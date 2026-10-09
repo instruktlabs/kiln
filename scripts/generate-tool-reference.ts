@@ -2,8 +2,36 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { packagedMcpManifest } from '../src/mcp-manifest';
+import { toolManifestEntry } from '../src/mcp-manifest';
+import { createKilnOperationToolRegistry } from '../src/tools/registry';
+import { createLocalToolContext } from '../src/local-runtime';
+import { localAssetLibrary } from '../src/assets-node';
 
 export const toolReferencePath = fileURLToPath(new URL('../docs/tools.md', import.meta.url));
+export const operationReferencePath = fileURLToPath(
+  new URL('../docs/tools-operations.md', import.meta.url),
+);
+
+/** Host-neutral named profile with asset/material storage and no local-only services. */
+export function operationReferenceMarkdown(): string {
+  const local = createLocalToolContext({ assetLibrary: localAssetLibrary() }, {});
+  const tools = createKilnOperationToolRegistry({
+    assetLibrary: local.assetLibrary,
+    materialLibrary: local.materialLibrary,
+  }).map(toolManifestEntry);
+  return `${[
+    '# Named operation reference',
+    'Available in package version 1.2.0 and later. Generated with `bun run docs:tools` from the same engine registry as the default [local tools](tools.md). This profile supplies asset and material storage without project/review or renderer-control callbacks. Other host capabilities can change the tool list; connected tools/list is authoritative. See the [embedding contract](sdk.md#named-operation-presentation).',
+    'Select this presentation explicitly with `createKilnMcpServer(context, { toolPresentation: "operations" })`. Existing local tool names and actions remain the default. Host authentication, request quotas, isolation and persistence policy are outside this engine reference.',
+    'Use kiln_discover for helper contracts and complete shape: records; kiln_capabilities reports configuration, not proof of successful rendering. Material creation requires a typed definition. Search results preserve collection, asset/material and revision identity. Saving remains an explicit decision.',
+    ...tools.flatMap((tool) => [
+      `## ${tool.name}`,
+      tool.description,
+      '<details>\n<summary>Input JSON Schema</summary>\n',
+      `\`\`\`json\n${JSON.stringify(tool.inputSchema, null, 2)}\n\`\`\`\n\n</details>`,
+    ]),
+  ].join('\n\n')}\n`;
+}
 
 /**
  * The published tool reference: the definitions the packaged server advertises,
@@ -37,14 +65,18 @@ export function toolReferenceMarkdown(): string {
 // Only when run as a command. Importing this module must not write a file or set
 // an exit code -- the test below it imports the builder.
 if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import.meta.url))) {
-  const content = toolReferenceMarkdown();
-  if (process.argv.includes('--check')) {
-    if ((await readFile(toolReferencePath, 'utf8').catch(() => '')) !== content) {
-      console.error('Tool reference differs from the registry. Run bun run docs:tools.');
-      process.exitCode = 1;
+  for (const [path, content] of [
+    [toolReferencePath, toolReferenceMarkdown()],
+    [operationReferencePath, operationReferenceMarkdown()],
+  ] as const) {
+    if (process.argv.includes('--check')) {
+      if ((await readFile(path, 'utf8').catch(() => '')) !== content) {
+        console.error('Tool reference differs from the registry. Run bun run docs:tools.');
+        process.exitCode = 1;
+      }
+    } else {
+      await writeFile(path, content);
+      console.log(`Wrote ${path}.`);
     }
-  } else {
-    await writeFile(toolReferencePath, content);
-    console.log(`Wrote ${packagedMcpManifest().tools.length} tool definitions to docs/tools.md.`);
   }
 }

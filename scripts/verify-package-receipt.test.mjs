@@ -47,6 +47,31 @@ describe('package receipt verification', () => {
     expect(receiptProblems(good(), target)).toEqual([]);
   });
 
+  test.each(['1.2.0', '1.2.0-rc.1', '1.10.0', '2.0.0'])(
+    '%s requires the installed named operation check',
+    (version) => {
+      const candidate = { ...target, manifest: { ...manifest, version } };
+      const receipt = { ...good(), engineVersion: version };
+      expect(receiptProblems(receipt, candidate)).toEqual([
+        'missing check: installed-named-operation-contract',
+      ]);
+      receipt.checks.push('installed-named-operation-contract');
+      expect(receiptProblems(receipt, candidate)).toEqual([]);
+    },
+  );
+
+  test('published 1.1 does not claim a future operation API', () => {
+    expect(
+      receiptProblems(
+        { ...good(), engineVersion: '1.1.0' },
+        {
+          ...target,
+          manifest: { ...manifest, version: '1.1.0' },
+        },
+      ),
+    ).toEqual([]);
+  });
+
   test('consumer qualification requires the exact explicitly selected Node and npm', () => {
     const consumer = { ...good(), node: 'v20.15.0', npm: '10.7.0' };
     const selected = { ...target, node: '20.15.0', npm: '10.7.0' };

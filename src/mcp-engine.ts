@@ -26,6 +26,7 @@ import {
   type KilnResourceContents,
   type KilnToolResult,
   withoutLocalPaths,
+  MCP_OPERATION_INSTRUCTIONS,
 } from './mcp-core';
 import { buildMcpManifest } from './mcp-manifest';
 import { localProgramStore } from './program-store-node';
@@ -33,6 +34,7 @@ import { validateRequirementsBinding } from './requirements-context';
 import { describeInputError, schemaFields } from './tools/actions';
 import {
   createKilnProgramToolRegistry,
+  createKilnOperationToolRegistry,
   type KilnToolContext,
   type KilnToolDef,
 } from './tools/registry';
@@ -42,6 +44,8 @@ export type { KilnToolResult } from './mcp-core';
 
 /** Optional wire features whose support is not negotiated by core MCP. */
 export type KilnMcpCompatibilityOptions = {
+  /** Opt-in domain operation presentation generated from the shared registry. */
+  toolPresentation?: 'grouped' | 'operations';
   /**
    * Add core `resource_link` blocks for saved artifact files.
    *
@@ -160,7 +164,10 @@ export function createKilnToolHost(
       };
     },
   };
-  const defs = kilnMcpToolDefs(requestContext);
+  const defs =
+    options.toolPresentation === 'operations'
+      ? createKilnOperationToolRegistry(requestContext)
+      : kilnMcpToolDefs(requestContext);
   const byName = new Map(defs.map((def) => [def.name, def] as const));
   return {
     defs,
@@ -259,6 +266,9 @@ export function createKilnMcpServer(
 ): Server {
   const host = createKilnToolHost(context, options);
   return createKilnServer({
+    ...(options.toolPresentation === 'operations'
+      ? { instructions: MCP_OPERATION_INSTRUCTIONS }
+      : {}),
     manifest: buildMcpManifest(host.defs, context),
     host: async () => host,
   });

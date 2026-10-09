@@ -63,6 +63,8 @@ export function createDiscoveryService(
   retirements: Readonly<Record<string, string>> = {},
   /** Host notes for the overview, such as the project an omitted `projectId` selects. */
   notes: () => Promise<string[]> = async () => [],
+  /** Host-selected capability entrypoint, never a model-provided instruction. */
+  capabilitiesCall = 'capabilities:true',
 ): (input: unknown) => Promise<DiscoveryResponse> {
   const entries = parseCatalog(source);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
@@ -94,7 +96,7 @@ export function createDiscoveryService(
       'Parts auto-add to opts.parent; do not wrap createPart in parent.add. Part rotation uses degrees.',
       'Custom THREE.BufferGeometry and ordinary JavaScript functions remain available. Recipes offer guidance and never restrict modeling.',
       'Send source once and reuse programRef for reads, edits, inspection and rendering. Review geometry, materials and destination constraints separately.',
-      'Search for the operation you need in ordinary language, then fetch exact contracts with ids. Use capabilities:true for the current host.',
+      `Search for the operation you need in ordinary language, then fetch exact contracts with ids. Use ${capabilitiesCall} for the current host.`,
     ],
   };
   const error = (

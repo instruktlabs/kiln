@@ -36171,7 +36171,7 @@ var init_program_artifacts = __esm(() => {
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
 }
-var ENGINE_VERSION = "1.1.0", ENGINE_INSTALL_URL;
+var ENGINE_VERSION = "1.2.0", ENGINE_INSTALL_URL;
 var init_engine_identity = __esm(() => {
   ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 });
@@ -39652,7 +39652,7 @@ var init_query_schema = __esm(() => {
 });
 
 // src/discovery/service.ts
-function createDiscoveryService(source, index, capabilities, retirements = {}, notes = async () => []) {
+function createDiscoveryService(source, index, capabilities, retirements = {}, notes = async () => [], capabilitiesCall = "capabilities:true") {
   const entries = parseCatalog(source);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
   const byName = new Map(entries.filter((entry) => entry.kind !== "recipe").map((entry) => [entry.name, entry]));
@@ -39675,7 +39675,7 @@ function createDiscoveryService(source, index, capabilities, retirements = {}, n
       "Parts auto-add to opts.parent; do not wrap createPart in parent.add. Part rotation uses degrees.",
       "Custom THREE.BufferGeometry and ordinary JavaScript functions remain available. Recipes offer guidance and never restrict modeling.",
       "Send source once and reuse programRef for reads, edits, inspection and rendering. Review geometry, materials and destination constraints separately.",
-      "Search for the operation you need in ordinary language, then fetch exact contracts with ids. Use capabilities:true for the current host."
+      `Search for the operation you need in ordinary language, then fetch exact contracts with ids. Use ${capabilitiesCall} for the current host.`
     ]
   };
   const error = (mode, code, message) => ({
@@ -39861,12 +39861,12 @@ var init_service = __esm(() => {
 function createDiscovery(capabilities = async () => ({
   host: "No host capability provider was supplied.",
   discovery: { mode: "lexical", offline: true, requiresModel: false }
-}), notes = async () => []) {
+}), notes = async () => [], capabilitiesCall = "capabilities:true") {
   snapshot2 ??= (() => {
     const entries = listDiscoveryEntries();
     return { entries, index: createLexicalDiscoveryIndex(entries) };
   })();
-  return createDiscoveryService(snapshot2.entries, snapshot2.index, capabilities, REMOVED_AUTHORING_HELPERS, notes);
+  return createDiscoveryService(snapshot2.entries, snapshot2.index, capabilities, REMOVED_AUTHORING_HELPERS, notes, capabilitiesCall);
 }
 var snapshot2;
 var init_discovery = __esm(() => {
@@ -39881,8 +39881,8 @@ var init_discovery = __esm(() => {
 });
 
 // src/tools/discovery.ts
-function createKilnDiscoveryDef(context) {
-  const run = createDiscovery(() => currentCapabilities(context), async () => projectNotes(context));
+function createKilnDiscoveryDef(context, presentation = "grouped") {
+  const run = createDiscovery(() => currentCapabilities(context, presentation), async () => projectNotes(context), presentation === "operations" ? "kiln_capabilities({})" : "capabilities:true");
   return {
     name: "kiln_discover",
     description: "Discover Kiln operations, assemblies, recipes, tool-input shapes and current host capabilities. Omit arguments for a compact overview. Search with ordinary modeling language using query; refine with family, kind or tags. Fetch complete contracts/examples with ids (up to six exact IDs, executable names or shape: ids). Overview/search pages default to six summaries. Recipes guide construction without restricting the asset. Search runs locally without models or network calls.",
@@ -39906,7 +39906,7 @@ function projectNotes(context) {
     `Project ${projectId} is configured for this workspace and applies when projectId is omitted: read its brief, design, inventory and material pins first with kiln_project { action: "get", projectId: "${projectId}" }; projectId: null selects standalone work.`
   ] : [];
 }
-async function currentCapabilities(context) {
+async function currentCapabilities(context, presentation) {
   const externalEvaluator = Boolean(context.evaluatorPort) || context.evaluatorProfile === "evaluator-required";
   const approvedTextures = context.approvedTextureResources ? context.approvedTextureResources() : externalEvaluator ? null : approvedTextureCatalogV1();
   const textureSlots = approvedTextures === null ? null : {};
@@ -39935,7 +39935,7 @@ async function currentCapabilities(context) {
       requiresModel: false
     },
     engine: engineIdentity(),
-    project: {
+    project: presentation === "operations" && !context.projectStore ? { available: false } : {
       configured: configuredProject(context),
       select: "projectId per call; omitted uses the configured project, null selects standalone work",
       read: 'kiln_project { action: "get", projectId } returns the brief, design, inventory and material pins'
@@ -39954,7 +39954,7 @@ async function currentCapabilities(context) {
       available: Boolean(context.assetLibrary),
       collections: context.assetLibrary?.collections() ?? [],
       save: "kiln_save persists exact GLB, source and provenance; draft renders do not populate collections",
-      resume: "kiln_assets action=restore imports a saved revision into the current program store",
+      resume: `${presentation === "operations" ? "kiln_assets_restore" : "kiln_assets action=restore"} imports a saved revision into the current program store`,
       downloads: "kiln_export returns GLB/source/ZIP resource links; client presentation varies",
       viewer: "kiln_present opens a saved revision in supporting chat clients with 3D viewing and downloads; kiln view opens a local collection or standalone GLB/ZIP"
     },
@@ -40340,12 +40340,12 @@ var init_material_presets = __esm(() => {
 
 // src/tools/materials.ts
 import { z as z18 } from "zod";
-async function onlyRevision(library, materialId) {
+async function onlyRevision(library, materialId, listCall) {
   const revisions = (await library.list()).filter((material) => material.materialId === materialId).map((material) => material.revisionId).sort();
   if (revisions.length === 1)
     return revisions[0];
   if (revisions.length === 0)
-    throw unknownMaterial(materialId);
+    throw unknownMaterial(materialId, undefined, listCall);
   throw new Error(`Material ${materialId} has ${revisions.length} revisions: ${revisions.join(", ")}. Pass revisionId to get one.`);
 }
 function aliasMaterialId(raw) {
@@ -40358,11 +40358,13 @@ function aliasMaterialId(raw) {
     throw new Error(`kiln_material: resourceId (${String(resourceId)}) and materialId (${String(rest.materialId)}) name different materials; pass materialId alone.`);
   return { ...rest, materialId: resourceId };
 }
-function createKilnMaterialDef(library) {
+function createKilnMaterialDef(library, presentation = "grouped") {
+  const listCall = presentation === "operations" ? 'kiln_material_search({ scope: "saved" })' : "kiln_material { action: 'list' }";
   return {
     name: "kiln_material",
     description: "Manage optional immutable material resources in this workspace. presets discovers shipped architecture, wood, metal, fabric and ground recipes; create-preset bakes one with an explicit seed, creator and license; list returns compact material/revision summaries; get returns full provenance, hashes, map conventions, physical repeat scale and a code-ready portable material spec; create-procedural bakes bounded editable layer recipes including optional height-derived normals; import accepts complete normalized records with embedded PNG bytes. No action downloads URLs or executes source. Pin the returned materialId/revisionId through per-invocation materialDependencies or project dependencies before authored evaluation resolves the resources; no project is required.",
     inputSchema: materialToolInput,
+    actionContract: MATERIAL_CONTRACT,
     annotations: {
       readOnlyHint: false,
       destructiveHint: false,
@@ -40372,7 +40374,7 @@ function createKilnMaterialDef(library) {
     async run(raw) {
       assertMaterialJson(raw);
       const input = materialToolInput.parse(aliasMaterialId(raw));
-      requireActionFields("kiln_material", input.action, input, REQUIREMENTS2[input.action]);
+      requireActionFields("kiln_material", input.action, input, MATERIAL_CONTRACT[input.action]);
       switch (input.action) {
         case "presets":
           return {
@@ -40408,12 +40410,12 @@ function createKilnMaterialDef(library) {
           };
         }
         case "get": {
-          const revisionId = input.revisionId ?? await onlyRevision(library, input.materialId);
+          const revisionId = input.revisionId ?? await onlyRevision(library, input.materialId, listCall);
           try {
             return materialResult((await library.read(input.materialId, revisionId)).manifest);
           } catch (error) {
             if (error.code === "ENOENT")
-              throw unknownMaterial(input.materialId, revisionId);
+              throw unknownMaterial(input.materialId, revisionId, listCall);
             throw error;
           }
         }
@@ -40437,11 +40439,11 @@ function createKilnMaterialDef(library) {
     }
   };
 }
-var MATERIAL_ACTIONS, REQUIREMENTS2, record7 = (description) => z18.record(z18.string(), z18.unknown()).optional().describe(description), tag, materialToolInput, materialResult = (material) => ({
+var MATERIAL_ACTIONS, MATERIAL_CONTRACT, record7 = (description) => z18.record(z18.string(), z18.unknown()).optional().describe(description), tag, materialToolInput, materialResult = (material) => ({
   ok: true,
   material,
   portableSpec: materialLibraryPortableSpec(material)
-}), unknownMaterial = (materialId, revisionId) => new Error(`Unknown material ${materialId}${revisionId ? ` at ${revisionId}` : ""}. kiln_material { action: 'list' } lists the materials in this workspace with their revision IDs.`);
+}), unknownMaterial = (materialId, revisionId, listCall) => new Error(`Unknown material ${materialId}${revisionId ? ` at ${revisionId}` : ""}. ${listCall} lists the materials in this workspace with their revision IDs.`);
 var init_materials = __esm(() => {
   init_material_library();
   init_material_library_node();
@@ -40454,13 +40456,39 @@ var init_materials = __esm(() => {
     "create-procedural",
     "import"
   ];
-  REQUIREMENTS2 = {
-    presets: { required: [] },
-    "create-preset": { required: ["presetId", "seed", "creator", "license"] },
-    list: { required: [] },
-    get: { required: ["materialId"] },
-    "create-procedural": { required: ["draft"], shapes: { draft: "shape:material-draft" } },
-    import: { required: ["payload"], shapes: { payload: "shape:material-import" } }
+  MATERIAL_CONTRACT = {
+    presets: {
+      fields: ["tag"],
+      required: [],
+      description: "List shipped material recipes, optionally filtered by tag."
+    },
+    "create-preset": {
+      fields: ["presetId", "seed", "creator", "license", "size", "materialId"],
+      required: ["presetId", "seed", "creator", "license"],
+      description: "Create an immutable material from a shipped preset with explicit seed, creator and license."
+    },
+    list: {
+      fields: ["tag"],
+      required: [],
+      description: "List saved immutable material revisions, optionally filtered by tag."
+    },
+    get: {
+      fields: ["materialId", "revisionId"],
+      required: ["materialId"],
+      description: "Read a material revision, provenance and portable specification. Omit revisionId only when exactly one revision exists."
+    },
+    "create-procedural": {
+      fields: ["draft"],
+      required: ["draft"],
+      shapes: { draft: "shape:material-draft" },
+      description: "Create an immutable material from a bounded procedural draft. Does not fetch URLs or execute source."
+    },
+    import: {
+      fields: ["payload"],
+      required: ["payload"],
+      shapes: { payload: "shape:material-import" },
+      description: "Import complete normalized material records and embedded PNGs. Does not fetch URLs or execute source."
+    }
   };
   tag = z18.string().min(1).max(80).optional().describe("presets, list: keep one tag.");
   materialToolInput = z18.strictObject({
@@ -40556,7 +40584,7 @@ function createKilnReviewDef(context) {
     },
     async run(raw) {
       const input = reviewToolInput.parse(raw);
-      requireActionFields("kiln_review", input.action, input, REQUIREMENTS3[input.action]);
+      requireActionFields("kiln_review", input.action, input, REQUIREMENTS2[input.action]);
       if (input.action === "list") {
         const snapshot = await store.snapshot({ projectId: input.projectId });
         const offset = input.offset ?? 0;
@@ -40663,7 +40691,7 @@ function createKilnReviewDef(context) {
     }
   };
 }
-var operationId, assetId, REVIEW_ACTIONS, REQUIREMENTS3, reviewToolInput, DEFAULT_PAGE = 20;
+var operationId, assetId, REVIEW_ACTIONS, REQUIREMENTS2, reviewToolInput, DEFAULT_PAGE = 20;
 var init_review = __esm(() => {
   init_assets();
   init_requirements_context();
@@ -40674,7 +40702,7 @@ var init_review = __esm(() => {
   operationId = z19.string().regex(/^op_[a-f0-9-]{36}$/);
   assetId = z19.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
   REVIEW_ACTIONS = ["list", "get", "pin", "save"];
-  REQUIREMENTS3 = {
+  REQUIREMENTS2 = {
     list: { required: [] },
     get: { required: ["operationId"] },
     pin: { required: ["operationId", "pinned"] },
@@ -40763,6 +40791,16 @@ var init_workspace2 = __esm(() => {
     "kiln_inspect",
     "kiln_save"
   ]);
+});
+
+// src/tools/operation-contract.ts
+import { z as z21 } from "zod";
+var init_operation_contract = () => {};
+
+// src/tools/operations.ts
+import { z as z22 } from "zod";
+var init_operations = __esm(() => {
+  init_operation_contract();
 });
 
 // src/edit-buffer.ts
@@ -42363,7 +42401,7 @@ var init_asset_widget = __esm(() => {
 });
 
 // src/tools/registry.ts
-import { z as z21 } from "zod";
+import { z as z23 } from "zod";
 import * as THREE46 from "three";
 function proceduralTextureMaterialContract(rendered, context) {
   const required = [...new Set(context.requiredProceduralTextureUsages ?? [])];
@@ -43427,21 +43465,24 @@ function withCaptureCache(context) {
     } : {}
   };
 }
-async function readSavedRevision(target, collection, assetId, revisionId) {
+async function readSavedRevision(target, collection, assetId, revisionId, listCall = `kiln_assets { action: 'list', collection: '${collection}' }`) {
   try {
     return await target.read(collection, assetId, revisionId);
   } catch (error) {
     if (error.code === "ENOENT")
-      throw new Error(`Unknown asset ${assetId} revision ${revisionId} in collection ${collection}. kiln_assets { action: 'list', collection: '${collection}' } lists the saved revisions.`);
+      throw new Error(`Unknown asset ${assetId} revision ${revisionId} in collection ${collection}. ${listCall} lists the saved revisions.`);
     throw error;
   }
 }
 function createKilnProgramToolRegistry(suppliedContext = {}) {
+  return createProgramDefs(suppliedContext, "grouped");
+}
+function createProgramDefs(suppliedContext, presentation) {
   toolRequirements(suppliedContext);
   const store = suppliedContext.programStore ?? new MemoryProgramStore;
   const context = withCaptureCache(withBuildCache({ ...suppliedContext, programStore: store }));
   return [
-    createKilnDiscoveryDef({ ...suppliedContext, programStore: store }),
+    createKilnDiscoveryDef({ ...suppliedContext, programStore: store }, presentation),
     {
       name: "kiln_renderer",
       description: "Inspect status, or reprobe after renderer setup/repair to refresh this session and reset failed starts. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart. Read viewFidelity after rendering.",
@@ -43481,7 +43522,7 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
     ].map((def) => withProgramReferences(def, store, context.readSourceFile)),
     createKilnSourceDef(store),
     ...context.projectStore ? [createKilnProjectDef(context.projectStore, context.projectBundleReader)] : [],
-    ...context.materialLibrary ? [createKilnMaterialDef(context.materialLibrary)] : [],
+    ...context.materialLibrary ? [createKilnMaterialDef(context.materialLibrary, presentation)] : [],
     ...context.reviewStore && context.assetLibrary ? [
       createKilnReviewDef({
         reviewStore: context.reviewStore,
@@ -43489,7 +43530,7 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
         requirements: context.requirements
       })
     ] : [],
-    ...createKilnAssetDefs({ ...context, programStore: store })
+    ...createKilnAssetDefs({ ...context, programStore: store }, presentation)
   ].map((def) => withWorkspaceContext(def, context)).map((def) => ({
     ...def,
     annotations: {
@@ -43501,10 +43542,10 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
     }
   }));
 }
-async function newestRevision(target, collection, assetId) {
+async function newestRevision(target, collection, assetId, listCall = `kiln_assets { action: 'list', collection: '${collection}' }`) {
   const revisions = (await target.list(collection)).filter((a) => a.assetId === assetId);
   if (!revisions.length)
-    throw new Error(`Unknown asset ${assetId} in ${collection}; kiln_assets { action: 'list', collection: '${collection}' } lists them.`);
+    throw new Error(`Unknown asset ${assetId} in ${collection}; ${listCall} lists them.`);
   const parents = new Set(revisions.map((a) => a.parentRevision).filter(Boolean));
   const heads = revisions.filter((a) => !parents.has(a.revisionId));
   const newest = (heads.length ? heads : revisions).sort((a, b) => a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0);
@@ -43569,7 +43610,12 @@ async function buildProgramAssetDraft(code, context, backdrop) {
     }
   };
 }
-function createKilnAssetDefs(context) {
+function createKilnAssetDefs(context, presentation = "grouped") {
+  const listCall = (collection) => presentation === "operations" ? `kiln_assets_search({ collection: '${collection}' })` : `kiln_assets { action: 'list', collection: '${collection}' }`;
+  const selector = presentation === "operations" ? {
+    ...assetSelector,
+    collection: assetSelector.collection.describe("Collection ID from kiln_assets_collections; default project.")
+  } : assetSelector;
   const library = () => {
     if (!context.assetLibrary)
       throw new Error("No asset library configured. The local CLI/MCP host supplies workspace collections; embedded hosts must inject assetLibrary.");
@@ -43597,38 +43643,38 @@ function createKilnAssetDefs(context) {
     resources: (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).assetLinks(collection, asset),
     downloadUrls: await context.assetDownloadUrls?.(collection, asset.assetId, asset.revisionId)
   });
-  const saveInput = z21.object({
-    collection: assetSelector.collection,
-    programRef: z21.string(),
-    name: z21.string().min(1).max(200),
-    assetId: assetSelector.assetId.optional(),
-    parentRevision: assetSelector.revisionId.optional(),
-    tags: z21.array(z21.string().max(80)).max(30).optional(),
-    brief: z21.string().max(8000).optional(),
-    description: z21.string().max(4000).optional(),
-    attribution: z21.object({
-      model: z21.string().max(200).optional(),
-      harness: z21.string().max(200).optional(),
-      author: z21.string().max(200).optional()
+  const saveInput = z23.object({
+    collection: selector.collection,
+    programRef: z23.string(),
+    name: z23.string().min(1).max(200),
+    assetId: selector.assetId.optional(),
+    parentRevision: selector.revisionId.optional(),
+    tags: z23.array(z23.string().max(80)).max(30).optional(),
+    brief: z23.string().max(8000).optional(),
+    description: z23.string().max(4000).optional(),
+    attribution: z23.object({
+      model: z23.string().max(200).optional(),
+      harness: z23.string().max(200).optional(),
+      author: z23.string().max(200).optional()
     }).optional(),
-    backdrop: z21.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
+    backdrop: z23.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
   });
-  const assetsInput = z21.object({
-    action: z21.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
-    collection: assetSelector.collection,
-    assetId: assetSelector.assetId.optional(),
-    revisionId: assetSelector.revisionId.optional().describe("get, restore: the saved revision; omitted, the newest."),
-    query: z21.string().max(200).optional(),
-    offset: z21.number().int().min(0).default(0),
-    limit: z21.number().int().min(1).max(50).default(20)
+  const assetsInput = z23.object({
+    action: z23.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
+    collection: selector.collection,
+    assetId: selector.assetId.optional(),
+    revisionId: selector.revisionId.optional().describe("get, restore: the saved revision; omitted, the newest."),
+    query: z23.string().max(200).optional(),
+    offset: z23.number().int().min(0).default(0),
+    limit: z23.number().int().min(1).max(50).default(20)
   });
-  const exportInput = z21.object(assetSelector);
+  const exportInput = z23.object(selector);
   const profileExportInput = exportInput.extend({
-    profile: z21.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
+    profile: z23.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
-  const importInput = z21.object({
-    ...assetSelector,
-    sourceCollection: assetSelector.collection
+  const importInput = z23.object({
+    ...selector,
+    sourceCollection: selector.collection
   });
   return [
     {
@@ -43644,7 +43690,7 @@ function createKilnAssetDefs(context) {
           requirements: activeRequirements.binding
         };
         if (input.assetId && input.parentRevision) {
-          const previous = await readSavedRevision(target, input.collection, input.assetId, input.parentRevision);
+          const previous = await readSavedRevision(target, input.collection, input.assetId, input.parentRevision, listCall(input.collection));
           assertSavedRequirementsAuthorized(previous.manifest, activeRequirements);
         }
         const code = await context.programStore.get(input.programRef);
@@ -43659,6 +43705,7 @@ function createKilnAssetDefs(context) {
       name: "kiln_assets",
       description: "Browse saved assets: collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.",
       inputSchema: assetsInput,
+      actionContract: ASSET_CONTRACT,
       run: async (raw) => {
         const input = assetsInput.parse(raw);
         const activeRequirements = toolRequirements(context);
@@ -43703,10 +43750,10 @@ function createKilnAssetDefs(context) {
             }))
           };
         }
-        if (!input.assetId)
+        if (ASSET_CONTRACT[input.action].required.some((field) => !input[field]))
           throw new Error(`kiln_assets ${input.action} requires assetId; kiln_assets { action: 'list', collection: '${input.collection}' } lists them.`);
-        const revisionId = input.revisionId ?? await newestRevision(target, input.collection, input.assetId);
-        const record = await readSavedRevision(target, input.collection, input.assetId, revisionId);
+        const revisionId = input.revisionId ?? await newestRevision(target, input.collection, input.assetId, listCall(input.collection));
+        const record = await readSavedRevision(target, input.collection, input.assetId, revisionId, listCall(input.collection));
         if (input.action === "get")
           return links(input.collection, record.manifest);
         const saved = assertSavedRequirementsAuthorized(record.manifest, activeRequirements);
@@ -43726,9 +43773,9 @@ function createKilnAssetDefs(context) {
       name: "kiln_present",
       description: "Present one exact saved revision. Supporting MCP App clients show an interactive 3D card with GLB, editable ZIP, and source downloads. Every host receives exact artifact descriptors with resource URIs in the JSON result; verified hosts may also receive core MCP resource-link blocks. This tool does not launch a local browser in coding harnesses. Call after saving or when the user wants to see or download an asset.",
       inputSchema: exportInput,
-      outputSchema: z21.object({
-        ok: z21.literal(true),
-        collection: z21.string(),
+      outputSchema: z23.object({
+        ok: z23.literal(true),
+        collection: z23.string(),
         asset: assetManifestSchema.pick({
           assetId: true,
           revisionId: true,
@@ -43739,25 +43786,25 @@ function createKilnAssetDefs(context) {
           editable: true,
           files: true
         }).extend({
-          build: z21.object({
-            engine: z21.string(),
-            rebuild: z21.enum(["engine-required", "external-dependencies-required"]),
-            warningCount: z21.number().int(),
-            warnings: z21.array(z21.string())
+          build: z23.object({
+            engine: z23.string(),
+            rebuild: z23.enum(["engine-required", "external-dependencies-required"]),
+            warningCount: z23.number().int(),
+            warnings: z23.array(z23.string())
           }).optional()
         }),
-        resources: z21.array(z21.object({
-          type: z21.literal("resource_link"),
-          name: z21.string(),
-          uri: z21.string(),
-          mimeType: z21.string(),
-          size: z21.number().int().nonnegative(),
-          annotations: z21.object({
-            audience: z21.array(z21.enum(["user", "assistant"])),
-            priority: z21.number()
+        resources: z23.array(z23.object({
+          type: z23.literal("resource_link"),
+          name: z23.string(),
+          uri: z23.string(),
+          mimeType: z23.string(),
+          size: z23.number().int().nonnegative(),
+          annotations: z23.object({
+            audience: z23.array(z23.enum(["user", "assistant"])),
+            priority: z23.number()
           })
         })),
-        downloadUrls: z21.record(z21.string(), z21.string()).optional()
+        downloadUrls: z23.record(z23.string(), z23.string()).optional()
       }),
       ui: {
         resourceUri: KILN_ASSET_WIDGET_URI,
@@ -43774,7 +43821,7 @@ function createKilnAssetDefs(context) {
       inputSchema: profileExportInput,
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
-        const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId);
+        const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId, listCall(input.collection));
         await Promise.resolve().then(() => init_draw_diagnostics());
         if (input.profile === "runtime") {
           const output = await (await Promise.resolve().then(() => (init_asset_export(), exports_asset_export))).exportAssetGlb(record, {
@@ -43808,7 +43855,7 @@ function createKilnAssetDefs(context) {
       run: async (raw) => {
         const input = importInput.parse(raw);
         const target = library();
-        const record = await readSavedRevision(target, input.sourceCollection, input.assetId, input.revisionId);
+        const record = await readSavedRevision(target, input.sourceCollection, input.assetId, input.revisionId, listCall(input.sourceCollection));
         await target.import(input.collection, [record]);
         return links(input.collection, record.manifest);
       }
@@ -43823,7 +43870,7 @@ var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html", DEFAULT_INLOOP_VIEW_RENDE
       path: `.kiln/review/${operation.operationId}/evaluation.json`
     } : undefined;
   }
-}), renderViewsBufferInput, screenshotAnimationInput, screenshotAnimationAdvertisedInput, viewInteriorInput, viewInteriorAdvertisedInput, partListInput, PLACEMENT_PAGE_LIMIT = 50, lod0Views = (views) => Array.from({ length: views }, () => []), KILN_RENDER_VIEWS_DESCRIPTION, kilnRenderViewsDef, KILN_SCREENSHOT_ANIMATION_DESCRIPTION, kilnScreenshotAnimationDef, KILN_VIEW_INTERIOR_DESCRIPTION, kilnViewInteriorDef, attachmentEndpointInput, surfacePairInput, inspectInput, inspectBufferInput, inspectAdvertisedInput, KILN_INSPECT_DESCRIPTION, kilnInspectDef, editOperationInput, editInput, editAdvertisedInput, KILN_EDIT_DESCRIPTION = "Patch an EXISTING Kiln program with exact-string replacements and render the result in one call. This is the refine verb: use it to change an asset you already have rather than re-emitting the whole file, so every line you did not touch stays byte-for-byte identical and the reply carries a unified diff of what actually changed. Pass the full current source as `code` and one or more { oldString, newString } edits, copied verbatim from that source. Edits apply in order and the call is all-or-nothing: if any oldString does not match, or matches more than once without replaceAll, NOTHING is applied and the reply names the edit that failed -- fix it and call again. The patched program comes back as `code`; write it to your file to keep it. Renders by default, so you see the change immediately; pass render:false to patch without rendering. Writes no files.", kilnEditDef, localCacheScope = 0, NESTED_RECORD_SHAPES, rendererInput, assetSelector;
+}), renderViewsBufferInput, screenshotAnimationInput, screenshotAnimationAdvertisedInput, viewInteriorInput, viewInteriorAdvertisedInput, partListInput, PLACEMENT_PAGE_LIMIT = 50, lod0Views = (views) => Array.from({ length: views }, () => []), KILN_RENDER_VIEWS_DESCRIPTION, kilnRenderViewsDef, KILN_SCREENSHOT_ANIMATION_DESCRIPTION, kilnScreenshotAnimationDef, KILN_VIEW_INTERIOR_DESCRIPTION, kilnViewInteriorDef, attachmentEndpointInput, surfacePairInput, inspectInput, inspectBufferInput, inspectAdvertisedInput, KILN_INSPECT_DESCRIPTION, kilnInspectDef, editOperationInput, editInput, editAdvertisedInput, KILN_EDIT_DESCRIPTION = "Patch an EXISTING Kiln program with exact-string replacements and render the result in one call. This is the refine verb: use it to change an asset you already have rather than re-emitting the whole file, so every line you did not touch stays byte-for-byte identical and the reply carries a unified diff of what actually changed. Pass the full current source as `code` and one or more { oldString, newString } edits, copied verbatim from that source. Edits apply in order and the call is all-or-nothing: if any oldString does not match, or matches more than once without replaceAll, NOTHING is applied and the reply names the edit that failed -- fix it and call again. The patched program comes back as `code`; write it to your file to keep it. Renders by default, so you see the change immediately; pass render:false to patch without rendering. Writes no files.", kilnEditDef, localCacheScope = 0, NESTED_RECORD_SHAPES, rendererInput, assetSelector, ASSET_CONTRACT;
 var init_registry2 = __esm(() => {
   init_capture_cache();
   init_assets();
@@ -43836,6 +43883,7 @@ var init_registry2 = __esm(() => {
   init_materials();
   init_review();
   init_workspace2();
+  init_operations();
   init_capture_input();
   init_review_detail();
   init_build_cache();
@@ -43850,41 +43898,41 @@ var init_registry2 = __esm(() => {
   init_evidence_history();
   init_background();
   viewEvidenceHistoryByContext = new WeakMap;
-  validateInput = z21.object({
-    code: z21.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
+  validateInput = z23.object({
+    code: z23.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
   });
-  renderInput = z21.object({
-    code: z21.string().describe("Kiln source code to execute and render to an in-memory GLB.")
+  renderInput = z23.object({
+    code: z23.string().describe("Kiln source code to execute and render to an in-memory GLB.")
   });
   renderViewsInput = renderInput.extend({ capture: captureInput, detail: reviewDetailInput });
   renderViewsBufferInput = renderViewsInput.omit({ code: true });
-  screenshotAnimationInput = z21.object({
+  screenshotAnimationInput = z23.object({
     shot: cameraShotInput.optional(),
-    measureParts: z21.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
-    frames: z21.number().int().min(2).max(6).optional(),
-    frameTimes: z21.array(z21.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
-    framing: z21.enum(["locked", "follow"]).optional(),
-    size: z21.number().int().min(128).max(1024).optional().describe("Frame size in px; default 256."),
+    measureParts: z23.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
+    frames: z23.number().int().min(2).max(6).optional(),
+    frameTimes: z23.array(z23.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
+    framing: z23.enum(["locked", "follow"]).optional(),
+    size: z23.number().int().min(128).max(1024).optional().describe("Frame size in px; default 256."),
     detail: reviewDetailInput,
-    code: z21.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
-    clip: z21.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
-    camera: z21.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
-    perFrame: z21.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
+    code: z23.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
+    clip: z23.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
+    camera: z23.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
+    perFrame: z23.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
   });
   screenshotAnimationAdvertisedInput = screenshotAnimationInput.extend({
     shot: cameraShotRecordInput
   });
-  viewInteriorInput = z21.object({
+  viewInteriorInput = z23.object({
     capture: advancedCaptureInput.optional(),
-    code: z21.string().describe("Kiln source code to execute and render with the roof hidden."),
-    nodeName: z21.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
+    code: z23.string().describe("Kiln source code to execute and render with the roof hidden."),
+    nodeName: z23.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
   });
   viewInteriorAdvertisedInput = viewInteriorInput.extend({ capture: captureRecordInput });
-  partListInput = z21.object({
-    query: z21.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
-    offset: z21.number().int().min(0).optional(),
-    limit: z21.number().int().min(1).max(100).optional(),
-    placement: z21.boolean().optional().describe("Add world position, rotation, scale, mirroring and bounds per part; pages of 50.")
+  partListInput = z23.object({
+    query: z23.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
+    offset: z23.number().int().min(0).optional(),
+    limit: z23.number().int().min(1).max(100).optional(),
+    placement: z23.boolean().optional().describe("Add world position, rotation, scale, mirroring and bounds per part; pages of 50.")
   }).strict();
   KILN_RENDER_VIEWS_DESCRIPTION = "Build the current asset and return geometry metrics, exact part paths and images. Omit capture for six orthographic views. Choose preset/cells for a smaller orbit sheet, or version kiln.capture.v1 with shots for per-part framing, local axes, perspective and separate images. +X is forward, +Y up, +Z right. Review silhouette, attachments, proportion and ground contact. GPU PBR shading supports textured or metallic materials; a flat-shaded CPU render supports geometry review. Read viewFidelity; do not judge material fidelity from CPU views. Failed builds return errors without images." + VIEW_EVIDENCE_GUIDANCE;
   kilnRenderViewsDef = createKilnRenderViewsDef();
@@ -43892,49 +43940,49 @@ var init_registry2 = __esm(() => {
   kilnScreenshotAnimationDef = createKilnScreenshotAnimationDef();
   KILN_VIEW_INTERIOR_DESCRIPTION = "SEE INSIDE an enterable building: renders it with the roof lifted off, as a " + "three-view grid. (1) Floor plan: top-down — check the interior is open and walkable and the footprint " + "is right. (2) Dollhouse: a 3/4 cutaway — check built-in fixtures (hearth, counter, shelves) rest ON the " + "floor, not floating or sunk, and the walls enclose a real volume with headroom. (3) Eye-level: a low " + "angle looking in through the doorway with the near walls also removed — confirm the doorway is a REAL " + "gap you could walk through (not a panel) and no wall or glass is buried inside a solid mass. Call this before finalizing any building. Take no argument: the roof is found from its semantic role, so any roof built with createRoofPlanes/createGableRoof lifts whatever it is named. If " + "roofsHidden comes back 0 no roof was resolvable and the interior stays hidden — build the roof " + 'with a roof primitive (or name the group "Roof"). Each cell is rendered from deterministic cutaway GLB bytes: GPU PBR when available, otherwise a GLB-native geometry-flat fallback. Read viewFidelity before judging materials; writes no files.' + VIEW_EVIDENCE_GUIDANCE;
   kilnViewInteriorDef = createKilnViewInteriorDef();
-  attachmentEndpointInput = z21.object({
-    subject: z21.object({ path: z21.string().optional(), name: z21.string().optional() }).strict(),
+  attachmentEndpointInput = z23.object({
+    subject: z23.object({ path: z23.string().optional(), name: z23.string().optional() }).strict(),
     point: cameraVec3Input.optional()
   }).strict();
-  surfacePairInput = z21.array(z21.string().max(4096)).length(2);
-  inspectInput = z21.object({
-    image: z21.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
+  surfacePairInput = z23.array(z23.string().max(4096)).length(2);
+  inspectInput = z23.object({
+    image: z23.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
     detail: reviewDetailInput,
     listParts: partListInput.optional().describe("List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering."),
-    surfacePairs: z21.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
-    compare: z21.object({
-      programRef: z21.string().regex(programRefPattern),
-      offset: z21.number().int().min(0).optional(),
-      limit: z21.number().int().min(1).max(100).optional(),
-      paths: z21.array(z21.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
+    surfacePairs: z23.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
+    compare: z23.object({
+      programRef: z23.string().regex(programRefPattern),
+      offset: z23.number().int().min(0).optional(),
+      limit: z23.number().int().min(1).max(100).optional(),
+      paths: z23.array(z23.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
     }).strict().optional().describe("Static geometry/material/transform/bounds under current host settings. Follow nextOffset; paths adds complete subtrees."),
-    measure: z21.object({
-      mode: z21.enum(["anchors", "surface"]).optional(),
+    measure: z23.object({
+      mode: z23.enum(["anchors", "surface"]).optional(),
       from: attachmentEndpointInput,
       to: attachmentEndpointInput
     }).strict().optional().describe("Default anchors: origin/local-point distance. Surface: disjoint mesh triangles, omit points. Rest pose, asset units. Check status/bounds; no solid clearance/attachment proof."),
     shot: cameraShotInput.optional().describe("Exact shot; omit part/view/orbit controls."),
-    code: z21.string().describe("Kiln source code to execute and inspect."),
-    part: z21.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
-    view: z21.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
-    azimuthDeg: z21.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
-    elevationDeg: z21.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
-    zoom: z21.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
-    isolate: z21.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
+    code: z23.string().describe("Kiln source code to execute and inspect."),
+    part: z23.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
+    view: z23.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
+    azimuthDeg: z23.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
+    elevationDeg: z23.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
+    zoom: z23.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
+    isolate: z23.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
   });
   inspectBufferInput = inspectInput.omit({ code: true });
   inspectAdvertisedInput = inspectInput.extend({ shot: cameraShotRecordInput });
   KILN_INSPECT_DESCRIPTION = "List complete part paths with listParts and image:false; query filters names/paths, offset/limit paginate. Follow partListing.nextOffset. ZOOM IN on one part: renders a single 512x512 close-up framed to the named part (the node name you gave createPart, matched case-insensitively with a substring fallback) and its descendants, " + "from one camera. Use it after kiln_render reveals a suspect region — a floating part, a bad " + "joint, a wrong proportion — to see fine detail one grid cell cannot show. args: part (omit to " + "frame the whole asset in one large view), view (front/right/back/left/top/three-quarter, default three-quarter), azimuthDeg + elevationDeg (orbit to ANY angle instead of a named view: azimuth 0 = front, 90 = right, 180 = back, 270 = left; elevation 0 = eye level, positive looks down, clamped to -89..89), zoom (padding multiplier around the part bounds, 1 = tight crop up to 4 = wide context, default 1.2), isolate (hide everything except that part, default false). Reach for the orbit angles when a named view puts the thing you need to judge edge-on or " + "behind something — the reply always tells you the azimuth/elevation it used, so you can step " + "from there. " + "If the part name does not resolve you get the list of available part names back — pick one and " + "retry. By default surrounding geometry stays visible for context and can occlude the part: either pick a different view, or set isolate:true to hide everything else and see the part unobstructed (use it for anything buried inside or behind other geometry). The view is rendered from deterministic derivative GLB bytes; GPU PBR is used only when it can preserve the requested framing, otherwise the GLB-native geometry-flat fallback reports why in viewFidelity. Writes no files." + VIEW_EVIDENCE_GUIDANCE;
   kilnInspectDef = createKilnInspectDef();
-  editOperationInput = z21.object({
-    oldString: z21.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
-    newString: z21.string().describe("The replacement text. Use an empty string to delete."),
-    replaceAll: z21.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
+  editOperationInput = z23.object({
+    oldString: z23.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
+    newString: z23.string().describe("The replacement text. Use an empty string to delete."),
+    replaceAll: z23.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
   });
-  editInput = z21.object({
-    code: z21.string().describe("The Kiln program to patch. The full current source."),
-    edits: z21.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
-    render: z21.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
+  editInput = z23.object({
+    code: z23.string().describe("The Kiln program to patch. The full current source."),
+    edits: z23.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
+    render: z23.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
     capture: captureInput,
     detail: reviewDetailInput
   });
@@ -43944,13 +43992,40 @@ var init_registry2 = __esm(() => {
     shot: "shape:camera-shot",
     capture: "shape:capture"
   };
-  rendererInput = z21.strictObject({
-    action: z21.enum(["status", "reprobe"]).default("status")
+  rendererInput = z23.strictObject({
+    action: z23.enum(["status", "reprobe"]).default("status")
   });
   assetSelector = {
-    collection: z21.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Collection ID (list with kiln_assets action=collections): the user destination, else project.").default("project"),
-    assetId: z21.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
-    revisionId: z21.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
+    collection: z23.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Collection ID (list with kiln_assets action=collections): the user destination, else project.").default("project"),
+    assetId: z23.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
+    revisionId: z23.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
+  };
+  ASSET_CONTRACT = {
+    collections: {
+      fields: [],
+      required: [],
+      description: "List configured asset storage collections. Collection is not project membership."
+    },
+    catalog: {
+      fields: ["assetId", "query", "offset", "limit"],
+      required: [],
+      description: "Search saved assets across configured collections with pagination."
+    },
+    list: {
+      fields: ["collection", "assetId", "query", "offset", "limit"],
+      required: [],
+      description: "Search saved assets in one collection with pagination."
+    },
+    get: {
+      fields: ["collection", "assetId", "revisionId"],
+      required: ["assetId"],
+      description: "Read a saved revision and its download descriptors. Omit revisionId for the newest revision."
+    },
+    restore: {
+      fields: ["collection", "assetId", "revisionId"],
+      required: ["assetId"],
+      description: "Restore exact saved source as programRef for editing or rendering. Omit revisionId for the newest revision. Does not overwrite the saved revision. Binary-only assets have no source."
+    }
   };
 });
 
@@ -44750,7 +44825,7 @@ var init_loopback = __esm(() => {
 });
 
 // src/workspace-http.ts
-import { z as z22 } from "zod";
+import { z as z24 } from "zod";
 async function readJson(req, origin) {
   if (req.headers.origin !== origin)
     throw new WorkspaceHttpError(403, "Same-origin writes only");
@@ -44919,11 +44994,11 @@ var init_workspace_http = __esm(() => {
       this.status = status;
     }
   };
-  updateSchema = z22.strictObject({
+  updateSchema = z24.strictObject({
     expectedRevision: projectRevisionIdSchema,
     patch: projectPatchSchema
   });
-  pinSchema = z22.strictObject({ pinned: z22.boolean() });
+  pinSchema = z24.strictObject({ pinned: z24.boolean() });
   filePattern3 = /^(asset\.glb|source\.kiln\.js|evaluation\.json|capture-\d{1,2}\.png)$/;
 });
 

@@ -13,6 +13,7 @@
 import { expect, test } from 'bun:test';
 import { readFile } from 'node:fs/promises';
 import { toolReferenceMarkdown, toolReferencePath } from './generate-tool-reference.ts';
+import { operationReferenceMarkdown, operationReferencePath } from './generate-tool-reference.ts';
 
 test('docs/tools.md matches the registry it is generated from', async () => {
   const published = await readFile(toolReferencePath, 'utf8');
@@ -22,4 +23,9 @@ test('docs/tools.md matches the registry it is generated from', async () => {
     published === toolReferenceMarkdown(),
     'docs/tools.md is stale — run `bun run docs:tools`',
   ).toBe(true);
+});
+
+test('named operation reference matches the registry without changing default tools', async () => {
+  expect(await readFile(operationReferencePath, 'utf8')).toBe(operationReferenceMarkdown());
+  expect(operationReferenceMarkdown().match(/^## kiln_/gm)).toHaveLength(21);
 });
