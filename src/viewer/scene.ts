@@ -1,9 +1,8 @@
 /// <reference lib="dom" />
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { validateAssetGlb } from '../assets';
+import { loadAssetGlb, disposeAssetModel as disposeModel } from './glb-loader';
 import { frameAssetBounds } from './framing';
 import {
   captureCameraView,
@@ -156,22 +155,6 @@ export function createAssetStage(container: HTMLElement) {
       ],
     };
   };
-  const disposeModel = (model: THREE.Object3D) => {
-    const geometries = new Set<THREE.BufferGeometry>();
-    const materials = new Set<THREE.Material>();
-    const textures = new Set<THREE.Texture>();
-    model.traverse((object) => {
-      const mesh = object as THREE.Mesh;
-      if (!mesh.isMesh) return;
-      geometries.add(mesh.geometry);
-      for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
-        materials.add(material);
-        for (const value of Object.values(material))
-          if (value instanceof THREE.Texture) textures.add(value);
-      }
-    });
-    for (const value of [...geometries, ...materials, ...textures]) value.dispose();
-  };
   const reset = () => {
     if (!root) return;
     const box = drawnBounds(root);
@@ -263,17 +246,17 @@ export function createAssetStage(container: HTMLElement) {
       const loadStarted = performance.now();
       const current = ++generation;
       cancelMeasurement('The artifact changed during measurement. Measure the new revision again.');
-      validateAssetGlb(bytes);
-      const manager = new THREE.LoadingManager();
-      manager.setURLModifier((url) => {
-        if (!url.startsWith('blob:') && !url.startsWith('data:'))
-          throw new Error('External model resources are not loaded');
-        return url;
-      });
-      const parsed = await new GLTFLoader(manager).parseAsync(Uint8Array.from(bytes).buffer, '');
+      const parsed = await loadAssetGlb(bytes);
       // three's loader draws every node; hide what KHR_node_visibility hides before counting.
       applyNodeVisibility(parsed, [parsed.scene]);
       const parsedLevels = await loadViewerLevels(parsed);
+      try {
+        parsed.assertTexturesLoaded();
+      } catch (error) {
+        disposeModel(parsed.scene);
+        for (const level of detachedLevels(parsedLevels)) disposeModel(level);
+        throw error;
+      }
       const gltf = acceptLoadedResource(
         parsed,
         () => !disposed && current === generation && options.isCurrent?.() !== false,

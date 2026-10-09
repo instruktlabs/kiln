@@ -1749,13 +1749,13 @@ var mcp_manifest_default = {
       },
       _meta: {
         ui: {
-          resourceUri: "ui://kiln/asset-v5.html",
+          resourceUri: "ui://kiln/asset-v6.html",
           visibility: [
             "model"
           ]
         },
-        "openai/outputTemplate": "ui://kiln/asset-v5.html",
-        "ui/resourceUri": "ui://kiln/asset-v5.html"
+        "openai/outputTemplate": "ui://kiln/asset-v6.html",
+        "ui/resourceUri": "ui://kiln/asset-v6.html"
       },
       outputSchema: {
         type: "object",
@@ -2034,7 +2034,7 @@ var mcp_manifest_default = {
   ],
   resources: [
     {
-      uri: "ui://kiln/asset-v5.html",
+      uri: "ui://kiln/asset-v6.html",
       name: "kiln-asset-viewer",
       mimeType: "text/html;profile=mcp-app",
       description: "Interactive Kiln asset viewer and downloads",
@@ -2082,10 +2082,10 @@ import {
 import { readFile } from "node:fs/promises";
 
 // src/asset-widget-uri.ts
-var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html";
+var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v6.html";
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "1.2.0";
+var ENGINE_VERSION = "1.2.1";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 
 // src/requirements-json.ts
