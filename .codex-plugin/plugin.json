@@ -1,6 +1,6 @@
 {
   "name": "kiln",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Create, review, save, and refine procedural 3D assets with portable source and GLB collections.",
   "author": {
     "name": "Matthew Kissinger"

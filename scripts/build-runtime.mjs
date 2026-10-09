@@ -126,14 +126,20 @@ export async function buildRuntime(target, root = repo) {
   return entry;
 }
 
+export async function buildAllRuntime(root = repo) {
+  const entries = [];
+  // MCP regenerates an identity input. Do it before any sibling captures its
+  // source identity, so a version/widget change needs only one complete build.
+  for (const target of ['mcp', 'worker', 'agent-run', 'agent-providers', 'engine', 'cli'])
+    entries.push(await buildRuntime(target, root));
+  return entries;
+}
+
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const targets =
-      process.argv[2] === 'all'
-        ? ['worker', 'agent-run', 'agent-providers', 'engine', 'mcp', 'cli']
-        : [process.argv[2]];
-    for (const target of targets) {
-      const entry = await buildRuntime(target);
+    const entries =
+      process.argv[2] === 'all' ? await buildAllRuntime() : [await buildRuntime(process.argv[2])];
+    for (const entry of entries) {
       console.log(`${entry.file} ${entry.bundleHash} (${entry.identity})`);
     }
     if (process.argv[2] === 'all') await buildSdk();

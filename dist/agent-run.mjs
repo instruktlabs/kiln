@@ -32939,7 +32939,7 @@ function createKilnSourceDef(store) {
 }
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "1.2.0";
+var ENGINE_VERSION = "1.2.1";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
@@ -37996,7 +37996,10 @@ function resolveViewRenderTimeoutMs(input) {
 // src/tools/registry.ts
 init_evidence_history();
 init_background();
-var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html";
+
+// src/asset-widget-uri.ts
+var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v6.html";
+// src/tools/registry.ts
 function proceduralTextureMaterialContract(rendered, context) {
   const required = [...new Set(context.requiredProceduralTextureUsages ?? [])];
   if (required.length === 0)

@@ -1733,13 +1733,13 @@
       },
       "_meta": {
         "ui": {
-          "resourceUri": "ui://kiln/asset-v5.html",
+          "resourceUri": "ui://kiln/asset-v6.html",
           "visibility": [
             "model"
           ]
         },
-        "openai/outputTemplate": "ui://kiln/asset-v5.html",
-        "ui/resourceUri": "ui://kiln/asset-v5.html"
+        "openai/outputTemplate": "ui://kiln/asset-v6.html",
+        "ui/resourceUri": "ui://kiln/asset-v6.html"
       },
       "outputSchema": {
         "type": "object",
@@ -2018,7 +2018,7 @@
   ],
   "resources": [
     {
-      "uri": "ui://kiln/asset-v5.html",
+      "uri": "ui://kiln/asset-v6.html",
       "name": "kiln-asset-viewer",
       "mimeType": "text/html;profile=mcp-app",
       "description": "Interactive Kiln asset viewer and downloads",

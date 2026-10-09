@@ -36171,7 +36171,7 @@ var init_program_artifacts = __esm(() => {
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
 }
-var ENGINE_VERSION = "1.2.0", ENGINE_INSTALL_URL;
+var ENGINE_VERSION = "1.2.1", ENGINE_INSTALL_URL;
 var init_engine_identity = __esm(() => {
   ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 });
@@ -41029,6 +41029,9 @@ var init_view_render_timeout = __esm(() => {
   WARM_UP_STATES = new Set(["unknown", "pending", "ready", "degraded"]);
 });
 
+// src/asset-widget-uri.ts
+var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v6.html";
+
 // src/views/port.ts
 async function sha256Bytes(bytes) {
   const input = new Uint8Array(bytes.byteLength);
@@ -43862,7 +43865,7 @@ function createKilnAssetDefs(context, presentation = "grouped") {
     }
   ];
 }
-var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html", DEFAULT_INLOOP_VIEW_RENDER_TIMEOUT_MS = 6000, viewEvidenceHistoryByContext, VIEW_EVIDENCE_GUIDANCE = " viewEvidence.current describes ONLY this request. lastFaithful is older hash-only evidence for reference, not reused pixels and not current verification.", validateInput, renderInput, renderViewsInput, reviewDetailOptions = (context) => ({
+var DEFAULT_INLOOP_VIEW_RENDER_TIMEOUT_MS = 6000, viewEvidenceHistoryByContext, VIEW_EVIDENCE_GUIDANCE = " viewEvidence.current describes ONLY this request. lastFaithful is older hash-only evidence for reference, not reused pixels and not current verification.", validateInput, renderInput, renderViewsInput, reviewDetailOptions = (context) => ({
   retainedReport: () => {
     const operation = context.liveReview?.currentOperation?.();
     return operation ? {

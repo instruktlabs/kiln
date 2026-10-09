@@ -36103,10 +36103,10 @@ import {
 import { readFile as readFile8 } from "node:fs/promises";
 
 // src/asset-widget-uri.ts
-var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v5.html";
+var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v6.html";
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "1.2.0";
+var ENGINE_VERSION = "1.2.1";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
@@ -41937,7 +41937,6 @@ function resolveViewRenderTimeoutMs(input) {
 // src/tools/registry.ts
 init_evidence_history();
 init_background();
-var KILN_ASSET_WIDGET_URI2 = "ui://kiln/asset-v5.html";
 function proceduralTextureMaterialContract(rendered, context) {
   const required = [...new Set(context.requiredProceduralTextureUsages ?? [])];
   if (required.length === 0)
@@ -43490,7 +43489,7 @@ function createKilnAssetDefs(context, presentation = "grouped") {
         downloadUrls: z23.record(z23.string(), z23.string()).optional()
       }),
       ui: {
-        resourceUri: KILN_ASSET_WIDGET_URI2,
+        resourceUri: KILN_ASSET_WIDGET_URI,
         data: async (output) => (await Promise.resolve().then(() => (init_asset_widget(), exports_asset_widget))).assetWidgetData(library(), output)
       },
       run: async (raw) => {
