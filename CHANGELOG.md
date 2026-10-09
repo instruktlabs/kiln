@@ -5,7 +5,7 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
-## 1.2.1 (unpublished)
+## 1.2.1
 
 - Load embedded viewer textures through the browser image path, retaining
   pixels, sampler settings and UV transforms under restrictive MCP Apps CSP.

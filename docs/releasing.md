@@ -1,10 +1,11 @@
 # Publishing Kiln
 
 This is the maintainer runbook for `@instruktlabs/kiln`. npm publishing access is
-configured and stable `1.1.0` is published under `latest`. Follow-up changes need
+configured. The [verified publication record](../.github/published-candidate.json)
+identifies the current qualified registry release. Follow-up changes need
 a new version and the qualification process below. Development, registry publication,
 hosted deployment and directory acceptance have separate evidence requirements.
-See the [release status](reviews/2026-10-07-release-status.md) for current status.
+The [October 7 release status](reviews/2026-10-07-release-status.md) is historical.
 
 The official hosted application has its own private `instruktlabs/kiln-hosted`
 repository, dependency lockfile, CI and deployment runbooks. Its source and
@@ -133,6 +134,13 @@ local plugin flows. Verify the public provenance statement's repository, workflo
 and commit. Retain registry URL, version/tag, digest, run IDs, installed receipts
 and the owner's approval. Create the approved GitHub release/tag with matching
 notes and archive identity only after these checks.
+
+Update `.github/published-candidate.json` from the verified publication receipt.
+The website reads that same record for its version labels, release/download links
+and generated share cards; there is no separate site version to edit. Its CI runs
+when the record changes. A site build reflects the recorded published release,
+not an unreleased `package.json` bump. Review and deploy the resulting site build
+through the normal site publication process.
 
 Publication failure does not authorize a rebuild under an existing version. Before
 promotion, reject and replace an incorrect stage. After publication, stop rollout
