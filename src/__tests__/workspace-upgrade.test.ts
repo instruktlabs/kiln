@@ -129,7 +129,13 @@ it('checks the recorded interpreter without treating another supported caller as
     expect(invoke(root, repo, { repair: true }).status).toBe(0);
     expect(JSON.parse(invoke(root, repo, { check: true }).stdout).status).toBe('current');
   } finally {
-    await rm(temp, { recursive: true, force: true });
+    const actual = await realpath(temp);
+    const parent = await realpath(tmpdir());
+    expect(dirname(actual)).toBe(parent);
+    expect(actual.slice(parent.length + 1)).toStartWith('kiln-check-node-');
+    // Windows CI observed EBUSY here after every assertion and child exit passed.
+    // Retry only fixture removal, bounded to 5.5 seconds; persistent locks still fail.
+    await rm(actual, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 }, 30000);
 
