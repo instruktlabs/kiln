@@ -136,11 +136,9 @@ the stability of the helpers it uses. Exact details retain the same structured
 `stability` field. Implicit modeling remains available without a new opt-in switch;
 the community exporter retains its explicit selection.
 
-## Maintainer qualification
+## Named operation presentation
 
-### Named operation presentation (unreleased)
-
-The next additive release is planned as 1.2.0. Embeddings can select
+In package version 1.2.0 and later, embeddings can select
 `createKilnMcpServer(context, { toolPresentation: 'operations' })`, or obtain the
 same definitions through `createKilnOperationToolRegistry(context)` from `tools`.
 The default MCP and native interfaces retain their existing grouped tools.
@@ -161,7 +159,7 @@ persistence policy; do not copy domain schemas or assume a local read hint
 describes a quota-admitted cloud job. This API change does not publish a package
 or deploy a hosted service. Actual client acceptance is still required.
 
-### Release checks
+## Maintainer qualification
 
 `node scripts/build-runtime.mjs all` builds both executable bundles and the ESM SDK.
 `bun run build` remains typechecking only. SDK output replaces the generated `lib/`

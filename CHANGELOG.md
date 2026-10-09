@@ -5,7 +5,7 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
-## Unreleased (planned 1.2.0)
+## 1.2.0
 
 - Add an opt-in named MCP operation presentation generated from the shared
   registry, including consolidated asset search, material browsing and typed
@@ -15,7 +15,7 @@ does not publish a package.
 - Omit unsupported renderer controls from the named presentation and use its
   available tool names in capability guidance and resource-recovery messages.
 
-This work is not yet released or qualified for production hosting.
+This additive SDK contract does not establish production-hosting readiness.
 
 ## 1.1.0
 

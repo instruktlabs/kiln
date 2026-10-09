@@ -1,6 +1,6 @@
-# Named operation reference (unreleased)
+# Named operation reference
 
-Generated with `bun run docs:tools` from the same engine registry as the default [local tools](tools.md). This profile supplies asset and material storage without project/review or renderer-control callbacks. Other host capabilities can change the tool list; connected tools/list is authoritative. See the [embedding contract](sdk.md#named-operation-presentation-unreleased).
+Available in package version 1.2.0 and later. Generated with `bun run docs:tools` from the same engine registry as the default [local tools](tools.md). This profile supplies asset and material storage without project/review or renderer-control callbacks. Other host capabilities can change the tool list; connected tools/list is authoritative. See the [embedding contract](sdk.md#named-operation-presentation).
 
 Select this presentation explicitly with `createKilnMcpServer(context, { toolPresentation: "operations" })`. Existing local tool names and actions remain the default. Host authentication, request quotas, isolation and persistence policy are outside this engine reference.
 

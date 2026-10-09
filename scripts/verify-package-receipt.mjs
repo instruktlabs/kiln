@@ -39,6 +39,12 @@ const REQUIRED_CHECKS = [
 
 const PLATFORMS = new Set(['darwin', 'linux', 'win32']);
 
+/** Registry checks can exercise an older published package than this checkout. */
+export function requiresNamedOperationCheck(version) {
+  const [major, minor] = version.split('.').map(Number);
+  return major > 1 || (major === 1 && minor >= 2);
+}
+
 function option(argv, name) {
   const at = argv.indexOf(`--${name}`);
   return at === -1 ? undefined : argv[at + 1];
@@ -60,6 +66,10 @@ export function receiptProblems(receipt, { platform, arch, manifest, toolchain, 
   mustBe(receipt.engineName, manifest.name, 'engineName');
 
   for (const check of REQUIRED_CHECKS) {
+    if (!receipt.checks?.includes(check)) problems.push(`missing check: ${check}`);
+  }
+  if (requiresNamedOperationCheck(manifest.version)) {
+    const check = 'installed-named-operation-contract';
     if (!receipt.checks?.includes(check)) problems.push(`missing check: ${check}`);
   }
   if (manifest.files?.includes('scripts/workspace-project.mjs')) {
