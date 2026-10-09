@@ -15,6 +15,8 @@ does not publish a package.
   The chat component labels its saved-preview fallback and can recover when
   another asset is presented. Advance the widget resource URI to invalidate
   cached component bytes.
+- Generate the MCP manifest before building sibling runtimes so one complete
+  build keeps their identities consistent after a package or widget update.
 
 Actual ChatGPT-host acceptance and hosted production deployment remain separate
 from local browser regression evidence and package publication.
