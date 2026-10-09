@@ -21,6 +21,7 @@ export function createDiscovery(
     discovery: { mode: 'lexical', offline: true, requiresModel: false },
   }),
   notes: () => Promise<string[]> = async () => [],
+  capabilitiesCall = 'capabilities:true',
 ) {
   snapshot ??= (() => {
     const entries = listDiscoveryEntries();
@@ -32,5 +33,6 @@ export function createDiscovery(
     capabilities,
     REMOVED_AUTHORING_HELPERS,
     notes,
+    capabilitiesCall,
   );
 }

@@ -11,10 +11,14 @@ import { resolveGltfExporter } from '../community-exporter';
 import { approvedTextureCatalogV1 } from '../material-resources';
 
 /** Shared native tool definition; all transports use the same Discovery service. */
-export function createKilnDiscoveryDef(context: KilnToolContext): KilnToolDef {
+export function createKilnDiscoveryDef(
+  context: KilnToolContext,
+  presentation: 'grouped' | 'operations' = 'grouped',
+): KilnToolDef {
   const run = createDiscovery(
-    () => currentCapabilities(context),
+    () => currentCapabilities(context, presentation),
     async () => projectNotes(context),
+    presentation === 'operations' ? 'kiln_capabilities({})' : 'capabilities:true',
   );
   return {
     name: 'kiln_discover',
@@ -48,7 +52,10 @@ function projectNotes(context: KilnToolContext): string[] {
     : [];
 }
 
-async function currentCapabilities(context: KilnToolContext) {
+async function currentCapabilities(
+  context: KilnToolContext,
+  presentation: 'grouped' | 'operations',
+) {
   const externalEvaluator =
     Boolean(context.evaluatorPort) || context.evaluatorProfile === 'evaluator-required';
   const approvedTextures = context.approvedTextureResources
@@ -102,12 +109,15 @@ async function currentCapabilities(context: KilnToolContext) {
     // you -- so the workspace guide's "do not substitute it silently" had
     // nothing to check against. Compare with `runtime` in .kiln/workspace.json.
     engine: engineIdentity(),
-    project: {
-      configured: configuredProject(context),
-      select:
-        'projectId per call; omitted uses the configured project, null selects standalone work',
-      read: 'kiln_project { action: "get", projectId } returns the brief, design, inventory and material pins',
-    },
+    project:
+      presentation === 'operations' && !context.projectStore
+        ? { available: false }
+        : {
+            configured: configuredProject(context),
+            select:
+              'projectId per call; omitted uses the configured project, null selects standalone work',
+            read: 'kiln_project { action: "get", projectId } returns the brief, design, inventory and material pins',
+          },
     renderer,
     execution:
       context.localExecution ??
@@ -128,7 +138,7 @@ async function currentCapabilities(context: KilnToolContext) {
       available: Boolean(context.assetLibrary),
       collections: context.assetLibrary?.collections() ?? [],
       save: 'kiln_save persists exact GLB, source and provenance; draft renders do not populate collections',
-      resume: 'kiln_assets action=restore imports a saved revision into the current program store',
+      resume: `${presentation === 'operations' ? 'kiln_assets_restore' : 'kiln_assets action=restore'} imports a saved revision into the current program store`,
       downloads: 'kiln_export returns GLB/source/ZIP resource links; client presentation varies',
       viewer:
         'kiln_present opens a saved revision in supporting chat clients with 3D viewing and downloads; kiln view opens a local collection or standalone GLB/ZIP',

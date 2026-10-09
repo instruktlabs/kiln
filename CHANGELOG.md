@@ -5,6 +5,18 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
+## Unreleased (planned 1.2.0)
+
+- Add an opt-in named MCP operation presentation generated from the shared
+  registry, including consolidated asset search, material browsing and typed
+  material creation. Existing grouped local tools remain the default.
+- Share action requirements with schema generation and reject unclassified
+  fields/actions instead of silently dropping required inputs.
+- Omit unsupported renderer controls from the named presentation and use its
+  available tool names in capability guidance and resource-recovery messages.
+
+This work is not yet released or qualified for production hosting.
+
 ## 1.1.0
 
 Existing-project setup, public host interfaces and simpler onboarding. Hosted

@@ -24,6 +24,8 @@ import { createKilnMaterialDef } from './materials';
 import { createKilnReviewDef, type ReviewStore } from './review';
 import { withWorkspaceContext } from './workspace';
 import { describeInputError } from './actions';
+import { projectOperationDefs } from './operations';
+import type { KilnActionContract } from './operation-contract';
 import {
   advancedCaptureInput,
   cameraShotInput,
@@ -94,6 +96,8 @@ import type { TextureUsage } from '../textures';
 
 export const KILN_ASSET_WIDGET_URI = 'ui://kiln/asset-v5.html';
 export interface KilnToolDef {
+  /** Shared action ownership and requirements; never hand-maintained by transports. */
+  actionContract?: Readonly<Record<string, import('./operation-contract').KilnActionContract>>;
   outputSchema?: z.ZodType;
   /** Optional MCP App presentation; metadata is hidden from the language model. */
   ui?: {
@@ -2498,13 +2502,14 @@ async function readSavedRevision(
   collection: string,
   assetId: string,
   revisionId: string,
+  listCall = `kiln_assets { action: 'list', collection: '${collection}' }`,
 ) {
   try {
     return await target.read(collection, assetId, revisionId);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT')
       throw new Error(
-        `Unknown asset ${assetId} revision ${revisionId} in collection ${collection}. kiln_assets { action: 'list', collection: '${collection}' } lists the saved revisions.`,
+        `Unknown asset ${assetId} revision ${revisionId} in collection ${collection}. ${listCall} lists the saved revisions.`,
       );
     throw error;
   }
@@ -2513,11 +2518,18 @@ async function readSavedRevision(
 export function createKilnProgramToolRegistry(
   suppliedContext: KilnToolContext = {},
 ): KilnToolDef[] {
+  return createProgramDefs(suppliedContext, 'grouped');
+}
+
+function createProgramDefs(
+  suppliedContext: KilnToolContext,
+  presentation: 'grouped' | 'operations',
+): KilnToolDef[] {
   toolRequirements(suppliedContext);
   const store = suppliedContext.programStore ?? new MemoryProgramStore();
   const context = withCaptureCache(withBuildCache({ ...suppliedContext, programStore: store }));
   return [
-    createKilnDiscoveryDef({ ...suppliedContext, programStore: store }),
+    createKilnDiscoveryDef({ ...suppliedContext, programStore: store }, presentation),
     {
       name: 'kiln_renderer',
       description:
@@ -2564,7 +2576,9 @@ export function createKilnProgramToolRegistry(
     ...(context.projectStore
       ? [createKilnProjectDef(context.projectStore, context.projectBundleReader)]
       : []),
-    ...(context.materialLibrary ? [createKilnMaterialDef(context.materialLibrary)] : []),
+    ...(context.materialLibrary
+      ? [createKilnMaterialDef(context.materialLibrary, presentation)]
+      : []),
     ...(context.reviewStore && context.assetLibrary
       ? [
           createKilnReviewDef({
@@ -2574,7 +2588,7 @@ export function createKilnProgramToolRegistry(
           }),
         ]
       : []),
-    ...createKilnAssetDefs({ ...context, programStore: store }),
+    ...createKilnAssetDefs({ ...context, programStore: store }, presentation),
   ]
     .map((def) => withWorkspaceContext(def, context))
     .map((def) => ({
@@ -2589,6 +2603,11 @@ export function createKilnProgramToolRegistry(
         ...def.annotations,
       },
     }));
+}
+
+/** Opt-in named domain operations; grouped local/native contracts remain unchanged. */
+export function createKilnOperationToolRegistry(context: KilnToolContext = {}): KilnToolDef[] {
+  return projectOperationDefs(createProgramDefs(context, 'operations'), context);
 }
 
 /** Canonical native workflow: shared definitions plus one host-owned terminal. */
@@ -2686,6 +2705,36 @@ const assetSelector = {
   revisionId: z.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
 };
 
+const ASSET_CONTRACT = {
+  collections: {
+    fields: [],
+    required: [],
+    description: 'List configured asset storage collections. Collection is not project membership.',
+  },
+  catalog: {
+    fields: ['assetId', 'query', 'offset', 'limit'],
+    required: [],
+    description: 'Search saved assets across configured collections with pagination.',
+  },
+  list: {
+    fields: ['collection', 'assetId', 'query', 'offset', 'limit'],
+    required: [],
+    description: 'Search saved assets in one collection with pagination.',
+  },
+  get: {
+    fields: ['collection', 'assetId', 'revisionId'],
+    required: ['assetId'],
+    description:
+      'Read a saved revision and its download descriptors. Omit revisionId for the newest revision.',
+  },
+  restore: {
+    fields: ['collection', 'assetId', 'revisionId'],
+    required: ['assetId'],
+    description:
+      'Restore exact saved source as programRef for editing or rendering. Omit revisionId for the newest revision. Does not overwrite the saved revision. Binary-only assets have no source.',
+  },
+} satisfies Record<string, KilnActionContract>;
+
 /**
  * The revision a get or restore without `revisionId` means: the newest, the
  * one no later revision names as its parent, ties to the latest `createdAt`
@@ -2701,12 +2750,11 @@ export async function newestRevision(
   },
   collection: string,
   assetId: string,
+  listCall = `kiln_assets { action: 'list', collection: '${collection}' }`,
 ): Promise<string> {
   const revisions = (await target.list(collection)).filter((a) => a.assetId === assetId);
   if (!revisions.length)
-    throw new Error(
-      `Unknown asset ${assetId} in ${collection}; kiln_assets { action: 'list', collection: '${collection}' } lists them.`,
-    );
+    throw new Error(`Unknown asset ${assetId} in ${collection}; ${listCall} lists them.`);
   const parents = new Set(revisions.map((a) => a.parentRevision).filter(Boolean));
   const heads = revisions.filter((a) => !parents.has(a.revisionId));
   const newest = (heads.length ? heads : revisions).sort((a, b) =>
@@ -2797,7 +2845,23 @@ export async function buildProgramAssetDraft(
 }
 
 /** All asset operation schemas live here, alongside the existing tool definitions. */
-export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
+export function createKilnAssetDefs(
+  context: KilnToolContext,
+  presentation: 'grouped' | 'operations' = 'grouped',
+): KilnToolDef[] {
+  const listCall = (collection: string) =>
+    presentation === 'operations'
+      ? `kiln_assets_search({ collection: '${collection}' })`
+      : `kiln_assets { action: 'list', collection: '${collection}' }`;
+  const selector =
+    presentation === 'operations'
+      ? {
+          ...assetSelector,
+          collection: assetSelector.collection.describe(
+            'Collection ID from kiln_assets_collections; default project.',
+          ),
+        }
+      : assetSelector;
   const library = () => {
     if (!context.assetLibrary)
       throw new Error(
@@ -2828,11 +2892,11 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
     downloadUrls: await context.assetDownloadUrls?.(collection, asset.assetId, asset.revisionId),
   });
   const saveInput = z.object({
-    collection: assetSelector.collection,
+    collection: selector.collection,
     programRef: z.string(),
     name: z.string().min(1).max(200),
-    assetId: assetSelector.assetId.optional(),
-    parentRevision: assetSelector.revisionId.optional(),
+    assetId: selector.assetId.optional(),
+    parentRevision: selector.revisionId.optional(),
     tags: z.array(z.string().max(80)).max(30).optional(),
     brief: z.string().max(8000).optional(),
     description: z.string().max(4000).optional(),
@@ -2850,16 +2914,16 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
   });
   const assetsInput = z.object({
     action: z.enum(['collections', 'catalog', 'list', 'get', 'restore']).default('list'),
-    collection: assetSelector.collection,
-    assetId: assetSelector.assetId.optional(),
-    revisionId: assetSelector.revisionId
+    collection: selector.collection,
+    assetId: selector.assetId.optional(),
+    revisionId: selector.revisionId
       .optional()
       .describe('get, restore: the saved revision; omitted, the newest.'),
     query: z.string().max(200).optional(),
     offset: z.number().int().min(0).default(0),
     limit: z.number().int().min(1).max(50).default(20),
   });
-  const exportInput = z.object(assetSelector);
+  const exportInput = z.object(selector);
   const profileExportInput = exportInput.extend({
     profile: z
       .enum(['editable', 'runtime'])
@@ -2869,8 +2933,8 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
       ),
   });
   const importInput = z.object({
-    ...assetSelector,
-    sourceCollection: assetSelector.collection,
+    ...selector,
+    sourceCollection: selector.collection,
   });
   return [
     {
@@ -2892,6 +2956,7 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
             input.collection,
             input.assetId,
             input.parentRevision,
+            listCall(input.collection),
           );
           assertSavedRequirementsAuthorized(previous.manifest, activeRequirements);
         }
@@ -2908,6 +2973,7 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
       description:
         'Browse saved assets: collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.',
       inputSchema: assetsInput,
+      actionContract: ASSET_CONTRACT,
       run: async (raw) => {
         const input = assetsInput.parse(raw);
         const activeRequirements = toolRequirements(context);
@@ -2961,13 +3027,25 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
             })),
           };
         }
-        if (!input.assetId)
+        if (ASSET_CONTRACT[input.action].required.some((field) => !input[field as 'assetId']))
           throw new Error(
             `kiln_assets ${input.action} requires assetId; kiln_assets { action: 'list', collection: '${input.collection}' } lists them.`,
           );
         const revisionId =
-          input.revisionId ?? (await newestRevision(target, input.collection, input.assetId));
-        const record = await readSavedRevision(target, input.collection, input.assetId, revisionId);
+          input.revisionId ??
+          (await newestRevision(
+            target,
+            input.collection,
+            input.assetId!,
+            listCall(input.collection),
+          ));
+        const record = await readSavedRevision(
+          target,
+          input.collection,
+          input.assetId!,
+          revisionId,
+          listCall(input.collection),
+        );
         if (input.action === 'get') return links(input.collection, record.manifest);
         const saved = assertSavedRequirementsAuthorized(record.manifest, activeRequirements);
         const code = record.files['source.kiln.js'];
@@ -3059,6 +3137,7 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
           input.collection,
           input.assetId,
           input.revisionId,
+          listCall(input.collection),
         );
         const { inspectDrawDiagnostics } = await import('../draw-diagnostics');
         if (input.profile === 'runtime') {
@@ -3102,6 +3181,7 @@ export function createKilnAssetDefs(context: KilnToolContext): KilnToolDef[] {
           input.sourceCollection,
           input.assetId,
           input.revisionId,
+          listCall(input.sourceCollection),
         );
         await target.import(input.collection, [record]);
         return links(input.collection, record.manifest);

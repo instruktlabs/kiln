@@ -300,6 +300,19 @@ for (const subpath of ${JSON.stringify(coreExports)}) {
 }
 assert.equal(typeof sdk.validateKilnCode, 'function');
 assert.equal(typeof sdk.createDiscovery, 'function');
+const { createKilnOperationToolRegistry } = await import(name + '/tools');
+const { createKilnToolHost } = await import(name + '/mcp');
+const operationContext = {
+  assetLibrary: { collections: () => [], list: async () => [] },
+  materialLibrary: { list: async () => [] },
+};
+const operations = createKilnOperationToolRegistry(operationContext);
+assert.equal(operations.length, 21);
+const operationHost = createKilnToolHost(operationContext, { toolPresentation: 'operations' });
+assert.deepEqual(operationHost.defs.map(tool => tool.name), operations.map(tool => tool.name));
+assert.deepEqual(await operations.find(tool => tool.name === 'kiln_material_search').run({ scope: 'saved' }),
+  { ok: true, presets: [], materials: [] });
+await assert.rejects(() => operations.find(tool => tool.name === 'kiln_material_create').run({ definition: { kind: 'preset' } }));
 const arena = await import(name + '/arena');
 assert.equal(arena.fitBradleyTerry([{winner:'a',loser:'b'}]).items[0].id, 'a');
 assert.deepEqual(arena.pickNextPair(['a','b'], []), {a:'a',b:'b'});
@@ -315,7 +328,11 @@ console.log(JSON.stringify({ imports: ${coreExports.length}, renderBytes: result
       KILN_EVALUATOR_MODE: 'subprocess',
     }),
   );
-  receipt.checks.push('plain-node-sdk-exports', 'sdk-subprocess-render');
+  receipt.checks.push(
+    'plain-node-sdk-exports',
+    'sdk-subprocess-render',
+    'installed-named-operation-contract',
+  );
   // Qualify the compiled worker's native imports and wire protocol. This runs
   // trusted fixture code without an OS sandbox; provider isolation is a separate gate.
   await writeFile(

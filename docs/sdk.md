@@ -138,6 +138,31 @@ the community exporter retains its explicit selection.
 
 ## Maintainer qualification
 
+### Named operation presentation (unreleased)
+
+The next additive release is planned as 1.2.0. Embeddings can select
+`createKilnMcpServer(context, { toolPresentation: 'operations' })`, or obtain the
+same definitions through `createKilnOperationToolRegistry(context)` from `tools`.
+The default MCP and native interfaces retain their existing grouped tools.
+
+With asset and material storage, and without project/review or renderer-control
+callbacks, the named presentation exposes 21 tools. Asset browsing becomes
+`kiln_assets_search` with an optional collection; material browsing becomes
+`kiln_material_search` with `scope: 'all' | 'presets' | 'saved'`. Material creation
+uses `kiln_material_create` with a required `definition` discriminated by
+`kind: 'preset' | 'procedural'`. Saving, importing, retrieval and source restoration
+remain explicit operations. Renderer controls appear only when their callbacks
+exist. Connected `tools/list` remains authoritative.
+
+Action requirements and field constraints come from the shared engine registry.
+Generation rejects unclassified action/field additions and missing required
+fields. Hosts select supported operations and add their actual execution and
+persistence policy; do not copy domain schemas or assume a local read hint
+describes a quota-admitted cloud job. This API change does not publish a package
+or deploy a hosted service. Actual client acceptance is still required.
+
+### Release checks
+
 `node scripts/build-runtime.mjs all` builds both executable bundles and the ESM SDK.
 `bun run build` remains typechecking only. SDK output replaces the generated `lib/`
 tree after successful compilation and module resolution, so removed modules cannot

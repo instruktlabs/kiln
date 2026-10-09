@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { z } from 'zod';
 import { FileMaterialLibrary, createMaterialLibraryPayload } from '../material-library-node';
 import { createKilnMaterialDef, materialToolInput } from './materials';
+import { createKilnOperationToolRegistry } from './registry';
 
 const roots: string[] = [];
 afterEach(async () => {
@@ -48,6 +49,27 @@ async function library() {
   roots.push(root);
   return new FileMaterialLibrary(root);
 }
+
+test('named material creation and grouped creation retain identical revisions and portable specs', async () => {
+  const store = await library();
+  const named = createKilnOperationToolRegistry({ materialLibrary: store }).find(
+    (def) => def.name === 'kiln_material_create',
+  )!;
+  const legacy = createKilnMaterialDef(store);
+  const created = await named.run({ definition: { kind: 'procedural', draft } });
+  expect(await legacy.run({ action: 'create-procedural', draft })).toEqual(created);
+  const options = {
+    presetId: 'wood-oak',
+    seed: 12,
+    size: 64,
+    creator: 'Test author',
+    license: draft.sources[0]!.license,
+  };
+  const presets = (await legacy.run({ action: 'presets' })) as { presets: { id: string }[] };
+  options.presetId = presets.presets[0]!.id;
+  const fromPreset = await named.run({ definition: { kind: 'preset', ...options } });
+  expect(await legacy.run({ action: 'create-preset', ...options })).toEqual(fromPreset);
+});
 test('material tool creates repeatable recipes, lists summaries and reads code-ready portable specs', async () => {
   const store = await library();
   const tool = createKilnMaterialDef(store);

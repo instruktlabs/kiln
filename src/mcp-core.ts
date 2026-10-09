@@ -65,6 +65,9 @@ export const MCP_SERVER_VERSION = ENGINE_VERSION;
 export const MCP_SERVER_INSTRUCTIONS =
   "Kiln turns JavaScript you write into GLB assets and returns rendered views. Work by reference: send a program once to kiln_validate or kiln_render, keep the returned programRef exactly, and use it for every later render, inspect, kiln_source and kiln_edit call; never resend a program to change part of it. Call kiln_discover first for helper contracts, with capabilities:true for the host's runtime, project and camera facts. Read viewFidelity before judging materials: a CPU view shows shape, not material; GPU views need the render service in render-service/. Agent Skills for authoring, refining, QA and scenes ship in skills/ beside this server's dist/; read the matching SKILL.md first.";
 
+export const MCP_OPERATION_INSTRUCTIONS =
+  'Kiln turns authored JavaScript into editable GLB assets and rendered views. Send source once to kiln_validate or kiln_render, then preserve the exact programRef for later reads, edits and renders. Use kiln_discover for helper contracts and full input shapes; use kiln_capabilities for host configuration and limits. Read viewFidelity before judging materials: CPU geometry views are not material evidence. Search saved assets with kiln_assets_search; reopen exact source with kiln_assets_restore. Browse materials with kiln_material_search and create with kiln_material_create. Save only when requested. Pin collection, asset and revision IDs for reuse and export.';
+
 /** One MCP content block. Mirrors the SDK's `CallToolResult['content']` element. */
 export type KilnContentBlock =
   | AssetLink

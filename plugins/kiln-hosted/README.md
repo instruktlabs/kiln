@@ -46,12 +46,14 @@ application builds independently in the private `instruktlabs/kiln-hosted`
 repository. No private application source or credentials are needed to build this
 draft with `node scripts/package-hosted-plugin.mjs FRESH_OUTPUT_DIRECTORY`.
 
-`tool-surface.json` records the 26 public operation names generated from the
-qualified private candidate using the published engine 1.0.0. It contains no
-service configuration or tool implementation. The private candidate's protocol
-parity checks establish these names; the packaging tests validate review cases
-against them. Refresh this generated record when the qualified service contract
-changes. The plugin version and hosted engine version are recorded separately.
+`tool-surface.json` and the accompanying skill/review cases retain the historical
+26-operation snapshot from the engine 1.0.0 private candidate. They do not describe
+the approved replacement design or establish current service readiness. The
+unreleased engine 1.2.0 adds the shared [21-tool presentation](../../docs/tools-operations.md).
+After the private service adopts and qualifies that package, regenerate this
+snapshot and align its skill/review cases from that exact candidate before any
+directory submission. The draft plugin version and historical hosted engine
+version are recorded separately; neither is a deployment receipt.
 
 The public product name is Kiln, published by Instrukt Labs. Directory submissions
 and live-service qualification remain deferred to the private hosting work.

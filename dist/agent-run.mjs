@@ -32234,7 +32234,7 @@ import {
 // src/tools/registry.ts
 init_capture_cache();
 init_assets();
-import { z as z20 } from "zod";
+import { z as z22 } from "zod";
 
 // src/requirements-assets.ts
 init_requirements_context();
@@ -32939,7 +32939,7 @@ function createKilnSourceDef(store) {
 }
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "1.1.0";
+var ENGINE_VERSION = "1.2.0";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
@@ -36395,7 +36395,7 @@ var MAX_RESPONSE_BYTES = 64 * 1024;
 var MAX_TEXT_CHARS = 16 * 1024;
 var DETAIL_RESULT_BUDGET = 15000;
 var compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
-function createDiscoveryService(source, index, capabilities, retirements = {}, notes = async () => []) {
+function createDiscoveryService(source, index, capabilities, retirements = {}, notes = async () => [], capabilitiesCall = "capabilities:true") {
   const entries = parseCatalog(source);
   const byId = new Map(entries.map((entry) => [entry.id, entry]));
   const byName = new Map(entries.filter((entry) => entry.kind !== "recipe").map((entry) => [entry.name, entry]));
@@ -36418,7 +36418,7 @@ function createDiscoveryService(source, index, capabilities, retirements = {}, n
       "Parts auto-add to opts.parent; do not wrap createPart in parent.add. Part rotation uses degrees.",
       "Custom THREE.BufferGeometry and ordinary JavaScript functions remain available. Recipes offer guidance and never restrict modeling.",
       "Send source once and reuse programRef for reads, edits, inspection and rendering. Review geometry, materials and destination constraints separately.",
-      "Search for the operation you need in ordinary language, then fetch exact contracts with ids. Use capabilities:true for the current host."
+      `Search for the operation you need in ordinary language, then fetch exact contracts with ids. Use ${capabilitiesCall} for the current host.`
     ]
   };
   const error = (mode, code, message) => ({
@@ -36599,12 +36599,12 @@ var snapshot;
 function createDiscovery(capabilities = async () => ({
   host: "No host capability provider was supplied.",
   discovery: { mode: "lexical", offline: true, requiresModel: false }
-}), notes = async () => []) {
+}), notes = async () => [], capabilitiesCall = "capabilities:true") {
   snapshot ??= (() => {
     const entries = listDiscoveryEntries();
     return { entries, index: createLexicalDiscoveryIndex(entries) };
   })();
-  return createDiscoveryService(snapshot.entries, snapshot.index, capabilities, REMOVED_AUTHORING_HELPERS, notes);
+  return createDiscoveryService(snapshot.entries, snapshot.index, capabilities, REMOVED_AUTHORING_HELPERS, notes, capabilitiesCall);
 }
 
 // src/tools/discovery.ts
@@ -36613,8 +36613,8 @@ init_capture_limits();
 init_geometry_export();
 init_community_exporter();
 init_material_resources();
-function createKilnDiscoveryDef(context) {
-  const run = createDiscovery(() => currentCapabilities(context), async () => projectNotes(context));
+function createKilnDiscoveryDef(context, presentation = "grouped") {
+  const run = createDiscovery(() => currentCapabilities(context, presentation), async () => projectNotes(context), presentation === "operations" ? "kiln_capabilities({})" : "capabilities:true");
   return {
     name: "kiln_discover",
     description: "Discover Kiln operations, assemblies, recipes, tool-input shapes and current host capabilities. Omit arguments for a compact overview. Search with ordinary modeling language using query; refine with family, kind or tags. Fetch complete contracts/examples with ids (up to six exact IDs, executable names or shape: ids). Overview/search pages default to six summaries. Recipes guide construction without restricting the asset. Search runs locally without models or network calls.",
@@ -36638,7 +36638,7 @@ function projectNotes(context) {
     `Project ${projectId} is configured for this workspace and applies when projectId is omitted: read its brief, design, inventory and material pins first with kiln_project { action: "get", projectId: "${projectId}" }; projectId: null selects standalone work.`
   ] : [];
 }
-async function currentCapabilities(context) {
+async function currentCapabilities(context, presentation) {
   const externalEvaluator = Boolean(context.evaluatorPort) || context.evaluatorProfile === "evaluator-required";
   const approvedTextures = context.approvedTextureResources ? context.approvedTextureResources() : externalEvaluator ? null : approvedTextureCatalogV1();
   const textureSlots = approvedTextures === null ? null : {};
@@ -36667,7 +36667,7 @@ async function currentCapabilities(context) {
       requiresModel: false
     },
     engine: engineIdentity(),
-    project: {
+    project: presentation === "operations" && !context.projectStore ? { available: false } : {
       configured: configuredProject(context),
       select: "projectId per call; omitted uses the configured project, null selects standalone work",
       read: 'kiln_project { action: "get", projectId } returns the brief, design, inventory and material pins'
@@ -36686,7 +36686,7 @@ async function currentCapabilities(context) {
       available: Boolean(context.assetLibrary),
       collections: context.assetLibrary?.collections() ?? [],
       save: "kiln_save persists exact GLB, source and provenance; draft renders do not populate collections",
-      resume: "kiln_assets action=restore imports a saved revision into the current program store",
+      resume: `${presentation === "operations" ? "kiln_assets_restore" : "kiln_assets action=restore"} imports a saved revision into the current program store`,
       downloads: "kiln_export returns GLB/source/ZIP resource links; client presentation varies",
       viewer: "kiln_present opens a saved revision in supporting chat clients with 3D viewing and downloads; kiln view opens a local collection or standalone GLB/ZIP"
     },
@@ -37071,13 +37071,39 @@ var MATERIAL_ACTIONS = [
   "create-procedural",
   "import"
 ];
-var REQUIREMENTS2 = {
-  presets: { required: [] },
-  "create-preset": { required: ["presetId", "seed", "creator", "license"] },
-  list: { required: [] },
-  get: { required: ["materialId"] },
-  "create-procedural": { required: ["draft"], shapes: { draft: "shape:material-draft" } },
-  import: { required: ["payload"], shapes: { payload: "shape:material-import" } }
+var MATERIAL_CONTRACT = {
+  presets: {
+    fields: ["tag"],
+    required: [],
+    description: "List shipped material recipes, optionally filtered by tag."
+  },
+  "create-preset": {
+    fields: ["presetId", "seed", "creator", "license", "size", "materialId"],
+    required: ["presetId", "seed", "creator", "license"],
+    description: "Create an immutable material from a shipped preset with explicit seed, creator and license."
+  },
+  list: {
+    fields: ["tag"],
+    required: [],
+    description: "List saved immutable material revisions, optionally filtered by tag."
+  },
+  get: {
+    fields: ["materialId", "revisionId"],
+    required: ["materialId"],
+    description: "Read a material revision, provenance and portable specification. Omit revisionId only when exactly one revision exists."
+  },
+  "create-procedural": {
+    fields: ["draft"],
+    required: ["draft"],
+    shapes: { draft: "shape:material-draft" },
+    description: "Create an immutable material from a bounded procedural draft. Does not fetch URLs or execute source."
+  },
+  import: {
+    fields: ["payload"],
+    required: ["payload"],
+    shapes: { payload: "shape:material-import" },
+    description: "Import complete normalized material records and embedded PNGs. Does not fetch URLs or execute source."
+  }
 };
 var record7 = (description) => z16.record(z16.string(), z16.unknown()).optional().describe(description);
 var tag = z16.string().min(1).max(80).optional().describe("presets, list: keep one tag.");
@@ -37099,13 +37125,13 @@ var materialResult = (material) => ({
   material,
   portableSpec: materialLibraryPortableSpec(material)
 });
-var unknownMaterial = (materialId, revisionId) => new Error(`Unknown material ${materialId}${revisionId ? ` at ${revisionId}` : ""}. kiln_material { action: 'list' } lists the materials in this workspace with their revision IDs.`);
-async function onlyRevision(library, materialId) {
+var unknownMaterial = (materialId, revisionId, listCall) => new Error(`Unknown material ${materialId}${revisionId ? ` at ${revisionId}` : ""}. ${listCall} lists the materials in this workspace with their revision IDs.`);
+async function onlyRevision(library, materialId, listCall) {
   const revisions = (await library.list()).filter((material) => material.materialId === materialId).map((material) => material.revisionId).sort();
   if (revisions.length === 1)
     return revisions[0];
   if (revisions.length === 0)
-    throw unknownMaterial(materialId);
+    throw unknownMaterial(materialId, undefined, listCall);
   throw new Error(`Material ${materialId} has ${revisions.length} revisions: ${revisions.join(", ")}. Pass revisionId to get one.`);
 }
 function aliasMaterialId(raw) {
@@ -37118,11 +37144,13 @@ function aliasMaterialId(raw) {
     throw new Error(`kiln_material: resourceId (${String(resourceId)}) and materialId (${String(rest.materialId)}) name different materials; pass materialId alone.`);
   return { ...rest, materialId: resourceId };
 }
-function createKilnMaterialDef(library) {
+function createKilnMaterialDef(library, presentation = "grouped") {
+  const listCall = presentation === "operations" ? 'kiln_material_search({ scope: "saved" })' : "kiln_material { action: 'list' }";
   return {
     name: "kiln_material",
     description: "Manage optional immutable material resources in this workspace. presets discovers shipped architecture, wood, metal, fabric and ground recipes; create-preset bakes one with an explicit seed, creator and license; list returns compact material/revision summaries; get returns full provenance, hashes, map conventions, physical repeat scale and a code-ready portable material spec; create-procedural bakes bounded editable layer recipes including optional height-derived normals; import accepts complete normalized records with embedded PNG bytes. No action downloads URLs or executes source. Pin the returned materialId/revisionId through per-invocation materialDependencies or project dependencies before authored evaluation resolves the resources; no project is required.",
     inputSchema: materialToolInput,
+    actionContract: MATERIAL_CONTRACT,
     annotations: {
       readOnlyHint: false,
       destructiveHint: false,
@@ -37132,7 +37160,7 @@ function createKilnMaterialDef(library) {
     async run(raw) {
       assertMaterialJson(raw);
       const input = materialToolInput.parse(aliasMaterialId(raw));
-      requireActionFields("kiln_material", input.action, input, REQUIREMENTS2[input.action]);
+      requireActionFields("kiln_material", input.action, input, MATERIAL_CONTRACT[input.action]);
       switch (input.action) {
         case "presets":
           return {
@@ -37168,12 +37196,12 @@ function createKilnMaterialDef(library) {
           };
         }
         case "get": {
-          const revisionId = input.revisionId ?? await onlyRevision(library, input.materialId);
+          const revisionId = input.revisionId ?? await onlyRevision(library, input.materialId, listCall);
           try {
             return materialResult((await library.read(input.materialId, revisionId)).manifest);
           } catch (error) {
             if (error.code === "ENOENT")
-              throw unknownMaterial(input.materialId, revisionId);
+              throw unknownMaterial(input.materialId, revisionId, listCall);
             throw error;
           }
         }
@@ -37224,7 +37252,7 @@ async function persistedPreviewFidelity(fidelity, glb) {
 var operationId = z17.string().regex(/^op_[a-f0-9-]{36}$/);
 var assetId = z17.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
 var REVIEW_ACTIONS = ["list", "get", "pin", "save"];
-var REQUIREMENTS3 = {
+var REQUIREMENTS2 = {
   list: { required: [] },
   get: { required: ["operationId"] },
   pin: { required: ["operationId", "pinned"] },
@@ -37306,7 +37334,7 @@ function createKilnReviewDef(context) {
     },
     async run(raw) {
       const input = reviewToolInput.parse(raw);
-      requireActionFields("kiln_review", input.action, input, REQUIREMENTS3[input.action]);
+      requireActionFields("kiln_review", input.action, input, REQUIREMENTS2[input.action]);
       if (input.action === "list") {
         const snapshot = await store.snapshot({ projectId: input.projectId });
         const offset = input.offset ?? 0;
@@ -37495,6 +37523,12 @@ function withWorkspaceContext(def, context) {
     }
   };
 }
+
+// src/tools/operations.ts
+import { z as z21 } from "zod";
+
+// src/tools/operation-contract.ts
+import { z as z20 } from "zod";
 
 // src/build-cache.ts
 init_protocol();
@@ -38191,11 +38225,11 @@ function derivativeReviewFidelity(receipts) {
     ...reasonCodes.length ? { reasonCodes } : {}
   };
 }
-var validateInput = z20.object({
-  code: z20.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
+var validateInput = z22.object({
+  code: z22.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
 });
-var renderInput = z20.object({
-  code: z20.string().describe("Kiln source code to execute and render to an in-memory GLB.")
+var renderInput = z22.object({
+  code: z22.string().describe("Kiln source code to execute and render to an in-memory GLB.")
 });
 var renderViewsInput = renderInput.extend({ capture: captureInput, detail: reviewDetailInput });
 var reviewDetailOptions = (context) => ({
@@ -38208,26 +38242,26 @@ var reviewDetailOptions = (context) => ({
   }
 });
 var renderViewsBufferInput = renderViewsInput.omit({ code: true });
-var screenshotAnimationInput = z20.object({
+var screenshotAnimationInput = z22.object({
   shot: cameraShotInput.optional(),
-  measureParts: z20.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
-  frames: z20.number().int().min(2).max(6).optional(),
-  frameTimes: z20.array(z20.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
-  framing: z20.enum(["locked", "follow"]).optional(),
-  size: z20.number().int().min(128).max(1024).optional().describe("Frame size in px; default 256."),
+  measureParts: z22.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
+  frames: z22.number().int().min(2).max(6).optional(),
+  frameTimes: z22.array(z22.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
+  framing: z22.enum(["locked", "follow"]).optional(),
+  size: z22.number().int().min(128).max(1024).optional().describe("Frame size in px; default 256."),
   detail: reviewDetailInput,
-  code: z20.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
-  clip: z20.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
-  camera: z20.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
-  perFrame: z20.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
+  code: z22.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
+  clip: z22.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
+  camera: z22.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
+  perFrame: z22.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
 });
 var screenshotAnimationAdvertisedInput = screenshotAnimationInput.extend({
   shot: cameraShotRecordInput
 });
-var viewInteriorInput = z20.object({
+var viewInteriorInput = z22.object({
   capture: advancedCaptureInput.optional(),
-  code: z20.string().describe("Kiln source code to execute and render with the roof hidden."),
-  nodeName: z20.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
+  code: z22.string().describe("Kiln source code to execute and render with the roof hidden."),
+  nodeName: z22.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
 });
 var viewInteriorAdvertisedInput = viewInteriorInput.extend({ capture: captureRecordInput });
 function runValidate(input, context) {
@@ -38242,11 +38276,11 @@ function runValidate(input, context) {
     warnings: result.warnings.map((w) => w.fixHint ? `${w.message} (${w.fixHint})` : w.message)
   };
 }
-var partListInput = z20.object({
-  query: z20.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
-  offset: z20.number().int().min(0).optional(),
-  limit: z20.number().int().min(1).max(100).optional(),
-  placement: z20.boolean().optional().describe("Add world position, rotation, scale, mirroring and bounds per part; pages of 50.")
+var partListInput = z22.object({
+  query: z22.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
+  offset: z22.number().int().min(0).optional(),
+  limit: z22.number().int().min(1).max(100).optional(),
+  placement: z22.boolean().optional().describe("Add world position, rotation, scale, mirroring and bounds per part; pages of 50.")
 }).strict();
 var PLACEMENT_PAGE_LIMIT = 50;
 async function listPartNames2(root, options = {}) {
@@ -38713,35 +38747,35 @@ function createKilnViewInteriorDef(context = {}) {
   };
 }
 var kilnViewInteriorDef = createKilnViewInteriorDef();
-var attachmentEndpointInput = z20.object({
-  subject: z20.object({ path: z20.string().optional(), name: z20.string().optional() }).strict(),
+var attachmentEndpointInput = z22.object({
+  subject: z22.object({ path: z22.string().optional(), name: z22.string().optional() }).strict(),
   point: cameraVec3Input.optional()
 }).strict();
-var surfacePairInput = z20.array(z20.string().max(4096)).length(2);
-var inspectInput = z20.object({
-  image: z20.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
+var surfacePairInput = z22.array(z22.string().max(4096)).length(2);
+var inspectInput = z22.object({
+  image: z22.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
   detail: reviewDetailInput,
   listParts: partListInput.optional().describe("List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering."),
-  surfacePairs: z20.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
-  compare: z20.object({
-    programRef: z20.string().regex(programRefPattern),
-    offset: z20.number().int().min(0).optional(),
-    limit: z20.number().int().min(1).max(100).optional(),
-    paths: z20.array(z20.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
+  surfacePairs: z22.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
+  compare: z22.object({
+    programRef: z22.string().regex(programRefPattern),
+    offset: z22.number().int().min(0).optional(),
+    limit: z22.number().int().min(1).max(100).optional(),
+    paths: z22.array(z22.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
   }).strict().optional().describe("Static geometry/material/transform/bounds under current host settings. Follow nextOffset; paths adds complete subtrees."),
-  measure: z20.object({
-    mode: z20.enum(["anchors", "surface"]).optional(),
+  measure: z22.object({
+    mode: z22.enum(["anchors", "surface"]).optional(),
     from: attachmentEndpointInput,
     to: attachmentEndpointInput
   }).strict().optional().describe("Default anchors: origin/local-point distance. Surface: disjoint mesh triangles, omit points. Rest pose, asset units. Check status/bounds; no solid clearance/attachment proof."),
   shot: cameraShotInput.optional().describe("Exact shot; omit part/view/orbit controls."),
-  code: z20.string().describe("Kiln source code to execute and inspect."),
-  part: z20.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
-  view: z20.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
-  azimuthDeg: z20.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
-  elevationDeg: z20.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
-  zoom: z20.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
-  isolate: z20.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
+  code: z22.string().describe("Kiln source code to execute and inspect."),
+  part: z22.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
+  view: z22.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
+  azimuthDeg: z22.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
+  elevationDeg: z22.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
+  zoom: z22.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
+  isolate: z22.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
 });
 var inspectBufferInput = inspectInput.omit({ code: true });
 var inspectAdvertisedInput = inspectInput.extend({ shot: cameraShotRecordInput });
@@ -38901,15 +38935,15 @@ function createKilnInspectDef(context = {}) {
   };
 }
 var kilnInspectDef = createKilnInspectDef();
-var editOperationInput = z20.object({
-  oldString: z20.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
-  newString: z20.string().describe("The replacement text. Use an empty string to delete."),
-  replaceAll: z20.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
+var editOperationInput = z22.object({
+  oldString: z22.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
+  newString: z22.string().describe("The replacement text. Use an empty string to delete."),
+  replaceAll: z22.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
 });
-var editInput = z20.object({
-  code: z20.string().describe("The Kiln program to patch. The full current source."),
-  edits: z20.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
-  render: z20.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
+var editInput = z22.object({
+  code: z22.string().describe("The Kiln program to patch. The full current source."),
+  edits: z22.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
+  render: z22.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
   capture: captureInput,
   detail: reviewDetailInput
 });
@@ -39135,24 +39169,27 @@ function withCaptureCache(context) {
     } : {}
   };
 }
-var rendererInput = z20.strictObject({
-  action: z20.enum(["status", "reprobe"]).default("status")
+var rendererInput = z22.strictObject({
+  action: z22.enum(["status", "reprobe"]).default("status")
 });
-async function readSavedRevision(target, collection, assetId, revisionId) {
+async function readSavedRevision(target, collection, assetId, revisionId, listCall = `kiln_assets { action: 'list', collection: '${collection}' }`) {
   try {
     return await target.read(collection, assetId, revisionId);
   } catch (error) {
     if (error.code === "ENOENT")
-      throw new Error(`Unknown asset ${assetId} revision ${revisionId} in collection ${collection}. kiln_assets { action: 'list', collection: '${collection}' } lists the saved revisions.`);
+      throw new Error(`Unknown asset ${assetId} revision ${revisionId} in collection ${collection}. ${listCall} lists the saved revisions.`);
     throw error;
   }
 }
 function createKilnProgramToolRegistry(suppliedContext = {}) {
+  return createProgramDefs(suppliedContext, "grouped");
+}
+function createProgramDefs(suppliedContext, presentation) {
   toolRequirements(suppliedContext);
   const store = suppliedContext.programStore ?? new MemoryProgramStore;
   const context = withCaptureCache(withBuildCache({ ...suppliedContext, programStore: store }));
   return [
-    createKilnDiscoveryDef({ ...suppliedContext, programStore: store }),
+    createKilnDiscoveryDef({ ...suppliedContext, programStore: store }, presentation),
     {
       name: "kiln_renderer",
       description: "Inspect status, or reprobe after renderer setup/repair to refresh this session and reset failed starts. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart. Read viewFidelity after rendering.",
@@ -39192,7 +39229,7 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
     ].map((def) => withProgramReferences(def, store, context.readSourceFile)),
     createKilnSourceDef(store),
     ...context.projectStore ? [createKilnProjectDef(context.projectStore, context.projectBundleReader)] : [],
-    ...context.materialLibrary ? [createKilnMaterialDef(context.materialLibrary)] : [],
+    ...context.materialLibrary ? [createKilnMaterialDef(context.materialLibrary, presentation)] : [],
     ...context.reviewStore && context.assetLibrary ? [
       createKilnReviewDef({
         reviewStore: context.reviewStore,
@@ -39200,7 +39237,7 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
         requirements: context.requirements
       })
     ] : [],
-    ...createKilnAssetDefs({ ...context, programStore: store })
+    ...createKilnAssetDefs({ ...context, programStore: store }, presentation)
   ].map((def) => withWorkspaceContext(def, context)).map((def) => ({
     ...def,
     annotations: {
@@ -39220,14 +39257,14 @@ function createKilnNativeToolRegistry(suppliedContext, completion) {
     programStore: suppliedContext.programStore ?? new MemoryProgramStore,
     programArtifacts: suppliedContext.programArtifacts ?? new ProgramArtifactStore
   };
-  const inputSchema = z20.strictObject({
-    programRef: z20.string().regex(programRefPattern)
+  const inputSchema = z22.strictObject({
+    programRef: z22.string().regex(programRefPattern)
   });
-  const skillResourceInput = z20.strictObject({
-    skill: z20.string().min(1).max(64),
-    path: z20.string().min(1).max(240).optional(),
-    offset: z20.number().int().min(0).max(262144).default(0),
-    limit: z20.number().int().min(1).max(16000).default(12000)
+  const skillResourceInput = z22.strictObject({
+    skill: z22.string().min(1).max(64),
+    path: z22.string().min(1).max(240).optional(),
+    offset: z22.number().int().min(0).max(262144).default(0),
+    limit: z22.number().int().min(1).max(16000).default(12000)
   });
   const delivery = new Set([
     "kiln_save",
@@ -39278,14 +39315,41 @@ function createKilnNativeToolRegistry(suppliedContext, completion) {
   ];
 }
 var assetSelector = {
-  collection: z20.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Collection ID (list with kiln_assets action=collections): the user destination, else project.").default("project"),
-  assetId: z20.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
-  revisionId: z20.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
+  collection: z22.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Collection ID (list with kiln_assets action=collections): the user destination, else project.").default("project"),
+  assetId: z22.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
+  revisionId: z22.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
 };
-async function newestRevision(target, collection, assetId) {
+var ASSET_CONTRACT = {
+  collections: {
+    fields: [],
+    required: [],
+    description: "List configured asset storage collections. Collection is not project membership."
+  },
+  catalog: {
+    fields: ["assetId", "query", "offset", "limit"],
+    required: [],
+    description: "Search saved assets across configured collections with pagination."
+  },
+  list: {
+    fields: ["collection", "assetId", "query", "offset", "limit"],
+    required: [],
+    description: "Search saved assets in one collection with pagination."
+  },
+  get: {
+    fields: ["collection", "assetId", "revisionId"],
+    required: ["assetId"],
+    description: "Read a saved revision and its download descriptors. Omit revisionId for the newest revision."
+  },
+  restore: {
+    fields: ["collection", "assetId", "revisionId"],
+    required: ["assetId"],
+    description: "Restore exact saved source as programRef for editing or rendering. Omit revisionId for the newest revision. Does not overwrite the saved revision. Binary-only assets have no source."
+  }
+};
+async function newestRevision(target, collection, assetId, listCall = `kiln_assets { action: 'list', collection: '${collection}' }`) {
   const revisions = (await target.list(collection)).filter((a) => a.assetId === assetId);
   if (!revisions.length)
-    throw new Error(`Unknown asset ${assetId} in ${collection}; kiln_assets { action: 'list', collection: '${collection}' } lists them.`);
+    throw new Error(`Unknown asset ${assetId} in ${collection}; ${listCall} lists them.`);
   const parents = new Set(revisions.map((a) => a.parentRevision).filter(Boolean));
   const heads = revisions.filter((a) => !parents.has(a.revisionId));
   const newest = (heads.length ? heads : revisions).sort((a, b) => a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0);
@@ -39350,7 +39414,12 @@ async function buildProgramAssetDraft(code, context, backdrop) {
     }
   };
 }
-function createKilnAssetDefs(context) {
+function createKilnAssetDefs(context, presentation = "grouped") {
+  const listCall = (collection) => presentation === "operations" ? `kiln_assets_search({ collection: '${collection}' })` : `kiln_assets { action: 'list', collection: '${collection}' }`;
+  const selector = presentation === "operations" ? {
+    ...assetSelector,
+    collection: assetSelector.collection.describe("Collection ID from kiln_assets_collections; default project.")
+  } : assetSelector;
   const library = () => {
     if (!context.assetLibrary)
       throw new Error("No asset library configured. The local CLI/MCP host supplies workspace collections; embedded hosts must inject assetLibrary.");
@@ -39378,38 +39447,38 @@ function createKilnAssetDefs(context) {
     resources: (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).assetLinks(collection, asset),
     downloadUrls: await context.assetDownloadUrls?.(collection, asset.assetId, asset.revisionId)
   });
-  const saveInput = z20.object({
-    collection: assetSelector.collection,
-    programRef: z20.string(),
-    name: z20.string().min(1).max(200),
-    assetId: assetSelector.assetId.optional(),
-    parentRevision: assetSelector.revisionId.optional(),
-    tags: z20.array(z20.string().max(80)).max(30).optional(),
-    brief: z20.string().max(8000).optional(),
-    description: z20.string().max(4000).optional(),
-    attribution: z20.object({
-      model: z20.string().max(200).optional(),
-      harness: z20.string().max(200).optional(),
-      author: z20.string().max(200).optional()
+  const saveInput = z22.object({
+    collection: selector.collection,
+    programRef: z22.string(),
+    name: z22.string().min(1).max(200),
+    assetId: selector.assetId.optional(),
+    parentRevision: selector.revisionId.optional(),
+    tags: z22.array(z22.string().max(80)).max(30).optional(),
+    brief: z22.string().max(8000).optional(),
+    description: z22.string().max(4000).optional(),
+    attribution: z22.object({
+      model: z22.string().max(200).optional(),
+      harness: z22.string().max(200).optional(),
+      author: z22.string().max(200).optional()
     }).optional(),
-    backdrop: z20.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
+    backdrop: z22.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
   });
-  const assetsInput = z20.object({
-    action: z20.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
-    collection: assetSelector.collection,
-    assetId: assetSelector.assetId.optional(),
-    revisionId: assetSelector.revisionId.optional().describe("get, restore: the saved revision; omitted, the newest."),
-    query: z20.string().max(200).optional(),
-    offset: z20.number().int().min(0).default(0),
-    limit: z20.number().int().min(1).max(50).default(20)
+  const assetsInput = z22.object({
+    action: z22.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
+    collection: selector.collection,
+    assetId: selector.assetId.optional(),
+    revisionId: selector.revisionId.optional().describe("get, restore: the saved revision; omitted, the newest."),
+    query: z22.string().max(200).optional(),
+    offset: z22.number().int().min(0).default(0),
+    limit: z22.number().int().min(1).max(50).default(20)
   });
-  const exportInput = z20.object(assetSelector);
+  const exportInput = z22.object(selector);
   const profileExportInput = exportInput.extend({
-    profile: z20.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
+    profile: z22.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
-  const importInput = z20.object({
-    ...assetSelector,
-    sourceCollection: assetSelector.collection
+  const importInput = z22.object({
+    ...selector,
+    sourceCollection: selector.collection
   });
   return [
     {
@@ -39425,7 +39494,7 @@ function createKilnAssetDefs(context) {
           requirements: activeRequirements.binding
         };
         if (input.assetId && input.parentRevision) {
-          const previous = await readSavedRevision(target, input.collection, input.assetId, input.parentRevision);
+          const previous = await readSavedRevision(target, input.collection, input.assetId, input.parentRevision, listCall(input.collection));
           assertSavedRequirementsAuthorized(previous.manifest, activeRequirements);
         }
         const code = await context.programStore.get(input.programRef);
@@ -39440,6 +39509,7 @@ function createKilnAssetDefs(context) {
       name: "kiln_assets",
       description: "Browse saved assets: collections discovers storage; catalog searches all configured collections; list searches one. Both searches paginate. get returns a build record/downloads; restore loads exact source for kiln_source/kiln_edit. Collection is not project membership. Binary-only assets cannot restore source.",
       inputSchema: assetsInput,
+      actionContract: ASSET_CONTRACT,
       run: async (raw) => {
         const input = assetsInput.parse(raw);
         const activeRequirements = toolRequirements(context);
@@ -39484,10 +39554,10 @@ function createKilnAssetDefs(context) {
             }))
           };
         }
-        if (!input.assetId)
+        if (ASSET_CONTRACT[input.action].required.some((field) => !input[field]))
           throw new Error(`kiln_assets ${input.action} requires assetId; kiln_assets { action: 'list', collection: '${input.collection}' } lists them.`);
-        const revisionId = input.revisionId ?? await newestRevision(target, input.collection, input.assetId);
-        const record = await readSavedRevision(target, input.collection, input.assetId, revisionId);
+        const revisionId = input.revisionId ?? await newestRevision(target, input.collection, input.assetId, listCall(input.collection));
+        const record = await readSavedRevision(target, input.collection, input.assetId, revisionId, listCall(input.collection));
         if (input.action === "get")
           return links(input.collection, record.manifest);
         const saved = assertSavedRequirementsAuthorized(record.manifest, activeRequirements);
@@ -39507,9 +39577,9 @@ function createKilnAssetDefs(context) {
       name: "kiln_present",
       description: "Present one exact saved revision. Supporting MCP App clients show an interactive 3D card with GLB, editable ZIP, and source downloads. Every host receives exact artifact descriptors with resource URIs in the JSON result; verified hosts may also receive core MCP resource-link blocks. This tool does not launch a local browser in coding harnesses. Call after saving or when the user wants to see or download an asset.",
       inputSchema: exportInput,
-      outputSchema: z20.object({
-        ok: z20.literal(true),
-        collection: z20.string(),
+      outputSchema: z22.object({
+        ok: z22.literal(true),
+        collection: z22.string(),
         asset: assetManifestSchema.pick({
           assetId: true,
           revisionId: true,
@@ -39520,25 +39590,25 @@ function createKilnAssetDefs(context) {
           editable: true,
           files: true
         }).extend({
-          build: z20.object({
-            engine: z20.string(),
-            rebuild: z20.enum(["engine-required", "external-dependencies-required"]),
-            warningCount: z20.number().int(),
-            warnings: z20.array(z20.string())
+          build: z22.object({
+            engine: z22.string(),
+            rebuild: z22.enum(["engine-required", "external-dependencies-required"]),
+            warningCount: z22.number().int(),
+            warnings: z22.array(z22.string())
           }).optional()
         }),
-        resources: z20.array(z20.object({
-          type: z20.literal("resource_link"),
-          name: z20.string(),
-          uri: z20.string(),
-          mimeType: z20.string(),
-          size: z20.number().int().nonnegative(),
-          annotations: z20.object({
-            audience: z20.array(z20.enum(["user", "assistant"])),
-            priority: z20.number()
+        resources: z22.array(z22.object({
+          type: z22.literal("resource_link"),
+          name: z22.string(),
+          uri: z22.string(),
+          mimeType: z22.string(),
+          size: z22.number().int().nonnegative(),
+          annotations: z22.object({
+            audience: z22.array(z22.enum(["user", "assistant"])),
+            priority: z22.number()
           })
         })),
-        downloadUrls: z20.record(z20.string(), z20.string()).optional()
+        downloadUrls: z22.record(z22.string(), z22.string()).optional()
       }),
       ui: {
         resourceUri: KILN_ASSET_WIDGET_URI,
@@ -39555,7 +39625,7 @@ function createKilnAssetDefs(context) {
       inputSchema: profileExportInput,
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
-        const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId);
+        const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId, listCall(input.collection));
         await Promise.resolve().then(() => init_draw_diagnostics());
         if (input.profile === "runtime") {
           const output = await (await Promise.resolve().then(() => (init_asset_export(), exports_asset_export))).exportAssetGlb(record, {
@@ -39589,7 +39659,7 @@ function createKilnAssetDefs(context) {
       run: async (raw) => {
         const input = importInput.parse(raw);
         const target = library();
-        const record = await readSavedRevision(target, input.sourceCollection, input.assetId, input.revisionId);
+        const record = await readSavedRevision(target, input.sourceCollection, input.assetId, input.revisionId, listCall(input.sourceCollection));
         await target.import(input.collection, [record]);
         return links(input.collection, record.manifest);
       }

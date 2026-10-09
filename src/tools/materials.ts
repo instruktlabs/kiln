@@ -14,6 +14,7 @@ import { createMaterialRecordV1, decodeMaterialLibraryPayload } from '../materia
 import { createMaterialPresetDraft, listMaterialPresets } from '../material-presets';
 import { nestedRecordDescription, requireActionFields } from './actions';
 import type { KilnToolDef } from './registry';
+import type { KilnActionContract } from './operation-contract';
 
 const MATERIAL_ACTIONS = [
   'presets',
@@ -24,13 +25,43 @@ const MATERIAL_ACTIONS = [
   'import',
 ] as const;
 type MaterialAction = (typeof MATERIAL_ACTIONS)[number];
-const REQUIREMENTS: Record<MaterialAction, Parameters<typeof requireActionFields>[3]> = {
-  presets: { required: [] },
-  'create-preset': { required: ['presetId', 'seed', 'creator', 'license'] },
-  list: { required: [] },
-  get: { required: ['materialId'] },
-  'create-procedural': { required: ['draft'], shapes: { draft: 'shape:material-draft' } },
-  import: { required: ['payload'], shapes: { payload: 'shape:material-import' } },
+const MATERIAL_CONTRACT: Record<MaterialAction, KilnActionContract> = {
+  presets: {
+    fields: ['tag'],
+    required: [],
+    description: 'List shipped material recipes, optionally filtered by tag.',
+  },
+  'create-preset': {
+    fields: ['presetId', 'seed', 'creator', 'license', 'size', 'materialId'],
+    required: ['presetId', 'seed', 'creator', 'license'],
+    description:
+      'Create an immutable material from a shipped preset with explicit seed, creator and license.',
+  },
+  list: {
+    fields: ['tag'],
+    required: [],
+    description: 'List saved immutable material revisions, optionally filtered by tag.',
+  },
+  get: {
+    fields: ['materialId', 'revisionId'],
+    required: ['materialId'],
+    description:
+      'Read a material revision, provenance and portable specification. Omit revisionId only when exactly one revision exists.',
+  },
+  'create-procedural': {
+    fields: ['draft'],
+    required: ['draft'],
+    shapes: { draft: 'shape:material-draft' },
+    description:
+      'Create an immutable material from a bounded procedural draft. Does not fetch URLs or execute source.',
+  },
+  import: {
+    fields: ['payload'],
+    required: ['payload'],
+    shapes: { payload: 'shape:material-import' },
+    description:
+      'Import complete normalized material records and embedded PNGs. Does not fetch URLs or execute source.',
+  },
 };
 const record = (description: string) =>
   z.record(z.string(), z.unknown()).optional().describe(description);
@@ -74,9 +105,9 @@ const materialResult = (material: MaterialManifestV1) => ({
   material,
   portableSpec: materialLibraryPortableSpec(material),
 });
-const unknownMaterial = (materialId: string, revisionId?: string) =>
+const unknownMaterial = (materialId: string, revisionId: string | undefined, listCall: string) =>
   new Error(
-    `Unknown material ${materialId}${revisionId ? ` at ${revisionId}` : ''}. kiln_material { action: 'list' } lists the materials in this workspace with their revision IDs.`,
+    `Unknown material ${materialId}${revisionId ? ` at ${revisionId}` : ''}. ${listCall} lists the materials in this workspace with their revision IDs.`,
   );
 /**
  * The revision a `get` without `revisionId` means: the material's only one.
@@ -84,13 +115,17 @@ const unknownMaterial = (materialId: string, revisionId?: string) =>
  * caller to choose (two live sessions of 1 October 2026 called get with the
  * id alone and were refused).
  */
-async function onlyRevision(library: MaterialLibrary, materialId: string): Promise<string> {
+async function onlyRevision(
+  library: MaterialLibrary,
+  materialId: string,
+  listCall: string,
+): Promise<string> {
   const revisions = (await library.list())
     .filter((material) => material.materialId === materialId)
     .map((material) => material.revisionId)
     .sort();
   if (revisions.length === 1) return revisions[0]!;
-  if (revisions.length === 0) throw unknownMaterial(materialId);
+  if (revisions.length === 0) throw unknownMaterial(materialId, undefined, listCall);
   throw new Error(
     `Material ${materialId} has ${revisions.length} revisions: ${revisions.join(', ')}. Pass revisionId to get one.`,
   );
@@ -111,12 +146,20 @@ function aliasMaterialId(raw: unknown): unknown {
     );
   return { ...rest, materialId: resourceId };
 }
-export function createKilnMaterialDef(library: MaterialLibrary): KilnToolDef {
+export function createKilnMaterialDef(
+  library: MaterialLibrary,
+  presentation: 'grouped' | 'operations' = 'grouped',
+): KilnToolDef {
+  const listCall =
+    presentation === 'operations'
+      ? 'kiln_material_search({ scope: "saved" })'
+      : "kiln_material { action: 'list' }";
   return {
     name: 'kiln_material',
     description:
       'Manage optional immutable material resources in this workspace. presets discovers shipped architecture, wood, metal, fabric and ground recipes; create-preset bakes one with an explicit seed, creator and license; list returns compact material/revision summaries; get returns full provenance, hashes, map conventions, physical repeat scale and a code-ready portable material spec; create-procedural bakes bounded editable layer recipes including optional height-derived normals; import accepts complete normalized records with embedded PNG bytes. No action downloads URLs or executes source. Pin the returned materialId/revisionId through per-invocation materialDependencies or project dependencies before authored evaluation resolves the resources; no project is required.',
     inputSchema: materialToolInput,
+    actionContract: MATERIAL_CONTRACT,
     annotations: {
       readOnlyHint: false,
       destructiveHint: false,
@@ -126,7 +169,7 @@ export function createKilnMaterialDef(library: MaterialLibrary): KilnToolDef {
     async run(raw) {
       assertMaterialJson(raw);
       const input = materialToolInput.parse(aliasMaterialId(raw));
-      requireActionFields('kiln_material', input.action, input, REQUIREMENTS[input.action]);
+      requireActionFields('kiln_material', input.action, input, MATERIAL_CONTRACT[input.action]);
       switch (input.action) {
         case 'presets':
           return {
@@ -170,13 +213,14 @@ export function createKilnMaterialDef(library: MaterialLibrary): KilnToolDef {
           };
         }
         case 'get': {
-          const revisionId = input.revisionId ?? (await onlyRevision(library, input.materialId!));
+          const revisionId =
+            input.revisionId ?? (await onlyRevision(library, input.materialId!, listCall));
           try {
             return materialResult((await library.read(input.materialId!, revisionId)).manifest);
           } catch (error) {
             // Rule 9: an unknown id names the call that lists the known ones.
             if ((error as NodeJS.ErrnoException).code === 'ENOENT')
-              throw unknownMaterial(input.materialId!, revisionId);
+              throw unknownMaterial(input.materialId!, revisionId, listCall);
             throw error;
           }
         }
