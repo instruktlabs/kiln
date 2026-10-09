@@ -69,6 +69,16 @@ four transformed corners against the intended frame plane and opening, then
 inspect an oblique view where an out-of-plane pane is visible. Matching centers
 or bounding boxes alone cannot establish this fit.
 
+For blocks or panels around a cylinder, separate their radial positions from
+their orientation. A `boxGeo(length, height, thickness)` has its long axis along
+local X. At `[radius * Math.cos(theta), y, radius * Math.sin(theta)]`, Y rotation
+`-thetaDeg` points that axis radially outward; `90 - thetaDeg` makes it tangent
+to the ring (`theta` is radians, `thetaDeg` is degrees). Derive the orientation
+again when the geometry's long axis or parent frame differs. Check one part at
+each quarter turn before repeating it. For a continuous wall, inspect neighboring
+edges on both its inside and outside, including staggered courses: correct centers
+and tangency alone do not guarantee closure. Preserve intentional openings.
+
 For attached veins, ribs or seams, discover `recipe:surface-detail-v1`. Its strip
 shares the carrier mesh's sampled boundary vertices and rises along local normals.
 A shared equation followed by a separately interpolated curve does not establish
