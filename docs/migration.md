@@ -4,6 +4,22 @@ Existing inline-code transport and the legacy capture format remain supported. T
 Discovery and authoring-helper changes below require explicit migration; retired
 names have no callable compatibility aliases.
 
+## Changes in 1.2
+
+Version 1.2.0 adds an opt-in named-operation presentation derived from the shared
+tool registry. The default local MCP interface retains its seventeen tools;
+ordinary local callers need no migration. Embedding hosts can adopt the
+[named-operation presentation](sdk.md#named-operation-presentation), including
+consolidated asset search and material operations. Host capabilities determine
+which tools are available; do not maintain a separate schema copy.
+
+Version 1.2.1 fixes embedded texture loading in the shared presentation viewer
+under restrictive MCP Apps content security policies, reports failed texture
+decoding, and advances the widget resource URI to refresh cached components.
+Upgrade the installed package and rebuild embedding hosts to use those fixes.
+No tool-count change or saved-asset migration is required. Package publication
+does not establish that a particular hosted deployment has been upgraded.
+
 ## Changes in 1.1
 
 Version 1.1 adds existing-project setup

@@ -4,6 +4,7 @@ import PageHeader from "../../components/PageHeader.astro";
 import { getCollection, render } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import DocsLayout from "../../layouts/DocsLayout.astro";
+import { VERSION, RELEASE_URL } from "../../lib/config";
 export async function getStaticPaths() {
   const docs = await getCollection("docs");
   return docs.map((entry) => ({
@@ -30,5 +31,9 @@ const { Content, headings } = await render(entry);
     {entry.data.title}
     <DocsMobileNav slot="navigation" current={entry.id} headings={headings} />
   </PageHeader>
+  <p class="text-caption text-dim">
+    Latest published package: <a href={RELEASE_URL}>Kiln {VERSION}</a>.
+    Earlier versions below identify feature requirements or historical results.
+  </p>
   <Content />
 </DocsLayout>

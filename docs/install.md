@@ -1,6 +1,7 @@
 # Install Kiln for your coding agent
 
-This guide describes **Kiln 1.1** under the package name `@instruktlabs/kiln`.
+This guide covers the stable `@instruktlabs/kiln` package. Feature-specific
+minimum versions are noted where they matter.
 Use a version available in the [npm registry](https://www.npmjs.com/package/@instruktlabs/kiln),
 or build a [local package](#install-a-local-package) to test an unpublished checkout.
 [CHANGELOG.md](../CHANGELOG.md) lists changes; read the
@@ -154,7 +155,7 @@ For agent-assisted installation, give your agent the repository URL and ask:
 
 ## Release compatibility
 
-The current candidate's connected MCP server lists the fourteen tools in the
+The packaged local MCP server lists the fourteen base tools in the
 [generated tool reference](tools.md), plus `kiln_project`, `kiln_material` and
 `kiln_review` from the packaged local host: seventeen in all. When installing an
 older release, use the documentation and receipt attached to that release; newer
@@ -163,7 +164,7 @@ tools and migration changes are not retroactively available there.
 Package publication requires per-platform receipts (Linux, Windows, macOS arm64,
 macOS x64) and `SHA256SUMS.txt` for the exact tarball. Check the artifacts actually
 attached to the selected release; do not treat an older receipt or a source archive
-as qualification of the current candidate.
+as qualification of a different package version.
 
 A successful local build or an unreleased fix does not update the GitHub release: a
 checkout can be ahead of it. Registry and GitHub release receipts each identify the

@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import Logo from "../components/Logo.astro";
-import { REPO, SITE, VERSION } from "../lib/config";
+import { DISCORD, REPO, SITE, VERSION } from "../lib/config";
 import { socialCard } from "../lib/social";
 interface Props {
   title: string;
@@ -245,6 +245,9 @@ const structured = [
             </a>
             <a class="text-link" href={REPO}>
               GitHub
+            </a>
+            <a class="text-link" href={DISCORD}>
+              Discord community
             </a>
             <a class="text-link" href={`${REPO}/blob/main/LICENSE`}>
               Kiln licence: MIT

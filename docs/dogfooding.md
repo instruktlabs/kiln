@@ -4,7 +4,7 @@ Three tiers, and they answer different questions. Running the cheap one does not
 what the expensive one would have. Per-harness install, flags and MCP config locations are in
 [headless harnesses](harnesses.md).
 
-The current [1.1 release goal](plans/2026-10-07-public-release-goal.md) covers blind
+The historical [1.1 release goal](plans/2026-10-07-public-release-goal.md) covered blind
 clone and installed-package trials with AGY Gemini 3.8 Flash High and OpenCode
 Muse Spark 1.3 Contributor, for both new workspaces and existing projects.
 The September [checkpoint](plans/2026-09-22-progress-checkpoint.md) and
