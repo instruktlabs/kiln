@@ -3,6 +3,7 @@
 [![CI](https://github.com/instruktlabs/kiln/actions/workflows/ci.yml/badge.svg)](https://github.com/instruktlabs/kiln/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/@instruktlabs/kiln)](https://www.npmjs.com/package/@instruktlabs/kiln)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Discord](https://img.shields.io/badge/Discord-Join%20the%20community-5865F2?logo=discord&logoColor=white)](https://discord.gg/fSWVbMdQXK)
 
 **Build and revise 3D assets with your coding agent.**
 
@@ -18,6 +19,15 @@ do not require a separate model API key.
 [Gallery](https://kilnstudio.tools/gallery/) ·
 [Interactive scenes](https://kilnstudio.tools/scenes/) ·
 [Changelog](CHANGELOG.md)
+
+## Community and hosted access
+
+[Join the Kiln Discord](https://discord.gg/fSWVbMdQXK) to share assets, get help,
+and request hosted access. The hosted service is being prepared as a free,
+invite-only introductory service. Ask in `#request-access` or message `matt_941`;
+when access is available, individual Kiln codes will be sent privately.
+Joining Discord does not automatically grant hosted access. Local Kiln remains
+free, open source and account-free.
 
 | Troy: the city and fleet | Achilles and Hector at the gates |
 | --- | --- |

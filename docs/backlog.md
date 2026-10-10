@@ -1,6 +1,6 @@
 # Kiln current backlog
 
-Updated 7 October 2026 for the published 1.0 package and active 1.1 candidate.
+Current release status: npm 1.2.1 and GitHub v1.2.1 are published.
 Scene delivery evidence below retains its 5 October scope.
 This is a work queue and known-limit inventory, not a count of defects.
 The [roadmap](../ROADMAP.md) describes the delivered state and future milestones.
@@ -57,8 +57,10 @@ own package qualification and publication.
 
 | Item | Completion boundary |
 | --- | --- |
-| Public 1.1 package and docs | Shared setup, host SDK interfaces, clone/npm blind dogfooding, exact archive qualification, approved package/tag/site publication; see the [release goal](plans/2026-10-07-public-release-goal.md) |
-| Hosted service and directory submissions | Deferred to the private hosted application's documented handoff; not required for the public 1.1 package |
+| Authoring guidance follow-up | PR #163 contains circular-wall orientation and export-receipt guidance; still unmerged at the October 9 readback and not included in npm 1.2.1 |
+| Hosted service | Invite-only launch work is owned by the private application's handoff; public package publication does not establish hosted availability |
+| Community and site alignment | Discord setup, hosted-access instructions and current-version documentation are in progress; publish only after review |
+| Directory submissions | Separate from package publication and hosted deployment; no submission is implied by either |
 | Further packs | Separate product work; ten-pack production is not a Troy release chore |
 | Broader importer qualification | Actual destination tests for LOD, visibility and supported export profiles |
 | Optional compressed runtime derivatives | Explicit loader/profile adoption and measured size/startup/render tradeoffs; current shared runtime loading is not universal Meshopt/Draco/KTX2 support |

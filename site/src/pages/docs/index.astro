@@ -4,6 +4,7 @@ import PageHeader from "../../components/PageHeader.astro";
 import { getCollection } from "astro:content";
 import DocsLayout from "../../layouts/DocsLayout.astro";
 import { DOC_GROUPS } from "../../lib/docs-navigation";
+import { VERSION, RELEASE_URL } from "../../lib/config";
 const available = new Set((await getCollection("docs")).map((page) => page.id));
 ---
 
@@ -12,6 +13,7 @@ const available = new Set((await getCollection("docs")).map((page) => page.id));
   description="Install Kiln, connect your coding agent, and learn the source, rendering, revision and export tools."
 >
   <PageHeader>Docs<DocsMobileNav slot="navigation" /></PageHeader>
+  <p>Latest published package: <a href={RELEASE_URL}>Kiln {VERSION}</a>.</p>
   <p>
     Start with an asset workspace, then use the same source through rendering,
     revision and export. These pages are built from the engine repository’s
