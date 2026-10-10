@@ -5,6 +5,17 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
+## 1.2.2
+
+- Clarify radial and tangential orientation for circular walls and roof sections,
+  including edge checks for accidental quarter-turn rotations.
+- Require checking export receipts and delivering files from the final reviewed
+  revision in the authoring skill and CLI guidance.
+- Include these instructions in the package and local plugin. Geometry/runtime
+  behavior and the seventeen-tool local MCP interface are unchanged.
+- Align the public hosted integration draft with the deployed 21-tool contract,
+  and update README/site guidance for the invite-only service and Discord access.
+
 ## 1.2.1
 
 - Load embedded viewer textures through the browser image path, retaining

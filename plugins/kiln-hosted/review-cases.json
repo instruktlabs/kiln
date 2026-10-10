@@ -9,25 +9,25 @@
     {
       "description": "Revise existing saved source",
       "prompt": "Find my saved Review Stool and make its seat 0.5 metres high while keeping the width and connected braces. Save a new revision without replacing the previous one.",
-      "tools_triggered": "kiln_assets_catalog, kiln_assets_restore, kiln_source, kiln_edit, kiln_inspect, kiln_save, kiln_present",
+      "tools_triggered": "kiln_assets_search, kiln_assets_restore, kiln_source, kiln_edit, kiln_inspect, kiln_save, kiln_present",
       "expected_behavior": "Find the review account fixture, restore its exact source, edit from returned anchors, review changed dimensions and joins, and save under the same asset ID with the selected parent revision. The previous revision remains accessible."
     },
     {
       "description": "Create a procedural material and review its appearance",
       "prompt": "Make a small stone plinth with an editable procedural stone texture. For this generated review texture use creator Kiln review and license CC0-1.0. Inspect a material-faithful view and save the editable asset with its material dependencies.",
-      "tools_triggered": "kiln_discover, kiln_material_create_procedural, kiln_render, kiln_save, kiln_export",
+      "tools_triggered": "kiln_discover, kiln_material_create, kiln_render, kiln_save, kiln_export",
       "expected_behavior": "Use the advertised material draft schema and complete provenance, retain exact dependency pins across rendering and saving, inspect returned fidelity, and export the saved material closure. If only CPU fallback is available, state that appearance is unverified."
     },
     {
       "description": "Download an exact saved revision",
       "prompt": "Open my saved Review Stool and give me the exact GLB, editable source and editable bundle for its latest revision.",
-      "tools_triggered": "kiln_assets_catalog, kiln_assets_get, kiln_export",
+      "tools_triggered": "kiln_assets_search, kiln_assets_get, kiln_export",
       "expected_behavior": "Select one account-owned saved revision and return its actual authenticated download links without regenerating the asset or claiming anonymous access. Browser download checks verify exact GLB and source bytes and the bundle contents."
     },
     {
       "description": "Handle an empty saved-asset search",
       "prompt": "Find my saved asset named kiln-directory-no-such-asset-7c29.",
-      "tools_triggered": "kiln_assets_catalog",
+      "tools_triggered": "kiln_assets_search",
       "expected_behavior": "Report no matching asset in the connected account without inventing a model or searching another account."
     }
   ],

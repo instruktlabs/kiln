@@ -4,6 +4,7 @@ import { createKilnOperationToolRegistry } from '../registry';
 import { createKilnToolHost } from '../../mcp-engine';
 import type { AssetLibrary } from '../../assets';
 import type { MaterialLibrary } from '../../material-library';
+import hostedSurface from '../../../plugins/kiln-hosted/tool-surface.json';
 
 const assets = {
   collections: () => [{ id: 'project', label: 'Project', writable: true }],
@@ -13,6 +14,15 @@ const materials = { list: async () => [] } as unknown as MaterialLibrary;
 const context = { assetLibrary: assets, materialLibrary: materials };
 const defs = () => createKilnOperationToolRegistry(context);
 const find = (name: string) => defs().find((def) => def.name === name)!;
+
+test('public hosted integration snapshot matches the shared operation registry', () => {
+  expect(hostedSurface.hostedToolSurface).toBe('kiln.hosted-tools.v2');
+  expect([...hostedSurface.tools].sort()).toEqual(
+    defs()
+      .map((def) => def.name)
+      .sort(),
+  );
+});
 
 test('named presentation preserves capabilities with 21 tools and no unsupported renderer controls', () => {
   const names = defs().map((def) => def.name);

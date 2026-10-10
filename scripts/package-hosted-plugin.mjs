@@ -121,7 +121,7 @@ export async function packagePublicPlugin(destination) {
   noPrivateConfiguration(surface);
   assert.deepEqual(Object.keys(surface).sort(), ['engine', 'hostedToolSurface', 'kind', 'tools']);
   assert.equal(surface.kind, 'kiln.hosted-public-interface.v1');
-  assert.equal(surface.hostedToolSurface, 'kiln.hosted-tools.v1');
+  assert.equal(surface.hostedToolSurface, 'kiln.hosted-tools.v2');
   assert.deepEqual(Object.keys(surface.engine).sort(), [
     'name',
     'sha256',

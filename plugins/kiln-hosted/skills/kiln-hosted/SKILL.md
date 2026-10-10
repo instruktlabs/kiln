@@ -43,20 +43,22 @@ existing references; do not switch accounts or keep retrying to evade it.
 
 ## Materials and saved work
 
-For library materials, use `kiln_material_presets`, `kiln_material_list` and
-`kiln_material_get` to find exact resources. The separate
-`kiln_material_create_preset`, `kiln_material_create_procedural` and
-`kiln_material_import` tools retain new resources. Read their current schemas and
+For library materials, use `kiln_material_search` with `scope: 'all'`, `'presets'`
+or `'saved'`, and `kiln_material_get` to read exact saved resources.
+`kiln_material_create` accepts a `definition` with `kind: 'preset'` or
+`'procedural'`; `kiln_material_import` retains an imported resource. Read their current schemas and
 Discovery shapes; supply known provenance and licensing rather than inventing it.
 Carry the same `materialId`/`revisionId` dependency pins through each render, edit,
 inspection and save that needs them. A program reference alone does not supply
 material context.
 
-Browse with `kiln_assets_collections`, `kiln_assets_catalog` or `kiln_assets_list`.
+Use `kiln_assets_collections` to list destinations and `kiln_assets_search` to
+browse saved assets. Omit `collection` to search all configured collections, or
+select one explicitly.
 `kiln_assets_get` reads a selected revision and its downloads;
 `kiln_assets_restore` returns its exact source reference for editing. Preserve the
-collection, asset ID and revision ID together. These hosted operations are separate
-tools, not an `action` argument on `kiln_assets` or `kiln_material`.
+collection, asset ID and revision ID together. The hosted presentation uses these
+domain operations from the shared engine contract; follow their advertised schemas.
 
 ## Deliver the requested result
 
@@ -66,7 +68,9 @@ revision, supply its asset ID and parent revision so earlier work stays intact.
 Use the same material dependencies and reviewed backdrop. Do not save every draft
 or save a preview-only exploration unless the user requested persistence.
 
-Use `kiln_present` or `kiln_export` on the exact saved revision. Return actual
+Use `kiln_present` on the exact saved revision when the host supports an interactive
+viewer, including ChatGPT; a text download link alone does not display that viewer.
+Use `kiln_export` for the requested files or editable bundle. Return actual
 download links from the result; they require the owning browser account and
 expire. Get fresh links by reopening the saved revision when needed. Present an
 interactive card only when the host supports it; otherwise use the supplied
