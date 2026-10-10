@@ -60,7 +60,7 @@ async function buildMedia() {
     await sharp(Buffer.from(logo)).resize(size, size).flatten({ background: '#eee9df' }).png().toFile(join(publicDir, file));
   }
 
-  const release = await json(join(site, 'src/data/release.json'));
+  const release = await json(join(site, '../.github/published-candidate.json'));
   const farm = await json(join(site, 'src/data/packs/farm.json'));
   const vehicles = await json(join(site, 'src/data/packs/vehicles.json'));
   const bridge = await json(join(site, 'src/data/standalone/golden-gate-bridge.json'));

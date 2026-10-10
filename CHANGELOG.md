@@ -5,6 +5,22 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
+## 1.2.1
+
+- Load embedded viewer textures through the browser image path, retaining
+  pixels, sampler settings and UV transforms under restrictive MCP Apps CSP.
+  This uses the shared viewer and existing presentation tool; local and hosted
+  tool counts remain unchanged.
+- Reject failed texture decoding instead of silently showing white geometry.
+  The chat component labels its saved-preview fallback and can recover when
+  another asset is presented. Advance the widget resource URI to invalidate
+  cached component bytes.
+- Generate the MCP manifest before building sibling runtimes so one complete
+  build keeps their identities consistent after a package or widget update.
+
+Actual ChatGPT-host acceptance and hosted production deployment remain separate
+from local browser regression evidence and package publication.
+
 ## 1.2.0
 
 - Add an opt-in named MCP operation presentation generated from the shared

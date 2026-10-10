@@ -51,6 +51,8 @@ function encode(bytes: Uint8Array) {
 async function show(input: unknown) {
   const revision = ++presentationRevision;
   record = undefined;
+  element('stats').textContent = '';
+  element<HTMLSelectElement>('clips').hidden = true;
   for (const button of document.querySelectorAll<HTMLButtonElement>('button[data-download]'))
     button.disabled = true;
   try {
@@ -116,14 +118,16 @@ async function showResult(
     status.textContent = 'Drag to orbit · Scroll to zoom';
   } catch (error) {
     if (revision !== presentationRevision) return;
+    stage?.dispose();
+    stage = undefined;
     const preview = record.files['preview.png'];
     if (preview) {
       const image = new Image();
-      image.alt = record.manifest.name;
+      image.alt = `${record.manifest.name} · saved preview image`;
       image.src = `data:image/png;base64,${encode(preview)}`;
       element('stage').replaceChildren(image);
     }
-    status.textContent = `3D preview unavailable: ${String(error)}`;
+    status.textContent = `${preview ? 'Showing saved preview. ' : ''}3D preview unavailable: ${String(error)}`;
   }
   for (const button of document.querySelectorAll<HTMLButtonElement>('button[data-download]'))
     button.disabled = false;

@@ -1,5 +1,6 @@
 import { expect, test } from 'bun:test';
-import release from '../src/data/release.json';
+import published from '../../.github/published-candidate.json';
+import { VERSION, RELEASE_TAG, PACKAGE_TARBALL } from '../src/lib/config';
 import foundryFloor from '../src/data/foundry-floor.json';
 import hero from '../src/data/hero.json';
 import farm from '../src/data/packs/farm.json';
@@ -7,7 +8,15 @@ import vehicles from '../src/data/packs/vehicles.json';
 import bridge from '../src/data/standalone/golden-gate-bridge.json';
 import { SOCIAL_CARD, socialCardAlt, socialCardPath, socialCards } from '../src/lib/social-cards.mjs';
 
+const release = published;
 const data = { release, farm, vehicles, bridge, hero, foundryFloor, archive: [{ name: 'robot-arm', thumb: 'thumbs/robot-arm.webp' }] };
+
+test('site release labels and downloads follow the verified published package', () => {
+  expect(VERSION).toBe(published.version);
+  expect(RELEASE_TAG).toBe(`v${published.version}`);
+  expect(PACKAGE_TARBALL).toBe(`instruktlabs-kiln-${published.version}.tgz`);
+  expect(release.version).toBe(published.version);
+});
 
 // Engineering review, finding 4: the declared type follows the card's real format.
 test('share cards are JPEG files at 1200 x 630 and declare image/jpeg', () => {
@@ -20,7 +29,7 @@ test('one card per slug; the home card pictures the hero poster; the pre-upload 
   expect(new Set(cards.map((card) => card.slug)).size).toBe(cards.length);
   expect(cards.find((card) => card.slug === 'home')?.poster?.src).toBe(hero.poster.src);
   expect(cards.find((card) => card.slug === 'golden-gate-bridge')?.poster?.alt).toBe(bridge.poster.alt);
-  // The home card names the release in `release.json` without a `.0` patch: "0.10", not "0.10.0" (and never a number
+  // The home card names the verified published release without a `.0` patch: "0.10", not "0.10.0" (and never a number
   // written into this test, which broke on the 0.10.0 bump).
   expect(release.version).toMatch(/^\d+\.\d+\.\d+$/);
   expect(cards.find((card) => card.slug === 'home')?.note).toBe(`Kiln · ${release.version.replace(/\.0$/, '')} release package`);

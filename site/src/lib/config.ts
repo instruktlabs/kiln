@@ -1,4 +1,4 @@
-import release from '../data/release.json';
+import release from '../../../.github/published-candidate.json';
 export const VERSION = release.version;
 export const VERSION_SHORT = VERSION.replace(/\.0$/, '');
 export const RELEASE_TAG = `v${VERSION}`;

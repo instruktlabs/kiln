@@ -26,9 +26,11 @@ on:
       - 'scripts/authorship.ts'
       - 'README.md'
       - '.github/workflows/pages.yml'
+      - '.github/published-candidate.json'
   workflow_dispatch:
   pull_request:
     paths:
+      - '.github/published-candidate.json'
       - 'scripts/example-archive.mjs'
       - 'site/**'
       - 'scenes/**'

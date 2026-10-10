@@ -6,4 +6,4 @@
  * engine has loaded. Neither of those may import the other, so the literal
  * lives here on its own.
  */
-export const KILN_ASSET_WIDGET_URI = 'ui://kiln/asset-v5.html';
+export const KILN_ASSET_WIDGET_URI = 'ui://kiln/asset-v6.html';

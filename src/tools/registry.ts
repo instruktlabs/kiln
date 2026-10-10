@@ -94,7 +94,8 @@ import type { TextureUsage } from '../textures';
 // Tool definition contract
 // =============================================================================
 
-export const KILN_ASSET_WIDGET_URI = 'ui://kiln/asset-v5.html';
+export { KILN_ASSET_WIDGET_URI } from '../asset-widget-uri';
+import { KILN_ASSET_WIDGET_URI } from '../asset-widget-uri';
 export interface KilnToolDef {
   /** Shared action ownership and requirements; never hand-maintained by transports. */
   actionContract?: Readonly<Record<string, import('./operation-contract').KilnActionContract>>;
