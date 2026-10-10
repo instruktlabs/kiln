@@ -2,7 +2,7 @@
   "name": "kiln",
   "displayName": "Kiln",
   "description": "Build and revise 3D assets with your coding agent. Write JavaScript, inspect selected views, edit saved source revisions, and export GLB files locally.",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "license": "MIT",
   "homepage": "https://github.com/instruktlabs/kiln",
   "keywords": [

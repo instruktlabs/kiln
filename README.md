@@ -23,9 +23,10 @@ do not require a separate model API key.
 ## Community and hosted access
 
 [Join the Kiln Discord](https://discord.gg/fSWVbMdQXK) to share assets, get help,
-and request hosted access. The hosted service is being prepared as a free,
-invite-only introductory service. Ask in `#request-access` or message `matt_941`;
-when access is available, individual Kiln codes will be sent privately.
+and request hosted access. [Hosted Kiln](https://kiln.instruktlabs.com/) is open
+as a free, invite-only introductory service, with ten accounts sharing an
+allowance of 200 native requests per month. Ask in `#request-access` or message
+`matt_941`; individual Kiln codes are sent privately as capacity allows.
 Joining Discord does not automatically grant hosted access. Local Kiln remains
 free, open source and account-free.
 

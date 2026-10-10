@@ -27,7 +27,7 @@
  * `src/__tests__/package-contents.test.ts` fails if it disagrees with the manifest
  * or with any plugin manifest, which is what keeps the literal honest.
  */
-export const ENGINE_VERSION = '1.2.1';
+export const ENGINE_VERSION = '1.2.2';
 
 /**
  * Where this engine was loaded from, as a `file://` URL of the package root.

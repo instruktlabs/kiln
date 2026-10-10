@@ -1,13 +1,17 @@
 # Kiln hosted integration (draft)
 
 This is the public-directory submission candidate, not a launched or approved
-listing. Live service qualification, terms publication, review access and directory review
-remain pending. The published local package is a separate distribution.
+listing. The hosted service is open for an introductory invite-only launch;
+directory submission, its dedicated review account and review materials remain
+deferred. The published local package is a separate distribution.
 
 Kiln turns agent-authored JavaScript into editable 3D assets. This integration
-is prepared to connect ChatGPT or Codex to a future hosted service at
-`kiln.instruktlabs.com` using OAuth. The planned Google or GitHub sign-in keeps assets private and applies personal
-quotas. No local engine installation or model-provider API key is required for
+connects supported clients to [kiln.instruktlabs.com](https://kiln.instruktlabs.com)
+using OAuth with Google or GitHub sign-in. Enrollment requires a private invitation;
+the introduction allows ten accounts sharing 200 native requests per month, with
+additional account quotas. Request access through
+[Discord](https://discord.gg/fSWVbMdQXK); joining the server does not enroll an account.
+No local engine installation or model-provider API key is required for
 hosted operation.
 
 The agent can discover geometry helpers, validate source, render views, inspect
@@ -46,14 +50,13 @@ application builds independently in the private `instruktlabs/kiln-hosted`
 repository. No private application source or credentials are needed to build this
 draft with `node scripts/package-hosted-plugin.mjs FRESH_OUTPUT_DIRECTORY`.
 
-`tool-surface.json` and the accompanying skill/review cases retain the historical
-26-operation snapshot from the engine 1.0.0 private candidate. They do not describe
-the approved replacement design or establish current service readiness. The
-engine 1.2.0 adds a shared 21-tool presentation.
-After the private service adopts and qualifies that package, regenerate this
-snapshot and align its skill/review cases from that exact candidate before any
-directory submission. The draft plugin version and historical hosted engine
-version are recorded separately; neither is a deployment receipt.
+`tool-surface.json` records the 21-tool `kiln.hosted-tools.v2` presentation verified
+in production with engine 1.2.1. Its skill and review cases use those operation
+names. A parity test checks the snapshot against the shared engine registry to
+catch drift. The local package retains its seventeen-tool interface.
+The draft plugin version and deployed hosted engine version are recorded
+separately; a new public package does not silently upgrade the hosted service.
 
 The public product name is Kiln, published by Instrukt Labs. Directory submissions
-and live-service qualification remain deferred to the private hosting work.
+remain deferred. The packager's outstanding review steps apply to this directory
+candidate, not to the production launch acceptance recorded in the private repository.

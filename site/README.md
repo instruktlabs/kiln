@@ -2,8 +2,9 @@
 
 The public documentation, gallery, asset packs and interactive scenes live at
 [kilnstudio.tools](https://kilnstudio.tools). This is a static Astro site on
-Cloudflare Pages. It is separate from the private hosted MCP application, which
-has not launched publicly.
+Cloudflare Pages. The separate hosted MCP application is open at
+[kiln.instruktlabs.com](https://kiln.instruktlabs.com) for an introductory ten-account,
+invite-only launch. Request access through [Discord](https://discord.gg/fSWVbMdQXK).
 
 ## Develop and check
 
