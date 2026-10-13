@@ -173,7 +173,8 @@ it('the CLI launcher runs under the pinned interpreter that the MCP server uses'
     // The pinned interpreter itself runs the CLI in process.
     expect(await run(pinned)).toHaveLength(1);
   } finally {
-    await rm(temp, { recursive: true, force: true });
+    // Windows may briefly retain a handle to the copied interpreter after it exits.
+    await rm(temp, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
   }
 }, 30000);
 

@@ -93,21 +93,24 @@ async function fixture() {
   return { child, atlas, resources, code };
 }
 
-test('actual subprocess admits V2 material and pinned atlas closure with exact direct-render output', async () => {
-  const { resources, code } = await fixture();
-  expect(resources.schemaVersion).toBe(2);
-  const options = { materialResources: resources, optimize: 'off' as const };
-  const direct = await renderGLBInProcess(code, options);
-  const contained = await renderGLBViaSubprocess(code, options);
-  expect(contained.glb).toEqual(direct.glb);
-  expect(contained.artifactGlbSha256).toBe(direct.artifactGlbSha256);
-  expect(contained.materialLibraryDependencies).toEqual(resources.records.map((r) => r.manifest));
-  const doc = await new NodeIO().readBinary(contained.glb);
-  expect(doc.getRoot().listMaterials()[0]!.getBaseColorTextureInfo()!.getMinFilter()).toBe(9728);
-  expect(doc.getRoot().listMeshes()[0]!.listPrimitives()[0]!.getExtras().kilnAtlasBinding).toEqual(
-    expect.objectContaining({ region: 'patch' }),
-  );
-});
+for (const gltfExporter of ['legacy', 'three'] as const)
+  test(`actual subprocess admits V2 material and pinned atlas closure with exact ${gltfExporter} output`, async () => {
+    const { resources, code } = await fixture();
+    expect(resources.schemaVersion).toBe(2);
+    // The isolated worker intentionally does not inherit exporter environment switches.
+    // Match both sides explicitly, as the public renderGLB entrypoint does.
+    const options = { materialResources: resources, optimize: 'off' as const, gltfExporter };
+    const direct = await renderGLBInProcess(code, options);
+    const contained = await renderGLBViaSubprocess(code, options);
+    expect(contained.glb).toEqual(direct.glb);
+    expect(contained.artifactGlbSha256).toBe(direct.artifactGlbSha256);
+    expect(contained.materialLibraryDependencies).toEqual(resources.records.map((r) => r.manifest));
+    const doc = await new NodeIO().readBinary(contained.glb);
+    expect(doc.getRoot().listMaterials()[0]!.getBaseColorTextureInfo()!.getMinFilter()).toBe(9728);
+    expect(
+      doc.getRoot().listMeshes()[0]!.listPrimitives()[0]!.getExtras().kilnAtlasBinding,
+    ).toEqual(expect.objectContaining({ region: 'patch' }));
+  });
 
 test('V2 subprocess material admission retains count limits and rejects changed encoded map bytes', async () => {
   const { resources, code } = await fixture();
