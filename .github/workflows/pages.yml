@@ -101,7 +101,7 @@ jobs:
       # broken bucket reports as a broken bucket rather than hiding behind a
       # build failure.
       - name: Verify the published gallery images
-        run: bun scripts/verify-posters.mjs
+        run: node scripts/verify-posters.mjs
 
       - name: Install the site
         run: bun install --frozen-lockfile
