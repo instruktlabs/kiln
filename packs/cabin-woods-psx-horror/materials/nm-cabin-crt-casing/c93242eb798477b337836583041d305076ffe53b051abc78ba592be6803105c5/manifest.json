@@ -1,0 +1,154 @@
+{
+  "materialId": "nm-cabin-crt-casing",
+  "revisionId": "sha256:c93242eb798477b337836583041d305076ffe53b051abc78ba592be6803105c5",
+  "name": "CRT olive enamel",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "tx09"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 1,
+    "height": 1
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 0.85,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:88f9526d474e19dbc1e0cdcf6195bc6f8d637beafa848a88e9d1a57cf468c76f",
+      "bytes": 223,
+      "width": 64,
+      "height": 64,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "repeat",
+        "wrapT": "repeat"
+      },
+      "pixelHash": "sha256:c047462622967162c44335417eab76a643dc95ea697da5dc9977c9ce69ae4bd4",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 64,
+          "height": 64,
+          "usage": "albedo",
+          "background": [
+            76,
+            85,
+            75,
+            255
+          ],
+          "operations": [
+            {
+              "op": "paint",
+              "shape": {
+                "x": 2,
+                "y": 0,
+                "width": 3,
+                "height": 64,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                102,
+                112,
+                100,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 0,
+                "y": 48,
+                "width": 64,
+                "height": 3,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                57,
+                71,
+                60,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 6,
+                "y": 54,
+                "width": 14,
+                "height": 1,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                148,
+                161,
+                139,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 46,
+                "y": 9,
+                "width": 12,
+                "height": 1,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                119,
+                131,
+                115,
+                255
+              ],
+              "opacity": 255
+            }
+          ]
+        },
+        "recipeHash": "sha256:3052eb5b8a08e2b475602af0cbc9ca13cc67a1388ca63640c21eb4f3eaa5e9e2",
+        "pixelHash": "sha256:c047462622967162c44335417eab76a643dc95ea697da5dc9977c9ce69ae4bd4",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

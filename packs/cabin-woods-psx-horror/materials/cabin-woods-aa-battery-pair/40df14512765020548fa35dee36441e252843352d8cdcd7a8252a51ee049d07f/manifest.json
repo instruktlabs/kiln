@@ -1,0 +1,375 @@
+{
+  "materialId": "cabin-woods-aa-battery-pair",
+  "revisionId": "sha256:40df14512765020548fa35dee36441e252843352d8cdcd7a8252a51ee049d07f",
+  "name": "Fictional battery cream and dark green labels",
+  "tags": [
+    "cabin-woods",
+    "original",
+    "psx",
+    "batteries"
+  ],
+  "tileable": false,
+  "physicalSizeMeters": {
+    "width": 0.044,
+    "height": 0.05
+  },
+  "parameters": {
+    "roughness": 0.7,
+    "metalness": 0.12,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "original-cells",
+      "kind": "procedural",
+      "provider": "Original Kiln authoring",
+      "creator": "GPT-6.1 Sol / Codex",
+      "license": {
+        "spdx": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": "Original fictional battery label symbols and pixel blocks; no brands or external pixels."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:7be2fdf5caf5a3e076fe004ee94a0ec5aef3f8289684c4ed778daf2c44413a71",
+      "bytes": 271,
+      "width": 64,
+      "height": 64,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "original-cells",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "wrapS": "clamp-to-edge",
+        "wrapT": "clamp-to-edge"
+      },
+      "pixelHash": "sha256:22656b0c74810790527bcb78cfdf79e5dc4a1a3ee164250e22d411f8019cff3e",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 64,
+          "height": 64,
+          "usage": "albedo",
+          "name": "Fictional AA battery diffuse sheet",
+          "background": [
+            194,
+            182,
+            139,
+            255
+          ],
+          "operations": [
+            {
+              "op": "paint",
+              "shape": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 32,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                194,
+                182,
+                139,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 3,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                27,
+                34,
+                30,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 0,
+                "y": 29,
+                "width": 64,
+                "height": 3,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                27,
+                34,
+                30,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 6,
+                "y": 7,
+                "width": 52,
+                "height": 18,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                40,
+                55,
+                42,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 15,
+                "y": 10,
+                "width": 3,
+                "height": 9,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                194,
+                182,
+                139,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 12,
+                "y": 13,
+                "width": 9,
+                "height": 3,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                194,
+                182,
+                139,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 29,
+                "y": 11,
+                "width": 21,
+                "height": 2,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                194,
+                182,
+                139,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 29,
+                "y": 16,
+                "width": 15,
+                "height": 2,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                194,
+                182,
+                139,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 45,
+                "y": 21,
+                "width": 5,
+                "height": 2,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                194,
+                182,
+                139,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 0,
+                "y": 32,
+                "width": 64,
+                "height": 8,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                121,
+                134,
+                119,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 0,
+                "y": 40,
+                "width": 64,
+                "height": 8,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                27,
+                34,
+                30,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 0,
+                "y": 48,
+                "width": 64,
+                "height": 16,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                194,
+                182,
+                139,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 0,
+                "y": 52,
+                "width": 64,
+                "height": 1,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                159,
+                148,
+                111,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 0,
+                "y": 60,
+                "width": 64,
+                "height": 1,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                159,
+                148,
+                111,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 30,
+                "y": 53,
+                "width": 2,
+                "height": 6,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                40,
+                55,
+                42,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 28,
+                "y": 55,
+                "width": 6,
+                "height": 2,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                40,
+                55,
+                42,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 41,
+                "y": 55,
+                "width": 6,
+                "height": 2,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                40,
+                55,
+                42,
+                255
+              ],
+              "opacity": 255
+            }
+          ]
+        },
+        "recipeHash": "sha256:9529b41df3092cbadc421064a4e221242fdcbc2bf7389c286767548452be1c37",
+        "pixelHash": "sha256:22656b0c74810790527bcb78cfdf79e5dc4a1a3ee164250e22d411f8019cff3e",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

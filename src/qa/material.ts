@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import type { KilnTextureMetadata } from '../textures';
 import { conformancePromotionAuthorization, KILN_ENGINE_QA_OWNER, type QaRule } from './registry';
 import type { QaContext, QaFinding } from './types';
+import { inspectAtlasScene } from './atlas';
 
 type StandardMaterial = THREE.MeshStandardMaterial & {
   isMeshStandardMaterial?: boolean;
@@ -276,6 +277,7 @@ export function inspectPortableSceneMaterials(
       }
     }
   });
+  findings.push(...inspectAtlasScene(scene).findings);
   return findings;
 }
 

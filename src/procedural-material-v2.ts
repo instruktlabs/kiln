@@ -519,7 +519,8 @@ const SHA256_K = new Uint32Array([
 const rotateRight = (value: number, bits: number): number =>
   (value >>> bits) | (value << (32 - bits));
 
-function sha256Hex(text: string): string {
+/** Browser-safe SHA-256 shared by versioned recipe contracts. */
+export function sha256Hex(text: string): string {
   const source = new TextEncoder().encode(text);
   const bitLength = source.length * 8;
   const paddedLength = Math.ceil((source.length + 9) / 64) * 64;

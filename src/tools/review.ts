@@ -216,7 +216,7 @@ export function createKilnReviewDef(context: {
       const dependencies = [
         ...(evaluation.materialResourceProvenance ?? []),
         ...(evaluation.materialLibraryDependencies ?? []).map((manifest) => ({
-          kind: 'kiln.material.v1',
+          kind: `kiln.material.v${manifest.schemaVersion}`,
           delivery: 'runtime',
           manifest,
         })),

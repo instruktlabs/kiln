@@ -29,7 +29,7 @@ Authoring commands accept `--project` and `--project-revision`. MCP tools use `p
 node kiln.mjs render asset.kiln.js --no-project --materials pins.json --out asset.glb
 ```
 
-`pins.json` contains an array of exact `{resourceId, revisionId, sha256}` material dependencies. MCP accepts the same array as `materialDependencies`. These per-call pins work independently of project membership. With a project, additional pins can extend its lock, but conflicting revisions for the same resource are rejected. Copy returned identities rather than constructing them, and preserve the selected dependencies on subsequent calls that evaluate the source.
+`pins.json` contains an array of exact `{resourceId, revisionId, sha256}` material dependencies. MCP accepts the same array as `materialDependencies`. These per-call pins work independently of project membership. With a project, additional pins extend its lock and an explicit pin replaces the project pin for the same resource for that invocation. The saved project revision remains unchanged. Copy returned identities rather than constructing them, and preserve the selected dependencies on subsequent calls that evaluate the source.
 
 ## Materials and coherent art direction
 

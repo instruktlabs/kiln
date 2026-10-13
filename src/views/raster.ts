@@ -6,13 +6,13 @@
  * kiln-studio agent-runtime container ships without a browser
  * (PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1) and Playwright is unsupported under
  * Bun on Windows (see imposter/bake.ts). headless-gl is WebGL1-only while
- * three >= r163 requires WebGL2. So: a dependency-free scanline z-buffer
+ * three >= r163 requires WebGL2. So: a CPU scanline z-buffer
  * rasterizer over the executed scene. Flat lambert, base color only — enough
  * fidelity for silhouette / proportion / orientation / contact QA, which is
  * what the vision loop checks.
  *
  * Scene access is strictly duck-typed (`.isMesh`, `matrixWorld.elements`,
- * position attribute arrays) because sandbox-created objects live in a
+ * vertex readers and position attributes) because sandbox-created objects live in a
  * different module realm — see executeKilnCode in ../render.ts.
  *
  * Lighting matches scripts/visual-audit.ts: key directional light from
@@ -20,7 +20,10 @@
  * the offline audit grid) so inverted winding shows up as missing faces.
  */
 
+import { Vector3 } from 'three';
 import { resolveBackdrop, type BackdropId } from './background';
+import { visibleNormalSign, worldWindingParity, type SurfaceSide } from './face-policy';
+import { prepareTriangleCoverage } from './triangle-coverage';
 
 export interface ViewSpec {
   name: string;
@@ -118,7 +121,10 @@ export interface RasterOptions {
    * (a sideways/forward-sliding walk would look stationary). The scene's own
    * geometry is still drawn; only the camera center/zoom come from this box.
    */
-  frameBounds?: { min: [number, number, number]; max: [number, number, number] };
+  frameBounds?: {
+    min: [number, number, number];
+    max: [number, number, number];
+  };
   /** Named backdrop to clear to. Omit for the default; see `views/background.ts`. */
   backdrop?: BackdropId;
 }
@@ -146,6 +152,9 @@ interface DuckAttribute {
   array: ArrayLike<number>;
   itemSize: number;
   count: number;
+  getX?(index: number): number;
+  getY?(index: number): number;
+  getZ?(index: number): number;
 }
 interface DuckGeometry {
   getAttribute(name: string): DuckAttribute | undefined;
@@ -159,6 +168,7 @@ interface DuckMaterial {
   /** Effective glTF base-color alpha after OPAQUE/MASK/BLEND handling. */
   opacity?: number;
   doubleSided?: boolean;
+  side?: number;
   visible?: boolean;
 }
 interface DuckMesh {
@@ -167,12 +177,40 @@ interface DuckMesh {
   geometry?: DuckGeometry;
   material?: DuckMaterial | DuckMaterial[];
   matrixWorld?: { elements: ArrayLike<number> };
+  getVertexPosition?(index: number, target: Vector3): Vector3;
+  skeleton?: { bones: DuckObject3D[] };
 }
 interface DuckObject3D {
   visible?: boolean;
   children?: DuckObject3D[];
   updateMatrixWorld?(force?: boolean): void;
+  updateWorldMatrix?(updateParents: boolean, updateChildren: boolean): void;
   traverse?(cb: (obj: unknown) => void): void;
+}
+
+function updateSurfaceMatrices(root: DuckObject3D): void {
+  // Isolated part measurements may start below a changed parent. Keep the normal
+  // updateMatrixWorld dispatch too: SkinnedMesh refreshes its bind inverse there.
+  root.updateWorldMatrix?.(true, false);
+  root.updateMatrixWorld?.(true);
+}
+
+/** Three's own vertex reader applies morphs, then skinning, without changing the
+ * source buffers. A local Vector3 works across realms; no class identity test is
+ * needed. Plain GLB duck geometry retains its deterministic array fallback. */
+function surfaceVertexReader(mesh: DuckMesh, position: DuckAttribute): (index: number) => Vector3 {
+  for (const bone of mesh.skeleton?.bones ?? []) bone.updateWorldMatrix?.(true, false);
+  const vertex = new Vector3();
+  if (mesh.getVertexPosition) return (index) => mesh.getVertexPosition!(index, vertex);
+  if (position.getX && position.getY && position.getZ)
+    return (index) =>
+      vertex.set(position.getX!(index), position.getY!(index), position.getZ!(index));
+  return (index) =>
+    vertex.set(
+      position.array[index * 3]!,
+      position.array[index * 3 + 1]!,
+      position.array[index * 3 + 2]!,
+    );
 }
 
 interface Tri {
@@ -181,6 +219,8 @@ interface Tri {
   color: [number, number, number];
   alpha: number;
   doubleSided: boolean;
+  side: SurfaceSide;
+  windingParity: 1 | -1;
 }
 
 /**
@@ -241,7 +281,7 @@ export function collectTriangles(root: DuckObject3D): {
   tris: Tri[];
   bbox: { min: Vec3; max: Vec3 };
 } {
-  root.updateMatrixWorld?.(true);
+  updateSurfaceMatrices(root);
 
   const tris: Tri[] = [];
   const min: Vec3 = [Infinity, Infinity, Infinity];
@@ -277,13 +317,12 @@ export function collectTriangles(root: DuckObject3D): {
 
     const m = mesh.matrixWorld?.elements;
     if (!m) return;
+    const windingParity = worldWindingParity(m);
 
-    const arr = pos.array;
+    const readVertex = surfaceVertexReader(mesh, pos);
     const world = new Float64Array(pos.count * 3);
     for (let i = 0; i < pos.count; i++) {
-      const x = arr[i * 3]!;
-      const y = arr[i * 3 + 1]!;
-      const z = arr[i * 3 + 2]!;
+      const { x, y, z } = readVertex(i);
       const wx = m[0]! * x + m[4]! * y + m[8]! * z + m[12]!;
       const wy = m[1]! * x + m[5]! * y + m[9]! * z + m[13]!;
       const wz = m[2]! * x + m[6]! * y + m[10]! * z + m[14]!;
@@ -309,11 +348,15 @@ export function collectTriangles(root: DuckObject3D): {
       v[6] = world[c2 * 3]!;
       v[7] = world[c2 * 3 + 1]!;
       v[8] = world[c2 * 3 + 2]!;
+      const side =
+        material?.doubleSided === true || material?.side === 2 ? 2 : material?.side === 1 ? 1 : 0;
       tris.push({
         v,
         color: colorOf(material),
         alpha: clamp01(material?.opacity ?? 1),
-        doubleSided: material?.doubleSided === true,
+        doubleSided: side === 2,
+        side,
+        windingParity,
       });
     };
 
@@ -410,6 +453,7 @@ export function rasterizeView(
   const sx = new Float64Array(3);
   const sy = new Float64Array(3);
   const sz = new Float64Array(3);
+  const weights = new Float64Array(3);
 
   // Orthographic: distance from the viewer runs against the view axis `z`.
   const ordered = compositingOrder(
@@ -423,10 +467,15 @@ export function rasterizeView(
     const n = cross(e1, e2);
     const nLen = Math.hypot(n[0], n[1], n[2]);
     if (nLen < 1e-12) continue;
-    const N: Vec3 = [n[0] / nLen, n[1] / nLen, n[2] / nLen];
+    const N: Vec3 = [
+      (n[0] / nLen) * tri.windingParity,
+      (n[1] / nLen) * tri.windingParity,
+      (n[2] / nLen) * tri.windingParity,
+    ];
 
     const facing = dot(N, z);
-    if (cull && facing <= 0 && !tri.doubleSided) continue;
+    const normalSign = visibleNormalSign(facing, tri.side, cull);
+    if (normalSign === 0) continue;
     if (tri.alpha <= 0) continue;
 
     // Project to screen space.
@@ -442,43 +491,20 @@ export function rasterizeView(
 
     // Flat lambert with the audit-grid light rig, in linear space, then the
     // sRGB output transform (matching what a Three.js renderer would write).
-    const lambert = Math.max(0, dot(N, KEY_DIR));
+    const lambert = Math.max(0, dot(N, KEY_DIR) * normalSign);
     const lit = Math.min(1, AMBIENT + KEY_INTENSITY * lambert);
     const r = Math.round(linearToSrgb(tri.color[0] * lit) * 255);
     const g = Math.round(linearToSrgb(tri.color[1] * lit) * 255);
     const b = Math.round(linearToSrgb(tri.color[2] * lit) * 255);
 
-    // Rasterize via edge functions.
-    const minX = Math.max(0, Math.floor(Math.min(sx[0]!, sx[1]!, sx[2]!)));
-    const maxX = Math.min(size - 1, Math.ceil(Math.max(sx[0]!, sx[1]!, sx[2]!)));
-    const minY = Math.max(0, Math.floor(Math.min(sy[0]!, sy[1]!, sy[2]!)));
-    const maxY = Math.min(size - 1, Math.ceil(Math.max(sy[0]!, sy[1]!, sy[2]!)));
-    if (minX > maxX || minY > maxY) continue;
-
-    const ax = sx[0]!,
-      ay = sy[0]!,
-      bx2 = sx[1]!,
-      by = sy[1]!,
-      cx = sx[2]!,
-      cy = sy[2]!;
-    const area = (bx2 - ax) * (cy - ay) - (by - ay) * (cx - ax);
-    if (Math.abs(area) < 1e-9) continue;
-    const invArea = 1 / area;
+    const triangle = prepareTriangleCoverage(sx[0]!, sy[0]!, sx[1]!, sy[1]!, sx[2]!, sy[2]!, size);
+    if (!triangle) continue;
+    const { minX, maxX, minY, maxY } = triangle;
 
     for (let py = minY; py <= maxY; py++) {
       for (let px = minX; px <= maxX; px++) {
-        const cxp = px + 0.5;
-        const cyp = py + 0.5;
-        const w0 = ((bx2 - ax) * (cyp - ay) - (by - ay) * (cxp - ax)) * invArea;
-        const w1 = ((cx - bx2) * (cyp - by) - (cy - by) * (cxp - bx2)) * invArea;
-        const w2 = 1 - w0 - w1;
-        // Accept either winding on screen (back-face culling already happened
-        // in world space) — check all barycentrics share the area's sign space.
-        if (w0 < 0 || w1 < 0 || w2 < 0) continue;
-        // Barycentric weights map: w0 → vertex C, w1 → vertex A, w2 → vertex B
-        // for this edge-function arrangement; depth interpolation just needs a
-        // consistent convex combination, so order doesn't matter for QA views.
-        const depth = w1 * sz[0]! + w2 * sz[1]! + w0 * sz[2]!;
+        if (!triangle.sample(px + 0.5, py + 0.5, weights)) continue;
+        const depth = weights[0]! * sz[0]! + weights[1]! * sz[1]! + weights[2]! * sz[2]!;
         const pi = py * size + px;
         if (depth <= zbuf[pi]!) continue;
         zbuf[pi] = depth;
@@ -525,7 +551,7 @@ export function measurePartBounds(root: unknown): ReturnType<typeof measureBound
 export function createPartBoundsReader(
   root: unknown,
 ): (node: unknown) => ReturnType<typeof measureBounds> | null {
-  (root as DuckObject3D).updateMatrixWorld?.(true);
+  updateSurfaceMatrices(root as DuckObject3D);
   const own = new Map<unknown, { min: Vec3; max: Vec3; tris: number } | null>();
   const meshBounds = (obj: unknown) => {
     if (own.has(obj)) return own.get(obj)!;
@@ -536,11 +562,9 @@ export function createPartBoundsReader(
     if (pos && pos.itemSize === 3 && m) {
       const min: Vec3 = [Infinity, Infinity, Infinity];
       const max: Vec3 = [-Infinity, -Infinity, -Infinity];
-      const arr = pos.array;
+      const readVertex = surfaceVertexReader(mesh, pos);
       for (let i = 0; i < pos.count; i++) {
-        const x = arr[i * 3]!,
-          y = arr[i * 3 + 1]!,
-          z = arr[i * 3 + 2]!;
+        const { x, y, z } = readVertex(i);
         const w: Vec3 = [
           m[0]! * x + m[4]! * y + m[8]! * z + m[12]!,
           m[1]! * x + m[5]! * y + m[9]! * z + m[13]!,
@@ -614,7 +638,10 @@ export function hideNodeInScene(
   let hidden = 0;
   const r = root as DuckObject3D;
   r.traverse?.((obj) => {
-    const node = obj as { name?: string; traverse?(cb: (o: unknown) => void): void };
+    const node = obj as {
+      name?: string;
+      traverse?(cb: (o: unknown) => void): void;
+    };
     if (!node.name || !test(node.name)) return;
     hidden++;
     // Flip the matched node and its whole subtree (the per-mesh cull means hiding

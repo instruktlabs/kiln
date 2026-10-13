@@ -11,6 +11,11 @@ const record = (revisionId: string, parentRevision?: string) => {
     files: { 'source.kiln.js': source } };
 };
 describe('asset delivery', () => {
+  test('modern saved material dependencies require their complete editable closure', () => {
+    const current = record('r_current');
+    const manifest = { ...current.manifest, build: { dependencies: [{ kind: 'kiln.material.v2', manifest: { materialId: 'original-map', revisionId: 'sha256:' + 'a'.repeat(64) } }] } };
+    expect(() => revisionBundle({ ...current, manifest })).toThrow('Editable material closure unavailable');
+  });
   test('includes actual ancestor records, declaring an unavailable parent without fabricating it', async () => {
     const records = new Map([['r_current', record('r_current', 'r_previous')], ['r_previous', record('r_previous', 'r_missing')]]);
     const result = await collectHistory({ collection: 'project', assetId: 'soldier', revisionId: 'r_current' }, async (pin: any) => records.get(pin.revisionId));

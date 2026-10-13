@@ -1,0 +1,191 @@
+{
+  "materialId": "nm-cabin-deer-hide",
+  "revisionId": "sha256:14df6cc21c5a44c1da1792d17fccce6ee8f02b650b43e4e0aeff624a268074b2",
+  "name": "Mounted deer warm hide",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "tx34"
+  ],
+  "tileable": false,
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:71d68228a9fac215794d08b684c1f4f0a17121a8470206127d3fc020113f20cd",
+      "bytes": 754,
+      "width": 128,
+      "height": 128,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "clamp-to-edge",
+        "wrapT": "clamp-to-edge"
+      },
+      "pixelHash": "sha256:4bcb49ebb4973314bc0097d2f003a58ff25117852bfa8cc268f4c9fe85f0e2c7",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 128,
+          "height": 128,
+          "usage": "albedo",
+          "background": [
+            164,
+            139,
+            99,
+            255
+          ],
+          "operations": [
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    0,
+                    98
+                  ],
+                  [
+                    17,
+                    71
+                  ],
+                  [
+                    49,
+                    61
+                  ],
+                  [
+                    79,
+                    79
+                  ],
+                  [
+                    127,
+                    68
+                  ],
+                  [
+                    127,
+                    127
+                  ],
+                  [
+                    0,
+                    127
+                  ]
+                ]
+              },
+              "rgba": [
+                112,
+                88,
+                63,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    21,
+                    3
+                  ],
+                  [
+                    91,
+                    0
+                  ],
+                  [
+                    107,
+                    28
+                  ],
+                  [
+                    74,
+                    34
+                  ],
+                  [
+                    39,
+                    25
+                  ]
+                ]
+              },
+              "rgba": [
+                195,
+                172,
+                124,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "stamps",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  0,
+                  0
+                ],
+                "to": [
+                  4,
+                  1
+                ],
+                "width": 1
+              },
+              "rgba": [
+                136,
+                112,
+                71,
+                255
+              ],
+              "opacity": 255,
+              "count": 50,
+              "seed": 11034,
+              "area": {
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 128
+              },
+              "periodic": false
+            }
+          ]
+        },
+        "recipeHash": "sha256:83224b940838977c6ab64b8408173224e99e0c66f433aea399daa5c02ae87704",
+        "pixelHash": "sha256:4bcb49ebb4973314bc0097d2f003a58ff25117852bfa8cc268f4c9fe85f0e2c7",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

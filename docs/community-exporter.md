@@ -57,6 +57,28 @@ partitions are rejected by the shared preflight. Private `userData` is excluded;
 semantic extras and bounded review clips retain their existing policy. Export copies keep caller
 texture sources and skeleton references intact.
 
+Both converters preserve standard magnification/minification filters and S/T wrap
+modes on supported texture bindings, including different samplers sharing image
+bytes. Kiln's loader and procedural texture defaults remain repeat wrapping,
+linear magnification and trilinear minification. The default converter now writes
+these choices explicitly; regenerated GLBs can therefore have different bytes
+and material fingerprints from older exports. Existing saved revisions are
+unchanged. Mipmap generation itself is a consumer policy, not a glTF sampler flag.
+
+Already encoded PNG/JPEG images on direct, unflipped texture bindings retain their
+original bytes. This matters for cutout RGB padding under zero alpha and for exact
+partial-alpha color: canvas conversion can erase or round those channels. Derived
+channel maps and explicitly flipped images still require conversion. Raw byte maps
+used for metallic/roughness packing or normal-channel inversion are adapted on the
+export copy; caller images and texture references remain unchanged. For cutout atlas
+delivery, keep the canonical image orientation with `flipY: false`; pixel-exact
+transparent RGB through a requested vertical image flip is not qualified.
+
+If the optional native canvas binding cannot load, textured headless export reports
+the dependency and recovery steps. Reinstall with optional dependencies enabled and
+check the binding in the same Node runtime and platform as the Kiln host. It does not
+silently switch converters. Flat-material exports do not require that binding.
+
 This describes serialization capability. It does not automatically extend all authoring helpers,
 QA rules, preview materials or optimization algorithms. In particular, skin/morph deformation,
 complex texture transforms, material extensions in every review path, and runtime codec support
@@ -64,6 +86,11 @@ still need feature-specific qualification. Lines/points are explicitly rejected 
 converter rather than bypassing the triangle pipeline's metadata and geometry policy.
 
 ## Qualify a consumer
+
+Both converters reject used `BackSide` materials because glTF has no back-only
+material flag. See the [portable sidedness contract](export-profiles.md#material-sidedness-at-export)
+for explicit inward geometry and deliberate two-sided sheets. This prevents silent
+front-face substitution; it does not change the default exporter or existing GLBs.
 
 Keep a canonical GLB and name the actual engine, importer, version and render pipeline in results.
 For example, Unity 6 Built-in RP with glTFast is a different target from Unity URP or an FBX workflow.

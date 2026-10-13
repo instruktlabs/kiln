@@ -8,6 +8,9 @@ export function routeForFile(file) {
   return `/${normalized.replace(/(?:^|\/)index\.html$/, '/')}`.replace(/^\/\//, '/');
 }
 export function resolveInternalLink(href, route) {
+  // Downloadable Vite source is checked against its project root, before bundling.
+  const sourceRoot = isSceneSourceDocument(route) && route.match(/^\/asset-demos\/[^/]+\/scene-source/)[0];
+  if (sourceRoot && href.startsWith('/') && !href.startsWith('//')) href = sourceRoot + href;
   const url = new URL(href, new URL(route, ORIGIN));
   if (url.origin !== ORIGIN) return null;
   return { path: decodeURIComponent(url.pathname), fragment: decodeURIComponent(url.hash.slice(1)) };
@@ -17,7 +20,9 @@ export function resolveInternalLink(href, route) {
  * HTML the site serves inside a frame rather than as a page: the staged scene runtime documents. They are held to
  * what a frame needs (a title, a language, never indexed and no links followed), not to page metadata.
  */
-export const isEmbeddedDocument = (route) => /^\/scene-runtime\/[^/]+\/frame\.html$/.test(route) || /^\/scene-packs\/troy\/[^/]+\/web\/(?:qualification\/[^/]+\.html)?$/.test(route);
+export const isEmbeddedDocument = (route) => /^\/scene-runtime\/[^/]+\/frame\.html$/.test(route) || /^\/scene-packs\/troy\/[^/]+\/web\/(?:qualification\/[^/]+\.html)?$/.test(route) || /^\/asset-demos\/[^/]+\/web\/game\.html$/.test(route);
+/** Raw project entrypoints accompany the source download; they are not site pages. */
+export const isSceneSourceDocument = (route) => /^\/asset-demos\/[^/]+\/scene-source\/(?:[^/]+\/)*[^/]+\.html$/.test(route);
 export function embeddedDocumentErrors(page) {
   const errors = [];
   if (!page.title?.trim()) errors.push('Missing title');

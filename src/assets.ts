@@ -5,10 +5,12 @@ import { zipSync, unzipSync } from 'three/addons/libs/fflate.module.js';
 import {
   assertMaterialJson,
   canonicalMaterialJson,
-  materialLibraryPayloadSchema,
-  validateMaterialManifest,
+  materialLibraryPayloadAnySchema,
+  materialRecordDependencyPins,
+  validateMaterialManifestAny,
   MATERIAL_LIBRARY_LIMITS,
-  type MaterialLibraryPayloadV1,
+  type MaterialLibraryPayload,
+  type MaterialManifest,
 } from './material-library';
 
 export const ASSET_LIMIT = 64 * 1024 * 1024;
@@ -61,7 +63,7 @@ export interface AssetRecord {
   manifest: AssetManifest;
   files: Record<string, Uint8Array>;
   /** Editable delivery closure; not part of the canonical asset manifest or revision identity. */
-  materialResources?: MaterialLibraryPayloadV1;
+  materialResources?: MaterialLibraryPayload;
 }
 export interface AssetDraft {
   name: string;
@@ -90,35 +92,59 @@ export interface AssetLibrary {
 }
 export const ASSET_MATERIAL_FILE = 'materials.kiln.json';
 export const ASSET_MATERIAL_BYTES = 24 * 1024 * 1024;
+/** Pure declaration boundary shared by portable delivery and host hash verification. */
+export function assetMaterialRootManifests(record: AssetRecord): MaterialManifest[] {
+  const roots = new Map<string, MaterialManifest>();
+  for (const raw of record.manifest.build?.dependencies ?? []) {
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw))
+      throw new Error('Invalid saved asset dependency');
+    const dependency = raw as Record<string, unknown>;
+    if (dependency.kind !== 'kiln.material.v1' && dependency.kind !== 'kiln.material.v2') {
+      if (dependency.delivery === 'runtime') throw new Error('Unsupported runtime dependency');
+      if (dependency.delivery !== 'embedded') throw new Error('Unsupported saved asset dependency');
+      continue;
+    }
+    if (dependency.delivery !== 'runtime') throw new Error('Invalid saved material dependency');
+    const manifest = validateMaterialManifestAny(dependency.manifest);
+    if (dependency.kind !== `kiln.material.v${manifest.schemaVersion}`)
+      throw new Error('Saved material dependency kind/version mismatch');
+    const key = `${manifest.materialId}/${manifest.revisionId}`;
+    const existing = roots.get(key);
+    if (existing && canonicalMaterialJson(existing) !== canonicalMaterialJson(manifest))
+      throw new Error('Conflicting saved material dependency manifests');
+    roots.set(key, manifest);
+    if (roots.size > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+      throw new Error('Saved asset material dependency count exceeds limit');
+  }
+  return [...roots.values()];
+}
 /** Shape and closure checks are portable; hosts verify hashes and PNG/recipe bytes before import. */
 export function validateAssetMaterialClosure(record: AssetRecord, required = false): void {
-  const dependencies = (record.manifest.build?.dependencies ?? []).filter(
-    (raw) =>
-      raw &&
-      typeof raw === 'object' &&
-      (raw as Record<string, unknown>).kind === 'kiln.material.v1',
-  ) as { manifest: unknown; delivery: unknown }[];
+  const dependencies = assetMaterialRootManifests(record);
   const expected = new Map(
-    dependencies.map((dependency) => {
-      if (dependency.delivery !== 'runtime') throw new Error('Invalid saved material dependency');
-      const manifest = validateMaterialManifest(dependency.manifest);
-      return [`${manifest.materialId}/${manifest.revisionId}`, canonicalMaterialJson(manifest)];
-    }),
+    dependencies.map((manifest) => [
+      `${manifest.materialId}/${manifest.revisionId}`,
+      canonicalMaterialJson(manifest),
+    ]),
   );
   if (!record.materialResources) {
     if (required && expected.size) throw new Error('Editable asset material closure unavailable');
     return;
   }
   assertMaterialJson(record.materialResources);
-  const payload = materialLibraryPayloadSchema.parse(record.materialResources);
+  const payload = materialLibraryPayloadAnySchema.parse(record.materialResources);
   let bytes = 0;
   let pixels = 0;
-  const seen = new Set<string>();
+  const available = new Map<string, MaterialManifest>();
   for (const wire of payload.records) {
+    const manifest = validateMaterialManifestAny(wire.manifest);
     const key = `${wire.manifest.materialId}/${wire.manifest.revisionId}`;
-    if (seen.has(key) || expected.get(key) !== canonicalMaterialJson(wire.manifest))
+    if (
+      available.has(key) ||
+      (expected.has(key) && expected.get(key) !== canonicalMaterialJson(manifest))
+    )
       throw new Error('Asset material closure mismatch');
-    seen.add(key);
+    available.set(key, manifest);
     if (Object.keys(wire.files).length !== wire.manifest.maps.length)
       throw new Error('Asset material map inventory mismatch');
     for (const map of wire.manifest.maps) {
@@ -128,12 +154,27 @@ export function validateAssetMaterialClosure(record: AssetRecord, required = fal
       pixels += map.width * map.height;
     }
   }
-  if (seen.size !== expected.size) throw new Error('Asset material closure incomplete');
   if (
     bytes > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes ||
     pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels
   )
     throw new Error('Asset material closure exceeds allocation limits');
+  const visited = new Set<string>();
+  const active = new Set<string>();
+  const visit = (key: string): void => {
+    if (active.has(key)) throw new Error('Asset material closure contains a cycle');
+    if (visited.has(key)) return;
+    const manifest = available.get(key);
+    if (!manifest) throw new Error('Asset material closure incomplete');
+    active.add(key);
+    for (const pin of materialRecordDependencyPins(manifest))
+      visit(`${pin.resourceId}/${pin.revisionId}`);
+    active.delete(key);
+    visited.add(key);
+  };
+  for (const key of expected.keys()) visit(key);
+  if (visited.size !== available.size)
+    throw new Error('Asset material closure has unrelated records');
 }
 const allowedFiles = new Set(['asset.glb', 'source.kiln.js', 'preview.png']);
 export function validateRecordShape(record: AssetRecord): void {

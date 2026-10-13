@@ -5,6 +5,7 @@ import {
   encodeAssetBundle,
   type AssetManifest,
   type AssetRecord,
+  assetMaterialRootManifests,
 } from '../assets';
 import { assetAttributionRows } from './attribution';
 import { createAssetStage } from './scene';
@@ -16,6 +17,7 @@ import { mountPerformanceControl } from './performance-control';
 import type { ProjectRevision } from '../projects';
 import { assetIdentity, entriesForProject } from './library-state';
 import { mountMembership } from './membership-panel';
+import { materialViewerHref } from './material-preview';
 
 const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id)! as T;
 const node = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string) => {
@@ -347,6 +349,41 @@ async function openDetail(entry: Entry) {
     attribution.append(item);
   }
   attribution.hidden = !attribution.childElementCount;
+  let materialInputs = document.getElementById('asset-material-inputs');
+  if (!materialInputs) {
+    materialInputs = node('section', undefined, 'asset-material-inputs');
+    materialInputs.id = 'asset-material-inputs';
+    attribution.after(materialInputs);
+  }
+  materialInputs.replaceChildren();
+  try {
+    const dependencies = assetMaterialRootManifests({ manifest: entry.manifest, files: {} });
+    if (dependencies.length) {
+      materialInputs.append(
+        node('h3', 'Exact material build inputs'),
+        node(
+          'p',
+          'Open the saved revision to inspect its raw maps, sampling declaration and atlas regions. Declared inputs do not prove every map was used.',
+          'subtle',
+        ),
+      );
+      for (const material of dependencies) {
+        const link = node('a', `${material.name} · ${material.materialId}`);
+        link.href = materialViewerHref(material);
+        link.target = '_blank';
+        link.rel = 'noopener';
+        materialInputs.append(link, node('p', material.revisionId, 'mono'));
+      }
+    }
+  } catch (error) {
+    materialInputs.append(
+      node(
+        'p',
+        `Material revision links unavailable: ${error instanceof Error ? error.message : String(error)}`,
+        'subtle',
+      ),
+    );
+  }
   el('provenance').textContent = entry.loose
     ? 'Standalone GLB. No source or build provenance supplied.'
     : JSON.stringify(entry.manifest, null, 2);

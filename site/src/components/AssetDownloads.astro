@@ -1,9 +1,10 @@
 ---
 import { bytes } from '../lib/catalog';
 import { buildDownloadChoices, type DownloadFile } from '../lib/download-choices';
-interface Props { runtime: DownloadFile; editable: DownloadFile }
-const { runtime, editable } = Astro.props;
-const choices = buildDownloadChoices(runtime, editable);
+interface Props { runtime: DownloadFile; editable: DownloadFile; editableLabel?: string }
+const { runtime, editable, editableLabel } = Astro.props;
+const choices = buildDownloadChoices(runtime, editable).map(choice =>
+  choice.profile === 'editable' && editableLabel ? { ...choice, label: editableLabel } : choice);
 ---
 <div class="mt-6 grid gap-6 md:grid-cols-2" data-asset-downloads>
   {choices.map(choice => <article class="border-y border-rule py-5">

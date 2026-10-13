@@ -80,6 +80,59 @@ and source/revision receipts for reproducible replay. Compatibility of the SDK
 does not imply identical generated GLB bytes or renderer output across releases.
 Persisted data and rebuild restrictions follow the [migration contract](migration.md).
 
+## Procedural RGBA surfaces
+
+The `primitives` entrypoint and authored `proceduralTexture` helper accept an
+explicit V3 recipe for bounded rectangular RGBA images, shape coverage, alpha
+masks, palettes, dithering and seeded stamps. Pure V3 compilation returns pixels,
+canonical JSON and a compiler-qualified recipe hash without creating a mesh.
+Read the [V3 contract](procedural-surfaces-v3.md) for the exact limits and rounding
+rules. V1/V2 remain supported with their existing pixels, hashes and sampler
+defaults. The same entrypoint exposes `textureAtlas` and `remapUVToAtlas` for
+named regions. Portable V3 materials add explicit per-map sampling; opt-in V2
+material records persist recipes, compiled maps and exact dependency pins.
+See the [standalone material and atlas workflow](procedural-surfaces-v3.md#standalone-saved-materials-and-atlases).
+
+## Explicit character skinning
+
+The `character` and `primitives` entrypoints expose opt-in `createBoneChain` and
+`createSkinnedPart`; both are also sandbox helpers. `createJointChain` continues
+to return ordinary rigid `Object3D` pivots. Bone chains use the same versioned
+joint descriptors, infer an attached declared parent role and reject ambiguous
+roles/names before attaching nodes. They do not choose anatomy or a body plan.
+
+`createSkinnedPart(name, geometry, material, { parent, bones, indices, weights })`
+clones unchanged geometry and binds it to the assembled hierarchy's current rest
+pose. Supply exactly four indices and weights per vertex, in the explicit bone
+array order. Indices must be valid even in zero-weight lanes. By default weights
+must be in 0..1 and sum to one within 1e-5; `normalizeWeights: true` explicitly
+normalizes positive finite sums. Zero sums are rejected. Optional local position,
+Euler rotation (degrees), scale and semantic metadata match `createPart`'s units.
+
+The helper owns geometry, influence arrays and inverse bind matrices; bones and
+materials remain shared. Limits are 1024 bones, 262144 vertices and 128 MiB of
+cloned attributes plus new influence storage. These are helper limits, not new
+restrictions on direct Three.js authoring. Existing skin attributes and singular
+bind transforms are rejected. Set up rest transforms before binding; later rest
+edits/reparenting need deliberate rebinding. Animated bounds remain a consumer
+responsibility. The selected Three exporter is required to preserve skins;
+calling these helpers does not change the legacy default or select a converter.
+
+`inspectSkinIntegrity(root)` from `@instruktlabs/kiln/qa` reads source bindings
+without updating matrices, normalizing weights or repairing the scene. It returns
+bounded findings, checked counts and current posed world bounds (including position
+morphs). It is not an animation envelope, deformation-quality score or proof of
+collision clearance. Rigid meshes do not acquire skin or body-plan requirements.
+
+Export runs this check before bounds, texture baking or conversion. Invalid source
+bindings produce an `AssetQaBlockedError` at the scene stage with mesh/joint or
+vertex-range context and repair advice. This is mandatory input integrity, like
+invalid geometry buffers; QA warning mode and derivative serialization do not
+bypass it. The partial failure report does not claim the remaining QA rules ran.
+The independent final glTF validation remains in place. Source Three skeletons
+need their inverse-bind arrays populated; this does not change glTF's valid
+identity-matrix default when the file omits `inverseBindMatrices`.
+
 ## Execution and dependencies
 
 The root SDK is Node-oriented. `/node` adapters use filesystem or server services;

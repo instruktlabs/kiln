@@ -27,7 +27,7 @@ import foundryFloor from "../data/foundry-floor.json";
 import foundryFloorPack from "../data/packs/foundry-floor.json";
 import troy from "../data/troy.json";
 import { sceneRuntimes } from "virtual:kiln-scenes";
-import { farmScene, foundryFloorScene, goldenGateScene } from "../data/scenes";
+import { cabinWoodsScene, farmScene, foundryFloorScene, goldenGateScene } from "../data/scenes";
 import { PUBLIC_EXAMPLES } from "../../scripts/collection.mjs";
 const house = farm.assets[0]!;
 const docs = new Set((await getCollection("docs")).map((doc) => doc.id));
@@ -387,6 +387,17 @@ const CARD_SIZES = "(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) c
     {PACKS_ENABLED ? (
       <>
       <div class="mt-8 grid gap-10 md:grid-cols-2 md:gap-8">
+        <article>
+          <a href={cabinWoodsScene.href} class="block no-underline text-ink" aria-label={cabinWoodsScene.name}>
+            <ScenePoster images={cabinWoodsScene.posterImages} sizes={CARD_SIZES} decorative />
+            <h3 class="mt-5 text-ink">{cabinWoodsScene.name}</h3>
+          </a>
+          <p class="mt-2 text-dim">A furnished cabin and woodland to explore, with 53 editable assets.</p>
+          <div class="mt-2 flex flex-wrap gap-x-6">
+            <a class="text-link" href={cabinWoodsScene.href}>Open the scene preview</a>
+            <a class="text-link" href="/packs/cabin-woods-psx-horror/">Browse the cabin and woodland pack</a>
+          </div>
+        </article>
         <article>
           <a href="/packs/farm/" class="block no-underline text-ink" aria-label="Shapes &amp; Seasons Farm">
             <ScenePoster images={farmScene.posterImages} sizes={CARD_SIZES} decorative />

@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -132,6 +133,24 @@ export function stagedScenes(site = SITE) {
     const troy = JSON.parse(readFileSync(troyFile, 'utf8'));
     const packFile = resolve(site, 'public', troy.base.replace(/^\/+/, ''), 'pack.json');
     if (existsSync(packFile)) scenes.troy = { kind: 'frame', url: `${troy.base}web/index.html`, pack: servedPack(packFile) };
+  }
+  const candidateId = 'cabin-woods-psx-horror';
+  const candidateFile = resolve(site, 'src/data', `${candidateId}.json`);
+  if (existsSync(candidateFile)) {
+    const candidate = JSON.parse(readFileSync(candidateFile, 'utf8'));
+    scenes[candidateId] = null;
+    if (typeof candidate.base === 'string' && candidate.base.startsWith(`/asset-demos/${candidateId}/`) && !candidate.base.includes('..')) {
+      const directory = resolve(site, 'public', candidate.base.replace(/^\/+/, ''));
+      const packFile = resolve(directory, 'pack.json');
+      const entry = resolve(directory, 'web/game.html');
+      if (existsSync(packFile) && existsSync(entry)) {
+        const sha256 = createHash('sha256').update(readFileSync(entry)).digest('hex');
+        const seal = candidate.runtime;
+        if (!seal || (seal.file === 'web/game.html' && /^(?:sha256:)?[a-f0-9]{64}$/.test(seal.sha256) && seal.sha256.replace(/^sha256:/, '') === sha256)) {
+          scenes[candidateId] = { kind: 'frame', url: `${candidate.base}web/game.html`, sha256, pack: servedPack(packFile) };
+        }
+      }
+    }
   }
   return scenes;
 }

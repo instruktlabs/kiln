@@ -47,6 +47,9 @@ export function remapUV(
     values[i * 2 + 1] = nextV;
   }
   const cloned = geo.clone();
+  // BufferGeometry.clone() shares userData; owned UV results must not write
+  // warnings or later atlas bindings back into their source geometry.
+  cloned.userData = structuredClone(geo.userData);
   cloned.setAttribute('uv', new THREE.Float32BufferAttribute(values, 2));
   if ((scale[0] !== 1 || scale[1] !== 1) && cloned.hasAttribute('tangent')) {
     cloned.deleteAttribute('tangent');

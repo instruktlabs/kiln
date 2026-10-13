@@ -30,6 +30,13 @@ allowance of 200 native requests per month. Ask in `#request-access` or message
 Joining Discord does not automatically grant hosted access. Local Kiln remains
 free, open source and account-free.
 
+| Cabin in the Woods: the cabin and woodland | Inside the cabin |
+| --- | --- |
+| [![The cabin and woodland with a warm porch light](scenes/packages/cabin-woods-psx-horror/review-media/aerial.png)](scenes/packages/cabin-woods-psx-horror/README.md) | [![Furnished cabin interior and burning fireplace](scenes/packages/cabin-woods-psx-horror/review-media/interior.png)](scenes/packages/cabin-woods-psx-horror/README.md) |
+
+[Cabin in the Woods: PSX Horror](scenes/packages/cabin-woods-psx-horror/README.md)
+includes 53 editable assets and a playable cabin and woodland scene.
+
 | Troy: the city and fleet | Achilles and Hector at the gates |
 | --- | --- |
 | [![Troy's walled city, army formations and fleet along the coast](assets/readme/troy-coast.webp)](https://kilnstudio.tools/scenes/troy/) | [![Achilles and Hector outside Troy's gate, with army formations behind them](assets/readme/troy-city.webp)](https://kilnstudio.tools/scenes/troy/) |

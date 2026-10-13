@@ -17,6 +17,18 @@ and release. Matching endpoints can still produce a path through the payload or
 support. Keep joints, contact markers and payload motion in the intended hierarchy;
 repair the geometry or path where the swept volumes collide.
 
+Measure a resting or mounting frame against the exported geometry, including
+angled feet, supports and small protrusions. A nominal primitive bottom or a
+locator called `ground` can differ from the actual lowest surface after rotation.
+Preserve intentional hanging origins and provide a separate resting socket when
+both placements are useful; do not silently move every asset to its bounds.
+
+For directional repeated surfaces, preserve grain direction and texel scale while
+varying the phase between neighboring pieces. Identical knots aligned in columns
+can make separate boards read as one repeated stamp. Compare a single module with
+an assembled span. Random rotation is inappropriate for directional grain and
+must not change named atlas regions or their sampling margins.
+
 For ears, handles or other details attached to a rotated or lofted body, derive
 their bases from the carrier's local surface and transform them through the same
 frame. A nearby world-space point can leave a visible gap after the body rotates.
@@ -61,6 +73,15 @@ can cull the connecting surface even when vertex normals point outward. Repair t
 winding or missing geometry rather than hiding the defect with double-sided shading;
 deliberate thin sheets may need it. Check ceiling and trim extents against the actual sloping roof, including
 the eaves, rather than its bounding box.
+
+Choose sidedness deliberately: an inward-facing tunnel lining can use `FrontSide`
+with inward triangle winding; a leaf card viewed from both sides can use
+`DoubleSide`. GLB has no back-only material flag, so Kiln rejects a used `BackSide`
+material instead of exporting it as front-only. Reversing normals alone does not
+reverse winding. Double-sided shading adds neither thickness nor end caps. A
+negative node scale mirrors the front-face convention; baking that reflection into
+vertex positions is a different operation and requires consistent winding and
+normal/tangent data. Inspect both sides after export in the intended consumer.
 
 For a pane or panel fitted into a sloping frame, derive its corners and surface
 normal in the frame's coordinates. A bar's long axis and a sheet's plane may use
@@ -125,10 +146,50 @@ joint each pivot represents before reversing its bend direction. Correct exposed
 attachment caps, gaps and snapping through the motion, without assuming every
 stylized creature needs one rigging or deformation technique.
 
+Choose the mechanism deliberately: rigid armor plates or robot links can follow
+`createJointChain` pivots; a continuous elbow or flexible appendage can use
+`createBoneChain` plus `createSkinnedPart` when the installed Discovery exposes
+them. Both chains carry the same joint roles and local rest frames. Bones are
+opt-in; rigid pivots do not become bones merely because their names say `Joint_`.
+
+For explicit skinning, assemble the bones under the asset root in the rest pose
+before binding. Finish topology and UV operations first where practical. Supply
+four indices and weights for every final vertex, including duplicated UV seam
+vertices; use valid indices even for zero-weight lanes. Weights should sum to one.
+`normalizeWeights:true` normalizes a positive sum but cannot infer missing weights
+or repair a zero sum. The helper owns cloned geometry and inverse bind matrices;
+the caller still owns the bones and shared materials. Changing rest geometry or
+reparenting afterward needs deliberate rebinding, not just another animation pose.
+
+If export reports `SKIN_*` integrity findings, repair the named mesh, joint or
+vertex range before another render. A missing inverse matrix needs the intended
+rest binding restored; an invalid joint index needs the bone order and influence
+lanes corrected. Normalizing weights cannot repair either. These source-data
+checks also run on review derivatives and in QA warning mode. A valid current-pose
+bound does not prove all animation poses, good deformation or collision clearance.
+
+A two-bone ramp is useful for a simple strip or tube, not a general anatomical
+weighting rule: for a chosen local transition interval `[startY, endY]`, with
+`endY > startY`, use `t = Math.max(0, Math.min(1, (y-startY)/(endY-startY)))`,
+indices `[baseIndex, tipIndex, baseIndex, baseIndex]` and weights `[1-t,t,0,0]`.
+Keep the interval, joint placement and profile appropriate to the asset. Inspect
+rest, intermediate and extreme poses under the actual parent transforms; correct
+volume loss, exposed caps and pinching in the geometry/weights. Verify the chosen
+converter preserves skinning: the explicit Three exporter supports this path,
+while the legacy converter remains the default and does not preserve skins.
+
 Before mirroring a hand, inspect its local frame, palm, thumb web and any tool grip.
 Weak anatomical cues can look reversed without a left/right frame error. Refine the
 shape while preserving a correct wrist pivot and attachment frame, then check hand
 clearance through the relevant motion and against the complete carried tool.
+
+Define the palm normal, finger direction and thumb side in each hand's local frame.
+A grip marker reaching a handle does not establish a natural grip orientation.
+Solve reach with elbow and torso clearance as well as wrist alignment, distributing
+rotation through the forearm when appropriate. Inspect finger wrap and the actual
+skinned wrist and shoulder surfaces between keys; a correct joint frame can still
+produce a stretched sleeve cap. Neutral palm direction and pose belong to the
+asset brief, rather than a universal character default.
 
 For a shield or other broad carried plate, define the intended support pose as
 well as its mounting frame: which way the plate faces, where the grip lies, and
@@ -152,12 +213,27 @@ in the host). Recheck what each
 lookup controls, clip targets and intermediate poses after export; fewer meshes
 alone does not establish a successful optimization.
 
+In custom consolidation, a scalar mesh material applies to every geometry group.
+Group `materialIndex` selects an entry only when `mesh.material` is an array;
+indexing a one-element array for box face groups can silently create default
+materials on some faces. Preserve valid material assignments, then inspect the
+exported faces rather than relying on a successful merge or export.
+
 Budget materials within each rigid group. Reuse the parent's material for tiny
 fixed details when it gives the intended appearance; a separate material adds a
 potential draw even when the detail is small. One material does not guarantee
 one draw: vertex layouts, protected parts, transparency and vertex-limit splits
 also constrain merging. Available `drawDiagnostics` can help locate these costs;
 read its scope and skip reasons, then measure in the destination.
+
+Budget skinned mesh count as well as triangles. A small articulated asset can
+still submit many draws when each segment is a separate skin, even if the parts
+share one texture. Where the authoring/export path supports it, combine
+compatible surfaces into a skin with a shared skeleton and material. A skin-aware
+consolidation must preserve bind transforms, joint indices and weights, normals,
+UVs, morph channels and attachment frames. Keep separate skins when their
+materials, skeletons or visibility controls require them. Do not send skins
+through a rigid merge by weakening its rejection checks.
 
 Avoid unintentionally overlapping coplanar faces on separate parts. Merging can
 change which face wins a depth tie even when geometry and colours are preserved.
@@ -173,6 +249,36 @@ leaf silhouette. Its bundled 4×4 texture is a teaching placeholder. Check curre
 material capabilities before choosing a delivery resource, then inspect GPU views
 and destination filtering/backfaces. Raw `THREE.DataTexture` is not an available
 authoring route. Solid leaves and custom surfaces remain valid alternatives.
+
+For original cutouts, `proceduralTexture` V3 authors rectangular RGBA pixels;
+`textureAtlas` combines named fixed regions from V3 recipes or exact saved map
+revisions. Discover their full contracts before authoring. Atlas regions do not
+pack or resize themselves. Reserve nonoverlapping gutters and choose edge copying
+or transparent RGB dilation for the actual filtering and alpha policy.
+
+Map unit UVs with
+`remapUVToAtlas(geometry, atlas, 'region-name', {inputOrigin:'bottom-left', mode:'texel-center'})`.
+Choose `inputOrigin` from the source UV convention and `mode` deliberately:
+`texel-center` insets to edge texel centers, while `content-boundary` uses the
+content rectangle boundary. Finish topology and then remap the correct region;
+do not rotate arbitrary charts over a painted atlas and expect the artwork to
+follow. A geometry-wide region binding does not assign separate regions to
+material groups. For repeating grass or directional wood, preserve or project
+UVs and tile a standalone texture instead of forcing every surface into an atlas.
+Neither atlas remapping nor `autoUnwrap` creates painted detail.
+
+For repeated boards or other directional surfaces, align UV length with the
+physical grain direction and retain the chosen texel density. Repeating the same
+narrow UV band can miss a texture's authored detail even when the map is bound.
+Use deliberate deterministic offsets when variation is intended, and inspect a
+close perspective view as well as the assembly; a low-contrast surface alone
+does not prove missing textures or a rendering defect.
+
+When projecting along a chosen grain axis, use an alternate projection for faces
+whose normal is parallel to that axis; otherwise their UV area can collapse to a
+line. Check exported nondegenerate faces for usable UV area, including end faces
+and caps. A separate visible end-grain cap can be intentional, but does not repair
+the underlying face's UVs or justify claiming every chart is valid.
 
 For lengthwise grain or stripes through bends, discover `recipe:directional-sweep-v1`.
 It demonstrates sweep side U around the profile and V along path distance. Preserve
@@ -337,3 +443,21 @@ box or cylindrical mapping in a geometry-local frame. Fetch its exact Discovery
 contract for rotated frames, partial angular ranges, caps and seam sampling.
 `autoUnwrap` is the separate atlas operation. Removed shape unwrap names do not
 select a preservation or projection fallback.
+
+For a packed baked texture, `await autoUnwrap(geometry, options)` returns new
+buffers and leaves the source unchanged. It duplicates seam vertices and remaps
+vertex colors, skin indices/weights, extra UVs, custom per-vertex attributes
+(1..4 components), and position/normal/color morphs. It retains triangle groups,
+draw range and JSON metadata. It replaces UV0 and drops stale tangents; recompute
+tangents after the final UV layout. Skin bindings and animation remain on the
+mesh/skeleton, so verify an exported posed mesh before relying on deformation.
+
+Default unwrapping recomputes normals. Use `useNormals: true` to preserve authored
+normals and when normal morphs need their original reference frame. The installed
+xatlas adapter supports at most 65,536 vertices both before and after seam
+splitting; split larger geometry. Instanced data and unsupported morph semantics
+fail explicitly. Read the returned `userData.atlas.width/height`; requested
+`resolution` is a target and the packed image can be rectangular. Unwrapping
+cannot preserve the appearance of a texture painted for the old UV0: rebake it.
+For directional wood grain or a tiled wall, prefer existing primitive UVs or
+`projectUV` rather than an arbitrarily rotated atlas.

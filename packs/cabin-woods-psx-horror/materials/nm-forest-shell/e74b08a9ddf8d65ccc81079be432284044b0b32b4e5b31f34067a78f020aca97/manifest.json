@@ -1,0 +1,241 @@
+{
+  "materialId": "nm-forest-shell",
+  "revisionId": "sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97",
+  "name": "Spider shell / olive-black armor plates",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "shell"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 1,
+    "height": 1
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:cd94a64af4fffe086c36e51c7675b7a01a459da676d183b9bbe6468e3a429056",
+      "bytes": 340,
+      "width": 64,
+      "height": 64,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "repeat",
+        "wrapT": "repeat"
+      },
+      "pixelHash": "sha256:a3fb7a667924753f77242ed1fb69d21a68f08126517227867e505a99aa141b0d",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 64,
+          "height": 64,
+          "usage": "albedo",
+          "background": [
+            53,
+            66,
+            57,
+            255
+          ],
+          "operations": [
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    6,
+                    -4
+                  ],
+                  [
+                    15,
+                    -2
+                  ],
+                  [
+                    22,
+                    63
+                  ],
+                  [
+                    13,
+                    67
+                  ]
+                ]
+              },
+              "rgba": [
+                43,
+                53,
+                45,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    40,
+                    -4
+                  ],
+                  [
+                    48,
+                    -2
+                  ],
+                  [
+                    55,
+                    63
+                  ],
+                  [
+                    46,
+                    67
+                  ]
+                ]
+              },
+              "rgba": [
+                43,
+                53,
+                45,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    19,
+                    -3
+                  ],
+                  [
+                    23,
+                    -3
+                  ],
+                  [
+                    30,
+                    66
+                  ],
+                  [
+                    26,
+                    66
+                  ]
+                ]
+              },
+              "rgba": [
+                69,
+                83,
+                61,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    52,
+                    -3
+                  ],
+                  [
+                    55,
+                    -3
+                  ],
+                  [
+                    62,
+                    66
+                  ],
+                  [
+                    59,
+                    66
+                  ]
+                ]
+              },
+              "rgba": [
+                69,
+                83,
+                61,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "stamps",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  0,
+                  0
+                ],
+                "to": [
+                  6,
+                  1
+                ],
+                "width": 1
+              },
+              "rgba": [
+                83,
+                97,
+                73,
+                255
+              ],
+              "opacity": 255,
+              "count": 5,
+              "seed": 439,
+              "area": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "periodic": true
+            }
+          ]
+        },
+        "recipeHash": "sha256:d98ca7dcc6b2f3012ccd081f6b8be1ecbbf0b71d2e384b2c6a95d98b9212534c",
+        "pixelHash": "sha256:a3fb7a667924753f77242ed1fb69d21a68f08126517227867e505a99aa141b0d",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

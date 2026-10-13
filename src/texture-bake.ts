@@ -41,6 +41,12 @@
 
 import { createHash } from 'node:crypto';
 import * as THREE from 'three';
+import {
+  collectAtlasProvenance,
+  readAtlasEncodedTexture,
+  readValidatedAtlasDelivery,
+  type AtlasReferenceV1,
+} from './atlas-provenance';
 import type { EncodedTextureData, KilnTextureMetadata, TextureUsage } from './textures';
 
 export interface BakedTextureBindingV1 {
@@ -94,6 +100,8 @@ export interface BakedTextureProvenanceV1 {
    * regenerate the exact bytes. Absent for textures loaded from a file.
    */
   procedural?: ProceduralRecipeRecord;
+  /** Compact atlas source identity; the export scene table owns its recipe/manifest. */
+  atlas?: AtlasReferenceV1;
 }
 
 /** The `userData.kilnProcedural` stamp `proceduralTexture()` leaves behind. */
@@ -228,6 +236,7 @@ export async function bakeSceneTextures(
   root: THREE.Object3D,
   warnings: string[],
 ): Promise<BakedTextureProvenanceV1[]> {
+  const atlas = collectAtlasProvenance(root);
   // Collect first, encode second: traversal is sync, encoding is not, and doing
   // them together would interleave awaits with a mutating walk.
   const pending = new Map<
@@ -251,7 +260,8 @@ export async function bakeSceneTextures(
       for (const [slot, usage] of SLOT_USAGE) {
         const texture = bag[slot];
         if (!isTexture(texture)) continue;
-        if ((texture.userData as Record<string, unknown>)['encoded']) continue;
+        if ((texture.userData as Record<string, unknown>)['encoded'] && !atlas.texture(texture))
+          continue;
         const existing = pending.get(texture) ?? { texture, bindings: [] };
         existing.bindings.push({
           node: node.name || '(unnamed node)',
@@ -267,19 +277,84 @@ export async function bakeSceneTextures(
   const baked: BakedTextureProvenanceV1[] = [];
   for (const entry of pending.values()) {
     const name = entry.texture.name || '(unnamed texture)';
-    const raw = readPixels(entry.texture);
+    const atlasRef = atlas.texture(entry.texture);
+    const atlasRecord = atlasRef && atlas.table!.atlases.find((a) => a.id === atlasRef.id)!;
+    const encoded = atlasRef ? readAtlasEncodedTexture(entry.texture) : undefined;
+    if (
+      encoded &&
+      (encoded.mime !== 'image/png' ||
+        !(encoded.bytes instanceof Uint8Array) ||
+        encoded.bytes.length > 16_777_216)
+    )
+      throw new TypeError('Atlas baked encoding must be bounded PNG bytes.');
+    const raw =
+      encoded && atlasRecord
+        ? {
+            width: atlasRecord.spec.width,
+            height: atlasRecord.spec.height,
+            channels: 4 as const,
+            data: new Uint8Array(0),
+          }
+        : readPixels(entry.texture);
     const firstBinding = entry.bindings[0]!;
     const bindingSummary = `material ${JSON.stringify(firstBinding.material)} (${firstBinding.slot})${entry.bindings.length > 1 ? ` and ${entry.bindings.length - 1} other binding(s)` : ''}`;
     if (typeof raw === 'string') {
+      if (atlasRef)
+        throw new TypeError(
+          `Atlas has stale compiled provenance: ${raw}; rebuild with textureAtlas() or remove atlas metadata for a manual texture.`,
+        );
       warnings.push(
         `Texture ${JSON.stringify(name)} on ${bindingSummary} was dropped from the GLB: ${raw}.`,
       );
       continue;
     }
 
+    if (atlasRecord) {
+      const stale = () =>
+        new TypeError(
+          'Atlas has stale compiled provenance: rebuild with textureAtlas() after editing pixels, or remove atlas metadata for a manual texture.',
+        );
+      if (encoded) {
+        const delivery = readValidatedAtlasDelivery(entry.texture);
+        if (delivery) {
+          if (
+            delivery.id !== atlasRef!.id ||
+            delivery.finalMime !== encoded.mime ||
+            delivery.finalImageSha256 !==
+              `sha256:${createHash('sha256').update(encoded.bytes).digest('hex')}`
+          )
+            throw stale();
+        } else {
+          const sharp = (await import('sharp')).default;
+          const image = sharp(encoded.bytes, {
+            limitInputPixels: atlasRecord.spec.width * atlasRecord.spec.height,
+          });
+          const metadata = await image.metadata();
+          if (
+            metadata.width !== atlasRecord.spec.width ||
+            metadata.height !== atlasRecord.spec.height
+          )
+            throw stale();
+          const decoded = await image.ensureAlpha().raw().toBuffer();
+          if (
+            `sha256:${createHash('sha256').update(decoded).digest('hex')}` !==
+            atlasRecord.manifest.decodedPixelHash
+          )
+            throw stale();
+        }
+      } else if (
+        raw.width !== atlasRecord.spec.width ||
+        raw.height !== atlasRecord.spec.height ||
+        raw.channels !== 4 ||
+        `sha256:${createHash('sha256').update(raw.data).digest('hex')}` !==
+          atlasRecord.manifest.decodedPixelHash
+      )
+        throw stale();
+    }
+
     let bytes: Uint8Array;
     try {
-      bytes = await encodePngFromRaw(raw);
+      bytes = encoded?.bytes ?? (await encodePngFromRaw(raw));
     } catch (err) {
       warnings.push(
         `Texture ${JSON.stringify(name)} on ${bindingSummary} was dropped from the GLB: PNG encoding failed (${err instanceof Error ? err.message : String(err)}).`,
@@ -302,18 +377,20 @@ export async function bakeSceneTextures(
     // metallic-roughness map occupies both Three.js slots, where choosing the
     // first (`roughnessMap`) loses the authored combined-channel meaning.
     const primaryUsage =
+      atlasRecord?.spec.usage ??
       recipe?.usage ??
       (entry.bindings.some(({ slot }) => slot === 'roughnessMap') &&
       entry.bindings.some(({ slot }) => slot === 'metalnessMap')
         ? 'metallicRoughness'
         : (entry.bindings[0]?.usage ?? 'albedo'));
-    (entry.texture.userData as Record<string, unknown>)['kilnTexture'] = {
-      usage: primaryUsage,
-      colorSpace,
-      width: raw.width,
-      height: raw.height,
-      hasAlpha: hasTranslucentPixel(raw),
-    } satisfies KilnTextureMetadata;
+    if (!encoded)
+      (entry.texture.userData as Record<string, unknown>)['kilnTexture'] = {
+        usage: primaryUsage,
+        colorSpace,
+        width: raw.width,
+        height: raw.height,
+        hasAlpha: hasTranslucentPixel(raw),
+      } satisfies KilnTextureMetadata;
 
     const sha1 = createHash('sha1').update(bytes).digest('hex');
     const imageSha256 = `sha256:${createHash('sha256').update(bytes).digest('hex')}` as const;
@@ -334,6 +411,7 @@ export async function bakeSceneTextures(
       imageSha256,
       sha1,
       ...(recipe ? { procedural: recipe } : {}),
+      ...(atlasRef ? { atlas: atlasRef } : {}),
     });
   }
 

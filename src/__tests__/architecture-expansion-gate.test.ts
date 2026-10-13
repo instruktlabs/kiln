@@ -94,6 +94,7 @@ interface UvMeasurement {
   rebakedGlbSha256: string;
   initialSemanticSha256: string;
   rebakedSemanticSha256: string;
+  omittedFilterComparisonSha256: readonly [string, string];
   texturedMaterials: number;
 }
 
@@ -315,7 +316,10 @@ function glbJsonFixture(json: Record<string, unknown>): Uint8Array {
  * the roof gate: hierarchy/TRS/extras, PBR materials, primitive topology/accessors, and decoded
  * texture pixels. Numbers are quantized below the gate's 1e-5 geometric tolerance.
  */
-async function canonicalSemanticGlbSha256(bytes: Uint8Array): Promise<string> {
+async function canonicalSemanticGlbSha256(
+  bytes: Uint8Array,
+  omitFiltersForHistoricalComparison = false,
+): Promise<string> {
   assertNoDeclaredExtensions(bytes);
   const document = await new WebIO().readBinary(bytes);
   const root = document.getRoot();
@@ -338,17 +342,25 @@ async function canonicalSemanticGlbSha256(bytes: Uint8Array): Promise<string> {
   const textureIndices = new Map(textures.map((value, index) => [value, index]));
   const accessorIndices = new Map(accessors.map((value, index) => [value, index]));
 
-  const textureUse = (texture: Texture | null, info: TextureInfo | null) =>
-    texture
+  const textureUse = (texture: Texture | null, info: TextureInfo | null) => {
+    if (texture && omitFiltersForHistoricalComparison) {
+      // The sampler fix now emits loadTexture's existing defaults explicitly.
+      // Project only these two fields back to their old missing values to prove
+      // that the historical geometry, UVs, material factors and pixels did not change.
+      expect(info?.getMagFilter()).toBe(9729);
+      expect(info?.getMinFilter()).toBe(9987);
+    }
+    return texture
       ? {
           texture: refIndex(textureIndices, texture),
           texCoord: info?.getTexCoord() ?? 0,
-          magFilter: info?.getMagFilter() ?? null,
-          minFilter: info?.getMinFilter() ?? null,
+          magFilter: omitFiltersForHistoricalComparison ? null : (info?.getMagFilter() ?? null),
+          minFilter: omitFiltersForHistoricalComparison ? null : (info?.getMinFilter() ?? null),
           wrapS: info?.getWrapS() ?? null,
           wrapT: info?.getWrapT() ?? null,
         }
       : null;
+  };
 
   const canonicalTextures = await Promise.all(
     textures.map(async (texture) => {
@@ -1088,6 +1100,10 @@ async function measureUvCase(
     rebakedGlbSha256: sha256(rebaked.bytes),
     initialSemanticSha256: await canonicalSemanticGlbSha256(initial.bytes),
     rebakedSemanticSha256: await canonicalSemanticGlbSha256(rebaked.bytes),
+    omittedFilterComparisonSha256: [
+      await canonicalSemanticGlbSha256(initial.bytes, true),
+      await canonicalSemanticGlbSha256(rebaked.bytes, true),
+    ],
     texturedMaterials: Math.min(
       initialInspection.texturedMaterials,
       rebakedInspection.texturedMaterials,
@@ -1267,7 +1283,7 @@ describe('W8 G-ROOF-EXPAND provider-free gate', () => {
       '98edae5f31ab323530e80f11ee321c608924b56804c0430d1569bcf3f957d868',
       'ef0c35aa4b374129c28ef63a6bbda1018786f8f22146bf7ed8056954664587a4',
     ]);
-    expect(report.uvArtifactSemanticSha256).toEqual([
+    expect(uv.flatMap((entry) => entry.omittedFilterComparisonSha256)).toEqual([
       '4e945b321eb8e1ef058454ec2be04fe12dcce0a0f82bd5adce67809be07d9e8c',
       '1b237305e0a2d4fcb605edfddf2d1ba6798946227b2c4f6adf42eed4170f454a',
       'a8a01f015dbbfb830306311cf056def7a2b648ebf21e090f02ede0022a0938c8',
@@ -1277,14 +1293,24 @@ describe('W8 G-ROOF-EXPAND provider-free gate', () => {
       'fe0c383ca2027ea6642e4a3773e47923b13914ec55a421d51f291cd16e4f2028',
       '6f4f4ba10f1028ba8cde301f153200da34bebc58ba7d8a971f0b2b8338aaa177',
     ]);
+    expect(report.uvArtifactSemanticSha256).toEqual([
+      '1413a9e6aea2494de11e19613e229dd61f47d288d5cbce989c3724a6d071a459',
+      '07b20eb170f25f460a3061a76b6f99db456aee2db6202cb7406e67140c8c901a',
+      '1ad8c4ef0a6d683a00826d611e0e66a7b2f2f1368954666d9beb5c1c74db51f8',
+      'f0d5d885b9714f045ba5cb2158cf7fa351fd0b95b301c8327c30b6f93dfb4948',
+      '966047cecbeb89ede3e5602eddcb940e3a93c139bd660d01f577b5031a10b9d3',
+      'd647bfea4da710fb30fb6c363684b75ed4103901bed49b806aff4a3cfc7f2c28',
+      'd9d5eb11bcee48cb510fee9bb74c6a807c2ad724b8169d14a6f4c3cb9d749c83',
+      'f2c08d868f84d284918d9164bd87d6d0e39d3a2c0404d0b4505d683a618e9ce1',
+    ]);
     expect(sha256(canonicalJson(report.artifactSemanticSha256))).toBe(
       '35397ac0dbc9f395d31f1c83275553c227f6ef9bb9725301c264878cbcaf0ddd',
     );
     expect(sha256(canonicalJson(report.uvArtifactSemanticSha256))).toBe(
-      '5b1e21ecdf2fa71a83757daf144c4334cb154dedf057aeb07f0c9c4c33fe2204',
+      '9c07fedf6fd5e73a68bc8aefadaf54d4d6ab5701ad9a775d3b6dfb5360ca3667',
     );
     expect(sha256(canonicalJson(report))).toBe(
-      '6047b4aac6fd9d21392ca490185f2987adbda3135fba8966cc4f82d57c98a96f',
+      '069b88805c180afe93f2cd7ca07a1ff3902cbbb41b30902107003b3b3a35e791',
     );
   });
 });

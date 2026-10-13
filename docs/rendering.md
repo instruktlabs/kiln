@@ -27,6 +27,47 @@ safety. See `kiln animation --help` for the complete options.
 
 CPU views show silhouette, orientation, proportion, and contact. They do not reproduce the asset's PBR materials. Translucent (opacity below 1) surfaces are composited after opaque geometry, farthest first, so parts behind glazing stay visible whatever order the scene lists them in. Use GPU views to review textures, roughness, metalness, and normal relief. GPU output can vary by device and driver.
 
+GLB review reconstructs skins with up to four joint influences per vertex,
+including normalized weights and inverse bind matrices. CPU triangles and pose
+bounds follow the sampled joint pose rather than the undeformed position buffer.
+Unsupported additional influence sets produce an explicit error. GLB review
+also reconstructs position/normal morph deltas, node-over-mesh default weights,
+and STEP, LINEAR or CUBICSPLINE weight animation before applying skin transforms.
+Missing target attributes contribute zero displacement. Other morph semantics
+retain `GLB_FLAT_MORPH_TARGETS_UNSUPPORTED`; they are not qualified by this path.
+Expanded morph attributes are bounded to 64 MiB per review scene, including
+zero-filled attributes. Weight tracks use the review limits of 4,096 keys and
+16,384 scalar values. Invalid counts and nonfinite weights/deltas are rejected.
+Morph primitive children receive unique binding-safe names beneath the original
+named node; use that parent for a stable authored-part selection. Copies have
+independent morph influences. Loop-closure evidence remains transform-only and
+reports weight tracks as unassessed rather than labeling them as scale tracks.
+Isolated, two-sided and composed-scene review
+copies own their skeletons and preserve required hidden joint ancestors as
+transforms without drawing their geometry. Include all referenced bones in the
+review root; copying an incomplete hierarchy reports the missing dependency.
+Geometry and textures remain shared read-only, while two-sided overrides own
+their materials. Qualify material-faithful derivatives separately from the
+whole-character CPU view.
+
+CPU views honor front-only, back-only and double-sided source materials in both
+camera paths. Facing follows triangle winding after deformation, with the mesh's
+world-transform reflection parity; changing vertex normals does not change culling.
+Visible back faces reverse their flat lighting normal. Disabling culling for a
+diagnostic view acts as a two-sided override. Singular transforms do not flip
+winding; collapsed triangles do not draw. CPU output remains geometry evidence,
+not PBR evidence. Back-only source materials are not directly portable to GLB;
+see [material sidedness at export](export-profiles.md#material-sidedness-at-export).
+
+Both CPU camera paths sample pixel centres with top-left shared-edge ownership.
+They evaluate all three edges directly from canonical endpoints, preventing
+rounding gaps and duplicate blending where adjacent triangles meet. Near/far
+clipping uses direction-independent intersections. Interpolation uses unbiased
+edge weights, including reciprocal depth for perspective cameras. This is a
+floating-point geometry preview, not hardware subpixel/MSAA emulation; perimeter
+pixels can differ from GPU views. Degenerate or nonfinite projected triangles
+are discarded, and raster loops stay within the output image.
+
 ## Review lighting
 
 New GPU tool captures use **`review-neutral-v1`**. The rig uses the room PMREM

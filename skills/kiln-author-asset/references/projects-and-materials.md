@@ -46,7 +46,25 @@ For library materials, use CLI `material create-preset --file options.json`, the
 `material get MATERIAL_ID REVISION` for the code-ready `portableSpec`. Custom recipes
 use `material procedural --file draft.json`. These CLI paths do not need an internal
 `dist/` import or an extra TypeScript loader. Copy the returned spec into source,
-compile it with `compilePortableMaterialSpecV2`, and supply the exact pins below.
+compile schemaVersion 2 with `compilePortableMaterialSpecV2` or schemaVersion 3
+with `compilePortableMaterialSpecV3`, and supply the exact pins below.
+
+For a texture without geometry, create the material directly; do not invent a
+mesh or project just to save PNG maps. Read `shape:material-draft` with Discovery.
+Unversioned layered drafts keep their existing V1 records. Opt-in
+`schemaVersion:2` material drafts add explicit samplers and a `procedural` V3
+RGBA recipe or `atlas` recipe per map. The material-record version and texture-
+recipe version describe different contracts. V3 recipes support rectangular
+surfaces and alpha; a mask material still needs actual opaque and transparent
+texels to produce a cutout.
+
+An atlas resource source names an exact map `resourceId` plus its material
+revision pin. It does not load arbitrary URLs or paths. Save sources first,
+reuse returned identifiers, then create the atlas. The library resolves the
+transitive closure. Export a saved material with
+`node kiln.mjs material export MATERIAL_ID REVISION --out material.json` and
+import that complete payload with `material import --file material.json`;
+copying only the atlas PNG loses editable sources and named regions.
 
 ## Create and revise a project when useful
 
@@ -104,7 +122,7 @@ editable design guidance, not trusted requirements or release authorization.
 Inspect `kiln_material` with `action: "presets"`, `"list"` or `"get"`. CLI equivalents
 are `material presets`, `material list`, and `material get ID REVISION`. Creation
 and import preserve creator, license, recipe/seed and source provenance. Copy the
-returned `portableSpec` into source and call `compilePortableMaterialSpecV2(spec)`;
+returned `portableSpec` into source and select its matching V2 or V3 compiler;
 the host provides the selected immutable map bytes before evaluating source.
 
 A pin uses the returned material ID as `resourceId`; both hashes equal its returned
@@ -129,9 +147,21 @@ already pins replaces the project's for that call. Update the lock deliberately 
 changing shared art direction. A missing resource or mismatched hash must be resolved
 before building; neither source URLs nor material names authorize an implicit download.
 
+Keep project defaults to a deliberate shared authoring palette, not every material
+used anywhere in a growing inventory. An evaluation currently resolves at most 16
+resources, including transitive dependencies; call-level pins replace matching
+defaults but do not remove unrelated defaults. If that merged context exceeds the
+budget, use an explicit standalone operation with the asset's complete small pin
+set, then link the exact saved revision to the project. Refine the project defaults
+through a deliberate revision update. Saved asset closures retain their own exact
+materials independently of those authoring defaults.
+
 Material records carry physical repeat scale, but the author controls mesh UV scale.
 Review seams, repeats, roughness and normal strength on representative geometry with
 actual GPU views. A project palette is guidance, not automatic recoloring.
+Keep explicit nearest sampling for a requested pixel texture local to that
+material. Smooth or physically based materials may need linear filtering and
+mipmaps; neither a project nor an atlas implies one sampling policy.
 
 ## Retain and deliver the work
 

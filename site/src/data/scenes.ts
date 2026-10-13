@@ -3,7 +3,8 @@ import foundryFloor from './foundry-floor.json';
 import foundryFloorPack from './packs/foundry-floor.json';
 import sceneMedia from './scene-media.json';
 import scenePacks from './scene-packs.json';
-import { listOf } from '../lib/catalog';
+import cabinWoods from './cabin-woods-psx-horror.json';
+import { listOf, type CatalogImage } from '../lib/catalog';
 import { foundryPresentation } from '../lib/foundry-presentation';
 
 /** A link shown while a scene runs, relative to the scene's staged pack. */
@@ -24,6 +25,8 @@ interface SceneCopy {
   unavailableBody: string;
   /** What the error surface says; the last sentence names what remains available. */
   errorText: string;
+  /** Optional scene-specific graphics requirement; older scenes keep the shell default. */
+  rendererErrorText?: string;
 }
 
 /**
@@ -191,10 +194,42 @@ export const foundryFloorScene = {
   fallback: { href: foundryFloor.packRoute, label: 'View the Foundry Floor pack' },
 } as const;
 
+const cabinWoodsPosters = cabinWoods.posters as CatalogImage[];
+export const cabinWoodsScene = {
+  id: 'cabin-woods-psx-horror',
+  available: cabinWoods.available,
+  name: cabinWoods.name,
+  href: '/scenes/cabin-woods-psx-horror/',
+  assetBase: cabinWoods.base,
+  pack: { base: cabinWoods.base },
+  poster: cabinWoodsPosters[0]?.src ?? '',
+  posterImage: cabinWoodsPosters[0],
+  posterImages: cabinWoodsPosters,
+  posterWidth: cabinWoodsPosters[0]?.width ?? 0,
+  posterHeight: cabinWoodsPosters[0]?.height ?? 0,
+  posterAlt: cabinWoodsPosters[0]?.alt ?? '',
+  description: cabinWoods.description,
+  links: [] satisfies SceneLink[],
+  copy: {
+    available: 'Explore the cabin and woodland in your browser.',
+    preview: 'Explore the cabin and woodland in your browser.',
+    unavailable: 'The scene runtime is not staged in this build. Explore opens its status.',
+    devices: `${cabinWoods.devices} Loads only when you choose Explore.`,
+    unavailableTitle: 'The cabin and woodland scene is not staged in this build.',
+    unavailableBody: 'The pack page includes the assets and a downloadable scene.',
+    errorText:
+      'The scene could not load. This preview requires desktop WebGPU. Try Explore again in a compatible browser; the pack page remains available.',
+    rendererErrorText:
+      'WebGPU is unavailable in this browser. This desktop preview requires WebGPU; return to the pack page or try a compatible browser with WebGPU enabled.',
+  } satisfies SceneCopy,
+  fallback: { href: '/packs/cabin-woods-psx-horror/', label: 'View the cabin and woodland pack' },
+} as const;
+
 export const scenes = {
   farm: farmScene,
   'golden-gate': goldenGateScene,
   'foundry-floor': foundryFloorScene,
+  'cabin-woods-psx-horror': cabinWoodsScene,
 } as const;
 export type SceneId = keyof typeof scenes;
 

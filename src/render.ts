@@ -11,6 +11,8 @@ import {
   appendRequirementsFinalQa,
 } from './qa/requirements-run';
 import type { AssetRequirementsQaReportV2 } from './qa/requirements-report';
+import { createRequirementsQaReport } from './qa/requirements-report';
+import { inspectSkinIntegrity } from './qa/skin-integrity';
 import { AuthoringDiagnosticError, rethrowAuthoringError } from './evaluator/authoring-diagnostic';
 /**
  * Headless Kiln GLB Renderer
@@ -30,6 +32,14 @@ import { collectLodSets } from './lod';
 import { applyLodChains, summarizeLodChains } from './lod-export';
 import { applyNodeVisibility, drawnSceneBounds, summarizeHiddenNodes } from './node-visibility';
 import { communitySceneDocument, resolveGltfExporter } from './community-exporter';
+import {
+  collectAtlasProvenance,
+  mergeAtlasDocumentProvenance,
+  refreshAtlasDocumentProvenance,
+  validateAtlasDocumentProvenance,
+  type AtlasProvenanceCollection,
+} from './atlas-provenance';
+import { assertPortableMaterialSides } from './material-export';
 import { isCubicSplineTrack } from './animation-spline';
 import {
   applyIndexPolicy,
@@ -47,7 +57,7 @@ import {
   type GeometryExportPolicy,
 } from './geometry-export';
 import { createHash } from 'node:crypto';
-import { Document, Logger } from '@gltf-transform/core';
+import { Document, Logger, type TextureInfo } from '@gltf-transform/core';
 import { KHRMaterialsEmissiveStrength } from '@gltf-transform/extensions';
 import { dedup, instance, palette, weld, prune, mergeDocuments } from '@gltf-transform/functions';
 
@@ -98,7 +108,7 @@ import {
   type MaterialResourceProvenanceV1,
 } from './material-resources';
 import { DEFAULT_TEXTURE_RESOLVER, type TextureResolver } from './texture-resolver';
-import type { MaterialLibraryPayloadV1, MaterialManifestV1 } from './material-library';
+import type { MaterialLibraryPayload, MaterialManifest } from './material-library';
 import { FULL_OPTIMIZATION_PIPELINE, type RebuildOptions } from './rebuild-options';
 import { rigidMerge, type RigidMergeSummary } from './rigid-merge';
 import { assertGeneratedSourceSafe } from './validation';
@@ -464,12 +474,55 @@ function bridgeEmissive(
   );
 }
 
+const GLTF_MIN_FILTER = {
+  [THREE.NearestFilter]: 9728,
+  [THREE.LinearFilter]: 9729,
+  [THREE.NearestMipmapNearestFilter]: 9984,
+  [THREE.LinearMipmapNearestFilter]: 9985,
+  [THREE.NearestMipmapLinearFilter]: 9986,
+  [THREE.LinearMipmapLinearFilter]: 9987,
+} as const;
+const GLTF_MAG_FILTER = { [THREE.NearestFilter]: 9728, [THREE.LinearFilter]: 9729 } as const;
+const GLTF_WRAP = {
+  [THREE.ClampToEdgeWrapping]: 33071,
+  [THREE.MirroredRepeatWrapping]: 33648,
+  [THREE.RepeatWrapping]: 10497,
+} as const;
+
+/** Samplers belong to each texture use, not the cached glTF image. */
+function bridgeTextureSampler(
+  source: THREE.Texture,
+  target: TextureInfo,
+  atlas?: AtlasProvenanceCollection,
+): void {
+  const min = GLTF_MIN_FILTER[source.minFilter];
+  const mag = GLTF_MAG_FILTER[source.magFilter];
+  const s = GLTF_WRAP[source.wrapS];
+  const t = GLTF_WRAP[source.wrapT];
+  for (const [property, value] of [
+    ['minFilter', min],
+    ['magFilter', mag],
+    ['wrapS', s],
+    ['wrapT', t],
+  ] as const) {
+    if (typeof source[property] !== 'number' || value === undefined) {
+      throw new TypeError(
+        `${source.name || '(unnamed texture)'}: unsupported ${property} ${source[property]}`,
+      );
+    }
+  }
+  target.setMinFilter(min).setMagFilter(mag).setWrapS(s).setWrapT(t);
+  const ref = atlas?.texture(source);
+  if (ref) target.setExtras({ ...target.getExtras(), kilnAtlasReference: ref });
+}
+
 function bridgeMaterial(
   doc: Document,
   threeMat: THREE.Material,
   cache: Map<THREE.Material, GtMaterial>,
   textureCache: Map<THREE.Texture, GtTexture>,
   authorExtras?: AuthorExtras,
+  atlas?: AtlasProvenanceCollection,
 ): GtMaterial {
   const cached = cache.get(threeMat);
   if (cached) return cached;
@@ -505,11 +558,17 @@ function bridgeMaterial(
     // PBR texture slots (Wave 3B)
     if (stdMat.map) {
       const t = bridgeTexture(doc, stdMat.map, textureCache);
-      if (t) mat.setBaseColorTexture(t);
+      if (t) {
+        mat.setBaseColorTexture(t);
+        bridgeTextureSampler(stdMat.map, mat.getBaseColorTextureInfo()!, atlas);
+      }
     }
     if (stdMat.normalMap) {
       const t = bridgeTexture(doc, stdMat.normalMap, textureCache);
-      if (t) mat.setNormalTexture(t);
+      if (t) {
+        mat.setNormalTexture(t);
+        bridgeTextureSampler(stdMat.normalMap, mat.getNormalTextureInfo()!, atlas);
+      }
     }
     // metallic + roughness live in one glTF texture (R=unused, G=rough, B=metal).
     // If the agent used separate Three.js maps we emit the roughness one as
@@ -522,15 +581,24 @@ function bridgeMaterial(
     const mrSource = stdMat.roughnessMap ?? stdMat.metalnessMap;
     if (mrSource) {
       const t = bridgeTexture(doc, mrSource, textureCache);
-      if (t) mat.setMetallicRoughnessTexture(t);
+      if (t) {
+        mat.setMetallicRoughnessTexture(t);
+        bridgeTextureSampler(mrSource, mat.getMetallicRoughnessTextureInfo()!, atlas);
+      }
     }
     if (stdMat.emissiveMap) {
       const t = bridgeTexture(doc, stdMat.emissiveMap, textureCache);
-      if (t) mat.setEmissiveTexture(t);
+      if (t) {
+        mat.setEmissiveTexture(t);
+        bridgeTextureSampler(stdMat.emissiveMap, mat.getEmissiveTextureInfo()!, atlas);
+      }
     }
     if (stdMat.aoMap) {
       const t = bridgeTexture(doc, stdMat.aoMap, textureCache);
-      if (t) mat.setOcclusionTexture(t);
+      if (t) {
+        mat.setOcclusionTexture(t);
+        bridgeTextureSampler(stdMat.aoMap, mat.getOcclusionTextureInfo()!, atlas);
+      }
       mat.setOcclusionStrength(stdMat.aoMapIntensity ?? 1);
     }
   } else if (matFlags.isMeshLambertMaterial) {
@@ -580,7 +648,10 @@ function bridgeMaterial(
   if (threeMat.side === THREE.DoubleSide) mat.setDoubleSided(true);
   if (common.map && !mat.getBaseColorTexture()) {
     const texture = bridgeTexture(doc, common.map, textureCache);
-    if (texture) mat.setBaseColorTexture(texture);
+    if (texture) {
+      mat.setBaseColorTexture(texture);
+      bridgeTextureSampler(common.map, mat.getBaseColorTextureInfo()!, atlas);
+    }
   }
 
   cache.set(threeMat, mat);
@@ -627,6 +698,7 @@ function bridgeGeometry(
   geometry: THREE.BufferGeometry,
   material: GtMaterial | GtMaterial[],
   meshName: string,
+  atlas?: AtlasProvenanceCollection,
 ): GtMesh {
   if (!geometry.getAttribute('normal')) {
     geometry.computeVertexNormals();
@@ -697,6 +769,8 @@ function bridgeGeometry(
     );
   }
 
+  const binding = atlas?.binding(geometry);
+  if (binding) prim.setExtras({ kilnAtlasBinding: binding });
   const mesh = doc.createMesh(meshName);
   if (!Array.isArray(material)) return mesh.addPrimitive(prim);
   const indexValues = indexAttr
@@ -715,6 +789,7 @@ function bridgeGeometry(
         .setType(TYPE_SCALAR)
         .setBuffer(buf),
     );
+    if (binding) part.setExtras({ kilnAtlasBinding: binding });
     mesh.addPrimitive(part);
   }
   prim.dispose();
@@ -730,6 +805,7 @@ function bridgeNode(
   meshCache: Map<string, GtMesh>,
   texCache: Map<THREE.Texture, GtTexture>,
   authorExtras?: AuthorExtras,
+  atlas?: AtlasProvenanceCollection,
 ): GtNode {
   const gtNode = doc.createNode(threeObj.name || undefined);
 
@@ -800,7 +876,7 @@ function bridgeNode(
     const threeMesh = threeObj as THREE.Mesh;
     const threeMats = Array.isArray(threeMesh.material) ? threeMesh.material : [threeMesh.material];
     const gtMats = threeMats.map((material) =>
-      bridgeMaterial(doc, material, matCache, texCache, authorExtras),
+      bridgeMaterial(doc, material, matCache, texCache, authorExtras, atlas),
     );
     const gtMat = Array.isArray(threeMesh.material) ? gtMats : gtMats[0]!;
 
@@ -811,14 +887,14 @@ function bridgeNode(
     const cacheKey = `${threeMesh.geometry.uuid}__${threeMats.map((material) => material.uuid).join('_')}`;
     let gtMesh = meshCache.get(cacheKey);
     if (!gtMesh) {
-      gtMesh = bridgeGeometry(doc, buf, threeMesh.geometry, gtMat, threeMesh.name || 'mesh');
+      gtMesh = bridgeGeometry(doc, buf, threeMesh.geometry, gtMat, threeMesh.name || 'mesh', atlas);
       meshCache.set(cacheKey, gtMesh);
     }
     gtNode.setMesh(gtMesh);
   } else if ((threeObj as THREE.Object3D & { isSprite?: boolean }).isSprite) {
     const sprite = threeObj as THREE.Sprite;
     const threeMat = sprite.material;
-    const gtMat = bridgeMaterial(doc, threeMat, matCache, texCache, authorExtras);
+    const gtMat = bridgeMaterial(doc, threeMat, matCache, texCache, authorExtras, atlas);
     // Unit XY quad matches Three.js Sprite scale semantics. Non-default center
     // and material rotation are baked into the quad; camera-facing remains an
     // explicit semantic runtime behavior on the exported node.
@@ -833,7 +909,7 @@ function bridgeNode(
         geometry.translate(0.5 - centerX, 0.5 - centerY, 0);
       }
       if (rotation !== 0) geometry.rotateZ(rotation);
-      gtMesh = bridgeGeometry(doc, buf, geometry, gtMat, sprite.name || 'sprite-quad');
+      gtMesh = bridgeGeometry(doc, buf, geometry, gtMat, sprite.name || 'sprite-quad', atlas);
       meshCache.set(cacheKey, gtMesh);
     }
     gtNode.setMesh(gtMesh);
@@ -853,6 +929,7 @@ function bridgeNode(
       meshCache,
       texCache,
       authorExtras,
+      atlas,
     );
     gtNode.addChild(childNode);
   }
@@ -1070,7 +1147,7 @@ export interface RenderResult {
   materialResourceProvenance?: MaterialResourceProvenanceV1[];
   /** Exact host-approved input dependencies, including licenses and procedural recipes.
    * These are declared build inputs, not proof that every supplied map was used. */
-  materialLibraryDependencies?: MaterialManifestV1[];
+  materialLibraryDependencies?: MaterialManifest[];
   /** Textures baked into the returned GLB, including bounded procedural lineage. */
   bakedTextures?: BakedTextureProvenanceV1[];
   integrationManifest: IntegrationManifestV1;
@@ -1539,6 +1616,29 @@ export async function renderSceneToGLB(
   if (opts.geometryPolicy !== undefined && !['warn', 'strict'].includes(opts.geometryPolicy))
     throw new Error('geometryPolicy must be warn or strict');
   const exporter = resolveGltfExporter(opts.gltfExporter);
+  // Mandatory source-data invariants precede any operation that dereferences bindings.
+  // Reuse the structured QA transport without claiming that the full QA rules ran.
+  // Like invalid geometry buffers, malformed skin data cannot be made safe by QA-warn
+  // or derivative mode. No automatic weight normalization or rest-pose repair occurs.
+  const skinIntegrity = inspectSkinIntegrity(root);
+  if (skinIntegrity.findings.length) {
+    throw new AssetQaBlockedError(
+      createRequirementsQaReport(requirements, {
+        findings: skinIntegrity.findings,
+        executedRules: [],
+        evaluatedDimensions: ['exportIntegrity'],
+        metrics: {
+          exportIntegrity: {
+            skinMeshesChecked: skinIntegrity.meshesChecked,
+            skinVerticesChecked: skinIntegrity.verticesChecked,
+            skinInspectionTruncated: skinIntegrity.truncated,
+          },
+        },
+      }),
+      'scene',
+    );
+  }
+  assertPortableMaterialSides(root);
   // A set of LOD tiers needs its declared thresholds before anything is written. A
   // derivative re-serializes a review scene that has no declarations, so it is not judged.
   const lodSets = opts.derivative === true ? [] : collectLodSets(root);
@@ -1569,6 +1669,7 @@ export async function renderSceneToGLB(
   // that will actually be written. A procedural DataTexture used to reach the
   // bridge with no encoded bytes and be dropped without a word; now it is
   // either baked into the GLB or warned about by name.
+  const atlas = collectAtlasProvenance(root);
   const bakedTextures = await bakeSceneTextures(root, warnings);
   // A normal-mapped mesh without tangents makes every runtime invent its own
   // tangent basis, so the same asset lights differently in different engines.
@@ -1599,6 +1700,7 @@ export async function renderSceneToGLB(
           nativeClips,
           (await import('./exporter-node')).nodeExportPlatform,
           authorExtras,
+          atlas,
         )
       : new Document();
   // `asset.generator` defaults to the serializer's own version string, which put
@@ -1627,6 +1729,7 @@ export async function renderSceneToGLB(
       meshCache,
       texCache,
       authorExtras,
+      atlas,
     );
     const gltfScene = doc.createScene(opts.sceneName ?? 'Scene').addChild(rootNode);
     doc.getRoot().setDefaultScene(gltfScene);
@@ -1646,6 +1749,10 @@ export async function renderSceneToGLB(
       if (!finishNativeAnimations(doc, nativeClips))
         scene.setExtras({ [REVIEW_CLIPS_EXTRAS_KEY]: review });
     }
+  }
+  if (atlas.table) {
+    const scene = doc.getRoot().getDefaultScene()!;
+    scene.setExtras({ ...scene.getExtras(), kilnAtlasProvenance: atlas.table });
   }
   // Visibility flags and LOD chains are written before any pass merges or prunes nodes, so
   // those passes see them and keep them; flags first, while every node is still in place.
@@ -1734,6 +1841,8 @@ export async function renderSceneToGLB(
 
   const io = engineIO();
   ensureDefaultScene(doc);
+  await refreshAtlasDocumentProvenance(doc);
+  await validateAtlasDocumentProvenance(doc);
   const bytes = await io.writeBinary(doc);
   const artifactGlbSha256 = `sha256:${await sha256Hex(bytes)}` as const;
   const boundBakedTextures = bakedTextures.map((entry) => ({
@@ -1844,7 +1953,7 @@ export interface RenderGlbOptions {
   /** Trusted evaluator dependency; never derived from generated code. */
   textureResolver?: TextureResolver;
   /** Host-approved portable material maps, transported as data to evaluator workers. */
-  materialResources?: MaterialLibraryPayloadV1;
+  materialResources?: MaterialLibraryPayload;
   /** In-process host diagnostic sink; not serializable to evaluator workers. */
   diagnosticConsole?: DiagnosticConsole;
 }
@@ -1874,7 +1983,7 @@ export async function renderGLBInProcess(
       : {}),
     instance: resolveInstance(opts.instance),
   };
-  let materialLibraryDependencies: MaterialManifestV1[] | undefined;
+  let materialLibraryDependencies: MaterialManifest[] | undefined;
   if (opts.materialResources) {
     const { decodeMaterialLibraryPayload, createMaterialLibraryTextureResolver } = await import(
       './material-library-node'
@@ -2029,6 +2138,7 @@ export async function optimizeGlbBytes(
   try {
     const io = engineIO();
     const doc = await io.readBinary(bytes);
+    await validateAtlasDocumentProvenance(doc);
     // GPU-instancing first (dedup already ran at bake; instance → palette is the
     // canonical order). Defaults OFF here — this is the web-tier re-bake seam, and
     // the caller opts in per-asset (Studio passes instance:'auto' + the record's
@@ -2053,6 +2163,8 @@ export async function optimizeGlbBytes(
     if (mode) summary = await consolidateMaterials(doc, mode);
     if (!summary && !instancing) return undefined;
     ensureDefaultScene(doc);
+    await refreshAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc);
     const outBytes = await io.writeBinary(doc);
     const gltfValidation = await assertFinalGlbValid(outBytes);
     let report: InstanceabilityReport | undefined;
@@ -2157,6 +2269,7 @@ export async function snapGlbToPalette(
   try {
     const io = engineIO();
     const doc = await io.readBinary(bytes);
+    await validateAtlasDocumentProvenance(doc);
     const before = collectGlbMetrics(doc);
     const idx = buildSlotIndex(slots as readonly SnapSlot[]);
     let snapped = 0;
@@ -2209,6 +2322,8 @@ export async function snapGlbToPalette(
       drawsAfter: after.drawCalls,
     };
     ensureDefaultScene(doc);
+    await refreshAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc);
     const outBytes = await io.writeBinary(doc);
     const gltfValidation = await assertFinalGlbValid(outBytes);
     let report: InstanceabilityReport | undefined;
@@ -2322,6 +2437,7 @@ export async function composeSceneGLB(
     const part = parts[i]!;
     try {
       const src = await io.readBinary(part.bytes);
+      await mergeAtlasDocumentProvenance(master, src);
       if (opts.keepAnimations && opts.animationNaming === 'instance') {
         for (const [clipIndex, animation] of src.getRoot().listAnimations().entries()) {
           animation.setName(
@@ -2393,6 +2509,8 @@ export async function composeSceneGLB(
 
   const metrics = collectGlbMetrics(master);
   ensureDefaultScene(master);
+  await refreshAtlasDocumentProvenance(master);
+  await validateAtlasDocumentProvenance(master);
   const bytes = await io.writeBinary(master);
   const gltfValidation = await assertFinalGlbValid(bytes, 'scene.glb');
   for (const issue of gltfValidation.issues.messages) {

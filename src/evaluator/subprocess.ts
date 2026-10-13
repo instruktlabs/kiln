@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import type { RenderGlbOptions, RenderResult } from '../render';
 import { AssetQaBlockedError } from '../qa/run';
 import { assertNoLegacyRuntimePolicy, resolveRequirementsContext } from '../requirements-context';
-import { validateMaterialLibraryPayload } from '../material-library-node';
+import { validateMaterialLibraryPayloadAny } from '../material-library-node';
 import {
   decodeEvaluatorResultV2,
   assertEvaluatorResultRequirements,
@@ -117,7 +117,7 @@ export async function renderGLBViaProcessLaunch(
     96 * 1024 * 1024,
   );
   if (options.materialResources !== undefined)
-    validateMaterialLibraryPayload(options.materialResources);
+    validateMaterialLibraryPayloadAny(options.materialResources);
   const request: EvaluatorRequestV2 = {
     version: EVALUATOR_REQUEST_VERSION,
     requestId: 'render-1',

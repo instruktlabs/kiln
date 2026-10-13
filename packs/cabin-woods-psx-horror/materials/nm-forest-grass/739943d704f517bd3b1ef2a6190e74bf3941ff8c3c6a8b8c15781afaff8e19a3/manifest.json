@@ -1,0 +1,240 @@
+{
+  "materialId": "nm-forest-grass",
+  "revisionId": "sha256:739943d704f517bd3b1ef2a6190e74bf3941ff8c3c6a8b8c15781afaff8e19a3",
+  "name": "Forest grass / worn clustered turf",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "grass"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 1,
+    "height": 1
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:9d810a99a7e85fdad7b73b32a8fa86e4b674e56535a509745c3957473635439f",
+      "bytes": 565,
+      "width": 64,
+      "height": 64,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "repeat",
+        "wrapT": "repeat"
+      },
+      "pixelHash": "sha256:691ede26f068f1362fc0801d7ca8b442394d4b59f165f6d3d695d209ee3136d2",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 64,
+          "height": 64,
+          "usage": "albedo",
+          "background": [
+            78,
+            101,
+            67,
+            255
+          ],
+          "operations": [
+            {
+              "op": "stamps",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    11,
+                    0
+                  ],
+                  [
+                    14,
+                    5
+                  ],
+                  [
+                    10,
+                    9
+                  ],
+                  [
+                    2,
+                    8
+                  ],
+                  [
+                    -2,
+                    3
+                  ]
+                ]
+              },
+              "rgba": [
+                64,
+                81,
+                57,
+                255
+              ],
+              "opacity": 255,
+              "count": 6,
+              "seed": 241,
+              "area": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "periodic": true
+            },
+            {
+              "op": "stamps",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    6,
+                    0
+                  ],
+                  [
+                    8,
+                    3
+                  ],
+                  [
+                    4,
+                    5
+                  ],
+                  [
+                    0,
+                    4
+                  ]
+                ]
+              },
+              "rgba": [
+                100,
+                115,
+                75,
+                255
+              ],
+              "opacity": 255,
+              "count": 6,
+              "seed": 591,
+              "area": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "periodic": true
+            },
+            {
+              "op": "stamps",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  0,
+                  4
+                ],
+                "to": [
+                  4,
+                  0
+                ],
+                "width": 2
+              },
+              "rgba": [
+                41,
+                56,
+                43,
+                255
+              ],
+              "opacity": 255,
+              "count": 6,
+              "seed": 37,
+              "area": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "periodic": true
+            },
+            {
+              "op": "stamps",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  0,
+                  3
+                ],
+                "to": [
+                  2,
+                  0
+                ],
+                "width": 1
+              },
+              "rgba": [
+                145,
+                160,
+                107,
+                255
+              ],
+              "opacity": 255,
+              "count": 6,
+              "seed": 794,
+              "area": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "periodic": true
+            }
+          ]
+        },
+        "recipeHash": "sha256:4a215663509cb12130c1c6b54761dd6b2ca16a12b404b8d5344b2e5dbf4d3f51",
+        "pixelHash": "sha256:691ede26f068f1362fc0801d7ca8b442394d4b59f165f6d3d695d209ee3136d2",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

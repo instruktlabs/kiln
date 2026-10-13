@@ -38,6 +38,19 @@ Check closed, open and moving door states and safe dismounts. A path over a rive
 needs a real supporting collision surface. Broad-phase bounds alone do not prove
 that a person can pass through an opening.
 
+Exercise each one-shot interaction at least twice, including after its action has
+finished and clamped. In Three AnimationMixer, seeking a completed paused action
+does not restart it; explicitly reset/play for a new use while preserving the
+action during the same use. Tie damage or resource consumption to the reviewed
+contact event and check range or interruption again there.
+
+Visual gaps and gameplay barriers are different scene contracts. A sparse gate
+or boarded opening can have visible gaps while blocking an actor or melee reach.
+Use the chosen interaction rule and the opening's actual frame for that test;
+a single ray through decorative triangles cannot establish protection. Keep
+project-specific damage, collision and barrier rules out of standalone asset
+requirements. Compare the actor path, visual geometry and interaction result.
+
 For a follow camera, run its actual update and controls during passage checks.
 A controller-only loop can pass while the rendered camera hides the actor behind
 an eave or lintel. Inspect the animated head and accessories, not only a clear
@@ -239,6 +252,12 @@ Profile transform updates as well as draw submission. Cache matrices only for
 placements the application knows will remain fixed. Keep animated and controlled
 hierarchies live, and restore or rebuild the cache before placement or variant
 changes. Check exact world transforms, visibility and culling in the consumer.
+
+For spatial instance batches, changing a source root's visibility must also
+update its batch membership and culling bounds. Synchronize on a relevant change;
+avoid scanning every immutable source each frame. Test hidden and restored
+instances, preserving interactive or independently moving objects outside the
+static batch.
 
 Hiding draws does not necessarily stop CPU animation. Count evaluated rigs and
 motion owners as well as visible actors. A projected-error selector may demand

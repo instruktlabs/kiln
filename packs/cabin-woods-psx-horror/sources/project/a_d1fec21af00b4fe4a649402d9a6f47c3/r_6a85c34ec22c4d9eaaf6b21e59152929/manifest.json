@@ -1,0 +1,2006 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_d1fec21af00b4fe4a649402d9a6f47c3",
+  "revisionId": "r_6a85c34ec22c4d9eaaf6b21e59152929",
+  "parentRevision": "r_78a5618ba34e4b73a6fdf982459f9dec",
+  "name": "Caretaker Shotgun",
+  "tags": [
+    "psx",
+    "original",
+    "caretaker",
+    "owner-review"
+  ],
+  "createdAt": "2026-10-12T22:55:45.318Z",
+  "description": "Original weathered timber and metal break-action shotgun with a connected closed receiver, paired shells and a reload synchronized to the Caretaker grip animations. Owner visual review pending.",
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:d6cae8789c3b7f8ae1a453bd346dba413d766115e1de7de7f4984685193cf70c",
+      "bytes": 76400
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:e2f37373a72e6a6f0883971bcb861e962fe05ae9956f6b54a376062bad1c030f",
+      "bytes": 10763
+    },
+    "preview.png": {
+      "sha256": "sha256:30a91ee3dd174d008de0a2814e65bcb6ff6b0efc32991c44efb47cc00c0050c2",
+      "bytes": 56548
+    }
+  },
+  "build": {
+    "engine": "sha256:429cb76bd79db6cf401c415b2ab8f44593ae8ffa54c7c8cfc4f0cfbb24729eec",
+    "options": {
+      "gltfExporter": "three",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "d6cae8789c3b7f8ae1a453bd346dba413d766115e1de7de7f4984685193cf70c",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.3179999887943268,
+          -0.09300000220537186,
+          -0.0430000014603138
+        ],
+        "max": [
+          0.6900000286102295,
+          0.11200000095367432,
+          0.0430000014603138
+        ],
+        "size": [
+          1.0080000174045562,
+          0.20500000315904618,
+          0.0860000029206276
+        ],
+        "center": [
+          0.18600001990795134,
+          0.009499999374151233,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -0.09300000220537186,
+        "offsetToGround": 0.09300000220537186,
+        "grounded": false
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Caretaker equipment"
+      },
+      "renderMetrics": {
+        "triangles": 792,
+        "drawCalls": 18,
+        "uniqueGeometries": 15,
+        "uniqueMaterials": 4,
+        "textureCount": 3,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Barrel_left\" and \"Mesh_LoadedShell_leftHead\" occupy the same space: they share 0.00000195 m³, which is 44.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Barrel_left"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.449157746,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Barrel_right\" and \"Mesh_LoadedShell_rightHead\" occupy the same space: they share 0.00000195 m³, which is 44.9% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Barrel_right"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.449157746,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Barrel_left\" and \"Mesh_LoadedShell_leftHull\" occupy the same space: they share 0.00000777 m³, which is 35.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Barrel_left"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.351838645,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Barrel_right\" and \"Mesh_LoadedShell_rightHull\" occupy the same space: they share 0.00000777 m³, which is 35.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Barrel_right"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.351838645,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Barrel_right\" and \"Mesh_ForeEnd\" occupy the same space: they share 0.0000148 m³, which is 7.4% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Barrel_right"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.07372876,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Barrel_left\" and \"Mesh_ForeEnd\" occupy the same space: they share 0.0000148 m³, which is 7.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Barrel_left"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.073450253,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_WalnutStock\" and \"Mesh_Receiver\" occupy the same space: they share 0.00000966 m³, which is 2.5% of the smaller part.",
+              "affected": {
+                "node": "Mesh_WalnutStock"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.024784158,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_BarrelRib\" and \"Mesh_FrontSight\" occupy the same space: they share 1.48e-9 m³, which is 0.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_BarrelRib"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.006161995,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Receiver\" and \"Mesh_LoadedShell_leftPrimer\" occupy the same space: they share 6.41e-11 m³, which is 0.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Receiver"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.001960348,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Receiver\" and \"Mesh_Barrel_left\" occupy the same space: they share 2.98e-7 m³, which is 0.1% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Receiver"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.001484564,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Receiver\" and \"Mesh_Barrel_right\" occupy the same space: they share 2.55e-7 m³, which is 0.1% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Receiver"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.001268505,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "1 part-volume measurement was unavailable. 1 because compound solid exceeds the component budget or contains an unsupported inward shell: \"Mesh_TriggerGuard\". 2 overlapping part pairs include this part and were not measured. This part is not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 18,
+            "partVolumeCandidatePairs": 31,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 29,
+            "partVolumeUnmeasurablePairs": 2,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 1
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "C",
+            "instanceabilitySummary": "C (informational, not a QA verdict), set by 4 distinct materials (C at 4-6). Also: 15 geometries; 18 draw calls.",
+            "uniqueGeometries": 15,
+            "uniqueMaterials": 4,
+            "meshNodes": 18,
+            "meshInstances": 18,
+            "drawCalls": 18,
+            "textureCount": 3,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 792,
+            "materialCount": 4,
+            "opaqueMaterials": 4,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 4,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 4,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 3,
+            "maxImageDimension": 64,
+            "decodedImageBytesRgba8": 40960,
+            "estimatedGpuBytesWithMipmaps": 54615,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [
+      {
+        "kind": "kiln.material.v2",
+        "delivery": "runtime",
+        "manifest": {
+          "materialId": "nm-caretaker-equipment-detail",
+          "revisionId": "sha256:3d181e24dfe2a2c6b475e9460dd1f32b0b31be32f0149f577ed4ad0679b8049f",
+          "name": "Original tool edge, shell and brass detail pixels",
+          "tags": [
+            "nightman",
+            "equipment",
+            "original-pixels"
+          ],
+          "tileable": false,
+          "parameters": {
+            "roughness": 0.7,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "original-equipment-pixels",
+              "kind": "procedural",
+              "provider": "Nightman original authoring",
+              "creator": "Nightman procedural equipment lane",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "schemaVersion": 2,
+          "dependencies": [],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:e59af59bcc18b95007af5072ae5d0a7cc6e29a6f07b3dd15c7af4dad032694a5",
+              "bytes": 285,
+              "width": 64,
+              "height": 32,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "original-equipment-pixels",
+              "transforms": [],
+              "sampler": {
+                "minFilter": "nearest",
+                "magFilter": "nearest",
+                "wrapS": "clamp-to-edge",
+                "wrapT": "clamp-to-edge"
+              },
+              "pixelHash": "sha256:120ec8608253b8029b4a677e0634c0a2f07dff12329242b6663aa848cfa0f1a8",
+              "recipe": {
+                "kind": "atlas",
+                "compilerId": "kiln.texture-atlas.v1.1",
+                "spec": {
+                  "schemaVersion": 1,
+                  "width": 64,
+                  "height": 32,
+                  "usage": "albedo",
+                  "sampler": {
+                    "minFilter": "nearest",
+                    "magFilter": "nearest",
+                    "wrapS": "clamp-to-edge",
+                    "wrapT": "clamp-to-edge"
+                  },
+                  "regions": [
+                    {
+                      "name": "brass",
+                      "content": {
+                        "x": 18,
+                        "y": 2,
+                        "width": 12,
+                        "height": 12
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 12,
+                          "height": 12,
+                          "usage": "albedo",
+                          "background": [
+                            155,
+                            120,
+                            56,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 2,
+                                "width": 12,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                189,
+                                149,
+                                66,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 8,
+                                "width": 12,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                125,
+                                91,
+                                42,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 5,
+                                "y": 5,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                88,
+                                70,
+                                40,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 12
+                      }
+                    },
+                    {
+                      "name": "edge",
+                      "content": {
+                        "x": 34,
+                        "y": 2,
+                        "width": 24,
+                        "height": 12
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 24,
+                          "height": 12,
+                          "usage": "albedo",
+                          "background": [
+                            161,
+                            164,
+                            148,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 3,
+                                "width": 24,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                185,
+                                189,
+                                172,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 3,
+                                "y": 6,
+                                "width": 5,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                131,
+                                138,
+                                127,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 13,
+                                "y": 8,
+                                "width": 7,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                134,
+                                139,
+                                126,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 17,
+                                "y": 1,
+                                "width": 3,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                201,
+                                202,
+                                184,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 24,
+                        "height": 12
+                      }
+                    },
+                    {
+                      "name": "rubber",
+                      "content": {
+                        "x": 18,
+                        "y": 18,
+                        "width": 12,
+                        "height": 12
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 12,
+                          "height": 12,
+                          "usage": "albedo",
+                          "background": [
+                            39,
+                            38,
+                            32,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 1,
+                                "y": 2,
+                                "width": 10,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                59,
+                                55,
+                                45,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 1,
+                                "y": 5,
+                                "width": 10,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                59,
+                                55,
+                                45,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 1,
+                                "y": 8,
+                                "width": 10,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                59,
+                                55,
+                                45,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 12
+                      }
+                    },
+                    {
+                      "name": "shell",
+                      "content": {
+                        "x": 2,
+                        "y": 2,
+                        "width": 12,
+                        "height": 24
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 12,
+                          "height": 24,
+                          "usage": "albedo",
+                          "background": [
+                            128,
+                            46,
+                            37,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 3,
+                                "width": 12,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                176,
+                                66,
+                                49,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 18,
+                                "width": 12,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                178,
+                                159,
+                                115,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 2,
+                                "y": 5,
+                                "width": 1,
+                                "height": 11,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                151,
+                                55,
+                                44,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 8,
+                                "y": 5,
+                                "width": 1,
+                                "height": 11,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                102,
+                                38,
+                                31,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 4,
+                                "y": 20,
+                                "width": 4,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                71,
+                                39,
+                                31,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 24
+                      }
+                    }
+                  ]
+                },
+                "manifest": {
+                  "version": "kiln.atlas-manifest.v1",
+                  "compilerId": "kiln.texture-atlas.v1.1",
+                  "width": 64,
+                  "height": 32,
+                  "usage": "albedo",
+                  "origin": "top-left",
+                  "sampler": {
+                    "minFilter": "nearest",
+                    "magFilter": "nearest",
+                    "wrapS": "clamp-to-edge",
+                    "wrapT": "clamp-to-edge"
+                  },
+                  "specHash": "sha256:abf06ce7e642c6aa3d706b9571613cab1e3e15aa36296d07affd5dbc44ed0618",
+                  "layoutHash": "sha256:285e2ec3042e312f85aaa5e124cd9a72013553212ea32c2a90ca46df58f60c47",
+                  "decodedPixelHash": "sha256:120ec8608253b8029b4a677e0634c0a2f07dff12329242b6663aa848cfa0f1a8",
+                  "atlasPixelHash": "sha256:f5543dc1b6c63827ea3f498507c000c313fde38811903a75fbd7edfff7f2a273",
+                  "sources": [
+                    {
+                      "id": "procedural:sha256:cf7912d634ae04333c24e1c876edee18a3e2180f129086144ff614198e959344",
+                      "width": 12,
+                      "height": 12,
+                      "decodedPixelHash": "sha256:c5e5503354d34a2aa168fd25a51c37d3f8bc0b96845905e2b0f14a6bd814a369",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:cf7912d634ae04333c24e1c876edee18a3e2180f129086144ff614198e959344",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:d01ba3ac72130a03014c336831bf07f18e8b36301ab5a0072f0e6ef4fbb818e7",
+                      "width": 12,
+                      "height": 24,
+                      "decodedPixelHash": "sha256:c9033ad708dabadabf487d99496cb021a656d89b430d6108dc8af9b9439ab409",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:d01ba3ac72130a03014c336831bf07f18e8b36301ab5a0072f0e6ef4fbb818e7",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:eb1626d8d2bd1c53820e8fa66545a543943abd84b87f4ad752507bbc9c3f8706",
+                      "width": 24,
+                      "height": 12,
+                      "decodedPixelHash": "sha256:a1b4c2b0698df89e4177456e59e9031bdcaf171005ae51b277c60085cced4e94",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:eb1626d8d2bd1c53820e8fa66545a543943abd84b87f4ad752507bbc9c3f8706",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:ebdfdb0e4d142c4597347587f234fa07bf8ca89e171720eb55877523164e3ce2",
+                      "width": 12,
+                      "height": 12,
+                      "decodedPixelHash": "sha256:67cfbd998e3cba23189e0e9d5a2900de778f1dffd7fa2d588b162dc5a1a20129",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:ebdfdb0e4d142c4597347587f234fa07bf8ca89e171720eb55877523164e3ce2",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    }
+                  ],
+                  "regions": [
+                    {
+                      "name": "brass",
+                      "content": {
+                        "x": 18,
+                        "y": 2,
+                        "width": 12,
+                        "height": 12
+                      },
+                      "allocation": {
+                        "x": 16,
+                        "y": 0,
+                        "width": 16,
+                        "height": 16
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 12
+                      },
+                      "sourceId": "procedural:sha256:cf7912d634ae04333c24e1c876edee18a3e2180f129086144ff614198e959344"
+                    },
+                    {
+                      "name": "edge",
+                      "content": {
+                        "x": 34,
+                        "y": 2,
+                        "width": 24,
+                        "height": 12
+                      },
+                      "allocation": {
+                        "x": 32,
+                        "y": 0,
+                        "width": 28,
+                        "height": 16
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 24,
+                        "height": 12
+                      },
+                      "sourceId": "procedural:sha256:eb1626d8d2bd1c53820e8fa66545a543943abd84b87f4ad752507bbc9c3f8706"
+                    },
+                    {
+                      "name": "rubber",
+                      "content": {
+                        "x": 18,
+                        "y": 18,
+                        "width": 12,
+                        "height": 12
+                      },
+                      "allocation": {
+                        "x": 16,
+                        "y": 16,
+                        "width": 16,
+                        "height": 16
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 12
+                      },
+                      "sourceId": "procedural:sha256:ebdfdb0e4d142c4597347587f234fa07bf8ca89e171720eb55877523164e3ce2"
+                    },
+                    {
+                      "name": "shell",
+                      "content": {
+                        "x": 2,
+                        "y": 2,
+                        "width": 12,
+                        "height": 24
+                      },
+                      "allocation": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 16,
+                        "height": 28
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 12,
+                        "height": 24
+                      },
+                      "sourceId": "procedural:sha256:d01ba3ac72130a03014c336831bf07f18e8b36301ab5a0072f0e6ef4fbb818e7"
+                    }
+                  ],
+                  "manifestHash": "sha256:7e03a85848db06d5e6e5bad868b2b9ee09dd8636956cd02dd51dbb6fd3c1cdfc"
+                },
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.5"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v2",
+        "delivery": "runtime",
+        "manifest": {
+          "materialId": "nm-shared-rusted-iron",
+          "revisionId": "sha256:1870a95ffec8e00bc9daac56a32bc537547e002305e373c4ff7a97f098119fbe",
+          "name": "Worn iron",
+          "tags": [
+            "Nightman",
+            "original",
+            "PSX",
+            "tx08"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 0.85,
+            "metalness": 0.25,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "nightman-original",
+              "kind": "procedural",
+              "provider": "Kiln",
+              "creator": "OpenAI Codex for Nightman",
+              "license": {
+                "spdx": "LicenseRef-Proprietary",
+                "url": "https://choosealicense.com/no-permission/",
+                "attribution": "Original Nightman procedural work; project owner retains rights."
+              },
+              "originalFiles": []
+            }
+          ],
+          "schemaVersion": 2,
+          "dependencies": [],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:16b8d5dda19462c46244325624871abdea777bcada69a3bb503a376ea6731476",
+              "bytes": 1958,
+              "width": 64,
+              "height": 64,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "nightman-original",
+              "transforms": [],
+              "sampler": {
+                "minFilter": "nearest-mipmap-linear",
+                "magFilter": "nearest",
+                "wrapS": "repeat",
+                "wrapT": "repeat"
+              },
+              "pixelHash": "sha256:c02e3aa8402d07f23abf22339981b1501d923b3aeb2ce985305e59d0e4e54de2",
+              "recipe": {
+                "kind": "procedural",
+                "compilerId": "kiln.procedural-rgba.v3.1",
+                "spec": {
+                  "schemaVersion": 3,
+                  "width": 64,
+                  "height": 64,
+                  "usage": "albedo",
+                  "background": [
+                    87,
+                    96,
+                    92,
+                    255
+                  ],
+                  "operations": [
+                    {
+                      "op": "legacy-v2",
+                      "spec": {
+                        "schemaVersion": 2,
+                        "size": 64,
+                        "usage": "albedo",
+                        "layers": [
+                          {
+                            "op": "noise",
+                            "colorA": 4608334,
+                            "colorB": 7569525,
+                            "scale": 6,
+                            "octaves": 1,
+                            "seed": 11008,
+                            "blend": "normal",
+                            "opacity": 1
+                          }
+                        ]
+                      },
+                      "alpha": 255,
+                      "opacity": 65
+                    },
+                    {
+                      "op": "stamps",
+                      "shape": {
+                        "kind": "polygon",
+                        "points": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            5,
+                            0
+                          ],
+                          [
+                            7,
+                            3
+                          ],
+                          [
+                            5,
+                            6
+                          ],
+                          [
+                            1,
+                            5
+                          ]
+                        ]
+                      },
+                      "rgba": [
+                        121,
+                        88,
+                        61,
+                        255
+                      ],
+                      "opacity": 255,
+                      "count": 14,
+                      "seed": 11008,
+                      "area": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 64,
+                        "height": 64
+                      },
+                      "periodic": true
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          2,
+                          9
+                        ],
+                        "to": [
+                          61,
+                          10
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        147,
+                        168,
+                        154,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          4,
+                          43
+                        ],
+                        "to": [
+                          24,
+                          43
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        53,
+                        67,
+                        60,
+                        255
+                      ],
+                      "opacity": 255
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:fa0eaa5f72dd2dea4a2d387ef0f6abda24b1974ed86934acdbbb58604a4e3ec0",
+                "pixelHash": "sha256:c02e3aa8402d07f23abf22339981b1501d923b3aeb2ce985305e59d0e4e54de2",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.5"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v2",
+        "delivery": "runtime",
+        "manifest": {
+          "materialId": "nm-shared-split-wood",
+          "revisionId": "sha256:dec8945f78a3dca6d5031b36094a0583f02b39b0e3978ed2c34418010f14fbd5",
+          "name": "Fresh split wood",
+          "tags": [
+            "Nightman",
+            "original",
+            "PSX",
+            "tx03"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "nightman-original",
+              "kind": "procedural",
+              "provider": "Kiln",
+              "creator": "OpenAI Codex for Nightman",
+              "license": {
+                "spdx": "LicenseRef-Proprietary",
+                "url": "https://choosealicense.com/no-permission/",
+                "attribution": "Original Nightman procedural work; project owner retains rights."
+              },
+              "originalFiles": []
+            }
+          ],
+          "schemaVersion": 2,
+          "dependencies": [],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:7401460f134ad1cb3aa5bef0494184068ea126923f075fa2fe3e6c19346fc9bf",
+              "bytes": 306,
+              "width": 64,
+              "height": 64,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "nightman-original",
+              "transforms": [],
+              "sampler": {
+                "minFilter": "nearest-mipmap-linear",
+                "magFilter": "nearest",
+                "wrapS": "repeat",
+                "wrapT": "repeat"
+              },
+              "pixelHash": "sha256:95b1d133387bb0f158b634368423eefbe680345b1dcc0c0a7387041d71030093",
+              "recipe": {
+                "kind": "procedural",
+                "compilerId": "kiln.procedural-rgba.v3.1",
+                "spec": {
+                  "schemaVersion": 3,
+                  "width": 64,
+                  "height": 64,
+                  "usage": "albedo",
+                  "background": [
+                    178,
+                    154,
+                    104,
+                    255
+                  ],
+                  "operations": [
+                    {
+                      "op": "legacy-v2",
+                      "spec": {
+                        "schemaVersion": 2,
+                        "size": 64,
+                        "usage": "albedo",
+                        "layers": [
+                          {
+                            "op": "noise",
+                            "colorA": 11704936,
+                            "colorB": 13679492,
+                            "scale": 7,
+                            "octaves": 1,
+                            "seed": 11003,
+                            "blend": "normal",
+                            "opacity": 1
+                          }
+                        ]
+                      },
+                      "alpha": 255,
+                      "opacity": 55
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          59,
+                          59
+                        ],
+                        "to": [
+                          63,
+                          58
+                        ],
+                        "width": 2
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          12,
+                          18
+                        ],
+                        "to": [
+                          40,
+                          18
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          29,
+                          41
+                        ],
+                        "to": [
+                          63,
+                          42
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          46,
+                          0
+                        ],
+                        "to": [
+                          63,
+                          -1
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          63,
+                          23
+                        ],
+                        "to": [
+                          63,
+                          23
+                        ],
+                        "width": 2
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          16,
+                          46
+                        ],
+                        "to": [
+                          41,
+                          47
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          33,
+                          5
+                        ],
+                        "to": [
+                          63,
+                          4
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          50,
+                          28
+                        ],
+                        "to": [
+                          63,
+                          28
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          3,
+                          51
+                        ],
+                        "to": [
+                          63,
+                          52
+                        ],
+                        "width": 2
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          20,
+                          10
+                        ],
+                        "to": [
+                          42,
+                          9
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          37,
+                          33
+                        ],
+                        "to": [
+                          63,
+                          33
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          54,
+                          56
+                        ],
+                        "to": [
+                          63,
+                          57
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          7,
+                          15
+                        ],
+                        "to": [
+                          63,
+                          14
+                        ],
+                        "width": 2
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          24,
+                          38
+                        ],
+                        "to": [
+                          43,
+                          38
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          41,
+                          61
+                        ],
+                        "to": [
+                          63,
+                          62
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          58,
+                          20
+                        ],
+                        "to": [
+                          63,
+                          19
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          11,
+                          43
+                        ],
+                        "to": [
+                          63,
+                          43
+                        ],
+                        "width": 2
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          28,
+                          2
+                        ],
+                        "to": [
+                          44,
+                          3
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          45,
+                          25
+                        ],
+                        "to": [
+                          63,
+                          24
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 24,
+                        "y": 31,
+                        "width": 17,
+                        "height": 7,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 27,
+                        "y": 33,
+                        "width": 11,
+                        "height": 3,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        178,
+                        154,
+                        104,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          39,
+                          35
+                        ],
+                        "to": [
+                          55,
+                          36
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          0,
+                          10
+                        ],
+                        "to": [
+                          63,
+                          10
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        96,
+                        67,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          0,
+                          42
+                        ],
+                        "to": [
+                          63,
+                          42
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    }
+                  ],
+                  "palette": {
+                    "colors": [
+                      11704936,
+                      7888963,
+                      13679492
+                    ],
+                    "dither": "none"
+                  }
+                },
+                "recipeHash": "sha256:73b35f60d235e478fde6b3cea122ab53a67949249fe372c8e0dd0c64fe8fc4a2",
+                "pixelHash": "sha256:95b1d133387bb0f158b634368423eefbe680345b1dcc0c0a7387041d71030093",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.5"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "rebuild": "external-dependencies-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1088",
+      "inputGlbSha256": "sha256:d6cae8789c3b7f8ae1a453bd346dba413d766115e1de7de7f4984685193cf70c",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

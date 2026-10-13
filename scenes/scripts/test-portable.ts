@@ -32,4 +32,8 @@ process.exitCode = run.exitCode;
 if (run.exitCode === 0) {
   const troy = Bun.spawnSync(['node', 'packages/troy/scripts/test.mjs'], { cwd: root, stdout: 'inherit', stderr: 'inherit' });
   process.exitCode = troy.exitCode;
+  if (troy.exitCode === 0) {
+    const cabin = Bun.spawnSync(['node', 'packages/cabin-woods-psx-horror/scripts/test.mjs'], { cwd: root, stdout: 'inherit', stderr: 'inherit' });
+    process.exitCode = cabin.exitCode;
+  }
 }

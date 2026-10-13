@@ -4,6 +4,21 @@ import {
   canonicalizeProceduralTextureSpecV2,
   type CanonicalPortableMaterialSpecV2,
 } from './procedural-material-v2';
+import {
+  canonicalizeProceduralTextureSpecV3,
+  PROCEDURAL_TEXTURE_V3_COMPILER_ID,
+} from './procedural-texture-v3-contract';
+import { canonicalizePortableSamplerV1 } from './portable-sampler';
+import type { CanonicalPortableMaterialSpecV3 } from './procedural-material-v3';
+import {
+  canonicalizeTextureAtlasSpecV1,
+  validateTextureAtlasManifestV1,
+  TEXTURE_ATLAS_COMPILER_ID,
+  type CanonicalTextureAtlasSpecV1,
+} from './texture-atlas-contract';
+import type { TextureAtlasManifestV1 } from './texture-atlas-pixels';
+import type { MaterialMapPinV1 } from './pinned-material-map';
+import { makeMaterialAuthoringSchemas } from './material-authoring-schema';
 
 export const MATERIAL_LIBRARY_LIMITS = Object.freeze({
   maxMapBytes: 8 * 1024 * 1024,
@@ -301,9 +316,14 @@ export interface MaterialLibraryPayloadV1 {
   records: { manifest: MaterialManifestV1; files: Record<string, string> }[];
 }
 export interface MaterialLibrary {
-  list(): Promise<MaterialManifestV1[]>;
-  read(materialId: string, revisionId: string): Promise<MaterialRecordV1>;
-  import(records: MaterialRecordV1[]): Promise<MaterialManifestV1[]>;
+  list(): Promise<MaterialManifest[]>;
+  read(materialId: string, revisionId: string): Promise<MaterialRecord>;
+  readManifest?(materialId: string, revisionId: string): Promise<MaterialManifest>;
+  readRecordFiles?(materialId: string, revisionId: string): Promise<MaterialRecord>;
+  import(
+    records: MaterialRecord[],
+    options?: { materials?: readonly MaterialRecord[] },
+  ): Promise<MaterialManifest[]>;
 }
 export const materialLibraryPayloadSchema = z
   .object({
@@ -455,7 +475,7 @@ export function validateMaterialRecordShape(record: MaterialRecordV1): MaterialM
   return manifest;
 }
 export function materialLibraryResourceId(
-  manifest: MaterialManifestV1,
+  manifest: MaterialManifest,
   slot: MaterialLibrarySlot,
 ): string {
   materialLibraryHashSchema.parse(manifest.revisionId);
@@ -464,7 +484,35 @@ export function materialLibraryResourceId(
 }
 export function materialLibraryPortableSpec(
   manifest: MaterialManifestV1,
-): CanonicalPortableMaterialSpecV2 {
+): CanonicalPortableMaterialSpecV2;
+export function materialLibraryPortableSpec(
+  manifest: MaterialManifestV2,
+): CanonicalPortableMaterialSpecV3;
+export function materialLibraryPortableSpec(
+  manifest: MaterialManifest,
+): CanonicalPortableMaterialSpecV2 | CanonicalPortableMaterialSpecV3;
+export function materialLibraryPortableSpec(
+  manifest: MaterialManifest,
+): CanonicalPortableMaterialSpecV2 | CanonicalPortableMaterialSpecV3 {
+  if (manifest.schemaVersion === 2) {
+    const modern = validateMaterialManifestAny(manifest) as MaterialManifestV2;
+    return {
+      schemaVersion: 3,
+      model: 'pbrMetallicRoughness',
+      name: modern.name,
+      ...modern.parameters,
+      textures: Object.fromEntries(
+        modern.maps.map((map) => [
+          map.slot,
+          {
+            kind: 'resource' as const,
+            resourceId: materialLibraryResourceId(modern, map.slot),
+            sampler: { ...map.sampler },
+          },
+        ]),
+      ),
+    };
+  }
   manifest = validateMaterialManifest(manifest);
   return {
     schemaVersion: 2,
@@ -478,4 +526,299 @@ export function materialLibraryPortableSpec(
       ]),
     ),
   };
+}
+
+/** New versions are explicit; every exported V1 schema/type above stays V1. */
+const authoringSchemas = makeMaterialAuthoringSchemas(materialProceduralSpecSchema);
+const samplerSchema = authoringSchemas.portableSamplerSchema.refine((value) => {
+  try {
+    return (
+      canonicalMaterialJson(value) === canonicalMaterialJson(canonicalizePortableSamplerV1(value))
+    );
+  } catch {
+    return false;
+  }
+});
+const v3SpecSchema = authoringSchemas.canonicalProceduralTextureSpecV3Schema.refine((value) => {
+  try {
+    return (
+      canonicalMaterialJson(value) ===
+      canonicalMaterialJson(canonicalizeProceduralTextureSpecV3(value))
+    );
+  } catch {
+    return false;
+  }
+});
+const atlasSpecSchema: z.ZodType<CanonicalTextureAtlasSpecV1> =
+  authoringSchemas.canonicalTextureAtlasSpecV1Schema.refine((value) => {
+    try {
+      return (
+        canonicalMaterialJson(value) ===
+        canonicalMaterialJson(canonicalizeTextureAtlasSpecV1(value))
+      );
+    } catch {
+      return false;
+    }
+  });
+const atlasManifestSchema: z.ZodType<TextureAtlasManifestV1> =
+  authoringSchemas.textureAtlasManifestV1Schema;
+export const materialMapPinSchema = z
+  .object({
+    resourceId: materialLibraryIdSchema,
+    revisionId: materialLibraryHashSchema,
+    sha256: materialLibraryHashSchema,
+  })
+  .strict()
+  .refine((pin) => pin.sha256 === pin.revisionId, 'Material pin hash must match revision');
+const materialRecipeV2Schema = z.discriminatedUnion('kind', [
+  z
+    .object({
+      kind: z.literal('procedural'),
+      compilerId: z.enum(['kiln.procedural-texture.v2', PROCEDURAL_TEXTURE_V3_COMPILER_ID]),
+      spec: z.union([materialProceduralSpecSchema, v3SpecSchema]),
+      recipeHash: materialLibraryHashSchema,
+      pixelHash: materialLibraryHashSchema,
+      encoder: z.object({ name: z.literal('sharp'), version: text }).strict(),
+      derive: materialNormalDerivationSchema.optional(),
+    })
+    .strict(),
+  z
+    .object({
+      kind: z.literal('atlas'),
+      compilerId: z.literal(TEXTURE_ATLAS_COMPILER_ID),
+      spec: atlasSpecSchema,
+      manifest: atlasManifestSchema,
+      encoder: z.object({ name: z.literal('sharp'), version: text }).strict(),
+    })
+    .strict()
+    .superRefine((recipe, context) => {
+      try {
+        validateTextureAtlasManifestV1(recipe.manifest, recipe.spec);
+      } catch {
+        context.addIssue({ code: 'custom', message: 'Invalid stored atlas manifest' });
+      }
+    }),
+]);
+export const materialManifestV2Schema = materialManifestSchema
+  .omit({ schemaVersion: true, maps: true })
+  .extend({
+    schemaVersion: z.literal(2),
+    dependencies: z.array(materialMapPinSchema).max(16),
+    maps: z
+      .array(
+        materialManifestSchema.shape.maps.element
+          .omit({ procedural: true })
+          .extend({
+            sampler: samplerSchema,
+            pixelHash: materialLibraryHashSchema,
+            recipe: materialRecipeV2Schema.optional(),
+          })
+          .strict(),
+      )
+      .min(1)
+      .max(5),
+  })
+  .strict();
+export type MaterialManifestV2 = z.infer<typeof materialManifestV2Schema>;
+export type MaterialMapV2 = MaterialManifestV2['maps'][number];
+export interface MaterialRecordV2 {
+  manifest: MaterialManifestV2;
+  files: Record<string, Uint8Array>;
+}
+export type MaterialManifest = MaterialManifestV1 | MaterialManifestV2;
+export type MaterialRecord = MaterialRecordV1 | MaterialRecordV2;
+export interface MaterialLibraryPayloadV2 {
+  schemaVersion: 2;
+  records: { manifest: MaterialManifest; files: Record<string, string> }[];
+}
+export type MaterialLibraryPayload = MaterialLibraryPayloadV1 | MaterialLibraryPayloadV2;
+export const materialManifestAnySchema = z.discriminatedUnion('schemaVersion', [
+  materialManifestSchema,
+  materialManifestV2Schema,
+]);
+export const materialLibraryPayloadV2Schema = materialLibraryPayloadSchema
+  .extend({
+    schemaVersion: z.literal(2),
+    records: z
+      .array(
+        materialLibraryPayloadSchema.shape.records.element
+          .extend({ manifest: materialManifestAnySchema })
+          .strict(),
+      )
+      .max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords),
+  })
+  .strict();
+export const materialLibraryPayloadAnySchema = z.discriminatedUnion('schemaVersion', [
+  materialLibraryPayloadSchema,
+  materialLibraryPayloadV2Schema,
+]);
+export function materialRecordDependencyPins(manifest: MaterialManifest): MaterialMapPinV1[] {
+  return manifest.schemaVersion === 1 ? [] : manifest.dependencies.map((pin) => ({ ...pin }));
+}
+/** Opt-in JSON-only standalone creation; external bytes remain host-only. */
+export const proceduralMaterialDraftV2Schema = proceduralMaterialDraftSchema
+  .extend({
+    schemaVersion: z.literal(2),
+    maps: z
+      .array(
+        proceduralMaterialDraftSchema.shape.maps.element
+          .omit({ procedural: true })
+          .extend({
+            sampler: samplerSchema,
+            procedural: z
+              .union([
+                materialProceduralSpecSchema,
+                authoringSchemas.proceduralTextureSpecV3Schema.refine((value) => {
+                  try {
+                    canonicalizeProceduralTextureSpecV3(value);
+                    return true;
+                  } catch {
+                    return false;
+                  }
+                }),
+              ])
+              .optional(),
+            atlas: authoringSchemas.textureAtlasSpecV1Schema
+              .refine((value) => {
+                try {
+                  canonicalizeTextureAtlasSpecV1(value);
+                  return true;
+                } catch {
+                  return false;
+                }
+              })
+              .optional(),
+          })
+          .strict()
+          .refine(
+            (map) => (map.procedural !== undefined) !== (map.atlas !== undefined),
+            'Supply exactly one procedural or atlas recipe',
+          ),
+      )
+      .min(1)
+      .max(5),
+  })
+  .strict();
+export type ProceduralMaterialDraftV2 = z.infer<typeof proceduralMaterialDraftV2Schema>;
+export const proceduralMaterialDraftAnySchema = z.union([
+  proceduralMaterialDraftSchema,
+  proceduralMaterialDraftV2Schema,
+]);
+export function validateMaterialManifestAny(value: unknown): MaterialManifest {
+  assertMaterialJson(value);
+  if (
+    new TextEncoder().encode(JSON.stringify(value)).length >
+    MATERIAL_LIBRARY_LIMITS.maxManifestBytes
+  )
+    throw Error('Material manifest exceeds size limit');
+  if (!value || typeof value !== 'object' || Array.isArray(value))
+    throw Error('Invalid material manifest');
+  if ((value as Record<string, unknown>)['schemaVersion'] === 1)
+    return validateMaterialManifest(value);
+  const manifest = materialManifestV2Schema.parse(value);
+  if (
+    new Set(manifest.sources.map((s) => s.id)).size !== manifest.sources.length ||
+    new Set(manifest.maps.map((m) => m.slot)).size !== manifest.maps.length
+  )
+    throw Error('Duplicate material source or slot');
+  let bytes = 0,
+    pixels = 0;
+  const pins = new Map<string, MaterialMapPinV1>();
+  for (const map of manifest.maps) {
+    const source = manifest.sources.find((s) => s.id === map.sourceId);
+    if (
+      !source ||
+      map.file !== `${map.slot}.png` ||
+      map.usage !== MATERIAL_LIBRARY_USAGE[map.slot] ||
+      map.colorSpace !==
+        (map.slot === 'baseColor' || map.slot === 'emissive' ? 'srgb' : 'linear') ||
+      (map.slot === 'normal') !== (map.normalConvention === 'opengl') ||
+      (map.slot === 'metallicRoughness') !==
+        (map.channelPacking === 'r-occlusion-g-roughness-b-metallic')
+    )
+      throw Error('Material map source/usage/convention mismatch');
+    const recipe = map.recipe;
+    if (recipe) {
+      if (source.kind !== 'procedural' || map.originalFile)
+        throw Error('Procedural/atlas map source convention mismatch');
+      if (recipe.kind === 'procedural') {
+        const spec = recipe.spec;
+        if (spec.schemaVersion === 3) {
+          if (
+            recipe.compilerId !== PROCEDURAL_TEXTURE_V3_COMPILER_ID ||
+            recipe.derive ||
+            spec.width !== map.width ||
+            spec.height !== map.height
+          )
+            throw Error('V3 compiler/dimensions/derivation mismatch');
+        } else if (
+          recipe.compilerId !== 'kiln.procedural-texture.v2' ||
+          spec.size !== map.width ||
+          map.width !== map.height ||
+          canonicalMaterialJson(spec) !==
+            canonicalMaterialJson(canonicalizeProceduralTextureSpecV2(spec))
+        )
+          throw Error('V2 compiler/canonical recipe dimensions mismatch');
+        if (
+          spec.usage !== map.usage ||
+          recipe.pixelHash !== map.pixelHash ||
+          (recipe.derive && map.slot !== 'normal')
+        )
+          throw Error('Procedural recipe pixel/usage mismatch');
+      } else {
+        validateTextureAtlasManifestV1(recipe.manifest, recipe.spec);
+        if (
+          recipe.spec.width !== map.width ||
+          recipe.spec.height !== map.height ||
+          recipe.spec.usage !== map.usage ||
+          canonicalMaterialJson(recipe.spec.sampler) !== canonicalMaterialJson(map.sampler) ||
+          recipe.manifest.decodedPixelHash !== map.pixelHash
+        )
+          throw Error('Atlas recipe map mismatch');
+        for (const region of recipe.spec.regions)
+          if (region.source.kind === 'resource') {
+            const pin = region.source.pin;
+            pins.set(`${pin.resourceId}/${pin.revisionId}`, pin);
+          }
+      }
+    } else if (
+      source.kind !== 'external' ||
+      !source.originalFiles.some((f) => f.name === map.originalFile)
+    )
+      throw Error('External material source original file missing');
+    bytes += map.bytes;
+    pixels += map.width * map.height;
+  }
+  const actual = manifest.dependencies.map((p) => `${p.resourceId}/${p.revisionId}`);
+  if (
+    new Set(actual).size !== actual.length ||
+    actual.length !== pins.size ||
+    actual.some((k) => !pins.has(k))
+  )
+    throw Error('Material dependency pin inventory mismatch');
+  if (
+    bytes > MATERIAL_LIBRARY_LIMITS.maxRecordBytes ||
+    pixels > MATERIAL_LIBRARY_LIMITS.maxRecordPixels
+  )
+    throw Error('Material record exceeds byte/pixel budget');
+  return structuredClone(manifest);
+}
+export function validateMaterialRecordShapeAny(record: MaterialRecord): MaterialManifest {
+  assertMaterialJson(record, true);
+  if (record.manifest.schemaVersion === 1)
+    return validateMaterialRecordShape(record as MaterialRecordV1);
+  if (Object.keys(record).some((k) => k !== 'manifest' && k !== 'files'))
+    throw Error('Invalid material record');
+  const manifest = validateMaterialManifestAny(record.manifest);
+  if (!record.files || Object.keys(record.files).length !== manifest.maps.length)
+    throw Error('Material file inventory mismatch');
+  for (const map of manifest.maps) {
+    const bytes = record.files[map.file];
+    if (!(bytes instanceof Uint8Array) || bytes.length !== map.bytes)
+      throw Error('Material file inventory mismatch');
+    const size = materialPngDimensions(bytes);
+    if (size.width !== map.width || size.height !== map.height)
+      throw Error('Material PNG dimensions mismatch');
+  }
+  return manifest;
 }

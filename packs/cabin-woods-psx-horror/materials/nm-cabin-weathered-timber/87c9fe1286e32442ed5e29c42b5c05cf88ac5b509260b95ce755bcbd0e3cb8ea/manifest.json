@@ -1,0 +1,690 @@
+{
+  "materialId": "nm-cabin-weathered-timber",
+  "revisionId": "sha256:87c9fe1286e32442ed5e29c42b5c05cf88ac5b509260b95ce755bcbd0e3cb8ea",
+  "name": "Weathered cabin timber",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "tx01"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 2,
+    "height": 2
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:64da2a7198e38bb63d5c5ddb075b659c4856e825e0cee3046c7c665808e3b8dd",
+      "bytes": 501,
+      "width": 128,
+      "height": 128,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "repeat",
+        "wrapT": "repeat"
+      },
+      "pixelHash": "sha256:641ecd4905d89d1f0b82f183d28f3cee5cd00ade6684b0abeb43b2c79d68708d",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 128,
+          "height": 128,
+          "usage": "albedo",
+          "background": [
+            85,
+            67,
+            51,
+            255
+          ],
+          "operations": [
+            {
+              "op": "legacy-v2",
+              "spec": {
+                "schemaVersion": 2,
+                "size": 128,
+                "usage": "albedo",
+                "layers": [
+                  {
+                    "op": "noise",
+                    "colorA": 5587763,
+                    "colorB": 7889738,
+                    "scale": 7,
+                    "octaves": 1,
+                    "seed": 11001,
+                    "blend": "normal",
+                    "opacity": 1
+                  }
+                ]
+              },
+              "alpha": 255,
+              "opacity": 55
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  121,
+                  121
+                ],
+                "to": [
+                  127,
+                  120
+                ],
+                "width": 2
+              },
+              "rgba": [
+                120,
+                99,
+                74,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  10,
+                  16
+                ],
+                "to": [
+                  38,
+                  16
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  27,
+                  39
+                ],
+                "to": [
+                  68,
+                  40
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  44,
+                  62
+                ],
+                "to": [
+                  98,
+                  61
+                ],
+                "width": 1
+              },
+              "rgba": [
+                120,
+                99,
+                74,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  61,
+                  85
+                ],
+                "to": [
+                  127,
+                  85
+                ],
+                "width": 2
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  78,
+                  108
+                ],
+                "to": [
+                  103,
+                  109
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  95,
+                  3
+                ],
+                "to": [
+                  127,
+                  2
+                ],
+                "width": 1
+              },
+              "rgba": [
+                120,
+                99,
+                74,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  112,
+                  26
+                ],
+                "to": [
+                  127,
+                  26
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  1,
+                  49
+                ],
+                "to": [
+                  65,
+                  50
+                ],
+                "width": 2
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  18,
+                  72
+                ],
+                "to": [
+                  40,
+                  71
+                ],
+                "width": 1
+              },
+              "rgba": [
+                120,
+                99,
+                74,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  35,
+                  95
+                ],
+                "to": [
+                  70,
+                  95
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  52,
+                  118
+                ],
+                "to": [
+                  100,
+                  119
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  69,
+                  13
+                ],
+                "to": [
+                  127,
+                  12
+                ],
+                "width": 2
+              },
+              "rgba": [
+                120,
+                99,
+                74,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  86,
+                  36
+                ],
+                "to": [
+                  105,
+                  36
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  103,
+                  59
+                ],
+                "to": [
+                  127,
+                  60
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  120,
+                  82
+                ],
+                "to": [
+                  127,
+                  81
+                ],
+                "width": 1
+              },
+              "rgba": [
+                120,
+                99,
+                74,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  9,
+                  105
+                ],
+                "to": [
+                  67,
+                  105
+                ],
+                "width": 2
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  26,
+                  0
+                ],
+                "to": [
+                  42,
+                  1
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  43,
+                  23
+                ],
+                "to": [
+                  72,
+                  22
+                ],
+                "width": 1
+              },
+              "rgba": [
+                120,
+                99,
+                74,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 24,
+                "y": 31,
+                "width": 17,
+                "height": 7,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 27,
+                "y": 33,
+                "width": 11,
+                "height": 3,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                85,
+                67,
+                51,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  39,
+                  35
+                ],
+                "to": [
+                  55,
+                  36
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 89,
+                "y": 91,
+                "width": 17,
+                "height": 7,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 92,
+                "y": 93,
+                "width": 11,
+                "height": 3,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                85,
+                67,
+                51,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  104,
+                  95
+                ],
+                "to": [
+                  120,
+                  96
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  0,
+                  10
+                ],
+                "to": [
+                  127,
+                  10
+                ],
+                "width": 1
+              },
+              "rgba": [
+                61,
+                51,
+                40,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  0,
+                  84
+                ],
+                "to": [
+                  127,
+                  84
+                ],
+                "width": 1
+              },
+              "rgba": [
+                120,
+                99,
+                74,
+                255
+              ],
+              "opacity": 255
+            }
+          ],
+          "palette": {
+            "colors": [
+              5587763,
+              4010792,
+              7889738
+            ],
+            "dither": "none"
+          }
+        },
+        "recipeHash": "sha256:7cfd0f22796cbb22b55e66c079330a991e8fd6297385d059f9f507a0bb56c9a0",
+        "pixelHash": "sha256:641ecd4905d89d1f0b82f183d28f3cee5cd00ade6684b0abeb43b2c79d68708d",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

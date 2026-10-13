@@ -18,7 +18,11 @@ import {
   type AssetManifest,
   type AssetRecord,
 } from './assets';
-import type { MaterialLibrary, MaterialRecordV1 } from './material-library';
+import {
+  canonicalMaterialJson,
+  type MaterialLibrary,
+  type MaterialRecord,
+} from './material-library';
 import { FileMaterialLibrary, createMaterialLibraryPayload } from './material-library-node';
 import { dependencyManifests, resolveSavedAssetMaterials } from './asset-materials-node';
 import { renameDirectoryAtomically } from './atomic-directory';
@@ -230,7 +234,9 @@ export class FileAssetLibrary implements AssetLibrary {
             (raw) =>
               raw &&
               typeof raw === 'object' &&
-              (raw as Record<string, unknown>).kind === 'kiln.material.v1',
+              ['kiln.material.v1', 'kiln.material.v2'].includes(
+                String((raw as Record<string, unknown>).kind),
+              ),
           ),
       ),
     );
@@ -243,7 +249,7 @@ export class FileAssetLibrary implements AssetLibrary {
     if (resourceBytes > ASSET_LIMIT)
       throw new Error('Asset material import exceeds allocation limit');
     const prepared: AssetRecord[] = [];
-    const resources = new Map<string, MaterialRecordV1>();
+    const resources = new Map<string, MaterialRecord>();
     // Validate the whole input before writing anything; per-revision commits are atomic.
     for (const record of records) {
       await verifyAssetRecord(record);
@@ -256,11 +262,22 @@ export class FileAssetLibrary implements AssetLibrary {
             (raw) =>
               raw &&
               typeof raw === 'object' &&
-              (raw as Record<string, unknown>).kind === 'kiln.material.v1',
+              ['kiln.material.v1', 'kiln.material.v2'].includes(
+                String((raw as Record<string, unknown>).kind),
+              ),
           ))
       ) {
         const materials = await resolveSavedAssetMaterials(record, this.materials);
-        for (const material of materials) resources.set(material.manifest.revisionId, material);
+        for (const material of materials) {
+          const key = `${material.manifest.materialId}/${material.manifest.revisionId}`;
+          const previous = resources.get(key);
+          if (
+            previous &&
+            canonicalMaterialJson(previous.manifest) !== canonicalMaterialJson(material.manifest)
+          )
+            throw new Error('Conflicting asset material dependencies');
+          resources.set(key, material);
+        }
         prepared.push({
           ...record,
           materialResources: await createMaterialLibraryPayload(materials),

@@ -3,11 +3,19 @@ import { renderGLBInProcess } from './render';
 import { FileAssetLibrary } from './assets-node';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join, resolve, relative, isAbsolute, basename } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { FileLiveReview } from './live-review-node';
 import { createKilnReviewDef } from './tools/review';
 import type { LiveOperation } from './live-review';
+import {
+  FileMaterialLibrary,
+  createMaterialRecordV1,
+  createMaterialRecordV2,
+  createMaterialLibraryPayload,
+} from './material-library-node';
+import { materialLibraryPortableSpec } from './material-library';
+import { decodeAssetBundle } from './assets';
 
 test('review save preserves recorded GLB/source and refuses revision or policy mismatch', async () => {
   const root = await mkdtemp(join(tmpdir(), 'kiln-exact-review-'));
@@ -152,3 +160,128 @@ test('review CLI lists, pins and saves the exact retained artifact using workspa
     await rm(root, { recursive: true, force: true });
   }
 }, 20000);
+
+test('reviewed save preserves mixed V1/V2 material identities and editable closure through file-backed export/import', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-reviewed-v2-'));
+  const checked = relative(resolve(tmpdir()), resolve(root));
+  if (
+    checked.startsWith('..') ||
+    isAbsolute(checked) ||
+    !basename(root).startsWith('kiln-reviewed-v2-')
+  )
+    throw Error('Unexpected temporary cleanup target');
+  try {
+    const materials = new FileMaterialLibrary(join(root, 'materials'));
+    const library = new FileAssetLibrary({ project: join(root, 'assets') }, materials);
+    const source = {
+      id: 'authored',
+      kind: 'procedural' as const,
+      provider: 'Kiln',
+      creator: 'Review fixture',
+      license: {
+        spdx: 'CC0-1.0',
+        url: 'https://creativecommons.org/publicdomain/zero/1.0/',
+        attribution: '',
+      },
+      originalFiles: [],
+    };
+    const legacy = await createMaterialRecordV1({
+      materialId: 'review-legacy',
+      name: 'Legacy review material',
+      tileable: true,
+      sources: [source],
+      maps: [
+        {
+          slot: 'baseColor',
+          sourceId: 'authored',
+          transforms: [],
+          procedural: {
+            schemaVersion: 2,
+            size: 4,
+            usage: 'albedo',
+            layers: [{ op: 'solid', color: 0x884422 }],
+          },
+        },
+      ],
+    });
+    const modern = await createMaterialRecordV2({
+      schemaVersion: 2,
+      materialId: 'review-modern',
+      name: 'V2 review material',
+      tileable: false,
+      sources: [source],
+      maps: [
+        {
+          slot: 'baseColor',
+          sourceId: 'authored',
+          transforms: [],
+          sampler: {
+            minFilter: 'nearest',
+            magFilter: 'nearest',
+            wrapS: 'clamp-to-edge',
+            wrapT: 'clamp-to-edge',
+          },
+          procedural: {
+            schemaVersion: 3,
+            width: 8,
+            height: 4,
+            usage: 'albedo',
+            background: [40, 100, 60, 255],
+            operations: [],
+          },
+        },
+      ],
+    });
+    await materials.import([legacy, modern]);
+    const code = `async function build(){const root=createRoot('MixedReview');const legacy=await compilePortableMaterialSpecV2(${JSON.stringify(materialLibraryPortableSpec(legacy.manifest))});const modern=await compilePortableMaterialSpecV3(${JSON.stringify(materialLibraryPortableSpec(modern.manifest))});createPart('Old',boxGeo(.5,.5,.5),legacy,{parent:root,position:[-.4,.25,0]});createPart('New',boxGeo(.5,.5,.5),modern,{parent:root,position:[.4,.25,0]});return root;}`;
+    const rendered = await renderGLBInProcess(code, {
+      optimize: 'off',
+      materialResources: await createMaterialLibraryPayload([legacy, modern]),
+    });
+    const review = new FileLiveReview(join(root, 'review'));
+    await review.observe('kiln_render', {}, async () => {
+      review.artifact(code, rendered);
+      return { ok: true };
+    });
+    await review.flush();
+    const operation = (await review.snapshot()).operations[0]!;
+    const saved = (await createKilnReviewDef({ reviewStore: review, assetLibrary: library }).run({
+      action: 'save',
+      operationId: operation.operationId,
+      expectedRevision: operation.revision,
+      name: 'Reviewed mixed resource fixture',
+      collection: 'project',
+    })) as { asset: { assetId: string; revisionId: string } };
+    const record = await library.read('project', saved.asset.assetId, saved.asset.revisionId);
+    expect(record.files['asset.glb']).toEqual(rendered.glb);
+    expect(record.files['source.kiln.js']).toEqual(new TextEncoder().encode(code));
+    expect(record.manifest.files['asset.glb']!.sha256).toBe(operation.artifact!.sha256);
+    const dependencies = record.manifest.build!.dependencies! as {
+      kind: string;
+      delivery: string;
+      manifest: unknown;
+    }[];
+    expect(dependencies).toEqual([
+      { kind: 'kiln.material.v1', delivery: 'runtime', manifest: legacy.manifest },
+      { kind: 'kiln.material.v2', delivery: 'runtime', manifest: modern.manifest },
+    ]);
+    const bundle = decodeAssetBundle(await library.exportBundle([record]));
+    expect(bundle[0]!.manifest).toEqual(record.manifest);
+    expect(bundle[0]!.materialResources!.records.map((r) => r.manifest)).toEqual(
+      expect.arrayContaining([legacy.manifest, modern.manifest]),
+    );
+    const targetMaterials = new FileMaterialLibrary(join(root, 'import-materials'));
+    const target = new FileAssetLibrary({ project: join(root, 'import-assets') }, targetMaterials);
+    await target.import('project', bundle);
+    const imported = await target.read('project', saved.asset.assetId, saved.asset.revisionId);
+    expect(imported.files['asset.glb']).toEqual(rendered.glb);
+    expect(
+      (await targetMaterials.read(modern.manifest.materialId, modern.manifest.revisionId)).manifest,
+    ).toEqual(modern.manifest);
+    expect(
+      (await targetMaterials.read(legacy.manifest.materialId, legacy.manifest.revisionId)).manifest,
+    ).toEqual(legacy.manifest);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});

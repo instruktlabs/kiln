@@ -1,0 +1,843 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_c80528f46ba24acd948cab5eb439e09b",
+  "revisionId": "r_7f2e355bcb2e49919a434cfb62778cf9",
+  "parentRevision": "r_f7124a0e73334aeaa8a1f3950df29d7b",
+  "name": "Woodland spider",
+  "tags": [],
+  "createdAt": "2026-10-12T20:20:50.412Z",
+  "description": "Original woodland asset; compatible render parts consolidated with triangle, normal, UV, material and rig preservation measured. Owner scene acceptance and GPU performance remain separate.",
+  "attribution": {
+    "model": "gpt-6.1-sol",
+    "harness": "codex"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:0ab2a69d806984446dc7271f7993d2af958ae9b911060617a3922543a56eb4d2",
+      "bytes": 122500
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:5430593717810a293a95e18f0d781d63c7b07236322962d97cddf16a0a6fa32c",
+      "bytes": 11892
+    },
+    "preview.png": {
+      "sha256": "sha256:92aa89691b868128a403d8e16cfa258b62d083c911864a62263e2571b730987b",
+      "bytes": 71704
+    }
+  },
+  "build": {
+    "engine": "sha256:429cb76bd79db6cf401c415b2ab8f44593ae8ffa54c7c8cfc4f0cfbb24729eec",
+    "options": {
+      "gltfExporter": "three",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "strict",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "projectId": "nightman",
+      "projectRevision": "r_0000000005_61f0f0d89412c0e3469821c38f23426e354a95557ae2a158e6cc80642f34a968",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [
+      "glTF NODE_SKINNED_MESH_NON_ROOT at /nodes/34: Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh."
+    ],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "0ab2a69d806984446dc7271f7993d2af958ae9b911060617a3922543a56eb4d2",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.5500985383987427,
+          0,
+          -0.8799999952316284
+        ],
+        "max": [
+          0.6899999976158142,
+          0.6299999952316284,
+          0.8799999952316284
+        ],
+        "size": [
+          1.2400985360145569,
+          0.6299999952316284,
+          1.7599999904632568
+        ],
+        "center": [
+          0.06995072960853577,
+          0.3149999976158142,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": 0,
+        "offsetToGround": 0,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Woodland spider"
+      },
+      "renderMetrics": {
+        "triangles": 578,
+        "drawCalls": 2,
+        "uniqueGeometries": 2,
+        "uniqueMaterials": 2,
+        "textureCount": 1,
+        "transparentMaterials": 0,
+        "skinned": true
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 1
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "warn",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "warn",
+          "findings": [
+            {
+              "code": "GLTF_NODE_SKINNED_MESH_NON_ROOT",
+              "disposition": "warn",
+              "dimension": "exportIntegrity",
+              "profile": "asset.requirements.v1",
+              "message": "Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh.",
+              "affected": {
+                "nodePath": "/nodes/34"
+              }
+            }
+          ],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 1
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "1 part-volume measurement was unavailable. 1 because instancing, skin or morph deformation is unsupported by part-volume analysis: \"Mesh_SpiderSurface\". This part is not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 1,
+            "partVolumeCandidatePairs": 0,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeUnmeasurablePairs": 0,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 1
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "B",
+            "instanceabilitySummary": "B (informational, not a QA verdict), set by 2 distinct materials (B at 2-3). Also: 2 geometries; 2 draw calls; skinned (clone-rendered, not penalized).",
+            "uniqueGeometries": 2,
+            "uniqueMaterials": 2,
+            "meshNodes": 2,
+            "meshInstances": 2,
+            "drawCalls": 2,
+            "textureCount": 1,
+            "skinned": true,
+            "transparentMaterials": 0,
+            "triangles": 578,
+            "materialCount": 2,
+            "opaqueMaterials": 2,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 2,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 1,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 1,
+            "maxImageDimension": 256,
+            "decodedImageBytesRgba8": 131072,
+            "estimatedGpuBytesWithMipmaps": 174763,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [
+      {
+        "kind": "kiln.material.v2",
+        "delivery": "runtime",
+        "manifest": {
+          "materialId": "nm-forest-shell",
+          "revisionId": "sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97",
+          "name": "Spider shell / olive-black armor plates",
+          "tags": [
+            "Nightman",
+            "original",
+            "PSX",
+            "shell"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "nightman-original",
+              "kind": "procedural",
+              "provider": "Kiln",
+              "creator": "OpenAI Codex for Nightman",
+              "license": {
+                "spdx": "LicenseRef-Proprietary",
+                "url": "https://choosealicense.com/no-permission/",
+                "attribution": "Original Nightman procedural work; project owner retains rights."
+              },
+              "originalFiles": []
+            }
+          ],
+          "schemaVersion": 2,
+          "dependencies": [],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:cd94a64af4fffe086c36e51c7675b7a01a459da676d183b9bbe6468e3a429056",
+              "bytes": 340,
+              "width": 64,
+              "height": 64,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "nightman-original",
+              "transforms": [],
+              "sampler": {
+                "minFilter": "nearest-mipmap-linear",
+                "magFilter": "nearest",
+                "wrapS": "repeat",
+                "wrapT": "repeat"
+              },
+              "pixelHash": "sha256:a3fb7a667924753f77242ed1fb69d21a68f08126517227867e505a99aa141b0d",
+              "recipe": {
+                "kind": "procedural",
+                "compilerId": "kiln.procedural-rgba.v3.1",
+                "spec": {
+                  "schemaVersion": 3,
+                  "width": 64,
+                  "height": 64,
+                  "usage": "albedo",
+                  "background": [
+                    53,
+                    66,
+                    57,
+                    255
+                  ],
+                  "operations": [
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "polygon",
+                        "points": [
+                          [
+                            6,
+                            -4
+                          ],
+                          [
+                            15,
+                            -2
+                          ],
+                          [
+                            22,
+                            63
+                          ],
+                          [
+                            13,
+                            67
+                          ]
+                        ]
+                      },
+                      "rgba": [
+                        43,
+                        53,
+                        45,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "polygon",
+                        "points": [
+                          [
+                            40,
+                            -4
+                          ],
+                          [
+                            48,
+                            -2
+                          ],
+                          [
+                            55,
+                            63
+                          ],
+                          [
+                            46,
+                            67
+                          ]
+                        ]
+                      },
+                      "rgba": [
+                        43,
+                        53,
+                        45,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "polygon",
+                        "points": [
+                          [
+                            19,
+                            -3
+                          ],
+                          [
+                            23,
+                            -3
+                          ],
+                          [
+                            30,
+                            66
+                          ],
+                          [
+                            26,
+                            66
+                          ]
+                        ]
+                      },
+                      "rgba": [
+                        69,
+                        83,
+                        61,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "polygon",
+                        "points": [
+                          [
+                            52,
+                            -3
+                          ],
+                          [
+                            55,
+                            -3
+                          ],
+                          [
+                            62,
+                            66
+                          ],
+                          [
+                            59,
+                            66
+                          ]
+                        ]
+                      },
+                      "rgba": [
+                        69,
+                        83,
+                        61,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "stamps",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          0,
+                          0
+                        ],
+                        "to": [
+                          6,
+                          1
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        83,
+                        97,
+                        73,
+                        255
+                      ],
+                      "opacity": 255,
+                      "count": 5,
+                      "seed": 439,
+                      "area": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 64,
+                        "height": 64
+                      },
+                      "periodic": true
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:d98ca7dcc6b2f3012ccd081f6b8be1ecbbf0b71d2e384b2c6a95d98b9212534c",
+                "pixelHash": "sha256:a3fb7a667924753f77242ed1fb69d21a68f08126517227867e505a99aa141b0d",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.5"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v2",
+        "delivery": "runtime",
+        "manifest": {
+          "materialId": "nm-forest-spider-atlas",
+          "revisionId": "sha256:17bce067cd782389fdf4510d6d70cd0bedcd8b836bcae732c38c16f4cf6d4c92",
+          "name": "Forest spider-atlas",
+          "tags": [],
+          "tileable": false,
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "nightman-original",
+              "kind": "procedural",
+              "provider": "Kiln",
+              "creator": "OpenAI Codex for Nightman",
+              "license": {
+                "spdx": "LicenseRef-Proprietary",
+                "url": "https://choosealicense.com/no-permission/",
+                "attribution": "Original Nightman procedural work; project owner retains rights."
+              },
+              "originalFiles": []
+            }
+          ],
+          "schemaVersion": 2,
+          "dependencies": [
+            {
+              "resourceId": "nm-forest-shell",
+              "revisionId": "sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97",
+              "sha256": "sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97"
+            }
+          ],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:f4281c44d4653d6b179fd45495b7756409c7a2be5f1b67355e70ca01347a12d0",
+              "bytes": 724,
+              "width": 256,
+              "height": 128,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "nightman-original",
+              "transforms": [],
+              "sampler": {
+                "minFilter": "nearest",
+                "magFilter": "nearest",
+                "wrapS": "clamp-to-edge",
+                "wrapT": "clamp-to-edge"
+              },
+              "pixelHash": "sha256:c995bd00c080251710d04439019cd2fe7860e25ce379ca344996b9c86f32f560",
+              "recipe": {
+                "kind": "atlas",
+                "compilerId": "kiln.texture-atlas.v1.1",
+                "spec": {
+                  "schemaVersion": 1,
+                  "width": 256,
+                  "height": 128,
+                  "usage": "albedo",
+                  "sampler": {
+                    "minFilter": "nearest",
+                    "magFilter": "nearest",
+                    "wrapS": "clamp-to-edge",
+                    "wrapT": "clamp-to-edge"
+                  },
+                  "regions": [
+                    {
+                      "name": "body",
+                      "content": {
+                        "x": 4,
+                        "y": 4,
+                        "width": 64,
+                        "height": 64
+                      },
+                      "gutter": 4,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "resource",
+                        "resourceId": "kiln.library.e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97.base-color",
+                        "pin": {
+                          "resourceId": "nm-forest-shell",
+                          "revisionId": "sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97",
+                          "sha256": "sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97"
+                        }
+                      }
+                    },
+                    {
+                      "name": "legs",
+                      "content": {
+                        "x": 76,
+                        "y": 4,
+                        "width": 64,
+                        "height": 64
+                      },
+                      "gutter": 4,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "resource",
+                        "resourceId": "kiln.library.e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97.base-color",
+                        "pin": {
+                          "resourceId": "nm-forest-shell",
+                          "revisionId": "sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97",
+                          "sha256": "sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "manifest": {
+                  "version": "kiln.atlas-manifest.v1",
+                  "compilerId": "kiln.texture-atlas.v1.1",
+                  "width": 256,
+                  "height": 128,
+                  "usage": "albedo",
+                  "origin": "top-left",
+                  "sampler": {
+                    "minFilter": "nearest",
+                    "magFilter": "nearest",
+                    "wrapS": "clamp-to-edge",
+                    "wrapT": "clamp-to-edge"
+                  },
+                  "specHash": "sha256:fd1e31f6787f07ce1098cde37fb4c50838831dcc92aedb3f6610082b5eff59a1",
+                  "layoutHash": "sha256:2c9be17d448d09ec80eb5cce87acd3e15daf7f87302a27edf6bbfe68dc789148",
+                  "decodedPixelHash": "sha256:c995bd00c080251710d04439019cd2fe7860e25ce379ca344996b9c86f32f560",
+                  "atlasPixelHash": "sha256:ad9389c7e7c0dec001d784761c39ecfcb8e09e5a99921b7a9158701d1c70d2d7",
+                  "sources": [
+                    {
+                      "id": "resource:nm-forest-shell:sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97:kiln.library.e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97.base-color",
+                      "width": 64,
+                      "height": 64,
+                      "decodedPixelHash": "sha256:a3fb7a667924753f77242ed1fb69d21a68f08126517227867e505a99aa141b0d",
+                      "kind": "resource",
+                      "descriptor": {
+                        "materialId": "nm-forest-shell",
+                        "revisionId": "sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97",
+                        "resourceId": "kiln.library.e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97.base-color",
+                        "slot": "baseColor",
+                        "usage": "albedo",
+                        "colorSpace": "srgb",
+                        "width": 64,
+                        "height": 64,
+                        "encodedByteLength": 340,
+                        "imageSha256": "sha256:cd94a64af4fffe086c36e51c7675b7a01a459da676d183b9bbe6468e3a429056",
+                        "decodedPixelHash": "sha256:a3fb7a667924753f77242ed1fb69d21a68f08126517227867e505a99aa141b0d"
+                      }
+                    }
+                  ],
+                  "regions": [
+                    {
+                      "name": "body",
+                      "content": {
+                        "x": 4,
+                        "y": 4,
+                        "width": 64,
+                        "height": 64
+                      },
+                      "allocation": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 72,
+                        "height": 72
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 64,
+                        "height": 64
+                      },
+                      "sourceId": "resource:nm-forest-shell:sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97:kiln.library.e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97.base-color"
+                    },
+                    {
+                      "name": "legs",
+                      "content": {
+                        "x": 76,
+                        "y": 4,
+                        "width": 64,
+                        "height": 64
+                      },
+                      "allocation": {
+                        "x": 72,
+                        "y": 0,
+                        "width": 72,
+                        "height": 72
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 64,
+                        "height": 64
+                      },
+                      "sourceId": "resource:nm-forest-shell:sha256:e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97:kiln.library.e74b08a9ddf8d65ccc81079be432284044b0b32b4e5b31f34067a78f020aca97.base-color"
+                    }
+                  ],
+                  "manifestHash": "sha256:998a53025fdcf14ed08ba4a4722d285e122f19091a4775b2aee8795aac514cbb"
+                },
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.5"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "rebuild": "external-dependencies-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1088",
+      "inputGlbSha256": "sha256:0ab2a69d806984446dc7271f7993d2af958ae9b911060617a3922543a56eb4d2",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

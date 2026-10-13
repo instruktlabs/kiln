@@ -1,0 +1,196 @@
+{
+  "materialId": "nm-shared-rusted-iron",
+  "revisionId": "sha256:1870a95ffec8e00bc9daac56a32bc537547e002305e373c4ff7a97f098119fbe",
+  "name": "Worn iron",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "tx08"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 1,
+    "height": 1
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 0.85,
+    "metalness": 0.25,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:16b8d5dda19462c46244325624871abdea777bcada69a3bb503a376ea6731476",
+      "bytes": 1958,
+      "width": 64,
+      "height": 64,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "repeat",
+        "wrapT": "repeat"
+      },
+      "pixelHash": "sha256:c02e3aa8402d07f23abf22339981b1501d923b3aeb2ce985305e59d0e4e54de2",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 64,
+          "height": 64,
+          "usage": "albedo",
+          "background": [
+            87,
+            96,
+            92,
+            255
+          ],
+          "operations": [
+            {
+              "op": "legacy-v2",
+              "spec": {
+                "schemaVersion": 2,
+                "size": 64,
+                "usage": "albedo",
+                "layers": [
+                  {
+                    "op": "noise",
+                    "colorA": 4608334,
+                    "colorB": 7569525,
+                    "scale": 6,
+                    "octaves": 1,
+                    "seed": 11008,
+                    "blend": "normal",
+                    "opacity": 1
+                  }
+                ]
+              },
+              "alpha": 255,
+              "opacity": 65
+            },
+            {
+              "op": "stamps",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    5,
+                    0
+                  ],
+                  [
+                    7,
+                    3
+                  ],
+                  [
+                    5,
+                    6
+                  ],
+                  [
+                    1,
+                    5
+                  ]
+                ]
+              },
+              "rgba": [
+                121,
+                88,
+                61,
+                255
+              ],
+              "opacity": 255,
+              "count": 14,
+              "seed": 11008,
+              "area": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "periodic": true
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  2,
+                  9
+                ],
+                "to": [
+                  61,
+                  10
+                ],
+                "width": 1
+              },
+              "rgba": [
+                147,
+                168,
+                154,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  4,
+                  43
+                ],
+                "to": [
+                  24,
+                  43
+                ],
+                "width": 1
+              },
+              "rgba": [
+                53,
+                67,
+                60,
+                255
+              ],
+              "opacity": 255
+            }
+          ]
+        },
+        "recipeHash": "sha256:fa0eaa5f72dd2dea4a2d387ef0f6abda24b1974ed86934acdbbb58604a4e3ec0",
+        "pixelHash": "sha256:c02e3aa8402d07f23abf22339981b1501d923b3aeb2ce985305e59d0e4e54de2",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

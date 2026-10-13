@@ -1,0 +1,367 @@
+{
+  "materialId": "nm-forest-nightman-atlas",
+  "revisionId": "sha256:7b711fed2b077855239949f953a4c3e0a42f834fa46f1741b58c5aea2fbce8e1",
+  "name": "Forest nightman-atlas",
+  "tags": [],
+  "tileable": false,
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [
+    {
+      "resourceId": "nm-nightman-body-stone",
+      "revisionId": "sha256:6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588",
+      "sha256": "sha256:6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588"
+    },
+    {
+      "resourceId": "nm-nightman-hands-stone",
+      "revisionId": "sha256:a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87",
+      "sha256": "sha256:a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87"
+    },
+    {
+      "resourceId": "nm-nightman-head-stone",
+      "revisionId": "sha256:80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912",
+      "sha256": "sha256:80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912"
+    },
+    {
+      "resourceId": "nm-nightman-shoulders-stone",
+      "revisionId": "sha256:cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a",
+      "sha256": "sha256:cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a"
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:0631bd9e5b8762c9beaf5bd05822fd2b0bc12cc1bfcc06ac8dbf5abde5eb5251",
+      "bytes": 2686,
+      "width": 256,
+      "height": 256,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "wrapS": "clamp-to-edge",
+        "wrapT": "clamp-to-edge"
+      },
+      "pixelHash": "sha256:dc7a1cc203d80da2a9e8d3bd6f3364bd3d3ae9573b2e3783998b62133e242bd3",
+      "recipe": {
+        "kind": "atlas",
+        "compilerId": "kiln.texture-atlas.v1.1",
+        "spec": {
+          "schemaVersion": 1,
+          "width": 256,
+          "height": 256,
+          "usage": "albedo",
+          "sampler": {
+            "minFilter": "nearest",
+            "magFilter": "nearest",
+            "wrapS": "clamp-to-edge",
+            "wrapT": "clamp-to-edge"
+          },
+          "regions": [
+            {
+              "name": "body",
+              "content": {
+                "x": 4,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588.base-color",
+                "pin": {
+                  "resourceId": "nm-nightman-body-stone",
+                  "revisionId": "sha256:6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588",
+                  "sha256": "sha256:6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588"
+                }
+              }
+            },
+            {
+              "name": "hands",
+              "content": {
+                "x": 76,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87.base-color",
+                "pin": {
+                  "resourceId": "nm-nightman-hands-stone",
+                  "revisionId": "sha256:a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87",
+                  "sha256": "sha256:a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87"
+                }
+              }
+            },
+            {
+              "name": "head",
+              "content": {
+                "x": 148,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912.base-color",
+                "pin": {
+                  "resourceId": "nm-nightman-head-stone",
+                  "revisionId": "sha256:80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912",
+                  "sha256": "sha256:80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912"
+                }
+              }
+            },
+            {
+              "name": "shoulders",
+              "content": {
+                "x": 4,
+                "y": 76,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a.base-color",
+                "pin": {
+                  "resourceId": "nm-nightman-shoulders-stone",
+                  "revisionId": "sha256:cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a",
+                  "sha256": "sha256:cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a"
+                }
+              }
+            }
+          ]
+        },
+        "manifest": {
+          "version": "kiln.atlas-manifest.v1",
+          "compilerId": "kiln.texture-atlas.v1.1",
+          "width": 256,
+          "height": 256,
+          "usage": "albedo",
+          "origin": "top-left",
+          "sampler": {
+            "minFilter": "nearest",
+            "magFilter": "nearest",
+            "wrapS": "clamp-to-edge",
+            "wrapT": "clamp-to-edge"
+          },
+          "specHash": "sha256:92bd39071e24b0bf349e3765d10365eba9248326004a0e9de93e8fc96d09af41",
+          "layoutHash": "sha256:2e80e3469c62b62c92ec841f90eba7a12ad3016fbc5d469c252bb3df84cbdc36",
+          "decodedPixelHash": "sha256:dc7a1cc203d80da2a9e8d3bd6f3364bd3d3ae9573b2e3783998b62133e242bd3",
+          "atlasPixelHash": "sha256:84732af2e79c92a036af19144826994f5a531c16ee0fce930fb8e105614d69b8",
+          "sources": [
+            {
+              "id": "resource:nm-nightman-body-stone:sha256:6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588:kiln.library.6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588.base-color",
+              "width": 64,
+              "height": 64,
+              "decodedPixelHash": "sha256:67ee4ba16130647977d0c31bdae4645fdb866912981375353b33b77b8e314a33",
+              "kind": "resource",
+              "descriptor": {
+                "materialId": "nm-nightman-body-stone",
+                "revisionId": "sha256:6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588",
+                "resourceId": "kiln.library.6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588.base-color",
+                "slot": "baseColor",
+                "usage": "albedo",
+                "colorSpace": "srgb",
+                "width": 64,
+                "height": 64,
+                "encodedByteLength": 579,
+                "imageSha256": "sha256:2c43e8d8632d6b1cd6020c060220bf1a77e01bb7b30ab0bc9165adff74522c32",
+                "decodedPixelHash": "sha256:67ee4ba16130647977d0c31bdae4645fdb866912981375353b33b77b8e314a33"
+              }
+            },
+            {
+              "id": "resource:nm-nightman-hands-stone:sha256:a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87:kiln.library.a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87.base-color",
+              "width": 64,
+              "height": 64,
+              "decodedPixelHash": "sha256:6bd706f7f3e09fd31b135d46081942638bcafa478b96f04832af627aef3c288f",
+              "kind": "resource",
+              "descriptor": {
+                "materialId": "nm-nightman-hands-stone",
+                "revisionId": "sha256:a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87",
+                "resourceId": "kiln.library.a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87.base-color",
+                "slot": "baseColor",
+                "usage": "albedo",
+                "colorSpace": "srgb",
+                "width": 64,
+                "height": 64,
+                "encodedByteLength": 494,
+                "imageSha256": "sha256:6d760a689bd7a336d451c720b03f0e885777c78c00d3187e999a2a712992208d",
+                "decodedPixelHash": "sha256:6bd706f7f3e09fd31b135d46081942638bcafa478b96f04832af627aef3c288f"
+              }
+            },
+            {
+              "id": "resource:nm-nightman-head-stone:sha256:80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912:kiln.library.80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912.base-color",
+              "width": 64,
+              "height": 64,
+              "decodedPixelHash": "sha256:c85e92b9cf35e665225d50c0b37b8061e5cc3a8d26f69096a32d579cdb68cb4f",
+              "kind": "resource",
+              "descriptor": {
+                "materialId": "nm-nightman-head-stone",
+                "revisionId": "sha256:80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912",
+                "resourceId": "kiln.library.80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912.base-color",
+                "slot": "baseColor",
+                "usage": "albedo",
+                "colorSpace": "srgb",
+                "width": 64,
+                "height": 64,
+                "encodedByteLength": 596,
+                "imageSha256": "sha256:380de1681b6cabeecdcf7ac2ac287b6ce81c3d8ede3aec52c4e9882110104a2c",
+                "decodedPixelHash": "sha256:c85e92b9cf35e665225d50c0b37b8061e5cc3a8d26f69096a32d579cdb68cb4f"
+              }
+            },
+            {
+              "id": "resource:nm-nightman-shoulders-stone:sha256:cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a:kiln.library.cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a.base-color",
+              "width": 64,
+              "height": 64,
+              "decodedPixelHash": "sha256:ca880db8f579d1214bfa2df74abb66ff69c9a9b18e9352f3ec090fbf5de09275",
+              "kind": "resource",
+              "descriptor": {
+                "materialId": "nm-nightman-shoulders-stone",
+                "revisionId": "sha256:cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a",
+                "resourceId": "kiln.library.cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a.base-color",
+                "slot": "baseColor",
+                "usage": "albedo",
+                "colorSpace": "srgb",
+                "width": 64,
+                "height": 64,
+                "encodedByteLength": 715,
+                "imageSha256": "sha256:f171ce01a1d3b8ebc92b91d419e0434d24590fcadc3e14282a1092086444a7b4",
+                "decodedPixelHash": "sha256:ca880db8f579d1214bfa2df74abb66ff69c9a9b18e9352f3ec090fbf5de09275"
+              }
+            }
+          ],
+          "regions": [
+            {
+              "name": "body",
+              "content": {
+                "x": 4,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 0,
+                "y": 0,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-nightman-body-stone:sha256:6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588:kiln.library.6ed4f0a51dbfcb16ff902f1ff7c9145b2e4fa3b2628b58d674b4a6d3a0bc1588.base-color"
+            },
+            {
+              "name": "hands",
+              "content": {
+                "x": 76,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 72,
+                "y": 0,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-nightman-hands-stone:sha256:a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87:kiln.library.a84e9072b09421f2061cb5b914198cea41b955e1341b8b5f0ec8de6c5a6fbf87.base-color"
+            },
+            {
+              "name": "head",
+              "content": {
+                "x": 148,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 144,
+                "y": 0,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-nightman-head-stone:sha256:80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912:kiln.library.80a45848fe220677ef4bbb340573f32e4b0651d9d8ec560f10ffb6cf0e8a4912.base-color"
+            },
+            {
+              "name": "shoulders",
+              "content": {
+                "x": 4,
+                "y": 76,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 0,
+                "y": 72,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-nightman-shoulders-stone:sha256:cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a:kiln.library.cad3f4cff01cc0b16b51f26bb53ba3b5afec11709a1f68559e54262b49fab14a.base-color"
+            }
+          ],
+          "manifestHash": "sha256:131cd196af64e48b8603d18179bd435b00d38e02ef6b8385c69f225b1f44f635"
+        },
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

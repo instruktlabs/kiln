@@ -1289,7 +1289,7 @@
     },
     {
       "name": "kiln_material",
-      "description": "Manage optional immutable material resources in this workspace. presets discovers shipped architecture, wood, metal, fabric and ground recipes; create-preset bakes one with an explicit seed, creator and license; list returns compact material/revision summaries; get returns full provenance, hashes, map conventions, physical repeat scale and a code-ready portable material spec; create-procedural bakes bounded editable layer recipes including optional height-derived normals; import accepts complete normalized records with embedded PNG bytes. No action downloads URLs or executes source. Pin the returned materialId/revisionId through per-invocation materialDependencies or project dependencies before authored evaluation resolves the resources; no project is required.",
+      "description": "Manage optional immutable material resources in this workspace. presets lists shipped recipes; create-preset uses explicit seed, creator and license; list returns revision summaries; get returns provenance, hashes, sampling and a portable material spec. create-procedural accepts legacy layer drafts or schemaVersion 2 drafts with explicit samplers and bounded RGBA or named atlas recipes. Atlas resource sources require exact saved revisions; import requires complete normalized records and dependencies with embedded PNG bytes. Read shape:material-draft or shape:material-import through kiln_discover for full fields. No action downloads URLs or executes source. Pin the returned materialId/revisionId through per-invocation materialDependencies or project dependencies before evaluation; no project or mesh is required.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1386,7 +1386,7 @@
             "pattern": "^sha256:[a-f0-9]{64}$"
           },
           "draft": {
-            "description": "create-procedural: materialId, name, tileable, sources, maps with layered procedural specs; optional tags, physicalSizeMeters, parameters. Shape: kiln_discover({ ids: ['shape:material-draft'] }).",
+            "description": "create-procedural: legacy layered draft, or schemaVersion 2 with explicit samplers and RGBA/atlas recipes. Exact atlas sources must exist in this library. Shape: kiln_discover({ ids: ['shape:material-draft'] }).",
             "type": "object",
             "propertyNames": {
               "type": "string"
@@ -1394,7 +1394,7 @@
             "additionalProperties": {}
           },
           "payload": {
-            "description": "import: schemaVersion 1 and complete normalized records with embedded PNG bytes. Shape: kiln_discover({ ids: ['shape:material-import'] }).",
+            "description": "import: schemaVersion 1 or 2, complete normalized records and their exact dependencies with embedded PNG bytes. Shape: kiln_discover({ ids: ['shape:material-import'] }).",
             "type": "object",
             "propertyNames": {
               "type": "string"

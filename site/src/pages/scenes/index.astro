@@ -2,7 +2,7 @@
 import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { sceneRuntimes } from "virtual:kiln-scenes";
-import { farmScene, foundryFloorScene, goldenGateScene } from "../../data/scenes";
+import { cabinWoodsScene, farmScene, foundryFloorScene, goldenGateScene } from "../../data/scenes";
 import { PACKS_ENABLED } from "../../lib/config";
 import troy from "../../data/troy.json";
 import ScenePoster from "../../components/ScenePoster.astro";
@@ -33,6 +33,12 @@ const cards = [
       "Explore the campus and the fab floor. It loads only when you choose Explore.",
     unstaged:
       "The browser scene is not part of this build.",
+  },
+  {
+    scene: cabinWoodsScene,
+    alt: cabinWoodsScene.posterAlt,
+    staged: "Walk the cabin and mixed woodland on desktop with WebGPU. Mobile play is not qualified.",
+    unstaged: "The scene is not staged in this build; download it from the pack page.",
   },
 ] as const;
 ---

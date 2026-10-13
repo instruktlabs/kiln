@@ -1,0 +1,616 @@
+{
+  "materialId": "nm-caretaker-equipment-detail",
+  "revisionId": "sha256:3d181e24dfe2a2c6b475e9460dd1f32b0b31be32f0149f577ed4ad0679b8049f",
+  "name": "Original tool edge, shell and brass detail pixels",
+  "tags": [
+    "nightman",
+    "equipment",
+    "original-pixels"
+  ],
+  "tileable": false,
+  "parameters": {
+    "roughness": 0.7,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "original-equipment-pixels",
+      "kind": "procedural",
+      "provider": "Nightman original authoring",
+      "creator": "Nightman procedural equipment lane",
+      "license": {
+        "spdx": "CC0-1.0",
+        "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+        "attribution": ""
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:e59af59bcc18b95007af5072ae5d0a7cc6e29a6f07b3dd15c7af4dad032694a5",
+      "bytes": 285,
+      "width": 64,
+      "height": 32,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "original-equipment-pixels",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "wrapS": "clamp-to-edge",
+        "wrapT": "clamp-to-edge"
+      },
+      "pixelHash": "sha256:120ec8608253b8029b4a677e0634c0a2f07dff12329242b6663aa848cfa0f1a8",
+      "recipe": {
+        "kind": "atlas",
+        "compilerId": "kiln.texture-atlas.v1.1",
+        "spec": {
+          "schemaVersion": 1,
+          "width": 64,
+          "height": 32,
+          "usage": "albedo",
+          "sampler": {
+            "minFilter": "nearest",
+            "magFilter": "nearest",
+            "wrapS": "clamp-to-edge",
+            "wrapT": "clamp-to-edge"
+          },
+          "regions": [
+            {
+              "name": "brass",
+              "content": {
+                "x": 18,
+                "y": 2,
+                "width": 12,
+                "height": 12
+              },
+              "gutter": 2,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "procedural",
+                "spec": {
+                  "schemaVersion": 3,
+                  "width": 12,
+                  "height": 12,
+                  "usage": "albedo",
+                  "background": [
+                    155,
+                    120,
+                    56,
+                    255
+                  ],
+                  "operations": [
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 0,
+                        "y": 2,
+                        "width": 12,
+                        "height": 2,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        189,
+                        149,
+                        66,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 0,
+                        "y": 8,
+                        "width": 12,
+                        "height": 1,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        125,
+                        91,
+                        42,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 5,
+                        "y": 5,
+                        "width": 2,
+                        "height": 2,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        88,
+                        70,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    }
+                  ]
+                }
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 12,
+                "height": 12
+              }
+            },
+            {
+              "name": "edge",
+              "content": {
+                "x": 34,
+                "y": 2,
+                "width": 24,
+                "height": 12
+              },
+              "gutter": 2,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "procedural",
+                "spec": {
+                  "schemaVersion": 3,
+                  "width": 24,
+                  "height": 12,
+                  "usage": "albedo",
+                  "background": [
+                    161,
+                    164,
+                    148,
+                    255
+                  ],
+                  "operations": [
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 0,
+                        "y": 3,
+                        "width": 24,
+                        "height": 1,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        185,
+                        189,
+                        172,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 3,
+                        "y": 6,
+                        "width": 5,
+                        "height": 1,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        131,
+                        138,
+                        127,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 13,
+                        "y": 8,
+                        "width": 7,
+                        "height": 1,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        134,
+                        139,
+                        126,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 17,
+                        "y": 1,
+                        "width": 3,
+                        "height": 1,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        201,
+                        202,
+                        184,
+                        255
+                      ],
+                      "opacity": 255
+                    }
+                  ]
+                }
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 24,
+                "height": 12
+              }
+            },
+            {
+              "name": "rubber",
+              "content": {
+                "x": 18,
+                "y": 18,
+                "width": 12,
+                "height": 12
+              },
+              "gutter": 2,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "procedural",
+                "spec": {
+                  "schemaVersion": 3,
+                  "width": 12,
+                  "height": 12,
+                  "usage": "albedo",
+                  "background": [
+                    39,
+                    38,
+                    32,
+                    255
+                  ],
+                  "operations": [
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 1,
+                        "y": 2,
+                        "width": 10,
+                        "height": 1,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        59,
+                        55,
+                        45,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 1,
+                        "y": 5,
+                        "width": 10,
+                        "height": 1,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        59,
+                        55,
+                        45,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 1,
+                        "y": 8,
+                        "width": 10,
+                        "height": 1,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        59,
+                        55,
+                        45,
+                        255
+                      ],
+                      "opacity": 255
+                    }
+                  ]
+                }
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 12,
+                "height": 12
+              }
+            },
+            {
+              "name": "shell",
+              "content": {
+                "x": 2,
+                "y": 2,
+                "width": 12,
+                "height": 24
+              },
+              "gutter": 2,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "procedural",
+                "spec": {
+                  "schemaVersion": 3,
+                  "width": 12,
+                  "height": 24,
+                  "usage": "albedo",
+                  "background": [
+                    128,
+                    46,
+                    37,
+                    255
+                  ],
+                  "operations": [
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 0,
+                        "y": 3,
+                        "width": 12,
+                        "height": 1,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        176,
+                        66,
+                        49,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 0,
+                        "y": 18,
+                        "width": 12,
+                        "height": 2,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        178,
+                        159,
+                        115,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 2,
+                        "y": 5,
+                        "width": 1,
+                        "height": 11,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        151,
+                        55,
+                        44,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 8,
+                        "y": 5,
+                        "width": 1,
+                        "height": 11,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        102,
+                        38,
+                        31,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 4,
+                        "y": 20,
+                        "width": 4,
+                        "height": 1,
+                        "kind": "rectangle"
+                      },
+                      "rgba": [
+                        71,
+                        39,
+                        31,
+                        255
+                      ],
+                      "opacity": 255
+                    }
+                  ]
+                }
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 12,
+                "height": 24
+              }
+            }
+          ]
+        },
+        "manifest": {
+          "version": "kiln.atlas-manifest.v1",
+          "compilerId": "kiln.texture-atlas.v1.1",
+          "width": 64,
+          "height": 32,
+          "usage": "albedo",
+          "origin": "top-left",
+          "sampler": {
+            "minFilter": "nearest",
+            "magFilter": "nearest",
+            "wrapS": "clamp-to-edge",
+            "wrapT": "clamp-to-edge"
+          },
+          "specHash": "sha256:abf06ce7e642c6aa3d706b9571613cab1e3e15aa36296d07affd5dbc44ed0618",
+          "layoutHash": "sha256:285e2ec3042e312f85aaa5e124cd9a72013553212ea32c2a90ca46df58f60c47",
+          "decodedPixelHash": "sha256:120ec8608253b8029b4a677e0634c0a2f07dff12329242b6663aa848cfa0f1a8",
+          "atlasPixelHash": "sha256:f5543dc1b6c63827ea3f498507c000c313fde38811903a75fbd7edfff7f2a273",
+          "sources": [
+            {
+              "id": "procedural:sha256:cf7912d634ae04333c24e1c876edee18a3e2180f129086144ff614198e959344",
+              "width": 12,
+              "height": 12,
+              "decodedPixelHash": "sha256:c5e5503354d34a2aa168fd25a51c37d3f8bc0b96845905e2b0f14a6bd814a369",
+              "kind": "procedural",
+              "recipeHash": "sha256:cf7912d634ae04333c24e1c876edee18a3e2180f129086144ff614198e959344",
+              "compilerId": "kiln.procedural-rgba.v3.1"
+            },
+            {
+              "id": "procedural:sha256:d01ba3ac72130a03014c336831bf07f18e8b36301ab5a0072f0e6ef4fbb818e7",
+              "width": 12,
+              "height": 24,
+              "decodedPixelHash": "sha256:c9033ad708dabadabf487d99496cb021a656d89b430d6108dc8af9b9439ab409",
+              "kind": "procedural",
+              "recipeHash": "sha256:d01ba3ac72130a03014c336831bf07f18e8b36301ab5a0072f0e6ef4fbb818e7",
+              "compilerId": "kiln.procedural-rgba.v3.1"
+            },
+            {
+              "id": "procedural:sha256:eb1626d8d2bd1c53820e8fa66545a543943abd84b87f4ad752507bbc9c3f8706",
+              "width": 24,
+              "height": 12,
+              "decodedPixelHash": "sha256:a1b4c2b0698df89e4177456e59e9031bdcaf171005ae51b277c60085cced4e94",
+              "kind": "procedural",
+              "recipeHash": "sha256:eb1626d8d2bd1c53820e8fa66545a543943abd84b87f4ad752507bbc9c3f8706",
+              "compilerId": "kiln.procedural-rgba.v3.1"
+            },
+            {
+              "id": "procedural:sha256:ebdfdb0e4d142c4597347587f234fa07bf8ca89e171720eb55877523164e3ce2",
+              "width": 12,
+              "height": 12,
+              "decodedPixelHash": "sha256:67cfbd998e3cba23189e0e9d5a2900de778f1dffd7fa2d588b162dc5a1a20129",
+              "kind": "procedural",
+              "recipeHash": "sha256:ebdfdb0e4d142c4597347587f234fa07bf8ca89e171720eb55877523164e3ce2",
+              "compilerId": "kiln.procedural-rgba.v3.1"
+            }
+          ],
+          "regions": [
+            {
+              "name": "brass",
+              "content": {
+                "x": 18,
+                "y": 2,
+                "width": 12,
+                "height": 12
+              },
+              "allocation": {
+                "x": 16,
+                "y": 0,
+                "width": 16,
+                "height": 16
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 12,
+                "height": 12
+              },
+              "sourceId": "procedural:sha256:cf7912d634ae04333c24e1c876edee18a3e2180f129086144ff614198e959344"
+            },
+            {
+              "name": "edge",
+              "content": {
+                "x": 34,
+                "y": 2,
+                "width": 24,
+                "height": 12
+              },
+              "allocation": {
+                "x": 32,
+                "y": 0,
+                "width": 28,
+                "height": 16
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 24,
+                "height": 12
+              },
+              "sourceId": "procedural:sha256:eb1626d8d2bd1c53820e8fa66545a543943abd84b87f4ad752507bbc9c3f8706"
+            },
+            {
+              "name": "rubber",
+              "content": {
+                "x": 18,
+                "y": 18,
+                "width": 12,
+                "height": 12
+              },
+              "allocation": {
+                "x": 16,
+                "y": 16,
+                "width": 16,
+                "height": 16
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 12,
+                "height": 12
+              },
+              "sourceId": "procedural:sha256:ebdfdb0e4d142c4597347587f234fa07bf8ca89e171720eb55877523164e3ce2"
+            },
+            {
+              "name": "shell",
+              "content": {
+                "x": 2,
+                "y": 2,
+                "width": 12,
+                "height": 24
+              },
+              "allocation": {
+                "x": 0,
+                "y": 0,
+                "width": 16,
+                "height": 28
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 12,
+                "height": 24
+              },
+              "sourceId": "procedural:sha256:d01ba3ac72130a03014c336831bf07f18e8b36301ab5a0072f0e6ef4fbb818e7"
+            }
+          ],
+          "manifestHash": "sha256:7e03a85848db06d5e6e5bad868b2b9ee09dd8636956cd02dd51dbb6fd3c1cdfc"
+        },
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

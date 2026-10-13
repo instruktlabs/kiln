@@ -15,6 +15,7 @@
  */
 
 import * as THREE from 'three';
+import { prepareUnwrap, remapUnwrapAttribute, validateAtlasRemap, type AtlasMesh } from './uv-data';
 
 // Lazy xatlas init — pays ~100-200ms on first call, then free.
 let _xatlasReady: Promise<unknown> | null = null;
@@ -41,17 +42,7 @@ type XatlasApi = {
     height: number;
     atlasCount: number;
     meshCount: number;
-    meshes: Array<{
-      mesh: string;
-      vertex: {
-        vertices: Float32Array | number[];
-        normals?: Float32Array | number[];
-        coords?: Float32Array | number[];
-        coords1?: Float32Array | number[];
-      };
-      index?: Uint32Array | number[];
-      oldIndexes: Uint32Array | number[];
-    }>;
+    meshes: AtlasMesh[];
   };
   destroyAtlas(): void;
 };
@@ -85,11 +76,11 @@ async function getXatlas(): Promise<XatlasApi> {
 }
 
 export interface AutoUnwrapOptions {
-  /** Atlas texture resolution (power-of-2). Default 1024. */
+  /** Target atlas resolution, integer 1..4096. Actual packed dimensions may differ. Default 1024. */
   resolution?: number;
   /** Padding between charts in texels. Default 2. */
   padding?: number;
-  /** Bake surface normals when determining seams. Default false (faster). */
+  /** Use and preserve source normals; otherwise recompute. Required for normal morphs. Default false. */
   useNormals?: boolean;
 }
 
@@ -100,7 +91,13 @@ export interface AutoUnwrapOptions {
  * sampling, and (usually) a different vertex count than the input: xatlas
  * duplicates vertices along UV seams so each shell gets its own chart.
  *
- * Returns a *new* BufferGeometry; the input is left untouched.
+ * Returns a *new* BufferGeometry; the input is left untouched. Seam remapping
+ * preserves per-vertex attributes, position/normal/color morphs, groups and JSON
+ * userData. Replaces UV0 and removes stale tangents. Normal behavior is unchanged:
+ * recompute by default, preserve source normals with useNormals: true.
+ * The current xatlasjs adapter supports at most 65,536 input AND output vertices;
+ * split larger meshes. Instancing, multi-page atlases and changed face order are
+ * rejected rather than returning corrupt attribute correspondence.
  *
  * @example
  * const raw = boxGeo(1, 2, 1);
@@ -111,125 +108,73 @@ export async function autoUnwrap(
   geometry: THREE.BufferGeometry,
   opts: AutoUnwrapOptions = {},
 ): Promise<THREE.BufferGeometry> {
+  const prepared = prepareUnwrap(geometry, opts);
   const xa = await getXatlas();
-
-  // xatlas needs an indexed BufferGeometry. Convert if necessary.
-  const src = geometry.index ? geometry : toIndexed(geometry);
-  const posAttr = src.getAttribute('position') as THREE.BufferAttribute | undefined;
-  const normAttr = src.getAttribute('normal') as THREE.BufferAttribute | undefined;
-  const idxAttr = src.getIndex();
-  if (!posAttr || !idxAttr) {
-    throw new Error('autoUnwrap: geometry requires position attribute and an index');
-  }
-  // T2.4: measured — xatlas accepts an empty mesh and returns an empty atlas
-  // without complaint, so a zero-triangle geometry used to come back with zero
-  // vertices and NO uv attribute, and the failure only surfaced later as a
-  // texture that would not appear. The realistic upstream cause is a CSG result
-  // that collapsed to nothing.
-  if (idxAttr.count === 0 || posAttr.count === 0) {
-    throw new Error(
-      'autoUnwrap: geometry has no triangles. Nothing can be unwrapped — check the operation that produced it (an empty CSG result is the usual cause).',
-    );
-  }
-  if (idxAttr.count % 3 !== 0) {
-    throw new Error(
-      `autoUnwrap: geometry has ${idxAttr.count} indices, which is not a whole number of triangles.`,
-    );
-  }
-
   xa.createAtlas();
-
-  const useNormals = Boolean(opts.useNormals && normAttr);
-  const indexArray =
-    idxAttr.array instanceof Uint32Array
-      ? idxAttr.array
-      : new Uint32Array(idxAttr.array as ArrayLike<number>);
-
-  const addRes = xa.addMesh(
-    indexArray,
-    new Float32Array(posAttr.array),
-    useNormals && normAttr ? new Float32Array(normAttr.array) : null,
-    null,
-    'kiln-mesh',
-    useNormals,
-    false,
-    1,
-  );
-  if (!addRes) {
-    xa.destroyAtlas();
-    throw new Error('autoUnwrap: xatlas.addMesh failed (non-manifold or degenerate geometry?)');
-  }
-
-  const result = xa.generateAtlas(
-    {},
-    { resolution: opts.resolution ?? 1024, padding: opts.padding ?? 2 },
-    true,
-  );
-
-  const mesh = result.meshes[0];
-  if (!mesh) {
-    xa.destroyAtlas();
-    throw new Error('autoUnwrap: xatlas returned no meshes');
-  }
-
-  const out = new THREE.BufferGeometry();
-  out.setAttribute(
-    'position',
-    new THREE.BufferAttribute(new Float32Array(mesh.vertex.vertices), 3),
-  );
-  if (mesh.vertex.normals) {
-    out.setAttribute('normal', new THREE.BufferAttribute(new Float32Array(mesh.vertex.normals), 3));
-  }
-  if (mesh.vertex.coords1) {
-    out.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(mesh.vertex.coords1), 2));
-  }
-  if (mesh.index) {
-    out.setIndex(new THREE.BufferAttribute(new Uint32Array(mesh.index), 1));
-  }
-
-  // Atlas metadata lives on userData so downstream tools (texture baking,
-  // projection painting) can sample the atlas resolution.
-  //
-  // T2.4 — read `width`/`height`, do NOT assume `resolution` squared. `resolution`
-  // is an upper bound xatlas packs within, not the atlas it returns: a CSG'd box
-  // at resolution 1024 measured 917x1085. A baker that allocated a square
-  // `resolution x resolution` target would sample the wrong texels along one
-  // axis, which reads as a subtle uniform stretch rather than an obvious break.
-  out.userData['atlas'] = {
-    width: result.width,
-    height: result.height,
-    atlasCount: result.atlasCount,
-  };
-
-  if (!out.getAttribute('normal')) out.computeVertexNormals();
-  repairZeroNormals(out);
-
-  // xatlas can pack every chart and still hand back a mesh with no coords1 when
-  // the input degenerates. Better to say so than to return a geometry whose
-  // missing `uv` only shows up as an untextured surface much later.
-  if (!out.getAttribute('uv')) {
-    xa.destroyAtlas();
-    throw new Error(
-      'autoUnwrap: xatlas produced no UV coordinates for this geometry (degenerate or zero-area triangles?).',
+  try {
+    const added = xa.addMesh(
+      prepared.index,
+      prepared.positions,
+      prepared.normals,
+      null,
+      'kiln-mesh',
+      prepared.useNormals,
+      false,
+      1,
     );
+    if (!added)
+      throw new Error('autoUnwrap: xatlas.addMesh failed (non-manifold or degenerate geometry?).');
+    const result = xa.generateAtlas(
+      {},
+      { resolution: prepared.resolution, padding: prepared.padding },
+      true,
+    );
+    const mesh = result.meshes[0];
+    if (!mesh || result.meshCount !== 1)
+      throw new Error('autoUnwrap: xatlas returned no single mesh.');
+    if (
+      result.atlasCount !== 1 ||
+      !Number.isSafeInteger(result.width) ||
+      result.width <= 0 ||
+      !Number.isSafeInteger(result.height) ||
+      result.height <= 0
+    )
+      throw new Error(
+        'autoUnwrap: xatlas must return one valid atlas; multiple atlas pages are unsupported.',
+      );
+    const remap = validateAtlasRemap(mesh, prepared.index, geometry.getAttribute('position').count);
+    const out = new THREE.BufferGeometry();
+    for (const [name, attribute] of Object.entries(geometry.attributes)) {
+      if (name === 'uv' || name === 'tangent' || (name === 'normal' && !prepared.useNormals))
+        continue;
+      out.setAttribute(name, remapUnwrapAttribute(attribute, remap.oldIndexes));
+    }
+    for (const [name, targets] of Object.entries(geometry.morphAttributes)) {
+      // Three's declaration lists standard keys, although its runtime uses a dictionary.
+      (out.morphAttributes as Record<string, THREE.BufferAttribute[]>)[name] = targets.map(
+        (attribute) => remapUnwrapAttribute(attribute, remap.oldIndexes),
+      );
+    }
+    out.morphTargetsRelative = geometry.morphTargetsRelative;
+    out.setIndex(new THREE.BufferAttribute(new Uint32Array(remap.index), 1));
+    out.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(remap.uv), 2));
+    out.name = geometry.name;
+    // Triangle correspondence was checked before retaining material groups and draw range.
+    out.groups = geometry.groups.map((group) => ({ ...group }));
+    out.setDrawRange(geometry.drawRange.start, geometry.drawRange.count);
+    out.userData = JSON.parse(JSON.stringify(geometry.userData));
+    // xatlas's requested resolution is not the returned width/height (often rectangular).
+    out.userData['atlas'] = {
+      width: result.width,
+      height: result.height,
+      atlasCount: result.atlasCount,
+    };
+    if (!out.getAttribute('normal')) out.computeVertexNormals();
+    repairZeroNormals(out);
+    return out;
+  } finally {
+    xa.destroyAtlas();
   }
-
-  xa.destroyAtlas();
-  return out;
-}
-
-/**
- * Convert a non-indexed BufferGeometry to an indexed one via naive
- * sequential indexing. Sufficient for xatlas input (it re-indexes anyway
- * during chart generation).
- */
-function toIndexed(geo: THREE.BufferGeometry): THREE.BufferGeometry {
-  const posAttr = geo.getAttribute('position') as THREE.BufferAttribute;
-  const indices = new Uint32Array(posAttr.count);
-  for (let i = 0; i < posAttr.count; i++) indices[i] = i;
-  const out = geo.clone();
-  out.setIndex(new THREE.BufferAttribute(indices, 1));
-  return out;
 }
 
 /**

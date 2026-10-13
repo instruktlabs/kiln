@@ -1,9 +1,18 @@
 /** GLB-native input adapter for the deterministic CPU geometry-flat renderer. */
 import { useCubicSpline } from '../animation-cubic';
+import { gltfTextureBindingKey, restoreGltfTextureBinding } from '../gltf-texture-binding';
+import { isCubicSplineTrack } from '../animation-spline';
 import { createGltfIO } from '../gltf-io';
 import { listLodChainNodes } from '../lod-export';
 import { isHiddenGltfNode } from '../metrics';
 import { registerReviewLodChains } from './lod';
+import {
+  atlasDocumentTable,
+  expandAtlasBinding,
+  restoreAtlasTextureProvenance,
+  validateAtlasDocumentProvenance,
+  type AtlasProvenanceTableV1,
+} from '../atlas-provenance';
 
 import {
   Primitive,
@@ -18,6 +27,9 @@ import {
   Group,
   Matrix4,
   Mesh,
+  Bone,
+  SkinnedMesh,
+  Skeleton,
   MeshStandardMaterial,
   NoColorSpace,
   SRGBColorSpace,
@@ -25,6 +37,8 @@ import {
   type Object3D,
   AnimationClip,
   QuaternionKeyframeTrack,
+  NumberKeyframeTrack,
+  PropertyBinding,
   VectorKeyframeTrack,
   Quaternion,
   Vector3,
@@ -188,11 +202,19 @@ function reviewClipsFromExtras(extras: unknown): AnimationClip[] | undefined {
         throw new GlbGeometryFlatError('GLB_FLAT_PARSE_FAILED', 'Invalid animation review track.');
       }
       const property = track.name.slice(track.name.lastIndexOf('.') + 1);
-      const Track = property === 'quaternion' ? QuaternionKeyframeTrack : VectorKeyframeTrack;
+      const morph = /^morphTargetInfluences(?:\[[^\]]+\])?$/.test(property);
+      const Track = morph
+        ? NumberKeyframeTrack
+        : property === 'quaternion'
+          ? QuaternionKeyframeTrack
+          : VectorKeyframeTrack;
       if (track.interpolation === 'CUBICSPLINE') {
+        const tuple = morph ? track.values.length / track.times.length : cubicTuple(property);
         if (
           track.times.length < 2 ||
-          track.values.length !== track.times.length * cubicTuple(property)
+          track.values.length !== track.times.length * tuple ||
+          !Number.isInteger(tuple / 3) ||
+          tuple < 3
         ) {
           throw new GlbGeometryFlatError(
             'GLB_FLAT_PARSE_FAILED',
@@ -309,7 +331,9 @@ function flatMaterial(material: Material | null): FlatMaterial {
 function preserveTexture(
   source: GltfTexture | null,
   usage: 'color' | 'data',
-  cache: Map<GltfTexture, Map<'color' | 'data', Texture>>,
+  cache: Map<GltfTexture, Map<string, Texture>>,
+  info?: import('@gltf-transform/core').TextureInfo | null,
+  atlas?: AtlasProvenanceTableV1,
 ): Texture | null {
   if (!source) return null;
   const encoded = source.getImage();
@@ -320,13 +344,18 @@ function preserveTexture(
     byUsage = new Map();
     cache.set(source, byUsage);
   }
-  const existing = byUsage.get(usage);
+  const reference = info?.getExtras()['kilnAtlasReference'];
+  const cacheKey = `${usage}:${gltfTextureBindingKey(info)}`;
+  const existing = byUsage.get(cacheKey);
   if (existing) return existing;
   const texture = new Texture();
   texture.name = source.getName();
   texture.colorSpace = usage === 'color' ? SRGBColorSpace : NoColorSpace;
   texture.userData.encoded = { mime, bytes: Uint8Array.from(encoded) };
-  byUsage.set(usage, texture);
+  texture.flipY = false;
+  if (info) restoreGltfTextureBinding(texture, info);
+  if (reference && info && atlas) restoreAtlasTextureProvenance(texture, info, atlas);
+  byUsage.set(cacheKey, texture);
   return texture;
 }
 
@@ -415,6 +444,7 @@ export async function loadGlbGeometryFlatScene(
       `Could not parse final GLB bytes: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
+  await validateAtlasDocumentProvenance(document);
   const scene = document.getRoot().getDefaultScene() ?? document.getRoot().listScenes()[0];
   if (!scene) throw new GlbGeometryFlatError('GLB_FLAT_NO_SCENE', 'Final GLB has no scene.');
 
@@ -430,16 +460,29 @@ export async function loadGlbGeometryFlatScene(
   };
   for (const child of scene.listChildren()) visit(child);
 
+  // Skinning needs the joint hierarchy and inverse bind matrices. Keep the
+  // historical flat adapter for rigid scenes, but share the review loader for
+  // a posed derivative instead of silently rasterizing its bind-pose positions.
+  if (
+    [...sceneNodes].some(
+      (node) =>
+        node.getSkin() ||
+        node
+          .getMesh()
+          ?.listPrimitives()
+          .some((p) => p.listTargets().length),
+    )
+  ) {
+    await validateAtlasDocumentProvenance(document);
+    return reviewSceneFromDocument(document);
+  }
+
   for (const node of sceneNodes) {
     const mesh = node.getMesh();
     if (!mesh) continue;
-    if (node.getSkin()) reasons.add(GLB_GEOMETRY_FLAT_REASON.SKIN_DEFORMATION_UNSUPPORTED);
     const instances = instanceMatrices(node);
     instanceCount += instances.count;
     for (const primitive of mesh.listPrimitives()) {
-      if (primitive.listTargets().length > 0) {
-        reasons.add(GLB_GEOMETRY_FLAT_REASON.MORPH_TARGETS_UNSUPPORTED);
-      }
       const positionAccessor = primitive.getAttribute('POSITION');
       if (positionAccessor?.getElementSize() !== 3) continue;
       const positions = decodedAccessor(positionAccessor);
@@ -536,20 +579,55 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
   } catch {
     throw new GlbGeometryFlatError('GLB_FLAT_PARSE_FAILED', 'Could not parse final GLB bytes.');
   }
+  await validateAtlasDocumentProvenance(document);
+  return reviewSceneFromDocument(document);
+}
+
+function reviewSceneFromDocument(
+  document: import('@gltf-transform/core').Document,
+): LoadedGlbReviewScene {
   const sourceScene = document.getRoot().getDefaultScene() ?? document.getRoot().listScenes()[0];
   if (!sourceScene) throw new GlbGeometryFlatError('GLB_FLAT_NO_SCENE', 'Final GLB has no scene.');
   const reasons = new Set<GlbGeometryFlatReasonCode>();
   const root = new Group();
   root.name = sourceScene.getName() || 'Scene';
   const nodeMap = new Map<import('@gltf-transform/core').Node, Object3D>();
-  const textureCache = new Map<GltfTexture, Map<'color' | 'data', Texture>>();
+  const atlas = atlasDocumentTable(document);
+  const textureCache = new Map<GltfTexture, Map<string, Texture>>();
+  const morphMeshes = new Map<import('@gltf-transform/core').Node, Mesh[]>();
+  // Morph primitives need unique, binding-safe names: the historical ':primitive'
+  // suffix is a namespace separator to Three.PropertyBinding. Parent names stay intact.
+  const usedNames = new Set(
+    document
+      .getRoot()
+      .listNodes()
+      .map((node) => node.getName()),
+  );
+  const nodeIds = new Map(
+    document
+      .getRoot()
+      .listNodes()
+      .map((node, index) => [node, index]),
+  );
+  let morphValues = 0;
+  const morphError = (detail: string): never => {
+    throw new GlbGeometryFlatError('GLB_FLAT_PARSE_FAILED', `Invalid morph review data: ${detail}`);
+  };
+  const joints = new Set(
+    document
+      .getRoot()
+      .listSkins()
+      .flatMap((skin) => skin.listJoints()),
+  );
+  const pendingSkins: Array<{ source: import('@gltf-transform/core').Node; mesh: SkinnedMesh }> =
+    [];
   let meshCount = 0;
   let instanceCount = 0;
 
   const buildNode = (source: import('@gltf-transform/core').Node): Object3D => {
     const existing = nodeMap.get(source);
     if (existing) return existing;
-    const target = new Group();
+    const target = joints.has(source) ? new Bone() : new Group();
     target.name = source.getName();
     target.position.fromArray(source.getTranslation());
     target.quaternion.fromArray(source.getRotation());
@@ -560,13 +638,29 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
     nodeMap.set(source, target);
     const sourceMesh = source.getMesh();
     if (sourceMesh) {
+      const targetCount = sourceMesh.listPrimitives()[0]?.listTargets().length ?? 0;
+      if (sourceMesh.listPrimitives().some((p) => p.listTargets().length !== targetCount))
+        morphError('primitives must have equal target counts.');
+      const nodeWeights = source.getWeights(),
+        meshWeights = sourceMesh.getWeights();
+      for (const weights of [nodeWeights, meshWeights])
+        if (weights.length && (weights.length !== targetCount || !weights.every(Number.isFinite)))
+          morphError('default weight count or values.');
+      const weights = nodeWeights.length
+        ? nodeWeights
+        : meshWeights.length
+          ? meshWeights
+          : Array<number>(targetCount).fill(0);
+      // glTF Transform decodes extras.targetNames into PrimitiveTarget names.
+      const targetNames =
+        sourceMesh
+          .listPrimitives()[0]
+          ?.listTargets()
+          .map((target, index) => target.getName() || String(index)) ?? [];
       target.userData.kilnGlbMeshNode = true;
-      if (source.getSkin()) reasons.add(GLB_GEOMETRY_FLAT_REASON.SKIN_DEFORMATION_UNSUPPORTED);
       const matrices = localInstanceMatrices(source);
       instanceCount += matrices.length;
       for (const [primitiveIndex, primitive] of sourceMesh.listPrimitives().entries()) {
-        if (primitive.listTargets().length)
-          reasons.add(GLB_GEOMETRY_FLAT_REASON.MORPH_TARGETS_UNSUPPORTED);
         const position = primitive.getAttribute('POSITION');
         if (position?.getElementSize() !== 3) continue;
         const indices = triangleIndices(primitive, position.getCount());
@@ -578,6 +672,9 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
         noteMaterialTextures(material, reasons);
         const flat = flatMaterial(material);
         const geometry = new BufferGeometry();
+        const atlasBinding = primitive.getExtras()['kilnAtlasBinding'];
+        if (atlasBinding !== undefined && atlas)
+          geometry.userData.kilnAtlasBinding = expandAtlasBinding(atlasBinding, atlas);
         geometry.setAttribute(
           'position',
           new BufferAttribute(Float32Array.from(decodedAccessor(position)), 3),
@@ -604,6 +701,72 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
           );
         }
         geometry.setIndex(new BufferAttribute(indices, 1));
+        if (targetCount) {
+          const targets = primitive.listTargets();
+          for (const target of targets)
+            for (const semantic of target.listSemantics()) {
+              const attribute = target.getAttribute(semantic)!;
+              if (
+                !primitive.getAttribute(semantic) ||
+                attribute.getCount() !== position.getCount() ||
+                ((semantic === 'POSITION' || semantic === 'NORMAL' || semantic === 'TANGENT') &&
+                  attribute.getElementSize() !== 3)
+              )
+                morphError(`target attribute ${semantic} does not match the base primitive.`);
+              if (semantic !== 'POSITION' && semantic !== 'NORMAL')
+                reasons.add(GLB_GEOMETRY_FLAT_REASON.MORPH_TARGETS_UNSUPPORTED);
+            }
+          const semantics = targets.some((target) => target.getAttribute('NORMAL'))
+            ? (['POSITION', 'NORMAL'] as const)
+            : (['POSITION'] as const);
+          // Bound zero-filled missing attributes as well as decoded ones: a tiny
+          // file with many omitted deltas must not expand without limit.
+          morphValues += targetCount * position.getCount() * 3 * semantics.length;
+          if (morphValues > 16_777_216)
+            morphError('expanded morph attributes exceed the 64 MiB review budget.');
+          geometry.morphTargetsRelative = true;
+          for (const semantic of semantics) {
+            const attributes = targets.map((target) => {
+              const attribute = target.getAttribute(semantic);
+              const values = attribute
+                ? Float32Array.from(decodedAccessor(attribute))
+                : new Float32Array(position.getCount() * 3);
+              if (!values.every(Number.isFinite)) morphError(`nonfinite ${semantic} displacement.`);
+              return new BufferAttribute(values, 3);
+            });
+            if (semantic === 'POSITION') geometry.morphAttributes.position = attributes;
+            else geometry.morphAttributes.normal = attributes;
+          }
+        }
+        if (source.getSkin()) {
+          const skinIndices = primitive.getAttribute('JOINTS_0');
+          const skinWeights = primitive.getAttribute('WEIGHTS_0');
+          if (
+            !skinIndices ||
+            !skinWeights ||
+            skinIndices.getElementSize() !== 4 ||
+            skinWeights.getElementSize() !== 4 ||
+            skinIndices.getCount() !== position.getCount() ||
+            skinWeights.getCount() !== position.getCount()
+          )
+            throw new GlbGeometryFlatError(
+              'GLB_FLAT_PARSE_FAILED',
+              `Invalid skin attributes on ${source.getName()}.`,
+            );
+          if (primitive.getAttribute('JOINTS_1') || primitive.getAttribute('WEIGHTS_1'))
+            throw new GlbGeometryFlatError(
+              'GLB_FLAT_PARSE_FAILED',
+              `Skin review supports four influences per vertex; ${source.getName()} has additional joint/weight sets.`,
+            );
+          geometry.setAttribute(
+            'skinIndex',
+            new BufferAttribute(Uint16Array.from(decodedAccessor(skinIndices)), 4),
+          );
+          geometry.setAttribute(
+            'skinWeight',
+            new BufferAttribute(Float32Array.from(decodedAccessor(skinWeights)), 4),
+          );
+        }
         const threeMaterial = new MeshStandardMaterial({
           opacity: flat.opacity,
           transparent: flat.alphaMode === 'BLEND',
@@ -621,17 +784,23 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
             material.getBaseColorTexture(),
             'color',
             textureCache,
+            material.getBaseColorTextureInfo(),
+            atlas,
           );
           threeMaterial.normalMap = preserveTexture(
             material.getNormalTexture(),
             'data',
             textureCache,
+            material.getNormalTextureInfo(),
+            atlas,
           );
           threeMaterial.normalScale.setScalar(material.getNormalScale());
           const metallicRoughness = preserveTexture(
             material.getMetallicRoughnessTexture(),
             'data',
             textureCache,
+            material.getMetallicRoughnessTextureInfo(),
+            atlas,
           );
           threeMaterial.metalnessMap = metallicRoughness;
           threeMaterial.roughnessMap = metallicRoughness;
@@ -639,22 +808,47 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
             material.getEmissiveTexture(),
             'color',
             textureCache,
+            material.getEmissiveTextureInfo(),
+            atlas,
           );
           threeMaterial.aoMap = preserveTexture(
             material.getOcclusionTexture(),
             'data',
             textureCache,
+            material.getOcclusionTextureInfo(),
+            atlas,
           );
           threeMaterial.aoMapIntensity = material.getOcclusionStrength();
         }
         for (const [index, matrix] of matrices.entries()) {
-          const mesh = new Mesh(geometry, threeMaterial);
+          const mesh = source.getSkin()
+            ? new SkinnedMesh(geometry, threeMaterial)
+            : new Mesh(geometry, threeMaterial);
+          if (mesh instanceof SkinnedMesh) pendingSkins.push({ source, mesh });
           // A deduplicated mesh resource can serve many distinctly named nodes.
           // QA repair hints must identify this owning node, not the shared resource.
           const baseName = source.getName() || sourceMesh.getName() || 'Mesh';
           mesh.name = `${baseName}:primitive-${primitiveIndex}${
             matrices.length === 1 ? '' : `:instance-${index}`
           }`;
+          if (targetCount) {
+            let bindingName = `${PropertyBinding.sanitizeNodeName(baseName)}_morph_${nodeIds.get(source)}_${primitiveIndex}_${index}`;
+            while (usedNames.has(bindingName)) bindingName += '_';
+            usedNames.add(bindingName);
+            mesh.name = bindingName;
+            mesh.morphTargetInfluences = [...weights];
+            if (
+              Array.isArray(targetNames) &&
+              targetNames.length === targetCount &&
+              targetNames.every((name) => typeof name === 'string')
+            )
+              mesh.morphTargetDictionary = Object.fromEntries(
+                targetNames.map((name, index) => [name, index]),
+              );
+            const siblings = morphMeshes.get(source) ?? [];
+            siblings.push(mesh);
+            morphMeshes.set(source, siblings);
+          }
           mesh.matrixAutoUpdate = false;
           mesh.matrix.copy(matrix);
           target.add(mesh);
@@ -685,6 +879,41 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
     })),
   );
 
+  for (const { source, mesh } of pendingSkins) {
+    const skin = source.getSkin()!;
+    const bones = skin.listJoints().map((joint) => nodeMap.get(joint));
+    const inverse = skin.getInverseBindMatrices();
+    if (
+      !bones.length ||
+      bones.some((bone) => !(bone instanceof Bone)) ||
+      (inverse && (inverse.getElementSize() !== 16 || inverse.getCount() < bones.length))
+    )
+      throw new GlbGeometryFlatError(
+        'GLB_FLAT_PARSE_FAILED',
+        `Invalid or unavailable skin joints/bind matrices on ${source.getName()}.`,
+      );
+    const indices = mesh.geometry.getAttribute('skinIndex');
+    const weights = mesh.geometry.getAttribute('skinWeight');
+    for (let i = 0; i < indices.array.length; i++)
+      if (
+        indices.array[i]! >= bones.length ||
+        !Number.isFinite(weights.array[i]) ||
+        weights.array[i]! < 0
+      )
+        throw new GlbGeometryFlatError(
+          'GLB_FLAT_PARSE_FAILED',
+          `Invalid skin joint index or weight on ${source.getName()}.`,
+        );
+    const matrices = bones.map((_, index) =>
+      new Matrix4().fromArray(inverse ? inverse.getElement(index, []) : new Matrix4().elements),
+    );
+    // glTF's inverse bind already maps mesh-local positions into joint space.
+    // Identity bindMatrix and AttachedBindMode cancel the mesh world transform,
+    // matching GLTFLoader even under translated/scaled mesh ancestors.
+    mesh.bind(new Skeleton(bones as Bone[], matrices), new Matrix4());
+  }
+  root.updateMatrixWorld(true);
+
   const nativeClips = document
     .getRoot()
     .listAnimations()
@@ -701,7 +930,7 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
             const output = sampler?.getOutput()?.getArray();
             const property =
               path === 'translation' ? 'position' : path === 'rotation' ? 'quaternion' : path;
-            if (!node || !property || property === 'weights' || !input || !output) return [];
+            if (!node || !property || !input || !output) return [];
             const interpolation: string = sampler!.getInterpolation();
             if (
               interpolation !== 'STEP' &&
@@ -712,6 +941,33 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
                 'GLB_FLAT_PARSE_FAILED',
                 `Animation review does not support ${interpolation} interpolation; use LINEAR, STEP or CUBICSPLINE.`,
               );
+            }
+            if (property === 'weights') {
+              const targets = morphMeshes.get(node);
+              if (!targets?.length) return [];
+              const width = targets[0]!.morphTargetInfluences!.length;
+              const values = decodedAccessor(sampler!.getOutput()!);
+              if (
+                input.length < 1 ||
+                input.length > REVIEW_CLIP_LIMITS.samplesPerTrack ||
+                values.length > REVIEW_CLIP_LIMITS.valuesPerTrack ||
+                values.length !==
+                  input.length * width * (interpolation === 'CUBICSPLINE' ? 3 : 1) ||
+                !Array.from(input).every(
+                  (v, i) => Number.isFinite(v) && v >= 0 && (i === 0 || v > input[i - 1]!),
+                ) ||
+                !Array.from(values).every(Number.isFinite)
+              )
+                morphError('animation weight sampler width or values.');
+              return targets.map((mesh) => {
+                const track = new NumberKeyframeTrack(
+                  `${mesh.name}.morphTargetInfluences`,
+                  input,
+                  values,
+                  interpolation === 'STEP' ? InterpolateDiscrete : InterpolateLinear,
+                );
+                return interpolation === 'CUBICSPLINE' ? useCubicSpline(track) : track;
+              });
             }
             const Track = path === 'rotation' ? QuaternionKeyframeTrack : VectorKeyframeTrack;
             if (interpolation === 'CUBICSPLINE') {
@@ -736,7 +992,28 @@ export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbRe
         (animation.getExtras() as { kilnLoopIntent?: unknown }).kilnLoopIntent,
       ),
     );
-  const clips = reviewClipsFromExtras(sourceScene.getExtras()) ?? nativeClips;
+  const extrasClips = reviewClipsFromExtras(sourceScene.getExtras());
+  if (extrasClips)
+    for (const clip of extrasClips)
+      clip.tracks = clip.tracks.flatMap((track) => {
+        const dot = track.name.lastIndexOf('.'),
+          property = track.name.slice(dot + 1);
+        if (!/^morphTargetInfluences(?:\[[^\]]+\])?$/.test(property)) return [track];
+        const sources = [...morphMeshes.keys()].filter(
+          (node) => node.getName() === track.name.slice(0, dot),
+        );
+        if (sources.length !== 1) return [track]; // Preserve unresolved/ambiguous author evidence.
+        return morphMeshes.get(sources[0]!)!.map((mesh) => {
+          const copy = new NumberKeyframeTrack(
+            `${mesh.name}.${property}`,
+            track.times,
+            track.values,
+            track.getInterpolation(),
+          );
+          return isCubicSplineTrack(track) ? useCubicSpline(copy) : copy;
+        });
+      });
+  const clips = extrasClips ?? nativeClips;
   return {
     root,
     clips,

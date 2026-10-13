@@ -1,0 +1,17 @@
+{
+  "name": "@kiln-scenes/cabin-woods-psx-horror",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Cabin in the Woods: PSX Horror asset demonstration using R3F and WebGPU",
+  "scripts": {
+    "test": "node scripts/test.mjs",
+    "dev": "vite --config vite.config.mjs",
+    "build": "vite build --config vite.config.mjs",
+    "hydrate": "node scripts/hydrate-runtime.mjs",
+    "serve": "node scripts/serve.mjs"
+  },
+  "peerDependencies": { "react": "19.3.0", "react-dom": "19.3.0", "@react-three/fiber": "9.8.1", "three": "0.186.1" },
+  "dependencies": { "fflate": "0.8.3" },
+  "devDependencies": { "react": "19.3.0", "react-dom": "19.3.0", "@react-three/fiber": "9.8.1", "three": "0.186.1", "vite": "8.3.2" }
+}

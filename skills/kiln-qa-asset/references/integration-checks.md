@@ -19,6 +19,27 @@ Kiln authors metres, +X forward, +Y up, +Z right. Confirm importer conversion in
 
 Source refs name source revisions. They do not identify arbitrary externally modified GLB bytes. Track the exact exported file used for integration.
 
+For a first-person presentation, review the held assembly from its actual animated
+eye frame at the destination field of view and aspect ratio. Inspect ready, lift,
+contact and recovery; an external pose can fit both hands while obscuring the
+crosshair or passing through the camera. Keep any view-specific presentation in
+the asset or consuming scene selected by the brief, not in universal rig defaults.
+
+Measure deformed surface vertices as well as contact locators. Planted foot markers
+do not rule out a sole, claw or swinging hand passing below the ground. Sample
+between animation keys and between the usual quarter poses; record the sampling
+density and tolerance rather than claiming a continuous guarantee from a few views.
+
+For atlas cutouts, first inspect the exact saved sheet on light, dark and checker
+backgrounds for alpha, edge RGB and region placement. Raw map pixels establish
+image content, not shaded material appearance. Then inspect the exported asset
+with the destination's actual sampler, alpha cutoff, sidedness and lighting,
+including receding and moving views. A still nearest-filtered preview cannot
+clear mip bleed, shimmering or disappearing thin details. Keep material revision,
+atlas region and compiler identity with the reviewed file. Structural UV-domain
+checks cannot prove intended corner orientation without source correspondence;
+use an asymmetric corner fixture when qualifying a mapping pipeline.
+
 `composeSceneGLB` defaults to static composition (`keepAnimations: false`). Explicitly keep animations when required. Its material optimization policy can change scene material organization; choose it deliberately, then inspect the result. Warnings can report skipped inputs, so successful export alone does not prove every required asset was included.
 
 Do not invent a universal performance cap. State the destination, tested conditions, and material limits of the evidence.
@@ -40,8 +61,13 @@ closure; flush rest-pose joins can separate or expose caps during motion.
 
 For articulated actors carrying equipment, inspect the limb bend as well as hand
 attachment closure. A hand can reach its target while the elbow folds through the
-body. Include headgear and carried items in intermediate-pose clearance checks,
-and inspect cables or strings at their moving attachment points. A convincing
+body. Include headgear and carried items in intermediate-pose clearance checks.
+Verify palm/finger orientation and wrist continuity against the full handle.
+Sample the interpolated skinned surfaces as well as joint centres; shoulder
+weights can create a pointed cap or a sleeve crossing the torso despite valid
+attachment distances. Inspect the actual first-person view when the destination
+requires it, without treating camera offsets as a repair for an invalid grip.
+Also inspect cables or strings at their moving attachment points. A convincing
 draw or tensioning action needs compatible equipment deformation, not just a
 moving hand and an arbitrarily stretched connector. Keep controller choices and
 equipment fit in the destination; a scene repair need not change the saved master.
@@ -78,6 +104,15 @@ instancing, so it does not predict complete `full` output or GPU speed. Check
 `afterRigidMerge` by ID, and report `anchors.omitted` when the listing is truncated.
 Measure actual destination draws by anchor, material and pass after export, then
 exercise the interactions and attachments those anchors protect.
+
+For a composed scene, inventory every placed asset family and conditional visible
+state, then verify actual submitted draws from representative views. Report
+pack-only assets separately. A source primitive count is not a visible draw
+count; one mesh may have several material groups, and repeated geometry may be
+instanced into spatial batches. Compare skin counts and material/texture variants
+when a low-triangle asset still contributes many submissions. Separate coverage
+snapshots from timed benchmarks and preserve exact camera, viewport and quality
+settings when comparing runtime derivatives.
 
 Read each observation's `evidence` and sampling/omission counts.
 `mirroredTangents` identifies static tangent-bearing parts with mirrored transforms;

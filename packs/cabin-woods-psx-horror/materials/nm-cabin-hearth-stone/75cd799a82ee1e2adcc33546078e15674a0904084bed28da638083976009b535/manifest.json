@@ -1,0 +1,542 @@
+{
+  "materialId": "nm-cabin-hearth-stone",
+  "revisionId": "sha256:75cd799a82ee1e2adcc33546078e15674a0904084bed28da638083976009b535",
+  "name": "Worn hearth masonry with varied stone courses",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "tx07"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 2,
+    "height": 2
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:f524d6591bbf459cdb8f7f440b662aedf3f163edd783228cab96aaf62d97eede",
+      "bytes": 614,
+      "width": 128,
+      "height": 128,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "repeat",
+        "wrapT": "repeat"
+      },
+      "pixelHash": "sha256:2b860cf974c5a38efe5a7f5be58fe01e3d49837eb87a53039ccbf4d70a08ad82",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 128,
+          "height": 128,
+          "usage": "albedo",
+          "background": [
+            89,
+            99,
+            79,
+            255
+          ],
+          "operations": [
+            {
+              "op": "paint",
+              "shape": {
+                "x": 1,
+                "y": 1,
+                "width": 32,
+                "height": 22,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                129,
+                132,
+                116,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 35,
+                "y": 1,
+                "width": 25,
+                "height": 22,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                114,
+                122,
+                104,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 62,
+                "y": 1,
+                "width": 37,
+                "height": 22,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                138,
+                140,
+                122,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 101,
+                "y": 1,
+                "width": 26,
+                "height": 22,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                119,
+                126,
+                107,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 129,
+                "y": 1,
+                "width": 32,
+                "height": 22,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                129,
+                132,
+                116,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": -13,
+                "y": 25,
+                "width": 20,
+                "height": 25,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                119,
+                126,
+                107,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 9,
+                "y": 25,
+                "width": 35,
+                "height": 25,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                129,
+                132,
+                116,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 46,
+                "y": 25,
+                "width": 27,
+                "height": 25,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                114,
+                122,
+                104,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 75,
+                "y": 25,
+                "width": 38,
+                "height": 25,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                138,
+                140,
+                122,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 115,
+                "y": 25,
+                "width": 20,
+                "height": 25,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                119,
+                126,
+                107,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 1,
+                "y": 52,
+                "width": 32,
+                "height": 21,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                138,
+                140,
+                122,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 35,
+                "y": 52,
+                "width": 25,
+                "height": 21,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                119,
+                126,
+                107,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 62,
+                "y": 52,
+                "width": 37,
+                "height": 21,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                129,
+                132,
+                116,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 101,
+                "y": 52,
+                "width": 26,
+                "height": 21,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                114,
+                122,
+                104,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 129,
+                "y": 52,
+                "width": 32,
+                "height": 21,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                138,
+                140,
+                122,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": -13,
+                "y": 75,
+                "width": 20,
+                "height": 26,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                114,
+                122,
+                104,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 9,
+                "y": 75,
+                "width": 35,
+                "height": 26,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                138,
+                140,
+                122,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 46,
+                "y": 75,
+                "width": 27,
+                "height": 26,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                119,
+                126,
+                107,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 75,
+                "y": 75,
+                "width": 38,
+                "height": 26,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                129,
+                132,
+                116,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 115,
+                "y": 75,
+                "width": 20,
+                "height": 26,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                114,
+                122,
+                104,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 1,
+                "y": 103,
+                "width": 32,
+                "height": 24,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                129,
+                132,
+                116,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 35,
+                "y": 103,
+                "width": 25,
+                "height": 24,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                114,
+                122,
+                104,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 62,
+                "y": 103,
+                "width": 37,
+                "height": 24,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                138,
+                140,
+                122,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 101,
+                "y": 103,
+                "width": 26,
+                "height": 24,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                119,
+                126,
+                107,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 129,
+                "y": 103,
+                "width": 32,
+                "height": 24,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                129,
+                132,
+                116,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "stamps",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  0,
+                  0
+                ],
+                "to": [
+                  6,
+                  1
+                ],
+                "width": 1
+              },
+              "rgba": [
+                147,
+                150,
+                129,
+                255
+              ],
+              "opacity": 255,
+              "count": 18,
+              "seed": 11007,
+              "area": {
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 128
+              },
+              "periodic": false
+            }
+          ]
+        },
+        "recipeHash": "sha256:45b89e12885f6f995bb4455f614e6d6fb5e17637fc61298494e90e034e7ad818",
+        "pixelHash": "sha256:2b860cf974c5a38efe5a7f5be58fe01e3d49837eb87a53039ccbf4d70a08ad82",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

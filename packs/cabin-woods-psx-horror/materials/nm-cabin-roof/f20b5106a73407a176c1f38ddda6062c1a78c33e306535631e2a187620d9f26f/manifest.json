@@ -1,0 +1,135 @@
+{
+  "materialId": "nm-cabin-roof",
+  "revisionId": "sha256:f20b5106a73407a176c1f38ddda6062c1a78c33e306535631e2a187620d9f26f",
+  "name": "Dark wooden shingles",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "tx06"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 2,
+    "height": 2
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:8cd22d80f02602194c5aa31ac2ca2e9f8e6561e1e5aa2bdbf13625f1a5d892cf",
+      "bytes": 626,
+      "width": 128,
+      "height": 128,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "repeat",
+        "wrapT": "repeat"
+      },
+      "pixelHash": "sha256:267034e27d64a4502912ba9023ed9741bf3ca4e9b54f5a7b5d1f32d3567b4114",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 128,
+          "height": 128,
+          "usage": "albedo",
+          "background": [
+            61,
+            68,
+            62,
+            255
+          ],
+          "operations": [
+            {
+              "op": "legacy-v2",
+              "spec": {
+                "schemaVersion": 2,
+                "size": 128,
+                "usage": "albedo",
+                "layers": [
+                  {
+                    "op": "bricks",
+                    "brick": 4936006,
+                    "mortar": 2371370,
+                    "rows": 8,
+                    "cols": 5,
+                    "mortarWidth": 0.065,
+                    "stagger": 0.5,
+                    "blend": "normal",
+                    "opacity": 1
+                  }
+                ]
+              },
+              "alpha": 255,
+              "opacity": 255
+            },
+            {
+              "op": "stamps",
+              "shape": {
+                "x": 0,
+                "y": 0,
+                "width": 8,
+                "height": 2,
+                "kind": "rectangle"
+              },
+              "rgba": [
+                104,
+                114,
+                99,
+                255
+              ],
+              "opacity": 255,
+              "count": 24,
+              "seed": 11006,
+              "area": {
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 128
+              },
+              "periodic": true
+            }
+          ]
+        },
+        "recipeHash": "sha256:15bb94b4c33168d9f30243517119887a2504111ef3bb04d3c8db83394032d3b0",
+        "pixelHash": "sha256:267034e27d64a4502912ba9023ed9741bf3ca4e9b54f5a7b5d1f32d3567b4114",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

@@ -13,3 +13,9 @@ test('explicit prior sections remain available and asset/file links open Library
   expect(initialWorkspaceSection('?asset=an-exact-asset', 'projects')).toBe('library');
   expect(initialWorkspaceSection('?open=fixture.glb', 'materials')).toBe('library');
 });
+test('an exact material link opens Materials regardless of remembered section', () => {
+  expect(
+    initialWorkspaceSection(`?material=atlas&materialRevision=sha256:${'a'.repeat(64)}`, 'live'),
+  ).toBe('materials');
+  expect(initialWorkspaceSection('?material=atlas', 'live')).toBe('live');
+});

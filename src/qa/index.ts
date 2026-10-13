@@ -9,6 +9,7 @@ export * from './architecture';
 export * from './architecture-repairs';
 export * from './architecture-corpus';
 export * from './character';
+export * from './skin-integrity';
 export * from './character-advisory';
 export * from './character-repairs';
 export * from './character-vehicle-corpus';

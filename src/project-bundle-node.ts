@@ -12,9 +12,19 @@ import {
   ProjectNotFoundError,
   type ProjectRevision,
 } from './projects';
-import { canonicalMaterialJson, type MaterialRecordV1 } from './material-library';
+import {
+  canonicalMaterialJson,
+  MATERIAL_LIBRARY_LIMITS,
+  type MaterialManifest,
+  type MaterialRecord,
+} from './material-library';
 import { dependencyManifests, resolveSavedAssetMaterials } from './asset-materials-node';
-import { createMaterialLibraryPayload, verifyMaterialRecordV1 } from './material-library-node';
+import {
+  createMaterialLibraryPayload,
+  verifyMaterialRecord,
+  resolveMaterialRecordClosure,
+  validateMaterialManifestIdentityAny,
+} from './material-library-node';
 import {
   PROJECT_BUNDLE_LIMITS,
   decodeProjectBundle,
@@ -26,7 +36,7 @@ import {
 async function assetMaterials(
   workspace: FileWorkspace,
   asset: AssetRecord,
-): Promise<MaterialRecordV1[]> {
+): Promise<MaterialRecord[]> {
   return resolveSavedAssetMaterials(asset, workspace.materials);
 }
 export async function resolveAssetMaterialPayload(workspace: FileWorkspace, asset: AssetRecord) {
@@ -60,27 +70,101 @@ export async function exportWorkspaceProjectBundle(
       ),
     });
   }
-  const materials = new Map<string, MaterialRecordV1>();
+  let materials: MaterialRecord[] = [];
   if (profile === 'editable') {
+    const roots = new Map<string, MaterialManifest>();
+    const assetRoots = new Set<string>();
+    const embedded = new Map<
+      string,
+      { manifest: MaterialManifest; files: Record<string, string> }
+    >();
+    const addRoot = (manifest: MaterialManifest) => {
+      const key = `${manifest.materialId}/${manifest.revisionId}`;
+      const previous = roots.get(key);
+      if (previous && canonicalMaterialJson(previous) !== canonicalMaterialJson(manifest))
+        throw new Error('Conflicting project material identity');
+      roots.set(key, manifest);
+    };
     for (const dependency of project.materialDependencies) {
       if (dependency.sha256 !== dependency.revisionId)
         throw new Error(`Material lock hash mismatch: ${dependency.resourceId}`);
-      let record: MaterialRecordV1;
+      let manifest: MaterialManifest;
       try {
-        record = await workspace.materials.read(dependency.resourceId, dependency.revisionId);
+        manifest = await workspace.materials.readManifest(
+          dependency.resourceId,
+          dependency.revisionId,
+        );
       } catch (error) {
         throw new Error(
           `Locked project material unavailable: ${dependency.resourceId} at ${dependency.revisionId}`,
           { cause: error },
         );
       }
-      materials.set(`${record.manifest.materialId}/${record.manifest.revisionId}`, record);
+      addRoot(manifest);
     }
-    for (const asset of assets)
-      for (const record of await assetMaterials(workspace, asset.record))
-        materials.set(`${record.manifest.materialId}/${record.manifest.revisionId}`, record);
+    for (const asset of assets) {
+      for (const manifest of dependencyManifests(asset.record)) {
+        addRoot(manifest);
+        assetRoots.add(`${manifest.materialId}/${manifest.revisionId}`);
+      }
+      for (const wire of asset.record.materialResources?.records ?? []) {
+        const manifest = validateMaterialManifestIdentityAny(wire.manifest);
+        const key = `${manifest.materialId}/${manifest.revisionId}`;
+        const previous = embedded.get(key);
+        if (
+          previous &&
+          (canonicalMaterialJson(previous.manifest) !== canonicalMaterialJson(manifest) ||
+            canonicalMaterialJson(previous.files) !== canonicalMaterialJson(wire.files))
+        )
+          throw new Error('Conflicting embedded material identity');
+        embedded.set(key, { manifest, files: wire.files });
+      }
+    }
+    const lockedRead = async <T>(
+      id: string,
+      revision: string,
+      read: () => Promise<T>,
+    ): Promise<T> => {
+      try {
+        return await read();
+      } catch (error) {
+        throw new Error(
+          `Locked ${assetRoots.has(`${id}/${revision}`) ? 'asset' : 'project'} material unavailable: ${id} at ${revision}`,
+          { cause: error },
+        );
+      }
+    };
+    materials = await resolveMaterialRecordClosure(
+      [...roots.values()],
+      {
+        readManifest: async (id, revision) =>
+          embedded.get(`${id}/${revision}`)?.manifest ??
+          lockedRead(id, revision, () => workspace.materials.readManifest(id, revision)),
+        read: async (id, revision) => {
+          const wire = embedded.get(`${id}/${revision}`);
+          if (!wire)
+            return lockedRead(id, revision, () =>
+              workspace.materials.readRecordFiles(id, revision),
+            );
+          return {
+            manifest: wire.manifest,
+            files: Object.fromEntries(
+              Object.entries(wire.files).map(([name, value]) => [
+                name,
+                new Uint8Array(Buffer.from(value, 'base64')),
+              ]),
+            ),
+          } as MaterialRecord;
+        },
+      },
+      {
+        maxRecords: 1024,
+        maxBytes: PROJECT_BUNDLE_LIMITS.maxBytes,
+        maxPixels: 1024 * MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
+      },
+    );
   }
-  return encodeProjectBundle({ project, assets, materials: [...materials.values()] }, profile);
+  return encodeProjectBundle({ project, assets, materials }, profile);
 }
 
 async function retainArchive(workspace: FileWorkspace, bytes: Uint8Array, digest: string) {
@@ -153,7 +237,8 @@ export async function importWorkspaceProjectBundle(
       record,
     ]),
   );
-  for (const record of decoded.materials) await verifyMaterialRecordV1(record);
+  for (const record of decoded.materials)
+    await verifyMaterialRecord(record, { materials: decoded.materials });
   for (const asset of decoded.assets) {
     await verifyAssetRecord(asset.record);
     for (const manifest of dependencyManifests(asset.record)) {
@@ -211,8 +296,15 @@ export async function importWorkspaceProjectBundle(
   // Nothing above performs writes. Verified immutable resources can safely survive a
   // later disk failure or project-ID conflict; imports never overwrite other revisions.
   await retainArchive(workspace, snapshot, digest);
-  for (let i = 0; i < decoded.materials.length; i += 100)
-    await workspace.materials.import(decoded.materials.slice(i, i + 100));
+  const newMaterialContext = decoded.materials.some(
+    (record) => record.manifest.schemaVersion === 2,
+  );
+  for (let i = 0; i < decoded.materials.length; i += 100) {
+    const batch = decoded.materials.slice(i, i + 100);
+    if (newMaterialContext)
+      await workspace.materials.import(batch, { materials: decoded.materials });
+    else await workspace.materials.import(batch);
+  }
   const records = [...destinationRecords.values()];
   for (let i = 0; i < records.length; i += 100)
     await library.import(options.collectionId, records.slice(i, i + 100));

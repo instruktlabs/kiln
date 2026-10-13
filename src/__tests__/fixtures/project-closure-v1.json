@@ -1,0 +1,181 @@
+{
+  "project": {
+    "version": "kiln.project.v1",
+    "projectId": "closure-control",
+    "createdAt": "2026-10-11T12:00:00.000Z",
+    "name": "Closure control",
+    "brief": "",
+    "design": {
+      "style": "",
+      "scale": "",
+      "palette": [],
+      "materialRoles": [],
+      "conventions": [],
+      "exceptions": []
+    },
+    "inventory": [],
+    "deliveryProfiles": [],
+    "materialDependencies": [
+      {
+        "resourceId": "wood",
+        "revisionId": "sha256:de42bb89f45ede0bb75dc447ac0b3295adbe03be401ad9d4bb4f0b2544f2c0cb",
+        "sha256": "sha256:de42bb89f45ede0bb75dc447ac0b3295adbe03be401ad9d4bb4f0b2544f2c0cb"
+      }
+    ],
+    "references": [],
+    "reviews": [],
+    "revisionId": "r_0000000001_b100044749a3c19303af5caddacbb99a68d41f0a82f27ca000d6c64a28004e5d"
+  },
+  "materials": [
+    {
+      "manifest": {
+        "schemaVersion": 1,
+        "materialId": "wood",
+        "revisionId": "sha256:de42bb89f45ede0bb75dc447ac0b3295adbe03be401ad9d4bb4f0b2544f2c0cb",
+        "name": "Wood",
+        "tags": [],
+        "tileable": true,
+        "parameters": {
+          "roughness": 1,
+          "metalness": 0,
+          "emissiveIntensity": 1,
+          "alphaMode": "opaque",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        },
+        "sources": [
+          {
+            "id": "authored",
+            "kind": "procedural",
+            "provider": "Kiln",
+            "creator": "Fixture",
+            "license": {
+              "spdx": "CC0-1.0",
+              "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+              "attribution": ""
+            },
+            "originalFiles": []
+          }
+        ],
+        "maps": [
+          {
+            "slot": "baseColor",
+            "file": "baseColor.png",
+            "sha256": "sha256:6ce7ea549f31978071b39e29b7019ecdcdba9e48fcce893759384742553728b4",
+            "bytes": 155,
+            "width": 4,
+            "height": 4,
+            "usage": "albedo",
+            "colorSpace": "srgb",
+            "sourceId": "authored",
+            "transforms": [],
+            "procedural": {
+              "compiler": "kiln.procedural-texture.v2",
+              "spec": {
+                "schemaVersion": 2,
+                "size": 4,
+                "usage": "albedo",
+                "layers": [
+                  {
+                    "op": "noise",
+                    "colorA": 1193046,
+                    "colorB": 11259375,
+                    "scale": 8,
+                    "octaves": 3,
+                    "seed": 2,
+                    "blend": "normal",
+                    "opacity": 1
+                  }
+                ]
+              },
+              "recipeHash": "sha256:80fe93016d3afbc987e6c2a960479fd6196c55e077cc7e1f94243405cdd6ef40",
+              "pixelHash": "sha256:7a974805d721a9e2865b48025cd77c7d94c484729d5abbb7d8cef706462fc0ab",
+              "encoder": {
+                "name": "sharp",
+                "version": "0.35.5"
+              }
+            }
+          }
+        ]
+      },
+      "files": {
+        "baseColor.png": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAACXBIWXMAAAPoAAAD6AG1e1JrAAAATUlEQVQI12OonX/wPwiXTNvxv27Bof8MEVVz/nvl9P23jW/8bxRS9p9hwqYr/6Nq5v0PKZvxv2nJsf8M3WvP/0/rWPW/ZdmJ//qBxf8BgIYpdKLAw3AAAAAASUVORK5CYII="
+      }
+    },
+    {
+      "manifest": {
+        "schemaVersion": 1,
+        "materialId": "wood",
+        "revisionId": "sha256:432673d15a2dcfb2753138efa40bae76430bd6ebe9804d589ad323de0cdc9ebd",
+        "name": "Wood",
+        "tags": [],
+        "tileable": true,
+        "parameters": {
+          "roughness": 1,
+          "metalness": 0,
+          "emissiveIntensity": 1,
+          "alphaMode": "opaque",
+          "alphaCutoff": 0.5,
+          "doubleSided": false
+        },
+        "sources": [
+          {
+            "id": "authored",
+            "kind": "procedural",
+            "provider": "Kiln",
+            "creator": "Fixture",
+            "license": {
+              "spdx": "CC0-1.0",
+              "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+              "attribution": ""
+            },
+            "originalFiles": []
+          }
+        ],
+        "maps": [
+          {
+            "slot": "baseColor",
+            "file": "baseColor.png",
+            "sha256": "sha256:e60a1cbe92248f7ca066310f6d3f1bd073e0908058e29621d96ea3087c6f7688",
+            "bytes": 157,
+            "width": 4,
+            "height": 4,
+            "usage": "albedo",
+            "colorSpace": "srgb",
+            "sourceId": "authored",
+            "transforms": [],
+            "procedural": {
+              "compiler": "kiln.procedural-texture.v2",
+              "spec": {
+                "schemaVersion": 2,
+                "size": 4,
+                "usage": "albedo",
+                "layers": [
+                  {
+                    "op": "noise",
+                    "colorA": 1193046,
+                    "colorB": 11259375,
+                    "scale": 8,
+                    "octaves": 3,
+                    "seed": 1,
+                    "blend": "normal",
+                    "opacity": 1
+                  }
+                ]
+              },
+              "recipeHash": "sha256:bcdaf2321b000354e888e3562530dd4a84c414af0a028e7fbbc1936cdbbd4050",
+              "pixelHash": "sha256:ddde1bfed24eb1641fb103473f1bd570a0c49b3a1ff726550ad447d20db5d32e",
+              "encoder": {
+                "name": "sharp",
+                "version": "0.35.5"
+              }
+            }
+          }
+        ]
+      },
+      "files": {
+        "baseColor.png": "iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAACXBIWXMAAAPoAAAD6AG1e1JrAAAAT0lEQVQI1wFEALv/AFN1l/9ihKb/NFZ4/zdZe/8Aa42v/4SmyP9HaYv/Z4mr/wB0lrj/j7HT/22Psf+CpMb/AFR2mP9Ja43/Y4Wn/z1fgf83kygVYEwacQAAAABJRU5ErkJggg=="
+      }
+    }
+  ]
+}

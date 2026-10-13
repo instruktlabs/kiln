@@ -7,6 +7,8 @@
  * executed once (the cache), without any GLB round-trip.
  */
 import { describe, expect, test } from 'bun:test';
+import * as THREE from 'three';
+import { renderSceneToGLB } from '../render';
 
 import { rasterizeComposedScene, SCENE_VIEWS } from '../views';
 
@@ -28,6 +30,51 @@ const TREE = `function build() {
 
 const isPng = (b: Buffer): boolean =>
   b.length > 1000 && b[0] === 0x89 && b.subarray(1, 4).toString('latin1') === 'PNG';
+
+test('composed skinned placements match rigid controls instead of sharing the original bones', async () => {
+  const geometry = new THREE.BoxGeometry(0.4, 1, 0.3);
+  const count = geometry.getAttribute('position').count;
+  geometry.setAttribute(
+    'skinIndex',
+    new THREE.Uint16BufferAttribute(new Uint16Array(count * 4), 4),
+  );
+  geometry.setAttribute(
+    'skinWeight',
+    new THREE.Float32BufferAttribute(
+      Array.from({ length: count * 4 }, (_, i) => (i % 4 === 0 ? 1 : 0)),
+      4,
+    ),
+  );
+  const material = new THREE.MeshStandardMaterial({ color: '#789abc' });
+  const root = new THREE.Group();
+  const mesh = new THREE.SkinnedMesh(geometry, material);
+  const bone = new THREE.Bone();
+  mesh.add(bone);
+  root.add(mesh);
+  root.updateMatrixWorld(true);
+  mesh.bind(new THREE.Skeleton([bone]));
+  const skin = await renderSceneToGLB(root, {
+    gltfExporter: 'three',
+    derivative: true,
+    optimize: 'off',
+  });
+  const rigidRoot = new THREE.Group();
+  rigidRoot.add(new THREE.Mesh(new THREE.BoxGeometry(0.4, 1, 0.3), material));
+  const rigid = await renderSceneToGLB(rigidRoot, {
+    gltfExporter: 'three',
+    derivative: true,
+    optimize: 'off',
+  });
+  const capture = (glb: Uint8Array) =>
+    rasterizeComposedScene(
+      [
+        { glb, pos: [-2, 0, 0], rotYDeg: 35, scale: 0.7 },
+        { glb, pos: [2, 0, 0], rotYDeg: -20, scale: 1.2 },
+      ],
+      { size: 96 },
+    );
+  expect((await capture(skin.bytes)).png).toEqual((await capture(rigid.bytes)).png);
+});
 
 describe('rasterizeComposedScene', () => {
   test('renders a multi-asset scene from the 3 default angles into one grid PNG', async () => {

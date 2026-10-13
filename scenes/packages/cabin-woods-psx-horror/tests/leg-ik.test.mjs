@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {solveLeg,stepTarget} from '../src/game/leg-ik.mjs';
+const distance=(a,b)=>Math.hypot(...a.map((v,i)=>v-b[i]));
+test('rest target recovers the authored knee and both original segment lengths',()=>{const h=[0,.38,0],k=[.2,.6,.55],f=[.4,.025,.85],r=solveLeg(h,k,f,f);assert(distance(r.knee,k)<1e-6);assert(distance(r.foot,f)<1e-6);assert(r.reachable);});
+test('reachable contact and overextension keep lengths finite without stretching',()=>{const h=[0,.38,0],k=[.2,.6,.55],f=[.4,.025,.85];for(const target of [[.5,.08,.7],[4,0,7],[0,.38,0]]){const r=solveLeg(h,k,f,target);assert(Math.abs(distance(h,r.knee)-r.upperLength)<1e-5);assert(Math.abs(distance(r.knee,r.foot)-r.lowerLength)<1e-5);assert(r.knee.every(Number.isFinite));}assert(!solveLeg(h,k,f,[4,0,7]).reachable);});
+test('swing rises while contact half-cycle remains on the surface',()=>{const foot=[0,.025,.8];for(const p of [0,.1,.25,.49])assert.equal(stepTarget(foot,p)[1],.025);assert(stepTarget(foot,.75)[1]>.07);assert.deepEqual(stepTarget(foot,1),stepTarget(foot,0));});

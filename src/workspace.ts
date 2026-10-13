@@ -6,12 +6,12 @@ import {
   type MaterialDependency,
   type ProjectRevision,
 } from './projects';
-import type { MaterialLibraryPayloadV1 } from './material-library';
+import type { MaterialLibraryPayload } from './material-library';
 
 export interface WorkspaceBinding {
   project?: ProjectRevision;
   materialDependencies: MaterialDependency[];
-  materialResources: MaterialLibraryPayloadV1;
+  materialResources: MaterialLibraryPayload;
 }
 export const workspaceSelectionSchema = z
   .object({

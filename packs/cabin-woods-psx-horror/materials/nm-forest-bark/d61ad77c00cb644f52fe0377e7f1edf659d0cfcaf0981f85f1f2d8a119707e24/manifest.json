@@ -1,0 +1,1112 @@
+{
+  "materialId": "nm-forest-bark",
+  "revisionId": "sha256:d61ad77c00cb644f52fe0377e7f1edf659d0cfcaf0981f85f1f2d8a119707e24",
+  "name": "Pine bark / broken plates",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "bark"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 1,
+    "height": 1
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:8a94aa284a8036c73c46ddc028ecd5a8495aa6007c4828cc4b683e21f0a0b038",
+      "bytes": 665,
+      "width": 64,
+      "height": 64,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "repeat",
+        "wrapT": "repeat"
+      },
+      "pixelHash": "sha256:d2a1a830cdcb88a4f28ca0f160094df6424940ac40fa3090acf5e00c402f8f29",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 64,
+          "height": 64,
+          "usage": "albedo",
+          "background": [
+            85,
+            67,
+            51,
+            255
+          ],
+          "operations": [
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    0,
+                    -8
+                  ],
+                  [
+                    6,
+                    -10
+                  ],
+                  [
+                    8,
+                    10
+                  ],
+                  [
+                    5,
+                    15
+                  ],
+                  [
+                    1,
+                    13
+                  ]
+                ]
+              },
+              "rgba": [
+                105,
+                82,
+                59,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  1,
+                  -5
+                ],
+                "to": [
+                  2,
+                  10
+                ],
+                "width": 2
+              },
+              "rgba": [
+                52,
+                44,
+                36,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    0,
+                    14
+                  ],
+                  [
+                    5,
+                    12
+                  ],
+                  [
+                    7,
+                    29
+                  ],
+                  [
+                    4,
+                    34
+                  ],
+                  [
+                    1,
+                    32
+                  ]
+                ]
+              },
+              "rgba": [
+                117,
+                93,
+                67,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  1,
+                  17
+                ],
+                "to": [
+                  2,
+                  29
+                ],
+                "width": 2
+              },
+              "rgba": [
+                139,
+                113,
+                80,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    0,
+                    38
+                  ],
+                  [
+                    8,
+                    36
+                  ],
+                  [
+                    10,
+                    60
+                  ],
+                  [
+                    7,
+                    65
+                  ],
+                  [
+                    1,
+                    63
+                  ]
+                ]
+              },
+              "rgba": [
+                75,
+                59,
+                44,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  1,
+                  41
+                ],
+                "to": [
+                  2,
+                  60
+                ],
+                "width": 2
+              },
+              "rgba": [
+                52,
+                44,
+                36,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    9,
+                    -8
+                  ],
+                  [
+                    14,
+                    -10
+                  ],
+                  [
+                    16,
+                    7
+                  ],
+                  [
+                    13,
+                    12
+                  ],
+                  [
+                    10,
+                    10
+                  ]
+                ]
+              },
+              "rgba": [
+                117,
+                93,
+                67,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  10,
+                  -5
+                ],
+                "to": [
+                  11,
+                  7
+                ],
+                "width": 2
+              },
+              "rgba": [
+                139,
+                113,
+                80,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    9,
+                    14
+                  ],
+                  [
+                    17,
+                    12
+                  ],
+                  [
+                    19,
+                    36
+                  ],
+                  [
+                    16,
+                    41
+                  ],
+                  [
+                    10,
+                    39
+                  ]
+                ]
+              },
+              "rgba": [
+                75,
+                59,
+                44,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  10,
+                  17
+                ],
+                "to": [
+                  11,
+                  36
+                ],
+                "width": 2
+              },
+              "rgba": [
+                52,
+                44,
+                36,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    9,
+                    38
+                  ],
+                  [
+                    15,
+                    36
+                  ],
+                  [
+                    17,
+                    56
+                  ],
+                  [
+                    14,
+                    61
+                  ],
+                  [
+                    10,
+                    59
+                  ]
+                ]
+              },
+              "rgba": [
+                105,
+                82,
+                59,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  10,
+                  41
+                ],
+                "to": [
+                  11,
+                  56
+                ],
+                "width": 2
+              },
+              "rgba": [
+                139,
+                113,
+                80,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    19,
+                    -8
+                  ],
+                  [
+                    27,
+                    -10
+                  ],
+                  [
+                    29,
+                    14
+                  ],
+                  [
+                    26,
+                    19
+                  ],
+                  [
+                    20,
+                    17
+                  ]
+                ]
+              },
+              "rgba": [
+                75,
+                59,
+                44,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  20,
+                  -5
+                ],
+                "to": [
+                  21,
+                  14
+                ],
+                "width": 2
+              },
+              "rgba": [
+                52,
+                44,
+                36,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    19,
+                    14
+                  ],
+                  [
+                    25,
+                    12
+                  ],
+                  [
+                    27,
+                    32
+                  ],
+                  [
+                    24,
+                    37
+                  ],
+                  [
+                    20,
+                    35
+                  ]
+                ]
+              },
+              "rgba": [
+                105,
+                82,
+                59,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  20,
+                  17
+                ],
+                "to": [
+                  21,
+                  32
+                ],
+                "width": 2
+              },
+              "rgba": [
+                139,
+                113,
+                80,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    19,
+                    38
+                  ],
+                  [
+                    24,
+                    36
+                  ],
+                  [
+                    26,
+                    53
+                  ],
+                  [
+                    23,
+                    58
+                  ],
+                  [
+                    20,
+                    56
+                  ]
+                ]
+              },
+              "rgba": [
+                117,
+                93,
+                67,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  20,
+                  41
+                ],
+                "to": [
+                  21,
+                  53
+                ],
+                "width": 2
+              },
+              "rgba": [
+                52,
+                44,
+                36,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    31,
+                    -8
+                  ],
+                  [
+                    37,
+                    -10
+                  ],
+                  [
+                    39,
+                    10
+                  ],
+                  [
+                    36,
+                    15
+                  ],
+                  [
+                    32,
+                    13
+                  ]
+                ]
+              },
+              "rgba": [
+                105,
+                82,
+                59,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  32,
+                  -5
+                ],
+                "to": [
+                  33,
+                  10
+                ],
+                "width": 2
+              },
+              "rgba": [
+                139,
+                113,
+                80,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    31,
+                    14
+                  ],
+                  [
+                    36,
+                    12
+                  ],
+                  [
+                    38,
+                    29
+                  ],
+                  [
+                    35,
+                    34
+                  ],
+                  [
+                    32,
+                    32
+                  ]
+                ]
+              },
+              "rgba": [
+                117,
+                93,
+                67,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  32,
+                  17
+                ],
+                "to": [
+                  33,
+                  29
+                ],
+                "width": 2
+              },
+              "rgba": [
+                52,
+                44,
+                36,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    31,
+                    38
+                  ],
+                  [
+                    39,
+                    36
+                  ],
+                  [
+                    41,
+                    60
+                  ],
+                  [
+                    38,
+                    65
+                  ],
+                  [
+                    32,
+                    63
+                  ]
+                ]
+              },
+              "rgba": [
+                75,
+                59,
+                44,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  32,
+                  41
+                ],
+                "to": [
+                  33,
+                  60
+                ],
+                "width": 2
+              },
+              "rgba": [
+                139,
+                113,
+                80,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    43,
+                    -8
+                  ],
+                  [
+                    48,
+                    -10
+                  ],
+                  [
+                    50,
+                    7
+                  ],
+                  [
+                    47,
+                    12
+                  ],
+                  [
+                    44,
+                    10
+                  ]
+                ]
+              },
+              "rgba": [
+                117,
+                93,
+                67,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  44,
+                  -5
+                ],
+                "to": [
+                  45,
+                  7
+                ],
+                "width": 2
+              },
+              "rgba": [
+                52,
+                44,
+                36,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    43,
+                    14
+                  ],
+                  [
+                    51,
+                    12
+                  ],
+                  [
+                    53,
+                    36
+                  ],
+                  [
+                    50,
+                    41
+                  ],
+                  [
+                    44,
+                    39
+                  ]
+                ]
+              },
+              "rgba": [
+                75,
+                59,
+                44,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  44,
+                  17
+                ],
+                "to": [
+                  45,
+                  36
+                ],
+                "width": 2
+              },
+              "rgba": [
+                139,
+                113,
+                80,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    43,
+                    38
+                  ],
+                  [
+                    49,
+                    36
+                  ],
+                  [
+                    51,
+                    56
+                  ],
+                  [
+                    48,
+                    61
+                  ],
+                  [
+                    44,
+                    59
+                  ]
+                ]
+              },
+              "rgba": [
+                105,
+                82,
+                59,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  44,
+                  41
+                ],
+                "to": [
+                  45,
+                  56
+                ],
+                "width": 2
+              },
+              "rgba": [
+                52,
+                44,
+                36,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    55,
+                    -8
+                  ],
+                  [
+                    63,
+                    -10
+                  ],
+                  [
+                    65,
+                    14
+                  ],
+                  [
+                    62,
+                    19
+                  ],
+                  [
+                    56,
+                    17
+                  ]
+                ]
+              },
+              "rgba": [
+                75,
+                59,
+                44,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  56,
+                  -5
+                ],
+                "to": [
+                  57,
+                  14
+                ],
+                "width": 2
+              },
+              "rgba": [
+                139,
+                113,
+                80,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    55,
+                    14
+                  ],
+                  [
+                    61,
+                    12
+                  ],
+                  [
+                    63,
+                    32
+                  ],
+                  [
+                    60,
+                    37
+                  ],
+                  [
+                    56,
+                    35
+                  ]
+                ]
+              },
+              "rgba": [
+                105,
+                82,
+                59,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  56,
+                  17
+                ],
+                "to": [
+                  57,
+                  32
+                ],
+                "width": 2
+              },
+              "rgba": [
+                52,
+                44,
+                36,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    55,
+                    38
+                  ],
+                  [
+                    60,
+                    36
+                  ],
+                  [
+                    62,
+                    53
+                  ],
+                  [
+                    59,
+                    58
+                  ],
+                  [
+                    56,
+                    56
+                  ]
+                ]
+              },
+              "rgba": [
+                117,
+                93,
+                67,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  56,
+                  41
+                ],
+                "to": [
+                  57,
+                  53
+                ],
+                "width": 2
+              },
+              "rgba": [
+                139,
+                113,
+                80,
+                255
+              ],
+              "opacity": 255
+            }
+          ]
+        },
+        "recipeHash": "sha256:45060c9f1590596a330dc6acf0f69e49f40f7e21b0609eb881580aca37e2ec2c",
+        "pixelHash": "sha256:d2a1a830cdcb88a4f28ca0f160094df6424940ac40fa3090acf5e00c402f8f29",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

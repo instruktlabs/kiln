@@ -5,8 +5,9 @@ test('the portable gate selects script contracts without selecting historical au
   const spawn = spyOn(Bun, 'spawnSync').mockReturnValue({ exitCode: 0 } as ReturnType<typeof Bun.spawnSync>);
   try {
     await import('../test-portable');
-    expect(spawn).toHaveBeenCalledTimes(2);
+    expect(spawn).toHaveBeenCalledTimes(3);
     expect(spawn.mock.calls[1]![0]).toEqual(['node', 'packages/troy/scripts/test.mjs']);
+    expect(spawn.mock.calls[2]![0]).toEqual(['node', 'packages/cabin-woods-psx-horror/scripts/test.mjs']);
     const [command] = spawn.mock.calls[0]!;
     expect(command).toContain('./scripts/tests/static-server.test.ts');
     expect(command).toContain('./scripts/tests/checks.test.ts');

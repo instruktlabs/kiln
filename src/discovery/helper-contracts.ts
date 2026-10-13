@@ -1177,6 +1177,74 @@ define(
   },
 );
 define(
+  'createBoneChain',
+  {
+    ...nodeFacts,
+    axes: 'Explicit local forward/bend axes and rest transforms; body-plan neutral.',
+    origin: 'Offsets are local to the preceding bone; first offset is under the supplied parent.',
+    parameters: [
+      '1..1024 descriptors; unique roles and sanitized node names across the parent hierarchy. The first parentRole is inferred from a declared parent joint; an explicit value must agree.',
+    ],
+    preservation: [
+      'Creates real Bones with the same versioned semantic descriptors as rigid createJointChain; leaves existing nodes untouched.',
+    ],
+    semantics: ['Preserves declared roles, local rest frames, axes, contacts and end-effectors.'],
+    cost: 'Linear in descriptors and existing parent hierarchy; validates before adding the chain.',
+  },
+  {
+    kind: 'assembly',
+    references: ['src/character.ts'],
+    tags: ['rig', 'bones', 'skinning'],
+    aliases: ['bone chain', 'semantic bones'],
+    intents: ['create bones for a skinned custom body plan'],
+    related: [
+      { name: 'createJointChain', relation: 'alternative' },
+      { name: 'createSkinnedPart', relation: 'companion' },
+    ],
+    limitations: [
+      'Does not bind geometry, create animations, choose a body plan or generate anatomical weights.',
+    ],
+  },
+);
+define(
+  'createSkinnedPart',
+  {
+    ...nodeFacts,
+    ownership:
+      'Owns cloned geometry, influence arrays and inverse bind matrices. Materials and caller-owned bones are shared; source geometry stays unchanged.',
+    coordinates:
+      'Geometry is mesh-local; supplied mesh transforms are local to the required parent. All bones must share its existing hierarchy and be in the intended rest pose.',
+    axes: 'No forced character forward axis. Local rotation options are Euler XYZ degrees, matching createPart.',
+    origin: 'The supplied geometry origin is unchanged.',
+    topology: [
+      'Creates a skinned mesh on cloned unchanged topology; no automatic solid repair or watertightness claim.',
+    ],
+    parameters: [
+      '1..1024 distinct named Bones; 1..262144 xyz vertices; 128 MiB total cloned attribute storage plus new influences.',
+      'Exactly four valid indices and finite nonnegative weights per vertex. Default requires each weight <=1 and sum within 1e-5 of one; normalizeWeights:true explicitly normalizes positive finite sums. Zero sums never receive invented weights.',
+      'Existing skin attributes, singular/nonfinite bind transforms and ambiguous bone names are rejected.',
+    ],
+    preservation: [
+      'Unchanged topology retains UV/color/morph attributes and material groups on an owned clone. Skeleton order matches the supplied bone array.',
+    ],
+    semantics: ['Optional semantic metadata is stamped on the returned Mesh_name.'],
+    cost: 'O(vertices + attributes + bones + parent hierarchy); no automatic weighting or anatomical fit computation.',
+  },
+  {
+    kind: 'assembly',
+    references: ['src/skin-binding.ts'],
+    tags: ['rig', 'skinning', 'weights', 'binding'],
+    aliases: ['skin binding', 'weighted mesh'],
+    intents: ['bind explicit vertex influences without mutating shared geometry'],
+    related: [{ name: 'createBoneChain', relation: 'prerequisite' }],
+    limitations: [
+      'Requires the explicit Three exporter for skin delivery; legacy defaults remain unchanged.',
+      'Four influences are this helper contract, not a new global restriction on direct Three.js authoring.',
+      'Bind only after rest transforms are assembled. Reparenting or editing rest geometry afterward needs deliberate rebinding; runtime posed bounds remain the consumer responsibility.',
+    ],
+  },
+);
+define(
   'createVehicleFrame',
   {
     ...nodeFacts,
@@ -1424,6 +1492,39 @@ define(
     ],
     aliases: ['portable material specification', 'project material library'],
     intents: ['compile a strict portable material definition'],
+  },
+);
+
+define(
+  'compilePortableMaterialSpecV3',
+  {
+    ...materialFacts,
+    execution: 'async',
+    ownership:
+      'Creates an owned material and owned texture, Source, pixel and encoded-byte bindings; never mutates a cached resource texture.',
+    parameters: [
+      'Strict schemaVersion 3 pbrMetallicRoughness specification, with existing scalar PBR fields and exact slot usage checks.',
+      'Each texture ref is a typed procedural V3 spec or approved resource ID plus a complete sampler: minFilter, magFilter, wrapS and wrapT.',
+      'Procedural dimensions are independent width/height; colors are straight RGBA bytes. The material selects opaque, mask or blend behavior explicitly.',
+      'Source accepts exactly one specification. Host resources are injected after verification; authored source cannot provide bytes, paths, URLs or a resolver.',
+    ],
+    preservation: [
+      'Existing V1/V2 recipe algorithms, hashes and material defaults are unchanged.',
+      'Sampler and alpha state export through standard glTF material and sampler fields; runtime glow, lighting and postprocessing remain consumer choices.',
+    ],
+  },
+  {
+    ...materialMetadata,
+    references: [
+      'src/procedural-material-v3.ts',
+      'src/portable-material-runtime.ts',
+      'src/portable-sampler.ts',
+    ],
+    aliases: ['portable RGBA material', 'explicit texture sampling'],
+    intents: ['compile cutout or pixel-textured portable materials'],
+    limitations: [
+      'Height-map derivation is not part of the V3 binding contract. V2 remains available for existing derive recipes.',
+    ],
   },
 );
 
@@ -2048,13 +2149,16 @@ define(
     execution: 'async',
     axes: 'Chart orientation is selected by xatlas, not a directional material frame.',
     parameters: [
-      'Nonempty complete triangle geometry; resolution is a packing limit, not guaranteed final dimensions.',
-      'padding defaults 2; useNormals defaults false.',
+      'Nonempty complete triangle geometry; at most 65,536 source and output vertices, 1,000,000 triangles and a 128 MiB attribute allocation bound. Split larger meshes.',
+      'resolution is an integer 1..4096 target, not guaranteed final dimensions; read userData.atlas.width/height. padding is an integer 0..resolution, default 2.',
+      'useNormals defaults false (recompute); true uses and preserves source normals. Normal morphs require true and a base normal attribute.',
     ],
     topology: ['Reindexes/splits vertices for charts; does not repair malformed source topology.'],
     preservation: [
-      'Returns new positions/index/UVs and atlas metadata; normals depend on input/options.',
-      'Arbitrary custom attributes, groups, materials and original UV orientation are not preserved by this reconstruction.',
+      'Returns owned buffers; source remains unchanged. Seam mapping retains per-vertex attributes with 1..4 components, including colors, skin weights/indices, extra UVs and normalized/interleaved storage values.',
+      'Preserves position/normal/color morph targets, relative-mode flag, triangle groups, draw range, name and JSON userData. Normal policy stays opt-in; zero normals are repaired.',
+      'Replaces UV0 and atlas metadata; drops stale tangents. Recompute tangents after final UVs. Mesh materials, skeleton and animation belong to the caller, not the geometry helper.',
+      'Rejects instanced data, unsupported morph semantics, multiple atlas pages, invalid correspondence and adapter index overflow instead of silently discarding data.',
     ],
     cost: 'WASM charting/packing depends on mesh complexity and resolution; no general time bound.',
   },
@@ -2111,17 +2215,23 @@ define(
     ...textureFacts,
     ownership: 'Creates a new DataTexture with generated bytes and portable metadata.',
     parameters: [
-      'Strict schemaVersion 2; size power-of-two 4..1024; at most 8 layers.',
+      'V1/V2 preserve opaque patterns: size power-of-two 4..1024 and at most 8 layers. Explicit schemaVersion 3 uses width/height integers 4..1024, byte RGBA, at most 64 ordered operations and 64 polygon vertices.',
+      'V3 paint/mask use integer pixel-edge shapes with binary center coverage and fixed integer source-over rounding. A mask clears outside its shape; invert keeps outside. Zero-alpha pixels are transparent black.',
+      'V3 color-only palette colors are 1..32 RGB integers, optional fixed Bayer4 dither. Color-only stamps use bounded Xorshift32 seed/area placement; periodic wrapping is explicit and at most 256 expanded copies. Legacy-v2 layers delegate unchanged square V2 patterns with matching usage.',
       'Pattern counts 1..256 and noise octaves 1..6; seeded patterns are deterministic.',
       'For stripes and gradient, angleDeg rotates the direction of color variation in UV space about the image center. At 0 degrees colors vary across U: stripe bands run along V. At 90 degrees colors vary across V: bands run along U. This does not rotate the mesh UVs.',
       'Stripes count is the number of alternating bands across one unit of the projected coordinate, not the number of colorA/colorB pairs. Gradient runs from its from color to its to color along that coordinate and clamps outside 0..1.',
       'Unknown keys, callbacks, paths, URLs and shader source are rejected.',
     ],
     preservation: ['Produces repeat-wrapped encoded texture content; color space follows usage.'],
-    cost: 'Bounded pixel/layer budgets; generation scales with pixels × layers × pattern work.',
+    cost: 'V2 retains pixel/layer budgets. V3 preflights at most 1,048,576 texels, 64million work units including polygon edges, palette comparisons and periodic copies, and 64MiB transient bytes.',
   },
   {
-    references: ['src/procedural-texture.ts'],
+    references: [
+      'src/procedural-texture.ts',
+      'src/procedural-texture-v3-contract.ts',
+      'docs/procedural-surfaces-v3.md',
+    ],
     tags: ['texture', 'procedural', 'deterministic'],
     aliases: ['generated texture', 'noise texture', 'layered pattern'],
     intents: ['generate a repeatable texture without external image files'],
@@ -2249,6 +2359,77 @@ define(
     ],
   },
 );
+define(
+  'textureAtlas',
+  {
+    ...textureFacts,
+    execution: 'async',
+    units: 'Integer image pixel edges; half-open content rectangles and gutters.',
+    axes: 'Image +X right and +Y down, top-left origin. Texture flipY=false.',
+    ownership:
+      'Creates an owned texture and immutable-by-copy source snapshots; host map capability is never exposed to authored code.',
+    parameters: [
+      'schemaVersion1, width/height 4..1024, explicit usage and 1..64 named regions from at most16 distinct sources.',
+      'Each region has name, content rectangle and source; gutter defaults2 and edgeMode defaults copy-edge. Source crops and content dimensions must match without resampling.',
+      'Source is {kind:"procedural",spec:V3} or {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256},expected?}. Pins are host-selected immutable library revisions; no arbitrary acquisition I/O.',
+      'Optional sampler specifies all four portable fields; default linear-mipmap-linear/linear/clamp-to-edge on both axes.',
+    ],
+    preservation: [
+      'Copies straight RGBA; mask-rgb-dilate changes only transparent RGB, leaving coverage unchanged. Sources and padded allocations stay separate.',
+    ],
+    semantics: [
+      'Named atlas metadata records compiler, recipe, layout, source, raw-pixel and domain-separated atlas hashes. It does not establish project membership.',
+    ],
+    cost: 'Bounded full-source decode, compilation, pixel work and scratch memory admitted together before source loads.',
+  },
+  {
+    references: [
+      'src/texture-atlas-contract.ts',
+      'src/texture-atlas-pixels.ts',
+      'src/texture-atlas.ts',
+    ],
+    tags: ['texture', 'atlas', 'rgba', 'ownership'],
+    aliases: ['named texture sheet', 'foliage atlas'],
+    intents: ['compose reusable named pixel regions without a mesh'],
+    limitations: [
+      'No automatic packing, rotation or resampling. Gutters reduce filtering bleed but cannot isolate every downsampled mip level.',
+    ],
+    related: [{ name: 'remapUVToAtlas', relation: 'companion' }],
+  },
+);
+
+define(
+  'remapUVToAtlas',
+  {
+    ...ownedGeometry,
+    units: 'Input unit UVs [0,1]; target rectangles are atlas pixels.',
+    axes: 'Explicit top-left or bottom-left input origin; target follows top-left image coordinates.',
+    parameters: [
+      'Requires a compiled atlas texture or manifest and exact region name.',
+      'inputOrigin and content-boundary/texel-center mode are both required; finite per-vertex UV0 only.',
+    ],
+    topology: ['Preserves vertices, indices, groups, draw range and morph correspondence.'],
+    preservation: [
+      'Owns output attributes and metadata; UV0 is replaced. Nonidentity scale drops stale tangents with a warning.',
+    ],
+    semantics: [
+      'Records the named region and affine mapping without changing asset category, project membership or materials.',
+    ],
+    cost: 'Linear UV mapping plus a bounded clone of geometry and morph buffers.',
+  },
+  {
+    references: ['src/texture-atlas.ts', 'src/uv-shapes.ts'],
+    tags: ['uv', 'atlas', 'ownership'],
+    aliases: ['named region UV mapping'],
+    intents: ['bind existing UVs to a named atlas region'],
+    limitations: ['Does not unwrap, project, resample or tile within a region.'],
+    related: [
+      { name: 'textureAtlas', relation: 'prerequisite' },
+      { name: 'projectUV', relation: 'companion' },
+    ],
+  },
+);
+
 define(
   'materialBudgetAdvisory',
   {

@@ -5,16 +5,13 @@ import { FileWorkspace, localWorkspaceRoot } from './workspace-node';
 import { MAX_PROJECT_BYTES } from './projects';
 import { createKilnProjectDef } from './tools/projects';
 import { createKilnMaterialDef } from './tools/materials';
+import { MATERIAL_LIBRARY_LIMITS, materialLibraryPortableSpec } from './material-library';
 import {
-  MATERIAL_LIBRARY_LIMITS,
-  materialLibraryPortableSpec,
-  proceduralMaterialDraftSchema,
-} from './material-library';
-import {
-  createMaterialRecordV1,
   createMaterialLibraryPayload,
   decodeMaterialLibraryPayload,
+  resolveMaterialRecordClosure,
 } from './material-library-node';
+import { createProceduralMaterialRecord } from './material-authoring-node';
 import { writeNewDestinationsAtomic } from './cli-output';
 import { localAssetLibrary } from './assets-node';
 import { exportWorkspaceProjectBundle, importWorkspaceProjectBundle } from './project-bundle-node';
@@ -44,6 +41,9 @@ revision; supplied top-level fields replace their previous values.
 Material imports verify embedded map bytes and provenance. Procedural creation
 uses a JSON recipe with explicit creator/license records. These commands do not
 fetch source URLs or read paths from imported JSON.
+Legacy recipes retain their existing behavior. Opt-in schemaVersion 2 drafts
+add explicit samplers and RGBA or named atlas recipes. Atlas sources pin exact
+saved material revisions; export carries the complete verified dependency closure.
 Project and material storage is under <workspace>/.kiln. KILN_WORKSPACE selects the
 workspace. KILN_PROGRAM_STORE overrides only the source store when both are set.
 Without KILN_WORKSPACE, its grandparent remains the workspace root for compatibility.
@@ -214,21 +214,28 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
   } else if (action === 'list')
     output = await createKilnMaterialDef(materials).run({ action: 'list' });
   else if (action === 'get' || action === 'export') {
-    const record = await materials.read(positional[0]!, positional[1]!);
+    const manifest =
+      action === 'get'
+        ? (await materials.read(positional[0]!, positional[1]!)).manifest
+        : await materials.readManifest(positional[0]!, positional[1]!);
     if (action === 'get')
       output = {
-        manifest: record.manifest,
-        portableSpec: materialLibraryPortableSpec(record.manifest),
+        manifest,
+        portableSpec: materialLibraryPortableSpec(manifest),
       };
     else {
       if (!flags.out) throw new Error('material export requires --out');
-      const payload = await createMaterialLibraryPayload([record]);
+      const records = await resolveMaterialRecordClosure([manifest], {
+        readManifest: (id, revision) => materials.readManifest(id, revision),
+        read: (id, revision) => materials.readRecordFiles(id, revision),
+      });
+      const payload = await createMaterialLibraryPayload(records);
       const path = resolve(flags.out);
       await writeNewDestinationsAtomic([{ path, data: JSON.stringify(payload, null, 2) }]);
       output = {
         file: path,
-        materialId: record.manifest.materialId,
-        revisionId: record.manifest.revisionId,
+        materialId: manifest.materialId,
+        revisionId: manifest.revisionId,
       };
     }
   } else {
@@ -237,11 +244,16 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
       flags.file,
       action === 'procedural' ? MATERIAL_LIBRARY_LIMITS.maxManifestBytes : 24 * 1024 * 1024,
     );
-    const records =
-      action === 'procedural'
-        ? [await createMaterialRecordV1(proceduralMaterialDraftSchema.parse(input))]
-        : await decodeMaterialLibraryPayload(input);
-    output = { materials: await materials.import(records) };
+    if (action === 'procedural') {
+      const { record, dependencies } = await createProceduralMaterialRecord(input, materials);
+      output = {
+        materials: await materials.import(
+          [record],
+          dependencies.length ? { materials: dependencies } : undefined,
+        ),
+      };
+    } else
+      output = { materials: await materials.import(await decodeMaterialLibraryPayload(input)) };
   }
   console.log(JSON.stringify(output, null, 2));
   return 0;

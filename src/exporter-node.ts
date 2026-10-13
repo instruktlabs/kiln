@@ -19,8 +19,19 @@ export async function prepareNodeExport(hasTextures: boolean): Promise<void> {
   const host = globalThis as unknown as Record<string, unknown>;
   if (!host['FileReader']) host['FileReader'] = ExportFileReader;
   if (!hasTextures || host['OffscreenCanvas'] || host['document']) return;
-  const { Canvas, ImageData } = await import('@napi-rs/canvas');
+  const { Canvas, ImageData } = await import('@napi-rs/canvas').catch((cause: unknown) => {
+    throw new Error(
+      'Headless textured export requires @napi-rs/canvas. Reinstall Kiln with optional dependencies enabled, then verify the native binding in the same Node runtime and platform used by the Kiln host.',
+      { cause },
+    );
+  });
   class ExportCanvas extends Canvas {
+    constructor(width: number, height: number) {
+      super(width, height);
+      // Native Canvas.data() is a method, not a DataTexture image byte array.
+      // Shadow it on the instance: the native constructor supplies its own prototype.
+      Object.defineProperty(this, 'data', { value: undefined });
+    }
     override async convertToBlob(
       options: { type?: string; mime?: string; quality?: number } = {},
     ): Promise<Blob> {

@@ -1,10 +1,16 @@
 import * as THREE from 'three';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
-import type { Document } from '@gltf-transform/core';
+import { GLB_BUFFER, type Document } from '@gltf-transform/core';
 import { createGltfIO } from './gltf-io';
 import { openShellExtras } from './open-shell';
 import { rigExtrasForExport } from './rig-export';
 import type { AuthorExtras } from './user-data-extras';
+import { assertPortableMaterialSides } from './material-export';
+import {
+  collectAtlasProvenance,
+  refreshAtlasDocumentProvenance,
+  type AtlasProvenanceCollection,
+} from './atlas-provenance';
 import {
   KILN_SEMANTIC_EXTRAS_KEY,
   validateSemanticMetadataV1,
@@ -60,9 +66,14 @@ export async function communitySceneDocument(
   clips: THREE.AnimationClip[],
   platform: ExportPlatform = browserPlatform,
   authorExtras?: AuthorExtras,
+  atlas: AtlasProvenanceCollection = collectAtlasProvenance(root),
 ): Promise<Document> {
+  assertPortableMaterialSides(root);
   const materials = new Map<THREE.Material, THREE.Material>();
+  const originalMaterials = new Map<THREE.Material, THREE.Material>();
+  const originalGeometries = new Map<THREE.Mesh, THREE.BufferGeometry>();
   const textures = new Map<THREE.Texture, THREE.Texture>();
+  const directImages = new Map<THREE.Texture, { bytes: Uint8Array; mime: string }>();
   const nodes = new Map<THREE.Object3D, THREE.Object3D>();
   const encoded: Array<Promise<void>> = [];
   function texture(source: THREE.Texture): THREE.Texture {
@@ -75,6 +86,11 @@ export async function communitySceneDocument(
     textures.set(source, copy);
     const bytes = source.userData['encoded'] as { bytes?: Uint8Array; mime?: string } | undefined;
     if (bytes?.bytes) {
+      // Canvas stores premultiplied color and can discard hidden cutout RGB or
+      // round partial-alpha channels. Keep already-encoded direct images when
+      // the exporter does not need to flip or derive a new texture from them.
+      if (!copy.flipY && (bytes.mime === 'image/png' || bytes.mime === 'image/jpeg'))
+        directImages.set(copy, { bytes: bytes.bytes, mime: bytes.mime });
       encoded.push(
         (async () => {
           copy.image = await platform.decode(bytes.bytes!);
@@ -104,6 +120,7 @@ export async function communitySceneDocument(
         (copy as unknown as Record<string, unknown>)[key] = texture(value);
     }
     materials.set(source, copy);
+    originalMaterials.set(copy, source);
     return copy;
   }
   function node(source: THREE.Object3D): THREE.Object3D {
@@ -137,6 +154,7 @@ export async function communitySceneDocument(
         map: sprite.material.map ? texture(sprite.material.map) : null,
       });
       Object.assign(spriteMaterial.userData, authorExtras?.material(sprite.material));
+      originalMaterials.set(spriteMaterial, sprite.material);
       copy = new THREE.Mesh(geometry, spriteMaterial);
       THREE.Object3D.prototype.copy.call(copy, shadow, false);
     }
@@ -172,6 +190,7 @@ export async function communitySceneDocument(
       const original = source as THREE.Mesh;
       const mesh = copy as THREE.Mesh;
       mesh.geometry = cleanClone(original.geometry);
+      originalGeometries.set(mesh, original.geometry);
       mesh.material = Array.isArray(original.material)
         ? original.material.map(material)
         : material(original.material);
@@ -195,6 +214,42 @@ export async function communitySceneDocument(
   }
   await Promise.all(encoded);
   await platform.prepare(textures.size > 0);
+  // Upstream channel-packing and normal-basis conversions use drawImage, which
+  // does not accept a DataTexture's {data,width,height} image in either host.
+  // Adapt only those detached inputs; direct color textures keep their bytes.
+  const canvasInputs = new Map<THREE.Texture, THREE.Texture>();
+  const canvasInput = (map: THREE.Texture | null): THREE.Texture | null => {
+    const raw = map?.image as { data?: Uint8Array; width: number; height: number } | undefined;
+    if (!map || !raw?.data) return map;
+    const found = canvasInputs.get(map);
+    if (found) return found;
+    const { data, width, height } = raw;
+    const canvas = new OffscreenCanvas(width, height);
+    const context = canvas.getContext('2d');
+    if (!context) throw new Error('A 2D canvas is required to prepare export texture channels.');
+    context.putImageData(new ImageData(new Uint8ClampedArray(data), width, height), 0, 0);
+    const adapted = new THREE.Texture().copy(map);
+    adapted.source = new THREE.TextureSource(canvas);
+    canvasInputs.set(map, adapted);
+    const direct = directImages.get(map);
+    if (direct) directImages.set(adapted, direct);
+    return adapted;
+  };
+  for (const material of materials.values()) {
+    // putImageData ignores the canvas transform used by GLTFExporter for flipY.
+    // A canvas image makes that explicit orientation request reach drawImage.
+    for (const [key, value] of Object.entries(material)) {
+      if (value instanceof THREE.Texture && value.flipY && value.image?.data)
+        (material as unknown as Record<string, unknown>)[key] = canvasInput(value);
+    }
+    const standard = material as THREE.MeshStandardMaterial;
+    if (!standard.isMeshStandardMaterial) continue;
+    if (standard.metalnessMap !== standard.roughnessMap) {
+      standard.metalnessMap = canvasInput(standard.metalnessMap);
+      standard.roughnessMap = canvasInput(standard.roughnessMap);
+    }
+    standard.normalMap = canvasInput(standard.normalMap);
+  }
   const exportClips = clips.map((clip) => {
     const cloned = cleanClone(clip);
     // UUID-targeted clips must point at the export copy, not the live scene.
@@ -220,7 +275,55 @@ export async function communitySceneDocument(
     });
     return cloned;
   });
-  const bytes = await new GLTFExporter().parseAsync(copy, {
+  const preservedImages = new Map<number, { bytes: Uint8Array; mime: string }>();
+  const exporter = new GLTFExporter().register(() => ({
+    writeMesh(mesh, definition) {
+      const geometry = originalGeometries.get(mesh);
+      const binding = geometry && atlas.binding(geometry);
+      if (binding)
+        for (const primitive of definition.primitives as Array<{
+          extras?: Record<string, unknown>;
+        }>)
+          primitive.extras = { ...primitive.extras, kilnAtlasBinding: binding };
+    },
+    async writeMaterialAsync(material, definition) {
+      const source = originalMaterials.get(material);
+      if (!source) return;
+      const bag = source as unknown as Record<string, THREE.Texture | undefined>;
+      const pbr = definition.pbrMetallicRoughness as
+        | {
+            baseColorTexture?: { extras?: Record<string, unknown> };
+            metallicRoughnessTexture?: { extras?: Record<string, unknown> };
+          }
+        | undefined;
+      for (const [slot, info] of [
+        ['map', pbr?.baseColorTexture],
+        ['normalMap', definition.normalTexture as { extras?: Record<string, unknown> } | undefined],
+        ['metalnessMap', pbr?.metallicRoughnessTexture],
+        ['roughnessMap', pbr?.metallicRoughnessTexture],
+        [
+          'emissiveMap',
+          definition.emissiveTexture as { extras?: Record<string, unknown> } | undefined,
+        ],
+        ['aoMap', definition.occlusionTexture as { extras?: Record<string, unknown> } | undefined],
+      ] as const) {
+        const texture = bag[slot],
+          ref = texture && atlas.texture(texture);
+        if (ref && info) {
+          const prior = info.extras?.['kilnAtlasReference'] as { id?: string } | undefined;
+          if (prior && prior.id !== ref.id)
+            throw new TypeError('Atlas channel packing requires one exact source identity.');
+          info.extras = { ...info.extras, kilnAtlasReference: ref };
+        }
+      }
+    },
+    writeTexture(map, definition) {
+      const direct = directImages.get(map);
+      if (direct && typeof definition['source'] === 'number')
+        preservedImages.set(definition['source'], direct);
+    },
+  }));
+  const bytes = await exporter.parseAsync(copy, {
     binary: true,
     trs: true,
     onlyVisible: false,
@@ -228,6 +331,37 @@ export async function communitySceneDocument(
   });
   const io = createGltfIO();
   const json = await io.binaryToJSON(new Uint8Array(bytes as ArrayBuffer));
+  for (const [index, original] of preservedImages) {
+    const image = json.json.images?.[index];
+    if (!image) throw new Error('The glTF converter lost a direct texture image.');
+    const uri = `kiln-direct-image-${index}`;
+    image.uri = uri;
+    image.mimeType = original.mime;
+    delete image.bufferView;
+    json.resources[uri] = new Uint8Array(original.bytes);
+  }
+  // GLTFExporter includes four-byte buffer alignment in generated image views.
+  // Keep the BIN allocation aligned but end a PNG's view at its IEND chunk.
+  // Direct authored bytes above remain untouched; this is not an input decoder.
+  for (const image of json.json.images ?? []) {
+    if (image.mimeType !== 'image/png' || image.bufferView === undefined) continue;
+    const view = json.json.bufferViews![image.bufferView]!;
+    const buffer = json.resources[json.json.buffers?.[view.buffer]?.uri ?? GLB_BUFFER]!;
+    const start = view.byteOffset ?? 0;
+    const png = buffer.subarray(start, start + view.byteLength);
+    const data = new DataView(png.buffer, png.byteOffset, png.byteLength);
+    for (let offset = 8; offset + 12 <= png.length; ) {
+      const length = data.getUint32(offset),
+        end = offset + length + 12;
+      if (end > png.length) break;
+      if (data.getUint32(offset + 4) === 0x49454e44 && length === 0) {
+        if (png.length - end <= 3 && png.subarray(end).every((byte) => byte === 0))
+          view.byteLength = end;
+        break;
+      }
+      offset = end;
+    }
+  }
   // Three names texture/sampler bindings; glTF Transform models textures by
   // image. Carry the first named binding onto an unnamed shared image so the
   // conversion retains a useful authored resource name without duplicating it.
@@ -236,7 +370,13 @@ export async function communitySceneDocument(
     const image = json.json.images?.[binding.source];
     if (image && !image.name) image.name = binding.name;
   }
-  return io.readJSON(json);
+  const document = await io.readJSON(json);
+  if (atlas.table) {
+    const scene = document.getRoot().getDefaultScene() ?? document.getRoot().listScenes()[0]!;
+    scene.setExtras({ ...scene.getExtras(), kilnAtlasProvenance: atlas.table });
+    await refreshAtlasDocumentProvenance(document);
+  }
+  return document;
 }
 
 /** Encode the effective UV matrix in glTF's T*R*S order, including manual

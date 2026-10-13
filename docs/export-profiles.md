@@ -44,6 +44,26 @@ unsupported UV transforms and destination feature support still need qualificati
 Neither setting automatically enables mesh merging, geometry simplification, Draco,
 Meshopt or KTX2 compression. Those require separate choices and validation.
 
+## Material sidedness at export
+
+glTF represents front-only or double-sided surfaces. Both Kiln converters preserve
+`FrontSide` and `DoubleSide`. A used `BackSide` material now stops a source build
+with `EXPORT_MATERIAL_SIDE_UNSUPPORTED`. The direct scene API names the part and
+material; CLI/MCP carry closed repair advice without authored identifiers across
+the evaluator boundary. Use `kiln_source` with query `BackSide` to locate the
+authored material. This applies
+in both `warn` and `strict` geometry modes and before texture baking or conversion;
+unused material-array slots do not block export. Existing saved GLBs remain readable
+and exporting their exact bytes does not rebuild them.
+
+For a one-sided interior surface, author triangles facing inward and use
+`FrontSide`. For a leaf or other deliberate sheet visible from either side, use
+`DoubleSide`. Neither choice supplies thickness or missing caps. Do not flip only
+normals to repair winding. Automatic back-only conversion is not provided: winding,
+normal/tangent basis, groups, shared geometry and deformation data must remain
+consistent. A destination shader override is an explicit runtime choice, separate
+from the portable asset.
+
 ## CLI
 
 From an asset workspace, using the IDs returned by `save` or `assets`:

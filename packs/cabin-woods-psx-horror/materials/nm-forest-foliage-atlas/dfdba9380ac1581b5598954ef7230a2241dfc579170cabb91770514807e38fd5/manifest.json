@@ -1,0 +1,233 @@
+{
+  "materialId": "nm-forest-foliage-atlas",
+  "revisionId": "sha256:dfdba9380ac1581b5598954ef7230a2241dfc579170cabb91770514807e38fd5",
+  "name": "Forest foliage-atlas",
+  "tags": [],
+  "tileable": false,
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "mask",
+    "alphaCutoff": 0.5,
+    "doubleSided": true
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [
+    {
+      "resourceId": "nm-forest-bush-leaf",
+      "revisionId": "sha256:f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834",
+      "sha256": "sha256:f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834"
+    },
+    {
+      "resourceId": "nm-forest-pine-branch",
+      "revisionId": "sha256:2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583",
+      "sha256": "sha256:2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583"
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:9a14427dfb693e5fa23705d7eabb0a2ea73ee4a5ecbf73adc8f53f2b20c73270",
+      "bytes": 2155,
+      "width": 256,
+      "height": 128,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "wrapS": "clamp-to-edge",
+        "wrapT": "clamp-to-edge"
+      },
+      "pixelHash": "sha256:f36a9d82a585b60f4cdff5b417090854ad04116e58f683f8ea67d318ff691c28",
+      "recipe": {
+        "kind": "atlas",
+        "compilerId": "kiln.texture-atlas.v1.1",
+        "spec": {
+          "schemaVersion": 1,
+          "width": 256,
+          "height": 128,
+          "usage": "albedo",
+          "sampler": {
+            "minFilter": "nearest",
+            "magFilter": "nearest",
+            "wrapS": "clamp-to-edge",
+            "wrapT": "clamp-to-edge"
+          },
+          "regions": [
+            {
+              "name": "bush-leaf",
+              "content": {
+                "x": 76,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "mask-rgb-dilate",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834.base-color",
+                "pin": {
+                  "resourceId": "nm-forest-bush-leaf",
+                  "revisionId": "sha256:f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834",
+                  "sha256": "sha256:f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834"
+                }
+              }
+            },
+            {
+              "name": "pine-branch",
+              "content": {
+                "x": 4,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "mask-rgb-dilate",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583.base-color",
+                "pin": {
+                  "resourceId": "nm-forest-pine-branch",
+                  "revisionId": "sha256:2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583",
+                  "sha256": "sha256:2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583"
+                }
+              }
+            }
+          ]
+        },
+        "manifest": {
+          "version": "kiln.atlas-manifest.v1",
+          "compilerId": "kiln.texture-atlas.v1.1",
+          "width": 256,
+          "height": 128,
+          "usage": "albedo",
+          "origin": "top-left",
+          "sampler": {
+            "minFilter": "nearest",
+            "magFilter": "nearest",
+            "wrapS": "clamp-to-edge",
+            "wrapT": "clamp-to-edge"
+          },
+          "specHash": "sha256:5a3b97a576f5bc671c9efe13909f84f98f40aa1060e3653c7a63cd9f5c881831",
+          "layoutHash": "sha256:82aa77056d5ccd974a68d17085e3685a1dc621407bd491bda3b6f58a74243265",
+          "decodedPixelHash": "sha256:f36a9d82a585b60f4cdff5b417090854ad04116e58f683f8ea67d318ff691c28",
+          "atlasPixelHash": "sha256:145b4bbd2ed5f5c54a546306ae3ca6c10841ec45ac8489a01f5ae7a256722bbe",
+          "sources": [
+            {
+              "id": "resource:nm-forest-bush-leaf:sha256:f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834:kiln.library.f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834.base-color",
+              "width": 64,
+              "height": 64,
+              "decodedPixelHash": "sha256:45c8df65313df3dbe641eab0fec573827ab482441ff18eb4e428db2f76f34845",
+              "kind": "resource",
+              "descriptor": {
+                "materialId": "nm-forest-bush-leaf",
+                "revisionId": "sha256:f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834",
+                "resourceId": "kiln.library.f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834.base-color",
+                "slot": "baseColor",
+                "usage": "albedo",
+                "colorSpace": "srgb",
+                "width": 64,
+                "height": 64,
+                "encodedByteLength": 639,
+                "imageSha256": "sha256:819ffe60a13da9d7e96492438e7e81fd1a3203a4de5742df7abcf05163ffe55e",
+                "decodedPixelHash": "sha256:45c8df65313df3dbe641eab0fec573827ab482441ff18eb4e428db2f76f34845"
+              }
+            },
+            {
+              "id": "resource:nm-forest-pine-branch:sha256:2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583:kiln.library.2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583.base-color",
+              "width": 64,
+              "height": 64,
+              "decodedPixelHash": "sha256:e042d95437951ffe56fc5b4b4487f043e93f6715afd7f9e93fa8490adf32437d",
+              "kind": "resource",
+              "descriptor": {
+                "materialId": "nm-forest-pine-branch",
+                "revisionId": "sha256:2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583",
+                "resourceId": "kiln.library.2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583.base-color",
+                "slot": "baseColor",
+                "usage": "albedo",
+                "colorSpace": "srgb",
+                "width": 64,
+                "height": 64,
+                "encodedByteLength": 670,
+                "imageSha256": "sha256:1844fce55445f37db957078d3418af54f99459bc7bb9f31495d56aca785d03f0",
+                "decodedPixelHash": "sha256:e042d95437951ffe56fc5b4b4487f043e93f6715afd7f9e93fa8490adf32437d"
+              }
+            }
+          ],
+          "regions": [
+            {
+              "name": "bush-leaf",
+              "content": {
+                "x": 76,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 72,
+                "y": 0,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-forest-bush-leaf:sha256:f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834:kiln.library.f8a87faa8a4cb27a2bb61107fe27308d617129db3f625adb0792f46f1081b834.base-color"
+            },
+            {
+              "name": "pine-branch",
+              "content": {
+                "x": 4,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 0,
+                "y": 0,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-forest-pine-branch:sha256:2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583:kiln.library.2da9bce65baac03632439a53d03260418b707feb72be9be4484c5c27869e7583.base-color"
+            }
+          ],
+          "manifestHash": "sha256:14af6c76d3e1ec52546abd7e6a55690000542f3e02c31555871294de98cdfc0d"
+        },
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

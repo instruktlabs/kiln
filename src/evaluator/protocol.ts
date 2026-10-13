@@ -17,10 +17,10 @@ import { validateRequirementsQaReport } from '../qa/requirements-report';
 import type { RenderGlbOptions, RenderResult } from '../render';
 import type { KhronosGltfValidationReport } from '../qa/gltf';
 import {
-  validateMaterialLibraryPayload,
-  validateMaterialManifestIdentity,
+  validateMaterialLibraryPayloadAny,
+  validateMaterialManifestIdentityAny,
 } from '../material-library-node';
-import type { MaterialLibraryPayloadV1 } from '../material-library';
+import { canonicalMaterialJson, type MaterialLibraryPayload } from '../material-library';
 import { rebuildOptionsSchema } from '../rebuild-options';
 
 export const EVALUATOR_REQUEST_VERSION = 'kiln.evaluator.request.v2' as const;
@@ -287,7 +287,7 @@ function parseOptions(
   }
   const options: Omit<RenderGlbOptions, 'textureResolver' | 'diagnosticConsole'> = {};
   if (value.materialResources !== undefined)
-    options.materialResources = validateMaterialLibraryPayload(value.materialResources);
+    options.materialResources = validateMaterialLibraryPayloadAny(value.materialResources);
   if (value.gltfExporter !== undefined) {
     if (value.gltfExporter !== 'legacy' && value.gltfExporter !== 'three') fail('request');
     options.gltfExporter = value.gltfExporter;
@@ -437,6 +437,9 @@ export function decodeEvaluatorResultV2(
           value.error.diagnostic !== 'ROUNDED_BOX_RADIUS' &&
           value.error.diagnostic !== 'PROCEDURAL_TEXTURE_UNKNOWN_KEY' &&
           value.error.diagnostic !== 'PROCEDURAL_TEXTURE_BLEND' &&
+          value.error.diagnostic !== 'PROCEDURAL_TEXTURE_V3_CONTRACT' &&
+          value.error.diagnostic !== 'PORTABLE_MATERIAL_V3_CONTRACT' &&
+          value.error.diagnostic !== 'TEXTURE_ATLAS_CONTRACT' &&
           value.error.diagnostic !== 'MATERIAL_FRACTION_RANGE' &&
           value.error.diagnostic !== 'MATERIAL_RECIPE_TEXTURE_BINDING' &&
           value.error.diagnostic !== 'PORTABLE_TEXTURE_REFERENCE' &&
@@ -462,7 +465,10 @@ export function decodeEvaluatorResultV2(
           value.error.diagnostic !== 'PROGRAM_TYPE_ERROR' &&
           value.error.diagnostic !== 'PROGRAM_RANGE_ERROR' &&
           value.error.diagnostic !== 'LOD_SET' &&
-          value.error.diagnostic !== 'OPEN_SHELL'))
+          value.error.diagnostic !== 'OPEN_SHELL' &&
+          value.error.diagnostic !== 'EXPORT_MATERIAL_SIDE_UNSUPPORTED' &&
+          value.error.diagnostic !== 'BONE_CHAIN_ARGUMENT' &&
+          value.error.diagnostic !== 'SKIN_BINDING_ARGUMENT'))
     )
       return fail('result');
     if (value.error.qa !== undefined) {
@@ -524,7 +530,7 @@ export function decodeEvaluatorResultV2(
       fail('result');
     try {
       for (const manifest of value.render.materialLibraryDependencies)
-        validateMaterialManifestIdentity(manifest);
+        validateMaterialManifestIdentityAny(manifest);
     } catch {
       return fail('result');
     }
@@ -657,13 +663,17 @@ export function createEvaluatorPortV2(
 /** All transports bind decoded acceptance evidence to the same current-host snapshot. */
 export function assertEvaluatorResultMaterialResources(
   result: EvaluatorResultV2,
-  expected?: MaterialLibraryPayloadV1,
+  expected?: MaterialLibraryPayload,
 ): void {
   if (!result.ok) return;
   const actual = result.render.materialLibraryDependencies ?? [];
-  const wanted = expected?.records.map((record) => record.manifest.revisionId).sort() ?? [];
+  const wanted = expected?.records.map((record) => record.manifest) ?? [];
+  const identity = (manifest: (typeof actual)[number]) =>
+    `${manifest.materialId}/${manifest.revisionId}`;
   if (
-    JSON.stringify(actual.map((manifest) => manifest.revisionId).sort()) !== JSON.stringify(wanted)
+    new Set(actual.map(identity)).size !== actual.length ||
+    JSON.stringify(actual.map(canonicalMaterialJson).sort()) !==
+      JSON.stringify(wanted.map(canonicalMaterialJson).sort())
   )
     throw new EvaluatorPortError('PROTOCOL_ERROR');
 }

@@ -1,0 +1,1718 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_831c8568d1c64d32ba3bdec26e01c5e7",
+  "revisionId": "r_02259d548f9145428b2d01acfa6250f1",
+  "parentRevision": "r_8e1148212e9942d8b1b96191c0848164",
+  "name": "Incoming outdoor log pile",
+  "tags": [],
+  "createdAt": "2026-10-12T15:20:45.084Z",
+  "attribution": {
+    "harness": "codex"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:99b2c8c30b9617da5f9e9e3029cf042a634ee703d102dd0f31e227fff2436e0b",
+      "bytes": 22276
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:e3eec398f2918f9cbdafa8b496a4e698abfb26e1fff93621a15972de1f960919",
+      "bytes": 14097
+    },
+    "preview.png": {
+      "sha256": "sha256:9ce0e959c5d03c87d330dc94fcb53ed3813a4dbe9431b2bc91d2f7cc0a4d034b",
+      "bytes": 62865
+    }
+  },
+  "build": {
+    "engine": "sha256:429cb76bd79db6cf401c415b2ab8f44593ae8ffa54c7c8cfc4f0cfbb24729eec",
+    "options": {
+      "gltfExporter": "three",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "99b2c8c30b9617da5f9e9e3029cf042a634ee703d102dd0f31e227fff2436e0b",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.30000001192092896,
+          -3.725290284584126e-10,
+          -0.6505000000142492
+        ],
+        "max": [
+          0.30000001192092896,
+          0.5745537558876896,
+          0.6505000000142492
+        ],
+        "size": [
+          0.6000000238418579,
+          0.5745537562602187,
+          1.3010000000284985
+        ],
+        "center": [
+          0,
+          0.2872768777575803,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -3.725290284584126e-10,
+        "offsetToGround": 3.725290284584126e-10,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Incoming outdoor log pile"
+      },
+      "renderMetrics": {
+        "triangles": 888,
+        "drawCalls": 20,
+        "uniqueGeometries": 9,
+        "uniqueMaterials": 2,
+        "textureCount": 2,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "pass",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_5\" and \"Mesh_LogEnd_5_-0.6372\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166707203,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_5\" and \"Mesh_LogEnd_5_0.6372\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_5"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166707203,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_1\" and \"Mesh_LogEnd_1_-0.6457\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_1"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166673824,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_1\" and \"Mesh_LogEnd_1_0.6457\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_1"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166673824,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_4\" and \"Mesh_LogEnd_4_-0.6392000000000001\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_4"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166664288,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_4\" and \"Mesh_LogEnd_4_0.6392000000000001\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_4"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166664288,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_0\" and \"Mesh_LogEnd_0_-0.6502\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166626935,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_0\" and \"Mesh_LogEnd_0_0.6502\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166626935,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_2\" and \"Mesh_LogEnd_2_-0.6412\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166621372,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_2\" and \"Mesh_LogEnd_2_0.6412\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_2"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166621372,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_3\" and \"Mesh_LogEnd_3_-0.6437\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_3"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166617399,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_IncomingLog_3\" and \"Mesh_LogEnd_3_0.6437\" occupy the same space: they share 0.00000274 m³, which is 16.7% of the smaller part.",
+              "affected": {
+                "node": "Mesh_IncomingLog_3"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.166617399,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "complete-static-pairs",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 20,
+            "partVolumeCandidatePairs": 39,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 39,
+            "partVolumeUnmeasurablePairs": 0,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 0
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "B",
+            "instanceabilitySummary": "B (informational, not a QA verdict), set by 2 distinct materials (B at 2-3). Also: 9 geometries; 20 draw calls.",
+            "uniqueGeometries": 9,
+            "uniqueMaterials": 2,
+            "meshNodes": 20,
+            "meshInstances": 20,
+            "drawCalls": 20,
+            "textureCount": 2,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 888,
+            "materialCount": 2,
+            "opaqueMaterials": 2,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 2,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 2,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 2,
+            "maxImageDimension": 128,
+            "decodedImageBytesRgba8": 81920,
+            "estimatedGpuBytesWithMipmaps": 109228,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [
+      {
+        "kind": "kiln.material.v2",
+        "delivery": "runtime",
+        "manifest": {
+          "materialId": "nm-cabin-weathered-timber",
+          "revisionId": "sha256:87c9fe1286e32442ed5e29c42b5c05cf88ac5b509260b95ce755bcbd0e3cb8ea",
+          "name": "Weathered cabin timber",
+          "tags": [
+            "Nightman",
+            "original",
+            "PSX",
+            "tx01"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 2,
+            "height": 2
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "nightman-original",
+              "kind": "procedural",
+              "provider": "Kiln",
+              "creator": "OpenAI Codex for Nightman",
+              "license": {
+                "spdx": "LicenseRef-Proprietary",
+                "url": "https://choosealicense.com/no-permission/",
+                "attribution": "Original Nightman procedural work; project owner retains rights."
+              },
+              "originalFiles": []
+            }
+          ],
+          "schemaVersion": 2,
+          "dependencies": [],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:64da2a7198e38bb63d5c5ddb075b659c4856e825e0cee3046c7c665808e3b8dd",
+              "bytes": 501,
+              "width": 128,
+              "height": 128,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "nightman-original",
+              "transforms": [],
+              "sampler": {
+                "minFilter": "nearest-mipmap-linear",
+                "magFilter": "nearest",
+                "wrapS": "repeat",
+                "wrapT": "repeat"
+              },
+              "pixelHash": "sha256:641ecd4905d89d1f0b82f183d28f3cee5cd00ade6684b0abeb43b2c79d68708d",
+              "recipe": {
+                "kind": "procedural",
+                "compilerId": "kiln.procedural-rgba.v3.1",
+                "spec": {
+                  "schemaVersion": 3,
+                  "width": 128,
+                  "height": 128,
+                  "usage": "albedo",
+                  "background": [
+                    85,
+                    67,
+                    51,
+                    255
+                  ],
+                  "operations": [
+                    {
+                      "op": "legacy-v2",
+                      "spec": {
+                        "schemaVersion": 2,
+                        "size": 128,
+                        "usage": "albedo",
+                        "layers": [
+                          {
+                            "op": "noise",
+                            "colorA": 5587763,
+                            "colorB": 7889738,
+                            "scale": 7,
+                            "octaves": 1,
+                            "seed": 11001,
+                            "blend": "normal",
+                            "opacity": 1
+                          }
+                        ]
+                      },
+                      "alpha": 255,
+                      "opacity": 55
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          121,
+                          121
+                        ],
+                        "to": [
+                          127,
+                          120
+                        ],
+                        "width": 2
+                      },
+                      "rgba": [
+                        120,
+                        99,
+                        74,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          10,
+                          16
+                        ],
+                        "to": [
+                          38,
+                          16
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          27,
+                          39
+                        ],
+                        "to": [
+                          68,
+                          40
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          44,
+                          62
+                        ],
+                        "to": [
+                          98,
+                          61
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        99,
+                        74,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          61,
+                          85
+                        ],
+                        "to": [
+                          127,
+                          85
+                        ],
+                        "width": 2
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          78,
+                          108
+                        ],
+                        "to": [
+                          103,
+                          109
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          95,
+                          3
+                        ],
+                        "to": [
+                          127,
+                          2
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        99,
+                        74,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          112,
+                          26
+                        ],
+                        "to": [
+                          127,
+                          26
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          1,
+                          49
+                        ],
+                        "to": [
+                          65,
+                          50
+                        ],
+                        "width": 2
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          18,
+                          72
+                        ],
+                        "to": [
+                          40,
+                          71
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        99,
+                        74,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          35,
+                          95
+                        ],
+                        "to": [
+                          70,
+                          95
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          52,
+                          118
+                        ],
+                        "to": [
+                          100,
+                          119
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          69,
+                          13
+                        ],
+                        "to": [
+                          127,
+                          12
+                        ],
+                        "width": 2
+                      },
+                      "rgba": [
+                        120,
+                        99,
+                        74,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          86,
+                          36
+                        ],
+                        "to": [
+                          105,
+                          36
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          103,
+                          59
+                        ],
+                        "to": [
+                          127,
+                          60
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          120,
+                          82
+                        ],
+                        "to": [
+                          127,
+                          81
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        99,
+                        74,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          9,
+                          105
+                        ],
+                        "to": [
+                          67,
+                          105
+                        ],
+                        "width": 2
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          26,
+                          0
+                        ],
+                        "to": [
+                          42,
+                          1
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          43,
+                          23
+                        ],
+                        "to": [
+                          72,
+                          22
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        99,
+                        74,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 24,
+                        "y": 31,
+                        "width": 17,
+                        "height": 7,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 27,
+                        "y": 33,
+                        "width": 11,
+                        "height": 3,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        85,
+                        67,
+                        51,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          39,
+                          35
+                        ],
+                        "to": [
+                          55,
+                          36
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 89,
+                        "y": 91,
+                        "width": 17,
+                        "height": 7,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 92,
+                        "y": 93,
+                        "width": 11,
+                        "height": 3,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        85,
+                        67,
+                        51,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          104,
+                          95
+                        ],
+                        "to": [
+                          120,
+                          96
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          0,
+                          10
+                        ],
+                        "to": [
+                          127,
+                          10
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        61,
+                        51,
+                        40,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          0,
+                          84
+                        ],
+                        "to": [
+                          127,
+                          84
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        120,
+                        99,
+                        74,
+                        255
+                      ],
+                      "opacity": 255
+                    }
+                  ],
+                  "palette": {
+                    "colors": [
+                      5587763,
+                      4010792,
+                      7889738
+                    ],
+                    "dither": "none"
+                  }
+                },
+                "recipeHash": "sha256:7cfd0f22796cbb22b55e66c079330a991e8fd6297385d059f9f507a0bb56c9a0",
+                "pixelHash": "sha256:641ecd4905d89d1f0b82f183d28f3cee5cd00ade6684b0abeb43b2c79d68708d",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.5"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v2",
+        "delivery": "runtime",
+        "manifest": {
+          "materialId": "nm-shared-endgrain",
+          "revisionId": "sha256:2dadd9f8f02157fcab7add4c237598d8358b2c65babbd07830c653791bad128d",
+          "name": "Cut endgrain",
+          "tags": [
+            "Nightman",
+            "original",
+            "PSX",
+            "tx04"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 0.5,
+            "height": 0.5
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 1,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "nightman-original",
+              "kind": "procedural",
+              "provider": "Kiln",
+              "creator": "OpenAI Codex for Nightman",
+              "license": {
+                "spdx": "LicenseRef-Proprietary",
+                "url": "https://choosealicense.com/no-permission/",
+                "attribution": "Original Nightman procedural work; project owner retains rights."
+              },
+              "originalFiles": []
+            }
+          ],
+          "schemaVersion": 2,
+          "dependencies": [],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:7d4c923723cb3b5e2b2e8df8d6aa227e82f0b9a2998655db576b4fe6ebee4c1c",
+              "bytes": 614,
+              "width": 64,
+              "height": 64,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "nightman-original",
+              "transforms": [],
+              "sampler": {
+                "minFilter": "nearest-mipmap-linear",
+                "magFilter": "nearest",
+                "wrapS": "repeat",
+                "wrapT": "repeat"
+              },
+              "pixelHash": "sha256:c1fbb8d19590c932b4c8d4e222b418fd4e1b91d95f072c79272100f5b7872d8f",
+              "recipe": {
+                "kind": "procedural",
+                "compilerId": "kiln.procedural-rgba.v3.1",
+                "spec": {
+                  "schemaVersion": 3,
+                  "width": 64,
+                  "height": 64,
+                  "usage": "albedo",
+                  "background": [
+                    178,
+                    154,
+                    104,
+                    255
+                  ],
+                  "operations": [
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 3,
+                        "y": 4,
+                        "width": 58,
+                        "height": 56,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        138,
+                        113,
+                        76,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 6,
+                        "y": 7,
+                        "width": 52,
+                        "height": 50,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 9,
+                        "y": 10,
+                        "width": 46,
+                        "height": 44,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        138,
+                        113,
+                        76,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 12,
+                        "y": 13,
+                        "width": 40,
+                        "height": 38,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 15,
+                        "y": 16,
+                        "width": 34,
+                        "height": 32,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        138,
+                        113,
+                        76,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 18,
+                        "y": 19,
+                        "width": 28,
+                        "height": 26,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 21,
+                        "y": 22,
+                        "width": 22,
+                        "height": 20,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        138,
+                        113,
+                        76,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "x": 24,
+                        "y": 25,
+                        "width": 16,
+                        "height": 14,
+                        "kind": "ellipse"
+                      },
+                      "rgba": [
+                        208,
+                        187,
+                        132,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          34,
+                          33
+                        ],
+                        "to": [
+                          55,
+                          18
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        102,
+                        80,
+                        58,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          31,
+                          34
+                        ],
+                        "to": [
+                          20,
+                          53
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        102,
+                        80,
+                        58,
+                        255
+                      ],
+                      "opacity": 255
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:1a533fe66f559035a86b8956d8d91614d78e57f2b1a5b4dd00b6e04e04b811ce",
+                "pixelHash": "sha256:c1fbb8d19590c932b4c8d4e222b418fd4e1b91d95f072c79272100f5b7872d8f",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.5"
+                }
+              }
+            }
+          ]
+        }
+      },
+      {
+        "kind": "kiln.material.v2",
+        "delivery": "runtime",
+        "manifest": {
+          "materialId": "nm-shared-rusted-iron",
+          "revisionId": "sha256:1870a95ffec8e00bc9daac56a32bc537547e002305e373c4ff7a97f098119fbe",
+          "name": "Worn iron",
+          "tags": [
+            "Nightman",
+            "original",
+            "PSX",
+            "tx08"
+          ],
+          "tileable": true,
+          "physicalSizeMeters": {
+            "width": 1,
+            "height": 1
+          },
+          "parameters": {
+            "baseColor": 16777215,
+            "roughness": 0.85,
+            "metalness": 0.25,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "nightman-original",
+              "kind": "procedural",
+              "provider": "Kiln",
+              "creator": "OpenAI Codex for Nightman",
+              "license": {
+                "spdx": "LicenseRef-Proprietary",
+                "url": "https://choosealicense.com/no-permission/",
+                "attribution": "Original Nightman procedural work; project owner retains rights."
+              },
+              "originalFiles": []
+            }
+          ],
+          "schemaVersion": 2,
+          "dependencies": [],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:16b8d5dda19462c46244325624871abdea777bcada69a3bb503a376ea6731476",
+              "bytes": 1958,
+              "width": 64,
+              "height": 64,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "nightman-original",
+              "transforms": [],
+              "sampler": {
+                "minFilter": "nearest-mipmap-linear",
+                "magFilter": "nearest",
+                "wrapS": "repeat",
+                "wrapT": "repeat"
+              },
+              "pixelHash": "sha256:c02e3aa8402d07f23abf22339981b1501d923b3aeb2ce985305e59d0e4e54de2",
+              "recipe": {
+                "kind": "procedural",
+                "compilerId": "kiln.procedural-rgba.v3.1",
+                "spec": {
+                  "schemaVersion": 3,
+                  "width": 64,
+                  "height": 64,
+                  "usage": "albedo",
+                  "background": [
+                    87,
+                    96,
+                    92,
+                    255
+                  ],
+                  "operations": [
+                    {
+                      "op": "legacy-v2",
+                      "spec": {
+                        "schemaVersion": 2,
+                        "size": 64,
+                        "usage": "albedo",
+                        "layers": [
+                          {
+                            "op": "noise",
+                            "colorA": 4608334,
+                            "colorB": 7569525,
+                            "scale": 6,
+                            "octaves": 1,
+                            "seed": 11008,
+                            "blend": "normal",
+                            "opacity": 1
+                          }
+                        ]
+                      },
+                      "alpha": 255,
+                      "opacity": 65
+                    },
+                    {
+                      "op": "stamps",
+                      "shape": {
+                        "kind": "polygon",
+                        "points": [
+                          [
+                            0,
+                            0
+                          ],
+                          [
+                            5,
+                            0
+                          ],
+                          [
+                            7,
+                            3
+                          ],
+                          [
+                            5,
+                            6
+                          ],
+                          [
+                            1,
+                            5
+                          ]
+                        ]
+                      },
+                      "rgba": [
+                        121,
+                        88,
+                        61,
+                        255
+                      ],
+                      "opacity": 255,
+                      "count": 14,
+                      "seed": 11008,
+                      "area": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 64,
+                        "height": 64
+                      },
+                      "periodic": true
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          2,
+                          9
+                        ],
+                        "to": [
+                          61,
+                          10
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        147,
+                        168,
+                        154,
+                        255
+                      ],
+                      "opacity": 255
+                    },
+                    {
+                      "op": "paint",
+                      "shape": {
+                        "kind": "line",
+                        "from": [
+                          4,
+                          43
+                        ],
+                        "to": [
+                          24,
+                          43
+                        ],
+                        "width": 1
+                      },
+                      "rgba": [
+                        53,
+                        67,
+                        60,
+                        255
+                      ],
+                      "opacity": 255
+                    }
+                  ]
+                },
+                "recipeHash": "sha256:fa0eaa5f72dd2dea4a2d387ef0f6abda24b1974ed86934acdbbb58604a4e3ec0",
+                "pixelHash": "sha256:c02e3aa8402d07f23abf22339981b1501d923b3aeb2ce985305e59d0e4e54de2",
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.5"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "rebuild": "external-dependencies-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1088",
+      "inputGlbSha256": "sha256:99b2c8c30b9617da5f9e9e3029cf042a634ee703d102dd0f31e227fff2436e0b",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

@@ -7,7 +7,7 @@ export const APPROVED_PINS: Record<string, string> = {
   react: '19.3.0', 'react-dom': '19.3.0', '@react-three/fiber': '9.8.1', three: '0.186.1',
   '@types/three': '0.186.0', '@types/react': '^19.3.0', '@types/react-dom': '^19.3.0', 'three-mesh-bvh': '0.9.15',
   typescript: '7.0.2', 'typescript-6': 'npm:typescript@6.0.3', vite: '8.3.2', '@vitejs/plugin-react': '6.1.1',
-  'puppeteer-core': '25.12.0', 'axe-core': '4.13.0', fflate: '0.8.3', pngjs: '7.0.0', pixelmatch: '7.2.0', npm: '12.2.0',
+  'puppeteer-core': '25.12.0', 'axe-core': '4.13.0', acorn: '8.18.0', fflate: '0.8.3', pngjs: '7.0.0', pixelmatch: '7.2.0', npm: '12.2.0',
 };
 const RUNTIME_PEERS = ['react', 'react-dom', '@react-three/fiber', 'three'] as const;
 export interface PinSnapshot {

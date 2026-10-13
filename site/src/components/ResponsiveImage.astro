@@ -18,8 +18,8 @@ const {
   {image.srcsetAvif && <source type="image/avif" srcset={image.srcsetAvif} sizes={sizes} />}
   <img
     src={image.src}
-    srcset={image.srcsetWebp}
-    sizes={sizes}
+    srcset={image.srcsetWebp || undefined}
+    sizes={image.srcsetWebp ? sizes : undefined}
     width={image.width}
     height={image.height}
     alt={image.alt}

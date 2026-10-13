@@ -1,7 +1,13 @@
 import { expect, test } from 'bun:test';
 import { createMaterialRecordV1, createMaterialLibraryPayload } from '../material-library-node';
 import { materialLibraryPortableSpec } from '../material-library';
-import { createEvaluatorRequestV2, decodeEvaluatorRequestV2 } from './protocol';
+import {
+  assertEvaluatorResultMaterialResources,
+  createEvaluatorRequestV2,
+  decodeEvaluatorRequestV2,
+  EVALUATOR_RESULT_VERSION,
+  type EvaluatorResultV2,
+} from './protocol';
 import { renderGLBViaSubprocess } from './subprocess';
 import { renderGLBInProcess } from '../render';
 import { createCachedEvaluatorPort, MemoryBuildCache } from '../build-cache';
@@ -105,4 +111,40 @@ test('authored code cannot replace the portable material resolver capability', a
   await expect(
     compile({ schemaVersion: 2, model: 'pbrMetallicRoughness' }, { resolver: {} }),
   ).rejects.toThrow(/exactly one/);
+});
+
+test('host acceptance binds complete manifest identity, not only revision hashes', async () => {
+  const { record, materialResources, code } = await fixture();
+  const render = await renderGLBInProcess(code, { materialResources, optimize: 'off' });
+  const result: EvaluatorResultV2 = {
+    version: EVALUATOR_RESULT_VERSION,
+    requestId: 'exact-materials',
+    ok: true,
+    render,
+  };
+  expect(() => assertEvaluatorResultMaterialResources(result, materialResources)).not.toThrow();
+  for (const replacement of [
+    { ...record.manifest, materialId: 'another-material' },
+    { ...record.manifest, name: 'Changed display identity' },
+    { ...record.manifest, maps: [] },
+  ]) {
+    expect(() =>
+      assertEvaluatorResultMaterialResources(
+        {
+          ...result,
+          render: { ...render, materialLibraryDependencies: [replacement] },
+        },
+        materialResources,
+      ),
+    ).toThrow(/invalid data/);
+  }
+  expect(() =>
+    assertEvaluatorResultMaterialResources(
+      {
+        ...result,
+        render: { ...render, materialLibraryDependencies: [record.manifest, record.manifest] },
+      },
+      materialResources,
+    ),
+  ).toThrow(/invalid data/);
 });

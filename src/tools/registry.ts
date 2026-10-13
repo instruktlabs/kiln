@@ -492,26 +492,16 @@ async function renderDerivativeCell(
 ): Promise<import('../views').DerivativeCellRenderResult> {
   let derivativeRoot = input.root as THREE.Object3D;
   if (input.backfaceCull === false) {
-    derivativeRoot = derivativeRoot.clone(true);
-    derivativeRoot.traverse((node) => {
-      const mesh = node as THREE.Mesh;
-      if (!mesh.isMesh) return;
-      const prepare = (material: THREE.Material) => {
-        const copy = material.clone();
-        copy.side = THREE.DoubleSide;
-        return copy;
-      };
-      mesh.material = Array.isArray(mesh.material)
-        ? mesh.material.map(prepare)
-        : prepare(mesh.material);
-    });
+    const { cloneReviewScene } = await import('../views/scene-copy');
+    derivativeRoot = cloneReviewScene(derivativeRoot, { omitHidden: true, doubleSided: true });
   }
   // `withCameraVisibility` and `isolateSubtree` express isolation by clearing
   // `mesh.visible`. The CPU rasterizer culls on that flag (see views/raster.ts),
   // but glTF carries no per-mesh visibility, so serializing unfiltered ships the
   // hidden geometry to the GPU service and makes isolate a silent no-op on exactly
   // the material-faithful path it is most useful on. Prune on a copy: the caller
-  // restores `.visible` afterwards and must not observe a mutated scene.
+  // restores `.visible` afterwards and must not observe a mutated scene. Required
+  // joint ancestors survive as transform-only nodes in the derivative.
   const { withoutHiddenMeshes } = await import('../views/camera');
   derivativeRoot = withoutHiddenMeshes(derivativeRoot);
   const rendered = await renderSceneToGLB(derivativeRoot, {
@@ -2807,7 +2797,7 @@ export async function buildProgramAssetDraft(
   const dependencies = [
     ...(rendered.materialResourceProvenance ?? []),
     ...(rendered.materialLibraryDependencies ?? []).map((manifest) => ({
-      kind: 'kiln.material.v1',
+      kind: `kiln.material.v${manifest.schemaVersion}`,
       delivery: 'runtime',
       manifest,
     })),

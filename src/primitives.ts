@@ -19,7 +19,7 @@ import {
   GEOMETRY_ALLOCATION_LIMITS,
 } from './geometry-budget';
 import { buildWallPanels } from './wall-panels';
-import { createJointChain } from './character';
+import { createBoneChain, createJointChain, createSkinnedPart } from './character';
 import { describeAssembly, replicateAssembly } from './assembly';
 import { defineLod } from './lod';
 export { defineLod } from './lod';
@@ -57,8 +57,12 @@ import * as profile from './profile';
 import * as solids from './solids';
 import * as proceduralTextures from './procedural-texture';
 import * as textures from './textures';
+import { textureAtlas, remapUVToAtlas } from './texture-atlas';
 import type { TextureResolver } from './texture-resolver';
-import { compilePortableMaterialSpecV2 } from './portable-material-runtime';
+import {
+  compilePortableMaterialSpecV2,
+  compilePortableMaterialSpecV3,
+} from './portable-material-runtime';
 import { createVehicleFrame, createWheelAssembly, createWheelGeometrySet } from './vehicle';
 import {
   stampSemanticMetadataV1,
@@ -72,6 +76,36 @@ export { projectUV } from './uv-project';
 export type { ProjectUVOptions } from './uv-project';
 export { remapUV } from './uv-shapes';
 export type { RemapUVOptions } from './uv-shapes';
+export { textureAtlas, remapUVToAtlas } from './texture-atlas';
+export type { AtlasUVOptionsV1 } from './texture-atlas';
+export {
+  TextureAtlasError,
+  TEXTURE_ATLAS_COMPILER_ID,
+  TEXTURE_ATLAS_LIMITS,
+  canonicalizeTextureAtlasSpecV1,
+  canonicalTextureAtlasJsonV1,
+  hashTextureAtlasSpecV1,
+} from './texture-atlas-contract';
+export type {
+  AtlasRectangleV1,
+  AtlasEdgeModeV1,
+  AtlasResourceExpectationV1,
+  TextureAtlasSourceV1,
+  TextureAtlasRegionV1,
+  TextureAtlasSpecV1,
+  CanonicalTextureAtlasSourceV1,
+  CanonicalTextureAtlasRegionV1,
+  CanonicalTextureAtlasSpecV1,
+} from './texture-atlas-contract';
+export { compileTextureAtlasSpecV1 } from './texture-atlas-pixels';
+export type {
+  TextureAtlasCompileOptionsV1,
+  TextureAtlasBudgetV1,
+  TextureAtlasSourceManifestV1,
+  TextureAtlasRegionManifestV1,
+  TextureAtlasManifestV1,
+  CompiledTextureAtlasV1,
+} from './texture-atlas-pixels';
 
 export {
   createGableEndPanel,
@@ -86,8 +120,10 @@ export type {
   RoofFaceFrame,
   RoofSurfaceLayoutOptions,
 } from './architecture';
-export { createJointChain } from './character';
+export { createBoneChain, createJointChain, createSkinnedPart } from './character';
 export type {
+  BoneChainResultV1,
+  CreateSkinnedPartOptions,
   CreateJointChainOptionsV1,
   JointChainResultV1,
   JointChainSegmentV1,
@@ -100,7 +136,50 @@ export {
 export { materialRecipe } from './material-recipe-runtime';
 export type { ApplyMaterialRecipeOptions } from './material-recipe-runtime';
 export type { MaterialRecipeId, MaterialRecipeOverridesV1 } from './material-recipes';
-export { compilePortableMaterialSpecV2 } from './portable-material-runtime';
+export {
+  compilePortableMaterialSpecV2,
+  compilePortableMaterialSpecV3,
+} from './portable-material-runtime';
+export {
+  canonicalizePortableMaterialSpecV3,
+  PortableMaterialV3Error,
+  PORTABLE_MATERIAL_V3_LIMITS,
+} from './procedural-material-v3';
+export type {
+  PortableMaterialSpecV3,
+  CanonicalPortableMaterialSpecV3,
+  PortableTextureRefV3,
+  CanonicalPortableTextureRefV3,
+} from './procedural-material-v3';
+export { canonicalizePortableSamplerV1 } from './portable-sampler';
+export type { PortableSamplerV1, CanonicalPortableSamplerV1 } from './portable-sampler';
+export {
+  compileProceduralTextureSpecV3,
+  canonicalizeProceduralTextureSpecV3,
+  canonicalProceduralTextureJsonV3,
+  hashProceduralTextureSpecV3,
+  PROCEDURAL_TEXTURE_V3_COMPILER_ID,
+  PROCEDURAL_TEXTURE_SPEC_VERSION_V3,
+  MAX_PROCEDURAL_V3_EDGE,
+  MAX_PROCEDURAL_V3_TEXELS,
+  MAX_PROCEDURAL_V3_OPERATIONS,
+  MAX_PROCEDURAL_V3_VERTICES,
+  MAX_PROCEDURAL_V3_STAMPS,
+  MAX_PROCEDURAL_V3_PALETTE,
+  MAX_PROCEDURAL_V3_WORK,
+  MAX_PROCEDURAL_V3_TRANSIENT_BYTES,
+} from './procedural-texture-v3';
+export type {
+  CompiledProceduralTextureV3,
+  RgbaV3,
+  PixelPointV3,
+  PixelRectangleV3,
+  ProceduralShapeV3,
+  ProceduralOperationV3,
+  CanonicalProceduralOperationV3,
+  ProceduralTextureSpecV3,
+  CanonicalProceduralTextureSpecV3,
+} from './procedural-texture-v3';
 export {
   MAX_PORTABLE_MATERIAL_TEXELS,
   MAX_PORTABLE_MATERIAL_TEXTURES,
@@ -2173,6 +2252,8 @@ export function buildSandboxGlobals(
     replicateAssembly: wrap('replicateAssembly', replicateAssembly),
     createPivot: wrap('createPivot', createPivot),
     createJointChain: wrap('createJointChain', createJointChain),
+    createBoneChain: wrap('createBoneChain', createBoneChain),
+    createSkinnedPart: wrap('createSkinnedPart', createSkinnedPart),
     createVehicleFrame: wrap('createVehicleFrame', createVehicleFrame),
     createWheelGeometrySet: wrap('createWheelGeometrySet', createWheelGeometrySet),
     createWheelAssembly: wrap('createWheelAssembly', createWheelAssembly),
@@ -2222,6 +2303,13 @@ export function buildSandboxGlobals(
           new TypeError('compilePortableMaterialSpecV2 accepts exactly one material spec'),
         );
       return compilePortableMaterialSpecV2(args[0], { resolver: options.textureResolver });
+    }),
+    compilePortableMaterialSpecV3: wrap('compilePortableMaterialSpecV3', (...args: unknown[]) => {
+      if (args.length !== 1)
+        return Promise.reject(
+          new TypeError('compilePortableMaterialSpecV3 accepts exactly one material spec'),
+        );
+      return compilePortableMaterialSpecV3(args[0], { resolver: options.textureResolver });
     }),
     basicMaterial: wrap('basicMaterial', basicMaterial),
     glassMaterial: wrap('glassMaterial', glassMaterial),
@@ -2275,6 +2363,7 @@ export function buildSandboxGlobals(
     // Shape-aware unwraps (sync — preserve built-in directional UVs)
     projectUV: wrap('projectUV', projectUV),
     remapUV: wrap('remapUV', uvShapes.remapUV),
+    remapUVToAtlas: wrap('remapUVToAtlas', remapUVToAtlas),
     // Parametric primitives
     gearGeo: wrapGeo('gearGeo', gears.gearGeo),
     bladeGeo: wrapGeo('bladeGeo', gears.bladeGeo),
@@ -2283,6 +2372,11 @@ export function buildSandboxGlobals(
     loadApprovedTexture: wrap('loadApprovedTexture', loadApprovedTexture),
     // Procedural textures (sync — no I/O, so no await)
     proceduralTexture: wrap('proceduralTexture', proceduralTextures.proceduralTexture),
+    textureAtlas: wrap('textureAtlas', (...args: unknown[]) => {
+      if (args.length !== 1)
+        return Promise.reject(new TypeError('textureAtlas accepts exactly one atlas spec'));
+      return textureAtlas(args[0], { resources: options.textureResolver?.pinnedMaterialMaps });
+    }),
     normalMapFromHeight: wrap('normalMapFromHeight', proceduralTextures.normalMapFromHeight),
     pbrMaterial: wrap('pbrMaterial', textures.pbrMaterial),
     foliageMaterial: wrap('foliageMaterial', textures.foliageMaterial),

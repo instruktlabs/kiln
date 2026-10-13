@@ -1,0 +1,208 @@
+{
+  "materialId": "nm-forest-spider-atlas",
+  "revisionId": "sha256:caafc98db9a71e8d7076e25ea3ce20a81b6a60fc2734d105150c9f15431f03ad",
+  "name": "Forest spider-atlas",
+  "tags": [],
+  "tileable": false,
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [
+    {
+      "resourceId": "nm-forest-shell",
+      "revisionId": "sha256:53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f",
+      "sha256": "sha256:53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f"
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:fdf1cd4531c9793e9b087b71b897576f66bc49d690a5972e7d3d4374bc46d3b2",
+      "bytes": 1042,
+      "width": 256,
+      "height": 128,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "wrapS": "clamp-to-edge",
+        "wrapT": "clamp-to-edge"
+      },
+      "pixelHash": "sha256:7ec9cb5001e455c82710d779274fe8fc3aac9e44ddc26aeb19ee1ab057b3c8a6",
+      "recipe": {
+        "kind": "atlas",
+        "compilerId": "kiln.texture-atlas.v1.1",
+        "spec": {
+          "schemaVersion": 1,
+          "width": 256,
+          "height": 128,
+          "usage": "albedo",
+          "sampler": {
+            "minFilter": "nearest",
+            "magFilter": "nearest",
+            "wrapS": "clamp-to-edge",
+            "wrapT": "clamp-to-edge"
+          },
+          "regions": [
+            {
+              "name": "body",
+              "content": {
+                "x": 4,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f.base-color",
+                "pin": {
+                  "resourceId": "nm-forest-shell",
+                  "revisionId": "sha256:53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f",
+                  "sha256": "sha256:53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f"
+                }
+              }
+            },
+            {
+              "name": "legs",
+              "content": {
+                "x": 76,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f.base-color",
+                "pin": {
+                  "resourceId": "nm-forest-shell",
+                  "revisionId": "sha256:53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f",
+                  "sha256": "sha256:53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f"
+                }
+              }
+            }
+          ]
+        },
+        "manifest": {
+          "version": "kiln.atlas-manifest.v1",
+          "compilerId": "kiln.texture-atlas.v1.1",
+          "width": 256,
+          "height": 128,
+          "usage": "albedo",
+          "origin": "top-left",
+          "sampler": {
+            "minFilter": "nearest",
+            "magFilter": "nearest",
+            "wrapS": "clamp-to-edge",
+            "wrapT": "clamp-to-edge"
+          },
+          "specHash": "sha256:d092a0106c4838df57f44ef038eedab5c134c0c840ea3906f3a3a3e7d6c79660",
+          "layoutHash": "sha256:2c9be17d448d09ec80eb5cce87acd3e15daf7f87302a27edf6bbfe68dc789148",
+          "decodedPixelHash": "sha256:7ec9cb5001e455c82710d779274fe8fc3aac9e44ddc26aeb19ee1ab057b3c8a6",
+          "atlasPixelHash": "sha256:5886b75daa363d7b2ea3fd79486579921ea30e20d74f1e3fc9c3888adebff2c3",
+          "sources": [
+            {
+              "id": "resource:nm-forest-shell:sha256:53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f:kiln.library.53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f.base-color",
+              "width": 64,
+              "height": 64,
+              "decodedPixelHash": "sha256:4f6bfa42231e4eba02ea60427b5ac852abdabae9c71aef9a80370b3c75705247",
+              "kind": "resource",
+              "descriptor": {
+                "materialId": "nm-forest-shell",
+                "revisionId": "sha256:53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f",
+                "resourceId": "kiln.library.53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f.base-color",
+                "slot": "baseColor",
+                "usage": "albedo",
+                "colorSpace": "srgb",
+                "width": 64,
+                "height": 64,
+                "encodedByteLength": 544,
+                "imageSha256": "sha256:ee6fa9b8c782a6455f625a92eea56a8de5fdbed33907772359d9a7f8624b58a8",
+                "decodedPixelHash": "sha256:4f6bfa42231e4eba02ea60427b5ac852abdabae9c71aef9a80370b3c75705247"
+              }
+            }
+          ],
+          "regions": [
+            {
+              "name": "body",
+              "content": {
+                "x": 4,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 0,
+                "y": 0,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-forest-shell:sha256:53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f:kiln.library.53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f.base-color"
+            },
+            {
+              "name": "legs",
+              "content": {
+                "x": 76,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 72,
+                "y": 0,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-forest-shell:sha256:53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f:kiln.library.53debc013f9a402da8d62f62c5d20ff9e6d300b34a20206e90428b358a724a7f.base-color"
+            }
+          ],
+          "manifestHash": "sha256:6925d5ebeffcae2dc60bc04f1723b19ff33de60d205c7ffb9e5a42d75e14602c"
+        },
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

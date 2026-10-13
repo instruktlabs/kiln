@@ -15,6 +15,8 @@ import type { AssetManifest } from '../assets';
 import { mountPerformanceControl } from './performance-control';
 import { mountMembership } from './membership-panel';
 import { el, node, request, empty, notice, remember, recall, shortId } from './dom';
+import { materialEvaluationDependencies } from './material-preview';
+import { materialPreviewPanel } from './material-preview-panel';
 
 export function mountLiveReview() {
   let state: ReviewState = { following: true, crossRunContinuity: true, operations: [] };
@@ -35,6 +37,7 @@ export function mountLiveReview() {
   let compareGeneration = 0;
   let wire = false;
   let recoveredPreference = false;
+  let materialInspection: { key: string; card: HTMLElement } | undefined;
   const projectSelect = el<HTMLSelectElement>('live-project');
   const sourceSelect = el<HTMLSelectElement>('live-source');
   const livePath = (path: string) =>
@@ -179,7 +182,10 @@ export function mountLiveReview() {
     target.replaceChildren();
     downloads.replaceChildren();
     const operation = state.displayed;
-    if (!operation?.artifact) return;
+    if (!operation?.artifact) {
+      materialInspection = undefined;
+      return;
+    }
     const identity = node('div', undefined, 'evidence-card');
     identity.append(
       node('h3', 'Selected observed artifact'),
@@ -188,6 +194,56 @@ export function mountLiveReview() {
       node('p', `Source: ${operation.programRef ?? 'See authored source download'}`, 'mono'),
     );
     target.append(identity, fidelityCard(operation));
+    const materialKey = `${sourceSelect.value}/${operation.operationId}/${operation.artifact.sha256}`;
+    if (materialInspection?.key !== materialKey) {
+      const card = node('div', undefined, 'evidence-card live-material-inspection'),
+        button = node('button', 'Inspect exact material inputs', 'secondary');
+      card.append(
+        node('h3', 'Materials and atlas sheets'),
+        node(
+          'p',
+          'Declared inputs for this displayed artifact. Raw sheets are unshaded; capture fidelity is reported separately.',
+        ),
+        button,
+      );
+      materialInspection = { key: materialKey, card };
+      button.onclick = async () => {
+        button.disabled = true;
+        const status = node('p', 'Reading the displayed artifact evaluation…');
+        status.setAttribute('role', 'status');
+        card.append(status);
+        try {
+          const evaluation = await request<unknown>(
+            livePath(`/api/live/${encodeURIComponent(operation.operationId)}/evaluation.json`),
+          );
+          if (materialInspection?.key !== materialKey) return;
+          const dependencies = materialEvaluationDependencies(
+            evaluation,
+            operation.artifact!.sha256,
+          );
+          status.textContent = dependencies.length
+            ? 'Exact declared revisions. Map images require the matching record in this local material library.'
+            : 'No saved material resource declarations in this artifact. Embedded textures can still be viewed in the viewport.';
+          for (const material of dependencies) {
+            const details = node('details');
+            details.append(node('summary', `${material.name} · ${material.revisionId}`));
+            let loaded = false;
+            details.ontoggle = () => {
+              if (details.open && !loaded) {
+                loaded = true;
+                details.append(materialPreviewPanel(material));
+              }
+            };
+            card.append(details);
+          }
+        } catch (error) {
+          if (materialInspection?.key !== materialKey) return;
+          status.textContent = `Material inspection unavailable for this exact artifact: ${error instanceof Error ? error.message : String(error)}`;
+          button.disabled = false;
+        }
+      };
+    }
+    target.append(materialInspection.card);
     if (operation.captures.length) {
       for (const capture of operation.captures) {
         const card = node('div', undefined, 'evidence-card');

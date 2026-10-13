@@ -1,7 +1,8 @@
 # Kiln scenes
 
-The maintained Farm, Golden Gate, Foundry Floor, Troy and shared scene-kit sources
-live here. Farm, Golden Gate and Foundry Floor use React Three Fiber; Troy uses
+The maintained Farm, Golden Gate, Foundry Floor, Troy, Cabin in the Woods: PSX
+Horror and shared scene-kit sources live here. Farm, Golden Gate, Foundry Floor
+and Cabin in the Woods use React Three Fiber; Troy uses
 Three.js directly. All use the same pinned Three.js version. The original three
 scenes were integrated from the separate authored scene workspace for the v0.9
 site rollout. Generated capture evidence and asset payloads are kept out of Git.
@@ -12,6 +13,12 @@ Read the source and development instructions in [Farm](packages/farm/),
 [Troy](packages/troy/README.md). [Pack source](../packs/README.md) covers Farm,
 Vehicles, Bridge, Foundry and Troy. Scene controllers and composition remain
 separate from standalone authored asset programs.
+
+[Cabin in the Woods: PSX Horror](packages/cabin-woods-psx-horror/README.md) is a
+desktop WebGPU asset demonstration under owner review. Its source-only tests run
+in the portable gate. Asset payloads come from an explicit sealed scene archive;
+dependency installation and tests do not download them. Its pack, individual
+gallery assets and scene are staged together for feedback before publication.
 
 Troy's maintained modules, portable tests, bounded asset transport and bundling
 tools are public source. Its [runtime pin](packages/troy/runtime-pin.json) selects

@@ -19,6 +19,9 @@ export type AuthoringDiagnostic =
   | 'ROUNDED_BOX_RADIUS'
   | 'PROCEDURAL_TEXTURE_UNKNOWN_KEY'
   | 'PROCEDURAL_TEXTURE_BLEND'
+  | 'PROCEDURAL_TEXTURE_V3_CONTRACT'
+  | 'PORTABLE_MATERIAL_V3_CONTRACT'
+  | 'TEXTURE_ATLAS_CONTRACT'
   | 'MATERIAL_FRACTION_RANGE'
   | 'PARAMETRIC_PERIODIC_ENDPOINT'
   | 'PROFILE_HOLES_UNSUPPORTED'
@@ -30,7 +33,10 @@ export type AuthoringDiagnostic =
   | 'PROGRAM_TYPE_ERROR'
   | 'PROGRAM_RANGE_ERROR'
   | 'LOD_SET'
-  | 'OPEN_SHELL';
+  | 'OPEN_SHELL'
+  | 'BONE_CHAIN_ARGUMENT'
+  | 'SKIN_BINDING_ARGUMENT'
+  | 'EXPORT_MATERIAL_SIDE_UNSUPPORTED';
 // Names no identifier on purpose. The identifier is only available from the
 // sandboxed exception message, and this module's contract is that no captured
 // identifier, path, message or stack crosses that boundary. Pointing at the
@@ -76,6 +82,18 @@ export const OPEN_SHELL_ADVICE =
 export const EXECUTION_REJECTED_ADVICE =
   'No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.';
 export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | undefined): string {
+  if (diagnostic === 'PORTABLE_MATERIAL_V3_CONTRACT')
+    return 'compilePortableMaterialSpecV3 requires schemaVersion 3, model pbrMetallicRoughness, typed V3 procedural or injected resource references, and complete minFilter/magFilter/wrapS/wrapT samplers. Match texture usage to its slot and split work exceeding the material budget. Resource bindings need a host with verified-byte admission. V2 remains available unchanged. Shader code, paths, raw textures and V3 height derivation are unsupported. Read kiln_discover ids ["compilePortableMaterialSpecV3"] for the exact contract.';
+  if (diagnostic === 'TEXTURE_ATLAS_CONTRACT')
+    return 'textureAtlas requires bounded named integer content rectangles with nonoverlapping gutter allocations, matching source crops and usage, and explicit portable sampling. Sources are V3 recipes or exact host-injected library map pins. Split atlases exceeding aggregate work or allocation budgets. remapUVToAtlas requires finite unit UV0, a named content region, inputOrigin and mapping mode; it preserves topology and does not unwrap or tile a region. Read kiln_discover ids ["textureAtlas", "remapUVToAtlas"] for the exact contracts.';
+  if (diagnostic === 'PROCEDURAL_TEXTURE_V3_CONTRACT')
+    return 'proceduralTexture schemaVersion 3 requires bounded JSON: width/height 4..1024, byte RGBA, integer pixel shapes and at most 64 operations. Palette/dither and seeded stamps support only albedo/emissive. Work includes polygon edges and periodic copies. Read kiln_discover ids ["proceduralTexture"] for the V3 contract; keep schemaVersion 2 for existing opaque patterns.';
+  if (diagnostic === 'BONE_CHAIN_ARGUMENT')
+    return 'createBoneChain requires 1..1024 valid local joint descriptors with unique roles and animation-safe names across the parent hierarchy. Use normalized perpendicular forward/bend axes and finite rest transforms; an explicit parentRole must match the declared parent. Read the retained source and kiln_discover ids ["createBoneChain"] for the exact contract.';
+  if (diagnostic === 'SKIN_BINDING_ARGUMENT')
+    return 'createSkinnedPart requires four valid bone indices and finite nonnegative weights per vertex, summing to one unless normalizeWeights:true is explicit. Zero sums are rejected. Assemble distinct named Bones and the parent in one rest-pose hierarchy before binding. Use unbound geometry within the documented budgets and finite invertible transforms. Read the retained source and kiln_discover ids ["createSkinnedPart"] for the exact contract; the Three exporter is required for skin delivery.';
+  if (diagnostic === 'EXPORT_MATERIAL_SIDE_UNSUPPORTED')
+    return 'EXPORT_MATERIAL_SIDE_UNSUPPORTED: A used material has BackSide, which glTF cannot encode directly. Author inward-facing triangles with FrontSide, or choose DoubleSide when both faces are intended. Neither adds missing geometry. Read the retained program with kiln_source query BackSide to locate the material; source names and exception text do not cross the evaluator boundary.';
   if (diagnostic === 'UNINITIALIZED_BINDING') return UNINITIALIZED_BINDING_ADVICE;
   if (diagnostic === 'LOD_SET') return LOD_SET_ADVICE;
   if (diagnostic === 'OPEN_SHELL') return OPEN_SHELL_ADVICE;

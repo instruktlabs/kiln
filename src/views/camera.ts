@@ -1,6 +1,9 @@
 import { Vector3, Matrix4, Euler, Group, type Object3D } from 'three';
 import { collectTriangles, compositingOrder, measureBounds, orbitDir } from './raster';
 import { resolveBackdrop, type BackdropId } from './background';
+import { cloneReviewScene } from './scene-copy';
+import { visibleNormalSign } from './face-policy';
+import { prepareTriangleCoverage } from './triangle-coverage';
 
 export type CameraVec3 = [number, number, number];
 export type CameraBounds = { min: CameraVec3; max: CameraVec3 };
@@ -409,7 +412,11 @@ export function resolveAssetCamera(root: unknown, shot: CameraShotV1 = {}): Reso
         measureBounds(root),
       );
       if (request.projection === 'orthographic')
-        camera = { ...fit, near: request.near ?? fit.near, far: request.far ?? fit.far };
+        camera = {
+          ...fit,
+          near: request.near ?? fit.near,
+          far: request.far ?? fit.far,
+        };
       else {
         const fov = finite(request.fovDeg ?? 50, 'fovDeg');
         if (fov <= 0 || fov >= 180) throw new Error('invalid fovDeg');
@@ -487,9 +494,9 @@ export async function withCameraVisibility<T>(
  * A derivative GLB
  * serialized from a scene with hidden nodes (authored, or isolated by
  * {@link withCameraVisibility}) would ship them to the GPU. Every node with
- * `visible = false` leaves with its subtree, which is what three draws. Returns the root
- * itself when nothing is hidden, else a pruned clone; the caller's scene is never mutated and
- * restores `.visible` itself.
+ * `visible = false` removes drawing from its subtree. Required skeleton ancestors remain
+ * as transforms without drawing payloads. Returns the root itself when nothing is hidden,
+ * else an independent pruned hierarchy/skeleton; the caller restores `.visible` itself.
  */
 export function withoutHiddenMeshes(root: Object3D): Object3D {
   if (root.visible === false) {
@@ -504,13 +511,7 @@ export function withoutHiddenMeshes(root: Object3D): Object3D {
     if (hidden(node)) any = true;
   });
   if (!any) return root;
-  const copy = root.clone(true);
-  const drop: Object3D[] = [];
-  copy.traverse((node) => {
-    if (hidden(node)) drop.push(node);
-  });
-  for (const node of drop) node.removeFromParent();
-  return copy;
+  return cloneReviewScene(root, { omitHidden: true });
 }
 /** Flat geometry renderer with exact orthographic/perspective projection and near/far clipping. */
 export function rasterizeCamera(
@@ -531,6 +532,7 @@ export function rasterizeCamera(
   const out = new Uint8Array(size * size * 3);
   for (let i = 0; i < size * size; i++) out.set(bg, i * 3);
   const depth = new Float64Array(size * size).fill(Infinity);
+  const weights = new Float64Array(3);
   const clip = (points: Vector3[], plane: number, near: boolean) => {
     const result: Vector3[] = [];
     for (let i = 0; i < points.length; i++) {
@@ -539,7 +541,14 @@ export function rasterizeCamera(
       const insideA = near ? a.z >= plane : a.z <= plane,
         insideB = near ? b.z >= plane : b.z <= plane;
       if (insideA) result.push(a);
-      if (insideA !== insideB) result.push(a.clone().lerp(b, (plane - a.z) / (b.z - a.z)));
+      if (insideA !== insideB) {
+        // Shared intersections must round identically for either edge direction.
+        const low = a.z < b.z ? a : b,
+          high = a.z < b.z ? b : a;
+        const intersection = low.clone().lerp(high, (plane - low.z) / (high.z - low.z));
+        intersection.z = plane;
+        result.push(intersection);
+      }
     }
     return result;
   };
@@ -558,15 +567,16 @@ export function rasterizeCamera(
       .clone()
       .sub(world[0]!)
       .cross(world[2]!.clone().sub(world[0]!))
-      .normalize();
-    if (
-      backfaceCull &&
-      !tri.doubleSided &&
-      normal.dot(camera.projection === 'perspective' ? position.clone().sub(world[0]!) : z) <= 0
-    )
-      continue;
+      .normalize()
+      .multiplyScalar(tri.windingParity);
+    const normalSign = visibleNormalSign(
+      normal.dot(camera.projection === 'perspective' ? position.clone().sub(world[0]!) : z),
+      tri.side,
+      backfaceCull,
+    );
+    if (normalSign === 0) continue;
     if (tri.alpha <= 0) continue;
-    const light = Math.min(1, 0.25 + 1.1 * Math.max(0, normal.dot(key)));
+    const light = Math.min(1, 0.25 + 1.1 * Math.max(0, normal.dot(key) * normalSign));
     const color = tri.color.map((c) => Math.round(srgb(c * light) * 255));
     let polygon = world.map((p) => {
       const d = p.clone().sub(position);
@@ -586,28 +596,15 @@ export function rasterizeCamera(
         ];
       });
       const [a, b, c] = screen as [number[], number[], number[]];
-      const area = (b[0]! - a[0]!) * (c[1]! - a[1]!) - (b[1]! - a[1]!) * (c[0]! - a[0]!);
-      if (Math.abs(area) < 1e-9) continue;
-      for (
-        let py = Math.max(0, Math.floor(Math.min(...screen.map((s) => s[1]!))));
-        py <= Math.min(size - 1, Math.ceil(Math.max(...screen.map((s) => s[1]!))));
-        py++
-      )
-        for (
-          let px = Math.max(0, Math.floor(Math.min(...screen.map((s) => s[0]!))));
-          px <= Math.min(size - 1, Math.ceil(Math.max(...screen.map((s) => s[0]!))));
-          px++
-        ) {
-          const w0 =
-              ((b[0]! - a[0]!) * (py + 0.5 - a[1]!) - (b[1]! - a[1]!) * (px + 0.5 - a[0]!)) / area,
-            w1 =
-              ((c[0]! - b[0]!) * (py + 0.5 - b[1]!) - (c[1]! - b[1]!) * (px + 0.5 - b[0]!)) / area,
-            w2 = 1 - w0 - w1;
-          if (w0 < 0 || w1 < 0 || w2 < 0) continue;
+      const triangle = prepareTriangleCoverage(a[0]!, a[1]!, b[0]!, b[1]!, c[0]!, c[1]!, size);
+      if (!triangle) continue;
+      for (let py = triangle.minY; py <= triangle.maxY; py++)
+        for (let px = triangle.minX; px <= triangle.maxX; px++) {
+          if (!triangle.sample(px + 0.5, py + 0.5, weights)) continue;
           const d =
             camera.projection === 'perspective'
-              ? 1 / (w1 / p[0]!.z + w2 / p[1]!.z + w0 / p[2]!.z)
-              : w1 * p[0]!.z + w2 * p[1]!.z + w0 * p[2]!.z;
+              ? 1 / (weights[0]! / p[0]!.z + weights[1]! / p[1]!.z + weights[2]! / p[2]!.z)
+              : weights[0]! * p[0]!.z + weights[1]! * p[1]!.z + weights[2]! * p[2]!.z;
           const index = py * size + px;
           if (d >= depth[index]!) continue;
           depth[index] = d;

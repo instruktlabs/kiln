@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SceneShell from '../../components/SceneShell.astro';
+import cabinWoods from '../../data/cabin-woods-psx-horror.json';
+---
+<BaseLayout title={`${cabinWoods.name} scene · Kiln`} description="Explore a furnished cabin and dense woodland in a playable PSX horror scene, with first-person controls, tools, a fuel-fed fire and a Stone Golem." breadcrumbs={[{ label: 'Scenes', href: '/scenes/' }, { label: `${cabinWoods.name} scene`, href: '/scenes/cabin-woods-psx-horror/' }]} card="scenes">
+  <div class="container pb-12 pt-8">
+    <SceneShell scene="cabin-woods-psx-horror">
+      <div class="grid gap-8 md:grid-cols-2">
+        <div>
+          <h2 class="text-subheading">Walk the cabin and woodland.</h2>
+          <p class="mt-3">A furnished rural cabin, pine and birch woodland, removable window boards, tools and a limited Stone Golem encounter. The assets are made with Kiln; terrain, lighting, collision and gameplay are scene code.</p>
+        </div>
+        <div>
+          <h2 class="text-subheading">Desktop preview.</h2>
+          <p class="mt-3">{cabinWoods.devices} Follow the controls shown in the scene. Exit scene returns here and unloads the runtime.</p>
+        </div>
+      </div>
+    </SceneShell>
+  </div>
+</BaseLayout>

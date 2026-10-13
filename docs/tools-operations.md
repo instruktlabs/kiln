@@ -1123,7 +1123,7 @@ Create and retain one immutable material from a preset or procedural definition.
           "type": "object",
           "properties": {
             "draft": {
-              "description": "create-procedural: materialId, name, tileable, sources, maps with layered procedural specs; optional tags, physicalSizeMeters, parameters. Shape: kiln_discover({ ids: ['shape:material-draft'] }).",
+              "description": "create-procedural: legacy layered draft, or schemaVersion 2 with explicit samplers and RGBA/atlas recipes. Exact atlas sources must exist in this library. Shape: kiln_discover({ ids: ['shape:material-draft'] }).",
               "type": "object",
               "propertyNames": {
                 "type": "string"
@@ -1166,7 +1166,7 @@ Import complete normalized material records and embedded PNGs. Does not fetch UR
   "type": "object",
   "properties": {
     "payload": {
-      "description": "import: schemaVersion 1 and complete normalized records with embedded PNG bytes. Shape: kiln_discover({ ids: ['shape:material-import'] }).",
+      "description": "import: schemaVersion 1 or 2, complete normalized records and their exact dependencies with embedded PNG bytes. Shape: kiln_discover({ ids: ['shape:material-import'] }).",
       "type": "object",
       "propertyNames": {
         "type": "string"

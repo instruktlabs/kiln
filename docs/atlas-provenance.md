@@ -1,0 +1,23 @@
+# Atlas provenance in delivered GLBs
+
+`src/atlas-provenance.ts` is the internal owner of atlas metadata validation. It uses the existing atlas canonicalizer and manifest validator. It has no Node dependency and its live-scene readers are available to image-free structural QA. These internal helpers are not SDK authoring APIs.
+
+The default glTF scene owns `extras.kilnAtlasProvenance`:
+
+```json
+{"version":"kiln.atlas-provenance.v1","atlases":[{"id":"sha256:<manifest hash>","spec":{},"manifest":{}}]}
+```
+
+Each entry contains one complete canonical recipe and validated manifest. Entries deduplicate by exact manifest identity, with a content conflict check. Recipes are never repeated per mesh. Editable source and saved material records remain the authoring owners.
+
+Each material-slot `TextureInfo` owns `extras.kilnAtlasReference` with `version`, `id`, `effectiveSampler` (`minFilter`, `magFilter`, `wrapS`, `wrapT` as glTF values), `finalMime`, and `finalImageSha256`. Source collection creates only the version/id pair; final export fills actual sampler and encoded-image identities. The reference belongs to a texture use because one image can serve multiple samplers. glTF Transform preserves TextureInfo extras and does not preserve extras on glTF texture binding objects. Image extras would incorrectly conflate those uses.
+
+A primitive using a named remap owns `extras.kilnAtlasBinding`: `version`, `atlasId`, `region`, `inputOrigin`, and `mode`. Export checks the complete source geometry stamp against the primary atlas, including hashes, rectangles, scale and offset. Reimport derives that full geometry stamp from the validated manifest and compact binding. A geometry-wide binding requires its exact primary atlas among the primitive material slots. Companion color/data maps may have different manifest hashes with the same region layout. Manual full-sheet atlas use carries texture references without an inferred named binding. Ordinary textures carry no atlas metadata.
+
+Admission allows 128 unique identities, at most 256 KiB per JSON entry, a 4 MiB aggregate table including its envelope/separators, and 1,024 source binding observations. Exported documents independently bound slot references and primitive bindings to 1,024 each. Source graph admission precedes manifest cloning and scene export copies. Distinct atlas texture objects conservatively charge their full RGBA output toward a 64 MiB bake decoded-pixel budget. Encoded-image hashing admits at most 16 MiB per image and 64 MiB in aggregate before hashing. These are metadata/buffer-work bounds, not an operating-system or native codec RSS guarantee. Existing scene traversal remains proportional to the scene.
+
+Before first PNG encoding, baking verifies raw RGBA dimensions and SHA-256 against the compiled manifest. Already encoded source maps receive bounded PNG dimension/decode verification. Editing pixels while retaining an atlas stamp fails with a stale-provenance diagnostic. A validated GLB loader establishes a private WeakMap identity for exporter-derived delivery bytes; authored flags cannot establish this identity. Re-export checks those exact bytes against the validated delivery reference rather than comparing legitimate converted normal pixels to the original compiler pixels. The source recipe/pixel identity and final encoded-image identity remain separate. No GLB contains its own final artifact hash; that hash remains in external baked provenance.
+
+Both exporters write the same table, references and compact bindings. The optimizer validates input lineage and refreshes the final image identities after its transforms. Composition admits and merges the tables before copying source graphs and deleting their scenes. Import validates final bytes and samplers, never repairs a tampered reference. External transforms that rewrite images must update delivery references through the validated engine export path; retaining old image hashes makes the transformed artifact fail import validation.
+
+Structural metadata proves identities, named selectors and remap formulas. It does not prove an author's intended corner orientation after arbitrary within-domain UV edits, visual quality, or inferred physical density. Generic author `kiln*` userData remains excluded; only this owner's validated engine metadata is explicitly promoted.

@@ -20,6 +20,22 @@ createJointChain(name, segments: { role, offset, aliases?, side?, localForwardAx
   // e.g. const leg = createJointChain('LegL', [{ role: 'hip.left', offset: [0, 1, -0.2], side:
   // 'left' }, { role: 'knee.left', offset: [0, -0.5, 0], side: 'left' }, { role: 'ankle.left',
   // offset: [0, -0.5, 0], side: 'left', endEffector: true, contact: true }], { parent: root });
+createBoneChain(name, segments: JointChainSegmentV1[], opts?: { parent?, parentRole? })
+  // Creates an opt-in semantic Bone chain with the same local rest descriptors as
+  // createJointChain, for explicitly skinned meshes.
+  // NOTE: The bones must be in their assembled rest pose before binding. Use unique roles and
+  // names across the rig. createJointChain still returns rigid pivots.
+  // e.g. const bones = createBoneChain('Arm', [{ role: 'arm.base', offset: [0, 0, 0] }, { role:
+  // 'arm.tip', offset: [0, 1, 0] }], { parent: root });
+createSkinnedPart(name, geometry, material, opts: { parent, bones: Bone[], indices: ArrayLike<number>, weights: ArrayLike<number>, normalizeWeights?, position?, rotation?, scale?, semantic? })
+  // Clones unchanged geometry and binds explicit four-lane vertex influences to an already
+  // assembled rest-pose bone hierarchy.
+  // NOTE: Supply exactly four bone indices and weights per vertex; zero-weight lanes still need
+  // valid indices. Weights sum to one unless normalizeWeights:true is explicit; zero sums are
+  // rejected. Mesh transforms use local meters and Euler degrees. Three exporter is required
+  // for portable skin delivery; no automatic converter switch.
+  // e.g. const skin = createSkinnedPart('Arm', geometry, material, { parent: root, bones:
+  // chain.nodes, indices, weights });
 createVehicleFrame(name, opts?: { chassis?, axles?, seats?, contacts?, steering?, propulsion?, parent? })
   // Creates a canonical +X-forward/+Y-up/+Z-right vehicle frame with typed semantic sockets for
   // chassis, support, steering, and propulsion.
@@ -317,6 +333,22 @@ await compilePortableMaterialSpecV2({ schemaVersion: 2, model: 'pbrMetallicRough
   // 'pbrMetallicRoughness', roughness: 0.45, metalness: 0.85, textures: { metallicRoughness: {
   // kind: 'procedural', spec: { schemaVersion: 2, usage: 'metallicRoughness', size: 64, layers:
   // [{ op: 'solid', color: 0x0080cc }] } } } });
+await compilePortableMaterialSpecV3({ schemaVersion: 3, model: 'pbrMetallicRoughness', name?, baseColor?, roughness?, metalness?, emissive?, emissiveIntensity?, alphaMode?, alphaCutoff?, doubleSided?, textures?: { baseColor?, normal?, metallicRoughness?, emissive?, occlusion? } })
+  // Compiles opt-in portable PBR materials with bounded rectangular RGBA procedural textures
+  // and explicit portable samplers, preserving existing V2 behavior.
+  // NOTE: Every texture ref needs all four sampler fields. minFilter accepts nearest, linear,
+  // nearest-mipmap-nearest, linear-mipmap-nearest, nearest-mipmap-linear or
+  // linear-mipmap-linear; magFilter accepts nearest or linear; wrapS/wrapT accept
+  // clamp-to-edge, repeat or mirrored-repeat. Use typed procedural V3 specs or approved
+  // resource refs. Slot usages must match. RGBA alpha alone does not select mask/blend: set
+  // material alphaMode explicitly. Each binding owns texture state and bytes; no resolver,
+  // path, URL, raw pixels or shader arguments. V2 recipes and defaults remain separate.
+  // e.g. const leaf = await compilePortableMaterialSpecV3({ schemaVersion: 3, model:
+  // 'pbrMetallicRoughness', alphaMode: 'mask', doubleSided: true, textures: { baseColor: {
+  // kind: 'procedural', spec: { schemaVersion: 3, width: 16, height: 32, usage: 'albedo',
+  // background: [0, 0, 0, 0], operations: [{ op: 'paint', shape: { kind: 'ellipse', x: 2, y: 1,
+  // width: 12, height: 30 }, rgba: [60, 90, 40, 255] }] }, sampler: { minFilter: 'nearest',
+  // magFilter: 'nearest', wrapS: 'clamp-to-edge', wrapT: 'clamp-to-edge' } } } });
 basicMaterial(color, opts?: { transparent, opacity })
   // Unlit flat material. For UI / effects where lighting is baked in.
   // e.g. const mat = basicMaterial(0xffffff, { transparent: true, opacity: 0.5 });
@@ -576,12 +608,26 @@ remapUV(geometry: BufferGeometry, opts?: { scale?: [u, v], offset?: [u, v] })
   // scaling removes stale tangents with a warning.
   // e.g. const strip = remapUV(cylinderGeo(0.4, 0.4, 1), { scale: [1, 0.3], offset: [0, 0] });
 await autoUnwrap(geometry: BufferGeometry, opts?: { resolution?: 1024, padding?: 2, useNormals?: false })
-  // xatlas-based UV atlas for ANY geometry (CSG output, subdivided, deformed). Output is a
-  // packed atlas with arbitrary per-chart rotation — use for non-tileable baked textures. For
-  // directional tileable textures on box/cylinder/plane primitives, prefer the shape-aware
-  // unwraps below.
+  // xatlas-based UV atlas for bounded triangle geometry, including CSG output. Remaps vertex
+  // data and morphs across seams; preserves groups. Replaces UV0 and removes stale tangents.
+  // Maximum 65,536 input and output vertices; split larger meshes. Packed charts rotate
+  // arbitrarily: use for baked textures; prefer projectUV or original primitive UVs for
+  // directional tiling. See the preservation contract before unwrapping skinned or morphed
+  // geometry.
   // e.g. const unwrapped = await autoUnwrap(someCsgResult, { resolution: 1024 }); const mesh =
   // new THREE.Mesh(unwrapped, bakedPbr);
+remapUVToAtlas(geometry, atlasTextureOrManifest, regionName, { inputOrigin: 'top-left' | 'bottom-left', mode: 'content-boundary' | 'texel-center' })
+  // Maps existing unit UV0 into a named atlas content rectangle on an owned geometry clone,
+  // preserving topology and rich attributes.
+  // NOTE: UV0 must be finite in [0,1], with two components per vertex. Content-boundary maps
+  // endpoints to content edges; texel-center maps endpoints to the first/last content texel
+  // centers. Explicitly identify the input UV origin; atlas image coordinates use top left and
+  // flipY=false. Geometry, normals, colors, skin weights, morph buffers, groups and source
+  // metadata are preserved independently. UV scale changes invalidate tangents; regenerate when
+  // needed. This helper does not project, unwrap, tile within a region or change material
+  // sampling.
+  // e.g. const card = remapUVToAtlas(planeGeo(1, 1), atlas, 'patch', { inputOrigin:
+  // 'bottom-left', mode: 'texel-center' });
 
 // Textures (approved resource loading is async)
 await loadApprovedTexture(resourceId)
@@ -593,22 +639,53 @@ await loadApprovedTexture(resourceId)
   // authored surfaces. NEVER texture.clone() a loaded texture (clone() corrupts encoded bytes
   // and breaks GLB export).
   // e.g. const bark = await loadApprovedTexture('kiln.texture.bark-brown-01-albedo.v1');
-proceduralTexture({ schemaVersion: 2, size?: 4..1024 pow2, usage?, name?, layers: ProceduralLayer[] })
-  // Builds a repeat-wrapped texture from a bounded layer stack, with no image file needed.
-  // Layers composite bottom-first; the same spec produces the same bytes. Seeded noise is
-  // tileable, while other patterns can have visible repeat seams. Baked to PNG and embedded in
-  // the GLB automatically.
-  // NOTE: Layer fields by op — solid: { color }; checker: { colorA, colorB, squares? };
+proceduralTexture({ schemaVersion: 2, size?: 4..1024 pow2, usage?, name?, layers: ProceduralLayer[] } | { schemaVersion: 3, width: 4..1024, height: 4..1024, usage?, name?, background?: RGBA, operations: OperationV3[], palette? })
+  // Builds a repeat-wrapped deterministic texture without an image file. V2 retains opaque
+  // pattern layers. Explicit V3 adds rectangular RGBA, pixel shapes/masks, color palettes and
+  // seeded stamps. Repeat wrapping alone does not prove seamless pixels. Baked to PNG and
+  // embedded in the GLB automatically.
+  // NOTE: V2 layer fields by op: solid: { color }; checker: { colorA, colorB, squares? };
   // stripes: { colorA, colorB, count?, angleDeg? }; gradient: { from, to, angleDeg? }; bricks:
   // { brick, mortar, rows?, cols?, mortarWidth?: 0..1 (fraction of a brick cell, default 0.06),
   // stagger?: 0..1 (row offset fraction, default 0.5) }; noise: { colorA, colorB, scale?,
-  // octaves?, seed? }. Every layer also accepts blend?: 'normal'|'multiply'|'screen'|'overlay'
-  // and opacity?: 0..1. Pattern counts are integers 1..256; noise octaves are 1..6. Sync — no
-  // await. Unknown/prototype keys, callbacks, paths, URLs, and shader source are rejected. Max
-  // 8 layers.
+  // octaves?, seed? }. V2 blend normal|multiply|screen|overlay; opacity 0..1; max 8 layers,
+  // counts 1..256, octaves 1..6. V3 operations: paint {shape,rgba,opacity?}; mask
+  // {shape,alpha?,invert?}; stamps {shape,rgba,count,seed,area,periodic?,opacity?}; legacy-v2
+  // {spec,alpha?,opacity?} delegates an explicit V2 recipe with matching square
+  // dimensions/usage. RGBA is four bytes; V3 opacity/alpha are bytes0..255 default255. Shape
+  // kinds: rectangle/ellipse {x,y,width,height}; polygon {points:[[x,y],...]}; line
+  // {from:[x,y],to:[x,y],width}. Coordinates are integer pixel edges; centers define binary
+  // coverage, round line caps. Mask clears outside; invert keeps outside instead. area
+  // {x,y,width,height} sets seeded stamp translation offsets; periodic:true wraps copies
+  // explicitly. V3 background defaults transparent black, max64 ops,64 polygon vertices,256
+  // expanded stamps (periodic counts9),32 palette colors,64million estimated work including
+  // edges. palette {colors:[RGB integers],dither?:'none'|'bayer4'} and stamps are
+  // albedo/emissive only. Zero alpha normalizes RGB to0. Sampler defaults remain
+  // repeat/linear/mips; alphaMode belongs to pbrMaterial. Sync; strict JSON rejects
+  // unknown/prototype fields and accessors. See docs/procedural-surfaces-v3.md for exact
+  // rounding and bounds.
   // e.g. const bark = proceduralTexture({ schemaVersion: 2, size: 256, usage: 'albedo', name:
   // 'Bark', layers: [{ op: 'solid', color: 0x5a4632 }, { op: 'noise', colorA: 0x3d2f21, colorB:
   // 0x7a6248, scale: 6, octaves: 4, blend: 'overlay' }] });
+await textureAtlas({ schemaVersion: 1, width, height, usage, sampler?, regions: [{ name, content: { x, y, width, height }, gutter?, edgeMode?, source, crop? }] })
+  // Composes named, disjoint pixel regions from bounded procedural V3 recipes or exact pinned
+  // library maps without creating a mesh.
+  // NOTE: Coordinates are integer pixel edges from top left. Width/height 4..1024. Content
+  // excludes gutter (default2); padded allocations must not overlap. copy-edge (default)
+  // extrudes RGBA; mask-rgb-dilate preserves positive alpha and extends nearest donor RGB into
+  // zero-alpha pixels without growing alpha, for albedo/emissive only. No packing, rotation or
+  // resampling. An optional crop must exactly match content dimensions. Resource sources
+  // require
+  // {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256}} and a
+  // host-supplied exact dependency; paths, URLs, latest and approved non-library resources are
+  // unsupported. Default sampler is linear-mipmap-linear/linear/clamp-to-edge on both axes;
+  // explicit samplers require all four fields. Gutters do not guarantee isolation at every mip
+  // level. Use remapUVToAtlas with an explicit input origin and mode; inspect at intended scene
+  // distance.
+  // e.g. const atlas = await textureAtlas({ schemaVersion: 1, width: 8, height: 8, usage:
+  // 'albedo', regions: [{ name: 'patch', content: { x: 2, y: 2, width: 4, height: 4 }, source:
+  // { kind: 'procedural', spec: { schemaVersion: 3, width: 4, height: 4, background: [70, 90,
+  // 40, 255], operations: [] } } }] });
 normalMapFromHeight(source: THREE.Texture, { strength?: number, name?: string })
   // Derives a tangent-space normal map from the source texture's brightness, treating it as
   // height. The cheap way to get real PBR surface relief out of a procedural albedo. Wraps at

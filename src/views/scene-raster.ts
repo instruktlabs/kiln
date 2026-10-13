@@ -23,6 +23,7 @@ import {
 import { loadGlbReviewScene } from './glb';
 import { encodePng } from './png';
 import { rasterizeView, type ViewSpec } from './raster';
+import { cloneReviewScene } from './scene-copy';
 
 const DEG = Math.PI / 180;
 const PAD = 4;
@@ -103,7 +104,7 @@ export async function rasterizeComposedScene(
       base = (await loadGlbReviewScene(glb)).root;
       baseByInput.set(key, base);
     }
-    const inst = base.clone(true);
+    const inst = cloneReviewScene(base);
     inst.position.set(part.pos[0], part.pos[1], part.pos[2]);
     inst.rotation.set(0, part.rotYDeg * DEG, 0);
     inst.scale.setScalar(part.scale);

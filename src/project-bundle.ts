@@ -14,8 +14,10 @@ import { MAX_PROJECT_REVISIONS, projectRevisionSchema, type ProjectRevision } fr
 import {
   canonicalMaterialJson,
   materialManifestSchema,
-  validateMaterialRecordShape,
-  type MaterialRecordV1,
+  materialManifestAnySchema,
+  materialRecordDependencyPins,
+  validateMaterialRecordShapeAny,
+  type MaterialRecord,
 } from './material-library';
 
 export const PROJECT_BUNDLE_LIMITS = Object.freeze({
@@ -69,7 +71,16 @@ export const projectBundleManifestSchema = z
     ),
   })
   .strict();
-export type ProjectBundleManifest = z.infer<typeof projectBundleManifestSchema>;
+export const projectBundleManifestV2Schema = projectBundleManifestSchema.extend({
+  version: z.literal('kiln.project-bundle.v2'),
+});
+export const projectBundleManifestAnySchema = z.union([
+  projectBundleManifestSchema,
+  projectBundleManifestV2Schema,
+]);
+export type ProjectBundleManifestV1 = z.infer<typeof projectBundleManifestSchema>;
+export type ProjectBundleManifestV2 = z.infer<typeof projectBundleManifestV2Schema>;
+export type ProjectBundleManifest = ProjectBundleManifestV1 | ProjectBundleManifestV2;
 export interface ProjectBundleAsset {
   inventoryId: string;
   collectionId: string;
@@ -77,7 +88,7 @@ export interface ProjectBundleAsset {
 }
 export interface ProjectBundleInput {
   project: ProjectRevision;
-  materials: MaterialRecordV1[];
+  materials: MaterialRecord[];
   assets: ProjectBundleAsset[];
 }
 export interface DecodedProjectBundle extends ProjectBundleInput {
@@ -117,8 +128,8 @@ async function verifyAsset(record: AssetRecord) {
     if ((await projectBundleHash(file)) !== record.manifest.files[name]!.sha256)
       throw new Error('Asset file hash mismatch');
 }
-async function verifyMaterial(record: MaterialRecordV1) {
-  const manifest = validateMaterialRecordShape(record);
+async function verifyMaterial(record: MaterialRecord) {
+  const manifest = validateMaterialRecordShapeAny(record);
   const { revisionId, ...payload } = manifest;
   if ((await projectBundleHash(encoder.encode(canonicalMaterialJson(payload)))) !== revisionId)
     throw new Error('Material revision hash mismatch');
@@ -144,10 +155,9 @@ function assertAssetSelection(project: ProjectRevision, entries: ProjectBundleMa
       throw new Error('Bundle inventory asset binding mismatch');
   }
 }
-function assertMaterialClosure(project: ProjectRevision, records: MaterialRecordV1[]) {
-  const identities = records.map(
-    (record) => `${record.manifest.materialId}/${record.manifest.revisionId}`,
-  );
+function assertMaterialClosure(project: ProjectRevision, records: MaterialRecord[]) {
+  const manifests = records.map((record) => validateMaterialRecordShapeAny(record));
+  const identities = manifests.map((manifest) => `${manifest.materialId}/${manifest.revisionId}`);
   if (new Set(identities).size !== identities.length)
     throw new Error('Duplicate material revision');
   for (const dependency of project.materialDependencies)
@@ -156,6 +166,33 @@ function assertMaterialClosure(project: ProjectRevision, records: MaterialRecord
       !identities.includes(`${dependency.resourceId}/${dependency.revisionId}`)
     )
       throw new Error(`Missing locked material: ${dependency.resourceId}`);
+  const byKey = new Map(
+    manifests.map((manifest) => [`${manifest.materialId}/${manifest.revisionId}`, manifest]),
+  );
+  const visited = new Set<string>();
+  for (const key of identities) {
+    const active = new Set<string>();
+    const stack: Array<{ key: string; exit: boolean }> = [{ key, exit: false }];
+    while (stack.length) {
+      const frame = stack.pop()!;
+      if (frame.exit) {
+        active.delete(frame.key);
+        visited.add(frame.key);
+        continue;
+      }
+      if (active.has(frame.key)) throw new Error('Cyclic project material closure');
+      if (visited.has(frame.key)) continue;
+      const manifest = byKey.get(frame.key);
+      if (!manifest) throw new Error('Missing transitive project material');
+      active.add(frame.key);
+      stack.push({ key: frame.key, exit: true });
+      for (const pin of materialRecordDependencyPins(manifest)) {
+        if (pin.sha256 !== pin.revisionId)
+          throw new Error('Transitive material lock hash mismatch');
+        stack.push({ key: `${pin.resourceId}/${pin.revisionId}`, exit: false });
+      }
+    }
+  }
 }
 
 /** Editable includes normalized rebuild resources; runtime intentionally excludes source/recipes. */
@@ -228,8 +265,12 @@ export async function encodeProjectBundle(
       for (const [name, bytes] of Object.entries(record.files)) add(prefix + name, bytes);
     }
   }
-  const manifest = projectBundleManifestSchema.parse({
-    version: 'kiln.project-bundle.v1',
+  const version =
+    profile === 'editable' && input.materials.some((record) => record.manifest.schemaVersion === 2)
+      ? 'kiln.project-bundle.v2'
+      : 'kiln.project-bundle.v1';
+  const manifest = projectBundleManifestAnySchema.parse({
+    version,
     profile,
     editable: profile === 'editable',
     resourceClosure:
@@ -294,7 +335,7 @@ export async function decodeProjectBundle(bytes: Uint8Array): Promise<DecodedPro
     }
     return value;
   };
-  const manifest = projectBundleManifestSchema.parse(
+  const manifest = projectBundleManifestAnySchema.parse(
     json('bundle.json', PROJECT_BUNDLE_LIMITS.maxManifestBytes),
   );
   if (
@@ -314,7 +355,7 @@ export async function decodeProjectBundle(bytes: Uint8Array): Promise<DecodedPro
   assertAssetSelection(project, manifest.assets);
   const used = new Set(['bundle.json', 'project.json']);
   const assets: ProjectBundleAsset[] = [];
-  const materials: MaterialRecordV1[] = [];
+  const materials: MaterialRecord[] = [];
   const runtimeAssets: DecodedProjectBundle['runtimeAssets'] = [];
   for (const identity of manifest.assets) {
     const prefix = assetPrefix(identity);
@@ -367,16 +408,18 @@ export async function decodeProjectBundle(bytes: Uint8Array): Promise<DecodedPro
     throw new Error('Runtime profile contains editable material records');
   for (const identity of manifest.materials) {
     const prefix = materialPrefix(identity);
-    const materialManifest = materialManifestSchema.parse(
-      json(`${prefix}manifest.json`, 256 * 1024),
-    );
+    const materialManifest = (
+      manifest.version === 'kiln.project-bundle.v1'
+        ? materialManifestSchema
+        : materialManifestAnySchema
+    ).parse(json(`${prefix}manifest.json`, 256 * 1024));
     used.add(`${prefix}manifest.json`);
     if (
       materialManifest.materialId !== identity.materialId ||
       materialManifest.revisionId !== identity.revisionId
     )
       throw new Error('Bundle material identity mismatch');
-    const record: MaterialRecordV1 = { manifest: materialManifest, files: {} };
+    const record = { manifest: materialManifest, files: {} } as MaterialRecord;
     for (const map of materialManifest.maps) {
       const bytes = files[prefix + map.file];
       if (!bytes) throw new Error('Missing material map');

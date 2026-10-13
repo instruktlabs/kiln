@@ -8,7 +8,10 @@
  * the shape a model reads is the shape the server enforces.
  */
 import { z } from 'zod';
-import { materialLibraryPayloadSchema, proceduralMaterialDraftSchema } from '../material-library';
+import {
+  materialLibraryPayloadAnySchema,
+  proceduralMaterialDraftAnySchema,
+} from '../material-library';
 import { projectDraftSchema, projectPatchSchema } from '../projects';
 import { cameraShotInput, captureShapeInput } from '../tools/capture-input';
 import type { DiscoveryEntry } from './catalog-schema';
@@ -16,7 +19,8 @@ import type { DiscoveryEntry } from './catalog-schema';
 type ShapeEntry = Extract<DiscoveryEntry, { kind: 'shape' }>;
 
 const jsonSchema = (schema: z.ZodType): Record<string, unknown> => {
-  const { $schema: _dialect, ...rest } = z.toJSONSchema(schema, { io: 'input' });
+  // Local JSON Schema refs preserve complete fields without repeating nested recipes.
+  const { $schema: _dialect, ...rest } = z.toJSONSchema(schema, { io: 'input', reused: 'ref' });
   return rest;
 };
 
@@ -73,20 +77,32 @@ export const discoveryShapes: ShapeEntry[] = [
     'material-draft',
     'kiln_material',
     'draft',
-    'The record kiln_material create-procedural takes: materialId, name, tileable, sources with license, and maps whose layered procedural specs (solid, checker, stripes, gradient, bricks, noise) bake into PNG maps; optional tags, physicalSizeMeters and parameters.',
-    proceduralMaterialDraftSchema,
+    'The record kiln_material create-procedural takes: a legacy layered draft or schemaVersion 2 with explicit map samplers and V3 RGBA or named atlas recipes. Each includes materialId, name, tileable, sources with license, and maps. Atlas resource sources pin exact saved revisions.',
+    proceduralMaterialDraftAnySchema,
     {
-      aliases: ['procedural material', 'material recipe draft', 'texture layers'],
-      intents: ['bake a custom tileable material from layers'],
-      references: ['docs/projects-and-live-review.md'],
+      aliases: [
+        'procedural material',
+        'material recipe draft',
+        'texture layers',
+        'saved atlas',
+        'RGBA texture',
+      ],
+      intents: [
+        'bake a custom tileable material from layers',
+        'save a standalone texture or named atlas',
+      ],
+      limitations: [
+        'Semantic recipe, canonical-form and aggregate budget checks apply beyond the field shapes. Exact pinned sources must already exist in the injected library. No file paths or source fetching.',
+      ],
+      references: ['docs/projects-and-live-review.md', 'docs/procedural-surfaces-v3.md'],
     },
   ),
   shape(
     'material-import',
     'kiln_material',
     'payload',
-    'The record kiln_material import takes: schemaVersion 1 and complete normalized material records, each a manifest plus base64 PNG files keyed by map name.',
-    materialLibraryPayloadSchema,
+    'The record kiln_material import takes: schemaVersion 1 for legacy-only data or 2 for mixed/new records, each a manifest plus base64 PNG files keyed by map name. Supply complete exact dependency closures for atlas records.',
+    materialLibraryPayloadAnySchema,
     {
       aliases: ['material import payload', 'material records'],
       intents: ['import a material library payload'],

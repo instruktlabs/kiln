@@ -99,6 +99,32 @@ const PRIMITIVES: HelperSpec[] = [
       'Use only the resolved body-plan graph. Offsets are local to the previous joint; contact end effectors must land at world Y=0.',
   },
   {
+    name: 'createBoneChain',
+    signature:
+      'createBoneChain(name, segments: JointChainSegmentV1[], opts?: { parent?, parentRole? })',
+    returns: '{ root: Bone, end: Bone, nodes: Bone[], byRole, descriptors }',
+    category: 'structure',
+    description:
+      'Creates an opt-in semantic Bone chain with the same local rest descriptors as createJointChain, for explicitly skinned meshes.',
+    example:
+      "const bones = createBoneChain('Arm', [{ role: 'arm.base', offset: [0, 0, 0] }, { role: 'arm.tip', offset: [0, 1, 0] }], { parent: root });",
+    promptNotes:
+      'The bones must be in their assembled rest pose before binding. Use unique roles and names across the rig. createJointChain still returns rigid pivots.',
+  },
+  {
+    name: 'createSkinnedPart',
+    signature:
+      'createSkinnedPart(name, geometry, material, opts: { parent, bones: Bone[], indices: ArrayLike<number>, weights: ArrayLike<number>, normalizeWeights?, position?, rotation?, scale?, semantic? })',
+    returns: 'THREE.SkinnedMesh',
+    category: 'structure',
+    description:
+      'Clones unchanged geometry and binds explicit four-lane vertex influences to an already assembled rest-pose bone hierarchy.',
+    example:
+      "const skin = createSkinnedPart('Arm', geometry, material, { parent: root, bones: chain.nodes, indices, weights });",
+    promptNotes:
+      'Supply exactly four bone indices and weights per vertex; zero-weight lanes still need valid indices. Weights sum to one unless normalizeWeights:true is explicit; zero sums are rejected. Mesh transforms use local meters and Euler degrees. Three exporter is required for portable skin delivery; no automatic converter switch.',
+  },
+  {
     name: 'createVehicleFrame',
     signature:
       'createVehicleFrame(name, opts?: { chassis?, axles?, seats?, contacts?, steering?, propulsion?, parent? })',
@@ -597,6 +623,19 @@ const PRIMITIVES: HelperSpec[] = [
       'Use textures: { baseColor: { kind: "resource", resourceId: "kiln.texture.rough-concrete-albedo.v1" } } for an approved resource, or { kind: "procedural", spec: { schemaVersion: 2, ... } }; bare ID strings are invalid. Use metallicRoughness as one packed G=roughness/B=metalness map. Every procedural ref usage must match its slot; resource refs must be approved for that exact slot. baseColor and emissive are numeric color integers from 0x000000 to 0xffffff, not CSS or materialRecipe hex strings. roughness, metalness and alphaCutoff are finite 0..1; emissiveIntensity is finite 0..64 (unlike materialRecipe, whose intensity is 0..1).',
   },
   {
+    name: 'compilePortableMaterialSpecV3',
+    signature:
+      "await compilePortableMaterialSpecV3({ schemaVersion: 3, model: 'pbrMetallicRoughness', name?, baseColor?, roughness?, metalness?, emissive?, emissiveIntensity?, alphaMode?, alphaCutoff?, doubleSided?, textures?: { baseColor?, normal?, metallicRoughness?, emissive?, occlusion? } })",
+    returns: 'Promise<THREE.MeshStandardMaterial>',
+    category: 'material',
+    description:
+      'Compiles opt-in portable PBR materials with bounded rectangular RGBA procedural textures and explicit portable samplers, preserving existing V2 behavior.',
+    example:
+      "const leaf = await compilePortableMaterialSpecV3({ schemaVersion: 3, model: 'pbrMetallicRoughness', alphaMode: 'mask', doubleSided: true, textures: { baseColor: { kind: 'procedural', spec: { schemaVersion: 3, width: 16, height: 32, usage: 'albedo', background: [0, 0, 0, 0], operations: [{ op: 'paint', shape: { kind: 'ellipse', x: 2, y: 1, width: 12, height: 30 }, rgba: [60, 90, 40, 255] }] }, sampler: { minFilter: 'nearest', magFilter: 'nearest', wrapS: 'clamp-to-edge', wrapT: 'clamp-to-edge' } } } });",
+    promptNotes:
+      'Every texture ref needs all four sampler fields. minFilter accepts nearest, linear, nearest-mipmap-nearest, linear-mipmap-nearest, nearest-mipmap-linear or linear-mipmap-linear; magFilter accepts nearest or linear; wrapS/wrapT accept clamp-to-edge, repeat or mirrored-repeat. Use typed procedural V3 specs or approved resource refs. Slot usages must match. RGBA alpha alone does not select mask/blend: set material alphaMode explicitly. Each binding owns texture state and bytes; no resolver, path, URL, raw pixels or shader arguments. V2 recipes and defaults remain separate.',
+  },
+  {
     name: 'basicMaterial',
     signature: 'basicMaterial(color, opts?: { transparent, opacity })',
     returns: 'THREE.MeshBasicMaterial',
@@ -937,7 +976,7 @@ const PRIMITIVES: HelperSpec[] = [
     returns: 'Promise<THREE.BufferGeometry>',
     category: 'uv',
     description:
-      'xatlas-based UV atlas for ANY geometry (CSG output, subdivided, deformed). Output is a packed atlas with arbitrary per-chart rotation — use for non-tileable baked textures. For directional tileable textures on box/cylinder/plane primitives, prefer the shape-aware unwraps below.',
+      'xatlas-based UV atlas for bounded triangle geometry, including CSG output. Remaps vertex data and morphs across seams; preserves groups. Replaces UV0 and removes stale tangents. Maximum 65,536 input and output vertices; split larger meshes. Packed charts rotate arbitrarily: use for baked textures; prefer projectUV or original primitive UVs for directional tiling. See the preservation contract before unwrapping skinned or morphed geometry.',
     example:
       'const unwrapped = await autoUnwrap(someCsgResult, { resolution: 1024 });\nconst mesh = new THREE.Mesh(unwrapped, bakedPbr);',
   },
@@ -959,15 +998,41 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'proceduralTexture',
     signature:
-      'proceduralTexture({ schemaVersion: 2, size?: 4..1024 pow2, usage?, name?, layers: ProceduralLayer[] })',
+      'proceduralTexture({ schemaVersion: 2, size?: 4..1024 pow2, usage?, name?, layers: ProceduralLayer[] } | { schemaVersion: 3, width: 4..1024, height: 4..1024, usage?, name?, background?: RGBA, operations: OperationV3[], palette? })',
     returns: 'THREE.DataTexture (tiling, sRGB or linear per usage)',
     category: 'textures',
     description:
-      'Builds a repeat-wrapped texture from a bounded layer stack, with no image file needed. Layers composite bottom-first; the same spec produces the same bytes. Seeded noise is tileable, while other patterns can have visible repeat seams. Baked to PNG and embedded in the GLB automatically.',
+      'Builds a repeat-wrapped deterministic texture without an image file. V2 retains opaque pattern layers. Explicit V3 adds rectangular RGBA, pixel shapes/masks, color palettes and seeded stamps. Repeat wrapping alone does not prove seamless pixels. Baked to PNG and embedded in the GLB automatically.',
     example:
       "const bark = proceduralTexture({ schemaVersion: 2, size: 256, usage: 'albedo', name: 'Bark', layers: [{ op: 'solid', color: 0x5a4632 }, { op: 'noise', colorA: 0x3d2f21, colorB: 0x7a6248, scale: 6, octaves: 4, blend: 'overlay' }] });",
     promptNotes:
-      "Layer fields by op — solid: { color }; checker: { colorA, colorB, squares? }; stripes: { colorA, colorB, count?, angleDeg? }; gradient: { from, to, angleDeg? }; bricks: { brick, mortar, rows?, cols?, mortarWidth?: 0..1 (fraction of a brick cell, default 0.06), stagger?: 0..1 (row offset fraction, default 0.5) }; noise: { colorA, colorB, scale?, octaves?, seed? }. Every layer also accepts blend?: 'normal'|'multiply'|'screen'|'overlay' and opacity?: 0..1. Pattern counts are integers 1..256; noise octaves are 1..6. Sync — no await. Unknown/prototype keys, callbacks, paths, URLs, and shader source are rejected. Max 8 layers.",
+      "V2 layer fields by op: solid: { color }; checker: { colorA, colorB, squares? }; stripes: { colorA, colorB, count?, angleDeg? }; gradient: { from, to, angleDeg? }; bricks: { brick, mortar, rows?, cols?, mortarWidth?: 0..1 (fraction of a brick cell, default 0.06), stagger?: 0..1 (row offset fraction, default 0.5) }; noise: { colorA, colorB, scale?, octaves?, seed? }. V2 blend normal|multiply|screen|overlay; opacity 0..1; max 8 layers, counts 1..256, octaves 1..6. V3 operations: paint {shape,rgba,opacity?}; mask {shape,alpha?,invert?}; stamps {shape,rgba,count,seed,area,periodic?,opacity?}; legacy-v2 {spec,alpha?,opacity?} delegates an explicit V2 recipe with matching square dimensions/usage. RGBA is four bytes; V3 opacity/alpha are bytes0..255 default255. Shape kinds: rectangle/ellipse {x,y,width,height}; polygon {points:[[x,y],...]}; line {from:[x,y],to:[x,y],width}. Coordinates are integer pixel edges; centers define binary coverage, round line caps. Mask clears outside; invert keeps outside instead. area {x,y,width,height} sets seeded stamp translation offsets; periodic:true wraps copies explicitly. V3 background defaults transparent black, max64 ops,64 polygon vertices,256 expanded stamps (periodic counts9),32 palette colors,64million estimated work including edges. palette {colors:[RGB integers],dither?:'none'|'bayer4'} and stamps are albedo/emissive only. Zero alpha normalizes RGB to0. Sampler defaults remain repeat/linear/mips; alphaMode belongs to pbrMaterial. Sync; strict JSON rejects unknown/prototype fields and accessors. See docs/procedural-surfaces-v3.md for exact rounding and bounds.",
+  },
+  {
+    name: 'textureAtlas',
+    signature:
+      'await textureAtlas({ schemaVersion: 1, width, height, usage, sampler?, regions: [{ name, content: { x, y, width, height }, gutter?, edgeMode?, source, crop? }] })',
+    returns: 'Promise<THREE.DataTexture>',
+    category: 'textures',
+    description:
+      'Composes named, disjoint pixel regions from bounded procedural V3 recipes or exact pinned library maps without creating a mesh.',
+    example:
+      "const atlas = await textureAtlas({ schemaVersion: 1, width: 8, height: 8, usage: 'albedo', regions: [{ name: 'patch', content: { x: 2, y: 2, width: 4, height: 4 }, source: { kind: 'procedural', spec: { schemaVersion: 3, width: 4, height: 4, background: [70, 90, 40, 255], operations: [] } } }] });",
+    promptNotes:
+      'Coordinates are integer pixel edges from top left. Width/height 4..1024. Content excludes gutter (default2); padded allocations must not overlap. copy-edge (default) extrudes RGBA; mask-rgb-dilate preserves positive alpha and extends nearest donor RGB into zero-alpha pixels without growing alpha, for albedo/emissive only. No packing, rotation or resampling. An optional crop must exactly match content dimensions. Resource sources require {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256}} and a host-supplied exact dependency; paths, URLs, latest and approved non-library resources are unsupported. Default sampler is linear-mipmap-linear/linear/clamp-to-edge on both axes; explicit samplers require all four fields. Gutters do not guarantee isolation at every mip level. Use remapUVToAtlas with an explicit input origin and mode; inspect at intended scene distance.',
+  },
+  {
+    name: 'remapUVToAtlas',
+    signature:
+      "remapUVToAtlas(geometry, atlasTextureOrManifest, regionName, { inputOrigin: 'top-left' | 'bottom-left', mode: 'content-boundary' | 'texel-center' })",
+    returns: 'THREE.BufferGeometry',
+    category: 'uv',
+    description:
+      'Maps existing unit UV0 into a named atlas content rectangle on an owned geometry clone, preserving topology and rich attributes.',
+    example:
+      "const card = remapUVToAtlas(planeGeo(1, 1), atlas, 'patch', { inputOrigin: 'bottom-left', mode: 'texel-center' });",
+    promptNotes:
+      'UV0 must be finite in [0,1], with two components per vertex. Content-boundary maps endpoints to content edges; texel-center maps endpoints to the first/last content texel centers. Explicitly identify the input UV origin; atlas image coordinates use top left and flipY=false. Geometry, normals, colors, skin weights, morph buffers, groups and source metadata are preserved independently. UV scale changes invalidate tangents; regenerate when needed. This helper does not project, unwrap, tile within a region or change material sampling.',
   },
   {
     name: 'normalMapFromHeight',

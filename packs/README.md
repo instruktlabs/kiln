@@ -24,6 +24,11 @@ downloads are hosted on Cloudflare R2. Lightweight authored sources and scene co
 in this repository. Editable archives retain canonical metadata even when the website
 does not show that bookkeeping.
 
+[Cabin in the Woods: PSX Horror](cabin-woods-psx-horror/README.md) is a separate
+pack with the same runtime and full Kiln revision download
+contracts. Its local staging inventory is separate from the published release
+inventory above. It is not yet available through the group hydration command below.
+
 ## Restore one source group
 
 Create a separate Kiln asset workspace using the maintained setup skill before authoring.

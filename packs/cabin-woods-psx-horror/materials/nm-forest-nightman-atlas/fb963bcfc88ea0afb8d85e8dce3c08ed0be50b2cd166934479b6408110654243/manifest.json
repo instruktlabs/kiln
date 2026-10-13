@@ -1,0 +1,250 @@
+{
+  "materialId": "nm-forest-nightman-atlas",
+  "revisionId": "sha256:fb963bcfc88ea0afb8d85e8dce3c08ed0be50b2cd166934479b6408110654243",
+  "name": "Forest nightman-atlas",
+  "tags": [],
+  "tileable": false,
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [
+    {
+      "resourceId": "nm-forest-stone",
+      "revisionId": "sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961",
+      "sha256": "sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961"
+    }
+  ],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:fe5f004bb1c4a3138cdcd37c6d061905bd2c1b8318d571c11cd862fc7ee1f16e",
+      "bytes": 973,
+      "width": 256,
+      "height": 128,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest",
+        "magFilter": "nearest",
+        "wrapS": "clamp-to-edge",
+        "wrapT": "clamp-to-edge"
+      },
+      "pixelHash": "sha256:63935c5134f2c32600320d90934eb2dd7f484e372f305bcb559cc2b14a470c20",
+      "recipe": {
+        "kind": "atlas",
+        "compilerId": "kiln.texture-atlas.v1.1",
+        "spec": {
+          "schemaVersion": 1,
+          "width": 256,
+          "height": 128,
+          "usage": "albedo",
+          "sampler": {
+            "minFilter": "nearest",
+            "magFilter": "nearest",
+            "wrapS": "clamp-to-edge",
+            "wrapT": "clamp-to-edge"
+          },
+          "regions": [
+            {
+              "name": "body",
+              "content": {
+                "x": 4,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961.base-color",
+                "pin": {
+                  "resourceId": "nm-forest-stone",
+                  "revisionId": "sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961",
+                  "sha256": "sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961"
+                }
+              }
+            },
+            {
+              "name": "hands",
+              "content": {
+                "x": 76,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961.base-color",
+                "pin": {
+                  "resourceId": "nm-forest-stone",
+                  "revisionId": "sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961",
+                  "sha256": "sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961"
+                }
+              }
+            },
+            {
+              "name": "head",
+              "content": {
+                "x": 148,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "gutter": 4,
+              "edgeMode": "copy-edge",
+              "source": {
+                "kind": "resource",
+                "resourceId": "kiln.library.fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961.base-color",
+                "pin": {
+                  "resourceId": "nm-forest-stone",
+                  "revisionId": "sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961",
+                  "sha256": "sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961"
+                }
+              }
+            }
+          ]
+        },
+        "manifest": {
+          "version": "kiln.atlas-manifest.v1",
+          "compilerId": "kiln.texture-atlas.v1.1",
+          "width": 256,
+          "height": 128,
+          "usage": "albedo",
+          "origin": "top-left",
+          "sampler": {
+            "minFilter": "nearest",
+            "magFilter": "nearest",
+            "wrapS": "clamp-to-edge",
+            "wrapT": "clamp-to-edge"
+          },
+          "specHash": "sha256:e63b3ec1098f18d83ad71b408d02ad08ba804ab955706f85831b429b3dfa799b",
+          "layoutHash": "sha256:255d7b2a7798347b69825f2344db1633425ae477afc82359ca056017d095b7da",
+          "decodedPixelHash": "sha256:63935c5134f2c32600320d90934eb2dd7f484e372f305bcb559cc2b14a470c20",
+          "atlasPixelHash": "sha256:963f85e32eb89ac5024326f06d2ee41317b1d3756a34326a8159e50b9412d662",
+          "sources": [
+            {
+              "id": "resource:nm-forest-stone:sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961:kiln.library.fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961.base-color",
+              "width": 64,
+              "height": 64,
+              "decodedPixelHash": "sha256:d72a06f1baf9deeb89d7ae48bf673998361f9de5b4dd8756eeeff9f209e84b57",
+              "kind": "resource",
+              "descriptor": {
+                "materialId": "nm-forest-stone",
+                "revisionId": "sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961",
+                "resourceId": "kiln.library.fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961.base-color",
+                "slot": "baseColor",
+                "usage": "albedo",
+                "colorSpace": "srgb",
+                "width": 64,
+                "height": 64,
+                "encodedByteLength": 490,
+                "imageSha256": "sha256:64a596a401693ad8ce5bf37c0bb2618d87a449b882c3d45a3874de6ca4e3740b",
+                "decodedPixelHash": "sha256:d72a06f1baf9deeb89d7ae48bf673998361f9de5b4dd8756eeeff9f209e84b57"
+              }
+            }
+          ],
+          "regions": [
+            {
+              "name": "body",
+              "content": {
+                "x": 4,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 0,
+                "y": 0,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-forest-stone:sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961:kiln.library.fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961.base-color"
+            },
+            {
+              "name": "hands",
+              "content": {
+                "x": 76,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 72,
+                "y": 0,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-forest-stone:sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961:kiln.library.fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961.base-color"
+            },
+            {
+              "name": "head",
+              "content": {
+                "x": 148,
+                "y": 4,
+                "width": 64,
+                "height": 64
+              },
+              "allocation": {
+                "x": 144,
+                "y": 0,
+                "width": 72,
+                "height": 72
+              },
+              "crop": {
+                "x": 0,
+                "y": 0,
+                "width": 64,
+                "height": 64
+              },
+              "sourceId": "resource:nm-forest-stone:sha256:fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961:kiln.library.fdc98fb92c073a8d9d864ea0fd010da243ec07dfbe8acb614604281572a8a961.base-color"
+            }
+          ],
+          "manifestHash": "sha256:98afa19f501117d95e545ffeccdcd2ae70b9e0b1b49060cde032c9079ee4415a"
+        },
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

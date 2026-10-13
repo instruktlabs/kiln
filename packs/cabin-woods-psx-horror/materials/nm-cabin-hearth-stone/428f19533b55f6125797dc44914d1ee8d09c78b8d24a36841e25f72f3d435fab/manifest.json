@@ -1,0 +1,149 @@
+{
+  "materialId": "nm-cabin-hearth-stone",
+  "revisionId": "sha256:428f19533b55f6125797dc44914d1ee8d09c78b8d24a36841e25f72f3d435fab",
+  "name": "Worn hearth masonry",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "tx07"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 2,
+    "height": 2
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:d87ec395531c5601999bc23c49f23685df4bdd942bd86ecb6c883e37db4a8088",
+      "bytes": 953,
+      "width": 128,
+      "height": 128,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "repeat",
+        "wrapT": "repeat"
+      },
+      "pixelHash": "sha256:6e53f2c2f4292ccbf7f93a2a77bd66d953ae31de6eb939facf1c749a3e8a7d83",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 128,
+          "height": 128,
+          "usage": "albedo",
+          "background": [
+            83,
+            91,
+            80,
+            255
+          ],
+          "operations": [
+            {
+              "op": "legacy-v2",
+              "spec": {
+                "schemaVersion": 2,
+                "size": 128,
+                "usage": "albedo",
+                "layers": [
+                  {
+                    "op": "bricks",
+                    "brick": 7567464,
+                    "mortar": 3161140,
+                    "rows": 5,
+                    "cols": 4,
+                    "mortarWidth": 0.1,
+                    "stagger": 0.5,
+                    "blend": "normal",
+                    "opacity": 1
+                  }
+                ]
+              },
+              "alpha": 255,
+              "opacity": 255
+            },
+            {
+              "op": "stamps",
+              "shape": {
+                "kind": "polygon",
+                "points": [
+                  [
+                    0,
+                    0
+                  ],
+                  [
+                    12,
+                    2
+                  ],
+                  [
+                    10,
+                    7
+                  ],
+                  [
+                    2,
+                    8
+                  ]
+                ]
+              },
+              "rgba": [
+                139,
+                139,
+                119,
+                255
+              ],
+              "opacity": 255,
+              "count": 22,
+              "seed": 11007,
+              "area": {
+                "x": 0,
+                "y": 0,
+                "width": 128,
+                "height": 128
+              },
+              "periodic": true
+            }
+          ]
+        },
+        "recipeHash": "sha256:00ee40dabbdb4f42d5a41f5f484523a4b460b0eaa98ad97b11895d39226d28de",
+        "pixelHash": "sha256:6e53f2c2f4292ccbf7f93a2a77bd66d953ae31de6eb939facf1c749a3e8a7d83",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

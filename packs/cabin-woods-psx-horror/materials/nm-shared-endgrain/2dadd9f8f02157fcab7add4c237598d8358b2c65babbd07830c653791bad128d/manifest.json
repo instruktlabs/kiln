@@ -1,0 +1,266 @@
+{
+  "materialId": "nm-shared-endgrain",
+  "revisionId": "sha256:2dadd9f8f02157fcab7add4c237598d8358b2c65babbd07830c653791bad128d",
+  "name": "Cut endgrain",
+  "tags": [
+    "Nightman",
+    "original",
+    "PSX",
+    "tx04"
+  ],
+  "tileable": true,
+  "physicalSizeMeters": {
+    "width": 0.5,
+    "height": 0.5
+  },
+  "parameters": {
+    "baseColor": 16777215,
+    "roughness": 1,
+    "metalness": 0,
+    "emissiveIntensity": 1,
+    "alphaMode": "opaque",
+    "alphaCutoff": 0.5,
+    "doubleSided": false
+  },
+  "sources": [
+    {
+      "id": "nightman-original",
+      "kind": "procedural",
+      "provider": "Kiln",
+      "creator": "OpenAI Codex for Nightman",
+      "license": {
+        "spdx": "LicenseRef-Proprietary",
+        "url": "https://choosealicense.com/no-permission/",
+        "attribution": "Original Nightman procedural work; project owner retains rights."
+      },
+      "originalFiles": []
+    }
+  ],
+  "schemaVersion": 2,
+  "dependencies": [],
+  "maps": [
+    {
+      "slot": "baseColor",
+      "file": "baseColor.png",
+      "sha256": "sha256:7d4c923723cb3b5e2b2e8df8d6aa227e82f0b9a2998655db576b4fe6ebee4c1c",
+      "bytes": 614,
+      "width": 64,
+      "height": 64,
+      "usage": "albedo",
+      "colorSpace": "srgb",
+      "sourceId": "nightman-original",
+      "transforms": [],
+      "sampler": {
+        "minFilter": "nearest-mipmap-linear",
+        "magFilter": "nearest",
+        "wrapS": "repeat",
+        "wrapT": "repeat"
+      },
+      "pixelHash": "sha256:c1fbb8d19590c932b4c8d4e222b418fd4e1b91d95f072c79272100f5b7872d8f",
+      "recipe": {
+        "kind": "procedural",
+        "compilerId": "kiln.procedural-rgba.v3.1",
+        "spec": {
+          "schemaVersion": 3,
+          "width": 64,
+          "height": 64,
+          "usage": "albedo",
+          "background": [
+            178,
+            154,
+            104,
+            255
+          ],
+          "operations": [
+            {
+              "op": "paint",
+              "shape": {
+                "x": 3,
+                "y": 4,
+                "width": 58,
+                "height": 56,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                138,
+                113,
+                76,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 6,
+                "y": 7,
+                "width": 52,
+                "height": 50,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                208,
+                187,
+                132,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 9,
+                "y": 10,
+                "width": 46,
+                "height": 44,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                138,
+                113,
+                76,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 12,
+                "y": 13,
+                "width": 40,
+                "height": 38,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                208,
+                187,
+                132,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 15,
+                "y": 16,
+                "width": 34,
+                "height": 32,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                138,
+                113,
+                76,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 18,
+                "y": 19,
+                "width": 28,
+                "height": 26,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                208,
+                187,
+                132,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 21,
+                "y": 22,
+                "width": 22,
+                "height": 20,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                138,
+                113,
+                76,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "x": 24,
+                "y": 25,
+                "width": 16,
+                "height": 14,
+                "kind": "ellipse"
+              },
+              "rgba": [
+                208,
+                187,
+                132,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  34,
+                  33
+                ],
+                "to": [
+                  55,
+                  18
+                ],
+                "width": 1
+              },
+              "rgba": [
+                102,
+                80,
+                58,
+                255
+              ],
+              "opacity": 255
+            },
+            {
+              "op": "paint",
+              "shape": {
+                "kind": "line",
+                "from": [
+                  31,
+                  34
+                ],
+                "to": [
+                  20,
+                  53
+                ],
+                "width": 1
+              },
+              "rgba": [
+                102,
+                80,
+                58,
+                255
+              ],
+              "opacity": 255
+            }
+          ]
+        },
+        "recipeHash": "sha256:1a533fe66f559035a86b8956d8d91614d78e57f2b1a5b4dd00b6e04e04b811ce",
+        "pixelHash": "sha256:c1fbb8d19590c932b4c8d4e222b418fd4e1b91d95f072c79272100f5b7872d8f",
+        "encoder": {
+          "name": "sharp",
+          "version": "0.35.5"
+        }
+      }
+    }
+  ]
+}

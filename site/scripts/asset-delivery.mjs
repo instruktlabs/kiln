@@ -1,6 +1,8 @@
 import { zipSync } from 'fflate';
 import { assetPath, hashBytes, verifyBytes } from './mirror-core.mjs';
 
+export const isSavedMaterialDependency = (item) => item?.kind === 'kiln.material.v1' || item?.kind === 'kiln.material.v2';
+
 /** A history follows saved parents, never inventing records from the parent's identifier. */
 export async function collectHistory(pin, read) {
   const records = [], missingParents = [], seen = new Set();
@@ -48,7 +50,7 @@ export function revisionBundle(record) {
     if (!files[name]) throw new Error(`Missing revision member ${name}`);
     members[prefix + name] = verifyBytes(files[name], seal, name);
   }
-  const dependencies = (manifest.build?.dependencies ?? []).filter(item => item?.kind === 'kiln.material.v1');
+  const dependencies = (manifest.build?.dependencies ?? []).filter(isSavedMaterialDependency);
   if (dependencies.length && !materialResources) throw new Error('Editable material closure unavailable');
   if (materialResources) members[prefix + 'materials.kiln.json'] = Buffer.from(JSON.stringify(materialResources));
   const decodedBytes = Object.values(members).reduce((sum, bytes) => sum + bytes.length, 0);

@@ -1,12 +1,14 @@
 /// <reference lib="dom" />
-import type { MaterialManifestV1 } from '../material-library';
+import type { MaterialManifest, MaterialManifestV1 } from '../material-library';
+import { materialApiBase, materialViewerSelection } from './material-preview';
+import { materialPreviewPanel } from './material-preview-panel';
 import type { MaterialPresetSummary } from '../material-presets';
 import type { ProjectRevision } from '../projects';
 import { el, node, request, notice, empty, recordDetails } from './dom';
 import { materialPresetRequest } from './material-preset-form';
 
 export function mountMaterials(updated: () => Promise<void>) {
-  let materials: MaterialManifestV1[] = [];
+  let materials: MaterialManifest[] = [];
   let projects: ProjectRevision[] = [];
   let presets: MaterialPresetSummary[] = [];
   const projectSelect = el<HTMLSelectElement>('materials-project');
@@ -121,8 +123,7 @@ export function mountMaterials(updated: () => Promise<void>) {
       submit.disabled = false;
     }
   };
-  const base = (material: MaterialManifestV1) =>
-    `/api/materials/${encodeURIComponent(material.materialId)}/${encodeURIComponent(material.revisionId)}`;
+  const base = materialApiBase;
   function render() {
     const project = projects.find((p) => p.projectId === projectSelect.value);
     const dependencies = el('material-dependencies');
@@ -268,6 +269,24 @@ export function mountMaterials(updated: () => Promise<void>) {
         maps.append(link);
       }
       card.append(maps);
+      const inspection = node('details', undefined, 'material-map-inspection');
+      inspection.append(node('summary', 'Inspect maps and atlas regions'));
+      let inspected = false;
+      inspection.ontoggle = () => {
+        if (inspection.open && !inspected) {
+          inspected = true;
+          inspection.append(materialPreviewPanel(material));
+        }
+      };
+      const selected = materialViewerSelection(location.search);
+      if (
+        selected?.materialId === material.materialId &&
+        selected.revisionId === material.revisionId
+      ) {
+        inspection.open = true;
+        card.dataset.selectedMaterial = 'true';
+      }
+      card.append(inspection);
       const locked = project?.materialDependencies.find(
         (d) => d.resourceId === material.materialId,
       );
@@ -314,8 +333,18 @@ export function mountMaterials(updated: () => Promise<void>) {
     }
   }
   const refresh = async () => {
-    materials = (await request<{ materials: MaterialManifestV1[] }>('/api/materials')).materials;
+    materials = (await request<{ materials: MaterialManifest[] }>('/api/materials')).materials;
     render();
+    const selected = materialViewerSelection(location.search);
+    if (
+      selected &&
+      !materials.some(
+        (m) => m.materialId === selected.materialId && m.revisionId === selected.revisionId,
+      )
+    )
+      notice(
+        `Exact material revision unavailable: ${selected.materialId} at ${selected.revisionId}. No newer revision was selected.`,
+      );
   };
   el('material-search').oninput = render;
   projectSelect.onchange = render;

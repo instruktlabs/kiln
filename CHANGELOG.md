@@ -5,6 +5,78 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
+## 1.2.3 (2026-10-12)
+
+- Publish Cabin in the Woods: PSX Horror with 53 exact editable asset revisions,
+  runtime and Full Kiln downloads, a portable scene, and integrated gallery pages.
+  The WebGPU walkthrough includes first-person tools, fuel-driven fire, woodland
+  interactions and fullscreen controls. Performance evidence and limits are recorded
+  in the scene's review report.
+
+- Add opt-in named texture atlases, clone-owned region UV mapping and portable
+  V3 material sampling. V2 saved material records carry RGBA recipes, atlas source
+  manifests and exact dependency pins; standalone creation and complete offline
+  material/project delivery preserve existing V1 records and explicit opt-outs.
+- Inspect named atlas bindings against drawn UVs, material slots and samplers
+  without reading pixels. Report bounded or unavailable inspection as partial;
+  structural checks do not establish intended corner orientation or appearance.
+- Add exact saved-material map inspection to Materials, Library and Live Review,
+  with pixel zoom, light/dark/checker backgrounds and optional atlas-region labels.
+  Raw map inspection remains distinct from material-faithful rendered evidence.
+- Add opt-in bounded V3 RGBA procedural surfaces with rectangular images, explicit
+  shape coverage, alpha masks, palette mapping, fixed dithering and seeded periodic
+  stamps. V1/V2 recipes, pixels, hashes and material records retain their behavior.
+- Preserve encoded image bytes for direct unflipped PNG/JPEG bindings in the
+  experimental converter, including transparent RGB padding. Prepare raw maps for
+  channel conversion and explicit vertical flipping without changing caller data;
+  report native canvas load failures with recovery steps. Converted transparent
+  images retain a documented pixel-fidelity limitation.
+- Correct project documentation: explicit call-level material pins replace matching
+  project pins for that invocation without rewriting the saved project revision.
+- Diagnose malformed source skin bindings before bounds, texture baking and
+  conversion, with mesh/joint/vertex-range findings through SDK, CLI and MCP.
+  Read-only integrity inspection includes current morphed/skinned bounds and
+  preserves authored data. Invalid bindings cannot bypass input validation through
+  QA warning mode or derivative export; final glTF validation remains independent.
+- Add opt-in semantic `createBoneChain` and bounded explicit `createSkinnedPart`
+  helpers, retaining rigid `createJointChain` behavior and legacy exporter defaults.
+  Skin binding owns cloned geometry, preserves rich unchanged topology, validates
+  explicit four-lane influences and provides closed CLI/MCP repair advice.
+
+- Extend GLB geometry/animation review to position and normal morph targets,
+  default weight precedence and STEP/LINEAR/CUBICSPLINE weight tracks. Preserve
+  independent influences across primitives, instances and review copies, apply
+  morphs before skinning, and reject invalid data before claiming pose evidence.
+  Other morph semantics remain explicitly unsupported by this review path.
+- Remove CPU preview cracks and duplicate shared-edge coverage on continuous
+  triangulated surfaces. Both camera paths use top-left sample ownership and
+  unbiased edge interpolation; clipped shared edges retain matching endpoints.
+- Correct CPU face culling under mirrored transforms and honor back-only source
+  materials in both camera paths. Visible reverse faces now use the corresponding
+  flat lighting normal; ordinary positive-scale front faces retain their output.
+- Reject used `BackSide` materials in both GLB converters with an actionable diagnostic,
+  instead of silently writing front-only surfaces. Author inward-facing geometry
+  or deliberately choose `DoubleSide`; existing saved GLBs remain unchanged.
+- Preserve independent skeletons in isolated, two-sided and composed-scene review
+  copies. Hidden joint ancestors retain their transforms without rendering their
+  geometry; copied bones and bind data no longer reference the retained source.
+- Reconstruct four-influence glTF skins in geometry/animation review and measure
+  the sampled surface for CPU views and part bounds. Preserve joint hierarchy,
+  inverse bind matrices and normalized weights; reject unsupported extra
+  influence sets instead of showing a false pose. Supported POSITION/NORMAL morph
+  review is described above; other target semantics remain explicit limitations.
+- Preserve explicitly authored texture filtering and wrap modes in the default
+  GLB exporter, including separate samplers sharing image bytes. Existing
+  procedural and loaded-texture defaults stay unchanged. Regenerated GLBs now
+  encode those settings explicitly; saved asset revisions are not rewritten.
+- Reject unsupported sampler values in the default exporter instead of silently
+  replacing them with glTF defaults.
+- Preserve supported vertex attributes, morph targets, material groups and
+  metadata through `autoUnwrap` seam duplication. Reject unsupported inputs,
+  invalid correspondence and the xatlas adapter's 16-bit index overflow.
+  Existing normal defaults remain unchanged; normal morphs require
+  `useNormals: true`. New UV0 invalidates tangents, which must be recomputed.
+
 ## 1.2.2
 
 - Clarify radial and tangential orientation for circular walls and roof sections,

@@ -3,6 +3,7 @@ import foundry from '../data/packs/foundry-floor.json';
 import { catalogAssets, type CatalogImage } from './catalog';
 import { PACKS_ENABLED } from './config';
 import { isTroyGalleryAsset } from './troy-gallery.mjs';
+import { cabinWoodsAssets, cabinWoodsHref } from './cabin-woods';
 
 export { foundry };
 export type FoundryAsset = (typeof foundry.assets)[number];
@@ -51,6 +52,13 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
       ...asset,
       packs: ['troy'],
       href: `/gallery/troy/${asset.slug}/`,
+    })),
+  );
+  cards.push(
+    ...cabinWoodsAssets.map((asset) => ({
+      ...asset,
+      packs: ['cabin-woods-psx-horror'],
+      href: cabinWoodsHref(asset),
     })),
   );
   return cards;

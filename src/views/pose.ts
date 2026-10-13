@@ -19,6 +19,9 @@ import { cubicSegment, isCubicSplineTrack, normalizeQuaternion } from '../animat
 /** Minimal duck-typed view of a Three.js node we pose. */
 interface DuckNode {
   name?: string;
+  uuid?: string;
+  morphTargetInfluences?: number[];
+  morphTargetDictionary?: Record<string, number>;
   position?: { set(x: number, y: number, z: number): void };
   quaternion?: { set(x: number, y: number, z: number, w: number): void };
   scale?: { set(x: number, y: number, z: number): void };
@@ -44,7 +47,7 @@ export interface DuckClip {
   userData?: { kilnLoopIntent?: unknown };
 }
 
-type Prop = 'position' | 'quaternion' | 'scale';
+type Prop = 'position' | 'quaternion' | 'scale' | 'morphTargetInfluences';
 
 interface PreparedTrack {
   nodeName: string;
@@ -54,6 +57,9 @@ interface PreparedTrack {
   /** One value of `stride` per key; a CUBICSPLINE key is [in-tangent, value, out-tangent]. */
   values: number[];
   interpolation: 'LINEAR' | 'STEP' | 'CUBICSPLINE';
+  /** Original spelling retained for unresolved-track evidence. */
+  sourceName?: string;
+  morphIndex?: number;
 }
 
 /** A clip prepared for repeated time-sampling: parsed tracks + a derived duration. */
@@ -65,7 +71,7 @@ export interface PreparedClip {
   unresolved: string[];
 }
 
-const PROP_STRIDE: Record<Prop, number> = { position: 3, quaternion: 4, scale: 3 };
+const PROP_STRIDE = { position: 3, quaternion: 4, scale: 3 } as const;
 
 /** Find a clip by name (case-insensitive, trimmed). Returns the first exact match,
  *  else the first whose name contains the query, else undefined. */
@@ -90,10 +96,11 @@ export function clipNames(clips: readonly DuckClip[]): string[] {
  * clip doesn't carry one.
  */
 export function prepareClip(root: DuckNode, clip: DuckClip): PreparedClip {
-  const nodeNames = new Set<string>();
+  const nodes = new Map<string, DuckNode>();
   root.traverse?.((obj) => {
-    const n = (obj as DuckNode).name;
-    if (n) nodeNames.add(n);
+    const node = obj as DuckNode;
+    if (node.name && !nodes.has(node.name)) nodes.set(node.name, node);
+    if (node.uuid) nodes.set(node.uuid, node);
   });
 
   const tracks: PreparedTrack[] = [];
@@ -106,8 +113,11 @@ export function prepareClip(root: DuckNode, clip: DuckClip): PreparedClip {
     const dot = raw.lastIndexOf('.');
     if (dot === -1) continue;
     const nodeName = raw.slice(0, dot);
-    const property = raw.slice(dot + 1) as Prop;
-    if (property !== 'position' && property !== 'quaternion' && property !== 'scale') continue;
+    const suffix = raw.slice(dot + 1);
+    const morph = /^morphTargetInfluences(?:\[([^\]]+)\])?$/.exec(suffix);
+    const property = (morph ? 'morphTargetInfluences' : suffix) as Prop;
+    if (property !== 'position' && property !== 'quaternion' && property !== 'scale' && !morph)
+      continue;
 
     const times = track.times ? Array.from(track.times) : [];
     const values = track.values ? Array.from(track.values) : [];
@@ -125,16 +135,49 @@ export function prepareClip(root: DuckNode, clip: DuckClip): PreparedClip {
     }
     const interpolation = cubic ? 'CUBICSPLINE' : mode === 2300 ? 'STEP' : 'LINEAR';
 
-    if (!nodeNames.has(nodeName)) unresolved.push(raw);
+    const node = nodes.get(nodeName);
+    const indexed = morph?.[1];
+    const morphIndex =
+      indexed === undefined
+        ? undefined
+        : /^\d+$/.test(indexed)
+          ? Number(indexed)
+          : node?.morphTargetDictionary?.[indexed];
+    let stride = morph
+      ? indexed === undefined
+        ? (node?.morphTargetInfluences?.length ?? 0)
+        : 1
+      : PROP_STRIDE[property as keyof typeof PROP_STRIDE];
+    let resolved = !!node;
+    if (morph) {
+      resolved =
+        !!node?.morphTargetInfluences?.length &&
+        (indexed === undefined ||
+          (Number.isInteger(morphIndex) &&
+            morphIndex! >= 0 &&
+            morphIndex! < node.morphTargetInfluences.length));
+      // Unresolved morph tracks remain visible diagnostics, but never get sampled.
+      if (!resolved) stride = values.length / (times.length * (cubic ? 3 : 1));
+      if (
+        !Number.isInteger(stride) ||
+        stride < 1 ||
+        values.length !== times.length * stride * (cubic ? 3 : 1) ||
+        !values.every(Number.isFinite) ||
+        !times.every((v, i) => Number.isFinite(v) && v >= 0 && (i === 0 || v > times[i - 1]!))
+      )
+        throw new Error(`Invalid morph animation values on ${raw}.`);
+    }
+    if (!resolved) unresolved.push(raw);
     if (times[times.length - 1]! > maxTime) maxTime = times[times.length - 1]!;
 
     tracks.push({
       nodeName,
       prop: property,
-      stride: PROP_STRIDE[property],
+      stride,
       times,
       values,
       interpolation,
+      ...(morph ? { sourceName: raw, ...(morphIndex === undefined ? {} : { morphIndex }) } : {}),
     });
   }
 
@@ -228,7 +271,7 @@ function sampleTrack(track: PreparedTrack, t: number, out: number[]): void {
   }
   if (track.interpolation === 'CUBICSPLINE') {
     cubicSegment(values, stride, i, times[i]!, times[i + 1]!, t, out);
-    if (stride === 4) normalizeQuaternion(out);
+    if (track.prop === 'quaternion') normalizeQuaternion(out);
     return;
   }
   if (track.interpolation === 'STEP') {
@@ -243,7 +286,7 @@ function sampleTrack(track: PreparedTrack, t: number, out: number[]): void {
   const o0 = i * stride;
   const o1 = (i + 1) * stride;
 
-  if (stride === 4) {
+  if (track.prop === 'quaternion') {
     slerpFlat(quatTmp, values, o0, values, o1, a);
     out[0] = quatTmp[0]!;
     out[1] = quatTmp[1]!;
@@ -328,6 +371,12 @@ export function measureLoopClosure(root: DuckNode, clip: DuckClip): LoopClosureE
   }
   result.unassessedTracks = total - prepared.tracks.length;
   for (const track of prepared.tracks) {
+    // This established evidence contract measures transforms only. Weight-loop
+    // continuity needs a separately versioned evidence field, not a scale label.
+    if (track.prop === 'morphTargetInfluences') {
+      result.unassessedTracks++;
+      continue;
+    }
     const name = `${track.nodeName}.${track.prop}`;
     const valid =
       !prepared.unresolved.includes(name) &&
@@ -400,16 +449,25 @@ export function poseSceneAtTime(root: DuckNode, prepared: PreparedClip, t: numbe
   root.traverse?.((obj) => {
     const node = obj as DuckNode;
     if (node.name && !byName.has(node.name)) byName.set(node.name, node);
+    if (node.uuid) byName.set(node.uuid, node);
   });
 
   const buf: number[] = [0, 0, 0, 0];
   for (const track of prepared.tracks) {
     const node = byName.get(track.nodeName);
-    if (!node) continue;
+    if (
+      !node ||
+      prepared.unresolved.includes(track.sourceName ?? `${track.nodeName}.${track.prop}`)
+    )
+      continue;
     sampleTrack(track, t, buf);
     if (track.prop === 'position') node.position?.set(buf[0]!, buf[1]!, buf[2]!);
     else if (track.prop === 'scale') node.scale?.set(buf[0]!, buf[1]!, buf[2]!);
-    else node.quaternion?.set(buf[0]!, buf[1]!, buf[2]!, buf[3]!);
+    else if (track.prop === 'quaternion') node.quaternion?.set(buf[0]!, buf[1]!, buf[2]!, buf[3]!);
+    else if (node.morphTargetInfluences) {
+      if (track.morphIndex !== undefined) node.morphTargetInfluences[track.morphIndex] = buf[0]!;
+      else for (let i = 0; i < track.stride; i++) node.morphTargetInfluences[i] = buf[i]!;
+    }
   }
 
   root.updateMatrixWorld?.(true);

@@ -7,6 +7,14 @@ export const GEOMETRY_ALLOCATION_LIMITS = Object.freeze({
   repeatedMeshes: 10_000,
   primitiveSegments: 4096,
   primitiveGridVertices: 262_144,
+  // xatlasjs 0.2 returns Uint16 indices and source-vertex correspondence.
+  unwrapVertices: 65_536,
+  unwrapTriangles: 1_000_000,
+  unwrapAttributeBytes: 128 * 1024 * 1024,
+  unwrapResolution: 4096,
+  skinBones: 1024,
+  skinVertices: 262_144,
+  skinAttributeBytes: 128 * 1024 * 1024,
 });
 export function assertDimension(name: string, value: number, allowZero = false): void {
   if (

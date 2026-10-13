@@ -1,11 +1,15 @@
 /**
- * Body-plan-neutral character rig contracts and the one approved joint-chain
- * scaffold. Presets are semantic data only; they do not introduce humanoid or
+ * Body-plan-neutral character rig contracts and rigid/bone joint-chain
+ * scaffolds. Presets are semantic data only; they do not introduce humanoid or
  * animal geometry primitive families.
  */
 import * as THREE from 'three';
 
 import { stampSemanticMetadataV1 } from './contracts';
+import { GEOMETRY_ALLOCATION_LIMITS } from './geometry-budget';
+import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
+
+export { createSkinnedPart, type CreateSkinnedPartOptions } from './skin-binding';
 
 export const KILN_CHARACTER_JOINT_EXTRAS_KEY = 'kilnCharacterJoint' as const;
 export const KILN_CHARACTER_RIG_EXTRAS_KEY = 'kilnCharacterRig' as const;
@@ -635,6 +639,107 @@ export interface CharacterJointNodeEvidenceV1 {
   node: THREE.Object3D;
   nodePath: string;
   descriptor: CharacterJointDescriptorV1;
+}
+
+export interface BoneChainResultV1 extends JointChainResultV1 {
+  root: THREE.Bone;
+  end: THREE.Bone;
+  nodes: THREE.Bone[];
+  byRole: ReadonlyMap<string, THREE.Bone>;
+}
+
+/** Opt-in semantic bones. Existing createJointChain continues to make rigid pivots. */
+export function createBoneChain(
+  chainName: string,
+  segments: readonly JointChainSegmentV1[],
+  options: CreateJointChainOptionsV1 = {},
+): BoneChainResultV1 {
+  try {
+    return buildBoneChain(chainName, segments, options);
+  } catch (error) {
+    if (error instanceof TypeError || error instanceof RangeError)
+      throw new AuthoringDiagnosticError('BONE_CHAIN_ARGUMENT', error.message);
+    throw error;
+  }
+}
+
+function buildBoneChain(
+  chainName: string,
+  segments: readonly JointChainSegmentV1[],
+  options: CreateJointChainOptionsV1 = {},
+): BoneChainResultV1 {
+  if (
+    !Array.isArray(segments) ||
+    segments.length < 1 ||
+    segments.length > GEOMETRY_ALLOCATION_LIMITS.skinBones
+  )
+    throw new RangeError(
+      `createBoneChain segment limit is 1..${GEOMETRY_ALLOCATION_LIMITS.skinBones}.`,
+    );
+  if (options.parent !== undefined && !options.parent.isObject3D)
+    throw new TypeError('createBoneChain parent must be an Object3D.');
+  const parentDescriptor = options.parent
+    ? readCharacterJointDescriptorV1(options.parent)
+    : undefined;
+  if (options.parentRole !== undefined && options.parentRole !== parentDescriptor?.role)
+    throw new TypeError('createBoneChain parentRole must match the declared parent joint.');
+  const roles = new Set<string>(),
+    names = new Set<string>();
+  if (options.parent) {
+    let top = options.parent;
+    while (top.parent) top = top.parent;
+    top.traverse((node) => {
+      if (node.name) names.add(node.name);
+      const descriptor = readCharacterJointDescriptorV1(node);
+      if (descriptor) roles.add(descriptor.role);
+    });
+  }
+  let parentRole = parentDescriptor?.role;
+  // Validate the complete chain before allocating nodes or parenting any of them.
+  const descriptors = segments.map((segment) => {
+    const descriptor = createCharacterJointDescriptorV1({
+      role: segment.role,
+      aliases: segment.aliases,
+      parentRole,
+      side: segment.side,
+      rest: {
+        translation: segment.offset,
+        rotation: segment.restRotation,
+        scale: segment.restScale,
+      },
+      localForwardAxis: segment.localForwardAxis,
+      localBendAxis: segment.localBendAxis,
+      endEffector: segment.endEffector,
+      contact: segment.contact,
+    });
+    const name = characterJointNodeName(chainName, descriptor.role);
+    if (roles.has(descriptor.role))
+      throw new TypeError(`createBoneChain duplicate role: ${descriptor.role}.`);
+    if (names.has(name))
+      throw new TypeError(`createBoneChain duplicate node name after sanitization: ${name}.`);
+    roles.add(descriptor.role);
+    names.add(name);
+    parentRole = descriptor.role;
+    return descriptor;
+  });
+  const nodes = descriptors.map((descriptor) => {
+    const node = new THREE.Bone();
+    node.name = characterJointNodeName(chainName, descriptor.role);
+    node.position.fromArray(descriptor.rest.translation);
+    node.quaternion.fromArray(descriptor.rest.rotation);
+    node.scale.fromArray(descriptor.rest.scale);
+    stampCharacterJointDescriptorV1(node, descriptor);
+    return node;
+  });
+  for (let i = 1; i < nodes.length; i++) nodes[i - 1]!.add(nodes[i]!);
+  if (options.parent) options.parent.add(nodes[0]!);
+  return {
+    root: nodes[0]!,
+    end: nodes[nodes.length - 1]!,
+    nodes,
+    byRole: new Map(descriptors.map((descriptor, i) => [descriptor.role, nodes[i]!])),
+    descriptors,
+  };
 }
 
 /** Deterministic indexed paths shared by QA and diagnostic descriptors. */

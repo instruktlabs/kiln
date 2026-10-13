@@ -1,7 +1,11 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { join } from 'node:path';
 import { FileProjectStore } from './projects-node';
-import { FileMaterialLibrary, createMaterialLibraryPayload } from './material-library-node';
+import {
+  FileMaterialLibrary,
+  createMaterialLibraryPayload,
+  resolveMaterialRecordClosure,
+} from './material-library-node';
 import {
   workspaceSelectionSchema,
   type WorkspaceBinding,
@@ -68,12 +72,12 @@ export class FileWorkspace implements WorkspacePort {
       throw new Error(
         `An evaluation may resolve at most ${MATERIAL_LIBRARY_LIMITS.maxPayloadRecords} material resources; select a smaller dependency closure.`,
       );
-    const materials = await Promise.all(
+    const manifests = await Promise.all(
       materialDependencies.map(async (dependency) => {
         if (dependency.sha256 !== dependency.revisionId)
           throw new Error(`Material lock hash mismatch: ${dependency.resourceId}`);
         try {
-          return await this.materials.read(dependency.resourceId, dependency.revisionId);
+          return await this.materials.readManifest(dependency.resourceId, dependency.revisionId);
         } catch (error) {
           throw new Error(
             `Locked material unavailable: ${dependency.resourceId} at ${dependency.revisionId}`,
@@ -82,6 +86,10 @@ export class FileWorkspace implements WorkspacePort {
         }
       }),
     );
+    const materials = await resolveMaterialRecordClosure(manifests, {
+      readManifest: (id, revision) => this.materials.readManifest(id, revision),
+      read: (id, revision) => this.materials.readRecordFiles(id, revision),
+    });
     const materialResources = await createMaterialLibraryPayload(materials);
     return this.active.run(
       { ...(project ? { project } : {}), materialDependencies, materialResources },

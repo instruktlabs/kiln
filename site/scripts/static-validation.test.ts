@@ -80,6 +80,8 @@ test('the archive index and the reviewed gallery stay indexed and in the sitemap
 });
 
 test('a staged scene frame is an embedded document, not a page', () => {
+  expect(isEmbeddedDocument('/asset-demos/cabin-woods-psx-horror/web/game.html')).toBe(true);
+  expect(isEmbeddedDocument('/asset-demos/cabin-woods-psx-horror/scene-source/game.html')).toBe(false);
   expect(isEmbeddedDocument('/scene-runtime/golden-gate/frame.html')).toBe(true);
   expect(isEmbeddedDocument('/scene-packs/troy/troy-20261005-03/web/')).toBe(true);
   expect(isEmbeddedDocument('/scene-packs/troy/troy-20261005-03/web/qualification/pose-resources.html')).toBe(true);
@@ -88,6 +90,12 @@ test('a staged scene frame is an embedded document, not a page', () => {
   expect(isEmbeddedDocument('/scenes/golden-gate/')).toBe(false);
   expect(isEmbeddedDocument('/scene-runtime/golden-gate/')).toBe(false);
   expect(isEmbeddedDocument('/frame.html')).toBe(false);
+});
+
+test('source HTML resolves root imports within its downloadable project', () => {
+  const source = '/asset-demos/cabin-woods-psx-horror/scene-source/game.html';
+  expect(resolveInternalLink('/src/game/main.jsx', source)).toEqual({ path: '/asset-demos/cabin-woods-psx-horror/scene-source/src/game/main.jsx', fragment: '' });
+  expect(resolveInternalLink('/src/game/main.jsx', '/asset-demos/cabin-woods-psx-horror/web/game.html')).toEqual({ path: '/src/game/main.jsx', fragment: '' });
 });
 
 test('an embedded document needs a title, a language and to be kept out of search and link graphs', () => {

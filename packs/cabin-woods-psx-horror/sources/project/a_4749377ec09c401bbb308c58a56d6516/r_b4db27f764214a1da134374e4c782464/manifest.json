@@ -1,0 +1,3084 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_4749377ec09c401bbb308c58a56d6516",
+  "revisionId": "r_b4db27f764214a1da134374e4c782464",
+  "parentRevision": "r_81e911c619de43a7b3a1145a88715b84",
+  "name": "Caretaker First-Person Arms",
+  "tags": [
+    "psx",
+    "original",
+    "caretaker",
+    "first-person",
+    "owner-review"
+  ],
+  "createdAt": "2026-10-12T23:09:02.367Z",
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:b37776e0556ac846df0b52f4093cc7a84c444c84d5be98e8a438fda6de9f4693",
+      "bytes": 515404
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:6aa708eb87b789fe17d4ea29b558dbb9896c6a3ed1f0dc34f7e16aceaa764ac2",
+      "bytes": 87814
+    },
+    "preview.png": {
+      "sha256": "sha256:6ee0b5dbcc51f254c31ee8bcf3c62169d0908020efd6f3dd2913a9ff1b9474e3",
+      "bytes": 62456
+    }
+  },
+  "build": {
+    "engine": "sha256:429cb76bd79db6cf401c415b2ab8f44593ae8ffa54c7c8cfc4f0cfbb24729eec",
+    "options": {
+      "gltfExporter": "three",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [
+      "glTF NODE_SKINNED_MESH_NON_ROOT at /nodes/93: Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh."
+    ],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "b37776e0556ac846df0b52f4093cc7a84c444c84d5be98e8a438fda6de9f4693",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.28964489698410034,
+          -0.9359999752044679,
+          -0.4749999940395355
+        ],
+        "max": [
+          0.13500000536441803,
+          -0.08698986530303965,
+          0.4749999940395355
+        ],
+        "size": [
+          0.42464490234851837,
+          0.8490101099014282,
+          0.949999988079071
+        ],
+        "center": [
+          -0.07732244580984116,
+          -0.5114949202537538,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -0.9359999752044679,
+        "offsetToGround": 0.9359999752044679,
+        "grounded": false
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Caretaker First-Person Arms"
+      },
+      "renderMetrics": {
+        "triangles": 2368,
+        "drawCalls": 1,
+        "uniqueGeometries": 1,
+        "uniqueMaterials": 1,
+        "textureCount": 1,
+        "transparentMaterials": 0,
+        "skinned": true
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 1
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "warn",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "warn",
+          "findings": [
+            {
+              "code": "GLTF_NODE_SKINNED_MESH_NON_ROOT",
+              "disposition": "warn",
+              "dimension": "exportIntegrity",
+              "profile": "asset.requirements.v1",
+              "message": "Node with a skinned mesh is not root. Parent transforms will not affect a skinned mesh.",
+              "affected": {
+                "nodePath": "/nodes/93"
+              }
+            }
+          ],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 1
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "1 part-volume measurement was unavailable. 1 because instancing, skin or morph deformation is unsupported by part-volume analysis: \"FPSArmsSkin\". This part is not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 0,
+            "partVolumeCandidatePairs": 0,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeUnmeasurablePairs": 0,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 1
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "A",
+            "instanceabilitySummary": "A (informational, not a QA verdict), set by 1 distinct material (A at 0-1). Also: 1 geometry; 1 draw call; skinned (clone-rendered, not penalized).",
+            "uniqueGeometries": 1,
+            "uniqueMaterials": 1,
+            "meshNodes": 1,
+            "meshInstances": 1,
+            "drawCalls": 1,
+            "textureCount": 1,
+            "skinned": true,
+            "transparentMaterials": 0,
+            "triangles": 2368,
+            "materialCount": 1,
+            "opaqueMaterials": 1,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 1,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 1,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 1,
+            "maxImageDimension": 256,
+            "decodedImageBytesRgba8": 131072,
+            "estimatedGpuBytesWithMipmaps": 174763,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [
+      {
+        "kind": "kiln.material.v2",
+        "delivery": "runtime",
+        "manifest": {
+          "materialId": "nm-caretaker-clothing-skin",
+          "revisionId": "sha256:b5db650c0b2c4afff7b590debb66dbc7bccd85ae7500e3e5a38a135dab24764b",
+          "name": "Caretaker olive workwear and weathered skin",
+          "tags": [
+            "nightman",
+            "caretaker",
+            "original-pixels"
+          ],
+          "tileable": false,
+          "parameters": {
+            "roughness": 0.96,
+            "metalness": 0,
+            "emissiveIntensity": 1,
+            "alphaMode": "opaque",
+            "alphaCutoff": 0.5,
+            "doubleSided": false
+          },
+          "sources": [
+            {
+              "id": "original-pixel-recipe",
+              "kind": "procedural",
+              "provider": "Nightman original authoring",
+              "creator": "Nightman procedural asset lane",
+              "license": {
+                "spdx": "CC0-1.0",
+                "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+                "attribution": ""
+              },
+              "originalFiles": []
+            }
+          ],
+          "schemaVersion": 2,
+          "dependencies": [],
+          "maps": [
+            {
+              "slot": "baseColor",
+              "file": "baseColor.png",
+              "sha256": "sha256:dc3a96bf27a48cd2600efc5c2ff92a9d0042570901c5d926da23eb320f1fbddd",
+              "bytes": 2644,
+              "width": 256,
+              "height": 128,
+              "usage": "albedo",
+              "colorSpace": "srgb",
+              "sourceId": "original-pixel-recipe",
+              "transforms": [],
+              "sampler": {
+                "minFilter": "nearest",
+                "magFilter": "nearest",
+                "wrapS": "clamp-to-edge",
+                "wrapT": "clamp-to-edge"
+              },
+              "pixelHash": "sha256:764361a19eeed72cc6baac6b6879b897195c883b9cd2fc1f0c7bad648d29ac39",
+              "recipe": {
+                "kind": "atlas",
+                "compilerId": "kiln.texture-atlas.v1.1",
+                "spec": {
+                  "schemaVersion": 1,
+                  "width": 256,
+                  "height": 128,
+                  "usage": "albedo",
+                  "sampler": {
+                    "minFilter": "nearest",
+                    "magFilter": "nearest",
+                    "wrapS": "clamp-to-edge",
+                    "wrapT": "clamp-to-edge"
+                  },
+                  "regions": [
+                    {
+                      "name": "beard",
+                      "content": {
+                        "x": 146,
+                        "y": 70,
+                        "width": 20,
+                        "height": 16
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 20,
+                          "height": 16,
+                          "usage": "albedo",
+                          "background": [
+                            140,
+                            137,
+                            119,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                112,
+                                110,
+                                96,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 9,
+                              "seed": 542,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 20,
+                                "height": 16
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                162,
+                                159,
+                                141,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 6,
+                              "seed": 1036,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 20,
+                                "height": 16
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 7,
+                                "y": 4,
+                                "width": 6,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                116,
+                                112,
+                                97,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 8,
+                                "y": 6,
+                                "width": 5,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                66,
+                                54,
+                                45,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 6,
+                                "y": 6,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                152,
+                                112,
+                                78,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 13,
+                                "y": 6,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                152,
+                                112,
+                                78,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 3,
+                                "y": 1,
+                                "width": 3,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                158,
+                                112,
+                                79,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 15,
+                                "y": 1,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                158,
+                                112,
+                                79,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 4,
+                                "y": 12,
+                                "width": 3,
+                                "height": 3,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                123,
+                                120,
+                                103,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 14,
+                                "y": 10,
+                                "width": 2,
+                                "height": 4,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                165,
+                                161,
+                                145,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 20,
+                        "height": 16
+                      }
+                    },
+                    {
+                      "name": "boot",
+                      "content": {
+                        "x": 2,
+                        "y": 70,
+                        "width": 32,
+                        "height": 24
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 32,
+                          "height": 24,
+                          "usage": "albedo",
+                          "background": [
+                            62,
+                            51,
+                            40,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                47,
+                                40,
+                                32,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 21,
+                              "seed": 459,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 32,
+                                "height": 24
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                81,
+                                67,
+                                50,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 15,
+                              "seed": 1025,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 32,
+                                "height": 24
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 21,
+                                "width": 32,
+                                "height": 3,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                35,
+                                32,
+                                27,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 8,
+                                "y": 2,
+                                "width": 15,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                53,
+                                44,
+                                35,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 10,
+                                "y": 6,
+                                "width": 11,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                103,
+                                87,
+                                61,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 10,
+                                "y": 10,
+                                "width": 11,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                103,
+                                87,
+                                61,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 10,
+                                "y": 14,
+                                "width": 11,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                103,
+                                87,
+                                61,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 32,
+                        "height": 24
+                      }
+                    },
+                    {
+                      "name": "cap",
+                      "content": {
+                        "x": 42,
+                        "y": 70,
+                        "width": 32,
+                        "height": 20
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 32,
+                          "height": 20,
+                          "usage": "albedo",
+                          "background": [
+                            75,
+                            81,
+                            54,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                63,
+                                68,
+                                44,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 18,
+                              "seed": 376,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 32,
+                                "height": 20
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                96,
+                                101,
+                                69,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 12,
+                              "seed": 1014,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 32,
+                                "height": 20
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 17,
+                                "width": 32,
+                                "height": 3,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                46,
+                                51,
+                                36,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 15,
+                                "y": 2,
+                                "width": 1,
+                                "height": 14,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                55,
+                                60,
+                                40,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 32,
+                        "height": 20
+                      }
+                    },
+                    {
+                      "name": "face",
+                      "content": {
+                        "x": 170,
+                        "y": 2,
+                        "width": 28,
+                        "height": 28
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 28,
+                          "height": 28,
+                          "usage": "albedo",
+                          "background": [
+                            158,
+                            112,
+                            79,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                132,
+                                86,
+                                60,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 22,
+                              "seed": 459,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 28,
+                                "height": 28
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                177,
+                                134,
+                                94,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 15,
+                              "seed": 1025,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 28,
+                                "height": 28
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 5,
+                                "y": 2,
+                                "width": 18,
+                                "height": 3,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                112,
+                                109,
+                                86,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 8,
+                                "y": 7,
+                                "width": 5,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                73,
+                                66,
+                                51,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 15,
+                                "y": 7,
+                                "width": 5,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                73,
+                                66,
+                                51,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 10,
+                                "y": 10,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                46,
+                                42,
+                                34,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 16,
+                                "y": 10,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                46,
+                                42,
+                                34,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 12,
+                                "y": 11,
+                                "width": 3,
+                                "height": 4,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                176,
+                                125,
+                                88,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 9,
+                                "y": 16,
+                                "width": 10,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                132,
+                                112,
+                                90,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 12,
+                                "y": 21,
+                                "width": 4,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                145,
+                                120,
+                                92,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 7,
+                                "y": 14,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                132,
+                                86,
+                                60,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 20,
+                                "y": 14,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                132,
+                                86,
+                                60,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 6,
+                                "y": 11,
+                                "width": 3,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                132,
+                                86,
+                                60,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 19,
+                                "y": 11,
+                                "width": 3,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                132,
+                                86,
+                                60,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 9,
+                                "y": 12,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                177,
+                                134,
+                                94,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 17,
+                                "y": 12,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                177,
+                                134,
+                                94,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 28,
+                        "height": 28
+                      }
+                    },
+                    {
+                      "name": "hand",
+                      "content": {
+                        "x": 202,
+                        "y": 2,
+                        "width": 20,
+                        "height": 24
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 20,
+                          "height": 24,
+                          "usage": "albedo",
+                          "background": [
+                            158,
+                            112,
+                            79,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                132,
+                                86,
+                                60,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 13,
+                              "seed": 459,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 20,
+                                "height": 24
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                177,
+                                134,
+                                94,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 9,
+                              "seed": 1025,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 20,
+                                "height": 24
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 3,
+                                "y": 10,
+                                "width": 14,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                132,
+                                86,
+                                60,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 3,
+                                "y": 15,
+                                "width": 14,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                132,
+                                86,
+                                60,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 5,
+                                "y": 3,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                177,
+                                134,
+                                94,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 10,
+                                "y": 3,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                177,
+                                134,
+                                94,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 15,
+                                "y": 3,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                177,
+                                134,
+                                94,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 20,
+                        "height": 24
+                      }
+                    },
+                    {
+                      "name": "jacket-back",
+                      "content": {
+                        "x": 50,
+                        "y": 2,
+                        "width": 44,
+                        "height": 44
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 44,
+                          "height": 44,
+                          "usage": "albedo",
+                          "background": [
+                            89,
+                            94,
+                            60,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 19,
+                              "seed": 1040,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 44,
+                                "height": 44
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                105,
+                                109,
+                                74,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 13,
+                              "seed": 1102,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 44,
+                                "height": 44
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 2,
+                                "y": 15,
+                                "width": 40,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 20,
+                                "y": 15,
+                                "width": 2,
+                                "height": 27,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                105,
+                                109,
+                                74,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 1,
+                                "y": 41,
+                                "width": 42,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 44,
+                        "height": 44
+                      }
+                    },
+                    {
+                      "name": "jacket-front",
+                      "content": {
+                        "x": 2,
+                        "y": 2,
+                        "width": 44,
+                        "height": 44
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 44,
+                          "height": 44,
+                          "usage": "albedo",
+                          "background": [
+                            89,
+                            94,
+                            60,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 19,
+                              "seed": 1123,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 44,
+                                "height": 44
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                105,
+                                109,
+                                74,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 13,
+                              "seed": 1113,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 44,
+                                "height": 44
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 20,
+                                "y": 0,
+                                "width": 3,
+                                "height": 44,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                53,
+                                58,
+                                39,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 2,
+                                "y": 17,
+                                "width": 15,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 27,
+                                "y": 17,
+                                "width": 15,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 3,
+                                "y": 18,
+                                "width": 13,
+                                "height": 7,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                95,
+                                99,
+                                64,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 28,
+                                "y": 18,
+                                "width": 13,
+                                "height": 7,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                95,
+                                99,
+                                64,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 4,
+                                "y": 18,
+                                "width": 11,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                105,
+                                109,
+                                74,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 29,
+                                "y": 18,
+                                "width": 11,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                105,
+                                109,
+                                74,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 1,
+                                "y": 41,
+                                "width": 42,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 19,
+                                "y": 2,
+                                "width": 2,
+                                "height": 9,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                111,
+                                111,
+                                76,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 21,
+                                "y": 10,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                123,
+                                112,
+                                76,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 21,
+                                "y": 18,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                123,
+                                112,
+                                76,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 21,
+                                "y": 26,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                123,
+                                112,
+                                76,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 21,
+                                "y": 34,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                123,
+                                112,
+                                76,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 44,
+                        "height": 44
+                      }
+                    },
+                    {
+                      "name": "leather",
+                      "content": {
+                        "x": 114,
+                        "y": 70,
+                        "width": 24,
+                        "height": 24
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 24,
+                          "height": 24,
+                          "usage": "albedo",
+                          "background": [
+                            80,
+                            63,
+                            44,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                60,
+                                47,
+                                34,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 16,
+                              "seed": 708,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 24,
+                                "height": 24
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                101,
+                                81,
+                                57,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 11,
+                              "seed": 1058,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 24,
+                                "height": 24
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 18,
+                                "width": 24,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                48,
+                                41,
+                                31,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 9,
+                                "y": 2,
+                                "width": 5,
+                                "height": 4,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                143,
+                                125,
+                                83,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 24,
+                        "height": 24
+                      }
+                    },
+                    {
+                      "name": "pocket",
+                      "content": {
+                        "x": 178,
+                        "y": 70,
+                        "width": 24,
+                        "height": 20
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 24,
+                          "height": 20,
+                          "usage": "albedo",
+                          "background": [
+                            89,
+                            94,
+                            60,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 13,
+                              "seed": 625,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 24,
+                                "height": 20
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                105,
+                                109,
+                                74,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 9,
+                              "seed": 1047,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 24,
+                                "height": 20
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 2,
+                                "y": 2,
+                                "width": 20,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                105,
+                                109,
+                                74,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 2,
+                                "y": 3,
+                                "width": 20,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 2,
+                                "y": 15,
+                                "width": 20,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 3,
+                                "y": 4,
+                                "width": 1,
+                                "height": 11,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 20,
+                                "y": 4,
+                                "width": 1,
+                                "height": 11,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 10,
+                                "y": 5,
+                                "width": 3,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                132,
+                                117,
+                                80,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 24,
+                        "height": 20
+                      }
+                    },
+                    {
+                      "name": "shirt",
+                      "content": {
+                        "x": 82,
+                        "y": 70,
+                        "width": 24,
+                        "height": 32
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 24,
+                          "height": 32,
+                          "usage": "albedo",
+                          "background": [
+                            94,
+                            66,
+                            48,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                47,
+                                37,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 21,
+                              "seed": 542,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 24,
+                                "height": 32
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                117,
+                                86,
+                                61,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 15,
+                              "seed": 1036,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 24,
+                                "height": 32
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 11,
+                                "y": 0,
+                                "width": 2,
+                                "height": 32,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                57,
+                                41,
+                                31,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 6,
+                                "width": 24,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                108,
+                                80,
+                                57,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 14,
+                                "width": 24,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                108,
+                                80,
+                                57,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 22,
+                                "width": 24,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                108,
+                                80,
+                                57,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 24,
+                        "height": 32
+                      }
+                    },
+                    {
+                      "name": "sleeve",
+                      "content": {
+                        "x": 98,
+                        "y": 2,
+                        "width": 32,
+                        "height": 44
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 32,
+                          "height": 44,
+                          "usage": "albedo",
+                          "background": [
+                            89,
+                            94,
+                            60,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 14,
+                              "seed": 625,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 32,
+                                "height": 44
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                105,
+                                109,
+                                74,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 10,
+                              "seed": 1047,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 32,
+                                "height": 44
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 0,
+                                "y": 40,
+                                "width": 32,
+                                "height": 3,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                64,
+                                70,
+                                45,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 4,
+                                "y": 20,
+                                "width": 20,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                72,
+                                76,
+                                47,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 8,
+                                "y": 22,
+                                "width": 14,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                105,
+                                109,
+                                74,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 14,
+                                "y": 2,
+                                "width": 2,
+                                "height": 36,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                81,
+                                86,
+                                55,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 32,
+                        "height": 44
+                      }
+                    },
+                    {
+                      "name": "trouser",
+                      "content": {
+                        "x": 134,
+                        "y": 2,
+                        "width": 32,
+                        "height": 60
+                      },
+                      "gutter": 2,
+                      "edgeMode": "copy-edge",
+                      "source": {
+                        "kind": "procedural",
+                        "spec": {
+                          "schemaVersion": 3,
+                          "width": 32,
+                          "height": 60,
+                          "usage": "albedo",
+                          "background": [
+                            106,
+                            91,
+                            68,
+                            255
+                          ],
+                          "operations": [
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                90,
+                                77,
+                                58,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 54,
+                              "seed": 708,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 32,
+                                "height": 60
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "stamps",
+                              "shape": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 2,
+                                "height": 1,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                119,
+                                102,
+                                75,
+                                255
+                              ],
+                              "opacity": 255,
+                              "count": 38,
+                              "seed": 1058,
+                              "area": {
+                                "x": 0,
+                                "y": 0,
+                                "width": 32,
+                                "height": 60
+                              },
+                              "periodic": false
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 7,
+                                "y": 33,
+                                "width": 18,
+                                "height": 4,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                96,
+                                82,
+                                60,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 3,
+                                "y": 0,
+                                "width": 1,
+                                "height": 60,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                78,
+                                69,
+                                54,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 27,
+                                "y": 0,
+                                "width": 1,
+                                "height": 60,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                78,
+                                69,
+                                54,
+                                255
+                              ],
+                              "opacity": 255
+                            },
+                            {
+                              "op": "paint",
+                              "shape": {
+                                "x": 4,
+                                "y": 56,
+                                "width": 24,
+                                "height": 2,
+                                "kind": "rectangle"
+                              },
+                              "rgba": [
+                                80,
+                                70,
+                                53,
+                                255
+                              ],
+                              "opacity": 255
+                            }
+                          ]
+                        }
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 32,
+                        "height": 60
+                      }
+                    }
+                  ]
+                },
+                "manifest": {
+                  "version": "kiln.atlas-manifest.v1",
+                  "compilerId": "kiln.texture-atlas.v1.1",
+                  "width": 256,
+                  "height": 128,
+                  "usage": "albedo",
+                  "origin": "top-left",
+                  "sampler": {
+                    "minFilter": "nearest",
+                    "magFilter": "nearest",
+                    "wrapS": "clamp-to-edge",
+                    "wrapT": "clamp-to-edge"
+                  },
+                  "specHash": "sha256:d598b92bec3b91323821b5341012a5129fdbe211042e94414a407368b2daf3a4",
+                  "layoutHash": "sha256:84392adfe1bf8bc0f03404a6e440473905e203ad4a478c3537d5f29c55bc33f7",
+                  "decodedPixelHash": "sha256:764361a19eeed72cc6baac6b6879b897195c883b9cd2fc1f0c7bad648d29ac39",
+                  "atlasPixelHash": "sha256:a30d084bdeee008195445a08f0253be9606d6a7ede8f511b71fc931a2c244090",
+                  "sources": [
+                    {
+                      "id": "procedural:sha256:18b6714673859fc644e25dc6aa39e3b12237240c37715048514a274d02c1d6a8",
+                      "width": 20,
+                      "height": 16,
+                      "decodedPixelHash": "sha256:b7c4bb135a8f4008657ac7209299ab010f6ab0dd371a95a42d8f0d27ab7d55d5",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:18b6714673859fc644e25dc6aa39e3b12237240c37715048514a274d02c1d6a8",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:27be708abf543228401560adf78315008f284ea1563b1b0dfc250dd540685cb7",
+                      "width": 44,
+                      "height": 44,
+                      "decodedPixelHash": "sha256:cefd867056fa229b0654a6e1edb711284f2151e9ba29e5413b94fc07f70fcc0b",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:27be708abf543228401560adf78315008f284ea1563b1b0dfc250dd540685cb7",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:3067578238ec97a6c8fc23e7c3ec723a224adfef37c88c4dbc8b4005fd535e8f",
+                      "width": 28,
+                      "height": 28,
+                      "decodedPixelHash": "sha256:2eb8766d42f61a2f19e356d5d33def81bd2c8f31d71f91ee9d2c68d77680f785",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:3067578238ec97a6c8fc23e7c3ec723a224adfef37c88c4dbc8b4005fd535e8f",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:399fe9ca8b3fe410415ec0d5e881185c2dc97d7ab98dbdef4ba51adf4ae95a99",
+                      "width": 32,
+                      "height": 24,
+                      "decodedPixelHash": "sha256:4a97f8644bf2a6c03607bafbf467e16fe49aa68ac17035a590ad5ec7f1b03942",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:399fe9ca8b3fe410415ec0d5e881185c2dc97d7ab98dbdef4ba51adf4ae95a99",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:69755f1a87b8765f0b270582c50a766e50be9719dab05ea6fd9bfac55ad825a6",
+                      "width": 24,
+                      "height": 20,
+                      "decodedPixelHash": "sha256:5720cceb92b2f18e15a544fd4f80ae09106cbf20409c1643669e3c406a563477",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:69755f1a87b8765f0b270582c50a766e50be9719dab05ea6fd9bfac55ad825a6",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:83d5b4188221f81a865e89a17a0484ddd9ef9659d87453dcbf470e8b82d25061",
+                      "width": 32,
+                      "height": 20,
+                      "decodedPixelHash": "sha256:92b8c8fd141f62a8e1d6d3afeddb2b9fb613057fe7341cc9e572b469e74ee5b9",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:83d5b4188221f81a865e89a17a0484ddd9ef9659d87453dcbf470e8b82d25061",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:93e84cab8f9403df74e9b8b9b90bc48e0106ea8ae69ceafcdebd087f6c763fe3",
+                      "width": 32,
+                      "height": 44,
+                      "decodedPixelHash": "sha256:a47359adea3b7c87ad3cefccef8e9ef9af71ea7a8d87e63c2621bca7ec56a5b9",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:93e84cab8f9403df74e9b8b9b90bc48e0106ea8ae69ceafcdebd087f6c763fe3",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:9e21a9cf84e759ccb84598b7b0be74b4afb276fa7c562709b1775fae65400fcc",
+                      "width": 44,
+                      "height": 44,
+                      "decodedPixelHash": "sha256:5f2369ff38b5963084ee0b6584d1a85fdf77fa225a244d00cf9233804f2ac659",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:9e21a9cf84e759ccb84598b7b0be74b4afb276fa7c562709b1775fae65400fcc",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:a7d619aaea009e320c8c8d9246a09cd7bb97a4484959985850ff0b2fed6d00d1",
+                      "width": 20,
+                      "height": 24,
+                      "decodedPixelHash": "sha256:5f62edf318981d3be65d545e9001ba5693ef753a8c3165701bd0c40c1c65417b",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:a7d619aaea009e320c8c8d9246a09cd7bb97a4484959985850ff0b2fed6d00d1",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:c205abc114754a31ab8b7126707914074c8dc8418cb45191389cbd56acb336c7",
+                      "width": 24,
+                      "height": 32,
+                      "decodedPixelHash": "sha256:6c0d5e0eea1d60695c5b6e2c815f9ee3a777005d06d6a01e93dac85f74be8778",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:c205abc114754a31ab8b7126707914074c8dc8418cb45191389cbd56acb336c7",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:cb52ad7967584a570eeb354d0addbf77ddf2a99de75e7e3c578f967c235183c0",
+                      "width": 32,
+                      "height": 60,
+                      "decodedPixelHash": "sha256:d9bf0f91d8f3a3285c44aa0177dca9d8c026acb733fdef96c247450a3334adf4",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:cb52ad7967584a570eeb354d0addbf77ddf2a99de75e7e3c578f967c235183c0",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    },
+                    {
+                      "id": "procedural:sha256:d4004a262869e2b927daac2d0eae4b7468f9ea3f3cb8a7c3eb8e6ea25d880f0a",
+                      "width": 24,
+                      "height": 24,
+                      "decodedPixelHash": "sha256:b65dca298754152f7186f4f03de87d7a9eb183271a6cc0eb573068c085aedc3b",
+                      "kind": "procedural",
+                      "recipeHash": "sha256:d4004a262869e2b927daac2d0eae4b7468f9ea3f3cb8a7c3eb8e6ea25d880f0a",
+                      "compilerId": "kiln.procedural-rgba.v3.1"
+                    }
+                  ],
+                  "regions": [
+                    {
+                      "name": "beard",
+                      "content": {
+                        "x": 146,
+                        "y": 70,
+                        "width": 20,
+                        "height": 16
+                      },
+                      "allocation": {
+                        "x": 144,
+                        "y": 68,
+                        "width": 24,
+                        "height": 20
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 20,
+                        "height": 16
+                      },
+                      "sourceId": "procedural:sha256:18b6714673859fc644e25dc6aa39e3b12237240c37715048514a274d02c1d6a8"
+                    },
+                    {
+                      "name": "boot",
+                      "content": {
+                        "x": 2,
+                        "y": 70,
+                        "width": 32,
+                        "height": 24
+                      },
+                      "allocation": {
+                        "x": 0,
+                        "y": 68,
+                        "width": 36,
+                        "height": 28
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 32,
+                        "height": 24
+                      },
+                      "sourceId": "procedural:sha256:399fe9ca8b3fe410415ec0d5e881185c2dc97d7ab98dbdef4ba51adf4ae95a99"
+                    },
+                    {
+                      "name": "cap",
+                      "content": {
+                        "x": 42,
+                        "y": 70,
+                        "width": 32,
+                        "height": 20
+                      },
+                      "allocation": {
+                        "x": 40,
+                        "y": 68,
+                        "width": 36,
+                        "height": 24
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 32,
+                        "height": 20
+                      },
+                      "sourceId": "procedural:sha256:83d5b4188221f81a865e89a17a0484ddd9ef9659d87453dcbf470e8b82d25061"
+                    },
+                    {
+                      "name": "face",
+                      "content": {
+                        "x": 170,
+                        "y": 2,
+                        "width": 28,
+                        "height": 28
+                      },
+                      "allocation": {
+                        "x": 168,
+                        "y": 0,
+                        "width": 32,
+                        "height": 32
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 28,
+                        "height": 28
+                      },
+                      "sourceId": "procedural:sha256:3067578238ec97a6c8fc23e7c3ec723a224adfef37c88c4dbc8b4005fd535e8f"
+                    },
+                    {
+                      "name": "hand",
+                      "content": {
+                        "x": 202,
+                        "y": 2,
+                        "width": 20,
+                        "height": 24
+                      },
+                      "allocation": {
+                        "x": 200,
+                        "y": 0,
+                        "width": 24,
+                        "height": 28
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 20,
+                        "height": 24
+                      },
+                      "sourceId": "procedural:sha256:a7d619aaea009e320c8c8d9246a09cd7bb97a4484959985850ff0b2fed6d00d1"
+                    },
+                    {
+                      "name": "jacket-back",
+                      "content": {
+                        "x": 50,
+                        "y": 2,
+                        "width": 44,
+                        "height": 44
+                      },
+                      "allocation": {
+                        "x": 48,
+                        "y": 0,
+                        "width": 48,
+                        "height": 48
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 44,
+                        "height": 44
+                      },
+                      "sourceId": "procedural:sha256:27be708abf543228401560adf78315008f284ea1563b1b0dfc250dd540685cb7"
+                    },
+                    {
+                      "name": "jacket-front",
+                      "content": {
+                        "x": 2,
+                        "y": 2,
+                        "width": 44,
+                        "height": 44
+                      },
+                      "allocation": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 48,
+                        "height": 48
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 44,
+                        "height": 44
+                      },
+                      "sourceId": "procedural:sha256:9e21a9cf84e759ccb84598b7b0be74b4afb276fa7c562709b1775fae65400fcc"
+                    },
+                    {
+                      "name": "leather",
+                      "content": {
+                        "x": 114,
+                        "y": 70,
+                        "width": 24,
+                        "height": 24
+                      },
+                      "allocation": {
+                        "x": 112,
+                        "y": 68,
+                        "width": 28,
+                        "height": 28
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 24,
+                        "height": 24
+                      },
+                      "sourceId": "procedural:sha256:d4004a262869e2b927daac2d0eae4b7468f9ea3f3cb8a7c3eb8e6ea25d880f0a"
+                    },
+                    {
+                      "name": "pocket",
+                      "content": {
+                        "x": 178,
+                        "y": 70,
+                        "width": 24,
+                        "height": 20
+                      },
+                      "allocation": {
+                        "x": 176,
+                        "y": 68,
+                        "width": 28,
+                        "height": 24
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 24,
+                        "height": 20
+                      },
+                      "sourceId": "procedural:sha256:69755f1a87b8765f0b270582c50a766e50be9719dab05ea6fd9bfac55ad825a6"
+                    },
+                    {
+                      "name": "shirt",
+                      "content": {
+                        "x": 82,
+                        "y": 70,
+                        "width": 24,
+                        "height": 32
+                      },
+                      "allocation": {
+                        "x": 80,
+                        "y": 68,
+                        "width": 28,
+                        "height": 36
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 24,
+                        "height": 32
+                      },
+                      "sourceId": "procedural:sha256:c205abc114754a31ab8b7126707914074c8dc8418cb45191389cbd56acb336c7"
+                    },
+                    {
+                      "name": "sleeve",
+                      "content": {
+                        "x": 98,
+                        "y": 2,
+                        "width": 32,
+                        "height": 44
+                      },
+                      "allocation": {
+                        "x": 96,
+                        "y": 0,
+                        "width": 36,
+                        "height": 48
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 32,
+                        "height": 44
+                      },
+                      "sourceId": "procedural:sha256:93e84cab8f9403df74e9b8b9b90bc48e0106ea8ae69ceafcdebd087f6c763fe3"
+                    },
+                    {
+                      "name": "trouser",
+                      "content": {
+                        "x": 134,
+                        "y": 2,
+                        "width": 32,
+                        "height": 60
+                      },
+                      "allocation": {
+                        "x": 132,
+                        "y": 0,
+                        "width": 36,
+                        "height": 64
+                      },
+                      "crop": {
+                        "x": 0,
+                        "y": 0,
+                        "width": 32,
+                        "height": 60
+                      },
+                      "sourceId": "procedural:sha256:cb52ad7967584a570eeb354d0addbf77ddf2a99de75e7e3c578f967c235183c0"
+                    }
+                  ],
+                  "manifestHash": "sha256:b940bc2572a7611b63b77d84c97a7eeda9ef49578c47a6100ab5b10294a7d77d"
+                },
+                "encoder": {
+                  "name": "sharp",
+                  "version": "0.35.5"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "rebuild": "external-dependencies-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1088",
+      "inputGlbSha256": "sha256:b37776e0556ac846df0b52f4093cc7a84c444c84d5be98e8a438fda6de9f4693",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

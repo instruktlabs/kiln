@@ -35,6 +35,7 @@ const stateCopy = scene.available
   data-runtime-url={runtime?.url ?? ""}
   data-asset-base={scene.assetBase}
   data-error-text={inMode.errorText}
+  data-renderer-error-text={'rendererErrorText' in scene.copy ? scene.copy.rendererErrorText : undefined}
   data-frame-title={`${scene.name} scene`}
 >
   <div data-intro>
@@ -200,7 +201,7 @@ const stateCopy = scene.available
         status.classList.add("p-6");
         const code = (error as { code?: string } | undefined)?.code ?? (/WebGL|WebGPU|graphics|renderer/i.test(error?.message ?? "") ? "renderer-init" : "runtime");
         status.textContent = code === "renderer-init"
-          ? "Interactive graphics are unavailable in this browser. The scene poster and downloads remain available below. Try a browser with WebGL2 or WebGPU enabled."
+          ? this.dataset.rendererErrorText ?? "Interactive graphics are unavailable in this browser. The scene poster and downloads remain available below. Try a browser with WebGL2 or WebGPU enabled."
           : this.dataset.errorText ??
           "The scene could not load. Check your connection and try Explore again.";
         this.dataset.sceneError =

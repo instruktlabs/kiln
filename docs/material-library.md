@@ -35,8 +35,9 @@ node kiln.mjs material get RETURNED_MATERIAL_ID RETURNED_REVISION
 node kiln.mjs material export RETURNED_MATERIAL_ID RETURNED_REVISION --out wood-payload.json
 ```
 
-Copy the returned `portableSpec` into authored source and use
-`compilePortableMaterialSpecV2(portableSpec)` with the exact dependency pin.
+Copy the returned `portableSpec` into authored source with the exact dependency
+pin. Use `compilePortableMaterialSpecV2` for `portableSpec.schemaVersion === 2`
+and `compilePortableMaterialSpecV3` for version 3. Existing presets return V2.
 Custom draft creation uses CLI `material procedural --file draft.json`, corresponding
 to MCP `create-procedural`. These paths need no imports from internal `dist/` files
 or extra TypeScript loader. The public host APIs below are for a configured TypeScript
@@ -44,7 +45,10 @@ toolchain; ordinary Node cannot directly execute TypeScript inside `node_modules
 
 `list` returns compact summaries and accepts a `tag`. `get` requires `materialId` and `revisionId`
 and returns provenance plus a code-ready `portableSpec`. `create-procedural` accepts an editable
-draft using the same bounded layer recipes as the existing procedural compiler. An optional
+draft using the same bounded layer recipes as the existing procedural compiler. Opt-in
+drafts with `schemaVersion:2` also support RGBA recipes, named atlases and explicit
+per-map samplers; see the [standalone texture workflow](procedural-surfaces-v3.md#standalone-saved-materials-and-atlases).
+An optional
 `derive: {"kind":"normal-from-height","strength":2}` on a normal map converts the recipe's
 height pixels through the existing wrapped normal derivation. `import` accepts a complete
 normalized payload. None of these operations acquires source images from a provider.
@@ -66,8 +70,8 @@ Pin the returned material ID and revision hash before using its resource IDs. A 
 optional: pass a pin array as MCP `materialDependencies` or CLI `--materials pins.json` for
 an individual operation, or put the array in a project's `materialDependencies` for shared use.
 The pin's `resourceId` is the material ID; its `revisionId` and `sha256` both equal the
-manifest's immutable `revisionId`. `compilePortableMaterialSpecV2(portableSpec)` then creates the
-material inside authored source. The host supplies complete map bytes through `materialResources`
+manifest's immutable `revisionId`. The compiler matching `portableSpec.schemaVersion`
+creates the material inside authored source. The host supplies complete map bytes through `materialResources`
 before build-cache lookup, including when evaluation uses the default subprocess.
 
 Editable standalone asset ZIPs carry the saved dependency closure in `materials.kiln.json`;

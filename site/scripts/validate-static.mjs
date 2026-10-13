@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { HtmlValidate } from 'html-validate';
 import sharp from 'sharp';
 import { engineNoteErrors, isAssetPageRoute, readGlbFacts } from './engine-note.mjs';
-import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, DESCRIPTION_WARNING_LENGTH, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, isArchiveItemRoute, isEmbeddedDocument, ORIGIN, parseHeaderRules, resolveInternalLink, retiredNameErrors, routeForFile, scriptHashSource, socialMetadataErrors } from './static-validation-core.mjs';
+import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, DESCRIPTION_WARNING_LENGTH, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, isArchiveItemRoute, isEmbeddedDocument, isSceneSourceDocument, ORIGIN, parseHeaderRules, resolveInternalLink, retiredNameErrors, routeForFile, scriptHashSource, socialMetadataErrors } from './static-validation-core.mjs';
 import {sealedTroyCache} from './sealed-cache.mjs';
 import {viewerModelInput} from './viewer-model-input.mjs';
 import { glbJsonText } from './private-data.mjs';
@@ -56,7 +56,7 @@ const htmlResults = [];
 for (const [route, page] of pages) {
   if (new Set(page.ids).size !== page.ids.length) add(route, 'anchors', 'Duplicate element IDs');
   // A staged scene frame is served inside a page's iframe, so it is held to what a frame needs, not to page metadata.
-  if (isEmbeddedDocument(route)) for (const message of embeddedDocumentErrors(page)) add(route, 'metadata', message);
+  if (isEmbeddedDocument(route) || isSceneSourceDocument(route)) for (const message of embeddedDocumentErrors(page)) add(route, 'metadata', message);
   else {
     for (const [name, text, seen] of [['title', page.title, titles], ['description', page.description, descriptions]]) {
       if (!text?.trim()) add(route, 'metadata', `Missing ${name}`);
@@ -224,7 +224,7 @@ console.log(`Static validation: ${pages.size} pages, ${errors.length} link/metad
 for (const error of errors.slice(0, 35)) console.error(`${error.page}: ${error.kind}: ${error.message}`);
 for (const result of htmlResults.slice(0, 4)) console.error(`${result.file}: ${result.messages.slice(0, 8).map((message) => `${message.ruleId}: ${message.message}`).join('; ')}`);
 console.log(`Archive: ${archive.items} item pages (${archive.specimens} specimens), ${archive.noindexFollow} noindex, follow, ${archive.inSitemap} in sitemap.xml, ${archive.inLlms} in llms.txt; index indexed=${archive.indexPage?.indexed}, in sitemap=${archive.indexPage?.inSitemap}.`);
-console.log(`Discovery: ${sitemapUrls.length} sitemap URLs, ${new Set(sitemapUrls).size} distinct, ${sitemapUrls.filter((url) => /[#?]/.test(url)).length} with a fragment or query; robots.txt: ${discovery.filter((error) => error.page === '/robots.txt').length} problems; sitemap-index.xml: ${discovery.filter((error) => error.page === '/sitemap-index.xml').length} problems; canonical links: ${[...pages].filter(([route, page]) => !isEmbeddedDocument(route) && page.canonicalCount === 1).length} of ${[...pages.keys()].filter((route) => !isEmbeddedDocument(route)).length} pages have exactly one.`);
+console.log(`Discovery: ${sitemapUrls.length} sitemap URLs, ${new Set(sitemapUrls).size} distinct, ${sitemapUrls.filter((url) => /[#?]/.test(url)).length} with a fragment or query; robots.txt: ${discovery.filter((error) => error.page === '/robots.txt').length} problems; sitemap-index.xml: ${discovery.filter((error) => error.page === '/sitemap-index.xml').length} problems; canonical links: ${[...pages].filter(([route, page]) => !isEmbeddedDocument(route) && !isSceneSourceDocument(route) && page.canonicalCount === 1).length} of ${[...pages.keys()].filter((route) => !isEmbeddedDocument(route) && !isSceneSourceDocument(route)).length} pages have exactly one.`);
 console.log(`Engine notes: ${engineSummary.withNote} of ${engineSummary.assetPages} asset pages carry one; ${engineSummary.glbsRead} GLBs read (glTF ${engineSummary.gltfVersions.join(', ')}; extensions declared: ${engineSummary.extensionsDeclared.join(', ') || 'none'}); ${engineSummary.problems} problems.`);
 console.log(`Retired working title: ${retired.length} matches in ${pages.size} pages, ${files.length} file names and the discovery files. Foundry Floor pages: ${foundry.length} problems.`);
 console.log(`GLBs: ${glbs.length} read, ${dracoFree} without KHR_draco_mesh_compression. Copy rules (glued numbers, licence spelling, owner status): ${errors.filter((error) => error.kind === 'copy').length} problems.`);

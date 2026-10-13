@@ -3,14 +3,14 @@ import {
   assertMaterialJson,
   materialLibraryHashSchema,
   materialLibraryIdSchema,
-  materialLibraryPayloadSchema,
+  materialLibraryPayloadAnySchema,
   materialLibraryPortableSpec,
   materialSourceSchema,
-  proceduralMaterialDraftSchema,
   type MaterialLibrary,
-  type MaterialManifestV1,
+  type MaterialManifest,
 } from '../material-library';
 import { createMaterialRecordV1, decodeMaterialLibraryPayload } from '../material-library-node';
+import { createProceduralMaterialRecord } from '../material-authoring-node';
 import { createMaterialPresetDraft, listMaterialPresets } from '../material-presets';
 import { nestedRecordDescription, requireActionFields } from './actions';
 import type { KilnToolDef } from './registry';
@@ -89,18 +89,18 @@ export const materialToolInput = z.strictObject({
     .describe("get: the immutable revision; omitted, the material's only revision."),
   draft: record(
     nestedRecordDescription(
-      'create-procedural: materialId, name, tileable, sources, maps with layered procedural specs; optional tags, physicalSizeMeters, parameters.',
+      'create-procedural: legacy layered draft, or schemaVersion 2 with explicit samplers and RGBA/atlas recipes. Exact atlas sources must exist in this library.',
       'shape:material-draft',
     ),
   ),
   payload: record(
     nestedRecordDescription(
-      'import: schemaVersion 1 and complete normalized records with embedded PNG bytes.',
+      'import: schemaVersion 1 or 2, complete normalized records and their exact dependencies with embedded PNG bytes.',
       'shape:material-import',
     ),
   ),
 });
-const materialResult = (material: MaterialManifestV1) => ({
+const materialResult = (material: MaterialManifest) => ({
   ok: true,
   material,
   portableSpec: materialLibraryPortableSpec(material),
@@ -157,7 +157,7 @@ export function createKilnMaterialDef(
   return {
     name: 'kiln_material',
     description:
-      'Manage optional immutable material resources in this workspace. presets discovers shipped architecture, wood, metal, fabric and ground recipes; create-preset bakes one with an explicit seed, creator and license; list returns compact material/revision summaries; get returns full provenance, hashes, map conventions, physical repeat scale and a code-ready portable material spec; create-procedural bakes bounded editable layer recipes including optional height-derived normals; import accepts complete normalized records with embedded PNG bytes. No action downloads URLs or executes source. Pin the returned materialId/revisionId through per-invocation materialDependencies or project dependencies before authored evaluation resolves the resources; no project is required.',
+      'Manage optional immutable material resources in this workspace. presets lists shipped recipes; create-preset uses explicit seed, creator and license; list returns revision summaries; get returns provenance, hashes, sampling and a portable material spec. create-procedural accepts legacy layer drafts or schemaVersion 2 drafts with explicit samplers and bounded RGBA or named atlas recipes. Atlas resource sources require exact saved revisions; import requires complete normalized records and dependencies with embedded PNG bytes. Read shape:material-draft or shape:material-import through kiln_discover for full fields. No action downloads URLs or executes source. Pin the returned materialId/revisionId through per-invocation materialDependencies or project dependencies before evaluation; no project or mesh is required.',
     inputSchema: materialToolInput,
     actionContract: MATERIAL_CONTRACT,
     annotations: {
@@ -225,15 +225,19 @@ export function createKilnMaterialDef(
           }
         }
         case 'create-procedural': {
-          const record = await createMaterialRecordV1(
-            proceduralMaterialDraftSchema.parse(input.draft),
+          const { record, dependencies } = await createProceduralMaterialRecord(
+            input.draft,
+            library,
           );
-          const [material] = await library.import([record]);
+          const [material] = await library.import(
+            [record],
+            dependencies.length ? { materials: dependencies } : undefined,
+          );
           return materialResult(material!);
         }
         case 'import': {
           const records = await decodeMaterialLibraryPayload(
-            materialLibraryPayloadSchema.parse(input.payload),
+            materialLibraryPayloadAnySchema.parse(input.payload),
           );
           const materials = await library.import(records);
           return {
