@@ -16,6 +16,8 @@ on:
     branches: [main]
     paths:
       - 'scripts/example-archive.mjs'
+      - 'scripts/verify-posters.mjs'
+      - 'scripts/poster-download.mjs'
       - 'site/**'
       - 'scenes/**'
       - 'docs/**'
@@ -32,6 +34,8 @@ on:
     paths:
       - '.github/published-candidate.json'
       - 'scripts/example-archive.mjs'
+      - 'scripts/verify-posters.mjs'
+      - 'scripts/poster-download.mjs'
       - 'site/**'
       - 'scenes/**'
       - 'docs/**'

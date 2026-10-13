@@ -7,6 +7,8 @@ does not publish a package.
 
 ## 1.2.3 (2026-10-12)
 
+- Allow concurrent renderer clients to await verified health through the shared
+  startup deadline when another client wins the socket during a cold start.
 - Publish Cabin in the Woods: PSX Horror with 53 exact editable asset revisions,
   runtime and Full Kiln downloads, a portable scene, and integrated gallery pages.
   The WebGPU walkthrough includes first-person tools, fuel-driven fire, woodland

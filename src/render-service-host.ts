@@ -248,7 +248,6 @@ export async function startLocalRenderService(
     stderr = `${stderr}${chunk.toString()}`.slice(-2_000);
   });
   const deadline = Date.now() + budget;
-  let exitedAt: number | undefined;
   try {
     while (Date.now() < deadline) {
       const fresh = await inspectLocalRenderService(url, dir, 1_000);
@@ -258,11 +257,10 @@ export async function startLocalRenderService(
       const exited = windowsLaunch
         ? windowsLaunch.hasExited()
         : running.exitCode !== null || running.signalCode !== null;
-      if (exited) exitedAt ??= Date.now();
-      // Another client may have won the socket while this child lost its bind. Give
-      // that listener a bounded health warmup, and join only after full verification.
-      // A failed spawn has no such race; absent/unknown never count as success.
-      if (spawnError || (exitedAt !== undefined && Date.now() - exitedAt >= 1500))
+      // A competing child can win the socket while this one exits after losing
+      // its bind. An unknown listener gets the same startup deadline as our child;
+      // only verified health permits joining. An exited child with no listener fails.
+      if (spawnError || (exited && fresh.kind === 'absent'))
         throw new Error(
           `render service exited during startup${spawnError ? `: ${spawnError.message}` : ''}${stderr.trim() ? `: ${stderr.trim()}` : windowsLaunch ? '; launch the renderer manually to inspect native-driver errors' : ''}`,
         );

@@ -38532,7 +38532,6 @@ async function startLocalRenderService(dir = renderServiceDir(), environment = p
     stderr = `${stderr}${chunk.toString()}`.slice(-2000);
   });
   const deadline = Date.now() + budget;
-  let exitedAt;
   try {
     while (Date.now() < deadline) {
       const fresh = await inspectLocalRenderService(url, dir, 1000);
@@ -38541,9 +38540,7 @@ async function startLocalRenderService(dir = renderServiceDir(), environment = p
       if (fresh.kind === "service" || fresh.kind === "incompatible" || fresh.kind === "foreign")
         throw new Error(describeUnavailableService(url, fresh));
       const exited = windowsLaunch ? windowsLaunch.hasExited() : running.exitCode !== null || running.signalCode !== null;
-      if (exited)
-        exitedAt ??= Date.now();
-      if (spawnError || exitedAt !== undefined && Date.now() - exitedAt >= 1500)
+      if (spawnError || exited && fresh.kind === "absent")
         throw new Error(`render service exited during startup${spawnError ? `: ${spawnError.message}` : ""}${stderr.trim() ? `: ${stderr.trim()}` : windowsLaunch ? "; launch the renderer manually to inspect native-driver errors" : ""}`);
       await new Promise((done) => setTimeout(done, 250));
     }

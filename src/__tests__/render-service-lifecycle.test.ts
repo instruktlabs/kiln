@@ -136,7 +136,7 @@ test('stale services survive owner exit and both auto and gpu explicitly report 
   expect((await inspectLocalRenderService(url, dir)).kind).toBe('service');
   expect(child.exitCode).toBeNull();
 });
-test.each([0, 2000])(
+test.each([0, 4000])(
   'concurrent cold starts join one verified managed service with %dms health warmup',
   async (healthDelay) => {
     const { dir, url } = await installation();

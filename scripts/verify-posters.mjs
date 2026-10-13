@@ -25,6 +25,7 @@ import { createHash } from 'node:crypto';
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { exampleArchivePath } from './example-archive.mjs';
+import { downloadPoster } from './poster-download.mjs';
 
 const RECEIPTS = exampleArchivePath('examples/renders');
 const BASE = process.env.KILN_POSTER_BASE ?? 'https://assets.kilnstudio.tools/renders';
@@ -51,8 +52,9 @@ let present = 0;
 for (const file of [...attested.map((f) => f.replace(/\.json$/, '.png')), ...UNATTESTED]) {
   const url = `${BASE}/${file}`;
   let response;
+  let bytes;
   try {
-    response = await fetch(url);
+    ({ response, bytes } = await downloadPoster(url));
   } catch (err) {
     failures.push(`${file}: unreachable (${err instanceof Error ? err.message : String(err)})`);
     continue;
@@ -61,7 +63,6 @@ for (const file of [...attested.map((f) => f.replace(/\.json$/, '.png')), ...UNA
     failures.push(`${file}: HTTP ${response.status} from ${url}`);
     continue;
   }
-  const bytes = Buffer.from(await response.arrayBuffer());
   present += 1;
 
   const expected = /\.gif$/.test(file) ? '.gif' : '.png';
