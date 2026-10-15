@@ -1114,7 +1114,7 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'textureAtlas',
     signature:
-      'await textureAtlas({ schemaVersion: 1, width, height, usage, sampler?, regions: [{ name, content: { x, y, width, height }, gutter?, edgeMode?, source, crop? }] })',
+      "await textureAtlas({ schemaVersion: 1, width, height, usage, sampler?, pack?: { edge: 1024 | 2048, gutter?, algorithm?: 'maxrects' }, regions: [{ name, content?: { x, y, width, height }, gutter?, edgeMode?, source, crop? }] })",
     returns: 'Promise<THREE.DataTexture>',
     category: 'textures',
     description:
@@ -1122,7 +1122,7 @@ const PRIMITIVES: HelperSpec[] = [
     example:
       "const atlas = await textureAtlas({ schemaVersion: 1, width: 8, height: 8, usage: 'albedo', regions: [{ name: 'patch', content: { x: 2, y: 2, width: 4, height: 4 }, source: { kind: 'procedural', spec: { schemaVersion: 3, width: 4, height: 4, background: [70, 90, 40, 255], operations: [] } } }] });",
     promptNotes:
-      'Coordinates are integer pixel edges from top left. Width/height 4..1024. Content excludes gutter (default2); padded allocations must not overlap. copy-edge (default) extrudes RGBA; mask-rgb-dilate preserves positive alpha and extends nearest donor RGB into zero-alpha pixels without growing alpha, for albedo/emissive only. No packing, rotation or resampling. An optional crop must exactly match content dimensions. Resource sources require {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256}} and a host-supplied exact dependency; paths, URLs, latest and approved non-library resources are unsupported. Default sampler is linear-mipmap-linear/linear/clamp-to-edge on both axes; explicit samplers require all four fields. Gutters do not guarantee isolation at every mip level. Use remapUVToAtlas with an explicit input origin and mode; inspect at intended scene distance.',
+      'Coordinates are integer pixel edges from top left. Width/height 4..1024. Content excludes gutter (default2); padded allocations must not overlap. With pack, width/height default to pack.edge (up to 2048, 128 regions, 32 sources; compiler kiln.texture-atlas.v1.2) and regions may omit content: MaxRects places them by area descending then name, around any explicit rectangles, at their source size (procedural spec size, crop, or a resource expected width/height); pack.gutter is the default gutter. The compiled spec records each placement (packed: true); read placements from the manifest regions. copy-edge (default) extrudes RGBA; mask-rgb-dilate preserves positive alpha and extends nearest donor RGB into zero-alpha pixels without growing alpha, for albedo/emissive only. No rotation or resampling. An optional crop must exactly match content dimensions. Resource sources require {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256}} and a host-supplied exact dependency; paths, URLs, latest and approved non-library resources are unsupported. Default sampler is linear-mipmap-linear/linear/clamp-to-edge on both axes; explicit samplers require all four fields. Gutters do not guarantee isolation at every mip level. Use remapUVToAtlas with an explicit input origin and mode; inspect at intended scene distance.',
   },
   {
     name: 'remapUVToAtlas',

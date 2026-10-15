@@ -9,8 +9,10 @@ import {
 import {
   atlasFailure,
   canonicalAtlasMetadataJsonV1,
-  TEXTURE_ATLAS_COMPILER_ID,
+  TEXTURE_ATLAS_COMPILER_IDS,
+  TEXTURE_ATLAS_COMPILER_ID_V1_2,
   TEXTURE_ATLAS_LIMITS,
+  TEXTURE_ATLAS_LIMITS_V1_2,
 } from './texture-atlas-contract';
 import { sha256Hex } from './procedural-material-v2';
 import { remapUV } from './uv-shapes';
@@ -57,19 +59,23 @@ function manifestOf(atlas: THREE.Texture | TextureAtlasManifestV1): TextureAtlas
     atlasFailure('an atlas texture or compiled manifest is required.');
   canonicalAtlasMetadataJsonV1(value);
   const manifest = value as TextureAtlasManifestV1;
+  const limits =
+    manifest.compilerId === TEXTURE_ATLAS_COMPILER_ID_V1_2
+      ? TEXTURE_ATLAS_LIMITS_V1_2
+      : TEXTURE_ATLAS_LIMITS;
   if (
     manifest.version !== 'kiln.atlas-manifest.v1' ||
-    manifest.compilerId !== TEXTURE_ATLAS_COMPILER_ID ||
+    !(TEXTURE_ATLAS_COMPILER_IDS as readonly unknown[]).includes(manifest.compilerId) ||
     manifest.origin !== 'top-left' ||
     !Array.isArray(manifest.regions) ||
     !manifest.regions.length ||
-    manifest.regions.length > 64 ||
+    manifest.regions.length > limits.regions ||
     !Number.isSafeInteger(manifest.width) ||
     manifest.width < 4 ||
-    manifest.width > 1024 ||
+    manifest.width > limits.edge ||
     !Number.isSafeInteger(manifest.height) ||
     manifest.height < 4 ||
-    manifest.height > 1024
+    manifest.height > limits.edge
   )
     atlasFailure('invalid atlas manifest dimensions/version.');
   const { manifestHash, ...payload } = manifest;

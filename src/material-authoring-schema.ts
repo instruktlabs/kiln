@@ -16,7 +16,12 @@ import {
   MAX_PROCEDURAL_V3_PALETTE,
   PROCEDURAL_TEXTURE_V3_COMPILER_ID,
 } from './procedural-texture-v3-contract';
-import { TEXTURE_ATLAS_COMPILER_ID, TEXTURE_ATLAS_LIMITS } from './texture-atlas-contract';
+import {
+  TEXTURE_ATLAS_COMPILER_IDS,
+  TEXTURE_ATLAS_LIMITS,
+  TEXTURE_ATLAS_LIMITS_V1_2,
+  TEXTURE_ATLAS_PACK_EDGES,
+} from './texture-atlas-contract';
 import {
   PORTABLE_MIN_FILTERS_V1,
   PORTABLE_MAG_FILTERS_V1,
@@ -230,21 +235,47 @@ export function makeMaterialAuthoringSchemas<S extends z.ZodType<CanonicalProced
         resourceSource,
       ]),
       crop: atlasRectangleSchema.optional(),
+      packed: z.literal(true).optional(),
     })
     .strict();
+  // Packed atlases (compiler v1.2) raise the edge and counts; the canonicalizer applies the
+  // exact per-version limit.
   const atlasBase = {
     schemaVersion: z.literal(1),
-    width: integer(4, TEXTURE_ATLAS_LIMITS.edge),
-    height: integer(4, TEXTURE_ATLAS_LIMITS.edge),
+    width: integer(4, TEXTURE_ATLAS_LIMITS_V1_2.edge),
+    height: integer(4, TEXTURE_ATLAS_LIMITS_V1_2.edge),
     usage,
     sampler: portableSamplerSchema,
   };
+  const packEdge = z.union(
+    TEXTURE_ATLAS_PACK_EDGES.map((edge) => z.literal(edge)) as [
+      z.ZodLiteral<1024>,
+      z.ZodLiteral<2048>,
+    ],
+  );
   const canonicalTextureAtlasSpecV1Schema = z
-    .object({ ...atlasBase, regions: z.array(region).min(1).max(TEXTURE_ATLAS_LIMITS.regions) })
+    .object({
+      ...atlasBase,
+      regions: z.array(region).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
+      pack: z
+        .object({ edge: packEdge, gutter: integer(0, 32), algorithm: z.literal('maxrects') })
+        .strict()
+        .optional(),
+    })
     .strict();
   const textureAtlasSpecV1Schema = z
     .object({
       ...atlasBase,
+      width: atlasBase.width.optional(),
+      height: atlasBase.height.optional(),
+      pack: z
+        .object({
+          edge: packEdge,
+          gutter: integer(0, 32).optional(),
+          algorithm: z.literal('maxrects').optional(),
+        })
+        .strict()
+        .optional(),
       sampler: portableSamplerSchema.optional(),
       regions: z
         .array(
@@ -257,10 +288,10 @@ export function makeMaterialAuthoringSchemas<S extends z.ZodType<CanonicalProced
                 resourceSource,
               ]),
             })
-            .partial({ gutter: true, edgeMode: true }),
+            .partial({ content: true, gutter: true, edgeMode: true }),
         )
         .min(1)
-        .max(TEXTURE_ATLAS_LIMITS.regions),
+        .max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
     })
     .strict();
   const verifiedPinnedMaterialMapDescriptorSchema = z
@@ -302,7 +333,7 @@ export function makeMaterialAuthoringSchemas<S extends z.ZodType<CanonicalProced
   const textureAtlasManifestV1Schema = z
     .object({
       version: z.literal('kiln.atlas-manifest.v1'),
-      compilerId: z.literal(TEXTURE_ATLAS_COMPILER_ID),
+      compilerId: z.enum(TEXTURE_ATLAS_COMPILER_IDS),
       width: atlasBase.width,
       height: atlasBase.height,
       usage,
@@ -312,7 +343,7 @@ export function makeMaterialAuthoringSchemas<S extends z.ZodType<CanonicalProced
       layoutHash: hash,
       decodedPixelHash: hash,
       atlasPixelHash: hash,
-      sources: z.array(sourceManifest).min(1).max(TEXTURE_ATLAS_LIMITS.sources),
+      sources: z.array(sourceManifest).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.sources),
       regions: z
         .array(
           z
@@ -326,7 +357,7 @@ export function makeMaterialAuthoringSchemas<S extends z.ZodType<CanonicalProced
             .strict(),
         )
         .min(1)
-        .max(TEXTURE_ATLAS_LIMITS.regions),
+        .max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
       manifestHash: hash,
     })
     .strict();

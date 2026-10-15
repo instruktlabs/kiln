@@ -2590,7 +2590,8 @@ define(
       'Creates an owned texture and immutable-by-copy source snapshots; host map capability is never exposed to authored code.',
     parameters: [
       'schemaVersion1, width/height 4..1024, explicit usage and 1..64 named regions from at most16 distinct sources.',
-      'Each region has name, content rectangle and source; gutter defaults2 and edgeMode defaults copy-edge. Source crops and content dimensions must match without resampling.',
+      'Optional pack { edge: 1024 | 2048, gutter?: 0..32 (default 2, the default region gutter), algorithm?: "maxrects" } selects compiler kiln.texture-atlas.v1.2: width/height default to edge (4..edge), 1..128 regions, at most 32 distinct sources, 4,194,304 output texels. Regions may then omit content and are placed deterministically (allocation area descending, then name; best short side fit; no rotation) around explicit rectangles. The canonical spec records the resolved content with packed: true, so a saved record re-validates without re-packing.',
+      'Each region has name, content rectangle (optional when packing) and source; gutter defaults2 and edgeMode defaults copy-edge. Source crops and content dimensions must match without resampling.',
       'Source is {kind:"procedural",spec:V3} or {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256},expected?}. Pins are host-selected immutable library revisions; no arbitrary acquisition I/O.',
       'Optional sampler specifies all four portable fields; default linear-mipmap-linear/linear/clamp-to-edge on both axes.',
     ],
@@ -2609,10 +2610,13 @@ define(
       'src/texture-atlas.ts',
     ],
     tags: ['texture', 'atlas', 'rgba', 'ownership'],
-    aliases: ['named texture sheet', 'foliage atlas'],
-    intents: ['compose reusable named pixel regions without a mesh'],
+    aliases: ['named texture sheet', 'foliage atlas', 'atlas packer', 'pack textures'],
+    intents: [
+      'compose reusable named pixel regions without a mesh',
+      'pack texture regions into one atlas automatically',
+    ],
     limitations: [
-      'No automatic packing, rotation or resampling. Gutters reduce filtering bleed but cannot isolate every downsampled mip level.',
+      'No rotation or resampling. Packing needs each region size before any load: a packed resource region needs a crop or expected width and height. Gutters reduce filtering bleed but cannot isolate every downsampled mip level.',
     ],
     related: [{ name: 'remapUVToAtlas', relation: 'companion' }],
   },

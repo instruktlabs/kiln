@@ -13,7 +13,7 @@ import type { CanonicalPortableMaterialSpecV3 } from './procedural-material-v3';
 import {
   canonicalizeTextureAtlasSpecV1,
   validateTextureAtlasManifestV1,
-  TEXTURE_ATLAS_COMPILER_ID,
+  TEXTURE_ATLAS_COMPILER_IDS,
   type CanonicalTextureAtlasSpecV1,
 } from './texture-atlas-contract';
 import type { TextureAtlasManifestV1 } from './texture-atlas-pixels';
@@ -585,7 +585,7 @@ const materialRecipeV2Schema = z.discriminatedUnion('kind', [
   z
     .object({
       kind: z.literal('atlas'),
-      compilerId: z.literal(TEXTURE_ATLAS_COMPILER_ID),
+      compilerId: z.enum(TEXTURE_ATLAS_COMPILER_IDS),
       spec: atlasSpecSchema,
       manifest: atlasManifestSchema,
       encoder: z.object({ name: z.literal('sharp'), version: text }).strict(),
@@ -594,6 +594,7 @@ const materialRecipeV2Schema = z.discriminatedUnion('kind', [
     .superRefine((recipe, context) => {
       try {
         validateTextureAtlasManifestV1(recipe.manifest, recipe.spec);
+        if (recipe.compilerId !== recipe.manifest.compilerId) throw new Error('compiler id');
       } catch {
         context.addIssue({ code: 'custom', message: 'Invalid stored atlas manifest' });
       }

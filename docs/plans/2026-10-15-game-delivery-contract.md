@@ -254,3 +254,17 @@ from this scope and why. The owner's game session reads this log to monitor.
   lint pass; `bun run test` 3695 pass, 2 skip, 21 fail = the 19 GNU-tar baseline failures
   plus the two stale-bundle checks (`dist/mcp-engine.mjs`, `dist/cli.mjs`), which the item 4
   gate rebuilds.
+- 2026-10-15 item 4 (solid diagnostics) done. Files: `src/geometry.ts` (`solid: { closed,
+  manifold, orientation, signedVolume }` from the existing edge analysis plus a direct signed
+  volume sum; `mixed` on any winding conflict or a zero volume), new `src/require-solid.ts`
+  (`requireSolid(part)` marks `userData.kilnRequireSolid`; `assertRequiredSolids` checks
+  every visible covered mesh before either converter runs and fails with `REQUIRE_SOLID`
+  naming the part and the failing facts), `src/render.ts`, `src/primitives.ts`,
+  `src/evaluator/authoring-diagnostic.ts` + `protocol.ts` (`REQUIRE_SOLID` closed advice),
+  Discovery (`requireSolid`; `geometryDiagnostics` documents `solid`), prompt-api snapshot.
+  Test: new `src/__tests__/solid-diagnostics.test.ts` (6, observed failing first). Gate after
+  `node scripts/build-runtime.mjs all` (exit 0): `bun run test:coverage` 3703 pass, 2 skip,
+  19 fail (only the 19 GNU-tar baseline failures; both bundle checks pass);
+  `bun scripts/check-coverage.mjs` passed, functions 95.46% (min 94.00%), lines 93.10% (min
+  92.10%); `bun run test:render-service` exit 0; `bun run check:skills` 6 conform, 2 copies
+  identical; typecheck and lint pass.

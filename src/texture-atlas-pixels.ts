@@ -20,8 +20,10 @@ import {
   canonicalizeTextureAtlasSpecV1,
   canonicalAtlasMetadataJsonV1,
   hashTextureAtlasSpecV1,
-  TEXTURE_ATLAS_COMPILER_ID,
   TEXTURE_ATLAS_LIMITS,
+  textureAtlasCompilerIdV1,
+  textureAtlasLimitsV1,
+  type TextureAtlasCompilerIdV1,
   type AtlasRectangleV1,
   type CanonicalTextureAtlasRegionV1,
   type CanonicalTextureAtlasSourceV1,
@@ -73,7 +75,7 @@ export interface TextureAtlasRegionManifestV1 {
 }
 export interface TextureAtlasManifestV1 {
   version: 'kiln.atlas-manifest.v1';
-  compilerId: typeof TEXTURE_ATLAS_COMPILER_ID;
+  compilerId: TextureAtlasCompilerIdV1;
   width: number;
   height: number;
   usage: CanonicalTextureAtlasSpecV1['usage'];
@@ -145,6 +147,7 @@ export function admitTextureAtlasSpecV1(
   options: TextureAtlasCompileOptionsV1 = {},
 ): TextureAtlasAdmissionV1 {
   const spec = canonicalizeTextureAtlasSpecV1(input),
+    limits = textureAtlasLimitsV1(spec),
     unique = new Map<string, PreparedSource>(),
     crops = new Map<string, AtlasRectangleV1>();
   const outputTexels = spec.width * spec.height;
@@ -214,17 +217,17 @@ export function admitTextureAtlasSpecV1(
   }
   budget.workUnits += (spec.regions.length * (spec.regions.length - 1)) / 2;
   budget.conservativePixelAllocationBytes += budget.dilationScratchBytes;
-  if (budget.sourceTexels > TEXTURE_ATLAS_LIMITS.sourceTexels)
+  if (budget.sourceTexels > limits.sourceTexels)
     atlasFailure(
       'full decoded source texel budget exceeded; a small crop does not reduce source decode cost.',
     );
-  if (budget.encodedBytes > TEXTURE_ATLAS_LIMITS.encodedBytes)
+  if (budget.encodedBytes > limits.encodedBytes)
     atlasFailure('aggregate encoded source byte budget exceeded.');
-  if (budget.workUnits > TEXTURE_ATLAS_LIMITS.work)
-    atlasFailure(`aggregate work budget ${budget.workUnits} exceeds ${TEXTURE_ATLAS_LIMITS.work}.`);
-  if (budget.conservativePixelAllocationBytes > TEXTURE_ATLAS_LIMITS.allocatedBytes)
+  if (budget.workUnits > limits.work)
+    atlasFailure(`aggregate work budget ${budget.workUnits} exceeds ${limits.work}.`);
+  if (budget.conservativePixelAllocationBytes > limits.allocatedBytes)
     atlasFailure(
-      `aggregate pixel allocation budget ${budget.conservativePixelAllocationBytes} exceeds ${TEXTURE_ATLAS_LIMITS.allocatedBytes}.`,
+      `aggregate pixel allocation budget ${budget.conservativePixelAllocationBytes} exceeds ${limits.allocatedBytes}.`,
     );
   return {
     spec,
@@ -424,7 +427,7 @@ export async function compileTextureAtlasSpecV1(
   const atlasPixelHash = await pixelDigest(tagged);
   const payload = {
     version: 'kiln.atlas-manifest.v1' as const,
-    compilerId: TEXTURE_ATLAS_COMPILER_ID,
+    compilerId: textureAtlasCompilerIdV1(spec),
     width: spec.width,
     height: spec.height,
     usage: spec.usage,

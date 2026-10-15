@@ -44,7 +44,6 @@ import {
   PROCEDURAL_TEXTURE_V3_COMPILER_ID,
 } from './procedural-texture-v3-contract';
 import { admitTextureAtlasSpecV1, compileTextureAtlasSpecV1 } from './texture-atlas-pixels';
-import { TEXTURE_ATLAS_COMPILER_ID } from './texture-atlas-contract';
 import type {
   MaterialMapPinV1,
   PinnedMaterialMapPortV1,
@@ -1243,7 +1242,7 @@ export async function createMaterialRecordV2(
       );
       recipe = {
         kind: 'atlas',
-        compilerId: TEXTURE_ATLAS_COMPILER_ID,
+        compilerId: compiled.manifest.compilerId,
         spec: compiled.spec,
         manifest: compiled.manifest,
         encoder,
