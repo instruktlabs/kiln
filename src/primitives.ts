@@ -24,6 +24,7 @@ import { describeAssembly, replicateAssembly } from './assembly';
 import { defineLod } from './lod';
 export { defineLod } from './lod';
 import { markOpenShell } from './open-shell';
+import { anchor, colliderBox, colliderCapsule, colliderHull, defineModule, port } from './delivery';
 import { useCubicSpline } from './animation-cubic';
 import {
   CUBIC_INTERPOLATIONS,
@@ -2260,6 +2261,12 @@ export function buildSandboxGlobals(
     createPart: wrap('createPart', createPart),
     defineLod: wrap('defineLod', defineLod),
     markOpenShell: wrap('markOpenShell', markOpenShell),
+    colliderBox: wrap('colliderBox', colliderBox),
+    colliderCapsule: wrap('colliderCapsule', colliderCapsule),
+    colliderHull: wrap('colliderHull', colliderHull),
+    anchor: wrap('anchor', anchor),
+    defineModule: wrap('defineModule', defineModule),
+    port: wrap('port', port),
     capsuleGeo: wrapGeo('capsuleGeo', capsuleGeo),
     capsuleXGeo: wrapGeo('capsuleXGeo', capsuleXGeo),
     capsuleYGeo: wrapGeo('capsuleYGeo', capsuleYGeo),

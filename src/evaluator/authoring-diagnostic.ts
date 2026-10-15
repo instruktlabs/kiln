@@ -34,6 +34,7 @@ export type AuthoringDiagnostic =
   | 'PROGRAM_RANGE_ERROR'
   | 'LOD_SET'
   | 'OPEN_SHELL'
+  | 'DELIVERY_CONTRACT'
   | 'BONE_CHAIN_ARGUMENT'
   | 'SKIN_BINDING_ARGUMENT'
   | 'EXPORT_MATERIAL_SIDE_UNSUPPORTED';
@@ -73,6 +74,8 @@ export const LOD_SET_ADVICE =
   'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].';
 export const OPEN_SHELL_ADVICE =
   'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].';
+export const DELIVERY_CONTRACT_ADVICE =
+  'Delivery helpers: colliderBox(size, { id }), colliderCapsule(radius, height, { id }) with height the total height of at least 2 * radius, colliderHull(mesh, { id }), anchor(kind, id), port(id) and defineModule(root, { footprint: [w, d], height, snapAxis: "x"|"y"|"z", origin: "corner"|"center" }). Ids and kinds are one segment of letters, digits, "_" or "-" with no dots; sizes are positive metres. The engine owns the kilnKit userData key; set it only through defineModule. Call kiln_discover with ids ["colliderBox", "anchor", "defineModule"].';
 /**
  * The advice behind the generic rejection, when no closed cause crossed the boundary.
  * Engine-owned text only: it states the contract and names the two tools that answer
@@ -97,6 +100,7 @@ export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | unde
   if (diagnostic === 'UNINITIALIZED_BINDING') return UNINITIALIZED_BINDING_ADVICE;
   if (diagnostic === 'LOD_SET') return LOD_SET_ADVICE;
   if (diagnostic === 'OPEN_SHELL') return OPEN_SHELL_ADVICE;
+  if (diagnostic === 'DELIVERY_CONTRACT') return DELIVERY_CONTRACT_ADVICE;
   if (diagnostic === 'BUILD_RESULT') return BUILD_RESULT_ADVICE;
   if (diagnostic === 'MATERIAL_RECIPE_OVERRIDE') return MATERIAL_RECIPE_OVERRIDE_ADVICE;
   if (diagnostic === 'PROGRAM_TYPE_ERROR') return PROGRAM_TYPE_ERROR_ADVICE;

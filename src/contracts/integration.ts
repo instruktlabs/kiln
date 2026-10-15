@@ -28,6 +28,9 @@ export interface LevelOfDetailLevelV1 {
   path: string;
   /** Placed triangles in the level's subtree. */
   triangles: number;
+  /** Present on the last level when `defineLod` declared it a card or billboard tier
+   *  (`lod.impostor` role on that node). */
+  impostor?: true;
 }
 
 /** One node `MSFT_lod` chain: LOD0 in the scene and the lower levels it lists. */
@@ -54,6 +57,76 @@ export interface ReviewedLevelOfDetailChainV1 extends LevelOfDetailChainV1 {
   /** One entry per view, in view order: 0 when the view drew LOD0, otherwise the lower level
    *  a shot subject named. */
   drawn: number[];
+}
+
+/** A node transform relative to the asset root (the default scene), decomposed as glTF TRS. */
+export interface DeliveryTransformV1 {
+  translation: [number, number, number];
+  /** Unit quaternion [x, y, z, w]. A consumer that collides with yaw only reads yaw from it. */
+  rotation: [number, number, number, number];
+  scale: [number, number, number];
+}
+
+/** The resolved shape of a collider proxy, in metres, measured from its transform. */
+export type DeliveryColliderShapeV1 =
+  | { kind: 'box'; size: [number, number, number] }
+  /** `height` is the total end-to-end height along the node's local +Y, caps included. */
+  | { kind: 'capsule'; radius: number; height: number }
+  | { kind: 'hull'; vertices: number };
+
+/** A hidden collider proxy node (`collider.<shape>.<id>` role). */
+export interface DeliveryColliderV1 {
+  role: string;
+  id: string;
+  /** Inspection path, as `kiln_inspect` `listParts` lists it. */
+  path: string;
+  name: string;
+  transform: DeliveryTransformV1;
+  shape: DeliveryColliderShapeV1;
+}
+
+/** A named point (`anchor.<kind>.<id>` role). */
+export interface DeliveryAnchorV1 {
+  role: string;
+  kind: string;
+  id: string;
+  path: string;
+  name: string;
+  transform: DeliveryTransformV1;
+}
+
+/** `kilnKit` node extras on a `kit.module` root. Footprint is width along X, depth along Z. */
+export interface KitModuleSpecV1 {
+  footprint: [number, number];
+  height: number;
+  snapAxis: 'x' | 'y' | 'z';
+  origin: 'corner' | 'center';
+}
+
+/** The kit module this GLB delivers (`kit.module` role). */
+export interface DeliveryKitModuleV1 extends KitModuleSpecV1 {
+  role: string;
+  path: string;
+  name: string;
+  transform: DeliveryTransformV1;
+}
+
+/** A snap point (`kit.port.<id>` role). */
+export interface DeliveryPortV1 {
+  role: string;
+  id: string;
+  path: string;
+  name: string;
+  /** Inspection path of the kit module the port belongs to, when it is under one. */
+  module?: string;
+  transform: DeliveryTransformV1;
+}
+
+/** An advisory delivery finding. Never QA acceptance. */
+export interface DeliveryDiagnosticV1 {
+  code: string;
+  path: string;
+  message: string;
 }
 
 export interface IntegrationManifestV1 {
@@ -89,6 +162,16 @@ export interface IntegrationManifestV1 {
   /** Outermost hidden nodes in scene order, when the GLB has any. The bounds and render
    *  metrics above count what draws; these triangles are not in them. */
   hiddenNodes?: HiddenNodeV1[];
+  /** Collider proxies in scene order, when the GLB has any (additive in analyzer v1). */
+  colliders?: DeliveryColliderV1[];
+  /** Anchors in scene order, when the GLB has any. */
+  anchors?: DeliveryAnchorV1[];
+  /** The first kit module, when the GLB has one. */
+  kit?: DeliveryKitModuleV1;
+  /** Kit ports in scene order, when the GLB has any. */
+  ports?: DeliveryPortV1[];
+  /** Advisory delivery findings (colliders, anchors, ports), when there are any. */
+  deliveryDiagnostics?: DeliveryDiagnosticV1[];
   structuralQa: {
     hasDefaultScene: boolean;
     finiteBounds: boolean;

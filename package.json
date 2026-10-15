@@ -115,6 +115,10 @@
       "types": "./lib/kit.d.ts",
       "import": "./lib/kit.js"
     },
+    "./delivery": {
+      "types": "./lib/delivery.d.ts",
+      "import": "./lib/delivery.js"
+    },
     "./palette": {
       "types": "./lib/palette.d.ts",
       "import": "./lib/palette.js"

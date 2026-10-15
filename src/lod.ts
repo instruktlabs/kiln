@@ -11,6 +11,8 @@
  * guessed: a default could cull an asset in a consumer at a distance nobody chose.
  */
 import type * as THREE from 'three';
+import { KILN_SEMANTIC_ROLES } from './contracts/semantic';
+import { addSemanticRoles } from './delivery';
 import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
 
 /** An LOD level token such as `LOD0`, `lod1` or `Tree_LOD2`, delimited by the name's ends or non-alphanumerics. */
@@ -22,10 +24,14 @@ export const KILN_LOD_KEY = 'kilnLodV1';
 export interface LodDeclarationV1 {
   /** Minimum screen coverage (0..1) at which each level draws, LOD0 first. */
   screenCoverage: number[];
+  /** The last level is a card or billboard tier (role `lod.impostor` on that node). */
+  impostor?: true;
 }
 
 export interface DefineLodOptions {
   screenCoverage: number[];
+  /** Declare the last level a card or billboard tier: it gets the `lod.impostor` role. */
+  impostor?: boolean;
 }
 
 export interface LodSet {
@@ -118,8 +124,15 @@ export function defineLod<T extends THREE.Object3D>(levels: T[], options: Define
   const coverage = (options as Partial<DefineLodOptions> | undefined)?.screenCoverage;
   const problem = coverageProblem(coverage, levels.length);
   if (problem) fail(`defineLod: ${problem}; got ${format(coverage)}. For example ${EXAMPLE}.`);
-  const declaration: LodDeclarationV1 = { screenCoverage: [...(coverage as number[])] };
+  const impostor = (options as Partial<DefineLodOptions> | undefined)?.impostor;
+  if (impostor !== undefined && typeof impostor !== 'boolean')
+    fail(`defineLod: impostor must be true or false; got ${format(impostor)}.`);
+  const declaration: LodDeclarationV1 = {
+    screenCoverage: [...(coverage as number[])],
+    ...(impostor ? { impostor: true as const } : {}),
+  };
   levels[0]!.userData[KILN_LOD_KEY] = declaration;
+  if (impostor) addSemanticRoles(levels[levels.length - 1]!, [KILN_SEMANTIC_ROLES.lodImpostor]);
   return levels;
 }
 

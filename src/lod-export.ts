@@ -12,6 +12,7 @@
 import { type Document, type Node as GltfNode, PropertyType } from '@gltf-transform/core';
 import type * as THREE from 'three';
 import type { LevelOfDetailChainV1 } from './contracts/integration';
+import { KILN_SEMANTIC_ROLES, readSemanticMetadataV1FromExtras } from './contracts/semantic';
 import { type Lod, MSFT_LOD, MSFTLod } from './gltf-io';
 import type { LodSet } from './lod';
 import { drawnNodeTriangles } from './metrics';
@@ -102,6 +103,12 @@ export function listLodChainNodes(doc: Document): LodChainNodes[] {
   return chains;
 }
 
+/** Whether a level carries the `lod.impostor` role that `defineLod({ impostor: true })` stamps. */
+function isImpostorLevel(node: GltfNode): boolean {
+  const roles = readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [];
+  return roles.includes(KILN_SEMANTIC_ROLES.lodImpostor);
+}
+
 /** Each chain in {@link listLodChainNodes} order with its thresholds and per-level triangles. */
 export function summarizeLodChains(doc: Document): LevelOfDetailChainV1[] {
   return listLodChainNodes(doc).map(({ levels, paths }) => {
@@ -114,6 +121,7 @@ export function summarizeLodChains(doc: Document): LevelOfDetailChainV1[] {
         name: level.getName(),
         path: paths[number]!,
         triangles: drawnNodeTriangles(level),
+        ...(number > 0 && isImpostorLevel(level) ? { impostor: true as const } : {}),
       })),
     };
   });

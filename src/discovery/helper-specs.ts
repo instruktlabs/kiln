@@ -175,7 +175,8 @@ const PRIMITIVES: HelperSpec[] = [
   },
   {
     name: 'defineLod',
-    signature: 'defineLod(levels: Object3D[], opts: { screenCoverage: number[] })',
+    signature:
+      'defineLod(levels: Object3D[], opts: { screenCoverage: number[], impostor?: boolean })',
     returns: 'Object3D[] (levels, unchanged)',
     category: 'structure',
     description:
@@ -183,7 +184,7 @@ const PRIMITIVES: HelperSpec[] = [
     example:
       "const tiers = ['Body_LOD0', 'Body_LOD1', 'Body_LOD2'].map((name) => { const g = new THREE.Group(); g.name = name; root.add(g); return g; });\ndefineLod(tiers, { screenCoverage: [0.25, 0.06, 0.01] });",
     promptNotes:
-      'Only when the brief asks for LOD tiers; otherwise build one tier. Tiers are sibling nodes named with one stem and consecutive LOD<n> tokens. screenCoverage has one value per level, strictly decreasing; below the last the asset is culled, and a last value of 0 never culls.',
+      'Only when the brief asks for LOD tiers; otherwise build one tier. Tiers are sibling nodes named with one stem and consecutive LOD<n> tokens. screenCoverage has one value per level, strictly decreasing; below the last the asset is culled, and a last value of 0 never culls. impostor: true marks the last level a card or billboard tier.',
   },
   {
     name: 'markOpenShell',
@@ -196,6 +197,71 @@ const PRIMITIVES: HelperSpec[] = [
       "const rail = createPart('Rail', new THREE.CylinderGeometry(0.2, 0.2, 2, 16, 1, true), steel, { parent: root });\nmarkOpenShell(rail, 'Tube closed by the end plates');",
     promptNotes:
       'Only for shells open by design; close a part meant to be solid instead. A mark on a group covers its meshes. Overlap with a marked part stays unmeasured, not clear.',
+  },
+  {
+    name: 'colliderBox',
+    signature:
+      'colliderBox(size: [w, h, d] | number, opts: { id, parent?, position?, rotation?: [xDeg, yDeg, zDeg] })',
+    returns: 'THREE.Mesh (hidden proxy named Collider_box_<id>)',
+    category: 'structure',
+    description:
+      'Adds a hidden oriented-box collider proxy with role collider.box.<id>: a unit box whose node scale is the size, so a consumer reads centre, orientation and size from the transform alone.',
+    example: "colliderBox([2, 3, 0.4], { id: 'frame', parent: root, position: [0, 1.5, 0] });",
+    promptNotes:
+      'Only when the brief asks for colliders. The proxy never draws; it must wrap or cross the surface it stands for and stay inside the drawn bounds. id is one segment without dots.',
+  },
+  {
+    name: 'colliderCapsule',
+    signature:
+      'colliderCapsule(radius: number, height: number, opts: { id, parent?, position?, rotation? })',
+    returns: 'THREE.Mesh (hidden proxy named Collider_capsule_<id>)',
+    category: 'structure',
+    description:
+      'Adds a hidden capsule collider proxy along local +Y with role collider.capsule.<id>. height is the TOTAL end-to-end height including both caps (at least 2 * radius); the node scale is [2r, height, 2r].',
+    example: "colliderCapsule(0.15, 1.8, { id: 'post', parent: root, position: [0.8, 0.9, 0] });",
+    promptNotes:
+      'height here is total height, unlike capsuleGeo whose height is the straight middle length.',
+  },
+  {
+    name: 'colliderHull',
+    signature: 'colliderHull(mesh: Mesh, opts: { id, parent? })',
+    returns: 'THREE.Mesh (hidden convex hull named Collider_hull_<id>)',
+    category: 'structure',
+    description:
+      "Adds a hidden convex-hull collider proxy of a mesh's vertices beside it, with the mesh's local transform and role collider.hull.<id>. The input mesh is unchanged.",
+    example:
+      "const frame = createPart('Frame', boxGeo(2, 3, 0.4), steel, { parent: root });\ncolliderHull(frame, { id: 'frame' });",
+  },
+  {
+    name: 'anchor',
+    signature: 'anchor(kind: string, id: string, opts?: { parent?, position?, rotation? })',
+    returns: 'THREE.Object3D (hidden empty leaf named Anchor_<kind>_<id>)',
+    category: 'structure',
+    description:
+      'Adds a named point with a transform and role anchor.<kind>.<id>: a door, vault plate, beacon, hardpoint, light or spawn point the consumer attaches behaviour to.',
+    example: "anchor('door', 'main', { parent: root, position: [0, 1, 0.25] });",
+    promptNotes: 'An anchor is a leaf: never add parts under it. kind and id are single segments.',
+  },
+  {
+    name: 'defineModule',
+    signature:
+      "defineModule(root: Object3D, spec: { footprint: [w, d], height, snapAxis: 'x'|'y'|'z', origin: 'corner'|'center' })",
+    returns: 'Object3D (root, unchanged)',
+    category: 'structure',
+    description:
+      'Marks root as one modular kit piece (role kit.module) and records its footprint (width X, depth Z), height and snap axis as kilnKit node extras.',
+    example:
+      "defineModule(root, { footprint: [4, 4], height: 3, snapAxis: 'x', origin: 'center' });",
+    promptNotes: 'Only for modular kit pieces. Place each port inside the footprint.',
+  },
+  {
+    name: 'port',
+    signature: 'port(id: string, opts?: { parent?, position?, rotation? })',
+    returns: 'THREE.Object3D (empty node named Port_<id>)',
+    category: 'structure',
+    description:
+      'Adds a kit snap point with role kit.port.<id> under a defineModule root; its transform is the snap frame.',
+    example: "port('west', { parent: root, position: [-2, 0, 0], rotation: [0, 180, 0] });",
   },
   {
     name: 'beamBetween',

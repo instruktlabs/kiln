@@ -62,7 +62,34 @@ export const KILN_SEMANTIC_ROLES = Object.freeze({
   roof: 'roof',
   /** Long-form spelling of {@link KILN_SEMANTIC_ROLES.roof}, accepted on read. */
   architectureRoof: 'architecture.roof',
+
+  // -- game delivery (role vocabulary revision 2, additive) ---------------------
+  /** Any collider proxy; full role is `collider.<shape>.<id>`. Proxies are hidden nodes. */
+  collider: 'collider',
+  /** Oriented box: a unit box (-0.5..0.5) whose node scale is the box size. */
+  colliderBox: 'collider.box',
+  /** Capsule along local +Y: a unit capsule (radius 0.5, height 1) whose node scale is
+   *  [2 * radius, total height, 2 * radius]. */
+  colliderCapsule: 'collider.capsule',
+  /** Convex hull of the proxy node's own mesh vertices. */
+  colliderHull: 'collider.hull',
+  /** A named point with a transform; full role is `anchor.<kind>.<id>`. An empty leaf node. */
+  anchor: 'anchor',
+  /** The root of one modular kit piece; carries the `kilnKit` extras. */
+  kitModule: 'kit.module',
+  /** A snap point under a kit module; full role is `kit.port.<id>`. */
+  kitPort: 'kit.port',
+  /** The last level of a `defineLod` chain when it is a card or billboard tier. */
+  lodImpostor: 'lod.impostor',
 } as const);
+
+/**
+ * Revision of the {@link KILN_SEMANTIC_ROLES} vocabulary. The payload schema stays
+ * {@link KILN_SEMANTIC_SCHEMA_VERSION} 1; revisions only add roles, so every older
+ * asset stays valid. Revision 2 added the game-delivery roles (colliders, anchors,
+ * kit modules and ports, and the impostor LOD tier).
+ */
+export const KILN_SEMANTIC_ROLES_REVISION = 2 as const;
 
 export type KilnSemanticRoleKey = keyof typeof KILN_SEMANTIC_ROLES;
 

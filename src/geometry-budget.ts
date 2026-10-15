@@ -15,6 +15,8 @@ export const GEOMETRY_ALLOCATION_LIMITS = Object.freeze({
   skinBones: 1024,
   skinVertices: 262_144,
   skinAttributeBytes: 128 * 1024 * 1024,
+  // Delivery contract: colliderHull reads at most this many proxy vertices.
+  colliderHullVertices: 65_536,
 });
 export function assertDimension(name: string, value: number, allowZero = false): void {
   if (

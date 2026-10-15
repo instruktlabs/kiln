@@ -789,6 +789,7 @@ define(
     parameters: [
       'levels: two or more sibling tier nodes named with one stem and tokens LOD0, LOD1, ... in order.',
       'screenCoverage: one value per level, each from 0 to 1, strictly decreasing, LOD0 first; the last may be 0, which never culls.',
+      'impostor: optional boolean; true gives the last level the lod.impostor role (a card or billboard tier) and the manifest level record impostor: true.',
     ],
     semantics: [
       'Level i draws while the asset covers at least screenCoverage[i] of the screen; below the last value it is culled.',
@@ -810,6 +811,120 @@ define(
       'Sets cannot nest inside another tier; material LOD chains are not created.',
     ],
     related: [{ name: 'createPart', relation: 'companion' }],
+  },
+);
+const deliveryMetadata = {
+  references: ['src/delivery.ts', 'src/delivery-inspect.ts', 'docs/delivery-contract.md'],
+};
+const deliveryPlacement =
+  'Placement options: parent, position [x, y, z] in metres and rotation [x, y, z] in degrees (XYZ), as createPart.';
+const deliveryExport = [
+  'Exports as plain glTF: the role in kilnSemantic node extras; proxies and anchors carry KHR_node_visibility visible:false, so loaders that ignore roles draw only the asset.',
+  'The integration manifest lists each record with its inspection path and transform relative to the asset root; advisory DELIVERY_* findings are build warnings, never QA acceptance.',
+];
+define(
+  ['colliderBox', 'colliderCapsule', 'colliderHull'],
+  {
+    ...nodeFacts,
+    origin: 'The proxy node transform is the collider frame relative to its parent.',
+    ownership: 'Creates one hidden proxy mesh with its own unit geometry and proxy material.',
+    coordinates:
+      'Parent-local placement; the manifest reports the transform relative to the asset root.',
+    parameters: [
+      'opts.id: one role segment of letters, digits, _ or -, without dots.',
+      'colliderBox size: three positive metres or one number for a cube; the node scale is the size of a unit box (-0.5..0.5).',
+      'colliderCapsule radius and height: positive metres, height the total end-to-end height along local +Y and at least 2 * radius; the node scale is [2r, height, 2r] over a unit capsule (radius 0.5, height 1).',
+      'colliderHull mesh: a mesh with xyz positions, at most 65536 vertices; the hull takes its local transform under its parent unless parent is given.',
+      deliveryPlacement,
+    ],
+    semantics: [
+      ...deliveryExport,
+      'Diagnostics: a proxy that draws, reaches outside the drawn bounds, or (box and capsule) touches no drawn triangle is reported; a box or capsule wholly inside a closed solid touches no triangle and is reported too.',
+      'Invalid arguments are a DELIVERY_CONTRACT build error.',
+    ],
+    cost: 'One hidden mesh: 12 triangles for a box, about 200 for a capsule, the hull face count for a hull. Hidden triangles are not in the headline.',
+  },
+  {
+    ...deliveryMetadata,
+    tags: ['delivery', 'collision', 'export', 'hierarchy'],
+    aliases: ['collider', 'collision proxy', 'hitbox', 'physics proxy', 'convex hull collider'],
+    intents: ['give the asset collision proxies a game can read'],
+    summary:
+      'Hidden collider proxies (box, capsule, convex hull) with roles collider.<shape>.<id>; the consumer reads the shape from the node transform and its own collision code.',
+    limitations: [
+      'Kiln adds no physics, collision response or mass; it delivers shapes and transforms.',
+      'Box and capsule overlap is advisory and measured against drawn triangles only.',
+    ],
+  },
+);
+define(
+  ['anchor', 'port'],
+  {
+    ...nodeFacts,
+    origin: 'The node transform is the anchor or snap frame relative to its parent.',
+    ownership: 'Creates one empty node; anchors are hidden, ports are not.',
+    coordinates:
+      'Parent-local placement; the manifest reports the transform relative to the asset root.',
+    parameters: [
+      'anchor kind and id, port id: one role segment each of letters, digits, _ or -, without dots.',
+      deliveryPlacement,
+    ],
+    semantics: [
+      ...deliveryExport,
+      'anchor role anchor.<kind>.<id>, node Anchor_<kind>_<id>; an anchor with children is reported as DELIVERY_ANCHOR_NOT_LEAF.',
+      'port role kit.port.<id>, node Port_<id>; a port outside its kit module footprint, or not under one, is reported.',
+      'Invalid arguments are a DELIVERY_CONTRACT build error.',
+    ],
+    cost: 'One empty node.',
+  },
+  {
+    ...deliveryMetadata,
+    tags: ['delivery', 'hierarchy', 'export', 'kit'],
+    aliases: [
+      'attachment point',
+      'hardpoint',
+      'spawn point',
+      'door anchor',
+      'snap point',
+      'kit port',
+    ],
+    intents: ['mark named points a game attaches behaviour or kit pieces to'],
+    summary:
+      'Empty named nodes with delivery roles: anchors (doors, plates, beacons, hardpoints, lights, spawns) and kit ports (snap points under a kit module).',
+    limitations: [
+      'No snap solver: ports are delivered as frames, and composition stays in the consumer.',
+    ],
+    related: [{ name: 'defineModule', relation: 'companion' }],
+  },
+);
+define(
+  'defineModule',
+  {
+    ...nodeFacts,
+    units: 'footprint and height in metres; footprint is [width along X, depth along Z].',
+    origin:
+      'corner: footprint spans 0..w and 0..d; center: -w/2..w/2 and -d/2..d/2; height spans 0..height along Y.',
+    ownership: 'Writes the role kit.module and validated kilnKit extras on root; creates no nodes.',
+    coordinates: 'Module-local footprint.',
+    parameters: [
+      "spec: { footprint: [w, d] positive, height positive, snapAxis 'x' | 'y' | 'z', origin 'corner' | 'center' } and no other fields.",
+    ],
+    semantics: [
+      'Exports kilnKit: { schemaVersion: 1, footprint, height, snapAxis, origin } as root node extras, and the role in kilnSemantic.',
+      'The integration manifest kit field lists the first module; a second is reported as DELIVERY_KIT_MULTIPLE.',
+      'The engine owns the kilnKit key; a value defineModule did not write is a DELIVERY_CONTRACT build error.',
+    ],
+    cost: 'Metadata on one node.',
+  },
+  {
+    ...deliveryMetadata,
+    tags: ['delivery', 'kit', 'modular', 'export'],
+    aliases: ['modular piece', 'kit module', 'tile set piece', 'snap module'],
+    intents: ['deliver a modular kit piece with its footprint and ports'],
+    summary:
+      'Marks the root of one modular kit piece and records its footprint, height and snap axis.',
+    limitations: ['No snap solver or cross-module validation.'],
+    related: [{ name: 'port', relation: 'companion' }],
   },
 );
 define(

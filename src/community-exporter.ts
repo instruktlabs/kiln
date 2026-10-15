@@ -3,6 +3,7 @@ import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { GLB_BUFFER, type Document } from '@gltf-transform/core';
 import { createGltfIO } from './gltf-io';
 import { openShellExtras } from './open-shell';
+import { kitExtras } from './delivery';
 import { rigExtrasForExport } from './rig-export';
 import type { AuthorExtras } from './user-data-extras';
 import { assertPortableMaterialSides } from './material-export';
@@ -163,6 +164,7 @@ export async function communitySceneDocument(
       authorExtras?.node(source),
       rigExtrasForExport(source),
       openShellExtras(source),
+      kitExtras(source),
     );
     const semantic = source.userData[KILN_SEMANTIC_EXTRAS_KEY];
     if (semantic !== undefined) {

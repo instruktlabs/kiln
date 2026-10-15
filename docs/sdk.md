@@ -23,7 +23,7 @@ const result = await renderGLB(code);
 
 The complete authoring and host APIs remain available through documented subpaths.
 The original 55 export paths are retained; version 1.1 added four
-host entrypoints below. The root exposes rendering, validation,
+host entrypoints below, and the game delivery contract adds `delivery`. The root exposes rendering, validation,
 Discovery and engine identity; it does not re-export every name from every module.
 CommonJS is not part of this release's contract.
 
@@ -36,7 +36,7 @@ Use the existing material payload and asset-bundle encoders for portable deliver
 | Area | Subpaths |
 | --- | --- |
 | Root library | `@instruktlabs/kiln` |
-| Authoring | `primitives`, `geometry`, `deform`, `sweep`, `architecture`, `assembly`, `character`, `vehicle`, `palette` |
+| Authoring | `primitives`, `geometry`, `deform`, `sweep`, `architecture`, `assembly`, `character`, `vehicle`, `palette`, `delivery` |
 | Materials | `material-library`, `material-library/node`, `material-presets`, `material-recipes`, `material-resources`, `material-recipe-runtime`, `material-recipe-prompt`, `material-metrics`, `texture-resolver` |
 | Rendering and inspection | `render`, `views`, `views/port`, `validation`, `metrics`, `inspect`, `qa`, `asset-export`, `kit` |
 | Host contracts | `tools`, `tools/input`, `mcp`, `evaluator`, `discovery`, `discovery/portable`, `requirements`, `requirements/migration`, `contracts`, `prompt-api`, `profile` |
@@ -53,7 +53,7 @@ entrypoint list. Files inside `lib/`, including declaration dependencies under
 
 ## Stability in 1.x
 
-The table classifies all 59 public entrypoints. The root and every listed subpath
+The table classifies all 60 public entrypoints. The root and every listed subpath
 except `implicit` are stable entrypoints for v1: their declared public signatures,
 record shapes and documented behavior receive normal semantic-versioning
 compatibility. Optional dependencies do not make the two agent APIs experimental.

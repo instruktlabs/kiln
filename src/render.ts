@@ -48,6 +48,8 @@ import {
   type IndexBufferReceipt,
 } from './index-policy';
 import { openShellExtras } from './open-shell';
+import { kitExtras } from './delivery';
+import { inspectDelivery } from './delivery-inspect';
 import { rigExtrasForExport } from './rig-export';
 import { type AuthorExtras, collectAuthorExtras } from './user-data-extras';
 import {
@@ -252,6 +254,7 @@ export async function inspectGlbIntegration(
   const minY = minTuple[1];
   const levelsOfDetail = summarizeLodChains(doc);
   const hiddenNodes = summarizeHiddenNodes(doc);
+  const delivery = inspectDelivery(doc);
 
   return {
     schemaVersion: 'kiln.integration-manifest.v1',
@@ -291,6 +294,11 @@ export async function inspectGlbIntegration(
     },
     ...(levelsOfDetail.length ? { levelsOfDetail } : {}),
     ...(hiddenNodes.length ? { hiddenNodes } : {}),
+    ...(delivery.colliders.length ? { colliders: delivery.colliders } : {}),
+    ...(delivery.anchors.length ? { anchors: delivery.anchors } : {}),
+    ...(delivery.kit ? { kit: delivery.kit } : {}),
+    ...(delivery.ports.length ? { ports: delivery.ports } : {}),
+    ...(delivery.diagnostics.length ? { deliveryDiagnostics: delivery.diagnostics } : {}),
     structuralQa: {
       hasDefaultScene: explicitDefault !== null,
       finiteBounds,
@@ -818,6 +826,7 @@ function bridgeNode(
     ...authorExtras?.node(threeObj),
     ...rigExtrasForExport(threeObj),
     ...openShellExtras(threeObj),
+    ...kitExtras(threeObj),
   };
   let semanticForExport = semanticValue;
   if ((threeObj as THREE.Object3D & { isSprite?: boolean }).isSprite) {
@@ -1877,6 +1886,9 @@ export async function renderSceneToGLB(
     validation: gltfValidation,
   });
   if (!integrationManifest) throw new Error('renderSceneToGLB: final GLB has no measurable scene');
+  // Delivery findings are advisory: each is a build warning, never a QA disposition.
+  for (const finding of integrationManifest.deliveryDiagnostics ?? [])
+    warnings.push(`${finding.code} ${finding.path}: ${finding.message}`);
 
   const diagnosticViews: CapturedDiagnosticV1[] = [];
   const rig = requirements.requirements.requirements.rig;
