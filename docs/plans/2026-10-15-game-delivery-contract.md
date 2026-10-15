@@ -328,3 +328,48 @@ from this scope and why. The owner's game session reads this log to monitor.
   probe this small grows in total size because the extension JSON outweighs the saved
   geometry; the test asserts the binary chunk shrinks; (f) MCP `kiln_export` is unchanged
   (schemas are prompt-cached), so the three target is CLI and library only.
+- 2026-10-15 item 7 (small items) done. Files: `src/vegetation-prompt.ts` (`RECIPE_CACTUS_V1`:
+  ribbed star-profile `extrudeProfile` trunk, `pipeAlongPath` elbowed arms, spine cards on
+  rib crests, explicit `defineLod` tiers with an `impostor` card last; the shared closing
+  line now names `defineLod` as the general LOD helper), `src/contracts/asset.ts` (subtype
+  `cactus`; "cactus", "saguaro", "cholla", "opuntia" infer it) + `asset.test.ts`,
+  `src/qa/vegetation.ts` (observe-only cactus growth band), new `src/palette-check.ts`
+  (`definePalette(colors, { threshold? })`, CIE76 delta E in CIELAB from linear base colour
+  factors, scene extras `kilnPaletteV1`, manifest `palette`, `PALETTE_OFF` warnings),
+  `src/contracts/integration.ts`, `src/render.ts`, `src/primitives.ts`, `src/cli.ts`
+  (receipt `palette`, log line), Discovery (`definePalette`), prompt-api snapshot,
+  `skills/kiln-author-asset/references/geometry-recipes.md` (game delivery section and the
+  cactus recipe), `docs/geometry.md` (solid, bakes, budgets), `docs/export-profiles.md`
+  (three target), `docs/procedural-surfaces-v3.md` (packer), new `docs/delivery-contract.md`.
+  `bun run docs:tools` and `bun run mcp:manifest` produced no diff (tool schemas unchanged).
+  Test: new `src/__tests__/delivery-palette.test.ts` (3, observed failing first). Gates:
+  typecheck and lint pass; `bun run check:skills` 6 conform, 2 copies identical; `bun run
+  test` 3715 pass, 2 skip, 21 fail = the 19 GNU-tar baseline failures plus the two
+  stale-bundle checks. Deviations: (a) the palette module is `src/palette-check.ts` because
+  `src/palette.ts` already holds the render palette (my first copy briefly overwrote it; it
+  was restored from HEAD and is unchanged); (b) `cactus` is a new vegetation subtype rather
+  than a variant of `succulent`, so the recipe is selected by intent; it is additive to the
+  asset-intent contract and reaches no MCP tool schema; (c) the palette threshold is CIE76
+  delta E (default 10), and textured materials are judged by their factor and flagged
+  `textured`.
+- 2026-10-15 item 8 (end-to-end fixture) done. Files: new
+  `src/__tests__/fixtures/bunker-door-frame.kiln.js` (kit.module with ports `west`/`east`,
+  `collider.box.frame`, anchors `door.main`, `light.lintel`, `decal.stencil`, `Frame_LOD0..2`
+  with an impostor card last, `bakeSurfaceAttributes` on LOD0, a `pack: { edge: 1024, gutter:
+  4 }` atlas with procedural regions `concrete` and `steel`, `defineBudget`, `requireSolid`
+  on the extruded frame, six bolts under `repeatInstances`), new
+  `src/__tests__/delivery-fixture.test.ts` (2: legacy and three converters; each checks the
+  manifest, the packed v1.2 atlas provenance, then the three target through `GLTFLoader` +
+  meshopt decoder: roles, kit extras, hidden collider at its size, float `_edge`/`_cavity`,
+  one `InstancedMesh` of 6, the `MSFT_lod` levels with `lod.impostor`); this is the item 6
+  qualification subject. `docs/delivery-contract.md` points to it and notes that
+  `GLTFLoader` makes names unique (the root shares the scene's name). Test observed failing
+  first (fixture absent, ENOENT). Final gate after `node scripts/build-runtime.mjs all` (exit
+  0): `bun run test:coverage` 3719 pass, 2 skip, 19 fail (only the 19 GNU-tar baseline
+  failures in `scripts/`); `bun scripts/check-coverage.mjs` passed, functions 95.45% (min
+  94.00%), lines 93.14% (min 92.10%), ratchet unchanged; `bun run test:render-service` 78
+  pass, 0 fail; `bun run check:skills` 6 conform, 2 copies identical; `bun run typecheck`
+  and `bun run lint` (1003 files) pass; `bun run check:toolchain` pass; `bun run build:sdk`
+  60 entrypoints. Nothing was committed or pushed: the session brief reserves commits for
+  the owner, so the per-item commits this plan describes are left to the owner, with one
+  patch per item in the agent scratchpad.

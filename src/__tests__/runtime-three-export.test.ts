@@ -23,7 +23,7 @@ const binaryChunkBytes = (glb: Uint8Array) =>
   glb.byteLength - 20 - new DataView(glb.buffer, glb.byteOffset).getUint32(12, true);
 const sha = (bytes: Uint8Array) => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 
-export const RUNTIME_PROGRAM = `const meta={name:'Runtime Probe'};
+const RUNTIME_PROGRAM = `const meta={name:'Runtime Probe'};
 function build(){
   const root=createRoot('Root');
   const steel=gameMaterial('#777777');
@@ -44,7 +44,7 @@ function build(){
   return root;
 }`;
 
-export function assetRecord(bytes: Uint8Array): AssetRecord {
+function assetRecord(bytes: Uint8Array): AssetRecord {
   return {
     manifest: {
       version: 'kiln.asset.v1',
@@ -61,7 +61,7 @@ export function assetRecord(bytes: Uint8Array): AssetRecord {
 }
 
 /** Load a GLB the way a three.js application does: GLTFLoader plus the meshopt decoder. */
-export async function loadWithGltfLoader(bytes: Uint8Array) {
+async function loadWithGltfLoader(bytes: Uint8Array) {
   await MeshoptDecoder.ready;
   const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   return loader.parseAsync(Uint8Array.from(bytes).buffer, '');

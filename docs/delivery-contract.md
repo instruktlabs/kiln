@@ -118,6 +118,16 @@ Consumer rules that follow from it:
 - **Collider transforms are exact.** A collider's proxy mesh moves to a child named
   `<collider>_Proxy`, so the collider node's scale is still its size.
 - **Custom attributes stay float.** `_EDGE` and `_CAVITY` are never quantized.
+- **Find nodes by role, not by name alone.** three's `GLTFLoader` makes object names
+  unique, so an asset root that shares the scene's name loads with a numeric suffix.
+
+## Worked example
+
+`src/__tests__/fixtures/bunker-door-frame.kiln.js` uses every element above: a kit
+module with two ports, a box collider, three anchors, a two-tier `defineLod` plus an
+impostor, baked attributes, a packed two-region atlas, a budget, a required solid and
+instanced bolts. `src/__tests__/delivery-fixture.test.ts` renders it through both
+converters and loads its three.js runtime export through `GLTFLoader`.
 
 ## Out of scope
 

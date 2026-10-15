@@ -3330,7 +3330,7 @@ function rethrowAuthoringError(error) {
   }
   throw error;
 }
-var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', OPEN_SHELL_ADVICE = 'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].', DELIVERY_CONTRACT_ADVICE = 'Delivery helpers: colliderBox(size, { id }), colliderCapsule(radius, height, { id }) with height the total height of at least 2 * radius, colliderHull(mesh, { id }), anchor(kind, id), port(id) and defineModule(root, { footprint: [w, d], height, snapAxis: "x"|"y"|"z", origin: "corner"|"center" }). Ids and kinds are one segment of letters, digits, "_" or "-" with no dots; sizes are positive metres. The engine owns the kilnKit userData key; set it only through defineModule. defineBudget({ triangles: n | { LOD0, LOD1, ... }, draws? }) takes positive integers. Call kiln_discover with ids ["colliderBox", "anchor", "defineModule", "defineBudget"].', REQUIRE_SOLID_ADVICE = 'REQUIRE_SOLID: a part marked with requireSolid(part) is not a closed, manifold, outward solid. Close every boundary (caps, end plates, a hull or a solid helper such as boxGeo or extrudeProfile), remove faces shared by three or more triangles, and keep one consistent outward winding; do not flip normals alone. Check the part with geometryDiagnostics(geometry).solid, or remove the requireSolid mark if the part is open on purpose. Call kiln_discover with ids ["requireSolid", "geometryDiagnostics"].', EXECUTION_REJECTED_ADVICE = "No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.", AuthoringDiagnosticError;
+var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', OPEN_SHELL_ADVICE = 'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].', DELIVERY_CONTRACT_ADVICE = 'Delivery helpers: colliderBox(size, { id }), colliderCapsule(radius, height, { id }) with height the total height of at least 2 * radius, colliderHull(mesh, { id }), anchor(kind, id), port(id) and defineModule(root, { footprint: [w, d], height, snapAxis: "x"|"y"|"z", origin: "corner"|"center" }). Ids and kinds are one segment of letters, digits, "_" or "-" with no dots; sizes are positive metres. The engine owns the kilnKit userData key; set it only through defineModule. defineBudget({ triangles: n | { LOD0, LOD1, ... }, draws? }) takes positive integers; definePalette(colors, { threshold? }) takes 1..64 hex colours. Call kiln_discover with ids ["colliderBox", "anchor", "defineModule", "defineBudget"].', REQUIRE_SOLID_ADVICE = 'REQUIRE_SOLID: a part marked with requireSolid(part) is not a closed, manifold, outward solid. Close every boundary (caps, end plates, a hull or a solid helper such as boxGeo or extrudeProfile), remove faces shared by three or more triangles, and keep one consistent outward winding; do not flip normals alone. Check the part with geometryDiagnostics(geometry).solid, or remove the requireSolid mark if the part is open on purpose. Call kiln_discover with ids ["requireSolid", "geometryDiagnostics"].', EXECUTION_REJECTED_ADVICE = "No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.", AuthoringDiagnosticError;
 var init_authoring_diagnostic = __esm(() => {
   AuthoringDiagnosticError = class AuthoringDiagnosticError extends Error {
     diagnostic;
@@ -7801,6 +7801,15 @@ bakeSurfaceAttributes(root, { edge: { thresholdDegrees: 35 }, cavity: { rays: 32
       description: "Declares a triangle budget (one number for LOD0, or per LOD tier) and an optional LOD0 draw-call budget. Receipts report budget: { status, tiers: [{ tier, declared, measured, status }] } measured from the GLB. Advisory: never QA acceptance.",
       example: "defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 });",
       promptNotes: "Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching defineLod levels."
+    },
+    {
+      name: "definePalette",
+      signature: "definePalette(colors: string[], opts?: { threshold?: 10 }, target?: Object3D)",
+      returns: "{ schemaVersion: 1, colors, threshold } (the normalised declaration)",
+      category: "utility",
+      description: "Declares the asset palette (1..64 hex colours). Receipts list every drawn material whose base colour is farther than threshold (CIE76 delta E, default 10) from the nearest entry as PALETTE_OFF warnings and a manifest palette report. Advisory: never fails a build.",
+      example: "definePalette(['#6b6f73', '#3a3d40', '#8a4b2a', '#c9a227']);",
+      promptNotes: "Only when the brief names a palette or a set of exact colours. Call once."
     },
     {
       name: "requireSolid",
@@ -19682,6 +19691,10 @@ var init_vegetation = __esm(() => {
       trunk: { taper: [0.3, 1.2], lengthRadius: [1.2, 35] },
       branch: { taper: [0.15, 1.2], lengthRadius: [1.2, 50] }
     },
+    cactus: {
+      trunk: { taper: [0.45, 1.15], lengthRadius: [1.5, 45] },
+      branch: { taper: [0.35, 1.15], lengthRadius: [1.5, 35] }
+    },
     fungus: {
       trunk: { taper: [0.25, 1.25], lengthRadius: [1.2, 45] },
       branch: { taper: [0.1, 1.25], lengthRadius: [1.2, 60] }
@@ -26169,28 +26182,147 @@ var init_assembly = __esm(() => {
   threeConstructors = new Set(Object.values(THREE32));
 });
 
+// src/palette-check.ts
+function hex(value, label) {
+  if (typeof value !== "string" || !/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value))
+    fail7(`${label} must be a hex colour such as '#6b6f73', got ${JSON.stringify(value)}.`);
+  const digits = value.replace("#", "").toLowerCase();
+  return `#${digits.length === 3 ? [...digits].map((d) => d + d).join("") : digits}`;
+}
+function normalizePalette(colors, opts) {
+  if (!Array.isArray(colors) || colors.length === 0 || colors.length > PALETTE_MAX_COLORS)
+    fail7(`colors must be an array of 1..${PALETTE_MAX_COLORS} hex colours.`);
+  const entries = colors.map((value, i) => hex(value, `colors[${i}]`));
+  let threshold = PALETTE_DEFAULT_THRESHOLD;
+  if (opts !== undefined) {
+    if (!opts || typeof opts !== "object" || Array.isArray(opts))
+      fail7("opts must be { threshold? }.");
+    for (const key of Object.keys(opts))
+      if (key !== "threshold")
+        fail7(`unknown option ${JSON.stringify(key)}.`);
+    const t = opts.threshold;
+    if (t !== undefined) {
+      if (typeof t !== "number" || !Number.isFinite(t) || t <= 0 || t > 100)
+        fail7(`threshold must be a delta E in (0, 100], got ${String(t)}.`);
+      threshold = t;
+    }
+  }
+  return { schemaVersion: 1, colors: [...new Set(entries)], threshold };
+}
+function definePalette(colors, opts, target) {
+  const declaration = normalizePalette(colors, opts);
+  if (target !== undefined) {
+    if (target?.isObject3D !== true)
+      fail7("target must be a scene node, normally the root.");
+    target.userData[KILN_PALETTE_KEY] = structuredClone(declaration);
+  }
+  return declaration;
+}
+function readPaletteDeclaration(value) {
+  if (value === undefined)
+    return;
+  try {
+    const record = value;
+    if (record.schemaVersion !== 1)
+      return;
+    return normalizePalette(record.colors, { threshold: record.threshold });
+  } catch {
+    return;
+  }
+}
+function linearRgbToLab([r, g, b]) {
+  const x = (0.4124564 * r + 0.3575761 * g + 0.1804375 * b) / 0.95047;
+  const y = 0.2126729 * r + 0.7151522 * g + 0.072175 * b;
+  const z = (0.0193339 * r + 0.119192 * g + 0.9503041 * b) / 1.08883;
+  const f = (t) => t > 216 / 24389 ? Math.cbrt(t) : (24389 / 27 * t + 16) / 116;
+  const [fx, fy, fz] = [f(x), f(y), f(z)];
+  return [116 * fy - 16, 500 * (fx - fy), 200 * (fy - fz)];
+}
+function evaluatePalette(declaration, doc) {
+  const palette = declaration.colors.map((color) => ({
+    color,
+    lab: linearRgbToLab(hexToLinear(color))
+  }));
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  const materials = new Set;
+  const visit = (node, hidden) => {
+    const nodeHidden = hidden || isHiddenGltfNode(node);
+    if (!nodeHidden)
+      for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
+        const material = primitive.getMaterial();
+        if (material && material.getName() !== COLLIDER_PROXY_MATERIAL_NAME)
+          materials.add(material);
+      }
+    for (const child of node.listChildren())
+      visit(child, nodeHidden);
+  };
+  for (const node of scene?.listChildren() ?? [])
+    visit(node, false);
+  const offPalette = [];
+  for (const material of materials) {
+    const factor = material.getBaseColorFactor();
+    const lab = linearRgbToLab([factor[0], factor[1], factor[2]]);
+    let nearest = palette[0];
+    let distance = Number.POSITIVE_INFINITY;
+    for (const entry of palette) {
+      const d = deltaE(lab, entry.lab);
+      if (d < distance) {
+        distance = d;
+        nearest = entry;
+      }
+    }
+    if (distance > declaration.threshold)
+      offPalette.push({
+        material: material.getName(),
+        color: linearToHex(factor.slice(0, 3)),
+        nearest: nearest.color,
+        deltaE: Math.round(distance * 100) / 100,
+        ...material.getBaseColorTexture() ? { textured: true } : {}
+      });
+  }
+  offPalette.sort((a, b) => b.deltaE - a.deltaE || (a.material < b.material ? -1 : 1));
+  return {
+    status: offPalette.length ? "warn" : "pass",
+    colors: [...declaration.colors],
+    threshold: declaration.threshold,
+    checkedMaterials: materials.size,
+    offPalette
+  };
+}
+var KILN_PALETTE_KEY = "kilnPaletteV1", PALETTE_DEFAULT_THRESHOLD = 10, PALETTE_MAX_COLORS = 64, fail7 = (detail) => {
+  throw new AuthoringDiagnosticError("DELIVERY_CONTRACT", `definePalette(colors, opts?): ${detail}`);
+}, srgbToLinear = (c) => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4, linearToSrgb2 = (c) => c <= 0.0031308 ? c * 12.92 : 1.055 * Math.max(0, c) ** (1 / 2.4) - 0.055, hexToLinear = (value) => {
+  const n = Number.parseInt(value.slice(1), 16);
+  return [n >> 16 & 255, n >> 8 & 255, n & 255].map((c) => srgbToLinear(c / 255));
+}, linearToHex = (rgb) => `#${rgb.map((c) => Math.round(Math.min(1, Math.max(0, linearToSrgb2(c))) * 255).toString(16).padStart(2, "0")).join("")}`, deltaE = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+var init_palette_check = __esm(() => {
+  init_delivery();
+  init_authoring_diagnostic();
+  init_metrics();
+});
+
 // src/budget.ts
 function normalizeBudget(spec) {
   if (!spec || typeof spec !== "object" || Array.isArray(spec))
-    fail7("spec must be { triangles: number | { LOD0, LOD1, ... }, draws? }.");
+    fail8("spec must be { triangles: number | { LOD0, LOD1, ... }, draws? }.");
   const value = spec;
   for (const key of Object.keys(value))
     if (key !== "triangles" && key !== "draws" && key !== "schemaVersion")
-      fail7(`unknown field ${JSON.stringify(key)}.`);
+      fail8(`unknown field ${JSON.stringify(key)}.`);
   const triangles = {};
   if (typeof value.triangles === "number")
     triangles.LOD0 = count3("triangles", value.triangles);
   else if (value.triangles && typeof value.triangles === "object" && !Array.isArray(value.triangles)) {
     const entries = Object.entries(value.triangles);
     if (entries.length === 0)
-      fail7("triangles needs at least one tier.");
+      fail8("triangles needs at least one tier.");
     for (const [tier, limit] of entries) {
       if (!/^LOD(0|[1-9][0-9]?)$/.test(tier))
-        fail7(`triangles tier ${JSON.stringify(tier)} must be named LOD0, LOD1, ...`);
+        fail8(`triangles tier ${JSON.stringify(tier)} must be named LOD0, LOD1, ...`);
       triangles[tier] = count3(`triangles.${tier}`, limit);
     }
   } else
-    fail7("triangles must be a positive integer or a record of LOD tiers.");
+    fail8("triangles must be a positive integer or a record of LOD tiers.");
   const ordered = Object.fromEntries(Object.entries(triangles).sort(([a], [b]) => Number(a.slice(3)) - Number(b.slice(3))));
   return {
     schemaVersion: 1,
@@ -26202,7 +26334,7 @@ function defineBudget(spec, target) {
   const declaration = normalizeBudget(spec);
   if (target !== undefined) {
     if (target?.isObject3D !== true)
-      fail7("target must be a scene node, normally the root.");
+      fail8("target must be a scene node, normally the root.");
     target.userData[KILN_BUDGET_KEY] = structuredClone(declaration);
   }
   return declaration;
@@ -26247,11 +26379,11 @@ function evaluateBudget(declaration, measuredLod0, chains) {
     });
   return { status: tiers.every((tier) => tier.status === "pass") ? "pass" : "fail", tiers };
 }
-var KILN_BUDGET_KEY = "kilnBudgetV1", fail7 = (detail) => {
+var KILN_BUDGET_KEY = "kilnBudgetV1", fail8 = (detail) => {
   throw new AuthoringDiagnosticError("DELIVERY_CONTRACT", `defineBudget(spec): ${detail}`);
 }, count3 = (label, value) => {
   if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 1)
-    fail7(`${label} must be a positive integer, got ${String(value)}.`);
+    fail8(`${label} must be a positive integer, got ${String(value)}.`);
   return value;
 };
 var init_budget = __esm(() => {
@@ -30323,6 +30455,11 @@ function buildSandboxGlobals(usage, options = {}) {
       declarations.budget = declaration;
       return declaration;
     }),
+    definePalette: wrap("definePalette", (colors, opts, target) => {
+      const declaration = definePalette(colors, opts, target);
+      declarations.palette = declaration;
+      return declaration;
+    }),
     capsuleGeo: wrapGeo("capsuleGeo", capsuleGeo),
     capsuleXGeo: wrapGeo("capsuleXGeo", capsuleXGeo),
     capsuleYGeo: wrapGeo("capsuleYGeo", capsuleYGeo),
@@ -30451,6 +30588,7 @@ var init_primitives = __esm(() => {
   init_delivery();
   init_surface_bake();
   init_require_solid();
+  init_palette_check();
   init_budget();
   init_animation_cubic();
   init_animation_spline();
@@ -35695,6 +35833,8 @@ async function inspectGlbIntegration(bytes, opts = {}) {
   const vertexAttributes = summarizeVertexAttributes(doc);
   const budgetDeclaration = readBudgetDeclaration(scene.getExtras()[KILN_BUDGET_KEY]);
   const budget = budgetDeclaration ? evaluateBudget(budgetDeclaration, { triangles: metrics.triangles, draws: metrics.drawCalls }, levelsOfDetail) : undefined;
+  const paletteDeclaration = readPaletteDeclaration(scene.getExtras()[KILN_PALETTE_KEY]);
+  const palette = paletteDeclaration ? evaluatePalette(paletteDeclaration, doc) : undefined;
   return {
     schemaVersion: "kiln.integration-manifest.v1",
     analyzerVersion: 1,
@@ -35738,6 +35878,7 @@ async function inspectGlbIntegration(bytes, opts = {}) {
     ...delivery.kit ? { kit: delivery.kit } : {},
     ...delivery.ports.length ? { ports: delivery.ports } : {},
     ...budget ? { budget } : {},
+    ...palette ? { palette } : {},
     ...vertexAttributes.length ? { vertexAttributes } : {},
     ...delivery.diagnostics.length ? { deliveryDiagnostics: delivery.diagnostics } : {},
     structuralQa: {
@@ -35778,6 +35919,8 @@ return { meta: typeof meta !== 'undefined' ? meta : {}, build, animate: typeof a
     const declared = globals[SANDBOX_DECLARATIONS];
     if (declared?.budget && root.userData[KILN_BUDGET_KEY] === undefined)
       root.userData[KILN_BUDGET_KEY] = declared.budget;
+    if (declared?.palette && root.userData[KILN_PALETTE_KEY] === undefined)
+      root.userData[KILN_PALETTE_KEY] = declared.palette;
     const clips = animate ? await animate(root) ?? [] : [];
     return { meta: meta ?? {}, root, clips, primitiveUsage };
   } catch (error) {
@@ -36392,6 +36535,14 @@ async function renderSceneToGLB(root, opts = {}) {
       [KILN_BUDGET_KEY]: normalizeBudget(root.userData[KILN_BUDGET_KEY])
     });
   }
+  if (root.userData[KILN_PALETTE_KEY] !== undefined && opts.derivative !== true) {
+    const declared = root.userData[KILN_PALETTE_KEY];
+    const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+    scene.setExtras({
+      ...scene.getExtras(),
+      [KILN_PALETTE_KEY]: normalizePalette(declared?.colors, { threshold: declared?.threshold })
+    });
+  }
   applySurfaceBakeExtras(root, doc);
   applyNodeVisibility(root, doc);
   applyLodChains(root, lodSets, doc);
@@ -36473,6 +36624,9 @@ async function renderSceneToGLB(root, opts = {}) {
     throw new Error("renderSceneToGLB: final GLB has no measurable scene");
   for (const finding of integrationManifest.deliveryDiagnostics ?? [])
     warnings.push(`${finding.code} ${finding.path}: ${finding.message}`);
+  const palette = integrationManifest.palette;
+  for (const finding of palette?.offPalette ?? [])
+    warnings.push(`PALETTE_OFF material ${JSON.stringify(finding.material)} ${finding.color} is delta E ${finding.deltaE} from the nearest palette entry ${finding.nearest} (threshold ${palette.threshold})${finding.textured ? "; the factor tints a texture that is not judged" : ""}.`);
   const diagnosticViews = [];
   const rig = requirements.requirements.requirements.rig;
   const diagnosticParents = new Map(lodSets.map(({ parent }) => [parent, [...parent.children]]));
@@ -36773,6 +36927,7 @@ var init_render = __esm(() => {
   init_geometry_export();
   init_primitives();
   init_budget();
+  init_palette_check();
   init_metrics();
   init_contracts();
   init_gltf();
@@ -40502,6 +40657,34 @@ define2("defineBudget", {
   summary: "Declares triangle (per LOD tier) and draw-call budgets that every receipt measures against the GLB; advisory unless --strict-budget.",
   limitations: ["Does not simplify geometry or merge draws to meet a budget."],
   related: [{ name: "defineLod", relation: "companion" }]
+});
+define2("definePalette", {
+  units: "Colours are sRGB hex; threshold is a CIE 1976 delta E in CIELAB (D65).",
+  axes: "Not a placement operation.",
+  origin: "Not a placement operation.",
+  ownership: "Records one declaration: on target when given, otherwise on the root build() returns. Export writes it as default-scene extras kilnPaletteV1.",
+  coordinates: "Not a placement operation.",
+  parameters: [
+    "colors: 1..64 hex strings ('#rgb' or '#rrggbb'); duplicates collapse.",
+    "opts.threshold: delta E in (0, 100], default 10.",
+    "target: optional scene node, normally the root."
+  ],
+  topology: [noMesh],
+  preservation: ["Changes no geometry, material or node."],
+  semantics: [
+    "Every material drawn by a visible scene node (collider proxies excluded) is compared by its base colour factor, converted from linear to sRGB to CIELAB; a factor that tints a texture is flagged textured.",
+    "The integration manifest and CLI receipt report palette: { status: pass | warn, colors, threshold, checkedMaterials, offPalette: [{ material, color, nearest, deltaE, textured? }] }; each off-palette material is also a PALETTE_OFF warning.",
+    "Advisory only: no build fails and QA acceptance is unchanged. Invalid input is a DELIVERY_CONTRACT build error."
+  ],
+  cost: "One colour conversion per drawn material at export."
+}, {
+  references: ["src/palette-check.ts", "docs/delivery-contract.md"],
+  tags: ["delivery", "palette", "color", "art direction"],
+  aliases: ["color palette", "palette lock", "art palette", "swatches"],
+  intents: ["check materials against a declared colour palette"],
+  summary: "Declares a colour palette; receipts list drawn materials off it by delta E, advisory only.",
+  limitations: ["Judges base colour factors, not texture pixels. Never fails a build."],
+  related: [{ name: "gameMaterial", relation: "companion" }]
 });
 define2("requireSolid", {
   ...nodeFacts,
