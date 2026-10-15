@@ -289,6 +289,18 @@ const PRIMITIVES: HelperSpec[] = [
       'Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching defineLod levels.',
   },
   {
+    name: 'requireSolid',
+    signature: 'requireSolid(part: Object3D)',
+    returns: 'Object3D (part, unchanged)',
+    category: 'utility',
+    description:
+      'Opt-in assertion: the build fails with REQUIRE_SOLID unless every visible mesh in part is closed, manifold and outward (geometryDiagnostics(geometry).solid).',
+    example:
+      "const hull = createPart('Hull', boxGeo(2, 1, 4), steel, { parent: root });\nrequireSolid(hull);",
+    promptNotes:
+      'Only for parts that must be watertight (collision, booleans, printing). It measures; it repairs nothing.',
+  },
+  {
     name: 'beamBetween',
     signature:
       'beamBetween(name, start: [x,y,z], end: [x,y,z], radius, material, opts?: { segments, parent })',

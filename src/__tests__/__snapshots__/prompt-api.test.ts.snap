@@ -793,6 +793,13 @@ defineBudget(spec: { triangles: number | { LOD0, LOD1, ... }, draws?: number }, 
   // NOTE: Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching
   // defineLod levels.
   // e.g. defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 });
+requireSolid(part: Object3D)
+  // Opt-in assertion: the build fails with REQUIRE_SOLID unless every visible mesh in part is
+  // closed, manifold and outward (geometryDiagnostics(geometry).solid).
+  // NOTE: Only for parts that must be watertight (collision, booleans, printing). It measures;
+  // it repairs nothing.
+  // e.g. const hull = createPart('Hull', boxGeo(2, 1, 4), steel, { parent: root });
+  // requireSolid(hull);
 countTriangles(root: Object3D)
   // Sums placed mesh triangles across the subtree, including active InstancedMesh copies and
   // two triangles per sprite. Not draw calls or visible-frame cost.

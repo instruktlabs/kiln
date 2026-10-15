@@ -504,6 +504,7 @@ define(
     topology: [
       'Counts boundary/nonmanifold/orientation/degenerate/index/finite issues; does not detect arbitrary triangle self-intersections.',
       'An open sheet can be valid for its intended use.',
+      'solid reports closed (no boundary edges), manifold (no edge shared by 3+ faces), orientation (outward or inward from the signed-volume sign, mixed on any winding conflict or zero volume) and signedVolume in cubic position units; requireSolid(part) turns those facts into a build assertion.',
       'Position matching quantizes a grid relative to the bounds minimum, not an exact distance weld. Invalid-position triangles are excluded from edge/area counts and nonfinite vertices remain reported.',
       'collapsedByToleranceTriangles counts faces whose corners merge in that grid; they are excluded from edge counts, not removed from geometry. Nonzero means topology detail was lost at this tolerance; inspect at a finer tolerance before interpreting edge counts. This is separate from area-based degenerateTriangles.',
     ],
@@ -1000,6 +1001,35 @@ define(
       'Declares triangle (per LOD tier) and draw-call budgets that every receipt measures against the GLB; advisory unless --strict-budget.',
     limitations: ['Does not simplify geometry or merge draws to meet a budget.'],
     related: [{ name: 'defineLod', relation: 'companion' }],
+  },
+);
+define(
+  'requireSolid',
+  {
+    ...nodeFacts,
+    units: 'No lengths.',
+    origin: 'Not a placement operation.',
+    ownership:
+      'Writes { schemaVersion: 1 } to part.userData.kilnRequireSolid; creates no nodes and changes no geometry.',
+    coordinates: 'Geometry-local: winding and signed volume of each mesh geometry.',
+    parameters: ['part: a scene node; a mark on a group covers the visible meshes under it.'],
+    semantics: [
+      'At export each covered visible mesh must have geometryDiagnostics solid.closed, solid.manifold and solid.orientation === "outward"; otherwise the build fails with REQUIRE_SOLID naming the part and the failing facts.',
+      'Derivative review re-serialization is not judged. The mark does not export.',
+    ],
+    cost: 'One geometryDiagnostics pass per covered mesh at export.',
+  },
+  {
+    references: ['src/require-solid.ts', 'src/geometry.ts', 'docs/geometry.md'],
+    tags: ['qa', 'solid', 'watertight', 'export'],
+    aliases: ['watertight', 'closed mesh', 'manifold check', 'assert solid'],
+    intents: ['fail the build when a part is not a closed solid'],
+    summary: 'Opt-in build assertion that a part is a closed, manifold, outward-wound solid.',
+    limitations: ['Measures only; no repair. General self-intersection is not checked.'],
+    related: [
+      { name: 'geometryDiagnostics', relation: 'companion' },
+      { name: 'markOpenShell', relation: 'alternative' },
+    ],
   },
 );
 define(

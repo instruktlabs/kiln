@@ -241,3 +241,16 @@ from this scope and why. The owner's game session reads this log to monitor.
   on the produced lcov: passed, functions 95.46% (min 94.00%), lines 93.10% (min 92.10%);
   `bun run test:render-service` 0 fail; `bun run check:skills` 6 conform, 2 copies identical;
   typecheck and lint pass.
+- 2026-10-15 item 3 (budgets) done. Files: new `src/budget.ts` (`defineBudget`,
+  `evaluateBudget`: tier n = level min(n, last) of every `MSFT_lod` chain plus everything
+  outside the chains; draws attach to LOD0), `src/primitives.ts` (sandbox declarations so a
+  call without a target lands on the returned root), `src/render.ts` (scene extras
+  `kilnBudgetV1`; manifest `budget`), `src/contracts/integration.ts`, `src/cli.ts` (receipt
+  `budget`, log line, `--strict-budget` exits 1 on a failing tier), `src/tools/registry.ts` +
+  `src/tools/review-detail.ts` (`kiln_render` results carry `budget`, `{ status: 'none',
+  tiers: [] }` when undeclared; the tool input schemas are unchanged), Discovery entries,
+  prompt-api snapshot, `DELIVERY_CONTRACT` advice. Test: new
+  `src/__tests__/delivery-budget.test.ts` (5, observed failing first). Gates: typecheck and
+  lint pass; `bun run test` 3695 pass, 2 skip, 21 fail = the 19 GNU-tar baseline failures
+  plus the two stale-bundle checks (`dist/mcp-engine.mjs`, `dist/cli.mjs`), which the item 4
+  gate rebuilds.

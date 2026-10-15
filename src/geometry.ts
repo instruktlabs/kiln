@@ -86,6 +86,20 @@ export interface GeometryDiagnostics {
   collapsedByToleranceTriangles: number;
   invalidIndices: number;
   nonFiniteVertices: number;
+  /** Solid facts from the same edge analysis (delivery contract item 4). */
+  solid: GeometrySolidDiagnostics;
+}
+
+export interface GeometrySolidDiagnostics {
+  /** No boundary edges (and at least one counted triangle). */
+  closed: boolean;
+  /** No edge shared by more than two faces. */
+  manifold: boolean;
+  /** `mixed` when any shared edge is traversed the same way by both faces, or the volume is
+   *  zero; otherwise the sign of the signed volume: `outward` positive, `inward` negative. */
+  orientation: 'outward' | 'inward' | 'mixed';
+  /** Sum of a . (b x c) / 6 over the valid triangles, in cubic geometry units. */
+  signedVolume: number;
 }
 
 function boundsScale(bounds: THREE.Box3) {
@@ -150,7 +164,12 @@ export function geometryDiagnostics(
     collapsedByToleranceTriangles: 0,
     invalidIndices: 0,
     nonFiniteVertices: 0,
+    solid: { closed: false, manifold: true, orientation: 'mixed', signedVolume: 0 },
   };
+  let signedVolume = 0;
+  const pa = new THREE.Vector3(),
+    pb = new THREE.Vector3(),
+    pc = new THREE.Vector3();
   const ids: number[] = [];
   const points = new Map<string, number>();
   const finite: boolean[] = [];
@@ -182,6 +201,10 @@ export function geometryDiagnostics(
     }
     const [ia, ib, ic] = triangle as [number, number, number];
     if (!finite[ia] || !finite[ib] || !finite[ic]) continue;
+    pa.fromBufferAttribute(p, ia);
+    pb.fromBufferAttribute(p, ib);
+    pc.fromBufferAttribute(p, ic);
+    signedVolume += pa.dot(pb.cross(pc)) / 6;
     a.fromBufferAttribute(p, ia);
     b.fromBufferAttribute(p, ib);
     c.fromBufferAttribute(p, ic);
@@ -214,6 +237,18 @@ export function geometryDiagnostics(
     else if (edge.count > 2) result.nonManifoldEdges++;
     else if (edge.direction !== 0) result.orientationConflicts++;
   }
+  const volumeFloor = (frame.scale || 1) ** 3 * 1e-12;
+  result.solid = {
+    closed: result.boundaryEdges === 0 && edges.size > 0,
+    manifold: result.nonManifoldEdges === 0,
+    orientation:
+      result.orientationConflicts > 0 || Math.abs(signedVolume) <= volumeFloor
+        ? 'mixed'
+        : signedVolume > 0
+          ? 'outward'
+          : 'inward',
+    signedVolume: Object.is(signedVolume, -0) ? 0 : signedVolume,
+  };
   return result;
 }
 

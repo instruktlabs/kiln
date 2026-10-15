@@ -35,6 +35,7 @@ export type AuthoringDiagnostic =
   | 'LOD_SET'
   | 'OPEN_SHELL'
   | 'DELIVERY_CONTRACT'
+  | 'REQUIRE_SOLID'
   | 'BONE_CHAIN_ARGUMENT'
   | 'SKIN_BINDING_ARGUMENT'
   | 'EXPORT_MATERIAL_SIDE_UNSUPPORTED';
@@ -76,6 +77,8 @@ export const OPEN_SHELL_ADVICE =
   'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].';
 export const DELIVERY_CONTRACT_ADVICE =
   'Delivery helpers: colliderBox(size, { id }), colliderCapsule(radius, height, { id }) with height the total height of at least 2 * radius, colliderHull(mesh, { id }), anchor(kind, id), port(id) and defineModule(root, { footprint: [w, d], height, snapAxis: "x"|"y"|"z", origin: "corner"|"center" }). Ids and kinds are one segment of letters, digits, "_" or "-" with no dots; sizes are positive metres. The engine owns the kilnKit userData key; set it only through defineModule. defineBudget({ triangles: n | { LOD0, LOD1, ... }, draws? }) takes positive integers. Call kiln_discover with ids ["colliderBox", "anchor", "defineModule", "defineBudget"].';
+export const REQUIRE_SOLID_ADVICE =
+  'REQUIRE_SOLID: a part marked with requireSolid(part) is not a closed, manifold, outward solid. Close every boundary (caps, end plates, a hull or a solid helper such as boxGeo or extrudeProfile), remove faces shared by three or more triangles, and keep one consistent outward winding; do not flip normals alone. Check the part with geometryDiagnostics(geometry).solid, or remove the requireSolid mark if the part is open on purpose. Call kiln_discover with ids ["requireSolid", "geometryDiagnostics"].';
 /**
  * The advice behind the generic rejection, when no closed cause crossed the boundary.
  * Engine-owned text only: it states the contract and names the two tools that answer
@@ -101,6 +104,7 @@ export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | unde
   if (diagnostic === 'LOD_SET') return LOD_SET_ADVICE;
   if (diagnostic === 'OPEN_SHELL') return OPEN_SHELL_ADVICE;
   if (diagnostic === 'DELIVERY_CONTRACT') return DELIVERY_CONTRACT_ADVICE;
+  if (diagnostic === 'REQUIRE_SOLID') return REQUIRE_SOLID_ADVICE;
   if (diagnostic === 'BUILD_RESULT') return BUILD_RESULT_ADVICE;
   if (diagnostic === 'MATERIAL_RECIPE_OVERRIDE') return MATERIAL_RECIPE_OVERRIDE_ADVICE;
   if (diagnostic === 'PROGRAM_TYPE_ERROR') return PROGRAM_TYPE_ERROR_ADVICE;

@@ -26,6 +26,7 @@ export { defineLod } from './lod';
 import { markOpenShell } from './open-shell';
 import { anchor, colliderBox, colliderCapsule, colliderHull, defineModule, port } from './delivery';
 import { bakeSurfaceAttributes } from './surface-bake';
+import { requireSolid } from './require-solid';
 import { type BudgetDeclarationV1, defineBudget } from './budget';
 import { useCubicSpline } from './animation-cubic';
 import {
@@ -2278,6 +2279,7 @@ export function buildSandboxGlobals(
     defineModule: wrap('defineModule', defineModule),
     port: wrap('port', port),
     bakeSurfaceAttributes: wrap('bakeSurfaceAttributes', bakeSurfaceAttributes),
+    requireSolid: wrap('requireSolid', requireSolid),
     defineBudget: wrap(
       'defineBudget',
       (spec: Parameters<typeof defineBudget>[0], target?: THREE.Object3D) => {

@@ -467,6 +467,7 @@ export function decodeEvaluatorResultV2(
           value.error.diagnostic !== 'LOD_SET' &&
           value.error.diagnostic !== 'OPEN_SHELL' &&
           value.error.diagnostic !== 'DELIVERY_CONTRACT' &&
+          value.error.diagnostic !== 'REQUIRE_SOLID' &&
           value.error.diagnostic !== 'EXPORT_MATERIAL_SIDE_UNSUPPORTED' &&
           value.error.diagnostic !== 'BONE_CHAIN_ARGUMENT' &&
           value.error.diagnostic !== 'SKIN_BINDING_ARGUMENT'))

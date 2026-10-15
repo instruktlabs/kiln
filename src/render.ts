@@ -51,6 +51,7 @@ import { openShellExtras } from './open-shell';
 import { kitExtras } from './delivery';
 import { inspectDelivery, summarizeVertexAttributes } from './delivery-inspect';
 import { SURFACE_BAKE_KEY, surfaceBakeRecord } from './surface-bake';
+import { assertRequiredSolids } from './require-solid';
 import { writtenNodeResolver } from './written-nodes';
 import { rigExtrasForExport } from './rig-export';
 import { type AuthorExtras, collectAuthorExtras } from './user-data-extras';
@@ -1714,6 +1715,8 @@ export async function renderSceneToGLB(
   // A set of LOD tiers needs its declared thresholds before anything is written. A
   // derivative re-serializes a review scene that has no declarations, so it is not judged.
   const lodSets = opts.derivative === true ? [] : collectLodSets(root);
+  // An opt-in solid assertion is the author's, so a derivative re-serialization is not judged.
+  if (opts.derivative !== true) assertRequiredSolids(root);
   const warnings = inspectGeometryExport(root, opts.geometryPolicy, exporter);
   // The headline counts what a plain loader draws: LOD0 and the parts outside every set.
   let tris = countTriangles(root);
