@@ -166,7 +166,41 @@ test('CLI saves, exports, imports, and restores a revision across independent st
       ]).status,
     ).toBe(1);
     expect(await readFile(runtime)).toEqual(runtimeBefore);
+    // The three.js runtime target: derived GLB plus a sidecar with its delivery facts.
+    const three = join(root, 'three.glb');
+    const threeRun = run('first', [
+      'export',
+      asset.assetId,
+      asset.revisionId,
+      '--out',
+      three,
+      '--profile',
+      'runtime',
+      '--target',
+      'three',
+      '--json',
+    ]);
+    expect(threeRun.status).toBe(0);
+    expect(JSON.parse(threeRun.stdout)).toMatchObject({
+      ok: true,
+      profile: 'runtime',
+      target: 'three',
+      format: 'glb',
+    });
+    expect(
+      JSON.parse(await readFile(join(root, 'three.kiln-metadata.json'), 'utf8')),
+    ).toMatchObject({
+      version: 'kiln.runtime-metadata.v1',
+      target: 'three',
+      delivery: {
+        target: 'three',
+        extensionsRequired: expect.arrayContaining(['EXT_meshopt_compression']),
+        ktx2: { status: 'skipped' },
+      },
+    });
     for (const flags of [
+      ['--profile', 'editable', '--target', 'three'],
+      ['--profile', 'runtime', '--target', 'unity'],
       ['--profile', 'unknown'],
       ['--profile', 'runtime', '--format', 'bundle'],
       ['--profile', 'runtime', '--format', 'source'],

@@ -268,3 +268,27 @@ from this scope and why. The owner's game session reads this log to monitor.
   `bun scripts/check-coverage.mjs` passed, functions 95.46% (min 94.00%), lines 93.10% (min
   92.10%); `bun run test:render-service` exit 0; `bun run check:skills` 6 conform, 2 copies
   identical; typecheck and lint pass.
+- 2026-10-15 item 5 (atlas packer) done. Files: `src/texture-atlas-contract.ts` (`pack: {
+  edge: 1024 | 2048, gutter?, algorithm?: 'maxrects' }`; regions may omit `content` when the
+  atlas packs; MaxRects best-short-side-fit, no rotation, integer only, around explicit
+  allocations, order allocation area descending then name; `TEXTURE_ATLAS_COMPILER_ID_V1_2`
+  `kiln.texture-atlas.v1.2`, `TEXTURE_ATLAS_LIMITS_V1_2` edge 2048, output texels 4194304,
+  sources 32, regions 128; `textureAtlasCompilerIdV1`/`textureAtlasLimitsV1`; the manifest
+  validator accepts the id the spec selects), `src/texture-atlas-pixels.ts` (per-version
+  limits and compiler id), `src/texture-atlas.ts` (UV remap accepts both ids and per-version
+  bounds), `src/material-authoring-schema.ts`, `src/material-library.ts`,
+  `src/material-library-node.ts` (stored atlas recipes carry the manifest's compiler id),
+  `src/primitives.ts` (exports), Discovery (`textureAtlas`), prompt-api snapshot. Test: new
+  `src/__tests__/texture-atlas-pack.test.ts` (6, observed failing first). Gates: typecheck and
+  lint pass; `bun run test` 3707 pass, 2 skip, 21 fail = the 19 GNU-tar baseline failures plus
+  the two stale-bundle checks. Deviations: (a) v1.2 applies exactly when a spec sets `pack`;
+  an unpacked spec keeps compiler v1.1, its limits and byte-identical identities, so a large
+  explicit-only sheet opts in with `pack` and explicit rectangles; (b) with `pack`, `width`
+  and `height` default to `pack.edge` and may be smaller; `pack.gutter` (default 2) is the
+  default gutter of every region in that atlas; (c) the canonical spec keeps `pack` and marks
+  each packer-placed region `packed: true` with its resolved `content`, so the canonical spec,
+  provenance and saved recipes re-validate without re-packing; (d) the v1.2 work and
+  allocation budgets scale with the fourfold output (192000000 work units, 128 MiB); decoded
+  source texels and encoded byte budgets stay at the v1.1 values; (e) a packed resource
+  region needs `crop` or `expected` width and height, because its size must be known before
+  any host load.

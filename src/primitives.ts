@@ -24,7 +24,15 @@ import { describeAssembly, replicateAssembly } from './assembly';
 import { defineLod } from './lod';
 export { defineLod } from './lod';
 import { markOpenShell } from './open-shell';
-import { anchor, colliderBox, colliderCapsule, colliderHull, defineModule, port } from './delivery';
+import {
+  anchor,
+  colliderBox,
+  colliderCapsule,
+  colliderHull,
+  defineModule,
+  port,
+  repeatInstances,
+} from './delivery';
 import { bakeSurfaceAttributes } from './surface-bake';
 import { requireSolid } from './require-solid';
 import { type BudgetDeclarationV1, defineBudget } from './budget';
@@ -2284,6 +2292,7 @@ export function buildSandboxGlobals(
     anchor: wrap('anchor', anchor),
     defineModule: wrap('defineModule', defineModule),
     port: wrap('port', port),
+    repeatInstances: wrap('repeatInstances', repeatInstances),
     bakeSurfaceAttributes: wrap('bakeSurfaceAttributes', bakeSurfaceAttributes),
     requireSolid: wrap('requireSolid', requireSolid),
     defineBudget: wrap(

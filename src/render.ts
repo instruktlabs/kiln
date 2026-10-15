@@ -48,7 +48,7 @@ import {
   type IndexBufferReceipt,
 } from './index-policy';
 import { openShellExtras } from './open-shell';
-import { kitExtras } from './delivery';
+import { kitExtras, repeatInstancesExtras } from './delivery';
 import { inspectDelivery, summarizeVertexAttributes } from './delivery-inspect';
 import { SURFACE_BAKE_KEY, surfaceBakeRecord } from './surface-bake';
 import { assertRequiredSolids } from './require-solid';
@@ -891,6 +891,7 @@ function bridgeNode(
     ...rigExtrasForExport(threeObj),
     ...openShellExtras(threeObj),
     ...kitExtras(threeObj),
+    ...repeatInstancesExtras(threeObj),
   };
   let semanticForExport = semanticValue;
   if ((threeObj as THREE.Object3D & { isSprite?: boolean }).isSprite) {

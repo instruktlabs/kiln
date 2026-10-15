@@ -929,6 +929,32 @@ define(
   },
 );
 define(
+  'repeatInstances',
+  {
+    ...nodeFacts,
+    units: 'No lengths.',
+    origin: 'Not a placement operation.',
+    ownership:
+      'Writes { schemaVersion: 1 } to parent.userData.kilnRepeatInstances, exported as node extras; creates no nodes.',
+    coordinates: 'Each instance keeps its local transform relative to parent.',
+    parameters: ['parent: a scene node whose direct children repeat one mesh.'],
+    semantics: [
+      'The three.js runtime target groups direct children by mesh content (accessors, material, mode) and turns each group of two or more into one node named <parent>_Instances with EXT_mesh_gpu_instancing TRANSLATION/ROTATION/SCALE; the sidecar lists the instance names in order.',
+      'Children with their own children, roles, extras, skins, morph weights or hidden flags stay separate nodes. Other export profiles ignore the mark.',
+    ],
+    cost: 'Metadata on one node.',
+  },
+  {
+    ...deliveryMetadata,
+    tags: ['delivery', 'instancing', 'runtime', 'export'],
+    aliases: ['gpu instancing', 'instanced mesh', 'repeat parts'],
+    intents: ['deliver repeated identical parts as one instanced mesh'],
+    summary: 'Marks a parent whose identical children the three.js runtime export instances.',
+    limitations: ['Instancing happens only in the three.js runtime target.'],
+    related: [{ name: 'createPart', relation: 'companion' }],
+  },
+);
+define(
   'bakeSurfaceAttributes',
   {
     units:

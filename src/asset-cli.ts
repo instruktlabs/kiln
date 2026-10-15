@@ -51,6 +51,8 @@ ${SAVE_LINES}
   kiln asset <id> [<revision>] --rebuild --out rebuilt.glb [--requirements file]
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
+       [--target three]   runtime only: meshopt + quantization, repeatInstances GPU
+                          instancing, KTX2 skipped (no encoder); sidecar states node scales
        [--json]   receipt naming each file with its bytes and sha256
        export never replaces an existing file: an export hands off one exact
        saved revision, while render --out replaces its own working output
@@ -88,6 +90,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     'out',
     'format',
     'profile',
+    'target',
     'port',
     'render',
     'backdrop',
@@ -372,6 +375,10 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
       const profile = flags.profile ?? 'editable';
       if (profile !== 'editable' && profile !== 'runtime')
         throw new Error('Unknown export profile');
+      const target = flags.target;
+      if (target !== undefined && target !== 'three') throw new Error('Unknown export target');
+      if (target !== undefined && profile !== 'runtime')
+        throw new Error('--target requires --profile runtime');
       const format = flags.format ?? (profile === 'runtime' ? 'glb' : 'bundle');
       if (!['bundle', 'glb', 'source'].includes(format)) throw new Error('Unknown export format');
       const written: { kind: string; path: string; data: Uint8Array }[] = [];
@@ -382,7 +389,11 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
         if (!destination.toLowerCase().endsWith('.glb'))
           throw new Error('Runtime output must end in .glb');
         const metadataFileName = `${basename(destination).slice(0, -4)}.kiln-metadata.json`;
-        const output = await exportAssetGlb(record, { profile, metadataFileName });
+        const output = await exportAssetGlb(record, {
+          profile,
+          metadataFileName,
+          ...(target ? { target } : {}),
+        });
         if (output.profile !== 'runtime') throw new Error('Expected runtime export');
         const metadataPath = resolve(dirname(destination), output.metadata.name);
         await writeNewDestinationsAtomic([
@@ -413,6 +424,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
               assetId,
               revisionId,
               profile,
+              ...(target ? { target } : {}),
               format,
               ...(format !== 'source'
                 ? {

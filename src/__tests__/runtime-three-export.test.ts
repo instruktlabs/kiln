@@ -1,0 +1,227 @@
+/**
+ * three.js runtime delivery target (delivery contract item 6).
+ *
+ * `exportAssetGlb(record, { profile: 'runtime', target: 'three' })` and
+ * `deliverThreeRuntimeGlb(bytes)` derive a meshopt-compressed, quantized GLB with scoped GPU
+ * instancing, and keep custom attributes, roles, hidden colliders, anchors, kit extras and
+ * MSFT_lod chains. The qualification loads the result through three's GLTFLoader with the
+ * meshopt decoder.
+ */
+import { describe, expect, test } from 'bun:test';
+import { createHash } from 'node:crypto';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+import { deliverThreeRuntimeGlb, exportAssetGlb } from '../asset-export';
+import type { AssetRecord } from '../assets';
+import { KILN_REPEAT_INSTANCES_KEY, repeatInstances } from '../delivery';
+import { buildSandboxGlobals } from '../primitives';
+import { renderGLBInProcess, renderSceneToGLB } from '../render';
+
+/** Bytes of the GLB's binary chunk: the geometry the compression acts on. */
+const binaryChunkBytes = (glb: Uint8Array) =>
+  glb.byteLength - 20 - new DataView(glb.buffer, glb.byteOffset).getUint32(12, true);
+const sha = (bytes: Uint8Array) => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+
+export const RUNTIME_PROGRAM = `const meta={name:'Runtime Probe'};
+function build(){
+  const root=createRoot('Root');
+  const steel=gameMaterial('#777777');
+  const frame=createPart('Frame',boxGeo(2,3,0.4),steel,{parent:root,position:[0,1.5,0]});
+  defineModule(root,{footprint:[2,0.4],height:3,snapAxis:'x',origin:'center'});
+  port('west',{parent:root,position:[-1,0,0]});
+  colliderBox([2,3,0.4],{id:'frame',parent:root,position:[0,1.5,0]});
+  anchor('light','top',{parent:root,position:[0,2.9,0]});
+  const bolts=new THREE.Group(); bolts.name='Bolts'; root.add(bolts);
+  const boltGeo=cylinderGeo(0.03,0.03,0.05,8);
+  for(let i=0;i<4;i++) createPart('Bolt_'+i,boltGeo,steel,{parent:bolts,position:[-0.9+i*0.6,2.9,0.22]});
+  repeatInstances(bolts);
+  const tiers=['Lamp_LOD0','Lamp_LOD1'].map((name)=>{const g=new THREE.Group();g.name=name;root.add(g);return g;});
+  createPart('Lamp',boxGeo(0.2,0.2,0.2),steel,{parent:tiers[0],position:[0,3.1,0]});
+  createPart('Card',planeGeo(0.2,0.2),steel,{parent:tiers[1],position:[0,3.1,0]});
+  defineLod(tiers,{screenCoverage:[0.2,0],impostor:true});
+  bakeSurfaceAttributes(frame,{cavity:{rays:8}});
+  return root;
+}`;
+
+export function assetRecord(bytes: Uint8Array): AssetRecord {
+  return {
+    manifest: {
+      version: 'kiln.asset.v1',
+      assetId: 'a_runtime',
+      revisionId: 'r_runtime',
+      name: 'Runtime Probe',
+      tags: [],
+      createdAt: '2026-10-15T00:00:00.000Z',
+      editable: false,
+      files: { 'asset.glb': { bytes: bytes.length, sha256: sha(bytes) as `sha256:${string}` } },
+    },
+    files: { 'asset.glb': bytes },
+  };
+}
+
+/** Load a GLB the way a three.js application does: GLTFLoader plus the meshopt decoder. */
+export async function loadWithGltfLoader(bytes: Uint8Array) {
+  await MeshoptDecoder.ready;
+  const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+  return loader.parseAsync(Uint8Array.from(bytes).buffer, '');
+}
+
+const find = (root: THREE.Object3D, name: string) => {
+  const found = root.getObjectByName(name);
+  if (!found) throw new Error(`missing ${name}`);
+  return found;
+};
+
+describe('repeatInstances', () => {
+  test('marks a parent and is a sandbox helper', () => {
+    const group = new THREE.Group();
+    expect(repeatInstances(group)).toBe(group);
+    expect(group.userData[KILN_REPEAT_INSTANCES_KEY]).toEqual({ schemaVersion: 1 });
+    expect(typeof buildSandboxGlobals().repeatInstances).toBe('function');
+    expect(() => repeatInstances({} as THREE.Object3D)).toThrow(/repeatInstances/);
+  });
+});
+
+describe('three runtime target', () => {
+  for (const gltfExporter of ['legacy', 'three'] as const)
+    test(`${gltfExporter} converter output qualifies through GLTFLoader`, async () => {
+      const rendered = await renderGLBInProcess(RUNTIME_PROGRAM, { gltfExporter });
+      const source = new Uint8Array(rendered.glb);
+      const output = await exportAssetGlb(assetRecord(source), {
+        profile: 'runtime',
+        target: 'three',
+        metadataFileName: 'probe.kiln-metadata.json',
+      });
+      if (output.profile !== 'runtime') throw new Error('expected runtime');
+      const metadata = JSON.parse(new TextDecoder().decode(output.metadata.bytes));
+      expect(metadata.target).toBe('three');
+      const delivery = metadata.delivery;
+      expect(delivery.extensionsRequired).toEqual(
+        expect.arrayContaining([
+          'EXT_meshopt_compression',
+          'KHR_mesh_quantization',
+          'EXT_mesh_gpu_instancing',
+        ]),
+      );
+      expect(delivery.extensionsUsed).toEqual(
+        expect.arrayContaining(['KHR_node_visibility', 'MSFT_lod']),
+      );
+      expect(delivery.quantization).toMatchObject({
+        extension: 'KHR_mesh_quantization',
+        bits: { position: 14, normal: 10, texcoord: 12 },
+        customAttributes: 'float32',
+      });
+      expect(delivery.customAttributes.map((a: { name: string }) => a.name)).toEqual([
+        '_EDGE',
+        '_CAVITY',
+      ]);
+      expect(delivery.instancing).toEqual([
+        expect.objectContaining({
+          count: 4,
+          instances: ['Mesh_Bolt_0', 'Mesh_Bolt_1', 'Mesh_Bolt_2', 'Mesh_Bolt_3'],
+        }),
+      ]);
+      expect(delivery.ktx2).toMatchObject({ status: 'skipped' });
+      expect(delivery.colliderProxies).toHaveLength(1);
+      expect(delivery.preserved).toMatchObject({
+        lodChains: 1,
+        colliders: 1,
+        anchors: 1,
+        ports: 1,
+        kitModules: 1,
+      });
+      // The frame mesh carries its dequantization on its node: the sidecar says so.
+      const frameScale = delivery.nodeScale.find((entry: { node: string }) =>
+        entry.node.includes('Frame'),
+      );
+      expect(frameScale.dequantization.scale).toBeGreaterThan(1);
+      // Geometry shrinks; on a probe this small the extension JSON can outweigh it.
+      expect(binaryChunkBytes(output.glb)).toBeLessThan(binaryChunkBytes(source));
+
+      const gltf = await loadWithGltfLoader(output.glb);
+      const scene = gltf.scene;
+      // Roles and kit extras arrive as userData.
+      expect(scene.getObjectByName('Root')!.userData.kilnSemantic.roles).toContain('kit.module');
+      expect(scene.getObjectByName('Root')!.userData.kilnKit).toMatchObject({ height: 3 });
+      expect(find(scene, 'Port_west').userData.kilnSemantic.roles).toContain('kit.port.west');
+      expect(find(scene, 'Anchor_light_top').userData.kilnSemantic.roles).toContain(
+        'anchor.light.top',
+      );
+      // The collider keeps its hidden flag and its authored size; the proxy is its child.
+      const collider = find(scene, 'Collider_box_frame');
+      expect(collider.userData.gltfExtensions.KHR_node_visibility).toEqual({ visible: false });
+      [2, 3, 0.4].forEach((size, axis) => {
+        expect(collider.scale.getComponent(axis)).toBeCloseTo(size, 6);
+      });
+      expect((find(scene, 'Collider_box_frame_Proxy') as THREE.Mesh).isMesh).toBe(true);
+      // Custom attributes survive as float attributes (three lowercases custom names).
+      let edge: THREE.BufferAttribute | undefined;
+      find(scene, 'Mesh_Frame').traverse((object) => {
+        const geometry = (object as THREE.Mesh).geometry;
+        if (geometry?.getAttribute('_edge')) edge = geometry.getAttribute('_edge') as never;
+      });
+      expect(edge).toBeDefined();
+      expect(edge!.array).toBeInstanceOf(Float32Array);
+      expect(edge!.normalized).toBe(false);
+      // The four bolts load as one InstancedMesh.
+      const instanced: THREE.InstancedMesh[] = [];
+      scene.traverse((object) => {
+        if ((object as THREE.InstancedMesh).isInstancedMesh) instanced.push(object as never);
+      });
+      expect(instanced).toHaveLength(1);
+      expect(instanced[0]!.count).toBe(4);
+      // MSFT_lod survives as node extension data and its lower level node loads.
+      const lamp = find(scene, 'Lamp_LOD0');
+      const ids = lamp.userData.gltfExtensions.MSFT_lod.ids as number[];
+      expect(ids).toHaveLength(1);
+      const level = (await gltf.parser.getDependency('node', ids[0]!)) as THREE.Object3D;
+      expect(level.name).toBe('Lamp_LOD1');
+    });
+
+  test('KTX2 runs only through an injected encoder and the GLB library helper is equivalent', async () => {
+    const texture = new THREE.DataTexture(
+      new Uint8Array([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255, 255, 255, 255]),
+      2,
+      2,
+    );
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.needsUpdate = true;
+    const root = new THREE.Group();
+    root.name = 'Root';
+    const panel = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 0.1),
+      new THREE.MeshStandardMaterial({ map: texture }),
+    );
+    panel.name = 'Panel';
+    root.add(panel);
+    const bytes = (await renderSceneToGLB(root)).bytes;
+    const skipped = await deliverThreeRuntimeGlb(bytes);
+    expect(skipped.delivery.ktx2).toEqual({
+      status: 'skipped',
+      textures: 1,
+      reason: 'No KTX2 encoder was supplied; textures stay PNG or JPEG.',
+    });
+    const calls: string[] = [];
+    const encoded = await deliverThreeRuntimeGlb(bytes, {
+      ktx2Encoder: async ({ colorSpace, mimeType }) => {
+        calls.push(`${mimeType}:${colorSpace}`);
+        return new Uint8Array([
+          0xab, 0x4b, 0x54, 0x58, 0x20, 0x32, 0x30, 0xbb, 0x0d, 0x0a, 0x1a, 0x0a,
+        ]);
+      },
+    });
+    expect(calls).toEqual(['image/png:srgb']);
+    expect(encoded.delivery.ktx2).toEqual({ status: 'encoded', textures: 1 });
+    expect(encoded.delivery.extensionsRequired).toContain('KHR_texture_basisu');
+    // Deterministic: the same input gives the same bytes.
+    expect((await deliverThreeRuntimeGlb(bytes)).glb).toEqual(skipped.glb);
+  });
+
+  test('target three requires the runtime profile', async () => {
+    const rendered = await renderGLBInProcess(RUNTIME_PROGRAM);
+    await expect(
+      exportAssetGlb(assetRecord(new Uint8Array(rendered.glb)), { target: 'three' }),
+    ).rejects.toThrow(/runtime/);
+  });
+});

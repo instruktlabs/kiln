@@ -38,6 +38,8 @@ export type { KitModuleSpecV1 } from './contracts';
 export const KILN_KIT_KEY = 'kilnKit';
 /** Name of the shared proxy material; proxies are hidden, so its colour never draws. */
 export const COLLIDER_PROXY_MATERIAL_NAME = 'KilnColliderProxy';
+/** Engine-owned key `repeatInstances` writes; exported as node extras of the same name. */
+export const KILN_REPEAT_INSTANCES_KEY = 'kilnRepeatInstances';
 
 export interface KitModuleExtrasV1 extends KitModuleSpecV1 {
   schemaVersion: 1;
@@ -325,6 +327,36 @@ export function port(id: string, opts?: DeliveryPlacementOptions): THREE.Object3
   addSemanticRoles(node, [semanticRole(KILN_SEMANTIC_ROLES.kitPort, idSegment)]);
   place(helper, node, settings);
   return node;
+}
+
+/**
+ * Mark `parent` so the three.js runtime target batches its identical children (same mesh
+ * content and material, no children, roles or extras of their own) into one
+ * `EXT_mesh_gpu_instancing` node. The editable GLB keeps every child as authored.
+ */
+export function repeatInstances<T extends THREE.Object3D>(parent: T): T {
+  if (!isObject3D(parent))
+    fail('repeatInstances(parent)', 'parent must be a scene node, such as a group of repeats.');
+  parent.userData[KILN_REPEAT_INSTANCES_KEY] = { schemaVersion: 1 };
+  return parent;
+}
+
+/** The extras a repeatInstances mark exports, or nothing. */
+export function repeatInstancesExtras(node: unknown): Record<string, { schemaVersion: 1 }> {
+  const target = node as { name?: string; userData?: Record<string, unknown> } | null;
+  const value = target?.userData?.[KILN_REPEAT_INSTANCES_KEY];
+  if (value === undefined) return {};
+  if (
+    !value ||
+    typeof value !== 'object' ||
+    (value as { schemaVersion?: unknown }).schemaVersion !== 1 ||
+    Object.keys(value).length !== 1
+  )
+    fail(
+      'repeatInstances(parent)',
+      `userData.${KILN_REPEAT_INSTANCES_KEY} on ${JSON.stringify(target?.name || '(unnamed node)')} is not a mark repeatInstances wrote; set it only through repeatInstances.`,
+    );
+  return { [KILN_REPEAT_INSTANCES_KEY]: { schemaVersion: 1 } };
 }
 
 /**

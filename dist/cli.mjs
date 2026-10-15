@@ -1469,6 +1469,12 @@ var init_procedural_texture_v3_contract = __esm(() => {
 });
 
 // src/texture-atlas-contract.ts
+function textureAtlasCompilerIdV1(spec) {
+  return spec.pack === undefined ? TEXTURE_ATLAS_COMPILER_ID : TEXTURE_ATLAS_COMPILER_ID_V1_2;
+}
+function textureAtlasLimitsV1(spec) {
+  return spec.pack === undefined ? TEXTURE_ATLAS_LIMITS : TEXTURE_ATLAS_LIMITS_V1_2;
+}
 function atlasFailure(message) {
   throw new TextureAtlasError(message);
 }
@@ -1571,22 +1577,109 @@ function assertAtlasCropV1(crop, content, width, height) {
 function atlasSourceIdentityV1(source) {
   return source.kind === "procedural" ? `procedural:${hashProceduralTextureSpecV3(source.spec)}` : `resource:${source.pin.resourceId}:${source.pin.revisionId}:${source.resourceId}`;
 }
+function packAtlasRegionsV1(width, height, fixed, pending) {
+  let free = [{ x: 0, y: 0, width, height }];
+  const occupy = (used) => {
+    const next = [];
+    for (const f of free) {
+      if (!rectsOverlap(f, used)) {
+        next.push(f);
+        continue;
+      }
+      if (used.x > f.x)
+        next.push({ x: f.x, y: f.y, width: used.x - f.x, height: f.height });
+      if (used.x + used.width < f.x + f.width)
+        next.push({
+          x: used.x + used.width,
+          y: f.y,
+          width: f.x + f.width - used.x - used.width,
+          height: f.height
+        });
+      if (used.y > f.y)
+        next.push({ x: f.x, y: f.y, width: f.width, height: used.y - f.y });
+      if (used.y + used.height < f.y + f.height)
+        next.push({
+          x: f.x,
+          y: used.y + used.height,
+          width: f.width,
+          height: f.y + f.height - used.y - used.height
+        });
+    }
+    free = next.filter((a, i) => !next.some((b, j) => j !== i && rectContains(b, a) && (!rectContains(a, b) || j < i)));
+    if (free.length > 16384)
+      atlasFailure("pack: free-space bookkeeping budget exceeded.");
+  };
+  for (const allocation of fixed)
+    occupy(allocation);
+  const order = [...pending].sort((a, b) => b.width * b.height - a.width * a.height || (a.region.name < b.region.name ? -1 : a.region.name > b.region.name ? 1 : 0));
+  for (const item of order) {
+    let best;
+    let bestScore;
+    for (const f of free) {
+      if (f.width < item.width || f.height < item.height)
+        continue;
+      const dw = f.width - item.width, dh = f.height - item.height;
+      const score = [
+        Math.min(dw, dh),
+        Math.max(dw, dh),
+        f.y,
+        f.x
+      ];
+      if (!bestScore || score[0] < bestScore[0] || score[0] === bestScore[0] && (score[1] < bestScore[1] || score[1] === bestScore[1] && (score[2] < bestScore[2] || score[2] === bestScore[2] && score[3] < bestScore[3]))) {
+        best = f;
+        bestScore = score;
+      }
+    }
+    if (!best)
+      atlasFailure(`pack: region ${item.region.name} (${item.width}x${item.height} texels with its gutter) does not fit in the ${width}x${height} atlas beside the regions already placed.`);
+    item.region.content = {
+      x: best.x + item.region.gutter,
+      y: best.y + item.region.gutter,
+      width: item.region.content.width,
+      height: item.region.content.height
+    };
+    occupy({ x: best.x, y: best.y, width: item.width, height: item.height });
+  }
+}
 function canonicalizeTextureAtlasSpecV1(input) {
   preflight(input);
-  const r = record2(input, ["schemaVersion", "width", "height", "usage", "sampler", "regions"], "atlas");
+  const r = record2(input, ["schemaVersion", "width", "height", "usage", "sampler", "regions", "pack"], "atlas");
   if (r["schemaVersion"] !== 1)
     atlasFailure("schemaVersion must be 1.");
-  const width = integer3(r["width"], 4, TEXTURE_ATLAS_LIMITS.edge, "width"), height = integer3(r["height"], 4, TEXTURE_ATLAS_LIMITS.edge, "height");
+  let pack;
+  if (r["pack"] !== undefined) {
+    const p = record2(r["pack"], ["edge", "gutter", "algorithm"], "pack");
+    if (!TEXTURE_ATLAS_PACK_EDGES.includes(p["edge"]))
+      atlasFailure("pack.edge must be 1024 or 2048.");
+    if (p["algorithm"] !== undefined && p["algorithm"] !== "maxrects")
+      atlasFailure("pack.algorithm must be 'maxrects'.");
+    pack = {
+      edge: p["edge"],
+      gutter: p["gutter"] === undefined ? 2 : integer3(p["gutter"], 0, 32, "pack.gutter"),
+      algorithm: "maxrects"
+    };
+  }
+  const limits = pack ? TEXTURE_ATLAS_LIMITS_V1_2 : TEXTURE_ATLAS_LIMITS, maxEdge = pack ? pack.edge : limits.edge;
+  const width = pack && r["width"] === undefined ? pack.edge : integer3(r["width"], 4, maxEdge, "width"), height = pack && r["height"] === undefined ? pack.edge : integer3(r["height"], 4, maxEdge, "height");
+  if (width * height > limits.outputTexels)
+    atlasFailure("output texel budget exceeded.");
   if (!TEXTURE_USAGES.includes(r["usage"]))
     atlasFailure("usage must be a texture usage.");
   const usage = r["usage"];
-  if (!Array.isArray(r["regions"]) || !r["regions"].length || r["regions"].length > TEXTURE_ATLAS_LIMITS.regions)
-    atlasFailure("regions must contain 1..64 entries.");
+  if (!Array.isArray(r["regions"]) || !r["regions"].length || r["regions"].length > limits.regions)
+    atlasFailure(`regions must contain 1..${limits.regions} entries.`);
+  const pending = [];
   const regions = r["regions"].map((value, i) => {
-    const q = record2(value, ["name", "content", "gutter", "edgeMode", "source", "crop"], `regions[${i}]`);
+    const q = record2(value, ["name", "content", "gutter", "edgeMode", "source", "crop", "packed"], `regions[${i}]`);
     if (typeof q["name"] !== "string" || !/^[a-z][a-z0-9_-]{0,79}$/.test(q["name"]))
       atlasFailure("region name must be a stable lowercase identifier.");
-    const content = rect(q["content"], "content"), gutter = q["gutter"] === undefined ? 2 : integer3(q["gutter"], 0, 32, "gutter");
+    const explicit = q["content"] !== undefined;
+    if (!explicit && !pack)
+      atlasFailure(`region ${q["name"]}: content is required unless the atlas sets pack.`);
+    if (q["packed"] !== undefined && (q["packed"] !== true || !pack || !explicit))
+      atlasFailure("packed is the resolved-placement marker: true, with content, in an atlas that sets pack.");
+    let content = explicit ? rect(q["content"], "content") : undefined;
+    const gutter = q["gutter"] === undefined ? pack?.gutter ?? 2 : integer3(q["gutter"], 0, 32, "gutter");
     const edgeMode = q["edgeMode"] === undefined ? "copy-edge" : q["edgeMode"];
     if (!["copy-edge", "mask-rgb-dilate"].includes(edgeMode))
       atlasFailure("unsupported edgeMode.");
@@ -1602,6 +1695,7 @@ function canonicalizeTextureAtlasSpecV1(input) {
         atlasFailure("source usage does not match atlas usage.");
       source = { kind: "procedural", spec: admission.spec };
       crop ??= { x: 0, y: 0, width: admission.spec.width, height: admission.spec.height };
+      content ??= { x: 0, y: 0, width: crop.width, height: crop.height };
       assertAtlasCropV1(crop, content, admission.spec.width, admission.spec.height);
     } else if (s["kind"] === "resource") {
       record2(s, ["kind", "resourceId", "pin", "expected"], "resource source");
@@ -1629,6 +1723,10 @@ function canonicalizeTextureAtlasSpecV1(input) {
         pin: { resourceId: p["resourceId"], revisionId, sha256 },
         ...expected ? { expected } : {}
       };
+      if (!content) {
+        const size = crop ?? (expected?.width !== undefined && expected.height !== undefined ? { width: expected.width, height: expected.height } : atlasFailure(`region ${q["name"]}: a packed resource region needs a crop or expected width and height (its size).`));
+        content = { x: 0, y: 0, width: size.width, height: size.height };
+      }
       if (crop && (crop.width !== content.width || crop.height !== content.height))
         atlasFailure("source crop/content dimensions must match; resampling is unsupported.");
     } else
@@ -1639,23 +1737,36 @@ function canonicalizeTextureAtlasSpecV1(input) {
       gutter,
       edgeMode,
       source,
-      ...crop ? { crop } : {}
+      ...crop ? { crop } : {},
+      ...pack && (!explicit || q["packed"] === true) ? { packed: true } : {}
     };
-    const allocation = atlasAllocationV1(result);
-    if (allocation.x < 0 || allocation.y < 0 || allocation.x + allocation.width > width || allocation.y + allocation.height > height)
-      atlasFailure("padded allocation is out of bounds.");
+    if (!explicit)
+      pending.push({
+        region: result,
+        width: result.content.width + 2 * gutter,
+        height: result.content.height + 2 * gutter
+      });
     return result;
   }).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
   if (new Set(regions.map((v) => v.name)).size !== regions.length)
     atlasFailure("duplicate region name.");
+  if (pending.length) {
+    const placed = new Set(pending.map((p) => p.region));
+    packAtlasRegionsV1(width, height, regions.filter((region) => !placed.has(region)).map((region) => atlasAllocationV1(region)), pending);
+  }
+  for (const region of regions) {
+    const allocation = atlasAllocationV1(region);
+    if (allocation.x < 0 || allocation.y < 0 || allocation.x + allocation.width > width || allocation.y + allocation.height > height)
+      atlasFailure("padded allocation is out of bounds.");
+  }
   for (let i = 0;i < regions.length; i++)
     for (let j = i + 1;j < regions.length; j++) {
       const a = atlasAllocationV1(regions[i]), b = atlasAllocationV1(regions[j]);
       if (a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height)
         atlasFailure(`padded allocations overlap: ${regions[i].name}, ${regions[j].name}.`);
     }
-  if (new Set(regions.map((v) => atlasSourceIdentityV1(v.source))).size > TEXTURE_ATLAS_LIMITS.sources)
-    atlasFailure("distinct source budget exceeds 16.");
+  if (new Set(regions.map((v) => atlasSourceIdentityV1(v.source))).size > limits.sources)
+    atlasFailure(`distinct source budget exceeds ${limits.sources}.`);
   let sampler;
   try {
     sampler = canonicalizePortableSamplerV1(r["sampler"] === undefined ? {
@@ -1673,18 +1784,17 @@ function canonicalizeTextureAtlasSpecV1(input) {
     height,
     usage,
     sampler,
-    regions
+    regions,
+    ...pack ? { pack } : {}
   };
   if (new TextEncoder().encode(JSON.stringify(spec)).length > TEXTURE_ATLAS_LIMITS.jsonBytes)
     atlasFailure("canonical JSON byte budget exceeded.");
   return spec;
 }
-function canonicalTextureAtlasJsonV1(input) {
-  return JSON.stringify(canonicalizeTextureAtlasSpecV1(input));
-}
 function hashTextureAtlasSpecV1(input) {
-  return `sha256:${sha256Hex(`${TEXTURE_ATLAS_COMPILER_ID}
-${canonicalTextureAtlasJsonV1(input)}`)}`;
+  const spec = canonicalizeTextureAtlasSpecV1(input);
+  return `sha256:${sha256Hex(`${textureAtlasCompilerIdV1(spec)}
+${JSON.stringify(spec)}`)}`;
 }
 function canonicalAtlasMetadataJsonV1(input) {
   preflight(input);
@@ -1714,7 +1824,7 @@ function validateTextureAtlasManifestV1(input, providedSpec) {
     "regions",
     "manifestHash"
   ], "manifest");
-  if (r["version"] !== "kiln.atlas-manifest.v1" || r["compilerId"] !== TEXTURE_ATLAS_COMPILER_ID || r["width"] !== spec.width || r["height"] !== spec.height || r["usage"] !== spec.usage || r["origin"] !== "top-left")
+  if (r["version"] !== "kiln.atlas-manifest.v1" || r["compilerId"] !== textureAtlasCompilerIdV1(spec) || r["width"] !== spec.width || r["height"] !== spec.height || r["usage"] !== spec.usage || r["origin"] !== "top-left")
     atlasFailure("manifest version/compiler/dimensions/usage/origin mismatch.");
   if (canonicalAtlasMetadataJsonV1(r["sampler"]) !== canonicalAtlasMetadataJsonV1(spec.sampler) || r["specHash"] !== hashTextureAtlasSpecV1(spec) || r["layoutHash"] !== atlasLayoutHashV1(spec))
     atlasFailure("manifest sampler/spec/layout identity mismatch.");
@@ -1771,7 +1881,7 @@ function validateTextureAtlasManifestV1(input, providedSpec) {
       if (d["materialId"] !== source.pin.resourceId || d["revisionId"] !== source.pin.revisionId || d["resourceId"] !== source.resourceId || d["width"] !== width || d["height"] !== height || d["usage"] !== spec.usage || typeof d["slot"] !== "string" || slots[d["slot"]] !== spec.usage || d["colorSpace"] !== (spec.usage === "albedo" || spec.usage === "emissive" ? "srgb" : "linear"))
         atlasFailure("manifest pinned resource descriptor mismatch.");
       hash(d["imageSha256"], "manifest source imageSha256");
-      integer3(d["encodedByteLength"], 1, TEXTURE_ATLAS_LIMITS.encodedSourceBytes, "manifest encodedByteLength");
+      integer3(d["encodedByteLength"], 1, textureAtlasLimitsV1(spec).encodedSourceBytes, "manifest encodedByteLength");
       if (d["decodedPixelHash"] !== undefined && d["decodedPixelHash"] !== s["decodedPixelHash"])
         atlasFailure("manifest source decodedPixelHash mismatch.");
       for (const key of ["width", "height", "imageSha256", "decodedPixelHash"]) {
@@ -1796,13 +1906,17 @@ ${canonicalAtlasMetadataJsonV1(payload)}`)}`)
     atlasFailure("manifest hash mismatch.");
   return structuredClone(input);
 }
-var TEXTURE_ATLAS_COMPILER_ID = "kiln.texture-atlas.v1.1", TEXTURE_ATLAS_LIMITS, TextureAtlasError;
+var TEXTURE_ATLAS_COMPILER_ID = "kiln.texture-atlas.v1.1", TEXTURE_ATLAS_COMPILER_ID_V1_2 = "kiln.texture-atlas.v1.2", TEXTURE_ATLAS_COMPILER_IDS, TEXTURE_ATLAS_LIMITS, TEXTURE_ATLAS_LIMITS_V1_2, TEXTURE_ATLAS_PACK_EDGES, TextureAtlasError, rectsOverlap = (a, b) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height, rectContains = (outer, inner) => inner.x >= outer.x && inner.y >= outer.y && inner.x + inner.width <= outer.x + outer.width && inner.y + inner.height <= outer.y + outer.height;
 var init_texture_atlas_contract = __esm(() => {
   init_portable_sampler();
   init_procedural_texture_v3_contract();
   init_procedural_material_v2();
   init_texture_contract();
   init_authoring_diagnostic();
+  TEXTURE_ATLAS_COMPILER_IDS = Object.freeze([
+    TEXTURE_ATLAS_COMPILER_ID,
+    TEXTURE_ATLAS_COMPILER_ID_V1_2
+  ]);
   TEXTURE_ATLAS_LIMITS = Object.freeze({
     edge: 1024,
     outputTexels: 1048576,
@@ -1817,6 +1931,16 @@ var init_texture_atlas_contract = __esm(() => {
     uvVertices: 262144,
     uvAttributeBytes: 134217728
   });
+  TEXTURE_ATLAS_LIMITS_V1_2 = Object.freeze({
+    ...TEXTURE_ATLAS_LIMITS,
+    edge: 2048,
+    outputTexels: 4194304,
+    regions: 128,
+    sources: 32,
+    work: 192000000,
+    allocatedBytes: 134217728
+  });
+  TEXTURE_ATLAS_PACK_EDGES = Object.freeze([1024, 2048]);
   TextureAtlasError = class TextureAtlasError extends AuthoringDiagnosticError {
     constructor(message) {
       super("TEXTURE_ATLAS_CONTRACT", `textureAtlas: ${message}`);
@@ -11023,6 +11147,21 @@ function port(id, opts) {
   place(helper, node, settings);
   return node;
 }
+function repeatInstances(parent) {
+  if (!isObject3D(parent))
+    fail3("repeatInstances(parent)", "parent must be a scene node, such as a group of repeats.");
+  parent.userData[KILN_REPEAT_INSTANCES_KEY] = { schemaVersion: 1 };
+  return parent;
+}
+function repeatInstancesExtras(node) {
+  const target = node;
+  const value = target?.userData?.[KILN_REPEAT_INSTANCES_KEY];
+  if (value === undefined)
+    return {};
+  if (!value || typeof value !== "object" || value.schemaVersion !== 1 || Object.keys(value).length !== 1)
+    fail3("repeatInstances(parent)", `userData.${KILN_REPEAT_INSTANCES_KEY} on ${JSON.stringify(target?.name || "(unnamed node)")} is not a mark repeatInstances wrote; set it only through repeatInstances.`);
+  return { [KILN_REPEAT_INSTANCES_KEY]: { schemaVersion: 1 } };
+}
 function kitExtras(node) {
   const target = node;
   const value = target?.userData?.[KILN_KIT_KEY];
@@ -11034,7 +11173,7 @@ function kitExtras(node) {
   const { schemaVersion: _version, ...spec } = record;
   return { [KILN_KIT_KEY]: kitModuleExtras(spec) };
 }
-var KILN_KIT_KEY = "kilnKit", COLLIDER_PROXY_MATERIAL_NAME = "KilnColliderProxy", SEGMENT;
+var KILN_KIT_KEY = "kilnKit", COLLIDER_PROXY_MATERIAL_NAME = "KilnColliderProxy", KILN_REPEAT_INSTANCES_KEY = "kilnRepeatInstances", SEGMENT;
 var init_delivery = __esm(() => {
   init_contracts();
   init_authoring_diagnostic();
@@ -14566,25 +14705,38 @@ function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = 
       z3.object({ kind: z3.literal("procedural"), spec: canonicalProceduralTextureSpecV3Schema }).strict(),
       resourceSource
     ]),
-    crop: atlasRectangleSchema.optional()
+    crop: atlasRectangleSchema.optional(),
+    packed: z3.literal(true).optional()
   }).strict();
   const atlasBase = {
     schemaVersion: z3.literal(1),
-    width: integer(4, TEXTURE_ATLAS_LIMITS.edge),
-    height: integer(4, TEXTURE_ATLAS_LIMITS.edge),
+    width: integer(4, TEXTURE_ATLAS_LIMITS_V1_2.edge),
+    height: integer(4, TEXTURE_ATLAS_LIMITS_V1_2.edge),
     usage,
     sampler: portableSamplerSchema
   };
-  const canonicalTextureAtlasSpecV1Schema = z3.object({ ...atlasBase, regions: z3.array(region).min(1).max(TEXTURE_ATLAS_LIMITS.regions) }).strict();
+  const packEdge = z3.union(TEXTURE_ATLAS_PACK_EDGES.map((edge) => z3.literal(edge)));
+  const canonicalTextureAtlasSpecV1Schema = z3.object({
+    ...atlasBase,
+    regions: z3.array(region).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
+    pack: z3.object({ edge: packEdge, gutter: integer(0, 32), algorithm: z3.literal("maxrects") }).strict().optional()
+  }).strict();
   const textureAtlasSpecV1Schema = z3.object({
     ...atlasBase,
+    width: atlasBase.width.optional(),
+    height: atlasBase.height.optional(),
+    pack: z3.object({
+      edge: packEdge,
+      gutter: integer(0, 32).optional(),
+      algorithm: z3.literal("maxrects").optional()
+    }).strict().optional(),
     sampler: portableSamplerSchema.optional(),
     regions: z3.array(region.extend({
       source: z3.discriminatedUnion("kind", [
         z3.object({ kind: z3.literal("procedural"), spec: proceduralTextureSpecV3Schema }).strict(),
         resourceSource
       ])
-    }).partial({ gutter: true, edgeMode: true })).min(1).max(TEXTURE_ATLAS_LIMITS.regions)
+    }).partial({ content: true, gutter: true, edgeMode: true })).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions)
   }).strict();
   const verifiedPinnedMaterialMapDescriptorSchema = z3.object({
     materialId: stableId,
@@ -14618,7 +14770,7 @@ function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = 
   ]);
   const textureAtlasManifestV1Schema = z3.object({
     version: z3.literal("kiln.atlas-manifest.v1"),
-    compilerId: z3.literal(TEXTURE_ATLAS_COMPILER_ID),
+    compilerId: z3.enum(TEXTURE_ATLAS_COMPILER_IDS),
     width: atlasBase.width,
     height: atlasBase.height,
     usage,
@@ -14628,14 +14780,14 @@ function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = 
     layoutHash: hash,
     decodedPixelHash: hash,
     atlasPixelHash: hash,
-    sources: z3.array(sourceManifest).min(1).max(TEXTURE_ATLAS_LIMITS.sources),
+    sources: z3.array(sourceManifest).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.sources),
     regions: z3.array(z3.object({
       name: stableId,
       content: atlasRectangleSchema,
       allocation: atlasRectangleSchema,
       crop: atlasRectangleSchema,
       sourceId: z3.string().min(1).max(1024)
-    }).strict()).min(1).max(TEXTURE_ATLAS_LIMITS.regions),
+    }).strict()).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
     manifestHash: hash
   }).strict();
   return {
@@ -15179,13 +15331,15 @@ var init_material_library = __esm(() => {
     }).strict(),
     z4.object({
       kind: z4.literal("atlas"),
-      compilerId: z4.literal(TEXTURE_ATLAS_COMPILER_ID),
+      compilerId: z4.enum(TEXTURE_ATLAS_COMPILER_IDS),
       spec: atlasSpecSchema,
       manifest: atlasManifestSchema,
       encoder: z4.object({ name: z4.literal("sharp"), version: text3 }).strict()
     }).strict().superRefine((recipe, context) => {
       try {
         validateTextureAtlasManifestV1(recipe.manifest, recipe.spec);
+        if (recipe.compilerId !== recipe.manifest.compilerId)
+          throw new Error("compiler id");
       } catch {
         context.addIssue({ code: "custom", message: "Invalid stored atlas manifest" });
       }
@@ -15569,7 +15723,7 @@ function checkDescriptor(d, source, usage) {
   }
 }
 function admitTextureAtlasSpecV1(input, options = {}) {
-  const spec = canonicalizeTextureAtlasSpecV1(input), unique = new Map, crops = new Map;
+  const spec = canonicalizeTextureAtlasSpecV1(input), limits = textureAtlasLimitsV1(spec), unique = new Map, crops = new Map;
   const outputTexels = spec.width * spec.height;
   const budget = {
     sourceTexels: 0,
@@ -15627,14 +15781,14 @@ function admitTextureAtlasSpecV1(input, options = {}) {
   }
   budget.workUnits += spec.regions.length * (spec.regions.length - 1) / 2;
   budget.conservativePixelAllocationBytes += budget.dilationScratchBytes;
-  if (budget.sourceTexels > TEXTURE_ATLAS_LIMITS.sourceTexels)
+  if (budget.sourceTexels > limits.sourceTexels)
     atlasFailure("full decoded source texel budget exceeded; a small crop does not reduce source decode cost.");
-  if (budget.encodedBytes > TEXTURE_ATLAS_LIMITS.encodedBytes)
+  if (budget.encodedBytes > limits.encodedBytes)
     atlasFailure("aggregate encoded source byte budget exceeded.");
-  if (budget.workUnits > TEXTURE_ATLAS_LIMITS.work)
-    atlasFailure(`aggregate work budget ${budget.workUnits} exceeds ${TEXTURE_ATLAS_LIMITS.work}.`);
-  if (budget.conservativePixelAllocationBytes > TEXTURE_ATLAS_LIMITS.allocatedBytes)
-    atlasFailure(`aggregate pixel allocation budget ${budget.conservativePixelAllocationBytes} exceeds ${TEXTURE_ATLAS_LIMITS.allocatedBytes}.`);
+  if (budget.workUnits > limits.work)
+    atlasFailure(`aggregate work budget ${budget.workUnits} exceeds ${limits.work}.`);
+  if (budget.conservativePixelAllocationBytes > limits.allocatedBytes)
+    atlasFailure(`aggregate pixel allocation budget ${budget.conservativePixelAllocationBytes} exceeds ${limits.allocatedBytes}.`);
   return {
     spec,
     sources: [...unique.values()].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
@@ -15777,7 +15931,7 @@ ${spec.width},${spec.height},${spec.usage}
   const atlasPixelHash = await pixelDigest(tagged);
   const payload = {
     version: "kiln.atlas-manifest.v1",
-    compilerId: TEXTURE_ATLAS_COMPILER_ID,
+    compilerId: textureAtlasCompilerIdV1(spec),
     width: spec.width,
     height: spec.height,
     usage: spec.usage,
@@ -19434,7 +19588,7 @@ async function createMaterialRecordV2(draft, options) {
       }).png({ compressionLevel: 9, adaptiveFiltering: false }).toBuffer());
       recipe = {
         kind: "atlas",
-        compilerId: TEXTURE_ATLAS_COMPILER_ID,
+        compilerId: compiled.manifest.compilerId,
         spec: compiled.spec,
         manifest: compiled.manifest,
         encoder
@@ -19498,7 +19652,6 @@ var init_material_library_node = __esm(() => {
   init_procedural_texture_v3();
   init_procedural_texture_v3_contract();
   init_texture_atlas_pixels();
-  init_texture_atlas_contract();
   init_procedural_texture();
   init_procedural_material_v2();
   init_textures();
@@ -21190,7 +21343,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       copy = new THREE27.Mesh(geometry, spriteMaterial);
       THREE27.Object3D.prototype.copy.call(copy, shadow, false);
     }
-    Object.assign(copy.userData, authorExtras?.node(source), rigExtrasForExport(source), openShellExtras(source), kitExtras(source));
+    Object.assign(copy.userData, authorExtras?.node(source), rigExtrasForExport(source), openShellExtras(source), kitExtras(source), repeatInstancesExtras(source));
     const semantic = source.userData[KILN_SEMANTIC_EXTRAS_KEY];
     if (semantic !== undefined) {
       const checked = validateSemanticMetadataV1(semantic);
@@ -21653,6 +21806,25 @@ function triangleTouchesCapsule(a, b, c, p, q, radius) {
     if (segmentSegmentDistanceSq(p, q, s, e) <= r2)
       return true;
   return segmentCrossesTriangle(p, q, a, b, c);
+}
+function deliveryNodePaths(doc) {
+  const paths = new Map;
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return paths;
+  const visit = (siblings, parentPath) => {
+    const seen = new Map;
+    for (const node of siblings) {
+      const name = node.getName();
+      const occurrence = seen.get(name) ?? 0;
+      seen.set(name, occurrence + 1);
+      const path = `${parentPath}${segment4(name, occurrence)}`;
+      paths.set(node, path);
+      visit(node.listChildren(), path);
+    }
+  };
+  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0));
+  return paths;
 }
 function summarizeVertexAttributes(doc) {
   const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
@@ -26147,7 +26319,8 @@ function manifestOf(atlas) {
     atlasFailure("an atlas texture or compiled manifest is required.");
   canonicalAtlasMetadataJsonV1(value);
   const manifest = value;
-  if (manifest.version !== "kiln.atlas-manifest.v1" || manifest.compilerId !== TEXTURE_ATLAS_COMPILER_ID || manifest.origin !== "top-left" || !Array.isArray(manifest.regions) || !manifest.regions.length || manifest.regions.length > 64 || !Number.isSafeInteger(manifest.width) || manifest.width < 4 || manifest.width > 1024 || !Number.isSafeInteger(manifest.height) || manifest.height < 4 || manifest.height > 1024)
+  const limits = manifest.compilerId === TEXTURE_ATLAS_COMPILER_ID_V1_2 ? TEXTURE_ATLAS_LIMITS_V1_2 : TEXTURE_ATLAS_LIMITS;
+  if (manifest.version !== "kiln.atlas-manifest.v1" || !TEXTURE_ATLAS_COMPILER_IDS.includes(manifest.compilerId) || manifest.origin !== "top-left" || !Array.isArray(manifest.regions) || !manifest.regions.length || manifest.regions.length > limits.regions || !Number.isSafeInteger(manifest.width) || manifest.width < 4 || manifest.width > limits.edge || !Number.isSafeInteger(manifest.height) || manifest.height < 4 || manifest.height > limits.edge)
     atlasFailure("invalid atlas manifest dimensions/version.");
   const { manifestHash, ...payload } = manifest;
   if (`sha256:${sha256Hex(`kiln.atlas-manifest.v1
@@ -27866,6 +28039,7 @@ function buildSandboxGlobals(usage, options = {}) {
     anchor: wrap("anchor", anchor),
     defineModule: wrap("defineModule", defineModule),
     port: wrap("port", port),
+    repeatInstances: wrap("repeatInstances", repeatInstances),
     bakeSurfaceAttributes: wrap("bakeSurfaceAttributes", bakeSurfaceAttributes),
     requireSolid: wrap("requireSolid", requireSolid),
     defineBudget: wrap("defineBudget", (spec, target) => {
@@ -29180,6 +29354,17 @@ colliderHull(frame, { id: 'frame' });`
       example: "port('west', { parent: root, position: [-2, 0, 0], rotation: [0, 180, 0] });"
     },
     {
+      name: "repeatInstances",
+      signature: "repeatInstances(parent: Object3D)",
+      returns: "Object3D (parent, unchanged)",
+      category: "structure",
+      description: "Marks parent so the three.js runtime export (export --profile runtime --target three) batches its identical leaf children into one EXT_mesh_gpu_instancing node. The editable GLB is unchanged.",
+      example: `const bolts = new THREE.Group(); bolts.name = 'Bolts'; root.add(bolts);
+for (let i = 0; i < 8; i++) createPart('Bolt_' + i, boltGeo, steel, { parent: bolts, position: [i * 0.2, 0, 0] });
+repeatInstances(bolts);`,
+      promptNotes: "Only direct children with the same geometry and material and no children, roles or extras of their own are batched."
+    },
+    {
       name: "bakeSurfaceAttributes",
       signature: "bakeSurfaceAttributes(target: Object3D, opts?: { edge?: { thresholdDegrees?: 35, smoothing?: 1 } | false, cavity?: { rays?: 32, radius?, occluders? } | false })",
       returns: "Object3D (target, unchanged; its meshes get new geometry copies)",
@@ -29845,12 +30030,12 @@ const mesh = new THREE.Mesh(unwrapped, bakedPbr);`
     },
     {
       name: "textureAtlas",
-      signature: "await textureAtlas({ schemaVersion: 1, width, height, usage, sampler?, regions: [{ name, content: { x, y, width, height }, gutter?, edgeMode?, source, crop? }] })",
+      signature: "await textureAtlas({ schemaVersion: 1, width, height, usage, sampler?, pack?: { edge: 1024 | 2048, gutter?, algorithm?: 'maxrects' }, regions: [{ name, content?: { x, y, width, height }, gutter?, edgeMode?, source, crop? }] })",
       returns: "Promise<THREE.DataTexture>",
       category: "textures",
       description: "Composes named, disjoint pixel regions from bounded procedural V3 recipes or exact pinned library maps without creating a mesh.",
       example: "const atlas = await textureAtlas({ schemaVersion: 1, width: 8, height: 8, usage: 'albedo', regions: [{ name: 'patch', content: { x: 2, y: 2, width: 4, height: 4 }, source: { kind: 'procedural', spec: { schemaVersion: 3, width: 4, height: 4, background: [70, 90, 40, 255], operations: [] } } }] });",
-      promptNotes: 'Coordinates are integer pixel edges from top left. Width/height 4..1024. Content excludes gutter (default2); padded allocations must not overlap. copy-edge (default) extrudes RGBA; mask-rgb-dilate preserves positive alpha and extends nearest donor RGB into zero-alpha pixels without growing alpha, for albedo/emissive only. No packing, rotation or resampling. An optional crop must exactly match content dimensions. Resource sources require {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256}} and a host-supplied exact dependency; paths, URLs, latest and approved non-library resources are unsupported. Default sampler is linear-mipmap-linear/linear/clamp-to-edge on both axes; explicit samplers require all four fields. Gutters do not guarantee isolation at every mip level. Use remapUVToAtlas with an explicit input origin and mode; inspect at intended scene distance.'
+      promptNotes: 'Coordinates are integer pixel edges from top left. Width/height 4..1024. Content excludes gutter (default2); padded allocations must not overlap. With pack, width/height default to pack.edge (up to 2048, 128 regions, 32 sources; compiler kiln.texture-atlas.v1.2) and regions may omit content: MaxRects places them by area descending then name, around any explicit rectangles, at their source size (procedural spec size, crop, or a resource expected width/height); pack.gutter is the default gutter. The compiled spec records each placement (packed: true); read placements from the manifest regions. copy-edge (default) extrudes RGBA; mask-rgb-dilate preserves positive alpha and extends nearest donor RGB into zero-alpha pixels without growing alpha, for albedo/emissive only. No rotation or resampling. An optional crop must exactly match content dimensions. Resource sources require {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256}} and a host-supplied exact dependency; paths, URLs, latest and approved non-library resources are unsupported. Default sampler is linear-mipmap-linear/linear/clamp-to-edge on both axes; explicit samplers require all four fields. Gutters do not guarantee isolation at every mip level. Use remapUVToAtlas with an explicit input origin and mode; inspect at intended scene distance.'
     },
     {
       name: "remapUVToAtlas",
@@ -36899,7 +37084,8 @@ function bridgeNode(doc, buf, threeObj, matCache, nodeMap, meshCache, texCache, 
     ...authorExtras?.node(threeObj),
     ...rigExtrasForExport(threeObj),
     ...openShellExtras(threeObj),
-    ...kitExtras(threeObj)
+    ...kitExtras(threeObj),
+    ...repeatInstancesExtras(threeObj)
   };
   let semanticForExport = semanticValue;
   if (threeObj.isSprite) {
@@ -40792,6 +40978,279 @@ var init_assets_node = __esm(() => {
   windowsSharePath = /^[\\/]{2}[^\\/]+[\\/][^\\/]+/;
 });
 
+// src/runtime-three.ts
+var exports_runtime_three = {};
+__export(exports_runtime_three, {
+  deliverRuntimeThreeGlb: () => deliverRuntimeThreeGlb
+});
+import {
+  Logger as Logger2,
+  PropertyType as PropertyType5
+} from "@gltf-transform/core";
+import {
+  EXTMeshGPUInstancing,
+  EXTMeshoptCompression,
+  KHRTextureBasisu as KHRTextureBasisu2
+} from "@gltf-transform/extensions";
+import { dedup as dedup2, quantize, reorder } from "@gltf-transform/functions";
+import * as THREE54 from "three";
+function meshSignature(mesh, ids) {
+  const id = (property) => {
+    if (!property)
+      return -1;
+    if (!ids.has(property))
+      ids.set(property, ids.size);
+    return ids.get(property);
+  };
+  return mesh.listPrimitives().map((primitive) => `${primitive.getMode()}:${id(primitive.getMaterial())}:${id(primitive.getIndices())}:${primitive.listSemantics().sort().map((semantic) => `${semantic}=${id(primitive.getAttribute(semantic))}`).join(",")}:${primitive.listTargets().length}`).join("|");
+}
+function applyScopedInstancing(doc) {
+  const report = [];
+  const ids = new Map;
+  const parents = doc.getRoot().listNodes().filter((node) => node.getExtras()[KILN_REPEAT_INSTANCES_KEY] !== undefined);
+  let extension;
+  for (const parent of parents) {
+    const groups = new Map;
+    for (const child of parent.listChildren()) {
+      const mesh = child.getMesh();
+      if (!mesh || child.listChildren().length || child.getSkin() || child.listExtensions().length || isHiddenGltfNode(child) || rolesOf4(child).length || Object.keys(child.getExtras()).length || child.getWeights().length)
+        continue;
+      const signature = meshSignature(mesh, ids);
+      groups.set(signature, [...groups.get(signature) ?? [], child]);
+    }
+    let batchIndex = 0;
+    for (const nodes of groups.values()) {
+      if (nodes.length < 2)
+        continue;
+      const mesh = nodes[0].getMesh();
+      extension ??= doc.createExtension(EXTMeshGPUInstancing).setRequired(true);
+      const buffer = doc.getRoot().listBuffers()[0];
+      const accessor = (type, values) => doc.createAccessor().setType(type).setArray(new Float32Array(values)).setBuffer(buffer ?? null);
+      const t = [], r = [], s = [];
+      for (const node of nodes) {
+        t.push(...node.getTranslation());
+        r.push(...node.getRotation());
+        s.push(...node.getScale());
+      }
+      const batch = extension.createInstancedMesh().setAttribute("TRANSLATION", accessor("VEC3", t)).setAttribute("ROTATION", accessor("VEC4", r)).setAttribute("SCALE", accessor("VEC3", s));
+      const name = `${parent.getName() || "Node"}_Instances${batchIndex ? `_${batchIndex}` : ""}`;
+      batchIndex++;
+      const batchNode = doc.createNode(name).setMesh(mesh).setExtension("EXT_mesh_gpu_instancing", batch);
+      parent.addChild(batchNode);
+      report.push({
+        node: batchNode,
+        mesh: mesh.getName(),
+        count: nodes.length,
+        instances: nodes.map((node) => node.getName())
+      });
+      for (const node of nodes) {
+        const own = node.getMesh();
+        node.dispose();
+        if (own && own !== mesh && !own.listParents().some((p) => p.propertyType === PropertyType5.NODE))
+          own.dispose();
+      }
+    }
+    const extras = { ...parent.getExtras() };
+    delete extras[KILN_REPEAT_INSTANCES_KEY];
+    parent.setExtras(extras);
+  }
+  return report;
+}
+function splitColliderProxies(doc) {
+  const report = [];
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh || !isCollider(node))
+      continue;
+    const proxy = doc.createNode(`${node.getName()}_Proxy`).setMesh(mesh);
+    node.setMesh(null).addChild(proxy);
+    report.push({ collider: node, proxy });
+  }
+  return report;
+}
+async function encodeKtx2(doc, encoder) {
+  const textures = doc.getRoot().listTextures().filter((texture) => texture.getMimeType() !== "image/ktx2" && texture.getImage());
+  if (!encoder)
+    return {
+      status: "skipped",
+      textures: textures.length,
+      reason: "No KTX2 encoder was supplied; textures stay PNG or JPEG."
+    };
+  const srgb = new Set;
+  for (const material of doc.getRoot().listMaterials()) {
+    for (const texture of [material.getBaseColorTexture(), material.getEmissiveTexture()])
+      if (texture)
+        srgb.add(texture);
+  }
+  for (const texture of textures) {
+    const image = await encoder({
+      image: texture.getImage(),
+      mimeType: texture.getMimeType(),
+      name: texture.getName(),
+      colorSpace: srgb.has(texture) ? "srgb" : "linear"
+    });
+    if (!(image instanceof Uint8Array) || image.byteLength < 12)
+      throw new Error("ktx2Encoder must return KTX2 bytes");
+    texture.setImage(image).setMimeType("image/ktx2");
+    const uri = texture.getURI();
+    if (uri)
+      texture.setURI(uri.replace(/\.(png|jpe?g)$/i, ".ktx2"));
+  }
+  if (textures.length)
+    doc.createExtension(KHRTextureBasisu2).setRequired(true);
+  return { status: "encoded", textures: textures.length };
+}
+function decomposeDelta(before, after) {
+  const delta = new THREE54.Matrix4().fromArray(before).invert().multiply(new THREE54.Matrix4().fromArray(after));
+  const position = new THREE54.Vector3, quaternion = new THREE54.Quaternion, scale = new THREE54.Vector3;
+  delta.decompose(position, quaternion, scale);
+  return {
+    scale: scale.x,
+    offset: [position.x, position.y, position.z]
+  };
+}
+async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
+  const io = createGltfIO().registerDependencies({
+    "meshopt.encoder": meshoptEncoder
+  });
+  const doc = await io.readBinary(bytes);
+  doc.setLogger(new Logger2(Logger2.Verbosity.SILENT));
+  await doc.transform(dedup2({ propertyTypes: [PropertyType5.ACCESSOR], keepUniqueNames: true }));
+  const instanced = applyScopedInstancing(doc);
+  const proxies = splitColliderProxies(doc);
+  const matrices = new Map;
+  for (const node of doc.getRoot().listNodes())
+    if (node.getMesh())
+      matrices.set(node, [...node.getMatrix()]);
+  await doc.transform(reorder({ encoder: meshoptEncoder, target: "size" }), quantize({
+    pattern: QUANTIZED_SEMANTICS,
+    patternTargets: QUANTIZED_SEMANTICS,
+    quantizationVolume: "mesh",
+    quantizePosition: RUNTIME_THREE_QUANTIZATION.position,
+    quantizeNormal: RUNTIME_THREE_QUANTIZATION.normal,
+    quantizeTexcoord: RUNTIME_THREE_QUANTIZATION.texcoord,
+    quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
+    quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight
+  }));
+  doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder);
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh || matrices.has(node) || node.getName())
+      continue;
+    const parent = node.getParentNode();
+    node.setName(`${parent?.getName() || "Node"}_Mesh`);
+  }
+  const after = deliveryNodePaths(doc);
+  const pathOf = (node) => after.get(node) ?? `#${encodeURIComponent(node.getName())}`;
+  const proxyNodes = new Set(proxies.map((entry) => entry.proxy));
+  const nodeScale = [];
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh || node.getExtension("EXT_mesh_gpu_instancing"))
+      continue;
+    const path = after.get(node);
+    if (path === undefined)
+      continue;
+    const original = matrices.get(node);
+    const moved = original === undefined;
+    const split = moved || proxyNodes.has(node);
+    const reference = moved ? new THREE54.Matrix4().identity().toArray() : original;
+    const current = [...node.getMatrix()];
+    const { scale, offset } = decomposeDelta(reference, current);
+    if (!moved && Math.abs(scale - 1) < 0.000000000001 && offset.every((v) => v === 0))
+      continue;
+    const parent = node.getParentNode();
+    nodeScale.push({
+      node: path,
+      mesh: mesh.getName(),
+      meshMovedToChild: split,
+      ...split && parent ? { authoredNode: pathOf(parent) } : {},
+      dequantization: { scale, offset },
+      localScale: [...node.getScale()]
+    });
+  }
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh || after.has(node) || !matrices.has(node))
+      continue;
+    const { scale, offset } = decomposeDelta(matrices.get(node), [...node.getMatrix()]);
+    nodeScale.push({
+      node: `#lod/${encodeURIComponent(node.getName())}`,
+      mesh: mesh.getName(),
+      meshMovedToChild: false,
+      dequantization: { scale, offset },
+      localScale: [...node.getScale()]
+    });
+  }
+  const customAttributes = new Map;
+  for (const mesh of doc.getRoot().listMeshes())
+    for (const primitive of mesh.listPrimitives())
+      for (const semantic of primitive.listSemantics())
+        if (semantic.startsWith("_"))
+          customAttributes.set(semantic, (customAttributes.get(semantic) ?? new Set).add(mesh));
+  const all = doc.getRoot().listNodes();
+  const glb = await io.writeBinary(doc);
+  const json = (await io.binaryToJSON(glb)).json;
+  const delivery = {
+    target: "three",
+    extensionsUsed: [...json.extensionsUsed ?? []].sort(),
+    extensionsRequired: [...json.extensionsRequired ?? []].sort(),
+    compression: { extension: "EXT_meshopt_compression", method: "quantize" },
+    quantization: {
+      extension: "KHR_mesh_quantization",
+      volume: "mesh",
+      bits: {
+        position: RUNTIME_THREE_QUANTIZATION.position,
+        normal: RUNTIME_THREE_QUANTIZATION.normal,
+        texcoord: RUNTIME_THREE_QUANTIZATION.texcoord,
+        color: RUNTIME_THREE_QUANTIZATION.color,
+        weight: RUNTIME_THREE_QUANTIZATION.weight
+      },
+      customAttributes: "float32"
+    },
+    nodeScale,
+    colliderProxies: proxies.map(({ collider, proxy }) => ({
+      collider: pathOf(collider),
+      proxy: pathOf(proxy)
+    })),
+    customAttributes: [...customAttributes].sort(([a], [b]) => a === "_EDGE" ? -1 : b === "_EDGE" ? 1 : a < b ? -1 : a > b ? 1 : 0).map(([name, meshes]) => ({
+      name,
+      meshes: meshes.size,
+      componentType: "FLOAT",
+      normalized: false
+    })),
+    instancing: instanced.map(({ node, ...rest }) => ({ node: pathOf(node), ...rest })),
+    ktx2,
+    preserved: {
+      lodChains: all.filter((node) => node.getExtension(MSFT_LOD)).length,
+      hiddenNodes: all.filter((node) => isHiddenGltfNode(node)).length,
+      colliders: all.filter(isCollider).length,
+      anchors: all.filter((node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.anchor}.`))).length,
+      ports: all.filter((node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.kitPort}.`))).length,
+      kitModules: all.filter((node) => rolesOf4(node).includes(KILN_SEMANTIC_ROLES.kitModule)).length
+    }
+  };
+  return { glb, delivery };
+}
+var RUNTIME_THREE_QUANTIZATION, QUANTIZED_SEMANTICS, rolesOf4 = (node) => readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [], isCollider = (node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.collider}.`));
+var init_runtime_three = __esm(() => {
+  init_semantic();
+  init_gltf_io();
+  init_delivery_inspect();
+  init_delivery();
+  init_metrics();
+  RUNTIME_THREE_QUANTIZATION = Object.freeze({
+    volume: "mesh",
+    position: 14,
+    normal: 10,
+    texcoord: 12,
+    color: 8,
+    weight: 8
+  });
+  QUANTIZED_SEMANTICS = /^(POSITION|NORMAL|TANGENT|TEXCOORD_\d+|COLOR_\d+|JOINTS_\d+|WEIGHTS_\d+)$/;
+});
+
 // src/asset-export.ts
 var exports_asset_export = {};
 __export(exports_asset_export, {
@@ -40805,20 +41264,7 @@ function validateMetadataFileName(name) {
   if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.kiln-metadata\.json$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
     throw new Error("Runtime metadata filename must be a portable sibling *.kiln-metadata.json filename");
 }
-async function exportAssetGlb(record, options = {}) {
-  const profile = options.profile ?? "editable";
-  if (profile !== "editable" && profile !== "runtime")
-    throw new Error("Unknown export profile");
-  validateRecordShape(record);
-  const bytes = record.files["asset.glb"];
-  if (profile === "editable")
-    return { profile, glb: bytes };
-  const name = options.metadataFileName ?? "runtime.kiln-metadata.json";
-  validateMetadataFileName(name);
-  for (const [file, data] of Object.entries(record.files)) {
-    if (await sha2562(data) !== record.manifest.files[file].sha256)
-      throw new Error(`Asset integrity mismatch: ${file}`);
-  }
+function readGlbJson(bytes) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   let end = 12;
   while (end < bytes.length) {
@@ -40833,6 +41279,53 @@ async function exportAssetGlb(record, options = {}) {
   const json = JSON.parse(decoder.decode(bytes.subarray(20, jsonEnd)));
   if (!object2(json) || !object2(json.asset) || json.asset.version !== "2.0")
     throw new Error("Invalid glTF asset");
+  return { json, jsonEnd };
+}
+function writeGlbJson(bytes, jsonEnd, json) {
+  const jsonBytes = encoder2.encode(JSON.stringify(json));
+  const length = Math.ceil(jsonBytes.length / 4) * 4;
+  const result = new Uint8Array(20 + length + bytes.length - jsonEnd);
+  if (result.length > ASSET_LIMIT)
+    throw new Error("Runtime export exceeds 64 MiB");
+  result.set(bytes.subarray(0, 20));
+  const header = new DataView(result.buffer);
+  header.setUint32(8, result.length, true);
+  header.setUint32(12, length, true);
+  result.fill(32, 20, 20 + length);
+  result.set(jsonBytes, 20);
+  result.set(bytes.subarray(jsonEnd), 20 + length);
+  return result;
+}
+async function deliverThreeRuntimeGlb(glb, options = {}) {
+  const [{ deliverRuntimeThreeGlb }, { MeshoptEncoder }] = await Promise.all([
+    Promise.resolve().then(() => (init_runtime_three(), exports_runtime_three)),
+    import("meshoptimizer")
+  ]);
+  await MeshoptEncoder.ready;
+  const result = await deliverRuntimeThreeGlb(glb, MeshoptEncoder, options);
+  if (result.glb.byteLength > ASSET_LIMIT)
+    throw new Error("Runtime export exceeds 64 MiB");
+  return result;
+}
+async function exportAssetGlb(record, options = {}) {
+  const profile = options.profile ?? "editable";
+  if (profile !== "editable" && profile !== "runtime")
+    throw new Error("Unknown export profile");
+  if (options.target !== undefined && options.target !== "three")
+    throw new Error("Unknown runtime export target");
+  if (options.target !== undefined && profile !== "runtime")
+    throw new Error("A runtime export target requires the runtime profile");
+  validateRecordShape(record);
+  const bytes = record.files["asset.glb"];
+  if (profile === "editable")
+    return { profile, glb: bytes };
+  const name = options.metadataFileName ?? "runtime.kiln-metadata.json";
+  validateMetadataFileName(name);
+  for (const [file, data] of Object.entries(record.files)) {
+    if (await sha2562(data) !== record.manifest.files[file].sha256)
+      throw new Error(`Asset integrity mismatch: ${file}`);
+  }
+  const { json, jsonEnd } = readGlbJson(bytes);
   const asset = json.asset;
   if (owns(asset, "extras") && !object2(asset.extras))
     throw new Error("Cannot add provenance to non-object asset extras");
@@ -40861,27 +41354,30 @@ async function exportAssetGlb(record, options = {}) {
     },
     scenes
   };
+  let base = bytes, baseJson = json, baseJsonEnd = jsonEnd;
+  if (options.target === "three") {
+    const derived = await deliverThreeRuntimeGlb(writeGlbJson(bytes, jsonEnd, json), {
+      ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {}
+    });
+    metadata.target = "three";
+    metadata.delivery = derived.delivery;
+    base = derived.glb;
+    ({ json: baseJson, jsonEnd: baseJsonEnd } = readGlbJson(base));
+  }
   const metadataBytes = encoder2.encode(JSON.stringify(metadata));
-  asset.extras = {
-    ...extras,
+  if (metadataBytes.length > ASSET_LIMIT)
+    throw new Error("Runtime export exceeds 64 MiB");
+  const baseAsset = baseJson.asset;
+  baseAsset.extras = {
+    ...baseAsset.extras ?? extras,
     kilnProvenanceV1: {
       version: "kiln.provenance.v1",
       profile: "runtime",
+      ...options.target ? { target: options.target } : {},
       metadata: { uri: name, sha256: await sha2562(metadataBytes) }
     }
   };
-  const jsonBytes = encoder2.encode(JSON.stringify(json));
-  const length = Math.ceil(jsonBytes.length / 4) * 4;
-  const result = new Uint8Array(20 + length + bytes.length - jsonEnd);
-  if (result.length > ASSET_LIMIT || metadataBytes.length > ASSET_LIMIT)
-    throw new Error("Runtime export exceeds 64 MiB");
-  result.set(bytes.subarray(0, 20));
-  const header = new DataView(result.buffer);
-  header.setUint32(8, result.length, true);
-  header.setUint32(12, length, true);
-  result.fill(32, 20, 20 + length);
-  result.set(jsonBytes, 20);
-  result.set(bytes.subarray(jsonEnd), 20 + length);
+  const result = writeGlbJson(base, baseJsonEnd, baseJson);
   return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
 }
 var encoder2, decoder, object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
@@ -43270,6 +43766,27 @@ var init_helper_contracts = __esm(() => {
     limitations: ["No snap solver or cross-module validation."],
     related: [{ name: "port", relation: "companion" }]
   });
+  define2("repeatInstances", {
+    ...nodeFacts,
+    units: "No lengths.",
+    origin: "Not a placement operation.",
+    ownership: "Writes { schemaVersion: 1 } to parent.userData.kilnRepeatInstances, exported as node extras; creates no nodes.",
+    coordinates: "Each instance keeps its local transform relative to parent.",
+    parameters: ["parent: a scene node whose direct children repeat one mesh."],
+    semantics: [
+      "The three.js runtime target groups direct children by mesh content (accessors, material, mode) and turns each group of two or more into one node named <parent>_Instances with EXT_mesh_gpu_instancing TRANSLATION/ROTATION/SCALE; the sidecar lists the instance names in order.",
+      "Children with their own children, roles, extras, skins, morph weights or hidden flags stay separate nodes. Other export profiles ignore the mark."
+    ],
+    cost: "Metadata on one node."
+  }, {
+    ...deliveryMetadata,
+    tags: ["delivery", "instancing", "runtime", "export"],
+    aliases: ["gpu instancing", "instanced mesh", "repeat parts"],
+    intents: ["deliver repeated identical parts as one instanced mesh"],
+    summary: "Marks a parent whose identical children the three.js runtime export instances.",
+    limitations: ["Instancing happens only in the three.js runtime target."],
+    related: [{ name: "createPart", relation: "companion" }]
+  });
   define2("bakeSurfaceAttributes", {
     units: "thresholdDegrees in degrees; cavity radius in metres (default 0.5 x the occluders bounds diagonal); attribute values are unitless 0..1.",
     axes: "World space after the current parent transforms.",
@@ -44625,7 +45142,8 @@ var init_helper_contracts = __esm(() => {
     ownership: "Creates an owned texture and immutable-by-copy source snapshots; host map capability is never exposed to authored code.",
     parameters: [
       "schemaVersion1, width/height 4..1024, explicit usage and 1..64 named regions from at most16 distinct sources.",
-      "Each region has name, content rectangle and source; gutter defaults2 and edgeMode defaults copy-edge. Source crops and content dimensions must match without resampling.",
+      'Optional pack { edge: 1024 | 2048, gutter?: 0..32 (default 2, the default region gutter), algorithm?: "maxrects" } selects compiler kiln.texture-atlas.v1.2: width/height default to edge (4..edge), 1..128 regions, at most 32 distinct sources, 4,194,304 output texels. Regions may then omit content and are placed deterministically (allocation area descending, then name; best short side fit; no rotation) around explicit rectangles. The canonical spec records the resolved content with packed: true, so a saved record re-validates without re-packing.',
+      "Each region has name, content rectangle (optional when packing) and source; gutter defaults2 and edgeMode defaults copy-edge. Source crops and content dimensions must match without resampling.",
       'Source is {kind:"procedural",spec:V3} or {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256},expected?}. Pins are host-selected immutable library revisions; no arbitrary acquisition I/O.',
       "Optional sampler specifies all four portable fields; default linear-mipmap-linear/linear/clamp-to-edge on both axes."
     ],
@@ -44643,10 +45161,13 @@ var init_helper_contracts = __esm(() => {
       "src/texture-atlas.ts"
     ],
     tags: ["texture", "atlas", "rgba", "ownership"],
-    aliases: ["named texture sheet", "foliage atlas"],
-    intents: ["compose reusable named pixel regions without a mesh"],
+    aliases: ["named texture sheet", "foliage atlas", "atlas packer", "pack textures"],
+    intents: [
+      "compose reusable named pixel regions without a mesh",
+      "pack texture regions into one atlas automatically"
+    ],
     limitations: [
-      "No automatic packing, rotation or resampling. Gutters reduce filtering bleed but cannot isolate every downsampled mip level."
+      "No rotation or resampling. Packing needs each region size before any load: a packed resource region needs a crop or expected width and height. Gutters reduce filtering bleed but cannot isolate every downsampled mip level."
     ],
     related: [{ name: "remapUVToAtlas", relation: "companion" }]
   });
@@ -47884,12 +48405,12 @@ var exports_part_placement = {};
 __export(exports_part_placement, {
   createPartPlacementReader: () => createPartPlacementReader
 });
-import * as THREE54 from "three";
+import * as THREE55 from "three";
 function createPartPlacementReader(root) {
   const bounds = createPartBoundsReader(root);
-  const position = new THREE54.Vector3;
-  const quaternion = new THREE54.Quaternion;
-  const scale = new THREE54.Vector3;
+  const position = new THREE55.Vector3;
+  const quaternion = new THREE55.Quaternion;
+  const scale = new THREE55.Vector3;
   return (node) => {
     node.matrixWorld.decompose(position, quaternion, scale);
     const box = bounds(node);
@@ -48040,7 +48561,7 @@ var init_inspect = __esm(() => {
 });
 
 // src/views/measurement.ts
-import { Box3 as Box326, Vector3 as Vector343 } from "three";
+import { Box3 as Box326, Vector3 as Vector344 } from "three";
 function describeSubjectFrame(root, subject) {
   const selected = selectCameraSubject(root, subject);
   selected.node.updateWorldMatrix(true, true);
@@ -48057,10 +48578,10 @@ function describeSubjectFrame(root, subject) {
     if (!attr)
       return;
     for (let i = 0;i < attr.count; i++)
-      local.expandByPoint(new Vector343().fromBufferAttribute(attr, i).applyMatrix4(mesh.matrixWorld).applyMatrix4(inverse));
+      local.expandByPoint(new Vector344().fromBufferAttribute(attr, i).applyMatrix4(mesh.matrixWorld).applyMatrix4(inverse));
   });
   const box = (b) => b.isEmpty() ? null : { min: b.min.toArray(), max: b.max.toArray() };
-  const axis = (i) => new Vector343().setFromMatrixColumn(matrix, i).normalize().toArray();
+  const axis = (i) => new Vector344().setFromMatrixColumn(matrix, i).normalize().toArray();
   return {
     path: selected.path,
     name: selected.name,
@@ -48070,7 +48591,7 @@ function describeSubjectFrame(root, subject) {
     invertible,
     worldMatrix: matrix.toArray(),
     axes: { frame: "world", x: axis(0), y: axis(1), z: axis(2) },
-    origin: new Vector343().setFromMatrixPosition(matrix).toArray()
+    origin: new Vector344().setFromMatrixPosition(matrix).toArray()
   };
 }
 function measureAttachment(root, input) {
@@ -48083,7 +48604,7 @@ function measureAttachment(root, input) {
     return {
       path: selected.path,
       local: [...local],
-      world: new Vector343(...local).applyMatrix4(selected.node.matrixWorld).toArray()
+      world: new Vector344(...local).applyMatrix4(selected.node.matrixWorld).toArray()
     };
   };
   const from = endpoint(input.from), to = endpoint(input.to);
@@ -48093,7 +48614,7 @@ function measureAttachment(root, input) {
     method: "straight-line anchor distance",
     from,
     to,
-    distance: new Vector343(...from.world).distanceTo(new Vector343(...to.world))
+    distance: new Vector344(...from.world).distanceTo(new Vector344(...to.world))
   };
 }
 var init_measurement = __esm(() => {
@@ -48102,10 +48623,10 @@ var init_measurement = __esm(() => {
 
 // src/revision-comparison.ts
 import {
-  PropertyType as PropertyType5
+  PropertyType as PropertyType6
 } from "@gltf-transform/core";
 import { ALL_EXTENSIONS as ALL_EXTENSIONS2 } from "@gltf-transform/extensions";
-import { Box3 as Box327, Matrix4 as Matrix418, Vector3 as Vector344 } from "three";
+import { Box3 as Box327, Matrix4 as Matrix419, Vector3 as Vector345 } from "three";
 async function accessorFingerprint(accessor) {
   const array = accessor?.getArray();
   if (!accessor || !array)
@@ -48118,13 +48639,13 @@ async function accessorFingerprint(accessor) {
   ];
 }
 function lowerLevels(node) {
-  return (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType5.NODE);
+  return (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType6.NODE);
 }
 function bounds(box) {
   return box.isEmpty() ? null : {
     min: box.min.toArray(),
     max: box.max.toArray(),
-    size: box.getSize(new Vector344).toArray()
+    size: box.getSize(new Vector345).toArray()
   };
 }
 async function digest7(bytes) {
@@ -48176,7 +48697,7 @@ async function snapshot3(bytes) {
         throw new Error("Revision comparison does not support node/mesh extensions (including instancing).");
       const primitives = mesh?.listPrimitives() ?? [];
       const own = new Box327;
-      const matrix = parentWorld.clone().multiply(new Matrix418().fromArray(node.getMatrix()));
+      const matrix = parentWorld.clone().multiply(new Matrix419().fromArray(node.getMatrix()));
       if (matrix.elements.some((value) => !Number.isFinite(value)))
         throw new Error("Revision comparison requires finite transforms.");
       for (const primitive of primitives) {
@@ -48196,7 +48717,7 @@ async function snapshot3(bytes) {
           if (!Number.isInteger(vertex) || vertex < 0 || vertex >= position.getCount())
             throw new Error("Revision comparison found an invalid vertex index.");
           position.getElement(vertex, element);
-          const point = new Vector344(...element).applyMatrix4(matrix);
+          const point = new Vector345(...element).applyMatrix4(matrix);
           if (point.toArray().some((value) => !Number.isFinite(value)))
             throw new Error("Revision comparison requires finite positions.");
           own.expandByPoint(point);
@@ -48215,7 +48736,7 @@ async function snapshot3(bytes) {
   if (scenes[0].listExtensions().length)
     throw new Error("Revision comparison does not support scene extensions.");
   const scenePath = `/${encodeURIComponent(scenes[0].getName() || "Scene")}[0]`;
-  const box = visit(scenes[0].listChildren(), "", 0, new Matrix418);
+  const box = visit(scenes[0].listChildren(), "", 0, new Matrix419);
   const nodePaths = new Map([...parts].map(([path, part]) => [part.node, path]));
   const animation = new Map;
   const clipNames = new Set;
@@ -48387,10 +48908,10 @@ var init_revision_comparison = __esm(() => {
 // src/views/surface-distance.ts
 import {
   Box3 as Box328,
-  Matrix4 as Matrix419,
+  Matrix4 as Matrix420,
   Ray as Ray2,
   Triangle as Triangle2,
-  Vector3 as Vector345
+  Vector3 as Vector346
 } from "three";
 function hierarchy(triangles) {
   const box = new Box328;
@@ -48399,7 +48920,7 @@ function hierarchy(triangles) {
   const count = triangles.length;
   if (count <= 4)
     return { box, count, triangles };
-  const size = box.getSize(new Vector345);
+  const size = box.getSize(new Vector346);
   const axis = size.x >= size.y && size.x >= size.z ? "x" : size.y >= size.z ? "y" : "z";
   const center = (triangle) => triangle.box.min[axis] / 2 + triangle.box.max[axis] / 2;
   triangles.sort((a, b) => center(a) - center(b));
@@ -48442,7 +48963,7 @@ function collect(node, paths) {
     for (let instance = 0;instance < instances; instance++) {
       const matrix = mesh.matrixWorld.clone();
       if (instanced.isInstancedMesh) {
-        const local = new Matrix419;
+        const local = new Matrix420;
         instanced.getMatrixAt(instance, local);
         matrix.multiply(local);
       }
@@ -48451,7 +48972,7 @@ function collect(node, paths) {
           const id = index ? index.getX(i + offset) : i + offset;
           if (!Number.isSafeInteger(id) || id < 0 || id >= position.count)
             throw new Error("Surface distance encountered an invalid triangle index.");
-          const point = new Vector345().fromBufferAttribute(position, id).applyMatrix4(matrix);
+          const point = new Vector346().fromBufferAttribute(position, id).applyMatrix4(matrix);
           if (![point.x, point.y, point.z].every(Number.isFinite))
             throw new Error("Surface distance encountered a non-finite world position.");
           return point;
@@ -48510,10 +49031,10 @@ function trianglePair(a, b) {
   const av = [a.a, a.b, a.c], bv = [b.a, b.b, b.c];
   if (b.getArea() > 0)
     for (const p of av)
-      record(p, b.closestPointToPoint(p, new Vector345));
+      record(p, b.closestPointToPoint(p, new Vector346));
   if (a.getArea() > 0)
     for (const q of bv)
-      record(a.closestPointToPoint(q, new Vector345), q);
+      record(a.closestPointToPoint(q, new Vector346), q);
   for (let i = 0;i < 3; i++) {
     const p = av[i], q = av[(i + 1) % 3];
     for (let j = 0;j < 3; j++)
@@ -48526,9 +49047,9 @@ function trianglePair(a, b) {
       const length = delta.length();
       if (length === 0)
         continue;
-      const hit = new Ray2(origin, delta.divideScalar(length)).intersectTriangle(target.a, target.b, target.c, false, new Vector345);
+      const hit = new Ray2(origin, delta.divideScalar(length)).intersectTriangle(target.a, target.b, target.c, false, new Vector346);
       if (hit && origin.distanceTo(hit) <= length) {
-        const onFace = target.closestPointToPoint(hit, new Vector345);
+        const onFace = target.closestPointToPoint(hit, new Vector346);
         if (vertices === av)
           record(hit, onFace);
         else
@@ -48694,7 +49215,7 @@ __export(exports_draw_diagnostics, {
 });
 import { Primitive as Primitive3 } from "@gltf-transform/core";
 import { cloneDocument } from "@gltf-transform/functions";
-import * as THREE55 from "three";
+import * as THREE56 from "three";
 function withinLimits(doc) {
   const root = doc.getRoot();
   if (root.listNodes().length > MAX_NODES2 || root.listAccessors().length > 4096 || root.listMaterials().length > 2048 || root.listTextures().length > 256 || root.listScenes().length > 32 || doc.getGraph().listEdges().length > 32768)
@@ -48747,7 +49268,7 @@ function collect2(doc, keep) {
 function overlaps(a, b) {
   if (Math.abs(a.normal.dot(b.normal)) < 1 - 0.00000001 || !a.bounds.intersectsBox(b.bounds))
     return false;
-  const tolerance = Math.max(a.bounds.getSize(new THREE55.Vector3).length(), b.bounds.getSize(new THREE55.Vector3).length(), 0.000000000001) * 0.000001;
+  const tolerance = Math.max(a.bounds.getSize(new THREE56.Vector3).length(), b.bounds.getSize(new THREE56.Vector3).length(), 0.000000000001) * 0.000001;
   if (b.points.some((p) => Math.abs(a.normal.dot(p.clone().sub(a.points[0]))) > tolerance))
     return false;
   const normal = a.normal.toArray().map(Math.abs);
@@ -48789,7 +49310,7 @@ function observe(uses) {
       unexaminedPrimitiveUses++;
       continue;
     }
-    const matrix = new THREE55.Matrix4().fromArray(node.getWorldMatrix());
+    const matrix = new THREE56.Matrix4().fromArray(node.getWorldMatrix());
     if (primitive.getAttribute("TANGENT") && matrix.determinant() < 0)
       mirrored.set(part.id, part);
     const position = primitive.getAttribute("POSITION");
@@ -48803,14 +49324,14 @@ function observe(uses) {
     const amount = Math.min(count, 8, MAX_SAMPLES - samples.length);
     for (let i = 0;i < amount; i++) {
       const start = Math.floor(i * count / amount) * 3;
-      const points = [0, 1, 2].map((j) => new THREE55.Vector3().fromArray(position.getElement(indices ? indices.getScalar(start + j) : start + j, [])).applyMatrix4(matrix));
+      const points = [0, 1, 2].map((j) => new THREE56.Vector3().fromArray(position.getElement(indices ? indices.getScalar(start + j) : start + j, [])).applyMatrix4(matrix));
       const normal = points[1].clone().sub(points[0]).cross(points[2].clone().sub(points[0]));
       if (!Number.isFinite(normal.lengthSq()) || normal.lengthSq() === 0)
         continue;
       samples.push({
         points,
         normal: normal.normalize(),
-        bounds: new THREE55.Box3().setFromPoints(points),
+        bounds: new THREE56.Box3().setFromPoints(points),
         part
       });
     }
@@ -49044,7 +49565,7 @@ var init_asset_widget = __esm(() => {
 
 // src/tools/registry.ts
 import { z as z24 } from "zod";
-import * as THREE56 from "three";
+import * as THREE57 from "three";
 function proceduralTextureMaterialContract(rendered, context) {
   const required = [...new Set(context.requiredProceduralTextureUsages ?? [])];
   if (required.length === 0)
@@ -49324,8 +49845,8 @@ function collectSceneMetrics(root) {
   let meshes = 0;
   const materialSet = new Set;
   let lowestPart;
-  const box = new THREE56.Box3;
-  const point = new THREE56.Vector3;
+  const box = new THREE57.Box3;
+  const point = new THREE57.Vector3;
   root.updateWorldMatrix(true, true);
   root.traverseVisible((node) => {
     const n = node;
@@ -49341,7 +49862,7 @@ function collectSceneMetrics(root) {
       const mesh = node;
       const position = mesh.geometry.getAttribute("position");
       const index = mesh.geometry.index;
-      const mb = new THREE56.Box3;
+      const mb = new THREE57.Box3;
       if (position) {
         for (let i = 0;i < (index?.count ?? position.count); i++) {
           point.fromBufferAttribute(position, index ? index.getX(i) : i);
@@ -49356,7 +49877,7 @@ function collectSceneMetrics(root) {
   });
   let bbox;
   if (!box.isEmpty()) {
-    const size = new THREE56.Vector3;
+    const size = new THREE57.Vector3;
     box.getSize(size);
     bbox = {
       min: [box.min.x, box.min.y, box.min.z],
@@ -51818,6 +52339,7 @@ async function assetMain(argv) {
     "out",
     "format",
     "profile",
+    "target",
     "port",
     "render",
     "backdrop",
@@ -52015,6 +52537,11 @@ async function assetMain(argv) {
       const profile = flags.profile ?? "editable";
       if (profile !== "editable" && profile !== "runtime")
         throw new Error("Unknown export profile");
+      const target = flags.target;
+      if (target !== undefined && target !== "three")
+        throw new Error("Unknown export target");
+      if (target !== undefined && profile !== "runtime")
+        throw new Error("--target requires --profile runtime");
       const format = flags.format ?? (profile === "runtime" ? "glb" : "bundle");
       if (!["bundle", "glb", "source"].includes(format))
         throw new Error("Unknown export format");
@@ -52026,7 +52553,11 @@ async function assetMain(argv) {
         if (!destination.toLowerCase().endsWith(".glb"))
           throw new Error("Runtime output must end in .glb");
         const metadataFileName = `${basename(destination).slice(0, -4)}.kiln-metadata.json`;
-        const output = await exportAssetGlb(record, { profile, metadataFileName });
+        const output = await exportAssetGlb(record, {
+          profile,
+          metadataFileName,
+          ...target ? { target } : {}
+        });
         if (output.profile !== "runtime")
           throw new Error("Expected runtime export");
         const metadataPath = resolve13(dirname9(destination), output.metadata.name);
@@ -52053,6 +52584,7 @@ async function assetMain(argv) {
           assetId,
           revisionId,
           profile,
+          ...target ? { target } : {},
           format,
           ...format !== "source" ? {
             drawDiagnostics: await inspectDrawDiagnostics(written.find(({ kind }) => kind === "glb")?.data ?? record.files["asset.glb"])
@@ -52173,6 +52705,8 @@ ${SAVE_LINES}
   kiln asset <id> [<revision>] --rebuild --out rebuilt.glb [--requirements file]
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
+       [--target three]   runtime only: meshopt + quantization, repeatInstances GPU
+                          instancing, KTX2 skipped (no encoder); sidecar states node scales
        [--json]   receipt naming each file with its bytes and sha256
        export never replaces an existing file: an export hands off one exact
        saved revision, while render --out replaces its own working output

@@ -112,6 +112,15 @@ port(id: string, opts?: { parent?, position?, rotation? })
   // Adds a kit snap point with role kit.port.<id> under a defineModule root; its transform is
   // the snap frame.
   // e.g. port('west', { parent: root, position: [-2, 0, 0], rotation: [0, 180, 0] });
+repeatInstances(parent: Object3D)
+  // Marks parent so the three.js runtime export (export --profile runtime --target three)
+  // batches its identical leaf children into one EXT_mesh_gpu_instancing node. The editable GLB
+  // is unchanged.
+  // NOTE: Only direct children with the same geometry and material and no children, roles or
+  // extras of their own are batched.
+  // e.g. const bolts = new THREE.Group(); bolts.name = 'Bolts'; root.add(bolts); for (let i =
+  // 0; i < 8; i++) createPart('Bolt_' + i, boltGeo, steel, { parent: bolts, position: [i * 0.2,
+  // 0, 0] }); repeatInstances(bolts);
 beamBetween(name, start: [x,y,z], end: [x,y,z], radius, material, opts?: { segments, parent })
   // Creates a cylindrical rail/strut exactly between two endpoints in its parent frame. Derive
   // attachment endpoints from the neighboring geometry; the helper does not find joints or join

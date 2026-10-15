@@ -1,12 +1,21 @@
-/** Saved-asset delivery profiles. No renderer, filesystem, or network dependencies. */
+/**
+ * Saved-asset delivery profiles. No renderer, filesystem, or network dependencies; the
+ * three.js runtime target loads its glTF passes and the meshopt encoder lazily.
+ */
 import { ASSET_LIMIT, validateRecordShape, type AssetRecord } from './assets';
+import type { RuntimeThreeDeliveryV1, RuntimeThreeOptionsV1 } from './runtime-three';
 
+export type { RuntimeThreeDeliveryV1, RuntimeThreeOptionsV1 } from './runtime-three';
 export type AssetExportProfile = 'editable' | 'runtime';
-export interface AssetGlbExportOptions {
+/** Runtime delivery target; `three` adds meshopt, quantization, instancing and optional KTX2. */
+export type AssetExportTarget = 'three';
+export interface AssetGlbExportOptions extends RuntimeThreeOptionsV1 {
   /** Editable is the byte-preserving default. Runtime externalizes review-only data. */
   profile?: AssetExportProfile;
   /** A portable sibling filename, not a path or URL. Used only by runtime. */
   metadataFileName?: string;
+  /** Runtime only: derive for a three.js application (see docs/export-profiles.md). */
+  target?: AssetExportTarget;
 }
 export type AssetGlbExport =
   | { profile: 'editable'; glb: Uint8Array }
@@ -21,6 +30,10 @@ export interface RuntimeMetadataV1 {
     sourceSha256?: string;
   };
   scenes: { index: number; kilnReviewClipsV1: Record<string, unknown> }[];
+  /** Present when a runtime target derived the GLB. */
+  target?: AssetExportTarget;
+  /** Quantization, node-scale, attribute, instancing and extension facts of that target. */
+  delivery?: RuntimeThreeDeliveryV1;
 }
 
 const encoder = new TextEncoder();
@@ -46,27 +59,7 @@ export function validateMetadataFileName(name: string): void {
     );
 }
 
-/**
- * Derive a delivery GLB from a saved revision, never changing the canonical record.
- * The sidecar is informational: neither this helper nor standard glTF loaders fetch
- * it. Only the exact owned scene review field is moved; application extras survive.
- */
-export async function exportAssetGlb(
-  record: AssetRecord,
-  options: AssetGlbExportOptions = {},
-): Promise<AssetGlbExport> {
-  const profile = options.profile ?? 'editable';
-  if (profile !== 'editable' && profile !== 'runtime') throw new Error('Unknown export profile');
-  validateRecordShape(record);
-  const bytes = record.files['asset.glb']!;
-  if (profile === 'editable') return { profile, glb: bytes };
-  const name = options.metadataFileName ?? 'runtime.kiln-metadata.json';
-  validateMetadataFileName(name);
-  for (const [file, data] of Object.entries(record.files)) {
-    if ((await sha256(data)) !== record.manifest.files[file]!.sha256)
-      throw new Error(`Asset integrity mismatch: ${file}`);
-  }
-
+function readGlbJson(bytes: Uint8Array): { json: Record<string, unknown>; jsonEnd: number } {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   let end = 12;
   while (end < bytes.length) {
@@ -79,7 +72,68 @@ export async function exportAssetGlb(
   const json: unknown = JSON.parse(decoder.decode(bytes.subarray(20, jsonEnd)));
   if (!object(json) || !object(json.asset) || json.asset.version !== '2.0')
     throw new Error('Invalid glTF asset');
-  const asset = json.asset;
+  return { json, jsonEnd };
+}
+function writeGlbJson(bytes: Uint8Array, jsonEnd: number, json: unknown): Uint8Array {
+  const jsonBytes = encoder.encode(JSON.stringify(json));
+  const length = Math.ceil(jsonBytes.length / 4) * 4;
+  const result = new Uint8Array(20 + length + bytes.length - jsonEnd);
+  if (result.length > ASSET_LIMIT) throw new Error('Runtime export exceeds 64 MiB');
+  result.set(bytes.subarray(0, 20));
+  const header = new DataView(result.buffer);
+  header.setUint32(8, result.length, true);
+  header.setUint32(12, length, true);
+  result.fill(32, 20, 20 + length);
+  result.set(jsonBytes, 20);
+  result.set(bytes.subarray(jsonEnd), 20 + length);
+  return result;
+}
+
+/**
+ * Library equivalent of `export --profile runtime --target three` for any Kiln GLB: returns
+ * the derived GLB and its delivery facts. Deterministic for the same input bytes.
+ */
+export async function deliverThreeRuntimeGlb(
+  glb: Uint8Array,
+  options: RuntimeThreeOptionsV1 = {},
+): Promise<{ glb: Uint8Array; delivery: RuntimeThreeDeliveryV1 }> {
+  const [{ deliverRuntimeThreeGlb }, { MeshoptEncoder }] = await Promise.all([
+    import('./runtime-three'),
+    import('meshoptimizer'),
+  ]);
+  await MeshoptEncoder.ready;
+  const result = await deliverRuntimeThreeGlb(glb, MeshoptEncoder, options);
+  if (result.glb.byteLength > ASSET_LIMIT) throw new Error('Runtime export exceeds 64 MiB');
+  return result;
+}
+
+/**
+ * Derive a delivery GLB from a saved revision, never changing the canonical record.
+ * The sidecar is informational: neither this helper nor standard glTF loaders fetch
+ * it. Only the exact owned scene review field is moved; application extras survive.
+ */
+export async function exportAssetGlb(
+  record: AssetRecord,
+  options: AssetGlbExportOptions = {},
+): Promise<AssetGlbExport> {
+  const profile = options.profile ?? 'editable';
+  if (profile !== 'editable' && profile !== 'runtime') throw new Error('Unknown export profile');
+  if (options.target !== undefined && options.target !== 'three')
+    throw new Error('Unknown runtime export target');
+  if (options.target !== undefined && profile !== 'runtime')
+    throw new Error('A runtime export target requires the runtime profile');
+  validateRecordShape(record);
+  const bytes = record.files['asset.glb']!;
+  if (profile === 'editable') return { profile, glb: bytes };
+  const name = options.metadataFileName ?? 'runtime.kiln-metadata.json';
+  validateMetadataFileName(name);
+  for (const [file, data] of Object.entries(record.files)) {
+    if ((await sha256(data)) !== record.manifest.files[file]!.sha256)
+      throw new Error(`Asset integrity mismatch: ${file}`);
+  }
+
+  const { json, jsonEnd } = readGlbJson(bytes);
+  const asset = json.asset as Record<string, unknown>;
   if (owns(asset, 'extras') && !object(asset.extras))
     throw new Error('Cannot add provenance to non-object asset extras');
   const extras = (asset.extras ?? {}) as Record<string, unknown>;
@@ -116,26 +170,31 @@ export async function exportAssetGlb(
     },
     scenes,
   };
+  // The three target derives from the review-free GLB; provenance is stamped on its result.
+  let base = bytes,
+    baseJson: Record<string, unknown> = json,
+    baseJsonEnd = jsonEnd;
+  if (options.target === 'three') {
+    const derived = await deliverThreeRuntimeGlb(writeGlbJson(bytes, jsonEnd, json), {
+      ...(options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {}),
+    });
+    metadata.target = 'three';
+    metadata.delivery = derived.delivery;
+    base = derived.glb;
+    ({ json: baseJson, jsonEnd: baseJsonEnd } = readGlbJson(base));
+  }
   const metadataBytes = encoder.encode(JSON.stringify(metadata));
-  asset.extras = {
-    ...extras,
+  if (metadataBytes.length > ASSET_LIMIT) throw new Error('Runtime export exceeds 64 MiB');
+  const baseAsset = baseJson.asset as Record<string, unknown>;
+  baseAsset.extras = {
+    ...((baseAsset.extras as Record<string, unknown> | undefined) ?? extras),
     kilnProvenanceV1: {
       version: 'kiln.provenance.v1',
       profile: 'runtime',
+      ...(options.target ? { target: options.target } : {}),
       metadata: { uri: name, sha256: await sha256(metadataBytes) },
     },
   };
-  const jsonBytes = encoder.encode(JSON.stringify(json));
-  const length = Math.ceil(jsonBytes.length / 4) * 4;
-  const result = new Uint8Array(20 + length + bytes.length - jsonEnd);
-  if (result.length > ASSET_LIMIT || metadataBytes.length > ASSET_LIMIT)
-    throw new Error('Runtime export exceeds 64 MiB');
-  result.set(bytes.subarray(0, 20));
-  const header = new DataView(result.buffer);
-  header.setUint32(8, result.length, true);
-  header.setUint32(12, length, true);
-  result.fill(32, 20, 20 + length);
-  result.set(jsonBytes, 20);
-  result.set(bytes.subarray(jsonEnd), 20 + length);
+  const result = writeGlbJson(base, baseJsonEnd, baseJson);
   return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
 }

@@ -265,6 +265,29 @@ function triangleTouchesCapsule(
  * (mesh extras `kilnSurfaceBakeV1`). Paths are inspection paths; a lower level takes the
  * path it has in its LOD0's place.
  */
+/**
+ * Delivery path of every node in the default scene, the same paths the manifest uses:
+ * `/<scene>[0]/<name>[occurrence]/...` with each name URI-encoded.
+ */
+export function deliveryNodePaths(doc: Document): Map<GltfNode, string> {
+  const paths = new Map<GltfNode, string>();
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene) return paths;
+  const visit = (siblings: readonly GltfNode[], parentPath: string): void => {
+    const seen = new Map<string, number>();
+    for (const node of siblings) {
+      const name = node.getName();
+      const occurrence = seen.get(name) ?? 0;
+      seen.set(name, occurrence + 1);
+      const path = `${parentPath}${segment(name, occurrence)}`;
+      paths.set(node, path);
+      visit(node.listChildren(), path);
+    }
+  };
+  visit(scene.listChildren(), segment(scene.getName() || 'Scene', 0));
+  return paths;
+}
+
 export function summarizeVertexAttributes(doc: Document): DeliveryVertexAttributeV1[] {
   const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
   if (!scene) return [];

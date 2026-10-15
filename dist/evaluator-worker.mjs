@@ -4315,6 +4315,12 @@ var init_procedural_texture_v3_contract = __esm(() => {
 });
 
 // src/texture-atlas-contract.ts
+function textureAtlasCompilerIdV1(spec) {
+  return spec.pack === undefined ? TEXTURE_ATLAS_COMPILER_ID : TEXTURE_ATLAS_COMPILER_ID_V1_2;
+}
+function textureAtlasLimitsV1(spec) {
+  return spec.pack === undefined ? TEXTURE_ATLAS_LIMITS : TEXTURE_ATLAS_LIMITS_V1_2;
+}
 function atlasFailure(message) {
   throw new TextureAtlasError(message);
 }
@@ -4417,22 +4423,109 @@ function assertAtlasCropV1(crop, content, width, height) {
 function atlasSourceIdentityV1(source) {
   return source.kind === "procedural" ? `procedural:${hashProceduralTextureSpecV3(source.spec)}` : `resource:${source.pin.resourceId}:${source.pin.revisionId}:${source.resourceId}`;
 }
+function packAtlasRegionsV1(width, height, fixed, pending) {
+  let free = [{ x: 0, y: 0, width, height }];
+  const occupy = (used) => {
+    const next = [];
+    for (const f of free) {
+      if (!rectsOverlap(f, used)) {
+        next.push(f);
+        continue;
+      }
+      if (used.x > f.x)
+        next.push({ x: f.x, y: f.y, width: used.x - f.x, height: f.height });
+      if (used.x + used.width < f.x + f.width)
+        next.push({
+          x: used.x + used.width,
+          y: f.y,
+          width: f.x + f.width - used.x - used.width,
+          height: f.height
+        });
+      if (used.y > f.y)
+        next.push({ x: f.x, y: f.y, width: f.width, height: used.y - f.y });
+      if (used.y + used.height < f.y + f.height)
+        next.push({
+          x: f.x,
+          y: used.y + used.height,
+          width: f.width,
+          height: f.y + f.height - used.y - used.height
+        });
+    }
+    free = next.filter((a, i) => !next.some((b, j) => j !== i && rectContains(b, a) && (!rectContains(a, b) || j < i)));
+    if (free.length > 16384)
+      atlasFailure("pack: free-space bookkeeping budget exceeded.");
+  };
+  for (const allocation of fixed)
+    occupy(allocation);
+  const order = [...pending].sort((a, b) => b.width * b.height - a.width * a.height || (a.region.name < b.region.name ? -1 : a.region.name > b.region.name ? 1 : 0));
+  for (const item of order) {
+    let best;
+    let bestScore;
+    for (const f of free) {
+      if (f.width < item.width || f.height < item.height)
+        continue;
+      const dw = f.width - item.width, dh = f.height - item.height;
+      const score = [
+        Math.min(dw, dh),
+        Math.max(dw, dh),
+        f.y,
+        f.x
+      ];
+      if (!bestScore || score[0] < bestScore[0] || score[0] === bestScore[0] && (score[1] < bestScore[1] || score[1] === bestScore[1] && (score[2] < bestScore[2] || score[2] === bestScore[2] && score[3] < bestScore[3]))) {
+        best = f;
+        bestScore = score;
+      }
+    }
+    if (!best)
+      atlasFailure(`pack: region ${item.region.name} (${item.width}x${item.height} texels with its gutter) does not fit in the ${width}x${height} atlas beside the regions already placed.`);
+    item.region.content = {
+      x: best.x + item.region.gutter,
+      y: best.y + item.region.gutter,
+      width: item.region.content.width,
+      height: item.region.content.height
+    };
+    occupy({ x: best.x, y: best.y, width: item.width, height: item.height });
+  }
+}
 function canonicalizeTextureAtlasSpecV1(input) {
   preflight(input);
-  const r = record5(input, ["schemaVersion", "width", "height", "usage", "sampler", "regions"], "atlas");
+  const r = record5(input, ["schemaVersion", "width", "height", "usage", "sampler", "regions", "pack"], "atlas");
   if (r["schemaVersion"] !== 1)
     atlasFailure("schemaVersion must be 1.");
-  const width = integer3(r["width"], 4, TEXTURE_ATLAS_LIMITS.edge, "width"), height = integer3(r["height"], 4, TEXTURE_ATLAS_LIMITS.edge, "height");
+  let pack;
+  if (r["pack"] !== undefined) {
+    const p = record5(r["pack"], ["edge", "gutter", "algorithm"], "pack");
+    if (!TEXTURE_ATLAS_PACK_EDGES.includes(p["edge"]))
+      atlasFailure("pack.edge must be 1024 or 2048.");
+    if (p["algorithm"] !== undefined && p["algorithm"] !== "maxrects")
+      atlasFailure("pack.algorithm must be 'maxrects'.");
+    pack = {
+      edge: p["edge"],
+      gutter: p["gutter"] === undefined ? 2 : integer3(p["gutter"], 0, 32, "pack.gutter"),
+      algorithm: "maxrects"
+    };
+  }
+  const limits = pack ? TEXTURE_ATLAS_LIMITS_V1_2 : TEXTURE_ATLAS_LIMITS, maxEdge = pack ? pack.edge : limits.edge;
+  const width = pack && r["width"] === undefined ? pack.edge : integer3(r["width"], 4, maxEdge, "width"), height = pack && r["height"] === undefined ? pack.edge : integer3(r["height"], 4, maxEdge, "height");
+  if (width * height > limits.outputTexels)
+    atlasFailure("output texel budget exceeded.");
   if (!TEXTURE_USAGES.includes(r["usage"]))
     atlasFailure("usage must be a texture usage.");
   const usage = r["usage"];
-  if (!Array.isArray(r["regions"]) || !r["regions"].length || r["regions"].length > TEXTURE_ATLAS_LIMITS.regions)
-    atlasFailure("regions must contain 1..64 entries.");
+  if (!Array.isArray(r["regions"]) || !r["regions"].length || r["regions"].length > limits.regions)
+    atlasFailure(`regions must contain 1..${limits.regions} entries.`);
+  const pending = [];
   const regions = r["regions"].map((value, i) => {
-    const q = record5(value, ["name", "content", "gutter", "edgeMode", "source", "crop"], `regions[${i}]`);
+    const q = record5(value, ["name", "content", "gutter", "edgeMode", "source", "crop", "packed"], `regions[${i}]`);
     if (typeof q["name"] !== "string" || !/^[a-z][a-z0-9_-]{0,79}$/.test(q["name"]))
       atlasFailure("region name must be a stable lowercase identifier.");
-    const content = rect(q["content"], "content"), gutter = q["gutter"] === undefined ? 2 : integer3(q["gutter"], 0, 32, "gutter");
+    const explicit = q["content"] !== undefined;
+    if (!explicit && !pack)
+      atlasFailure(`region ${q["name"]}: content is required unless the atlas sets pack.`);
+    if (q["packed"] !== undefined && (q["packed"] !== true || !pack || !explicit))
+      atlasFailure("packed is the resolved-placement marker: true, with content, in an atlas that sets pack.");
+    let content = explicit ? rect(q["content"], "content") : undefined;
+    const gutter = q["gutter"] === undefined ? pack?.gutter ?? 2 : integer3(q["gutter"], 0, 32, "gutter");
     const edgeMode = q["edgeMode"] === undefined ? "copy-edge" : q["edgeMode"];
     if (!["copy-edge", "mask-rgb-dilate"].includes(edgeMode))
       atlasFailure("unsupported edgeMode.");
@@ -4448,6 +4541,7 @@ function canonicalizeTextureAtlasSpecV1(input) {
         atlasFailure("source usage does not match atlas usage.");
       source = { kind: "procedural", spec: admission.spec };
       crop ??= { x: 0, y: 0, width: admission.spec.width, height: admission.spec.height };
+      content ??= { x: 0, y: 0, width: crop.width, height: crop.height };
       assertAtlasCropV1(crop, content, admission.spec.width, admission.spec.height);
     } else if (s["kind"] === "resource") {
       record5(s, ["kind", "resourceId", "pin", "expected"], "resource source");
@@ -4475,6 +4569,10 @@ function canonicalizeTextureAtlasSpecV1(input) {
         pin: { resourceId: p["resourceId"], revisionId, sha256 },
         ...expected ? { expected } : {}
       };
+      if (!content) {
+        const size = crop ?? (expected?.width !== undefined && expected.height !== undefined ? { width: expected.width, height: expected.height } : atlasFailure(`region ${q["name"]}: a packed resource region needs a crop or expected width and height (its size).`));
+        content = { x: 0, y: 0, width: size.width, height: size.height };
+      }
       if (crop && (crop.width !== content.width || crop.height !== content.height))
         atlasFailure("source crop/content dimensions must match; resampling is unsupported.");
     } else
@@ -4485,23 +4583,36 @@ function canonicalizeTextureAtlasSpecV1(input) {
       gutter,
       edgeMode,
       source,
-      ...crop ? { crop } : {}
+      ...crop ? { crop } : {},
+      ...pack && (!explicit || q["packed"] === true) ? { packed: true } : {}
     };
-    const allocation = atlasAllocationV1(result);
-    if (allocation.x < 0 || allocation.y < 0 || allocation.x + allocation.width > width || allocation.y + allocation.height > height)
-      atlasFailure("padded allocation is out of bounds.");
+    if (!explicit)
+      pending.push({
+        region: result,
+        width: result.content.width + 2 * gutter,
+        height: result.content.height + 2 * gutter
+      });
     return result;
   }).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
   if (new Set(regions.map((v) => v.name)).size !== regions.length)
     atlasFailure("duplicate region name.");
+  if (pending.length) {
+    const placed = new Set(pending.map((p) => p.region));
+    packAtlasRegionsV1(width, height, regions.filter((region) => !placed.has(region)).map((region) => atlasAllocationV1(region)), pending);
+  }
+  for (const region of regions) {
+    const allocation = atlasAllocationV1(region);
+    if (allocation.x < 0 || allocation.y < 0 || allocation.x + allocation.width > width || allocation.y + allocation.height > height)
+      atlasFailure("padded allocation is out of bounds.");
+  }
   for (let i = 0;i < regions.length; i++)
     for (let j = i + 1;j < regions.length; j++) {
       const a = atlasAllocationV1(regions[i]), b = atlasAllocationV1(regions[j]);
       if (a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height)
         atlasFailure(`padded allocations overlap: ${regions[i].name}, ${regions[j].name}.`);
     }
-  if (new Set(regions.map((v) => atlasSourceIdentityV1(v.source))).size > TEXTURE_ATLAS_LIMITS.sources)
-    atlasFailure("distinct source budget exceeds 16.");
+  if (new Set(regions.map((v) => atlasSourceIdentityV1(v.source))).size > limits.sources)
+    atlasFailure(`distinct source budget exceeds ${limits.sources}.`);
   let sampler;
   try {
     sampler = canonicalizePortableSamplerV1(r["sampler"] === undefined ? {
@@ -4519,18 +4630,17 @@ function canonicalizeTextureAtlasSpecV1(input) {
     height,
     usage,
     sampler,
-    regions
+    regions,
+    ...pack ? { pack } : {}
   };
   if (new TextEncoder().encode(JSON.stringify(spec)).length > TEXTURE_ATLAS_LIMITS.jsonBytes)
     atlasFailure("canonical JSON byte budget exceeded.");
   return spec;
 }
-function canonicalTextureAtlasJsonV1(input) {
-  return JSON.stringify(canonicalizeTextureAtlasSpecV1(input));
-}
 function hashTextureAtlasSpecV1(input) {
-  return `sha256:${sha256Hex(`${TEXTURE_ATLAS_COMPILER_ID}
-${canonicalTextureAtlasJsonV1(input)}`)}`;
+  const spec = canonicalizeTextureAtlasSpecV1(input);
+  return `sha256:${sha256Hex(`${textureAtlasCompilerIdV1(spec)}
+${JSON.stringify(spec)}`)}`;
 }
 function canonicalAtlasMetadataJsonV1(input) {
   preflight(input);
@@ -4560,7 +4670,7 @@ function validateTextureAtlasManifestV1(input, providedSpec) {
     "regions",
     "manifestHash"
   ], "manifest");
-  if (r["version"] !== "kiln.atlas-manifest.v1" || r["compilerId"] !== TEXTURE_ATLAS_COMPILER_ID || r["width"] !== spec.width || r["height"] !== spec.height || r["usage"] !== spec.usage || r["origin"] !== "top-left")
+  if (r["version"] !== "kiln.atlas-manifest.v1" || r["compilerId"] !== textureAtlasCompilerIdV1(spec) || r["width"] !== spec.width || r["height"] !== spec.height || r["usage"] !== spec.usage || r["origin"] !== "top-left")
     atlasFailure("manifest version/compiler/dimensions/usage/origin mismatch.");
   if (canonicalAtlasMetadataJsonV1(r["sampler"]) !== canonicalAtlasMetadataJsonV1(spec.sampler) || r["specHash"] !== hashTextureAtlasSpecV1(spec) || r["layoutHash"] !== atlasLayoutHashV1(spec))
     atlasFailure("manifest sampler/spec/layout identity mismatch.");
@@ -4617,7 +4727,7 @@ function validateTextureAtlasManifestV1(input, providedSpec) {
       if (d["materialId"] !== source.pin.resourceId || d["revisionId"] !== source.pin.revisionId || d["resourceId"] !== source.resourceId || d["width"] !== width || d["height"] !== height || d["usage"] !== spec.usage || typeof d["slot"] !== "string" || slots[d["slot"]] !== spec.usage || d["colorSpace"] !== (spec.usage === "albedo" || spec.usage === "emissive" ? "srgb" : "linear"))
         atlasFailure("manifest pinned resource descriptor mismatch.");
       hash2(d["imageSha256"], "manifest source imageSha256");
-      integer3(d["encodedByteLength"], 1, TEXTURE_ATLAS_LIMITS.encodedSourceBytes, "manifest encodedByteLength");
+      integer3(d["encodedByteLength"], 1, textureAtlasLimitsV1(spec).encodedSourceBytes, "manifest encodedByteLength");
       if (d["decodedPixelHash"] !== undefined && d["decodedPixelHash"] !== s["decodedPixelHash"])
         atlasFailure("manifest source decodedPixelHash mismatch.");
       for (const key of ["width", "height", "imageSha256", "decodedPixelHash"]) {
@@ -4642,13 +4752,17 @@ ${canonicalAtlasMetadataJsonV1(payload)}`)}`)
     atlasFailure("manifest hash mismatch.");
   return structuredClone(input);
 }
-var TEXTURE_ATLAS_COMPILER_ID = "kiln.texture-atlas.v1.1", TEXTURE_ATLAS_LIMITS, TextureAtlasError;
+var TEXTURE_ATLAS_COMPILER_ID = "kiln.texture-atlas.v1.1", TEXTURE_ATLAS_COMPILER_ID_V1_2 = "kiln.texture-atlas.v1.2", TEXTURE_ATLAS_COMPILER_IDS, TEXTURE_ATLAS_LIMITS, TEXTURE_ATLAS_LIMITS_V1_2, TEXTURE_ATLAS_PACK_EDGES, TextureAtlasError, rectsOverlap = (a, b) => a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height, rectContains = (outer, inner) => inner.x >= outer.x && inner.y >= outer.y && inner.x + inner.width <= outer.x + outer.width && inner.y + inner.height <= outer.y + outer.height;
 var init_texture_atlas_contract = __esm(() => {
   init_portable_sampler();
   init_procedural_texture_v3_contract();
   init_procedural_material_v2();
   init_texture_contract();
   init_authoring_diagnostic();
+  TEXTURE_ATLAS_COMPILER_IDS = Object.freeze([
+    TEXTURE_ATLAS_COMPILER_ID,
+    TEXTURE_ATLAS_COMPILER_ID_V1_2
+  ]);
   TEXTURE_ATLAS_LIMITS = Object.freeze({
     edge: 1024,
     outputTexels: 1048576,
@@ -4663,6 +4777,16 @@ var init_texture_atlas_contract = __esm(() => {
     uvVertices: 262144,
     uvAttributeBytes: 134217728
   });
+  TEXTURE_ATLAS_LIMITS_V1_2 = Object.freeze({
+    ...TEXTURE_ATLAS_LIMITS,
+    edge: 2048,
+    outputTexels: 4194304,
+    regions: 128,
+    sources: 32,
+    work: 192000000,
+    allocatedBytes: 134217728
+  });
+  TEXTURE_ATLAS_PACK_EDGES = Object.freeze([1024, 2048]);
   TextureAtlasError = class TextureAtlasError extends AuthoringDiagnosticError {
     constructor(message) {
       super("TEXTURE_ATLAS_CONTRACT", `textureAtlas: ${message}`);
@@ -6590,6 +6714,21 @@ function port(id, opts) {
   place(helper, node, settings);
   return node;
 }
+function repeatInstances(parent) {
+  if (!isObject3D(parent))
+    fail3("repeatInstances(parent)", "parent must be a scene node, such as a group of repeats.");
+  parent.userData[KILN_REPEAT_INSTANCES_KEY] = { schemaVersion: 1 };
+  return parent;
+}
+function repeatInstancesExtras(node) {
+  const target = node;
+  const value = target?.userData?.[KILN_REPEAT_INSTANCES_KEY];
+  if (value === undefined)
+    return {};
+  if (!value || typeof value !== "object" || value.schemaVersion !== 1 || Object.keys(value).length !== 1)
+    fail3("repeatInstances(parent)", `userData.${KILN_REPEAT_INSTANCES_KEY} on ${JSON.stringify(target?.name || "(unnamed node)")} is not a mark repeatInstances wrote; set it only through repeatInstances.`);
+  return { [KILN_REPEAT_INSTANCES_KEY]: { schemaVersion: 1 } };
+}
 function kitExtras(node) {
   const target = node;
   const value = target?.userData?.[KILN_KIT_KEY];
@@ -6601,7 +6740,7 @@ function kitExtras(node) {
   const { schemaVersion: _version, ...spec } = record;
   return { [KILN_KIT_KEY]: kitModuleExtras(spec) };
 }
-var KILN_KIT_KEY = "kilnKit", COLLIDER_PROXY_MATERIAL_NAME = "KilnColliderProxy", SEGMENT;
+var KILN_KIT_KEY = "kilnKit", COLLIDER_PROXY_MATERIAL_NAME = "KilnColliderProxy", KILN_REPEAT_INSTANCES_KEY = "kilnRepeatInstances", SEGMENT;
 var init_delivery = __esm(() => {
   init_contracts();
   init_authoring_diagnostic();
@@ -14838,7 +14977,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       copy = new THREE24.Mesh(geometry, spriteMaterial);
       THREE24.Object3D.prototype.copy.call(copy, shadow, false);
     }
-    Object.assign(copy.userData, authorExtras?.node(source), rigExtrasForExport(source), openShellExtras(source), kitExtras(source));
+    Object.assign(copy.userData, authorExtras?.node(source), rigExtrasForExport(source), openShellExtras(source), kitExtras(source), repeatInstancesExtras(source));
     const semantic = source.userData[KILN_SEMANTIC_EXTRAS_KEY];
     if (semantic !== undefined) {
       const checked = validateSemanticMetadataV1(semantic);
@@ -20243,7 +20382,7 @@ function checkDescriptor(d, source, usage) {
   }
 }
 function admitTextureAtlasSpecV1(input, options = {}) {
-  const spec = canonicalizeTextureAtlasSpecV1(input), unique = new Map, crops = new Map;
+  const spec = canonicalizeTextureAtlasSpecV1(input), limits = textureAtlasLimitsV1(spec), unique = new Map, crops = new Map;
   const outputTexels = spec.width * spec.height;
   const budget = {
     sourceTexels: 0,
@@ -20301,14 +20440,14 @@ function admitTextureAtlasSpecV1(input, options = {}) {
   }
   budget.workUnits += spec.regions.length * (spec.regions.length - 1) / 2;
   budget.conservativePixelAllocationBytes += budget.dilationScratchBytes;
-  if (budget.sourceTexels > TEXTURE_ATLAS_LIMITS.sourceTexels)
+  if (budget.sourceTexels > limits.sourceTexels)
     atlasFailure("full decoded source texel budget exceeded; a small crop does not reduce source decode cost.");
-  if (budget.encodedBytes > TEXTURE_ATLAS_LIMITS.encodedBytes)
+  if (budget.encodedBytes > limits.encodedBytes)
     atlasFailure("aggregate encoded source byte budget exceeded.");
-  if (budget.workUnits > TEXTURE_ATLAS_LIMITS.work)
-    atlasFailure(`aggregate work budget ${budget.workUnits} exceeds ${TEXTURE_ATLAS_LIMITS.work}.`);
-  if (budget.conservativePixelAllocationBytes > TEXTURE_ATLAS_LIMITS.allocatedBytes)
-    atlasFailure(`aggregate pixel allocation budget ${budget.conservativePixelAllocationBytes} exceeds ${TEXTURE_ATLAS_LIMITS.allocatedBytes}.`);
+  if (budget.workUnits > limits.work)
+    atlasFailure(`aggregate work budget ${budget.workUnits} exceeds ${limits.work}.`);
+  if (budget.conservativePixelAllocationBytes > limits.allocatedBytes)
+    atlasFailure(`aggregate pixel allocation budget ${budget.conservativePixelAllocationBytes} exceeds ${limits.allocatedBytes}.`);
   return {
     spec,
     sources: [...unique.values()].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
@@ -20451,7 +20590,7 @@ ${spec.width},${spec.height},${spec.usage}
   const atlasPixelHash = await pixelDigest(tagged);
   const payload = {
     version: "kiln.atlas-manifest.v1",
-    compilerId: TEXTURE_ATLAS_COMPILER_ID,
+    compilerId: textureAtlasCompilerIdV1(spec),
     width: spec.width,
     height: spec.height,
     usage: spec.usage,
@@ -20560,7 +20699,8 @@ function manifestOf(atlas) {
     atlasFailure("an atlas texture or compiled manifest is required.");
   canonicalAtlasMetadataJsonV1(value);
   const manifest = value;
-  if (manifest.version !== "kiln.atlas-manifest.v1" || manifest.compilerId !== TEXTURE_ATLAS_COMPILER_ID || manifest.origin !== "top-left" || !Array.isArray(manifest.regions) || !manifest.regions.length || manifest.regions.length > 64 || !Number.isSafeInteger(manifest.width) || manifest.width < 4 || manifest.width > 1024 || !Number.isSafeInteger(manifest.height) || manifest.height < 4 || manifest.height > 1024)
+  const limits = manifest.compilerId === TEXTURE_ATLAS_COMPILER_ID_V1_2 ? TEXTURE_ATLAS_LIMITS_V1_2 : TEXTURE_ATLAS_LIMITS;
+  if (manifest.version !== "kiln.atlas-manifest.v1" || !TEXTURE_ATLAS_COMPILER_IDS.includes(manifest.compilerId) || manifest.origin !== "top-left" || !Array.isArray(manifest.regions) || !manifest.regions.length || manifest.regions.length > limits.regions || !Number.isSafeInteger(manifest.width) || manifest.width < 4 || manifest.width > limits.edge || !Number.isSafeInteger(manifest.height) || manifest.height < 4 || manifest.height > limits.edge)
     atlasFailure("invalid atlas manifest dimensions/version.");
   const { manifestHash, ...payload } = manifest;
   if (`sha256:${sha256Hex(`kiln.atlas-manifest.v1
@@ -24672,6 +24812,7 @@ function buildSandboxGlobals(usage, options = {}) {
     anchor: wrap("anchor", anchor),
     defineModule: wrap("defineModule", defineModule),
     port: wrap("port", port),
+    repeatInstances: wrap("repeatInstances", repeatInstances),
     bakeSurfaceAttributes: wrap("bakeSurfaceAttributes", bakeSurfaceAttributes),
     requireSolid: wrap("requireSolid", requireSolid),
     defineBudget: wrap("defineBudget", (spec, target) => {
@@ -26000,6 +26141,17 @@ colliderHull(frame, { id: 'frame' });`
       example: "port('west', { parent: root, position: [-2, 0, 0], rotation: [0, 180, 0] });"
     },
     {
+      name: "repeatInstances",
+      signature: "repeatInstances(parent: Object3D)",
+      returns: "Object3D (parent, unchanged)",
+      category: "structure",
+      description: "Marks parent so the three.js runtime export (export --profile runtime --target three) batches its identical leaf children into one EXT_mesh_gpu_instancing node. The editable GLB is unchanged.",
+      example: `const bolts = new THREE.Group(); bolts.name = 'Bolts'; root.add(bolts);
+for (let i = 0; i < 8; i++) createPart('Bolt_' + i, boltGeo, steel, { parent: bolts, position: [i * 0.2, 0, 0] });
+repeatInstances(bolts);`,
+      promptNotes: "Only direct children with the same geometry and material and no children, roles or extras of their own are batched."
+    },
+    {
       name: "bakeSurfaceAttributes",
       signature: "bakeSurfaceAttributes(target: Object3D, opts?: { edge?: { thresholdDegrees?: 35, smoothing?: 1 } | false, cavity?: { rays?: 32, radius?, occluders? } | false })",
       returns: "Object3D (target, unchanged; its meshes get new geometry copies)",
@@ -26665,12 +26817,12 @@ const mesh = new THREE.Mesh(unwrapped, bakedPbr);`
     },
     {
       name: "textureAtlas",
-      signature: "await textureAtlas({ schemaVersion: 1, width, height, usage, sampler?, regions: [{ name, content: { x, y, width, height }, gutter?, edgeMode?, source, crop? }] })",
+      signature: "await textureAtlas({ schemaVersion: 1, width, height, usage, sampler?, pack?: { edge: 1024 | 2048, gutter?, algorithm?: 'maxrects' }, regions: [{ name, content?: { x, y, width, height }, gutter?, edgeMode?, source, crop? }] })",
       returns: "Promise<THREE.DataTexture>",
       category: "textures",
       description: "Composes named, disjoint pixel regions from bounded procedural V3 recipes or exact pinned library maps without creating a mesh.",
       example: "const atlas = await textureAtlas({ schemaVersion: 1, width: 8, height: 8, usage: 'albedo', regions: [{ name: 'patch', content: { x: 2, y: 2, width: 4, height: 4 }, source: { kind: 'procedural', spec: { schemaVersion: 3, width: 4, height: 4, background: [70, 90, 40, 255], operations: [] } } }] });",
-      promptNotes: 'Coordinates are integer pixel edges from top left. Width/height 4..1024. Content excludes gutter (default2); padded allocations must not overlap. copy-edge (default) extrudes RGBA; mask-rgb-dilate preserves positive alpha and extends nearest donor RGB into zero-alpha pixels without growing alpha, for albedo/emissive only. No packing, rotation or resampling. An optional crop must exactly match content dimensions. Resource sources require {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256}} and a host-supplied exact dependency; paths, URLs, latest and approved non-library resources are unsupported. Default sampler is linear-mipmap-linear/linear/clamp-to-edge on both axes; explicit samplers require all four fields. Gutters do not guarantee isolation at every mip level. Use remapUVToAtlas with an explicit input origin and mode; inspect at intended scene distance.'
+      promptNotes: 'Coordinates are integer pixel edges from top left. Width/height 4..1024. Content excludes gutter (default2); padded allocations must not overlap. With pack, width/height default to pack.edge (up to 2048, 128 regions, 32 sources; compiler kiln.texture-atlas.v1.2) and regions may omit content: MaxRects places them by area descending then name, around any explicit rectangles, at their source size (procedural spec size, crop, or a resource expected width/height); pack.gutter is the default gutter. The compiled spec records each placement (packed: true); read placements from the manifest regions. copy-edge (default) extrudes RGBA; mask-rgb-dilate preserves positive alpha and extends nearest donor RGB into zero-alpha pixels without growing alpha, for albedo/emissive only. No rotation or resampling. An optional crop must exactly match content dimensions. Resource sources require {kind:"resource",resourceId:exactMapId,pin:{resourceId:materialId,revisionId,sha256}} and a host-supplied exact dependency; paths, URLs, latest and approved non-library resources are unsupported. Default sampler is linear-mipmap-linear/linear/clamp-to-edge on both axes; explicit samplers require all four fields. Gutters do not guarantee isolation at every mip level. Use remapUVToAtlas with an explicit input origin and mode; inspect at intended scene distance.'
     },
     {
       name: "remapUVToAtlas",
@@ -29860,25 +30012,38 @@ function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = 
       z4.object({ kind: z4.literal("procedural"), spec: canonicalProceduralTextureSpecV3Schema }).strict(),
       resourceSource
     ]),
-    crop: atlasRectangleSchema.optional()
+    crop: atlasRectangleSchema.optional(),
+    packed: z4.literal(true).optional()
   }).strict();
   const atlasBase = {
     schemaVersion: z4.literal(1),
-    width: integer(4, TEXTURE_ATLAS_LIMITS.edge),
-    height: integer(4, TEXTURE_ATLAS_LIMITS.edge),
+    width: integer(4, TEXTURE_ATLAS_LIMITS_V1_2.edge),
+    height: integer(4, TEXTURE_ATLAS_LIMITS_V1_2.edge),
     usage,
     sampler: portableSamplerSchema
   };
-  const canonicalTextureAtlasSpecV1Schema = z4.object({ ...atlasBase, regions: z4.array(region).min(1).max(TEXTURE_ATLAS_LIMITS.regions) }).strict();
+  const packEdge = z4.union(TEXTURE_ATLAS_PACK_EDGES.map((edge) => z4.literal(edge)));
+  const canonicalTextureAtlasSpecV1Schema = z4.object({
+    ...atlasBase,
+    regions: z4.array(region).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
+    pack: z4.object({ edge: packEdge, gutter: integer(0, 32), algorithm: z4.literal("maxrects") }).strict().optional()
+  }).strict();
   const textureAtlasSpecV1Schema = z4.object({
     ...atlasBase,
+    width: atlasBase.width.optional(),
+    height: atlasBase.height.optional(),
+    pack: z4.object({
+      edge: packEdge,
+      gutter: integer(0, 32).optional(),
+      algorithm: z4.literal("maxrects").optional()
+    }).strict().optional(),
     sampler: portableSamplerSchema.optional(),
     regions: z4.array(region.extend({
       source: z4.discriminatedUnion("kind", [
         z4.object({ kind: z4.literal("procedural"), spec: proceduralTextureSpecV3Schema }).strict(),
         resourceSource
       ])
-    }).partial({ gutter: true, edgeMode: true })).min(1).max(TEXTURE_ATLAS_LIMITS.regions)
+    }).partial({ content: true, gutter: true, edgeMode: true })).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions)
   }).strict();
   const verifiedPinnedMaterialMapDescriptorSchema = z4.object({
     materialId: stableId,
@@ -29912,7 +30077,7 @@ function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = 
   ]);
   const textureAtlasManifestV1Schema = z4.object({
     version: z4.literal("kiln.atlas-manifest.v1"),
-    compilerId: z4.literal(TEXTURE_ATLAS_COMPILER_ID),
+    compilerId: z4.enum(TEXTURE_ATLAS_COMPILER_IDS),
     width: atlasBase.width,
     height: atlasBase.height,
     usage,
@@ -29922,14 +30087,14 @@ function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = 
     layoutHash: hash,
     decodedPixelHash: hash,
     atlasPixelHash: hash,
-    sources: z4.array(sourceManifest).min(1).max(TEXTURE_ATLAS_LIMITS.sources),
+    sources: z4.array(sourceManifest).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.sources),
     regions: z4.array(z4.object({
       name: stableId,
       content: atlasRectangleSchema,
       allocation: atlasRectangleSchema,
       crop: atlasRectangleSchema,
       sourceId: z4.string().min(1).max(1024)
-    }).strict()).min(1).max(TEXTURE_ATLAS_LIMITS.regions),
+    }).strict()).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
     manifestHash: hash
   }).strict();
   return {
@@ -30443,13 +30608,15 @@ var init_material_library = __esm(() => {
     }).strict(),
     z5.object({
       kind: z5.literal("atlas"),
-      compilerId: z5.literal(TEXTURE_ATLAS_COMPILER_ID),
+      compilerId: z5.enum(TEXTURE_ATLAS_COMPILER_IDS),
       spec: atlasSpecSchema,
       manifest: atlasManifestSchema,
       encoder: z5.object({ name: z5.literal("sharp"), version: text3 }).strict()
     }).strict().superRefine((recipe, context) => {
       try {
         validateTextureAtlasManifestV1(recipe.manifest, recipe.spec);
+        if (recipe.compilerId !== recipe.manifest.compilerId)
+          throw new Error("compiler id");
       } catch {
         context.addIssue({ code: "custom", message: "Invalid stored atlas manifest" });
       }
@@ -31025,7 +31192,6 @@ var init_material_library_node = __esm(() => {
   init_procedural_texture_v3();
   init_procedural_texture_v3_contract();
   init_texture_atlas_pixels();
-  init_texture_atlas_contract();
   init_procedural_texture();
   init_procedural_material_v2();
   init_textures();
@@ -32293,7 +32459,8 @@ function bridgeNode(doc, buf, threeObj, matCache, nodeMap, meshCache, texCache, 
     ...authorExtras?.node(threeObj),
     ...rigExtrasForExport(threeObj),
     ...openShellExtras(threeObj),
-    ...kitExtras(threeObj)
+    ...kitExtras(threeObj),
+    ...repeatInstancesExtras(threeObj)
   };
   let semanticForExport = semanticValue;
   if (threeObj.isSprite) {

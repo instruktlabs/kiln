@@ -264,6 +264,18 @@ const PRIMITIVES: HelperSpec[] = [
     example: "port('west', { parent: root, position: [-2, 0, 0], rotation: [0, 180, 0] });",
   },
   {
+    name: 'repeatInstances',
+    signature: 'repeatInstances(parent: Object3D)',
+    returns: 'Object3D (parent, unchanged)',
+    category: 'structure',
+    description:
+      'Marks parent so the three.js runtime export (export --profile runtime --target three) batches its identical leaf children into one EXT_mesh_gpu_instancing node. The editable GLB is unchanged.',
+    example:
+      "const bolts = new THREE.Group(); bolts.name = 'Bolts'; root.add(bolts);\nfor (let i = 0; i < 8; i++) createPart('Bolt_' + i, boltGeo, steel, { parent: bolts, position: [i * 0.2, 0, 0] });\nrepeatInstances(bolts);",
+    promptNotes:
+      'Only direct children with the same geometry and material and no children, roles or extras of their own are batched.',
+  },
+  {
     name: 'bakeSurfaceAttributes',
     signature:
       'bakeSurfaceAttributes(target: Object3D, opts?: { edge?: { thresholdDegrees?: 35, smoothing?: 1 } | false, cavity?: { rays?: 32, radius?, occluders? } | false })',
