@@ -373,3 +373,10 @@ from this scope and why. The owner's game session reads this log to monitor.
   60 entrypoints. Nothing was committed or pushed: the session brief reserves commits for
   the owner, so the per-item commits this plan describes are left to the owner, with one
   patch per item in the agent scratchpad.
+- 2026-10-15 branch disposition: the eight items were replayed into one commit each on
+  `feat/game-delivery-contract` (bb558463..030cfcae) from the per-item patches, with the
+  pre-existing uncommitted `ROADMAP.md`, `docs/backlog.md`, `docs/install.md` and the
+  untracked trailer plan excluded. `meshoptimizer@1.1.1` pinned as a direct dependency
+  (owner decision). Owner decisions: per-item commits and a DRAFT pull request, no version
+  bump, no changelog release entry, no merge until the consuming game has built assets
+  against the branch; the inside-solid collider advisory is kept.
