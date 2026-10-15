@@ -968,6 +968,41 @@ define(
   },
 );
 define(
+  'defineBudget',
+  {
+    units: 'Counts: triangles drawn and draw calls; no lengths.',
+    axes: 'Not a placement operation.',
+    origin: 'Not a placement operation.',
+    ownership:
+      'Records one declaration: on target when given, otherwise on the root build() returns. Export writes it as default-scene extras kilnBudgetV1.',
+    coordinates: 'Not a placement operation.',
+    parameters: [
+      'triangles: a positive integer for LOD0, or a record of tiers named LOD0, LOD1, ... with positive integers.',
+      'draws: optional positive integer, the LOD0 draw-call cap.',
+      'target: optional scene node, normally the root.',
+    ],
+    topology: [noMesh],
+    preservation: ['Changes no geometry, material or node.'],
+    semantics: [
+      'Tier n is measured as level min(n, last) of every MSFT_lod chain plus everything outside the chains; LOD0 is the drawn headline. Hidden nodes are not counted.',
+      'The integration manifest, CLI render --json receipt and kiln_render results report budget: { status: pass | fail | none, tiers: [{ tier, declared, measured, status }] }.',
+      'Advisory: a failing tier never changes QA acceptance. CLI render --strict-budget exits 1 when any tier fails.',
+      'Invalid specs are a DELIVERY_CONTRACT build error.',
+    ],
+    cost: 'Metadata only; measurement reads the written GLB.',
+  },
+  {
+    references: ['src/budget.ts', 'docs/delivery-contract.md'],
+    tags: ['delivery', 'budget', 'performance', 'lod'],
+    aliases: ['triangle budget', 'poly budget', 'draw call budget', 'performance budget'],
+    intents: ['declare and check a triangle or draw budget'],
+    summary:
+      'Declares triangle (per LOD tier) and draw-call budgets that every receipt measures against the GLB; advisory unless --strict-budget.',
+    limitations: ['Does not simplify geometry or merge draws to meet a budget.'],
+    related: [{ name: 'defineLod', relation: 'companion' }],
+  },
+);
+define(
   'markOpenShell',
   {
     ...nodeFacts,

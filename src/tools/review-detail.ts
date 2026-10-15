@@ -483,6 +483,7 @@ const LEAN_KEYS = [
   'distinctMaterials',
   'bbox',
   'lowestPart',
+  'budget',
   'views',
   'capture',
   'gridWidth',

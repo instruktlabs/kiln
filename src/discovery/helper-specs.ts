@@ -277,6 +277,18 @@ const PRIMITIVES: HelperSpec[] = [
       'Only when the brief asks for wear or cavity attributes. Call it last, after parts are placed: cavity depends on placement. Each baked mesh gets its own geometry copy.',
   },
   {
+    name: 'defineBudget',
+    signature:
+      'defineBudget(spec: { triangles: number | { LOD0, LOD1, ... }, draws?: number }, target?: Object3D)',
+    returns: '{ schemaVersion: 1, triangles: { LOD0, ... }, draws? } (the normalised declaration)',
+    category: 'utility',
+    description:
+      'Declares a triangle budget (one number for LOD0, or per LOD tier) and an optional LOD0 draw-call budget. Receipts report budget: { status, tiers: [{ tier, declared, measured, status }] } measured from the GLB. Advisory: never QA acceptance.',
+    example: 'defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 });',
+    promptNotes:
+      'Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching defineLod levels.',
+  },
+  {
     name: 'beamBetween',
     signature:
       'beamBetween(name, start: [x,y,z], end: [x,y,z], radius, material, opts?: { segments, parent })',

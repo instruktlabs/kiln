@@ -74,7 +74,14 @@ import {
   type SnapPaletteSlot,
 } from './palette-snap';
 
-import { buildSandboxGlobals, countTriangles, type DiagnosticConsole } from './primitives';
+import {
+  buildSandboxGlobals,
+  countTriangles,
+  type DiagnosticConsole,
+  SANDBOX_DECLARATIONS,
+  type SandboxDeclarations,
+} from './primitives';
+import { evaluateBudget, KILN_BUDGET_KEY, normalizeBudget, readBudgetDeclaration } from './budget';
 import {
   collectGlbMetrics,
   gradeInstanceability,
@@ -279,6 +286,16 @@ export async function inspectGlbIntegration(
   const hiddenNodes = summarizeHiddenNodes(doc);
   const delivery = inspectDelivery(doc);
   const vertexAttributes = summarizeVertexAttributes(doc);
+  const budgetDeclaration = readBudgetDeclaration(
+    (scene.getExtras() as Record<string, unknown>)[KILN_BUDGET_KEY],
+  );
+  const budget = budgetDeclaration
+    ? evaluateBudget(
+        budgetDeclaration,
+        { triangles: metrics.triangles, draws: metrics.drawCalls },
+        levelsOfDetail,
+      )
+    : undefined;
 
   return {
     schemaVersion: 'kiln.integration-manifest.v1',
@@ -322,6 +339,7 @@ export async function inspectGlbIntegration(
     ...(delivery.anchors.length ? { anchors: delivery.anchors } : {}),
     ...(delivery.kit ? { kit: delivery.kit } : {}),
     ...(delivery.ports.length ? { ports: delivery.ports } : {}),
+    ...(budget ? { budget } : {}),
     ...(vertexAttributes.length ? { vertexAttributes } : {}),
     ...(delivery.diagnostics.length ? { deliveryDiagnostics: delivery.diagnostics } : {}),
     structuralQa: {
@@ -461,6 +479,13 @@ export async function executeKilnCode(
         'executeKilnCode: build() did not return a THREE.Object3D',
       );
     }
+
+    // Node-less declarations (defineBudget without a target) belong to the returned root.
+    const declared = (globals as { [SANDBOX_DECLARATIONS]?: SandboxDeclarations })[
+      SANDBOX_DECLARATIONS
+    ];
+    if (declared?.budget && root.userData[KILN_BUDGET_KEY] === undefined)
+      root.userData[KILN_BUDGET_KEY] = declared.budget;
 
     const clips = animate ? ((await animate(root)) ?? []) : [];
 
@@ -1800,6 +1825,14 @@ export async function renderSceneToGLB(
   if (atlas.table) {
     const scene = doc.getRoot().getDefaultScene()!;
     scene.setExtras({ ...scene.getExtras(), kilnAtlasProvenance: atlas.table });
+  }
+  // A declared budget travels in the bytes, so a receipt from the GLB alone can measure it.
+  if (root.userData[KILN_BUDGET_KEY] !== undefined && opts.derivative !== true) {
+    const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0]!;
+    scene.setExtras({
+      ...scene.getExtras(),
+      [KILN_BUDGET_KEY]: normalizeBudget(root.userData[KILN_BUDGET_KEY]),
+    });
   }
   // Visibility flags and LOD chains are written before any pass merges or prunes nodes, so
   // those passes see them and keep them; flags first, while every node is still in place.

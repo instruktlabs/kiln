@@ -1070,6 +1070,9 @@ export interface KilnRenderViewsResult extends PartPreview {
   /** Outermost hidden nodes (visible = false) with their triangles; `tris`, `bbox` and the
    *  default views leave them out. */
   hiddenNodes?: HiddenNodeV1[];
+  /** The defineBudget declaration measured against the written GLB; `none` when undeclared.
+   *  Advisory: never QA acceptance. */
+  budget?: import('../contracts').BudgetReportV1;
   /** Post-dedup instanceability grade (informational): how cheap to render at scale. */
   instanceability?: { grade: string; summary: string };
   /** Structured deterministic report; five dimensions remain separate. */
@@ -1118,6 +1121,12 @@ function levelsOfDetailField(
 }
 
 /** The hidden subtrees the headline leaves out, when the GLB has any. */
+/** The declared budget against the bytes, or status none: always present on a render. */
+function budgetField(rendered: RenderResult): { budget?: import('../contracts').BudgetReportV1 } {
+  if (!rendered.integrationManifest) return {};
+  return { budget: rendered.integrationManifest.budget ?? { status: 'none', tiers: [] } };
+}
+
 function hiddenNodesField(rendered: RenderResult): { hiddenNodes?: HiddenNodeV1[] } {
   const hidden = rendered.integrationManifest?.hiddenNodes;
   return hidden?.length ? { hiddenNodes: hidden } : {};
@@ -1207,6 +1216,7 @@ async function runRenderViews(
         lowestPart: metrics.lowestPart,
         ...levelsOfDetailField(rendered, grid.viewLevels ?? lod0Views(grid.views.length)),
         ...hiddenNodesField(rendered),
+        ...budgetField(rendered),
         views: grid.views,
         capture: grid.capture,
         ...(grid.captureCache ? { captureCache: grid.captureCache } : {}),
@@ -1369,6 +1379,7 @@ async function runRenderViews(
       lowestPart: metrics.lowestPart,
       ...levelsOfDetailField(rendered, lod0Views(grid.views.length)),
       ...hiddenNodesField(rendered),
+      ...budgetField(rendered),
       ...(rendered.meta.instanceability
         ? {
             instanceability: {

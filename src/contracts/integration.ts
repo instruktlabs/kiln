@@ -132,6 +132,22 @@ export interface DeliveryVertexAttributeV1 {
   params?: Record<string, number>;
 }
 
+/** One tier of a declared budget measured against the written GLB. */
+export interface BudgetTierV1 {
+  /** `LOD0`, `LOD1`, ...: tier n draws level min(n, last) of every chain. */
+  tier: string;
+  declared: { triangles?: number; draws?: number };
+  measured: { triangles: number; draws?: number };
+  status: 'pass' | 'fail';
+}
+
+/** A `defineBudget` declaration against the bytes. Advisory: never QA acceptance. */
+export interface BudgetReportV1 {
+  /** `none` when no budget was declared; `fail` when any tier fails. */
+  status: 'pass' | 'fail' | 'none';
+  tiers: BudgetTierV1[];
+}
+
 /** An advisory delivery finding. Never QA acceptance. */
 export interface DeliveryDiagnosticV1 {
   code: string;
@@ -180,6 +196,8 @@ export interface IntegrationManifestV1 {
   kit?: DeliveryKitModuleV1;
   /** Kit ports in scene order, when the GLB has any. */
   ports?: DeliveryPortV1[];
+  /** The declared budget measured against these bytes, when source declared one. */
+  budget?: BudgetReportV1;
   /** Custom vertex attributes (`_EDGE`, `_CAVITY`) grouped by name and parameters. */
   vertexAttributes?: DeliveryVertexAttributeV1[];
   /** Advisory delivery findings (colliders, anchors, ports), when there are any. */

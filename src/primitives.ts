@@ -26,6 +26,7 @@ export { defineLod } from './lod';
 import { markOpenShell } from './open-shell';
 import { anchor, colliderBox, colliderCapsule, colliderHull, defineModule, port } from './delivery';
 import { bakeSurfaceAttributes } from './surface-bake';
+import { type BudgetDeclarationV1, defineBudget } from './budget';
 import { useCubicSpline } from './animation-cubic';
 import {
   CUBIC_INTERPOLATIONS,
@@ -2132,6 +2133,13 @@ export function materialBudgetAdvisory(
  */
 export type DiagnosticConsole = Pick<Console, 'log' | 'info' | 'debug' | 'warn' | 'error'>;
 
+/** Declarations a program makes without a node; executeKilnCode stamps them on the root. */
+export interface SandboxDeclarations {
+  budget?: BudgetDeclarationV1;
+}
+/** Symbol-keyed, so it never becomes a sandbox global. */
+export const SANDBOX_DECLARATIONS: unique symbol = Symbol('kiln.sandbox.declarations');
+
 export interface SandboxGlobalsOptions {
   /** Host-owned closed resolver. Generated code receives only the bound
    *  loadApprovedTexture(resourceId) closure, never this object. */
@@ -2248,7 +2256,8 @@ export function buildSandboxGlobals(
     return options.textureResolver.materialRecipe(args[0], args[1]);
   };
 
-  return {
+  const declarations: SandboxDeclarations = {};
+  const globals: Record<string, unknown> = {
     createRoot: wrap('createRoot', createRoot),
     describeAssembly: wrap('describeAssembly', describeAssembly),
     replicateAssembly: wrap('replicateAssembly', replicateAssembly),
@@ -2269,6 +2278,14 @@ export function buildSandboxGlobals(
     defineModule: wrap('defineModule', defineModule),
     port: wrap('port', port),
     bakeSurfaceAttributes: wrap('bakeSurfaceAttributes', bakeSurfaceAttributes),
+    defineBudget: wrap(
+      'defineBudget',
+      (spec: Parameters<typeof defineBudget>[0], target?: THREE.Object3D) => {
+        const declaration = defineBudget(spec, target);
+        declarations.budget = declaration;
+        return declaration;
+      },
+    ),
     capsuleGeo: wrapGeo('capsuleGeo', capsuleGeo),
     capsuleXGeo: wrapGeo('capsuleXGeo', capsuleXGeo),
     capsuleYGeo: wrapGeo('capsuleYGeo', capsuleYGeo),
@@ -2399,4 +2416,6 @@ export function buildSandboxGlobals(
     Math,
     console: options.console ?? console,
   };
+  Object.defineProperty(globals, SANDBOX_DECLARATIONS, { value: declarations });
+  return globals;
 }

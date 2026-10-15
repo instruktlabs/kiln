@@ -786,6 +786,13 @@ geometryDiagnostics(geometry: BufferGeometry, tolerance?: number)
   // tolerance and scale. Open boundaries are valid for sheets; closed edges do not certify a
   // self-intersection-free solid.
   // e.g. const topology = geometryDiagnostics(shell);
+defineBudget(spec: { triangles: number | { LOD0, LOD1, ... }, draws?: number }, target?: Object3D)
+  // Declares a triangle budget (one number for LOD0, or per LOD tier) and an optional LOD0
+  // draw-call budget. Receipts report budget: { status, tiers: [{ tier, declared, measured,
+  // status }] } measured from the GLB. Advisory: never QA acceptance.
+  // NOTE: Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching
+  // defineLod levels.
+  // e.g. defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 });
 countTriangles(root: Object3D)
   // Sums placed mesh triangles across the subtree, including active InstancedMesh copies and
   // two triangles per sprite. Not draw calls or visible-frame cost.

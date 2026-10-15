@@ -73,6 +73,7 @@ OPTIONS
                          status|reprobe print receipts; commands that print
                          JSON already accept it; generate and view refuse it
   --detail <level>       render --json: lean | compact | full QA detail (default: compact)
+  --strict-budget        render: exit 1 when a defineBudget tier fails (advisory otherwise)
   --offset <n>           source --json: page start; pass the returned nextOffset
   --limit <n>            source --json: page size in characters (1-16000)
   --query <text>         source --json: find literal text at or after --offset
@@ -111,6 +112,8 @@ interface Args extends WorkspaceSelection {
   query?: string;
   /** render --json: the shared result detail; compact unless asked otherwise. */
   detail?: ReviewDetail;
+  /** render: a failing defineBudget tier makes the exit code non-zero. */
+  strictBudget?: boolean;
   help: boolean;
   json: boolean;
 }
@@ -145,6 +148,9 @@ export function parseArgs(argv: readonly string[]): Args {
         break;
       case '--out':
         args.out = next();
+        break;
+      case '--strict-budget':
+        args.strictBudget = true;
         break;
       case '--json':
         args.json = true;
@@ -340,6 +346,7 @@ async function emit(
     ...(result.integrationManifest.vertexAttributes
       ? { vertexAttributes: result.integrationManifest.vertexAttributes }
       : {}),
+    budget: result.integrationManifest.budget ?? { status: 'none', tiers: [] },
     artifactGlbSha256: result.artifactGlbSha256,
     glbBytes: result.glb.length,
     warnings: result.warnings,
@@ -381,6 +388,17 @@ async function emit(
   // Tris and bounds count what draws; a subtree KHR_node_visibility hides is listed apart.
   for (const node of result.integrationManifest.hiddenNodes ?? [])
     log(`  hidden ${node.path}  ${node.triangles} tris (not drawn, not in the headline)`);
+  // A declared budget, tier by tier: advisory unless --strict-budget.
+  const budget = result.integrationManifest.budget;
+  if (budget) {
+    const tiers = budget.tiers
+      .map(
+        (tier) =>
+          `${tier.tier} ${tier.measured.triangles}/${tier.declared.triangles ?? '-'} tris${tier.declared.draws === undefined ? '' : ` ${tier.measured.draws}/${tier.declared.draws} draws`} ${tier.status}`,
+      )
+      .join('; ');
+    log(`  budget ${budget.status}  ${tiers}`);
+  }
   // Custom vertex attributes the GLB preserves, such as baked _EDGE and _CAVITY.
   for (const attribute of result.integrationManifest.vertexAttributes ?? [])
     log(`  attribute ${attribute.name} on ${attribute.meshes.length} mesh(es)`);
@@ -485,6 +503,11 @@ async function cmdRender(args: Args): Promise<number> {
       },
       () => emit(code, args, callContext, undefined, receipt),
     );
+    const budget = (receipt as { budget?: { status?: string } }).budget;
+    if (args.strictBudget && budget?.status === 'fail') {
+      console.error('render: a defineBudget tier failed (--strict-budget).');
+      return 1;
+    }
     return 0;
   } catch (error) {
     if (!args.json) throw error;
