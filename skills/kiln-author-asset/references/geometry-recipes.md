@@ -426,6 +426,43 @@ subject, with `visibility: "isolate"` to see it alone; the shot draws the level 
 LOD0's place, and each chain's `drawn` says which level every view drew. An imported
 GLB's chains are kept through save and export.
 
+## Game delivery: colliders, anchors, kits, bakes and budgets
+
+Add these only when the brief asks for a game-ready asset. Each is plain glTF a
+loader can read; the manifest lists them and its advisory warnings name problems.
+
+```js
+defineModule(root, { footprint: [4, 0.6], height: 3.2, snapAxis: 'x', origin: 'center' });
+port('west', { parent: root, position: [-2, 0, 0], rotation: [0, 180, 0] });
+port('east', { parent: root, position: [2, 0, 0] });
+colliderBox([4, 3.2, 0.6], { id: 'frame', parent: root, position: [0, 1.6, 0] });
+anchor('door', 'main', { parent: root, position: [0, 0, 0.3] });
+anchor('light', 'lintel', { parent: root, position: [0, 3, 0.35] });
+repeatInstances(boltGroup); // identical bolts become one instanced mesh in the three.js export
+bakeSurfaceAttributes(root, { edge: { thresholdDegrees: 35 }, cavity: { rays: 32 } });
+defineBudget({ triangles: { LOD0: 6000, LOD1: 1500 }, draws: 4 });
+definePalette(['#5b6066', '#2e3135', '#8a4b2a']);
+requireSolid(frame);
+```
+
+- Colliders are hidden proxies; the box size or capsule `[2r, h, 2r]` is the node
+  scale. Keep each one inside the drawn bounds and touching what it stands for.
+- An anchor is a leaf transform (door, light, spawn); never parent parts under it.
+- Place ports inside the module footprint. One module per asset.
+- Bake after every occluding part is attached. `_edge` is 1 on rims and chamfers,
+  `_cavity` is 1 when exposed; both are 0..1 floats.
+- Budgets and palettes are advisory. `requireSolid` fails the build unless the part
+  is closed, manifold and outward; build it from solid helpers (`boxGeo`,
+  `extrudeProfile`, `revolveProfile`, `roundedBoxGeo`) rather than open sheets.
+- For a far tier drawn as a card, pass `impostor: true` to `defineLod`; the last
+  level is the impostor.
+
+A cactus (`vegetation.subtype: 'cactus'`): a ribbed trunk from a star outline with
+6 to 12 rounded ribs through `extrudeProfile(..., { axis: 'y', taper, divisions })`,
+arms swept with `pipeAlongPath` through an elbow (out, then up) and embedded in the
+trunk, small spine cards on the rib crests, and explicit tiers: full LOD0, fewer
+ribs and no spines at LOD1, and a `crossedQuadsGeo` impostor last.
+
 ## Implicit fields are experimental
 
 ```js

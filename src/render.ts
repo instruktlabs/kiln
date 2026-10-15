@@ -84,6 +84,12 @@ import {
 } from './primitives';
 import { evaluateBudget, KILN_BUDGET_KEY, normalizeBudget, readBudgetDeclaration } from './budget';
 import {
+  evaluatePalette,
+  KILN_PALETTE_KEY,
+  normalizePalette,
+  readPaletteDeclaration,
+} from './palette-check';
+import {
   collectGlbMetrics,
   gradeInstanceability,
   type InstanceabilityGrade,
@@ -297,6 +303,10 @@ export async function inspectGlbIntegration(
         levelsOfDetail,
       )
     : undefined;
+  const paletteDeclaration = readPaletteDeclaration(
+    (scene.getExtras() as Record<string, unknown>)[KILN_PALETTE_KEY],
+  );
+  const palette = paletteDeclaration ? evaluatePalette(paletteDeclaration, doc) : undefined;
 
   return {
     schemaVersion: 'kiln.integration-manifest.v1',
@@ -341,6 +351,7 @@ export async function inspectGlbIntegration(
     ...(delivery.kit ? { kit: delivery.kit } : {}),
     ...(delivery.ports.length ? { ports: delivery.ports } : {}),
     ...(budget ? { budget } : {}),
+    ...(palette ? { palette } : {}),
     ...(vertexAttributes.length ? { vertexAttributes } : {}),
     ...(delivery.diagnostics.length ? { deliveryDiagnostics: delivery.diagnostics } : {}),
     structuralQa: {
@@ -487,6 +498,8 @@ export async function executeKilnCode(
     ];
     if (declared?.budget && root.userData[KILN_BUDGET_KEY] === undefined)
       root.userData[KILN_BUDGET_KEY] = declared.budget;
+    if (declared?.palette && root.userData[KILN_PALETTE_KEY] === undefined)
+      root.userData[KILN_PALETTE_KEY] = declared.palette;
 
     const clips = animate ? ((await animate(root)) ?? []) : [];
 
@@ -1838,6 +1851,15 @@ export async function renderSceneToGLB(
       [KILN_BUDGET_KEY]: normalizeBudget(root.userData[KILN_BUDGET_KEY]),
     });
   }
+  // A declared palette travels the same way; the receipt judges the written materials.
+  if (root.userData[KILN_PALETTE_KEY] !== undefined && opts.derivative !== true) {
+    const declared = root.userData[KILN_PALETTE_KEY] as { colors?: unknown; threshold?: unknown };
+    const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0]!;
+    scene.setExtras({
+      ...scene.getExtras(),
+      [KILN_PALETTE_KEY]: normalizePalette(declared?.colors, { threshold: declared?.threshold }),
+    });
+  }
   // Visibility flags and LOD chains are written before any pass merges or prunes nodes, so
   // those passes see them and keep them; flags first, while every node is still in place.
   applySurfaceBakeExtras(root, doc);
@@ -1965,6 +1987,11 @@ export async function renderSceneToGLB(
   // Delivery findings are advisory: each is a build warning, never a QA disposition.
   for (const finding of integrationManifest.deliveryDiagnostics ?? [])
     warnings.push(`${finding.code} ${finding.path}: ${finding.message}`);
+  const palette = integrationManifest.palette;
+  for (const finding of palette?.offPalette ?? [])
+    warnings.push(
+      `PALETTE_OFF material ${JSON.stringify(finding.material)} ${finding.color} is delta E ${finding.deltaE} from the nearest palette entry ${finding.nearest} (threshold ${palette!.threshold})${finding.textured ? '; the factor tints a texture that is not judged' : ''}.`,
+    );
 
   const diagnosticViews: CapturedDiagnosticV1[] = [];
   const rig = requirements.requirements.requirements.rig;

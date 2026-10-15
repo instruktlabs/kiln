@@ -104,6 +104,7 @@ describe('asset contracts', () => {
       'vine',
       'crop/flower',
       'succulent',
+      'cactus',
       'fungus',
       'aquatic',
       'bare/dead',

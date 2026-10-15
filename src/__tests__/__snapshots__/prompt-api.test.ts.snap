@@ -807,6 +807,12 @@ defineBudget(spec: { triangles: number | { LOD0, LOD1, ... }, draws?: number }, 
   // NOTE: Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching
   // defineLod levels.
   // e.g. defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 });
+definePalette(colors: string[], opts?: { threshold?: 10 }, target?: Object3D)
+  // Declares the asset palette (1..64 hex colours). Receipts list every drawn material whose
+  // base colour is farther than threshold (CIE76 delta E, default 10) from the nearest entry as
+  // PALETTE_OFF warnings and a manifest palette report. Advisory: never fails a build.
+  // NOTE: Only when the brief names a palette or a set of exact colours. Call once.
+  // e.g. definePalette(['#6b6f73', '#3a3d40', '#8a4b2a', '#c9a227']);
 requireSolid(part: Object3D)
   // Opt-in assertion: the build fails with REQUIRE_SOLID unless every visible mesh in part is
   // closed, manifold and outward (geometryDiagnostics(geometry).solid).

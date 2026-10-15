@@ -1030,6 +1030,40 @@ define(
   },
 );
 define(
+  'definePalette',
+  {
+    units: 'Colours are sRGB hex; threshold is a CIE 1976 delta E in CIELAB (D65).',
+    axes: 'Not a placement operation.',
+    origin: 'Not a placement operation.',
+    ownership:
+      'Records one declaration: on target when given, otherwise on the root build() returns. Export writes it as default-scene extras kilnPaletteV1.',
+    coordinates: 'Not a placement operation.',
+    parameters: [
+      "colors: 1..64 hex strings ('#rgb' or '#rrggbb'); duplicates collapse.",
+      'opts.threshold: delta E in (0, 100], default 10.',
+      'target: optional scene node, normally the root.',
+    ],
+    topology: [noMesh],
+    preservation: ['Changes no geometry, material or node.'],
+    semantics: [
+      'Every material drawn by a visible scene node (collider proxies excluded) is compared by its base colour factor, converted from linear to sRGB to CIELAB; a factor that tints a texture is flagged textured.',
+      'The integration manifest and CLI receipt report palette: { status: pass | warn, colors, threshold, checkedMaterials, offPalette: [{ material, color, nearest, deltaE, textured? }] }; each off-palette material is also a PALETTE_OFF warning.',
+      'Advisory only: no build fails and QA acceptance is unchanged. Invalid input is a DELIVERY_CONTRACT build error.',
+    ],
+    cost: 'One colour conversion per drawn material at export.',
+  },
+  {
+    references: ['src/palette-check.ts', 'docs/delivery-contract.md'],
+    tags: ['delivery', 'palette', 'color', 'art direction'],
+    aliases: ['color palette', 'palette lock', 'art palette', 'swatches'],
+    intents: ['check materials against a declared colour palette'],
+    summary:
+      'Declares a colour palette; receipts list drawn materials off it by delta E, advisory only.',
+    limitations: ['Judges base colour factors, not texture pixels. Never fails a build.'],
+    related: [{ name: 'gameMaterial', relation: 'companion' }],
+  },
+);
+define(
   'requireSolid',
   {
     ...nodeFacts,

@@ -148,6 +148,29 @@ export interface BudgetReportV1 {
   tiers: BudgetTierV1[];
 }
 
+/** One drawn material whose base colour is off the declared palette. */
+export interface PaletteFindingV1 {
+  material: string;
+  /** The material's base colour factor as sRGB `#rrggbb`. */
+  color: string;
+  /** The nearest palette entry. */
+  nearest: string;
+  /** CIE 1976 delta E in CIELAB, rounded to 0.01. */
+  deltaE: number;
+  /** The factor tints a base colour texture; the texture itself is not judged. */
+  textured?: true;
+}
+
+/** A `definePalette` declaration against the bytes. Advisory: never QA acceptance. */
+export interface PaletteReportV1 {
+  status: 'pass' | 'warn';
+  colors: string[];
+  threshold: number;
+  checkedMaterials: number;
+  /** Farthest first. */
+  offPalette: PaletteFindingV1[];
+}
+
 /** An advisory delivery finding. Never QA acceptance. */
 export interface DeliveryDiagnosticV1 {
   code: string;
@@ -198,6 +221,8 @@ export interface IntegrationManifestV1 {
   ports?: DeliveryPortV1[];
   /** The declared budget measured against these bytes, when source declared one. */
   budget?: BudgetReportV1;
+  /** The declared palette against the drawn materials, when source declared one. */
+  palette?: PaletteReportV1;
   /** Custom vertex attributes (`_EDGE`, `_CAVITY`) grouped by name and parameters. */
   vertexAttributes?: DeliveryVertexAttributeV1[];
   /** Advisory delivery findings (colliders, anchors, ports), when there are any. */

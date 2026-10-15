@@ -219,7 +219,41 @@ Coordinates are integer pixels from the top-left. Each region has a stable
 lowercase `name`, a `content` rectangle, a `source`, and optional crop, gutter,
 and edge mode. Default gutters are two pixels; padded allocations must fit
 without overlap. Sources must already match the requested crop size: this
-operation does not pack, resize, rotate, or resample images.
+operation does not resize, rotate, or resample images. It packs only on request
+(below).
+
+### Pack regions automatically
+
+Set `pack: { edge: 1024 | 2048, gutter?, algorithm?: 'maxrects' }` and omit `content`
+on any region to have Kiln place it:
+
+```js
+const atlas = await textureAtlas({
+  schemaVersion: 1,
+  usage: 'albedo',
+  pack: { edge: 1024, gutter: 4 },
+  regions: [
+    { name: 'plate', source: { kind: 'procedural', spec: plateRecipe } },
+    { name: 'grime', source: { kind: 'procedural', spec: grimeRecipe } },
+    { name: 'decal', content: { x: 4, y: 4, width: 64, height: 64 }, source: decalSource },
+  ],
+});
+```
+
+A packed atlas compiles as `kiln.texture-atlas.v1.2` with raised limits: edge up to
+2048, 4,194,304 output texels, 32 distinct sources and 128 regions. Width and height
+default to `pack.edge`; `pack.gutter` (default 2) is the default gutter of every region.
+Placement is MaxRects best short side fit without rotation, in a fixed order
+(allocation area descending, then name), around any explicit rectangles, so the same
+spec always packs the same way. A packed region takes its source size: the procedural
+recipe's size, its `crop`, or for a pinned resource `expected.width` and
+`expected.height` (a resource without one of these is refused before any load).
+
+The compiled spec keeps `pack` and records each placed region's resolved `content`
+with `packed: true`; the manifest regions carry the same rectangles. A saved recipe
+or provenance record therefore re-validates exactly without re-packing. Use
+`remapUVToAtlas` with the region name as usual. Atlases without `pack` keep compiler
+`kiln.texture-atlas.v1.1`, its limits and their existing identities.
 
 A source is either `{kind:'procedural',spec:<V3 recipe>}` or
 `{kind:'resource',resourceId:<exact map id>,pin:{resourceId:<material id>,

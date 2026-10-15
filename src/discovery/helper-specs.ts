@@ -301,6 +301,16 @@ const PRIMITIVES: HelperSpec[] = [
       'Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching defineLod levels.',
   },
   {
+    name: 'definePalette',
+    signature: 'definePalette(colors: string[], opts?: { threshold?: 10 }, target?: Object3D)',
+    returns: '{ schemaVersion: 1, colors, threshold } (the normalised declaration)',
+    category: 'utility',
+    description:
+      'Declares the asset palette (1..64 hex colours). Receipts list every drawn material whose base colour is farther than threshold (CIE76 delta E, default 10) from the nearest entry as PALETTE_OFF warnings and a manifest palette report. Advisory: never fails a build.',
+    example: "definePalette(['#6b6f73', '#3a3d40', '#8a4b2a', '#c9a227']);",
+    promptNotes: 'Only when the brief names a palette or a set of exact colours. Call once.',
+  },
+  {
     name: 'requireSolid',
     signature: 'requireSolid(part: Object3D)',
     returns: 'Object3D (part, unchanged)',

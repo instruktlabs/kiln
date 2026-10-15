@@ -347,6 +347,7 @@ async function emit(
       ? { vertexAttributes: result.integrationManifest.vertexAttributes }
       : {}),
     budget: result.integrationManifest.budget ?? { status: 'none', tiers: [] },
+    ...(result.integrationManifest.palette ? { palette: result.integrationManifest.palette } : {}),
     artifactGlbSha256: result.artifactGlbSha256,
     glbBytes: result.glb.length,
     warnings: result.warnings,
@@ -399,6 +400,12 @@ async function emit(
       .join('; ');
     log(`  budget ${budget.status}  ${tiers}`);
   }
+  // A declared palette: advisory, off-palette materials farthest first.
+  const palette = result.integrationManifest.palette;
+  if (palette)
+    log(
+      `  palette ${palette.status}  ${palette.checkedMaterials} material(s), ${palette.offPalette.length} off palette (delta E > ${palette.threshold})`,
+    );
   // Custom vertex attributes the GLB preserves, such as baked _EDGE and _CAVITY.
   for (const attribute of result.integrationManifest.vertexAttributes ?? [])
     log(`  attribute ${attribute.name} on ${attribute.meshes.length} mesh(es)`);

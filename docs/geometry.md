@@ -385,6 +385,42 @@ allocation. Kiln reports the offending argument; it does not round, reduce detai
 or change the requested shape. These checks do not replace the evaluator boundary
 for raw Three.js or authored custom geometry.
 
+## Require a closed solid
+
+`geometryDiagnostics(geometry).solid` reports `closed` (no boundary edges),
+`manifold` (no edge shared by three or more faces), `orientation` (`outward` or
+`inward` from the sign of the signed volume, `mixed` on any winding conflict or a
+zero volume) and `signedVolume` in cubic geometry units. To make the build depend on
+it, mark the part:
+
+```js
+const hull = createPart('Hull', await extrudeProfile(outline, { depth: 2 }), steel, { parent: root });
+requireSolid(hull); // or requireSolid(group) for every visible mesh under it
+```
+
+A marked mesh that is open, non-manifold or not outward fails the build with
+`REQUIRE_SOLID`, naming the part and the failing facts. The check measures; it
+repairs nothing, and it does not detect general self-intersection.
+
+## Bake edge and cavity attributes
+
+`bakeSurfaceAttributes(target, { edge?, cavity? })` writes two float vertex
+attributes on each visible mesh under `target`, exported as glTF `_EDGE` and
+`_CAVITY`: edge is 1 on chamfers, bevels and rims and 0 on flat faces (for paint
+wear); cavity is 1 fully exposed and toward 0 in recesses (an ambient-occlusion
+input). Call it after every occluding part is attached. Each mesh gets its own
+geometry copy, because cavity depends on placement. The bake is deterministic and
+bounded by `GEOMETRY_ALLOCATION_LIMITS`; see the [delivery contract](delivery-contract.md#baked-vertex-attributes)
+for the formulas.
+
+## Declare a triangle budget
+
+`defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 })` records the asset's
+budget. Receipts measure the written GLB: tier n is level `min(n, last)` of every
+`MSFT_lod` chain plus everything outside the chains, and draws count LOD0. The result
+is `budget: { status, tiers }` in render results, `kiln_render` and CLI receipts. It
+is advisory; `kiln render --strict-budget` exits 1 when a tier fails.
+
 ## Joint discovery and resource counts
 
 `describeAssembly(root).joints` finds validated articulated joints, wheel-spin pivots,

@@ -292,3 +292,39 @@ from this scope and why. The owner's game session reads this log to monitor.
   source texels and encoded byte budgets stay at the v1.1 values; (e) a packed resource
   region needs `crop` or `expected` width and height, because its size must be known before
   any host load.
+- 2026-10-15 item 6 (three.js runtime target) done. Files: new `src/runtime-three.ts`
+  (`deliverRuntimeThreeGlb`: accessor dedup, scoped `EXT_mesh_gpu_instancing`, collider proxy
+  split, meshopt `reorder`, `KHR_mesh_quantization` (position 14, normal 10, texcoord 12,
+  colour 8, weight 8 bits, mesh volume), `EXT_meshopt_compression` (quantize method), KTX2
+  through an injected `ktx2Encoder` or `skipped`; report of extensions, node scales, collider
+  proxies, custom attributes, instancing, KTX2 and preserved roles), `src/asset-export.ts`
+  (`target: 'three'`, `ktx2Encoder`, `deliverThreeRuntimeGlb(glb, options)` library helper,
+  sidecar `target` + `delivery`, provenance `target`), `src/asset-cli.ts` (`export --profile
+  runtime --target three`; receipt `target`), `src/delivery.ts` (`repeatInstances(parent)`,
+  `kilnRepeatInstances` extras), `src/delivery-inspect.ts` (`deliveryNodePaths`),
+  `src/render.ts` + `src/community-exporter.ts` (export the mark), `src/primitives.ts`,
+  Discovery (`repeatInstances`), prompt-api snapshot, `src/asset-cli.test.ts` (CLI three
+  target and its refusals). Test: new `src/__tests__/runtime-three-export.test.ts` (5,
+  observed failing first). GLTFLoader qualification ran under `bun test`: three 0.186.1's
+  `GLTFLoader` with `three/addons/libs/meshopt_decoder.module.js` loads the derived GLB from
+  both converters and the test asserts roles and kit extras in `userData`, the hidden collider
+  (`userData.gltfExtensions.KHR_node_visibility`) at its authored scale with its proxy child,
+  float `_edge` attributes, one `InstancedMesh` of 4, and the `MSFT_lod` ids with the lower
+  level node loading through `parser.getDependency`. No fallback was needed. Gate after
+  `node scripts/build-runtime.mjs all` (exit 0): `bun run test:coverage` 3714 pass, 2 skip, 19
+  fail (only the GNU-tar baseline); `bun scripts/check-coverage.mjs` passed, functions 95.45%
+  (min 94.00%), lines 93.13% (min 92.10%); `bun run test:render-service` exit 0; `bun run
+  check:skills` 6 conform, 2 copies identical; typecheck and lint pass. Deviations: (a)
+  underscore attributes are excluded from quantization and stay FLOAT, unnormalized, so
+  `aEdge`/`aCav` keep their exact 0..1 floats and a CPU reader sees a `Float32Array`; (b) a
+  collider's proxy mesh moves to a child `<collider>_Proxy` before quantization so the
+  collider node keeps its authored transform (its scale is the collider size); every other
+  quantized mesh carries a dequantization scale and offset on its node, listed in the sidecar
+  `nodeScale` (the meshes a quantizer moved to a new child are named `<node>_Mesh`); (c) the
+  meshopt encoder is `meshoptimizer` 1.1.1, today a transitive dependency through
+  `@types/three`, imported lazily; it was not added to `package.json` because that needs a
+  lockfile update this offline session did not make (owner question); (d) Kiln ships no KTX2
+  encoder, so without `ktx2Encoder` the report is `skipped` and textures stay PNG/JPEG; (e) a
+  probe this small grows in total size because the extension JSON outweighs the saved
+  geometry; the test asserts the binary chunk shrinks; (f) MCP `kiln_export` is unchanged
+  (schemas are prompt-cached), so the three target is CLI and library only.

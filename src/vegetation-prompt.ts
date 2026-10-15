@@ -62,6 +62,11 @@ export const VEGETATION_SUBTYPE_RECIPES_V1: Readonly<
     guidance:
       'Compose thick leaves or pads from scaled sphereGeo, capsuleGeo, or rounded boxGeo parts around a grounded center. Vary vertical reach and azimuth modestly while keeping each pad visibly joined to the base.',
   },
+  cactus: {
+    marker: 'RECIPE_CACTUS_V1',
+    guidance:
+      'Build the trunk as a ribbed star-profile loft: await extrudeProfile(starOutline, { axis: "y", depth, taper, divisions }) with 6 to 12 rounded ribs (alternate outer and inner radii), seated at Y=0. Sweep each arm with pipeAlongPath through an elbow (out from the trunk, then up; bendRadius about one arm radius), embedded into the trunk. Seat spine clusters as small foliageCardGeo or crossedQuadsGeo cards on the rib crests, a few per rib, and keep them subordinate to the silhouette. Deliver explicit LOD tiers with defineLod: LOD0 full ribs, arms and spines; LOD1 fewer ribs and no spines; a last crossedQuadsGeo card tier with impostor: true.',
+  },
   fungus: {
     marker: 'RECIPE_FUNGUS_V1',
     guidance:
@@ -104,6 +109,6 @@ export function vegetationSubtypePromptContext(intent: AssetIntentV1): string {
     recipe.guidance,
     state,
     material,
-    'Use current executable APIs only. No branch, canopy, leaf-distribution, frond, procedural-map, or LOD helper has been promoted.',
+    'Use current executable APIs only. No branch, canopy, leaf-distribution, frond, procedural-map, or vegetation-specific LOD helper has been promoted; defineLod is the general LOD helper.',
   ].join('\n');
 }

@@ -467,6 +467,11 @@ export const VEGETATION_GROWTH_BANDS_V1: Readonly<
     trunk: { taper: [0.3, 1.2], lengthRadius: [1.2, 35] },
     branch: { taper: [0.15, 1.2], lengthRadius: [1.2, 50] },
   },
+  // Columnar ribbed trunks and elbowed arms barely taper.
+  cactus: {
+    trunk: { taper: [0.45, 1.15], lengthRadius: [1.5, 45] },
+    branch: { taper: [0.35, 1.15], lengthRadius: [1.5, 35] },
+  },
   fungus: {
     trunk: { taper: [0.25, 1.25], lengthRadius: [1.2, 45] },
     branch: { taper: [0.1, 1.25], lengthRadius: [1.2, 60] },

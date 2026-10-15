@@ -35,6 +35,7 @@ import {
 } from './delivery';
 import { bakeSurfaceAttributes } from './surface-bake';
 import { requireSolid } from './require-solid';
+import { definePalette, type PaletteDeclarationV1 } from './palette-check';
 import { type BudgetDeclarationV1, defineBudget } from './budget';
 import { useCubicSpline } from './animation-cubic';
 import {
@@ -2151,6 +2152,7 @@ export type DiagnosticConsole = Pick<Console, 'log' | 'info' | 'debug' | 'warn' 
 /** Declarations a program makes without a node; executeKilnCode stamps them on the root. */
 export interface SandboxDeclarations {
   budget?: BudgetDeclarationV1;
+  palette?: PaletteDeclarationV1;
 }
 /** Symbol-keyed, so it never becomes a sandbox global. */
 export const SANDBOX_DECLARATIONS: unique symbol = Symbol('kiln.sandbox.declarations');
@@ -2300,6 +2302,18 @@ export function buildSandboxGlobals(
       (spec: Parameters<typeof defineBudget>[0], target?: THREE.Object3D) => {
         const declaration = defineBudget(spec, target);
         declarations.budget = declaration;
+        return declaration;
+      },
+    ),
+    definePalette: wrap(
+      'definePalette',
+      (
+        colors: Parameters<typeof definePalette>[0],
+        opts?: Parameters<typeof definePalette>[1],
+        target?: THREE.Object3D,
+      ) => {
+        const declaration = definePalette(colors, opts, target);
+        declarations.palette = declaration;
         return declaration;
       },
     ),

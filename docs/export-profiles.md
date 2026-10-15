@@ -42,7 +42,8 @@ opt in because moving review data changes its location and adds a companion file
 The Three.js converter is experimental because native installation requirements,
 unsupported UV transforms and destination feature support still need qualification.
 Neither setting automatically enables mesh merging, geometry simplification, Draco,
-Meshopt or KTX2 compression. Those require separate choices and validation.
+Meshopt or KTX2 compression. Those require separate choices and validation; the
+opt-in [three.js runtime target](#threejs-runtime-target) is one such choice.
 
 ## Material sidedness at export
 
@@ -160,6 +161,71 @@ Assets with no review clips still receive the provenance link and an empty sidec
 scene list; their GLB can grow slightly. This is not geometry optimization, compression,
 mesh merging, texture compression, or an FPS improvement. Measure actual delivery size
 and target-scene performance separately.
+
+## three.js runtime target
+
+`--target three` (runtime profile only) derives a GLB for a three.js application:
+
+```sh
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --target three --out door.glb
+# door.glb
+# door.kiln-metadata.json   (version kiln.runtime-metadata.v1, target "three", delivery {...})
+```
+
+```ts
+import { deliverThreeRuntimeGlb, exportAssetGlb } from '@instruktlabs/kiln/asset-export';
+
+const output = await exportAssetGlb(record, { profile: 'runtime', target: 'three' });
+// Or derive from any Kiln GLB without a saved record:
+const { glb, delivery } = await deliverThreeRuntimeGlb(bytes, { ktx2Encoder });
+```
+
+What it does, in order:
+
+1. Identical accessors are merged. Under each node marked by `repeatInstances(parent)`,
+   direct children with the same mesh content (accessors, material, mode) and no
+   children, roles, extras, skin, morph weights or hidden flag become one node
+   `<parent>_Instances` with `EXT_mesh_gpu_instancing`.
+2. Each collider's proxy mesh moves to a child `<collider>_Proxy`, so the collider node
+   keeps its authored transform (its scale is the collider size).
+3. Vertices are reordered for compression, then quantized with `KHR_mesh_quantization`
+   per mesh: position 14 bits, normal 10, texcoord 12, colour 8, weights 8.
+   Underscore attributes such as `_EDGE` and `_CAVITY` are **not** quantized and stay
+   FLOAT. Buffers are written with `EXT_meshopt_compression` (required).
+4. Textures become KTX2 (`KHR_texture_basisu`) only when the library caller passes a
+   `ktx2Encoder`; Kiln ships none, so the CLI reports `ktx2: { status: 'skipped' }` and
+   textures stay PNG or JPEG.
+
+Roles and kit extras, hidden collider nodes (`KHR_node_visibility`), anchors, ports and
+`MSFT_lod` chains are kept. The sidecar `delivery` block states what a consumer needs:
+
+| Field | Meaning |
+| --- | --- |
+| `extensionsUsed`, `extensionsRequired` | The derived GLB's extension sets |
+| `quantization` | Bits per attribute class; `customAttributes: 'float32'` |
+| `nodeScale` | Every node whose matrix now carries a dequantization `{ scale, offset }`, its `localScale`, and whether the mesh moved to a child (`meshMovedToChild`, `authoredNode`) |
+| `colliderProxies` | Collider node and proxy child paths |
+| `customAttributes` | Each underscore attribute, its mesh count, `FLOAT`, not normalized |
+| `instancing` | Each batch node, its mesh, count and instance names in order |
+| `ktx2` | `encoded` or `skipped` with the texture count and reason |
+| `preserved` | Counts of LOD chains, hidden nodes, colliders, anchors, ports and kit modules |
+
+Quantization stores positions as normalized integers and moves the metre scale onto
+the node: read geometry through the node's world matrix. A loader needs the meshopt
+decoder; with three.js:
+
+```ts
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+
+await MeshoptDecoder.ready;
+const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(buffer, '');
+```
+
+three's `GLTFLoader` keeps unknown node extensions in `userData.gltfExtensions`
+(`KHR_node_visibility`, `MSFT_lod`) and lowercases custom attributes (`_edge`).
+Kiln's tests load the derived GLB from both converters this way. On a very small asset
+the extension JSON can outweigh the saved geometry; compare real assets.
 
 ## Pointer and hash contract
 

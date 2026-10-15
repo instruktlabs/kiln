@@ -296,6 +296,7 @@ export const VEGETATION_SUBTYPES = [
   'vine',
   'crop/flower',
   'succulent',
+  'cactus',
   'fungus',
   'aquatic',
   'bare/dead',
@@ -1776,7 +1777,8 @@ function inferVegetationSubtype(value: string | undefined): VegetationSubtype {
   if (/(?:shrub|bush|hedge|topiary)/i.test(value)) return 'shrub';
   if (/(?:grass|reed|sedge)/i.test(value)) return 'grass';
   if (/(?:vine|ivy|liana)/i.test(value)) return 'vine';
-  if (/(?:succulent|cactus|agave)/i.test(value)) return 'succulent';
+  if (/(?:cactus|cacti|saguaro|cholla|opuntia)/i.test(value)) return 'cactus';
+  if (/(?:succulent|agave)/i.test(value)) return 'succulent';
   if (/(?:fungus|mushroom)/i.test(value)) return 'fungus';
   if (/(?:aquatic|lily|kelp|lotus)/i.test(value)) return 'aquatic';
   return 'custom';
