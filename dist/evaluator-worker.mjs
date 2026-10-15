@@ -44,6 +44,8 @@ function authoringDiagnosticAdvice(diagnostic) {
     return LOD_SET_ADVICE;
   if (diagnostic === "OPEN_SHELL")
     return OPEN_SHELL_ADVICE;
+  if (diagnostic === "DELIVERY_CONTRACT")
+    return DELIVERY_CONTRACT_ADVICE;
   if (diagnostic === "BUILD_RESULT")
     return BUILD_RESULT_ADVICE;
   if (diagnostic === "MATERIAL_RECIPE_OVERRIDE")
@@ -117,7 +119,7 @@ function rethrowAuthoringError(error) {
   }
   throw error;
 }
-var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', OPEN_SHELL_ADVICE = 'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].', EXECUTION_REJECTED_ADVICE = "No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.", AuthoringDiagnosticError;
+var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', OPEN_SHELL_ADVICE = 'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].', DELIVERY_CONTRACT_ADVICE = 'Delivery helpers: colliderBox(size, { id }), colliderCapsule(radius, height, { id }) with height the total height of at least 2 * radius, colliderHull(mesh, { id }), anchor(kind, id), port(id) and defineModule(root, { footprint: [w, d], height, snapAxis: "x"|"y"|"z", origin: "corner"|"center" }). Ids and kinds are one segment of letters, digits, "_" or "-" with no dots; sizes are positive metres. The engine owns the kilnKit userData key; set it only through defineModule. Call kiln_discover with ids ["colliderBox", "anchor", "defineModule"].', EXECUTION_REJECTED_ADVICE = "No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.", AuthoringDiagnosticError;
 var init_authoring_diagnostic = __esm(() => {
   AuthoringDiagnosticError = class AuthoringDiagnosticError extends Error {
     diagnostic;
@@ -1354,7 +1356,15 @@ var init_semantic = __esm(() => {
     wheelContact: "wheel.contact",
     steeringPivot: "steering.pivot",
     roof: "roof",
-    architectureRoof: "architecture.roof"
+    architectureRoof: "architecture.roof",
+    collider: "collider",
+    colliderBox: "collider.box",
+    colliderCapsule: "collider.capsule",
+    colliderHull: "collider.hull",
+    anchor: "anchor",
+    kitModule: "kit.module",
+    kitPort: "kit.port",
+    lodImpostor: "lod.impostor"
   });
 });
 
@@ -6348,6 +6358,255 @@ var init_prop = __esm(() => {
   ];
 });
 
+// src/geometry-budget.ts
+function assertDimension(name, value, allowZero = false) {
+  if (!Number.isFinite(value) || !Number.isFinite(Math.fround(value)) || (allowZero ? value < 0 : Math.fround(value) <= 0))
+    throw new RangeError(`${name} must be finite, representable in Float32, and ${allowZero ? "nonnegative" : "positive"}.`);
+}
+function assertPrimitiveSegments(name, value, minimum) {
+  if (!Number.isSafeInteger(value) || value < minimum || value > GEOMETRY_ALLOCATION_LIMITS.primitiveSegments)
+    throw new RangeError(`${name} must be an integer from ${minimum} to ${GEOMETRY_ALLOCATION_LIMITS.primitiveSegments}.`);
+}
+function assertPrimitiveGrid(name, first, second) {
+  if ((first + 1) * (second + 1) > GEOMETRY_ALLOCATION_LIMITS.primitiveGridVertices)
+    throw new RangeError(`${name} exceeds ${GEOMETRY_ALLOCATION_LIMITS.primitiveGridVertices} grid vertices; reduce segment counts.`);
+}
+function assertRepetitionCount(name, count) {
+  if (!Number.isSafeInteger(count) || count < 1 || count > GEOMETRY_ALLOCATION_LIMITS.repeatedMeshes)
+    throw new RangeError(`${name} count must be an integer from 1 to ${GEOMETRY_ALLOCATION_LIMITS.repeatedMeshes}, including the source. Split large repetitions into intentional bounded groups.`);
+}
+function assertFiniteTriple(name, values) {
+  if (!Array.isArray(values) || values.length !== 3 || !values.every(Number.isFinite))
+    throw new RangeError(`${name} must contain three finite numbers.`);
+}
+var GEOMETRY_ALLOCATION_LIMITS;
+var init_geometry_budget = __esm(() => {
+  GEOMETRY_ALLOCATION_LIMITS = Object.freeze({
+    parametricSamples: 262144,
+    subdivisionTriangles: 1e6,
+    subdivisionAttributeBytes: 128 * 1024 * 1024,
+    subdivisionIterations: 10,
+    repeatedMeshes: 1e4,
+    primitiveSegments: 4096,
+    primitiveGridVertices: 262144,
+    unwrapVertices: 65536,
+    unwrapTriangles: 1e6,
+    unwrapAttributeBytes: 128 * 1024 * 1024,
+    unwrapResolution: 4096,
+    skinBones: 1024,
+    skinVertices: 262144,
+    skinAttributeBytes: 128 * 1024 * 1024,
+    colliderHullVertices: 65536,
+    surfaceBakeVertices: 262144,
+    surfaceBakeTriangles: 1e6,
+    surfaceBakeRays: 8388608,
+    surfaceBakeRayDirections: 256
+  });
+});
+
+// src/delivery.ts
+import * as THREE8 from "three";
+import { ConvexGeometry } from "three/addons/geometries/ConvexGeometry.js";
+function fail3(helper, detail) {
+  throw new AuthoringDiagnosticError("DELIVERY_CONTRACT", `${helper}: ${detail}`);
+}
+function segment(helper, label, value) {
+  if (typeof value !== "string" || !SEGMENT.test(value))
+    fail3(helper, `${label} must be 1 to 64 letters, digits, "_" or "-" starting with a letter or digit (no dots), got ${JSON.stringify(value)}.`);
+  return value;
+}
+function finitePositive2(helper, label, value) {
+  if (typeof value !== "number" || !Number.isFinite(value) || !(value > 0))
+    fail3(helper, `${label} must be a positive finite number of metres, got ${String(value)}.`);
+  return value;
+}
+function triple(helper, label, value) {
+  if (!Array.isArray(value) || value.length !== 3 || !value.every((item) => typeof item === "number" && Number.isFinite(item)))
+    fail3(helper, `${label} must be three finite numbers.`);
+  return [value[0], value[1], value[2]];
+}
+function isObject3D(value) {
+  return value?.isObject3D === true;
+}
+function place(helper, node, options) {
+  if (options.position !== undefined)
+    node.position.set(...triple(helper, "position", options.position));
+  if (options.rotation !== undefined) {
+    const [x, y, z] = triple(helper, "rotation", options.rotation);
+    node.rotation.set(THREE8.MathUtils.degToRad(x), THREE8.MathUtils.degToRad(y), THREE8.MathUtils.degToRad(z));
+  }
+  if (options.parent !== undefined) {
+    if (!isObject3D(options.parent))
+      fail3(helper, "parent must be a scene node.");
+    options.parent.add(node);
+  }
+}
+function options(helper, value) {
+  if (value === undefined)
+    return {};
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    fail3(helper, "options must be an object.");
+  return value;
+}
+function addSemanticRoles(node, roles) {
+  const existing = readSemanticMetadataV1(node);
+  const merged = [...existing?.roles ?? []];
+  for (const role of roles)
+    if (!merged.includes(role))
+      merged.push(role);
+  stampSemanticMetadataV1(node, {
+    roles: merged,
+    relationships: existing?.relationships ?? [],
+    frames: existing?.frames ?? [],
+    sockets: existing?.sockets ?? []
+  });
+}
+function proxyMaterial() {
+  return new THREE8.MeshBasicMaterial({ name: COLLIDER_PROXY_MATERIAL_NAME, color: 16711935 });
+}
+function proxy(shape, id, geometry) {
+  const mesh = new THREE8.Mesh(geometry, proxyMaterial());
+  mesh.name = `Collider_${shape}_${id}`;
+  mesh.visible = false;
+  addSemanticRoles(mesh, [
+    semanticRole(shape === "box" ? KILN_SEMANTIC_ROLES.colliderBox : shape === "capsule" ? KILN_SEMANTIC_ROLES.colliderCapsule : KILN_SEMANTIC_ROLES.colliderHull, id)
+  ]);
+  return mesh;
+}
+function colliderBox(size, opts) {
+  const helper = "colliderBox(size, { id })";
+  const settings = options(helper, opts);
+  const id = segment(helper, "id", settings.id);
+  const dims = typeof size === "number" ? [size, size, size] : triple(helper, "size", size).map((value) => value);
+  for (const [index, value] of dims.entries())
+    finitePositive2(helper, `size[${index}]`, value);
+  const mesh = proxy("box", id, new THREE8.BoxGeometry(1, 1, 1));
+  mesh.scale.set(dims[0], dims[1], dims[2]);
+  place(helper, mesh, settings);
+  return mesh;
+}
+function colliderCapsule(radius, height, opts) {
+  const helper = "colliderCapsule(radius, height, { id })";
+  const settings = options(helper, opts);
+  const id = segment(helper, "id", settings.id);
+  finitePositive2(helper, "radius", radius);
+  finitePositive2(helper, "height", height);
+  if (height < 2 * radius)
+    fail3(helper, `height is the total height including both caps and must be at least 2 * radius (${2 * radius}), got ${height}.`);
+  const geometry = new THREE8.CapsuleGeometry(radius, height - 2 * radius, 4, 12);
+  geometry.scale(1 / (2 * radius), 1 / height, 1 / (2 * radius));
+  const mesh = proxy("capsule", id, geometry);
+  mesh.scale.set(2 * radius, height, 2 * radius);
+  place(helper, mesh, settings);
+  return mesh;
+}
+function colliderHull(mesh, opts) {
+  const helper = "colliderHull(mesh, { id })";
+  const settings = options(helper, opts);
+  const id = segment(helper, "id", settings.id);
+  const source = mesh;
+  const position = source?.isMesh ? source.geometry?.getAttribute("position") : undefined;
+  if (position?.itemSize !== 3)
+    fail3(helper, "mesh must be a mesh with xyz positions, such as createPart returned.");
+  if (position.count > GEOMETRY_ALLOCATION_LIMITS.colliderHullVertices)
+    fail3(helper, `mesh has ${position.count} vertices; a hull proxy reads at most ${GEOMETRY_ALLOCATION_LIMITS.colliderHullVertices}.`);
+  const points = [];
+  for (let i = 0;i < position.count; i++)
+    points.push(new THREE8.Vector3().fromBufferAttribute(position, i));
+  let geometry;
+  try {
+    geometry = new ConvexGeometry(points);
+  } catch {
+    fail3(helper, "the mesh vertices do not span a volume, so they have no convex hull.");
+  }
+  if (!geometry.getAttribute("position")?.count)
+    fail3(helper, "the mesh vertices do not span a volume, so they have no convex hull.");
+  const hull = proxy("hull", id, geometry);
+  hull.position.copy(source.position);
+  hull.quaternion.copy(source.quaternion);
+  hull.scale.copy(source.scale);
+  const parent = settings.parent ?? source.parent;
+  if (parent !== undefined && parent !== null) {
+    if (!isObject3D(parent))
+      fail3(helper, "parent must be a scene node.");
+    parent.add(hull);
+  }
+  return hull;
+}
+function anchor(kind, id, opts) {
+  const helper = "anchor(kind, id, opts?)";
+  const settings = options(helper, opts);
+  const kindSegment = segment(helper, "kind", kind);
+  const idSegment = segment(helper, "id", id);
+  const node = new THREE8.Object3D;
+  node.name = `Anchor_${kindSegment}_${idSegment}`;
+  node.visible = false;
+  addSemanticRoles(node, [semanticRole(KILN_SEMANTIC_ROLES.anchor, kindSegment, idSegment)]);
+  place(helper, node, settings);
+  return node;
+}
+function kitModuleExtras(spec, helper = "defineModule(root, spec)") {
+  if (!spec || typeof spec !== "object" || Array.isArray(spec))
+    fail3(helper, "spec must be { footprint: [w, d], height, snapAxis, origin }.");
+  const value = spec;
+  const footprint = value.footprint;
+  if (!Array.isArray(footprint) || footprint.length !== 2)
+    fail3(helper, "footprint must be [width along X, depth along Z] in metres.");
+  const [width, depth] = footprint.map((item, index) => finitePositive2(helper, `footprint[${index}]`, item));
+  const height = finitePositive2(helper, "height", value.height);
+  if (value.snapAxis !== "x" && value.snapAxis !== "y" && value.snapAxis !== "z")
+    fail3(helper, `snapAxis must be 'x', 'y' or 'z', got ${JSON.stringify(value.snapAxis)}.`);
+  if (value.origin !== "corner" && value.origin !== "center")
+    fail3(helper, `origin must be 'corner' or 'center', got ${JSON.stringify(value.origin)}.`);
+  for (const key of Object.keys(value))
+    if (!["footprint", "height", "snapAxis", "origin"].includes(key))
+      fail3(helper, `unknown spec field ${JSON.stringify(key)}.`);
+  return {
+    schemaVersion: 1,
+    footprint: [width, depth],
+    height,
+    snapAxis: value.snapAxis,
+    origin: value.origin
+  };
+}
+function defineModule(root, spec) {
+  const helper = "defineModule(root, spec)";
+  if (!isObject3D(root))
+    fail3(helper, "root must be a scene node, such as createRoot returned.");
+  const extras = kitModuleExtras(spec, helper);
+  root.userData[KILN_KIT_KEY] = extras;
+  addSemanticRoles(root, [KILN_SEMANTIC_ROLES.kitModule]);
+  return root;
+}
+function port(id, opts) {
+  const helper = "port(id, opts?)";
+  const settings = options(helper, opts);
+  const idSegment = segment(helper, "id", id);
+  const node = new THREE8.Object3D;
+  node.name = `Port_${idSegment}`;
+  addSemanticRoles(node, [semanticRole(KILN_SEMANTIC_ROLES.kitPort, idSegment)]);
+  place(helper, node, settings);
+  return node;
+}
+function kitExtras(node) {
+  const target = node;
+  const value = target?.userData?.[KILN_KIT_KEY];
+  if (value === undefined)
+    return {};
+  const record = value;
+  if (!record || typeof record !== "object" || record.schemaVersion !== 1)
+    fail3("defineModule(root, spec)", `userData.${KILN_KIT_KEY} on ${JSON.stringify(target?.name || "(unnamed node)")} is not a record defineModule wrote; set it only through defineModule.`);
+  const { schemaVersion: _version, ...spec } = record;
+  return { [KILN_KIT_KEY]: kitModuleExtras(spec) };
+}
+var KILN_KIT_KEY = "kilnKit", COLLIDER_PROXY_MATERIAL_NAME = "KilnColliderProxy", SEGMENT;
+var init_delivery = __esm(() => {
+  init_contracts();
+  init_authoring_diagnostic();
+  init_geometry_budget();
+  SEGMENT = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
+});
+
 // src/lod.ts
 function lodName(name) {
   const match = LOD_TOKEN.exec(name);
@@ -6362,7 +6621,7 @@ function lodName(name) {
     pattern: `${name.slice(0, start)}${token}<n>${name.slice(end)}`
   };
 }
-function fail3(message) {
+function fail4(message) {
   throw new AuthoringDiagnosticError("LOD_SET", message);
 }
 function coverageProblem(values, levels) {
@@ -6385,24 +6644,32 @@ function format(values) {
 }
 function defineLod(levels, options) {
   if (!Array.isArray(levels) || levels.length < 2 || levels.some((level) => level?.isObject3D !== true))
-    fail3(`defineLod: levels must list at least two tier nodes, LOD0 first, as in ${EXAMPLE}.`);
+    fail4(`defineLod: levels must list at least two tier nodes, LOD0 first, as in ${EXAMPLE}.`);
   const first = lodName(levels[0].name);
   for (const [index, level] of levels.entries()) {
     const parsed = lodName(level.name);
     if (!parsed || parsed.level !== index || parsed.stem !== first?.stem) {
       const expected = first ? first.pattern.replace("<n>", String(index)) : `a name with the token LOD${index}`;
-      fail3(`defineLod: level ${index} is named ${JSON.stringify(level.name)}; name each tier with one stem and its level's token in order (${expected}).`);
+      fail4(`defineLod: level ${index} is named ${JSON.stringify(level.name)}; name each tier with one stem and its level's token in order (${expected}).`);
     }
   }
   const parents = new Set(levels.map((level) => level.parent));
   if (!parents.has(null) && parents.size > 1)
-    fail3(`defineLod: the tiers of ${JSON.stringify(first.pattern)} must share the same parent; lower levels replace LOD0 in place.`);
+    fail4(`defineLod: the tiers of ${JSON.stringify(first.pattern)} must share the same parent; lower levels replace LOD0 in place.`);
   const coverage = options?.screenCoverage;
   const problem = coverageProblem(coverage, levels.length);
   if (problem)
-    fail3(`defineLod: ${problem}; got ${format(coverage)}. For example ${EXAMPLE}.`);
-  const declaration = { screenCoverage: [...coverage] };
+    fail4(`defineLod: ${problem}; got ${format(coverage)}. For example ${EXAMPLE}.`);
+  const impostor = options?.impostor;
+  if (impostor !== undefined && typeof impostor !== "boolean")
+    fail4(`defineLod: impostor must be true or false; got ${format(impostor)}.`);
+  const declaration = {
+    screenCoverage: [...coverage],
+    ...impostor ? { impostor: true } : {}
+  };
   levels[0].userData[KILN_LOD_KEY] = declaration;
+  if (impostor)
+    addSemanticRoles(levels[levels.length - 1], [KILN_SEMANTIC_ROLES.lodImpostor]);
   return levels;
 }
 function declarationOf(node) {
@@ -6432,18 +6699,18 @@ function collectLodSets(root) {
       const ordered = [...members].sort((a, b) => a.name.level - b.name.level);
       const found = ordered.map((member) => member.name.level);
       if (found.some((level, index) => level !== index))
-        fail3(`LOD set ${where} has levels ${found.join(", ")}; a set needs LOD0 and consecutive levels with no repeats.`);
+        fail4(`LOD set ${where} has levels ${found.join(", ")}; a set needs LOD0 and consecutive levels with no repeats.`);
       const levels = ordered.map((member) => member.node);
       const declaration = declarationOf(levels[0]);
       const names = levels.map((level) => level.name).join(", ");
       if (declaration === undefined)
-        fail3(`LOD set ${where} (${names}) has no screen coverage. Declare it once: defineLod([${names}], { screenCoverage: [...] }) with one value per level, from 0 to 1, strictly decreasing.`);
+        fail4(`LOD set ${where} (${names}) has no screen coverage. Declare it once: defineLod([${names}], { screenCoverage: [...] }) with one value per level, from 0 to 1, strictly decreasing.`);
       const coverage = declaration?.screenCoverage;
       if (Array.isArray(coverage) && coverage.length !== levels.length)
-        fail3(`LOD set ${where} declares ${coverage.length} levels but has ${levels.length} (${names}); call defineLod again with every tier.`);
+        fail4(`LOD set ${where} declares ${coverage.length} levels but has ${levels.length} (${names}); call defineLod again with every tier.`);
       const problem = coverageProblem(coverage, levels.length);
       if (problem)
-        fail3(`LOD set ${where}: ${problem}.`);
+        fail4(`LOD set ${where}: ${problem}.`);
       declaredBases.add(levels[0]);
       sets.push({ parent, levels, screenCoverage: [...coverage] });
     }
@@ -6457,12 +6724,14 @@ function collectLodSets(root) {
       return;
     const coverage = declaration?.screenCoverage;
     const count = Array.isArray(coverage) ? coverage.length : "its";
-    fail3(`${JSON.stringify(node.name)} declares ${count} levels with defineLod but is not the LOD0 of a set of sibling tiers; attach every tier under the same parent (sets cannot nest inside another tier).`);
+    fail4(`${JSON.stringify(node.name)} declares ${count} levels with defineLod but is not the LOD0 of a set of sibling tiers; attach every tier under the same parent (sets cannot nest inside another tier).`);
   });
   return sets;
 }
 var LOD_TOKEN, KILN_LOD_KEY = "kilnLodV1", EXAMPLE = "defineLod([body0, body1, body2], { screenCoverage: [0.25, 0.06, 0.01] })";
 var init_lod = __esm(() => {
+  init_semantic();
+  init_delivery();
   init_authoring_diagnostic();
   LOD_TOKEN = /(^|[^a-z0-9])lod(\d+)([^a-z0-9]|$)/i;
 });
@@ -6490,7 +6759,7 @@ var init_lod2 = __esm(() => {
 });
 
 // src/qa/part-connectivity.ts
-import * as THREE8 from "three";
+import * as THREE9 from "three";
 function collectParts2(root, exempt) {
   const parts = [];
   let lodExcluded = 0;
@@ -6508,7 +6777,7 @@ function collectParts2(root, exempt) {
       exempt.push(name);
       return;
     }
-    const box = new THREE8.Box3().setFromObject(mesh);
+    const box = new THREE9.Box3().setFromObject(mesh);
     if (box.isEmpty())
       return;
     parts.push({ name, box });
@@ -6593,7 +6862,7 @@ function analyzePartConnectivity(root) {
   return report;
 }
 function inspectPartConnectivity(scene) {
-  if (!(scene instanceof THREE8.Object3D))
+  if (!(scene instanceof THREE9.Object3D))
     return [];
   const report = analyzePartConnectivity(scene);
   const lodNote = report.lodExcluded === 1 ? " 1 part on an LOD level above 0 was not analyzed." : report.lodExcluded > 1 ? ` ${report.lodExcluded} parts on LOD levels above 0 were not analyzed.` : "";
@@ -6636,9 +6905,9 @@ var init_part_connectivity = __esm(() => {
 });
 
 // src/sweep-analysis.ts
-import * as THREE9 from "three";
+import * as THREE10 from "three";
 function segmentHitsTriangle(a, b, tri, epsilon) {
-  const plane = new THREE9.Plane().setFromCoplanarPoints(tri.a, tri.b, tri.c);
+  const plane = new THREE10.Plane().setFromCoplanarPoints(tri.a, tri.b, tri.c);
   if (plane.normal.lengthSq() === 0)
     return false;
   const da = plane.distanceToPoint(a), db = plane.distanceToPoint(b);
@@ -6676,7 +6945,7 @@ function recordSweepAnalysis(geometry, rings, profiles, closed) {
     return result;
   }
   const unique = closed ? rings.length - 1 : rings.length;
-  const centers = rings.map((ring) => ring.reduce((sum, p) => sum.add(p), new THREE9.Vector3).divideScalar(ring.length));
+  const centers = rings.map((ring) => ring.reduce((sum, p) => sum.add(p), new THREE10.Vector3).divideScalar(ring.length));
   for (let i = closed ? 0 : 1;i < (closed ? unique : unique - 1); i++) {
     const a = centers[(i - 1 + unique) % unique], b = centers[i], c = centers[(i + 1) % unique];
     const u = b.clone().sub(a), v = c.clone().sub(b);
@@ -6690,17 +6959,17 @@ function recordSweepAnalysis(geometry, rings, profiles, closed) {
   const triangles = new Map;
   const faces = (index) => {
     if (!triangles.has(index))
-      triangles.set(index, THREE9.ShapeUtils.triangulateShape(profiles[index], []).map(([a, b, c]) => new THREE9.Triangle(rings[index][a], rings[index][b], rings[index][c])));
+      triangles.set(index, THREE10.ShapeUtils.triangulateShape(profiles[index], []).map(([a, b, c]) => new THREE10.Triangle(rings[index][a], rings[index][b], rings[index][c])));
     return triangles.get(index);
   };
   for (let i = 1;i < rings.length; i++) {
-    const boundsA = new THREE9.Box3().setFromPoints(rings[i - 1]);
-    const boundsB = new THREE9.Box3().setFromPoints(rings[i]);
+    const boundsA = new THREE10.Box3().setFromPoints(rings[i - 1]);
+    const boundsB = new THREE10.Box3().setFromPoints(rings[i]);
     if (!boundsA.intersectsBox(boundsB)) {
       result.ringPairsChecked++;
       continue;
     }
-    const epsilon = Math.max(boundsA.getSize(new THREE9.Vector3).length(), boundsB.getSize(new THREE9.Vector3).length()) * 0.0000000001;
+    const epsilon = Math.max(boundsA.getSize(new THREE10.Vector3).length(), boundsB.getSize(new THREE10.Vector3).length()) * 0.0000000001;
     let hit = false;
     pair:
       for (const [a, b] of [
@@ -6732,10 +7001,10 @@ var init_sweep_analysis = __esm(() => {
 });
 
 // src/qa/sweep.ts
-import { Object3D as Object3D4 } from "three";
+import { Object3D as Object3D5 } from "three";
 function inspectSweepGeometry(scene) {
   const findings = [];
-  if (!(scene instanceof Object3D4))
+  if (!(scene instanceof Object3D5))
     return findings;
   scene.traverseVisible((node) => {
     const geometry = node.geometry;
@@ -6803,10 +7072,10 @@ var init_sweep = __esm(() => {
 function markOpenShell(part, reason) {
   const node = part;
   if (!node || typeof node !== "object" || node.isObject3D !== true)
-    fail4("part must be a scene node, such as the mesh createPart returned or a group.");
+    fail5("part must be a scene node, such as the mesh createPart returned or a group.");
   const kept = validReason(reason);
   if (kept === undefined)
-    fail4(`reason must be a non-empty string of at most ${MAX_OPEN_SHELL_REASON} characters saying why the shell is open.`);
+    fail5(`reason must be a non-empty string of at most ${MAX_OPEN_SHELL_REASON} characters saying why the shell is open.`);
   const target = node;
   if (!target.userData || typeof target.userData !== "object")
     target.userData = {};
@@ -6839,10 +7108,10 @@ function openShellExtras(node) {
     return {};
   const reason = markReason(value);
   if (reason === undefined)
-    fail4(`userData.${OPEN_SHELL_KEY} on ${JSON.stringify(target?.name || "(unnamed node)")} is not a mark this helper wrote; the engine owns that key, so set it only through markOpenShell.`);
+    fail5(`userData.${OPEN_SHELL_KEY} on ${JSON.stringify(target?.name || "(unnamed node)")} is not a mark this helper wrote; the engine owns that key, so set it only through markOpenShell.`);
   return { [OPEN_SHELL_KEY]: { schemaVersion: 1, reason } };
 }
-var OPEN_SHELL_KEY = "kilnOpenShell", MAX_OPEN_SHELL_REASON = 200, EXAMPLE2 = 'markOpenShell(rail, "C-channel closed by the end plates")', fail4 = (detail) => {
+var OPEN_SHELL_KEY = "kilnOpenShell", MAX_OPEN_SHELL_REASON = 200, EXAMPLE2 = 'markOpenShell(rail, "C-channel closed by the end plates")', fail5 = (detail) => {
   throw new AuthoringDiagnosticError("OPEN_SHELL", `markOpenShell(part, reason): ${detail} For example ${EXAMPLE2}.`);
 }, validReason = (reason) => {
   if (typeof reason !== "string")
@@ -6855,7 +7124,7 @@ var init_open_shell = __esm(() => {
 });
 
 // src/qa/self-intersection.ts
-import * as THREE10 from "three";
+import * as THREE11 from "three";
 function boxOverlapRatio(a, b) {
   const shared = Math.max(0, Math.min(a.max.x, b.max.x) - Math.max(a.min.x, b.min.x)) * Math.max(0, Math.min(a.max.y, b.max.y) - Math.max(a.min.y, b.min.y)) * Math.max(0, Math.min(a.max.z, b.max.z) - Math.max(a.min.z, b.min.z));
   const ratio = shared / Math.min(boxVolume(a), boxVolume(b));
@@ -6906,8 +7175,8 @@ function collectParts3(root, skipped) {
     const box = mesh.geometry.boundingBox.clone().applyMatrix4(mesh.matrixWorld);
     if (box.isEmpty())
       return;
-    const center = box.getCenter(new THREE10.Vector3);
-    const size = box.getSize(new THREE10.Vector3);
+    const center = box.getCenter(new THREE11.Vector3);
+    const size = box.getSize(new THREE11.Vector3);
     const scale = Math.max(size.x, size.y, size.z);
     if (![...box.min, ...box.max, scale].every(Number.isFinite) || !(scale > 0) || !Number.isFinite(mesh.matrixWorld.determinant()) || mesh.matrixWorld.determinant() === 0) {
       skipped.push({
@@ -6939,7 +7208,7 @@ function meshToArrays(part) {
   matrix.elements[12] -= center.x;
   matrix.elements[13] -= center.y;
   matrix.elements[14] -= center.z;
-  const v = new THREE10.Vector3;
+  const v = new THREE11.Vector3;
   const verts = new Float32Array(position.count * 3);
   for (let i = 0;i < position.count; i++) {
     v.set(position.getX(i), position.getY(i), position.getZ(i)).applyMatrix4(matrix).divideScalar(scale);
@@ -7286,49 +7555,8 @@ var init_self_intersection = __esm(() => {
   });
 });
 
-// src/geometry-budget.ts
-function assertDimension(name, value, allowZero = false) {
-  if (!Number.isFinite(value) || !Number.isFinite(Math.fround(value)) || (allowZero ? value < 0 : Math.fround(value) <= 0))
-    throw new RangeError(`${name} must be finite, representable in Float32, and ${allowZero ? "nonnegative" : "positive"}.`);
-}
-function assertPrimitiveSegments(name, value, minimum) {
-  if (!Number.isSafeInteger(value) || value < minimum || value > GEOMETRY_ALLOCATION_LIMITS.primitiveSegments)
-    throw new RangeError(`${name} must be an integer from ${minimum} to ${GEOMETRY_ALLOCATION_LIMITS.primitiveSegments}.`);
-}
-function assertPrimitiveGrid(name, first, second) {
-  if ((first + 1) * (second + 1) > GEOMETRY_ALLOCATION_LIMITS.primitiveGridVertices)
-    throw new RangeError(`${name} exceeds ${GEOMETRY_ALLOCATION_LIMITS.primitiveGridVertices} grid vertices; reduce segment counts.`);
-}
-function assertRepetitionCount(name, count) {
-  if (!Number.isSafeInteger(count) || count < 1 || count > GEOMETRY_ALLOCATION_LIMITS.repeatedMeshes)
-    throw new RangeError(`${name} count must be an integer from 1 to ${GEOMETRY_ALLOCATION_LIMITS.repeatedMeshes}, including the source. Split large repetitions into intentional bounded groups.`);
-}
-function assertFiniteTriple(name, values) {
-  if (!Array.isArray(values) || values.length !== 3 || !values.every(Number.isFinite))
-    throw new RangeError(`${name} must contain three finite numbers.`);
-}
-var GEOMETRY_ALLOCATION_LIMITS;
-var init_geometry_budget = __esm(() => {
-  GEOMETRY_ALLOCATION_LIMITS = Object.freeze({
-    parametricSamples: 262144,
-    subdivisionTriangles: 1e6,
-    subdivisionAttributeBytes: 128 * 1024 * 1024,
-    subdivisionIterations: 10,
-    repeatedMeshes: 1e4,
-    primitiveSegments: 4096,
-    primitiveGridVertices: 262144,
-    unwrapVertices: 65536,
-    unwrapTriangles: 1e6,
-    unwrapAttributeBytes: 128 * 1024 * 1024,
-    unwrapResolution: 4096,
-    skinBones: 1024,
-    skinVertices: 262144,
-    skinAttributeBytes: 128 * 1024 * 1024
-  });
-});
-
 // src/vehicle.ts
-import * as THREE11 from "three";
+import * as THREE12 from "three";
 function assertId(value, name) {
   if (!ID_PATTERN.test(value))
     throw new TypeError(`${name} must be a stable identifier`);
@@ -7363,7 +7591,7 @@ function createTypedSocket(kind, input, parent) {
   if (!input.position.every(Number.isFinite))
     throw new TypeError(`${kind}.${id} position must be finite`);
   const rotation = normalizedQuaternion(input.rotation);
-  const node = new THREE11.Object3D;
+  const node = new THREE12.Object3D;
   node.name = `Socket_${kind}_${id}`;
   node.position.set(...input.position);
   node.quaternion.set(...rotation);
@@ -7384,7 +7612,7 @@ function createTypedSocket(kind, input, parent) {
   return node;
 }
 function createVehicleFrame(name, options = {}) {
-  const root = new THREE11.Object3D;
+  const root = new THREE12.Object3D;
   root.name = name;
   stampSemanticMetadataV1(root, semantic2([KILN_SEMANTIC_ROLES.vehicleFrame, KILN_SEMANTIC_ROLES.vehicleForward], {
     frames: [
@@ -7409,7 +7637,7 @@ function createVehicleFrame(name, options = {}) {
   };
 }
 function cylinderZ(radius, width, segments = 16) {
-  const geometry = new THREE11.CylinderGeometry(radius, radius, width, segments);
+  const geometry = new THREE12.CylinderGeometry(radius, radius, width, segments);
   geometry.rotateX(Math.PI / 2);
   return geometry;
 }
@@ -7426,14 +7654,14 @@ function defaultTireGeometry(radius, width) {
   if (width >= radius * 2)
     throw new RangeError("default wheel tire width must be less than its diameter");
   const tube = width / 2;
-  return new THREE11.TorusGeometry(radius - tube, tube, 8, 20);
+  return new THREE12.TorusGeometry(radius - tube, tube, 8, 20);
 }
 function checkWheelGeometry(part, geometry, radius, width) {
   const positions = geometry.getAttribute("position");
   if (positions?.itemSize !== 3 || positions.count < 1 || positions.count > 2000000)
     throw new RangeError(`wheel ${part} position must have 1..2000000 three-component samples.`);
-  const bounds = new THREE11.Box3;
-  const point = new THREE11.Vector3;
+  const bounds = new THREE12.Box3;
+  const point = new THREE12.Vector3;
   let actualRadius = 0;
   for (let i = 0;i < positions.count; i++) {
     point.fromBufferAttribute(positions, i);
@@ -7443,7 +7671,7 @@ function checkWheelGeometry(part, geometry, radius, width) {
     actualRadius = Math.max(actualRadius, Math.hypot(point.x, point.y));
   }
   const actualWidth = bounds.max.z - bounds.min.z;
-  const center = bounds.getCenter(new THREE11.Vector3);
+  const center = bounds.getCenter(new THREE12.Vector3);
   const tolerance = 0.00001 * Math.max(radius, width, actualRadius, actualWidth);
   const differences = [];
   if (Math.abs(actualRadius - radius) > tolerance)
@@ -7488,11 +7716,11 @@ function createWheelAssembly(name, materials, options) {
   const index = assertId(String(options.index), "wheel index");
   const key = `${options.side}.${index}`;
   const parent = options.parent;
-  const root = new THREE11.Object3D;
+  const root = new THREE12.Object3D;
   root.name = `${name}_Assembly_${options.side}_${index}`;
   let steeringPivot;
   if (options.steering) {
-    steeringPivot = new THREE11.Object3D;
+    steeringPivot = new THREE12.Object3D;
     steeringPivot.name = `SteeringPivot_${options.side}_${index}`;
     steeringPivot.position.set(...options.position ?? [0, 0, 0]);
     stampSemanticMetadataV1(steeringPivot, semantic2([semanticRole(ROLE.steeringPivot, key)], {
@@ -7503,7 +7731,7 @@ function createWheelAssembly(name, materials, options) {
     }));
     root.add(steeringPivot);
   }
-  const spinPivot = new THREE11.Object3D;
+  const spinPivot = new THREE12.Object3D;
   spinPivot.name = `WheelPivot_${options.side}_${index}`;
   if (!steeringPivot)
     spinPivot.position.set(...options.position ?? [0, 0, 0]);
@@ -7524,9 +7752,9 @@ function createWheelAssembly(name, materials, options) {
     ]
   }));
   (steeringPivot ?? root).add(spinPivot);
-  const tire = new THREE11.Mesh(options.geometries?.tire ?? defaultTireGeometry(radius, width), materials.tire);
-  const rim = new THREE11.Mesh(options.geometries?.rim ?? cylinderZ(rimRadius, rimWidth), materials.rim);
-  const hub = new THREE11.Mesh(options.geometries?.hub ?? cylinderZ(hubRadius, hubWidth), materials.hub ?? materials.rim);
+  const tire = new THREE12.Mesh(options.geometries?.tire ?? defaultTireGeometry(radius, width), materials.tire);
+  const rim = new THREE12.Mesh(options.geometries?.rim ?? cylinderZ(rimRadius, rimWidth), materials.rim);
+  const hub = new THREE12.Mesh(options.geometries?.hub ?? cylinderZ(hubRadius, hubWidth), materials.hub ?? materials.rim);
   tire.name = `Tire_${options.side}_${index}`;
   rim.name = `Rim_${options.side}_${index}`;
   hub.name = `Hub_${options.side}_${index}`;
@@ -7546,7 +7774,7 @@ function createWheelAssembly(name, materials, options) {
     ]
   }));
   spinPivot.add(tire, rim, hub);
-  const contact = new THREE11.Object3D;
+  const contact = new THREE12.Object3D;
   contact.name = `Contact_${options.side}_${index}`;
   contact.position.y = -radius;
   stampSemanticMetadataV1(contact, semantic2([semanticRole(ROLE.wheelContact, key), semanticRole(ROLE.contact, key)], {
@@ -7604,10 +7832,10 @@ function objectBoundsInFrame(object, frame) {
   object.updateWorldMatrix(true, true);
   frame.updateWorldMatrix(true, false);
   const worldToFrame = frame.matrixWorld.clone().invert();
-  const bounds = new THREE11.Box3;
+  const bounds = new THREE12.Box3;
   let found = false;
   object.traverse((node) => {
-    if (!(node instanceof THREE11.Mesh) || !(node.geometry instanceof THREE11.BufferGeometry))
+    if (!(node instanceof THREE12.Mesh) || !(node.geometry instanceof THREE12.BufferGeometry))
       return;
     node.geometry.computeBoundingBox();
     const local = node.geometry.boundingBox;
@@ -7617,7 +7845,7 @@ function objectBoundsInFrame(object, frame) {
     for (const x of [local.min.x, local.max.x])
       for (const y of [local.min.y, local.max.y])
         for (const z of [local.min.z, local.max.z]) {
-          bounds.expandByPoint(new THREE11.Vector3(x, y, z).applyMatrix4(matrix));
+          bounds.expandByPoint(new THREE12.Vector3(x, y, z).applyMatrix4(matrix));
           found = true;
         }
   });
@@ -7629,9 +7857,9 @@ function dimensions(object, frame) {
   const bounds = objectBoundsInFrame(object, frame);
   if (!bounds)
     return;
-  const size = bounds.getSize(new THREE11.Vector3);
+  const size = bounds.getSize(new THREE12.Vector3);
   return {
-    center: bounds.getCenter(new THREE11.Vector3),
+    center: bounds.getCenter(new THREE12.Vector3),
     radius: Math.max(size.x, size.y) / 2,
     width: size.z
   };
@@ -7641,7 +7869,7 @@ function resolved(source, id, root, pivot, parts) {
   const tire = dimensions(parts.tire, pivot);
   const rim = dimensions(parts.rim, pivot);
   const hub = dimensions(parts.hub, pivot);
-  const centerLocal = tire?.center ?? rim?.center ?? hub?.center ?? new THREE11.Vector3;
+  const centerLocal = tire?.center ?? rim?.center ?? hub?.center ?? new THREE12.Vector3;
   const toWorld = (value) => value.clone().applyMatrix4(pivot.matrixWorld);
   return {
     id,
@@ -7656,11 +7884,11 @@ function resolved(source, id, root, pivot, parts) {
     ...parts.hub ? { hub: parts.hub } : {},
     ...parts.contact ? { contact: parts.contact } : {},
     centerWorld: toWorld(centerLocal),
-    pivotCenterWorld: new THREE11.Vector3().setFromMatrixPosition(pivot.matrixWorld),
+    pivotCenterWorld: new THREE12.Vector3().setFromMatrixPosition(pivot.matrixWorld),
     ...tire ? { tireCenterWorld: toWorld(tire.center) } : {},
     ...rim ? { rimCenterWorld: toWorld(rim.center) } : {},
     ...hub ? { hubCenterWorld: toWorld(hub.center) } : {},
-    spinAxisWorld: new THREE11.Vector3(0, 0, 1).transformDirection(pivot.matrixWorld),
+    spinAxisWorld: new THREE12.Vector3(0, 0, 1).transformDirection(pivot.matrixWorld),
     ...tire ? { radius: tire.radius, width: tire.width } : {},
     ...rim ? { rimRadius: rim.radius, rimWidth: rim.width } : {},
     ...hub ? { hubRadius: hub.radius, hubWidth: hub.width } : {},
@@ -7997,7 +8225,7 @@ var EPSILON = 0.0000000001, DEFAULT_TOLERANCE = 0.000001, finiteVector = (value)
 ];
 
 // src/qa/vehicle-advisory.ts
-import * as THREE12 from "three";
+import * as THREE13 from "three";
 function advisory(context, value) {
   return {
     ...value,
@@ -8071,7 +8299,7 @@ function isFender(node) {
   return semanticRoles(node).some((role) => /(?:^|\.)(?:fender|wheel-arch)(?:\.|$)/i.test(role)) || /fender|wheel[ _.-]?arch/i.test(node.name);
 }
 function isChassisMesh(node) {
-  if (!(node instanceof THREE12.Mesh) || isFender(node))
+  if (!(node instanceof THREE13.Mesh) || isFender(node))
     return false;
   return semanticRoles(node).some((role) => /^(?:vehicle\.)?(?:chassis|body|hull)(?:\.|$)/i.test(role)) || /chassis|vehicle[ _.-]?body|fuselage|hull/i.test(node.name);
 }
@@ -8079,10 +8307,10 @@ function objectBoundsInFrame2(object, frame) {
   object.updateWorldMatrix(true, true);
   frame.updateWorldMatrix(true, false);
   const worldToFrame = frame.matrixWorld.clone().invert();
-  const bounds = new THREE12.Box3;
+  const bounds = new THREE13.Box3;
   let found = false;
   object.traverseVisible((part) => {
-    if (!(part instanceof THREE12.Mesh) || !(part.geometry instanceof THREE12.BufferGeometry))
+    if (!(part instanceof THREE13.Mesh) || !(part.geometry instanceof THREE13.BufferGeometry))
       return;
     part.geometry.computeBoundingBox();
     const box = part.geometry.boundingBox;
@@ -8092,7 +8320,7 @@ function objectBoundsInFrame2(object, frame) {
     for (const x of [box.min.x, box.max.x])
       for (const y of [box.min.y, box.max.y])
         for (const z of [box.min.z, box.max.z]) {
-          bounds.expandByPoint(new THREE12.Vector3(x, y, z).applyMatrix4(matrix));
+          bounds.expandByPoint(new THREE13.Vector3(x, y, z).applyMatrix4(matrix));
           found = true;
         }
   });
@@ -8103,15 +8331,15 @@ function tuple2(value) {
 }
 function probeBox(id, root, bounds) {
   root.updateWorldMatrix(true, false);
-  const center = bounds.getCenter(new THREE12.Vector3).applyMatrix4(root.matrixWorld);
-  const size = bounds.getSize(new THREE12.Vector3);
-  const position = new THREE12.Vector3;
-  const quaternion = new THREE12.Quaternion;
-  const scale = new THREE12.Vector3;
+  const center = bounds.getCenter(new THREE13.Vector3).applyMatrix4(root.matrixWorld);
+  const size = bounds.getSize(new THREE13.Vector3);
+  const position = new THREE13.Vector3;
+  const quaternion = new THREE13.Quaternion;
+  const scale = new THREE13.Vector3;
   root.matrixWorld.decompose(position, quaternion, scale);
-  const xAxis = new THREE12.Vector3(1, 0, 0).applyQuaternion(quaternion).normalize();
-  const yAxis = new THREE12.Vector3(0, 1, 0).applyQuaternion(quaternion).normalize();
-  const zAxis = new THREE12.Vector3(0, 0, 1).applyQuaternion(quaternion).normalize();
+  const xAxis = new THREE13.Vector3(1, 0, 0).applyQuaternion(quaternion).normalize();
+  const yAxis = new THREE13.Vector3(0, 1, 0).applyQuaternion(quaternion).normalize();
+  const zAxis = new THREE13.Vector3(0, 0, 1).applyQuaternion(quaternion).normalize();
   return createOrientedProbeBox3({
     id,
     frame: createProbeLocalFrame3({
@@ -8180,7 +8408,7 @@ function orientationFindings(context, root, intent) {
   const bounds = wholeAssetBounds(root);
   if (!bounds)
     return [];
-  const size = bounds.getSize(new THREE12.Vector3);
+  const size = bounds.getSize(new THREE13.Vector3);
   const ratio = size.z / Math.max(size.x, 0.000000001);
   if (ratio <= ORIENTATION_RATIO)
     return [];
@@ -8224,13 +8452,13 @@ function weldedBoundaryEdges(root, loop) {
   let triangleCount = 0;
   const vertexKey = (point) => [point.x, point.y, point.z].map((value) => Math.round(value * 1e6)).join(",");
   loop.traverseVisible((node) => {
-    if (!(node instanceof THREE12.Mesh) || !(node.geometry instanceof THREE12.BufferGeometry))
+    if (!(node instanceof THREE13.Mesh) || !(node.geometry instanceof THREE13.BufferGeometry))
       return;
     const positions = node.geometry.getAttribute("position");
     if (!positions)
       return;
     const matrix = inverse.clone().multiply(node.matrixWorld);
-    const keys = Array.from({ length: positions.count }, (_, index) => vertexKey(new THREE12.Vector3().fromBufferAttribute(positions, index).applyMatrix4(matrix)));
+    const keys = Array.from({ length: positions.count }, (_, index) => vertexKey(new THREE13.Vector3().fromBufferAttribute(positions, index).applyMatrix4(matrix)));
     const index = node.geometry.getIndex();
     const indices = index ? Array.from(index.array, Number) : Array.from({ length: positions.count }, (_, value) => value);
     for (let offset = 0;offset + 2 < indices.length; offset += 3) {
@@ -8300,7 +8528,7 @@ function trackProfileFindings(context, root, intent) {
       const wheelBounds = objectBoundsInFrame2(roadWheel, root);
       if (!wheelBounds)
         continue;
-      const center = wheelBounds.getCenter(new THREE12.Vector3);
+      const center = wheelBounds.getCenter(new THREE13.Vector3);
       if (expanded.containsPoint(center))
         continue;
       const clamped = center.clone().clamp(expanded.min, expanded.max);
@@ -8326,7 +8554,7 @@ function trackProfileFindings(context, root, intent) {
   return findings;
 }
 function inspectMobilityAdvisory(context) {
-  if (!(context.scene instanceof THREE12.Object3D)) {
+  if (!(context.scene instanceof THREE13.Object3D)) {
     return [];
   }
   const intent = context.mobility;
@@ -8373,7 +8601,7 @@ var init_vehicle_advisory = __esm(() => {
 });
 
 // src/qa/vehicle.ts
-import * as THREE13 from "three";
+import * as THREE14 from "three";
 function finding3(context, value) {
   return {
     ...value,
@@ -8390,7 +8618,7 @@ function rootAxis(root, axis) {
   return axis.clone().transformDirection(root.matrixWorld);
 }
 function angleDegrees(a, b) {
-  return THREE13.MathUtils.radToDeg(Math.acos(THREE13.MathUtils.clamp(a.clone().normalize().dot(b.clone().normalize()), -1, 1)));
+  return THREE14.MathUtils.radToDeg(Math.acos(THREE14.MathUtils.clamp(a.clone().normalize().dot(b.clone().normalize()), -1, 1)));
 }
 function isDescendant(node, ancestor) {
   let current = node;
@@ -8438,7 +8666,7 @@ function wheelCountFindings(context, intent, wheels) {
 }
 function wheelGeometryFindings(context, root, wheels) {
   const findings = [];
-  const expectedAxle = rootAxis(root, new THREE13.Vector3(0, 0, 1));
+  const expectedAxle = rootAxis(root, new THREE14.Vector3(0, 0, 1));
   for (const wheel of wheels) {
     const disposition = componentDisposition(wheel);
     const centerTolerance = Math.max(CENTER_MINIMUM, (wheel.radius ?? 0) * CENTER_RATIO);
@@ -8627,7 +8855,7 @@ function contactFindings(context, root, intent, wheels) {
 function renderableMinYInRoot(rootInverse, node) {
   let minimum = Infinity;
   node.traverseVisible((part) => {
-    if (!(part instanceof THREE13.Mesh) || !(part.geometry instanceof THREE13.BufferGeometry))
+    if (!(part instanceof THREE14.Mesh) || !(part.geometry instanceof THREE14.BufferGeometry))
       return;
     part.geometry.computeBoundingBox();
     const bounds = part.geometry.boundingBox;
@@ -8637,7 +8865,7 @@ function renderableMinYInRoot(rootInverse, node) {
     for (const x of [bounds.min.x, bounds.max.x]) {
       for (const y of [bounds.min.y, bounds.max.y]) {
         for (const z of [bounds.min.z, bounds.max.z]) {
-          minimum = Math.min(minimum, new THREE13.Vector3(x, y, z).applyMatrix4(matrix).y);
+          minimum = Math.min(minimum, new THREE14.Vector3(x, y, z).applyMatrix4(matrix).y);
         }
       }
     }
@@ -8655,7 +8883,7 @@ function supportContactFindings(context, root, intent) {
     if (!isWheelContact && roles.some((role) => role.startsWith("contact."))) {
       explicitContacts.push({
         node,
-        contactY: localPoint2(inverse, new THREE13.Vector3().setFromMatrixPosition(node.matrixWorld)).y,
+        contactY: localPoint2(inverse, new THREE14.Vector3().setFromMatrixPosition(node.matrixWorld)).y,
         source: "contact"
       });
     }
@@ -8735,7 +8963,7 @@ function steeringFindings(context, root, intent, wheels) {
     return [];
   root.updateWorldMatrix(true, false);
   const inverse = root.matrixWorld.clone().invert();
-  const expectedAxis = rootAxis(root, new THREE13.Vector3(0, 1, 0));
+  const expectedAxis = rootAxis(root, new THREE14.Vector3(0, 1, 0));
   const localCenters = wheels.map((wheel) => ({
     wheel,
     center: localPoint2(inverse, wheel.centerWorld)
@@ -8745,8 +8973,8 @@ function steeringFindings(context, root, intent, wheels) {
   const findings = [];
   for (const { wheel } of targets) {
     const steering = wheel.steeringPivot;
-    const centerDelta = steering ? localPoint2(inverse, new THREE13.Vector3().setFromMatrixPosition(steering.matrixWorld)).distanceTo(localPoint2(inverse, wheel.centerWorld)) : Infinity;
-    const axisAngle = steering ? angleDegrees(new THREE13.Vector3(0, 1, 0).transformDirection(steering.matrixWorld), expectedAxis) : Infinity;
+    const centerDelta = steering ? localPoint2(inverse, new THREE14.Vector3().setFromMatrixPosition(steering.matrixWorld)).distanceTo(localPoint2(inverse, wheel.centerWorld)) : Infinity;
+    const axisAngle = steering ? angleDegrees(new THREE14.Vector3(0, 1, 0).transformDirection(steering.matrixWorld), expectedAxis) : Infinity;
     if (!steering || !isDescendant(wheel.pivot, steering) || centerDelta > CENTER_MINIMUM || axisAngle > AXIS_TOLERANCE_DEGREES) {
       const axisInvalid = axisAngle > AXIS_TOLERANCE_DEGREES;
       findings.push(finding3(context, {
@@ -8801,14 +9029,14 @@ function propulsionFindings(context, root, intent) {
     }
     for (const component of candidates) {
       const pivot = pivots.get(component.id);
-      const box = new THREE13.Box3().setFromObject(component.node);
-      const center = box.isEmpty() ? undefined : box.getCenter(new THREE13.Vector3);
-      const pivotCenter = pivot ? new THREE13.Vector3().setFromMatrixPosition(pivot.matrixWorld) : undefined;
+      const box = new THREE14.Box3().setFromObject(component.node);
+      const center = box.isEmpty() ? undefined : box.getCenter(new THREE14.Vector3);
+      const pivotCenter = pivot ? new THREE14.Vector3().setFromMatrixPosition(pivot.matrixWorld) : undefined;
       const delta = center && pivotCenter ? localPoint2(rootInverse, center).distanceTo(localPoint2(rootInverse, pivotCenter)) : Infinity;
       const frameId = kind === "rotor" ? "propulsion-axis.+y" : "propulsion-axis.+x";
       const axisFrame = readSemanticMetadataV1(pivot ?? component.node)?.frames.find((frame) => frame.id === frameId);
-      const canonicalAxis = kind === "rotor" ? new THREE13.Vector3(0, 1, 0) : new THREE13.Vector3(1, 0, 0);
-      const axisAngle = pivot && axisFrame ? angleDegrees(canonicalAxis.clone().applyQuaternion(new THREE13.Quaternion(...axisFrame.rotation)).transformDirection(pivot.matrixWorld), rootAxis(root, canonicalAxis)) : Infinity;
+      const canonicalAxis = kind === "rotor" ? new THREE14.Vector3(0, 1, 0) : new THREE14.Vector3(1, 0, 0);
+      const axisAngle = pivot && axisFrame ? angleDegrees(canonicalAxis.clone().applyQuaternion(new THREE14.Quaternion(...axisFrame.rotation)).transformDirection(pivot.matrixWorld), rootAxis(root, canonicalAxis)) : Infinity;
       if (!pivot || !isDescendant(component.node, pivot) || delta > CENTER_MINIMUM || !axisFrame || axisAngle > AXIS_TOLERANCE_DEGREES) {
         findings.push(finding3(context, {
           code: "VEH_ROTOR_PIVOT",
@@ -8830,7 +9058,7 @@ function propulsionFindings(context, root, intent) {
   return findings;
 }
 function inspectMobility(context) {
-  if (!(context.scene instanceof THREE13.Object3D))
+  if (!(context.scene instanceof THREE14.Object3D))
     return [];
   const intent = context.mobility;
   if (!intent)
@@ -8903,7 +9131,7 @@ var init_vehicle2 = __esm(() => {
 });
 
 // src/qa/vegetation.ts
-import * as THREE14 from "three";
+import * as THREE15 from "three";
 function rolesOf2(node) {
   return readSemanticMetadataV1(node)?.roles ?? [];
 }
@@ -8919,22 +9147,22 @@ function pathOf(node, root) {
   return names.reverse().join("/");
 }
 function localPoint3(rootInverse, node) {
-  return node.getWorldPosition(new THREE14.Vector3).applyMatrix4(rootInverse);
+  return node.getWorldPosition(new THREE15.Vector3).applyMatrix4(rootInverse);
 }
 function meshLocalBox(mesh, rootInverse) {
-  if (!(mesh.geometry instanceof THREE14.BufferGeometry))
+  if (!(mesh.geometry instanceof THREE15.BufferGeometry))
     return;
   mesh.geometry.computeBoundingBox();
   const source = mesh.geometry.boundingBox;
   if (!source || source.isEmpty())
     return;
   const base = rootInverse.clone().multiply(mesh.matrixWorld);
-  const result = new THREE14.Box3;
-  const count = mesh instanceof THREE14.InstancedMesh ? mesh.count : 1;
+  const result = new THREE15.Box3;
+  const count = mesh instanceof THREE15.InstancedMesh ? mesh.count : 1;
   for (let index = 0;index < count; index++) {
     const transform = base.clone();
-    if (mesh instanceof THREE14.InstancedMesh) {
-      const instance = new THREE14.Matrix4;
+    if (mesh instanceof THREE15.InstancedMesh) {
+      const instance = new THREE15.Matrix4;
       mesh.getMatrixAt(index, instance);
       transform.multiply(instance);
     }
@@ -8947,7 +9175,7 @@ function collectRenderableBounds(root) {
   const inverse = root.matrixWorld.clone().invert();
   const values = [];
   root.traverseVisible((node) => {
-    if (!(node instanceof THREE14.Mesh))
+    if (!(node instanceof THREE15.Mesh))
       return;
     const box = meshLocalBox(node, inverse);
     if (!box)
@@ -8965,7 +9193,7 @@ function vegetationIntent(intent) {
 }
 function inspectFoliageContact(context) {
   const trusted = context.foliage;
-  if (!trusted?.grounded || !(context.scene instanceof THREE14.Object3D))
+  if (!trusted?.grounded || !(context.scene instanceof THREE15.Object3D))
     return [];
   const planeY = context.groundPlaneY ?? 0;
   const root = context.scene;
@@ -9003,7 +9231,7 @@ function inspectFoliageContact(context) {
   }
   const findings = [];
   for (const contact of contacts) {
-    const contactPoint = contact.frameTranslation ? new THREE14.Vector3(...contact.frameTranslation).applyMatrix4(contact.node.matrixWorld).applyMatrix4(inverse) : localPoint3(inverse, contact.node);
+    const contactPoint = contact.frameTranslation ? new THREE15.Vector3(...contact.frameTranslation).applyMatrix4(contact.node.matrixWorld).applyMatrix4(inverse) : localPoint3(inverse, contact.node);
     const y = contactPoint.y;
     const offset = y - planeY;
     if (Math.abs(offset) <= VEGETATION_CONTACT_TOLERANCE_METERS)
@@ -9032,7 +9260,7 @@ function inspectFoliageContact(context) {
   for (const support of semanticSupports) {
     let minimumY = Infinity;
     support.traverseVisible((node) => {
-      if (!(node instanceof THREE14.Mesh))
+      if (!(node instanceof THREE15.Mesh))
         return;
       const box = meshLocalBox(node, inverse);
       if (box)
@@ -9060,25 +9288,25 @@ function inspectFoliageContact(context) {
   return findings;
 }
 function materialNames(node) {
-  if (!(node instanceof THREE14.Mesh))
+  if (!(node instanceof THREE15.Mesh))
     return [];
   const materials = Array.isArray(node.material) ? node.material : [node.material];
   return materials.filter(Boolean).map((material) => material.name ?? "");
 }
 function inspectFoliageScope(context) {
   const trusted = context.foliage;
-  if (!trusted?.standalone || !(context.scene instanceof THREE14.Object3D))
+  if (!trusted?.standalone || !(context.scene instanceof THREE15.Object3D))
     return [];
   const root = context.scene;
   const renderables = collectRenderableBounds(root);
   if (renderables.length === 0)
     return [];
-  const overall = renderables.reduce((box, value) => box.union(value.box), new THREE14.Box3);
-  const overallSize = overall.getSize(new THREE14.Vector3);
+  const overall = renderables.reduce((box, value) => box.union(value.box), new THREE15.Box3);
+  const overallSize = overall.getSize(new THREE15.Vector3);
   const findings = [];
   for (const value of renderables) {
-    const size = value.box.getSize(new THREE14.Vector3);
-    const center = value.box.getCenter(new THREE14.Vector3);
+    const size = value.box.getSize(new THREE15.Vector3);
+    const center = value.box.getCenter(new THREE15.Vector3);
     const names = [value.node.name, ...value.roles];
     const nameEvidence = names.some((name) => CLUTTER_NAME.test(name));
     const roleEvidence = value.roles.some((role) => /(?:terrain|soil|rock|pot|planter|base)/i.test(role));
@@ -9115,8 +9343,8 @@ function inspectFoliageScope(context) {
 function unionVolume(boxes) {
   if (boxes.length === 0)
     return 0;
-  const union = boxes.reduce((result, box) => result.union(box), new THREE14.Box3);
-  const size = union.getSize(new THREE14.Vector3);
+  const union = boxes.reduce((result, box) => result.union(box), new THREE15.Box3);
+  const size = union.getSize(new THREE15.Vector3);
   return size.x * size.y * size.z;
 }
 function projectedOccupancy(boxes, axes) {
@@ -9186,7 +9414,7 @@ function boxDistanceToPoint(box, point) {
 function endpointRadius(position, axis, axisValue, tolerance, scale) {
   const radialAxes = [0, 1, 2].filter((value) => value !== axis);
   const points = [];
-  const point = new THREE14.Vector3;
+  const point = new THREE15.Vector3;
   for (let index = 0;index < position.count; index++) {
     point.fromBufferAttribute(position, index);
     if (Math.abs(point.getComponent(axis) - axisValue) <= tolerance)
@@ -9194,7 +9422,7 @@ function endpointRadius(position, axis, axisValue, tolerance, scale) {
   }
   if (points.length === 0)
     return;
-  const center = new THREE14.Vector3;
+  const center = new THREE15.Vector3;
   center.setComponent(axis, axisValue);
   for (const radialAxis of radialAxes) {
     center.setComponent(radialAxis, points.reduce((sum, value) => sum + value.getComponent(radialAxis), 0) / points.length);
@@ -9208,7 +9436,7 @@ function endpointRadius(position, axis, axisValue, tolerance, scale) {
   return { center, radius };
 }
 function growthNodeMeasurement(root, candidate, allCandidates, band) {
-  if (!(candidate.node instanceof THREE14.Mesh))
+  if (!(candidate.node instanceof THREE15.Mesh))
     return;
   const geometry = candidate.node.geometry;
   const position = geometry.getAttribute("position");
@@ -9220,9 +9448,9 @@ function growthNodeMeasurement(root, candidate, allCandidates, band) {
     return;
   root.updateWorldMatrix(true, true);
   const relative = root.matrixWorld.clone().invert().multiply(candidate.node.matrixWorld);
-  const relativeScale = new THREE14.Vector3;
-  relative.decompose(new THREE14.Vector3, new THREE14.Quaternion, relativeScale);
-  const size = geometryBox.getSize(new THREE14.Vector3);
+  const relativeScale = new THREE15.Vector3;
+  relative.decompose(new THREE15.Vector3, new THREE15.Quaternion, relativeScale);
+  const size = geometryBox.getSize(new THREE15.Vector3);
   const scaledSizes = [
     Math.abs(size.x * relativeScale.x),
     Math.abs(size.y * relativeScale.y),
@@ -9289,7 +9517,7 @@ function measureFoliageGrowth(foliage, root) {
   };
 }
 function inspectFoliageGrowth(context) {
-  if (!context.foliage || !(context.scene instanceof THREE14.Object3D))
+  if (!context.foliage || !(context.scene instanceof THREE15.Object3D))
     return [];
   const measured = measureFoliageGrowth(context.foliage, context.scene);
   const findings = [];
@@ -9340,7 +9568,7 @@ function measureVegetationFoliageAttachment(root) {
   const support = renderables.filter((value) => roleOrNameSource(value, TRUNK_PATTERNS) || roleOrNameSource(value, BRANCH_PATTERNS));
   const foliage = renderables.filter((value) => roleOrNameSource(value, CANOPY_PATTERNS));
   const clusters = foliage.map((value) => {
-    const size = value.box.getSize(new THREE14.Vector3);
+    const size = value.box.getSize(new THREE15.Vector3);
     const threshold = stable7(Math.max(0.03, Math.min(0.18, size.length() * 0.12)));
     const nearest = support.map((candidate) => ({ candidate, gap: distanceBetweenBoxes(value.box, candidate.box) })).sort((a, b) => a.gap - b.gap || (a.candidate.node.name || "").localeCompare(b.candidate.node.name || ""))[0];
     const source = roleOrNameSource(value, CANOPY_PATTERNS) ?? "fallback";
@@ -9363,7 +9591,7 @@ function measureVegetationFoliageAttachment(root) {
   };
 }
 function inspectFoliageAttachment(context) {
-  if (!context.foliage || !(context.scene instanceof THREE14.Object3D))
+  if (!context.foliage || !(context.scene instanceof THREE15.Object3D))
     return [];
   return measureVegetationFoliageAttachment(context.scene).clusters.filter((cluster) => cluster.detached).map((cluster) => finding4(context, {
     code: "VEG_FOLIAGE_DETACHED",
@@ -9383,9 +9611,9 @@ function inspectFoliageAttachment(context) {
 }
 function relativeTransformSignature(root, node) {
   const matrix = root.matrixWorld.clone().invert().multiply(node.matrixWorld);
-  const scale = new THREE14.Vector3;
-  const quaternion = new THREE14.Quaternion;
-  matrix.decompose(new THREE14.Vector3, quaternion, scale);
+  const scale = new THREE15.Vector3;
+  const quaternion = new THREE15.Quaternion;
+  matrix.decompose(new THREE15.Vector3, quaternion, scale);
   if (quaternion.w < 0)
     quaternion.set(-quaternion.x, -quaternion.y, -quaternion.z, -quaternion.w);
   const values = [...scale.toArray(), ...quaternion.toArray()].map((value) => stable7(value));
@@ -9406,9 +9634,9 @@ function measureFoliageRepetition(requirements, root) {
     nodes: values.map((value) => value.node.name || "foliage-cluster").sort()
   })).sort((a, b) => a.signature.localeCompare(b.signature));
   const supports = collectRenderableBounds(root).filter((value) => roleOrNameSource(value, TRUNK_PATTERNS));
-  const centerBox = supports.reduce((box, value) => box.union(value.box), new THREE14.Box3);
-  const centers = foliage.map((value) => value.box.getCenter(new THREE14.Vector3));
-  const center = centerBox.isEmpty() ? centers.reduce((result, value) => result.add(value), new THREE14.Vector3).multiplyScalar(centers.length > 0 ? 1 / centers.length : 0) : centerBox.getCenter(new THREE14.Vector3);
+  const centerBox = supports.reduce((box, value) => box.union(value.box), new THREE15.Box3);
+  const centers = foliage.map((value) => value.box.getCenter(new THREE15.Vector3));
+  const center = centerBox.isEmpty() ? centers.reduce((result, value) => result.add(value), new THREE15.Vector3).multiplyScalar(centers.length > 0 ? 1 / centers.length : 0) : centerBox.getCenter(new THREE15.Vector3);
   const radial = centers.map((value) => ({
     angle: Math.atan2(value.z - center.z, value.x - center.x),
     radius: Math.hypot(value.x - center.x, value.z - center.z)
@@ -9443,7 +9671,7 @@ function measureFoliageRepetition(requirements, root) {
   };
 }
 function inspectFoliageRepetition(context) {
-  if (!context.foliage || !(context.scene instanceof THREE14.Object3D))
+  if (!context.foliage || !(context.scene instanceof THREE15.Object3D))
     return [];
   const measured = measureFoliageRepetition(context.foliage, context.scene);
   if (measured.suppressedForTopiary)
@@ -9501,7 +9729,7 @@ function measureFoliageCanopy(profile, root) {
 }
 function inspectFoliageCanopy(context) {
   const trusted = context.foliage;
-  if (!trusted?.canopyProfile || !(context.scene instanceof THREE14.Object3D))
+  if (!trusted?.canopyProfile || !(context.scene instanceof THREE15.Object3D))
     return [];
   const measurements = measureFoliageCanopy(trusted.canopyProfile, context.scene);
   const bands = PROFILE_BANDS[measurements.profile];
@@ -9562,7 +9790,7 @@ function inspectFoliageCanopy(context) {
   return findings;
 }
 function materialValue(material) {
-  if (!(material instanceof THREE14.MeshStandardMaterial) && !(material instanceof THREE14.MeshBasicMaterial)) {
+  if (!(material instanceof THREE15.MeshStandardMaterial) && !(material instanceof THREE15.MeshBasicMaterial)) {
     return;
   }
   const color = material.color;
@@ -9572,11 +9800,11 @@ function measureFoliageMaterials(mode, root) {
   const values = [];
   let foliageNodeCount = 0;
   root.traverseVisible((node) => {
-    if (!(node instanceof THREE14.Mesh))
+    if (!(node instanceof THREE15.Mesh))
       return;
     const bounds = {
       node,
-      box: new THREE14.Box3,
+      box: new THREE15.Box3,
       roles: rolesOf2(node),
       source: rolesOf2(node).length > 0 ? "semantic" : "fallback"
     };
@@ -9603,7 +9831,7 @@ function measureFoliageMaterials(mode, root) {
   };
 }
 function inspectFoliageMaterial(context) {
-  if (!context.foliage || !(context.scene instanceof THREE14.Object3D))
+  if (!context.foliage || !(context.scene instanceof THREE15.Object3D))
     return [];
   if (!context.materialMode)
     return [];
@@ -9755,7 +9983,7 @@ var init_vegetation = __esm(() => {
 });
 
 // src/skin-binding.ts
-import * as THREE15 from "three";
+import * as THREE16 from "three";
 function topRoot(node) {
   while (node.parent)
     node = node.parent;
@@ -9775,7 +10003,7 @@ function createSkinnedPart(name, geometry, material, options) {
   }
 }
 function buildSkinnedPart(name, geometry, material, options) {
-  if (typeof name !== "string" || !name.trim() || THREE15.PropertyBinding.sanitizeNodeName(name) !== name)
+  if (typeof name !== "string" || !name.trim() || THREE16.PropertyBinding.sanitizeNodeName(name) !== name)
     throw new TypeError("createSkinnedPart name must be nonempty and free of animation binding punctuation.");
   if (!geometry?.isBufferGeometry)
     throw new TypeError("createSkinnedPart requires BufferGeometry.");
@@ -9793,7 +10021,7 @@ function buildSkinnedPart(name, geometry, material, options) {
   for (const bone of bones) {
     if (!bone?.isBone || topRoot(bone) !== top || members.has(bone))
       throw new TypeError("createSkinnedPart bones must be distinct Bones in the parent hierarchy.");
-    if (!bone.name || THREE15.PropertyBinding.sanitizeNodeName(bone.name) !== bone.name || names.has(bone.name))
+    if (!bone.name || THREE16.PropertyBinding.sanitizeNodeName(bone.name) !== bone.name || names.has(bone.name))
       throw new TypeError("createSkinnedPart bones need unique animation-safe names.");
     members.add(bone);
     names.add(bone.name);
@@ -9840,9 +10068,9 @@ function buildSkinnedPart(name, geometry, material, options) {
   for (const key of ["position", "rotation", "scale"])
     if (options[key] !== undefined)
       assertFiniteTriple(`createSkinnedPart ${key}`, options[key]);
-  const local = new THREE15.Matrix4().compose(new THREE15.Vector3(...options.position ?? [0, 0, 0]), new THREE15.Quaternion().setFromEuler(new THREE15.Euler(...(options.rotation ?? [0, 0, 0]).map(THREE15.MathUtils.degToRad))), new THREE15.Vector3(...options.scale ?? [1, 1, 1]));
+  const local = new THREE16.Matrix4().compose(new THREE16.Vector3(...options.position ?? [0, 0, 0]), new THREE16.Quaternion().setFromEuler(new THREE16.Euler(...(options.rotation ?? [0, 0, 0]).map(THREE16.MathUtils.degToRad))), new THREE16.Vector3(...options.scale ?? [1, 1, 1]));
   top.updateWorldMatrix(true, true);
-  const bind = new THREE15.Matrix4().multiplyMatrices(parent.matrixWorld, local);
+  const bind = new THREE16.Matrix4().multiplyMatrices(parent.matrixWorld, local);
   assertMatrix(bind, "mesh");
   for (const bone of bones) {
     assertMatrix(bone.matrixWorld, `bone ${bone.name}`);
@@ -9857,19 +10085,19 @@ function buildSkinnedPart(name, geometry, material, options) {
     }
   }
   const owned = geometry.clone();
-  owned.setAttribute("skinIndex", new THREE15.BufferAttribute(skinIndices, 4));
-  owned.setAttribute("skinWeight", new THREE15.BufferAttribute(skinWeights, 4));
-  const mesh = new THREE15.SkinnedMesh(owned, Array.isArray(material) ? [...material] : material);
+  owned.setAttribute("skinIndex", new THREE16.BufferAttribute(skinIndices, 4));
+  owned.setAttribute("skinWeight", new THREE16.BufferAttribute(skinWeights, 4));
+  const mesh = new THREE16.SkinnedMesh(owned, Array.isArray(material) ? [...material] : material);
   mesh.name = `Mesh_${name}`;
   if (options.position)
     mesh.position.fromArray(options.position);
   if (options.rotation)
-    mesh.rotation.set(...options.rotation.map(THREE15.MathUtils.degToRad));
+    mesh.rotation.set(...options.rotation.map(THREE16.MathUtils.degToRad));
   if (options.scale)
     mesh.scale.fromArray(options.scale);
   if (options.semantic)
     stampSemanticMetadataV1(mesh, options.semantic);
-  const skeleton = new THREE15.Skeleton([...bones], bones.map((bone) => bone.matrixWorld.clone().invert()));
+  const skeleton = new THREE16.Skeleton([...bones], bones.map((bone) => bone.matrixWorld.clone().invert()));
   mesh.bind(skeleton, bind);
   parent.add(mesh);
   mesh.updateWorldMatrix(true, false);
@@ -9882,7 +10110,7 @@ var init_skin_binding = __esm(() => {
 });
 
 // src/character.ts
-import * as THREE16 from "three";
+import * as THREE17 from "three";
 function validRole(value) {
   return typeof value === "string" && /^[a-z][a-z0-9]*(?:[._-][a-z0-9]+)*$/.test(value);
 }
@@ -10163,7 +10391,7 @@ function readCharacterRigGraphV1(target) {
   return result.valid ? result.value : undefined;
 }
 function axisQuaternion(from, to) {
-  const value = new THREE16.Quaternion().setFromUnitVectors(new THREE16.Vector3(...from), new THREE16.Vector3(...to));
+  const value = new THREE17.Quaternion().setFromUnitVectors(new THREE17.Vector3(...from), new THREE17.Vector3(...to));
   return [value.x, value.y, value.z, value.w];
 }
 function stampCharacterJointDescriptorV1(target, input) {
@@ -10268,7 +10496,7 @@ function createJointChain(chainName, segments, options = {}) {
       endEffector: segment.endEffector,
       contact: segment.contact
     });
-    const node = new THREE16.Object3D;
+    const node = new THREE17.Object3D;
     node.name = characterJointNodeName(chainName, segment.role);
     node.position.fromArray(descriptor.rest.translation);
     node.quaternion.fromArray(descriptor.rest.rotation);
@@ -10348,7 +10576,7 @@ function buildBoneChain(chainName, segments, options = {}) {
     return descriptor;
   });
   const nodes = descriptors.map((descriptor) => {
-    const node = new THREE16.Bone;
+    const node = new THREE17.Bone;
     node.name = characterJointNodeName(chainName, descriptor.role);
     node.position.fromArray(descriptor.rest.translation);
     node.quaternion.fromArray(descriptor.rest.rotation);
@@ -10537,7 +10765,7 @@ var init_character_repairs = __esm(() => {
 });
 
 // src/qa/character.ts
-import * as THREE17 from "three";
+import * as THREE18 from "three";
 function isClipLike(value) {
   if (typeof value !== "object" || value === null)
     return false;
@@ -10775,7 +11003,7 @@ function contactFindings2(input, root) {
   const planeY = input.groundPlaneY ?? 0;
   const findings = [];
   for (const contact of contacts) {
-    const point = contact.node.getWorldPosition(new THREE17.Vector3).applyMatrix4(rootInverse);
+    const point = contact.node.getWorldPosition(new THREE18.Vector3).applyMatrix4(rootInverse);
     const offset = point.y - planeY;
     if (offset > tolerance) {
       findings.push(block(input, "CHAR_CONTACT_FLOATING", `Ground contact ${contact.descriptor.role} is ${offset.toFixed(6)} m above asset-local ground.`, {
@@ -11040,13 +11268,13 @@ function declaredHeldItem(nodes) {
 function characterJointScale(root) {
   root.updateMatrixWorld(true);
   const inverse = root.matrixWorld.clone().invert();
-  const bounds = new THREE17.Box3;
+  const bounds = new THREE18.Box3;
   for (const joint of collectCharacterJointNodes(root)) {
-    bounds.expandByPoint(joint.node.getWorldPosition(new THREE17.Vector3).applyMatrix4(inverse));
+    bounds.expandByPoint(joint.node.getWorldPosition(new THREE18.Vector3).applyMatrix4(inverse));
   }
   if (bounds.isEmpty())
     return 1;
-  const size = bounds.getSize(new THREE17.Vector3);
+  const size = bounds.getSize(new THREE18.Vector3);
   return Math.max(size.x, size.y, size.z, 1);
 }
 function heldItemMotionFindings(input, root, clips) {
@@ -11082,8 +11310,8 @@ function heldItemMotionFindings(input, root, clips) {
       if (!cloneItem || !cloneAttachment)
         continue;
       const inverse = clone.matrixWorld.clone().invert();
-      const itemPoint = cloneItem.getWorldPosition(new THREE17.Vector3).applyMatrix4(inverse);
-      const gripPoint = cloneAttachment.getWorldPosition(new THREE17.Vector3).applyMatrix4(inverse);
+      const itemPoint = cloneItem.getWorldPosition(new THREE18.Vector3).applyMatrix4(inverse);
+      const gripPoint = cloneAttachment.getWorldPosition(new THREE18.Vector3).applyMatrix4(inverse);
       const distance = itemPoint.distanceTo(gripPoint);
       baseline ??= distance;
       const drift = Math.abs(distance - baseline);
@@ -11116,7 +11344,7 @@ function heldItemMotionFindings(input, root, clips) {
 function inspectRig(context) {
   if (!context.rig)
     return [];
-  const root = context.scene instanceof THREE17.Object3D ? context.scene : undefined;
+  const root = context.scene instanceof THREE18.Object3D ? context.scene : undefined;
   const clips = (context.clips ?? []).filter(isClipLike);
   const findings = [];
   if (root) {
@@ -11166,7 +11394,7 @@ var init_character2 = __esm(() => {
 });
 
 // src/qa/character-advisory.ts
-import * as THREE18 from "three";
+import * as THREE19 from "three";
 function isClipLike2(value) {
   if (typeof value !== "object" || value === null)
     return false;
@@ -11189,16 +11417,16 @@ function jointPoints(root) {
   const inverse = rootInverse(root);
   return collectCharacterJointNodes(root).map((evidence) => ({
     evidence,
-    local: evidence.node.getWorldPosition(new THREE18.Vector3).applyMatrix4(inverse)
+    local: evidence.node.getWorldPosition(new THREE19.Vector3).applyMatrix4(inverse)
   }));
 }
 function characterScale(points) {
   if (points.length === 0)
     return 1;
-  const bounds = new THREE18.Box3;
+  const bounds = new THREE19.Box3;
   for (const point of points)
     bounds.expandByPoint(point.local);
-  const size = bounds.getSize(new THREE18.Vector3);
+  const size = bounds.getSize(new THREE19.Vector3);
   return Math.max(size.x, size.y, size.z, 1);
 }
 function pairKey(descriptor) {
@@ -11297,12 +11525,12 @@ function restChainFindings(context, root) {
 }
 function forwardMarkerFindings(context, root) {
   root.updateMatrixWorld(true);
-  const expected = new THREE18.Vector3(1, 0, 0).transformDirection(root.matrixWorld);
+  const expected = new THREE19.Vector3(1, 0, 0).transformDirection(root.matrixWorld);
   const markers = collectCharacterJointNodes(root).filter((joint) => /(?:^|[._-])(?:toe|muzzle|head)(?:$|[._-])/i.test(joint.descriptor.role));
   return markers.flatMap((marker) => {
-    const quaternion = marker.node.getWorldQuaternion(new THREE18.Quaternion);
-    const actual = new THREE18.Vector3(...marker.descriptor.localForwardAxis).applyQuaternion(quaternion).normalize();
-    const angle = THREE18.MathUtils.radToDeg(Math.acos(THREE18.MathUtils.clamp(actual.dot(expected), -1, 1)));
+    const quaternion = marker.node.getWorldQuaternion(new THREE19.Quaternion);
+    const actual = new THREE19.Vector3(...marker.descriptor.localForwardAxis).applyQuaternion(quaternion).normalize();
+    const angle = THREE19.MathUtils.radToDeg(Math.acos(THREE19.MathUtils.clamp(actual.dot(expected), -1, 1)));
     if (angle <= FORWARD_ANGLE_DEGREES)
       return [];
     return [
@@ -11356,7 +11584,7 @@ function sampleClip(root, clip) {
       byRole: new Map(collectCharacterJointNodes(clone).map((evidence) => [
         evidence.descriptor.role,
         {
-          point: evidence.node.getWorldPosition(new THREE18.Vector3).applyMatrix4(inverse),
+          point: evidence.node.getWorldPosition(new THREE19.Vector3).applyMatrix4(inverse),
           evidence
         }
       ]))
@@ -11468,12 +11696,12 @@ function phaseOppositionFindings(context, root, clips) {
   return findings;
 }
 function signedBendDegrees(descriptor, quaternion) {
-  const rest = new THREE18.Quaternion(...descriptor.rest.rotation);
+  const rest = new THREE19.Quaternion(...descriptor.rest.rotation);
   const delta = rest.invert().multiply(quaternion).normalize();
-  const axis = new THREE18.Vector3(delta.x, delta.y, delta.z);
-  const signedMagnitude = axis.dot(new THREE18.Vector3(...descriptor.localBendAxis));
+  const axis = new THREE19.Vector3(delta.x, delta.y, delta.z);
+  const signedMagnitude = axis.dot(new THREE19.Vector3(...descriptor.localBendAxis));
   const angle = 2 * Math.atan2(signedMagnitude, delta.w);
-  return THREE18.MathUtils.radToDeg(THREE18.MathUtils.euclideanModulo(angle + Math.PI, Math.PI * 2) - Math.PI);
+  return THREE19.MathUtils.radToDeg(THREE19.MathUtils.euclideanModulo(angle + Math.PI, Math.PI * 2) - Math.PI);
 }
 function bendDirectionFindings(context, root, clips) {
   const joints = collectCharacterJointNodes(root).filter((joint) => /(?:^|[._-])(?:knee|elbow)(?:$|[._-])/i.test(joint.descriptor.role));
@@ -11487,7 +11715,7 @@ function bendDirectionFindings(context, root, clips) {
       let maximumFraction = 0;
       for (const fraction of SAMPLE_FRACTIONS) {
         const value = track.createInterpolant().evaluate(fraction * clip.duration);
-        const bend = signedBendDegrees(joint.descriptor, new THREE18.Quaternion().fromArray(value).normalize());
+        const bend = signedBendDegrees(joint.descriptor, new THREE19.Quaternion().fromArray(value).normalize());
         if (Math.abs(bend) > Math.abs(maximum)) {
           maximum = bend;
           maximumFraction = fraction;
@@ -11570,7 +11798,7 @@ function footSlideFindings(context, root, clips) {
   return findings;
 }
 function inspectRigAdvisory(context) {
-  if (!context.rig || !(context.scene instanceof THREE18.Object3D)) {
+  if (!context.rig || !(context.scene instanceof THREE19.Object3D)) {
     return [];
   }
   const root = context.scene;
@@ -11689,7 +11917,7 @@ var init_architecture_repairs = __esm(() => {
 });
 
 // src/qa/architecture.ts
-import * as THREE19 from "three";
+import * as THREE20 from "three";
 function hasRoofDimensions(value) {
   return value.footprint !== undefined && value.roof?.ridgeAxis !== undefined && value.roof.rise !== undefined && value.roof.overhang !== undefined;
 }
@@ -11699,7 +11927,7 @@ function semanticMetadata(node) {
 function markerBounds(matrix) {
   const bounds = emptyBounds();
   for (let corner = 0;corner < 8; corner++) {
-    expandBounds(bounds, new THREE19.Vector3(corner & 1 ? 0.5 : -0.5, corner & 2 ? 0.5 : -0.5, corner & 4 ? 0.5 : -0.5).applyMatrix4(matrix));
+    expandBounds(bounds, new THREE20.Vector3(corner & 1 ? 0.5 : -0.5, corner & 2 ? 0.5 : -0.5, corner & 4 ? 0.5 : -0.5).applyMatrix4(matrix));
   }
   return bounds;
 }
@@ -11708,7 +11936,7 @@ function geometryPlaneNormal(geometry, relativeMatrix) {
   const local = geometry.boundingBox;
   if (!local)
     return;
-  const size = local.getSize(new THREE19.Vector3);
+  const size = local.getSize(new THREE20.Vector3);
   const dimensions = [
     ["x", size.x],
     ["y", size.y],
@@ -11718,7 +11946,7 @@ function geometryPlaneNormal(geometry, relativeMatrix) {
   const axis = dimensions[0]?.[0];
   if (!axis)
     return;
-  const normal = new THREE19.Vector3(axis === "x" ? 1 : 0, axis === "y" ? 1 : 0, axis === "z" ? 1 : 0).transformDirection(relativeMatrix);
+  const normal = new THREE20.Vector3(axis === "x" ? 1 : 0, axis === "y" ? 1 : 0, axis === "z" ? 1 : 0).transformDirection(relativeMatrix);
   if (normal.y < 0)
     normal.multiplyScalar(-1);
   return normal.normalize();
@@ -11730,7 +11958,7 @@ function geometryEvidence(geometry, relativeMatrix) {
   if (position?.itemSize !== 3)
     return { bounds, vertices, triangles: [] };
   for (let index = 0;index < position.count; index++) {
-    const point = new THREE19.Vector3(position.getX(index), position.getY(index), position.getZ(index));
+    const point = new THREE20.Vector3(position.getX(index), position.getY(index), position.getZ(index));
     point.applyMatrix4(relativeMatrix);
     vertices.push(point);
     expandBounds(bounds, point);
@@ -11757,7 +11985,7 @@ function geometryEvidence(geometry, relativeMatrix) {
   return { bounds, vertices, triangles, ...planeNormal ? { planeNormal } : {} };
 }
 function collectArchitectureEvidence(scene) {
-  if (!(scene instanceof THREE19.Object3D))
+  if (!(scene instanceof THREE20.Object3D))
     return;
   scene.updateMatrixWorld(true);
   const rootInverse = scene.matrixWorld.clone().invert();
@@ -11777,7 +12005,7 @@ function collectArchitectureEvidence(scene) {
     const nodePath = parentPath ? `${parentPath}/${segment}` : segment;
     const relativeMatrix = rootInverse.clone().multiply(node.matrixWorld);
     const mesh = node;
-    const isMesh = mesh.isMesh === true && mesh.geometry instanceof THREE19.BufferGeometry;
+    const isMesh = mesh.isMesh === true && mesh.geometry instanceof THREE20.BufferGeometry;
     const evidence = isMesh ? geometryEvidence(mesh.geometry, relativeMatrix) : {
       bounds: markerBounds(relativeMatrix),
       vertices: [],
@@ -11836,7 +12064,7 @@ function architectureFinding(context, value) {
 function averageNormal(normals) {
   if (normals.length === 0)
     return;
-  const result = normals.reduce((sum, normal) => sum.add(normal), new THREE19.Vector3);
+  const result = normals.reduce((sum, normal) => sum.add(normal), new THREE20.Vector3);
   return result.lengthSq() > EPSILON2 ? result.normalize() : undefined;
 }
 function intervalCoverage(min, max, expectedMin, expectedMax) {
@@ -12547,8 +12775,8 @@ function evaluateArchitectureQa(context) {
   });
 }
 var PROFILE_RULE_ID2 = "ARCHITECTURE_PROFILE", EPSILON2 = 0.000001, ARCHITECTURE_REALISTIC_SCALE_BANDS, emptyBounds = () => ({
-  min: new THREE19.Vector3(Infinity, Infinity, Infinity),
-  max: new THREE19.Vector3(-Infinity, -Infinity, -Infinity)
+  min: new THREE20.Vector3(Infinity, Infinity, Infinity),
+  max: new THREE20.Vector3(-Infinity, -Infinity, -Infinity)
 }), expandBounds = (bounds, point) => {
   bounds.min.min(point);
   bounds.max.max(point);
@@ -12592,7 +12820,7 @@ var init_architecture = __esm(() => {
 });
 
 // src/qa/environment.ts
-import * as THREE20 from "three";
+import * as THREE21 from "three";
 function finding5(context, value) {
   return { ...value, profile: context.profile ?? "asset.requirements.v1" };
 }
@@ -12611,11 +12839,11 @@ function nodePath4(root, node) {
   return names.reverse().join("/");
 }
 function transformedBox2(source, transform) {
-  const result = new THREE20.Box3;
+  const result = new THREE21.Box3;
   for (const x of [source.min.x, source.max.x]) {
     for (const y of [source.min.y, source.max.y]) {
       for (const z of [source.min.z, source.max.z]) {
-        result.expandByPoint(new THREE20.Vector3(x, y, z).applyMatrix4(transform));
+        result.expandByPoint(new THREE21.Vector3(x, y, z).applyMatrix4(transform));
       }
     }
   }
@@ -12624,16 +12852,16 @@ function transformedBox2(source, transform) {
 function orientedBoxFromLocalBounds(root, node, source, relative = root.matrixWorld.clone().invert().multiply(node.matrixWorld)) {
   if (!relative.elements.every(Number.isFinite))
     return;
-  const position = new THREE20.Vector3;
-  const rotation = new THREE20.Quaternion;
-  const scale = new THREE20.Vector3;
+  const position = new THREE21.Vector3;
+  const rotation = new THREE21.Quaternion;
+  const scale = new THREE21.Vector3;
   relative.decompose(position, rotation, scale);
-  const recomposed = new THREE20.Matrix4().compose(position, rotation, scale);
+  const recomposed = new THREE21.Matrix4().compose(position, rotation, scale);
   const residual = Math.max(...relative.elements.map((component, index) => Math.abs(component - (recomposed.elements[index] ?? component))));
   if (residual > 0.00001)
     return;
-  const center = source.getCenter(new THREE20.Vector3).applyMatrix4(relative);
-  const sourceHalf = source.getSize(new THREE20.Vector3).multiplyScalar(0.5);
+  const center = source.getCenter(new THREE21.Vector3).applyMatrix4(relative);
+  const sourceHalf = source.getSize(new THREE21.Vector3).multiplyScalar(0.5);
   const halfExtents = [
     Math.abs(sourceHalf.x * scale.x),
     Math.abs(sourceHalf.y * scale.y),
@@ -12654,24 +12882,24 @@ function collectParts4(root) {
   const result = [];
   root.traverseVisible((node) => {
     const roles = rolesOf3(node);
-    const renderable = node instanceof THREE20.Mesh;
+    const renderable = node instanceof THREE21.Mesh;
     let box;
     let orientedBox;
     let source;
-    if (renderable && node.geometry instanceof THREE20.BufferGeometry) {
+    if (renderable && node.geometry instanceof THREE21.BufferGeometry) {
       node.geometry.computeBoundingBox();
       if (node.geometry.boundingBox) {
         source = node.geometry.boundingBox;
       }
     } else if (roles.length > 0) {
-      source = new THREE20.Box3(new THREE20.Vector3(-0.5, -0.5, -0.5), new THREE20.Vector3(0.5, 0.5, 0.5));
+      source = new THREE21.Box3(new THREE21.Vector3(-0.5, -0.5, -0.5), new THREE21.Vector3(0.5, 0.5, 0.5));
     }
     const relative = rootInverse.clone().multiply(node.matrixWorld);
-    const count = node instanceof THREE20.InstancedMesh ? node.count : 1;
+    const count = node instanceof THREE21.InstancedMesh ? node.count : 1;
     for (let index = 0;index < count; index++) {
       const transform = relative.clone();
-      if (node instanceof THREE20.InstancedMesh) {
-        const instance = new THREE20.Matrix4;
+      if (node instanceof THREE21.InstancedMesh) {
+        const instance = new THREE21.Matrix4;
         node.getMatrixAt(index, instance);
         transform.multiply(instance);
       }
@@ -12702,9 +12930,9 @@ function resolveSocket(root, node, socket) {
     return;
   root.updateWorldMatrix(true, true);
   const rootInverse = root.matrixWorld.clone().invert();
-  const point = new THREE20.Vector3(...frame.translation).applyMatrix4(node.matrixWorld).applyMatrix4(rootInverse);
-  const rootInverseQuaternion = root.getWorldQuaternion(new THREE20.Quaternion).invert();
-  const rotation = node.getWorldQuaternion(new THREE20.Quaternion).multiply(new THREE20.Quaternion(...frame.rotation)).premultiply(rootInverseQuaternion).normalize();
+  const point = new THREE21.Vector3(...frame.translation).applyMatrix4(node.matrixWorld).applyMatrix4(rootInverse);
+  const rootInverseQuaternion = root.getWorldQuaternion(new THREE21.Quaternion).invert();
+  const rotation = node.getWorldQuaternion(new THREE21.Quaternion).multiply(new THREE21.Quaternion(...frame.rotation)).premultiply(rootInverseQuaternion).normalize();
   return {
     id: socket.id,
     type: socket.type,
@@ -12733,7 +12961,7 @@ function socketByType(sockets, type) {
   return sockets.find((socket) => socket.type === type);
 }
 function inspectPlacementSockets(context) {
-  if (!(context.scene instanceof THREE20.Object3D)) {
+  if (!(context.scene instanceof THREE21.Object3D)) {
     return [];
   }
   const root = context.scene;
@@ -12797,7 +13025,7 @@ function materialSignature(material) {
 function boundarySamples(root, axis, side, bins = 12) {
   root.updateWorldMatrix(true, true);
   const inverse = root.matrixWorld.clone().invert();
-  const localBounds = new THREE20.Box3;
+  const localBounds = new THREE21.Box3;
   for (const part of collectParts4(root))
     if (part.renderable && part.box)
       localBounds.union(part.box);
@@ -12811,30 +13039,30 @@ function boundarySamples(root, axis, side, bins = 12) {
   const crossExtent = Math.max(0.000000001, localBounds.max[crossAxis] - crossMin);
   const byBin = new Map;
   root.traverseVisible((node) => {
-    if (!(node instanceof THREE20.Mesh) || !(node.geometry instanceof THREE20.BufferGeometry))
+    if (!(node instanceof THREE21.Mesh) || !(node.geometry instanceof THREE21.BufferGeometry))
       return;
     const positions = node.geometry.getAttribute("position");
     if (positions?.itemSize !== 3)
       return;
     const normals = node.geometry.getAttribute("normal");
     const relative = inverse.clone().multiply(node.matrixWorld);
-    const count = node instanceof THREE20.InstancedMesh ? node.count : 1;
+    const count = node instanceof THREE21.InstancedMesh ? node.count : 1;
     for (let instanceIndex = 0;instanceIndex < count; instanceIndex++) {
       const transform = relative.clone();
-      if (node instanceof THREE20.InstancedMesh) {
-        const instance = new THREE20.Matrix4;
+      if (node instanceof THREE21.InstancedMesh) {
+        const instance = new THREE21.Matrix4;
         node.getMatrixAt(instanceIndex, instance);
         transform.multiply(instance);
       }
-      const normalMatrix = new THREE20.Matrix3().getNormalMatrix(transform);
+      const normalMatrix = new THREE21.Matrix3().getNormalMatrix(transform);
       const material = materialSignature(node.material);
       for (let index = 0;index < positions.count; index++) {
-        const point = new THREE20.Vector3(positions.getX(index), positions.getY(index), positions.getZ(index)).applyMatrix4(transform);
+        const point = new THREE21.Vector3(positions.getX(index), positions.getY(index), positions.getZ(index)).applyMatrix4(transform);
         if (Math.abs(point[axis] - edge) > band)
           continue;
-        const t = THREE20.MathUtils.clamp((point[crossAxis] - crossMin) / crossExtent, 0, 1);
+        const t = THREE21.MathUtils.clamp((point[crossAxis] - crossMin) / crossExtent, 0, 1);
         const bin = Math.min(bins - 1, Math.floor(t * bins));
-        const normal = normals ? new THREE20.Vector3(normals.getX(index), normals.getY(index), normals.getZ(index)).applyMatrix3(normalMatrix).normalize() : new THREE20.Vector3(0, 1, 0);
+        const normal = normals ? new THREE21.Vector3(normals.getX(index), normals.getY(index), normals.getZ(index)).applyMatrix3(normalMatrix).normalize() : new THREE21.Vector3(0, 1, 0);
         const current = byBin.get(bin);
         if (!current || point.y > current.height || point.y === current.height && normal.y > current.normal.y) {
           byBin.set(bin, { bin, height: point.y, normal, material });
@@ -12857,7 +13085,7 @@ function edgePairMeasurements(root, axis, sockets) {
     ...positive.map((sample) => sample.bin)
   ]);
   const maximumHeightDelta = pairs.length ? Math.max(...pairs.map(([a, b]) => Math.abs(a.height - b.height))) : Number.POSITIVE_INFINITY;
-  const maximumNormalDeltaDegrees = pairs.length ? Math.max(...pairs.map(([a, b]) => THREE20.MathUtils.radToDeg(Math.acos(THREE20.MathUtils.clamp(a.normal.dot(b.normal), -1, 1))))) : 180;
+  const maximumNormalDeltaDegrees = pairs.length ? Math.max(...pairs.map(([a, b]) => THREE21.MathUtils.radToDeg(Math.acos(THREE21.MathUtils.clamp(a.normal.dot(b.normal), -1, 1))))) : 180;
   const materialMismatch = pairs.some(([a, b]) => a.material !== b.material);
   const negativeSocket = socketByType(sockets, `environment.tile.${axis}-negative`);
   const positiveSocket = socketByType(sockets, `environment.tile.${axis}-positive`);
@@ -12874,7 +13102,7 @@ function edgePairMeasurements(root, axis, sockets) {
   };
 }
 function inspectTileEdges(context) {
-  if (context.tileable !== true || !(context.scene instanceof THREE20.Object3D)) {
+  if (context.tileable !== true || !(context.scene instanceof THREE21.Object3D)) {
     return [];
   }
   const root = context.scene;
@@ -12957,7 +13185,7 @@ function isCorridor(part) {
   return part.roles.some((role) => /^environment\.(?:navigation\.)?corridor(?:\.|$)/.test(role));
 }
 function inspectNavigationClearance(context) {
-  if (context.navigable !== true || !(context.scene instanceof THREE20.Object3D)) {
+  if (context.navigable !== true || !(context.scene instanceof THREE21.Object3D)) {
     return [];
   }
   const root = context.scene;
@@ -13087,7 +13315,7 @@ function functionalLayer(part) {
   return part.roles.some((role) => role.startsWith("environment.functional") || role.startsWith("environment.layer") || role.startsWith("environment.path") || role.startsWith("environment.road") || role.startsWith("environment.bridge") || role.startsWith("environment.gate"));
 }
 function inspectSpatialSupport(context) {
-  if (context.groundPlaneY === undefined || !(context.scene instanceof THREE20.Object3D)) {
+  if (context.groundPlaneY === undefined || !(context.scene instanceof THREE21.Object3D)) {
     return [];
   }
   const root = context.scene;
@@ -13134,7 +13362,7 @@ function inspectSpatialSupport(context) {
         }));
       }
     }
-    const size = box.getSize(new THREE20.Vector3);
+    const size = box.getSize(new THREE21.Vector3);
     if (box.min.y < context.groundPlaneY - 0.05 && size.y <= Math.max(0.05, Math.min(size.x, size.z) * 0.03) && Math.max(size.x, size.z) >= 1) {
       findings.push(finding5(context, {
         code: "ENV_GROUND_UNDECLARED_SKIRT",
@@ -13651,13 +13879,13 @@ var init_run = __esm(() => {
 });
 
 // src/qa/requirements-run.ts
-import { Object3D as Object3D14 } from "three";
+import { Object3D as Object3D15 } from "three";
 function sceneDecisions(context, policy) {
   const applicable = new Set(resolveRequirementsApplicability(context.requirements).rules.filter((rule) => rule.status === "evaluate").map((rule) => rule.id));
   return new QaRegistry(registry.list().filter((rule) => applicable.has(rule.id))).describePolicy(policy);
 }
 async function collectRequirementsSceneEvidence(context, scene, policy = {}) {
-  if (!(scene instanceof Object3D14) || !sceneDecisions(context, policy).some((d) => d.ruleId === SELF_INTERSECTION_QA_RULE.id && d.mode !== "off"))
+  if (!(scene instanceof Object3D15) || !sceneDecisions(context, policy).some((d) => d.ruleId === SELF_INTERSECTION_QA_RULE.id && d.mode !== "off"))
     return {};
   try {
     return { partPenetration: await analyzePartPenetration(scene) };
@@ -13698,12 +13926,12 @@ function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {
   };
   const effects = needs.effects?.state === "requested" ? needs.effects.value : undefined;
   const scope = context.requirements.scope;
-  const scopeObservation = scope?.state === "requested" && scene instanceof Object3D14 && decisions.some((d) => d.ruleId === ASSET_SCOPE_QA_RULE.id && d.mode !== "off") ? analyzeAssetScopeObservationV1(scene) : undefined;
+  const scopeObservation = scope?.state === "requested" && scene instanceof Object3D15 && decisions.some((d) => d.ruleId === ASSET_SCOPE_QA_RULE.id && d.mode !== "off") ? analyzeAssetScopeObservationV1(scene) : undefined;
   const effectsInput = {
     effects,
     derivedEvidence: {
       source: "engine-scene-analysis",
-      ...effects && scene instanceof Object3D14 && decisions.some((d) => d.ruleId.startsWith("VFX_") && d.mode !== "off") ? { vfxArtifact: analyzeVfxArtifactEvidenceV1(effects, scene, clips) } : {}
+      ...effects && scene instanceof Object3D15 && decisions.some((d) => d.ruleId.startsWith("VFX_") && d.mode !== "off") ? { vfxArtifact: analyzeVfxArtifactEvidenceV1(effects, scene, clips) } : {}
     }
   };
   const spatialInput = {
@@ -13765,7 +13993,7 @@ function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {
     }
     if (decision.ruleId === ASSET_SCOPE_QA_RULE.id && !scopeObservation)
       continue;
-    if (decision.ruleId === PART_CONNECTIVITY_QA_RULE.id && !(scene instanceof Object3D14))
+    if (decision.ruleId === PART_CONNECTIVITY_QA_RULE.id && !(scene instanceof Object3D15))
       continue;
     executedRules.push(decision.ruleId);
     if (decision.ruleId === PROP_EXACT_QA_RULE.id) {
@@ -13941,7 +14169,7 @@ var init_requirements_run = __esm(() => {
 });
 
 // src/qa/skin-integrity.ts
-import * as THREE21 from "three";
+import * as THREE22 from "three";
 function validAttribute(a, count, size) {
   if (!a || a.itemSize !== size || a.count !== count || !Number.isSafeInteger(count) || count < 1)
     return false;
@@ -13988,9 +14216,9 @@ function inspectSkinIntegrity(root) {
     }
     while (chain.length) {
       const n = chain.pop();
-      const local = n.matrixAutoUpdate ? new THREE21.Matrix4().compose(n.position, n.quaternion, n.scale) : n.matrix.clone();
+      const local = n.matrixAutoUpdate ? new THREE22.Matrix4().compose(n.position, n.quaternion, n.scale) : n.matrix.clone();
       const parent = n.parent ? worlds.get(n.parent) : undefined;
-      const value = n.matrixWorldAutoUpdate === false ? n.matrixWorld.clone() : parent ? new THREE21.Matrix4().multiplyMatrices(parent, local) : local;
+      const value = n.matrixWorldAutoUpdate === false ? n.matrixWorld.clone() : parent ? new THREE22.Matrix4().multiplyMatrices(parent, local) : local;
       worlds.set(n, value);
     }
     return worlds.get(node);
@@ -14040,7 +14268,7 @@ function inspectSkinIntegrity(root) {
       if (result.truncated)
         break;
     }
-    if (!finiteAffine(mesh.bindMatrix) || !Number.isFinite(mesh.bindMatrix.determinant()) || mesh.bindMatrix.determinant() === 0 || ![THREE21.AttachedBindMode, THREE21.DetachedBindMode].includes(mesh.bindMode)) {
+    if (!finiteAffine(mesh.bindMatrix) || !Number.isFinite(mesh.bindMatrix.determinant()) || mesh.bindMatrix.determinant() === 0 || ![THREE22.AttachedBindMode, THREE22.DetachedBindMode].includes(mesh.bindMode)) {
       add("SKIN_BIND_MATRIX", "Mesh requires a finite invertible affine bind matrix and an attached or detached bind mode.", "bindMatrix");
     }
     const position = mesh.geometry?.getAttribute("position"), count = position?.count ?? 0;
@@ -14089,7 +14317,7 @@ function inspectSkinIntegrity(root) {
       add("SKIN_POSE_TRANSFORM", "Current mesh world transform must be finite and affine.");
       continue;
     }
-    const inverse = mesh.bindMode === THREE21.AttachedBindMode ? meshWorld.clone().invert() : mesh.bindMatrix.clone().invert();
+    const inverse = mesh.bindMode === THREE22.AttachedBindMode ? meshWorld.clone().invert() : mesh.bindMatrix.clone().invert();
     const matrices = [];
     for (let joint = 0;joint < bones.length; joint++) {
       const boneWorld = world(bones[joint]);
@@ -14097,13 +14325,13 @@ function inspectSkinIntegrity(root) {
         add("SKIN_POSE_TRANSFORM", `Current transform for joint ${joint} must be finite and affine.`, `joints[${joint}]`);
         break;
       }
-      matrices.push(new THREE21.Matrix4().multiplyMatrices(boneWorld, skeleton.boneInverses[joint]).multiply(mesh.bindMatrix));
+      matrices.push(new THREE22.Matrix4().multiplyMatrices(boneWorld, skeleton.boneInverses[joint]).multiply(mesh.bindMatrix));
     }
     if (result.findings.length !== start)
       continue;
-    const base = new THREE21.Vector3, posed = new THREE21.Vector3, temp = new THREE21.Vector3, box = new THREE21.Box3;
+    const base = new THREE22.Vector3, posed = new THREE22.Vector3, temp = new THREE22.Vector3, box = new THREE22.Box3;
     for (let vertex = 0;vertex < count; vertex++) {
-      THREE21.Mesh.prototype.getVertexPosition.call(mesh, vertex, base);
+      THREE22.Mesh.prototype.getVertexPosition.call(mesh, vertex, base);
       posed.set(0, 0, 0);
       for (let lane = 0;lane < 4; lane++) {
         const weight = weights.getComponent(vertex, lane);
@@ -14333,7 +14561,7 @@ function listLodChainNodes(doc) {
   const chains = [];
   const visit = (siblings, parentPath) => {
     siblings.forEach((node, index) => {
-      const at = (name) => `${parentPath}${segment(name, occurrence(siblings, index, name))}`;
+      const at = (name) => `${parentPath}${segment2(name, occurrence(siblings, index, name))}`;
       const path = at(node.getName());
       const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType2.NODE);
       if (lower.length > 0)
@@ -14344,8 +14572,12 @@ function listLodChainNodes(doc) {
       visit(node.listChildren(), path);
     });
   };
-  visit(scene.listChildren(), segment(scene.getName() || "Scene", 0));
+  visit(scene.listChildren(), segment2(scene.getName() || "Scene", 0));
   return chains;
+}
+function isImpostorLevel(node) {
+  const roles = readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [];
+  return roles.includes(KILN_SEMANTIC_ROLES.lodImpostor);
 }
 function summarizeLodChains(doc) {
   return listLodChainNodes(doc).map(({ levels, paths }) => {
@@ -14357,20 +14589,22 @@ function summarizeLodChains(doc) {
         level: number,
         name: level.getName(),
         path: paths[number],
-        triangles: drawnNodeTriangles(level)
+        triangles: drawnNodeTriangles(level),
+        ...number > 0 && isImpostorLevel(level) ? { impostor: true } : {}
       }))
     };
   });
 }
-var MSFT_SCREENCOVERAGE = "MSFT_screencoverage", segment = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
+var MSFT_SCREENCOVERAGE = "MSFT_screencoverage", segment2 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
 var init_lod_export = __esm(() => {
+  init_semantic();
   init_gltf_io();
   init_metrics();
 });
 
 // src/node-visibility.ts
 import { KHRNodeVisibility } from "@gltf-transform/extensions";
-import * as THREE22 from "three";
+import * as THREE23 from "three";
 function applyNodeVisibility(root, doc) {
   const hidden = [];
   root.traverse((node) => {
@@ -14395,14 +14629,14 @@ function summarizeHiddenNodes(doc) {
       const name = node.getName();
       const occurrence = seen.get(name) ?? 0;
       seen.set(name, occurrence + 1);
-      const path = `${parentPath}${segment2(name, occurrence)}`;
+      const path = `${parentPath}${segment3(name, occurrence)}`;
       if (isHiddenGltfNode(node))
         found.push({ path, name, triangles: nodeTriangles(node) });
       else
         visit(node.listChildren(), path);
     }
   };
-  visit(scene.listChildren(), segment2(scene.getName() || "Scene", 0));
+  visit(scene.listChildren(), segment3(scene.getName() || "Scene", 0));
   return found;
 }
 function drawnSceneBounds(scene) {
@@ -14413,7 +14647,7 @@ function drawnSceneBounds(scene) {
       return;
     const mesh = node.getMesh();
     if (mesh) {
-      const base = new THREE22.Matrix4().fromArray(node.getWorldMatrix());
+      const base = new THREE23.Matrix4().fromArray(node.getWorldMatrix());
       const instances = node.getExtension("EXT_mesh_gpu_instancing");
       const translation = instances?.getAttribute("TRANSLATION");
       const rotation = instances?.getAttribute("ROTATION");
@@ -14424,7 +14658,7 @@ function drawnSceneBounds(scene) {
         const t = translation?.getElement(i, []) ?? [0, 0, 0];
         const r = rotation?.getElement(i, []) ?? [0, 0, 0, 1];
         const s = scale?.getElement(i, []) ?? [1, 1, 1];
-        const localMatrix = new THREE22.Matrix4().compose(new THREE22.Vector3().fromArray(t), new THREE22.Quaternion().fromArray(r), new THREE22.Vector3().fromArray(s));
+        const localMatrix = new THREE23.Matrix4().compose(new THREE23.Vector3().fromArray(t), new THREE23.Quaternion().fromArray(r), new THREE23.Vector3().fromArray(s));
         matrices.push(base.clone().multiply(localMatrix).toArray());
       }
       const local = [0, 0, 0];
@@ -14459,7 +14693,7 @@ function drawnSceneBounds(scene) {
     visit(node);
   return { min, max };
 }
-var KHR_NODE_VISIBILITY = "KHR_node_visibility", segment2 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
+var KHR_NODE_VISIBILITY = "KHR_node_visibility", segment3 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
 var init_node_visibility = __esm(() => {
   init_metrics();
 });
@@ -14507,7 +14741,7 @@ var init_material_export = __esm(() => {
 });
 
 // src/community-exporter.ts
-import * as THREE23 from "three";
+import * as THREE24 from "three";
 import { GLTFExporter } from "three/addons/exporters/GLTFExporter.js";
 import { GLB_BUFFER } from "@gltf-transform/core";
 function resolveGltfExporter(value = typeof process !== "undefined" ? process.env["KILN_GLTF_EXPORTER"] : undefined) {
@@ -14537,7 +14771,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       return found;
     const copy = cleanClone(source);
     normalizeTextureTransform(copy);
-    copy.source = new THREE23.TextureSource(source.image);
+    copy.source = new THREE24.TextureSource(source.image);
     textures.set(source, copy);
     const bytes = source.userData["encoded"];
     if (bytes?.bytes) {
@@ -14546,8 +14780,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       encoded.push((async () => {
         copy.image = await platform.decode(bytes.bytes);
         Object.defineProperty(copy, "isDataTexture", { value: true });
-        copy.format = THREE23.RGBAFormat;
-        copy.type = THREE23.UnsignedByteType;
+        copy.format = THREE24.RGBAFormat;
+        copy.type = THREE24.UnsignedByteType;
       })());
     }
     return copy;
@@ -14564,7 +14798,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       physical.sheen = 1;
     }
     for (const [key, value] of Object.entries(copy)) {
-      if (value instanceof THREE23.Texture)
+      if (value instanceof THREE24.Texture)
         copy[key] = texture(value);
     }
     materials.set(source, copy);
@@ -14580,15 +14814,15 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
     if (!copy.matrixAutoUpdate)
       copy.matrix.decompose(copy.position, copy.quaternion, copy.scale);
     if (source.isScene) {
-      copy = new THREE23.Group;
+      copy = new THREE24.Group;
       copy.copy(shadow, false);
     }
     if (source.isSprite) {
       const sprite = source;
-      const geometry = new THREE23.PlaneGeometry(1, 1);
+      const geometry = new THREE24.PlaneGeometry(1, 1);
       geometry.translate(0.5 - sprite.center.x, 0.5 - sprite.center.y, 0);
       geometry.rotateZ(sprite.material.rotation);
-      const spriteMaterial = new THREE23.MeshBasicMaterial({
+      const spriteMaterial = new THREE24.MeshBasicMaterial({
         name: sprite.material.name,
         color: sprite.material.color,
         opacity: sprite.material.opacity,
@@ -14599,10 +14833,10 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       });
       Object.assign(spriteMaterial.userData, authorExtras?.material(sprite.material));
       originalMaterials.set(spriteMaterial, sprite.material);
-      copy = new THREE23.Mesh(geometry, spriteMaterial);
-      THREE23.Object3D.prototype.copy.call(copy, shadow, false);
+      copy = new THREE24.Mesh(geometry, spriteMaterial);
+      THREE24.Object3D.prototype.copy.call(copy, shadow, false);
     }
-    Object.assign(copy.userData, authorExtras?.node(source), rigExtrasForExport(source), openShellExtras(source));
+    Object.assign(copy.userData, authorExtras?.node(source), rigExtrasForExport(source), openShellExtras(source), kitExtras(source));
     const semantic = source.userData[KILN_SEMANTIC_EXTRAS_KEY];
     if (semantic !== undefined) {
       const checked = validateSemanticMetadataV1(semantic);
@@ -14664,8 +14898,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
     if (!context)
       throw new Error("A 2D canvas is required to prepare export texture channels.");
     context.putImageData(new ImageData(new Uint8ClampedArray(data), width, height), 0, 0);
-    const adapted = new THREE23.Texture().copy(map);
-    adapted.source = new THREE23.TextureSource(canvas);
+    const adapted = new THREE24.Texture().copy(map);
+    adapted.source = new THREE24.TextureSource(canvas);
     canvasInputs.set(map, adapted);
     const direct = directImages.get(map);
     if (direct)
@@ -14674,7 +14908,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
   };
   for (const material of materials.values()) {
     for (const [key, value] of Object.entries(material)) {
-      if (value instanceof THREE23.Texture && value.flipY && value.image?.data)
+      if (value instanceof THREE24.Texture && value.flipY && value.image?.data)
         material[key] = canvasInput(value);
     }
     const standard = material;
@@ -14696,8 +14930,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
     }
     cloned.tracks = cloned.tracks.filter((track) => {
       try {
-        const binding = THREE23.PropertyBinding.parseTrackName(track.name);
-        return ["position", "quaternion", "scale", "morphTargetInfluences"].includes(binding.propertyName) && THREE23.PropertyBinding.findNode(copy, binding.nodeName) !== null;
+        const binding = THREE24.PropertyBinding.parseTrackName(track.name);
+        return ["position", "quaternion", "scale", "morphTargetInfluences"].includes(binding.propertyName) && THREE24.PropertyBinding.findNode(copy, binding.nodeName) !== null;
       } catch {
         return false;
       }
@@ -14822,6 +15056,7 @@ var browserPlatform;
 var init_community_exporter = __esm(() => {
   init_gltf_io();
   init_open_shell();
+  init_delivery();
   init_rig_export();
   init_material_export();
   init_atlas_provenance();
@@ -14889,6 +15124,868 @@ function applyIndexPolicy(doc, policy) {
   };
 }
 var init_index_policy = () => {};
+
+// src/delivery-inspect.ts
+import * as THREE25 from "three";
+import { PropertyType as PropertyType3 } from "@gltf-transform/core";
+function decompose(matrix) {
+  const translation = new THREE25.Vector3;
+  const rotation = new THREE25.Quaternion;
+  const scale = new THREE25.Vector3;
+  matrix.decompose(translation, rotation, scale);
+  const clean = (value) => Object.is(value, -0) ? 0 : value;
+  return {
+    translation: translation.toArray().map(clean),
+    rotation: rotation.toArray().map(clean),
+    scale: scale.toArray().map(clean)
+  };
+}
+function drawnTriangles(visited) {
+  const values = [];
+  const local = [0, 0, 0];
+  const point = new THREE25.Vector3;
+  for (const { node, roles, hidden } of visited) {
+    const mesh = node.getMesh();
+    if (!mesh || hidden || roles.some((role) => role.startsWith("collider.")))
+      continue;
+    const base = worldMatrix(node);
+    const instances = node.getExtension("EXT_mesh_gpu_instancing");
+    const translation = instances?.getAttribute("TRANSLATION");
+    const rotation = instances?.getAttribute("ROTATION");
+    const scale = instances?.getAttribute("SCALE");
+    const copies = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
+    const matrices = [];
+    for (let i = 0;i < copies; i++) {
+      const instance = new THREE25.Matrix4().compose(new THREE25.Vector3().fromArray(translation?.getElement(i, []) ?? [0, 0, 0]), new THREE25.Quaternion().fromArray(rotation?.getElement(i, []) ?? [0, 0, 0, 1]), new THREE25.Vector3().fromArray(scale?.getElement(i, []) ?? [1, 1, 1]));
+      matrices.push(base.clone().multiply(instance));
+    }
+    for (const primitive of mesh.listPrimitives()) {
+      if (primitive.getMode() !== 4)
+        continue;
+      const position = primitive.getAttribute("POSITION");
+      if (!position)
+        continue;
+      const indices = primitive.getIndices();
+      const count = indices ? indices.getCount() : position.getCount();
+      for (const matrix of matrices)
+        for (let i = 0;i + 2 < count; i += 3)
+          for (let k = 0;k < 3; k++) {
+            position.getElement(indices ? indices.getScalar(i + k) : i + k, local);
+            point.fromArray(local).applyMatrix4(matrix);
+            values.push(point.x, point.y, point.z);
+          }
+    }
+  }
+  return Float64Array.from(values);
+}
+function triangleOverlapsBox(a, b, c, h, tolerance) {
+  const verts = [a, b, c];
+  const he = [h.x + tolerance, h.y + tolerance, h.z + tolerance];
+  for (let axis = 0;axis < 3; axis++) {
+    const values = verts.map((v) => v.getComponent(axis));
+    if (Math.min(...values) > he[axis] || Math.max(...values) < -he[axis])
+      return false;
+  }
+  const e = [
+    new THREE25.Vector3().subVectors(b, a),
+    new THREE25.Vector3().subVectors(c, b),
+    new THREE25.Vector3().subVectors(a, c)
+  ];
+  const normal = new THREE25.Vector3().crossVectors(e[0], e[1]);
+  const axes = [normal];
+  const units = [
+    new THREE25.Vector3(1, 0, 0),
+    new THREE25.Vector3(0, 1, 0),
+    new THREE25.Vector3(0, 0, 1)
+  ];
+  for (const unit of units)
+    for (const edge of e)
+      axes.push(new THREE25.Vector3().crossVectors(unit, edge));
+  for (const axis of axes) {
+    if (axis.lengthSq() < 0.000000000000000000000001)
+      continue;
+    const projections = verts.map((v) => v.dot(axis));
+    const radius = he[0] * Math.abs(axis.x) + he[1] * Math.abs(axis.y) + he[2] * Math.abs(axis.z);
+    if (Math.min(...projections) > radius || Math.max(...projections) < -radius)
+      return false;
+  }
+  return true;
+}
+function closestPointOnTriangle(p, a, b, c) {
+  const ab = new THREE25.Vector3().subVectors(b, a);
+  const ac = new THREE25.Vector3().subVectors(c, a);
+  const ap = new THREE25.Vector3().subVectors(p, a);
+  const d1 = ab.dot(ap);
+  const d2 = ac.dot(ap);
+  if (d1 <= 0 && d2 <= 0)
+    return a.clone();
+  const bp = new THREE25.Vector3().subVectors(p, b);
+  const d3 = ab.dot(bp);
+  const d4 = ac.dot(bp);
+  if (d3 >= 0 && d4 <= d3)
+    return b.clone();
+  const vc = d1 * d4 - d3 * d2;
+  if (vc <= 0 && d1 >= 0 && d3 <= 0)
+    return a.clone().addScaledVector(ab, d1 / (d1 - d3));
+  const cp = new THREE25.Vector3().subVectors(p, c);
+  const d5 = ab.dot(cp);
+  const d6 = ac.dot(cp);
+  if (d6 >= 0 && d5 <= d6)
+    return c.clone();
+  const vb = d5 * d2 - d1 * d6;
+  if (vb <= 0 && d2 >= 0 && d6 <= 0)
+    return a.clone().addScaledVector(ac, d2 / (d2 - d6));
+  const va = d3 * d6 - d5 * d4;
+  if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0)
+    return b.clone().addScaledVector(new THREE25.Vector3().subVectors(c, b), (d4 - d3) / (d4 - d3 + (d5 - d6)));
+  const denominator = 1 / (va + vb + vc);
+  return a.clone().addScaledVector(ab, vb * denominator).addScaledVector(ac, vc * denominator);
+}
+function segmentSegmentDistanceSq(p1, q1, p2, q2) {
+  const d1 = new THREE25.Vector3().subVectors(q1, p1);
+  const d2 = new THREE25.Vector3().subVectors(q2, p2);
+  const r = new THREE25.Vector3().subVectors(p1, p2);
+  const a = d1.dot(d1);
+  const e = d2.dot(d2);
+  const f = d2.dot(r);
+  let s = 0;
+  let t = 0;
+  if (a <= 0.000000000000000000000001 && e <= 0.000000000000000000000001)
+    return r.lengthSq();
+  if (a <= 0.000000000000000000000001)
+    t = THREE25.MathUtils.clamp(f / e, 0, 1);
+  else {
+    const c = d1.dot(r);
+    if (e <= 0.000000000000000000000001)
+      s = THREE25.MathUtils.clamp(-c / a, 0, 1);
+    else {
+      const b = d1.dot(d2);
+      const denominator = a * e - b * b;
+      s = denominator !== 0 ? THREE25.MathUtils.clamp((b * f - c * e) / denominator, 0, 1) : 0;
+      t = (b * s + f) / e;
+      if (t < 0) {
+        t = 0;
+        s = THREE25.MathUtils.clamp(-c / a, 0, 1);
+      } else if (t > 1) {
+        t = 1;
+        s = THREE25.MathUtils.clamp((b - c) / a, 0, 1);
+      }
+    }
+  }
+  const c1 = p1.clone().addScaledVector(d1, s);
+  const c2 = p2.clone().addScaledVector(d2, t);
+  return c1.distanceToSquared(c2);
+}
+function segmentCrossesTriangle(p, q, a, b, c) {
+  const hit = new THREE25.Vector3;
+  const ray = new THREE25.Ray(p, new THREE25.Vector3().subVectors(q, p));
+  const length = ray.direction.length();
+  if (length === 0)
+    return false;
+  ray.direction.divideScalar(length);
+  return ray.intersectTriangle(a, b, c, false, hit) !== null && hit.distanceTo(p) <= length;
+}
+function triangleTouchesCapsule(a, b, c, p, q, radius) {
+  const r2 = radius * radius;
+  if (closestPointOnTriangle(p, a, b, c).distanceToSquared(p) <= r2)
+    return true;
+  if (closestPointOnTriangle(q, a, b, c).distanceToSquared(q) <= r2)
+    return true;
+  for (const [s, e] of [
+    [a, b],
+    [b, c],
+    [c, a]
+  ])
+    if (segmentSegmentDistanceSq(p, q, s, e) <= r2)
+      return true;
+  return segmentCrossesTriangle(p, q, a, b, c);
+}
+function summarizeVertexAttributes(doc) {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return [];
+  const groups = new Map;
+  const order = [];
+  const record = (node, path) => {
+    const mesh = node.getMesh();
+    if (!mesh)
+      return;
+    const bake = mesh.getExtras().kilnSurfaceBakeV1;
+    const names = new Set;
+    for (const primitive of mesh.listPrimitives())
+      for (const semantic of primitive.listSemantics())
+        if (semantic.startsWith("_"))
+          names.add(semantic);
+    for (const name of names) {
+      const params = bake && typeof bake === "object" ? bake[name] : undefined;
+      const key = `${name}\x00${JSON.stringify(params ?? null)}`;
+      let group = groups.get(key);
+      if (!group) {
+        group = { name, meshes: [], ...params ? { params: { ...params } } : {} };
+        groups.set(key, group);
+        order.push(key);
+      }
+      if (!group.meshes.includes(path))
+        group.meshes.push(path);
+    }
+  };
+  const visit = (siblings, parentPath) => {
+    siblings.forEach((node, index) => {
+      const at = (name) => {
+        let occurrence = 0;
+        for (let i = 0;i < index; i++)
+          if (siblings[i].getName() === name)
+            occurrence++;
+        return `${parentPath}${segment4(name, occurrence)}`;
+      };
+      const path = at(node.getName());
+      record(node, path);
+      visit(node.listChildren(), path);
+      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType3.NODE);
+      for (const level of lower) {
+        const levelPath = at(level.getName());
+        record(level, levelPath);
+        visit(level.listChildren(), levelPath);
+      }
+    });
+  };
+  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0));
+  const rank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2;
+  return order.map((key, position) => ({ group: groups.get(key), position })).sort((a, b) => rank(a.group.name) - rank(b.group.name) || (rank(a.group.name) === 2 ? a.group.name.localeCompare(b.group.name) : 0) || a.position - b.position).map(({ group }) => group);
+}
+function inspectDelivery(doc) {
+  const summary = { colliders: [], anchors: [], ports: [], diagnostics: [] };
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return summary;
+  const visited = [];
+  const visit = (siblings, parentPath, hidden, module) => {
+    const seen = new Map;
+    for (const node of siblings) {
+      const name = node.getName();
+      const occurrence = seen.get(name) ?? 0;
+      seen.set(name, occurrence + 1);
+      const path = `${parentPath}${segment4(name, occurrence)}`;
+      const roles = readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [];
+      const nodeHidden = hidden || isHiddenGltfNode(node);
+      const nodeModule = roles.includes(KILN_SEMANTIC_ROLES.kitModule) ? { node, path } : module;
+      visited.push({ node, path, roles, hidden: nodeHidden, module: nodeModule });
+      visit(node.listChildren(), path, nodeHidden, nodeModule);
+    }
+  };
+  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0), false, undefined);
+  const finding = (code, path, message) => summary.diagnostics.push({ code, path, message });
+  const { min, max } = drawnSceneBounds(scene);
+  const bounds = new THREE25.Box3(new THREE25.Vector3(...min), new THREE25.Vector3(...max));
+  const finiteBounds = [...min, ...max].every(Number.isFinite);
+  const diagonal = finiteBounds ? bounds.getSize(new THREE25.Vector3).length() : 0;
+  const tolerance = Math.max(0.0001, diagonal * 0.0001);
+  const colliderNodes = [];
+  for (const entry of visited) {
+    const { node, path, roles } = entry;
+    for (const role of roles) {
+      const matrix = worldMatrix(node);
+      const transform = decompose(matrix);
+      for (const shape of ["box", "capsule", "hull"]) {
+        const id = roleTail(role, `${KILN_SEMANTIC_ROLES.collider}.${shape}`);
+        if (id === undefined)
+          continue;
+        const scale = transform.scale;
+        const record = {
+          role,
+          id,
+          path,
+          name: node.getName(),
+          transform,
+          shape: shape === "box" ? { kind: "box", size: [...scale] } : shape === "capsule" ? { kind: "capsule", radius: scale[0] / 2, height: scale[1] } : {
+            kind: "hull",
+            vertices: node.getMesh()?.listPrimitives().reduce((sum, primitive) => sum + (primitive.getAttribute("POSITION")?.getCount() ?? 0), 0) ?? 0
+          }
+        };
+        summary.colliders.push(record);
+        colliderNodes.push({ visit: entry, record });
+      }
+      const anchorTail = roleTail(role, KILN_SEMANTIC_ROLES.anchor);
+      if (anchorTail !== undefined) {
+        const [kind, ...rest] = anchorTail.split(".");
+        summary.anchors.push({
+          role,
+          kind,
+          id: rest.join("."),
+          path,
+          name: node.getName(),
+          transform
+        });
+      }
+      const portId = roleTail(role, KILN_SEMANTIC_ROLES.kitPort);
+      if (portId !== undefined)
+        summary.ports.push({
+          role,
+          id: portId,
+          path,
+          name: node.getName(),
+          ...entry.module && entry.module.node !== node ? { module: entry.module.path } : {},
+          transform
+        });
+      if (role === KILN_SEMANTIC_ROLES.kitModule) {
+        const extras = node.getExtras()[KILN_KIT_KEY];
+        let spec;
+        try {
+          const { schemaVersion, ...rest } = extras ?? {};
+          spec = schemaVersion === 1 ? kitModuleExtras(rest) : undefined;
+        } catch {
+          spec = undefined;
+        }
+        if (!spec)
+          finding("DELIVERY_KIT_INVALID", path, `kit module has no valid ${KILN_KIT_KEY} extras; mark it with defineModule.`);
+        else if (summary.kit)
+          finding("DELIVERY_KIT_MULTIPLE", path, `a GLB delivers one kit module; ${summary.kit.path} is listed and this one is not.`);
+        else
+          summary.kit = {
+            role,
+            path,
+            name: node.getName(),
+            footprint: spec.footprint,
+            height: spec.height,
+            snapAxis: spec.snapAxis,
+            origin: spec.origin,
+            transform
+          };
+      }
+    }
+  }
+  const triangles = colliderNodes.some(({ record }) => record.shape.kind !== "hull") ? drawnTriangles(visited) : new Float64Array;
+  const triangleCount = triangles.length / 9;
+  let overlapTests = 0;
+  const a = new THREE25.Vector3;
+  const b = new THREE25.Vector3;
+  const c = new THREE25.Vector3;
+  for (const { visit: entry, record } of colliderNodes) {
+    if (!entry.hidden)
+      finding("DELIVERY_COLLIDER_NOT_HIDDEN", record.path, "collider proxy draws; hide it (the delivery helpers do) so importers that ignore roles draw only the asset.");
+    const matrix = worldMatrix(entry.node);
+    const proxyBounds = new THREE25.Box3;
+    const mesh = entry.node.getMesh();
+    const local = [0, 0, 0];
+    for (const primitive of mesh?.listPrimitives() ?? []) {
+      const position = primitive.getAttribute("POSITION");
+      for (let i = 0;i < (position?.getCount() ?? 0); i++)
+        proxyBounds.expandByPoint(new THREE25.Vector3().fromArray(position.getElement(i, local)).applyMatrix4(matrix));
+    }
+    if (proxyBounds.isEmpty())
+      proxyBounds.expandByPoint(new THREE25.Vector3().setFromMatrixPosition(matrix));
+    const expanded = bounds.clone().expandByScalar(tolerance);
+    if (!finiteBounds || !expanded.containsBox(proxyBounds))
+      finding("DELIVERY_COLLIDER_OUTSIDE_BOUNDS", record.path, "collider proxy reaches outside the bounds of the drawn asset.");
+    if (record.shape.kind === "hull")
+      continue;
+    if (overlapTests + triangleCount > DELIVERY_OVERLAP_TEST_LIMIT) {
+      finding("DELIVERY_COLLIDER_OVERLAP_UNMEASURED", record.path, `overlap with drawn triangles was not measured: the check stops at ${DELIVERY_OVERLAP_TEST_LIMIT} collider-triangle tests.`);
+      continue;
+    }
+    overlapTests += triangleCount;
+    const toLocal = new THREE25.Matrix4;
+    let touches = false;
+    if (record.shape.kind === "box") {
+      toLocal.copy(matrix).invert();
+      const half = new THREE25.Vector3(0.5, 0.5, 0.5);
+      const scale = Math.max(...record.transform.scale.map(Math.abs), 0.000000001);
+      for (let t = 0;t < triangleCount && !touches; t++) {
+        a.fromArray(triangles, t * 9).applyMatrix4(toLocal);
+        b.fromArray(triangles, t * 9 + 3).applyMatrix4(toLocal);
+        c.fromArray(triangles, t * 9 + 6).applyMatrix4(toLocal);
+        touches = triangleOverlapsBox(a, b, c, half, tolerance / scale);
+      }
+    } else {
+      const { translation, rotation } = record.transform;
+      toLocal.compose(new THREE25.Vector3(...translation), new THREE25.Quaternion(...rotation), new THREE25.Vector3(1, 1, 1)).invert();
+      const { radius, height } = record.shape;
+      const p = new THREE25.Vector3(0, -height / 2 + radius, 0);
+      const q = new THREE25.Vector3(0, height / 2 - radius, 0);
+      for (let t = 0;t < triangleCount && !touches; t++) {
+        a.fromArray(triangles, t * 9).applyMatrix4(toLocal);
+        b.fromArray(triangles, t * 9 + 3).applyMatrix4(toLocal);
+        c.fromArray(triangles, t * 9 + 6).applyMatrix4(toLocal);
+        touches = triangleTouchesCapsule(a, b, c, p, q, radius + tolerance);
+      }
+    }
+    if (!touches)
+      finding("DELIVERY_COLLIDER_NO_OVERLAP", record.path, "collider proxy overlaps no drawn triangle; a box or capsule normally wraps or crosses the surface it stands for.");
+  }
+  for (const record of summary.ports) {
+    const entry = visited.find((item) => item.path === record.path);
+    const moduleEntry = entry.module && entry.module.node !== entry.node ? entry.module : undefined;
+    const spec = moduleEntry && summary.kit?.path === moduleEntry.path ? summary.kit : undefined;
+    if (!spec) {
+      finding("DELIVERY_PORT_WITHOUT_MODULE", record.path, "port is not under a valid kit module; place ports under the root defineModule marked.");
+      continue;
+    }
+    const point = new THREE25.Vector3(...record.transform.translation).applyMatrix4(worldMatrix(moduleEntry.node).invert());
+    const [width, depth] = spec.footprint;
+    const [x0, x1, z0, z1] = spec.origin === "corner" ? [0, width, 0, depth] : [-width / 2, width / 2, -depth / 2, depth / 2];
+    const slack = Math.max(0.0001, Math.max(width, depth, spec.height) * 0.00001);
+    if (point.x < x0 - slack || point.x > x1 + slack || point.z < z0 - slack || point.z > z1 + slack || point.y < -slack || point.y > spec.height + slack)
+      finding("DELIVERY_PORT_OUTSIDE_FOOTPRINT", record.path, `port lies outside its module footprint (${width} x ${depth} m from the ${spec.origin}, 0..${spec.height} m high).`);
+  }
+  for (const record of summary.anchors) {
+    const entry = visited.find((item) => item.path === record.path);
+    if (entry.node.listChildren().length > 0)
+      finding("DELIVERY_ANCHOR_NOT_LEAF", record.path, "anchor has children; an anchor is an empty leaf node, so attach parts beside it instead.");
+  }
+  return summary;
+}
+var DELIVERY_OVERLAP_TEST_LIMIT = 50000000, segment4 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`, roleTail = (role, base) => role.startsWith(`${base}.`) ? role.slice(base.length + 1) : undefined, worldMatrix = (node) => new THREE25.Matrix4().fromArray(node.getWorldMatrix());
+var init_delivery_inspect = __esm(() => {
+  init_gltf_io();
+  init_semantic();
+  init_delivery();
+  init_metrics();
+  init_node_visibility();
+});
+
+// src/surface-bake.ts
+import * as THREE26 from "three";
+function settings(value, label) {
+  if (value === false)
+    return;
+  if (value === undefined || value === true)
+    return {};
+  if (typeof value !== "object" || Array.isArray(value))
+    throw new TypeError(`bakeSurfaceAttributes: ${label} must be an options object or false.`);
+  return value;
+}
+function drawn(node, stop) {
+  for (let at = node;at && at !== stop; at = at.parent)
+    if (at.visible === false)
+      return false;
+  return true;
+}
+function tierOf(node) {
+  let found;
+  for (let at = node;at; at = at.parent) {
+    const parsed = lodName(at.name);
+    if (parsed)
+      found = { tier: at, level: parsed.level };
+  }
+  return found;
+}
+function drawnMeshes(root) {
+  const meshes = [];
+  const visit = (node) => {
+    if (node.visible === false)
+      return;
+    const mesh = node;
+    if (mesh.isMesh && !mesh.isInstancedMesh && mesh.geometry?.getAttribute("position")?.itemSize === 3)
+      meshes.push(mesh);
+    for (const child of node.children)
+      visit(child);
+  };
+  visit(root);
+  return meshes;
+}
+function weld(mesh) {
+  const position = mesh.geometry.getAttribute("position");
+  const world = [];
+  const box = new THREE26.Box3;
+  for (let i = 0;i < position.count; i++) {
+    const point = new THREE26.Vector3().fromBufferAttribute(position, i).applyMatrix4(mesh.matrixWorld);
+    world.push(point);
+    box.expandByPoint(point);
+  }
+  const size = box.isEmpty() ? 0 : box.getSize(new THREE26.Vector3).length();
+  const tolerance = size > 0 ? size * 0.000001 : 0.000000001;
+  const keys = new Map;
+  const ids = new Int32Array(position.count);
+  const points = [];
+  world.forEach((point, index) => {
+    const key = `${Math.round((point.x - box.min.x) / tolerance)},${Math.round((point.y - box.min.y) / tolerance)},${Math.round((point.z - box.min.z) / tolerance)}`;
+    let id = keys.get(key);
+    if (id === undefined) {
+      id = points.length;
+      keys.set(key, id);
+      points.push(point);
+    }
+    ids[index] = id;
+  });
+  const index = mesh.geometry.getIndex();
+  const count = index ? index.count : position.count;
+  const triangles = [];
+  for (let i = 0;i + 2 < count; i += 3) {
+    const a = ids[index ? index.getX(i) : i];
+    const b = ids[index ? index.getX(i + 1) : i + 1];
+    const c = ids[index ? index.getX(i + 2) : i + 2];
+    if (a !== b && b !== c && c !== a)
+      triangles.push(a, b, c);
+  }
+  return { ids, points, triangles };
+}
+function bakeEdge(topology, thresholdDegrees, smoothing) {
+  const { points, triangles } = topology;
+  const normals = [];
+  for (let t = 0;t < triangles.length; t += 3) {
+    const a = points[triangles[t]];
+    const b = points[triangles[t + 1]];
+    const c = points[triangles[t + 2]];
+    normals.push(new THREE26.Vector3().subVectors(b, a).cross(new THREE26.Vector3().subVectors(c, a)).normalize());
+  }
+  const edges = new Map;
+  const neighbours = points.map(() => new Set);
+  for (let t = 0;t < triangles.length; t += 3) {
+    const face = t / 3;
+    const corners = [triangles[t], triangles[t + 1], triangles[t + 2]];
+    for (let k = 0;k < 3; k++) {
+      const u = corners[k];
+      const v = corners[(k + 1) % 3];
+      const w = corners[(k + 2) % 3];
+      neighbours[u].add(v);
+      neighbours[v].add(u);
+      const key = u < v ? `${u}:${v}` : `${v}:${u}`;
+      const list = edges.get(key) ?? [];
+      list.push([face, w]);
+      edges.set(key, list);
+    }
+  }
+  const threshold = THREE26.MathUtils.degToRad(thresholdDegrees);
+  const weights = new Float64Array(points.length);
+  for (const [key, incidences] of edges) {
+    let weight;
+    if (incidences.length !== 2)
+      weight = 1;
+    else {
+      const [[f1], [f2, opposite2]] = incidences;
+      const n1 = normals[f1];
+      const n2 = normals[f2];
+      const angle = Math.acos(THREE26.MathUtils.clamp(n1.dot(n2), -1, 1));
+      const [u] = key.split(":").map(Number);
+      const scale = Math.max(points[u].distanceTo(points[opposite2]), 0.000000000001);
+      const side = new THREE26.Vector3().subVectors(points[opposite2], points[u]).dot(n1) / scale;
+      weight = side < -0.000000001 ? smoothstep(threshold / 2, threshold, angle) : 0;
+    }
+    for (const id of key.split(":").map(Number))
+      weights[id] = Math.max(weights[id], weight);
+  }
+  let current = weights;
+  for (let step = 0;step < smoothing; step++) {
+    const next = new Float64Array(current.length);
+    for (let id = 0;id < current.length; id++) {
+      const ring = neighbours[id];
+      if (ring.size === 0) {
+        next[id] = current[id];
+        continue;
+      }
+      let sum = 0;
+      for (const other of ring)
+        sum += current[other];
+      next[id] = 0.5 * current[id] + 0.5 * sum / ring.size;
+    }
+    current = next;
+  }
+  return current;
+}
+
+class TriangleBvh {
+  triangles;
+  bounds;
+  children;
+  firsts;
+  counts;
+  order;
+  nodes = 0;
+  constructor(triangles) {
+    this.triangles = triangles;
+    const count = triangles.length / 9;
+    const capacity = Math.max(1, 2 * count);
+    this.bounds = new Float64Array(capacity * 6);
+    this.children = new Int32Array(capacity * 2).fill(-1);
+    this.firsts = new Int32Array(capacity);
+    this.counts = new Int32Array(capacity);
+    this.order = Int32Array.from({ length: count }, (_, i) => i);
+    const centroids = new Float64Array(count * 3);
+    for (let t = 0;t < count; t++)
+      for (let k = 0;k < 3; k++)
+        centroids[t * 3 + k] = (triangles[t * 9 + k] + triangles[t * 9 + 3 + k] + triangles[t * 9 + 6 + k]) / 3;
+    if (count > 0)
+      this.build(0, count, centroids);
+  }
+  build(first, count, centroids) {
+    const node = this.nodes++;
+    const b = node * 6;
+    this.bounds.fill(Infinity, b, b + 3);
+    this.bounds.fill(-Infinity, b + 3, b + 6);
+    for (let i = first;i < first + count; i++) {
+      const t = this.order[i];
+      for (let v = 0;v < 3; v++)
+        for (let k = 0;k < 3; k++) {
+          const value = this.triangles[t * 9 + v * 3 + k];
+          if (value < this.bounds[b + k])
+            this.bounds[b + k] = value;
+          if (value > this.bounds[b + 3 + k])
+            this.bounds[b + 3 + k] = value;
+        }
+    }
+    if (count <= 4) {
+      this.firsts[node] = first;
+      this.counts[node] = count;
+      return node;
+    }
+    let axis = 0;
+    let extent = -1;
+    for (let k = 0;k < 3; k++) {
+      const size = this.bounds[b + 3 + k] - this.bounds[b + k];
+      if (size > extent) {
+        extent = size;
+        axis = k;
+      }
+    }
+    const slice = Array.from(this.order.subarray(first, first + count));
+    slice.sort((x, y) => centroids[x * 3 + axis] - centroids[y * 3 + axis] || x - y);
+    this.order.set(slice, first);
+    const half = count >> 1;
+    this.children[node * 2] = this.build(first, half, centroids);
+    this.children[node * 2 + 1] = this.build(first + half, count - half, centroids);
+    return node;
+  }
+  hits(origin, direction, near, far) {
+    if (this.nodes === 0)
+      return false;
+    const stack = [0];
+    const inverse = [1 / direction.x, 1 / direction.y, 1 / direction.z];
+    const o = [origin.x, origin.y, origin.z];
+    while (stack.length) {
+      const node = stack.pop();
+      const b = node * 6;
+      let tmin = near;
+      let tmax = far;
+      for (let k = 0;k < 3; k++) {
+        let t0 = (this.bounds[b + k] - o[k]) * inverse[k];
+        let t1 = (this.bounds[b + 3 + k] - o[k]) * inverse[k];
+        if (t0 > t1)
+          [t0, t1] = [t1, t0];
+        if (Number.isNaN(t0))
+          t0 = -Infinity;
+        if (Number.isNaN(t1))
+          t1 = Infinity;
+        tmin = Math.max(tmin, t0);
+        tmax = Math.min(tmax, t1);
+      }
+      if (tmin > tmax)
+        continue;
+      const left = this.children[node * 2];
+      if (left >= 0) {
+        stack.push(left, this.children[node * 2 + 1]);
+        continue;
+      }
+      for (let i = this.firsts[node];i < this.firsts[node] + this.counts[node]; i++)
+        if (this.intersect(this.order[i], origin, direction, near, far))
+          return true;
+    }
+    return false;
+  }
+  intersect(t, origin, d, near, far) {
+    const v = this.triangles;
+    const o = t * 9;
+    const e1x = v[o + 3] - v[o];
+    const e1y = v[o + 4] - v[o + 1];
+    const e1z = v[o + 5] - v[o + 2];
+    const e2x = v[o + 6] - v[o];
+    const e2y = v[o + 7] - v[o + 1];
+    const e2z = v[o + 8] - v[o + 2];
+    const px = d.y * e2z - d.z * e2y;
+    const py = d.z * e2x - d.x * e2z;
+    const pz = d.x * e2y - d.y * e2x;
+    const det = e1x * px + e1y * py + e1z * pz;
+    if (Math.abs(det) < 0.000000000000000001)
+      return false;
+    const inv = 1 / det;
+    const sx = origin.x - v[o];
+    const sy = origin.y - v[o + 1];
+    const sz = origin.z - v[o + 2];
+    const u = (sx * px + sy * py + sz * pz) * inv;
+    if (u < 0 || u > 1)
+      return false;
+    const qx = sy * e1z - sz * e1y;
+    const qy = sz * e1x - sx * e1z;
+    const qz = sx * e1y - sy * e1x;
+    const w = (d.x * qx + d.y * qy + d.z * qz) * inv;
+    if (w < 0 || u + w > 1)
+      return false;
+    const distance = (e2x * qx + e2y * qy + e2z * qz) * inv;
+    return distance > near && distance <= far;
+  }
+}
+function hemisphereDirections(count) {
+  const golden = Math.PI * (3 - Math.sqrt(5));
+  return Array.from({ length: count }, (_, i) => {
+    const r = Math.sqrt((i + 0.5) / count);
+    const phi = i * golden;
+    const x = r * Math.cos(phi);
+    const y = r * Math.sin(phi);
+    return new THREE26.Vector3(x, y, Math.sqrt(Math.max(0, 1 - x * x - y * y)));
+  });
+}
+function occluderTriangles(occluders, bakedTier) {
+  const values = [];
+  const point = new THREE26.Vector3;
+  for (const mesh of drawnMeshes(occluders)) {
+    if (!drawn(mesh, null))
+      continue;
+    const tier = tierOf(mesh);
+    if (tier && tier.tier !== bakedTier?.tier && (bakedTier || tier.level > 0))
+      continue;
+    const position = mesh.geometry.getAttribute("position");
+    const index = mesh.geometry.getIndex();
+    const count = index ? index.count : position.count;
+    for (let i = 0;i + 2 < count; i += 3)
+      for (let k = 0;k < 3; k++) {
+        point.fromBufferAttribute(position, index ? index.getX(i + k) : i + k).applyMatrix4(mesh.matrixWorld);
+        values.push(point.x, point.y, point.z);
+      }
+    if (values.length / 9 > GEOMETRY_ALLOCATION_LIMITS.surfaceBakeTriangles)
+      throw new RangeError(`bakeSurfaceAttributes: the occluders hold more than ${GEOMETRY_ALLOCATION_LIMITS.surfaceBakeTriangles} triangles; pass a smaller cavity.occluders subtree.`);
+  }
+  return Float64Array.from(values);
+}
+function positiveInteger(label, value, min, max) {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < min || value > max)
+    throw new RangeError(`bakeSurfaceAttributes: ${label} must be an integer from ${min} to ${max}.`);
+  return value;
+}
+function bakeSurfaceAttributes(target, options = {}) {
+  if (!isObject3D2(target))
+    throw new TypeError("bakeSurfaceAttributes: target must be a mesh or a scene node.");
+  if (!options || typeof options !== "object" || Array.isArray(options))
+    throw new TypeError("bakeSurfaceAttributes: options must be { edge?, cavity? }.");
+  const edgeOptions = settings(options.edge, "edge");
+  const cavityOptions = settings(options.cavity, "cavity");
+  const thresholdDegrees = edgeOptions?.thresholdDegrees ?? SURFACE_BAKE_DEFAULTS.edge.thresholdDegrees;
+  if (edgeOptions && (typeof thresholdDegrees !== "number" || !Number.isFinite(thresholdDegrees) || thresholdDegrees <= 0 || thresholdDegrees >= 180))
+    throw new RangeError("bakeSurfaceAttributes: edge.thresholdDegrees must be greater than 0 and less than 180.");
+  const smoothing = edgeOptions ? positiveInteger("edge.smoothing", edgeOptions.smoothing ?? SURFACE_BAKE_DEFAULTS.edge.smoothing, 0, 8) : 0;
+  const rays = cavityOptions ? positiveInteger("cavity.rays", cavityOptions.rays ?? SURFACE_BAKE_DEFAULTS.cavity.rays, 1, GEOMETRY_ALLOCATION_LIMITS.surfaceBakeRayDirections) : 0;
+  if (cavityOptions?.occluders !== undefined && !isObject3D2(cavityOptions.occluders))
+    throw new TypeError("bakeSurfaceAttributes: cavity.occluders must be a scene node.");
+  if (cavityOptions?.radius !== undefined && (typeof cavityOptions.radius !== "number" || !Number.isFinite(cavityOptions.radius) || cavityOptions.radius <= 0))
+    throw new RangeError("bakeSurfaceAttributes: cavity.radius must be a positive finite number.");
+  if (!edgeOptions && !cavityOptions)
+    return target;
+  let top = target;
+  while (top.parent)
+    top = top.parent;
+  top.updateMatrixWorld(true);
+  const occluders = cavityOptions?.occluders ?? top;
+  if (occluders !== top)
+    occluders.updateMatrixWorld(true);
+  const meshes = drawnMeshes(target).filter((mesh) => drawn(mesh, null));
+  const topologies = meshes.map(weld);
+  const vertices = topologies.reduce((sum, topology) => sum + topology.points.length, 0);
+  if (vertices > GEOMETRY_ALLOCATION_LIMITS.surfaceBakeVertices)
+    throw new RangeError(`bakeSurfaceAttributes: ${vertices} welded vertices exceed ${GEOMETRY_ALLOCATION_LIMITS.surfaceBakeVertices}; bake smaller subtrees.`);
+  if (vertices * rays > GEOMETRY_ALLOCATION_LIMITS.surfaceBakeRays)
+    throw new RangeError(`bakeSurfaceAttributes: ${vertices} vertices x ${rays} rays exceed ${GEOMETRY_ALLOCATION_LIMITS.surfaceBakeRays} rays; lower cavity.rays or bake smaller subtrees.`);
+  const directions = hemisphereDirections(rays);
+  const bvhs = new Map;
+  const occlusion = (tier) => {
+    const key = tier?.tier;
+    let entry = bvhs.get(key);
+    if (!entry) {
+      const triangles = occluderTriangles(occluders, tier);
+      const box = new THREE26.Box3;
+      for (let i = 0;i < triangles.length; i += 3)
+        box.expandByPoint(new THREE26.Vector3(triangles[i], triangles[i + 1], triangles[i + 2]));
+      entry = {
+        bvh: new TriangleBvh(triangles),
+        diagonal: box.isEmpty() ? 0 : box.getSize(new THREE26.Vector3).length()
+      };
+      bvhs.set(key, entry);
+    }
+    return entry;
+  };
+  meshes.forEach((mesh, meshIndex) => {
+    const topology = topologies[meshIndex];
+    const record = {
+      ...mesh.geometry.userData?.[SURFACE_BAKE_KEY] ?? {}
+    };
+    const geometry = mesh.geometry.clone();
+    const sourceCount = geometry.getAttribute("position").count;
+    if (edgeOptions) {
+      const welded = bakeEdge(topology, thresholdDegrees, smoothing);
+      const values = new Float32Array(sourceCount);
+      for (let i = 0;i < sourceCount; i++)
+        values[i] = THREE26.MathUtils.clamp(welded[topology.ids[i]], 0, 1);
+      geometry.setAttribute("_edge", new THREE26.BufferAttribute(values, 1));
+      record._EDGE = { thresholdDegrees, smoothing };
+    }
+    if (cavityOptions) {
+      const { bvh, diagonal } = occlusion(tierOf(mesh));
+      const radius = cavityOptions.radius ?? SURFACE_BAKE_DEFAULTS.cavity.radiusFactor * diagonal;
+      const epsilon = Math.max(diagonal * 0.00001, 0.0000001);
+      const normals = topology.points.map(() => new THREE26.Vector3);
+      const { points, triangles } = topology;
+      for (let t = 0;t < triangles.length; t += 3) {
+        const a = points[triangles[t]];
+        const face = new THREE26.Vector3().subVectors(points[triangles[t + 1]], a).cross(new THREE26.Vector3().subVectors(points[triangles[t + 2]], a));
+        for (let k = 0;k < 3; k++)
+          normals[triangles[t + k]].add(face);
+      }
+      const exposure = new Float64Array(points.length);
+      const tangent = new THREE26.Vector3;
+      const bitangent = new THREE26.Vector3;
+      const origin = new THREE26.Vector3;
+      const direction = new THREE26.Vector3;
+      points.forEach((point, id) => {
+        const normal = normals[id];
+        if (normal.lengthSq() === 0) {
+          exposure[id] = 1;
+          return;
+        }
+        normal.normalize();
+        tangent.set(Math.abs(normal.x) < 0.9 ? 1 : 0, Math.abs(normal.x) < 0.9 ? 0 : 1, 0);
+        tangent.cross(normal).normalize();
+        bitangent.crossVectors(normal, tangent);
+        origin.copy(point).addScaledVector(normal, epsilon);
+        let hits = 0;
+        for (const local of directions) {
+          direction.copy(tangent).multiplyScalar(local.x).addScaledVector(bitangent, local.y).addScaledVector(normal, local.z);
+          if (bvh.hits(origin, direction, epsilon, radius))
+            hits++;
+        }
+        exposure[id] = 1 - hits / directions.length;
+      });
+      const values = new Float32Array(sourceCount);
+      for (let i = 0;i < sourceCount; i++)
+        values[i] = THREE26.MathUtils.clamp(exposure[topology.ids[i]], 0, 1);
+      geometry.setAttribute("_cavity", new THREE26.BufferAttribute(values, 1));
+      record._CAVITY = { rays, radius };
+    }
+    geometry.userData = { ...geometry.userData, [SURFACE_BAKE_KEY]: record };
+    mesh.geometry = geometry;
+  });
+  return target;
+}
+function surfaceBakeRecord(geometry) {
+  const value = geometry.userData?.[SURFACE_BAKE_KEY];
+  if (!value || typeof value !== "object")
+    return;
+  const record = {};
+  if (value._EDGE)
+    record._EDGE = { ...value._EDGE };
+  if (value._CAVITY)
+    record._CAVITY = { ...value._CAVITY };
+  return record;
+}
+var SURFACE_ATTRIBUTES, SURFACE_BAKE_KEY = "kilnSurfaceBakeV1", SURFACE_BAKE_DEFAULTS, isObject3D2 = (value) => value?.isObject3D === true, smoothstep = (edge0, edge1, x) => {
+  const t = THREE26.MathUtils.clamp((x - edge0) / (edge1 - edge0), 0, 1);
+  return t * t * (3 - 2 * t);
+};
+var init_surface_bake = __esm(() => {
+  init_geometry_budget();
+  init_lod();
+  SURFACE_ATTRIBUTES = Object.freeze({ _edge: "_EDGE", _cavity: "_CAVITY" });
+  SURFACE_BAKE_DEFAULTS = Object.freeze({
+    edge: Object.freeze({ thresholdDegrees: 35, smoothing: 1 }),
+    cavity: Object.freeze({ rays: 32, radiusFactor: 0.5 })
+  });
+});
 
 // src/user-data-extras.ts
 function nonJsonReason(value, seen = new Set) {
@@ -15142,13 +16239,19 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
   });
   return warnings.map((warning) => typeof warning === "string" ? warning : formatNoteGroup(warning));
 }
-var EXPORTED_GEOMETRY_ATTRIBUTES, THREE_GEOMETRY_ATTRIBUTES, NOTE_NAMES_SHOWN = 3;
+var EXPORTED_GEOMETRY_ATTRIBUTES, CUSTOM_EXPORT_ATTRIBUTES, THREE_GEOMETRY_ATTRIBUTES, NOTE_NAMES_SHOWN = 3;
 var init_geometry_export = __esm(() => {
   EXPORTED_GEOMETRY_ATTRIBUTES = {
     position: 3,
     normal: 3,
     uv: 2,
-    tangent: 4
+    tangent: 4,
+    _edge: 1,
+    _cavity: 1
+  };
+  CUSTOM_EXPORT_ATTRIBUTES = {
+    _edge: "_EDGE",
+    _cavity: "_CAVITY"
   };
   THREE_GEOMETRY_ATTRIBUTES = {
     ...EXPORTED_GEOMETRY_ATTRIBUTES,
@@ -15247,16 +16350,16 @@ function buildWallPanels(length, height, thickness, apertures) {
 }
 
 // src/assembly-transform.ts
-import * as THREE24 from "three";
+import * as THREE27 from "three";
 function checkedTrs(matrix, label) {
   const e = matrix.elements;
   if (!e.every(Number.isFinite) || e[3] !== 0 || e[7] !== 0 || e[11] !== 0 || Math.abs(e[15] - 1) > 16 * Number.EPSILON)
     throw new Error(`${label}: finite affine TRS is required.`);
   if (!Number.isFinite(matrix.determinant()) || matrix.determinant() === 0)
     throw new Error(`${label}: singular/zero-scale transforms are unsupported.`);
-  const position = new THREE24.Vector3, quaternion = new THREE24.Quaternion, scale = new THREE24.Vector3;
+  const position = new THREE27.Vector3, quaternion = new THREE27.Quaternion, scale = new THREE27.Vector3;
   matrix.decompose(position, quaternion, scale);
-  const rebuilt = new THREE24.Matrix4().compose(position, quaternion, scale);
+  const rebuilt = new THREE27.Matrix4().compose(position, quaternion, scale);
   if (rebuilt.elements.some((value, i) => !Number.isFinite(value) || Math.abs(value - e[i]) > 0.00000001 * Math.max(1, Math.abs(e[i]))))
     throw new Error(`${label}: local shear cannot be represented losslessly as TRS.`);
   return { position, quaternion, scale };
@@ -15264,7 +16367,7 @@ function checkedTrs(matrix, label) {
 var init_assembly_transform = () => {};
 
 // src/assembly.ts
-import * as THREE25 from "three";
+import * as THREE28 from "three";
 function jsonData(value, label, ancestors = new Set) {
   if (value === null || typeof value === "string" || typeof value === "boolean")
     return;
@@ -15311,9 +16414,9 @@ function knownMetadata(source, parsed, label) {
     throw new Error(`${label}: unsupported fields in known metadata would be lost during remapping.`);
 }
 function localMatrix(node) {
-  return node.matrixAutoUpdate ? new THREE25.Matrix4().compose(node.position, node.quaternion, node.scale) : node.matrix.clone();
+  return node.matrixAutoUpdate ? new THREE28.Matrix4().compose(node.position, node.quaternion, node.scale) : node.matrix.clone();
 }
-function worldMatrix(node) {
+function worldMatrix2(node) {
   const chain = [], seen = new Set;
   for (let cursor = node;cursor; cursor = cursor.parent) {
     if (seen.has(cursor))
@@ -15321,7 +16424,7 @@ function worldMatrix(node) {
     seen.add(cursor);
     chain.push(cursor);
   }
-  const result = new THREE25.Matrix4;
+  const result = new THREE28.Matrix4;
   for (const entry of chain.reverse())
     result.multiply(localMatrix(entry));
   return result;
@@ -15337,7 +16440,7 @@ function census(root) {
   const stack = [root];
   while (stack.length) {
     const node = stack.pop();
-    if (!(node instanceof THREE25.Object3D) || ![THREE25.Object3D, THREE25.Group, THREE25.Mesh].includes(node.constructor))
+    if (!(node instanceof THREE28.Object3D) || ![THREE28.Object3D, THREE28.Group, THREE28.Mesh].includes(node.constructor))
       throw new Error("Unsupported assembly node: only ordinary Object3D, Group and Mesh hierarchies are qualified; no skins, instances or custom node classes.");
     if (matrices.has(node))
       throw new Error("Assembly must be a tree; duplicate/cyclic children are unsupported.");
@@ -15353,21 +16456,21 @@ function census(root) {
     checkedTrs(matrix, node.name || "unnamed node");
     nodes.push(node);
     matrices.set(node, matrix);
-    if (node.onBeforeRender !== THREE25.Object3D.prototype.onBeforeRender || node.onAfterRender !== THREE25.Object3D.prototype.onAfterRender || node.onBeforeShadow !== THREE25.Object3D.prototype.onBeforeShadow || node.onAfterShadow !== THREE25.Object3D.prototype.onAfterShadow)
+    if (node.onBeforeRender !== THREE28.Object3D.prototype.onBeforeRender || node.onAfterRender !== THREE28.Object3D.prototype.onAfterRender || node.onBeforeShadow !== THREE28.Object3D.prototype.onBeforeShadow || node.onAfterShadow !== THREE28.Object3D.prototype.onAfterShadow)
       throw new Error("Custom node render callbacks are unsupported in assembly replication.");
-    if (node instanceof THREE25.Mesh) {
-      if (!(node.geometry instanceof THREE25.BufferGeometry) || node.geometry instanceof THREE25.InstancedBufferGeometry)
+    if (node instanceof THREE28.Mesh) {
+      if (!(node.geometry instanceof THREE28.BufferGeometry) || node.geometry instanceof THREE28.InstancedBufferGeometry)
         throw new Error("Unsupported assembly geometry type.");
       if (Object.values(node.geometry.morphAttributes).some((attributes) => attributes?.length) || node.morphTargetInfluences?.length)
         throw new Error("Assembly morph target replication is unsupported.");
       const materials = Array.isArray(node.material) ? node.material : [node.material];
-      if (materials.length === 0 || materials.some((material) => !(material instanceof THREE25.Material)))
+      if (materials.length === 0 || materials.some((material) => !(material instanceof THREE28.Material)))
         throw new Error("Assembly mesh materials must be Material instances.");
     }
     if (!object(node.userData))
       throw new Error("Assembly node metadata must be an object.");
     jsonData(node.userData, node.name);
-    if (!Array.isArray(node.animations) || node.animations.some((clip) => !(clip instanceof THREE25.AnimationClip)))
+    if (!Array.isArray(node.animations) || node.animations.some((clip) => !(clip instanceof THREE28.AnimationClip)))
       throw new Error("Assembly node animations must contain AnimationClip instances.");
     if (node.userData[KILN_SEMANTIC_EXTRAS_KEY] !== undefined) {
       const metadata = readSemanticMetadataV1(node);
@@ -15408,11 +16511,11 @@ function describeAssembly(root, options = {}) {
   const state = census(root), roles = new Map;
   const frames = [], sockets = [], joints = [], materials = [];
   const relative = new Map;
-  const bounds = new THREE25.Box3, point = new THREE25.Vector3;
+  const bounds = new THREE28.Box3, point = new THREE28.Vector3;
   let positionSamples = 0;
   for (const [index, node] of state.nodes.entries()) {
     const nodeId = `n${index}`;
-    const matrix = node === root ? new THREE25.Matrix4 : relative.get(node.parent).clone().multiply(state.matrices.get(node));
+    const matrix = node === root ? new THREE28.Matrix4 : relative.get(node.parent).clone().multiply(state.matrices.get(node));
     relative.set(node, matrix);
     const metadata = state.semantics.get(node);
     const descriptor = state.joints.get(node);
@@ -15434,7 +16537,7 @@ function describeAssembly(root, options = {}) {
     for (const role of metadata?.roles ?? [])
       addIndex(roles, role, node);
     for (const frame of metadata?.frames ?? []) {
-      const local = new THREE25.Matrix4().compose(new THREE25.Vector3(...frame.translation), new THREE25.Quaternion(...frame.rotation), new THREE25.Vector3(1, 1, 1));
+      const local = new THREE28.Matrix4().compose(new THREE28.Vector3(...frame.translation), new THREE28.Quaternion(...frame.rotation), new THREE28.Vector3(1, 1, 1));
       frames.push({
         node,
         nodeId,
@@ -15444,7 +16547,7 @@ function describeAssembly(root, options = {}) {
     }
     for (const socket of metadata?.sockets ?? [])
       sockets.push({ node, nodeId, socket: structuredClone(socket) });
-    if (!(node instanceof THREE25.Mesh))
+    if (!(node instanceof THREE28.Mesh))
       continue;
     for (const [materialIndex, material] of (Array.isArray(node.material) ? node.material : [node.material]).entries())
       materials.push({ node, nodeId, index: materialIndex, material });
@@ -15479,7 +16582,7 @@ function describeAssembly(root, options = {}) {
       space: "root-local",
       min: bounds.min.toArray(),
       max: bounds.max.toArray(),
-      size: bounds.getSize(new THREE25.Vector3).toArray()
+      size: bounds.getSize(new THREE28.Vector3).toArray()
     },
     clips,
     ownership: {
@@ -15518,7 +16621,7 @@ function replicateAssembly(source, options) {
     if (value !== undefined && !choices.includes(value))
       throw new Error(`Unsupported assembly ${key} policy.`);
   }
-  if (options.parent !== undefined && !(options.parent instanceof THREE25.Object3D))
+  if (options.parent !== undefined && !(options.parent instanceof THREE28.Object3D))
     throw new Error("Assembly parent must be an Object3D.");
   const fresh = describeAssembly(source.root, { clips: source.clips }), state = census(source.root);
   if (options.parent && state.nodes.includes(options.parent))
@@ -15551,16 +16654,16 @@ function replicateAssembly(source, options) {
         throw new Error(`Unsupported custom metadata ${key} on ${node.name}; use copy-json only for inert data whose references you own.`);
     }
     jsonData(node.userData, node.name);
-    if (node instanceof THREE25.Mesh) {
+    if (node instanceof THREE28.Mesh) {
       if (options.geometry === "copy") {
         jsonData(node.geometry.userData, `${node.name} geometry`);
-        if (node.geometry.clone !== THREE25.BufferGeometry.prototype.clone || !threeConstructors.has(node.geometry.constructor))
+        if (node.geometry.clone !== THREE28.BufferGeometry.prototype.clone || !threeConstructors.has(node.geometry.constructor))
           throw new Error("Copying custom geometry classes/clone implementations is unsupported; explicitly share the resource.");
       }
       if (options.materials === "copy")
         for (const material of Array.isArray(node.material) ? node.material : [node.material]) {
           jsonData(material.userData, `${node.name} material`);
-          if (material.onBeforeCompile !== THREE25.Material.prototype.onBeforeCompile || material.onBeforeRender !== THREE25.Material.prototype.onBeforeRender || material.clone !== THREE25.Material.prototype.clone || !threeConstructors.has(material.constructor) || material.customProgramCacheKey !== THREE25.Material.prototype.customProgramCacheKey || material instanceof THREE25.ShaderMaterial)
+          if (material.onBeforeCompile !== THREE28.Material.prototype.onBeforeCompile || material.onBeforeRender !== THREE28.Material.prototype.onBeforeRender || material.clone !== THREE28.Material.prototype.clone || !threeConstructors.has(material.constructor) || material.customProgramCacheKey !== THREE28.Material.prototype.customProgramCacheKey || material instanceof THREE28.ShaderMaterial)
             throw new Error("Copying custom/shader materials is unsupported; explicit sharing preserves their existing implementation.");
         }
     }
@@ -15648,9 +16751,9 @@ function replicateAssembly(source, options) {
   const trackTargets = new Map;
   const animatedNodes = new Set;
   for (const clip of fresh.clips) {
-    if (!(clip instanceof THREE25.AnimationClip))
+    if (!(clip instanceof THREE28.AnimationClip))
       throw new Error("Assembly clips must be AnimationClip instances.");
-    if (clip.blendMode !== THREE25.NormalAnimationBlendMode)
+    if (clip.blendMode !== THREE28.NormalAnimationBlendMode)
       throw new Error("Additive/other animation blend modes are unsupported in assembly replication.");
     jsonData(clip.userData, `Clip ${clip.name}`);
     if (Object.keys(clip.userData).length && options.unknownMetadata !== "copy-json")
@@ -15677,10 +16780,10 @@ function replicateAssembly(source, options) {
   if (options.space === "world") {
     if (state.joints.has(source.root))
       throw new Error("World placement of a declared joint root requires rest-transform rebasing; wrap it in an assembly root or use local placement.");
-    const parentWorld = options.parent ? worldMatrix(options.parent) : new THREE25.Matrix4;
+    const parentWorld = options.parent ? worldMatrix2(options.parent) : new THREE28.Matrix4;
     if (!Number.isFinite(parentWorld.determinant()) || parentWorld.determinant() === 0)
       throw new Error("World placement requires an invertible, nonsingular parent transform.");
-    rootMatrix = parentWorld.invert().multiply(worldMatrix(source.root));
+    rootMatrix = parentWorld.invert().multiply(worldMatrix2(source.root));
     checkedTrs(rootMatrix, "Replica world placement");
     if (animatedNodes.has(source.root))
       throw new Error("World placement of an animated assembly root requires explicit track rebasing, which is unsupported; animate a child pivot or use local placement.");
@@ -15718,7 +16821,7 @@ function replicateAssembly(source, options) {
     return materials.get(material);
   };
   for (const node of state.nodes) {
-    const copy = node instanceof THREE25.Mesh ? new THREE25.Mesh(node.geometry, node.material) : node instanceof THREE25.Group ? new THREE25.Group : new THREE25.Object3D;
+    const copy = node instanceof THREE28.Mesh ? new THREE28.Mesh(node.geometry, node.material) : node instanceof THREE28.Group ? new THREE28.Group : new THREE28.Object3D;
     copy.copy(node, false);
     copy.name = names.get(node);
     copy.animations = [];
@@ -15731,7 +16834,7 @@ function replicateAssembly(source, options) {
     }
     copy.matrix.copy(matrix);
     copy.matrixWorldNeedsUpdate = true;
-    if (node instanceof THREE25.Mesh && copy instanceof THREE25.Mesh) {
+    if (node instanceof THREE28.Mesh && copy instanceof THREE28.Mesh) {
       if (options.geometry === "copy") {
         if (!geometries.has(node.geometry))
           geometries.set(node.geometry, node.geometry.clone());
@@ -15796,11 +16899,11 @@ var init_assembly = __esm(() => {
     KILN_CHARACTER_JOINT_EXTRAS_KEY,
     KILN_CHARACTER_RIG_EXTRAS_KEY
   ]);
-  threeConstructors = new Set(Object.values(THREE25));
+  threeConstructors = new Set(Object.values(THREE28));
 });
 
 // src/animation-cubic.ts
-import * as THREE26 from "three";
+import * as THREE29 from "three";
 function useCubicSpline(track) {
   track.createInterpolant = cubicSplineFactory;
   return track;
@@ -15808,7 +16911,7 @@ function useCubicSpline(track) {
 var CubicSplineInterpolant, CubicSplineQuaternionInterpolant, cubicSplineFactory;
 var init_animation_cubic = __esm(() => {
   init_animation_spline();
-  CubicSplineInterpolant = class CubicSplineInterpolant extends THREE26.Interpolant {
+  CubicSplineInterpolant = class CubicSplineInterpolant extends THREE29.Interpolant {
     copySampleValue_(index) {
       const result = this.resultBuffer;
       const size = this.valueSize;
@@ -15836,7 +16939,7 @@ var init_animation_cubic = __esm(() => {
 });
 
 // src/architecture.ts
-import * as THREE27 from "three";
+import * as THREE30 from "three";
 function positive4(value, name) {
   if (!Number.isFinite(value) || value <= 0)
     throw new RangeError(`${name} must be finite and > 0`);
@@ -15901,17 +17004,17 @@ function buildFace(roofRoot, profile, sideSign) {
   const verticalRun = profile.ridgeY - profile.eaveY;
   const downhillLength = Math.hypot(horizontalRun, verticalRun);
   const alongRidge = (profile.ridgeAxis === "x" ? profile.spanX : profile.spanZ) + profile.overhang * 2;
-  const downhill = profile.ridgeAxis === "x" ? new THREE27.Vector3(0, -verticalRun, sideSign * horizontalRun).normalize() : new THREE27.Vector3(sideSign * horizontalRun, -verticalRun, 0).normalize();
-  const tangent = profile.ridgeAxis === "x" ? new THREE27.Vector3(sideSign, 0, 0) : new THREE27.Vector3(0, 0, -sideSign);
+  const downhill = profile.ridgeAxis === "x" ? new THREE30.Vector3(0, -verticalRun, sideSign * horizontalRun).normalize() : new THREE30.Vector3(sideSign * horizontalRun, -verticalRun, 0).normalize();
+  const tangent = profile.ridgeAxis === "x" ? new THREE30.Vector3(sideSign, 0, 0) : new THREE30.Vector3(0, 0, -sideSign);
   const normal = downhill.clone().cross(tangent).normalize();
-  const localToRoof = new THREE27.Matrix4().makeBasis(tangent, normal, downhill);
+  const localToRoof = new THREE30.Matrix4().makeBasis(tangent, normal, downhill);
   localToRoof.setPosition(0, profile.ridgeY, 0);
   const world = () => {
     roofRoot.updateWorldMatrix(true, false);
     return roofRoot.matrixWorld.clone().multiply(localToRoof);
   };
   const direction = (axis) => axis.clone().transformDirection(world());
-  const point = (x, z) => new THREE27.Vector3(x, 0, z).applyMatrix4(world());
+  const point = (x, z) => new THREE30.Vector3(x, 0, z).applyMatrix4(world());
   return {
     side,
     ridgeAxis: profile.ridgeAxis,
@@ -15921,13 +17024,13 @@ function buildFace(roofRoot, profile, sideSign) {
       return world();
     },
     get ridgeTangent() {
-      return direction(new THREE27.Vector3(1, 0, 0));
+      return direction(new THREE30.Vector3(1, 0, 0));
     },
     get downhillDirection() {
-      return direction(new THREE27.Vector3(0, 0, 1));
+      return direction(new THREE30.Vector3(0, 0, 1));
     },
     get outwardNormal() {
-      return direction(new THREE27.Vector3(0, 1, 0));
+      return direction(new THREE30.Vector3(0, 1, 0));
     },
     get ridgeStart() {
       return point(-alongRidge / 2, 0);
@@ -15945,17 +17048,17 @@ function buildFace(roofRoot, profile, sideSign) {
   };
 }
 function buildRoof(name, material, profile, parent) {
-  const root = new THREE27.Object3D;
+  const root = new THREE30.Object3D;
   root.name = name;
   if (parent)
     parent.add(root);
   stampSemanticMetadataV1(root, roleMetadata([semanticRole(KILN_SEMANTIC_ROLES.roof, "assembly")], [relationship("separable-from", "architecture.shell.gable")]));
   const faces = [buildFace(root, profile, 1), buildFace(root, profile, -1)];
   const buildSlope = (face) => {
-    const geometry = new THREE27.BoxGeometry(face.dimensions.alongRidge, profile.thickness, face.dimensions.downhill);
-    const mesh = new THREE27.Mesh(geometry, material);
+    const geometry = new THREE30.BoxGeometry(face.dimensions.alongRidge, profile.thickness, face.dimensions.downhill);
+    const mesh = new THREE30.Mesh(geometry, material);
     mesh.name = `Mesh_${name}_${face.side}`;
-    const center = new THREE27.Matrix4().makeTranslation(0, -profile.thickness / 2, face.dimensions.downhill / 2);
+    const center = new THREE30.Matrix4().makeTranslation(0, -profile.thickness / 2, face.dimensions.downhill / 2);
     setTransform(mesh, face.localToRoof.clone().multiply(center));
     const coveredWall = profile.ridgeAxis === "x" ? face.side === "positive" ? "wall.right" : "wall.left" : face.side === "positive" ? "wall.front" : "wall.back";
     stampSemanticMetadataV1(mesh, roleMetadata([semanticRole(KILN_SEMANTIC_ROLES.roof, "slope", face.side)], [
@@ -16025,7 +17128,7 @@ function createGableEndPanel(name, material, options) {
   const ridgeAxis = options.ridgeAxis ?? "x";
   const side = options.side ?? "positive";
   const half = span / 2;
-  const shape = new THREE27.Shape;
+  const shape = new THREE30.Shape;
   shape.moveTo(-half, 0);
   shape.lineTo(half, 0);
   shape.lineTo(0, rise);
@@ -16044,7 +17147,7 @@ function createGableEndPanel(name, material, options) {
     const right = opening.offset + opening.width / 2;
     const bottom = opening.bottom;
     const top = bottom + opening.height;
-    const hole = new THREE27.Path;
+    const hole = new THREE30.Path;
     hole.moveTo(left, bottom);
     hole.lineTo(left, top);
     hole.lineTo(right, top);
@@ -16052,7 +17155,7 @@ function createGableEndPanel(name, material, options) {
     hole.closePath();
     shape.holes.push(hole);
   }
-  const geometry = new THREE27.ExtrudeGeometry(shape, {
+  const geometry = new THREE30.ExtrudeGeometry(shape, {
     depth: thickness,
     bevelEnabled: false,
     steps: 1
@@ -16061,7 +17164,7 @@ function createGableEndPanel(name, material, options) {
   if (ridgeAxis === "x")
     geometry.rotateY(-Math.PI / 2);
   geometry.computeVertexNormals();
-  const root = new THREE27.Mesh(geometry, material);
+  const root = new THREE30.Mesh(geometry, material);
   root.name = `Mesh_${name}`;
   stampSemanticMetadataV1(root, roleMetadata([`roof.gable.${side}`], [
     relationship("adjacent-to", "roof.slope.positive"),
@@ -16077,7 +17180,7 @@ function createGableEndPanel(name, material, options) {
     }
   ]));
   const markers = normalized.map((opening, index) => {
-    const marker = new THREE27.Object3D;
+    const marker = new THREE30.Object3D;
     marker.name = `Opening_${name}_${opening.id ?? index + 1}`;
     marker.position.set(ridgeAxis === "z" ? opening.offset : 0, opening.bottom + opening.height / 2, ridgeAxis === "x" ? opening.offset : 0);
     marker.scale.set(ridgeAxis === "x" ? thickness : opening.width, opening.height, ridgeAxis === "x" ? opening.width : thickness);
@@ -16097,7 +17200,7 @@ function wallNeighbors(wall) {
 }
 function createShellWall(name, wall, material, length, height, thickness, openings) {
   const axis = wallRunAxis(wall);
-  const root = new THREE27.Object3D;
+  const root = new THREE30.Object3D;
   root.name = `${name}_Wall_${wall}`;
   const neighbors = wallNeighbors(wall);
   stampSemanticMetadataV1(root, roleMetadata([`wall.${wall}`], [
@@ -16109,8 +17212,8 @@ function createShellWall(name, wall, material, length, height, thickness, openin
   const panel = (suffix, lo, hi, y0, y1) => {
     if (hi <= lo || y1 <= y0)
       return;
-    const geometry = axis === "x" ? new THREE27.BoxGeometry(hi - lo, y1 - y0, thickness) : new THREE27.BoxGeometry(thickness, y1 - y0, hi - lo);
-    const mesh = new THREE27.Mesh(geometry, material);
+    const geometry = axis === "x" ? new THREE30.BoxGeometry(hi - lo, y1 - y0, thickness) : new THREE30.BoxGeometry(thickness, y1 - y0, hi - lo);
+    const mesh = new THREE30.Mesh(geometry, material);
     mesh.name = `Mesh_${name}_${wall}_${suffix}`;
     mesh.position.set(axis === "x" ? (lo + hi) / 2 : 0, (y0 + y1) / 2, axis === "z" ? (lo + hi) / 2 : 0);
     root.add(mesh);
@@ -16127,7 +17230,7 @@ function createShellWall(name, wall, material, length, height, thickness, openin
     panel(singleNames[segment.suffix] ?? segment.suffix.slice(1), segment.left, segment.right, segment.bottom, segment.top);
   }
   for (const opening of built.openings) {
-    const marker = new THREE27.Object3D;
+    const marker = new THREE30.Object3D;
     marker.name = `Opening_${wall}_${opening.id}`;
     marker.position.set(axis === "x" ? opening.offset : 0, opening.sill + opening.height / 2, axis === "z" ? opening.offset : 0);
     marker.scale.set(axis === "x" ? opening.width : opening.depth, opening.height, axis === "z" ? opening.width : opening.depth);
@@ -16150,7 +17253,7 @@ function createGableShell(name, materials, options) {
   const closedEnds = options.closedEnds ?? true;
   const enterable = options.enterable ?? true;
   const shellOpenings = options.openings ?? (enterable ? [{ wall: "front", kind: "door" }] : []);
-  const root = new THREE27.Object3D;
+  const root = new THREE30.Object3D;
   root.name = name;
   stampSemanticMetadataV1(root, roleMetadata(["architecture.shell.gable"], [relationship("contains", "floor"), relationship("contains", "roof.assembly")]));
   const wallSpecs = {
@@ -16168,7 +17271,7 @@ function createGableShell(name, materials, options) {
     walls[wall] = built.root;
     openingMarkers.push(...built.openings);
   }
-  const floor = new THREE27.Mesh(new THREE27.BoxGeometry(spanX, floorThickness, spanZ), materials.floor ?? materials.wall);
+  const floor = new THREE30.Mesh(new THREE30.BoxGeometry(spanX, floorThickness, spanZ), materials.floor ?? materials.wall);
   floor.name = `Mesh_${name}_Floor`;
   floor.position.y = -floorThickness / 2;
   stampSemanticMetadataV1(floor, roleMetadata(["floor"], ["front", "back", "left", "right"].map((wall) => relationship("adjacent-to", `wall.${wall}`))));
@@ -16283,13 +17386,13 @@ function createRoofSurfaceLayout(name, material, options) {
     assertDimension("createRoofSurfaceLayout generated width", spec.width);
     assertDimension("createRoofSurfaceLayout generated length", spec.length);
   }
-  const root = new THREE27.Object3D;
+  const root = new THREE30.Object3D;
   root.name = name;
   stampSemanticMetadataV1(root, roleMetadata([`roof.surface.${options.kind}`], [relationship("coverage-of", `roof.slope.${options.face.side}`)]));
   const items = specs.map((spec, index) => {
-    const mesh = new THREE27.Mesh(new THREE27.BoxGeometry(spec.width, thickness, spec.length), material);
+    const mesh = new THREE30.Mesh(new THREE30.BoxGeometry(spec.width, thickness, spec.length), material);
     mesh.name = `Mesh_${name}_${index + 1}`;
-    const local = new THREE27.Matrix4().makeTranslation(spec.x, thickness / 2 + 0.002, spec.z);
+    const local = new THREE30.Matrix4().makeTranslation(spec.x, thickness / 2 + 0.002, spec.z);
     setTransform(mesh, faceToRoot.clone().multiply(local));
     root.add(mesh);
     return mesh;
@@ -16306,7 +17409,7 @@ var init_architecture2 = __esm(() => {
 });
 
 // src/gears.ts
-import * as THREE28 from "three";
+import * as THREE31 from "three";
 function gearGeo(opts = {}) {
   const {
     teeth = 12,
@@ -16405,8 +17508,8 @@ function gearGeo(opts = {}) {
     indices.push(tA, bA, bB);
     indices.push(tA, bB, tB);
   }
-  const geo = new THREE28.BufferGeometry;
-  geo.setAttribute("position", new THREE28.Float32BufferAttribute(positions, 3));
+  const geo = new THREE31.BufferGeometry;
+  geo.setAttribute("position", new THREE31.Float32BufferAttribute(positions, 3));
   geo.setIndex(indices);
   const nonIndexed = geo.toNonIndexed();
   nonIndexed.computeVertexNormals();
@@ -16491,8 +17594,8 @@ function bladeGeo(opts = {}) {
       indices.push(count + i, tip, count + j);
     }
   }
-  const geo = new THREE28.BufferGeometry;
-  geo.setAttribute("position", new THREE28.Float32BufferAttribute(positions, 3));
+  const geo = new THREE31.BufferGeometry;
+  geo.setAttribute("position", new THREE31.Float32BufferAttribute(positions, 3));
   geo.setIndex(indices);
   const nonIndexed = geo.toNonIndexed();
   nonIndexed.computeVertexNormals();
@@ -16504,7 +17607,7 @@ var init_gears = __esm(() => {
 });
 
 // src/ops.ts
-import * as THREE29 from "three";
+import * as THREE32 from "three";
 import { LoopSubdivision } from "three-subdivide/build/index.module.js";
 import { mergeVertices as threeMergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 function assertFiniteSourceFrame(name, source) {
@@ -16538,9 +17641,9 @@ function arrayLinear(namePrefix, source, count, offset, parent) {
 }
 function degreesOf(euler) {
   return [
-    THREE29.MathUtils.radToDeg(euler.x),
-    THREE29.MathUtils.radToDeg(euler.y),
-    THREE29.MathUtils.radToDeg(euler.z)
+    THREE32.MathUtils.radToDeg(euler.x),
+    THREE32.MathUtils.radToDeg(euler.y),
+    THREE32.MathUtils.radToDeg(euler.z)
   ];
 }
 function arrayRadial(namePrefix, source, count, axis = "y", parent, center, options = {}) {
@@ -16553,12 +17656,12 @@ function arrayRadial(namePrefix, source, count, axis = "y", parent, center, opti
   if (center)
     assertFiniteTriple("arrayRadial center", center);
   const out = [];
-  const pivot = center ? new THREE29.Vector3(...center) : new THREE29.Vector3;
+  const pivot = center ? new THREE32.Vector3(...center) : new THREE32.Vector3;
   const basePos = source.position.clone().sub(pivot);
-  const axisVec = axis === "x" ? new THREE29.Vector3(1, 0, 0) : axis === "z" ? new THREE29.Vector3(0, 0, 1) : new THREE29.Vector3(0, 1, 0);
+  const axisVec = axis === "x" ? new THREE32.Vector3(1, 0, 0) : axis === "z" ? new THREE32.Vector3(0, 0, 1) : new THREE32.Vector3(0, 1, 0);
   const positions = [];
   for (let i = 1;i < count; i++) {
-    const position = basePos.clone().applyMatrix4(new THREE29.Matrix4().makeRotationAxis(axisVec, i / count * Math.PI * 2)).add(pivot);
+    const position = basePos.clone().applyMatrix4(new THREE32.Matrix4().makeRotationAxis(axisVec, i / count * Math.PI * 2)).add(pivot);
     assertFiniteTriple("arrayRadial resulting position", position.toArray());
     positions.push(position);
   }
@@ -16582,15 +17685,15 @@ function arrayRadial(namePrefix, source, count, axis = "y", parent, center, opti
 function mirror(name, source, axis, parent) {
   if (source.matrixAutoUpdate)
     source.updateMatrix();
-  const reflected = new THREE29.Matrix4().makeScale(axis === "x" ? -1 : 1, axis === "y" ? -1 : 1, axis === "z" ? -1 : 1).multiply(source.matrix);
+  const reflected = new THREE32.Matrix4().makeScale(axis === "x" ? -1 : 1, axis === "y" ? -1 : 1, axis === "z" ? -1 : 1).multiply(source.matrix);
   if (!reflected.elements.every(Number.isFinite) || reflected.determinant() === 0) {
     throw new RangeError(`mirror("${name}"): source requires a finite, nonsingular local transform.`);
   }
-  const position = new THREE29.Vector3;
-  const quaternion = new THREE29.Quaternion;
-  const scale = new THREE29.Vector3;
+  const position = new THREE32.Vector3;
+  const quaternion = new THREE32.Quaternion;
+  const scale = new THREE32.Vector3;
   reflected.decompose(position, quaternion, scale);
-  const recomposed = new THREE29.Matrix4().compose(position, quaternion, scale);
+  const recomposed = new THREE32.Matrix4().compose(position, quaternion, scale);
   if (reflected.elements.some((value, i) => Math.abs(value - recomposed.elements[i]) > 0.00000001 * Math.max(1, Math.abs(value)))) {
     throw new RangeError(`mirror("${name}"): local shear cannot be represented by a reflected TRS.`);
   }
@@ -16606,13 +17709,13 @@ function mergeVertices(geometry, opts = {}) {
   const { tolerance = 0.0001, positionOnly = false } = typeof opts === "number" ? { tolerance: opts } : opts;
   if (!positionOnly)
     return threeMergeVertices(geometry, tolerance);
-  const stripped = new THREE29.BufferGeometry;
+  const stripped = new THREE32.BufferGeometry;
   const pos = geometry.getAttribute("position");
   if (!pos)
     return geometry;
-  stripped.setAttribute("position", new THREE29.BufferAttribute(new Float32Array(pos.array), pos.itemSize, pos.normalized));
+  stripped.setAttribute("position", new THREE32.BufferAttribute(new Float32Array(pos.array), pos.itemSize, pos.normalized));
   if (geometry.index) {
-    stripped.setIndex(new THREE29.BufferAttribute(new Uint32Array(geometry.index.array), 1));
+    stripped.setIndex(new THREE32.BufferAttribute(new Uint32Array(geometry.index.array), 1));
   }
   return threeMergeVertices(stripped, tolerance);
 }
@@ -16647,8 +17750,8 @@ function subdivide(geometry, iterations = 1, opts = {}) {
   const { weld = true, preserveUV = false, ...subOpts } = opts;
   const prepared = geometry.clone();
   prepared.computeBoundingBox();
-  const center = prepared.boundingBox.getCenter(new THREE29.Vector3);
-  const extent = prepared.boundingBox.getSize(new THREE29.Vector3);
+  const center = prepared.boundingBox.getCenter(new THREE32.Vector3);
+  const extent = prepared.boundingBox.getSize(new THREE32.Vector3);
   const size = Math.max(extent.x, extent.y, extent.z);
   const normalizationScale = size > 0 ? 1e4 / size : 1;
   if (!Number.isFinite(normalizationScale) || !center.toArray().every(Number.isFinite))
@@ -16678,13 +17781,13 @@ function subdivide(geometry, iterations = 1, opts = {}) {
         const values = new Float32Array(attribute.count);
         for (let i = 0;i < attribute.count; i++)
           values[i] = decoded[i * 4 + component];
-        input.setAttribute(lane, new THREE29.BufferAttribute(values, 1));
+        input.setAttribute(lane, new THREE32.BufferAttribute(values, 1));
         lanes.push(lane);
       }
       input.deleteAttribute(name);
       fourthComponents.push({ name, lanes });
     } else
-      input.setAttribute(name, new THREE29.BufferAttribute(decoded, components));
+      input.setAttribute(name, new THREE32.BufferAttribute(decoded, components));
   }
   for (const targets of Object.values(input.morphAttributes))
     for (let target = 0;target < targets.length; target++) {
@@ -16693,7 +17796,7 @@ function subdivide(geometry, iterations = 1, opts = {}) {
       for (let i = 0;i < attribute.count; i++)
         for (let component = 0;component < 3; component++)
           decoded[i * 3 + component] = attribute.getComponent(i, component);
-      targets[target] = new THREE29.BufferAttribute(decoded, 3);
+      targets[target] = new THREE32.BufferAttribute(decoded, 3);
     }
   if (preserveUV)
     subOpts.uvSmooth = false;
@@ -16707,7 +17810,7 @@ function subdivide(geometry, iterations = 1, opts = {}) {
         values[i * 4 + component] = lane.getX(i);
       output.deleteAttribute(lanes[component]);
     }
-    output.setAttribute(name, new THREE29.BufferAttribute(values, 4));
+    output.setAttribute(name, new THREE32.BufferAttribute(values, 4));
   }
   output.scale(1 / normalizationScale, 1 / normalizationScale, 1 / normalizationScale).translate(center.x, center.y, center.z);
   output.userData = structuredClone(geometry.userData);
@@ -16772,9 +17875,9 @@ function assertTubeRadius(radius) {
 }
 function curveToMesh(points, radius, tubularSegments = 32, radialSegments = 8, closed = false) {
   assertTubeRadius(radius);
-  const vectors = points.map((p) => new THREE29.Vector3(p[0], p[1], p[2]));
-  const curve = new THREE29.CatmullRomCurve3(vectors, closed);
-  return new THREE29.TubeGeometry(curve, tubularSegments, radius, radialSegments, closed);
+  const vectors = points.map((p) => new THREE32.Vector3(p[0], p[1], p[2]));
+  const curve = new THREE32.CatmullRomCurve3(vectors, closed);
+  return new THREE32.TubeGeometry(curve, tubularSegments, radius, radialSegments, closed);
 }
 function normalizeSurfaceNormals(geo) {
   const normal = geo.getAttribute("normal");
@@ -16805,15 +17908,15 @@ function lathe(profile, segments = 12) {
 }
 function revolveGeo(profile, options = {}) {
   const { angle = Math.PI * 2, axis = [0, 1, 0], segments = 12 } = options;
-  const points2d = profile.map((p) => new THREE29.Vector2(p[0], p[1]));
-  const geo = normalizeSurfaceNormals(new THREE29.LatheGeometry(points2d, segments, 0, angle));
-  const n = new THREE29.Vector3(axis[0], axis[1], axis[2]);
+  const points2d = profile.map((p) => new THREE32.Vector2(p[0], p[1]));
+  const geo = normalizeSurfaceNormals(new THREE32.LatheGeometry(points2d, segments, 0, angle));
+  const n = new THREE32.Vector3(axis[0], axis[1], axis[2]);
   if (n.lengthSq() < 0.000000000001) {
     throw new Error(`revolveGeo: axis must be a non-zero vector (got [${axis.join(",")}]).`);
   }
   n.normalize();
   if (n.x !== 0 || n.y !== 1 || n.z !== 0) {
-    const q = new THREE29.Quaternion().setFromUnitVectors(new THREE29.Vector3(0, 1, 0), n);
+    const q = new THREE32.Quaternion().setFromUnitVectors(new THREE32.Vector3(0, 1, 0), n);
     geo.applyQuaternion(q);
   }
   return geo;
@@ -16829,9 +17932,9 @@ function pipeAlongPath(points, radius, options = {}) {
     const smoothed = [];
     smoothed.push(points[0]);
     for (let i = 1;i < points.length - 1; i++) {
-      const prev = new THREE29.Vector3(...points[i - 1]);
-      const cur = new THREE29.Vector3(...points[i]);
-      const next = new THREE29.Vector3(...points[i + 1]);
+      const prev = new THREE32.Vector3(...points[i - 1]);
+      const cur = new THREE32.Vector3(...points[i]);
+      const next = new THREE32.Vector3(...points[i + 1]);
       const inDir = cur.clone().sub(prev);
       const outDir = next.clone().sub(cur);
       const inLen = inDir.length();
@@ -16849,12 +17952,12 @@ function pipeAlongPath(points, radius, options = {}) {
   return curveToMesh(pathPoints, radius, tubularSegments, radialSegments, closed);
 }
 function bezierCurve(controlPoints, samples = 32) {
-  const vecs = controlPoints.map((p) => new THREE29.Vector3(p[0], p[1], p[2]));
+  const vecs = controlPoints.map((p) => new THREE32.Vector3(p[0], p[1], p[2]));
   let curve;
   if (vecs.length === 3) {
-    curve = new THREE29.QuadraticBezierCurve3(vecs[0], vecs[1], vecs[2]);
+    curve = new THREE32.QuadraticBezierCurve3(vecs[0], vecs[1], vecs[2]);
   } else if (vecs.length === 4) {
-    curve = new THREE29.CubicBezierCurve3(vecs[0], vecs[1], vecs[2], vecs[3]);
+    curve = new THREE32.CubicBezierCurve3(vecs[0], vecs[1], vecs[2], vecs[3]);
   } else {
     throw new Error(`bezierCurve: need 3 or 4 control points, got ${vecs.length}`);
   }
@@ -16867,7 +17970,7 @@ var init_ops = __esm(() => {
 });
 
 // src/geometry.ts
-import * as THREE30 from "three";
+import * as THREE33 from "three";
 function finiteArray(values, label, length) {
   const result = Array.from(values);
   if (length !== undefined && result.length !== length)
@@ -16881,8 +17984,8 @@ function meshGeo(data) {
   if (positions.length < 9 || positions.length % 3)
     throw new Error("meshGeo positions: need at least three xyz vertices");
   const count = positions.length / 3;
-  const geometry = new THREE30.BufferGeometry;
-  geometry.setAttribute("position", new THREE30.Float32BufferAttribute(positions, 3));
+  const geometry = new THREE33.BufferGeometry;
+  geometry.setAttribute("position", new THREE33.Float32BufferAttribute(positions, 3));
   if (data.indices) {
     const indices = Array.from(data.indices);
     if (!indices.length || indices.length % 3)
@@ -16894,7 +17997,7 @@ function meshGeo(data) {
     throw new Error("meshGeo: non-indexed positions must form complete triangles");
   if (data.normals) {
     const normals = finiteArray(data.normals, "meshGeo normals", count * 3);
-    geometry.setAttribute("normal", new THREE30.Float32BufferAttribute(normals, 3));
+    geometry.setAttribute("normal", new THREE33.Float32BufferAttribute(normals, 3));
     for (let i = 0;i < count; i++)
       if (Math.hypot(normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2]) === 0)
         throw new Error("meshGeo normals: zero-length normal");
@@ -16902,36 +18005,36 @@ function meshGeo(data) {
   } else
     geometry.computeVertexNormals();
   if (data.uvs)
-    geometry.setAttribute("uv", new THREE30.Float32BufferAttribute(finiteArray(data.uvs, "meshGeo uvs", count * 2), 2));
+    geometry.setAttribute("uv", new THREE33.Float32BufferAttribute(finiteArray(data.uvs, "meshGeo uvs", count * 2), 2));
   if (data.tangents) {
     const tangents = finiteArray(data.tangents, "meshGeo tangents", count * 4);
     for (let i = 0;i < count; i++) {
       if (Math.abs(Math.hypot(tangents[i * 4], tangents[i * 4 + 1], tangents[i * 4 + 2]) - 1) > 0.0001 || Math.abs(tangents[i * 4 + 3]) !== 1)
         throw new Error("meshGeo tangents: expected unit xyz and handedness +1 or -1");
     }
-    geometry.setAttribute("tangent", new THREE30.Float32BufferAttribute(tangents, 4));
+    geometry.setAttribute("tangent", new THREE33.Float32BufferAttribute(tangents, 4));
   }
   geometry.computeBoundingBox();
   geometry.computeBoundingSphere();
   return geometry;
 }
 function boundsScale(bounds) {
-  const size = bounds.getSize(new THREE30.Vector3);
+  const size = bounds.getSize(new THREE33.Vector3);
   const scale = Math.hypot(size.x, size.y, size.z);
   if (!Number.isFinite(scale))
     throw new Error("Geometry position extent must be finite");
   return scale;
 }
 function positionFrame(position) {
-  const bounds = new THREE30.Box3;
-  const point = new THREE30.Vector3;
+  const bounds = new THREE33.Box3;
+  const point = new THREE33.Vector3;
   for (let i = 0;i < position.count; i++) {
     point.fromBufferAttribute(position, i);
     if ([point.x, point.y, point.z].every(Number.isFinite))
       bounds.expandByPoint(point);
   }
   return {
-    origin: bounds.isEmpty() ? new THREE30.Vector3 : bounds.min,
+    origin: bounds.isEmpty() ? new THREE33.Vector3 : bounds.min,
     scale: boundsScale(bounds)
   };
 }
@@ -16972,7 +18075,7 @@ function geometryDiagnostics(geometry, tolerance) {
   const ids = [];
   const points = new Map;
   const finite = [];
-  const point = new THREE30.Vector3;
+  const point = new THREE33.Vector3;
   for (let i = 0;i < p.count; i++) {
     point.fromBufferAttribute(p, i);
     finite[i] = [point.x, point.y, point.z].every(Number.isFinite);
@@ -16985,7 +18088,7 @@ function geometryDiagnostics(geometry, tolerance) {
   }
   const indices = geometry.index ? Array.from(geometry.index.array) : Array.from({ length: p.count }, (_, i) => i);
   const edges = new Map;
-  const a = new THREE30.Vector3, b = new THREE30.Vector3, c = new THREE30.Vector3;
+  const a = new THREE33.Vector3, b = new THREE33.Vector3, c = new THREE33.Vector3;
   for (let i = 0;i < indices.length; i += 3) {
     result.triangles++;
     const triangle = indices.slice(i, i + 3);
@@ -17059,8 +18162,8 @@ function parametricSurface(sample, options = {}) {
   if (orientation !== "uv" && orientation !== "vu")
     throw new Error("parametricSurface orientation must be uv or vu");
   const positions = [], uvs = [], indices = [];
-  const sampledBounds = new THREE30.Box3;
-  const sampledPoint = new THREE30.Vector3;
+  const sampledBounds = new THREE33.Box3;
+  const sampledPoint = new THREE33.Vector3;
   for (let j = 0;j <= nv; j++)
     for (let i = 0;i <= nu; i++) {
       const point = sample(u[0] + (u[1] - u[0]) * i / nu, v[0] + (v[1] - v[0]) * j / nv);
@@ -17102,8 +18205,8 @@ function parametricSurface(sample, options = {}) {
     const sums = new Map;
     for (let i = 0;i < normal.count; i++) {
       const id = find(i);
-      const sum = sums.get(id) ?? new THREE30.Vector3;
-      sum.add(new THREE30.Vector3().fromBufferAttribute(normal, i));
+      const sum = sums.get(id) ?? new THREE33.Vector3;
+      sum.add(new THREE33.Vector3().fromBufferAttribute(normal, i));
       sums.set(id, sum);
     }
     for (let i = 0;i < normal.count; i++) {
@@ -17128,13 +18231,13 @@ function creaseNormals(geometry, options = {}) {
   const keys = [];
   const faces = [];
   for (let i = 0;i < position.count; i += 3) {
-    const a = new THREE30.Vector3().fromBufferAttribute(position, i);
-    const b = new THREE30.Vector3().fromBufferAttribute(position, i + 1);
-    const c = new THREE30.Vector3().fromBufferAttribute(position, i + 2);
+    const a = new THREE33.Vector3().fromBufferAttribute(position, i);
+    const b = new THREE33.Vector3().fromBufferAttribute(position, i + 1);
+    const c = new THREE33.Vector3().fromBufferAttribute(position, i + 2);
     const face = b.sub(a).divideScalar(scale).cross(c.sub(a).divideScalar(scale)).normalize();
     faces.push(face);
     for (let j = i;j < i + 3; j++) {
-      const point = new THREE30.Vector3().fromBufferAttribute(position, j);
+      const point = new THREE33.Vector3().fromBufferAttribute(position, j);
       if (![point.x, point.y, point.z].every(Number.isFinite))
         throw new Error("creaseNormals positions must be finite");
       const key = positionKey(point, frame.origin, tolerance);
@@ -17145,15 +18248,15 @@ function creaseNormals(geometry, options = {}) {
     }
   }
   const normals = new Float32Array(position.count * 3);
-  const threshold = Math.cos(THREE30.MathUtils.degToRad(angle));
+  const threshold = Math.cos(THREE33.MathUtils.degToRad(angle));
   for (let i = 0;i < position.count; i++) {
-    const face = faces[Math.floor(i / 3)], sum = new THREE30.Vector3;
+    const face = faces[Math.floor(i / 3)], sum = new THREE33.Vector3;
     for (const other of adjacent.get(keys[i]))
       if (face.dot(faces[other]) >= threshold - 0.000000000001)
         sum.add(faces[other]);
     sum.normalize().toArray(normals, i * 3);
   }
-  out.setAttribute("normal", new THREE30.BufferAttribute(normals, 3));
+  out.setAttribute("normal", new THREE33.BufferAttribute(normals, 3));
   out.deleteAttribute("tangent");
   out.computeBoundingBox();
   out.computeBoundingSphere();
@@ -17165,20 +18268,20 @@ var init_geometry = __esm(() => {
 });
 
 // src/deformation-normals.ts
-import * as THREE31 from "three";
+import * as THREE34 from "three";
 function recomputeDeformedNormals(source, output) {
   const original = source.getAttribute("position");
   const authored = source.getAttribute("normal");
   const position = output.getAttribute("position");
   const bounds = (attribute) => {
-    const box = new THREE31.Box3().setFromBufferAttribute(attribute);
+    const box = new THREE34.Box3().setFromBufferAttribute(attribute);
     return {
-      center: box.getCenter(new THREE31.Vector3),
-      size: box.getSize(new THREE31.Vector3).length() || 1
+      center: box.getCenter(new THREE34.Vector3),
+      size: box.getSize(new THREE34.Vector3).length() || 1
     };
   };
   const before = bounds(original), after = bounds(position);
-  const point = new THREE31.Vector3, normal = new THREE31.Vector3;
+  const point = new THREE34.Vector3, normal = new THREE34.Vector3;
   const quantized = (attribute, index, frame) => {
     point.fromBufferAttribute(attribute, index).sub(frame.center).divideScalar(frame.size);
     return point.toArray().map((value) => Math.round(value * 1e7)).join(",");
@@ -17201,7 +18304,7 @@ function recomputeDeformedNormals(source, output) {
   const sums = new Float64Array(classes.size * 3);
   const index = output.index;
   const corners = index?.count ?? position.count;
-  const a = new THREE31.Vector3, b = new THREE31.Vector3, c = new THREE31.Vector3;
+  const a = new THREE34.Vector3, b = new THREE34.Vector3, c = new THREE34.Vector3;
   for (let t = 0;t < corners; t += 3) {
     const ia = index ? index.getX(t) : t;
     const ib = index ? index.getX(t + 1) : t + 1;
@@ -17222,17 +18325,17 @@ function recomputeDeformedNormals(source, output) {
     const offset = ids[i] * 3;
     normal.set(sums[offset], sums[offset + 1], sums[offset + 2]).normalize().toArray(normals, i * 3);
   }
-  output.setAttribute("normal", new THREE31.BufferAttribute(normals, 3));
+  output.setAttribute("normal", new THREE34.BufferAttribute(normals, 3));
 }
 var init_deformation_normals = () => {};
 
 // src/deform.ts
-import * as THREE32 from "three";
+import * as THREE35 from "three";
 function geometryFrameMatrix(frame = {}) {
   const origin = frame.origin ?? [0, 0, 0], rotation = frame.rotation ?? [0, 0, 0];
   if (origin.length !== 3 || rotation.length !== 3 || ![...origin, ...rotation].every(Number.isFinite))
     throw new Error("geometry frame requires finite xyz origin and rotation");
-  return new THREE32.Matrix4().compose(new THREE32.Vector3(...origin), new THREE32.Quaternion().setFromEuler(new THREE32.Euler(...rotation.map(THREE32.MathUtils.degToRad), "XYZ")), new THREE32.Vector3(1, 1, 1));
+  return new THREE35.Matrix4().compose(new THREE35.Vector3(...origin), new THREE35.Quaternion().setFromEuler(new THREE35.Euler(...rotation.map(THREE35.MathUtils.degToRad), "XYZ")), new THREE35.Vector3(1, 1, 1));
 }
 function deform(geometry, options, map) {
   const source = geometry.getAttribute("position");
@@ -17259,7 +18362,7 @@ function deform(geometry, options, map) {
         throw new Error("deformation normals must be finite");
   }
   const matrix = geometryFrameMatrix(options.frame), inverse = matrix.clone().invert();
-  const points = Array.from({ length: source.count }, (_, i) => new THREE32.Vector3().fromBufferAttribute(source, i).applyMatrix4(inverse));
+  const points = Array.from({ length: source.count }, (_, i) => new THREE35.Vector3().fromBufferAttribute(source, i).applyMatrix4(inverse));
   if (points.some((p) => ![p.x, p.y, p.z].every(Number.isFinite)))
     throw new Error("deformation positions must be finite");
   let low = Infinity, high = -Infinity;
@@ -17282,7 +18385,7 @@ function deform(geometry, options, map) {
     const point = points[i];
     if (point.y < low - epsilon || point.y > high + epsilon)
       continue;
-    const t = length > 0 ? THREE32.MathUtils.clamp((point.y - low) / length, 0, 1) : 0;
+    const t = length > 0 ? THREE35.MathUtils.clamp((point.y - low) / length, 0, 1) : 0;
     const weight = options.falloff?.(t) ?? 1;
     if (!Number.isFinite(weight) || weight < 0 || weight > 1)
       throw new Error("deformation falloff must return a finite weight between 0 and 1");
@@ -17316,31 +18419,31 @@ function deform(geometry, options, map) {
 function twist(geometry, options) {
   if (!Number.isFinite(options.angle))
     throw new Error("twist angle must be finite degrees");
-  return deform(geometry, options, (p, t) => p.applyAxisAngle(new THREE32.Vector3(0, 1, 0), THREE32.MathUtils.degToRad(options.angle) * t));
+  return deform(geometry, options, (p, t) => p.applyAxisAngle(new THREE35.Vector3(0, 1, 0), THREE35.MathUtils.degToRad(options.angle) * t));
 }
 function bend(geometry, options) {
   if (!Number.isFinite(options.angle))
     throw new Error("bend angle must be finite degrees");
-  const angle = THREE32.MathUtils.degToRad(options.angle);
+  const angle = THREE35.MathUtils.degToRad(options.angle);
   return deform(geometry, options, (p, t, low, length) => {
     if (Math.abs(angle) < 0.0000000001 || length === 0)
       return p;
     const radius = length / angle, theta = angle * t;
-    return new THREE32.Vector3(radius - (radius - p.x) * Math.cos(theta), low + (radius - p.x) * Math.sin(theta), p.z);
+    return new THREE35.Vector3(radius - (radius - p.x) * Math.cos(theta), low + (radius - p.x) * Math.sin(theta), p.z);
   });
 }
 function taper(geometry, options) {
   const start = options.startScale ?? [1, 1], end = options.endScale;
   if (start.length !== 2 || end.length !== 2 || ![...start, ...end].every((n) => Number.isFinite(n) && n > 0))
     throw new Error("taper scales must be two finite positive values");
-  return deform(geometry, options, (p, t) => p.set(p.x * THREE32.MathUtils.lerp(start[0], end[0], t), p.y, p.z * THREE32.MathUtils.lerp(start[1], end[1], t)));
+  return deform(geometry, options, (p, t) => p.set(p.x * THREE35.MathUtils.lerp(start[0], end[0], t), p.y, p.z * THREE35.MathUtils.lerp(start[1], end[1], t)));
 }
 function displace(geometry, offset, options = {}) {
   return deform(geometry, options, (p, t) => {
     const delta = offset([p.x, p.y, p.z], t);
     if (delta.length !== 3 || !delta.every(Number.isFinite))
       throw new Error("displace callback must return three finite offsets");
-    return p.add(new THREE32.Vector3(...delta));
+    return p.add(new THREE35.Vector3(...delta));
   });
 }
 var init_deform = __esm(() => {
@@ -17348,7 +18451,7 @@ var init_deform = __esm(() => {
 });
 
 // src/sweep.ts
-import * as THREE33 from "three";
+import * as THREE36 from "three";
 function rejectHoles(value, label) {
   if ("holes" in value && value.holes !== undefined)
     throw new AuthoringDiagnosticError("PROFILE_HOLES_UNSUPPORTED", `${label}: holes are unsupported. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction.`);
@@ -17356,9 +18459,9 @@ function rejectHoles(value, label) {
 function profilePoints(profile) {
   if (profile.length < 3 || profile.some((p) => p.length !== 2 || !p.every(Number.isFinite)))
     throw new Error("profile requires at least three finite xy points");
-  const points = profile.map((p) => new THREE33.Vector2(...p));
-  const bounds = new THREE33.Box2().setFromPoints(points);
-  const extent = bounds.getSize(new THREE33.Vector2).length();
+  const points = profile.map((p) => new THREE36.Vector2(...p));
+  const bounds = new THREE36.Box2().setFromPoints(points);
+  const extent = bounds.getSize(new THREE36.Vector2).length();
   if (!(extent > 0) || !Number.isFinite(extent))
     throw new Error("profile requires a finite nonzero extent");
   const normalized = points.map((p) => p.clone().sub(bounds.min).divideScalar(extent));
@@ -17381,7 +18484,7 @@ function profilePoints(profile) {
         throw new Error("profile self-intersects or touches itself");
     }
   }
-  const area = THREE33.ShapeUtils.area(normalized);
+  const area = THREE36.ShapeUtils.area(normalized);
   if (Math.abs(area) < 0.000000000001)
     throw new Error("profile area must be nonzero");
   if (area < 0)
@@ -17395,11 +18498,11 @@ function isCrease(first, second, creaseAngle) {
   if (!(first.lengthSq() > 0 && second.lengthSq() > 0))
     return false;
   const angle = Math.atan2(first.clone().cross(second).length(), first.dot(second));
-  return THREE33.MathUtils.radToDeg(angle) > creaseAngle + CREASE_TOLERANCE_DEGREES;
+  return THREE36.MathUtils.radToDeg(angle) > creaseAngle + CREASE_TOLERANCE_DEGREES;
 }
 function buildLoft(rings, profiles, closed, cap, firstFrameForward, creaseAngle) {
   const n = rings[0].length, positions = [], uvs = [], indices = [];
-  const centers = rings.map((r) => r.reduce((sum, p) => sum.add(p), new THREE33.Vector3).multiplyScalar(1 / n));
+  const centers = rings.map((r) => r.reduce((sum, p) => sum.add(p), new THREE36.Vector3).multiplyScalar(1 / n));
   const lengths = [0];
   for (let i = 1;i < centers.length; i++)
     lengths.push(lengths[i - 1] + centers[i].distanceTo(centers[i - 1]));
@@ -17459,13 +18562,13 @@ function buildLoft(rings, profiles, closed, cap, firstFrameForward, creaseAngle)
         continue;
       const ring = rings[station], profile = profiles[station];
       const start = positions.length / 3;
-      const bounds = new THREE33.Box2().setFromPoints(profile);
-      const size = bounds.getSize(new THREE33.Vector2);
+      const bounds = new THREE36.Box2().setFromPoints(profile);
+      const size = bounds.getSize(new THREE36.Vector2);
       for (let j = 0;j < n; j++) {
         positions.push(...ring[j].toArray());
         uvs.push((profile[j].x - bounds.min.x) / (size.x || 1), (profile[j].y - bounds.min.y) / (size.y || 1));
       }
-      for (const tri of THREE33.ShapeUtils.triangulateShape(profile, [])) {
+      for (const tri of THREE36.ShapeUtils.triangulateShape(profile, [])) {
         if (station === 0)
           indices.push(...tri.map((j) => start + j));
         else
@@ -17478,7 +18581,7 @@ function buildLoft(rings, profiles, closed, cap, firstFrameForward, creaseAngle)
   const out = meshGeo({ positions, indices, uvs });
   const normal = out.getAttribute("normal");
   const share = (a, b) => {
-    const sum = new THREE33.Vector3().fromBufferAttribute(normal, a).add(new THREE33.Vector3().fromBufferAttribute(normal, b)).normalize();
+    const sum = new THREE36.Vector3().fromBufferAttribute(normal, a).add(new THREE36.Vector3().fromBufferAttribute(normal, b)).normalize();
     normal.setXYZ(a, sum.x, sum.y, sum.z);
     normal.setXYZ(b, sum.x, sum.y, sum.z);
   };
@@ -17516,8 +18619,8 @@ function loftProfiles(sections, options = {}) {
   if (profiles.some((p) => p.length !== profiles[0].length))
     throw new Error("loftProfiles sections must have the same point count and correspondence");
   const frames = sections.map((section) => geometryFrameMatrix(section.frame));
-  const rings = profiles.map((profile, i) => profile.map((p) => new THREE33.Vector3(p.x, 0, p.y).applyMatrix4(frames[i])));
-  const out = buildLoft(rings, profiles, false, loftCapEnds(options.cap), new THREE33.Vector3(0, 1, 0).transformDirection(frames[0]));
+  const rings = profiles.map((profile, i) => profile.map((p) => new THREE36.Vector3(p.x, 0, p.y).applyMatrix4(frames[i])));
+  const out = buildLoft(rings, profiles, false, loftCapEnds(options.cap), new THREE36.Vector3(0, 1, 0).transformDirection(frames[0]));
   const analysis = recordSweepAnalysis(out, rings, profiles, false);
   out.userData.kilnGeometryWarnings = analysis.complete ? [] : [
     {
@@ -17540,8 +18643,8 @@ function sweepProfile(profile, path, options = {}) {
   const cap = sweepCapEnds(options.cap, closed);
   if (path.length < (closed ? 3 : 2) || path.some((p) => p.length !== 3 || !p.every(Number.isFinite)))
     throw new Error("sweepProfile requires finite path points (two open or three closed)");
-  const stations = path.map((p) => new THREE33.Vector3(...p));
-  const pathExtent = new THREE33.Box3().setFromPoints(stations).getSize(new THREE33.Vector3).length();
+  const stations = path.map((p) => new THREE36.Vector3(...p));
+  const pathExtent = new THREE36.Box3().setFromPoints(stations).getSize(new THREE36.Vector3).length();
   if (!(pathExtent > 0) || !Number.isFinite(pathExtent))
     throw new Error("sweepProfile path stations must be distinct with finite extent");
   const pathTolerance = pathExtent * 0.0000000001;
@@ -17582,7 +18685,7 @@ function sweepProfile(profile, path, options = {}) {
       });
     return incoming.clone().add(outgoing).normalize();
   });
-  const up = options.up ? new THREE33.Vector3(...options.up) : Math.abs(tangents[0].z) < 0.9 ? new THREE33.Vector3(0, 0, 1) : new THREE33.Vector3(1, 0, 0);
+  const up = options.up ? new THREE36.Vector3(...options.up) : Math.abs(tangents[0].z) < 0.9 ? new THREE36.Vector3(0, 0, 1) : new THREE36.Vector3(1, 0, 0);
   const upLength = Math.hypot(up.x, up.y, up.z);
   if (!(upLength > 0) || !Number.isFinite(upLength))
     throw new Error("sweepProfile up must be a finite nonzero vector");
@@ -17599,7 +18702,7 @@ function sweepProfile(profile, path, options = {}) {
   }
   const distances = [0];
   for (let i = 1;i < stations.length; i++) {
-    z = z.clone().applyQuaternion(new THREE33.Quaternion().setFromUnitVectors(tangents[i - 1], tangents[i]));
+    z = z.clone().applyQuaternion(new THREE36.Quaternion().setFromUnitVectors(tangents[i - 1], tangents[i]));
     normals.push(z);
     distances.push(distances[i - 1] + stations[i].distanceTo(stations[i - 1]));
   }
@@ -17609,7 +18712,7 @@ function sweepProfile(profile, path, options = {}) {
     correction = Math.atan2(tangents[0].dot(normals[normals.length - 1].clone().cross(normals[0])), normals[normals.length - 1].dot(normals[0]));
   const rings = stations.map((station, i) => {
     const tangent = tangents[i], t = distances[i] / total;
-    const axisZ = normals[i].clone().applyAxisAngle(tangent, (correction + THREE33.MathUtils.degToRad(twist)) * t);
+    const axisZ = normals[i].clone().applyAxisAngle(tangent, (correction + THREE36.MathUtils.degToRad(twist)) * t);
     const axisX = tangent.clone().cross(axisZ).normalize(), scale = scales[i];
     return points.map((p) => station.clone().addScaledVector(axisX, p.x * scale[0]).addScaledVector(axisZ, p.y * scale[1]));
   });
@@ -17634,7 +18737,7 @@ var init_sweep2 = __esm(() => {
 });
 
 // src/solids.ts
-import * as THREE34 from "three";
+import * as THREE37 from "three";
 async function getManifoldModule() {
   if (_module)
     return _module;
@@ -17664,10 +18767,10 @@ function computationFrame(parts) {
         meshes.push(mesh);
     });
   }
-  const origin = meshes.length ? new THREE34.Vector3().setFromMatrixPosition(meshes[0].matrixWorld) : new THREE34.Vector3;
+  const origin = meshes.length ? new THREE37.Vector3().setFromMatrixPosition(meshes[0].matrixWorld) : new THREE37.Vector3;
   const matrices = new Map;
-  const bounds = new THREE34.Box3;
-  const point = new THREE34.Vector3;
+  const bounds = new THREE37.Box3;
+  const point = new THREE37.Vector3;
   for (const mesh of meshes) {
     const matrix = mesh.matrixWorld.clone();
     matrix.elements[12] -= origin.x;
@@ -17684,11 +18787,11 @@ function computationFrame(parts) {
       bounds.expandByPoint(point);
     }
   }
-  const size = bounds.getSize(new THREE34.Vector3);
+  const size = bounds.getSize(new THREE37.Vector3);
   const scale = Math.hypot(size.x, size.y, size.z);
   if (!Number.isFinite(scale))
     throw new Error("CSG: combined operand extent must be finite");
-  return { origin, center: bounds.getCenter(new THREE34.Vector3), scale: scale || 1, matrices };
+  return { origin, center: bounds.getCenter(new THREE37.Vector3), scale: scale || 1, matrices };
 }
 function retainNotes(target, notes) {
   if (!Array.isArray(notes))
@@ -17768,7 +18871,7 @@ function threeToManifold(src, mod, label, context) {
       else
         context.missingUV.add(mesh.name || label);
     }
-    const point = new THREE34.Vector3;
+    const point = new THREE37.Vector3;
     for (let i = 0;i < position.count; i++) {
       point.fromBufferAttribute(position, i).applyMatrix4(context.frame.matrices.get(mesh)).sub(context.frame.center).divideScalar(context.frame.scale);
       if (![point.x, point.y, point.z].every((n) => Number.isFinite(Math.fround(n))))
@@ -17911,11 +19014,11 @@ function solidMeshToGeometry({ mesh, collapsed }, opts = {}) {
     if (uvs)
       uvs.set(mesh.vertProperties.subarray(i + 3, i + 5), v * 2);
   }
-  const geometry = new THREE34.BufferGeometry;
-  geometry.setAttribute("position", new THREE34.BufferAttribute(positions, 3));
-  geometry.setIndex(new THREE34.BufferAttribute(new Uint32Array(mesh.triVerts), 1));
+  const geometry = new THREE37.BufferGeometry;
+  geometry.setAttribute("position", new THREE37.BufferAttribute(positions, 3));
+  geometry.setIndex(new THREE37.BufferAttribute(new Uint32Array(mesh.triVerts), 1));
   if (uvs)
-    geometry.setAttribute("uv", new THREE34.BufferAttribute(uvs, 2));
+    geometry.setAttribute("uv", new THREE37.BufferAttribute(uvs, 2));
   const out = opts.smooth ? geometry : geometry.toNonIndexed();
   out.computeVertexNormals();
   if (opts.smooth && uvs) {
@@ -17946,7 +19049,7 @@ function firstMaterial(src) {
     if (!material && mesh.isMesh)
       material = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
   });
-  return material ?? new THREE34.MeshStandardMaterial;
+  return material ?? new THREE37.MeshStandardMaterial;
 }
 function outputMesh(result, name, parts, opts, context, isHull) {
   const materialized = materializeSolid(result);
@@ -18005,7 +19108,7 @@ function outputMesh(result, name, parts, opts, context, isHull) {
   retainNotes(context.geometryWarnings, geometry.userData.kilnGeometryWarnings);
   if (context.geometryWarnings.size)
     geometry.userData.kilnGeometryWarnings = [...context.geometryWarnings.values()];
-  const output = new THREE34.Mesh(geometry, context.preserve && !isHull && materials.length ? materials : firstMaterial(parts[0]));
+  const output = new THREE37.Mesh(geometry, context.preserve && !isHull && materials.length ? materials : firstMaterial(parts[0]));
   output.name = `Mesh_${name}`;
   output.position.copy(context.frame.origin);
   return output;
@@ -18383,8 +19486,8 @@ function valueNoise(u, v, period, seed) {
   const y0 = wrap(yi);
   const x1 = wrap(xi + 1);
   const y1 = wrap(yi + 1);
-  const sx = smoothstep(xf);
-  const sy = smoothstep(yf);
+  const sx = smoothstep2(xf);
+  const sy = smoothstep2(yf);
   const n00 = hash22(x0, y0, seed);
   const n10 = hash22(x1, y0, seed);
   const n01 = hash22(x0, y1, seed);
@@ -18501,7 +19604,7 @@ function compileProceduralTextureSpecV2(input) {
     recipeHash: hashProceduralTextureSpecV2(spec)
   };
 }
-var smoothstep = (t) => t * t * (3 - 2 * t), rgbOf = (color) => [
+var smoothstep2 = (t) => t * t * (3 - 2 * t), rgbOf = (color) => [
   color >> 16 & 255,
   color >> 8 & 255,
   color & 255
@@ -18668,7 +19771,7 @@ var init_procedural_texture_v3 = __esm(() => {
 });
 
 // src/procedural-texture.ts
-import * as THREE35 from "three";
+import * as THREE38 from "three";
 function proceduralTextureSchemaVersion(input) {
   if (!input || typeof input !== "object" || Array.isArray(input))
     throw new ProceduralTextureError("proceduralTexture requires a plain JSON object.", "PROCEDURAL_TEXTURE_V3_CONTRACT");
@@ -18689,14 +19792,14 @@ function proceduralTexture(spec) {
   if (proceduralTextureSchemaVersion(spec) === 3) {
     const compiled = compileProceduralTextureSpecV3(spec);
     const { width, height, usage, name } = compiled.spec;
-    const tex = new THREE35.DataTexture(compiled.pixels, width, height, THREE35.RGBAFormat, THREE35.UnsignedByteType);
+    const tex = new THREE38.DataTexture(compiled.pixels, width, height, THREE38.RGBAFormat, THREE38.UnsignedByteType);
     if (name)
       tex.name = name;
-    tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE35.SRGBColorSpace : THREE35.NoColorSpace;
-    tex.wrapS = THREE35.RepeatWrapping;
-    tex.wrapT = THREE35.RepeatWrapping;
-    tex.minFilter = THREE35.LinearMipmapLinearFilter;
-    tex.magFilter = THREE35.LinearFilter;
+    tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE38.SRGBColorSpace : THREE38.NoColorSpace;
+    tex.wrapS = THREE38.RepeatWrapping;
+    tex.wrapT = THREE38.RepeatWrapping;
+    tex.minFilter = THREE38.LinearMipmapLinearFilter;
+    tex.magFilter = THREE38.LinearFilter;
     tex.generateMipmaps = true;
     tex.needsUpdate = true;
     tex.userData["kilnProcedural"] = {
@@ -18709,14 +19812,14 @@ function proceduralTexture(spec) {
   }
   const compiled = compileProceduralTextureSpecV2(spec);
   const { size, usage, name, layers } = compiled.spec;
-  const tex = new THREE35.DataTexture(compiled.pixels, size, size, THREE35.RGBAFormat, THREE35.UnsignedByteType);
+  const tex = new THREE38.DataTexture(compiled.pixels, size, size, THREE38.RGBAFormat, THREE38.UnsignedByteType);
   if (name)
     tex.name = name;
-  tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE35.SRGBColorSpace : THREE35.NoColorSpace;
-  tex.wrapS = THREE35.RepeatWrapping;
-  tex.wrapT = THREE35.RepeatWrapping;
-  tex.minFilter = THREE35.LinearMipmapLinearFilter;
-  tex.magFilter = THREE35.LinearFilter;
+  tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE38.SRGBColorSpace : THREE38.NoColorSpace;
+  tex.wrapS = THREE38.RepeatWrapping;
+  tex.wrapT = THREE38.RepeatWrapping;
+  tex.minFilter = THREE38.LinearMipmapLinearFilter;
+  tex.magFilter = THREE38.LinearFilter;
   tex.generateMipmaps = true;
   tex.needsUpdate = true;
   tex.userData["kilnProcedural"] = {
@@ -18770,13 +19873,13 @@ function normalMapFromHeight(source, opts = {}) {
       out[o + 3] = 255;
     }
   }
-  const tex = new THREE35.DataTexture(out, width, height, THREE35.RGBAFormat, THREE35.UnsignedByteType);
+  const tex = new THREE38.DataTexture(out, width, height, THREE38.RGBAFormat, THREE38.UnsignedByteType);
   tex.name = opts.name ?? (source.name ? `${source.name}_Normal` : "");
-  tex.colorSpace = THREE35.NoColorSpace;
-  tex.wrapS = THREE35.RepeatWrapping;
-  tex.wrapT = THREE35.RepeatWrapping;
-  tex.minFilter = THREE35.LinearMipmapLinearFilter;
-  tex.magFilter = THREE35.LinearFilter;
+  tex.colorSpace = THREE38.NoColorSpace;
+  tex.wrapS = THREE38.RepeatWrapping;
+  tex.wrapT = THREE38.RepeatWrapping;
+  tex.minFilter = THREE38.LinearMipmapLinearFilter;
+  tex.magFilter = THREE38.LinearFilter;
   tex.generateMipmaps = true;
   tex.needsUpdate = true;
   return tex;
@@ -18791,7 +19894,7 @@ var init_procedural_texture = __esm(() => {
 });
 
 // src/textures.ts
-import * as THREE36 from "three";
+import * as THREE39 from "three";
 async function loadTexture(source, opts = {}) {
   let bytes;
   if (typeof source === "string") {
@@ -18812,7 +19915,7 @@ async function loadTexture(source, opts = {}) {
   if (!meta.width || !meta.height) {
     throw new Error("loadTexture: could not read image dimensions");
   }
-  const tex = new THREE36.DataTexture(new Uint8Array(data), meta.width, meta.height, THREE36.RGBAFormat, THREE36.UnsignedByteType);
+  const tex = new THREE39.DataTexture(new Uint8Array(data), meta.width, meta.height, THREE39.RGBAFormat, THREE39.UnsignedByteType);
   const usage = opts.usage ?? "albedo";
   const colorSpace = usage === "albedo" || usage === "emissive" ? "srgb" : "linear";
   let hasAlpha = false;
@@ -18822,14 +19925,14 @@ async function loadTexture(source, opts = {}) {
       break;
     }
   }
-  tex.colorSpace = colorSpace === "srgb" ? THREE36.SRGBColorSpace : THREE36.NoColorSpace;
+  tex.colorSpace = colorSpace === "srgb" ? THREE39.SRGBColorSpace : THREE39.NoColorSpace;
   if (opts.name)
     tex.name = opts.name;
   tex.needsUpdate = true;
-  tex.wrapS = THREE36.RepeatWrapping;
-  tex.wrapT = THREE36.RepeatWrapping;
-  tex.minFilter = THREE36.LinearMipmapLinearFilter;
-  tex.magFilter = THREE36.LinearFilter;
+  tex.wrapS = THREE39.RepeatWrapping;
+  tex.wrapT = THREE39.RepeatWrapping;
+  tex.minFilter = THREE39.LinearMipmapLinearFilter;
+  tex.magFilter = THREE39.LinearFilter;
   tex.generateMipmaps = true;
   tex.userData["encoded"] = {
     mime,
@@ -18864,17 +19967,17 @@ function requireTextureUsage(texture, usage) {
   if (meta && meta.usage !== usage) {
     throw new TypeError(`Texture ${JSON.stringify(texture.name || "(unnamed)")} was loaded for ${meta.usage}, not ${usage}.`);
   }
-  texture.colorSpace = usage === "albedo" || usage === "emissive" ? THREE36.SRGBColorSpace : THREE36.NoColorSpace;
+  texture.colorSpace = usage === "albedo" || usage === "emissive" ? THREE39.SRGBColorSpace : THREE39.NoColorSpace;
 }
 function pbrMaterial(opts = {}) {
-  const mat = new THREE36.MeshStandardMaterial;
+  const mat = new THREE39.MeshStandardMaterial;
   const isTex = (v) => !!v?.isTexture;
   if (isTex(opts.albedo)) {
     requireTextureUsage(opts.albedo, "albedo");
     mat.map = opts.albedo;
-    mat.color = new THREE36.Color(16777215);
+    mat.color = new THREE39.Color(16777215);
   } else if (opts.albedo !== undefined) {
-    mat.color = new THREE36.Color(opts.albedo);
+    mat.color = new THREE39.Color(opts.albedo);
   }
   if (opts.normal) {
     requireTextureUsage(opts.normal, "normal");
@@ -18912,9 +20015,9 @@ function pbrMaterial(opts = {}) {
   if (isTex(opts.emissive)) {
     requireTextureUsage(opts.emissive, "emissive");
     mat.emissiveMap = opts.emissive;
-    mat.emissive = new THREE36.Color(16777215);
+    mat.emissive = new THREE39.Color(16777215);
   } else if (opts.emissive !== undefined) {
-    mat.emissive = new THREE36.Color(opts.emissive);
+    mat.emissive = new THREE39.Color(opts.emissive);
   }
   if (opts.emissiveIntensity !== undefined) {
     mat.emissiveIntensity = opts.emissiveIntensity;
@@ -18946,7 +20049,7 @@ function pbrMaterial(opts = {}) {
     mat.transparent = true;
   }
   if (opts.doubleSided)
-    mat.side = THREE36.DoubleSide;
+    mat.side = THREE39.DoubleSide;
   mat.userData["kilnMaterial"] = {
     alphaMode,
     ...alphaMode === "mask" ? { alphaCutoff: mat.alphaTest } : {},
@@ -19238,7 +20341,7 @@ var init_texture_atlas_pixels = __esm(() => {
 });
 
 // src/uv-shapes.ts
-import * as THREE37 from "three";
+import * as THREE40 from "three";
 function remapUV(geo, options = {}) {
   if (!options || typeof options !== "object" || Array.isArray(options) || Object.keys(options).some((key) => !["scale", "offset"].includes(key))) {
     throw new Error("remapUV: options may contain only scale and offset.");
@@ -19267,7 +20370,7 @@ function remapUV(geo, options = {}) {
   }
   const cloned = geo.clone();
   cloned.userData = structuredClone(geo.userData);
-  cloned.setAttribute("uv", new THREE37.Float32BufferAttribute(values, 2));
+  cloned.setAttribute("uv", new THREE40.Float32BufferAttribute(values, 2));
   if ((scale[0] !== 1 || scale[1] !== 1) && cloned.hasAttribute("tangent")) {
     cloned.deleteAttribute("tangent");
     const previous = cloned.userData.kilnAttributeWarnings;
@@ -19284,13 +20387,13 @@ function remapUV(geo, options = {}) {
 var init_uv_shapes = () => {};
 
 // src/texture-atlas.ts
-import * as THREE38 from "three";
+import * as THREE41 from "three";
 async function textureAtlas(input, options = {}) {
   const compiled = await compileTextureAtlasSpecV1(input, options);
-  const texture = new THREE38.DataTexture(compiled.pixels, compiled.spec.width, compiled.spec.height, THREE38.RGBAFormat, THREE38.UnsignedByteType);
+  const texture = new THREE41.DataTexture(compiled.pixels, compiled.spec.width, compiled.spec.height, THREE41.RGBAFormat, THREE41.UnsignedByteType);
   texture.name = "Atlas";
   texture.flipY = false;
-  texture.colorSpace = compiled.spec.usage === "albedo" || compiled.spec.usage === "emissive" ? THREE38.SRGBColorSpace : THREE38.NoColorSpace;
+  texture.colorSpace = compiled.spec.usage === "albedo" || compiled.spec.usage === "emissive" ? THREE41.SRGBColorSpace : THREE41.NoColorSpace;
   applyPortableSamplerV1(texture, compiled.spec.sampler);
   texture.userData.kilnAtlas = { spec: compiled.spec, manifest: compiled.manifest };
   texture.userData.kilnTexture = {
@@ -19340,7 +20443,7 @@ function remapUVToAtlas(geometry, atlas, name, options) {
         bytes += buffer.byteLength;
       }
     } else {
-      bytes += attribute.array.byteLength * (attribute.constructor === THREE38.BufferAttribute || attribute.constructor === THREE38.InstancedBufferAttribute ? 1 : 2);
+      bytes += attribute.array.byteLength * (attribute.constructor === THREE41.BufferAttribute || attribute.constructor === THREE41.InstancedBufferAttribute ? 1 : 2);
     }
   };
   for (const attr of Object.values(geometry.attributes))
@@ -21496,7 +22599,7 @@ var init_material_resources = __esm(() => {
 });
 
 // src/material-recipe-runtime.ts
-import * as THREE39 from "three";
+import * as THREE42 from "three";
 async function applyMaterialRecipeV1(request, options = {}) {
   const resolved = resolveMaterialRecipeV1(request);
   const cache = options.cache ?? DEFAULT_APPROVED_TEXTURE_CACHE;
@@ -21519,9 +22622,9 @@ async function applyMaterialRecipeV1(request, options = {}) {
   };
   const material = pbrMaterial(materialOptions);
   material.name = options.name ?? request.id;
-  material.color.setRGB(resolved.baseColorFactor[0], resolved.baseColorFactor[1], resolved.baseColorFactor[2], THREE39.LinearSRGBColorSpace);
+  material.color.setRGB(resolved.baseColorFactor[0], resolved.baseColorFactor[1], resolved.baseColorFactor[2], THREE42.LinearSRGBColorSpace);
   material.opacity = resolved.baseColorFactor[3];
-  material.emissive.setRGB(resolved.emissiveFactor[0], resolved.emissiveFactor[1], resolved.emissiveFactor[2], THREE39.LinearSRGBColorSpace);
+  material.emissive.setRGB(resolved.emissiveFactor[0], resolved.emissiveFactor[1], resolved.emissiveFactor[2], THREE42.LinearSRGBColorSpace);
   const resources = [...loaded.values()].map((entry) => entry.provenance).sort((a, b) => `${a.resourceId}:${a.usage}`.localeCompare(`${b.resourceId}:${b.usage}`));
   const provenance = {
     schemaVersion: 1,
@@ -21626,57 +22729,57 @@ var init_texture_resolver = __esm(() => {
 });
 
 // src/procedural-material-v3.ts
-function fail5(message) {
+function fail6(message) {
   throw new PortableMaterialV3Error(message);
 }
 function assertJson(input) {
   let nodes = 0;
   const visit = (value, depth) => {
     if (++nodes > 65536 || depth > 16)
-      fail5("JSON size/depth budget exceeded.");
+      fail6("JSON size/depth budget exceeded.");
     if (value === null || typeof value === "boolean")
       return;
     if (typeof value === "string") {
       if (value.length > PORTABLE_MATERIAL_V3_LIMITS.maxJsonBytes)
-        fail5("string budget exceeded.");
+        fail6("string budget exceeded.");
       return;
     }
     if (typeof value === "number" && Number.isFinite(value))
       return;
     if (!value || typeof value !== "object")
-      fail5("only plain JSON data is supported.");
+      fail6("only plain JSON data is supported.");
     const array = Array.isArray(value), proto = Object.getPrototypeOf(value);
     if (array ? proto !== Array.prototype : proto !== Object.prototype && proto !== null)
-      fail5("only plain JSON prototypes are supported.");
+      fail6("only plain JSON prototypes are supported.");
     const descriptors = Object.getOwnPropertyDescriptors(value), keys = Reflect.ownKeys(value);
     if (keys.length > 1025)
-      fail5("field/array budget exceeded.");
+      fail6("field/array budget exceeded.");
     const length = array ? descriptors["length"]?.value : undefined;
     if (array && (length > 1024 || keys.length !== length + 1))
-      fail5("arrays must be bounded dense JSON data.");
+      fail6("arrays must be bounded dense JSON data.");
     for (const key of keys) {
       if (array && key === "length")
         continue;
       if (typeof key !== "string" || ["__proto__", "prototype", "constructor"].includes(key))
-        fail5("forbidden JSON field.");
+        fail6("forbidden JSON field.");
       const d = descriptors[key];
       if (!d.enumerable || !("value" in d))
-        fail5("JSON accessors/hidden fields are unsupported.");
+        fail6("JSON accessors/hidden fields are unsupported.");
       if (array && (!/^(0|[1-9][0-9]*)$/.test(key) || Number(key) >= length))
-        fail5("invalid array key.");
+        fail6("invalid array key.");
       visit(d.value, depth + 1);
     }
   };
   visit(input, 0);
   if (new TextEncoder().encode(JSON.stringify(input)).length > PORTABLE_MATERIAL_V3_LIMITS.maxJsonBytes)
-    fail5("JSON byte budget exceeded.");
+    fail6("JSON byte budget exceeded.");
 }
 function record6(value, keys) {
   if (!value || typeof value !== "object" || Array.isArray(value))
-    fail5("expected a JSON object.");
+    fail6("expected a JSON object.");
   const result = value;
   if (Object.keys(result).some((key) => !keys.includes(key)))
-    fail5("unknown field in material or texture reference.");
+    fail6("unknown field in material or texture reference.");
   return result;
 }
 function admitMaterial(input) {
@@ -21693,10 +22796,10 @@ function admitMaterial(input) {
   ];
   const r = record6(input, ["schemaVersion", "model", "name", "textures", ...scalarKeys]);
   if (r["schemaVersion"] !== 3 || r["model"] !== "pbrMetallicRoughness")
-    fail5("requires schemaVersion 3 and model pbrMetallicRoughness.");
+    fail6("requires schemaVersion 3 and model pbrMetallicRoughness.");
   const name = r["name"];
   if (name !== undefined && (typeof name !== "string" || name.length < 1 || name.length > 200))
-    fail5("name requires 1..200 characters.");
+    fail6("name requires 1..200 characters.");
   const common = canonicalizePortableMaterialSpecV2({
     schemaVersion: 2,
     model: "pbrMetallicRoughness",
@@ -21711,23 +22814,23 @@ function admitMaterial(input) {
     const sampler = canonicalizePortableSamplerV1(ref["sampler"]);
     if (ref["kind"] === "procedural") {
       if (ref["resourceId"] !== undefined)
-        fail5("procedural references cannot carry a resource ID.");
+        fail6("procedural references cannot carry a resource ID.");
       const admitted = admitProceduralTextureSpecV3(ref["spec"]);
       if (admitted.spec.usage !== PORTABLE_MATERIAL_SLOT_USAGE[slot])
-        fail5(`${slot} requires ${PORTABLE_MATERIAL_SLOT_USAGE[slot]} data.`);
+        fail6(`${slot} requires ${PORTABLE_MATERIAL_SLOT_USAGE[slot]} data.`);
       texels += admitted.spec.width * admitted.spec.height;
       work += admitted.estimatedWorkUnits;
       bytes += admitted.conservativePixelAllocationBytes;
       textures[slot] = { kind: "procedural", spec: admitted.spec, sampler };
     } else if (ref["kind"] === "resource") {
       if (ref["spec"] !== undefined || typeof ref["resourceId"] !== "string" || ref["resourceId"].length > 128 || !/^kiln\.[a-z0-9][a-z0-9._-]+$/.test(ref["resourceId"]))
-        fail5("resource requires only a bounded closed kiln.* ID and sampler.");
+        fail6("resource requires only a bounded closed kiln.* ID and sampler.");
       textures[slot] = { kind: "resource", resourceId: ref["resourceId"], sampler };
     } else
-      fail5("texture kind must be procedural or resource.");
+      fail6("texture kind must be procedural or resource.");
   }
   if (texels > PORTABLE_MATERIAL_V3_LIMITS.maxTexels || work > PORTABLE_MATERIAL_V3_LIMITS.maxWork || bytes > PORTABLE_MATERIAL_V3_LIMITS.maxTransientBytes)
-    fail5("aggregate texel/work/allocation budget exceeded.");
+    fail6("aggregate texel/work/allocation budget exceeded.");
   const { schemaVersion: _, textures: __, ...parameters } = common;
   return {
     spec: {
@@ -21957,7 +23060,7 @@ var init_portable_material_runtime = __esm(() => {
 });
 
 // src/uv-data.ts
-import * as THREE40 from "three";
+import * as THREE43 from "three";
 function validateAtlasRemap(mesh, inputIndex, sourceCount) {
   const count = mesh.vertexCount;
   if (!Number.isSafeInteger(count) || count < 1 || count > GEOMETRY_ALLOCATION_LIMITS.unwrapVertices)
@@ -21992,7 +23095,7 @@ function remapUnwrapAttribute(attribute, oldIndexes) {
     for (let c = 0;c < attribute.itemSize; c++)
       array[i * attribute.itemSize + c] = attribute.array[oldIndexes[i] * stride + offset + c];
   }
-  const output = attribute.isFloat16BufferAttribute ? new THREE40.Float16BufferAttribute(array, attribute.itemSize, attribute.normalized) : new THREE40.BufferAttribute(array, attribute.itemSize, attribute.normalized);
+  const output = attribute.isFloat16BufferAttribute ? new THREE43.Float16BufferAttribute(array, attribute.itemSize, attribute.normalized) : new THREE43.BufferAttribute(array, attribute.itemSize, attribute.normalized);
   output.name = attribute.name;
   output.setUsage(interleaved(attribute) ? attribute.data.usage : attribute.usage);
   if (!interleaved(attribute))
@@ -22104,7 +23207,7 @@ var init_uv_data = __esm(() => {
 });
 
 // src/uv.ts
-import * as THREE41 from "three";
+import * as THREE44 from "three";
 async function getXatlas() {
   if (!_xatlasReady) {
     _xatlasReady = (async () => {
@@ -22136,7 +23239,7 @@ async function autoUnwrap(geometry, opts = {}) {
     if (result.atlasCount !== 1 || !Number.isSafeInteger(result.width) || result.width <= 0 || !Number.isSafeInteger(result.height) || result.height <= 0)
       throw new Error("autoUnwrap: xatlas must return one valid atlas; multiple atlas pages are unsupported.");
     const remap = validateAtlasRemap(mesh, prepared.index, geometry.getAttribute("position").count);
-    const out = new THREE41.BufferGeometry;
+    const out = new THREE44.BufferGeometry;
     for (const [name, attribute] of Object.entries(geometry.attributes)) {
       if (name === "uv" || name === "tangent" || name === "normal" && !prepared.useNormals)
         continue;
@@ -22146,8 +23249,8 @@ async function autoUnwrap(geometry, opts = {}) {
       out.morphAttributes[name] = targets.map((attribute) => remapUnwrapAttribute(attribute, remap.oldIndexes));
     }
     out.morphTargetsRelative = geometry.morphTargetsRelative;
-    out.setIndex(new THREE41.BufferAttribute(new Uint32Array(remap.index), 1));
-    out.setAttribute("uv", new THREE41.BufferAttribute(new Float32Array(remap.uv), 2));
+    out.setIndex(new THREE44.BufferAttribute(new Uint32Array(remap.index), 1));
+    out.setAttribute("uv", new THREE44.BufferAttribute(new Float32Array(remap.uv), 2));
     out.name = geometry.name;
     out.groups = geometry.groups.map((group) => ({ ...group }));
     out.setDrawRange(geometry.drawRange.start, geometry.drawRange.count);
@@ -22182,11 +23285,11 @@ function repairZeroNormals(geo) {
   if (broken.size === 0)
     return;
   const acc = new Float32Array(normal.count * 3);
-  const a = new THREE41.Vector3;
-  const b = new THREE41.Vector3;
-  const c = new THREE41.Vector3;
-  const face = new THREE41.Vector3;
-  const edge = new THREE41.Vector3;
+  const a = new THREE44.Vector3;
+  const b = new THREE44.Vector3;
+  const c = new THREE44.Vector3;
+  const face = new THREE44.Vector3;
+  const edge = new THREE44.Vector3;
   for (let t = 0;t + 2 < index.count; t += 3) {
     const tri = [index.getX(t), index.getX(t + 1), index.getX(t + 2)];
     if (!tri.some((i) => broken.has(i)))
@@ -22222,7 +23325,7 @@ var init_uv = __esm(() => {
 });
 
 // src/uv-project.ts
-import * as THREE42 from "three";
+import * as THREE45 from "three";
 function projectUV(geometry, options) {
   if (!options || typeof options !== "object" || Array.isArray(options) || !["planar", "box", "cylindrical"].includes(options.projection) || Object.keys(options).some((key) => !["projection", "frame", "seamDegrees", "angularRange", "caps"].includes(key)))
     throw new Error("projectUV: select an explicit planar, box or cylindrical projection with documented options.");
@@ -22260,15 +23363,15 @@ function projectUV(geometry, options) {
         throw new Error("projectUV: index contains an invalid vertex reference.");
     }
   const points = [];
-  const bounds = new THREE42.Box3;
+  const bounds = new THREE45.Box3;
   for (let i = 0;i < positions.count; i++) {
-    const point = new THREE42.Vector3().fromBufferAttribute(positions, i).applyMatrix4(inverse);
+    const point = new THREE45.Vector3().fromBufferAttribute(positions, i).applyMatrix4(inverse);
     if (![point.x, point.y, point.z].every(Number.isFinite))
       throw new Error("projectUV: frame-local positions must be finite.");
     points.push(point);
     bounds.expandByPoint(point);
   }
-  const extent = bounds.getSize(new THREE42.Vector3);
+  const extent = bounds.getSize(new THREE45.Vector3);
   const fit = (point, axis) => extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
   const outputUVs = new Float32Array(corners * 2);
   const startDegrees = options.angularRange?.[0] ?? options.seamDegrees ?? 180;
@@ -22276,8 +23379,8 @@ function projectUV(geometry, options) {
   const sweep = (options.angularRange?.[1] ?? 360) * Math.PI / 180;
   const fullWrap = options.angularRange === undefined || options.angularRange[1] === 360;
   const wrap = (angle) => (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
-  const normal = new THREE42.Vector3;
-  const edge = new THREE42.Vector3;
+  const normal = new THREE45.Vector3;
+  const edge = new THREE45.Vector3;
   for (let i = 0;i < corners; i += 3) {
     const triangle = [0, 1, 2].map((offset) => points[index ? index.getX(i + offset) : i + offset]);
     normal.subVectors(triangle[1], triangle[0]).cross(edge.subVectors(triangle[2], triangle[0])).normalize();
@@ -22324,7 +23427,7 @@ function projectUV(geometry, options) {
   const out = geometry.index ? geometry.toNonIndexed() : geometry.clone();
   out.userData = structuredClone(geometry.userData);
   out.setDrawRange(geometry.drawRange.start, geometry.drawRange.count);
-  out.setAttribute("uv", new THREE42.Float32BufferAttribute(outputUVs, 2));
+  out.setAttribute("uv", new THREE45.Float32BufferAttribute(outputUVs, 2));
   if (out.hasAttribute("tangent")) {
     out.deleteAttribute("tangent");
     const previous = out.userData.kilnAttributeWarnings;
@@ -22345,17 +23448,17 @@ var init_uv_project = __esm(() => {
 });
 
 // src/primitives.ts
-import * as THREE43 from "three";
+import * as THREE46 from "three";
 function vectorToTuple(v) {
   return [v.x, v.y, v.z];
 }
 function createRoot(name) {
-  const root = new THREE43.Object3D;
+  const root = new THREE46.Object3D;
   root.name = name;
   return root;
 }
 function createPivot(name, position = [0, 0, 0], parent) {
-  const pivot = new THREE43.Object3D;
+  const pivot = new THREE46.Object3D;
   pivot.name = `Joint_${name}`;
   pivot.position.set(...position);
   if (parent)
@@ -22387,16 +23490,16 @@ function assertPartArgs(name, geometry2, material) {
 }
 function createPart(name, geometry2, material, options = {}) {
   assertPartArgs(name, geometry2, material);
-  const mesh = new THREE43.Mesh(geometry2, material);
+  const mesh = new THREE46.Mesh(geometry2, material);
   mesh.name = `Mesh_${name}`;
   if (options.position)
     mesh.position.set(...options.position);
   if (options.rotation)
-    mesh.rotation.set(THREE43.MathUtils.degToRad(options.rotation[0]), THREE43.MathUtils.degToRad(options.rotation[1]), THREE43.MathUtils.degToRad(options.rotation[2]));
+    mesh.rotation.set(THREE46.MathUtils.degToRad(options.rotation[0]), THREE46.MathUtils.degToRad(options.rotation[1]), THREE46.MathUtils.degToRad(options.rotation[2]));
   if (options.scale)
     mesh.scale.set(...options.scale);
   if (options.pivot) {
-    const pivot = new THREE43.Object3D;
+    const pivot = new THREE46.Object3D;
     pivot.name = `Joint_${name}`;
     pivot.add(mesh);
     mesh.position.set(0, 0, 0);
@@ -22419,7 +23522,7 @@ function capsuleGeo(radius, height, segments = 6) {
   assertDimension("capsuleGeo height (straight middle length)", height, true);
   assertDimension("capsuleGeo outer half-length", height / 2 + radius);
   assertPrimitiveSegments("capsuleGeo segments", segments, 3);
-  return new THREE43.CapsuleGeometry(radius, height, 2, segments);
+  return new THREE46.CapsuleGeometry(radius, height, 2, segments);
 }
 function capsuleXGeo(radius, length, segments = 6) {
   const geo = capsuleGeo(radius, length, segments);
@@ -22438,7 +23541,7 @@ function cylinderGeo(radiusTop, radiusBottom, height, segments = 8) {
     throw new RangeError("cylinderGeo requires at least one positive radius.");
   assertDimension("cylinderGeo height", height);
   assertPrimitiveSegments("cylinderGeo segments", segments, 3);
-  return new THREE43.CylinderGeometry(radiusTop, radiusBottom, height, segments);
+  return new THREE46.CylinderGeometry(radiusTop, radiusBottom, height, segments);
 }
 function cylinderXGeo(radiusTop, radiusBottom, length, segments = 8) {
   const geo = cylinderGeo(radiusTop, radiusBottom, length, segments);
@@ -22453,20 +23556,20 @@ function cylinderZGeo(radiusTop, radiusBottom, length, segments = 8) {
 function boxGeo(width, height, depth) {
   for (const [name, value] of Object.entries({ width, height, depth }))
     assertDimension(`boxGeo ${name} (use planeGeo for a sheet)`, value);
-  return new THREE43.BoxGeometry(width, height, depth);
+  return new THREE46.BoxGeometry(width, height, depth);
 }
 function sphereGeo(radius, widthSegments = 8, heightSegments = 6) {
   assertDimension("sphereGeo radius", radius);
   assertPrimitiveSegments("sphereGeo widthSegments", widthSegments, 3);
   assertPrimitiveSegments("sphereGeo heightSegments", heightSegments, 2);
   assertPrimitiveGrid("sphereGeo", widthSegments, heightSegments);
-  return new THREE43.SphereGeometry(radius, widthSegments, heightSegments);
+  return new THREE46.SphereGeometry(radius, widthSegments, heightSegments);
 }
 function coneGeo(radius, height, segments = 8) {
   assertDimension("coneGeo radius", radius);
   assertDimension("coneGeo height", height);
   assertPrimitiveSegments("coneGeo segments", segments, 3);
-  return new THREE43.ConeGeometry(radius, height, segments);
+  return new THREE46.ConeGeometry(radius, height, segments);
 }
 function coneXGeo(radius, length, segments = 8) {
   const geo = coneGeo(radius, length, segments);
@@ -22483,7 +23586,7 @@ function cylinderOnAxis(center, normal, radiusBottom, height, options = {}) {
   const segments = options.segments ?? 8;
   assertFiniteTriple("cylinderOnAxis center", center);
   assertFiniteTriple("cylinderOnAxis normal", normal);
-  const n = new THREE43.Vector3(normal[0], normal[1], normal[2]);
+  const n = new THREE46.Vector3(normal[0], normal[1], normal[2]);
   const len = Math.hypot(...normal);
   if (len < 0.000001) {
     throw new Error(`cylinderOnAxis: normal must be a non-zero vector (got [${normal.join(",")}]).`);
@@ -22491,7 +23594,7 @@ function cylinderOnAxis(center, normal, radiusBottom, height, options = {}) {
   const magnitude = Math.max(...normal.map(Math.abs));
   n.set(normal[0] / magnitude, normal[1] / magnitude, normal[2] / magnitude).normalize();
   const geo = cylinderGeo(radiusTop, radiusBottom, height, segments);
-  const q = new THREE43.Quaternion().setFromUnitVectors(new THREE43.Vector3(0, 1, 0), n);
+  const q = new THREE46.Quaternion().setFromUnitVectors(new THREE46.Vector3(0, 1, 0), n);
   geo.applyQuaternion(q);
   geo.translate(center[0], center[1], center[2]);
   return geo;
@@ -22513,7 +23616,7 @@ function torusGeo(radius, tube, radialSegments = 8, tubularSegments = 12) {
   assertPrimitiveSegments("torusGeo radialSegments", radialSegments, 3);
   assertPrimitiveSegments("torusGeo tubularSegments", tubularSegments, 3);
   assertPrimitiveGrid("torusGeo", radialSegments, tubularSegments);
-  return new THREE43.TorusGeometry(radius, tube, radialSegments, tubularSegments);
+  return new THREE46.TorusGeometry(radius, tube, radialSegments, tubularSegments);
 }
 function planeGeo(width, height, widthSegments = 1, heightSegments = 1) {
   assertDimension("planeGeo width", width);
@@ -22521,14 +23624,14 @@ function planeGeo(width, height, widthSegments = 1, heightSegments = 1) {
   assertPrimitiveSegments("planeGeo widthSegments", widthSegments, 1);
   assertPrimitiveSegments("planeGeo heightSegments", heightSegments, 1);
   assertPrimitiveGrid("planeGeo", widthSegments, heightSegments);
-  return new THREE43.PlaneGeometry(width, height, widthSegments, heightSegments);
+  return new THREE46.PlaneGeometry(width, height, widthSegments, heightSegments);
 }
 function decalBox(width, height, depth = 0.01) {
   assertDimension("decalBox width", width);
   assertDimension("decalBox height", height);
   assertDimension("decalBox depth", depth, true);
   const d = Math.max(depth, 0.002);
-  return new THREE43.BoxGeometry(width, height, d);
+  return new THREE46.BoxGeometry(width, height, d);
 }
 function validateCardFrame(name, width, height, yPivot) {
   assertDimension(`${name} width`, width);
@@ -22542,7 +23645,7 @@ function foliageCardGeo(opts = {}) {
   const h = opts.height ?? 1;
   const yPivot = opts.yPivot ?? 0;
   validateCardFrame("foliageCardGeo", w, h, yPivot);
-  const geom = new THREE43.PlaneGeometry(w, h);
+  const geom = new THREE46.PlaneGeometry(w, h);
   geom.translate(0, h * (0.5 - yPivot), 0);
   geom.userData["kilnGeometryRole"] = "foliageCard";
   return geom;
@@ -22558,12 +23661,12 @@ function crossedQuadsGeo(opts = {}) {
   const geometries = [];
   for (let i = 0;i < planes; i++) {
     const angle = i / planes * Math.PI;
-    const quad = new THREE43.PlaneGeometry(w, h);
+    const quad = new THREE46.PlaneGeometry(w, h);
     quad.translate(0, h * (0.5 - yPivot), 0);
     quad.rotateY(angle);
     geometries.push(quad);
   }
-  const out = new THREE43.BufferGeometry;
+  const out = new THREE46.BufferGeometry;
   const posCount = geometries.reduce((sum, g) => sum + (g.attributes.position?.count ?? 0), 0);
   const positions = new Float32Array(posCount * 3);
   const normals = new Float32Array(posCount * 3);
@@ -22590,9 +23693,9 @@ function crossedQuadsGeo(opts = {}) {
     }
     vOffset += p.count;
   }
-  out.setAttribute("position", new THREE43.BufferAttribute(positions, 3));
-  out.setAttribute("normal", new THREE43.BufferAttribute(normals, 3));
-  out.setAttribute("uv", new THREE43.BufferAttribute(uvs, 2));
+  out.setAttribute("position", new THREE46.BufferAttribute(positions, 3));
+  out.setAttribute("normal", new THREE46.BufferAttribute(normals, 3));
+  out.setAttribute("uv", new THREE46.BufferAttribute(uvs, 2));
   out.setIndex(indices);
   out.userData["kilnGeometryRole"] = "foliageCard";
   return out;
@@ -22607,7 +23710,7 @@ function octaGridPlane(opts) {
   const h = opts.height ?? 1;
   const yPivot = opts.yPivot ?? 0;
   validateCardFrame("octaGridPlane", w, h, yPivot);
-  const geom = new THREE43.PlaneGeometry(w, h);
+  const geom = new THREE46.PlaneGeometry(w, h);
   geom.translate(0, h * (0.5 - yPivot), 0);
   const uv = geom.attributes.uv;
   const du = 1 / opts.tilesX;
@@ -22703,8 +23806,8 @@ function wingGeo(options = {}) {
     7,
     6
   ];
-  const geo = new THREE43.BufferGeometry;
-  geo.setAttribute("position", new THREE43.BufferAttribute(vertices, 3));
+  const geo = new THREE46.BufferGeometry;
+  geo.setAttribute("position", new THREE46.BufferAttribute(vertices, 3));
   geo.setIndex(tipChord === 0 ? [0, 1, 3, 4, 7, 5, 0, 2, 6, 0, 6, 4, 1, 5, 7, 1, 7, 3, 0, 4, 5, 0, 5, 1] : indices);
   geo.computeVertexNormals();
   return geo;
@@ -22735,17 +23838,17 @@ function createWingPair(name, material, options) {
   };
 }
 function beamBetween(name, start, end, radius, material, options = {}) {
-  const a = new THREE43.Vector3(...start);
-  const b = new THREE43.Vector3(...end);
+  const a = new THREE46.Vector3(...start);
+  const b = new THREE46.Vector3(...end);
   const direction = b.clone().sub(a);
   const length = direction.length();
   if (length <= 0.0001) {
     throw new Error(`beamBetween("${name}"): start and end must be different points (got start=[${start.join(",")}], end=[${end.join(",")}], delta=${length.toExponential(2)}). Pick two distinct endpoints or switch to cylinderGeo with an explicit length + position.`);
   }
-  const mesh = new THREE43.Mesh(cylinderGeo(radius, radius, length, options.segments ?? 8), material);
+  const mesh = new THREE46.Mesh(cylinderGeo(radius, radius, length, options.segments ?? 8), material);
   mesh.name = `Mesh_${name}`;
   mesh.position.copy(a.add(b).multiplyScalar(0.5));
-  mesh.quaternion.setFromUnitVectors(new THREE43.Vector3(0, 1, 0), direction.normalize());
+  mesh.quaternion.setFromUnitVectors(new THREE46.Vector3(0, 1, 0), direction.normalize());
   if (options.parent)
     options.parent.add(mesh);
   return mesh;
@@ -22754,11 +23857,11 @@ function snapTo(part, host, options = {}) {
   const overlap = options.overlap ?? 0.02;
   part.updateWorldMatrix(true, true);
   host.updateWorldMatrix(true, true);
-  const a = new THREE43.Box3().setFromObject(part);
-  const b = new THREE43.Box3().setFromObject(host);
+  const a = new THREE46.Box3().setFromObject(part);
+  const b = new THREE46.Box3().setFromObject(host);
   if (a.isEmpty() || b.isEmpty())
     return part;
-  const delta = new THREE43.Vector3;
+  const delta = new THREE46.Vector3;
   for (const axis of ["x", "y", "z"]) {
     if (a.min[axis] > b.max[axis])
       delta[axis] = b.max[axis] - a.min[axis];
@@ -22774,7 +23877,7 @@ function snapTo(part, host, options = {}) {
     delta[dominant] = -overlap;
   const parent = part.parent;
   if (parent) {
-    const p0 = new THREE43.Vector3;
+    const p0 = new THREE46.Vector3;
     part.getWorldPosition(p0);
     const p1 = p0.clone().add(delta);
     const l0 = parent.worldToLocal(p0.clone());
@@ -22809,8 +23912,8 @@ function createLadder(name, options) {
     throw new RangeError("createLadder rungCount must be an integer from 0 to 10000.");
   if (widthAxis !== "x" && widthAxis !== "z")
     throw new RangeError("createLadder widthAxis must be x or z.");
-  const bottomVec = new THREE43.Vector3;
-  const topVec = new THREE43.Vector3(...top).sub(new THREE43.Vector3(...bottom));
+  const bottomVec = new THREE46.Vector3;
+  const topVec = new THREE46.Vector3(...top).sub(new THREE46.Vector3(...bottom));
   const length = Math.hypot(topVec.x, topVec.y, topVec.z);
   assertDimension("createLadder endpoint distance", length);
   if (length <= 0.0001)
@@ -22818,7 +23921,7 @@ function createLadder(name, options) {
   const along = topVec.clone().divideScalar(length);
   if (widthDirection !== undefined)
     assertFiniteTriple("createLadder widthDirection", widthDirection);
-  let across = widthDirection ? new THREE43.Vector3(...widthDirection) : widthAxis === "x" ? new THREE43.Vector3(1, 0, 0) : new THREE43.Vector3(0, 0, 1);
+  let across = widthDirection ? new THREE46.Vector3(...widthDirection) : widthAxis === "x" ? new THREE46.Vector3(1, 0, 0) : new THREE46.Vector3(0, 0, 1);
   const largest = Math.max(Math.abs(across.x), Math.abs(across.y), Math.abs(across.z));
   if (!largest)
     throw new RangeError("createLadder widthDirection must be nonzero.");
@@ -22828,19 +23931,19 @@ function createLadder(name, options) {
     if (widthDirection)
       throw new RangeError("createLadder widthDirection must not be parallel to the endpoints.");
     const axes = [
-      new THREE43.Vector3(1, 0, 0),
-      new THREE43.Vector3(0, 1, 0),
-      new THREE43.Vector3(0, 0, 1)
+      new THREE46.Vector3(1, 0, 0),
+      new THREE46.Vector3(0, 1, 0),
+      new THREE46.Vector3(0, 0, 1)
     ];
     across = axes.reduce((best, axis) => Math.abs(axis.dot(along)) < Math.abs(best.dot(along)) ? axis : best);
     across.addScaledVector(along, -across.dot(along));
   }
   across.normalize();
   const offset = across.clone().multiplyScalar(width / 2);
-  const root = new THREE43.Object3D;
+  const root = new THREE46.Object3D;
   root.name = name;
   root.position.set(...bottom);
-  const rotation = new THREE43.Quaternion().setFromRotationMatrix(new THREE43.Matrix4().makeBasis(across, along, across.clone().cross(along))).toArray();
+  const rotation = new THREE46.Quaternion().setFromRotationMatrix(new THREE46.Matrix4().makeBasis(across, along, across.clone().cross(along))).toArray();
   stampSemanticMetadataV1(root, {
     roles: ["ladder"],
     frames: [
@@ -22880,7 +23983,7 @@ function wallWithOpening(name, material, options) {
   if (opening && openings)
     throw new TypeError("wallWithOpening: use opening or openings, not both.");
   const built = buildWallPanels(length, height, thickness, openings ?? (opening ? [opening] : []));
-  const group = new THREE43.Object3D;
+  const group = new THREE46.Object3D;
   group.name = name;
   const panel = (suffix, lenStart, lenEnd, yLo, yHi) => {
     const segLen = lenEnd - lenStart;
@@ -22911,7 +24014,7 @@ function room(name, material, options = {}) {
     parent
   } = options;
   const openings = options.openings ?? [{ wall: "front", kind: "door" }];
-  const root = new THREE43.Object3D;
+  const root = new THREE46.Object3D;
   root.name = name;
   const wall = (suffix, len, axis, pos, which) => {
     const w = wallWithOpening(`${name}_Wall${suffix}`, material, {
@@ -22965,7 +24068,7 @@ function createStairs(name, material, options) {
   if (Math.abs(totalRise) < 0.0001 || Math.abs(totalRun) < 0.0001) {
     throw new Error(`createStairs("${name}"): totalRise and totalRun must be non-zero (got rise=${totalRise}, run=${totalRun}).`);
   }
-  const root = new THREE43.Object3D;
+  const root = new THREE46.Object3D;
   root.name = name;
   const stepRise = totalRise / steps;
   const stepRun = totalRun / steps;
@@ -22995,7 +24098,7 @@ function requireColor(color, fn) {
 }
 function gameMaterial(color, options = {}) {
   requireColor(color, "gameMaterial");
-  return new THREE43.MeshStandardMaterial({
+  return new THREE46.MeshStandardMaterial({
     color,
     metalness: options.metalness ?? 0,
     roughness: options.roughness ?? 0.8,
@@ -23006,7 +24109,7 @@ function gameMaterial(color, options = {}) {
 }
 function basicMaterial(color, options = {}) {
   requireColor(color, "basicMaterial");
-  return new THREE43.MeshBasicMaterial({
+  return new THREE46.MeshBasicMaterial({
     color,
     transparent: options.transparent ?? false,
     opacity: options.opacity ?? 1
@@ -23014,18 +24117,18 @@ function basicMaterial(color, options = {}) {
 }
 function glassMaterial(color, options = {}) {
   requireColor(color, "glassMaterial");
-  return new THREE43.MeshStandardMaterial({
+  return new THREE46.MeshStandardMaterial({
     color,
     transparent: true,
     opacity: options.opacity ?? 0.35,
     roughness: options.roughness ?? 0.1,
     metalness: options.metalness ?? 0,
-    side: THREE43.DoubleSide
+    side: THREE46.DoubleSide
   });
 }
 function lambertMaterial(color, options = {}) {
   requireColor(color, "lambertMaterial");
-  return new THREE43.MeshLambertMaterial({
+  return new THREE46.MeshLambertMaterial({
     color,
     flatShading: options.flatShading ?? true,
     emissive: options.emissive ?? 0
@@ -23035,12 +24138,12 @@ function threeInterpolation(mode) {
   if (mode !== undefined && !TRACK_INTERPOLATIONS.includes(mode)) {
     throw new Error(`Animation interpolation must be one of ${TRACK_INTERPOLATIONS.join(", ")}.`);
   }
-  return mode === "STEP" ? THREE43.InterpolateDiscrete : THREE43.InterpolateLinear;
+  return mode === "STEP" ? THREE46.InterpolateDiscrete : THREE46.InterpolateLinear;
 }
 function interpolatedTrack(Type, name, times, values, interpolation) {
   if (!isCubicInterpolation(interpolation))
     return new Type(name, times, values, threeInterpolation(interpolation));
-  const quaternion = Type === THREE43.QuaternionKeyframeTrack;
+  const quaternion = Type === THREE46.QuaternionKeyframeTrack;
   return useCubicSpline(new Type(name, times, cubicSplineValues(times, values, quaternion ? 4 : 3, interpolation, quaternion)));
 }
 function animationNumber(value, label) {
@@ -23094,15 +24197,15 @@ function rotationTrack(jointName, keyframes, interpolation) {
   animationKeys(jointName, keyframes, "rotation", interpolation);
   const times = [];
   const values = [];
-  const euler = new THREE43.Euler;
-  const quat = new THREE43.Quaternion;
+  const euler = new THREE46.Euler;
+  const quat = new THREE46.Quaternion;
   for (const kf of keyframes) {
     times.push(kf.time);
-    euler.set(THREE43.MathUtils.degToRad(kf.rotation[0]), THREE43.MathUtils.degToRad(kf.rotation[1]), THREE43.MathUtils.degToRad(kf.rotation[2]));
+    euler.set(THREE46.MathUtils.degToRad(kf.rotation[0]), THREE46.MathUtils.degToRad(kf.rotation[1]), THREE46.MathUtils.degToRad(kf.rotation[2]));
     quat.setFromEuler(euler);
     values.push(quat.x, quat.y, quat.z, quat.w);
   }
-  return interpolatedTrack(THREE43.QuaternionKeyframeTrack, `${jointName}.quaternion`, times, values, interpolation);
+  return interpolatedTrack(THREE46.QuaternionKeyframeTrack, `${jointName}.quaternion`, times, values, interpolation);
 }
 function positionTrack(jointName, keyframes, interpolation) {
   animationKeys(jointName, keyframes, "position", interpolation);
@@ -23112,7 +24215,7 @@ function positionTrack(jointName, keyframes, interpolation) {
     times.push(kf.time);
     values.push(...kf.position);
   }
-  return interpolatedTrack(THREE43.VectorKeyframeTrack, `${jointName}.position`, times, values, interpolation);
+  return interpolatedTrack(THREE46.VectorKeyframeTrack, `${jointName}.position`, times, values, interpolation);
 }
 function scaleTrack(jointName, keyframes, interpolation) {
   animationKeys(jointName, keyframes, "scale", interpolation);
@@ -23122,7 +24225,7 @@ function scaleTrack(jointName, keyframes, interpolation) {
     times.push(kf.time);
     values.push(...kf.scale);
   }
-  return interpolatedTrack(THREE43.VectorKeyframeTrack, `${jointName}.scale`, times, values, interpolation);
+  return interpolatedTrack(THREE46.VectorKeyframeTrack, `${jointName}.scale`, times, values, interpolation);
 }
 function createClip(name, duration, tracks, options) {
   if (typeof name !== "string" || !name.trim())
@@ -23135,7 +24238,7 @@ function createClip(name, duration, tracks, options) {
   const loop = clipLoopOption(options);
   const names = new Set;
   for (const track of tracks) {
-    if (!(track instanceof THREE43.KeyframeTrack))
+    if (!(track instanceof THREE46.KeyframeTrack))
       throw new Error("Animation clip tracks must be KeyframeTrack instances.");
     if (typeof track.name !== "string")
       throw new Error("Animation track target/channel must use a string name.");
@@ -23149,12 +24252,12 @@ function createClip(name, duration, tracks, options) {
       throw new Error(`Duplicate animation target/channel: ${track.name}.`);
     names.add(track.name);
     const quaternion = channel === "quaternion";
-    const Type = quaternion ? THREE43.QuaternionKeyframeTrack : THREE43.VectorKeyframeTrack;
+    const Type = quaternion ? THREE46.QuaternionKeyframeTrack : THREE46.VectorKeyframeTrack;
     if (!(track instanceof Type))
       throw new Error(`Animation channel ${channel} requires ${quaternion ? "QuaternionKeyframeTrack" : "VectorKeyframeTrack"}.`);
     const cubic = isCubicSplineTrack(track);
     const mode = track.getInterpolation();
-    if (!cubic && mode !== THREE43.InterpolateLinear && mode !== THREE43.InterpolateDiscrete) {
+    if (!cubic && mode !== THREE46.InterpolateLinear && mode !== THREE46.InterpolateDiscrete) {
       throw new Error("Animation interpolation must be LINEAR, STEP or CUBICSPLINE (the glTF sampler modes); three.js smooth and Bezier interpolants have no glTF form.");
     }
     animationTimes(track.times, track.name);
@@ -23177,7 +24280,7 @@ function createClip(name, duration, tracks, options) {
       throw new Error(`Animation clip duration ${duration} does not include every key of ${track.name}.`);
     }
   }
-  const clip = new THREE43.AnimationClip(name, duration, tracks);
+  const clip = new THREE46.AnimationClip(name, duration, tracks);
   if (loop !== undefined)
     clip.userData.kilnLoopIntent = loop ? "loop" : "once";
   return clip;
@@ -23254,12 +24357,12 @@ function createInstance(name, source, options = {}) {
   if (!sourceMesh) {
     throw new Error(`createInstance("${name}"): source "${source.name}" has no Mesh to clone from`);
   }
-  const mesh = new THREE43.Mesh(sourceMesh.geometry, sourceMesh.material);
+  const mesh = new THREE46.Mesh(sourceMesh.geometry, sourceMesh.material);
   mesh.name = `Mesh_${name}`;
   if (options.position)
     mesh.position.set(...options.position);
   if (options.rotation)
-    mesh.rotation.set(THREE43.MathUtils.degToRad(options.rotation[0]), THREE43.MathUtils.degToRad(options.rotation[1]), THREE43.MathUtils.degToRad(options.rotation[2]));
+    mesh.rotation.set(THREE46.MathUtils.degToRad(options.rotation[0]), THREE46.MathUtils.degToRad(options.rotation[1]), THREE46.MathUtils.degToRad(options.rotation[2]));
   if (options.scale)
     mesh.scale.set(...options.scale);
   if (options.parent)
@@ -23413,6 +24516,13 @@ function buildSandboxGlobals(usage, options = {}) {
     createPart: wrap("createPart", createPart),
     defineLod: wrap("defineLod", defineLod),
     markOpenShell: wrap("markOpenShell", markOpenShell),
+    colliderBox: wrap("colliderBox", colliderBox),
+    colliderCapsule: wrap("colliderCapsule", colliderCapsule),
+    colliderHull: wrap("colliderHull", colliderHull),
+    anchor: wrap("anchor", anchor),
+    defineModule: wrap("defineModule", defineModule),
+    port: wrap("port", port),
+    bakeSurfaceAttributes: wrap("bakeSurfaceAttributes", bakeSurfaceAttributes),
     capsuleGeo: wrapGeo("capsuleGeo", capsuleGeo),
     capsuleXGeo: wrapGeo("capsuleXGeo", capsuleXGeo),
     capsuleYGeo: wrapGeo("capsuleYGeo", capsuleYGeo),
@@ -23522,7 +24632,7 @@ function buildSandboxGlobals(usage, options = {}) {
     countMaterials: wrap("countMaterials", countMaterials),
     getJointNames: wrap("getJointNames", getJointNames),
     materialBudgetAdvisory: wrap("materialBudgetAdvisory", materialBudgetAdvisory),
-    THREE: THREE43,
+    THREE: THREE46,
     Math,
     console: options.console ?? console
   };
@@ -23536,6 +24646,8 @@ var init_primitives = __esm(() => {
   init_lod();
   init_lod();
   init_open_shell();
+  init_delivery();
+  init_surface_bake();
   init_animation_cubic();
   init_animation_spline();
   init_open_shell();
@@ -23896,10 +25008,10 @@ var init_rebuild_options = __esm(() => {
 import {
   ComponentTypeToTypedArray,
   Primitive,
-  PropertyType as PropertyType3
+  PropertyType as PropertyType4
 } from "@gltf-transform/core";
 import { createTransform, dequantizePrimitive, joinPrimitives } from "@gltf-transform/functions";
-import * as THREE44 from "three";
+import * as THREE47 from "three";
 function isSingular(matrix) {
   const e = matrix.elements;
   const scale = Math.hypot(e[0], e[1], e[2]) * Math.hypot(e[4], e[5], e[6]) * Math.hypot(e[8], e[9], e[10]);
@@ -23935,7 +25047,7 @@ function findRigidBoundaries(doc, keep) {
   }
   for (const node of root.listNodes()) {
     const name = node.getName();
-    const sceneParents = node.listParents().filter((parent) => parent.propertyType === PropertyType3.SCENE).length;
+    const sceneParents = node.listParents().filter((parent) => parent.propertyType === PropertyType4.SCENE).length;
     if (sceneParents > 1)
       add(node, "shared-scene");
     if (JOINT_PIVOT.test(name))
@@ -23950,7 +25062,7 @@ function findRigidBoundaries(doc, keep) {
     if (lod) {
       add(node, "lod");
       for (const level of lod.listLevels())
-        if (level.propertyType === PropertyType3.NODE)
+        if (level.propertyType === PropertyType4.NODE)
           add(level, "lod");
     }
     if (keep.has(name))
@@ -24017,10 +25129,10 @@ function reverseWinding(prim) {
   }
 }
 function bake(prim, matrix) {
-  const linear = new THREE44.Matrix3().setFromMatrix4(matrix);
-  const normalMatrix = new THREE44.Matrix3().getNormalMatrix(matrix);
+  const linear = new THREE47.Matrix3().setFromMatrix4(matrix);
+  const normalMatrix = new THREE47.Matrix3().getNormalMatrix(matrix);
   const mirrored = matrix.determinant() < 0;
-  const v = new THREE44.Vector3;
+  const v = new THREE47.Vector3;
   const each = (semantic, apply) => {
     const attribute = prim.getAttribute(semantic);
     const element = [];
@@ -24044,7 +25156,7 @@ function destinationOf(entries) {
   let best = Infinity;
   let bestScale = Infinity;
   for (const { node } of entries) {
-    const linear = new THREE44.Matrix3().setFromMatrix4(worldOf(node));
+    const linear = new THREE47.Matrix3().setFromMatrix4(worldOf(node));
     const norm = Math.hypot(...linear.elements);
     const inverseNorm = Math.hypot(...linear.clone().invert().elements);
     const condition = norm * inverseNorm;
@@ -24058,9 +25170,9 @@ function destinationOf(entries) {
   return chosen;
 }
 function checkPositionPrecision(input, output, sourceWorld, destinationWorld, reversed) {
-  const expected = new THREE44.Vector3;
-  const actual = new THREE44.Vector3;
-  const bounds = new THREE44.Box3;
+  const expected = new THREE47.Vector3;
+  const actual = new THREE47.Vector3;
+  const bounds = new THREE47.Box3;
   const element = [];
   let error = 0;
   let magnitude = 0;
@@ -24184,11 +25296,11 @@ function removableBytes(entries) {
   const removed = new Set;
   for (const [prim, nodes] of uses) {
     const retained = prim.listParents().some((parent) => {
-      if (parent.propertyType === PropertyType3.ROOT)
+      if (parent.propertyType === PropertyType4.ROOT)
         return false;
-      if (parent.propertyType !== PropertyType3.MESH)
+      if (parent.propertyType !== PropertyType4.MESH)
         return true;
-      return parent.listParents().some((user) => user.propertyType !== PropertyType3.ROOT && (user.propertyType !== PropertyType3.NODE || !nodes.has(user)));
+      return parent.listParents().some((user) => user.propertyType !== PropertyType4.ROOT && (user.propertyType !== PropertyType4.NODE || !nodes.has(user)));
     });
     if (!retained)
       removed.add(prim);
@@ -24196,7 +25308,7 @@ function removableBytes(entries) {
   const accessors = new Set([...removed].flatMap(accessorsOf));
   let bytes = 0;
   for (const accessor of accessors)
-    if (accessor.listParents().every((parent) => parent.propertyType === PropertyType3.ROOT || removed.has(parent)))
+    if (accessor.listParents().every((parent) => parent.propertyType === PropertyType4.ROOT || removed.has(parent)))
       bytes += accessor.getArray()?.byteLength ?? 0;
   return bytes;
 }
@@ -24363,12 +25475,12 @@ function mergeRigidGroups(doc, options = {}) {
         mesh.dispose();
     }
   for (const prim of removed) {
-    if (prim.listParents().some((parent) => parent.propertyType === PropertyType3.MESH))
+    if (prim.listParents().some((parent) => parent.propertyType === PropertyType4.MESH))
       continue;
     const accessors = accessorsOf(prim);
     prim.dispose();
     for (const accessor of accessors)
-      if (accessor.listParents().every((parent) => parent.propertyType === PropertyType3.ROOT))
+      if (accessor.listParents().every((parent) => parent.propertyType === PropertyType4.ROOT))
         accessor.dispose();
   }
   summary.merges = plans.length;
@@ -24381,7 +25493,7 @@ function rigidMerge(options = {}, onSummary) {
     onSummary?.(summary);
   });
 }
-var JOINT_PIVOT, RESTART_MODES, BAKED, MAX_VERTICES = 65534, MAX_BYTES_PER_SAVED_DRAW = 4096, hasKeys = (value) => Object.keys(value).length > 0, worldOf = (node) => new THREE44.Matrix4().fromArray(node.getWorldMatrix()), nodeUsers = (mesh) => mesh.listParents().filter((parent) => parent.propertyType === PropertyType3.NODE).length, accessorsOf = (prim) => {
+var JOINT_PIVOT, RESTART_MODES, BAKED, MAX_VERTICES = 65534, MAX_BYTES_PER_SAVED_DRAW = 4096, hasKeys = (value) => Object.keys(value).length > 0, worldOf = (node) => new THREE47.Matrix4().fromArray(node.getWorldMatrix()), nodeUsers = (mesh) => mesh.listParents().filter((parent) => parent.propertyType === PropertyType4.NODE).length, accessorsOf = (prim) => {
   const indices = prim.getIndices();
   return indices ? [...prim.listAttributes(), indices] : prim.listAttributes();
 }, primitiveBytes = (primitives) => [...new Set(primitives.flatMap(accessorsOf))].reduce((sum, a) => sum + (a.getArray()?.byteLength ?? 0), 0), countPrimitives = (nodes) => [...nodes].reduce((sum, node) => sum + (node.getMesh()?.listPrimitives().length ?? 0), 0);
@@ -24655,13 +25767,13 @@ var init_helper_specs = __esm(() => {
     },
     {
       name: "defineLod",
-      signature: "defineLod(levels: Object3D[], opts: { screenCoverage: number[] })",
+      signature: "defineLod(levels: Object3D[], opts: { screenCoverage: number[], impostor?: boolean })",
       returns: "Object3D[] (levels, unchanged)",
       category: "structure",
       description: "Declares one set of level-of-detail tiers, LOD0 (full detail) first, and the minimum screen coverage (0..1) at which each level draws.",
       example: `const tiers = ['Body_LOD0', 'Body_LOD1', 'Body_LOD2'].map((name) => { const g = new THREE.Group(); g.name = name; root.add(g); return g; });
 defineLod(tiers, { screenCoverage: [0.25, 0.06, 0.01] });`,
-      promptNotes: "Only when the brief asks for LOD tiers; otherwise build one tier. Tiers are sibling nodes named with one stem and consecutive LOD<n> tokens. screenCoverage has one value per level, strictly decreasing; below the last the asset is culled, and a last value of 0 never culls."
+      promptNotes: "Only when the brief asks for LOD tiers; otherwise build one tier. Tiers are sibling nodes named with one stem and consecutive LOD<n> tokens. screenCoverage has one value per level, strictly decreasing; below the last the asset is culled, and a last value of 0 never culls. impostor: true marks the last level a card or billboard tier."
     },
     {
       name: "markOpenShell",
@@ -24672,6 +25784,69 @@ defineLod(tiers, { screenCoverage: [0.25, 0.06, 0.01] });`,
       example: `const rail = createPart('Rail', new THREE.CylinderGeometry(0.2, 0.2, 2, 16, 1, true), steel, { parent: root });
 markOpenShell(rail, 'Tube closed by the end plates');`,
       promptNotes: "Only for shells open by design; close a part meant to be solid instead. A mark on a group covers its meshes. Overlap with a marked part stays unmeasured, not clear."
+    },
+    {
+      name: "colliderBox",
+      signature: "colliderBox(size: [w, h, d] | number, opts: { id, parent?, position?, rotation?: [xDeg, yDeg, zDeg] })",
+      returns: "THREE.Mesh (hidden proxy named Collider_box_<id>)",
+      category: "structure",
+      description: "Adds a hidden oriented-box collider proxy with role collider.box.<id>: a unit box whose node scale is the size, so a consumer reads centre, orientation and size from the transform alone.",
+      example: "colliderBox([2, 3, 0.4], { id: 'frame', parent: root, position: [0, 1.5, 0] });",
+      promptNotes: "Only when the brief asks for colliders. The proxy never draws; it must wrap or cross the surface it stands for and stay inside the drawn bounds. id is one segment without dots."
+    },
+    {
+      name: "colliderCapsule",
+      signature: "colliderCapsule(radius: number, height: number, opts: { id, parent?, position?, rotation? })",
+      returns: "THREE.Mesh (hidden proxy named Collider_capsule_<id>)",
+      category: "structure",
+      description: "Adds a hidden capsule collider proxy along local +Y with role collider.capsule.<id>. height is the TOTAL end-to-end height including both caps (at least 2 * radius); the node scale is [2r, height, 2r].",
+      example: "colliderCapsule(0.15, 1.8, { id: 'post', parent: root, position: [0.8, 0.9, 0] });",
+      promptNotes: "height here is total height, unlike capsuleGeo whose height is the straight middle length."
+    },
+    {
+      name: "colliderHull",
+      signature: "colliderHull(mesh: Mesh, opts: { id, parent? })",
+      returns: "THREE.Mesh (hidden convex hull named Collider_hull_<id>)",
+      category: "structure",
+      description: "Adds a hidden convex-hull collider proxy of a mesh's vertices beside it, with the mesh's local transform and role collider.hull.<id>. The input mesh is unchanged.",
+      example: `const frame = createPart('Frame', boxGeo(2, 3, 0.4), steel, { parent: root });
+colliderHull(frame, { id: 'frame' });`
+    },
+    {
+      name: "anchor",
+      signature: "anchor(kind: string, id: string, opts?: { parent?, position?, rotation? })",
+      returns: "THREE.Object3D (hidden empty leaf named Anchor_<kind>_<id>)",
+      category: "structure",
+      description: "Adds a named point with a transform and role anchor.<kind>.<id>: a door, vault plate, beacon, hardpoint, light or spawn point the consumer attaches behaviour to.",
+      example: "anchor('door', 'main', { parent: root, position: [0, 1, 0.25] });",
+      promptNotes: "An anchor is a leaf: never add parts under it. kind and id are single segments."
+    },
+    {
+      name: "defineModule",
+      signature: "defineModule(root: Object3D, spec: { footprint: [w, d], height, snapAxis: 'x'|'y'|'z', origin: 'corner'|'center' })",
+      returns: "Object3D (root, unchanged)",
+      category: "structure",
+      description: "Marks root as one modular kit piece (role kit.module) and records its footprint (width X, depth Z), height and snap axis as kilnKit node extras.",
+      example: "defineModule(root, { footprint: [4, 4], height: 3, snapAxis: 'x', origin: 'center' });",
+      promptNotes: "Only for modular kit pieces. Place each port inside the footprint."
+    },
+    {
+      name: "port",
+      signature: "port(id: string, opts?: { parent?, position?, rotation? })",
+      returns: "THREE.Object3D (empty node named Port_<id>)",
+      category: "structure",
+      description: "Adds a kit snap point with role kit.port.<id> under a defineModule root; its transform is the snap frame.",
+      example: "port('west', { parent: root, position: [-2, 0, 0], rotation: [0, 180, 0] });"
+    },
+    {
+      name: "bakeSurfaceAttributes",
+      signature: "bakeSurfaceAttributes(target: Object3D, opts?: { edge?: { thresholdDegrees?: 35, smoothing?: 1 } | false, cavity?: { rays?: 32, radius?, occluders? } | false })",
+      returns: "Object3D (target, unchanged; its meshes get new geometry copies)",
+      category: "mesh-ops",
+      description: "Bakes two float vertex attributes in [0, 1] on every visible mesh in target: _edge (convex rim weight, 1 on chamfers and rims, 0 on flat faces) and _cavity (exposure, 1 open, toward 0 in recesses and under overhangs). Exported as glTF _EDGE and _CAVITY.",
+      example: `// after every part that occludes is attached
+bakeSurfaceAttributes(root, { edge: { thresholdDegrees: 35 }, cavity: { rays: 32 } });`,
+      promptNotes: "Only when the brief asks for wear or cavity attributes. Call it last, after parts are placed: cavity depends on placement. Each baked mesh gets its own geometry copy."
     },
     {
       name: "beamBetween",
@@ -25922,7 +27097,7 @@ var init_kit = __esm(() => {
 
 // src/texture-bake.ts
 import { createHash as createHash5 } from "node:crypto";
-import * as THREE45 from "three";
+import * as THREE48 from "three";
 function readPixels(texture) {
   const image = texture.image;
   if (!image)
@@ -26049,7 +27224,7 @@ async function bakeSceneTextures(root, warnings) {
       mime: "image/png",
       bytes
     };
-    const colorSpace = entry.texture.colorSpace === THREE45.SRGBColorSpace ? "srgb" : "linear";
+    const colorSpace = entry.texture.colorSpace === THREE48.SRGBColorSpace ? "srgb" : "linear";
     const recipe = entry.texture.userData["kilnProcedural"];
     const primaryUsage = atlasRecord?.spec.usage ?? recipe?.usage ?? (entry.bindings.some(({ slot }) => slot === "roughnessMap") && entry.bindings.some(({ slot }) => slot === "metalnessMap") ? "metallicRoughness" : entry.bindings[0]?.usage ?? "albedo");
     if (!encoded)
@@ -26132,10 +27307,10 @@ function computeTangentBasis(geometry) {
     }
   }
   const out = new Float32Array(vertexCount * 4);
-  const n = new THREE45.Vector3;
-  const t = new THREE45.Vector3;
-  const tmp = new THREE45.Vector3;
-  const tmp2 = new THREE45.Vector3;
+  const n = new THREE48.Vector3;
+  const t = new THREE48.Vector3;
+  const tmp = new THREE48.Vector3;
+  const tmp2 = new THREE48.Vector3;
   for (let v = 0;v < vertexCount; v++) {
     n.set(normal.getX(v), normal.getY(v), normal.getZ(v));
     t.set(tan1[v * 3], tan1[v * 3 + 1], tan1[v * 3 + 2]);
@@ -26155,7 +27330,7 @@ function computeTangentBasis(geometry) {
     out[v * 4 + 2] = tmp.z;
     out[v * 4 + 3] = w;
   }
-  geometry.setAttribute("tangent", new THREE45.BufferAttribute(out, 4));
+  geometry.setAttribute("tangent", new THREE48.BufferAttribute(out, 4));
 }
 function ensureNormalMapTangents(root, warnings) {
   let count = 0;
@@ -26273,7 +27448,7 @@ var init_exporter_node = __esm(() => {
 });
 
 // src/views/character.ts
-import * as THREE46 from "three";
+import * as THREE49 from "three";
 function rounded(value) {
   const result = Math.round(value * 1e9) / 1e9;
   return Object.is(result, -0) ? 0 : result;
@@ -26315,9 +27490,9 @@ function buildCharacterDiagnosticDescriptor(root, findings = []) {
   const invalidPaths = new Set(invalidFindingNodePaths);
   const joints = evidence.map((joint) => {
     const relative = rootInverse.clone().multiply(joint.node.matrixWorld);
-    const position = new THREE46.Vector3().setFromMatrixPosition(relative);
-    const forward = new THREE46.Vector3(...joint.descriptor.localForwardAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
-    const bend = new THREE46.Vector3(...joint.descriptor.localBendAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
+    const position = new THREE49.Vector3().setFromMatrixPosition(relative);
+    const forward = new THREE49.Vector3(...joint.descriptor.localForwardAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
+    const bend = new THREE49.Vector3(...joint.descriptor.localBendAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
     const chainId = chainIdFor(joint.descriptor, descriptorByRole);
     return {
       role: joint.descriptor.role,
@@ -27580,7 +28755,7 @@ function prepareTriangleCoverage(ax, ay, bx, by, cx, cy, size) {
 }
 
 // src/views/raster.ts
-import { Vector3 as Vector333 } from "three";
+import { Vector3 as Vector336 } from "three";
 function orbitDir(azimuthDeg, elevationDeg) {
   const el = Math.min(MAX_ELEVATION_DEG, Math.max(MIN_ELEVATION_DEG, elevationDeg)) * Math.PI / 180;
   const az = azimuthDeg * Math.PI / 180;
@@ -27604,7 +28779,7 @@ function updateSurfaceMatrices(root) {
 function surfaceVertexReader(mesh, position) {
   for (const bone of mesh.skeleton?.bones ?? [])
     bone.updateWorldMatrix?.(true, false);
-  const vertex = new Vector333;
+  const vertex = new Vector336;
   if (mesh.getVertexPosition)
     return (index) => mesh.getVertexPosition(index, vertex);
   if (position.getX && position.getY && position.getZ)
@@ -27881,7 +29056,7 @@ import {
 var init_scene_copy = () => {};
 
 // src/views/camera.ts
-import { Vector3 as Vector334, Matrix4 as Matrix415, Euler as Euler5, Group as Group4 } from "three";
+import { Vector3 as Vector337, Matrix4 as Matrix416, Euler as Euler5, Group as Group4 } from "three";
 function strict(value, keys, label) {
   for (const key of Object.keys(value))
     if (!keys.includes(key)) {
@@ -27894,7 +29069,7 @@ function finite2(n, label) {
     throw new Error(`${label} must be finite`);
   return n;
 }
-function triple(v, label) {
+function triple2(v, label) {
   if (!Array.isArray(v) || v.length !== 3 || v.some((n) => !Number.isFinite(n)))
     throw new Error(`${label} must contain three finite numbers`);
   return [...v];
@@ -27975,14 +29150,14 @@ function cameraFromBounds(bounds, dir, padding = 1, up, sceneBounds = bounds) {
   const z = vec(dir).normalize();
   if (!z.length())
     throw new Error("camera direction must be non-zero");
-  const hint = up ? vec(up) : Math.abs(z.y) > 0.99 ? new Vector334(0, 0, -1) : new Vector334(0, 1, 0);
+  const hint = up ? vec(up) : Math.abs(z.y) > 0.99 ? new Vector337(0, 0, -1) : new Vector337(0, 1, 0);
   const x = hint.clone().cross(z).normalize();
   if (x.length() < 0.000000001)
     throw new Error("camera up must not be collinear with view");
   const y = z.clone().cross(x);
   let extent = 0.000001;
   for (let i = 0;i < 8; i++) {
-    const p = new Vector334((i & 1 ? bounds.max : bounds.min)[0], (i & 2 ? bounds.max : bounds.min)[1], (i & 4 ? bounds.max : bounds.min)[2]).sub(target);
+    const p = new Vector337((i & 1 ? bounds.max : bounds.min)[0], (i & 2 ? bounds.max : bounds.min)[1], (i & 4 ? bounds.max : bounds.min)[2]).sub(target);
     extent = Math.max(extent, Math.abs(p.dot(x)), Math.abs(p.dot(y)));
   }
   const depthMin = bounds.min.map((v, i) => Math.min(v, sceneBounds.min[i]));
@@ -28018,9 +29193,9 @@ function validateResolvedAssetCamera(value) {
     throw new Error("camera.version must be kiln.camera.v1");
   const camera = {
     ...value,
-    position: triple(value.position, "position"),
-    target: triple(value.target, "target"),
-    up: triple(value.up, "up")
+    position: triple2(value.position, "position"),
+    target: triple2(value.target, "target"),
+    up: triple2(value.up, "up")
   };
   const view = vec(camera.target).sub(vec(camera.position));
   const up = vec(camera.up);
@@ -28063,7 +29238,7 @@ function resolveAssetCamera(root, shot = {}) {
     if (relative !== "world") {
       const node = relative === "part" ? selected.node : rootNode;
       dir.transformDirection(node.matrixWorld);
-      up = tuple6(new Vector334(0, 1, 0).transformDirection(node.matrixWorld));
+      up = tuple6(new Vector337(0, 1, 0).transformDirection(node.matrixWorld));
     }
     camera = cameraFromBounds(bounds, tuple6(dir), request.padding ?? 1.2, up, measureBounds(root));
   } else if (request.type === "explicit") {
@@ -28098,19 +29273,19 @@ function resolveAssetCamera(root, shot = {}) {
       throw new Error("padding requires bounds framing");
     if (request.framing === "bounds" && request.halfHeight !== undefined)
       throw new Error("bounds framing derives halfHeight");
-    let matrix = new Matrix415;
+    let matrix = new Matrix416;
     if (relative === "asset" || relative === "part")
       matrix = (relative === "asset" ? rootNode : selected.node).matrixWorld;
     if (request.frame) {
       strict(request.frame, ["origin", "rotation"], "frame");
-      const rotation = triple(request.frame.rotation ?? [0, 0, 0], "frame.rotation");
+      const rotation = triple2(request.frame.rotation ?? [0, 0, 0], "frame.rotation");
       matrix.makeRotationFromEuler(new Euler5(...rotation.map((n) => n * Math.PI / 180), "XYZ"));
-      matrix.setPosition(...triple(request.frame.origin ?? [0, 0, 0], "frame.origin"));
+      matrix.setPosition(...triple2(request.frame.origin ?? [0, 0, 0], "frame.origin"));
     }
-    const position = vec(triple(request.position, "position")).applyMatrix4(matrix);
-    const target = request.target ? vec(triple(request.target, "target")).applyMatrix4(matrix) : vec(bounds.min).add(vec(bounds.max)).multiplyScalar(0.5);
-    const up = vec(triple(request.up ?? [0, 1, 0], "up")).transformDirection(matrix);
-    const offset = vec(triple(request.targetOffset ?? [0, 0, 0], "targetOffset")).applyMatrix4(matrix).sub(new Vector334().setFromMatrixPosition(matrix));
+    const position = vec(triple2(request.position, "position")).applyMatrix4(matrix);
+    const target = request.target ? vec(triple2(request.target, "target")).applyMatrix4(matrix) : vec(bounds.min).add(vec(bounds.max)).multiplyScalar(0.5);
+    const up = vec(triple2(request.up ?? [0, 1, 0], "up")).transformDirection(matrix);
+    const offset = vec(triple2(request.targetOffset ?? [0, 0, 0], "targetOffset")).applyMatrix4(matrix).sub(new Vector337().setFromMatrixPosition(matrix));
     const radius = vec(bounds.max).sub(vec(bounds.min)).length();
     camera = {
       version: "kiln.camera.v1",
@@ -28223,11 +29398,11 @@ function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop)
     }
     return result;
   };
-  const key = new Vector334(1.5, 2, 1).normalize();
+  const key = new Vector337(1.5, 2, 1).normalize();
   const srgb = (n) => n <= 0.0031308 ? n * 12.92 : 1.055 * n ** (1 / 2.4) - 0.055;
   const ordered = compositingOrder(collectTriangles(root).tris, (px, py, pz) => camera.projection === "perspective" ? Math.hypot(px - position.x, py - position.y, pz - position.z) : (position.x - px) * z.x + (position.y - py) * z.y + (position.z - pz) * z.z);
   for (const tri of ordered) {
-    const world = [0, 1, 2].map((i) => new Vector334(tri.v[i * 3], tri.v[i * 3 + 1], tri.v[i * 3 + 2]));
+    const world = [0, 1, 2].map((i) => new Vector337(tri.v[i * 3], tri.v[i * 3 + 1], tri.v[i * 3 + 2]));
     const normal = world[1].clone().sub(world[0]).cross(world[2].clone().sub(world[0])).normalize().multiplyScalar(tri.windingParity);
     const normalSign = visibleNormalSign(normal.dot(camera.projection === "perspective" ? position.clone().sub(world[0]) : z), tri.side, backfaceCull);
     if (normalSign === 0)
@@ -28238,7 +29413,7 @@ function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop)
     const color = tri.color.map((c) => Math.round(srgb(c * light) * 255));
     let polygon = world.map((p) => {
       const d = p.clone().sub(position);
-      return new Vector334(d.dot(x), d.dot(y), -d.dot(z));
+      return new Vector337(d.dot(x), d.dot(y), -d.dot(z));
     });
     polygon = clip(clip(polygon, camera.near, true), camera.far, false);
     for (let t = 1;t < polygon.length - 1; t++) {
@@ -28270,7 +29445,7 @@ function rasterizeCamera(root, input, size = 384, backfaceCull = true, backdrop)
   }
   return out;
 }
-var vec = (a) => new Vector334(...a), tuple6 = (v) => [v.x || 0, v.y || 0, v.z || 0], KEY_HINTS;
+var vec = (a) => new Vector337(...a), tuple6 = (v) => [v.x || 0, v.y || 0, v.z || 0], KEY_HINTS;
 var init_camera = __esm(() => {
   init_raster();
   init_background();
@@ -28363,11 +29538,11 @@ import {
   Primitive as Primitive2
 } from "@gltf-transform/core";
 import {
-  BufferAttribute as BufferAttribute11,
+  BufferAttribute as BufferAttribute12,
   BufferGeometry as BufferGeometry15,
   Group as Group5,
-  Matrix4 as Matrix416,
-  Mesh as Mesh13,
+  Matrix4 as Matrix417,
+  Mesh as Mesh14,
   Bone as Bone2,
   SkinnedMesh as SkinnedMesh2,
   Skeleton as Skeleton3,
@@ -28380,8 +29555,8 @@ import {
   NumberKeyframeTrack,
   PropertyBinding as PropertyBinding3,
   VectorKeyframeTrack as VectorKeyframeTrack2,
-  Quaternion as Quaternion18,
-  Vector3 as Vector335,
+  Quaternion as Quaternion19,
+  Vector3 as Vector338,
   InterpolateDiscrete as InterpolateDiscrete2,
   InterpolateLinear as InterpolateLinear2
 } from "three";
@@ -29689,7 +30864,7 @@ function isRecord4(value) {
 function hasExactKeys(value, allowed) {
   return Object.keys(value).every((key) => allowed.includes(key));
 }
-function fail6(kind) {
+function fail7(kind) {
   throw new Error(`invalid evaluator ${kind}`);
 }
 function validRequestId(value) {
@@ -29710,34 +30885,34 @@ function parseOptions(value) {
     "gltfExporter",
     "materialResources"
   ])) {
-    return fail6("request");
+    return fail7("request");
   }
   const options = {};
   if (value.materialResources !== undefined)
     options.materialResources = validateMaterialLibraryPayloadAny(value.materialResources);
   if (value.gltfExporter !== undefined) {
     if (value.gltfExporter !== "legacy" && value.gltfExporter !== "three")
-      fail6("request");
+      fail7("request");
     options.gltfExporter = value.gltfExporter;
   }
   if (value.geometryPolicy !== undefined) {
     if (!["warn", "strict"].includes(String(value.geometryPolicy)))
-      fail6("request");
+      fail7("request");
     options.geometryPolicy = value.geometryPolicy;
   }
   if (value.indexPolicy !== undefined) {
     if (value.indexPolicy !== "indexed" && value.indexPolicy !== "asBuilt")
-      fail6("request");
+      fail7("request");
     options.indexPolicy = value.indexPolicy;
   }
   if (value.optimize !== undefined) {
     if (!["off", "auto", "palette", "full"].includes(String(value.optimize)))
-      fail6("request");
+      fail7("request");
     options.optimize = value.optimize;
   }
   if (value.instance !== undefined) {
     if (!["off", "auto", "on"].includes(String(value.instance)))
-      fail6("request");
+      fail7("request");
     options.instance = value.instance;
   }
   assertNoLegacyRuntimePolicy(value);
@@ -29747,20 +30922,20 @@ function parseOptions(value) {
 }
 function decodeEvaluatorRequestV2(json) {
   if (Buffer.byteLength(json, "utf8") > MAX_EVALUATOR_REQUEST_BYTES)
-    fail6("request");
+    fail7("request");
   let value;
   try {
     value = JSON.parse(json);
   } catch {
-    return fail6("request");
+    return fail7("request");
   }
   if (isRecord4(value) && isRecord4(value.options)) {
     const { materialResources: _, ...metadataOptions } = value.options;
     if (Buffer.byteLength(JSON.stringify({ ...value, options: metadataOptions }), "utf8") > 1024 * 1024)
-      return fail6("request");
+      return fail7("request");
   }
   if (!isRecord4(value) || !hasExactKeys(value, ["version", "requestId", "operation", "code", "options", "limits"]) || value.version !== EVALUATOR_REQUEST_VERSION || !validRequestId(value.requestId) || value.operation !== "execute-export-glb" || typeof value.code !== "string" || Buffer.byteLength(value.code, "utf8") > MAX_EVALUATOR_CODE_BYTES || !isRecord4(value.limits) || !hasExactKeys(value.limits, ["maxGlbBytes"]) || !validInteger(value.limits.maxGlbBytes, 1, 64 * 1024 * 1024)) {
-    return fail6("request");
+    return fail7("request");
   }
   return {
     version: EVALUATOR_REQUEST_VERSION,
@@ -29874,7 +31049,7 @@ var init_renderer_id = __esm(() => {
 });
 
 // src/views/scene-raster.ts
-import * as THREE47 from "three";
+import * as THREE50 from "three";
 var DEG2;
 var init_scene_raster = __esm(() => {
   init_evaluator();
@@ -29886,18 +31061,18 @@ var init_scene_raster = __esm(() => {
 });
 
 // src/views/vehicle.ts
-import * as THREE48 from "three";
+import * as THREE51 from "three";
 function hasRole2(node, prefix) {
   return readSemanticMetadataV1(node)?.roles.some((role) => role === prefix || role.startsWith(`${prefix}.`)) ?? false;
 }
 function chassisBounds(root, inverse) {
-  const bounds = new THREE48.Box3;
+  const bounds = new THREE51.Box3;
   let found = false;
   root.traverse((node) => {
     if (!hasRole2(node, "chassis"))
       return;
     node.traverse((part) => {
-      if (!(part instanceof THREE48.Mesh) || !(part.geometry instanceof THREE48.BufferGeometry))
+      if (!(part instanceof THREE51.Mesh) || !(part.geometry instanceof THREE51.BufferGeometry))
         return;
       part.geometry.computeBoundingBox();
       const box = part.geometry.boundingBox;
@@ -29907,7 +31082,7 @@ function chassisBounds(root, inverse) {
       for (const x of [box.min.x, box.max.x])
         for (const y of [box.min.y, box.max.y])
           for (const z of [box.min.z, box.max.z]) {
-            bounds.expandByPoint(new THREE48.Vector3(x, y, z).applyMatrix4(matrix));
+            bounds.expandByPoint(new THREE51.Vector3(x, y, z).applyMatrix4(matrix));
             found = true;
           }
     });
@@ -29975,33 +31150,33 @@ function tagDiagnostic(node, role) {
   stampSemanticMetadataV1(node, { roles: [role] });
 }
 function rod(name, start, end, radius, color, role) {
-  const from = new THREE48.Vector3(...start);
-  const to = new THREE48.Vector3(...end);
+  const from = new THREE51.Vector3(...start);
+  const to = new THREE51.Vector3(...end);
   const direction = to.clone().sub(from);
   const length = direction.length();
-  const geometry = length > 0.000000001 ? new THREE48.CylinderGeometry(radius, radius, length, 8) : new THREE48.SphereGeometry(radius, 8, 6);
-  const result = new THREE48.Mesh(geometry, new THREE48.MeshBasicMaterial({ color }));
+  const geometry = length > 0.000000001 ? new THREE51.CylinderGeometry(radius, radius, length, 8) : new THREE51.SphereGeometry(radius, 8, 6);
+  const result = new THREE51.Mesh(geometry, new THREE51.MeshBasicMaterial({ color }));
   result.name = name;
   result.position.copy(from).add(to).multiplyScalar(0.5);
   if (length > 0.000000001) {
-    result.quaternion.setFromUnitVectors(new THREE48.Vector3(0, 1, 0), direction.multiplyScalar(1 / length));
+    result.quaternion.setFromUnitVectors(new THREE51.Vector3(0, 1, 0), direction.multiplyScalar(1 / length));
   }
   tagDiagnostic(result, role);
   return result;
 }
 function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagnostics(root)) {
-  const overlay = new THREE48.Group;
+  const overlay = new THREE51.Group;
   overlay.name = "VehicleDiagnosticOverlay";
   const chassisSpan = descriptor.chassisBox ? Math.max(descriptor.chassisBox.max[0] - descriptor.chassisBox.min[0], descriptor.chassisBox.max[1] - descriptor.chassisBox.min[1], descriptor.chassisBox.max[2] - descriptor.chassisBox.min[2]) : 1;
   const thickness = Math.max(0.01, chassisSpan * 0.008);
-  const arrow = new THREE48.Group;
+  const arrow = new THREE51.Group;
   arrow.name = "Diagnostic_Forward_+X";
   tagDiagnostic(arrow, "diagnostic.vehicle.forward");
   arrow.add(rod("Diagnostic_Forward_Shaft", descriptor.forwardArrow.start, [descriptor.forwardArrow.end[0] - 0.12, 0, 0], thickness, 16724804, "diagnostic.vehicle.forward"));
-  const arrowHead = new THREE48.Mesh(new THREE48.ConeGeometry(thickness * 3.2, 0.24, 10), new THREE48.MeshBasicMaterial({ color: 16724804 }));
+  const arrowHead = new THREE51.Mesh(new THREE51.ConeGeometry(thickness * 3.2, 0.24, 10), new THREE51.MeshBasicMaterial({ color: 16724804 }));
   arrowHead.name = "Diagnostic_Forward_Head";
   arrowHead.position.set(descriptor.forwardArrow.end[0] - 0.12, 0, 0);
-  arrowHead.quaternion.setFromUnitVectors(new THREE48.Vector3(0, 1, 0), new THREE48.Vector3(1, 0, 0));
+  arrowHead.quaternion.setFromUnitVectors(new THREE51.Vector3(0, 1, 0), new THREE51.Vector3(1, 0, 0));
   tagDiagnostic(arrowHead, "diagnostic.vehicle.forward");
   arrow.add(arrowHead);
   overlay.add(arrow);
@@ -30009,18 +31184,18 @@ function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagno
     overlay.add(rod(`Diagnostic_Axle_${axle.id}`, axle.start, axle.end, thickness, 3386111, `diagnostic.vehicle.axle.${axle.id}`));
   }
   for (const wheel of descriptor.wheels) {
-    const ring = new THREE48.Mesh(new THREE48.TorusGeometry(wheel.radius, Math.min(thickness, wheel.radius * 0.15), 6, 32), new THREE48.MeshBasicMaterial({ color: 16763955 }));
+    const ring = new THREE51.Mesh(new THREE51.TorusGeometry(wheel.radius, Math.min(thickness, wheel.radius * 0.15), 6, 32), new THREE51.MeshBasicMaterial({ color: 16763955 }));
     ring.name = `Diagnostic_Wheel_${wheel.id}`;
     ring.position.set(...wheel.center);
-    const axle = new THREE48.Vector3(...wheel.axle);
+    const axle = new THREE51.Vector3(...wheel.axle);
     if (axle.lengthSq() > 0.000000000001) {
-      ring.quaternion.setFromUnitVectors(new THREE48.Vector3(0, 0, 1), axle.normalize());
+      ring.quaternion.setFromUnitVectors(new THREE51.Vector3(0, 0, 1), axle.normalize());
     }
     tagDiagnostic(ring, `diagnostic.vehicle.wheel.${wheel.id}`);
     overlay.add(ring);
   }
   if (descriptor.chassisBox) {
-    const chassis = new THREE48.Group;
+    const chassis = new THREE51.Group;
     chassis.name = "Diagnostic_ChassisBox";
     tagDiagnostic(chassis, "diagnostic.vehicle.chassis");
     const { min, max } = descriptor.chassisBox;
@@ -30054,7 +31229,7 @@ function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagno
     overlay.add(chassis);
   }
   if (descriptor.supportPlaneY !== undefined) {
-    const plane = new THREE48.Group;
+    const plane = new THREE51.Group;
     plane.name = "Diagnostic_SupportPlane";
     tagDiagnostic(plane, "diagnostic.vehicle.support-plane");
     const halfX = Math.max(1, ...descriptor.chassisBox ? [Math.abs(descriptor.chassisBox.min[0]), Math.abs(descriptor.chassisBox.max[0])] : [], ...descriptor.wheels.map((wheel) => Math.abs(wheel.center[0]) + wheel.radius)) + 0.2;
@@ -30383,7 +31558,7 @@ var init_views = __esm(() => {
 });
 
 // src/views/character-capture.ts
-import * as THREE49 from "three";
+import * as THREE52 from "three";
 function drawLine2(rgb, width, height, from, to, color) {
   let x0 = Math.round(from[0]);
   let y0 = Math.round(from[1]);
@@ -30420,22 +31595,22 @@ function drawCross(rgb, width, height, point, color, radius = 3) {
 }
 function projector(root, cameraId, size) {
   root.updateMatrixWorld(true);
-  const bounds = new THREE49.Box3().setFromObject(root);
+  const bounds = new THREE52.Box3().setFromObject(root);
   if (bounds.isEmpty())
-    bounds.set(new THREE49.Vector3(-0.5, 0, -0.5), new THREE49.Vector3(0.5, 1, 0.5));
-  const center = bounds.getCenter(new THREE49.Vector3);
-  const camera = cameraId === "front" ? new THREE49.Vector3(1, 0, 0) : new THREE49.Vector3(0, 0, 1);
-  const upHint = new THREE49.Vector3(0, 1, 0);
-  const xAxis = new THREE49.Vector3().crossVectors(upHint, camera).normalize();
-  const yAxis = new THREE49.Vector3().crossVectors(camera, xAxis).normalize();
+    bounds.set(new THREE52.Vector3(-0.5, 0, -0.5), new THREE52.Vector3(0.5, 1, 0.5));
+  const center = bounds.getCenter(new THREE52.Vector3);
+  const camera = cameraId === "front" ? new THREE52.Vector3(1, 0, 0) : new THREE52.Vector3(0, 0, 1);
+  const upHint = new THREE52.Vector3(0, 1, 0);
+  const xAxis = new THREE52.Vector3().crossVectors(upHint, camera).normalize();
+  const yAxis = new THREE52.Vector3().crossVectors(camera, xAxis).normalize();
   let extent = 0.000001;
   for (let corner = 0;corner < 8; corner++) {
-    const point = new THREE49.Vector3(corner & 1 ? bounds.max.x : bounds.min.x, corner & 2 ? bounds.max.y : bounds.min.y, corner & 4 ? bounds.max.z : bounds.min.z).sub(center);
+    const point = new THREE52.Vector3(corner & 1 ? bounds.max.x : bounds.min.x, corner & 2 ? bounds.max.y : bounds.min.y, corner & 4 ? bounds.max.z : bounds.min.z).sub(center);
     extent = Math.max(extent, Math.abs(point.dot(xAxis)), Math.abs(point.dot(yAxis)));
   }
   const scale = size * 0.45 / extent;
   return (assetPoint) => {
-    const world = new THREE49.Vector3(...assetPoint).applyMatrix4(root.matrixWorld).sub(center);
+    const world = new THREE52.Vector3(...assetPoint).applyMatrix4(root.matrixWorld).sub(center);
     return [size / 2 + world.dot(xAxis) * scale, size / 2 - world.dot(yAxis) * scale];
   };
 }
@@ -30561,10 +31736,27 @@ var init_character_capture = __esm(() => {
 });
 
 // src/render.ts
-import * as THREE50 from "three";
+import * as THREE53 from "three";
 import { Document, Logger } from "@gltf-transform/core";
 import { KHRMaterialsEmissiveStrength } from "@gltf-transform/extensions";
-import { dedup, instance, palette, weld, prune, mergeDocuments } from "@gltf-transform/functions";
+import { dedup, instance, palette, weld as weld2, prune, mergeDocuments } from "@gltf-transform/functions";
+function applySurfaceBakeExtras(root, doc) {
+  const baked = [];
+  root.traverse((node) => {
+    const mesh = node;
+    const record = mesh.isMesh ? surfaceBakeRecord(mesh.geometry) : undefined;
+    if (record && Object.keys(record).length)
+      baked.push([mesh, { ...record }]);
+  });
+  if (baked.length === 0)
+    return;
+  const written = writtenNodeResolver(root, doc, "Surface bake export");
+  for (const [node, record] of baked) {
+    const mesh = written(node).getMesh();
+    if (mesh)
+      mesh.setExtras({ ...mesh.getExtras(), [SURFACE_BAKE_KEY]: record });
+  }
+}
 function hiddenTriangles(root, lowerLevels) {
   let hidden = 0;
   const visit = (node) => {
@@ -30610,6 +31802,8 @@ async function inspectGlbIntegration(bytes, opts = {}) {
   const minY = minTuple[1];
   const levelsOfDetail = summarizeLodChains(doc);
   const hiddenNodes = summarizeHiddenNodes(doc);
+  const delivery = inspectDelivery(doc);
+  const vertexAttributes = summarizeVertexAttributes(doc);
   return {
     schemaVersion: "kiln.integration-manifest.v1",
     analyzerVersion: 1,
@@ -30648,6 +31842,12 @@ async function inspectGlbIntegration(bytes, opts = {}) {
     },
     ...levelsOfDetail.length ? { levelsOfDetail } : {},
     ...hiddenNodes.length ? { hiddenNodes } : {},
+    ...delivery.colliders.length ? { colliders: delivery.colliders } : {},
+    ...delivery.anchors.length ? { anchors: delivery.anchors } : {},
+    ...delivery.kit ? { kit: delivery.kit } : {},
+    ...delivery.ports.length ? { ports: delivery.ports } : {},
+    ...vertexAttributes.length ? { vertexAttributes } : {},
+    ...delivery.diagnostics.length ? { deliveryDiagnostics: delivery.diagnostics } : {},
     structuralQa: {
       hasDefaultScene: explicitDefault !== null,
       finiteBounds,
@@ -30745,7 +31945,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache, authorExtras, atlas)
     } else if (stdMat.transparent) {
       mat.setAlphaMode("BLEND");
     }
-    if (stdMat.side === THREE50.DoubleSide) {
+    if (stdMat.side === THREE53.DoubleSide) {
       mat.setDoubleSided(true);
     }
     if (stdMat.map) {
@@ -30822,7 +32022,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache, authorExtras, atlas)
   } else if (common.transparent || (common.opacity ?? 1) < 1) {
     mat.setAlphaMode("BLEND");
   }
-  if (threeMat.side === THREE50.DoubleSide)
+  if (threeMat.side === THREE53.DoubleSide)
     mat.setDoubleSided(true);
   if (common.map && !mat.getBaseColorTexture()) {
     const texture = bridgeTexture(doc, common.map, textureCache);
@@ -30868,6 +32068,12 @@ function bridgeGeometry(doc, buf, geometry, material, meshName, atlas) {
   if (tangentAttr?.itemSize === 4) {
     prim.setAttribute("TANGENT", doc.createAccessor(`${meshName}_tangent`).setArray(geometryAttributeValues(tangentAttr)).setType(TYPE_VEC4).setBuffer(buf));
   }
+  for (const [key, gltfName] of Object.entries(CUSTOM_EXPORT_ATTRIBUTES)) {
+    const custom = geometry.getAttribute(key);
+    if (custom?.itemSize !== 1)
+      continue;
+    prim.setAttribute(gltfName, doc.createAccessor(`${meshName}${gltfName.toLowerCase()}`).setArray(geometryAttributeValues(custom)).setType(TYPE_SCALAR).setBuffer(buf));
+  }
   const indexAttr = geometry.getIndex();
   if (indexAttr) {
     const IndexArray = posAttr && posAttr.count > 65535 ? Uint32Array : Uint16Array;
@@ -30900,7 +32106,8 @@ function bridgeNode(doc, buf, threeObj, matCache, nodeMap, meshCache, texCache, 
   const extras = {
     ...authorExtras?.node(threeObj),
     ...rigExtrasForExport(threeObj),
-    ...openShellExtras(threeObj)
+    ...openShellExtras(threeObj),
+    ...kitExtras(threeObj)
   };
   let semanticForExport = semanticValue;
   if (threeObj.isSprite) {
@@ -30964,7 +32171,7 @@ function bridgeNode(doc, buf, threeObj, matCache, nodeMap, meshCache, texCache, 
     const cacheKey = `kiln-sprite-quad:${centerX}:${centerY}:${rotation}__${threeMat.uuid}`;
     let gtMesh = meshCache.get(cacheKey);
     if (!gtMesh) {
-      const geometry = new THREE50.PlaneGeometry(1, 1);
+      const geometry = new THREE53.PlaneGeometry(1, 1);
       if (centerX !== 0.5 || centerY !== 0.5) {
         geometry.translate(0.5 - centerX, 0.5 - centerY, 0);
       }
@@ -30988,9 +32195,9 @@ function animationInterpolation(track) {
   if (isCubicSplineTrack(track))
     return "CUBICSPLINE";
   const mode = track.getInterpolation();
-  if (mode === THREE50.InterpolateDiscrete)
+  if (mode === THREE53.InterpolateDiscrete)
     return "STEP";
-  if (mode === THREE50.InterpolateLinear)
+  if (mode === THREE53.InterpolateLinear)
     return "LINEAR";
   throw new Error(`Unsupported animation interpolation on ${track.name}; use LINEAR, STEP or CUBICSPLINE.`);
 }
@@ -31164,7 +32371,7 @@ async function consolidateMaterials(doc, mode, keep = []) {
     steps.push(rigidMerge({ keep }, (summary) => {
       merge = summary;
     }));
-  steps.push(weld(), prune({ keepLeaves: true, keepExtras: true, keepSolidTextures: true }));
+  steps.push(weld2(), prune({ keepLeaves: true, keepExtras: true, keepSolidTextures: true }));
   await doc.transform(...steps);
   const after = collectGlbMetrics(doc);
   return {
@@ -31280,6 +32487,7 @@ async function renderSceneToGLB(root, opts = {}) {
     const scene = doc.getRoot().getDefaultScene();
     scene.setExtras({ ...scene.getExtras(), kilnAtlasProvenance: atlas.table });
   }
+  applySurfaceBakeExtras(root, doc);
   applyNodeVisibility(root, doc);
   applyLodChains(root, lodSets, doc);
   const indexBuffers = applyIndexPolicy(doc, indexPolicy);
@@ -31358,6 +32566,8 @@ async function renderSceneToGLB(root, opts = {}) {
   });
   if (!integrationManifest)
     throw new Error("renderSceneToGLB: final GLB has no measurable scene");
+  for (const finding of integrationManifest.deliveryDiagnostics ?? [])
+    warnings.push(`${finding.code} ${finding.path}: ${finding.message}`);
   const diagnosticViews = [];
   const rig = requirements.requirements.requirements.rig;
   const diagnosticParents = new Map(lodSets.map(({ parent }) => [parent, [...parent.children]]));
@@ -31527,8 +32737,8 @@ function collectMeshStats(root) {
     if (!Number.isFinite(box.min.x) || !Number.isFinite(box.max.x)) {
       return;
     }
-    const center = new THREE50.Vector3;
-    const size = new THREE50.Vector3;
+    const center = new THREE53.Vector3;
+    const size = new THREE53.Vector3;
     box.getCenter(center);
     box.getSize(size);
     out.push({
@@ -31543,7 +32753,7 @@ function collectMeshStats(root) {
   return out;
 }
 function minimalGapVector(a, b) {
-  const v = new THREE50.Vector3;
+  const v = new THREE53.Vector3;
   for (const axis of ["x", "y", "z"]) {
     if (a.min[axis] > b.max[axis])
       v[axis] = b.max[axis] - a.min[axis];
@@ -31561,10 +32771,10 @@ function inspectSceneStructure(root, opts = {}) {
     return warnings;
   const cat = opts.category?.toLowerCase();
   if (cat === "vehicle" || cat === "weapon" || cat === "boat" || cat === "aircraft") {
-    const all = new THREE50.Box3;
+    const all = new THREE53.Box3;
     for (const m of meshes)
       all.union(m.box);
-    const size = new THREE50.Vector3;
+    const size = new THREE53.Vector3;
     all.getSize(size);
     if (cat === "aircraft") {
       if (size.y > size.x * 1.2) {
@@ -31650,6 +32860,9 @@ var init_render = __esm(() => {
   init_animation_spline();
   init_index_policy();
   init_open_shell();
+  init_delivery();
+  init_delivery_inspect();
+  init_surface_bake();
   init_rig_export();
   init_geometry_export();
   init_primitives();
@@ -31668,18 +32881,18 @@ var init_render = __esm(() => {
   init_texture_bake();
   engineIO = createGltfIO;
   GLTF_MIN_FILTER = {
-    [THREE50.NearestFilter]: 9728,
-    [THREE50.LinearFilter]: 9729,
-    [THREE50.NearestMipmapNearestFilter]: 9984,
-    [THREE50.LinearMipmapNearestFilter]: 9985,
-    [THREE50.NearestMipmapLinearFilter]: 9986,
-    [THREE50.LinearMipmapLinearFilter]: 9987
+    [THREE53.NearestFilter]: 9728,
+    [THREE53.LinearFilter]: 9729,
+    [THREE53.NearestMipmapNearestFilter]: 9984,
+    [THREE53.LinearMipmapNearestFilter]: 9985,
+    [THREE53.NearestMipmapLinearFilter]: 9986,
+    [THREE53.LinearMipmapLinearFilter]: 9987
   };
-  GLTF_MAG_FILTER = { [THREE50.NearestFilter]: 9728, [THREE50.LinearFilter]: 9729 };
+  GLTF_MAG_FILTER = { [THREE53.NearestFilter]: 9728, [THREE53.LinearFilter]: 9729 };
   GLTF_WRAP = {
-    [THREE50.ClampToEdgeWrapping]: 33071,
-    [THREE50.MirroredRepeatWrapping]: 33648,
-    [THREE50.RepeatWrapping]: 10497
+    [THREE53.ClampToEdgeWrapping]: 33071,
+    [THREE53.MirroredRepeatWrapping]: 33648,
+    [THREE53.RepeatWrapping]: 10497
   };
   REVIEW_CLIP_LIMITS = {
     clips: 32,

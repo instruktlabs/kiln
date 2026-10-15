@@ -200,3 +200,44 @@ from this scope and why. The owner's game session reads this log to monitor.
   connect to C: resolve failed"); 1 `src/__tests__/workspace-setup.test.ts` "ships a CLI
   bundle matching the current source" fails because the committed `dist/cli.mjs` differs
   from a fresh build at HEAD on this machine (Node 24.20.0 on PATH, toolchain pins 22.23.3).
+- 2026-10-15 item 1 (delivery roles) done. Files: `src/contracts/semantic.ts` (roles +
+  `KILN_SEMANTIC_ROLES_REVISION = 2`), `src/contracts/integration.ts` (additive optional
+  `colliders`, `anchors`, `kit`, `ports`, `deliveryDiagnostics`, level `impostor`),
+  new `src/delivery.ts` and `src/delivery-inspect.ts`, `src/lod.ts`, `src/lod-export.ts`,
+  `src/render.ts`, `src/community-exporter.ts`, `src/primitives.ts`, `src/geometry-budget.ts`
+  (`colliderHullVertices`), `src/evaluator/authoring-diagnostic.ts` + `protocol.ts`
+  (`DELIVERY_CONTRACT`), Discovery specs/contracts, prompt-api snapshot, `package.json`
+  (`./delivery` subpath), `docs/sdk.md` (60 entrypoints). Test: new
+  `src/__tests__/delivery-roles.test.ts` (11, observed failing first). Gates: typecheck and
+  lint pass; `bun run test` 3684 pass, 2 skip, 21 fail = the 20 baseline failures plus
+  `mcp-server bundles > dist/mcp-engine.mjs matches a fresh build`, which is the expected
+  stale-bundle check until `node scripts/build-runtime.mjs all` runs at the item 2 gate.
+  Deviations: (a) kit extras key is `kilnKit` (`{ schemaVersion: 1, footprint, height,
+  snapAxis, origin }`), not a literal `kiln.kit`, to follow the existing engine-owned
+  `kiln*` extras convention (`kilnSemantic`, `kilnOpenShell`); (b) `colliderCapsule` height
+  is the total end-to-end height (caps included), and the proxy geometry is the true capsule
+  normalised into the unit box so the node scale `[2r, h, 2r]` restores it exactly; (c) the
+  manifest also gives each collider an explicit `shape` (box size, capsule radius/height,
+  hull vertex count) so consumers need not interpret the proxy mesh; (d) a box or capsule
+  wholly inside a closed solid touches no triangle and is reported by the advisory overlap
+  check, as the contract's wording requires.
+- 2026-10-15 item 2 (baked `_EDGE`/`_CAVITY`) done. Files: new `src/surface-bake.ts`
+  (`bakeSurfaceAttributes`, fixed Fibonacci cosine-weighted hemisphere, median-split BVH,
+  welded topology), `src/geometry-budget.ts` (`surfaceBakeVertices` 262144,
+  `surfaceBakeTriangles` 1000000, `surfaceBakeRays` 8388608, `surfaceBakeRayDirections`
+  256), `src/geometry-export.ts` (`_edge`/`_cavity` accepted by both converters,
+  `CUSTOM_EXPORT_ATTRIBUTES`), `src/render.ts` (legacy bridge writes `_EDGE`/`_CAVITY`;
+  bake parameters as mesh extras `kilnSurfaceBakeV1`; manifest `vertexAttributes`),
+  `src/delivery-inspect.ts` (`summarizeVertexAttributes`, LOD levels included),
+  `src/contracts/integration.ts`, `src/cli.ts` (receipt `vertexAttributes` and a log line per
+  attribute: the export diagnostic of preserved custom attributes), Discovery entries,
+  prompt-api snapshot, `src/primitives.ts`. Test: new `src/__tests__/surface-bake.test.ts`
+  (6). Three-side names are lowercase `_edge`/`_cavity` because three's GLTFLoader lowercases
+  custom glTF attributes; glTF names are `_EDGE`/`_CAVITY`. Each baked mesh gets its own
+  geometry copy (cavity depends on placement). Gates after `node scripts/build-runtime.mjs
+  all` (exit 0; rebuilt tracked `dist/`): `bun run test:coverage` 3692 pass, 2 skip, 19 fail
+  (all 19 are the baseline GNU-tar `scripts/` failures; both stale-bundle checks now pass),
+  and because the failing tests stop the `&&` chain, `bun scripts/check-coverage.mjs` was run
+  on the produced lcov: passed, functions 95.46% (min 94.00%), lines 93.10% (min 92.10%);
+  `bun run test:render-service` 0 fail; `bun run check:skills` 6 conform, 2 copies identical;
+  typecheck and lint pass.

@@ -122,6 +122,16 @@ export interface DeliveryPortV1 {
   transform: DeliveryTransformV1;
 }
 
+/** One custom vertex attribute in the written GLB and the meshes that carry it. */
+export interface DeliveryVertexAttributeV1 {
+  /** glTF attribute name, such as `_EDGE`; three's GLTFLoader lowercases it (`_edge`). */
+  name: string;
+  /** Inspection paths of the nodes whose mesh carries the attribute with these parameters. */
+  meshes: string[];
+  /** The bake parameters recorded in mesh extras `kilnSurfaceBakeV1`, when Kiln baked it. */
+  params?: Record<string, number>;
+}
+
 /** An advisory delivery finding. Never QA acceptance. */
 export interface DeliveryDiagnosticV1 {
   code: string;
@@ -170,6 +180,8 @@ export interface IntegrationManifestV1 {
   kit?: DeliveryKitModuleV1;
   /** Kit ports in scene order, when the GLB has any. */
   ports?: DeliveryPortV1[];
+  /** Custom vertex attributes (`_EDGE`, `_CAVITY`) grouped by name and parameters. */
+  vertexAttributes?: DeliveryVertexAttributeV1[];
   /** Advisory delivery findings (colliders, anchors, ports), when there are any. */
   deliveryDiagnostics?: DeliveryDiagnosticV1[];
   structuralQa: {

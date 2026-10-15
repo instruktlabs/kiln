@@ -17,6 +17,12 @@ export const GEOMETRY_ALLOCATION_LIMITS = Object.freeze({
   skinAttributeBytes: 128 * 1024 * 1024,
   // Delivery contract: colliderHull reads at most this many proxy vertices.
   colliderHullVertices: 65_536,
+  // bakeSurfaceAttributes: welded vertices baked per call, occluder triangles, total
+  // cavity rays (vertices x directions) and directions per vertex.
+  surfaceBakeVertices: 262_144,
+  surfaceBakeTriangles: 1_000_000,
+  surfaceBakeRays: 8_388_608,
+  surfaceBakeRayDirections: 256,
 });
 export function assertDimension(name: string, value: number, allowZero = false): void {
   if (

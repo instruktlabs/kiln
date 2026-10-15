@@ -25,6 +25,7 @@ import { defineLod } from './lod';
 export { defineLod } from './lod';
 import { markOpenShell } from './open-shell';
 import { anchor, colliderBox, colliderCapsule, colliderHull, defineModule, port } from './delivery';
+import { bakeSurfaceAttributes } from './surface-bake';
 import { useCubicSpline } from './animation-cubic';
 import {
   CUBIC_INTERPOLATIONS,
@@ -2267,6 +2268,7 @@ export function buildSandboxGlobals(
     anchor: wrap('anchor', anchor),
     defineModule: wrap('defineModule', defineModule),
     port: wrap('port', port),
+    bakeSurfaceAttributes: wrap('bakeSurfaceAttributes', bakeSurfaceAttributes),
     capsuleGeo: wrapGeo('capsuleGeo', capsuleGeo),
     capsuleXGeo: wrapGeo('capsuleXGeo', capsuleXGeo),
     capsuleYGeo: wrapGeo('capsuleYGeo', capsuleYGeo),

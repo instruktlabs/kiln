@@ -561,6 +561,14 @@ displace(geometry, offset: ([x,y,z], t) => [dx,dy,dz], opts?: { frame?: { origin
   // Adds an authored displacement vector in the chosen local frame. Returns owned geometry;
   // callback coordinates are local and t is normalized along the interval.
   // e.g. const rippled = displace(surface, ([x,y,z]) => [0, 0.1*Math.sin(x*8), 0]);
+bakeSurfaceAttributes(target: Object3D, opts?: { edge?: { thresholdDegrees?: 35, smoothing?: 1 } | false, cavity?: { rays?: 32, radius?, occluders? } | false })
+  // Bakes two float vertex attributes in [0, 1] on every visible mesh in target: _edge (convex
+  // rim weight, 1 on chamfers and rims, 0 on flat faces) and _cavity (exposure, 1 open, toward
+  // 0 in recesses and under overhangs). Exported as glTF _EDGE and _CAVITY.
+  // NOTE: Only when the brief asks for wear or cavity attributes. Call it last, after parts are
+  // placed: cavity depends on placement. Each baked mesh gets its own geometry copy.
+  // e.g. // after every part that occludes is attached bakeSurfaceAttributes(root, { edge: {
+  // thresholdDegrees: 35 }, cavity: { rays: 32 } });
 subdivide(geometry: BufferGeometry, iterations?: 1, opts?: { preserveUV?: boolean, split?: boolean, uvSmooth?: boolean, preserveEdges?: boolean, flatOnly?: boolean, weld?: boolean })
   // Loop subdivision returns new geometry; each iteration roughly quadruples triangles and
   // smooths the surface. Use preserveUV:true for textured meshes. Legacy position-only welding

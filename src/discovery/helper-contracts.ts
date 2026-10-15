@@ -928,6 +928,46 @@ define(
   },
 );
 define(
+  'bakeSurfaceAttributes',
+  {
+    units:
+      'thresholdDegrees in degrees; cavity radius in metres (default 0.5 x the occluders bounds diagonal); attribute values are unitless 0..1.',
+    axes: 'World space after the current parent transforms.',
+    origin: 'Not a placement operation.',
+    ownership:
+      'Replaces each visible mesh geometry under target with a copy carrying _edge and/or _cavity; shared input geometry is never mutated.',
+    coordinates: 'Edge angles and cavity rays are measured in world space at call time.',
+    parameters: [
+      'edge: false skips it; thresholdDegrees in (0, 180), default 35: convex edges weigh smoothstep(threshold/2, threshold, dihedral); open boundary edges weigh 1; smoothing 0..8 one-ring steps, default 1.',
+      'cavity: false skips it; rays 1..256 fixed cosine-weighted hemisphere directions, default 32; radius positive metres; occluders defaults to the topmost ancestor of target.',
+      'Bounds: 262144 welded vertices, 1000000 occluder triangles and 8388608 rays per call (GEOMETRY_ALLOCATION_LIMITS).',
+    ],
+    topology: ['Positions are welded on a relative grid for adjacency; topology is unchanged.'],
+    preservation: [
+      'Keeps every existing attribute, index and group; adds float attributes _edge and _cavity (itemSize 1).',
+      'Both converters write them as glTF _EDGE and _CAVITY; three GLTFLoader reads them back as _edge and _cavity.',
+    ],
+    semantics: [
+      '_edge: 1 on a chamfer, bevel or rim and 0 on a flat face; _cavity: 1 fully exposed, toward 0 in a recess or under an overhang (an ambient occlusion input).',
+      'Deterministic: fixed direction set, no random numbers or clock. Hidden subtrees neither bake nor occlude; another LOD tier never occludes the tier it replaces.',
+      'Records parameters as mesh extras kilnSurfaceBakeV1; the integration manifest lists vertexAttributes: [{ name, meshes, params }].',
+    ],
+    cost: 'Edge is linear in triangles; cavity is welded vertices x rays BVH queries.',
+  },
+  {
+    references: ['src/surface-bake.ts', 'docs/delivery-contract.md'],
+    tags: ['delivery', 'vertex attributes', 'wear', 'ambient occlusion', 'export'],
+    aliases: ['edge wear', 'cavity map', 'curvature', 'ambient occlusion bake', 'vertex AO'],
+    intents: ['bake edge wear and cavity attributes a game shader reads'],
+    summary:
+      'Bakes _EDGE (convex rim weight) and _CAVITY (hemisphere exposure) float vertex attributes in [0, 1] for game shaders.',
+    limitations: [
+      'Vertex resolution only: detail between vertices is not captured.',
+      'Call after every occluding part is attached; later changes are not re-baked.',
+    ],
+  },
+);
+define(
   'markOpenShell',
   {
     ...nodeFacts,

@@ -11,6 +11,7 @@
 import type { Document, Node as GltfNode } from '@gltf-transform/core';
 import type { InstancedMesh } from '@gltf-transform/extensions';
 import * as THREE from 'three';
+import { PropertyType } from '@gltf-transform/core';
 import type {
   DeliveryAnchorV1,
   DeliveryColliderV1,
@@ -18,7 +19,9 @@ import type {
   DeliveryKitModuleV1,
   DeliveryPortV1,
   DeliveryTransformV1,
+  DeliveryVertexAttributeV1,
 } from './contracts/integration';
+import { type Lod, MSFT_LOD } from './gltf-io';
 import { KILN_SEMANTIC_ROLES, readSemanticMetadataV1FromExtras } from './contracts/semantic';
 import { KILN_KIT_KEY, kitModuleExtras } from './delivery';
 import { isHiddenGltfNode } from './metrics';
@@ -254,6 +257,73 @@ function triangleTouchesCapsule(
   ] as const)
     if (segmentSegmentDistanceSq(p, q, s, e) <= r2) return true;
   return segmentCrossesTriangle(p, q, a, b, c);
+}
+
+/**
+ * Custom (underscore) vertex attributes on every mesh reachable from the default scene,
+ * lower `MSFT_lod` levels included, grouped by attribute name and recorded bake parameters
+ * (mesh extras `kilnSurfaceBakeV1`). Paths are inspection paths; a lower level takes the
+ * path it has in its LOD0's place.
+ */
+export function summarizeVertexAttributes(doc: Document): DeliveryVertexAttributeV1[] {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene) return [];
+  const groups = new Map<string, DeliveryVertexAttributeV1>();
+  const order: string[] = [];
+  const record = (node: GltfNode, path: string) => {
+    const mesh = node.getMesh();
+    if (!mesh) return;
+    const bake = (mesh.getExtras() as Record<string, unknown>).kilnSurfaceBakeV1 as
+      | Record<string, Record<string, number>>
+      | undefined;
+    const names = new Set<string>();
+    for (const primitive of mesh.listPrimitives())
+      for (const semantic of primitive.listSemantics())
+        if (semantic.startsWith('_')) names.add(semantic);
+    for (const name of names) {
+      const params = bake && typeof bake === 'object' ? bake[name] : undefined;
+      const key = `${name}\u0000${JSON.stringify(params ?? null)}`;
+      let group = groups.get(key);
+      if (!group) {
+        group = { name, meshes: [], ...(params ? { params: { ...params } } : {}) };
+        groups.set(key, group);
+        order.push(key);
+      }
+      if (!group.meshes.includes(path)) group.meshes.push(path);
+    }
+  };
+  const visit = (siblings: readonly GltfNode[], parentPath: string): void => {
+    siblings.forEach((node, index) => {
+      const at = (name: string) => {
+        let occurrence = 0;
+        for (let i = 0; i < index; i++) if (siblings[i]!.getName() === name) occurrence++;
+        return `${parentPath}${segment(name, occurrence)}`;
+      };
+      const path = at(node.getName());
+      record(node, path);
+      visit(node.listChildren(), path);
+      const lower = (node.getExtension<Lod>(MSFT_LOD)?.listLevels() ?? []).filter(
+        (level): level is GltfNode => level.propertyType === PropertyType.NODE,
+      );
+      for (const level of lower) {
+        const levelPath = at(level.getName());
+        record(level, levelPath);
+        visit(level.listChildren(), levelPath);
+      }
+    });
+  };
+  visit(scene.listChildren(), segment(scene.getName() || 'Scene', 0));
+  // Attribute name order is stable for consumers: _EDGE, _CAVITY, then others by name.
+  const rank = (name: string) => (name === '_EDGE' ? 0 : name === '_CAVITY' ? 1 : 2);
+  return order
+    .map((key, position) => ({ group: groups.get(key)!, position }))
+    .sort(
+      (a, b) =>
+        rank(a.group.name) - rank(b.group.name) ||
+        (rank(a.group.name) === 2 ? a.group.name.localeCompare(b.group.name) : 0) ||
+        a.position - b.position,
+    )
+    .map(({ group }) => group);
 }
 
 /** Every delivery record and advisory finding in the default scene of `doc`. */

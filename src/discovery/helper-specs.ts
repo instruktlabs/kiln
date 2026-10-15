@@ -264,6 +264,19 @@ const PRIMITIVES: HelperSpec[] = [
     example: "port('west', { parent: root, position: [-2, 0, 0], rotation: [0, 180, 0] });",
   },
   {
+    name: 'bakeSurfaceAttributes',
+    signature:
+      'bakeSurfaceAttributes(target: Object3D, opts?: { edge?: { thresholdDegrees?: 35, smoothing?: 1 } | false, cavity?: { rays?: 32, radius?, occluders? } | false })',
+    returns: 'Object3D (target, unchanged; its meshes get new geometry copies)',
+    category: 'mesh-ops',
+    description:
+      'Bakes two float vertex attributes in [0, 1] on every visible mesh in target: _edge (convex rim weight, 1 on chamfers and rims, 0 on flat faces) and _cavity (exposure, 1 open, toward 0 in recesses and under overhangs). Exported as glTF _EDGE and _CAVITY.',
+    example:
+      '// after every part that occludes is attached\nbakeSurfaceAttributes(root, { edge: { thresholdDegrees: 35 }, cavity: { rays: 32 } });',
+    promptNotes:
+      'Only when the brief asks for wear or cavity attributes. Call it last, after parts are placed: cavity depends on placement. Each baked mesh gets its own geometry copy.',
+  },
+  {
     name: 'beamBetween',
     signature:
       'beamBetween(name, start: [x,y,z], end: [x,y,z], radius, material, opts?: { segments, parent })',

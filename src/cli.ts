@@ -337,6 +337,9 @@ async function emit(
     ...(result.integrationManifest.hiddenNodes
       ? { hiddenNodes: result.integrationManifest.hiddenNodes }
       : {}),
+    ...(result.integrationManifest.vertexAttributes
+      ? { vertexAttributes: result.integrationManifest.vertexAttributes }
+      : {}),
     artifactGlbSha256: result.artifactGlbSha256,
     glbBytes: result.glb.length,
     warnings: result.warnings,
@@ -378,6 +381,9 @@ async function emit(
   // Tris and bounds count what draws; a subtree KHR_node_visibility hides is listed apart.
   for (const node of result.integrationManifest.hiddenNodes ?? [])
     log(`  hidden ${node.path}  ${node.triangles} tris (not drawn, not in the headline)`);
+  // Custom vertex attributes the GLB preserves, such as baked _EDGE and _CAVITY.
+  for (const attribute of result.integrationManifest.vertexAttributes ?? [])
+    log(`  attribute ${attribute.name} on ${attribute.meshes.length} mesh(es)`);
   if (result.meta.indexBuffers) {
     const buffers = result.meta.indexBuffers;
     log(

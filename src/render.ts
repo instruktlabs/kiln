@@ -49,10 +49,13 @@ import {
 } from './index-policy';
 import { openShellExtras } from './open-shell';
 import { kitExtras } from './delivery';
-import { inspectDelivery } from './delivery-inspect';
+import { inspectDelivery, summarizeVertexAttributes } from './delivery-inspect';
+import { SURFACE_BAKE_KEY, surfaceBakeRecord } from './surface-bake';
+import { writtenNodeResolver } from './written-nodes';
 import { rigExtrasForExport } from './rig-export';
 import { type AuthorExtras, collectAuthorExtras } from './user-data-extras';
 import {
+  CUSTOM_EXPORT_ATTRIBUTES,
   geometryAttributeValues,
   inspectGeometryExport,
   validateMaterialGroups,
@@ -168,6 +171,26 @@ export async function measureGlbBounds(
   };
 }
 
+/**
+ * Record each baked mesh's parameters as its glTF mesh extras `kilnSurfaceBakeV1`, keyed by
+ * glTF attribute name, so the bytes alone say how `_EDGE` and `_CAVITY` were made. Runs on
+ * either converter's document before any pass moves nodes.
+ */
+function applySurfaceBakeExtras(root: THREE.Object3D, doc: Document): void {
+  const baked: Array<[THREE.Object3D, Record<string, unknown>]> = [];
+  root.traverse((node) => {
+    const mesh = node as THREE.Mesh;
+    const record = mesh.isMesh ? surfaceBakeRecord(mesh.geometry) : undefined;
+    if (record && Object.keys(record).length) baked.push([mesh, { ...record }]);
+  });
+  if (baked.length === 0) return;
+  const written = writtenNodeResolver(root, doc, 'Surface bake export');
+  for (const [node, record] of baked) {
+    const mesh = written(node).getMesh();
+    if (mesh) mesh.setExtras({ ...mesh.getExtras(), [SURFACE_BAKE_KEY]: record });
+  }
+}
+
 /** Triangles a loader does not draw: hidden subtrees outside the lower LOD levels. */
 function hiddenTriangles(root: THREE.Object3D, lowerLevels: ReadonlySet<THREE.Object3D>): number {
   let hidden = 0;
@@ -255,6 +278,7 @@ export async function inspectGlbIntegration(
   const levelsOfDetail = summarizeLodChains(doc);
   const hiddenNodes = summarizeHiddenNodes(doc);
   const delivery = inspectDelivery(doc);
+  const vertexAttributes = summarizeVertexAttributes(doc);
 
   return {
     schemaVersion: 'kiln.integration-manifest.v1',
@@ -298,6 +322,7 @@ export async function inspectGlbIntegration(
     ...(delivery.anchors.length ? { anchors: delivery.anchors } : {}),
     ...(delivery.kit ? { kit: delivery.kit } : {}),
     ...(delivery.ports.length ? { ports: delivery.ports } : {}),
+    ...(vertexAttributes.length ? { vertexAttributes } : {}),
     ...(delivery.diagnostics.length ? { deliveryDiagnostics: delivery.diagnostics } : {}),
     structuralQa: {
       hasDefaultScene: explicitDefault !== null,
@@ -758,6 +783,19 @@ function bridgeGeometry(
         .createAccessor(`${meshName}_tangent`)
         .setArray(geometryAttributeValues(tangentAttr))
         .setType(TYPE_VEC4)
+        .setBuffer(buf),
+    );
+  }
+
+  for (const [key, gltfName] of Object.entries(CUSTOM_EXPORT_ATTRIBUTES)) {
+    const custom = geometry.getAttribute(key) as THREE.BufferAttribute | undefined;
+    if (custom?.itemSize !== 1) continue;
+    prim.setAttribute(
+      gltfName,
+      doc
+        .createAccessor(`${meshName}${gltfName.toLowerCase()}`)
+        .setArray(geometryAttributeValues(custom))
+        .setType(TYPE_SCALAR)
         .setBuffer(buf),
     );
   }
@@ -1765,6 +1803,7 @@ export async function renderSceneToGLB(
   }
   // Visibility flags and LOD chains are written before any pass merges or prunes nodes, so
   // those passes see them and keep them; flags first, while every node is still in place.
+  applySurfaceBakeExtras(root, doc);
   applyNodeVisibility(root, doc);
   applyLodChains(root, lodSets, doc);
   const indexBuffers = applyIndexPolicy(doc, indexPolicy);

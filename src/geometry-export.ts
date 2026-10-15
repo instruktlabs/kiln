@@ -6,6 +6,15 @@ export const EXPORTED_GEOMETRY_ATTRIBUTES: Readonly<Record<string, number>> = {
   normal: 3,
   uv: 2,
   tangent: 4,
+  // Delivery contract custom attributes (bakeSurfaceAttributes), written as _EDGE/_CAVITY.
+  _edge: 1,
+  _cavity: 1,
+};
+
+/** Custom float attributes both converters write: three.js name to glTF name. */
+export const CUSTOM_EXPORT_ATTRIBUTES: Readonly<Record<string, string>> = {
+  _edge: '_EDGE',
+  _cavity: '_CAVITY',
 };
 
 const THREE_GEOMETRY_ATTRIBUTES = {
