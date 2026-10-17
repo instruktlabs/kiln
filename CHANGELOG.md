@@ -7,6 +7,8 @@ does not publish a package.
 
 ## Unreleased
 
+## 1.3.0 (2026-10-16)
+
 - Add optional game delivery roles, colliders, anchors, kit ports, surface bakes,
   budgets, solid assertions, atlas packing and a compressed Three.js runtime target.
   These describe explicit delivery choices; they do not impose an asset style or

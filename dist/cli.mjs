@@ -29563,7 +29563,7 @@ var init_geometry_catalog = __esm(() => {
       returns: "Promise<THREE.BufferGeometry>",
       category: "geometry",
       description: "Experimental smooth union of spheres meshed through implicitSurface. Uses polynomial blending; output has no UVs.",
-      promptNotes: "Prefer this over hand-rolling smoothUnion fields for creatures, blobs and rounded junctions. Match edgeLength to feature size.",
+      promptNotes: "Useful when a smooth union of sphere volumes fits the intended shape. Match edgeLength to feature size.",
       example: "const body = await metaballSurface([{ center: [0,0.4,0], radius: 0.35 }, { center: [0.2,0.55,0], radius: 0.22 }], { bounds: { min: [-0.6,-0.1,-0.5], max: [0.6,1,0.5] }, edgeLength: 0.08 });"
     },
     {
@@ -29571,7 +29571,7 @@ var init_geometry_catalog = __esm(() => {
       signature: "taperedTube(path: [x,y,z][], radii: number[], opts?: { radialSegments?: 20, creaseAngle?: 180, cap?: true, closed?: false, up?, twist?, sectionScale?: [side,depth][] })",
       returns: "THREE.BufferGeometry",
       category: "curves",
-      description: "Circular sweep with one radius per path station. Default creaseAngle 180 shades round profiles smoothly; sample splines with catmullRomPath first.",
+      description: "Circular sweep along a polyline with one radius per station. Default creaseAngle 180 shades round profiles smoothly. catmullRomPath can supply samples when a spline fits the intended path.",
       example: "const path = catmullRomPath([[0,0.5,0],[0.3,0.7,0],[0.5,0.4,0]], 6); const radii = path.map((_, i) => 0.08 - 0.06 * i / (path.length - 1)); const tail = taperedTube(path, radii);"
     },
     {
@@ -43357,7 +43357,7 @@ var init_program_artifacts = __esm(() => {
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
 }
-var ENGINE_VERSION = "1.2.3", ENGINE_INSTALL_URL;
+var ENGINE_VERSION = "1.3.0", ENGINE_INSTALL_URL;
 var init_engine_identity = __esm(() => {
   ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 });
@@ -45468,7 +45468,7 @@ var init_helper_contracts = __esm(() => {
     intents: ["limb, tail, tentacle or branch with changing thickness"],
     related: [
       { name: "pipeAlongPath", relation: "alternative" },
-      { name: "catmullRomPath", relation: "prerequisite" }
+      { name: "catmullRomPath", relation: "companion" }
     ]
   });
   define2("lathe", {
