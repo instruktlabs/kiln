@@ -4,6 +4,7 @@ import {
   type AuthoringDiagnostic,
 } from './authoring-diagnostic';
 import { spawn, type SpawnOptions } from 'node:child_process';
+import { solidFailureAdvice, type SolidFailureDetails } from './solid-diagnostic';
 import { fileURLToPath } from 'node:url';
 import type { RenderGlbOptions, RenderResult } from '../render';
 import { AssetQaBlockedError } from '../qa/run';
@@ -49,12 +50,13 @@ export class EvaluatorSubprocessError extends Error {
     code: EvaluatorOutcomeCode,
     message: string,
     readonly diagnostic?: AuthoringDiagnostic,
+    readonly solid?: SolidFailureDetails,
   ) {
     // As EvaluatorPortError: a closed cause's advice, or the generic advice for a bare
     // EXECUTION_REJECTED (decision 24); the wire message itself never changes.
     super(
       diagnostic
-        ? `${message} ${authoringDiagnosticAdvice(diagnostic)}`
+        ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}`
         : code === 'EXECUTION_REJECTED'
           ? `${message} ${EXECUTION_REJECTED_ADVICE}`
           : message,
@@ -272,6 +274,7 @@ export async function renderGLBViaProcessLaunch(
               result.error.code,
               evaluatorOutcomeMessage(result.error.code),
               result.error.diagnostic,
+              result.error.solid,
             ),
           );
           return;

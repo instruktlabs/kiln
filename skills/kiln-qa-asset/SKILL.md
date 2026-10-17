@@ -22,6 +22,15 @@ Read validation/build findings and export warnings. MCP render and inspection re
 
 Distinguish expected open sheets from invalid solid topology. `geometryDiagnostics` reports boundary edges, non-manifold edges, orientation conflicts and degenerates; it does not prove absence of self-intersection. A capped loft, shell-like surface, or sampled field is not automatically a manufacturing-grade solid.
 
+Use `requireSolid` only on parts whose intended use requires closed, manifold,
+outward geometry. It is an explicit build assertion, not a rule for every mesh or
+an asset-name heuristic. Its error retains bounded topology measurements and
+numeric child locators in the authored build root; use the retained source's child
+order to find a failure, since a failed build has no exported inspection artifact.
+An open card, cloth sheet or intentionally open shell can be valid for its purpose.
+Keep budget and palette observations separate from requirements explicitly requested
+by the user; strict budget enforcement is opt-in.
+
 An intentional boundary can use `markOpenShell(part, 'specific reason')`. Read the
 overlap report's acknowledgment and reason; this is an explicit measurement limit,
 not a clean result. Closed components are unioned before measuring overlap;

@@ -3,8 +3,68 @@ import { createHash } from 'node:crypto';
 import { createKilnProgramToolRegistry } from '../registry';
 import { encodePng } from '../../views';
 import type { PbrRenderRequest } from '../../composer/render-port';
+import { createGltfIO } from '../../gltf-io';
+import { trustedInProcessEvaluatorPortV2 } from '../../evaluator';
 const code =
   "const meta={name:'box',category:'prop'};function build(){const r=createRoot('Root');createPart('Body',boxGeo(1,1,1),gameMaterial('#888888'),{parent:r});return r;}";
+
+test('inspection preserves an evaluator colored GLB regardless of the host authored exporter default', async () => {
+  const previous = process.env.KILN_GLTF_EXPORTER;
+  const colored = `function build(){const root=createRoot('Colored');const g=boxGeo(1,1,1);
+    g.setAttribute('color',new THREE.Float32BufferAttribute(new Array(g.getAttribute('position').count).fill([0,0.5,1]).flat(),3));
+    createPart('Body',g,new THREE.MeshStandardMaterial({vertexColors:true}),{parent:root});return root;}`;
+  try {
+    process.env.KILN_GLTF_EXPORTER = 'legacy';
+    const requests: PbrRenderRequest[] = [];
+    const tools = createKilnProgramToolRegistry({
+      cacheCaptures: false,
+      evaluatorPort: {
+        render: (source, options, controls) =>
+          trustedInProcessEvaluatorPortV2.render(
+            source,
+            { ...options, gltfExporter: 'three' },
+            controls,
+          ),
+      },
+      evaluatorProfile: 'evaluator-required',
+      viewRenderPort: async (req) => {
+        requests.push(req);
+        const width = req.width ?? req.size!,
+          height = req.height ?? req.size!;
+        return {
+          ok: true,
+          rendererId: 'gpu:test',
+          cameras: req.cameras,
+          width,
+          height,
+          viewsPng: (req.cameras ?? req.viewDirs ?? [0]).map(() =>
+            encodePng(new Uint8Array(width * height * 3), width, height),
+          ),
+          derivativeFidelity: {
+            materialFaithful: true,
+            inputGlbSha256: `sha256:${createHash('sha256').update(req.glb).digest('hex')}`,
+          },
+        };
+      },
+    });
+    const result = (await tools
+      .find((d) => d.name === 'kiln_inspect')!
+      .run({ code: colored, part: 'Body' })) as Record<string, unknown>;
+    expect(result.ok).toBe(true);
+    expect(requests).toHaveLength(1);
+    const primitive = (await createGltfIO().readBinary(requests[0]!.glb))
+      .getRoot()
+      .listMeshes()[0]!
+      .listPrimitives()[0]!;
+    const colors = primitive.getAttribute('COLOR_0');
+    expect(colors).not.toBeNull();
+    expect(Array.from(colors!.getArray()!).slice(0, 3)).toEqual([0, 0.5, 1]);
+    expect(result.viewFidelity).toMatchObject({ materialFaithful: true, exactArtifact: false });
+  } finally {
+    if (previous === undefined) delete process.env.KILN_GLTF_EXPORTER;
+    else process.env.KILN_GLTF_EXPORTER = previous;
+  }
+});
 test('public references render mixed exact cameras and expose separate images', async () => {
   const defs = createKilnProgramToolRegistry();
   const render = defs.find((d) => d.name === 'kiln_render')!;

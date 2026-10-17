@@ -1,9 +1,59 @@
 import { test, expect } from 'bun:test';
-import { Group, Mesh, BoxGeometry, MeshStandardMaterial } from 'three';
+import { Group, Mesh, BoxGeometry, MeshStandardMaterial, Float32BufferAttribute } from 'three';
+import { createGltfIO } from '../../gltf-io';
 import { renderSceneToGLB } from '../../render';
 import { captureViewsViaPort } from '../port';
 import { encodePng } from '../png';
 import { createHash } from 'node:crypto';
+
+test('advanced capture preserves vertex colors in the exact derivative sent to the GPU', async () => {
+  const root = new Group();
+  const geometry = new BoxGeometry();
+  const colors = new Float32Array(geometry.getAttribute('position').count * 3);
+  for (let i = 0; i < colors.length; i++) colors[i] = (i % 3) / 2;
+  geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
+  const material = new MeshStandardMaterial({ vertexColors: true, color: '#8090a0' });
+  root.add(new Mesh(geometry, material));
+  const rendered = await renderSceneToGLB(root, { gltfExporter: 'three', derivative: true });
+  let received: Uint8Array | undefined;
+  const out = await captureViewsViaPort(
+    async (req) => {
+      received = req.glb;
+      return {
+        ok: true,
+        rendererId: 'gpu:test',
+        cameras: req.cameras,
+        width: req.width,
+        height: req.height,
+        viewsPng: [encodePng(new Uint8Array(128 * 128 * 3), 128, 128)],
+        derivativeFidelity: {
+          materialFaithful: true,
+          inputGlbSha256: `sha256:${createHash('sha256').update(req.glb).digest('hex')}`,
+        },
+      };
+    },
+    rendered.bytes,
+    5000,
+    { version: 'kiln.capture.v1', shots: [{}], size: 128 },
+  );
+  expect(out.ok).toBe(true);
+  expect(received).toBeDefined();
+  const primitive = (await createGltfIO().readBinary(received!))
+    .getRoot()
+    .listMeshes()[0]!
+    .listPrimitives()[0]!;
+  expect(primitive.getAttribute('COLOR_0')).not.toBeNull();
+  expect(Array.from(primitive.getAttribute('COLOR_0')!.getArray()!)).toEqual(Array.from(colors));
+  expect(primitive.getMaterial()!.getBaseColorFactor().slice(0, 3)).toEqual(
+    material.color.toArray(),
+  );
+  if (out.ok) {
+    expect(out.derivativeReceipts?.[0]?.exactArtifact).toBe(false);
+    expect(out.derivativeReceipts?.[0]?.inputGlbSha256).toBe(
+      `sha256:${createHash('sha256').update(received!).digest('hex')}`,
+    );
+  }
+});
 test('SDK advanced capture sends isolated derivative with explicit cameras and returns receipts', async () => {
   const root = new Group();
   root.name = 'Root';

@@ -45,7 +45,36 @@ unsupported UV transforms and destination feature support still need qualificati
 Neither setting automatically enables mesh merging, geometry simplification, Draco,
 Meshopt or KTX2 compression. Those require separate choices and validation.
 
+### Optional Three.js runtime target
+
+The runtime profile also accepts `target: "three"` (CLI `--target three`). This is
+a third choice, separate from the build converter: it derives the saved GLB using
+Meshopt compression and quantization, and batches explicitly marked repeated
+instances. Read the current Discovery export capability and the packaged
+`docs/delivery-contract.md` and `docs/export-profiles.md` for its exact contract.
+Plain `--profile runtime` keeps the byte-preserving geometry policy described below;
+the additional target changes geometry encoding and can change hierarchy.
+
+Use this target only for a consumer configured with Meshopt decoding. Preserve
+loaded node transforms, skeletons and inverse bind matrices: they restore quantized
+positions to the intended dimensions. A loader does not automatically implement
+Kiln's LOD selection, collider behavior, anchors or kit snapping. Test those in the
+destination application when requested. Retain the editable asset and compare
+dimensions, colors, animation poses and the target's delivery receipt, not file size
+alone. A skipped draw assessment is unmeasured, never a passing performance result.
+
 ## CLI
+
+### Optional game delivery semantics
+
+Discover collider, anchor, kit, surface-bake and budget helpers when the request
+needs them. Add semantic roles for the consumer's intended interactions; the roles
+do not implement physics, snapping or gameplay. Standalone decorative assets do
+not need anchors, projects or a kit declaration. Use `requireSolid` only for a part
+explicitly intended to satisfy that topology contract. These choices describe the
+requested asset, not a required modeling style.
+
+### Export commands
 
 From an asset workspace, using the IDs returned by `save` or `assets`:
 
@@ -60,6 +89,9 @@ node kiln.mjs export ASSET_ID REVISION_ID --profile editable --format glb --out 
 node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --out mech.glb
 # mech.glb
 # mech.kiln-metadata.json
+
+# Optional Three.js derivative, with a machine-readable export receipt.
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --target three --out mech-three.glb --json
 ```
 
 Runtime requires GLB format and an output ending in `.glb`. Bundle/source formats
@@ -115,6 +147,10 @@ bytes for the same record and sibling filename. It does not serialize through a 
 glTF exporter or decode/re-encode textures.
 
 ## What runtime changes
+
+This section describes runtime **without** `target: "three"`. The optional target
+adds the transformations described above and records them in the sidecar's
+`delivery` block.
 
 Only `scenes[].extras.kilnReviewClipsV1` is moved into the JSON sidecar. It contains
 Kiln's authored animation review vocabulary, including advisory tracks that might not

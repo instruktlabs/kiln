@@ -22,6 +22,11 @@ import {
 } from '../material-library-node';
 import { canonicalMaterialJson, type MaterialLibraryPayload } from '../material-library';
 import { rebuildOptionsSchema } from '../rebuild-options';
+import {
+  solidFailureAdvice,
+  validSolidFailureDetails,
+  type SolidFailureDetails,
+} from './solid-diagnostic';
 
 export const EVALUATOR_REQUEST_VERSION = 'kiln.evaluator.request.v2' as const;
 export const EVALUATOR_RESULT_VERSION = 'kiln.evaluator.result.v2' as const;
@@ -120,12 +125,13 @@ export class EvaluatorPortError extends Error {
     readonly code: EvaluatorOutcomeCode,
     message = evaluatorOutcomeMessage(code),
     readonly diagnostic?: AuthoringDiagnostic,
+    readonly solid?: SolidFailureDetails,
   ) {
     // A rejection with a closed cause carries that cause's advice; one without carries
     // the engine's generic advice (decision 24). The wire message itself never changes.
     super(
       diagnostic
-        ? `${message} ${authoringDiagnosticAdvice(diagnostic)}`
+        ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}`
         : code === 'EXECUTION_REJECTED'
           ? `${message} ${EXECUTION_REJECTED_ADVICE}`
           : message,
@@ -159,6 +165,7 @@ export type EvaluatorResultV2 =
         code: EvaluatorOutcomeCode;
         message: string;
         diagnostic?: AuthoringDiagnostic;
+        solid?: SolidFailureDetails;
         qa?: {
           report: AssetQaReport;
           stage: 'scene' | 'final-glb';
@@ -407,7 +414,7 @@ export function decodeEvaluatorResultV2(
     if (value.render !== undefined) return fail('result');
     if (
       !isRecord(value.error) ||
-      !hasExactKeys(value.error, ['code', 'message', 'qa', 'diagnostic'])
+      !hasExactKeys(value.error, ['code', 'message', 'qa', 'diagnostic', 'solid'])
     ) {
       return fail('result');
     }
@@ -471,6 +478,11 @@ export function decodeEvaluatorResultV2(
           value.error.diagnostic !== 'EXPORT_MATERIAL_SIDE_UNSUPPORTED' &&
           value.error.diagnostic !== 'BONE_CHAIN_ARGUMENT' &&
           value.error.diagnostic !== 'SKIN_BINDING_ARGUMENT'))
+    )
+      return fail('result');
+    if (
+      value.error.solid !== undefined &&
+      (value.error.diagnostic !== 'REQUIRE_SOLID' || !validSolidFailureDetails(value.error.solid))
     )
       return fail('result');
     if (value.error.qa !== undefined) {
@@ -655,7 +667,12 @@ export function createEvaluatorPortV2(
             result.error.qa.gltfValidation,
           );
         }
-        throw new EvaluatorPortError(result.error.code, undefined, result.error.diagnostic);
+        throw new EvaluatorPortError(
+          result.error.code,
+          undefined,
+          result.error.diagnostic,
+          result.error.solid,
+        );
       }
       return result.render;
     },

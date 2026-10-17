@@ -306,7 +306,32 @@ export async function inspectDrawDiagnostics(
 ): Promise<DrawDiagnostics> {
   if (bytes.byteLength > MAX_BYTES) return skipped('input-limit');
   try {
-    return analyzeDrawDiagnostics(await createGltfIO().readBinary(bytes), options);
+    const io = createGltfIO();
+    const json = await io.binaryToJSON(bytes);
+    let expandedBytes = 0;
+    let compressed = false;
+    // The extension allocates count * byteStride before invoking its decoder. Bound
+    // that allocation before readJSON, rather than only inspecting the decoded document.
+    for (const view of json.json.bufferViews ?? []) {
+      const extension = view.extensions?.['EXT_meshopt_compression'] as
+        | { count?: number; byteStride?: number }
+        | undefined;
+      compressed ||= extension !== undefined;
+      const length = extension
+        ? (extension.count ?? Number.NaN) * (extension.byteStride ?? Number.NaN)
+        : view.byteLength;
+      if (!Number.isSafeInteger(length) || length < 0) return skipped('unreadable-glb');
+      expandedBytes += length;
+      if (expandedBytes > MAX_BYTES) return skipped('input-limit');
+    }
+    if (compressed) {
+      // Decoder ownership stays with this host diagnostic, not every deterministic
+      // engine reader. No network, renderer or provider is involved.
+      const { MeshoptDecoder } = await import('meshoptimizer');
+      await MeshoptDecoder.ready;
+      io.registerDependencies({ 'meshopt.decoder': MeshoptDecoder });
+    }
+    return analyzeDrawDiagnostics(await io.readJSON(json), options);
   } catch {
     return skipped('unreadable-glb');
   }

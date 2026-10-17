@@ -10,6 +10,12 @@
 import type * as THREE from 'three';
 import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
 import { geometryDiagnostics } from './geometry';
+import {
+  RequiredSolidError,
+  MAX_SOLID_FAILURE_MESHES,
+  MAX_SOLID_FAILURE_PATH,
+  type SolidFailureMesh,
+} from './evaluator/solid-diagnostic';
 
 /** The engine-owned userData key a marked part carries. */
 export const REQUIRE_SOLID_KEY = 'kilnRequireSolid';
@@ -37,7 +43,9 @@ const marked = (node: THREE.Object3D): boolean => {
  */
 export function assertRequiredSolids(root: THREE.Object3D): void {
   const problems: string[] = [];
-  const visit = (node: THREE.Object3D): void => {
+  const meshes: SolidFailureMesh[] = [];
+  let total = 0;
+  const visit = (node: THREE.Object3D, childPath: number[]): void => {
     if (node.visible === false) return;
     const mesh = node as THREE.Mesh;
     if (mesh.isMesh && marked(mesh) && mesh.geometry?.getAttribute('position')) {
@@ -53,14 +61,30 @@ export function assertRequiredSolids(root: THREE.Object3D): void {
             ? `winding is mixed (${report.orientationConflicts} conflicting edges)`
             : `faces point inward (signed volume ${solid.signedVolume.toPrecision(4)})`,
         );
-      if (reasons.length) problems.push(`${mesh.name || '(unnamed mesh)'}: ${reasons.join(', ')}`);
+      if (reasons.length) {
+        total++;
+        if (meshes.length < MAX_SOLID_FAILURE_MESHES) {
+          problems.push(`${mesh.name || '(unnamed mesh)'}: ${reasons.join(', ')}`);
+          meshes.push({
+            childPath: childPath.length <= MAX_SOLID_FAILURE_PATH ? childPath : null,
+            closed: solid.closed,
+            manifold: solid.manifold,
+            orientation: solid.orientation,
+            boundaryEdges: report.boundaryEdges,
+            nonManifoldEdges: report.nonManifoldEdges,
+            orientationConflicts: report.orientationConflicts,
+          });
+        }
+      }
     }
-    for (const child of node.children) visit(child);
+    node.children.forEach((child, index) => {
+      visit(child, [...childPath, index]);
+    });
   };
-  visit(root);
-  if (problems.length)
-    throw new AuthoringDiagnosticError(
-      'REQUIRE_SOLID',
-      `requireSolid: ${problems.length} marked mesh(es) are not closed, manifold, outward solids: ${problems.slice(0, 4).join('; ')}${problems.length > 4 ? '; ...' : ''}.`,
+  visit(root, []);
+  if (total)
+    throw new RequiredSolidError(
+      { total, truncated: total > meshes.length, meshes },
+      `requireSolid: ${total} marked mesh(es) are not closed, manifold, outward solids: ${problems.join('; ')}${total > meshes.length ? '; ...' : ''}.`,
     );
 }

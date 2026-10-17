@@ -3,6 +3,8 @@ import { Document, type Material, type Primitive } from '@gltf-transform/core';
 import { KHRNodeVisibility } from '@gltf-transform/extensions';
 import { analyzeDrawDiagnostics, inspectDrawDiagnostics } from '../draw-diagnostics';
 import { createGltfIO } from '../gltf-io';
+import { deliverThreeRuntimeGlb } from '../asset-export';
+import { MeshoptDecoder } from 'meshoptimizer';
 
 function fixture() {
   const doc = new Document();
@@ -35,6 +37,66 @@ function fixture() {
   };
   return { doc, scene, material, primitive, node, buffer };
 }
+
+interface TestGlbJson {
+  bufferViews: Array<{
+    extensions?: { EXT_meshopt_compression?: { count: number; mode: string } };
+  }>;
+}
+function replaceGlbJson(bytes: Uint8Array, edit: (json: TestGlbJson) => void): Uint8Array {
+  const header = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const oldLength = header.getUint32(12, true);
+  const json = JSON.parse(new TextDecoder().decode(bytes.subarray(20, 20 + oldLength)));
+  edit(json);
+  const encoded = new TextEncoder().encode(JSON.stringify(json));
+  const length = Math.ceil(encoded.length / 4) * 4;
+  const result = new Uint8Array(bytes.length - oldLength + length);
+  result.set(bytes.subarray(0, 20));
+  const resultHeader = new DataView(result.buffer);
+  resultHeader.setUint32(8, result.length, true);
+  resultHeader.setUint32(12, length, true);
+  result.fill(32, 20, 20 + length);
+  result.set(encoded, 20);
+  result.set(bytes.subarray(20 + oldLength), 20 + length);
+  return result;
+}
+
+test('draw diagnostics decode the exact meshopt runtime export', async () => {
+  const f = fixture();
+  f.node('A');
+  f.node('B').setTranslation([2, 0, 0]);
+  const runtime = await deliverThreeRuntimeGlb(await createGltfIO().writeBinary(f.doc));
+  await MeshoptDecoder.ready;
+  const independentlyDecoded = await createGltfIO()
+    .registerDependencies({ 'meshopt.decoder': MeshoptDecoder })
+    .readBinary(runtime.glb);
+  const report = await inspectDrawDiagnostics(runtime.glb);
+  expect(report.status).toBe('assessed');
+  expect(report.currentDraws).toBe(2);
+  expect(report).toEqual(analyzeDrawDiagnostics(independentlyDecoded));
+});
+
+test('draw diagnostics bound meshopt expansion before decoding and reject malformed streams', async () => {
+  const f = fixture();
+  f.node('A');
+  const runtime = await deliverThreeRuntimeGlb(await createGltfIO().writeBinary(f.doc));
+  const oversized = replaceGlbJson(runtime.glb, (json) => {
+    const view = json.bufferViews.find((v) => v.extensions?.EXT_meshopt_compression)!;
+    view.extensions!.EXT_meshopt_compression!.count = 64 * 1024 * 1024;
+  });
+  expect(await inspectDrawDiagnostics(oversized)).toMatchObject({
+    status: 'skipped',
+    reason: 'input-limit',
+  });
+  const malformed = replaceGlbJson(runtime.glb, (json) => {
+    const view = json.bufferViews.find((v) => v.extensions?.EXT_meshopt_compression)!;
+    view.extensions!.EXT_meshopt_compression!.mode = 'INVALID';
+  });
+  expect(await inspectDrawDiagnostics(malformed)).toMatchObject({
+    status: 'skipped',
+    reason: 'unreadable-glb',
+  });
+});
 
 test('draw estimates use actual rigid groups, layouts and locks and never change the input', async () => {
   const f = fixture();

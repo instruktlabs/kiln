@@ -11,9 +11,10 @@
  * Kept: `_EDGE`/`_CAVITY` and every other underscore attribute (as float32, never quantized),
  * semantic roles and kit extras, hidden collider nodes, anchors, ports and `MSFT_lod` chains.
  * A collider node keeps its authored transform: its proxy mesh moves to a child first, so the
- * dequantization transform lands on that child instead of the collider's size. Every other
- * quantized mesh carries its dequantization on a node; the report names each one, because a
- * consumer that re-parents a bare geometry drops it.
+ * dequantization transform lands on that child instead of the collider's size. Static mesh
+ * dequantization is recorded in nodeScale; skinned meshes instead retain it in their inverse
+ * bind matrices. Consumers must preserve the loaded node, skeleton and bind transforms,
+ * rather than re-parenting bare geometry.
  */
 import {
   type Document,

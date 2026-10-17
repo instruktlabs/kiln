@@ -15,7 +15,8 @@ import {
 import { geometryDiagnostics } from '../geometry';
 import { buildSandboxGlobals } from '../primitives';
 import { renderGLBInProcess, renderSceneToGLB } from '../render';
-import { REQUIRE_SOLID_KEY, requireSolid } from '../require-solid';
+import { REQUIRE_SOLID_KEY, requireSolid, assertRequiredSolids } from '../require-solid';
+import { RequiredSolidError } from '../evaluator/solid-diagnostic';
 
 function flipped(geometry: THREE.BufferGeometry, faces?: (face: number) => boolean) {
   const copy = geometry.clone();
@@ -54,6 +55,29 @@ describe('geometryDiagnostics solid section', () => {
 });
 
 describe('requireSolid', () => {
+  test('a deep failure keeps measured facts without an unbounded locator', () => {
+    const root = new THREE.Group();
+    let parent = root;
+    for (let i = 0; i < 65; i++) {
+      const group = new THREE.Group();
+      parent.add(group);
+      parent = group;
+    }
+    const part = new THREE.Mesh(new THREE.PlaneGeometry());
+    parent.add(part);
+    requireSolid(part);
+    try {
+      assertRequiredSolids(root);
+      throw new Error('expected failure');
+    } catch (error) {
+      expect(error).toBeInstanceOf(RequiredSolidError);
+      expect((error as RequiredSolidError).solid).toMatchObject({
+        total: 1,
+        truncated: false,
+        meshes: [{ childPath: null, closed: false, boundaryEdges: 4 }],
+      });
+    }
+  });
   test('marks a part and is a sandbox helper', () => {
     const part = new THREE.Mesh(new THREE.BoxGeometry());
     expect(requireSolid(part)).toBe(part);

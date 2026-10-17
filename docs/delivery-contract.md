@@ -66,6 +66,16 @@ attribute names, so shaders read `_edge` and `_cavity`.
   under `part` is closed, manifold and outward. `geometryDiagnostics(geometry).solid`
   reports the same facts and the signed volume.
 
+Across the evaluator boundary, `REQUIRE_SOLID` retains measurements for at most four
+failing meshes, the total failure count and a truncation flag. A numeric locator
+such as `root.children[0].children[2]` identifies the mesh in the authored build
+root before export. The tool error includes closure, manifoldness, orientation and
+edge counts. Follow the child order in the retained source to inspect that mesh;
+the failed build has no exported inspection artifact. Names and exception text
+are not forwarded. A locator deeper than 64 levels is omitted, while its measured
+facts remain. This is diagnostic evidence for explicitly marked parts, not a new
+universal requirement that every mesh be closed.
+
 ## Integration manifest fields
 
 `inspectGlbIntegration(bytes)`, render results and CLI `render --json` receipts add
@@ -112,14 +122,31 @@ batches. See [export profiles](export-profiles.md#threejs-runtime-target).
 
 Consumer rules that follow from it:
 
-- **Read geometry through its node.** Quantized positions are normalized integers;
-  the node's matrix restores metres. A bare geometry re-parented into your own mesh
-  drops that scale. `delivery.nodeScale` lists every such node.
+- **Keep the loaded mesh and its transforms.** Quantized positions are normalized
+  integers. Static mesh node transforms restore metres; `delivery.nodeScale` lists
+  those node changes. For skinned meshes, the quantizer folds dequantization into
+  the skin's inverse bind matrices instead. Keep the loaded skeleton, bind matrices
+  and hierarchy together. Copying bare geometry into a new mesh, or replacing the
+  inverse bind matrices with the editable asset's matrices, loses that correction.
 - **Collider transforms are exact.** A collider's proxy mesh moves to a child named
   `<collider>_Proxy`, so the collider node's scale is still its size.
 - **Custom attributes stay float.** `_EDGE` and `_CAVITY` are never quantized.
 - **Find nodes by role, not by name alone.** three's `GLTFLoader` makes object names
   unique, so an asset root that shares the scene's name loads with a numeric suffix.
+- **Choose LOD levels in the consumer.** `GLTFLoader` preserves `MSFT_lod` extension
+  data but does not create a `THREE.LOD` controller or automatically switch levels.
+  LOD0 is attached to the scene. Read its `userData.gltfExtensions.MSFT_lod.ids`,
+  resolve lower tiers with `gltf.parser.getDependency('node', id)`, and install them
+  under the appropriate authored parent. Your application chooses one active tier
+  using the retained `MSFT_screencoverage` policy or its own documented policy.
+  Do not show all levels together. A final impostor marker does not implement
+  billboarding or distance-based switching.
+
+`src/__tests__/runtime-three-export.test.ts` qualifies static geometry, role data,
+instancing, explicit lower-tier selection and a quantized skin through Three's
+`GLTFLoader` with `MeshoptDecoder`. The skin test compares rest and two posed
+world-space vertex sets within 1 mm on its four-metre fixture. It is a focused
+consumer regression, not acceptance of every rig, animation or game integration.
 
 ## Worked example
 

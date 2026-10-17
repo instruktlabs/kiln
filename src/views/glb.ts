@@ -686,13 +686,21 @@ function reviewSceneFromDocument(
             new BufferAttribute(Float32Array.from(decodedAccessor(normal)), 3),
           );
         }
-        const uv = primitive.getAttribute('TEXCOORD_0');
-        if (uv) {
-          geometry.setAttribute(
-            'uv',
-            new BufferAttribute(Float32Array.from(decodedAccessor(uv)), 2),
-          );
+        // Texture bindings retain their UV channel, so retain the matching vertex data too.
+        for (let channel = 0; channel < 4; channel++) {
+          const uv = primitive.getAttribute(`TEXCOORD_${channel}`);
+          if (uv)
+            geometry.setAttribute(
+              channel ? `uv${channel}` : 'uv',
+              new BufferAttribute(Float32Array.from(decodedAccessor(uv)), 2),
+            );
         }
+        const color = primitive.getAttribute('COLOR_0');
+        if (color)
+          geometry.setAttribute(
+            'color',
+            new BufferAttribute(Float32Array.from(decodedAccessor(color)), color.getElementSize()),
+          );
         const tangent = primitive.getAttribute('TANGENT');
         if (tangent) {
           geometry.setAttribute(
@@ -768,6 +776,7 @@ function reviewSceneFromDocument(
           );
         }
         const threeMaterial = new MeshStandardMaterial({
+          vertexColors: color !== null,
           opacity: flat.opacity,
           transparent: flat.alphaMode === 'BLEND',
           alphaTest: flat.alphaMode === 'MASK' ? flat.alphaCutoff : 0,

@@ -2,6 +2,8 @@ import { createHash } from 'node:crypto';
 import { describe, expect, spyOn, test } from 'bun:test';
 import { Document, WebIO } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing, KHRTextureBasisu } from '@gltf-transform/extensions';
+import type { Mesh, MeshStandardMaterial } from 'three';
+import sharp from 'sharp';
 
 import * as renderModule from '../../render';
 import {
@@ -71,6 +73,103 @@ function triangleDocument(
 }
 
 describe('GLB-native geometry-flat view input', () => {
+  test.each([3, 4] as const)(
+    'review retains normalized %i-component vertex colors and material factors',
+    async (size) => {
+      const doc = triangleDocument({ alpha: 0.4 });
+      const values =
+        size === 3
+          ? [255, 0, 64, 0, 128, 255, 32, 255, 0]
+          : [255, 0, 64, 255, 0, 128, 255, 128, 32, 255, 0, 0];
+      doc
+        .getRoot()
+        .listMeshes()[0]!
+        .listPrimitives()[0]!
+        .setAttribute(
+          'COLOR_0',
+          doc
+            .createAccessor()
+            .setType(size === 3 ? 'VEC3' : 'VEC4')
+            .setNormalized(true)
+            .setArray(Uint8Array.from(values))
+            .setBuffer(doc.getRoot().listBuffers()[0]!),
+        );
+      const loaded = await loadGlbReviewScene(await io().writeBinary(doc));
+      const mesh = loaded.root.getObjectByName('Triangle')!.children[0] as Mesh;
+      const color = mesh.geometry.getAttribute('color');
+      expect(color?.itemSize).toBe(size);
+      expect(Array.from(color.array)).toEqual(values.map((v) => Math.fround(v / 255)));
+      const material = mesh.material as MeshStandardMaterial;
+      expect(material.vertexColors).toBe(true);
+      expect(material.color.toArray()).toEqual([0.25, 0.5, 0.75]);
+      expect(material.opacity).toBe(0.4);
+      expect(material.transparent).toBe(true);
+      const derivative = await renderModule.renderSceneToGLB(loaded.root, {
+        gltfExporter: 'three',
+        derivative: true,
+        optimize: 'off',
+      });
+      const preserved = (await io().readBinary(derivative.bytes))
+        .getRoot()
+        .listMeshes()[0]!
+        .listPrimitives()[0]!
+        .getAttribute('COLOR_0')!;
+      expect(preserved.getElementSize()).toBe(size);
+      expect(Array.from(preserved.getArray()!)).toEqual(Array.from(color.array));
+    },
+  );
+
+  test('review retains secondary UVs used by a texture channel', async () => {
+    const doc = triangleDocument({ texture: true });
+    doc
+      .getRoot()
+      .listTextures()[0]!
+      .setImage(
+        await sharp({
+          create: { width: 1, height: 1, channels: 4, background: '#ff0000' },
+        })
+          .png()
+          .toBuffer(),
+      );
+    const primitive = doc.getRoot().listMeshes()[0]!.listPrimitives()[0]!;
+    for (let channel = 0; channel < 4; channel++) {
+      primitive.setAttribute(
+        `TEXCOORD_${channel}`,
+        doc
+          .createAccessor()
+          .setType('VEC2')
+          .setArray(new Float32Array([channel, 0, channel + 1, 0, channel, 1]))
+          .setBuffer(doc.getRoot().listBuffers()[0]!),
+      );
+    }
+    primitive.getMaterial()!.getBaseColorTextureInfo()!.setTexCoord(2);
+    const loaded = await loadGlbReviewScene(await io().writeBinary(doc));
+    const mesh = loaded.root.getObjectByName('Triangle')!.children[0] as Mesh;
+    expect((mesh.material as MeshStandardMaterial).map!.channel).toBe(2);
+    for (let channel = 0; channel < 4; channel++) {
+      expect(
+        Array.from(mesh.geometry.getAttribute(channel ? `uv${channel}` : 'uv')?.array ?? []),
+      ).toEqual([channel, 0, channel + 1, 0, channel, 1]);
+    }
+    const derivative = await renderModule.renderSceneToGLB(loaded.root, {
+      gltfExporter: 'three',
+      derivative: true,
+      optimize: 'off',
+    });
+    const result = await io().readBinary(derivative.bytes);
+    const output = result.getRoot().listMeshes()[0]!.listPrimitives()[0]!;
+    expect(output.getMaterial()!.getBaseColorTextureInfo()!.getTexCoord()).toBe(2);
+    for (let channel = 0; channel < 4; channel++)
+      expect(Array.from(output.getAttribute(`TEXCOORD_${channel}`)!.getArray()!)).toEqual([
+        channel,
+        0,
+        channel + 1,
+        0,
+        channel,
+        1,
+      ]);
+  });
+
   test('shared mesh resources retain owning node names in primitive QA repair hints', async () => {
     const doc = triangleDocument();
     const first = doc.getRoot().listNodes()[0]!.setName('ChainLink_A');

@@ -177,6 +177,16 @@ describe('three runtime target', () => {
       expect(ids).toHaveLength(1);
       const level = (await gltf.parser.getDependency('node', ids[0]!)) as THREE.Object3D;
       expect(level.name).toBe('Lamp_LOD1');
+      expect(scene.getObjectByName('Lamp_LOD1')).toBeUndefined();
+      expect(lamp).not.toBeInstanceOf(THREE.LOD);
+      // GLTFLoader does not choose a level. An application must attach and select it.
+      lamp.parent!.add(level);
+      lamp.visible = false;
+      level.visible = true;
+      scene.updateMatrixWorld(true);
+      const cardBounds = new THREE.Box3().setFromObject(level, true);
+      expect(cardBounds.getSize(new THREE.Vector3()).x).toBeCloseTo(0.2, 3);
+      expect(cardBounds.getCenter(new THREE.Vector3()).y).toBeCloseTo(3.1, 3);
     });
 
   test('KTX2 runs only through an injected encoder and the GLB library helper is equivalent', async () => {
@@ -223,5 +233,69 @@ describe('three runtime target', () => {
     await expect(
       exportAssetGlb(assetRecord(new Uint8Array(rendered.glb)), { target: 'three' }),
     ).rejects.toThrow(/runtime/);
+  });
+
+  test('quantized skin retains rest and posed world-space vertices through GLTFLoader', async () => {
+    const root = new THREE.Group();
+    root.position.set(3, 2, -4);
+    const geometry = new THREE.BoxGeometry(2, 4, 1);
+    const positions = geometry.getAttribute('position');
+    const indices: number[] = [];
+    const weights: number[] = [];
+    for (let i = 0; i < positions.count; i++) {
+      const upper = positions.getY(i) > 0;
+      indices.push(upper ? 1 : 0, 0, 0, 0);
+      weights.push(1, 0, 0, 0);
+    }
+    geometry.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(indices, 4));
+    geometry.setAttribute('skinWeight', new THREE.Float32BufferAttribute(weights, 4));
+    const mesh = new THREE.SkinnedMesh(geometry, new THREE.MeshStandardMaterial());
+    mesh.name = 'Skin';
+    const base = new THREE.Bone();
+    base.name = 'Base';
+    const tip = new THREE.Bone();
+    tip.name = 'Tip';
+    tip.position.y = 1;
+    base.add(tip);
+    mesh.add(base);
+    root.add(mesh);
+    root.updateMatrixWorld(true);
+    mesh.bind(new THREE.Skeleton([base, tip]));
+    const source = await renderSceneToGLB(root, {
+      gltfExporter: 'three',
+      optimize: 'off',
+      derivative: true,
+    });
+    const runtime = await deliverThreeRuntimeGlb(source.bytes);
+    const loaded = await loadWithGltfLoader(runtime.glb);
+    const skin = find(loaded.scene, 'Skin') as THREE.SkinnedMesh;
+    expect(skin.isSkinnedMesh).toBe(true);
+    expect(skin.geometry.getAttribute('position').normalized).toBe(true);
+    // Skin dequantization is folded into inverse bind matrices, not a nodeScale entry.
+    expect(runtime.delivery.nodeScale.some((entry) => entry.node.includes('Skin'))).toBe(false);
+    expect(skin.skeleton.boneInverses[0]!.equals(mesh.skeleton.boneInverses[0]!)).toBe(false);
+    const sample = (scene: THREE.Object3D, target: THREE.SkinnedMesh) => {
+      scene.updateMatrixWorld(true);
+      target.skeleton.update();
+      return Array.from({ length: target.geometry.getAttribute('position').count }, (_, i) =>
+        target.getVertexPosition(i, new THREE.Vector3()).applyMatrix4(target.matrixWorld),
+      );
+    };
+    for (const angle of [0, 0.35, 0.7]) {
+      tip.rotation.z = angle;
+      find(loaded.scene, 'Tip').rotation.z = angle;
+      const expected = sample(root, mesh);
+      const actual = sample(loaded.scene, skin);
+      expect(actual).toHaveLength(expected.length);
+      // Vertex reordering is allowed; every exported point must remain within 1 mm.
+      for (const point of actual)
+        expect(Math.min(...expected.map((candidate) => candidate.distanceTo(point)))).toBeLessThan(
+          0.001,
+        );
+      for (const point of expected)
+        expect(Math.min(...actual.map((candidate) => candidate.distanceTo(point)))).toBeLessThan(
+          0.001,
+        );
+    }
   });
 });

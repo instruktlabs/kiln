@@ -7,11 +7,20 @@ does not publish a package.
 
 ## Unreleased
 
+- Add optional game delivery roles, colliders, anchors, kit ports, surface bakes,
+  budgets, solid assertions, atlas packing and a compressed Three.js runtime target.
+  These describe explicit delivery choices; they do not impose an asset style or
+  require every mesh to be closed.
 - Adapt the non-rock organic helpers contributed by [FaberVi (Vincenzo Fabiano)](https://github.com/FaberVi)
   in [#141](https://github.com/instruktlabs/kiln/pull/141): metaball surfaces, field
   composition, sampled paths, tapered tubes, curls and smoothing. Maintainer
   integration corrects sampling, recipes, input validation and unsafe count arithmetic while
   retaining the original blend default. See the [provenance record](docs/reviews/2026-10-16-organic-adoption.md).
+- Preserve vertex colors and additional UV channels in review reconstruction and
+  custom capture derivatives; measure draw diagnostics on Meshopt runtime exports;
+  retain bounded topology facts when an explicit solid assertion fails.
+- Document quantized skin transforms and consumer-owned LOD selection, and bring
+  demonstrated authoring and harness lessons into maintained workspace guidance.
 
 ## 1.2.3 (2026-10-12)
 

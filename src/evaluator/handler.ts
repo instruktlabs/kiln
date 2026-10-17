@@ -1,4 +1,9 @@
 import { programErrorDiagnostic, type AuthoringDiagnostic } from './authoring-diagnostic';
+import {
+  RequiredSolidError,
+  validSolidFailureDetails,
+  type SolidFailureDetails,
+} from './solid-diagnostic';
 import type { RenderGlbOptions, RenderResult } from '../render';
 import { renderGLBInProcess } from '../render';
 import { AssetQaBlockedError } from '../qa/run';
@@ -29,6 +34,7 @@ function failure(
   code: EvaluatorOutcomeCode,
   diagnostic?: AuthoringDiagnostic,
   qa?: Extract<WireEvaluatorResultV2, { ok: false }>['error']['qa'],
+  solid?: SolidFailureDetails,
 ): Extract<WireEvaluatorResultV2, { ok: false }> {
   return {
     version: EVALUATOR_RESULT_VERSION,
@@ -39,6 +45,7 @@ function failure(
       message: evaluatorOutcomeMessage(code),
       ...(qa ? { qa } : {}),
       ...(diagnostic ? { diagnostic } : {}),
+      ...(solid ? { solid } : {}),
     },
   };
 }
@@ -101,7 +108,15 @@ export async function evaluateEvaluatorRequestV2(
     } else if (error instanceof EvaluatorPortError && error.code === 'DEADLINE_EXCEEDED') {
       wire = failure(request.requestId, 'DEADLINE_EXCEEDED');
     } else {
-      wire = failure(request.requestId, 'EXECUTION_REJECTED', programErrorDiagnostic(error));
+      wire = failure(
+        request.requestId,
+        'EXECUTION_REJECTED',
+        programErrorDiagnostic(error),
+        undefined,
+        error instanceof RequiredSolidError && validSolidFailureDetails(error.solid)
+          ? error.solid
+          : undefined,
+      );
     }
   } finally {
     clearTimeout(timer);

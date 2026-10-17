@@ -216,7 +216,7 @@ export async function captureViewsViaPort(
           // An isolated shot hides the other meshes; send the GPU only what it may draw.
           const derivative = await renderSceneToGLB(
             withoutHiddenMeshes(input.root as import('three').Object3D),
-            { derivative: true },
+            { derivative: true, gltfExporter: 'three' },
           );
           const result = await captureViewPngsViaPort(
             port,
