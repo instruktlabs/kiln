@@ -221,7 +221,7 @@ export const geometryPrimitives: readonly HelperSpec[] = [
     description:
       'Experimental smooth union of spheres meshed through implicitSurface. Uses polynomial blending; output has no UVs.',
     promptNotes:
-      'Prefer this over hand-rolling smoothUnion fields for creatures, blobs and rounded junctions. Match edgeLength to feature size.',
+      'Useful when a smooth union of sphere volumes fits the intended shape. Match edgeLength to feature size.',
     example:
       'const body = await metaballSurface([{ center: [0,0.4,0], radius: 0.35 }, { center: [0.2,0.55,0], radius: 0.22 }], { bounds: { min: [-0.6,-0.1,-0.5], max: [0.6,1,0.5] }, edgeLength: 0.08 });',
   },
@@ -232,7 +232,7 @@ export const geometryPrimitives: readonly HelperSpec[] = [
     returns: 'THREE.BufferGeometry',
     category: 'curves',
     description:
-      'Circular sweep with one radius per path station. Default creaseAngle 180 shades round profiles smoothly; sample splines with catmullRomPath first.',
+      'Circular sweep along a polyline with one radius per station. Default creaseAngle 180 shades round profiles smoothly. catmullRomPath can supply samples when a spline fits the intended path.',
     example:
       'const path = catmullRomPath([[0,0.5,0],[0.3,0.7,0],[0.5,0.4,0]], 6); const radii = path.map((_, i) => 0.08 - 0.06 * i / (path.length - 1)); const tail = taperedTube(path, radii);',
   },

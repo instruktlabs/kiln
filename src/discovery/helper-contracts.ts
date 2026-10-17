@@ -2471,7 +2471,7 @@ define(
     intents: ['limb, tail, tentacle or branch with changing thickness'],
     related: [
       { name: 'pipeAlongPath', relation: 'alternative' },
-      { name: 'catmullRomPath', relation: 'prerequisite' },
+      { name: 'catmullRomPath', relation: 'companion' },
     ],
   },
 );

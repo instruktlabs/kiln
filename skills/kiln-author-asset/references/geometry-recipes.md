@@ -483,22 +483,26 @@ Positive values are inside. Bounds/resolution are required; smaller cells cost m
 
 ## Organic curves and blended volumes
 
-Prefer smooth paths and round profiles before adding detail:
+When the intended shape follows a smooth curve with a round, varying cross-section,
+one option is to sample a spline and sweep it:
 
 ```js
 const path = catmullRomPath([[0,0,0],[0.2,0.4,0.1],[0.5,0.2,0]], 8);
 const radii = path.map((_, i) => 0.06 - 0.04 * i / (path.length - 1));
 const limb = taperedTube(path, radii, { radialSegments: 16, creaseAngle: 180 });
-const soft = smoothOrganic(limb, { iterations: 1, creaseAngle: 50 });
 ```
 
-Use one radius per sampled station. Closed `catmullRomPath` output omits the
+Use one radius per path station; `taperedTube` also accepts an authored polyline.
+Closed `catmullRomPath` output omits the
 repeated endpoint and can feed `taperedTube(path, radii, { closed: true })` directly.
 Path helpers reject derived sample counts that exceed safe-integer precision.
-Subdivision changes the shape and increases triangle count; inspect the result
-before adding iterations. `smoothOrganic` drops UVs by default; use `preserveUV: true` when retaining supported corner attributes and material boundaries matters.
+`smoothOrganic(limb, { iterations: 1, creaseAngle: 50 })` is an optional refinement
+when subdivision produces the intended surface. Subdivision changes the shape and
+increases triangle count; inspect the result before adding iterations.
+`smoothOrganic` drops UVs by default; use `preserveUV: true` when retaining supported corner attributes and material boundaries matters.
 
-`metaballSurface` smooth-unions spheres for torsos, bells and heads without visible CSG seams:
+When a smooth blend of sphere volumes fits the intended shape, `metaballSurface`
+can mesh that field:
 
 ```js
 const torso = await metaballSurface(
@@ -507,7 +511,7 @@ const torso = await metaballSurface(
 );
 ```
 
-Compose custom fields with `sphereInside` and `smoothUnion` inside `implicitSurface` when metaballs are not enough.
+For custom fields, `sphereInside` and `smoothUnion` can be composed inside `implicitSurface`.
 
 The default metaball blend is `max(0.35 * smallestRadius, 0.02)` in scene units;
 choose an explicit blend when scaling. Include blended junctions inside the
