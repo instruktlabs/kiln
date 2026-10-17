@@ -71,3 +71,11 @@ coauthor trailer above and reference PR #141 and the original commit. Maintainer
 corrections should be described as adaptations, not as original authorship of
 the contributed helpers. No commit, merge, push or release is implied by this
 provenance record.
+
+## Contribution demonstration
+
+The [Morrow Fen Regent preview](assets/2026-10-16-morrow-fen-regent.png) shows a
+new agent-authored asset made with the adapted helpers. Its blended body and tail
+use `metaballSurface`; curved details use the path and tube helpers. FaberVi's
+contribution is the helper implementation, not authorship of this demonstration.
+The image is an unmodified GPU capture of the saved asset.
