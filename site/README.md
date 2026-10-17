@@ -60,7 +60,7 @@ deployment are separate release steps.
 
 ## Assets and scenes
 
-All five public packs have source records under `../packs/`; four runnable scenes
+All six public packs have source records under `../packs/`; five runnable scenes
 have source under `../scenes/packages/`. Large binaries are downloaded explicitly
 from Cloudflare R2. Follow the [asset source guide](../packs/README.md) to hydrate
 editable revisions and the [scene guide](../scenes/README.md) to rebuild runtimes.
