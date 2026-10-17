@@ -99,6 +99,7 @@ async function expectedFiles() {
       }),
     ],
     ['LICENSE', await readFile(join(repo, 'LICENSE'))],
+    ['SECURITY.md', await readFile(join(repo, 'SECURITY.md'))],
     ['PRIVACY.md', await readFile(join(repo, 'docs/local-plugin-privacy.md'))],
     [executable, await readFile(join(repo, 'scripts/setup-plugin-workspace.mjs'))],
   ]);
@@ -223,7 +224,7 @@ sanitized reproduction at [GitHub issues](https://github.com/instruktlabs/kiln/i
 If setup fails, retain the error, check Node/npm and network access, and follow the
 setup guide. Do not delete an unfamiliar runtime or another installer's lock.
 
-[Local privacy notice](PRIVACY.md) · [MIT license](LICENSE) ·
+[Security policy](SECURITY.md) · [Local privacy notice](PRIVACY.md) · [MIT license](LICENSE) ·
 [Source](https://github.com/instruktlabs/kiln)
 `,
     ),

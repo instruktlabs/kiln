@@ -5,6 +5,10 @@ For a behavior bug, include a minimal `.kiln.js` program, the command or tool ca
 and the error or image you saw. Include your OS, Node version and whether rendering
 used CPU or GPU. Remove credentials and private paths from shared logs.
 
+For suspected vulnerabilities, follow the [security policy](SECURITY.md)
+and report privately to support@instruktlabs.com. Keep exploit details,
+credentials and private assets out of public issues.
+
 ## Work on the engine
 
 Read [AGENTS.md](AGENTS.md) and the [README](README.md). Contributor checks use Bun

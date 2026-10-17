@@ -196,6 +196,8 @@ try {
     assert(pack.files.some((entry) => entry.path === 'scripts/create-workspace.mjs'));
     assert(pack.files.some((entry) => entry.path === 'plugin.json'));
     assert(pack.files.some((entry) => entry.path === '.claude-plugin/plugin.json'));
+    assert(pack.files.some((entry) => entry.path === 'SECURITY.md'));
+    assert(pack.files.some((entry) => entry.path === 'plugins/kiln-engine/SECURITY.md'));
     // The MCP server tells every model that a GPU renderer "ships as render-service/
     // in this installation". That sentence was false for anyone installing from npm
     // until this line existed, and the on-demand start has nothing to start without it.

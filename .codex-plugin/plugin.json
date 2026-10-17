@@ -5,12 +5,23 @@
   "author": {
     "name": "Matthew Kissinger"
   },
+  "homepage": "https://kilnstudio.tools",
+  "repository": "https://github.com/instruktlabs/kiln",
+  "keywords": [
+    "3d",
+    "glb",
+    "gltf",
+    "asset-generation",
+    "three.js",
+    "gamedev"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Kiln",
     "shortDescription": "Build and collect editable 3D assets",
     "longDescription": "Author JavaScript, inspect camera views, and save GLBs with source revisions for later refinement.",
     "developerName": "Instrukt Labs",
+    "websiteURL": "https://kilnstudio.tools",
     "category": "Developer Tools",
     "capabilities": [
       "Read",

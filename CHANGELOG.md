@@ -7,6 +7,10 @@ does not publish a package.
 
 ## Unreleased
 
+- Document private security reporting, include the policy in distributed
+  packages, complete Codex plugin website and repository metadata, and
+  configure monthly dependency update proposals.
+
 ## 1.3.0 (2026-10-16)
 
 - Add optional game delivery roles, colliders, anchors, kit ports, surface bakes,

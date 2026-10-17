@@ -13,8 +13,9 @@
     "LICENSE": "sha256:cdba278ebf1d6de618869936226bf03be4887179c128efc7aaa13d22034826a5",
     "plugin.json": "sha256:425bcd358ed757c1a805bec8ae6f2cd2c57688d6e438e7f7a06b7e750df7805b",
     "PRIVACY.md": "sha256:5f58d981667e40441e21c2dec411f269a9a67a6141cec61976d27088fb12573b",
-    "README.md": "sha256:b759c4ec60dc6440441a6a7e9eefc453455b810cbe31363c47078a48e88bda2b",
+    "README.md": "sha256:d8be7621db5b864df5242f9dc3cd8ddbef51ebbada3afcfd7043840f9e8006f2",
     "runtime.json": "sha256:b6ed859e3a27c6275a740f11abdd53e0753228919574cca92a15453a870dfa1c",
+    "SECURITY.md": "sha256:8e238d3985deff828efd71bc3354a5b0275613a4921f369fc971f760ca249606",
     "skills/kiln-setup-workspace/references/plugin-install.md": "sha256:c338fb792e7fad0364c3e1a13c94c506afa1395489ec1b6e83b36d04728935fb",
     "skills/kiln-setup-workspace/references/renderer-setup.md": "sha256:b743b1b2827fa814385990e1e5b849391cb427413e9c016d273aa19cebd46031",
     "skills/kiln-setup-workspace/SKILL.md": "sha256:65ed926b3503a33f4fe793e84e4a045ce36e3967f0e6b340e456a15dd010ce54"

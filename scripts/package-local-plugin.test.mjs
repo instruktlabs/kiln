@@ -86,6 +86,9 @@ test('bundle registers setup alone and keeps its complete maintained reference a
   expect(await readFile(join(directory, 'PRIVACY.md'), 'utf8')).toBe(
     await readFile(resolve('docs/local-plugin-privacy.md'), 'utf8'),
   );
+  expect(await readFile(join(directory, 'SECURITY.md'), 'utf8')).toBe(
+    await readFile(resolve('SECURITY.md'), 'utf8'),
+  );
   const entries = await readdir(directory);
   for (const excluded of [
     'src',

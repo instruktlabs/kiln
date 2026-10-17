@@ -11,6 +11,21 @@ try {
   assert.equal(manifest.apps, './.app.json');
   assert.equal(manifest.mcpServers, undefined);
   assert.equal(manifest.name, 'kiln-chatgpt');
+  assert.equal(manifest.homepage, 'https://kilnstudio.tools');
+  assert.equal(manifest.repository, 'https://github.com/instruktlabs/kiln');
+  assert.equal(manifest.interface.websiteURL, manifest.homepage);
+  assert.deepEqual(manifest.keywords, [
+    '3d',
+    'glb',
+    'gltf',
+    'asset-generation',
+    'three.js',
+    'gamedev',
+  ]);
+  assert.equal(
+    await readFile(join(result.directory, 'SECURITY.md'), 'utf8'),
+    await readFile(new URL('../SECURITY.md', import.meta.url), 'utf8'),
+  );
   const mapping = JSON.parse(await readFile(join(result.directory, '.app.json')));
   assert.equal(mapping.apps.kiln.id, 'plugin_asdk_app_test');
   assert.match(

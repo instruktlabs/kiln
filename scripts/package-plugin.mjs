@@ -27,6 +27,7 @@ export async function packagePlugin(destination, appId) {
   );
   await cp(join(repo, 'skills'), join(directory, 'skills'), { recursive: true });
   await cp(join(repo, 'LICENSE'), join(directory, 'LICENSE'));
+  await cp(join(repo, 'SECURITY.md'), join(directory, 'SECURITY.md'));
   if (appId)
     await writeFile(
       join(directory, '.app.json'),
