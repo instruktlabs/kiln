@@ -1,7 +1,11 @@
 # Kiln current backlog
 
-Current release status: npm 1.2.1 and GitHub v1.2.1 are published.
-Scene delivery evidence below retains its 5 October scope.
+Current release status (17 October 2026): npm 1.3.0 and
+[GitHub v1.3.0](https://github.com/instruktlabs/kiln/releases/tag/v1.3.0) are published,
+and the public site is deployed. The publication record is on main through #174.
+Open work is listed under [Cycle handoff](#cycle-handoff-17-october).
+Scene performance evidence retains its original candidate scope; Cabin carries
+its own review report.
 This is a work queue and known-limit inventory, not a count of defects.
 The [roadmap](../ROADMAP.md) describes the delivered state and future milestones.
 [Historical reports](reviews/2026-10-05-status-reconciliation.md) keep their original
@@ -9,21 +13,21 @@ test, device and candidate scopes.
 
 ## Completed delivery cycle
 
-The hub migration, Troy environment/gameplay/control/asset work, public scene
-integration, pack downloads, portable scene source and source organization are
-complete. Development happens on this computer; the hub is reserved for isolated
-performance testing. The canonical Troy entry is
+Troy environment/gameplay/control/asset work, public scene integration, pack
+downloads, portable scene source and source organization are complete within
+their recorded scope. The canonical Troy entry is
 [scenes/packages/troy](../scenes/packages/troy/README.md).
 
-All five packs (Farm, Vehicles, Bridge, Foundry and Troy) have checked-in editable
-source; all four runnable scenes have maintained source packages. Runtime and
-Editable downloads are public. Large generated files remain outside the normal
+All six packs (Farm, Vehicles, Bridge, Foundry, Troy and Cabin in the Woods) have
+checked-in editable source; all five runnable scenes have maintained source packages.
+Runtime and Editable downloads are public. Large generated files remain outside the normal
 clone through hash-pinned Cloudflare R2 delivery and explicit hydration.
 Bridge is in the gallery. The unwanted Battle before the gate composition is
 removed from gallery presentation while its saved source/history remains.
 
 Current scene pins are Farm `r36-local-review`, Bridge `g9-code6`, Foundry
-`ff3-review2-code5` and Troy `troy-20261005-07`.
+`ff3-review2-code5`, Troy `troy-20261005-07` and Cabin `cabin-20261012-01`
+(Cabin shipped in 1.2.3).
 The horse-ear child revision, loading transport/bundling changes, public-text
 encoding guard, Troy homepage images and revised Foundry campus preview are delivered.
 The obsolete private `/reviews/troy/` prototype has been retired; use the normal
@@ -53,14 +57,40 @@ handling; CORE-1's shared-image isolation and the remaining core changes landed
 through #133 and shipped in npm 1.0.0. Later candidate changes still require their
 own package qualification and publication.
 
+## Released in 1.3.0
+
+The optional game-delivery contract from #171 and selected organic helpers from
+#141 were integrated through #172. FaberVi's contribution is acknowledged in the
+[changelog](../CHANGELOG.md) and [provenance record](reviews/2026-10-16-organic-adoption.md).
+The original PRs #140, #141, #142 and #171, plus umbrella proposal #134, are closed
+with their individual dispositions recorded. Rock helpers remain deferred; the
+universal topology heuristic and benchmark runner were not adopted.
+
+Review/export fidelity, measured runtime draw diagnostics, Windows material-file
+publication and renderer startup fixes are released. Reviewed 1.2.3 dogfood lessons
+are incorporated into the maintained skills and clean-room guidance. The earlier
+circular-wall and export-receipt guidance from #163 shipped in 1.2.2 and remains
+included. These are completed integrations, not pending PRs.
+
+## Cycle handoff (17 October)
+
+The 1.3.0 integration and publication cycle is complete. Remaining work below has
+its own review and completion boundary.
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Catalog listing | [awesome-ai-plugins#771](https://github.com/hashgraph-online/awesome-ai-plugins/pull/771) remains open. Format validation passes; the source scan and aggregate catalog gate are not satisfied | Await catalog maintainer review; assess any requested changes separately |
+| Repository hygiene | A security policy and dependency-update configuration remain follow-ups; Codex plugin metadata is already present | Review in a small, separately scoped PR |
+| Scenes trailer | Capture tooling and preview cuts are prepared separately from the released scene runtimes | Owner review of the cuts; decide what, if anything, lands on main |
+| Organic authoring follow-up | Selected helpers have shipped; rock displacement helpers remain deferred | Require demonstrated authoring need and explicit contracts before adding another helper |
+| HOL Guard integration | Separate command-classification experiment | Reassess after the catalog listing decision; no upstream adoption is implied |
+
 ## Remaining package and product work
 
 | Item | Completion boundary |
 | --- | --- |
-| Authoring guidance follow-up | PR #163 contains circular-wall orientation and export-receipt guidance; still unmerged at the October 9 readback and not included in npm 1.2.1 |
-| Hosted service | Invite-only launch work is owned by the private application's handoff; public package publication does not establish hosted availability |
-| Community and site alignment | Discord setup, hosted-access instructions and current-version documentation are in progress; publish only after review |
-| Directory submissions | Separate from package publication and hosted deployment; no submission is implied by either |
+| Hosted service | Hosted runtime upgrades require separate qualification; public package publication does not establish hosted availability |
+| Directory submissions | Separate from package publication and hosted deployment; see the cycle handoff for the open catalog listing. Vendor review remains separate from local plugin distribution |
 | Further packs | Separate product work; ten-pack production is not a Troy release chore |
 | Broader importer qualification | Actual destination tests for LOD, visibility and supported export profiles |
 | Optional compressed runtime derivatives | Explicit loader/profile adoption and measured size/startup/render tradeoffs; current shared runtime loading is not universal Meshopt/Draco/KTX2 support |
