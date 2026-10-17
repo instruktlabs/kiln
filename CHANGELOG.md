@@ -21,6 +21,9 @@ does not publish a package.
   retain bounded topology facts when an explicit solid assertion fails.
 - Document quantized skin transforms and consumer-owned LOD selection, and bring
   demonstrated authoring and harness lessons into maintained workspace guidance.
+- Retry transient Windows permission failures when publishing material revisions,
+  using the existing bounded atomic-directory helper. Existing revisions remain
+  immutable and are accepted only after full material verification.
 
 ## 1.2.3 (2026-10-12)
 

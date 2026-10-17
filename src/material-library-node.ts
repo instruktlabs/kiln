@@ -1,9 +1,10 @@
 /** Host-owned immutable material storage and byte-only evaluator delivery. No acquisition I/O. */
 import { createHash, randomUUID } from 'node:crypto';
-import { lstat, mkdir, readFile, readdir, realpath, rename, rm, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import sharp from 'sharp';
 import { DataTexture } from 'three';
+import { renameDirectoryAtomically } from './atomic-directory';
 import {
   assertMaterialJson,
   canonicalMaterialJson,
@@ -590,7 +591,7 @@ export class FileMaterialLibrary {
           flag: 'wx',
         });
         try {
-          await rename(stage, dest);
+          await renameDirectoryAtomically(stage, dest);
         } catch (error) {
           const existing = await this.read(manifest.materialId, manifest.revisionId).catch(
             () => undefined,
