@@ -131,6 +131,24 @@ The ones that cost real time:
   installs its own copy must pin a release that knows the requested model; one short
   `smoke:harness` turn shows the refusal before a batch spends time.
 
+## OpenCode V2 storage and completion
+
+`run --standalone` gives the command a private server; `XDG_CONFIG_HOME` selects
+configuration. Neither alone isolates the persistent session database. OpenCode
+documents `XDG_DATA_HOME` and `OPENCODE_DB` as database-location controls, and stores
+provider sign-ins in that database too. Use a separately prepared data location
+for concurrent independent servers or nested headless authors. Verify model access
+there first; do not copy credentials or silently switch providers to make it work.
+[OpenCode V2 provider storage](https://dev.opencode.ai/v2/docs/cli/providers/#storage).
+
+In the October 13 Windows trials, an OpenCode 2.0.14 client reported a provider
+reasoning-item error after server-restart notices while descendant work continued.
+This does not establish the restart's root cause. Retain the client exit, native
+session outcome and child-process results separately. Before retrying, check the
+actual processes and saved outputs; a disconnected client is not a stopped author.
+Export native sessions after they become idle so evidence collection does not
+start another server against an active database.
+
 ## Long-running sessions and compaction
 
 Keep automatic compaction enabled. It is a normal continuation boundary, not a reason for a

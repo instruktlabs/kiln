@@ -21,6 +21,13 @@ assisted OpenCode recoveries remain distinct from the incomplete blind handoffs.
 The report covers native traces, independent export checks, visual defects and
 the resulting evaluation-tool and skill changes.
 
+The [October 13 public 1.2.3 campaign](reviews/2026-10-13-1.2.3-blind-dogfood.md)
+records nine initial assets and six localized edits with AGY/Gemini and
+OpenCode/Muse, including an extra blind attempt and an OpenCode client error
+whose underlying session completed. It separates validated delivery from visual
+quality, native image receipt from independent GPU review, and tested published
+guidance from subsequent local documentation changes.
+
 | tier | question it answers | cost |
 | --- | --- | --- |
 | 0 · wiring smoke | can this harness reach the tools at all? | one short turn |
@@ -52,7 +59,7 @@ harness, then ask for an asset the way a user would:
 ```bash
 node scripts/create-workspace.mjs /tmp/dogfood-opencode --harness opencode
 cd /tmp/dogfood-opencode
-opencode run --auto -m PROVIDER/MODEL "Generate a weathered dockside crane asset."
+opencode run --standalone --auto -m PROVIDER/MODEL "Generate a weathered dockside crane asset."
 ```
 
 The workspace already registers the skills and the MCP server and writes an AGENTS.md that
@@ -107,7 +114,7 @@ interrupted run is not a completed asset.
 `dogfood:tier2` drives the outer, blind agent. It supports Agy, Claude Code, Codex, Hermes and
 OpenCode, using each harness's verified isolation: an operator-prepared clean auth home for Agy,
 strict empty MCP for Claude, ignored user configuration and rules for Codex, safe mode or an
-isolated home for Hermes, and a fresh XDG configuration plus pure mode for OpenCode. The ordinary
+isolated home for Hermes, and a fresh XDG configuration plus a private V2 server for OpenCode. The ordinary
 routes keep their normal authentication store. Adding another adapter is appropriate only after
 its isolation can be demonstrated; a clean current directory by itself does not suppress
 user-level skills or MCP servers.
@@ -147,6 +154,15 @@ It does not name setup commands, skills, Kiln tools, primitives, or examples. Th
 surface being tested. Claude runs in safe mode with a strict empty MCP configuration and no saved
 outer session. Codex ignores user configuration and execution rules and uses an ephemeral outer
 session. OpenCode uses `--standalone` under a fresh `XDG_CONFIG_HOME`; Hermes uses `--safe-mode`.
+
+For OpenCode V2, configuration and persistent state are separate. `--standalone`
+starts a private server but does not select a separate session database. Record
+the resolved data/database location as well as the configuration location. Use a
+separately prepared `XDG_DATA_HOME` or `OPENCODE_DB` for concurrent independent
+servers, including nested authors; changing this can also remove access to saved
+provider sign-ins. Verify the requested route before dispatch, never copy a user's
+database or credentials, and never count a client exit as proof that its server or
+children stopped. See [harness storage and completion](harnesses.md#opencode-v2-storage-and-completion).
 Agy has no equivalent flag, so it requires `--agy-home` pointing to an operator-prepared home
 whose `agy mcp list` is empty and which exposes only the authentication/runtime files the test
 needs. The driver never copies credentials into it. Authentication remains available where the

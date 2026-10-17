@@ -12,6 +12,14 @@ Use a new workspace when testing changed skills. `--repair` repairs generated in
 
 Hash the package and every installed skill resource recursively, not only `SKILL.md`. Keep the exact model identifier and harness version beside the run. When a provider reports a resolved model identity, retain it as well.
 
+A private harness server need not have private session storage. For OpenCode V2,
+record configuration and database locations separately; concurrent independent
+servers and nested authors need separately prepared data locations. Changing
+`XDG_DATA_HOME` or `OPENCODE_DB` can also change provider authentication. Verify
+the requested route without copying credentials. A client error or exit can leave
+server-side work running: check native session and child-process outcomes before
+retrying, and retain both results when they disagree.
+
 ## A small but complete trial
 
 Use a brief with three recognizable parts and one requested revision. Save the first `programRef`; render, source-view, source-edit, and inspect by reference. Export the revised source and GLB. Compare unrelated source text before and after, and verify the changed part in a targeted image. A source handle proves revision reuse; it does not by itself prove a render-cache hit.

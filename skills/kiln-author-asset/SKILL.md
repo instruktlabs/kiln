@@ -17,7 +17,7 @@ Read the [program contract](references/program-contract.md) when writing source.
 
 ## Make the asset
 
-Establish the subject, scale, style, and destination constraints from the request. Build a recognizable silhouette and meaningful construction details. Name parts by their role. Use metres, +X forward, +Y up, +Z right; ground contact normally sits at Y=0. Forward is the direction the object faces: a bench's sitter faces +X, so its backrest sits toward -X. Part `rotation` is in degrees and follows the right-hand rule in this frame: `[0, 90, 0]` turns forward (+X) toward -Z, the object's left; `[0, 0, 90]` tips +X up to +Y; `[90, 0, 0]` rolls +Y toward +Z.
+Take subject, scale, style and destination constraints from the request, not examples or recipes. Build a recognizable silhouette and meaningful construction details. Name parts by their role. Use metres, +X forward, +Y up, +Z right; ground contact normally sits at Y=0. Forward is the direction the object faces: a bench's sitter faces +X, so its backrest sits toward -X. Part `rotation` is in degrees and follows the right-hand rule in this frame: `[0, 90, 0]` turns forward (+X) toward -Z, the object's left; `[0, 0, 90]` tips +X up to +Y; `[90, 0, 0]` rolls +Y toward +Z.
 
 Unless exact reconstruction is requested, use reference images to align silhouette,
 materials and art direction alongside the written brief, not as a requirement to

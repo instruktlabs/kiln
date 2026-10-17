@@ -39,6 +39,14 @@ their transforms or motion survived the export.
 
 ## Surfaces from equations
 
+Match continuity to the brief. For a requested smooth surface, inspect both its
+silhouette and its shading: increasing radial segments does not smooth a coarse
+longitudinal profile, and smooth normals do not remove corners from the geometry.
+Refine the curve or topology where the shape needs it; preserve intentional
+creases and facets. Flat colours do not require faceted geometry. CPU geometry
+views can exaggerate face boundaries, so use material-faithful views to separate
+that limitation from ridges that remain in the exported surface.
+
 An asymmetric canopy or corrugated sheet can be much shorter as a function than as many primitives:
 
 ```js
