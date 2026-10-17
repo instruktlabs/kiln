@@ -708,7 +708,86 @@ define(
     ],
   },
 );
-
+define(
+  'metaballSurface',
+  {
+    ...ownedGeometry,
+    execution: 'async',
+    axes: 'Sphere centers use XYZ; positive-inside smooth union.',
+    origin: 'Explicit sampling bounds min/max define the evaluated region.',
+    parameters: [
+      'One or more { center, radius } spheres; blend defaults to max(0.35 times the smallest radius, 0.02 scene units).',
+      'Same bounds/edgeLength limits as implicitSurface.',
+      'Uses implicitSurface defaults of 1,000,000 estimated cells and 8,000,000 field callbacks; explicit maxCells/maxEvaluations ceilings pass through unchanged.',
+    ],
+    topology: ['Resolution-dependent manifold level set; review thin features.'],
+    preservation: ['No UVs; experimental metadata like implicitSurface.'],
+    cost: 'Implicit grid cost times sphere count; maxEvaluations counts field callbacks, not individual sphere evaluations. Use the host evaluator for process/time limits.',
+  },
+  {
+    references: ['src/organic.ts', 'src/implicit.ts'],
+    tags: ['metaball', 'blob', 'organic'],
+    aliases: ['smooth blob', 'blended spheres'],
+    intents: ['author a smooth organic solid from spheres'],
+    stability: 'experimental',
+    related: [{ name: 'implicitSurface', relation: 'alternative' }],
+  },
+);
+define(
+  'smoothUnion',
+  {
+    units: 'Blend width uses asset-length units when composed into spatial fields.',
+    axes: 'Operands are scalar field samples, not mesh coordinates.',
+    parameters: ['Finite operands; positive finite blend width.'],
+    topology: [noMesh],
+    preservation: ['Pure scalar helper; no geometry output.'],
+    cost: 'O(1) per sample.',
+  },
+  {
+    references: ['src/sdf.ts'],
+    tags: ['sdf', 'implicit', 'blend'],
+    intents: ['smoothly join two positive-inside fields'],
+    related: [{ name: 'implicitSurface', relation: 'companion' }],
+  },
+);
+define(
+  'sphereInside',
+  {
+    units: lengthUnits,
+    axes: 'Center and sample point use XYZ.',
+    parameters: ['Positive finite radius; finite center and sample point.'],
+    topology: [noMesh],
+    preservation: ['Scalar field sample only.'],
+    cost: 'O(1) per sample.',
+  },
+  {
+    references: ['src/sdf.ts'],
+    tags: ['sdf', 'sphere', 'field'],
+    intents: ['sphere distance field for implicitSurface'],
+    related: [{ name: 'smoothUnion', relation: 'companion' }],
+  },
+);
+define(
+  'smoothOrganic',
+  {
+    ...ownedGeometry,
+    parameters: [
+      'Optional iterations (default 1), creaseAngle (default 55), preserveUV flag.',
+      'Subject to subdivide admission budgets.',
+    ],
+    preservation: [
+      'Subdivision may drop legacy CSG provenance; creaseNormals invalidates tangents.',
+      'Default position-only subdivision drops UVs and material groups; preserveUV: true retains supported corner attributes and material boundaries.',
+    ],
+    cost: 'Subdivide estimate applies before work begins.',
+  },
+  {
+    references: ['src/organic.ts', 'src/ops.ts', 'src/geometry.ts'],
+    tags: ['subdivide', 'normals', 'organic'],
+    intents: ['soften an authored mesh for creatures and plants'],
+    related: [{ name: 'subdivide', relation: 'companion' }],
+  },
+);
 const nodeFacts: Facts = {
   units: `${lengthUnits} explicit rotation triples use degrees unless stated otherwise.`,
   axes: 'Three.js local XYZ; +Y is the normal up convention.',
@@ -2317,6 +2396,82 @@ define(
     related: [
       { name: 'sweepProfile', relation: 'alternative' },
       { name: 'curveToMesh', relation: 'alternative' },
+    ],
+  },
+);
+define(
+  'catmullRomPath',
+  {
+    units: lengthUnits,
+    axes: 'Control points and output use XYZ.',
+    parameters: [
+      'At least two open or three closed control points; positive integer samplesPerSpan.',
+      'Open output has (controlPoints.length - 1) * samplesPerSpan + 1 stations including endpoints. Closed output has controlPoints.length * samplesPerSpan stations without a repeated endpoint.',
+      'Derived sample counts must be safe integers; unsafe products are rejected before sampling.',
+    ],
+    topology: [noMesh],
+    preservation: ['Returns a point array for downstream sweeps.'],
+    cost: 'Linear in control points × samplesPerSpan.',
+  },
+  {
+    references: ['src/organic.ts'],
+    tags: ['path', 'spline', 'curve'],
+    aliases: ['smooth path samples'],
+    intents: ['sample a smooth curve through waypoints'],
+    related: [
+      { name: 'taperedTube', relation: 'companion' },
+      { name: 'sweepProfile', relation: 'companion' },
+    ],
+  },
+);
+define(
+  'spiralPath',
+  {
+    units: lengthUnits,
+    axes: 'Center, axis, forward and output use XYZ.',
+    origin:
+      'Starts radius away from center in the projected forward direction; center is the spiral axis datum.',
+    parameters: [
+      'Positive radius, rise, and turns; optional sample count (>= 4).',
+      'Finite nonzero axis and forward; forward must not be parallel to axis.',
+      'Returns samples + 1 stations, rising by rise while radius shrinks linearly to 42% of its initial value.',
+      'The derived samples + 1 count must be a safe integer.',
+    ],
+    topology: [noMesh],
+    preservation: ['Returns spiral polyline samples for taperedTube or sweepProfile.'],
+    cost: 'Linear in samples.',
+  },
+  {
+    references: ['src/organic.ts'],
+    tags: ['path', 'spiral', 'curve'],
+    aliases: ['curl path', 'prehensile tail path'],
+    intents: ['sample a rising spiral for curled tails and tendrils'],
+    related: [
+      { name: 'catmullRomPath', relation: 'alternative' },
+      { name: 'taperedTube', relation: 'companion' },
+    ],
+  },
+);
+define(
+  'taperedTube',
+  {
+    ...curveFacts,
+    parameters: [
+      'Polyline path with one positive radius per station.',
+      'Closed paths omit the repeated endpoint, matching closed catmullRomPath output.',
+      'Optional per-station sectionScale [side, depth] for elliptical cross-sections.',
+      'Default creaseAngle 180 for round profiles; radialSegments default 20.',
+    ],
+    preservation: ['UVs and normals like sweepProfile; smooth round shading by default.'],
+  },
+  {
+    references: ['src/organic.ts', 'src/sweep.ts'],
+    tags: ['tube', 'taper', 'organic'],
+    aliases: ['varying radius tube'],
+    intents: ['limb, tail, tentacle or branch with changing thickness'],
+    related: [
+      { name: 'pipeAlongPath', relation: 'alternative' },
+      { name: 'catmullRomPath', relation: 'prerequisite' },
     ],
   },
 );

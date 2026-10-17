@@ -5,6 +5,14 @@ Source releases and installable package publication are separate milestones.
 Published versions and tags are recorded by the npm registry; changing this file
 does not publish a package.
 
+## Unreleased
+
+- Adapt the non-rock organic helpers contributed by [FaberVi (Vincenzo Fabiano)](https://github.com/FaberVi)
+  in [#141](https://github.com/instruktlabs/kiln/pull/141): metaball surfaces, field
+  composition, sampled paths, tapered tubes, curls and smoothing. Maintainer
+  integration corrects sampling, recipes, input validation and unsafe count arithmetic while
+  retaining the original blend default. See the [provenance record](docs/reviews/2026-10-16-organic-adoption.md).
+
 ## 1.2.3 (2026-10-12)
 
 - Allow concurrent renderer clients to await verified health through the shared

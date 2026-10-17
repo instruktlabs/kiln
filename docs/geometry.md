@@ -355,6 +355,36 @@ const blob = await implicitSurface(
 );
 ```
 
+Higher-level organic helpers build on the same positive-inside convention:
+`metaballSurface` smooth-unions spheres; `taperedTube` and `catmullRomPath` author
+smooth limbs and tentacles; `smoothOrganic` subdivides then limits crease angles;
+`smoothUnion` and `sphereInside` compose custom fields inside `implicitSurface` callbacks.
+
+`taperedTube` takes one radius per sampled path point. Derive radii from the
+returned path length, not the original control-point count. `catmullRomPath`
+includes both endpoints on open curves and omits the repeated endpoint on closed
+curves, so its closed output can feed `taperedTube(..., { closed: true })` directly.
+Both `catmullRomPath` and `spiralPath` reject derived sample counts that exceed
+safe-integer precision before sampling.
+
+`metaballSurface` retains the experimental implicit-surface limits and has no UVs.
+Its default blend is `Math.max(0.35 * smallestRadius, 0.02)` in scene units; provide
+`blend` explicitly when scaling a shape. More spheres add work to every field
+sample; finer `edgeLength` increases mesh cost. Bounds must include the desired
+surface, including blended junctions.
+Metaballs use `implicitSurface`'s existing default grid and field-callback limits;
+explicit `maxCells` and `maxEvaluations` ceilings pass through unchanged.
+`maxEvaluations` counts field callbacks, not the individual spheres evaluated by
+each callback. More spheres therefore increase work within that ceiling. Use the
+host's process-bounded evaluator when execution deadlines matter.
+
+`spiralPath` is a rising, shrinking curl: it starts `radius` away from `center`
+along the projected `forward` direction, rises by `rise`, and ends at 42% of the
+initial radius after `turns` turns. `smoothOrganic` changes geometry through
+subdivision before computing crease normals. It can increase triangle count
+sharply and drops UVs by default; use `preserveUV: true` when retaining supported
+corner attributes and material boundaries matters.
+
 The field is **positive inside**. Bounds and `edgeLength` are required. Smaller spacing can increase cost sharply and is necessary for thin features. The default limits are one million estimated grid cells and eight million actual callback evaluations; `maxCells` and `maxEvaluations` are explicit overrides. An evaluation counter cannot stop a callback that never returns: use the host's process-bounded evaluator for untrusted source.
 
 Output is experimental, has no UVs, and records resolution and evaluation counts. A finite grid cannot guarantee preservation of every thin feature or exact CAD dimensions. See the [candidate measurements and adoption decisions](https://github.com/instruktlabs/kiln/blob/main/docs/experiments/geometry-frontier.md) for implicit surfaces, general beveling, normal-offset shells, and mesh-to-field remeshing.

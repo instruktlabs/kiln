@@ -473,6 +473,45 @@ const blob = await implicitSurface(([x,y,z]) => 1 - Math.hypot(x,y,z), {
 
 Positive values are inside. Bounds/resolution are required; smaller cells cost more and thin features can disappear. Explicit grid/evaluation limits apply. Output has no UVs. Use this for a deliberate organic/cellular experiment, not an unsupported promise of general shelling, remeshing, or CAD accuracy.
 
+## Organic curves and blended volumes
+
+Prefer smooth paths and round profiles before adding detail:
+
+```js
+const path = catmullRomPath([[0,0,0],[0.2,0.4,0.1],[0.5,0.2,0]], 8);
+const radii = path.map((_, i) => 0.06 - 0.04 * i / (path.length - 1));
+const limb = taperedTube(path, radii, { radialSegments: 16, creaseAngle: 180 });
+const soft = smoothOrganic(limb, { iterations: 1, creaseAngle: 50 });
+```
+
+Use one radius per sampled station. Closed `catmullRomPath` output omits the
+repeated endpoint and can feed `taperedTube(path, radii, { closed: true })` directly.
+Path helpers reject derived sample counts that exceed safe-integer precision.
+Subdivision changes the shape and increases triangle count; inspect the result
+before adding iterations. `smoothOrganic` drops UVs by default; use `preserveUV: true` when retaining supported corner attributes and material boundaries matters.
+
+`metaballSurface` smooth-unions spheres for torsos, bells and heads without visible CSG seams:
+
+```js
+const torso = await metaballSurface(
+  [{ center: [0,0.4,0], radius: 0.3 }, { center: [0.2,0.45,0], radius: 0.22 }],
+  { bounds: { min: [-0.4,0,-0.35], max: [0.45,0.7,0.35] }, edgeLength: 0.06, blend: 0.08 },
+);
+```
+
+Compose custom fields with `sphereInside` and `smoothUnion` inside `implicitSurface` when metaballs are not enough.
+
+The default metaball blend is `max(0.35 * smallestRadius, 0.02)` in scene units;
+choose an explicit blend when scaling. Include blended junctions inside the
+sampling bounds. Finer cells cost more and do not guarantee thin-feature fidelity;
+the result remains experimental and has no UVs. For a rising tail curl,
+`spiralPath` starts one radius away from its center and shrinks to 42% of that
+radius over the requested turns. It does not produce a constant-radius helix.
+Metaballs use the existing implicit-surface grid and callback limits, including
+explicit `maxCells` and `maxEvaluations` overrides. The callback count does not
+include individual sphere evaluations, so additional spheres increase work.
+Use the host evaluator's process/time boundary for execution deadlines.
+
 
 For textures, preserve valid primitive UVs. Use `copyGeometry` before independent
 buffer edits, `remapUV` to scale/offset UVs, and `projectUV` for explicit planar,
