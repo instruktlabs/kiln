@@ -3,13 +3,7 @@ import * as THREE from 'three';
 import { readFileSync } from 'node:fs';
 import { geometryDiagnostics, type Point3 } from '../geometry';
 import { geometryPrimitives } from '../geometry-catalog';
-import {
-  catmullRomPath,
-  metaballSurface,
-  smoothOrganic,
-  spiralPath,
-  taperedTube,
-} from '../organic';
+import { catmullRomPath, metaballSurface, spiralPath, taperedTube } from '../organic';
 
 test('spline rejects unsafe derived counts before invoking the curve sampler', () => {
   const sample = spyOn(THREE.CatmullRomCurve3.prototype, 'getPoints').mockImplementation(() => {
@@ -199,12 +193,10 @@ test('maintained organic curve recipe executes', () => {
   );
   const section = text.split('## Organic curves and blended volumes')[1]!;
   const example = section.match(/```js\r?\n([\s\S]*?)```/)![1]!;
-  const geometry = new Function(
-    'catmullRomPath',
-    'taperedTube',
-    'smoothOrganic',
-    `${example}\nreturn soft;`,
-  )(catmullRomPath, taperedTube, smoothOrganic);
+  const geometry = new Function('catmullRomPath', 'taperedTube', `${example}\nreturn limb;`)(
+    catmullRomPath,
+    taperedTube,
+  );
   expect(geometryDiagnostics(geometry).boundaryEdges).toBe(0);
 });
 
