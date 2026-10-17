@@ -2,12 +2,12 @@
   "schemaVersion": 1,
   "entries": {
     "worker": {
-      "identity": "sha256:6faddbf66b4a18602b198937133dd80f696af99af525c2b58d82484d7c19f885",
+      "identity": "sha256:817a2024b497ee4a1b3463bf6359e74ddd44b1324a137e75b5068d24233473d8",
       "engineVersion": "1.2.3",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "1831d3bf721f61f7ccde42f50b6db0d53fd29784a81d6457d8ca770ff5ae57c4",
+      "sourceHash": "7fe5e0fee88daf30d23b2710f6542c24db5828043e473fa639f6b2c0294299b7",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "bb179f2715f8fd9059898ef3a2028947e8f5f7e7979ad7eafe59d7a464c18f9f",
+      "dependencyHash": "f17d705cc5de6856252c111542b8e179695cc81448eb1e2fc4d9a343ed42370a",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
@@ -21,6 +21,7 @@
         "gltf-validator": "2.0.0-dev.3.10",
         "jsonc-parser": "3.3.1",
         "manifold-3d": "^3.5.4",
+        "meshoptimizer": "1.1.1",
         "minisearch": "7.2.0",
         "pngjs": "7.0.0",
         "sharp": "^0.35.5",
@@ -36,15 +37,15 @@
       },
       "target": "node",
       "file": "evaluator-worker.mjs",
-      "bundleHash": "sha256:ce531903d4338186657f50f079e2ecffa0dd3b04d7765d3f4daccd725bd66804"
+      "bundleHash": "sha256:a79166bc5d349917ff0362837bb376e5e19e696fa04a314a246b0ef1e785ef68"
     },
     "agent-run": {
-      "identity": "sha256:6faddbf66b4a18602b198937133dd80f696af99af525c2b58d82484d7c19f885",
+      "identity": "sha256:817a2024b497ee4a1b3463bf6359e74ddd44b1324a137e75b5068d24233473d8",
       "engineVersion": "1.2.3",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "1831d3bf721f61f7ccde42f50b6db0d53fd29784a81d6457d8ca770ff5ae57c4",
+      "sourceHash": "7fe5e0fee88daf30d23b2710f6542c24db5828043e473fa639f6b2c0294299b7",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "bb179f2715f8fd9059898ef3a2028947e8f5f7e7979ad7eafe59d7a464c18f9f",
+      "dependencyHash": "f17d705cc5de6856252c111542b8e179695cc81448eb1e2fc4d9a343ed42370a",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
@@ -58,6 +59,7 @@
         "gltf-validator": "2.0.0-dev.3.10",
         "jsonc-parser": "3.3.1",
         "manifold-3d": "^3.5.4",
+        "meshoptimizer": "1.1.1",
         "minisearch": "7.2.0",
         "pngjs": "7.0.0",
         "sharp": "^0.35.5",
@@ -73,15 +75,15 @@
       },
       "target": "node",
       "file": "agent-run.mjs",
-      "bundleHash": "sha256:5ddfb55fa50037292a1fba651157ac25d0593e8f721b9b6e3ec74d7a592e79f8"
+      "bundleHash": "sha256:e177fb7ad95931b33b13af3a504187010db6ed9967e408eb2b2ebd9cc0affdf5"
     },
     "agent-providers": {
-      "identity": "sha256:6faddbf66b4a18602b198937133dd80f696af99af525c2b58d82484d7c19f885",
+      "identity": "sha256:817a2024b497ee4a1b3463bf6359e74ddd44b1324a137e75b5068d24233473d8",
       "engineVersion": "1.2.3",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "1831d3bf721f61f7ccde42f50b6db0d53fd29784a81d6457d8ca770ff5ae57c4",
+      "sourceHash": "7fe5e0fee88daf30d23b2710f6542c24db5828043e473fa639f6b2c0294299b7",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "bb179f2715f8fd9059898ef3a2028947e8f5f7e7979ad7eafe59d7a464c18f9f",
+      "dependencyHash": "f17d705cc5de6856252c111542b8e179695cc81448eb1e2fc4d9a343ed42370a",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
@@ -95,6 +97,7 @@
         "gltf-validator": "2.0.0-dev.3.10",
         "jsonc-parser": "3.3.1",
         "manifold-3d": "^3.5.4",
+        "meshoptimizer": "1.1.1",
         "minisearch": "7.2.0",
         "pngjs": "7.0.0",
         "sharp": "^0.35.5",
@@ -113,12 +116,12 @@
       "bundleHash": "sha256:9d6faf03d307321bc2e3bd5ce5bdee0bbbf61e0ebed8bfebfa1fb072287b83fa"
     },
     "mcp": {
-      "identity": "sha256:6faddbf66b4a18602b198937133dd80f696af99af525c2b58d82484d7c19f885",
+      "identity": "sha256:817a2024b497ee4a1b3463bf6359e74ddd44b1324a137e75b5068d24233473d8",
       "engineVersion": "1.2.3",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "1831d3bf721f61f7ccde42f50b6db0d53fd29784a81d6457d8ca770ff5ae57c4",
+      "sourceHash": "7fe5e0fee88daf30d23b2710f6542c24db5828043e473fa639f6b2c0294299b7",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "bb179f2715f8fd9059898ef3a2028947e8f5f7e7979ad7eafe59d7a464c18f9f",
+      "dependencyHash": "f17d705cc5de6856252c111542b8e179695cc81448eb1e2fc4d9a343ed42370a",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
@@ -132,6 +135,7 @@
         "gltf-validator": "2.0.0-dev.3.10",
         "jsonc-parser": "3.3.1",
         "manifold-3d": "^3.5.4",
+        "meshoptimizer": "1.1.1",
         "minisearch": "7.2.0",
         "pngjs": "7.0.0",
         "sharp": "^0.35.5",
@@ -150,12 +154,12 @@
       "bundleHash": "sha256:0976f6cbeb0fcb605b4cd473ade1b975e21962f407fe69a1f73d6ba1be314d0d"
     },
     "cli": {
-      "identity": "sha256:6faddbf66b4a18602b198937133dd80f696af99af525c2b58d82484d7c19f885",
+      "identity": "sha256:817a2024b497ee4a1b3463bf6359e74ddd44b1324a137e75b5068d24233473d8",
       "engineVersion": "1.2.3",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "1831d3bf721f61f7ccde42f50b6db0d53fd29784a81d6457d8ca770ff5ae57c4",
+      "sourceHash": "7fe5e0fee88daf30d23b2710f6542c24db5828043e473fa639f6b2c0294299b7",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "bb179f2715f8fd9059898ef3a2028947e8f5f7e7979ad7eafe59d7a464c18f9f",
+      "dependencyHash": "f17d705cc5de6856252c111542b8e179695cc81448eb1e2fc4d9a343ed42370a",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
@@ -169,6 +173,7 @@
         "gltf-validator": "2.0.0-dev.3.10",
         "jsonc-parser": "3.3.1",
         "manifold-3d": "^3.5.4",
+        "meshoptimizer": "1.1.1",
         "minisearch": "7.2.0",
         "pngjs": "7.0.0",
         "sharp": "^0.35.5",
@@ -184,15 +189,15 @@
       },
       "target": "node",
       "file": "cli.mjs",
-      "bundleHash": "sha256:98ef08c58b3098b186f8192e87014b0e17737a749daaea61098f8a320c301e89"
+      "bundleHash": "sha256:68581cbc0609611f0f21b4efc051d7b3ff81888740ff836025bbed278ccc017c"
     },
     "engine": {
-      "identity": "sha256:6faddbf66b4a18602b198937133dd80f696af99af525c2b58d82484d7c19f885",
+      "identity": "sha256:817a2024b497ee4a1b3463bf6359e74ddd44b1324a137e75b5068d24233473d8",
       "engineVersion": "1.2.3",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "1831d3bf721f61f7ccde42f50b6db0d53fd29784a81d6457d8ca770ff5ae57c4",
+      "sourceHash": "7fe5e0fee88daf30d23b2710f6542c24db5828043e473fa639f6b2c0294299b7",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "bb179f2715f8fd9059898ef3a2028947e8f5f7e7979ad7eafe59d7a464c18f9f",
+      "dependencyHash": "f17d705cc5de6856252c111542b8e179695cc81448eb1e2fc4d9a343ed42370a",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
@@ -206,6 +211,7 @@
         "gltf-validator": "2.0.0-dev.3.10",
         "jsonc-parser": "3.3.1",
         "manifold-3d": "^3.5.4",
+        "meshoptimizer": "1.1.1",
         "minisearch": "7.2.0",
         "pngjs": "7.0.0",
         "sharp": "^0.35.5",
@@ -221,7 +227,7 @@
       },
       "target": "node",
       "file": "mcp-engine.mjs",
-      "bundleHash": "sha256:a000f617f641e857e4650109f23b088229d1baa2e1126995160475511e9c505e"
+      "bundleHash": "sha256:6a5c2c4d6d06abfa981cf5db34fc3df26e10368e65ce920203337a39d941cdc0"
     }
   }
 }
