@@ -26,6 +26,8 @@ does not publish a package.
 - Retry transient Windows permission failures when publishing material revisions,
   using the existing bounded atomic-directory helper. Existing revisions remain
   immutable and are accepted only after full material verification.
+- Recheck renderer health after observing a child exit during concurrent startup,
+  so an earlier refused connection cannot hide another client's verified service.
 
 ## 1.2.3 (2026-10-12)
 

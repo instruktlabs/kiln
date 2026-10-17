@@ -250,17 +250,18 @@ export async function startLocalRenderService(
   const deadline = Date.now() + budget;
   try {
     while (Date.now() < deadline) {
+      const exitedBeforeProbe = windowsLaunch
+        ? windowsLaunch.hasExited()
+        : running.exitCode !== null || running.signalCode !== null;
       const fresh = await inspectLocalRenderService(url, dir, 1_000);
       if (fresh.kind === 'service' && !fresh.stale) return url;
       if (fresh.kind === 'service' || fresh.kind === 'incompatible' || fresh.kind === 'foreign')
         throw new Error(describeUnavailableService(url, fresh));
-      const exited = windowsLaunch
-        ? windowsLaunch.hasExited()
-        : running.exitCode !== null || running.signalCode !== null;
       // A competing child can win the socket while this one exits after losing
       // its bind. An unknown listener gets the same startup deadline as our child;
-      // only verified health permits joining. An exited child with no listener fails.
-      if (spawnError || (exited && fresh.kind === 'absent'))
+      // only verified health permits joining. A refusal observed before exit can
+      // already be stale, so require a probe begun after observing the child exit.
+      if (spawnError || (exitedBeforeProbe && fresh.kind === 'absent'))
         throw new Error(
           `render service exited during startup${spawnError ? `: ${spawnError.message}` : ''}${stderr.trim() ? `: ${stderr.trim()}` : windowsLaunch ? '; launch the renderer manually to inspect native-driver errors' : ''}`,
         );

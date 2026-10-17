@@ -40907,13 +40907,13 @@ async function startLocalRenderService(dir = renderServiceDir(), environment = p
   const deadline = Date.now() + budget;
   try {
     while (Date.now() < deadline) {
+      const exitedBeforeProbe = windowsLaunch ? windowsLaunch.hasExited() : running.exitCode !== null || running.signalCode !== null;
       const fresh = await inspectLocalRenderService(url, dir, 1000);
       if (fresh.kind === "service" && !fresh.stale)
         return url;
       if (fresh.kind === "service" || fresh.kind === "incompatible" || fresh.kind === "foreign")
         throw new Error(describeUnavailableService(url, fresh));
-      const exited = windowsLaunch ? windowsLaunch.hasExited() : running.exitCode !== null || running.signalCode !== null;
-      if (spawnError || exited && fresh.kind === "absent")
+      if (spawnError || exitedBeforeProbe && fresh.kind === "absent")
         throw new Error(`render service exited during startup${spawnError ? `: ${spawnError.message}` : ""}${stderr.trim() ? `: ${stderr.trim()}` : windowsLaunch ? "; launch the renderer manually to inspect native-driver errors" : ""}`);
       await new Promise((done) => setTimeout(done, 250));
     }

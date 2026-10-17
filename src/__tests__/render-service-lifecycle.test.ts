@@ -6,6 +6,7 @@ import { join, resolve } from 'node:path';
 import { afterEach, expect, test } from 'bun:test';
 import {
   inspectLocalRenderService,
+  processIsAlive,
   renderServiceSourceFingerprint,
   startLocalRenderService,
   terminateRenderService,
@@ -186,6 +187,101 @@ test.each([0, 4000])(
     });
   },
 );
+
+test('a refusal observed before child exit cannot reject a compatible winner that is now listening', async () => {
+  const { dir, port, url } = await installation();
+  const journal = join(dir, 'delayed-probe-startup.jsonl');
+  const barrier = join(dir, 'release-delayed-probe');
+  const originalFetch = globalThis.fetch;
+  let healthCalls = 0;
+  let refusalCode: string | undefined;
+  let probeTimer: ReturnType<typeof setTimeout> | undefined;
+  let probeEntered!: () => void;
+  const entered = new Promise<void>((done) => {
+    probeEntered = done;
+  });
+  let releaseProbe!: () => void;
+  const released = new Promise<void>((done) => {
+    releaseProbe = done;
+  });
+  globalThis.fetch = (async (input, init) => {
+    const target = input instanceof Request ? input.url : String(input);
+    if (target !== `${url}/health` || ++healthCalls !== 2) return originalFetch(input, init);
+    // Capture a real refusal while the child is gated before listen, but delay
+    // delivering that old observation until its bind attempt has lost and exited.
+    try {
+      return await originalFetch(input, init);
+    } catch (error) {
+      const detail = error as { code?: string; cause?: { code?: string } };
+      refusalCode = detail.code ?? detail.cause?.code;
+      probeEntered();
+      await released;
+      throw error;
+    }
+  }) as typeof fetch;
+  const pending = startLocalRenderService(dir, {
+    ...process.env,
+    FAKE_STARTUP_JOURNAL: journal,
+    FAKE_STARTUP_BARRIER: barrier,
+    KILN_RENDER_SERVICE_STARTUP_MS: '15000',
+  });
+  void pending.catch(() => {});
+  const deadline = Date.now() + 10_000;
+  try {
+    await Promise.race([
+      entered,
+      new Promise((_, reject) => {
+        probeTimer = setTimeout(() => reject(new Error('startup probe not entered')), 10_000);
+      }),
+    ]);
+    clearTimeout(probeTimer);
+    expect(refusalCode ?? '').toMatch(/^(ECONNREFUSED|ConnectionRefused)$/);
+    let pid: number | undefined;
+    while (!pid && Date.now() < deadline) {
+      pid = await readFile(journal, 'utf8')
+        .then((text) => JSON.parse(text.trim()).pid)
+        .catch(() => undefined);
+      if (!pid) await new Promise((done) => setTimeout(done, 20));
+    }
+    if (!pid) throw new Error('owned child did not announce startup');
+    ownedPids.push(pid);
+    const base = fakeRenderHealth();
+    const health = fakeRenderHealth({
+      instance: {
+        ...base.instance,
+        sourceDir: dir,
+        sourceFingerprint: renderServiceSourceFingerprint(dir)!,
+      },
+    });
+    const winner = createServer((_request, response) => {
+      response.setHeader('content-type', 'application/json');
+      response.end(JSON.stringify(health));
+    });
+    servers.push(winner);
+    await new Promise<void>((done, reject) => {
+      winner.once('error', reject);
+      winner.listen(port, '127.0.0.1', done);
+    });
+    // The losing child now attempts this same occupied socket and really exits.
+    await writeFile(barrier, 'release');
+    while (processIsAlive(pid) && Date.now() < deadline)
+      await new Promise((done) => setTimeout(done, 20));
+    expect(processIsAlive(pid)).toBe(false);
+    expect(await inspectLocalRenderService(url, dir)).toMatchObject({
+      kind: 'service',
+      stale: false,
+    });
+    releaseProbe();
+    expect(await pending).toBe(url);
+    expect(healthCalls).toBeGreaterThanOrEqual(4);
+  } finally {
+    clearTimeout(probeTimer);
+    releaseProbe();
+    await writeFile(barrier, 'release');
+    globalThis.fetch = originalFetch;
+    await pending.catch(() => {});
+  }
+});
 
 test('a renderer that exits before health is reported as startup failure', async () => {
   const { dir } = await installation();
