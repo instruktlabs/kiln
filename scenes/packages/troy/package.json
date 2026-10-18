@@ -10,5 +10,5 @@
     "dev": "node scripts/serve.mjs"
   },
   "peerDependencies": { "three": "0.186.1" },
-  "devDependencies": { "three": "0.186.1", "acorn": "8.18.0" }
+  "devDependencies": { "three": "0.186.1", "acorn": "8.19.0" }
 }
