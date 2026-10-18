@@ -1,0 +1,48 @@
+name: Plugin Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: plugin-security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: HOL plugin scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      # Pin from awesome-ai-plugins/SCANNER_GUIDE.md; bundles scanner 3.0.123.
+      # Keep the catalog's score gate: severity findings remain reviewable.
+      - name: Scan repository
+        uses: hashgraph-online/ai-plugin-scanner-action@caba2e96aa8ad2feb6cf6fca52442b52e22e779f # v1.2.635
+        with:
+          install_source: pypi
+          mode: scan
+          plugin_dir: "."
+          profile: default
+          min_score: 80
+          fail_on_severity: none
+          trust_repository_policy: false
+          online: false
+          install_cisco: false
+          cisco_skill_scan: auto
+          cisco_policy: balanced
+          format: text
+          write_step_summary: true
+          pr_comment: "off"
+          submission_enabled: false
+          upload_sarif: false
