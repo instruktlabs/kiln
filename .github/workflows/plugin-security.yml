@@ -38,8 +38,10 @@ jobs:
           fail_on_severity: none
           trust_repository_policy: false
           online: false
-          install_cisco: false
-          cisco_skill_scan: auto
+          # The pinned action installs Cisco 2.0.12 from its hash-locked dependencies.
+          # HOL uses its local static/bytecode/pipeline defaults, without cloud analyzers.
+          install_cisco: true
+          cisco_skill_scan: "on"
           cisco_policy: balanced
           format: text
           write_step_summary: true
