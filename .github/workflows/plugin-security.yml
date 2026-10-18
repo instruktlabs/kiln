@@ -38,13 +38,45 @@ jobs:
           fail_on_severity: none
           trust_repository_policy: false
           online: false
-          # The pinned action installs Cisco 2.0.12 from its hash-locked dependencies.
-          # HOL uses its local static/bytecode/pipeline defaults, without cloud analyzers.
-          install_cisco: true
-          cisco_skill_scan: "on"
+          install_cisco: false
+          cisco_skill_scan: auto
           cisco_policy: balanced
-          format: text
+          format: json
+          output: ${{ runner.temp }}/kiln-plugin-scan.json
           write_step_summary: true
           pr_comment: "off"
           submission_enabled: false
           upload_sarif: false
+
+      - name: Verify Cisco skill coverage
+        env:
+          SCAN_REPORT: ${{ runner.temp }}/kiln-plugin-scan.json
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = json.loads(Path(os.environ["SCAN_REPORT"]).read_text())
+          manifest = json.loads(Path(".codex-plugin/plugin.json").read_text())
+          skills = sorted(Path(manifest["skills"]).glob("*/SKILL.md"))
+          assert skills, "No maintained skills found"
+          plugin, = [p for p in report["plugins"] if p["name"] == manifest["name"]]
+          integration, = [i for i in plugin["summary"]["integrations"]
+                          if i["name"] == "cisco-skill-scanner"]
+          assert integration["status"] == "enabled", integration
+          analyzers = set(integration["metadata"].get("analyzers", "").split(","))
+          assert "static_analyzer" in analyzers, analyzers
+          assert analyzers <= {"static_analyzer", "bytecode", "pipeline"}, analyzers
+          category, = [c for c in report["categories"]
+                       if c["name"] == "[codex:.] Skill Security"]
+          coverage, = [c for c in category["checks"] if c["name"] == "Skills analyzable"]
+          assert coverage["passed"] and coverage["points"] > 0, coverage
+          assert coverage["message"] == f"Cisco analyzed {len(skills)} skill(s).", coverage
+          summary = (f"Cisco analyzed all {len(skills)} maintained skills using "
+                     f"{', '.join(sorted(analyzers))}.\n"
+                     + "\n".join(f"- {skill.parent.name}" for skill in skills))
+          print(summary)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as output:
+              output.write("\n### Cisco skill coverage\n\n" + summary + "\n")
+          PY
