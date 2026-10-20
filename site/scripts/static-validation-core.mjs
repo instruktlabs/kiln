@@ -373,6 +373,8 @@ export const scriptHashSource = (text) => `'sha256-${createHash('sha256').update
 
 /** A file whose name carries a build content hash (Vite's `name.HASH.js` or `name-HASH.js`). */
 const HASHED_NAME = /[.-][A-Za-z0-9_-]{8}\.(?:js|css|woff2|svg|png|jpg|webp|avif)$/;
+// Astro appends its variable-length transform hash to the imported image's Vite hash.
+const ASTRO_TRANSFORMED_IMAGE = /^_astro\/[^/]+\.[A-Za-z0-9_-]{8}_[A-Za-z0-9]{1,7}\.(?:png|jpg|jpeg|webp|avif|gif)$/;
 
 /**
  * The header layer (engineering review, finding 11; brief part 1, item 4). Every response gets nosniff, the referrer
@@ -410,7 +412,7 @@ export function headersErrors({ text, inlineScripts = [], files = [], sealedFile
     const cacheControl = headersFor(rules, `/${file}`)['cache-control'] ?? '';
     if ((cacheControl.match(/max-age=/g) ?? []).length > 1) errors.push(`/${file}: Cache-Control is set twice (${cacheControl})`);
     const immutable = /immutable/.test(cacheControl);
-    if (immutable && !HASHED_NAME.test(file) && !sealed.has(file)) errors.push(`/${file} is cached as immutable but its name carries no content hash`);
+    if (immutable && !HASHED_NAME.test(file) && !ASTRO_TRANSFORMED_IMAGE.test(file) && !sealed.has(file)) errors.push(`/${file} is cached as immutable but its name carries no content hash`);
     if (!immutable && file.startsWith('_astro/')) errors.push(`/${file} is a hashed build file but is not cached as immutable`);
   }
   return errors;

@@ -1,0 +1,31 @@
+{
+  "images": [
+    {
+      "name": "sheepdog-sim",
+      "game": "Sheepdog Sim",
+      "source": "sds/captures/fence-kit/runtime-gate-1/webgpu-desktop/follow-gate.png",
+      "captured": "2026-10-17",
+      "note": "Existing native WebGPU production-build capture; house, barn, fences and trees. Full frame, WebP encoding only.",
+      "width": 1600,
+      "height": 900,
+      "originalSha256": "1dc924707c03a32b8f48b16b582db1ba937c3862eaeb4ffe1aa8803c68e690fa",
+      "imageSha256": "2dedf8779193cab74af2139e559301d6419beb853ae76a8c0973a7e6ea732cd0",
+      "bytes": 336142
+    },
+    {
+      "name": "objekt62",
+      "game": "OBJEKT-62",
+      "source": "https://objekt62.com/",
+      "captured": "2026-10-20",
+      "version": "0.21.2",
+      "note": "Fresh native WebGPU in-game browser capture. Survey rifle, outpost and distant monument. Full frame, WebP encoding only.",
+      "width": 1600,
+      "height": 900,
+      "originalSha256": "c6ee6f622e0208a6691487b87670f6e72e4310258f4fd7d05bd6bb10e373e899",
+      "imageSha256": "020d9f05a501832557186a0915dfd8125572e9418e5a9464c10872387cbedbff",
+      "bytes": 88322,
+      "buildSha": "9d82bb927f951389291731e64e0803140e523ae9",
+      "buildGeneratedAt": "2026-10-19T22:36:21.075Z"
+    }
+  ]
+}
