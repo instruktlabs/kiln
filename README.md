@@ -20,6 +20,23 @@ do not require a separate model API key.
 [Interactive scenes](https://kilnstudio.tools/scenes/) ·
 [Changelog](CHANGELOG.md)
 
+## Used in live games
+
+I build Sheepdog Sim and OBJEKT-62 alongside Kiln, and use both games to test
+Kiln-authored assets in real gameplay.
+
+| Sheepdog Sim | OBJEKT-62 |
+| --- | --- |
+| [![The sheepdog facing a fenced pen, with the farmhouse, red barn and trees behind it](site/src/assets/live-games/sheepdog-sim.webp)](https://sheepdogsim.com/) | [![The survey rifle overlooking an outpost, with a monument on the distant horizon](site/src/assets/live-games/objekt62.webp)](https://objekt62.com/) |
+
+**[Sheepdog Sim](https://sheepdogsim.com/)** uses Kiln-authored house, barn,
+fence and tree assets. The game is open source; [browse its repository](https://github.com/matthew-kissinger/sds)
+to see how the assets fit into a working game.
+
+**[OBJEKT-62](https://objekt62.com/)** uses Kiln for most of its 3D assets,
+including guns, ship parts, vehicles, outpost modules and salvage. The shot shows
+the survey rifle and outpost in the live game, with a monument in the background.
+
 ## Community and hosted access
 
 [Join the Kiln Discord](https://discord.gg/fSWVbMdQXK) to share assets, get help,
