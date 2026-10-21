@@ -26,6 +26,34 @@
       "bytes": 88322,
       "buildSha": "9d82bb927f951389291731e64e0803140e523ae9",
       "buildGeneratedAt": "2026-10-19T22:36:21.075Z"
+    },
+    {
+      "name": "ski-sim-village",
+      "game": "ski sim",
+      "source": "ski-sim-app/docs/r3f-port/evidence/alpine-night/rebuilt-roof-wide.png",
+      "captured": "2026-10-21",
+      "note": "Native in-game capture of the reviewed Village Bend night course. Modular lodge, trail lamps and pines. Full frame, WebP encoding only.",
+      "width": 1440,
+      "height": 900,
+      "originalSha256": "d07c743046b0fded262cb5d8379cdd703aaece3777788af5a240232d2bdd44b0",
+      "imageSha256": "91e1fe768ab508b0ff9b695a2bbe597c41e866146d13122d01e91a3f5b2619a4",
+      "bytes": 67880,
+      "buildSha": "42077d1",
+      "playUrl": "https://skisim.app/"
+    },
+    {
+      "name": "ski-sim-skier",
+      "game": "ski sim",
+      "source": "https://ski-app-preview.fallline.pages.dev/?map=mutex-ridge",
+      "captured": "2026-10-21",
+      "note": "Fresh native browser capture of the released candidate character selection screen, Chalkline outfit with V12 headwear. Full frame, WebP encoding only.",
+      "width": 1600,
+      "height": 1000,
+      "originalSha256": "08e731c5a5cbd85cca0996274d29b3f4da880c0115149af2860214fbfba549c3",
+      "imageSha256": "c28f3267abc4a0ca1a9ea0fe08ee336ef2cf642afb12690c8967f8fe7ff431c7",
+      "bytes": 47650,
+      "buildSha": "42077d1",
+      "playUrl": "https://skisim.app/"
     }
   ]
 }
