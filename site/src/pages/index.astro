@@ -235,8 +235,12 @@ const CARD_SIZES = "(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) c
             <figcaption class="mt-2 font-mono text-code text-dim">Modular lodge, trail lamps and pines on Village Bend.</figcaption>
           </figure>
           <figure>
-            <Image src={skiCharacterShot} alt="The ski sim character selection screen showing the Kiln-authored Chalkline skier with jacket, beanie, goggles and skis." widths={[480, 800, 1280, 1600]} sizes={CARD_SIZES} format="webp" loading="lazy" class="w-full" />
-            <figcaption class="mt-2 font-mono text-code text-dim">Chalkline skier in the game's character selection screen.</figcaption>
+            <video controls loop muted playsinline preload="none" poster={skiCharacterShot.src} width="1200" height="750" class="w-full" aria-label="A skier flips with a mute grab, then crashes into a Jolt ragdoll on Mutex Ridge">
+              <source src="/live-games/ski-sim-flip-grab.mp4" type="video/mp4" />
+              <a href="/live-games/ski-sim-flip-grab.mp4">Watch the ski sim jump</a>
+            </video>
+            <figcaption class="mt-2 font-mono text-code text-dim">Flip, mute grab and Jolt crash. In-game menu demonstration, filmed from the landing.</figcaption>
+            <a class="text-link mt-2" href="/live-games/ski-sim-flip-grab.gif" download>Download GIF</a>
           </figure>
         </div>
         <h3 class="mt-5">ski sim</h3>

@@ -30,30 +30,54 @@
     {
       "name": "ski-sim-village",
       "game": "ski sim",
-      "source": "ski-sim-app/docs/r3f-port/evidence/alpine-night/rebuilt-roof-wide.png",
+      "source": "ski-sim-app/scratch/cinematic/village-roof-wide.png",
       "captured": "2026-10-21",
-      "note": "Native in-game capture of the reviewed Village Bend night course. Modular lodge, trail lamps and pines. Full frame, WebP encoding only.",
-      "width": 1440,
-      "height": 900,
-      "originalSha256": "d07c743046b0fded262cb5d8379cdd703aaece3777788af5a240232d2bdd44b0",
-      "imageSha256": "91e1fe768ab508b0ff9b695a2bbe597c41e866146d13122d01e91a3f5b2619a4",
-      "bytes": 67880,
-      "buildSha": "42077d1",
+      "note": "Native in-game capture of Village Bend. Modular lodge, chalets, trail lamps, pines and lift. Authored inspection camera, HUD hidden. Full frame, WebP encoding only.",
+      "width": 1600,
+      "height": 1000,
+      "originalSha256": "77c706e82b1bcd22e652b5688b97485abc6ae186d55b6c4f173bf8b511f7985a",
+      "imageSha256": "5252cd2fd8deb24e2c5d1c22acc59679a30982904bebeadc10b11c78b73ca796",
+      "bytes": 70050,
+      "buildSha": "91f1c6c",
       "playUrl": "https://skisim.app/"
     },
     {
       "name": "ski-sim-skier",
       "game": "ski sim",
-      "source": "https://ski-app-preview.fallline.pages.dev/?map=mutex-ridge",
+      "source": "ski-sim-app/scratch/cinematic/mutex-flip-grab.png",
       "captured": "2026-10-21",
-      "note": "Fresh native browser capture of the released candidate character selection screen, Chalkline outfit with V12 headwear. Full frame, WebP encoding only.",
+      "note": "Native in-game Mutex Ridge menu demonstration. Seed 268 selects a flip with mute grab; the original flight/contact and Jolt determine the crash. Camera downhill of landing, HUD hidden. Full frame, WebP encoding only.",
       "width": 1600,
       "height": 1000,
-      "originalSha256": "08e731c5a5cbd85cca0996274d29b3f4da880c0115149af2860214fbfba549c3",
-      "imageSha256": "c28f3267abc4a0ca1a9ea0fe08ee336ef2cf642afb12690c8967f8fe7ff431c7",
-      "bytes": 47650,
-      "buildSha": "42077d1",
+      "originalSha256": "964329118bf5fc8a54f33a0ddd453914c0ab014a37ab798512846b6ee15b094c",
+      "imageSha256": "23caae870fb999d953b9d158bdf0d3ed8457d38d69e2a4e2a26510c9fab8b917",
+      "bytes": 35252,
+      "buildSha": "91f1c6c",
       "playUrl": "https://skisim.app/"
+    }
+  ],
+  "motion": [
+    {
+      "game": "ski sim",
+      "path": "/live-games/ski-sim-flip-grab.mp4",
+      "sha256": "b8ead96a8754fe57c3a4c6771d74ed20ac8422d5bd00d165a40be6759fe9ef7f",
+      "bytes": 1135039,
+      "duration": 7,
+      "source": "Native browser recording of the same seed-268 menu attempt; trimmed and encoded only.",
+      "buildSha": "91f1c6c",
+      "width": 1200,
+      "height": 750
+    },
+    {
+      "game": "ski sim",
+      "path": "/live-games/ski-sim-flip-grab.gif",
+      "sha256": "b200991af5a8fab2317cbf8940ca708e8922a55565e226990808e071880a5026",
+      "bytes": 8355289,
+      "duration": 7,
+      "source": "Native browser recording of the same seed-268 menu attempt; trimmed and encoded only.",
+      "buildSha": "91f1c6c",
+      "width": 640,
+      "height": 400
     }
   ]
 }
