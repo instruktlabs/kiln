@@ -22742,6 +22742,19 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
           throw new TypeError(`${name}: index ${i} is outside the position attribute.`);
       }
     }
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      for (const slot of TEXTURE_SLOTS) {
+        const texture = material[slot];
+        const channel = texture?.isTexture ? texture.channel ?? 0 : 0;
+        if (channel === 0)
+          continue;
+        const uv = `uv${channel}`;
+        if (attributes[uv] === undefined)
+          unsupported(`${slot} UV channel ${channel}`);
+        else if (!geometry.getAttribute(uv))
+          throw new TypeError(`${name}: ${slot} samples ${uv}, which the geometry lacks.`);
+      }
+    }
     if (exporter === "three" && Array.isArray(mesh.material))
       validateMaterialGroups(geometry, mesh.material.length, name);
     if (exporter === "legacy") {
@@ -22764,12 +22777,13 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
   });
   return warnings.map((warning) => typeof warning === "string" ? warning : formatNoteGroup(warning));
 }
-var EXPORTED_GEOMETRY_ATTRIBUTES, CUSTOM_EXPORT_ATTRIBUTES, AUTHOR_ATTRIBUTE_PATTERN, AUTHOR_ATTRIBUTE_COMPONENTS, AUTHOR_ATTRIBUTE_MAX_NAME = 64, THREE_GEOMETRY_ATTRIBUTES, NOTE_NAMES_SHOWN = 3;
+var EXPORTED_GEOMETRY_ATTRIBUTES, CUSTOM_EXPORT_ATTRIBUTES, AUTHOR_ATTRIBUTE_PATTERN, AUTHOR_ATTRIBUTE_COMPONENTS, AUTHOR_ATTRIBUTE_MAX_NAME = 64, TEXTURE_SLOTS, THREE_GEOMETRY_ATTRIBUTES, NOTE_NAMES_SHOWN = 3;
 var init_geometry_export = __esm(() => {
   EXPORTED_GEOMETRY_ATTRIBUTES = {
     position: 3,
     normal: 3,
     uv: 2,
+    uv1: 2,
     tangent: 4,
     color: [3, 4],
     _edge: 1,
@@ -22781,9 +22795,16 @@ var init_geometry_export = __esm(() => {
   };
   AUTHOR_ATTRIBUTE_PATTERN = /^_[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/;
   AUTHOR_ATTRIBUTE_COMPONENTS = [1, 2, 3, 4];
+  TEXTURE_SLOTS = [
+    "map",
+    "normalMap",
+    "roughnessMap",
+    "metalnessMap",
+    "aoMap",
+    "emissiveMap"
+  ];
   THREE_GEOMETRY_ATTRIBUTES = {
     ...EXPORTED_GEOMETRY_ATTRIBUTES,
-    uv1: 2,
     uv2: 2,
     uv3: 2,
     skinIndex: 4,
@@ -37056,6 +37077,8 @@ function bridgeTextureSampler(source, target, atlas) {
     }
   }
   target.setMinFilter(min).setMagFilter(mag).setWrapS(s).setWrapT(t);
+  if (source.channel === 1)
+    target.setTexCoord(1);
   const ref = atlas?.texture(source);
   if (ref)
     target.setExtras({ ...target.getExtras(), kilnAtlasReference: ref });
@@ -37199,6 +37222,10 @@ function bridgeGeometry(doc, buf, geometry, material, meshName, atlas) {
   const uvAttr = geometry.getAttribute("uv");
   if (uvAttr) {
     prim.setAttribute("TEXCOORD_0", doc.createAccessor(`${meshName}_uv`).setArray(geometryAttributeValues(uvAttr)).setType(TYPE_VEC2).setBuffer(buf));
+  }
+  const uv1Attr = geometry.getAttribute("uv1");
+  if (uv1Attr) {
+    prim.setAttribute("TEXCOORD_1", doc.createAccessor(`${meshName}_uv1`).setArray(geometryAttributeValues(uv1Attr)).setType(TYPE_VEC2).setBuffer(buf));
   }
   const tangentAttr = geometry.getAttribute("tangent");
   if (tangentAttr?.itemSize === 4) {
@@ -46165,7 +46192,6 @@ define2("repeatAlongCurve", {
   ],
   limitations: [
     "Tangents come from the polyline segments; sample curves densely for smooth turns.",
-    "The default legacy GLB converter does not export the _along attribute.",
     "Merged copies are one part: they are not separately named or addressable."
   ],
   related: [
@@ -48657,7 +48683,7 @@ async function currentCapabilities(context, presentation) {
       materialGroups: true,
       skinning: exporter === undefined ? null : exporter === "three",
       morphAttributes: exporter === undefined ? null : exporter === "three" ? ["position", "normal"] : [],
-      unsupported: exporter === undefined ? null : exporter === "three" ? ["UV4+", "morph attributes other than position/normal"] : ["UV1+", "skinning", "morphs"],
+      unsupported: exporter === undefined ? null : exporter === "three" ? ["UV4+", "morph attributes other than position/normal"] : ["UV2+", "skinning", "morphs"],
       customAttributes: exporter === undefined ? null : "Lowercase underscore names such as _wet with 1 to 4 float components export as _WET; GLTFLoader reads them back as _wet.",
       strictExport: "geometryPolicy:strict on GLB export or host context; local KILN_GEOMETRY_POLICY=strict",
       implicitSurfaces: "experimental"

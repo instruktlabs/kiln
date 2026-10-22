@@ -2138,7 +2138,6 @@ define(
     ],
     limitations: [
       'Tangents come from the polyline segments; sample curves densely for smooth turns.',
-      'The default legacy GLB converter does not export the _along attribute.',
       'Merged copies are one part: they are not separately named or addressable.',
     ],
     related: [
