@@ -356,7 +356,6 @@ export function admitProceduralTextureSpecV3(input: unknown): ProceduralTextureA
       return { op: 'paint', ...paint };
     }
     record(op, ['op', 'shape', 'rgba', 'opacity', 'count', 'seed', 'area', 'periodic'], path);
-    if (!colorUsage) fail('stamps are supported only for color usages albedo and emissive.');
     const count = integer(op['count'], 1, MAX_PROCEDURAL_V3_STAMPS, `${path}.count`);
     const periodic = boolean(op['periodic'], `${path}.periodic`);
     const [bx0, by0, bx1, by1] = proceduralShapeBoundsV3(s);

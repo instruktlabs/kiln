@@ -37,8 +37,10 @@ does not publish a package.
   skill describes the foliage workflow and when per-element naming applies.
 - Accept `derive: normal-from-height` on V3 normal-slot maps in `schemaVersion:2` material
   drafts. Derivation reads compiled RGB luma as height, counts toward the V3 budgets, is
-  recorded in the saved recipe and reapplied by verification. V2 derivation identities are
-  unchanged (#205).
+  recorded in the saved recipe and reapplied by verification. V3 `stamps` now accept data
+  usages such as `normal`, so a height recipe can emboss the albedo's stamped pits; palettes
+  stay colour-only. V2 derivation identities and existing V3 recipe hashes are unchanged
+  (#205).
 
 ## 1.3.1 (2026-10-17)
 

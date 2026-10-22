@@ -646,3 +646,24 @@ test('V2 normal derivation keeps its recorded identities', async () => {
     recipeHash: 'sha256:30d6d7a740a6cc860148171b4ebce1288c09e0b9e95284936493df921e205578',
   });
 });
+test('a V3 height source may stamp pits on a data usage before derivation', async () => {
+  const pits = {
+    op: 'stamps',
+    shape: { kind: 'ellipse', x: 0, y: 0, width: 3, height: 2 },
+    rgba: [40, 40, 40, 255],
+    count: 12,
+    seed: 11,
+    area: { x: 0, y: 0, width: 16, height: 16 },
+    periodic: true,
+  } as const;
+  const height = { ...structuredClone(heightSource), width: 16, height: 16, operations: [pits] };
+  const record = await createMaterialRecordV2(
+    derivedDraft({ procedural: height, derive: { kind: 'normal-from-height', strength: 4 } }),
+  );
+  const compiled = compileProceduralTextureSpecV3(height);
+  expect(new Set(compiled.pixels.filter((_, i) => i % 4 === 0))).toEqual(new Set([200, 40]));
+  await verifyMaterialRecord(record);
+  expect(() =>
+    compileProceduralTextureSpecV3({ ...height, palette: { colors: [0x808080] } }),
+  ).toThrow(/palette and dither are supported only for color usages/);
+});

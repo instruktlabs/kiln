@@ -31,7 +31,8 @@ and V2 saved material records are opt-in contracts described below.
 RGBA channels are straight bytes. RGB is authored encoded color for albedo and
 emissive; other usages retain linear data. Transparent RGBA input canonicalizes
 to `[0,0,0,0]`, and every output pixel with zero alpha has zero RGB. Palette
-mapping and stamps support only albedo/emissive; they reject all data usages.
+mapping supports only albedo/emissive and rejects all data usages. Stamps write
+bytes like `paint`, so every usage accepts them.
 Shapes and masks operate on declared bytes without interpreting data channels.
 
 Operations have these exact fields:
@@ -219,9 +220,9 @@ read as height (Rec. 601 luma of RGB; alpha ignored) and converted by the same
 wrapped derivation as V2 recipes, so paint pits dark and ridges light. The
 recipe hash still identifies the V3 spec; the pixel hash identifies the derived
 normal pixels, and the saved recipe records `derive`. Derivation counts toward
-the V3 work and allocation budgets. A height recipe has data usage `normal`, so
-stamps and palettes are unavailable in it: place pits with `paint` operations
-(up to 64) or a `legacy-v2` noise layer. Authored-source
+the V3 work and allocation budgets. A height recipe can reuse the albedo's
+`stamps` operation with the same seed and area, so embossed pits line up with
+painted ones; palettes stay colour-only. Authored-source
 `compilePortableMaterialSpecV3` references do not accept `derive`; save the
 material and bind the record instead.
 
