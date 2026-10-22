@@ -1,8 +1,8 @@
 {
   "name": "@instruktlabs/kiln",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "tag": "latest",
-  "sha256": "5f9016af402cf53d71efe8e2c998ee15291f7aea2c04af0ef0e81fe2330ee098",
-  "sourceCommit": "c47118a251a4a3476ad87c8b65e6fea00dfa63bb",
-  "publicationRun": "38993262512"
+  "sha256": "4e7a3db229dfe11facc9b008dcc11e0c49ef093fcdb968ca644cc47ddab6d5c7",
+  "sourceCommit": "4788c5acd4d3081aa04cc16a563b88f319c6cfa1",
+  "publicationRun": "39085568303"
 }
