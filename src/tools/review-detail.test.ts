@@ -847,7 +847,12 @@ describe('review tool detail', () => {
     expect((retained!.review.qaReport as { detail?: string }).detail).toBeUndefined();
     expect(Array.isArray((retained!.review.qaReport as { rules?: unknown }).rules)).toBe(true);
 
-    const full = (await render.run({ code: stack, detail: 'full' })) as ReviewView;
+    // Full detail of the 40-part stack sits near the 40,000-character bound, so each QA rule
+    // the engine adds can tip it into full-bounded. 32 parts keep the full report unbounded.
+    const full = (await render.run({
+      code: stack.replace('i < 40', 'i < 32'),
+      detail: 'full',
+    })) as ReviewView;
     expect(full.qaReport.detail).toBeUndefined();
     expect(Array.isArray(full.qaReport.rules)).toBe(true);
     expect(full.parts.length).toBeGreaterThan(COMPACT_PART_PREVIEW);

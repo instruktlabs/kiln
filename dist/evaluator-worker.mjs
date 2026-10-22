@@ -693,14 +693,115 @@ var init_asset = __esm(() => {
   THREE_DEGREES = Math.PI / 180;
 });
 
-// src/contracts/requirements.ts
+// src/contracts/validation-profile.ts
 import { z } from "zod";
+var VALIDATION_PROFILE_VERSION = "kiln.validation-profile.v1", MAX_VALIDATION_PROFILE_BYTES, MAX_VALIDATION_CHECKS = 16, MAX_VALIDATION_PATTERN_CHARS = 128, MAX_VALIDATION_PATTERN_STARS = 4, MAX_VALIDATION_MATCHES = 512, VALIDATION_SEMANTICS, VALIDATION_SEMANTIC_SIZE, VALIDATION_AXES, finite, id = (max) => z.string().min(1).max(max).regex(/^[A-Za-z0-9._-]+$/, 'Use letters, digits, ".", "_" or "-".'), pattern, componentFits = (value) => value.component < VALIDATION_SEMANTIC_SIZE[value.attribute], componentMessage, gradient, range, check, ValidationProfileV1Schema;
+var init_validation_profile = __esm(() => {
+  MAX_VALIDATION_PROFILE_BYTES = 8 * 1024;
+  VALIDATION_SEMANTICS = [
+    "POSITION",
+    "NORMAL",
+    "TANGENT",
+    "TEXCOORD_0",
+    "TEXCOORD_1",
+    "COLOR_0",
+    "JOINTS_0",
+    "WEIGHTS_0"
+  ];
+  VALIDATION_SEMANTIC_SIZE = {
+    POSITION: 3,
+    NORMAL: 3,
+    TANGENT: 4,
+    TEXCOORD_0: 2,
+    TEXCOORD_1: 2,
+    COLOR_0: 4,
+    JOINTS_0: 4,
+    WEIGHTS_0: 4
+  };
+  VALIDATION_AXES = ["+X", "-X", "+Y", "-Y", "+Z", "-Z"];
+  finite = z.number().finite();
+  pattern = z.string().min(1).refine((value) => Array.from(value).length <= MAX_VALIDATION_PATTERN_CHARS, {
+    message: `A pattern has at most ${MAX_VALIDATION_PATTERN_CHARS} characters.`
+  }).refine((value) => value.split("*").length - 1 <= MAX_VALIDATION_PATTERN_STARS, {
+    message: `A pattern has at most ${MAX_VALIDATION_PATTERN_STARS} "*".`
+  });
+  componentMessage = {
+    message: "component is outside the attribute.",
+    path: ["component"]
+  };
+  gradient = z.strictObject({
+    attribute: z.enum(["TEXCOORD_0", "TEXCOORD_1", "COLOR_0"]),
+    component: z.number().int().min(0).max(3),
+    axis: z.enum(VALIDATION_AXES),
+    from: finite,
+    to: finite,
+    tolerance: finite.positive().max(0.5),
+    monotonic: z.boolean()
+  }).refine((value) => value.from !== value.to, {
+    message: "from and to must differ."
+  }).refine(componentFits, componentMessage);
+  range = z.strictObject({
+    attribute: z.enum(VALIDATION_SEMANTICS),
+    component: z.number().int().min(0).max(3),
+    min: finite,
+    max: finite,
+    tolerance: finite.nonnegative()
+  }).refine((value) => value.min <= value.max, {
+    message: "min must not exceed max."
+  }).refine(componentFits, componentMessage);
+  check = z.strictObject({
+    id: id(48),
+    select: z.strictObject({
+      names: z.array(pattern).min(1).max(8),
+      minMatches: z.number().int().min(0).max(MAX_VALIDATION_MATCHES).optional(),
+      maxMatches: z.number().int().min(0).max(MAX_VALIDATION_MATCHES).optional()
+    }).refine((value) => value.maxMatches === undefined || (value.minMatches ?? 1) <= value.maxMatches, { message: "minMatches must not exceed maxMatches." }),
+    primitives: z.union([
+      z.strictObject({ exactly: z.number().int().min(1).max(64) }),
+      z.strictObject({ max: z.number().int().min(1).max(64) })
+    ]).optional(),
+    attributes: z.array(z.enum(VALIDATION_SEMANTICS)).min(1).max(8).refine((values) => new Set(values).size === values.length, {
+      message: "Attributes must be unique."
+    }).optional(),
+    gradient: gradient.optional(),
+    range: range.optional(),
+    material: z.strictObject({
+      alphaMode: z.enum(["OPAQUE", "MASK", "BLEND"]).optional(),
+      doubleSided: z.boolean().optional()
+    }).refine((value) => value.alphaMode !== undefined || value.doubleSided !== undefined, {
+      message: "A material check needs alphaMode or doubleSided."
+    }).optional()
+  }).refine((value) => value.primitives !== undefined || value.attributes !== undefined || value.gradient !== undefined || value.range !== undefined || value.material !== undefined, { message: "A check needs at least one assertion." });
+  ValidationProfileV1Schema = z.strictObject({
+    version: z.literal(VALIDATION_PROFILE_VERSION),
+    profileId: id(64).regex(/^[a-z0-9._-]+$/, 'Use lowercase letters, digits, ".", "_" or "-".'),
+    mode: z.enum(["warn", "enforce"]),
+    checks: z.array(check).min(1).max(MAX_VALIDATION_CHECKS)
+  }).superRefine((value, context) => {
+    const ids = value.checks.map((item) => item.id);
+    if (new Set(ids).size !== ids.length)
+      context.addIssue({
+        code: "custom",
+        path: ["checks"],
+        message: "Check ids must be unique."
+      });
+    const bytes = new TextEncoder().encode(JSON.stringify(value)).byteLength;
+    if (bytes > MAX_VALIDATION_PROFILE_BYTES)
+      context.addIssue({
+        code: "custom",
+        message: `A validation profile serializes to at most ${MAX_VALIDATION_PROFILE_BYTES} bytes (got ${bytes}).`
+      });
+  });
+});
+
+// src/contracts/requirements.ts
+import { z as z2 } from "zod";
 function statement(value) {
-  return z.discriminatedUnion("state", [
-    z.strictObject({ state: z.literal("requested"), value, reason: text.optional() }),
-    z.strictObject({ state: z.literal("inferred"), value, reason: text.optional() }),
-    z.strictObject({ state: z.literal("unknown"), reason: text.optional() }),
-    z.strictObject({ state: z.literal("inapplicable"), reason: text.optional() })
+  return z2.discriminatedUnion("state", [
+    z2.strictObject({ state: z2.literal("requested"), value, reason: text.optional() }),
+    z2.strictObject({ state: z2.literal("inferred"), value, reason: text.optional() }),
+    z2.strictObject({ state: z2.literal("unknown"), reason: text.optional() }),
+    z2.strictObject({ state: z2.literal("inapplicable"), reason: text.optional() })
   ]);
 }
 function validateAssetRequirementsV1(value) {
@@ -730,157 +831,159 @@ var text, positive, nonnegative, count2, names, marker, supportParts, roof, stru
 var init_requirements = __esm(() => {
   init_asset();
   init_breadth();
-  text = z.string().refine((value) => value.trim().length > 0, { message: "Must be non-empty." });
-  positive = z.number().finite().positive();
-  nonnegative = z.number().finite().nonnegative();
-  count2 = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
-  names = z.array(text).refine((values) => new Set(values).size === values.length, {
+  init_validation_profile();
+  text = z2.string().refine((value) => value.trim().length > 0, { message: "Must be non-empty." });
+  positive = z2.number().finite().positive();
+  nonnegative = z2.number().finite().nonnegative();
+  count2 = z2.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+  names = z2.array(text).refine((values) => new Set(values).size === values.length, {
     message: "Values must be unique."
   });
-  marker = z.strictObject({});
-  supportParts = z.array(text).min(1).max(256).refine((values) => new Set(values).size === values.length, {
+  marker = z2.strictObject({});
+  supportParts = z2.array(text).min(1).max(256).refine((values) => new Set(values).size === values.length, {
     message: "Values must be unique."
   });
-  roof = z.strictObject({
+  roof = z2.strictObject({
     type: text.optional(),
-    ridgeAxis: z.enum(["x", "z"]).optional(),
+    ridgeAxis: z2.enum(["x", "z"]).optional(),
     rise: nonnegative.optional(),
-    pitchDegrees: z.number().min(0).max(90).optional(),
+    pitchDegrees: z2.number().min(0).max(90).optional(),
     overhang: nonnegative.optional(),
-    closedEnds: z.boolean().optional()
+    closedEnds: z2.boolean().optional()
   });
-  structure = z.strictObject({
+  structure = z2.strictObject({
     subtype: text.optional(),
-    enterable: z.boolean().optional(),
+    enterable: z2.boolean().optional(),
     storeyCount: count2.min(1).optional(),
-    interiorMode: z.enum(ARCHITECTURE_INTERIOR_MODES).optional(),
-    roofMode: z.enum(ARCHITECTURE_ROOF_MODES).optional(),
-    footprint: z.strictObject({ spanX: positive, spanZ: positive, units: z.literal("m") }).optional(),
+    interiorMode: z2.enum(ARCHITECTURE_INTERIOR_MODES).optional(),
+    roofMode: z2.enum(ARCHITECTURE_ROOF_MODES).optional(),
+    footprint: z2.strictObject({ spanX: positive, spanZ: positive, units: z2.literal("m") }).optional(),
     wallHeight: positive.optional(),
-    scaleMode: z.enum(ARCHITECTURE_SCALE_MODES).optional(),
+    scaleMode: z2.enum(ARCHITECTURE_SCALE_MODES).optional(),
     roof: roof.optional(),
-    portal: z.strictObject({ width: positive, height: positive, depth: positive }).optional()
+    portal: z2.strictObject({ width: positive, height: positive, depth: positive }).optional()
   }).refine((value) => value.enterable === undefined || value.interiorMode === undefined || value.enterable === (value.interiorMode === "navigable"), {
     message: "enterable and interiorMode must agree when both are specified."
   });
-  effects = z.strictObject({
-    schemaVersion: z.literal(1),
-    subtype: z.enum(VFX_SUBTYPES),
-    portability: z.enum(VFX_PORTABILITY_MODES),
-    transparency: z.enum(MATERIAL_TRANSPARENCY_MODES),
-    doubleSided: z.boolean(),
-    facing: z.strictObject({
-      source: z.enum(["explicit", "inferred"]),
-      mode: z.enum(VFX_FACING_MODES),
-      normalAxis: z.enum(VFX_AXIS_DIRECTIONS).optional(),
-      directionAxis: z.enum(VFX_AXIS_DIRECTIONS).optional()
+  effects = z2.strictObject({
+    schemaVersion: z2.literal(1),
+    subtype: z2.enum(VFX_SUBTYPES),
+    portability: z2.enum(VFX_PORTABILITY_MODES),
+    transparency: z2.enum(MATERIAL_TRANSPARENCY_MODES),
+    doubleSided: z2.boolean(),
+    facing: z2.strictObject({
+      source: z2.enum(["explicit", "inferred"]),
+      mode: z2.enum(VFX_FACING_MODES),
+      normalAxis: z2.enum(VFX_AXIS_DIRECTIONS).optional(),
+      directionAxis: z2.enum(VFX_AXIS_DIRECTIONS).optional()
     }),
-    animation: z.strictObject({
-      playback: z.enum(VFX_PLAYBACK_POLICIES),
+    animation: z2.strictObject({
+      playback: z2.enum(VFX_PLAYBACK_POLICIES),
       durationSeconds: nonnegative,
-      endpointBehavior: z.enum(VFX_ENDPOINT_BEHAVIORS),
-      driver: z.enum(VFX_RUNTIME_DRIVERS),
+      endpointBehavior: z2.enum(VFX_ENDPOINT_BEHAVIORS),
+      driver: z2.enum(VFX_RUNTIME_DRIVERS),
       clipName: text.optional(),
       timeUniformName: text.optional()
     }),
-    sidecar: z.strictObject({ kind: z.literal("tsl"), id: text, version: text }).optional()
+    sidecar: z2.strictObject({ kind: z2.literal("tsl"), id: text, version: text }).optional()
   }).superRefine((value, context) => {
     for (const issue of validateVfxIntentV1(value).issues) {
       context.addIssue({ code: "custom", path: issue.path.split("."), message: issue.message });
     }
   });
-  requirements = z.strictObject({
-    grounding: statement(z.strictObject({ planeY: z.number().finite().optional() })).optional(),
+  requirements = z2.strictObject({
+    grounding: statement(z2.strictObject({ planeY: z2.number().finite().optional() })).optional(),
     articulation: statement(marker).optional(),
     opening: statement(marker).optional(),
-    navigation: statement(z.strictObject({ minWidth: positive.optional(), minHeight: positive.optional() })).optional(),
+    navigation: statement(z2.strictObject({ minWidth: positive.optional(), minHeight: positive.optional() })).optional(),
     tiling: statement(marker).optional(),
-    mobility: statement(z.strictObject({
+    mobility: statement(z2.strictObject({
       subtype: text.optional(),
       supportAssemblies: names.optional(),
       propulsionAssemblies: names.optional(),
-      frontFrame: z.literal("+X").optional(),
+      frontFrame: z2.literal("+X").optional(),
       wheelCount: count2.optional(),
       axleCount: count2.optional(),
-      steering: z.enum(VEHICLE_STEERING_ARRANGEMENTS).optional(),
-      supportPolicy: z.enum(VEHICLE_SUPPORT_POLICIES).optional(),
+      steering: z2.enum(VEHICLE_STEERING_ARRANGEMENTS).optional(),
+      supportPolicy: z2.enum(VEHICLE_SUPPORT_POLICIES).optional(),
       animationAssemblies: names.optional()
     })).optional(),
     structure: statement(structure).optional(),
-    rig: statement(z.strictObject({
-      bodyPlan: z.enum(CHARACTER_BODY_PLANS).optional(),
-      grounded: z.boolean().optional(),
-      locomotion: z.enum(CHARACTER_LOCOMOTION_MODES).optional(),
+    rig: statement(z2.strictObject({
+      bodyPlan: z2.enum(CHARACTER_BODY_PLANS).optional(),
+      grounded: z2.boolean().optional(),
+      locomotion: z2.enum(CHARACTER_LOCOMOTION_MODES).optional(),
       gait: text.optional(),
-      rootMotion: z.enum(["inPlace", "forward"]).optional(),
-      clips: z.array(z.strictObject({ name: text, playback: z.enum(["loop", "oneShot"]) })).optional(),
-      heldItem: z.strictObject({ required: z.boolean(), attachmentRole: text }).optional()
+      rootMotion: z2.enum(["inPlace", "forward"]).optional(),
+      clips: z2.array(z2.strictObject({ name: text, playback: z2.enum(["loop", "oneShot"]) })).optional(),
+      heldItem: z2.strictObject({ required: z2.boolean(), attachmentRole: text }).optional()
     })).optional(),
-    foliage: statement(z.strictObject({
+    foliage: statement(z2.strictObject({
       subtype: text.optional(),
-      growthState: z.enum(VEGETATION_GROWTH_STATES).optional(),
-      canopyProfile: z.enum(VEGETATION_CANOPY_PROFILES).optional(),
-      standalone: z.boolean().optional(),
-      grounded: z.boolean().optional()
+      growthState: z2.enum(VEGETATION_GROWTH_STATES).optional(),
+      canopyProfile: z2.enum(VEGETATION_CANOPY_PROFILES).optional(),
+      standalone: z2.boolean().optional(),
+      grounded: z2.boolean().optional()
     })).optional(),
-    spatialLayout: statement(z.strictObject({
+    spatialLayout: statement(z2.strictObject({
       subtype: text.optional(),
-      tileable: z.boolean().optional(),
-      navigable: z.boolean().optional()
+      tileable: z2.boolean().optional(),
+      navigable: z2.boolean().optional()
     })).optional(),
     effects: statement(effects).optional(),
-    material: statement(z.strictObject({
-      mode: z.enum(MATERIAL_INTENT_MODES).optional(),
+    material: statement(z2.strictObject({
+      mode: z2.enum(MATERIAL_INTENT_MODES).optional(),
       recipeId: text.optional(),
       paletteId: text.optional(),
-      transparency: z.enum(MATERIAL_TRANSPARENCY_MODES).optional()
+      transparency: z2.enum(MATERIAL_TRANSPARENCY_MODES).optional()
     })).optional(),
-    animation: statement(z.strictObject({
+    animation: statement(z2.strictObject({
       clips: names,
-      locomotionDirection: z.literal("+X").optional(),
-      rootMotion: z.enum(["inPlace", "forward"]).optional(),
-      loop: z.boolean().optional(),
+      locomotionDirection: z2.literal("+X").optional(),
+      rootMotion: z2.enum(["inPlace", "forward"]).optional(),
+      loop: z2.boolean().optional(),
       gait: text.optional()
     })).optional(),
-    bounds: statement(z.strictObject({
-      units: z.literal("m"),
+    bounds: statement(z2.strictObject({
+      units: z2.literal("m"),
       x: positive.optional(),
       y: positive.optional(),
       z: positive.optional()
     })).optional(),
-    parts: statement(z.strictObject({ required: names, forbiddenExtras: names })).optional(),
-    modular: statement(z.strictObject({
-      schemaVersion: z.literal(1),
-      units: z.literal("m"),
-      grid: z.tuple([positive, positive, positive])
+    parts: statement(z2.strictObject({ required: names, forbiddenExtras: names })).optional(),
+    modular: statement(z2.strictObject({
+      schemaVersion: z2.literal(1),
+      units: z2.literal("m"),
+      grid: z2.tuple([positive, positive, positive])
     })).optional(),
-    representation: statement(z.strictObject({
-      transparentSurface: z.boolean().optional(),
-      runtimeShader: z.boolean().optional(),
-      precomputedTangents: z.boolean().optional(),
-      skinned: z.boolean().optional()
+    representation: statement(z2.strictObject({
+      transparentSurface: z2.boolean().optional(),
+      runtimeShader: z2.boolean().optional(),
+      precomputedTangents: z2.boolean().optional(),
+      skinned: z2.boolean().optional()
     })).optional(),
-    externalSupport: statement(z.strictObject({
-      supports: z.array(z.strictObject({
+    externalSupport: statement(z2.strictObject({
+      supports: z2.array(z2.strictObject({
         parts: supportParts,
-        planeY: z.number().finite(),
+        planeY: z2.number().finite(),
         tolerance: nonnegative.max(0.5).optional()
       })).min(1).max(32)
     })).optional(),
-    access: statement(z.strictObject({ enterable: z.boolean().optional(), driveable: z.boolean().optional() })).optional()
+    access: statement(z2.strictObject({ enterable: z2.boolean().optional(), driveable: z2.boolean().optional() })).optional(),
+    validation: statement(ValidationProfileV1Schema).optional()
   });
-  AssetRequirementsV1Schema = z.strictObject({
-    kind: z.literal("kiln.asset-requirements"),
-    schemaVersion: z.literal(1),
+  AssetRequirementsV1Schema = z2.strictObject({
+    kind: z2.literal("kiln.asset-requirements"),
+    schemaVersion: z2.literal(1),
     labels: names,
-    frame: z.strictObject({
-      units: z.literal("m"),
-      forward: z.literal("+X"),
-      up: z.literal("+Y"),
-      right: z.literal("+Z"),
-      groundY: z.literal(0)
+    frame: z2.strictObject({
+      units: z2.literal("m"),
+      forward: z2.literal("+X"),
+      up: z2.literal("+Y"),
+      right: z2.literal("+Z"),
+      groundY: z2.literal(0)
     }),
-    scope: statement(z.enum(ASSET_SCOPES)).optional(),
+    scope: statement(z2.enum(ASSET_SCOPES)).optional(),
     requirements
   }).superRefine((record, context) => {
     const requests = record.requirements;
@@ -997,7 +1100,7 @@ var init_requirements_json = __esm(() => {
 
 // src/requirements-context.ts
 import { createHash as createHash2 } from "node:crypto";
-import { z as z2 } from "zod";
+import { z as z3 } from "zod";
 function canonical2(value) {
   if (Array.isArray(value))
     return `[${value.map(canonical2).join(",")}]`;
@@ -1040,26 +1143,26 @@ var init_requirements_context = __esm(() => {
   init_requirements();
   init_requirements_identity();
   init_requirements_json();
-  text2 = z2.string().refine((value) => value.trim().length > 0, "Must be non-empty.");
-  hash = z2.string().regex(/^[a-f0-9]{64}$/);
-  revision = z2.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
-  change = z2.strictObject({
+  text2 = z3.string().refine((value) => value.trim().length > 0, "Must be non-empty.");
+  hash = z3.string().regex(/^[a-f0-9]{64}$/);
+  revision = z3.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
+  change = z3.strictObject({
     actor: text2,
     reason: text2,
-    source: z2.enum(["brief", "automation", "migration", "restore"]),
+    source: z3.enum(["brief", "automation", "migration", "restore"]),
     revision,
     policyHash: hash,
     previousPolicyHash: hash.optional()
   });
-  RequirementsBindingSchema = z2.strictObject({
-    kind: z2.literal("kiln.requirements-binding"),
-    schemaVersion: z2.literal(1),
+  RequirementsBindingSchema = z3.strictObject({
+    kind: z3.literal("kiln.requirements-binding"),
+    schemaVersion: z3.literal(1),
     taskId: text2,
     lineageId: text2,
     revision,
     policyHash: hash,
     requirements: AssetRequirementsV1Schema,
-    history: z2.array(change).min(1)
+    history: z3.array(change).min(1)
   }).superRefine((binding, context) => {
     const issue = (message) => context.addIssue({ code: "custom", message });
     if (binding.policyHash !== assetRequirementsPolicyHash(binding.requirements))
@@ -1074,9 +1177,9 @@ var init_requirements_context = __esm(() => {
     if (binding.history.at(-1)?.policyHash !== binding.policyHash)
       issue("Requirements binding history does not end at its current policy.");
   });
-  CheckpointSchema = z2.strictObject({
-    kind: z2.literal("kiln.requirements-checkpoint.v1"),
-    programRef: z2.string().regex(/^sha256:[a-f0-9]{64}$/),
+  CheckpointSchema = z3.strictObject({
+    kind: z3.literal("kiln.requirements-checkpoint.v1"),
+    programRef: z3.string().regex(/^sha256:[a-f0-9]{64}$/),
     binding: RequirementsBindingSchema
   });
 });
@@ -3623,7 +3726,7 @@ function integer(value, path, fallback, min, max) {
   }
   return value;
 }
-function finite(value, path, fallback, min, max, diagnostic) {
+function finite2(value, path, fallback, min, max, diagnostic) {
   if (value === undefined)
     return fallback;
   if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) {
@@ -3632,7 +3735,7 @@ function finite(value, path, fallback, min, max, diagnostic) {
   return value;
 }
 function unit(value, path, fallback) {
-  return finite(value, path, fallback, 0, 1, "MATERIAL_FRACTION_RANGE");
+  return finite2(value, path, fallback, 0, 1, "MATERIAL_FRACTION_RANGE");
 }
 function optionalName(value, path) {
   if (value === undefined)
@@ -3655,7 +3758,7 @@ function usage(value, path, fallback) {
   return value;
 }
 function angle(value, path) {
-  const bounded = finite(value, path, 0, -36000, 36000);
+  const bounded = finite2(value, path, 0, -36000, 36000);
   const normalized = (bounded % 360 + 360) % 360;
   return Object.is(normalized, -0) ? 0 : normalized;
 }
@@ -3934,7 +4037,7 @@ function canonicalizePortableMaterialSpecV2(input) {
     ...record["emissive"] !== undefined ? {
       emissive: color(record["emissive"], "portableMaterial.emissive", "PORTABLE_COLOR_ARGUMENT")
     } : {},
-    emissiveIntensity: finite(record["emissiveIntensity"], "portableMaterial.emissiveIntensity", 1, 0, 64),
+    emissiveIntensity: finite2(record["emissiveIntensity"], "portableMaterial.emissiveIntensity", 1, 0, 64),
     alphaMode,
     alphaCutoff: unit(record["alphaCutoff"], "portableMaterial.alphaCutoff", 0.5),
     doubleSided: record["doubleSided"] === true,
@@ -13790,7 +13893,8 @@ function resolveRequirementsApplicability(requirements) {
     bounds: ["units", "x", "y", "z"],
     animation: ["clips"],
     representation: ["precomputedTangents"],
-    externalSupport: ["supports"]
+    externalSupport: ["supports"],
+    validation: ["version", "profileId", "mode", "checks"]
   };
   for (const [key, statement] of Object.entries(requirements.requirements)) {
     if (statement?.state !== "requested")
@@ -13907,689 +14011,10 @@ var init_requirements_applicability = __esm(() => {
       kernel: "connectivity"
     },
     { id: "REF_COMPARISON", mode: "observe", keys: [], observation: true },
-    { id: "SWEEP_SELF_INTERSECTION", mode: "observe", keys: [], observation: true, kernel: "sweep" }
+    { id: "SWEEP_SELF_INTERSECTION", mode: "observe", keys: [], observation: true, kernel: "sweep" },
+    { id: "HOST_VALIDATION_PROFILE", mode: "enforce", keys: ["validation"], kernel: "validation" }
   ];
 });
-
-// src/qa/requirements-report.ts
-function createRequirementsQaReport(context, options) {
-  const applicability = resolveRequirementsApplicability(context.requirements);
-  const unevaluatedRequirements = [
-    ...applicability.unevaluatedRequirements,
-    ...sceneMeasurementGaps(context.requirements, options.findings ?? [])
-  ];
-  const executed = new Set(options.executedRules);
-  const rules = applicability.rules.map((rule) => ({
-    id: rule.id,
-    mode: options.modes?.[rule.id] ?? rule.mode,
-    status: rule.status === "evaluate" ? executed.has(rule.id) ? "evaluated" : "notEvaluated" : rule.status,
-    ...rule.reason ? { reason: rule.reason } : {}
-  }));
-  const incomplete = unevaluatedRequirements.length > 0 || applicability.rules.some((rule) => rule.status === "evaluate" && !(rule.mode === "observe" && rule.keys.length === 0) && (!executed.has(rule.id) || (options.modes?.[rule.id] ?? rule.mode) === "off" || rule.mode === "enforce" && (options.modes?.[rule.id] ?? rule.mode) !== "enforce"));
-  const findings = (options.findings ?? []).map((finding) => ({
-    ...finding,
-    dimension: finding.dimension === "categoryReadiness" ? "requirementReadiness" : finding.dimension
-  }));
-  const evaluated = new Set(options.evaluatedDimensions ?? ["exportIntegrity", "requirementReadiness"]);
-  for (const finding of findings)
-    evaluated.add(finding.dimension);
-  const dimensions = Object.fromEntries(REQUIREMENTS_QA_DIMENSIONS.map((dimension) => {
-    const selected = findings.filter((finding) => finding.dimension === dimension);
-    const partialObservation = selected.some((finding) => finding.code === "GEO_PART_SELF_INTERSECTION_UNMEASURED" || finding.code === "GEO_PART_SELF_INTERSECTION_TRUNCATED" || finding.code === "GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED");
-    const status = selected.some((f) => f.disposition === "block") ? "block" : partialObservation || !evaluated.has(dimension) || dimension === "requirementReadiness" && incomplete ? "notEvaluated" : selected.some((f) => f.disposition === "warn") ? "warn" : "pass";
-    return [
-      dimension,
-      {
-        status,
-        findings: selected,
-        ...options.metrics?.[dimension] ? { metrics: options.metrics[dimension] } : {}
-      }
-    ];
-  }));
-  const blocked = findings.some((f) => f.disposition === "block");
-  const warned = findings.some((f) => f.disposition === "warn");
-  return {
-    kind: "kiln.asset-qa-report",
-    schemaVersion: 2,
-    qaProfile: "asset.requirements.v1",
-    policyHash: context.policyHash,
-    adviceHash: context.adviceHash,
-    acceptance: blocked ? "blocked" : incomplete ? "incomplete" : "accepted",
-    disposition: blocked ? "block" : incomplete ? "notEvaluated" : warned ? "warn" : "pass",
-    dimensions,
-    rules,
-    unevaluatedRequirements
-  };
-}
-var REQUIREMENTS_QA_DIMENSIONS;
-var init_requirements_report = __esm(() => {
-  init_requirements_applicability();
-  init_types();
-  REQUIREMENTS_QA_DIMENSIONS = [
-    "exportIntegrity",
-    "requirementReadiness",
-    "promptAlignment",
-    "visualQuality",
-    "runtimeCost"
-  ];
-});
-
-// src/qa/reference-comparison.ts
-function isEvidence(value) {
-  if (typeof value !== "object" || value === null)
-    return false;
-  const candidate = value;
-  return candidate.schemaVersion === 1 && typeof candidate.silhouetteIoU === "number" && typeof candidate.colorAgreement === "number" && typeof candidate.reference === "object" && typeof candidate.rendered === "object";
-}
-function referenceComparisonFindings(evidence, profile) {
-  if (evidence.reference.coverage <= 0 || evidence.rendered.coverage <= 0)
-    return [];
-  const findings = [];
-  if (evidence.silhouetteIoU < SILHOUETTE_IOU_OBSERVE) {
-    findings.push({
-      code: "REF_SILHOUETTE_AGREEMENT",
-      disposition: "observe",
-      dimension: "promptAlignment",
-      profile,
-      message: `The asset's outline agrees with the reference image on ${(evidence.silhouetteIoU * 100).toFixed(0)}% of ` + `its normalised silhouette. Shapes are compared after cropping each to its own bounding box, so this is ` + `about proportion and outline, not about framing or distance.`,
-      measurement: {
-        name: "silhouetteIoU",
-        actual: evidence.silhouetteIoU,
-        threshold: SILHOUETTE_IOU_OBSERVE
-      },
-      repairText: "Compare the reference against the rendered views and adjust the overall proportions — the outline is the part that disagrees, not the detail."
-    });
-  }
-  if (evidence.colorAgreement < COLOR_AGREEMENT_OBSERVE) {
-    findings.push({
-      code: "REF_COLOR_AGREEMENT",
-      disposition: "observe",
-      dimension: "promptAlignment",
-      profile,
-      message: `The asset's average colour is far from the reference image's ` + `(agreement ${(evidence.colorAgreement * 100).toFixed(0)}%). This is a coarse whole-subject average, so it ` + `catches a wrong palette rather than a wrong detail.`,
-      measurement: {
-        name: "colorAgreement",
-        actual: evidence.colorAgreement,
-        threshold: COLOR_AGREEMENT_OBSERVE
-      },
-      repairText: "Set the base colours from the reference image rather than from the prompt wording, then re-render."
-    });
-  }
-  return findings;
-}
-var SILHOUETTE_IOU_OBSERVE = 0.55, COLOR_AGREEMENT_OBSERVE = 0.5, REFERENCE_COMPARISON_QA_RULE;
-var init_reference_comparison = __esm(() => {
-  init_registry();
-  REFERENCE_COMPARISON_QA_RULE = Object.freeze({
-    id: "REF_COMPARISON",
-    profile: "reference.comparison",
-    scope: { kind: "universal" },
-    ruleClass: "heuristic",
-    owner: KILN_ENGINE_QA_OWNER,
-    defaultMode: "observe",
-    evaluate(context) {
-      const evidence = context.derivedEvidence?.["referenceComparison"];
-      if (!isEvidence(evidence))
-        return [];
-      return referenceComparisonFindings(evidence, "reference.comparison");
-    }
-  });
-});
-
-// src/qa/run.ts
-function gltfReportFindings(report, profile) {
-  return report.issues.messages.filter((issue) => issue.severity === 0 || issue.severity === 1).filter((issue) => !isExpectedKtx2ValidatorLimitation(report, issue)).map((issue) => ({
-    code: `GLTF_${issue.code}`.replace(/[^A-Z0-9_]/g, "_"),
-    disposition: issue.severity === 0 ? "block" : "warn",
-    dimension: "exportIntegrity",
-    profile,
-    message: issue.message,
-    ...issue.pointer ? { affected: { nodePath: issue.pointer } } : {}
-  }));
-}
-function isExpectedKtx2ValidatorLimitation(report, issue) {
-  const required = report.info?.["extensionsRequired"];
-  if (!Array.isArray(required) || !required.includes("KHR_texture_basisu"))
-    return false;
-  if (issue.code === "VALUE_NOT_IN_LIST") {
-    return /^\/images\/\d+\/mimeType$/.test(issue.pointer ?? "") && issue.message === "Invalid value 'image/ktx2'. Valid values are ('image/jpeg', 'image/png').";
-  }
-  return issue.code === "IMAGE_UNRECOGNIZED_FORMAT" && /^\/images\/\d+$/.test(issue.pointer ?? "") && issue.message === "Image format not recognized.";
-}
-function qaPolicyFromEnv(env = process.env) {
-  const mode = env["KILN_QA_MODE"];
-  return mode === "observe" || mode === "off" ? { defaultMode: mode } : {};
-}
-function qaBlockingEnabled(env = process.env) {
-  const mode = env["KILN_QA_MODE"];
-  return mode !== "observe" && mode !== "off";
-}
-var DETERMINISTIC_QA_REGISTRY, MAX_DETAILED_BLOCKERS = 6, AssetQaBlockedError;
-var init_run = __esm(() => {
-  init_material();
-  init_architecture();
-  init_character2();
-  init_character_advisory();
-  init_vehicle2();
-  init_vegetation();
-  init_prop();
-  init_part_connectivity();
-  init_reference_comparison();
-  init_self_intersection();
-  init_sweep();
-  init_environment2();
-  init_breadth2();
-  init_breadth_evidence();
-  init_registry();
-  init_types();
-  init_universal();
-  DETERMINISTIC_QA_REGISTRY = new QaRegistry([
-    ...UNIVERSAL_QA_RULES,
-    MATERIAL_QA_RULE,
-    ...ARCHITECTURE_QA_RULES,
-    CHARACTER_QA_RULE,
-    CHARACTER_ADVISORY_QA_RULE,
-    ...VEHICLE_QA_RULES,
-    ...VEGETATION_QA_RULES,
-    ...PROP_QA_RULES,
-    ...ENVIRONMENT_QA_RULES,
-    ...W7_BREADTH_QA_RULES,
-    SELF_INTERSECTION_QA_RULE,
-    SWEEP_QA_RULE,
-    PART_CONNECTIVITY_QA_RULE,
-    REFERENCE_COMPARISON_QA_RULE
-  ]);
-  AssetQaBlockedError = class AssetQaBlockedError extends Error {
-    report;
-    stage;
-    gltfValidation;
-    constructor(report, stage, gltfValidation) {
-      const blockers = Object.values(report.dimensions).flatMap((dimension) => dimension.findings).filter((finding) => finding.disposition === "block");
-      const detailed = blockers.slice(0, MAX_DETAILED_BLOCKERS).map((finding) => `${finding.code}: ${finding.message}${finding.affected ? ` AFFECTED: ${JSON.stringify(finding.affected)}` : ""}${finding.repairText ? ` FIX: ${finding.repairText}` : ""}`);
-      const overflow = blockers.length > MAX_DETAILED_BLOCKERS ? ` (+${blockers.length - MAX_DETAILED_BLOCKERS} more blockers)` : "";
-      super(`Asset QA blocked at ${stage}: ${detailed.join(" | ") || "unknown blocker"}${overflow}`);
-      this.name = "AssetQaBlockedError";
-      this.report = report;
-      this.stage = stage;
-      this.gltfValidation = gltfValidation;
-    }
-  };
-});
-
-// src/qa/requirements-run.ts
-import { Object3D as Object3D15 } from "three";
-function sceneDecisions(context, policy) {
-  const applicable = new Set(resolveRequirementsApplicability(context.requirements).rules.filter((rule) => rule.status === "evaluate").map((rule) => rule.id));
-  return new QaRegistry(registry.list().filter((rule) => applicable.has(rule.id))).describePolicy(policy);
-}
-async function collectRequirementsSceneEvidence(context, scene, policy = {}) {
-  if (!(scene instanceof Object3D15) || !sceneDecisions(context, policy).some((d) => d.ruleId === SELF_INTERSECTION_QA_RULE.id && d.mode !== "off"))
-    return {};
-  try {
-    return { partPenetration: await analyzePartPenetration(scene) };
-  } catch {
-    return { partPenetrationFailed: true };
-  }
-}
-function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {}) {
-  const needs = context.requirements.requirements;
-  const parts = needs.parts?.state === "requested" ? needs.parts.value.required : [];
-  const animation = needs.animation?.state === "requested" ? needs.animation.value : undefined;
-  const rig = needs.rig?.state === "requested" ? needs.rig.value : undefined;
-  const requiredClips = [
-    ...new Set([...animation?.clips ?? [], ...rig?.clips?.map((clip) => clip.name) ?? []])
-  ];
-  const tangents = needs.representation?.state === "requested" && needs.representation.value.precomputedTangents === true;
-  const findings = [];
-  const decisions = sceneDecisions(context, policy);
-  const geometryMetrics = {};
-  const mobilityInput = {
-    scene,
-    mobility: needs.mobility?.state === "requested" ? needs.mobility.value : undefined,
-    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
-  };
-  const mobilityFindings = mobilityInput.mobility && decisions.some((d) => (d.ruleId === "VEHICLE_PROFILE" || d.ruleId === "VEHICLE_ADVISORY_PROFILE") && d.mode !== "off") ? inspectMobility(mobilityInput) : [];
-  const executedRules = [];
-  const rigInput = {
-    scene,
-    clips,
-    rig,
-    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
-  };
-  const foliageInput = {
-    scene,
-    foliage: needs.foliage?.state === "requested" ? needs.foliage.value : undefined,
-    materialMode: needs.material?.state === "requested" ? needs.material.value.mode : undefined,
-    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
-  };
-  const effects = needs.effects?.state === "requested" ? needs.effects.value : undefined;
-  const scope = context.requirements.scope;
-  const scopeObservation = scope?.state === "requested" && scene instanceof Object3D15 && decisions.some((d) => d.ruleId === ASSET_SCOPE_QA_RULE.id && d.mode !== "off") ? analyzeAssetScopeObservationV1(scene) : undefined;
-  const effectsInput = {
-    effects,
-    derivedEvidence: {
-      source: "engine-scene-analysis",
-      ...effects && scene instanceof Object3D15 && decisions.some((d) => d.ruleId.startsWith("VFX_") && d.mode !== "off") ? { vfxArtifact: analyzeVfxArtifactEvidenceV1(effects, scene, clips) } : {}
-    }
-  };
-  const spatialInput = {
-    scene,
-    tileable: needs.tiling?.state === "requested" || needs.spatialLayout?.state === "requested" && needs.spatialLayout.value.tileable === true,
-    navigable: needs.navigation?.state === "requested" || needs.spatialLayout?.state === "requested" && needs.spatialLayout.value.navigable === true,
-    navigation: needs.navigation?.state === "requested" ? needs.navigation.value : undefined,
-    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY ?? 0 : undefined
-  };
-  const spatialFindings = decisions.some((d) => d.ruleId.startsWith("ENVIRONMENT_") && d.mode !== "off") ? [
-    ...inspectPlacementSockets(spatialInput),
-    ...inspectTileEdges(spatialInput),
-    ...inspectNavigationClearance(spatialInput),
-    ...inspectSpatialSupport(spatialInput)
-  ] : [];
-  const structureFindings = needs.structure?.state === "requested" && decisions.some((d) => d.ruleId.startsWith("ARCHITECTURE_") && d.mode !== "off") ? inspectStructure({
-    scene,
-    structure: needs.structure.value,
-    opening: needs.opening?.state === "requested"
-  }) : [];
-  for (const decision of decisions) {
-    if (decision.mode === "off")
-      continue;
-    if (decision.ruleId === SELF_INTERSECTION_QA_RULE.id) {
-      const volume = evidence.partPenetration;
-      if (volume) {
-        const acknowledged = volume.acknowledged?.length ?? 0;
-        const partial = volume.truncated || volume.skipped.length > 0 || acknowledged > 0;
-        if (!partial)
-          executedRules.push(decision.ruleId);
-        findings.push(...inspectPartPenetration(volume));
-        Object.assign(geometryMetrics, {
-          partVolumeCoverage: partial ? "partial" : "complete-static-pairs",
-          partVolumeScope: "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
-          partVolumeEligibleParts: volume.partsAnalyzed,
-          partVolumeCandidatePairs: volume.candidatePairs,
-          partVolumeCandidatesLowerBound: volume.broadPhaseTruncated === true,
-          partVolumePairsTested: volume.pairsTested,
-          partVolumeUnmeasurablePairs: volume.pairsUnmeasurable,
-          partVolumePairsNotReached: volume.pairsNotReached,
-          partVolumeLodAlternatePairs: volume.pairsLodAlternates,
-          partVolumeSkipped: volume.skipped.length,
-          ...acknowledged > 0 ? {
-            partVolumeAcknowledgedParts: acknowledged,
-            partVolumeAcknowledgedPairs: volume.pairsUnmeasurableAcknowledged ?? 0
-          } : {}
-        });
-      } else if (evidence.partPenetrationFailed) {
-        findings.push({
-          code: "GEO_PART_SELF_INTERSECTION_UNMEASURED",
-          disposition: "observe",
-          dimension: "visualQuality",
-          profile: "geometry.selfIntersection",
-          message: "Part-volume analysis could not complete. Overlap and clearance remain unmeasured."
-        });
-        geometryMetrics.partVolumeCoverage = "unavailable";
-      }
-      continue;
-    }
-    if (decision.ruleId === ASSET_SCOPE_QA_RULE.id && !scopeObservation)
-      continue;
-    if (decision.ruleId === PART_CONNECTIVITY_QA_RULE.id && !(scene instanceof Object3D15))
-      continue;
-    executedRules.push(decision.ruleId);
-    if (decision.ruleId === PROP_EXACT_QA_RULE.id) {
-      const measured = [
-        ...needs.articulation?.state === "requested" ? inspectArticulation({ scene }) : [],
-        ...needs.opening?.state === "requested" ? inspectContainerOpening({ scene }) : []
-      ];
-      for (const finding of measured)
-        findings.push(decision.mode === "observe" || decision.mode === "warn" ? { ...finding, disposition: decision.mode } : finding);
-      continue;
-    }
-    const measured = decision.ruleId === SWEEP_QA_RULE.id ? inspectSweepGeometry(scene) : decision.ruleId === PART_CONNECTIVITY_QA_RULE.id ? inspectPartConnectivity(scene, needs.externalSupport?.state === "requested" ? needs.externalSupport.value.supports : undefined) : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === "requested" ? inspectAssetScope({
-      profile: "asset.requirements.v1",
-      scope: { schemaVersion: 1, scope: scope.value, explicit: true },
-      derivedEvidence: { source: "engine-scene-analysis", assetScope: scopeObservation }
-    }) : decision.ruleId === "CHARACTER_PROFILE" ? inspectRig(rigInput) : decision.ruleId === "CHARACTER_ADVISORY_PROFILE" ? inspectRigAdvisory(rigInput) : decision.ruleId === "VEGETATION_CONTACT_PROFILE" ? inspectFoliageContact(foliageInput) : decision.ruleId === "VEGETATION_ADVISORY_PROFILE" ? inspectFoliageAdvisory(foliageInput) : decision.ruleId === MATERIAL_QA_RULE.id ? inspectPortableSceneMaterials(scene, tangents) : decision.ruleId === "VFX_EXACT_PROFILE" ? inspectEffectsExact(effectsInput) : decision.ruleId === "VFX_ADVISORY_PROFILE" ? inspectEffectsAdvisory(effectsInput) : decision.ruleId === "ARCHITECTURE_PROFILE" ? structureFindings.filter((f) => f.disposition === "block") : decision.ruleId === "ARCHITECTURE_ADVISORY_PROFILE" ? structureFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "ENVIRONMENT_EXACT_PROFILE" ? spatialFindings.filter((f) => f.disposition === "block") : decision.ruleId === "ENVIRONMENT_ADVISORY_PROFILE" ? spatialFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "VEHICLE_PROFILE" ? mobilityFindings.filter((f) => f.disposition === "block") : decision.ruleId === "VEHICLE_ADVISORY_PROFILE" ? mobilityFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "VEHICLE_W6_ADVISORY_PROFILE" ? inspectMobilityAdvisory(mobilityInput) : decision.ruleId === PROP_ADVISORY_QA_RULE.id ? inspectPlacement({
-      scene,
-      bounds: needs.bounds?.state === "requested" ? needs.bounds.value : undefined,
-      groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY ?? 0 : undefined
-    }) : UNIVERSAL_QA_KERNELS[decision.ruleId]({
-      scene,
-      clips,
-      requiredParts: parts,
-      animation: { clips: requiredClips }
-    });
-    for (const finding of measured)
-      findings.push(decision.mode === "observe" || decision.mode === "warn" ? { ...finding, disposition: decision.mode } : finding);
-  }
-  return createRequirementsQaReport(context, {
-    findings,
-    executedRules,
-    modes: Object.fromEntries(decisions.map((x) => [x.ruleId, x.mode])),
-    metrics: {
-      ...Object.keys(geometryMetrics).length ? { visualQuality: geometryMetrics } : {},
-      ...scopeObservation ? {
-        promptAlignment: {
-          scopeTopLevelAssetRoots: scopeObservation.topLevelAssetRoots,
-          scopeReusableMemberCount: scopeObservation.reusableMemberCount,
-          scopeDressingSignalCount: scopeObservation.sceneDressingRoles.length
-        }
-      } : {}
-    },
-    ...scopeObservation ? {
-      evaluatedDimensions: ["exportIntegrity", "requirementReadiness", "promptAlignment"]
-    } : {}
-  });
-}
-function appendRequirementsQa(context, report, findings, metrics = {}) {
-  const priorMetrics = Object.fromEntries(Object.entries(report.dimensions).flatMap(([dimension, value]) => value.metrics ? [[dimension, value.metrics]] : []));
-  const merged = { ...priorMetrics };
-  for (const [dimension, value] of Object.entries(metrics ?? {}))
-    merged[dimension] = { ...priorMetrics[dimension], ...value };
-  return createRequirementsQaReport(context, {
-    findings: [...Object.values(report.dimensions).flatMap((x) => x.findings), ...findings],
-    executedRules: report.rules.filter((x) => x.status === "evaluated").map((x) => x.id),
-    modes: Object.fromEntries(report.rules.map((x) => [x.id, x.mode])),
-    evaluatedDimensions: [
-      ...new Set([
-        ...Object.entries(report.dimensions).filter(([, value]) => value.status !== "notEvaluated").map(([key]) => key),
-        ...Object.keys(metrics ?? {})
-      ])
-    ],
-    metrics: merged
-  });
-}
-async function appendRequirementsFinalQa(context, report, gltf, bytes, instanceability, metricsError, material, warnings = []) {
-  const gltfFindings = gltfReportFindings(gltf, report.qaProfile);
-  const findings = [
-    ...gltfFindings,
-    ...warnings.map((w) => ({
-      code: w.code,
-      disposition: "warn",
-      dimension: "runtimeCost",
-      profile: `${w.profile}.${w.tier}`,
-      message: `${w.message} ${w.advice}`,
-      measurement: w.measurement
-    }))
-  ];
-  if (metricsError)
-    findings.push({
-      code: "RUNTIME_COST_METRICS_FAILED",
-      disposition: "warn",
-      dimension: "runtimeCost",
-      profile: report.qaProfile,
-      message: `Runtime-cost metrics could not be computed: ${metricsError}`
-    });
-  const cost = {};
-  if (instanceability)
-    Object.assign(cost, {
-      instanceabilityGrade: instanceability.grade,
-      instanceabilitySummary: instanceability.summary,
-      ...instanceability.metrics
-    });
-  if (material)
-    Object.assign(cost, {
-      materialCount: material.materialCount,
-      opaqueMaterials: material.opaqueMaterials,
-      maskedMaterials: material.maskedMaterials,
-      blendedMaterials: material.blendedMaterials,
-      singleSidedMaterials: material.singleSidedMaterials,
-      doubleSidedMaterials: material.doubleSidedMaterials,
-      texturedMaterials: material.texturedMaterials,
-      materialExtensionCount: material.materialExtensionCount,
-      materialExtensionsUsed: material.materialExtensionsUsed.join(","),
-      imageCount: material.imageCount,
-      maxImageDimension: material.maxImageDimension,
-      decodedImageBytesRgba8: material.decodedImageBytesRgba8,
-      estimatedGpuBytesWithMipmaps: material.estimatedGpuBytesWithMipmaps,
-      blendedSurfaceAreaRatio: material.blendedSurfaceAreaRatio
-    });
-  let result = appendRequirementsQa(context, report, findings, {
-    exportIntegrity: {
-      gltfErrors: gltf.issues.numErrors,
-      gltfWarnings: gltfFindings.filter((x) => x.disposition === "warn").length
-    },
-    runtimeCost: cost
-  });
-  const effects = context.requirements.requirements.effects;
-  const rule = report.rules.find((r) => r.id === "VFX_EXACT_PROFILE");
-  if (effects?.state === "requested" && rule?.status === "evaluated" && rule.mode !== "off") {
-    const evidence = await analyzeFinalVfxGlbBytesV1(bytes);
-    const measured = inspectFinalEffects(effects.value, evidence);
-    const findings = rule.mode === "enforce" ? measured : measured.map((f) => ({
-      ...f,
-      disposition: rule.mode
-    }));
-    result = appendRequirementsQa(context, result, findings, {
-      exportIntegrity: finalEffectsMetrics(evidence)
-    });
-  }
-  return result;
-}
-var registry;
-var init_requirements_run = __esm(() => {
-  init_breadth_evidence();
-  init_breadth2();
-  init_breadth_final();
-  init_registry();
-  init_universal();
-  init_material();
-  init_prop();
-  init_part_connectivity();
-  init_sweep();
-  init_self_intersection();
-  init_vehicle2();
-  init_vehicle_advisory();
-  init_vegetation();
-  init_character2();
-  init_character_advisory();
-  init_architecture();
-  init_environment2();
-  init_requirements_applicability();
-  init_requirements_report();
-  init_run();
-  registry = new QaRegistry([
-    ...UNIVERSAL_QA_RULES,
-    MATERIAL_QA_RULE,
-    PROP_EXACT_QA_RULE,
-    PROP_ADVISORY_QA_RULE,
-    PART_CONNECTIVITY_QA_RULE,
-    SELF_INTERSECTION_QA_RULE,
-    SWEEP_QA_RULE,
-    ...VEHICLE_QA_RULES,
-    ...ARCHITECTURE_QA_RULES,
-    ...ENVIRONMENT_QA_RULES,
-    ...VEGETATION_QA_RULES,
-    CHARACTER_QA_RULE,
-    CHARACTER_ADVISORY_QA_RULE,
-    VFX_EXACT_QA_RULE,
-    VFX_ADVISORY_QA_RULE,
-    ASSET_SCOPE_QA_RULE
-  ]);
-});
-
-// src/qa/skin-integrity.ts
-import * as THREE22 from "three";
-function validAttribute(a, count, size) {
-  if (!a || a.itemSize !== size || a.count !== count || !Number.isSafeInteger(count) || count < 1)
-    return false;
-  if ("isInterleavedBufferAttribute" in a) {
-    return Number.isSafeInteger(a.data.stride) && a.data.stride >= size && Number.isSafeInteger(a.offset) && a.offset >= 0 && a.offset + size <= a.data.stride && (count - 1) * a.data.stride + a.offset + size <= a.array.length;
-  }
-  return count * size <= a.array.length;
-}
-function finiteAffine(matrix) {
-  const e = matrix?.elements;
-  return !!e && e.length === 16 && [...e].every((v) => Number.isFinite(v) && Number.isFinite(Math.fround(v))) && Math.fround(e[3]) === 0 && Math.fround(e[7]) === 0 && Math.fround(e[11]) === 0 && Math.fround(e[15]) === 1;
-}
-function inspectSkinIntegrity(root) {
-  const result = {
-    schemaVersion: 1,
-    findings: [],
-    meshesChecked: 0,
-    verticesChecked: 0,
-    truncated: false,
-    bounds: []
-  };
-  const paths = new Map;
-  const pending = [[root, "", 0]];
-  while (pending.length) {
-    const [node, parent, sibling] = pending.pop();
-    if (paths.has(node))
-      continue;
-    const segment = `${(node.name || node.type).slice(0, 80)}[${sibling}]`;
-    const path = (parent ? `${parent}/${segment}` : segment).slice(-800);
-    paths.set(node, path);
-    for (let i = node.children.length - 1;i >= 0; i--)
-      pending.push([node.children[i], path, i]);
-  }
-  const worlds = new Map;
-  function world(node) {
-    const chain = [], seen = new Set;
-    let cursor = node;
-    while (cursor && !worlds.has(cursor)) {
-      if (seen.has(cursor))
-        return;
-      seen.add(cursor);
-      chain.push(cursor);
-      cursor = cursor.parent;
-    }
-    while (chain.length) {
-      const n = chain.pop();
-      const local = n.matrixAutoUpdate ? new THREE22.Matrix4().compose(n.position, n.quaternion, n.scale) : n.matrix.clone();
-      const parent = n.parent ? worlds.get(n.parent) : undefined;
-      const value = n.matrixWorldAutoUpdate === false ? n.matrixWorld.clone() : parent ? new THREE22.Matrix4().multiplyMatrices(parent, local) : local;
-      worlds.set(n, value);
-    }
-    return worlds.get(node);
-  }
-  for (const [node, nodePath] of paths) {
-    const mesh = node;
-    if (!mesh.isSkinnedMesh)
-      continue;
-    if (result.findings.length >= MAX_FINDINGS) {
-      result.truncated = true;
-      break;
-    }
-    result.meshesChecked++;
-    const start = result.findings.length;
-    const add = (code, message, attribute, measurement) => {
-      if (result.findings.length >= MAX_FINDINGS) {
-        result.truncated = true;
-        return;
-      }
-      result.findings.push({
-        code,
-        disposition: "block",
-        dimension: "exportIntegrity",
-        profile: "skin.source-integrity.v1",
-        message,
-        affected: { node: mesh.name.slice(0, 160), nodePath, ...attribute ? { attribute } : {} },
-        ...measurement ? { measurement } : {},
-        repairText: "Rebuild the named binding at its intended rest pose. Keep bone order, inverse bind matrices and four influence lanes aligned with every final vertex; unwrap or change topology before binding. Do not repair invalid indices by normalizing weights."
-      });
-    };
-    const skeleton = mesh.skeleton, bones = skeleton?.bones;
-    if (!bones?.length || !Array.isArray(bones)) {
-      add("SKIN_SKELETON", "Skinned mesh requires a nonempty skeleton in the exported hierarchy.");
-      continue;
-    }
-    const unique = new Set;
-    for (let joint = 0;joint < bones.length; joint++) {
-      const bone = bones[joint];
-      if (!bone?.isObject3D || !paths.has(bone) || unique.has(bone)) {
-        add("SKIN_JOINT_MEMBERSHIP", `Joint ${joint} (${JSON.stringify(bone?.name?.slice(0, 160) ?? "missing")}) must be a distinct node inside the exported hierarchy.`, `joints[${joint}]`);
-      }
-      if (bone)
-        unique.add(bone);
-      if (!finiteAffine(skeleton.boneInverses?.[joint])) {
-        add("SKIN_INVERSE_BIND", `Joint ${joint} (${JSON.stringify(bone?.name?.slice(0, 160) ?? "missing")}) requires a finite affine inverse bind matrix.`, `boneInverses[${joint}]`);
-      }
-      if (result.truncated)
-        break;
-    }
-    if (!finiteAffine(mesh.bindMatrix) || !Number.isFinite(mesh.bindMatrix.determinant()) || mesh.bindMatrix.determinant() === 0 || ![THREE22.AttachedBindMode, THREE22.DetachedBindMode].includes(mesh.bindMode)) {
-      add("SKIN_BIND_MATRIX", "Mesh requires a finite invertible affine bind matrix and an attached or detached bind mode.", "bindMatrix");
-    }
-    const position = mesh.geometry?.getAttribute("position"), count = position?.count ?? 0;
-    const indices = mesh.geometry?.getAttribute("skinIndex"), weights = mesh.geometry?.getAttribute("skinWeight");
-    if (!validAttribute(position, count, 3) || !validAttribute(indices, count, 4) || indices.normalized || !validAttribute(weights, count, 4)) {
-      add("SKIN_ATTRIBUTES", "Skin requires xyz positions and four non-normalized joint indices and four weights per final vertex, backed by complete buffers.", "skinIndex/skinWeight");
-      continue;
-    }
-    const invalid = new Map;
-    const bad = (code, vertex, attribute) => {
-      const row = invalid.get(code);
-      if (row) {
-        if (row.last !== vertex)
-          row.count++;
-        row.last = vertex;
-      } else
-        invalid.set(code, { count: 1, first: vertex, last: vertex, attribute });
-    };
-    for (let vertex = 0;vertex < count; vertex++) {
-      let sum = 0;
-      for (let lane = 0;lane < 4; lane++) {
-        const index = indices.getComponent(vertex, lane), weight = weights.getComponent(vertex, lane);
-        if (!Number.isInteger(index) || index < 0 || index >= bones.length)
-          bad("SKIN_JOINT_INDEX", vertex, "skinIndex");
-        if (!Number.isFinite(weight) || weight < 0 || weight > 1)
-          bad("SKIN_WEIGHT_VALUE", vertex, "skinWeight");
-        sum += weight;
-      }
-      if (!Number.isFinite(sum) || Math.abs(sum - 1) > WEIGHT_TOLERANCE)
-        bad("SKIN_WEIGHT_SUM", vertex, "skinWeight");
-    }
-    result.verticesChecked += count;
-    for (const [code, row] of invalid) {
-      const why = code === "SKIN_JOINT_INDEX" ? "indices must address the skeleton, including zero-weight lanes" : code === "SKIN_WEIGHT_SUM" ? `weights must sum to one within ${WEIGHT_TOLERANCE}` : "weights must be finite values in [0,1]";
-      add(code, `Invalid ${row.attribute} at vertex range ${row.first}..${row.last} (${row.count} affected vertices): ${why}.`, row.attribute, {
-        name: "invalidSkinVertices",
-        actual: row.count,
-        expected: 0,
-        breakdown: { firstVertex: row.first, lastVertex: row.last }
-      });
-    }
-    if (result.findings.length !== start)
-      continue;
-    const meshWorld = world(mesh);
-    if (!finiteAffine(meshWorld)) {
-      add("SKIN_POSE_TRANSFORM", "Current mesh world transform must be finite and affine.");
-      continue;
-    }
-    const inverse = mesh.bindMode === THREE22.AttachedBindMode ? meshWorld.clone().invert() : mesh.bindMatrix.clone().invert();
-    const matrices = [];
-    for (let joint = 0;joint < bones.length; joint++) {
-      const boneWorld = world(bones[joint]);
-      if (!finiteAffine(boneWorld)) {
-        add("SKIN_POSE_TRANSFORM", `Current transform for joint ${joint} must be finite and affine.`, `joints[${joint}]`);
-        break;
-      }
-      matrices.push(new THREE22.Matrix4().multiplyMatrices(boneWorld, skeleton.boneInverses[joint]).multiply(mesh.bindMatrix));
-    }
-    if (result.findings.length !== start)
-      continue;
-    const base = new THREE22.Vector3, posed = new THREE22.Vector3, temp = new THREE22.Vector3, box = new THREE22.Box3;
-    for (let vertex = 0;vertex < count; vertex++) {
-      THREE22.Mesh.prototype.getVertexPosition.call(mesh, vertex, base);
-      posed.set(0, 0, 0);
-      for (let lane = 0;lane < 4; lane++) {
-        const weight = weights.getComponent(vertex, lane);
-        if (weight !== 0)
-          posed.addScaledVector(temp.copy(base).applyMatrix4(matrices[indices.getComponent(vertex, lane)]), weight);
-      }
-      posed.applyMatrix4(inverse).applyMatrix4(meshWorld);
-      if (!Number.isFinite(Math.fround(posed.x)) || !Number.isFinite(Math.fround(posed.y)) || !Number.isFinite(Math.fround(posed.z))) {
-        add("SKIN_POSED_VERTEX", `Current deformed vertex ${vertex} is not finite and Float32-representable. Check positions, morphs and weighted joint transforms.`, `position[${vertex}]`);
-        break;
-      }
-      box.expandByPoint(posed);
-    }
-    if (result.findings.length === start)
-      result.bounds.push({ nodePath, min: box.min.toArray(), max: box.max.toArray() });
-  }
-  return result;
-}
-var MAX_FINDINGS = 64, WEIGHT_TOLERANCE = 0.00001;
-var init_skin_integrity = () => {};
 
 // src/metrics.ts
 function primTris(prim) {
@@ -14917,8 +14342,1593 @@ function writtenNodeResolver(root, doc, purpose) {
   };
 }
 
-// src/lod-export.ts
+// src/node-visibility.ts
+import { KHRNodeVisibility } from "@gltf-transform/extensions";
+import * as THREE22 from "three";
+function applyNodeVisibility(root, doc) {
+  const hidden = [];
+  root.traverse((node) => {
+    if (node.visible === false)
+      hidden.push(node);
+  });
+  if (hidden.length === 0)
+    return;
+  const written = hidden.map(writtenNodeResolver(root, doc, "Visibility export"));
+  const extension = doc.createExtension(KHRNodeVisibility);
+  for (const node of written)
+    node.setExtension(KHR_NODE_VISIBILITY, extension.createVisibility().setVisible(false));
+}
+function summarizeHiddenNodes(doc) {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return [];
+  const found = [];
+  const visit = (siblings, parentPath) => {
+    const seen = new Map;
+    for (const node of siblings) {
+      const name = node.getName();
+      const occurrence = seen.get(name) ?? 0;
+      seen.set(name, occurrence + 1);
+      const path = `${parentPath}${segment2(name, occurrence)}`;
+      if (isHiddenGltfNode(node))
+        found.push({ path, name, triangles: nodeTriangles(node) });
+      else
+        visit(node.listChildren(), path);
+    }
+  };
+  visit(scene.listChildren(), segment2(scene.getName() || "Scene", 0));
+  return found;
+}
+function drawnSceneBounds(scene) {
+  const min = [Infinity, Infinity, Infinity];
+  const max = [-Infinity, -Infinity, -Infinity];
+  const visit = (node) => {
+    if (isHiddenGltfNode(node))
+      return;
+    const mesh = node.getMesh();
+    if (mesh) {
+      const base = new THREE22.Matrix4().fromArray(node.getWorldMatrix());
+      const instances = node.getExtension("EXT_mesh_gpu_instancing");
+      const translation = instances?.getAttribute("TRANSLATION");
+      const rotation = instances?.getAttribute("ROTATION");
+      const scale = instances?.getAttribute("SCALE");
+      const countInstances = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
+      const matrices = [];
+      for (let i = 0;i < countInstances; i++) {
+        const t = translation?.getElement(i, []) ?? [0, 0, 0];
+        const r = rotation?.getElement(i, []) ?? [0, 0, 0, 1];
+        const s = scale?.getElement(i, []) ?? [1, 1, 1];
+        const localMatrix = new THREE22.Matrix4().compose(new THREE22.Vector3().fromArray(t), new THREE22.Quaternion().fromArray(r), new THREE22.Vector3().fromArray(s));
+        matrices.push(base.clone().multiply(localMatrix).toArray());
+      }
+      const local = [0, 0, 0];
+      for (const primitive of mesh.listPrimitives()) {
+        const position = primitive.getAttribute("POSITION");
+        if (!position)
+          continue;
+        const indices = primitive.getIndices();
+        const count = indices ? indices.getCount() : position.getCount();
+        for (const m of matrices)
+          for (let i = 0;i < count; i++) {
+            position.getElement(indices ? indices.getScalar(i) : i, local);
+            const [x, y, z] = local;
+            const world = [
+              m[0] * x + m[4] * y + m[8] * z + m[12],
+              m[1] * x + m[5] * y + m[9] * z + m[13],
+              m[2] * x + m[6] * y + m[10] * z + m[14]
+            ];
+            for (let k = 0;k < 3; k++) {
+              if (world[k] < min[k])
+                min[k] = world[k];
+              if (world[k] > max[k])
+                max[k] = world[k];
+            }
+          }
+      }
+    }
+    for (const child of node.listChildren())
+      visit(child);
+  };
+  for (const node of scene.listChildren())
+    visit(node);
+  return { min, max };
+}
+var KHR_NODE_VISIBILITY = "KHR_node_visibility", segment2 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
+var init_node_visibility = __esm(() => {
+  init_metrics();
+});
+
+// src/delivery-inspect.ts
+import * as THREE23 from "three";
 import { PropertyType as PropertyType2 } from "@gltf-transform/core";
+function decompose(matrix) {
+  const translation = new THREE23.Vector3;
+  const rotation = new THREE23.Quaternion;
+  const scale = new THREE23.Vector3;
+  matrix.decompose(translation, rotation, scale);
+  const clean = (value) => Object.is(value, -0) ? 0 : value;
+  return {
+    translation: translation.toArray().map(clean),
+    rotation: rotation.toArray().map(clean),
+    scale: scale.toArray().map(clean)
+  };
+}
+function drawnTriangles(visited) {
+  const values = [];
+  const local = [0, 0, 0];
+  const point = new THREE23.Vector3;
+  for (const { node, roles, hidden } of visited) {
+    const mesh = node.getMesh();
+    if (!mesh || hidden || roles.some((role) => role.startsWith("collider.")))
+      continue;
+    const base = worldMatrix(node);
+    const instances = node.getExtension("EXT_mesh_gpu_instancing");
+    const translation = instances?.getAttribute("TRANSLATION");
+    const rotation = instances?.getAttribute("ROTATION");
+    const scale = instances?.getAttribute("SCALE");
+    const copies = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
+    const matrices = [];
+    for (let i = 0;i < copies; i++) {
+      const instance = new THREE23.Matrix4().compose(new THREE23.Vector3().fromArray(translation?.getElement(i, []) ?? [0, 0, 0]), new THREE23.Quaternion().fromArray(rotation?.getElement(i, []) ?? [0, 0, 0, 1]), new THREE23.Vector3().fromArray(scale?.getElement(i, []) ?? [1, 1, 1]));
+      matrices.push(base.clone().multiply(instance));
+    }
+    for (const primitive of mesh.listPrimitives()) {
+      if (primitive.getMode() !== 4)
+        continue;
+      const position = primitive.getAttribute("POSITION");
+      if (!position)
+        continue;
+      const indices = primitive.getIndices();
+      const count = indices ? indices.getCount() : position.getCount();
+      for (const matrix of matrices)
+        for (let i = 0;i + 2 < count; i += 3)
+          for (let k = 0;k < 3; k++) {
+            position.getElement(indices ? indices.getScalar(i + k) : i + k, local);
+            point.fromArray(local).applyMatrix4(matrix);
+            values.push(point.x, point.y, point.z);
+          }
+    }
+  }
+  return Float64Array.from(values);
+}
+function triangleOverlapsBox(a, b, c, h, tolerance) {
+  const verts = [a, b, c];
+  const he = [h.x + tolerance, h.y + tolerance, h.z + tolerance];
+  for (let axis = 0;axis < 3; axis++) {
+    const values = verts.map((v) => v.getComponent(axis));
+    if (Math.min(...values) > he[axis] || Math.max(...values) < -he[axis])
+      return false;
+  }
+  const e = [
+    new THREE23.Vector3().subVectors(b, a),
+    new THREE23.Vector3().subVectors(c, b),
+    new THREE23.Vector3().subVectors(a, c)
+  ];
+  const normal = new THREE23.Vector3().crossVectors(e[0], e[1]);
+  const axes = [normal];
+  const units = [
+    new THREE23.Vector3(1, 0, 0),
+    new THREE23.Vector3(0, 1, 0),
+    new THREE23.Vector3(0, 0, 1)
+  ];
+  for (const unit of units)
+    for (const edge of e)
+      axes.push(new THREE23.Vector3().crossVectors(unit, edge));
+  for (const axis of axes) {
+    if (axis.lengthSq() < 0.000000000000000000000001)
+      continue;
+    const projections = verts.map((v) => v.dot(axis));
+    const radius = he[0] * Math.abs(axis.x) + he[1] * Math.abs(axis.y) + he[2] * Math.abs(axis.z);
+    if (Math.min(...projections) > radius || Math.max(...projections) < -radius)
+      return false;
+  }
+  return true;
+}
+function closestPointOnTriangle(p, a, b, c) {
+  const ab = new THREE23.Vector3().subVectors(b, a);
+  const ac = new THREE23.Vector3().subVectors(c, a);
+  const ap = new THREE23.Vector3().subVectors(p, a);
+  const d1 = ab.dot(ap);
+  const d2 = ac.dot(ap);
+  if (d1 <= 0 && d2 <= 0)
+    return a.clone();
+  const bp = new THREE23.Vector3().subVectors(p, b);
+  const d3 = ab.dot(bp);
+  const d4 = ac.dot(bp);
+  if (d3 >= 0 && d4 <= d3)
+    return b.clone();
+  const vc = d1 * d4 - d3 * d2;
+  if (vc <= 0 && d1 >= 0 && d3 <= 0)
+    return a.clone().addScaledVector(ab, d1 / (d1 - d3));
+  const cp = new THREE23.Vector3().subVectors(p, c);
+  const d5 = ab.dot(cp);
+  const d6 = ac.dot(cp);
+  if (d6 >= 0 && d5 <= d6)
+    return c.clone();
+  const vb = d5 * d2 - d1 * d6;
+  if (vb <= 0 && d2 >= 0 && d6 <= 0)
+    return a.clone().addScaledVector(ac, d2 / (d2 - d6));
+  const va = d3 * d6 - d5 * d4;
+  if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0)
+    return b.clone().addScaledVector(new THREE23.Vector3().subVectors(c, b), (d4 - d3) / (d4 - d3 + (d5 - d6)));
+  const denominator = 1 / (va + vb + vc);
+  return a.clone().addScaledVector(ab, vb * denominator).addScaledVector(ac, vc * denominator);
+}
+function segmentSegmentDistanceSq(p1, q1, p2, q2) {
+  const d1 = new THREE23.Vector3().subVectors(q1, p1);
+  const d2 = new THREE23.Vector3().subVectors(q2, p2);
+  const r = new THREE23.Vector3().subVectors(p1, p2);
+  const a = d1.dot(d1);
+  const e = d2.dot(d2);
+  const f = d2.dot(r);
+  let s = 0;
+  let t = 0;
+  if (a <= 0.000000000000000000000001 && e <= 0.000000000000000000000001)
+    return r.lengthSq();
+  if (a <= 0.000000000000000000000001)
+    t = THREE23.MathUtils.clamp(f / e, 0, 1);
+  else {
+    const c = d1.dot(r);
+    if (e <= 0.000000000000000000000001)
+      s = THREE23.MathUtils.clamp(-c / a, 0, 1);
+    else {
+      const b = d1.dot(d2);
+      const denominator = a * e - b * b;
+      s = denominator !== 0 ? THREE23.MathUtils.clamp((b * f - c * e) / denominator, 0, 1) : 0;
+      t = (b * s + f) / e;
+      if (t < 0) {
+        t = 0;
+        s = THREE23.MathUtils.clamp(-c / a, 0, 1);
+      } else if (t > 1) {
+        t = 1;
+        s = THREE23.MathUtils.clamp((b - c) / a, 0, 1);
+      }
+    }
+  }
+  const c1 = p1.clone().addScaledVector(d1, s);
+  const c2 = p2.clone().addScaledVector(d2, t);
+  return c1.distanceToSquared(c2);
+}
+function segmentCrossesTriangle(p, q, a, b, c) {
+  const hit = new THREE23.Vector3;
+  const ray = new THREE23.Ray(p, new THREE23.Vector3().subVectors(q, p));
+  const length = ray.direction.length();
+  if (length === 0)
+    return false;
+  ray.direction.divideScalar(length);
+  return ray.intersectTriangle(a, b, c, false, hit) !== null && hit.distanceTo(p) <= length;
+}
+function triangleTouchesCapsule(a, b, c, p, q, radius) {
+  const r2 = radius * radius;
+  if (closestPointOnTriangle(p, a, b, c).distanceToSquared(p) <= r2)
+    return true;
+  if (closestPointOnTriangle(q, a, b, c).distanceToSquared(q) <= r2)
+    return true;
+  for (const [s, e] of [
+    [a, b],
+    [b, c],
+    [c, a]
+  ])
+    if (segmentSegmentDistanceSq(p, q, s, e) <= r2)
+      return true;
+  return segmentCrossesTriangle(p, q, a, b, c);
+}
+function deliveryNodePaths(doc) {
+  const paths = new Map;
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return paths;
+  const visit = (siblings, parentPath) => {
+    const seen = new Map;
+    for (const node of siblings) {
+      const name = node.getName();
+      const occurrence = seen.get(name) ?? 0;
+      seen.set(name, occurrence + 1);
+      const path = `${parentPath}${segment3(name, occurrence)}`;
+      paths.set(node, path);
+      visit(node.listChildren(), path);
+    }
+  };
+  visit(scene.listChildren(), segment3(scene.getName() || "Scene", 0));
+  return paths;
+}
+function summarizeVertexAttributes(doc) {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return [];
+  const groups = new Map;
+  const order = [];
+  const record = (node, path) => {
+    const mesh = node.getMesh();
+    if (!mesh)
+      return;
+    const bake = mesh.getExtras().kilnSurfaceBakeV1;
+    const names = new Set;
+    for (const primitive of mesh.listPrimitives())
+      for (const semantic of primitive.listSemantics())
+        if (semantic.startsWith("_"))
+          names.add(semantic);
+    for (const name of names) {
+      const params = bake && typeof bake === "object" ? bake[name] : undefined;
+      const key = `${name}\x00${JSON.stringify(params ?? null)}`;
+      let group = groups.get(key);
+      if (!group) {
+        group = { name, meshes: [], ...params ? { params: { ...params } } : {} };
+        groups.set(key, group);
+        order.push(key);
+      }
+      if (!group.meshes.includes(path))
+        group.meshes.push(path);
+    }
+  };
+  const visit = (siblings, parentPath) => {
+    siblings.forEach((node, index) => {
+      const at = (name) => {
+        let occurrence = 0;
+        for (let i = 0;i < index; i++)
+          if (siblings[i].getName() === name)
+            occurrence++;
+        return `${parentPath}${segment3(name, occurrence)}`;
+      };
+      const path = at(node.getName());
+      record(node, path);
+      visit(node.listChildren(), path);
+      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType2.NODE);
+      for (const level of lower) {
+        const levelPath = at(level.getName());
+        record(level, levelPath);
+        visit(level.listChildren(), levelPath);
+      }
+    });
+  };
+  visit(scene.listChildren(), segment3(scene.getName() || "Scene", 0));
+  const rank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2;
+  return order.map((key, position) => ({ group: groups.get(key), position })).sort((a, b) => rank(a.group.name) - rank(b.group.name) || (rank(a.group.name) === 2 ? a.group.name.localeCompare(b.group.name) : 0) || a.position - b.position).map(({ group }) => group);
+}
+function inspectDelivery(doc) {
+  const summary = { colliders: [], anchors: [], ports: [], diagnostics: [] };
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return summary;
+  const visited = [];
+  const visit = (siblings, parentPath, hidden, module) => {
+    const seen = new Map;
+    for (const node of siblings) {
+      const name = node.getName();
+      const occurrence = seen.get(name) ?? 0;
+      seen.set(name, occurrence + 1);
+      const path = `${parentPath}${segment3(name, occurrence)}`;
+      const roles = readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [];
+      const nodeHidden = hidden || isHiddenGltfNode(node);
+      const nodeModule = roles.includes(KILN_SEMANTIC_ROLES.kitModule) ? { node, path } : module;
+      visited.push({ node, path, roles, hidden: nodeHidden, module: nodeModule });
+      visit(node.listChildren(), path, nodeHidden, nodeModule);
+    }
+  };
+  visit(scene.listChildren(), segment3(scene.getName() || "Scene", 0), false, undefined);
+  const finding = (code, path, message) => summary.diagnostics.push({ code, path, message });
+  const { min, max } = drawnSceneBounds(scene);
+  const bounds = new THREE23.Box3(new THREE23.Vector3(...min), new THREE23.Vector3(...max));
+  const finiteBounds = [...min, ...max].every(Number.isFinite);
+  const diagonal = finiteBounds ? bounds.getSize(new THREE23.Vector3).length() : 0;
+  const tolerance = Math.max(0.0001, diagonal * 0.0001);
+  const colliderNodes = [];
+  for (const entry of visited) {
+    const { node, path, roles } = entry;
+    for (const role of roles) {
+      const matrix = worldMatrix(node);
+      const transform = decompose(matrix);
+      for (const shape of ["box", "capsule", "hull"]) {
+        const id = roleTail(role, `${KILN_SEMANTIC_ROLES.collider}.${shape}`);
+        if (id === undefined)
+          continue;
+        const scale = transform.scale;
+        const record = {
+          role,
+          id,
+          path,
+          name: node.getName(),
+          transform,
+          shape: shape === "box" ? { kind: "box", size: [...scale] } : shape === "capsule" ? { kind: "capsule", radius: scale[0] / 2, height: scale[1] } : {
+            kind: "hull",
+            vertices: node.getMesh()?.listPrimitives().reduce((sum, primitive) => sum + (primitive.getAttribute("POSITION")?.getCount() ?? 0), 0) ?? 0
+          }
+        };
+        summary.colliders.push(record);
+        colliderNodes.push({ visit: entry, record });
+      }
+      const anchorTail = roleTail(role, KILN_SEMANTIC_ROLES.anchor);
+      if (anchorTail !== undefined) {
+        const [kind, ...rest] = anchorTail.split(".");
+        summary.anchors.push({
+          role,
+          kind,
+          id: rest.join("."),
+          path,
+          name: node.getName(),
+          transform
+        });
+      }
+      const portId = roleTail(role, KILN_SEMANTIC_ROLES.kitPort);
+      if (portId !== undefined)
+        summary.ports.push({
+          role,
+          id: portId,
+          path,
+          name: node.getName(),
+          ...entry.module && entry.module.node !== node ? { module: entry.module.path } : {},
+          transform
+        });
+      if (role === KILN_SEMANTIC_ROLES.kitModule) {
+        const extras = node.getExtras()[KILN_KIT_KEY];
+        let spec;
+        try {
+          const { schemaVersion, ...rest } = extras ?? {};
+          spec = schemaVersion === 1 ? kitModuleExtras(rest) : undefined;
+        } catch {
+          spec = undefined;
+        }
+        if (!spec)
+          finding("DELIVERY_KIT_INVALID", path, `kit module has no valid ${KILN_KIT_KEY} extras; mark it with defineModule.`);
+        else if (summary.kit)
+          finding("DELIVERY_KIT_MULTIPLE", path, `a GLB delivers one kit module; ${summary.kit.path} is listed and this one is not.`);
+        else
+          summary.kit = {
+            role,
+            path,
+            name: node.getName(),
+            footprint: spec.footprint,
+            height: spec.height,
+            snapAxis: spec.snapAxis,
+            origin: spec.origin,
+            transform
+          };
+      }
+    }
+  }
+  const triangles = colliderNodes.some(({ record }) => record.shape.kind !== "hull") ? drawnTriangles(visited) : new Float64Array;
+  const triangleCount = triangles.length / 9;
+  let overlapTests = 0;
+  const a = new THREE23.Vector3;
+  const b = new THREE23.Vector3;
+  const c = new THREE23.Vector3;
+  for (const { visit: entry, record } of colliderNodes) {
+    if (!entry.hidden)
+      finding("DELIVERY_COLLIDER_NOT_HIDDEN", record.path, "collider proxy draws; hide it (the delivery helpers do) so importers that ignore roles draw only the asset.");
+    const matrix = worldMatrix(entry.node);
+    const proxyBounds = new THREE23.Box3;
+    const mesh = entry.node.getMesh();
+    const local = [0, 0, 0];
+    for (const primitive of mesh?.listPrimitives() ?? []) {
+      const position = primitive.getAttribute("POSITION");
+      for (let i = 0;i < (position?.getCount() ?? 0); i++)
+        proxyBounds.expandByPoint(new THREE23.Vector3().fromArray(position.getElement(i, local)).applyMatrix4(matrix));
+    }
+    if (proxyBounds.isEmpty())
+      proxyBounds.expandByPoint(new THREE23.Vector3().setFromMatrixPosition(matrix));
+    const expanded = bounds.clone().expandByScalar(tolerance);
+    if (!finiteBounds || !expanded.containsBox(proxyBounds))
+      finding("DELIVERY_COLLIDER_OUTSIDE_BOUNDS", record.path, "collider proxy reaches outside the bounds of the drawn asset.");
+    if (record.shape.kind === "hull")
+      continue;
+    if (overlapTests + triangleCount > DELIVERY_OVERLAP_TEST_LIMIT) {
+      finding("DELIVERY_COLLIDER_OVERLAP_UNMEASURED", record.path, `overlap with drawn triangles was not measured: the check stops at ${DELIVERY_OVERLAP_TEST_LIMIT} collider-triangle tests.`);
+      continue;
+    }
+    overlapTests += triangleCount;
+    const toLocal = new THREE23.Matrix4;
+    let touches = false;
+    if (record.shape.kind === "box") {
+      toLocal.copy(matrix).invert();
+      const half = new THREE23.Vector3(0.5, 0.5, 0.5);
+      const scale = Math.max(...record.transform.scale.map(Math.abs), 0.000000001);
+      for (let t = 0;t < triangleCount && !touches; t++) {
+        a.fromArray(triangles, t * 9).applyMatrix4(toLocal);
+        b.fromArray(triangles, t * 9 + 3).applyMatrix4(toLocal);
+        c.fromArray(triangles, t * 9 + 6).applyMatrix4(toLocal);
+        touches = triangleOverlapsBox(a, b, c, half, tolerance / scale);
+      }
+    } else {
+      const { translation, rotation } = record.transform;
+      toLocal.compose(new THREE23.Vector3(...translation), new THREE23.Quaternion(...rotation), new THREE23.Vector3(1, 1, 1)).invert();
+      const { radius, height } = record.shape;
+      const p = new THREE23.Vector3(0, -height / 2 + radius, 0);
+      const q = new THREE23.Vector3(0, height / 2 - radius, 0);
+      for (let t = 0;t < triangleCount && !touches; t++) {
+        a.fromArray(triangles, t * 9).applyMatrix4(toLocal);
+        b.fromArray(triangles, t * 9 + 3).applyMatrix4(toLocal);
+        c.fromArray(triangles, t * 9 + 6).applyMatrix4(toLocal);
+        touches = triangleTouchesCapsule(a, b, c, p, q, radius + tolerance);
+      }
+    }
+    if (!touches)
+      finding("DELIVERY_COLLIDER_NO_OVERLAP", record.path, "collider proxy overlaps no drawn triangle; a box or capsule normally wraps or crosses the surface it stands for.");
+  }
+  for (const record of summary.ports) {
+    const entry = visited.find((item) => item.path === record.path);
+    const moduleEntry = entry.module && entry.module.node !== entry.node ? entry.module : undefined;
+    const spec = moduleEntry && summary.kit?.path === moduleEntry.path ? summary.kit : undefined;
+    if (!spec) {
+      finding("DELIVERY_PORT_WITHOUT_MODULE", record.path, "port is not under a valid kit module; place ports under the root defineModule marked.");
+      continue;
+    }
+    const point = new THREE23.Vector3(...record.transform.translation).applyMatrix4(worldMatrix(moduleEntry.node).invert());
+    const [width, depth] = spec.footprint;
+    const [x0, x1, z0, z1] = spec.origin === "corner" ? [0, width, 0, depth] : [-width / 2, width / 2, -depth / 2, depth / 2];
+    const slack = Math.max(0.0001, Math.max(width, depth, spec.height) * 0.00001);
+    if (point.x < x0 - slack || point.x > x1 + slack || point.z < z0 - slack || point.z > z1 + slack || point.y < -slack || point.y > spec.height + slack)
+      finding("DELIVERY_PORT_OUTSIDE_FOOTPRINT", record.path, `port lies outside its module footprint (${width} x ${depth} m from the ${spec.origin}, 0..${spec.height} m high).`);
+  }
+  for (const record of summary.anchors) {
+    const entry = visited.find((item) => item.path === record.path);
+    if (entry.node.listChildren().length > 0)
+      finding("DELIVERY_ANCHOR_NOT_LEAF", record.path, "anchor has children; an anchor is an empty leaf node, so attach parts beside it instead.");
+  }
+  return summary;
+}
+var DELIVERY_OVERLAP_TEST_LIMIT = 50000000, segment3 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`, roleTail = (role, base) => role.startsWith(`${base}.`) ? role.slice(base.length + 1) : undefined, worldMatrix = (node) => new THREE23.Matrix4().fromArray(node.getWorldMatrix());
+var init_delivery_inspect = __esm(() => {
+  init_gltf_io();
+  init_semantic();
+  init_delivery();
+  init_metrics();
+  init_node_visibility();
+});
+
+// src/qa/validation-profile.ts
+function matchValidationPattern(pattern, name) {
+  const p = Array.from(pattern);
+  const s = Array.from(name);
+  let pi = 0;
+  let si = 0;
+  let star = -1;
+  let resume = 0;
+  while (si < s.length) {
+    if (pi < p.length && (p[pi] === "?" || p[pi] !== "*" && p[pi] === s[si])) {
+      pi++;
+      si++;
+    } else if (pi < p.length && p[pi] === "*") {
+      star = pi++;
+      resume = si;
+    } else if (star >= 0) {
+      pi = star + 1;
+      si = ++resume;
+    } else
+      return false;
+  }
+  while (pi < p.length && p[pi] === "*")
+    pi++;
+  return pi === p.length;
+}
+function component(accessor, index, slot, element) {
+  accessor.getElement(index, element);
+  return element[slot];
+}
+function evaluateValidationProfileDocument(profile, doc, options = {}) {
+  const disposition = profile.mode === "enforce" ? "block" : "warn";
+  const profileName = `${VALIDATION_PROFILE_VERSION}:${profile.profileId}`;
+  const budget = options.maxAttributeReads ?? MAX_VALIDATION_ATTRIBUTE_READS;
+  const paths = deliveryNodePaths(doc);
+  const candidates = [...paths.entries()].filter(([node]) => node.getMesh() !== null);
+  const findings = [];
+  let complete = true;
+  let reads = 0;
+  let matchedNodes = 0;
+  let notMeasured = 0;
+  for (const check of profile.checks) {
+    const kept = new Map;
+    const omitted = new Map;
+    const push = (code, assertion, message, measurement, affected, findingDisposition) => findings.push({
+      code,
+      disposition: findingDisposition,
+      dimension: "categoryReadiness",
+      profile: profileName,
+      message: `Host validation check ${check.id}: ${message}`,
+      ...affected ? { affected } : {},
+      measurement: {
+        name: `checks.${check.id}.${assertion}`,
+        ...measurement
+      }
+    });
+    const report = (code, assertion, message, { affected, measurement }, findingDisposition = disposition) => {
+      const used = kept.get(code) ?? 0;
+      if (used < MAX_VALIDATION_FINDINGS_PER_CODE) {
+        kept.set(code, used + 1);
+        push(code, assertion, message, measurement, affected, findingDisposition);
+        return;
+      }
+      const entry = omitted.get(code) ?? {
+        count: 0,
+        assertion,
+        disposition: findingDisposition
+      };
+      entry.count++;
+      omitted.set(code, entry);
+    };
+    const matched = candidates.filter(([node]) => check.select.names.some((pattern) => matchValidationPattern(pattern, node.getName())));
+    const minMatches = check.select.minMatches ?? 1;
+    if (matched.length < minMatches || check.select.maxMatches !== undefined && matched.length > check.select.maxMatches) {
+      const expected = check.select.maxMatches === undefined ? `>= ${minMatches}` : minMatches === check.select.maxMatches ? `${minMatches}` : `${minMatches}..${check.select.maxMatches}`;
+      report("HOST_VALIDATION_SELECTOR_UNMATCHED", "select", `${matched.length} default-scene mesh node(s) match ${JSON.stringify(check.select.names)}; the host expects ${expected}. Node names come from the final GLB.`, { measurement: { actual: matched.length, expected } });
+    }
+    const measured = matched.slice(0, MAX_VALIDATION_MATCHES);
+    if (matched.length > measured.length) {
+      complete = false;
+      report("HOST_VALIDATION_UNMEASURED", "select", `${matched.length - measured.length} matched node(s) beyond the ${MAX_VALIDATION_MATCHES}-node limit were not measured.`, {
+        measurement: {
+          actual: matched.length,
+          threshold: MAX_VALIDATION_MATCHES,
+          breakdown: { nodesNotMeasured: matched.length - measured.length }
+        }
+      }, "observe");
+    }
+    for (const [node, nodePath] of measured) {
+      const primitives = node.getMesh().listPrimitives();
+      const cost = primitives.reduce((sum, primitive) => sum + (primitive.getAttribute("POSITION")?.getCount() ?? 0) * ((check.gradient ? 2 : 0) + (check.range ? 1 : 0)), 0);
+      if (notMeasured > 0 || reads + cost > budget) {
+        notMeasured++;
+        continue;
+      }
+      reads += cost;
+      matchedNodes++;
+      const affected = { node: node.getName(), nodePath };
+      if (check.primitives) {
+        const limit = "exactly" in check.primitives ? check.primitives.exactly : check.primitives.max;
+        const fails = "exactly" in check.primitives ? primitives.length !== limit : primitives.length > limit;
+        if (fails)
+          report("HOST_VALIDATION_PRIMITIVE_COUNT", "primitives", `${node.getName()} has ${primitives.length} primitive(s) in the final GLB; the host expects ${"exactly" in check.primitives ? "exactly" : "at most"} ${limit}. Each material group exports as its own primitive.`, {
+            affected,
+            measurement: {
+              actual: primitives.length,
+              expected: limit
+            }
+          });
+      }
+      primitives.forEach((primitive, index) => {
+        const where = `${node.getName()} primitive ${index}`;
+        for (const semantic of check.attributes ?? []) {
+          if (primitive.getAttribute(semantic))
+            continue;
+          report("HOST_VALIDATION_ATTRIBUTE_MISSING", "attributes", `${where} has no ${semantic} attribute.`, {
+            affected: { ...affected, attribute: semantic },
+            measurement: { actual: false, expected: true }
+          });
+        }
+        if (check.gradient) {
+          const outcome = measureGradient(primitive, check.gradient);
+          if (outcome.kind === "missing")
+            report("HOST_VALIDATION_ATTRIBUTE_MISSING", "gradient", `${where} cannot be measured: ${outcome.reason}.`, {
+              affected: { ...affected, attribute: outcome.attribute },
+              measurement: { actual: false, expected: true }
+            });
+          else if (outcome.kind === "unmeasured") {
+            complete = false;
+            report("HOST_VALIDATION_UNMEASURED", "gradient", `${where} has no extent along ${check.gradient.axis}; the gradient is unmeasured.`, {
+              affected: { ...affected, attribute: check.gradient.attribute },
+              measurement: { actual: null }
+            }, "observe");
+          } else if (outcome.failures.length > 0)
+            report("HOST_VALIDATION_ATTRIBUTE_GRADIENT", "gradient", `${where} ${check.gradient.attribute}[${check.gradient.component}] fails the ${outcome.failures.join(" and ")} test along local ${check.gradient.axis}: ${round2(outcome.fromMean)} to ${round2(outcome.toMean)}, expected ${check.gradient.from} to ${check.gradient.to} within ${check.gradient.tolerance}.`, {
+              affected: { ...affected, attribute: check.gradient.attribute },
+              measurement: {
+                actual: `${round2(outcome.fromMean)}..${round2(outcome.toMean)}`,
+                expected: `${check.gradient.from}..${check.gradient.to}`,
+                threshold: check.gradient.tolerance,
+                breakdown: {
+                  fromMean: round2(outcome.fromMean),
+                  toMean: round2(outcome.toMean),
+                  worstRegression: round2(outcome.worstRegression)
+                }
+              }
+            });
+        }
+        if (check.range) {
+          const accessor = primitive.getAttribute(check.range.attribute);
+          if (!accessor || check.range.component >= accessor.getElementSize())
+            report("HOST_VALIDATION_ATTRIBUTE_MISSING", "range", `${where} has no ${check.range.attribute}[${check.range.component}].`, {
+              affected: { ...affected, attribute: check.range.attribute },
+              measurement: { actual: false, expected: true }
+            });
+          else {
+            const element = [];
+            let min = Infinity;
+            let max = -Infinity;
+            for (let i = 0;i < accessor.getCount(); i++) {
+              const value = component(accessor, i, check.range.component, element);
+              if (value < min)
+                min = value;
+              if (value > max)
+                max = value;
+            }
+            const { tolerance } = check.range;
+            if (accessor.getCount() > 0 && (min < check.range.min - tolerance || max > check.range.max + tolerance))
+              report("HOST_VALIDATION_ATTRIBUTE_RANGE", "range", `${where} ${check.range.attribute}[${check.range.component}] spans ${round2(min)}..${round2(max)}; the host allows ${check.range.min}..${check.range.max} within ${tolerance}.`, {
+                affected: { ...affected, attribute: check.range.attribute },
+                measurement: {
+                  actual: `${round2(min)}..${round2(max)}`,
+                  expected: `${check.range.min}..${check.range.max}`,
+                  threshold: tolerance
+                }
+              });
+          }
+        }
+        if (check.material) {
+          const material = primitive.getMaterial();
+          const label = material?.getName() || (material ? `materials[${doc.getRoot().listMaterials().indexOf(material)}]` : "(glTF default)");
+          const alphaMode = material?.getAlphaMode() ?? "OPAQUE";
+          const doubleSided = material?.getDoubleSided() ?? false;
+          if (check.material.alphaMode !== undefined && alphaMode !== check.material.alphaMode)
+            report("HOST_VALIDATION_MATERIAL_ALPHA_MODE", "material", `${where} uses alphaMode ${alphaMode}; the host expects ${check.material.alphaMode}.`, {
+              affected: { ...affected, material: label },
+              measurement: {
+                actual: alphaMode,
+                expected: check.material.alphaMode
+              }
+            });
+          if (check.material.doubleSided !== undefined && doubleSided !== check.material.doubleSided)
+            report("HOST_VALIDATION_MATERIAL_DOUBLE_SIDED", "material", `${where} is ${doubleSided ? "double-sided" : "single-sided"}; the host expects ${check.material.doubleSided ? "double-sided" : "single-sided"}.`, {
+              affected: { ...affected, material: label },
+              measurement: {
+                actual: doubleSided,
+                expected: check.material.doubleSided
+              }
+            });
+        }
+      });
+    }
+    for (const [code, entry] of omitted)
+      push(code, entry.assertion, `${entry.count} more ${code} finding(s) omitted after the first ${MAX_VALIDATION_FINDINGS_PER_CODE}.`, { actual: entry.count, breakdown: { omitted: entry.count } }, undefined, entry.disposition);
+  }
+  if (notMeasured > 0) {
+    complete = false;
+    findings.push({
+      code: "HOST_VALIDATION_UNMEASURED",
+      disposition: "observe",
+      dimension: "categoryReadiness",
+      profile: profileName,
+      message: `Host validation stopped at its ${budget} attribute-read budget; ${notMeasured} matched node(s) were not measured.`,
+      measurement: {
+        name: "checks.*.budget",
+        actual: reads,
+        threshold: budget,
+        breakdown: { nodesNotMeasured: notMeasured }
+      }
+    });
+  }
+  return {
+    findings,
+    complete,
+    metrics: {
+      hostValidationProfile: profileName,
+      hostValidationChecks: profile.checks.length,
+      hostValidationMatchedNodes: matchedNodes,
+      hostValidationAttributeReads: reads,
+      hostValidationComplete: complete
+    }
+  };
+}
+function measureGradient(primitive, gradient) {
+  const position = primitive.getAttribute("POSITION");
+  if (!position)
+    return {
+      kind: "missing",
+      attribute: "POSITION",
+      reason: "no POSITION attribute"
+    };
+  const values = primitive.getAttribute(gradient.attribute);
+  if (!values || gradient.component >= values.getElementSize())
+    return {
+      kind: "missing",
+      attribute: gradient.attribute,
+      reason: `no ${gradient.attribute}[${gradient.component}]`
+    };
+  const count = Math.min(position.getCount(), values.getCount());
+  const axis = AXIS_INDEX[gradient.axis[1]];
+  const sign = gradient.axis[0] === "-" ? -1 : 1;
+  const t = new Float64Array(count);
+  const v = new Float64Array(count);
+  const element = [];
+  let tMin = Infinity;
+  let tMax = -Infinity;
+  for (let i = 0;i < count; i++) {
+    t[i] = sign * component(position, i, axis, element);
+    v[i] = component(values, i, gradient.component, element);
+    if (t[i] < tMin)
+      tMin = t[i];
+    if (t[i] > tMax)
+      tMax = t[i];
+  }
+  if (!(tMax - tMin >= MIN_AXIS_EXTENT))
+    return { kind: "unmeasured" };
+  const sums = new Float64Array(GRADIENT_BINS);
+  const counts = new Uint32Array(GRADIENT_BINS);
+  let fromSum = 0;
+  let fromCount = 0;
+  let toSum = 0;
+  let toCount = 0;
+  for (let i = 0;i < count; i++) {
+    const s = (t[i] - tMin) / (tMax - tMin);
+    if (s <= ENDPOINT_BAND) {
+      fromSum += v[i];
+      fromCount++;
+    }
+    if (s >= 1 - ENDPOINT_BAND) {
+      toSum += v[i];
+      toCount++;
+    }
+    const bin = Math.min(GRADIENT_BINS - 1, Math.floor(s * GRADIENT_BINS));
+    sums[bin] = sums[bin] + v[i];
+    counts[bin] = counts[bin] + 1;
+  }
+  const fromMean = fromSum / fromCount;
+  const toMean = toSum / toCount;
+  const direction = Math.sign(gradient.to - gradient.from);
+  let worstRegression = 0;
+  let previous;
+  for (let bin = 0;bin < GRADIENT_BINS; bin++) {
+    if (counts[bin] === 0)
+      continue;
+    const mean = sums[bin] / counts[bin];
+    if (previous !== undefined)
+      worstRegression = Math.max(worstRegression, (previous - mean) * direction);
+    previous = mean;
+  }
+  const failures = [];
+  if (Math.abs(fromMean - gradient.from) > gradient.tolerance || Math.abs(toMean - gradient.to) > gradient.tolerance)
+    failures.push("endpoints");
+  if (gradient.monotonic && worstRegression > gradient.tolerance)
+    failures.push("monotonic");
+  return { kind: "measured", fromMean, toMean, worstRegression, failures };
+}
+async function evaluateValidationProfileGlb(profile, bytes, options = {}) {
+  let doc;
+  try {
+    doc = await createGltfIO().readBinary(bytes);
+  } catch (error) {
+    const profileName = `${VALIDATION_PROFILE_VERSION}:${profile.profileId}`;
+    return {
+      findings: [
+        {
+          code: "HOST_VALIDATION_UNMEASURED",
+          disposition: "observe",
+          dimension: "categoryReadiness",
+          profile: profileName,
+          message: `Host validation could not read the final GLB: ${error instanceof Error ? error.message : String(error)}`,
+          measurement: { name: "checks.*.read", actual: null }
+        }
+      ],
+      complete: false,
+      metrics: {
+        hostValidationProfile: profileName,
+        hostValidationChecks: profile.checks.length,
+        hostValidationMatchedNodes: 0,
+        hostValidationAttributeReads: 0,
+        hostValidationComplete: false
+      }
+    };
+  }
+  return evaluateValidationProfileDocument(profile, doc, options);
+}
+var HOST_VALIDATION_RULE_ID = "HOST_VALIDATION_PROFILE", MAX_VALIDATION_ATTRIBUTE_READS = 4000000, MAX_VALIDATION_FINDINGS_PER_CODE = 32, ENDPOINT_BAND = 0.05, GRADIENT_BINS = 16, MIN_AXIS_EXTENT = 0.000001, HOST_VALIDATION_QA_RULE, round2 = (value) => Math.round(value * 1e6) / 1e6, AXIS_INDEX;
+var init_validation_profile2 = __esm(() => {
+  init_gltf_io();
+  init_delivery_inspect();
+  init_validation_profile();
+  init_registry();
+  HOST_VALIDATION_QA_RULE = Object.freeze({
+    id: HOST_VALIDATION_RULE_ID,
+    profile: "host.validation-profile",
+    scope: { kind: "universal" },
+    ruleClass: "exact",
+    owner: KILN_ENGINE_QA_OWNER,
+    promotion: conformancePromotionAuthorization("host-validation-profile-v1", "src/qa/validation-profile.test.ts", "b6b60fcbba0238688cb0d3ef497fa3ed837757422b43207f18fc8cbe0a412ffc", KILN_ENGINE_QA_OWNER, "2026-10-22T00:00:00.000Z", "enforce", "cpu-raster:1.3.1"),
+    defaultMode: "enforce",
+    evaluate: () => []
+  });
+  AXIS_INDEX = { X: 0, Y: 1, Z: 2 };
+});
+
+// src/qa/requirements-report.ts
+function createRequirementsQaReport(context, options) {
+  const applicability = resolveRequirementsApplicability(context.requirements);
+  const unevaluatedRequirements = [
+    ...applicability.unevaluatedRequirements,
+    ...sceneMeasurementGaps(context.requirements, options.findings ?? [])
+  ];
+  const executed = new Set(options.executedRules);
+  const rules = applicability.rules.map((rule) => ({
+    id: rule.id,
+    mode: options.modes?.[rule.id] ?? rule.mode,
+    status: rule.status === "evaluate" ? executed.has(rule.id) ? "evaluated" : "notEvaluated" : rule.status,
+    ...rule.reason ? { reason: rule.reason } : {}
+  }));
+  const incomplete = unevaluatedRequirements.length > 0 || applicability.rules.some((rule) => rule.status === "evaluate" && !(rule.mode === "observe" && rule.keys.length === 0) && (!executed.has(rule.id) || (options.modes?.[rule.id] ?? rule.mode) === "off" || rule.mode === "enforce" && (options.modes?.[rule.id] ?? rule.mode) !== "enforce"));
+  const findings = (options.findings ?? []).map((finding) => ({
+    ...finding,
+    dimension: finding.dimension === "categoryReadiness" ? "requirementReadiness" : finding.dimension
+  }));
+  const evaluated = new Set(options.evaluatedDimensions ?? ["exportIntegrity", "requirementReadiness"]);
+  for (const finding of findings)
+    evaluated.add(finding.dimension);
+  const dimensions = Object.fromEntries(REQUIREMENTS_QA_DIMENSIONS.map((dimension) => {
+    const selected = findings.filter((finding) => finding.dimension === dimension);
+    const partialObservation = selected.some((finding) => finding.code === "GEO_PART_SELF_INTERSECTION_UNMEASURED" || finding.code === "GEO_PART_SELF_INTERSECTION_TRUNCATED" || finding.code === "GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED");
+    const status = selected.some((f) => f.disposition === "block") ? "block" : partialObservation || !evaluated.has(dimension) || dimension === "requirementReadiness" && incomplete ? "notEvaluated" : selected.some((f) => f.disposition === "warn") ? "warn" : "pass";
+    return [
+      dimension,
+      {
+        status,
+        findings: selected,
+        ...options.metrics?.[dimension] ? { metrics: options.metrics[dimension] } : {}
+      }
+    ];
+  }));
+  const blocked = findings.some((f) => f.disposition === "block");
+  const warned = findings.some((f) => f.disposition === "warn");
+  return {
+    kind: "kiln.asset-qa-report",
+    schemaVersion: 2,
+    qaProfile: "asset.requirements.v1",
+    policyHash: context.policyHash,
+    adviceHash: context.adviceHash,
+    acceptance: blocked ? "blocked" : incomplete ? "incomplete" : "accepted",
+    disposition: blocked ? "block" : incomplete ? "notEvaluated" : warned ? "warn" : "pass",
+    dimensions,
+    rules,
+    unevaluatedRequirements
+  };
+}
+var REQUIREMENTS_QA_DIMENSIONS;
+var init_requirements_report = __esm(() => {
+  init_requirements_applicability();
+  init_types();
+  REQUIREMENTS_QA_DIMENSIONS = [
+    "exportIntegrity",
+    "requirementReadiness",
+    "promptAlignment",
+    "visualQuality",
+    "runtimeCost"
+  ];
+});
+
+// src/qa/reference-comparison.ts
+function isEvidence(value) {
+  if (typeof value !== "object" || value === null)
+    return false;
+  const candidate = value;
+  return candidate.schemaVersion === 1 && typeof candidate.silhouetteIoU === "number" && typeof candidate.colorAgreement === "number" && typeof candidate.reference === "object" && typeof candidate.rendered === "object";
+}
+function referenceComparisonFindings(evidence, profile) {
+  if (evidence.reference.coverage <= 0 || evidence.rendered.coverage <= 0)
+    return [];
+  const findings = [];
+  if (evidence.silhouetteIoU < SILHOUETTE_IOU_OBSERVE) {
+    findings.push({
+      code: "REF_SILHOUETTE_AGREEMENT",
+      disposition: "observe",
+      dimension: "promptAlignment",
+      profile,
+      message: `The asset's outline agrees with the reference image on ${(evidence.silhouetteIoU * 100).toFixed(0)}% of ` + `its normalised silhouette. Shapes are compared after cropping each to its own bounding box, so this is ` + `about proportion and outline, not about framing or distance.`,
+      measurement: {
+        name: "silhouetteIoU",
+        actual: evidence.silhouetteIoU,
+        threshold: SILHOUETTE_IOU_OBSERVE
+      },
+      repairText: "Compare the reference against the rendered views and adjust the overall proportions — the outline is the part that disagrees, not the detail."
+    });
+  }
+  if (evidence.colorAgreement < COLOR_AGREEMENT_OBSERVE) {
+    findings.push({
+      code: "REF_COLOR_AGREEMENT",
+      disposition: "observe",
+      dimension: "promptAlignment",
+      profile,
+      message: `The asset's average colour is far from the reference image's ` + `(agreement ${(evidence.colorAgreement * 100).toFixed(0)}%). This is a coarse whole-subject average, so it ` + `catches a wrong palette rather than a wrong detail.`,
+      measurement: {
+        name: "colorAgreement",
+        actual: evidence.colorAgreement,
+        threshold: COLOR_AGREEMENT_OBSERVE
+      },
+      repairText: "Set the base colours from the reference image rather than from the prompt wording, then re-render."
+    });
+  }
+  return findings;
+}
+var SILHOUETTE_IOU_OBSERVE = 0.55, COLOR_AGREEMENT_OBSERVE = 0.5, REFERENCE_COMPARISON_QA_RULE;
+var init_reference_comparison = __esm(() => {
+  init_registry();
+  REFERENCE_COMPARISON_QA_RULE = Object.freeze({
+    id: "REF_COMPARISON",
+    profile: "reference.comparison",
+    scope: { kind: "universal" },
+    ruleClass: "heuristic",
+    owner: KILN_ENGINE_QA_OWNER,
+    defaultMode: "observe",
+    evaluate(context) {
+      const evidence = context.derivedEvidence?.["referenceComparison"];
+      if (!isEvidence(evidence))
+        return [];
+      return referenceComparisonFindings(evidence, "reference.comparison");
+    }
+  });
+});
+
+// src/qa/run.ts
+function gltfReportFindings(report, profile) {
+  return report.issues.messages.filter((issue) => issue.severity === 0 || issue.severity === 1).filter((issue) => !isExpectedKtx2ValidatorLimitation(report, issue)).map((issue) => ({
+    code: `GLTF_${issue.code}`.replace(/[^A-Z0-9_]/g, "_"),
+    disposition: issue.severity === 0 ? "block" : "warn",
+    dimension: "exportIntegrity",
+    profile,
+    message: issue.message,
+    ...issue.pointer ? { affected: { nodePath: issue.pointer } } : {}
+  }));
+}
+function isExpectedKtx2ValidatorLimitation(report, issue) {
+  const required = report.info?.["extensionsRequired"];
+  if (!Array.isArray(required) || !required.includes("KHR_texture_basisu"))
+    return false;
+  if (issue.code === "VALUE_NOT_IN_LIST") {
+    return /^\/images\/\d+\/mimeType$/.test(issue.pointer ?? "") && issue.message === "Invalid value 'image/ktx2'. Valid values are ('image/jpeg', 'image/png').";
+  }
+  return issue.code === "IMAGE_UNRECOGNIZED_FORMAT" && /^\/images\/\d+$/.test(issue.pointer ?? "") && issue.message === "Image format not recognized.";
+}
+function qaPolicyFromEnv(env = process.env) {
+  const mode = env["KILN_QA_MODE"];
+  return mode === "observe" || mode === "off" ? { defaultMode: mode } : {};
+}
+function qaBlockingEnabled(env = process.env) {
+  const mode = env["KILN_QA_MODE"];
+  return mode !== "observe" && mode !== "off";
+}
+var DETERMINISTIC_QA_REGISTRY, MAX_DETAILED_BLOCKERS = 6, AssetQaBlockedError;
+var init_run = __esm(() => {
+  init_material();
+  init_architecture();
+  init_character2();
+  init_character_advisory();
+  init_vehicle2();
+  init_vegetation();
+  init_prop();
+  init_part_connectivity();
+  init_reference_comparison();
+  init_self_intersection();
+  init_sweep();
+  init_environment2();
+  init_breadth2();
+  init_breadth_evidence();
+  init_registry();
+  init_types();
+  init_universal();
+  init_validation_profile2();
+  DETERMINISTIC_QA_REGISTRY = new QaRegistry([
+    ...UNIVERSAL_QA_RULES,
+    MATERIAL_QA_RULE,
+    ...ARCHITECTURE_QA_RULES,
+    CHARACTER_QA_RULE,
+    CHARACTER_ADVISORY_QA_RULE,
+    ...VEHICLE_QA_RULES,
+    ...VEGETATION_QA_RULES,
+    ...PROP_QA_RULES,
+    ...ENVIRONMENT_QA_RULES,
+    ...W7_BREADTH_QA_RULES,
+    SELF_INTERSECTION_QA_RULE,
+    SWEEP_QA_RULE,
+    PART_CONNECTIVITY_QA_RULE,
+    REFERENCE_COMPARISON_QA_RULE,
+    HOST_VALIDATION_QA_RULE
+  ]);
+  AssetQaBlockedError = class AssetQaBlockedError extends Error {
+    report;
+    stage;
+    gltfValidation;
+    constructor(report, stage, gltfValidation) {
+      const blockers = Object.values(report.dimensions).flatMap((dimension) => dimension.findings).filter((finding) => finding.disposition === "block");
+      const detailed = blockers.slice(0, MAX_DETAILED_BLOCKERS).map((finding) => `${finding.code}: ${finding.message}${finding.affected ? ` AFFECTED: ${JSON.stringify(finding.affected)}` : ""}${finding.repairText ? ` FIX: ${finding.repairText}` : ""}`);
+      const overflow = blockers.length > MAX_DETAILED_BLOCKERS ? ` (+${blockers.length - MAX_DETAILED_BLOCKERS} more blockers)` : "";
+      super(`Asset QA blocked at ${stage}: ${detailed.join(" | ") || "unknown blocker"}${overflow}`);
+      this.name = "AssetQaBlockedError";
+      this.report = report;
+      this.stage = stage;
+      this.gltfValidation = gltfValidation;
+    }
+  };
+});
+
+// src/qa/requirements-run.ts
+import { Object3D as Object3D15 } from "three";
+function sceneDecisions(context, policy) {
+  const applicable = new Set(resolveRequirementsApplicability(context.requirements).rules.filter((rule) => rule.status === "evaluate").map((rule) => rule.id));
+  return new QaRegistry(registry.list().filter((rule) => applicable.has(rule.id))).describePolicy(policy);
+}
+async function collectRequirementsSceneEvidence(context, scene, policy = {}) {
+  if (!(scene instanceof Object3D15) || !sceneDecisions(context, policy).some((d) => d.ruleId === SELF_INTERSECTION_QA_RULE.id && d.mode !== "off"))
+    return {};
+  try {
+    return { partPenetration: await analyzePartPenetration(scene) };
+  } catch {
+    return { partPenetrationFailed: true };
+  }
+}
+function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {}) {
+  const needs = context.requirements.requirements;
+  const parts = needs.parts?.state === "requested" ? needs.parts.value.required : [];
+  const animation = needs.animation?.state === "requested" ? needs.animation.value : undefined;
+  const rig = needs.rig?.state === "requested" ? needs.rig.value : undefined;
+  const requiredClips = [
+    ...new Set([...animation?.clips ?? [], ...rig?.clips?.map((clip) => clip.name) ?? []])
+  ];
+  const tangents = needs.representation?.state === "requested" && needs.representation.value.precomputedTangents === true;
+  const findings = [];
+  const decisions = sceneDecisions(context, policy);
+  const geometryMetrics = {};
+  const mobilityInput = {
+    scene,
+    mobility: needs.mobility?.state === "requested" ? needs.mobility.value : undefined,
+    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
+  };
+  const mobilityFindings = mobilityInput.mobility && decisions.some((d) => (d.ruleId === "VEHICLE_PROFILE" || d.ruleId === "VEHICLE_ADVISORY_PROFILE") && d.mode !== "off") ? inspectMobility(mobilityInput) : [];
+  const executedRules = [];
+  const rigInput = {
+    scene,
+    clips,
+    rig,
+    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
+  };
+  const foliageInput = {
+    scene,
+    foliage: needs.foliage?.state === "requested" ? needs.foliage.value : undefined,
+    materialMode: needs.material?.state === "requested" ? needs.material.value.mode : undefined,
+    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY : undefined
+  };
+  const effects = needs.effects?.state === "requested" ? needs.effects.value : undefined;
+  const scope = context.requirements.scope;
+  const scopeObservation = scope?.state === "requested" && scene instanceof Object3D15 && decisions.some((d) => d.ruleId === ASSET_SCOPE_QA_RULE.id && d.mode !== "off") ? analyzeAssetScopeObservationV1(scene) : undefined;
+  const effectsInput = {
+    effects,
+    derivedEvidence: {
+      source: "engine-scene-analysis",
+      ...effects && scene instanceof Object3D15 && decisions.some((d) => d.ruleId.startsWith("VFX_") && d.mode !== "off") ? { vfxArtifact: analyzeVfxArtifactEvidenceV1(effects, scene, clips) } : {}
+    }
+  };
+  const spatialInput = {
+    scene,
+    tileable: needs.tiling?.state === "requested" || needs.spatialLayout?.state === "requested" && needs.spatialLayout.value.tileable === true,
+    navigable: needs.navigation?.state === "requested" || needs.spatialLayout?.state === "requested" && needs.spatialLayout.value.navigable === true,
+    navigation: needs.navigation?.state === "requested" ? needs.navigation.value : undefined,
+    groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY ?? 0 : undefined
+  };
+  const spatialFindings = decisions.some((d) => d.ruleId.startsWith("ENVIRONMENT_") && d.mode !== "off") ? [
+    ...inspectPlacementSockets(spatialInput),
+    ...inspectTileEdges(spatialInput),
+    ...inspectNavigationClearance(spatialInput),
+    ...inspectSpatialSupport(spatialInput)
+  ] : [];
+  const structureFindings = needs.structure?.state === "requested" && decisions.some((d) => d.ruleId.startsWith("ARCHITECTURE_") && d.mode !== "off") ? inspectStructure({
+    scene,
+    structure: needs.structure.value,
+    opening: needs.opening?.state === "requested"
+  }) : [];
+  for (const decision of decisions) {
+    if (decision.mode === "off")
+      continue;
+    if (decision.ruleId === SELF_INTERSECTION_QA_RULE.id) {
+      const volume = evidence.partPenetration;
+      if (volume) {
+        const acknowledged = volume.acknowledged?.length ?? 0;
+        const partial = volume.truncated || volume.skipped.length > 0 || acknowledged > 0;
+        if (!partial)
+          executedRules.push(decision.ruleId);
+        findings.push(...inspectPartPenetration(volume));
+        Object.assign(geometryMetrics, {
+          partVolumeCoverage: partial ? "partial" : "complete-static-pairs",
+          partVolumeScope: "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+          partVolumeEligibleParts: volume.partsAnalyzed,
+          partVolumeCandidatePairs: volume.candidatePairs,
+          partVolumeCandidatesLowerBound: volume.broadPhaseTruncated === true,
+          partVolumePairsTested: volume.pairsTested,
+          partVolumeUnmeasurablePairs: volume.pairsUnmeasurable,
+          partVolumePairsNotReached: volume.pairsNotReached,
+          partVolumeLodAlternatePairs: volume.pairsLodAlternates,
+          partVolumeSkipped: volume.skipped.length,
+          ...acknowledged > 0 ? {
+            partVolumeAcknowledgedParts: acknowledged,
+            partVolumeAcknowledgedPairs: volume.pairsUnmeasurableAcknowledged ?? 0
+          } : {}
+        });
+      } else if (evidence.partPenetrationFailed) {
+        findings.push({
+          code: "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+          disposition: "observe",
+          dimension: "visualQuality",
+          profile: "geometry.selfIntersection",
+          message: "Part-volume analysis could not complete. Overlap and clearance remain unmeasured."
+        });
+        geometryMetrics.partVolumeCoverage = "unavailable";
+      }
+      continue;
+    }
+    if (decision.ruleId === ASSET_SCOPE_QA_RULE.id && !scopeObservation)
+      continue;
+    if (decision.ruleId === HOST_VALIDATION_QA_RULE.id)
+      continue;
+    if (decision.ruleId === PART_CONNECTIVITY_QA_RULE.id && !(scene instanceof Object3D15))
+      continue;
+    executedRules.push(decision.ruleId);
+    if (decision.ruleId === PROP_EXACT_QA_RULE.id) {
+      const measured = [
+        ...needs.articulation?.state === "requested" ? inspectArticulation({ scene }) : [],
+        ...needs.opening?.state === "requested" ? inspectContainerOpening({ scene }) : []
+      ];
+      for (const finding of measured)
+        findings.push(decision.mode === "observe" || decision.mode === "warn" ? { ...finding, disposition: decision.mode } : finding);
+      continue;
+    }
+    const measured = decision.ruleId === SWEEP_QA_RULE.id ? inspectSweepGeometry(scene) : decision.ruleId === PART_CONNECTIVITY_QA_RULE.id ? inspectPartConnectivity(scene, needs.externalSupport?.state === "requested" ? needs.externalSupport.value.supports : undefined) : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === "requested" ? inspectAssetScope({
+      profile: "asset.requirements.v1",
+      scope: { schemaVersion: 1, scope: scope.value, explicit: true },
+      derivedEvidence: { source: "engine-scene-analysis", assetScope: scopeObservation }
+    }) : decision.ruleId === "CHARACTER_PROFILE" ? inspectRig(rigInput) : decision.ruleId === "CHARACTER_ADVISORY_PROFILE" ? inspectRigAdvisory(rigInput) : decision.ruleId === "VEGETATION_CONTACT_PROFILE" ? inspectFoliageContact(foliageInput) : decision.ruleId === "VEGETATION_ADVISORY_PROFILE" ? inspectFoliageAdvisory(foliageInput) : decision.ruleId === MATERIAL_QA_RULE.id ? inspectPortableSceneMaterials(scene, tangents) : decision.ruleId === "VFX_EXACT_PROFILE" ? inspectEffectsExact(effectsInput) : decision.ruleId === "VFX_ADVISORY_PROFILE" ? inspectEffectsAdvisory(effectsInput) : decision.ruleId === "ARCHITECTURE_PROFILE" ? structureFindings.filter((f) => f.disposition === "block") : decision.ruleId === "ARCHITECTURE_ADVISORY_PROFILE" ? structureFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "ENVIRONMENT_EXACT_PROFILE" ? spatialFindings.filter((f) => f.disposition === "block") : decision.ruleId === "ENVIRONMENT_ADVISORY_PROFILE" ? spatialFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "VEHICLE_PROFILE" ? mobilityFindings.filter((f) => f.disposition === "block") : decision.ruleId === "VEHICLE_ADVISORY_PROFILE" ? mobilityFindings.filter((f) => f.disposition !== "block") : decision.ruleId === "VEHICLE_W6_ADVISORY_PROFILE" ? inspectMobilityAdvisory(mobilityInput) : decision.ruleId === PROP_ADVISORY_QA_RULE.id ? inspectPlacement({
+      scene,
+      bounds: needs.bounds?.state === "requested" ? needs.bounds.value : undefined,
+      groundPlaneY: needs.grounding?.state === "requested" ? needs.grounding.value.planeY ?? 0 : undefined
+    }) : UNIVERSAL_QA_KERNELS[decision.ruleId]({
+      scene,
+      clips,
+      requiredParts: parts,
+      animation: { clips: requiredClips }
+    });
+    for (const finding of measured)
+      findings.push(decision.mode === "observe" || decision.mode === "warn" ? { ...finding, disposition: decision.mode } : finding);
+  }
+  return createRequirementsQaReport(context, {
+    findings,
+    executedRules,
+    modes: Object.fromEntries(decisions.map((x) => [x.ruleId, x.mode])),
+    metrics: {
+      ...Object.keys(geometryMetrics).length ? { visualQuality: geometryMetrics } : {},
+      ...scopeObservation ? {
+        promptAlignment: {
+          scopeTopLevelAssetRoots: scopeObservation.topLevelAssetRoots,
+          scopeReusableMemberCount: scopeObservation.reusableMemberCount,
+          scopeDressingSignalCount: scopeObservation.sceneDressingRoles.length
+        }
+      } : {}
+    },
+    ...scopeObservation ? {
+      evaluatedDimensions: ["exportIntegrity", "requirementReadiness", "promptAlignment"]
+    } : {}
+  });
+}
+function appendRequirementsQa(context, report, findings, metrics = {}, executedRules = []) {
+  const priorMetrics = Object.fromEntries(Object.entries(report.dimensions).flatMap(([dimension, value]) => value.metrics ? [[dimension, value.metrics]] : []));
+  const merged = { ...priorMetrics };
+  for (const [dimension, value] of Object.entries(metrics ?? {}))
+    merged[dimension] = { ...priorMetrics[dimension], ...value };
+  return createRequirementsQaReport(context, {
+    findings: [...Object.values(report.dimensions).flatMap((x) => x.findings), ...findings],
+    executedRules: [
+      ...report.rules.filter((x) => x.status === "evaluated").map((x) => x.id),
+      ...executedRules
+    ],
+    modes: Object.fromEntries(report.rules.map((x) => [x.id, x.mode])),
+    evaluatedDimensions: [
+      ...new Set([
+        ...Object.entries(report.dimensions).filter(([, value]) => value.status !== "notEvaluated").map(([key]) => key),
+        ...Object.keys(metrics ?? {})
+      ])
+    ],
+    metrics: merged
+  });
+}
+async function appendRequirementsFinalQa(context, report, gltf, bytes, instanceability, metricsError, material, warnings = []) {
+  const gltfFindings = gltfReportFindings(gltf, report.qaProfile);
+  const findings = [
+    ...gltfFindings,
+    ...warnings.map((w) => ({
+      code: w.code,
+      disposition: "warn",
+      dimension: "runtimeCost",
+      profile: `${w.profile}.${w.tier}`,
+      message: `${w.message} ${w.advice}`,
+      measurement: w.measurement
+    }))
+  ];
+  if (metricsError)
+    findings.push({
+      code: "RUNTIME_COST_METRICS_FAILED",
+      disposition: "warn",
+      dimension: "runtimeCost",
+      profile: report.qaProfile,
+      message: `Runtime-cost metrics could not be computed: ${metricsError}`
+    });
+  const cost = {};
+  if (instanceability)
+    Object.assign(cost, {
+      instanceabilityGrade: instanceability.grade,
+      instanceabilitySummary: instanceability.summary,
+      ...instanceability.metrics
+    });
+  if (material)
+    Object.assign(cost, {
+      materialCount: material.materialCount,
+      opaqueMaterials: material.opaqueMaterials,
+      maskedMaterials: material.maskedMaterials,
+      blendedMaterials: material.blendedMaterials,
+      singleSidedMaterials: material.singleSidedMaterials,
+      doubleSidedMaterials: material.doubleSidedMaterials,
+      texturedMaterials: material.texturedMaterials,
+      materialExtensionCount: material.materialExtensionCount,
+      materialExtensionsUsed: material.materialExtensionsUsed.join(","),
+      imageCount: material.imageCount,
+      maxImageDimension: material.maxImageDimension,
+      decodedImageBytesRgba8: material.decodedImageBytesRgba8,
+      estimatedGpuBytesWithMipmaps: material.estimatedGpuBytesWithMipmaps,
+      blendedSurfaceAreaRatio: material.blendedSurfaceAreaRatio
+    });
+  let result = appendRequirementsQa(context, report, findings, {
+    exportIntegrity: {
+      gltfErrors: gltf.issues.numErrors,
+      gltfWarnings: gltfFindings.filter((x) => x.disposition === "warn").length
+    },
+    runtimeCost: cost
+  });
+  const effects = context.requirements.requirements.effects;
+  const rule = report.rules.find((r) => r.id === "VFX_EXACT_PROFILE");
+  if (effects?.state === "requested" && rule?.status === "evaluated" && rule.mode !== "off") {
+    const evidence = await analyzeFinalVfxGlbBytesV1(bytes);
+    const measured = inspectFinalEffects(effects.value, evidence);
+    const findings = rule.mode === "enforce" ? measured : measured.map((f) => ({
+      ...f,
+      disposition: rule.mode
+    }));
+    result = appendRequirementsQa(context, result, findings, {
+      exportIntegrity: finalEffectsMetrics(evidence)
+    });
+  }
+  const validation = context.requirements.requirements.validation;
+  const hostRule = report.rules.find((r) => r.id === HOST_VALIDATION_QA_RULE.id);
+  if (validation?.state === "requested" && hostRule && hostRule.status !== "notRequested" && hostRule.mode !== "off") {
+    const evaluation = await evaluateValidationProfileGlb(validation.value, bytes);
+    const findings = hostRule.mode === "enforce" ? evaluation.findings : evaluation.findings.map((f) => ({
+      ...f,
+      disposition: f.disposition === "observe" ? f.disposition : hostRule.mode
+    }));
+    result = appendRequirementsQa(context, result, findings, { requirementReadiness: evaluation.metrics }, evaluation.complete ? [HOST_VALIDATION_QA_RULE.id] : []);
+  }
+  return result;
+}
+var registry;
+var init_requirements_run = __esm(() => {
+  init_breadth_evidence();
+  init_breadth2();
+  init_breadth_final();
+  init_registry();
+  init_universal();
+  init_material();
+  init_prop();
+  init_part_connectivity();
+  init_sweep();
+  init_self_intersection();
+  init_vehicle2();
+  init_vehicle_advisory();
+  init_vegetation();
+  init_character2();
+  init_character_advisory();
+  init_architecture();
+  init_environment2();
+  init_requirements_applicability();
+  init_validation_profile2();
+  init_requirements_report();
+  init_run();
+  registry = new QaRegistry([
+    ...UNIVERSAL_QA_RULES,
+    MATERIAL_QA_RULE,
+    PROP_EXACT_QA_RULE,
+    PROP_ADVISORY_QA_RULE,
+    PART_CONNECTIVITY_QA_RULE,
+    SELF_INTERSECTION_QA_RULE,
+    SWEEP_QA_RULE,
+    ...VEHICLE_QA_RULES,
+    ...ARCHITECTURE_QA_RULES,
+    ...ENVIRONMENT_QA_RULES,
+    ...VEGETATION_QA_RULES,
+    CHARACTER_QA_RULE,
+    CHARACTER_ADVISORY_QA_RULE,
+    VFX_EXACT_QA_RULE,
+    VFX_ADVISORY_QA_RULE,
+    ASSET_SCOPE_QA_RULE,
+    HOST_VALIDATION_QA_RULE
+  ]);
+});
+
+// src/qa/skin-integrity.ts
+import * as THREE24 from "three";
+function validAttribute(a, count, size) {
+  if (!a || a.itemSize !== size || a.count !== count || !Number.isSafeInteger(count) || count < 1)
+    return false;
+  if ("isInterleavedBufferAttribute" in a) {
+    return Number.isSafeInteger(a.data.stride) && a.data.stride >= size && Number.isSafeInteger(a.offset) && a.offset >= 0 && a.offset + size <= a.data.stride && (count - 1) * a.data.stride + a.offset + size <= a.array.length;
+  }
+  return count * size <= a.array.length;
+}
+function finiteAffine(matrix) {
+  const e = matrix?.elements;
+  return !!e && e.length === 16 && [...e].every((v) => Number.isFinite(v) && Number.isFinite(Math.fround(v))) && Math.fround(e[3]) === 0 && Math.fround(e[7]) === 0 && Math.fround(e[11]) === 0 && Math.fround(e[15]) === 1;
+}
+function inspectSkinIntegrity(root) {
+  const result = {
+    schemaVersion: 1,
+    findings: [],
+    meshesChecked: 0,
+    verticesChecked: 0,
+    truncated: false,
+    bounds: []
+  };
+  const paths = new Map;
+  const pending = [[root, "", 0]];
+  while (pending.length) {
+    const [node, parent, sibling] = pending.pop();
+    if (paths.has(node))
+      continue;
+    const segment = `${(node.name || node.type).slice(0, 80)}[${sibling}]`;
+    const path = (parent ? `${parent}/${segment}` : segment).slice(-800);
+    paths.set(node, path);
+    for (let i = node.children.length - 1;i >= 0; i--)
+      pending.push([node.children[i], path, i]);
+  }
+  const worlds = new Map;
+  function world(node) {
+    const chain = [], seen = new Set;
+    let cursor = node;
+    while (cursor && !worlds.has(cursor)) {
+      if (seen.has(cursor))
+        return;
+      seen.add(cursor);
+      chain.push(cursor);
+      cursor = cursor.parent;
+    }
+    while (chain.length) {
+      const n = chain.pop();
+      const local = n.matrixAutoUpdate ? new THREE24.Matrix4().compose(n.position, n.quaternion, n.scale) : n.matrix.clone();
+      const parent = n.parent ? worlds.get(n.parent) : undefined;
+      const value = n.matrixWorldAutoUpdate === false ? n.matrixWorld.clone() : parent ? new THREE24.Matrix4().multiplyMatrices(parent, local) : local;
+      worlds.set(n, value);
+    }
+    return worlds.get(node);
+  }
+  for (const [node, nodePath] of paths) {
+    const mesh = node;
+    if (!mesh.isSkinnedMesh)
+      continue;
+    if (result.findings.length >= MAX_FINDINGS) {
+      result.truncated = true;
+      break;
+    }
+    result.meshesChecked++;
+    const start = result.findings.length;
+    const add = (code, message, attribute, measurement) => {
+      if (result.findings.length >= MAX_FINDINGS) {
+        result.truncated = true;
+        return;
+      }
+      result.findings.push({
+        code,
+        disposition: "block",
+        dimension: "exportIntegrity",
+        profile: "skin.source-integrity.v1",
+        message,
+        affected: { node: mesh.name.slice(0, 160), nodePath, ...attribute ? { attribute } : {} },
+        ...measurement ? { measurement } : {},
+        repairText: "Rebuild the named binding at its intended rest pose. Keep bone order, inverse bind matrices and four influence lanes aligned with every final vertex; unwrap or change topology before binding. Do not repair invalid indices by normalizing weights."
+      });
+    };
+    const skeleton = mesh.skeleton, bones = skeleton?.bones;
+    if (!bones?.length || !Array.isArray(bones)) {
+      add("SKIN_SKELETON", "Skinned mesh requires a nonempty skeleton in the exported hierarchy.");
+      continue;
+    }
+    const unique = new Set;
+    for (let joint = 0;joint < bones.length; joint++) {
+      const bone = bones[joint];
+      if (!bone?.isObject3D || !paths.has(bone) || unique.has(bone)) {
+        add("SKIN_JOINT_MEMBERSHIP", `Joint ${joint} (${JSON.stringify(bone?.name?.slice(0, 160) ?? "missing")}) must be a distinct node inside the exported hierarchy.`, `joints[${joint}]`);
+      }
+      if (bone)
+        unique.add(bone);
+      if (!finiteAffine(skeleton.boneInverses?.[joint])) {
+        add("SKIN_INVERSE_BIND", `Joint ${joint} (${JSON.stringify(bone?.name?.slice(0, 160) ?? "missing")}) requires a finite affine inverse bind matrix.`, `boneInverses[${joint}]`);
+      }
+      if (result.truncated)
+        break;
+    }
+    if (!finiteAffine(mesh.bindMatrix) || !Number.isFinite(mesh.bindMatrix.determinant()) || mesh.bindMatrix.determinant() === 0 || ![THREE24.AttachedBindMode, THREE24.DetachedBindMode].includes(mesh.bindMode)) {
+      add("SKIN_BIND_MATRIX", "Mesh requires a finite invertible affine bind matrix and an attached or detached bind mode.", "bindMatrix");
+    }
+    const position = mesh.geometry?.getAttribute("position"), count = position?.count ?? 0;
+    const indices = mesh.geometry?.getAttribute("skinIndex"), weights = mesh.geometry?.getAttribute("skinWeight");
+    if (!validAttribute(position, count, 3) || !validAttribute(indices, count, 4) || indices.normalized || !validAttribute(weights, count, 4)) {
+      add("SKIN_ATTRIBUTES", "Skin requires xyz positions and four non-normalized joint indices and four weights per final vertex, backed by complete buffers.", "skinIndex/skinWeight");
+      continue;
+    }
+    const invalid = new Map;
+    const bad = (code, vertex, attribute) => {
+      const row = invalid.get(code);
+      if (row) {
+        if (row.last !== vertex)
+          row.count++;
+        row.last = vertex;
+      } else
+        invalid.set(code, { count: 1, first: vertex, last: vertex, attribute });
+    };
+    for (let vertex = 0;vertex < count; vertex++) {
+      let sum = 0;
+      for (let lane = 0;lane < 4; lane++) {
+        const index = indices.getComponent(vertex, lane), weight = weights.getComponent(vertex, lane);
+        if (!Number.isInteger(index) || index < 0 || index >= bones.length)
+          bad("SKIN_JOINT_INDEX", vertex, "skinIndex");
+        if (!Number.isFinite(weight) || weight < 0 || weight > 1)
+          bad("SKIN_WEIGHT_VALUE", vertex, "skinWeight");
+        sum += weight;
+      }
+      if (!Number.isFinite(sum) || Math.abs(sum - 1) > WEIGHT_TOLERANCE)
+        bad("SKIN_WEIGHT_SUM", vertex, "skinWeight");
+    }
+    result.verticesChecked += count;
+    for (const [code, row] of invalid) {
+      const why = code === "SKIN_JOINT_INDEX" ? "indices must address the skeleton, including zero-weight lanes" : code === "SKIN_WEIGHT_SUM" ? `weights must sum to one within ${WEIGHT_TOLERANCE}` : "weights must be finite values in [0,1]";
+      add(code, `Invalid ${row.attribute} at vertex range ${row.first}..${row.last} (${row.count} affected vertices): ${why}.`, row.attribute, {
+        name: "invalidSkinVertices",
+        actual: row.count,
+        expected: 0,
+        breakdown: { firstVertex: row.first, lastVertex: row.last }
+      });
+    }
+    if (result.findings.length !== start)
+      continue;
+    const meshWorld = world(mesh);
+    if (!finiteAffine(meshWorld)) {
+      add("SKIN_POSE_TRANSFORM", "Current mesh world transform must be finite and affine.");
+      continue;
+    }
+    const inverse = mesh.bindMode === THREE24.AttachedBindMode ? meshWorld.clone().invert() : mesh.bindMatrix.clone().invert();
+    const matrices = [];
+    for (let joint = 0;joint < bones.length; joint++) {
+      const boneWorld = world(bones[joint]);
+      if (!finiteAffine(boneWorld)) {
+        add("SKIN_POSE_TRANSFORM", `Current transform for joint ${joint} must be finite and affine.`, `joints[${joint}]`);
+        break;
+      }
+      matrices.push(new THREE24.Matrix4().multiplyMatrices(boneWorld, skeleton.boneInverses[joint]).multiply(mesh.bindMatrix));
+    }
+    if (result.findings.length !== start)
+      continue;
+    const base = new THREE24.Vector3, posed = new THREE24.Vector3, temp = new THREE24.Vector3, box = new THREE24.Box3;
+    for (let vertex = 0;vertex < count; vertex++) {
+      THREE24.Mesh.prototype.getVertexPosition.call(mesh, vertex, base);
+      posed.set(0, 0, 0);
+      for (let lane = 0;lane < 4; lane++) {
+        const weight = weights.getComponent(vertex, lane);
+        if (weight !== 0)
+          posed.addScaledVector(temp.copy(base).applyMatrix4(matrices[indices.getComponent(vertex, lane)]), weight);
+      }
+      posed.applyMatrix4(inverse).applyMatrix4(meshWorld);
+      if (!Number.isFinite(Math.fround(posed.x)) || !Number.isFinite(Math.fround(posed.y)) || !Number.isFinite(Math.fround(posed.z))) {
+        add("SKIN_POSED_VERTEX", `Current deformed vertex ${vertex} is not finite and Float32-representable. Check positions, morphs and weighted joint transforms.`, `position[${vertex}]`);
+        break;
+      }
+      box.expandByPoint(posed);
+    }
+    if (result.findings.length === start)
+      result.bounds.push({ nodePath, min: box.min.toArray(), max: box.max.toArray() });
+  }
+  return result;
+}
+var MAX_FINDINGS = 64, WEIGHT_TOLERANCE = 0.00001;
+var init_skin_integrity = () => {};
+
+// src/lod-export.ts
+import { PropertyType as PropertyType3 } from "@gltf-transform/core";
 function applyLodChains(root, sets, doc) {
   if (sets.length === 0)
     return;
@@ -14958,9 +15968,9 @@ function listLodChainNodes(doc) {
   const chains = [];
   const visit = (siblings, parentPath) => {
     siblings.forEach((node, index) => {
-      const at = (name) => `${parentPath}${segment2(name, occurrence(siblings, index, name))}`;
+      const at = (name) => `${parentPath}${segment4(name, occurrence(siblings, index, name))}`;
       const path = at(node.getName());
-      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType2.NODE);
+      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType3.NODE);
       if (lower.length > 0)
         chains.push({
           levels: [node, ...lower],
@@ -14969,7 +15979,7 @@ function listLodChainNodes(doc) {
       visit(node.listChildren(), path);
     });
   };
-  visit(scene.listChildren(), segment2(scene.getName() || "Scene", 0));
+  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0));
   return chains;
 }
 function isImpostorLevel(node) {
@@ -14992,106 +16002,10 @@ function summarizeLodChains(doc) {
     };
   });
 }
-var MSFT_SCREENCOVERAGE = "MSFT_screencoverage", segment2 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
+var MSFT_SCREENCOVERAGE = "MSFT_screencoverage", segment4 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
 var init_lod_export = __esm(() => {
   init_semantic();
   init_gltf_io();
-  init_metrics();
-});
-
-// src/node-visibility.ts
-import { KHRNodeVisibility } from "@gltf-transform/extensions";
-import * as THREE23 from "three";
-function applyNodeVisibility(root, doc) {
-  const hidden = [];
-  root.traverse((node) => {
-    if (node.visible === false)
-      hidden.push(node);
-  });
-  if (hidden.length === 0)
-    return;
-  const written = hidden.map(writtenNodeResolver(root, doc, "Visibility export"));
-  const extension = doc.createExtension(KHRNodeVisibility);
-  for (const node of written)
-    node.setExtension(KHR_NODE_VISIBILITY, extension.createVisibility().setVisible(false));
-}
-function summarizeHiddenNodes(doc) {
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  if (!scene)
-    return [];
-  const found = [];
-  const visit = (siblings, parentPath) => {
-    const seen = new Map;
-    for (const node of siblings) {
-      const name = node.getName();
-      const occurrence = seen.get(name) ?? 0;
-      seen.set(name, occurrence + 1);
-      const path = `${parentPath}${segment3(name, occurrence)}`;
-      if (isHiddenGltfNode(node))
-        found.push({ path, name, triangles: nodeTriangles(node) });
-      else
-        visit(node.listChildren(), path);
-    }
-  };
-  visit(scene.listChildren(), segment3(scene.getName() || "Scene", 0));
-  return found;
-}
-function drawnSceneBounds(scene) {
-  const min = [Infinity, Infinity, Infinity];
-  const max = [-Infinity, -Infinity, -Infinity];
-  const visit = (node) => {
-    if (isHiddenGltfNode(node))
-      return;
-    const mesh = node.getMesh();
-    if (mesh) {
-      const base = new THREE23.Matrix4().fromArray(node.getWorldMatrix());
-      const instances = node.getExtension("EXT_mesh_gpu_instancing");
-      const translation = instances?.getAttribute("TRANSLATION");
-      const rotation = instances?.getAttribute("ROTATION");
-      const scale = instances?.getAttribute("SCALE");
-      const countInstances = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
-      const matrices = [];
-      for (let i = 0;i < countInstances; i++) {
-        const t = translation?.getElement(i, []) ?? [0, 0, 0];
-        const r = rotation?.getElement(i, []) ?? [0, 0, 0, 1];
-        const s = scale?.getElement(i, []) ?? [1, 1, 1];
-        const localMatrix = new THREE23.Matrix4().compose(new THREE23.Vector3().fromArray(t), new THREE23.Quaternion().fromArray(r), new THREE23.Vector3().fromArray(s));
-        matrices.push(base.clone().multiply(localMatrix).toArray());
-      }
-      const local = [0, 0, 0];
-      for (const primitive of mesh.listPrimitives()) {
-        const position = primitive.getAttribute("POSITION");
-        if (!position)
-          continue;
-        const indices = primitive.getIndices();
-        const count = indices ? indices.getCount() : position.getCount();
-        for (const m of matrices)
-          for (let i = 0;i < count; i++) {
-            position.getElement(indices ? indices.getScalar(i) : i, local);
-            const [x, y, z] = local;
-            const world = [
-              m[0] * x + m[4] * y + m[8] * z + m[12],
-              m[1] * x + m[5] * y + m[9] * z + m[13],
-              m[2] * x + m[6] * y + m[10] * z + m[14]
-            ];
-            for (let k = 0;k < 3; k++) {
-              if (world[k] < min[k])
-                min[k] = world[k];
-              if (world[k] > max[k])
-                max[k] = world[k];
-            }
-          }
-      }
-    }
-    for (const child of node.listChildren())
-      visit(child);
-  };
-  for (const node of scene.listChildren())
-    visit(node);
-  return { min, max };
-}
-var KHR_NODE_VISIBILITY = "KHR_node_visibility", segment3 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
-var init_node_visibility = __esm(() => {
   init_metrics();
 });
 
@@ -15138,7 +16052,7 @@ var init_material_export = __esm(() => {
 });
 
 // src/community-exporter.ts
-import * as THREE24 from "three";
+import * as THREE25 from "three";
 import { GLTFExporter } from "three/addons/exporters/GLTFExporter.js";
 import { GLB_BUFFER } from "@gltf-transform/core";
 function resolveGltfExporter(value = typeof process !== "undefined" ? process.env["KILN_GLTF_EXPORTER"] : undefined) {
@@ -15168,7 +16082,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       return found;
     const copy = cleanClone(source);
     normalizeTextureTransform(copy);
-    copy.source = new THREE24.TextureSource(source.image);
+    copy.source = new THREE25.TextureSource(source.image);
     textures.set(source, copy);
     const bytes = source.userData["encoded"];
     if (bytes?.bytes) {
@@ -15177,8 +16091,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       encoded.push((async () => {
         copy.image = await platform.decode(bytes.bytes);
         Object.defineProperty(copy, "isDataTexture", { value: true });
-        copy.format = THREE24.RGBAFormat;
-        copy.type = THREE24.UnsignedByteType;
+        copy.format = THREE25.RGBAFormat;
+        copy.type = THREE25.UnsignedByteType;
       })());
     }
     return copy;
@@ -15195,7 +16109,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       physical.sheen = 1;
     }
     for (const [key, value] of Object.entries(copy)) {
-      if (value instanceof THREE24.Texture)
+      if (value instanceof THREE25.Texture)
         copy[key] = texture(value);
     }
     materials.set(source, copy);
@@ -15211,15 +16125,15 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
     if (!copy.matrixAutoUpdate)
       copy.matrix.decompose(copy.position, copy.quaternion, copy.scale);
     if (source.isScene) {
-      copy = new THREE24.Group;
+      copy = new THREE25.Group;
       copy.copy(shadow, false);
     }
     if (source.isSprite) {
       const sprite = source;
-      const geometry = new THREE24.PlaneGeometry(1, 1);
+      const geometry = new THREE25.PlaneGeometry(1, 1);
       geometry.translate(0.5 - sprite.center.x, 0.5 - sprite.center.y, 0);
       geometry.rotateZ(sprite.material.rotation);
-      const spriteMaterial = new THREE24.MeshBasicMaterial({
+      const spriteMaterial = new THREE25.MeshBasicMaterial({
         name: sprite.material.name,
         color: sprite.material.color,
         opacity: sprite.material.opacity,
@@ -15230,8 +16144,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       });
       Object.assign(spriteMaterial.userData, authorExtras?.material(sprite.material));
       originalMaterials.set(spriteMaterial, sprite.material);
-      copy = new THREE24.Mesh(geometry, spriteMaterial);
-      THREE24.Object3D.prototype.copy.call(copy, shadow, false);
+      copy = new THREE25.Mesh(geometry, spriteMaterial);
+      THREE25.Object3D.prototype.copy.call(copy, shadow, false);
     }
     Object.assign(copy.userData, authorExtras?.node(source), rigExtrasForExport(source), openShellExtras(source), kitExtras(source), repeatInstancesExtras(source));
     const semantic = source.userData[KILN_SEMANTIC_EXTRAS_KEY];
@@ -15295,8 +16209,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
     if (!context)
       throw new Error("A 2D canvas is required to prepare export texture channels.");
     context.putImageData(new ImageData(new Uint8ClampedArray(data), width, height), 0, 0);
-    const adapted = new THREE24.Texture().copy(map);
-    adapted.source = new THREE24.TextureSource(canvas);
+    const adapted = new THREE25.Texture().copy(map);
+    adapted.source = new THREE25.TextureSource(canvas);
     canvasInputs.set(map, adapted);
     const direct = directImages.get(map);
     if (direct)
@@ -15305,7 +16219,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
   };
   for (const material of materials.values()) {
     for (const [key, value] of Object.entries(material)) {
-      if (value instanceof THREE24.Texture && value.flipY && value.image?.data)
+      if (value instanceof THREE25.Texture && value.flipY && value.image?.data)
         material[key] = canvasInput(value);
     }
     const standard = material;
@@ -15327,8 +16241,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
     }
     cloned.tracks = cloned.tracks.filter((track) => {
       try {
-        const binding = THREE24.PropertyBinding.parseTrackName(track.name);
-        return ["position", "quaternion", "scale", "morphTargetInfluences"].includes(binding.propertyName) && THREE24.PropertyBinding.findNode(copy, binding.nodeName) !== null;
+        const binding = THREE25.PropertyBinding.parseTrackName(track.name);
+        return ["position", "quaternion", "scale", "morphTargetInfluences"].includes(binding.propertyName) && THREE25.PropertyBinding.findNode(copy, binding.nodeName) !== null;
       } catch {
         return false;
       }
@@ -15521,424 +16435,6 @@ function applyIndexPolicy(doc, policy) {
   };
 }
 var init_index_policy = () => {};
-
-// src/delivery-inspect.ts
-import * as THREE25 from "three";
-import { PropertyType as PropertyType3 } from "@gltf-transform/core";
-function decompose(matrix) {
-  const translation = new THREE25.Vector3;
-  const rotation = new THREE25.Quaternion;
-  const scale = new THREE25.Vector3;
-  matrix.decompose(translation, rotation, scale);
-  const clean = (value) => Object.is(value, -0) ? 0 : value;
-  return {
-    translation: translation.toArray().map(clean),
-    rotation: rotation.toArray().map(clean),
-    scale: scale.toArray().map(clean)
-  };
-}
-function drawnTriangles(visited) {
-  const values = [];
-  const local = [0, 0, 0];
-  const point = new THREE25.Vector3;
-  for (const { node, roles, hidden } of visited) {
-    const mesh = node.getMesh();
-    if (!mesh || hidden || roles.some((role) => role.startsWith("collider.")))
-      continue;
-    const base = worldMatrix(node);
-    const instances = node.getExtension("EXT_mesh_gpu_instancing");
-    const translation = instances?.getAttribute("TRANSLATION");
-    const rotation = instances?.getAttribute("ROTATION");
-    const scale = instances?.getAttribute("SCALE");
-    const copies = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
-    const matrices = [];
-    for (let i = 0;i < copies; i++) {
-      const instance = new THREE25.Matrix4().compose(new THREE25.Vector3().fromArray(translation?.getElement(i, []) ?? [0, 0, 0]), new THREE25.Quaternion().fromArray(rotation?.getElement(i, []) ?? [0, 0, 0, 1]), new THREE25.Vector3().fromArray(scale?.getElement(i, []) ?? [1, 1, 1]));
-      matrices.push(base.clone().multiply(instance));
-    }
-    for (const primitive of mesh.listPrimitives()) {
-      if (primitive.getMode() !== 4)
-        continue;
-      const position = primitive.getAttribute("POSITION");
-      if (!position)
-        continue;
-      const indices = primitive.getIndices();
-      const count = indices ? indices.getCount() : position.getCount();
-      for (const matrix of matrices)
-        for (let i = 0;i + 2 < count; i += 3)
-          for (let k = 0;k < 3; k++) {
-            position.getElement(indices ? indices.getScalar(i + k) : i + k, local);
-            point.fromArray(local).applyMatrix4(matrix);
-            values.push(point.x, point.y, point.z);
-          }
-    }
-  }
-  return Float64Array.from(values);
-}
-function triangleOverlapsBox(a, b, c, h, tolerance) {
-  const verts = [a, b, c];
-  const he = [h.x + tolerance, h.y + tolerance, h.z + tolerance];
-  for (let axis = 0;axis < 3; axis++) {
-    const values = verts.map((v) => v.getComponent(axis));
-    if (Math.min(...values) > he[axis] || Math.max(...values) < -he[axis])
-      return false;
-  }
-  const e = [
-    new THREE25.Vector3().subVectors(b, a),
-    new THREE25.Vector3().subVectors(c, b),
-    new THREE25.Vector3().subVectors(a, c)
-  ];
-  const normal = new THREE25.Vector3().crossVectors(e[0], e[1]);
-  const axes = [normal];
-  const units = [
-    new THREE25.Vector3(1, 0, 0),
-    new THREE25.Vector3(0, 1, 0),
-    new THREE25.Vector3(0, 0, 1)
-  ];
-  for (const unit of units)
-    for (const edge of e)
-      axes.push(new THREE25.Vector3().crossVectors(unit, edge));
-  for (const axis of axes) {
-    if (axis.lengthSq() < 0.000000000000000000000001)
-      continue;
-    const projections = verts.map((v) => v.dot(axis));
-    const radius = he[0] * Math.abs(axis.x) + he[1] * Math.abs(axis.y) + he[2] * Math.abs(axis.z);
-    if (Math.min(...projections) > radius || Math.max(...projections) < -radius)
-      return false;
-  }
-  return true;
-}
-function closestPointOnTriangle(p, a, b, c) {
-  const ab = new THREE25.Vector3().subVectors(b, a);
-  const ac = new THREE25.Vector3().subVectors(c, a);
-  const ap = new THREE25.Vector3().subVectors(p, a);
-  const d1 = ab.dot(ap);
-  const d2 = ac.dot(ap);
-  if (d1 <= 0 && d2 <= 0)
-    return a.clone();
-  const bp = new THREE25.Vector3().subVectors(p, b);
-  const d3 = ab.dot(bp);
-  const d4 = ac.dot(bp);
-  if (d3 >= 0 && d4 <= d3)
-    return b.clone();
-  const vc = d1 * d4 - d3 * d2;
-  if (vc <= 0 && d1 >= 0 && d3 <= 0)
-    return a.clone().addScaledVector(ab, d1 / (d1 - d3));
-  const cp = new THREE25.Vector3().subVectors(p, c);
-  const d5 = ab.dot(cp);
-  const d6 = ac.dot(cp);
-  if (d6 >= 0 && d5 <= d6)
-    return c.clone();
-  const vb = d5 * d2 - d1 * d6;
-  if (vb <= 0 && d2 >= 0 && d6 <= 0)
-    return a.clone().addScaledVector(ac, d2 / (d2 - d6));
-  const va = d3 * d6 - d5 * d4;
-  if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0)
-    return b.clone().addScaledVector(new THREE25.Vector3().subVectors(c, b), (d4 - d3) / (d4 - d3 + (d5 - d6)));
-  const denominator = 1 / (va + vb + vc);
-  return a.clone().addScaledVector(ab, vb * denominator).addScaledVector(ac, vc * denominator);
-}
-function segmentSegmentDistanceSq(p1, q1, p2, q2) {
-  const d1 = new THREE25.Vector3().subVectors(q1, p1);
-  const d2 = new THREE25.Vector3().subVectors(q2, p2);
-  const r = new THREE25.Vector3().subVectors(p1, p2);
-  const a = d1.dot(d1);
-  const e = d2.dot(d2);
-  const f = d2.dot(r);
-  let s = 0;
-  let t = 0;
-  if (a <= 0.000000000000000000000001 && e <= 0.000000000000000000000001)
-    return r.lengthSq();
-  if (a <= 0.000000000000000000000001)
-    t = THREE25.MathUtils.clamp(f / e, 0, 1);
-  else {
-    const c = d1.dot(r);
-    if (e <= 0.000000000000000000000001)
-      s = THREE25.MathUtils.clamp(-c / a, 0, 1);
-    else {
-      const b = d1.dot(d2);
-      const denominator = a * e - b * b;
-      s = denominator !== 0 ? THREE25.MathUtils.clamp((b * f - c * e) / denominator, 0, 1) : 0;
-      t = (b * s + f) / e;
-      if (t < 0) {
-        t = 0;
-        s = THREE25.MathUtils.clamp(-c / a, 0, 1);
-      } else if (t > 1) {
-        t = 1;
-        s = THREE25.MathUtils.clamp((b - c) / a, 0, 1);
-      }
-    }
-  }
-  const c1 = p1.clone().addScaledVector(d1, s);
-  const c2 = p2.clone().addScaledVector(d2, t);
-  return c1.distanceToSquared(c2);
-}
-function segmentCrossesTriangle(p, q, a, b, c) {
-  const hit = new THREE25.Vector3;
-  const ray = new THREE25.Ray(p, new THREE25.Vector3().subVectors(q, p));
-  const length = ray.direction.length();
-  if (length === 0)
-    return false;
-  ray.direction.divideScalar(length);
-  return ray.intersectTriangle(a, b, c, false, hit) !== null && hit.distanceTo(p) <= length;
-}
-function triangleTouchesCapsule(a, b, c, p, q, radius) {
-  const r2 = radius * radius;
-  if (closestPointOnTriangle(p, a, b, c).distanceToSquared(p) <= r2)
-    return true;
-  if (closestPointOnTriangle(q, a, b, c).distanceToSquared(q) <= r2)
-    return true;
-  for (const [s, e] of [
-    [a, b],
-    [b, c],
-    [c, a]
-  ])
-    if (segmentSegmentDistanceSq(p, q, s, e) <= r2)
-      return true;
-  return segmentCrossesTriangle(p, q, a, b, c);
-}
-function summarizeVertexAttributes(doc) {
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  if (!scene)
-    return [];
-  const groups = new Map;
-  const order = [];
-  const record = (node, path) => {
-    const mesh = node.getMesh();
-    if (!mesh)
-      return;
-    const bake = mesh.getExtras().kilnSurfaceBakeV1;
-    const names = new Set;
-    for (const primitive of mesh.listPrimitives())
-      for (const semantic of primitive.listSemantics())
-        if (semantic.startsWith("_"))
-          names.add(semantic);
-    for (const name of names) {
-      const params = bake && typeof bake === "object" ? bake[name] : undefined;
-      const key = `${name}\x00${JSON.stringify(params ?? null)}`;
-      let group = groups.get(key);
-      if (!group) {
-        group = { name, meshes: [], ...params ? { params: { ...params } } : {} };
-        groups.set(key, group);
-        order.push(key);
-      }
-      if (!group.meshes.includes(path))
-        group.meshes.push(path);
-    }
-  };
-  const visit = (siblings, parentPath) => {
-    siblings.forEach((node, index) => {
-      const at = (name) => {
-        let occurrence = 0;
-        for (let i = 0;i < index; i++)
-          if (siblings[i].getName() === name)
-            occurrence++;
-        return `${parentPath}${segment4(name, occurrence)}`;
-      };
-      const path = at(node.getName());
-      record(node, path);
-      visit(node.listChildren(), path);
-      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType3.NODE);
-      for (const level of lower) {
-        const levelPath = at(level.getName());
-        record(level, levelPath);
-        visit(level.listChildren(), levelPath);
-      }
-    });
-  };
-  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0));
-  const rank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2;
-  return order.map((key, position) => ({ group: groups.get(key), position })).sort((a, b) => rank(a.group.name) - rank(b.group.name) || (rank(a.group.name) === 2 ? a.group.name.localeCompare(b.group.name) : 0) || a.position - b.position).map(({ group }) => group);
-}
-function inspectDelivery(doc) {
-  const summary = { colliders: [], anchors: [], ports: [], diagnostics: [] };
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  if (!scene)
-    return summary;
-  const visited = [];
-  const visit = (siblings, parentPath, hidden, module) => {
-    const seen = new Map;
-    for (const node of siblings) {
-      const name = node.getName();
-      const occurrence = seen.get(name) ?? 0;
-      seen.set(name, occurrence + 1);
-      const path = `${parentPath}${segment4(name, occurrence)}`;
-      const roles = readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [];
-      const nodeHidden = hidden || isHiddenGltfNode(node);
-      const nodeModule = roles.includes(KILN_SEMANTIC_ROLES.kitModule) ? { node, path } : module;
-      visited.push({ node, path, roles, hidden: nodeHidden, module: nodeModule });
-      visit(node.listChildren(), path, nodeHidden, nodeModule);
-    }
-  };
-  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0), false, undefined);
-  const finding = (code, path, message) => summary.diagnostics.push({ code, path, message });
-  const { min, max } = drawnSceneBounds(scene);
-  const bounds = new THREE25.Box3(new THREE25.Vector3(...min), new THREE25.Vector3(...max));
-  const finiteBounds = [...min, ...max].every(Number.isFinite);
-  const diagonal = finiteBounds ? bounds.getSize(new THREE25.Vector3).length() : 0;
-  const tolerance = Math.max(0.0001, diagonal * 0.0001);
-  const colliderNodes = [];
-  for (const entry of visited) {
-    const { node, path, roles } = entry;
-    for (const role of roles) {
-      const matrix = worldMatrix(node);
-      const transform = decompose(matrix);
-      for (const shape of ["box", "capsule", "hull"]) {
-        const id = roleTail(role, `${KILN_SEMANTIC_ROLES.collider}.${shape}`);
-        if (id === undefined)
-          continue;
-        const scale = transform.scale;
-        const record = {
-          role,
-          id,
-          path,
-          name: node.getName(),
-          transform,
-          shape: shape === "box" ? { kind: "box", size: [...scale] } : shape === "capsule" ? { kind: "capsule", radius: scale[0] / 2, height: scale[1] } : {
-            kind: "hull",
-            vertices: node.getMesh()?.listPrimitives().reduce((sum, primitive) => sum + (primitive.getAttribute("POSITION")?.getCount() ?? 0), 0) ?? 0
-          }
-        };
-        summary.colliders.push(record);
-        colliderNodes.push({ visit: entry, record });
-      }
-      const anchorTail = roleTail(role, KILN_SEMANTIC_ROLES.anchor);
-      if (anchorTail !== undefined) {
-        const [kind, ...rest] = anchorTail.split(".");
-        summary.anchors.push({
-          role,
-          kind,
-          id: rest.join("."),
-          path,
-          name: node.getName(),
-          transform
-        });
-      }
-      const portId = roleTail(role, KILN_SEMANTIC_ROLES.kitPort);
-      if (portId !== undefined)
-        summary.ports.push({
-          role,
-          id: portId,
-          path,
-          name: node.getName(),
-          ...entry.module && entry.module.node !== node ? { module: entry.module.path } : {},
-          transform
-        });
-      if (role === KILN_SEMANTIC_ROLES.kitModule) {
-        const extras = node.getExtras()[KILN_KIT_KEY];
-        let spec;
-        try {
-          const { schemaVersion, ...rest } = extras ?? {};
-          spec = schemaVersion === 1 ? kitModuleExtras(rest) : undefined;
-        } catch {
-          spec = undefined;
-        }
-        if (!spec)
-          finding("DELIVERY_KIT_INVALID", path, `kit module has no valid ${KILN_KIT_KEY} extras; mark it with defineModule.`);
-        else if (summary.kit)
-          finding("DELIVERY_KIT_MULTIPLE", path, `a GLB delivers one kit module; ${summary.kit.path} is listed and this one is not.`);
-        else
-          summary.kit = {
-            role,
-            path,
-            name: node.getName(),
-            footprint: spec.footprint,
-            height: spec.height,
-            snapAxis: spec.snapAxis,
-            origin: spec.origin,
-            transform
-          };
-      }
-    }
-  }
-  const triangles = colliderNodes.some(({ record }) => record.shape.kind !== "hull") ? drawnTriangles(visited) : new Float64Array;
-  const triangleCount = triangles.length / 9;
-  let overlapTests = 0;
-  const a = new THREE25.Vector3;
-  const b = new THREE25.Vector3;
-  const c = new THREE25.Vector3;
-  for (const { visit: entry, record } of colliderNodes) {
-    if (!entry.hidden)
-      finding("DELIVERY_COLLIDER_NOT_HIDDEN", record.path, "collider proxy draws; hide it (the delivery helpers do) so importers that ignore roles draw only the asset.");
-    const matrix = worldMatrix(entry.node);
-    const proxyBounds = new THREE25.Box3;
-    const mesh = entry.node.getMesh();
-    const local = [0, 0, 0];
-    for (const primitive of mesh?.listPrimitives() ?? []) {
-      const position = primitive.getAttribute("POSITION");
-      for (let i = 0;i < (position?.getCount() ?? 0); i++)
-        proxyBounds.expandByPoint(new THREE25.Vector3().fromArray(position.getElement(i, local)).applyMatrix4(matrix));
-    }
-    if (proxyBounds.isEmpty())
-      proxyBounds.expandByPoint(new THREE25.Vector3().setFromMatrixPosition(matrix));
-    const expanded = bounds.clone().expandByScalar(tolerance);
-    if (!finiteBounds || !expanded.containsBox(proxyBounds))
-      finding("DELIVERY_COLLIDER_OUTSIDE_BOUNDS", record.path, "collider proxy reaches outside the bounds of the drawn asset.");
-    if (record.shape.kind === "hull")
-      continue;
-    if (overlapTests + triangleCount > DELIVERY_OVERLAP_TEST_LIMIT) {
-      finding("DELIVERY_COLLIDER_OVERLAP_UNMEASURED", record.path, `overlap with drawn triangles was not measured: the check stops at ${DELIVERY_OVERLAP_TEST_LIMIT} collider-triangle tests.`);
-      continue;
-    }
-    overlapTests += triangleCount;
-    const toLocal = new THREE25.Matrix4;
-    let touches = false;
-    if (record.shape.kind === "box") {
-      toLocal.copy(matrix).invert();
-      const half = new THREE25.Vector3(0.5, 0.5, 0.5);
-      const scale = Math.max(...record.transform.scale.map(Math.abs), 0.000000001);
-      for (let t = 0;t < triangleCount && !touches; t++) {
-        a.fromArray(triangles, t * 9).applyMatrix4(toLocal);
-        b.fromArray(triangles, t * 9 + 3).applyMatrix4(toLocal);
-        c.fromArray(triangles, t * 9 + 6).applyMatrix4(toLocal);
-        touches = triangleOverlapsBox(a, b, c, half, tolerance / scale);
-      }
-    } else {
-      const { translation, rotation } = record.transform;
-      toLocal.compose(new THREE25.Vector3(...translation), new THREE25.Quaternion(...rotation), new THREE25.Vector3(1, 1, 1)).invert();
-      const { radius, height } = record.shape;
-      const p = new THREE25.Vector3(0, -height / 2 + radius, 0);
-      const q = new THREE25.Vector3(0, height / 2 - radius, 0);
-      for (let t = 0;t < triangleCount && !touches; t++) {
-        a.fromArray(triangles, t * 9).applyMatrix4(toLocal);
-        b.fromArray(triangles, t * 9 + 3).applyMatrix4(toLocal);
-        c.fromArray(triangles, t * 9 + 6).applyMatrix4(toLocal);
-        touches = triangleTouchesCapsule(a, b, c, p, q, radius + tolerance);
-      }
-    }
-    if (!touches)
-      finding("DELIVERY_COLLIDER_NO_OVERLAP", record.path, "collider proxy overlaps no drawn triangle; a box or capsule normally wraps or crosses the surface it stands for.");
-  }
-  for (const record of summary.ports) {
-    const entry = visited.find((item) => item.path === record.path);
-    const moduleEntry = entry.module && entry.module.node !== entry.node ? entry.module : undefined;
-    const spec = moduleEntry && summary.kit?.path === moduleEntry.path ? summary.kit : undefined;
-    if (!spec) {
-      finding("DELIVERY_PORT_WITHOUT_MODULE", record.path, "port is not under a valid kit module; place ports under the root defineModule marked.");
-      continue;
-    }
-    const point = new THREE25.Vector3(...record.transform.translation).applyMatrix4(worldMatrix(moduleEntry.node).invert());
-    const [width, depth] = spec.footprint;
-    const [x0, x1, z0, z1] = spec.origin === "corner" ? [0, width, 0, depth] : [-width / 2, width / 2, -depth / 2, depth / 2];
-    const slack = Math.max(0.0001, Math.max(width, depth, spec.height) * 0.00001);
-    if (point.x < x0 - slack || point.x > x1 + slack || point.z < z0 - slack || point.z > z1 + slack || point.y < -slack || point.y > spec.height + slack)
-      finding("DELIVERY_PORT_OUTSIDE_FOOTPRINT", record.path, `port lies outside its module footprint (${width} x ${depth} m from the ${spec.origin}, 0..${spec.height} m high).`);
-  }
-  for (const record of summary.anchors) {
-    const entry = visited.find((item) => item.path === record.path);
-    if (entry.node.listChildren().length > 0)
-      finding("DELIVERY_ANCHOR_NOT_LEAF", record.path, "anchor has children; an anchor is an empty leaf node, so attach parts beside it instead.");
-  }
-  return summary;
-}
-var DELIVERY_OVERLAP_TEST_LIMIT = 50000000, segment4 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`, roleTail = (role, base) => role.startsWith(`${base}.`) ? role.slice(base.length + 1) : undefined, worldMatrix = (node) => new THREE25.Matrix4().fromArray(node.getWorldMatrix());
-var init_delivery_inspect = __esm(() => {
-  init_gltf_io();
-  init_semantic();
-  init_delivery();
-  init_metrics();
-  init_node_visibility();
-});
 
 // src/surface-bake.ts
 import * as THREE26 from "three";
@@ -26081,16 +26577,16 @@ var init_material_metrics = __esm(() => {
 });
 
 // src/rebuild-options.ts
-import { z as z3 } from "zod";
+import { z as z4 } from "zod";
 var FULL_OPTIMIZATION_PIPELINE = "rigid-v1", rebuildOptionsSchema;
 var init_rebuild_options = __esm(() => {
-  rebuildOptionsSchema = z3.object({
-    indexPolicy: z3.enum(["indexed", "asBuilt"]).optional(),
-    gltfExporter: z3.enum(["legacy", "three"]),
-    geometryPolicy: z3.enum(["warn", "strict"]),
-    optimize: z3.enum(["off", "auto", "palette", "full"]),
-    optimizationPipeline: z3.literal(FULL_OPTIMIZATION_PIPELINE).optional(),
-    instance: z3.enum(["off", "auto", "on"])
+  rebuildOptionsSchema = z4.object({
+    indexPolicy: z4.enum(["indexed", "asBuilt"]).optional(),
+    gltfExporter: z4.enum(["legacy", "three"]),
+    geometryPolicy: z4.enum(["warn", "strict"]),
+    optimize: z4.enum(["off", "auto", "palette", "full"]),
+    optimizationPipeline: z4.literal(FULL_OPTIMIZATION_PIPELINE).optional(),
+    instance: z4.enum(["off", "auto", "on"])
   });
 });
 
@@ -30262,7 +30758,7 @@ function strict(value, keys, label) {
       throw new Error(`${label}.${key} is unknown${hint ? `; use ${KEY_HINTS[key]}` : ""}; accepted keys: ${keys.join(", ")}`);
     }
 }
-function finite2(n, label) {
+function finite3(n, label) {
   if (!Number.isFinite(n))
     throw new Error(`${label} must be finite`);
   return n;
@@ -30401,7 +30897,7 @@ function validateResolvedAssetCamera(value) {
     throw new Error("camera target must differ from position");
   if (up.length() < 0.000000001 || view.clone().cross(up).length() <= view.length() * up.length() * 0.000000001)
     throw new Error("camera up must be non-zero and not collinear with view");
-  if (finite2(camera.aspect, "aspect") <= 0 || finite2(camera.near, "near") <= 0 || finite2(camera.far, "far") <= camera.near)
+  if (finite3(camera.aspect, "aspect") <= 0 || finite3(camera.near, "near") <= 0 || finite3(camera.far, "far") <= camera.near)
     throw new Error("camera requires positive aspect and 0 < near < far");
   if (camera.projection === "orthographic") {
     if (!Number.isFinite(camera.halfHeight) || camera.halfHeight <= 0 || camera.fovDeg !== undefined)
@@ -30431,7 +30927,7 @@ function resolveAssetCamera(root, shot = {}) {
     const relative = request.relativeTo ?? "world";
     if (!["world", "asset", "part"].includes(relative))
       throw new Error("invalid relativeTo");
-    const dir = vec(orbitDir(finite2(request.azimuthDeg ?? 45, "azimuthDeg"), finite2(request.elevationDeg ?? 25, "elevationDeg")));
+    const dir = vec(orbitDir(finite3(request.azimuthDeg ?? 45, "azimuthDeg"), finite3(request.elevationDeg ?? 25, "elevationDeg")));
     let up;
     if (relative !== "world") {
       const node = relative === "part" ? selected.node : rootNode;
@@ -30509,7 +31005,7 @@ function resolveAssetCamera(root, shot = {}) {
           far: request.far ?? fit.far
         };
       else {
-        const fov = finite2(request.fovDeg ?? 50, "fovDeg");
+        const fov = finite3(request.fovDeg ?? 50, "fovDeg");
         if (fov <= 0 || fov >= 180)
           throw new Error("invalid fovDeg");
         const distance = Math.max(radius / 2, 0.000001) * padding / Math.sin(fov * Math.PI / 360);
@@ -30788,58 +31284,58 @@ var init_glb = __esm(() => {
 var init_atomic_directory = () => {};
 
 // src/material-authoring-schema.ts
-import { z as z4 } from "zod";
+import { z as z5 } from "zod";
 function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = canonicalLegacyV2FieldSchema) {
-  const integer = (min, max) => z4.number().int().min(min).max(max);
+  const integer = (min, max) => z5.number().int().min(min).max(max);
   const byte = integer(0, 255);
   const coordinate = integer(-4096, 4096);
-  const point = z4.tuple([coordinate, coordinate]);
-  const rgba = z4.tuple([byte, byte, byte, byte]);
-  const usage = z4.enum(TEXTURE_USAGES);
-  const hash = z4.templateLiteral(["sha256:", z4.string().regex(/^[a-f0-9]{64}$/)]);
-  const name = z4.string().min(1).max(80);
-  const stableId = z4.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
-  const mapId = z4.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$/);
+  const point = z5.tuple([coordinate, coordinate]);
+  const rgba = z5.tuple([byte, byte, byte, byte]);
+  const usage = z5.enum(TEXTURE_USAGES);
+  const hash = z5.templateLiteral(["sha256:", z5.string().regex(/^[a-f0-9]{64}$/)]);
+  const name = z5.string().min(1).max(80);
+  const stableId = z5.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  const mapId = z5.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$/);
   const dimensions = { width: integer(1, 4096), height: integer(1, 4096) };
-  const pixelRectangleSchema = z4.object({ x: coordinate, y: coordinate, width: integer(1, 2048), height: integer(1, 2048) }).strict();
-  const atlasRectangleSchema = z4.object({ x: integer(0, 4096), y: integer(0, 4096), ...dimensions }).strict();
-  const shape = z4.discriminatedUnion("kind", [
-    pixelRectangleSchema.extend({ kind: z4.literal("rectangle") }).strict(),
-    pixelRectangleSchema.extend({ kind: z4.literal("ellipse") }).strict(),
-    z4.object({
-      kind: z4.literal("polygon"),
-      points: z4.array(point).min(3).max(MAX_PROCEDURAL_V3_VERTICES)
+  const pixelRectangleSchema = z5.object({ x: coordinate, y: coordinate, width: integer(1, 2048), height: integer(1, 2048) }).strict();
+  const atlasRectangleSchema = z5.object({ x: integer(0, 4096), y: integer(0, 4096), ...dimensions }).strict();
+  const shape = z5.discriminatedUnion("kind", [
+    pixelRectangleSchema.extend({ kind: z5.literal("rectangle") }).strict(),
+    pixelRectangleSchema.extend({ kind: z5.literal("ellipse") }).strict(),
+    z5.object({
+      kind: z5.literal("polygon"),
+      points: z5.array(point).min(3).max(MAX_PROCEDURAL_V3_VERTICES)
     }).strict(),
-    z4.object({ kind: z4.literal("line"), from: point, to: point, width: integer(1, 2048) }).strict()
+    z5.object({ kind: z5.literal("line"), from: point, to: point, width: integer(1, 2048) }).strict()
   ]);
-  const paint = z4.object({ op: z4.literal("paint"), shape, rgba, opacity: byte }).strict();
-  const mask = z4.object({ op: z4.literal("mask"), shape, alpha: byte, invert: z4.boolean() }).strict();
-  const stamps = z4.object({
-    op: z4.literal("stamps"),
+  const paint = z5.object({ op: z5.literal("paint"), shape, rgba, opacity: byte }).strict();
+  const mask = z5.object({ op: z5.literal("mask"), shape, alpha: byte, invert: z5.boolean() }).strict();
+  const stamps = z5.object({
+    op: z5.literal("stamps"),
     shape,
     rgba,
     opacity: byte,
     count: integer(1, MAX_PROCEDURAL_V3_STAMPS),
     seed: integer(0, 4294967295),
     area: pixelRectangleSchema,
-    periodic: z4.boolean()
+    periodic: z5.boolean()
   }).strict();
-  const legacy = z4.object({ op: z4.literal("legacy-v2"), spec: legacyV2Schema, alpha: byte, opacity: byte }).strict();
-  const palette = z4.object({
-    colors: z4.array(integer(0, 16777215)).min(1).max(MAX_PROCEDURAL_V3_PALETTE),
-    dither: z4.enum(["none", "bayer4"])
+  const legacy = z5.object({ op: z5.literal("legacy-v2"), spec: legacyV2Schema, alpha: byte, opacity: byte }).strict();
+  const palette = z5.object({
+    colors: z5.array(integer(0, 16777215)).min(1).max(MAX_PROCEDURAL_V3_PALETTE),
+    dither: z5.enum(["none", "bayer4"])
   }).strict();
   const proceduralBase = {
-    schemaVersion: z4.literal(3),
+    schemaVersion: z5.literal(3),
     width: integer(4, MAX_PROCEDURAL_V3_EDGE),
     height: integer(4, MAX_PROCEDURAL_V3_EDGE),
     usage,
     name: name.optional(),
     background: rgba
   };
-  const canonicalProceduralTextureSpecV3Schema = z4.object({
+  const canonicalProceduralTextureSpecV3Schema = z5.object({
     ...proceduralBase,
-    operations: z4.array(z4.discriminatedUnion("op", [
+    operations: z5.array(z5.discriminatedUnion("op", [
       paint,
       mask,
       stamps,
@@ -30847,11 +31343,11 @@ function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = 
     ])).max(MAX_PROCEDURAL_V3_OPERATIONS),
     palette: palette.optional()
   }).strict();
-  const proceduralTextureSpecV3Schema = z4.object({
+  const proceduralTextureSpecV3Schema = z5.object({
     ...proceduralBase,
     usage: usage.optional(),
     background: rgba.optional(),
-    operations: z4.array(z4.discriminatedUnion("op", [
+    operations: z5.array(z5.discriminatedUnion("op", [
       paint.partial({ opacity: true }),
       mask.partial({ alpha: true, invert: true }),
       stamps.partial({ opacity: true, periodic: true }),
@@ -30859,110 +31355,110 @@ function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = 
     ])).max(MAX_PROCEDURAL_V3_OPERATIONS),
     palette: palette.partial({ dither: true }).optional()
   }).strict();
-  const portableSamplerSchema = z4.object({
-    minFilter: z4.enum(PORTABLE_MIN_FILTERS_V1),
-    magFilter: z4.enum(PORTABLE_MAG_FILTERS_V1),
-    wrapS: z4.enum(PORTABLE_WRAPS_V1),
-    wrapT: z4.enum(PORTABLE_WRAPS_V1)
+  const portableSamplerSchema = z5.object({
+    minFilter: z5.enum(PORTABLE_MIN_FILTERS_V1),
+    magFilter: z5.enum(PORTABLE_MAG_FILTERS_V1),
+    wrapS: z5.enum(PORTABLE_WRAPS_V1),
+    wrapT: z5.enum(PORTABLE_WRAPS_V1)
   }).strict();
-  const materialMapPinSchema = z4.object({ resourceId: stableId, revisionId: hash, sha256: hash }).strict();
-  const resourceSource = z4.object({
-    kind: z4.literal("resource"),
+  const materialMapPinSchema = z5.object({ resourceId: stableId, revisionId: hash, sha256: hash }).strict();
+  const resourceSource = z5.object({
+    kind: z5.literal("resource"),
     resourceId: mapId,
     pin: materialMapPinSchema,
-    expected: z4.object({ ...dimensions, imageSha256: hash, decodedPixelHash: hash }).partial().strict().optional()
+    expected: z5.object({ ...dimensions, imageSha256: hash, decodedPixelHash: hash }).partial().strict().optional()
   }).strict();
-  const region = z4.object({
+  const region = z5.object({
     name: stableId,
     content: atlasRectangleSchema,
     gutter: integer(0, 32),
-    edgeMode: z4.enum(["copy-edge", "mask-rgb-dilate"]),
-    source: z4.discriminatedUnion("kind", [
-      z4.object({ kind: z4.literal("procedural"), spec: canonicalProceduralTextureSpecV3Schema }).strict(),
+    edgeMode: z5.enum(["copy-edge", "mask-rgb-dilate"]),
+    source: z5.discriminatedUnion("kind", [
+      z5.object({ kind: z5.literal("procedural"), spec: canonicalProceduralTextureSpecV3Schema }).strict(),
       resourceSource
     ]),
     crop: atlasRectangleSchema.optional(),
-    packed: z4.literal(true).optional()
+    packed: z5.literal(true).optional()
   }).strict();
   const atlasBase = {
-    schemaVersion: z4.literal(1),
+    schemaVersion: z5.literal(1),
     width: integer(4, TEXTURE_ATLAS_LIMITS_V1_2.edge),
     height: integer(4, TEXTURE_ATLAS_LIMITS_V1_2.edge),
     usage,
     sampler: portableSamplerSchema
   };
-  const packEdge = z4.union(TEXTURE_ATLAS_PACK_EDGES.map((edge) => z4.literal(edge)));
-  const canonicalTextureAtlasSpecV1Schema = z4.object({
+  const packEdge = z5.union(TEXTURE_ATLAS_PACK_EDGES.map((edge) => z5.literal(edge)));
+  const canonicalTextureAtlasSpecV1Schema = z5.object({
     ...atlasBase,
-    regions: z4.array(region).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
-    pack: z4.object({ edge: packEdge, gutter: integer(0, 32), algorithm: z4.literal("maxrects") }).strict().optional()
+    regions: z5.array(region).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
+    pack: z5.object({ edge: packEdge, gutter: integer(0, 32), algorithm: z5.literal("maxrects") }).strict().optional()
   }).strict();
-  const textureAtlasSpecV1Schema = z4.object({
+  const textureAtlasSpecV1Schema = z5.object({
     ...atlasBase,
     width: atlasBase.width.optional(),
     height: atlasBase.height.optional(),
-    pack: z4.object({
+    pack: z5.object({
       edge: packEdge,
       gutter: integer(0, 32).optional(),
-      algorithm: z4.literal("maxrects").optional()
+      algorithm: z5.literal("maxrects").optional()
     }).strict().optional(),
     sampler: portableSamplerSchema.optional(),
-    regions: z4.array(region.extend({
-      source: z4.discriminatedUnion("kind", [
-        z4.object({ kind: z4.literal("procedural"), spec: proceduralTextureSpecV3Schema }).strict(),
+    regions: z5.array(region.extend({
+      source: z5.discriminatedUnion("kind", [
+        z5.object({ kind: z5.literal("procedural"), spec: proceduralTextureSpecV3Schema }).strict(),
         resourceSource
       ])
     }).partial({ content: true, gutter: true, edgeMode: true })).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions)
   }).strict();
-  const verifiedPinnedMaterialMapDescriptorSchema = z4.object({
+  const verifiedPinnedMaterialMapDescriptorSchema = z5.object({
     materialId: stableId,
     revisionId: hash,
     resourceId: mapId,
-    slot: z4.enum(["baseColor", "normal", "metallicRoughness", "emissive", "occlusion"]),
+    slot: z5.enum(["baseColor", "normal", "metallicRoughness", "emissive", "occlusion"]),
     usage,
-    colorSpace: z4.enum(["srgb", "linear"]),
+    colorSpace: z5.enum(["srgb", "linear"]),
     ...dimensions,
     encodedByteLength: integer(1, TEXTURE_ATLAS_LIMITS.encodedSourceBytes),
     imageSha256: hash,
     decodedPixelHash: hash.optional()
   }).strict();
   const sourceManifestBase = {
-    id: z4.string().min(1).max(1024),
+    id: z5.string().min(1).max(1024),
     ...dimensions,
     decodedPixelHash: hash
   };
-  const sourceManifest = z4.discriminatedUnion("kind", [
-    z4.object({
+  const sourceManifest = z5.discriminatedUnion("kind", [
+    z5.object({
       ...sourceManifestBase,
-      kind: z4.literal("procedural"),
+      kind: z5.literal("procedural"),
       recipeHash: hash,
-      compilerId: z4.literal(PROCEDURAL_TEXTURE_V3_COMPILER_ID)
+      compilerId: z5.literal(PROCEDURAL_TEXTURE_V3_COMPILER_ID)
     }).strict(),
-    z4.object({
+    z5.object({
       ...sourceManifestBase,
-      kind: z4.literal("resource"),
+      kind: z5.literal("resource"),
       descriptor: verifiedPinnedMaterialMapDescriptorSchema
     }).strict()
   ]);
-  const textureAtlasManifestV1Schema = z4.object({
-    version: z4.literal("kiln.atlas-manifest.v1"),
-    compilerId: z4.enum(TEXTURE_ATLAS_COMPILER_IDS),
+  const textureAtlasManifestV1Schema = z5.object({
+    version: z5.literal("kiln.atlas-manifest.v1"),
+    compilerId: z5.enum(TEXTURE_ATLAS_COMPILER_IDS),
     width: atlasBase.width,
     height: atlasBase.height,
     usage,
-    origin: z4.literal("top-left"),
+    origin: z5.literal("top-left"),
     sampler: portableSamplerSchema,
     specHash: hash,
     layoutHash: hash,
     decodedPixelHash: hash,
     atlasPixelHash: hash,
-    sources: z4.array(sourceManifest).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.sources),
-    regions: z4.array(z4.object({
+    sources: z5.array(sourceManifest).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.sources),
+    regions: z5.array(z5.object({
       name: stableId,
       content: atlasRectangleSchema,
       allocation: atlasRectangleSchema,
       crop: atlasRectangleSchema,
-      sourceId: z4.string().min(1).max(1024)
+      sourceId: z5.string().min(1).max(1024)
     }).strict()).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
     manifestHash: hash
   }).strict();
@@ -30985,36 +31481,36 @@ var init_material_authoring_schema = __esm(() => {
   init_portable_sampler();
   init_texture_contract();
   canonicalLegacyV2FieldSchema = (() => {
-    const color = z4.number().int().min(0).max(16777215);
-    const count = z4.number().int().min(1).max(MAX_PROCEDURAL_PATTERN_COUNT);
-    const angleDeg = z4.number().min(-36000).max(36000);
-    const unit = z4.number().min(0).max(1);
-    const common = { blend: z4.enum(["normal", "multiply", "screen", "overlay"]), opacity: unit };
-    return z4.object({
-      schemaVersion: z4.literal(2),
-      size: z4.number().int().min(MIN_PROCEDURAL_SIZE).max(MAX_PROCEDURAL_SIZE),
-      usage: z4.enum(TEXTURE_USAGES),
-      name: z4.string().min(1).max(80).optional(),
-      layers: z4.array(z4.discriminatedUnion("op", [
-        z4.object({ op: z4.literal("solid"), color, ...common }).strict(),
-        z4.object({
-          op: z4.literal("checker"),
+    const color = z5.number().int().min(0).max(16777215);
+    const count = z5.number().int().min(1).max(MAX_PROCEDURAL_PATTERN_COUNT);
+    const angleDeg = z5.number().min(-36000).max(36000);
+    const unit = z5.number().min(0).max(1);
+    const common = { blend: z5.enum(["normal", "multiply", "screen", "overlay"]), opacity: unit };
+    return z5.object({
+      schemaVersion: z5.literal(2),
+      size: z5.number().int().min(MIN_PROCEDURAL_SIZE).max(MAX_PROCEDURAL_SIZE),
+      usage: z5.enum(TEXTURE_USAGES),
+      name: z5.string().min(1).max(80).optional(),
+      layers: z5.array(z5.discriminatedUnion("op", [
+        z5.object({ op: z5.literal("solid"), color, ...common }).strict(),
+        z5.object({
+          op: z5.literal("checker"),
           colorA: color,
           colorB: color,
           squares: count,
           ...common
         }).strict(),
-        z4.object({
-          op: z4.literal("stripes"),
+        z5.object({
+          op: z5.literal("stripes"),
           colorA: color,
           colorB: color,
           count,
           angleDeg,
           ...common
         }).strict(),
-        z4.object({ op: z4.literal("gradient"), from: color, to: color, angleDeg, ...common }).strict(),
-        z4.object({
-          op: z4.literal("bricks"),
+        z5.object({ op: z5.literal("gradient"), from: color, to: color, angleDeg, ...common }).strict(),
+        z5.object({
+          op: z5.literal("bricks"),
           brick: color,
           mortar: color,
           rows: count,
@@ -31023,13 +31519,13 @@ var init_material_authoring_schema = __esm(() => {
           stagger: unit,
           ...common
         }).strict(),
-        z4.object({
-          op: z4.literal("noise"),
+        z5.object({
+          op: z5.literal("noise"),
           colorA: color,
           colorB: color,
           scale: count,
-          octaves: z4.number().int().min(1).max(MAX_NOISE_OCTAVES),
-          seed: z4.number().int().min(-2147483648).max(2147483647),
+          octaves: z5.number().int().min(1).max(MAX_NOISE_OCTAVES),
+          seed: z5.number().int().min(-2147483648).max(2147483647),
           ...common
         }).strict()
       ])).min(1).max(MAX_PROCEDURAL_LAYERS)
@@ -31038,7 +31534,7 @@ var init_material_authoring_schema = __esm(() => {
 });
 
 // src/material-library.ts
-import { z as z5 } from "zod";
+import { z as z6 } from "zod";
 function assertMaterialJson(value, allowBytes = false, depth = 0) {
   if (depth > 30)
     throw new Error("Material JSON exceeds nesting limit");
@@ -31265,23 +31761,23 @@ var init_material_library = __esm(() => {
     emissive: "emissive",
     occlusion: "occlusion"
   };
-  materialLibraryIdSchema = z5.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
-  materialLibraryHashSchema = z5.string().regex(/^sha256:[a-f0-9]{64}$/);
-  text3 = z5.string().min(1).max(1000);
-  url = z5.string().max(2000).url().refine((value) => /^https?:\/\//.test(value), "Provenance URL must be HTTP(S)");
-  materialSourceSchema = z5.object({
+  materialLibraryIdSchema = z6.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  materialLibraryHashSchema = z6.string().regex(/^sha256:[a-f0-9]{64}$/);
+  text3 = z6.string().min(1).max(1000);
+  url = z6.string().max(2000).url().refine((value) => /^https?:\/\//.test(value), "Provenance URL must be HTTP(S)");
+  materialSourceSchema = z6.object({
     id: materialLibraryIdSchema,
-    kind: z5.enum(["external", "procedural"]),
+    kind: z6.enum(["external", "procedural"]),
     provider: text3,
     creator: text3,
     assetId: text3.optional(),
     assetUrl: url.optional(),
-    accessedAt: z5.string().datetime().optional(),
-    license: z5.object({ spdx: text3, url, attribution: z5.string().max(4000) }).strict(),
-    originalFiles: z5.array(z5.object({
-      name: z5.string().min(1).max(200),
+    accessedAt: z6.string().datetime().optional(),
+    license: z6.object({ spdx: text3, url, attribution: z6.string().max(4000) }).strict(),
+    originalFiles: z6.array(z6.object({
+      name: z6.string().min(1).max(200),
       sha256: materialLibraryHashSchema,
-      bytes: z5.number().int().positive().max(1024 * 1024 * 1024)
+      bytes: z6.number().int().positive().max(1024 * 1024 * 1024)
     }).strict()).max(20)
   }).strict().superRefine((source, context) => {
     if (source.kind === "external" && (!source.assetUrl || !source.originalFiles.length))
@@ -31292,22 +31788,22 @@ var init_material_library = __esm(() => {
     if (new Set(source.originalFiles.map((file) => file.name)).size !== source.originalFiles.length)
       context.addIssue({ code: "custom", message: "Duplicate original filename" });
   });
-  materialTransformSchema = z5.object({
+  materialTransformSchema = z6.object({
     operation: text3,
     tool: text3,
     version: text3,
-    parameters: z5.record(z5.string().max(100), z5.union([z5.string().max(2000), z5.number().finite(), z5.boolean()])).optional()
+    parameters: z6.record(z6.string().max(100), z6.union([z6.string().max(2000), z6.number().finite(), z6.boolean()])).optional()
   }).strict();
-  color2 = z5.number().int().min(0).max(16777215);
-  count4 = z5.number().int().min(1).max(256);
+  color2 = z6.number().int().min(0).max(16777215);
+  count4 = z6.number().int().min(1).max(256);
   layerCommon = {
-    blend: z5.enum(["normal", "multiply", "screen", "overlay"]).default("normal"),
-    opacity: z5.number().min(0).max(1).default(1)
+    blend: z6.enum(["normal", "multiply", "screen", "overlay"]).default("normal"),
+    opacity: z6.number().min(0).max(1).default(1)
   };
-  materialProceduralSpecSchema = z5.object({
-    schemaVersion: z5.literal(2),
-    size: z5.number().int().min(4).max(1024).default(256),
-    usage: z5.enum([
+  materialProceduralSpecSchema = z6.object({
+    schemaVersion: z6.literal(2),
+    size: z6.number().int().min(4).max(1024).default(256),
+    usage: z6.enum([
       "albedo",
       "normal",
       "roughness",
@@ -31316,90 +31812,90 @@ var init_material_library = __esm(() => {
       "emissive",
       "occlusion"
     ]).default("albedo"),
-    name: z5.string().min(1).max(80).optional(),
-    layers: z5.array(z5.discriminatedUnion("op", [
-      z5.object({ op: z5.literal("solid"), color: color2, ...layerCommon }).strict(),
-      z5.object({
-        op: z5.literal("checker"),
+    name: z6.string().min(1).max(80).optional(),
+    layers: z6.array(z6.discriminatedUnion("op", [
+      z6.object({ op: z6.literal("solid"), color: color2, ...layerCommon }).strict(),
+      z6.object({
+        op: z6.literal("checker"),
         colorA: color2,
         colorB: color2,
         squares: count4.default(8),
         ...layerCommon
       }).strict(),
-      z5.object({
-        op: z5.literal("stripes"),
+      z6.object({
+        op: z6.literal("stripes"),
         colorA: color2,
         colorB: color2,
         count: count4.default(8),
-        angleDeg: z5.number().min(-36000).max(36000).default(0),
+        angleDeg: z6.number().min(-36000).max(36000).default(0),
         ...layerCommon
       }).strict(),
-      z5.object({
-        op: z5.literal("gradient"),
+      z6.object({
+        op: z6.literal("gradient"),
         from: color2,
         to: color2,
-        angleDeg: z5.number().min(-36000).max(36000).default(0),
+        angleDeg: z6.number().min(-36000).max(36000).default(0),
         ...layerCommon
       }).strict(),
-      z5.object({
-        op: z5.literal("bricks"),
+      z6.object({
+        op: z6.literal("bricks"),
         brick: color2,
         mortar: color2,
         rows: count4.default(8),
         cols: count4.default(4),
-        mortarWidth: z5.number().min(0).max(1).default(0.06),
-        stagger: z5.number().min(0).max(1).default(0.5),
+        mortarWidth: z6.number().min(0).max(1).default(0.06),
+        stagger: z6.number().min(0).max(1).default(0.5),
         ...layerCommon
       }).strict(),
-      z5.object({
-        op: z5.literal("noise"),
+      z6.object({
+        op: z6.literal("noise"),
         colorA: color2,
         colorB: color2,
         scale: count4.default(8),
-        octaves: z5.number().int().min(1).max(6).default(3),
-        seed: z5.number().int().min(-2147483648).max(2147483647).default(0),
+        octaves: z6.number().int().min(1).max(6).default(3),
+        seed: z6.number().int().min(-2147483648).max(2147483647).default(0),
         ...layerCommon
       }).strict()
     ])).min(1).max(8)
   }).strict();
-  materialNormalDerivationSchema = z5.object({
-    kind: z5.literal("normal-from-height"),
-    strength: z5.number().finite().positive().max(64)
+  materialNormalDerivationSchema = z6.object({
+    kind: z6.literal("normal-from-height"),
+    strength: z6.number().finite().positive().max(64)
   }).strict();
-  proceduralSchema = z5.object({
-    compiler: z5.literal("kiln.procedural-texture.v2"),
+  proceduralSchema = z6.object({
+    compiler: z6.literal("kiln.procedural-texture.v2"),
     spec: materialProceduralSpecSchema,
     derive: materialNormalDerivationSchema.optional(),
     recipeHash: materialLibraryHashSchema,
     pixelHash: materialLibraryHashSchema,
-    encoder: z5.object({ name: z5.literal("sharp"), version: text3 }).strict()
+    encoder: z6.object({ name: z6.literal("sharp"), version: text3 }).strict()
   }).strict();
-  parametersSchema = z5.object({
-    baseColor: z5.number().int().min(0).max(16777215).optional(),
-    roughness: z5.number().min(0).max(1).default(1),
-    metalness: z5.number().min(0).max(1).default(0),
-    emissive: z5.number().int().min(0).max(16777215).optional(),
-    emissiveIntensity: z5.number().min(0).max(64).default(1),
-    alphaMode: z5.enum(["opaque", "mask", "blend"]).default("opaque"),
-    alphaCutoff: z5.number().min(0).max(1).default(0.5),
-    doubleSided: z5.boolean().default(false)
+  parametersSchema = z6.object({
+    baseColor: z6.number().int().min(0).max(16777215).optional(),
+    roughness: z6.number().min(0).max(1).default(1),
+    metalness: z6.number().min(0).max(1).default(0),
+    emissive: z6.number().int().min(0).max(16777215).optional(),
+    emissiveIntensity: z6.number().min(0).max(64).default(1),
+    alphaMode: z6.enum(["opaque", "mask", "blend"]).default("opaque"),
+    alphaCutoff: z6.number().min(0).max(1).default(0.5),
+    doubleSided: z6.boolean().default(false)
   }).strict();
-  materialManifestSchema = z5.object({
-    schemaVersion: z5.literal(1),
+  materialManifestSchema = z6.object({
+    schemaVersion: z6.literal(1),
     materialId: materialLibraryIdSchema,
     revisionId: materialLibraryHashSchema,
-    name: z5.string().min(1).max(200),
-    tags: z5.array(z5.string().min(1).max(80)).max(30),
-    tileable: z5.boolean(),
-    physicalSizeMeters: z5.object({
-      width: z5.number().finite().positive().max(1e5),
-      height: z5.number().finite().positive().max(1e5)
+    name: z6.string().min(1).max(200),
+    tags: z6.array(z6.string().min(1).max(80)).max(30),
+    tileable: z6.boolean(),
+    physicalSizeMeters: z6.object({
+      width: z6.number().finite().positive().max(1e5),
+      height: z6.number().finite().positive().max(1e5)
     }).strict().optional(),
     parameters: parametersSchema,
-    sources: z5.array(materialSourceSchema).min(1).max(20),
-    maps: z5.array(z5.object({
-      slot: z5.enum(MATERIAL_LIBRARY_SLOTS),
-      file: z5.enum([
+    sources: z6.array(materialSourceSchema).min(1).max(20),
+    maps: z6.array(z6.object({
+      slot: z6.enum(MATERIAL_LIBRARY_SLOTS),
+      file: z6.enum([
         "baseColor.png",
         "normal.png",
         "metallicRoughness.png",
@@ -31407,45 +31903,45 @@ var init_material_library = __esm(() => {
         "occlusion.png"
       ]),
       sha256: materialLibraryHashSchema,
-      bytes: z5.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapBytes),
-      width: z5.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
-      height: z5.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
-      usage: z5.enum(["albedo", "normal", "metallicRoughness", "emissive", "occlusion"]),
-      colorSpace: z5.enum(["srgb", "linear"]),
-      normalConvention: z5.literal("opengl").optional(),
-      channelPacking: z5.literal("r-occlusion-g-roughness-b-metallic").optional(),
+      bytes: z6.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapBytes),
+      width: z6.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
+      height: z6.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
+      usage: z6.enum(["albedo", "normal", "metallicRoughness", "emissive", "occlusion"]),
+      colorSpace: z6.enum(["srgb", "linear"]),
+      normalConvention: z6.literal("opengl").optional(),
+      channelPacking: z6.literal("r-occlusion-g-roughness-b-metallic").optional(),
       sourceId: materialLibraryIdSchema,
-      originalFile: z5.string().min(1).max(200).optional(),
-      transforms: z5.array(materialTransformSchema).max(30),
+      originalFile: z6.string().min(1).max(200).optional(),
+      transforms: z6.array(materialTransformSchema).max(30),
       procedural: proceduralSchema.optional()
     }).strict()).min(1).max(5)
   }).strict();
-  proceduralMaterialDraftSchema = z5.object({
+  proceduralMaterialDraftSchema = z6.object({
     materialId: materialLibraryIdSchema,
-    name: z5.string().min(1).max(200),
-    tags: z5.array(z5.string().min(1).max(80)).max(30).optional(),
-    tileable: z5.boolean(),
-    physicalSizeMeters: z5.object({
-      width: z5.number().finite().positive().max(1e5),
-      height: z5.number().finite().positive().max(1e5)
+    name: z6.string().min(1).max(200),
+    tags: z6.array(z6.string().min(1).max(80)).max(30).optional(),
+    tileable: z6.boolean(),
+    physicalSizeMeters: z6.object({
+      width: z6.number().finite().positive().max(1e5),
+      height: z6.number().finite().positive().max(1e5)
     }).strict().optional(),
     parameters: parametersSchema.partial().optional(),
-    sources: z5.array(materialSourceSchema).min(1).max(20),
-    maps: z5.array(z5.object({
-      slot: z5.enum(MATERIAL_LIBRARY_SLOTS),
+    sources: z6.array(materialSourceSchema).min(1).max(20),
+    maps: z6.array(z6.object({
+      slot: z6.enum(MATERIAL_LIBRARY_SLOTS),
       sourceId: materialLibraryIdSchema,
-      transforms: z5.array(materialTransformSchema).max(30),
-      normalConvention: z5.literal("opengl").optional(),
-      channelPacking: z5.literal("r-occlusion-g-roughness-b-metallic").optional(),
+      transforms: z6.array(materialTransformSchema).max(30),
+      normalConvention: z6.literal("opengl").optional(),
+      channelPacking: z6.literal("r-occlusion-g-roughness-b-metallic").optional(),
       procedural: materialProceduralSpecSchema,
       derive: materialNormalDerivationSchema.optional()
     }).strict()).min(1).max(5)
   }).strict();
-  materialLibraryPayloadSchema = z5.object({
-    schemaVersion: z5.literal(1),
-    records: z5.array(z5.object({
+  materialLibraryPayloadSchema = z6.object({
+    schemaVersion: z6.literal(1),
+    records: z6.array(z6.object({
       manifest: materialManifestSchema,
-      files: z5.record(z5.string().regex(/^(baseColor|normal|metallicRoughness|emissive|occlusion)\.png$/), z5.string().max(Math.ceil(MATERIAL_LIBRARY_LIMITS.maxMapBytes / 3) * 4))
+      files: z6.record(z6.string().regex(/^(baseColor|normal|metallicRoughness|emissive|occlusion)\.png$/), z6.string().max(Math.ceil(MATERIAL_LIBRARY_LIMITS.maxMapBytes / 3) * 4))
     }).strict()).max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
   }).strict();
   authoringSchemas = makeMaterialAuthoringSchemas(materialProceduralSpecSchema);
@@ -31454,27 +31950,27 @@ var init_material_library = __esm(() => {
   v3SpecSchema = authoringSchemas.canonicalProceduralTextureSpecV3Schema.superRefine(admittedBy("procedural V3 spec", canonicalizeProceduralTextureSpecV3, true), afterShape);
   atlasSpecSchema = authoringSchemas.canonicalTextureAtlasSpecV1Schema.superRefine(admittedBy("atlas spec", canonicalizeTextureAtlasSpecV1, true), afterShape);
   atlasManifestSchema = authoringSchemas.textureAtlasManifestV1Schema;
-  materialMapPinSchema = z5.object({
+  materialMapPinSchema = z6.object({
     resourceId: materialLibraryIdSchema,
     revisionId: materialLibraryHashSchema,
     sha256: materialLibraryHashSchema
   }).strict().refine((pin) => pin.sha256 === pin.revisionId, "Material pin hash must match revision");
-  materialRecipeV2Schema = z5.discriminatedUnion("kind", [
-    z5.object({
-      kind: z5.literal("procedural"),
-      compilerId: z5.enum(["kiln.procedural-texture.v2", PROCEDURAL_TEXTURE_V3_COMPILER_ID]),
-      spec: z5.union([materialProceduralSpecSchema, v3SpecSchema]),
+  materialRecipeV2Schema = z6.discriminatedUnion("kind", [
+    z6.object({
+      kind: z6.literal("procedural"),
+      compilerId: z6.enum(["kiln.procedural-texture.v2", PROCEDURAL_TEXTURE_V3_COMPILER_ID]),
+      spec: z6.union([materialProceduralSpecSchema, v3SpecSchema]),
       recipeHash: materialLibraryHashSchema,
       pixelHash: materialLibraryHashSchema,
-      encoder: z5.object({ name: z5.literal("sharp"), version: text3 }).strict(),
+      encoder: z6.object({ name: z6.literal("sharp"), version: text3 }).strict(),
       derive: materialNormalDerivationSchema.optional()
     }).strict(),
-    z5.object({
-      kind: z5.literal("atlas"),
-      compilerId: z5.enum(TEXTURE_ATLAS_COMPILER_IDS),
+    z6.object({
+      kind: z6.literal("atlas"),
+      compilerId: z6.enum(TEXTURE_ATLAS_COMPILER_IDS),
       spec: atlasSpecSchema,
       manifest: atlasManifestSchema,
-      encoder: z5.object({ name: z5.literal("sharp"), version: text3 }).strict()
+      encoder: z6.object({ name: z6.literal("sharp"), version: text3 }).strict()
     }).strict().superRefine((recipe, context) => {
       try {
         validateTextureAtlasManifestV1(recipe.manifest, recipe.spec);
@@ -31486,38 +31982,38 @@ var init_material_library = __esm(() => {
     }, afterShape)
   ]);
   materialManifestV2Schema = materialManifestSchema.omit({ schemaVersion: true, maps: true }).extend({
-    schemaVersion: z5.literal(2),
-    dependencies: z5.array(materialMapPinSchema).max(16),
-    maps: z5.array(materialManifestSchema.shape.maps.element.omit({ procedural: true }).extend({
+    schemaVersion: z6.literal(2),
+    dependencies: z6.array(materialMapPinSchema).max(16),
+    maps: z6.array(materialManifestSchema.shape.maps.element.omit({ procedural: true }).extend({
       sampler: samplerSchema,
       pixelHash: materialLibraryHashSchema,
       recipe: materialRecipeV2Schema.optional()
     }).strict()).min(1).max(5)
   }).strict();
-  materialManifestAnySchema = z5.discriminatedUnion("schemaVersion", [
+  materialManifestAnySchema = z6.discriminatedUnion("schemaVersion", [
     materialManifestSchema,
     materialManifestV2Schema
   ]);
   materialLibraryPayloadV2Schema = materialLibraryPayloadSchema.extend({
-    schemaVersion: z5.literal(2),
-    records: z5.array(materialLibraryPayloadSchema.shape.records.element.extend({ manifest: materialManifestAnySchema }).strict()).max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+    schemaVersion: z6.literal(2),
+    records: z6.array(materialLibraryPayloadSchema.shape.records.element.extend({ manifest: materialManifestAnySchema }).strict()).max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
   }).strict();
-  materialLibraryPayloadAnySchema = z5.discriminatedUnion("schemaVersion", [
+  materialLibraryPayloadAnySchema = z6.discriminatedUnion("schemaVersion", [
     materialLibraryPayloadSchema,
     materialLibraryPayloadV2Schema
   ]);
   proceduralMaterialDraftV2Schema = proceduralMaterialDraftSchema.extend({
-    schemaVersion: z5.literal(2),
-    maps: z5.array(proceduralMaterialDraftSchema.shape.maps.element.omit({ procedural: true }).extend({
+    schemaVersion: z6.literal(2),
+    maps: z6.array(proceduralMaterialDraftSchema.shape.maps.element.omit({ procedural: true }).extend({
       sampler: samplerSchema,
-      procedural: z5.union([
+      procedural: z6.union([
         materialProceduralSpecSchema,
         authoringSchemas.proceduralTextureSpecV3Schema.superRefine(admittedBy("procedural V3 spec", canonicalizeProceduralTextureSpecV3, false), afterShape)
       ]).optional(),
       atlas: authoringSchemas.textureAtlasSpecV1Schema.superRefine(admittedBy("atlas spec", canonicalizeTextureAtlasSpecV1, false), afterShape).optional()
     }).strict().refine((map) => map.procedural !== undefined !== (map.atlas !== undefined), "Supply exactly one procedural or atlas recipe")).min(1).max(5)
   }).strict();
-  proceduralMaterialDraftAnySchema = z5.union([
+  proceduralMaterialDraftAnySchema = z6.union([
     proceduralMaterialDraftSchema,
     proceduralMaterialDraftV2Schema
   ]);
