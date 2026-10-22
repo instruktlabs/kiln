@@ -70,6 +70,7 @@ describe('custom mesh export contract', () => {
       geometry.setAttribute('color', new THREE.Float32BufferAttribute(color, 4));
       geometry.setAttribute('_wet', new THREE.Float32BufferAttribute([0, 1, 1], 1));
       geometry.setAttribute('_flow_dir', new THREE.Float32BufferAttribute([1, 0, 0, 1, 1, 1], 2));
+      geometry.setAttribute('uv1', new THREE.Float32BufferAttribute([0.5, 0, 1, 0.5, 0, 1], 2));
       const result = await renderSceneToGLB(root, {
         dedup: false,
         optimize: 'off',
@@ -87,7 +88,28 @@ describe('custom mesh export contract', () => {
       expect(values('COLOR_0')).toEqual({ type: 'VEC4', values: color });
       expect(values('_WET')).toEqual({ type: 'SCALAR', values: [0, 1, 1] });
       expect(values('_FLOW_DIR')).toEqual({ type: 'VEC2', values: [1, 0, 0, 1, 1, 1] });
+      expect(values('TEXCOORD_1')).toEqual({ type: 'VEC2', values: [0.5, 0, 1, 0.5, 0, 1] });
     });
+
+  it('legacy samples a channel-1 occlusion map through TEXCOORD_1', async () => {
+    const { root, geometry } = fixture();
+    const mesh = root.children[0] as THREE.Mesh;
+    const ao = new THREE.DataTexture(new Uint8Array([200, 200, 200, 255]), 1, 1);
+    ao.needsUpdate = true;
+    ao.channel = 1;
+    (mesh.material as THREE.MeshStandardMaterial).aoMap = ao;
+    await expect(renderSceneToGLB(root)).rejects.toThrow(
+      'CustomPanel: aoMap samples uv1, which the geometry lacks.',
+    );
+    geometry.setAttribute('uv1', new THREE.Float32BufferAttribute([0, 0, 1, 0, 0, 1], 2));
+    const result = await renderSceneToGLB(root, { dedup: false, optimize: 'off', instance: 'off' });
+    const doc = await new WebIO().readBinary(result.bytes);
+    expect(doc.getRoot().listMaterials()[0]!.getOcclusionTextureInfo()!.getTexCoord()).toBe(1);
+    ao.channel = 2;
+    expect((await renderSceneToGLB(root)).warnings).toContain(
+      'EXPORT_ATTRIBUTE_UNSUPPORTED CustomPanel: aoMap UV channel 2 is not preserved by the GLB bridge.',
+    );
+  });
 
   it('names author attributes that cannot round-trip through GLTFLoader', async () => {
     const { root, geometry } = fixture();

@@ -5,6 +5,7 @@ export const EXPORTED_GEOMETRY_ATTRIBUTES: Readonly<Record<string, number | read
   position: 3,
   normal: 3,
   uv: 2,
+  uv1: 2,
   tangent: 4,
   color: [3, 4],
   // Delivery contract custom attributes (bakeSurfaceAttributes), written as _EDGE/_CAVITY.
@@ -33,9 +34,18 @@ export function customAttributeSemantic(key: string): string | null {
   return CUSTOM_EXPORT_ATTRIBUTES[key] ?? key.toUpperCase();
 }
 
+/** Material texture slots whose UV channel export must preserve. */
+const TEXTURE_SLOTS = [
+  'map',
+  'normalMap',
+  'roughnessMap',
+  'metalnessMap',
+  'aoMap',
+  'emissiveMap',
+] as const;
+
 const THREE_GEOMETRY_ATTRIBUTES = {
   ...EXPORTED_GEOMETRY_ATTRIBUTES,
-  uv1: 2,
   uv2: 2,
   uv3: 2,
   skinIndex: 4,
@@ -194,6 +204,20 @@ export function inspectGeometryExport(
         const value = index.getX(i);
         if (!Number.isInteger(value) || value < 0 || value >= position.count)
           throw new TypeError(`${name}: index ${i} is outside the position attribute.`);
+      }
+    }
+    // A texture's UV channel must reach the GLB, or it would silently sample UV0.
+    for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
+      for (const slot of TEXTURE_SLOTS) {
+        const texture = (material as unknown as Record<string, THREE.Texture | null | undefined>)[
+          slot
+        ];
+        const channel = texture?.isTexture ? (texture.channel ?? 0) : 0;
+        if (channel === 0) continue;
+        const uv = `uv${channel}`;
+        if (attributes[uv] === undefined) unsupported(`${slot} UV channel ${channel}`);
+        else if (!geometry.getAttribute(uv))
+          throw new TypeError(`${name}: ${slot} samples ${uv}, which the geometry lacks.`);
       }
     }
     if (exporter === 'three' && Array.isArray(mesh.material))

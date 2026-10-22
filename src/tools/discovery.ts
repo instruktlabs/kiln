@@ -157,7 +157,7 @@ async function currentCapabilities(
           ? null
           : exporter === 'three'
             ? ['UV4+', 'morph attributes other than position/normal']
-            : ['UV1+', 'skinning', 'morphs'],
+            : ['UV2+', 'skinning', 'morphs'],
       customAttributes:
         exporter === undefined
           ? null

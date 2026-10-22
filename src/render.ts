@@ -587,6 +587,8 @@ function bridgeTextureSampler(
     }
   }
   target.setMinFilter(min).setMagFilter(mag).setWrapS(s).setWrapT(t);
+  // Export inspection has already refused channels the geometry cannot supply.
+  if (source.channel === 1) target.setTexCoord(1);
   const ref = atlas?.texture(source);
   if (ref) target.setExtras({ ...target.getExtras(), kilnAtlasReference: ref });
 }
@@ -812,6 +814,18 @@ function bridgeGeometry(
       doc
         .createAccessor(`${meshName}_uv`)
         .setArray(geometryAttributeValues(uvAttr))
+        .setType(TYPE_VEC2)
+        .setBuffer(buf),
+    );
+  }
+
+  const uv1Attr = geometry.getAttribute('uv1') as THREE.BufferAttribute | undefined;
+  if (uv1Attr) {
+    prim.setAttribute(
+      'TEXCOORD_1',
+      doc
+        .createAccessor(`${meshName}_uv1`)
+        .setArray(geometryAttributeValues(uv1Attr))
         .setType(TYPE_VEC2)
         .setBuffer(buf),
     );

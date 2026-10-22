@@ -42,11 +42,14 @@ does not publish a package.
   stay colour-only. V2 derivation identities and existing V3 recipe hashes are unchanged
   (#205).
 - Export vertex colours (`COLOR_0`) and lowercase underscore author attributes such as
+- Export vertex colours (`COLOR_0`), a second UV set (`uv1` as `TEXCOORD_1`) and lowercase
+  underscore author attributes such as
   `_wet` (as float `_WET`, 1 to 4 components) through the default `legacy` converter as
   well as `three`; the runtime three target lists them in `customAttributes` in the same
   order as delivery inspection. A `color` attribute now tints the exported surface in glTF
   viewers instead of being dropped with a warning. `docs/geometry.md` lists the attributes
-  each converter keeps (#195).
+  each converter keeps. A texture with `channel = 1` exports with `texCoord: 1`, and a mesh it
+  samples must have `uv1` (#195).
 
 ## 1.3.1 (2026-10-17)
 

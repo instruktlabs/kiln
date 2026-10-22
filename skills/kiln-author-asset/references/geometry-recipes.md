@@ -307,7 +307,8 @@ decisions. Read the GPU image: CPU geometry feedback cannot establish texture di
 For a per-vertex mask such as a wet line, wear or moss, set a float attribute with a
 lowercase underscore name (`_wet`, 1 to 4 components) instead of cutting triangles
 along the boundary; both converters export it as `_WET` for the destination shader.
-A `color` attribute exports as `COLOR_0`, which glTF multiplies into base colour.
+A `color` attribute exports as `COLOR_0`, which glTF multiplies into base colour, and a
+second UV set `uv1` exports as `TEXCOORD_1` for baked occlusion or unique wear maps.
 
 ## Shape an existing mesh
 

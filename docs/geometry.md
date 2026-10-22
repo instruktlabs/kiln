@@ -456,8 +456,12 @@ Export keeps these vertex attributes; anything else is reported as
 | `color` (3 or 4 components) | `COLOR_0` | yes | yes |
 | `_edge`, `_cavity` (baked) | `_EDGE`, `_CAVITY` | yes | yes |
 | lowercase `_name`, 1 to 4 float components | `_NAME` | yes | yes |
-| `uv1`..`uv3` | `TEXCOORD_1`..`TEXCOORD_3` | no | yes |
+| `uv1` | `TEXCOORD_1` | yes | yes |
+| `uv2`, `uv3` | `TEXCOORD_2`, `TEXCOORD_3` | no | yes |
 | `skinIndex`, `skinWeight` | `JOINTS_0`, `WEIGHTS_0` | no | yes |
+
+A texture with `channel = 1` (for example a baked `aoMap`) samples `uv1` (`TEXCOORD_1`); export
+refuses it when the mesh has no `uv1`, and reports channels a converter does not write.
 
 An author attribute name is an underscore, a lowercase letter, then lowercase
 letters, digits or single underscores (at most 64 characters), such as `_wet` or

@@ -41,7 +41,7 @@ describe('progressive capability discovery', () => {
       const attributes = document.meshes[0].primitives[0].attributes;
       for (const [sourceKey, gltfKey, both] of [
         ['color', 'COLOR_0', true],
-        ['uv1', 'TEXCOORD_1', false],
+        ['uv1', 'TEXCOORD_1', true],
         ['uv2', 'TEXCOORD_2', false],
         ['uv3', 'TEXCOORD_3', false],
       ] as const) {
