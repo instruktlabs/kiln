@@ -1,4 +1,5 @@
 import { expect, it } from 'bun:test';
+import { createHash } from 'node:crypto';
 import {
   chmod,
   lstat,
@@ -13,7 +14,11 @@ import {
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { writeDestinationAtomic, writeNewDestinationsAtomic } from './cli-output';
+import {
+  writeDestinationAtomic,
+  writeExternalTextureExport,
+  writeNewDestinationsAtomic,
+} from './cli-output';
 
 async function fixture(run: (directory: string) => Promise<void>) {
   const directory = await mkdtemp(join(tmpdir(), 'kiln-output-'));
@@ -183,4 +188,82 @@ it('does not publish either output after a partial staging write fails', () =>
         { path: join(directory, 'same'), data: 'b' },
       ]),
     ).rejects.toThrow('distinct');
+  }));
+
+const contentAddress = (directory: string, data: string, extension = 'png') =>
+  join(directory, 'textures', `${createHash('sha256').update(data).digest('hex')}.${extension}`);
+
+it('publishes a content-addressed texture once and reuses identical bytes without rewriting', () =>
+  fixture(async (directory) => {
+    const texture = contentAddress(directory, 'shared texture');
+    const first = await writeExternalTextureExport(
+      [{ path: texture, data: Buffer.from('shared texture') }],
+      [{ path: join(directory, 'a.gltf'), data: 'first model' }],
+    );
+    expect(first).toEqual([{ path: texture, reused: false }]);
+    const before = await stat(texture);
+    const second = await writeExternalTextureExport(
+      [{ path: texture, data: Buffer.from('shared texture') }],
+      [{ path: join(directory, 'b.gltf'), data: 'second model' }],
+    );
+    expect(second).toEqual([{ path: texture, reused: true }]);
+    expect((await stat(texture)).ino).toBe(before.ino);
+    expect((await stat(texture)).mtimeMs).toBe(before.mtimeMs);
+    expect(await readFile(texture, 'utf8')).toBe('shared texture');
+    expect((await readdir(join(directory, 'textures'))).length).toBe(1);
+    expect((await readdir(directory)).sort()).toEqual(['a.gltf', 'b.gltf', 'textures']);
+  }));
+
+it('refuses a texture name that differs from its bytes or from an existing file, before any model file', () =>
+  fixture(async (directory) => {
+    const texture = contentAddress(directory, 'expected bytes');
+    await expect(
+      writeExternalTextureExport(
+        [{ path: texture, data: Buffer.from('other bytes') }],
+        [{ path: join(directory, 'a.gltf'), data: 'model' }],
+      ),
+    ).rejects.toThrow('content address');
+    await mkdir(join(directory, 'textures'), { recursive: true });
+    await writeFile(texture, 'tampered bytes');
+    await expect(
+      writeExternalTextureExport(
+        [{ path: texture, data: Buffer.from('expected bytes') }],
+        [
+          { path: join(directory, 'a.kiln-metadata.json'), data: 'metadata' },
+          { path: join(directory, 'a.gltf'), data: 'model' },
+        ],
+      ),
+    ).rejects.toThrow(`${texture} already exists with different bytes`);
+    expect(await readFile(texture, 'utf8')).toBe('tampered bytes');
+    expect(await readdir(directory)).toEqual(['textures']);
+  }));
+
+it('refuses an existing model file before publishing textures, and a failed model publish keeps textures', () =>
+  fixture(async (directory) => {
+    const texture = contentAddress(directory, 'texture');
+    const gltf = join(directory, 'a.gltf');
+    await writeFile(gltf, 'existing model');
+    const refused = writeExternalTextureExport(
+      [{ path: texture, data: Buffer.from('texture') }],
+      [{ path: gltf, data: 'new model' }],
+    );
+    await expect(refused).rejects.toThrow(`${gltf} already exists and is never replaced`);
+    await expect(refused).rejects.toMatchObject({ code: 'EEXIST' });
+    expect(await readdir(directory)).toEqual(['a.gltf']);
+    async function* interrupted() {
+      yield Buffer.from('partial');
+      throw new Error('interrupted');
+    }
+    await expect(
+      writeExternalTextureExport(
+        [{ path: texture, data: Buffer.from('texture') }],
+        [
+          { path: join(directory, 'b.kiln-metadata.json'), data: 'metadata' },
+          { path: join(directory, 'b.gltf'), data: interrupted() },
+        ],
+      ),
+    ).rejects.toThrow('interrupted');
+    // Another export may already reference the texture, so rollback never removes it.
+    expect(await readFile(texture, 'utf8')).toBe('texture');
+    expect((await readdir(directory)).sort()).toEqual(['a.gltf', 'textures']);
   }));

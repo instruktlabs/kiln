@@ -82,7 +82,8 @@ node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --out mech.glb
 # mech.kiln-metadata.json
 ```
 
-Runtime requires GLB format and an output ending in `.glb`. Bundle/source formats
+Runtime requires GLB format and an output ending in `.glb`, except `--textures external`,
+which writes `.gltf` (see runtime textures). Bundle/source formats
 use `editable`. Use a portable filename stem containing ASCII letters, digits,
 periods, underscores or hyphens, beginning with a letter or digit. The generated
 sidecar filename must be at most 200 characters; Windows device names are rejected.
@@ -231,6 +232,85 @@ decoder. three's `GLTFLoader` keeps unknown node extensions in `userData.gltfExt
 Kiln's tests load the derived GLB from both converters this way. On a very small asset
 the extension JSON can outweigh the saved geometry; compare real assets.
 
+## Runtime textures: manifest and shared files
+
+Runtime GLBs embed every texture, so forty assets that use one library material carry
+forty copies of its maps. Two opt-in choices let a host share them. Neither is the
+default: without `--textures`, the GLB, sidecar and `--json` receipt bytes are unchanged.
+
+**Manifest.** `--textures manifest` (runtime profile, with or without `--target three`)
+adds `textures[]` to the sidecar. The GLB is unchanged apart from the provenance hash of
+that larger sidecar.
+
+```sh
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --textures manifest --out wall.glb
+```
+
+```ts
+const output = await exportAssetGlb(record, { profile: 'runtime', textures: 'manifest' });
+```
+
+One entry per glTF image, sorted by image index:
+
+| Field | Meaning |
+| --- | --- |
+| `image` | glTF image index |
+| `sha256`, `bytes`, `mimeType` | Identity of the exact delivered bytes |
+| `width`, `height` | Pixel size read from the image header |
+| `colorSpace` | `srgb` when a base colour or emissive slot uses the image, otherwise `linear` |
+| `sourceSha256` | The bytes before KTX2 encoding, only when encoding changed them |
+| `material` | `{ pin: { resourceId, revisionId, sha256 }, slot }`, only when the pre-encode bytes exactly equal a map in the record's saved material closure (`materials.kiln.json`). Never inferred from names |
+| `uri` | External layout only: the image file relative to the `.gltf` |
+
+Equal `sha256` means equal bytes, so a host can deduplicate images across assets on that
+key without decoding a GLB. Library textures keep their encoded bytes in the GLB, so two
+assets that use one library map report the same `sha256` and the same `material.pin`.
+
+**External textures.** `--textures external` (requires `--target three` and `--out`
+ending in `.gltf`) writes standard JSON glTF with content-addressed images instead of a
+GLB, and implies the manifest with a `uri` on each entry:
+
+```sh
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --target three \
+  --textures external --out assets/wall.gltf --json
+# assets/wall.gltf               (asset.extras.kilnProvenanceV1 points at the sidecar)
+# assets/wall.bin
+# assets/wall.kiln-metadata.json
+# assets/textures/<sha256>.png   (or .jpg, .webp, .ktx2)
+```
+
+The file name of each texture is the hex SHA-256 of its exact bytes. Exports into one
+folder share those files:
+
+- Textures are published first, then the sidecar, the `.bin` and the `.gltf` last.
+- An existing texture with the same bytes is reused and never rewritten; the receipt
+  marks it `"reused": true`. A file with that name but different bytes stops the export
+  before any model file is published.
+- The model files keep the never-replace rule: an existing `.gltf`, `.bin` or sidecar
+  stops the export before any texture is written.
+- A failed export rolls back its model files but never removes a texture, even one it
+  created, because a concurrent export may already reference it. A leftover texture is
+  harmless.
+
+The library form returns `layout: 'gltf'` with `gltf`, `buffers`, `textures` and
+`metadata` to write, plus the equivalent embedded `glb` for inspection:
+
+```ts
+const output = await exportAssetGlb(record, {
+  profile: 'runtime',
+  target: 'three',
+  textures: 'external',
+  gltfFileName: 'wall.gltf',
+  metadataFileName: 'wall.kiln-metadata.json',
+});
+```
+
+three.js loads the `.gltf` and resolves `wall.bin` and `textures/...` relative to it:
+`new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync('assets/wall.gltf')`.
+Plain `--profile runtime` keeps `.glb` only, because that profile copies the binary chunk
+byte for byte. Kiln's tests validate the `.gltf` with `gltf-validator` and load it through
+`GLTFLoader`. MCP `kiln_export` does not offer these options.
+
 ## Pointer and hash contract
 
 The runtime GLB contains this record in `asset.extras.kilnProvenanceV1`:
@@ -268,7 +348,9 @@ sidecar points back to the canonical input GLB hash, not the derived runtime GLB
 so there is no circular hash dependency. IDs and hashes let a tool locate and verify
 the corresponding editable revision; they are integrity/provenance data, not signatures
 or authenticated authorship. The sidecar deliberately does not embed the full manifest,
-source or build record.
+source or build record. Optional fields appear only when requested: `target` and
+`delivery` with `--target three`, `textures` with `--textures`. In the external layout the
+same record sits in the `.gltf` file's `asset.extras`.
 
 The URI is informational, not a glTF buffer/image URI. Kiln does not automatically
 fetch it or execute its contents. Standard glTF playback works without the sidecar,

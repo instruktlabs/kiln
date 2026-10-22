@@ -18,6 +18,7 @@
  */
 import {
   type Document,
+  Format,
   Logger,
   type Mesh,
   type Node,
@@ -37,6 +38,7 @@ import { createGltfIO, MSFT_LOD } from './gltf-io';
 import { deliveryNodePaths } from './delivery-inspect';
 import { KILN_REPEAT_INSTANCES_KEY } from './delivery';
 import { isHiddenGltfNode } from './metrics';
+import { sha256Hex } from './runtime-textures';
 
 /** Bits per quantized attribute class; custom underscore attributes stay float32. */
 export const RUNTIME_THREE_QUANTIZATION = Object.freeze({
@@ -250,6 +252,7 @@ function splitColliderProxies(doc: Document) {
 async function encodeKtx2(
   doc: Document,
   encoder: RuntimeThreeOptionsV1['ktx2Encoder'],
+  sources: Map<Texture, string>,
 ): Promise<RuntimeThreeDeliveryV1['ktx2']> {
   const textures = doc
     .getRoot()
@@ -267,14 +270,16 @@ async function encodeKtx2(
       if (texture) srgb.add(texture);
   }
   for (const texture of textures) {
+    const original = texture.getImage()!;
     const image = await encoder({
-      image: texture.getImage()!,
+      image: original,
       mimeType: texture.getMimeType(),
       name: texture.getName(),
       colorSpace: srgb.has(texture) ? 'srgb' : 'linear',
     });
     if (!(image instanceof Uint8Array) || image.byteLength < 12)
       throw new Error('ktx2Encoder must return KTX2 bytes');
+    sources.set(texture, `sha256:${await sha256Hex(original)}`);
     texture.setImage(image).setMimeType('image/ktx2');
     const uri = texture.getURI();
     if (uri) texture.setURI(uri.replace(/\.(png|jpe?g)$/i, '.ktx2'));
@@ -298,16 +303,29 @@ function decomposeDelta(before: number[], after: number[]) {
   };
 }
 
+/** What the derivation returns beside the GLB: facts and, on request, the `.gltf` layout. */
+export interface RuntimeThreeResult {
+  glb: Uint8Array;
+  delivery: RuntimeThreeDeliveryV1;
+  /** Pre-encode `sha256:` of each image index KTX2 encoding replaced. */
+  imageSources: Map<number, string>;
+  /** The same document as JSON glTF, when `layout.gltfBasename` was given. */
+  gltf?: { json: Record<string, unknown>; resources: Record<string, Uint8Array> };
+}
+
 /**
  * Transform written GLB bytes into the three.js runtime delivery GLB. `meshoptEncoder` is the
  * `MeshoptEncoder` from the `meshoptimizer` package (loaded by the caller so this module stays
- * import-light).
+ * import-light). `layout.gltfBasename` also writes the same document as JSON glTF, whose
+ * buffers are named `<basename>.bin`; its image URIs are the writer's and are renamed by the
+ * caller.
  */
 export async function deliverRuntimeThreeGlb(
   bytes: Uint8Array,
   meshoptEncoder: unknown,
   options: RuntimeThreeOptionsV1 = {},
-): Promise<{ glb: Uint8Array; delivery: RuntimeThreeDeliveryV1 }> {
+  layout: { gltfBasename?: string } = {},
+): Promise<RuntimeThreeResult> {
   const compression = options.compression ?? 'meshopt';
   if (compression !== 'meshopt' && compression !== 'none')
     throw new Error('Runtime three compression must be meshopt or none');
@@ -343,7 +361,8 @@ export async function deliverRuntimeThreeGlb(
       .createExtension(EXTMeshoptCompression)
       .setRequired(true)
       .setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
-  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder);
+  const encodedSources = new Map<Texture, string>();
+  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder, encodedSources);
 
   // The quantizer moves a mesh to a new unnamed child when its node has children or is
   // animated; name it after its authored node so the delivery path is stable.
@@ -403,6 +422,18 @@ export async function deliverRuntimeThreeGlb(
   const all = doc.getRoot().listNodes();
   const glb = await io.writeBinary(doc);
   const json = (await io.binaryToJSON(glb)).json;
+  // The writer emits one glTF image per texture, in list order.
+  const imageSources = new Map<number, string>();
+  doc
+    .getRoot()
+    .listTextures()
+    .forEach((texture, image) => {
+      const source = encodedSources.get(texture);
+      if (source) imageSources.set(image, source);
+    });
+  const gltf = layout.gltfBasename
+    ? await io.writeJSON(doc, { format: Format.GLTF, basename: layout.gltfBasename })
+    : undefined;
   const delivery: RuntimeThreeDeliveryV1 = {
     target: 'three',
     extensionsUsed: [...(json.extensionsUsed ?? [])].sort(),
@@ -453,5 +484,17 @@ export async function deliverRuntimeThreeGlb(
         .length,
     },
   };
-  return { glb, delivery };
+  return {
+    glb,
+    delivery,
+    imageSources,
+    ...(gltf
+      ? {
+          gltf: {
+            json: gltf.json as unknown as Record<string, unknown>,
+            resources: gltf.resources,
+          },
+        }
+      : {}),
+  };
 }

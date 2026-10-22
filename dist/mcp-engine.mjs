@@ -6765,6 +6765,179 @@ var init_material_library_node = __esm(() => {
   encoder = { name: "sharp", version: sharp.versions.sharp };
 });
 
+// src/runtime-textures.ts
+async function sha256Hex2(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+function imageDimensions(bytes) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const fail = () => {
+    throw new Error("Texture manifest cannot read image dimensions");
+  };
+  const at = (offset, length) => {
+    if (offset + length > bytes.byteLength)
+      fail();
+  };
+  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
+    at(16, 8);
+    return { width: view.getUint32(16), height: view.getUint32(20) };
+  }
+  if (isKtx2(bytes)) {
+    at(20, 8);
+    return { width: view.getUint32(20, true), height: view.getUint32(24, true) };
+  }
+  if (bytes[0] === 255 && bytes[1] === 216) {
+    let offset = 2;
+    while (offset + 4 <= bytes.byteLength) {
+      if (bytes[offset] !== 255)
+        fail();
+      const marker = bytes[offset + 1];
+      if (marker === 255) {
+        offset++;
+        continue;
+      }
+      if (marker === 216 || marker === 1 || marker >= 208 && marker <= 215) {
+        offset += 2;
+        continue;
+      }
+      const length = view.getUint16(offset + 2);
+      if (marker >= 192 && marker <= 207 && ![196, 200, 204].includes(marker)) {
+        at(offset + 5, 4);
+        return { width: view.getUint16(offset + 7), height: view.getUint16(offset + 5) };
+      }
+      offset += 2 + length;
+    }
+    fail();
+  }
+  const text = (offset) => String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 4, bytes.byteLength)));
+  if (text(0) === "RIFF" && text(8) === "WEBP") {
+    at(12, 19);
+    const chunk = text(12);
+    if (chunk === "VP8X")
+      return {
+        width: 1 + (view.getUint32(24, true) & 16777215),
+        height: 1 + (view.getUint32(27, true) & 16777215)
+      };
+    if (chunk === "VP8L") {
+      const bits = view.getUint32(21, true);
+      return { width: 1 + (bits & 16383), height: 1 + (bits >> 14 & 16383) };
+    }
+    if (chunk === "VP8 ") {
+      at(26, 4);
+      return {
+        width: view.getUint16(26, true) & 16383,
+        height: view.getUint16(28, true) & 16383
+      };
+    }
+  }
+  return fail();
+}
+function textureSource(texture) {
+  if (!object(texture))
+    return;
+  const extensions = object(texture.extensions) ? texture.extensions : {};
+  for (const name of ["KHR_texture_basisu", "EXT_texture_webp", "EXT_texture_avif"]) {
+    const extension = extensions[name];
+    if (object(extension) && index(extension.source) !== undefined)
+      return index(extension.source);
+  }
+  return index(texture.source);
+}
+function srgbImages(json) {
+  const textures = Array.isArray(json.textures) ? json.textures : [];
+  const result = new Set;
+  for (const material of Array.isArray(json.materials) ? json.materials : []) {
+    if (!object(material))
+      continue;
+    const pbr = object(material.pbrMetallicRoughness) ? material.pbrMetallicRoughness : {};
+    for (const info of [pbr.baseColorTexture, material.emissiveTexture]) {
+      const texture = object(info) ? index(info.index) : undefined;
+      const image = texture === undefined ? undefined : textureSource(textures[texture]);
+      if (image !== undefined)
+        result.add(image);
+    }
+  }
+  return result;
+}
+function base64(text) {
+  const binary = atob(text);
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+}
+function embeddedImages(json, binary) {
+  const views = Array.isArray(json.bufferViews) ? json.bufferViews : [];
+  return (Array.isArray(json.images) ? json.images : []).map((image) => {
+    if (!object(image))
+      throw new Error("Invalid glTF image");
+    const view = index(image.bufferView);
+    if (view !== undefined) {
+      const def = views[view];
+      if (!object(def) || index(def.buffer) !== 0 || !binary)
+        throw new Error("Texture manifest requires images embedded in the GLB binary chunk");
+      const offset = index(def.byteOffset) ?? 0;
+      const length = index(def.byteLength);
+      if (length === undefined || offset + length > binary.byteLength)
+        throw new Error("Invalid glTF image buffer view");
+      if (typeof image.mimeType !== "string")
+        throw new Error("Embedded image needs a mimeType");
+      return { bytes: binary.subarray(offset, offset + length), mimeType: image.mimeType };
+    }
+    const match = typeof image.uri === "string" ? /^data:([^;,]+);base64,(.*)$/s.exec(image.uri) : null;
+    if (!match)
+      throw new Error("Texture manifest requires embedded image bytes");
+    return { bytes: base64(match[2]), mimeType: match[1] };
+  });
+}
+async function runtimeTextureManifest(json, binary, options = {}) {
+  const srgb = srgbImages(json);
+  const entries = [];
+  for (const [image, { bytes, mimeType }] of embeddedImages(json, binary).entries()) {
+    const sha256 = `sha256:${await sha256Hex2(bytes)}`;
+    const sourceSha256 = options.sources?.get(image);
+    const original = sourceSha256 ?? sha256;
+    const map = options.maps?.find((candidate) => candidate.sha256 === original);
+    entries.push({
+      image,
+      sha256,
+      bytes: bytes.byteLength,
+      mimeType,
+      ...imageDimensions(bytes),
+      colorSpace: srgb.has(image) ? "srgb" : "linear",
+      ...sourceSha256 && sourceSha256 !== sha256 ? { sourceSha256 } : {},
+      ...map ? { material: { pin: { ...map.pin }, slot: map.slot } } : {}
+    });
+  }
+  return entries;
+}
+function textureFileExtension(mimeType) {
+  const extension = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/webp": "webp",
+    "image/ktx2": "ktx2"
+  }[mimeType];
+  if (!extension)
+    throw new Error(`External textures do not support ${mimeType}`);
+  return extension;
+}
+var object = (value) => value !== null && typeof value === "object" && !Array.isArray(value), index = (value) => Number.isInteger(value) && value >= 0 ? value : undefined, KTX2_IDENTIFIER, isKtx2 = (bytes) => bytes.byteLength >= 12 && KTX2_IDENTIFIER.every((value, at) => bytes[at] === value);
+var init_runtime_textures = __esm(() => {
+  KTX2_IDENTIFIER = Object.freeze([
+    171,
+    75,
+    84,
+    88,
+    32,
+    50,
+    48,
+    187,
+    13,
+    10,
+    26,
+    10
+  ]);
+});
+
 // src/contracts/semantic.ts
 function semanticRole(base, ...segments) {
   const tail = segments.map((segment) => String(segment).trim()).filter((segment) => segment !== "");
@@ -8845,6 +9018,7 @@ __export(exports_runtime_three, {
   deliverRuntimeThreeGlb: () => deliverRuntimeThreeGlb
 });
 import {
+  Format,
   Logger,
   PropertyType as PropertyType3
 } from "@gltf-transform/core";
@@ -8929,7 +9103,7 @@ function splitColliderProxies(doc) {
   }
   return report;
 }
-async function encodeKtx2(doc, encoder) {
+async function encodeKtx2(doc, encoder, sources) {
   const textures = doc.getRoot().listTextures().filter((texture) => texture.getMimeType() !== "image/ktx2" && texture.getImage());
   if (!encoder)
     return {
@@ -8944,14 +9118,16 @@ async function encodeKtx2(doc, encoder) {
         srgb.add(texture);
   }
   for (const texture of textures) {
+    const original = texture.getImage();
     const image = await encoder({
-      image: texture.getImage(),
+      image: original,
       mimeType: texture.getMimeType(),
       name: texture.getName(),
       colorSpace: srgb.has(texture) ? "srgb" : "linear"
     });
     if (!(image instanceof Uint8Array) || image.byteLength < 12)
       throw new Error("ktx2Encoder must return KTX2 bytes");
+    sources.set(texture, `sha256:${await sha256Hex2(original)}`);
     texture.setImage(image).setMimeType("image/ktx2");
     const uri = texture.getURI();
     if (uri)
@@ -8970,10 +9146,7 @@ function decomposeDelta(before, after) {
     offset: [position.x, position.y, position.z]
   };
 }
-async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
-  const compression = options.compression ?? "meshopt";
-  if (compression !== "meshopt" && compression !== "none")
-    throw new Error("Runtime three compression must be meshopt or none");
+async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layout = {}) {
   const io = createGltfIO().registerDependencies({
     "meshopt.encoder": meshoptEncoder
   });
@@ -8996,9 +9169,9 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
     quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
     quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight
   }));
-  if (compression === "meshopt")
-    doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
-  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder);
+  doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  const encodedSources = new Map;
+  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder, encodedSources);
   for (const node of doc.getRoot().listNodes()) {
     const mesh = node.getMesh();
     if (!mesh || matrices.has(node) || node.getName())
@@ -9057,11 +9230,18 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
   const all = doc.getRoot().listNodes();
   const glb = await io.writeBinary(doc);
   const json = (await io.binaryToJSON(glb)).json;
+  const imageSources = new Map;
+  doc.getRoot().listTextures().forEach((texture, image) => {
+    const source = encodedSources.get(texture);
+    if (source)
+      imageSources.set(image, source);
+  });
+  const gltf = layout.gltfBasename ? await io.writeJSON(doc, { format: Format.GLTF, basename: layout.gltfBasename }) : undefined;
   const delivery = {
     target: "three",
     extensionsUsed: [...json.extensionsUsed ?? []].sort(),
     extensionsRequired: [...json.extensionsRequired ?? []].sort(),
-    compression: compression === "meshopt" ? { extension: "EXT_meshopt_compression", method: "quantize" } : { extension: "none" },
+    compression: { extension: "EXT_meshopt_compression", method: "quantize" },
     quantization: {
       extension: "KHR_mesh_quantization",
       volume: "mesh",
@@ -9096,7 +9276,17 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
       kitModules: all.filter((node) => rolesOf(node).includes(KILN_SEMANTIC_ROLES.kitModule)).length
     }
   };
-  return { glb, delivery };
+  return {
+    glb,
+    delivery,
+    imageSources,
+    ...gltf ? {
+      gltf: {
+        json: gltf.json,
+        resources: gltf.resources
+      }
+    } : {}
+  };
 }
 var RUNTIME_THREE_QUANTIZATION, QUANTIZED_SEMANTICS, customRank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2, rolesOf = (node) => readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [], isCollider = (node) => rolesOf(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.collider}.`));
 var init_runtime_three = __esm(() => {
@@ -9105,6 +9295,7 @@ var init_runtime_three = __esm(() => {
   init_delivery_inspect();
   init_delivery();
   init_metrics();
+  init_runtime_textures();
   RUNTIME_THREE_QUANTIZATION = Object.freeze({
     volume: "mesh",
     position: 14,
@@ -9129,6 +9320,36 @@ function validateMetadataFileName(name) {
   if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.kiln-metadata\.json$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
     throw new Error("Runtime metadata filename must be a portable sibling *.kiln-metadata.json filename");
 }
+function validateGltfFileName(name) {
+  if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.gltf$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
+    throw new Error("External texture output must be a portable sibling *.gltf filename");
+}
+function readGlbBinary(bytes, jsonEnd) {
+  if (jsonEnd + 8 > bytes.length)
+    return;
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  if (view.getUint32(jsonEnd + 4, true) !== 5130562)
+    return;
+  return bytes.subarray(jsonEnd + 8, jsonEnd + 8 + view.getUint32(jsonEnd, true));
+}
+function closureMaps(record) {
+  const manifests = new Map;
+  for (const manifest of [
+    ...assetMaterialRootManifests(record),
+    ...(record.materialResources?.records ?? []).map(({ manifest }) => manifest)
+  ])
+    manifests.set(`${manifest.materialId}/${manifest.revisionId}`, manifest);
+  const order = (value, other) => value < other ? -1 : value > other ? 1 : 0;
+  return [...manifests.values()].flatMap((manifest) => manifest.maps.map((map) => ({
+    sha256: map.sha256,
+    pin: {
+      resourceId: manifest.materialId,
+      revisionId: manifest.revisionId,
+      sha256: manifest.revisionId
+    },
+    slot: map.slot
+  }))).sort((a, b) => order(a.pin.resourceId, b.pin.resourceId) || order(a.pin.revisionId, b.pin.revisionId) || order(a.slot, b.slot));
+}
 function readGlbJson(bytes) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   let end = 12;
@@ -9142,7 +9363,7 @@ function readGlbJson(bytes) {
   }
   const jsonEnd = 20 + view.getUint32(12, true);
   const json = JSON.parse(decoder.decode(bytes.subarray(20, jsonEnd)));
-  if (!object(json) || !object(json.asset) || json.asset.version !== "2.0")
+  if (!object2(json) || !object2(json.asset) || json.asset.version !== "2.0")
     throw new Error("Invalid glTF asset");
   return { json, jsonEnd };
 }
@@ -9161,13 +9382,13 @@ function writeGlbJson(bytes, jsonEnd, json) {
   result.set(bytes.subarray(jsonEnd), 20 + length);
   return result;
 }
-async function deliverThreeRuntimeGlb(glb, options = {}) {
+async function deriveThree(glb, options, layout = {}) {
   const [{ deliverRuntimeThreeGlb }, { MeshoptEncoder }] = await Promise.all([
     Promise.resolve().then(() => (init_runtime_three(), exports_runtime_three)),
     import("meshoptimizer")
   ]);
   await MeshoptEncoder.ready;
-  const result = await deliverRuntimeThreeGlb(glb, MeshoptEncoder, options);
+  const result = await deliverRuntimeThreeGlb(glb, MeshoptEncoder, options, layout);
   if (result.glb.byteLength > ASSET_LIMIT)
     throw new Error("Runtime export exceeds 64 MiB");
   return result;
@@ -9180,8 +9401,16 @@ async function exportAssetGlb(record, options = {}) {
     throw new Error("Unknown runtime export target");
   if (options.target !== undefined && profile !== "runtime")
     throw new Error("A runtime export target requires the runtime profile");
-  if (options.compression !== undefined && options.target !== "three")
-    throw new Error("Runtime compression requires the three runtime target");
+  const textures = options.textures;
+  if (textures !== undefined && textures !== "manifest" && textures !== "external")
+    throw new Error("Unknown runtime texture option");
+  if (textures !== undefined && profile !== "runtime")
+    throw new Error("A texture manifest requires the runtime profile");
+  if (textures === "external" && options.target !== "three")
+    throw new Error("External textures require target three");
+  const gltfName = options.gltfFileName ?? "runtime.gltf";
+  if (textures === "external")
+    validateGltfFileName(gltfName);
   validateRecordShape(record);
   const bytes = record.files["asset.glb"];
   if (profile === "editable")
@@ -9194,7 +9423,7 @@ async function exportAssetGlb(record, options = {}) {
   }
   const { json, jsonEnd } = readGlbJson(bytes);
   const asset = json.asset;
-  if (owns(asset, "extras") && !object(asset.extras))
+  if (owns(asset, "extras") && !object2(asset.extras))
     throw new Error("Cannot add provenance to non-object asset extras");
   const extras = asset.extras ?? {};
   if (owns(extras, "kilnProvenanceV1"))
@@ -9203,10 +9432,10 @@ async function exportAssetGlb(record, options = {}) {
   if (json.scenes !== undefined && !Array.isArray(json.scenes))
     throw new Error("Invalid glTF scenes");
   for (const [index, scene] of (json.scenes ?? []).entries()) {
-    if (!object(scene) || !object(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
+    if (!object2(scene) || !object2(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
       continue;
     const review = scene.extras.kilnReviewClipsV1;
-    if (!object(review) || review.version !== 1 && review.version !== 2 || !Array.isArray(review.clips))
+    if (!object2(review) || review.version !== 1 && review.version !== 2 || !Array.isArray(review.clips))
       throw new Error("Unsupported scenes[].extras.kilnReviewClipsV1");
     scenes.push({ index, kilnReviewClipsV1: review });
     delete scene.extras.kilnReviewClipsV1;
@@ -9221,36 +9450,86 @@ async function exportAssetGlb(record, options = {}) {
     },
     scenes
   };
-  let base = bytes, baseJson = json, baseJsonEnd = jsonEnd;
+  let base = bytes, baseJson = json, baseJsonEnd = jsonEnd, imageSources, gltf;
   if (options.target === "three") {
-    const derived = await deliverThreeRuntimeGlb(writeGlbJson(bytes, jsonEnd, json), {
-      ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {},
-      ...options.compression ? { compression: options.compression } : {}
-    });
+    const derived = await deriveThree(writeGlbJson(bytes, jsonEnd, json), { ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {} }, textures === "external" ? { gltfBasename: gltfName.slice(0, -".gltf".length) } : {});
     metadata.target = "three";
     metadata.delivery = derived.delivery;
     base = derived.glb;
+    imageSources = derived.imageSources;
+    gltf = derived.gltf;
     ({ json: baseJson, jsonEnd: baseJsonEnd } = readGlbJson(base));
   }
+  if (textures !== undefined)
+    metadata.textures = await runtimeTextureManifest(baseJson, readGlbBinary(base, baseJsonEnd), {
+      ...imageSources ? { sources: imageSources } : {},
+      maps: closureMaps(record)
+    });
+  const external = gltf ? await externalLayout(gltf, metadata.textures ?? []) : undefined;
   const metadataBytes = encoder2.encode(JSON.stringify(metadata));
   if (metadataBytes.length > ASSET_LIMIT)
     throw new Error("Runtime export exceeds 64 MiB");
+  const provenance = {
+    version: "kiln.provenance.v1",
+    profile: "runtime",
+    ...options.target ? { target: options.target } : {},
+    metadata: { uri: name, sha256: await sha2562(metadataBytes) }
+  };
   const baseAsset = baseJson.asset;
   baseAsset.extras = {
     ...baseAsset.extras ?? extras,
-    kilnProvenanceV1: {
-      version: "kiln.provenance.v1",
-      profile: "runtime",
-      ...options.target ? { target: options.target } : {},
-      metadata: { uri: name, sha256: await sha2562(metadataBytes) }
-    }
+    kilnProvenanceV1: provenance
   };
   const result = writeGlbJson(base, baseJsonEnd, baseJson);
-  return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
+  if (!external)
+    return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
+  const gltfAsset = external.json.asset;
+  gltfAsset.extras = {
+    ...gltfAsset.extras ?? extras,
+    kilnProvenanceV1: provenance
+  };
+  const gltfBytes = encoder2.encode(JSON.stringify(external.json));
+  if (gltfBytes.length > ASSET_LIMIT)
+    throw new Error("Runtime export exceeds 64 MiB");
+  return {
+    profile,
+    layout: "gltf",
+    glb: result,
+    gltf: { name: gltfName, bytes: gltfBytes },
+    buffers: external.buffers,
+    textures: external.textures,
+    metadata: { name, bytes: metadataBytes }
+  };
 }
-var encoder2, decoder, object = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
+async function externalLayout(gltf, manifest) {
+  const json = structuredClone(gltf.json);
+  const resources = new Map(Object.entries(gltf.resources));
+  const images = Array.isArray(json.images) ? json.images : [];
+  if (images.length !== manifest.length)
+    throw new Error("External texture layout mismatch");
+  const textures = new Map;
+  for (const [index, image] of images.entries()) {
+    const entry = manifest[index];
+    const written = typeof image.uri === "string" ? image.uri : "";
+    const bytes = resources.get(written);
+    if (!bytes || `sha256:${await sha256Hex2(bytes)}` !== entry.sha256)
+      throw new Error("External texture bytes differ from the delivered GLB");
+    resources.delete(written);
+    const uri = `textures/${entry.sha256.slice("sha256:".length)}.${textureFileExtension(entry.mimeType)}`;
+    image.uri = uri;
+    entry.uri = uri;
+    textures.set(uri, { uri, sha256: entry.sha256, bytes });
+  }
+  const buffers = [...resources].map(([uri, bytes]) => ({ uri, bytes }));
+  for (const { uri } of buffers)
+    if (!/^[a-z0-9][a-z0-9._-]*\.bin$/i.test(uri))
+      throw new Error(`Unexpected external glTF resource ${uri}`);
+  return { json, buffers, textures: [...textures.values()] };
+}
+var encoder2, decoder, object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
 var init_asset_export = __esm(() => {
   init_assets();
+  init_runtime_textures();
   encoder2 = new TextEncoder;
   decoder = new TextDecoder;
 });
@@ -23311,7 +23590,7 @@ function canonicalJson2(value) {
   const sort = (entry) => {
     if (Array.isArray(entry))
       return entry.map(sort);
-    if (object2(entry))
+    if (object3(entry))
       return Object.fromEntries(Object.keys(entry).sort().map((key) => [key, sort(entry[key])]));
     return entry;
   };
@@ -23375,7 +23654,7 @@ function census(root) {
       if (materials.length === 0 || materials.some((material) => !(material instanceof THREE33.Material)))
         throw new Error("Assembly mesh materials must be Material instances.");
     }
-    if (!object2(node.userData))
+    if (!object3(node.userData))
       throw new Error("Assembly node metadata must be an object.");
     jsonData(node.userData, node.name);
     if (!Array.isArray(node.animations) || node.animations.some((clip) => !(clip instanceof THREE33.AnimationClip)))
@@ -23410,7 +23689,7 @@ function census(root) {
   return { nodes, matrices, semantics, joints, rigs };
 }
 function describeAssembly(root, options = {}) {
-  if (!object2(options))
+  if (!object3(options))
     throw new Error("Assembly description options must be an object.");
   if (Object.keys(options).some((key) => key !== "clips"))
     throw new Error("Unknown describeAssembly option.");
@@ -23505,7 +23784,7 @@ function describeAssembly(root, options = {}) {
 function replicateAssembly(source, options) {
   if (source?.version !== "kiln.assembly.v1")
     throw new Error("replicateAssembly requires a describeAssembly result.");
-  if (!object2(options) || typeof options.namespace !== "string" || options.namespace.length > 64 || !/^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$/.test(options.namespace))
+  if (!object3(options) || typeof options.namespace !== "string" || options.namespace.length > 64 || !/^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$/.test(options.namespace))
     throw new Error("Assembly namespace must be 1-64 lowercase letters/digits with single internal underscores or hyphens, starting with a letter.");
   const allowedOptions = new Set([
     "namespace",
@@ -23795,7 +24074,7 @@ function replicateAssembly(source, options) {
     }
   };
 }
-var ASSEMBLY_LIMITS, metadataKeys, threeConstructors, object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
+var ASSEMBLY_LIMITS, metadataKeys, threeConstructors, object3 = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 var init_assembly = __esm(() => {
   init_assembly_transform();
   init_semantic();
@@ -37185,7 +37464,7 @@ function ensureDefaultScene(doc) {
     root.setDefaultScene(scene);
   return scene;
 }
-async function sha256Hex2(bytes) {
+async function sha256Hex3(bytes) {
   const digest = await globalThis.crypto.subtle.digest("SHA-256", new Uint8Array(bytes).buffer);
   return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, "0")).join("");
 }
@@ -37217,7 +37496,7 @@ async function inspectGlbIntegration(bytes, opts = {}) {
   return {
     schemaVersion: "kiln.integration-manifest.v1",
     analyzerVersion: 1,
-    artifactSha256: await sha256Hex2(bytes),
+    artifactSha256: await sha256Hex3(bytes),
     units: "m",
     axes: { forward: "+X", up: "+Y", right: "+Z" },
     bounds: {
@@ -37997,7 +38276,7 @@ async function renderSceneToGLB(root, opts = {}) {
   await refreshAtlasDocumentProvenance(doc);
   await validateAtlasDocumentProvenance(doc);
   const bytes = await io.writeBinary(doc);
-  const artifactGlbSha256 = `sha256:${await sha256Hex2(bytes)}`;
+  const artifactGlbSha256 = `sha256:${await sha256Hex3(bytes)}`;
   const boundBakedTextures = bakedTextures.map((entry) => ({
     ...entry,
     artifactGlbSha256
@@ -40507,7 +40786,7 @@ var init_draw_diagnostics = __esm(() => {
 
 // src/widget-transfer.ts
 import { deflateSync as deflateSync2, inflateSync as inflateSync2 } from "three/addons/libs/fflate.module.js";
-function base64(bytes) {
+function base642(bytes) {
   let binary = "";
   for (let index = 0;index < bytes.length; index += 8192)
     binary += String.fromCharCode(...bytes.subarray(index, index + 8192));
@@ -40517,8 +40796,8 @@ function encodeWidgetFiles(files) {
   if (Object.values(files).reduce((total, bytes) => total + bytes.length, 0) > WIDGET_TRANSFER_LIMIT)
     invalid("exceeds the decoded size limit");
   return Object.fromEntries(Object.entries(files).map(([name, bytes]) => {
-    const plain = base64(bytes);
-    const compressed = base64(deflateSync2(bytes, { level: 6 }));
+    const plain = base642(bytes);
+    const compressed = base642(deflateSync2(bytes, { level: 6 }));
     return [
       name,
       compressed.length + 64 < plain.length ? { encoding: "kiln.deflate-base64.v1", data: compressed } : plain
