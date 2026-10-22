@@ -1,18 +1,24 @@
 ---
 name: kiln-compose-scene
-description: Compose existing assets into an exported scene or interactive proving environment, with deliberate placement, terrain, materials, integration checks and runtime qualification.
+description: Compose existing assets into an exported scene or interactive proving environment. Use Kiln welding to fit assets into a game's own geometry batches, materials, collision and interaction systems.
 license: MIT
 metadata:
   kiln-workflow: workspace
 ---
 
-# Compose a scene from existing assets
+# Compose and weld a scene from existing assets
 
 Use this optional workflow when the task concerns several assets. Keep placement separate from individual source authoring so moving an object does not regenerate its geometry.
 
 A scene or environment can be a standalone deliverable. A Kiln project is optional organization for a shared brief, inventory and design profile; composing several assets does not by itself require one. When composing a project's proving scene, use its selected saved inventory revisions and preserve the individual editable assets.
 
 Read the [composition API notes](references/composition-api.md) when using the library. These are host/project APIs, not tools automatically added to the Kiln MCP surface.
+
+For **Kiln welding**, where authored pieces become part of an existing game's
+structures and rendering, read [the welding workflow](references/welding.md).
+It covers placement, surface-role mapping, geometry batches and preserving
+moving parts, collision and interaction anchors. Welding is a consumer workflow,
+not a new Kiln tool or a requirement to fuse every vertex.
 
 Choose the deliverable before composing. A single scene GLB and an interactive
 application have different requirements; exporting a monolithic GLB is optional.
