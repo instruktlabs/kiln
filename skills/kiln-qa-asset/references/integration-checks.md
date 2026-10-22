@@ -42,6 +42,16 @@ use an asymmetric corner fixture when qualifying a mapping pipeline.
 
 `composeSceneGLB` defaults to static composition (`keepAnimations: false`). Explicitly keep animations when required. Its material optimization policy can change scene material organization; choose it deliberately, then inspect the result. Warnings can report skipped inputs, so successful export alone does not prove every required asset was included.
 
+Establish who drives motion in the destination. A consumer that procedurally
+rotates rigid child joints may require a static rest-pose GLB and reject embedded
+clips or skins, even when an animated QA study looks correct. In that case, keep
+the canonical source and motion study, and deliver a separately identified static
+artifact with the required named pivots, hierarchy and local transforms intact.
+Verify the final file's clip/skin inventory and exact node bindings; do not flatten
+the rig merely to pass import. Selecting the runtime delivery profile does not
+remove native glTF animation. This is conditional on the consumer contract, not
+a static-only default for asset authoring.
+
 Do not invent a universal performance cap. State the destination, tested conditions, and material limits of the evidence.
 
 ## Functional fit

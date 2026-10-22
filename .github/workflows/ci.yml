@@ -76,7 +76,7 @@ jobs:
 
       - name: Upload coverage report
         if: ${{ always() && hashFiles('coverage/lcov.info') != '' }}
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: engine-coverage
           path: coverage/lcov.info
@@ -222,7 +222,7 @@ jobs:
             cat candidate/candidate-sdk-receipt.json
             exit 1
           fi
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: node-package-candidate
           path: |
@@ -273,7 +273,7 @@ jobs:
         run: node scripts/verify-package-receipt.mjs --platform darwin --arch ${{ matrix.arch }}
       - name: Retain macOS package receipt
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: macos-package-${{ matrix.arch }}
           path: package-smoke.json
@@ -318,7 +318,7 @@ jobs:
         run: node scripts/verify-package-receipt.mjs --platform linux --arch x64 --node ${{ matrix.node }} --npm "$(npm --version)"
       - name: Retain Linux package receipt
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: linux-package-${{ matrix.node }}
           path: package-smoke.json
@@ -371,7 +371,7 @@ jobs:
         run: node scripts/verify-package-receipt.mjs --platform win32 --arch x64
       - name: Retain Windows package receipt
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: windows-package
           path: package-smoke.json
@@ -414,7 +414,7 @@ jobs:
         run: node scripts/smoke-renderer.mjs ./installation/node_modules/@instruktlabs/kiln renderer-receipt software
       - name: Retain renderer identity and images
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: linux-software-vulkan
           path: |

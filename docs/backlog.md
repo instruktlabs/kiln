@@ -1,8 +1,8 @@
 # Kiln current backlog
 
-Current release status (17 October 2026): npm 1.3.0 and
-[GitHub v1.3.0](https://github.com/instruktlabs/kiln/releases/tag/v1.3.0) are published,
-and the public site is deployed. The publication record is on main through #174.
+Current release status (22 October 2026): npm 1.3.1 and
+[GitHub v1.3.1](https://github.com/instruktlabs/kiln/releases/tag/v1.3.1) are published,
+and the public site is deployed. 1.3.1 is a maintenance release over 1.3.0.
 Open work is listed under [Cycle handoff](#cycle-handoff-17-october).
 Scene performance evidence retains its original candidate scope; Cabin carries
 its own review report.
@@ -79,18 +79,17 @@ its own review and completion boundary.
 
 | Item | State | Next step |
 | --- | --- | --- |
-| Catalog listing | [awesome-ai-plugins#771](https://github.com/hashgraph-online/awesome-ai-plugins/pull/771) remains open. Format validation passes; the source scan and aggregate catalog gate are not satisfied | Await catalog maintainer review; assess any requested changes separately |
-| Repository hygiene | A security policy and dependency-update configuration remain follow-ups; Codex plugin metadata is already present | Review in a small, separately scoped PR |
+| Catalog listing | [awesome-ai-plugins#771](https://github.com/hashgraph-online/awesome-ai-plugins/pull/771) merged on 18 October; Kiln is listed in the HOL Registry | Optional: claim the registry listing for the owner-verified badge |
 | Scenes trailer | Capture tooling and preview cuts are prepared separately from the released scene runtimes | Owner review of the cuts; decide what, if anything, lands on main |
 | Organic authoring follow-up | Selected helpers have shipped; rock displacement helpers remain deferred | Require demonstrated authoring need and explicit contracts before adding another helper |
-| HOL Guard integration | Separate command-classification experiment | Reassess after the catalog listing decision; no upstream adoption is implied |
+| HOL Guard integration | Separate command-classification experiment | Reassess now that the catalog listing is merged; no upstream adoption is implied |
 
 ## Remaining package and product work
 
 | Item | Completion boundary |
 | --- | --- |
 | Hosted service | Hosted runtime upgrades require separate qualification; public package publication does not establish hosted availability |
-| Directory submissions | Separate from package publication and hosted deployment; see the cycle handoff for the open catalog listing. Vendor review remains separate from local plugin distribution |
+| Directory submissions | Separate from package publication and hosted deployment; the HOL catalog listing is merged. Vendor review remains separate from local plugin distribution |
 | Further packs | Separate product work; ten-pack production is not a Troy release chore |
 | Broader importer qualification | Actual destination tests for LOD, visibility and supported export profiles |
 | Optional compressed runtime derivatives | Explicit loader/profile adoption and measured size/startup/render tradeoffs; current shared runtime loading is not universal Meshopt/Draco/KTX2 support |
