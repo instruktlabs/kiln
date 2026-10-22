@@ -28,7 +28,7 @@ jobs:
       # Pin from awesome-ai-plugins/SCANNER_GUIDE.md; bundles scanner 3.0.123.
       # Keep the catalog's score gate: severity findings remain reviewable.
       - name: Scan repository
-        uses: hashgraph-online/ai-plugin-scanner-action@caba2e96aa8ad2feb6cf6fca52442b52e22e779f # v1.2.635
+        uses: hashgraph-online/ai-plugin-scanner-action@d7cf6e5bffd3a40be801e038c9705e1e67086c18 # v1.2.793
         with:
           install_source: pypi
           mode: scan
