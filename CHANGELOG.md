@@ -76,6 +76,13 @@ does not publish a package.
   largest radius so the seam stays continuous. Calls without it are unchanged. The contract
   and geometry docs say to weld the non-indexed output with `mergeVertices` where the
   projection is continuous.
+- Normalise non-unit normals on export ([#217](https://github.com/instruktlabs/kiln/issues/217)).
+  A raw `THREE.LatheGeometry` whose profile nears the axis left pole normals of length
+  0.02 to 0.13, and export stopped with repeated `GLTF_ACCESSOR_VECTOR3_NON_UNIT` lines naming
+  an accessor. Export now writes those normals at unit length with one `NORMALS_NORMALISED`
+  note naming the part and count, leaving the authored geometry and unit normals untouched.
+  A zero-length normal fails naming the part and vertex, with `lathe`, `revolveGeo` or
+  `creaseNormals` as the remedy.
 
 ## 1.3.1 (2026-10-17)
 

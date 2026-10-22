@@ -16855,6 +16855,28 @@ function geometryAttributeValues(attribute) {
   }
   return values;
 }
+function unitNormalValues(attribute) {
+  const values = geometryAttributeValues(attribute);
+  for (let i = 0;i < values.length; i += 3) {
+    const length = Math.hypot(values[i], values[i + 1], values[i + 2]);
+    if (Math.abs(length - 1) <= UNIT_NORMAL_TOLERANCE || length === 0)
+      continue;
+    for (let component = 0;component < 3; component++)
+      values[i + component] /= length;
+  }
+  return values;
+}
+function offUnitNormals(normal, name) {
+  let count = 0;
+  for (let vertex = 0;vertex < normal.count; vertex++) {
+    const length = Math.hypot(normal.getX(vertex), normal.getY(vertex), normal.getZ(vertex));
+    if (length < 0.000001)
+      throw new TypeError(`${name}: normal at vertex ${vertex} has zero length, so it has no direction to export. Build revolved profiles with lathe or revolveGeo, or recompute the normals with creaseNormals.`);
+    if (Math.abs(length - 1) > UNIT_NORMAL_TOLERANCE)
+      count++;
+  }
+  return count;
+}
 function noteMeshList(names) {
   const counts = new Map;
   for (const name of names)
@@ -16925,6 +16947,10 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
         }
       }
     }
+    const normal = geometry.getAttribute("normal");
+    const offUnit = normal?.itemSize === 3 ? offUnitNormals(normal, name) : 0;
+    if (offUnit > 0)
+      addNote(mesh, name, "NORMALS_NORMALISED", `${offUnit} non-unit normals were scaled to unit length on export.`);
     const index = geometry.getIndex();
     if ((index?.count ?? position.count) % 3 !== 0)
       throw new TypeError(`${name}: triangle indices/vertices must be a multiple of three.`);
@@ -16970,7 +16996,7 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
   });
   return warnings.map((warning) => typeof warning === "string" ? warning : formatNoteGroup(warning));
 }
-var EXPORTED_GEOMETRY_ATTRIBUTES, CUSTOM_EXPORT_ATTRIBUTES, AUTHOR_ATTRIBUTE_PATTERN, AUTHOR_ATTRIBUTE_COMPONENTS, AUTHOR_ATTRIBUTE_MAX_NAME = 64, TEXTURE_SLOTS, THREE_GEOMETRY_ATTRIBUTES, NOTE_NAMES_SHOWN = 3;
+var EXPORTED_GEOMETRY_ATTRIBUTES, CUSTOM_EXPORT_ATTRIBUTES, AUTHOR_ATTRIBUTE_PATTERN, AUTHOR_ATTRIBUTE_COMPONENTS, AUTHOR_ATTRIBUTE_MAX_NAME = 64, TEXTURE_SLOTS, THREE_GEOMETRY_ATTRIBUTES, UNIT_NORMAL_TOLERANCE = 0.0005, NOTE_NAMES_SHOWN = 3;
 var init_geometry_export = __esm(() => {
   EXPORTED_GEOMETRY_ATTRIBUTES = {
     position: 3,
@@ -33197,7 +33223,7 @@ function bridgeGeometry(doc, buf, geometry, material, meshName, atlas) {
   }
   const normAttr = geometry.getAttribute("normal");
   if (normAttr) {
-    prim.setAttribute("NORMAL", doc.createAccessor(`${meshName}_norm`).setArray(geometryAttributeValues(normAttr)).setType(TYPE_VEC3).setBuffer(buf));
+    prim.setAttribute("NORMAL", doc.createAccessor(`${meshName}_norm`).setArray(unitNormalValues(normAttr)).setType(TYPE_VEC3).setBuffer(buf));
   }
   const uvAttr = geometry.getAttribute("uv");
   if (uvAttr) {

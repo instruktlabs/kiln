@@ -59,6 +59,7 @@ import {
   CUSTOM_EXPORT_ATTRIBUTES,
   customAttributeSemantic,
   geometryAttributeValues,
+  unitNormalValues,
   inspectGeometryExport,
   validateMaterialGroups,
   type GeometryExportPolicy,
@@ -802,7 +803,7 @@ function bridgeGeometry(
       'NORMAL',
       doc
         .createAccessor(`${meshName}_norm`)
-        .setArray(geometryAttributeValues(normAttr))
+        .setArray(unitNormalValues(normAttr))
         .setType(TYPE_VEC3)
         .setBuffer(buf),
     );
