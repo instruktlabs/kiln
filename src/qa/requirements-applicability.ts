@@ -19,7 +19,8 @@ interface RuleMapping {
     | 'connectivity'
     | 'partVolume'
     | 'sweep'
-    | 'rig';
+    | 'rig'
+    | 'validation';
   observation?: true;
 }
 /** Exhaustive migration inventory. Labels and source categories are deliberately absent. */
@@ -96,6 +97,8 @@ export const REQUIREMENTS_RULE_MAP: readonly RuleMapping[] = [
   },
   { id: 'REF_COMPARISON', mode: 'observe', keys: [], observation: true },
   { id: 'SWEEP_SELF_INTERSECTION', mode: 'observe', keys: [], observation: true, kernel: 'sweep' },
+  // Host-bound final-GLB profile (#208); evaluated by appendRequirementsFinalQa only.
+  { id: 'HOST_VALIDATION_PROFILE', mode: 'enforce', keys: ['validation'], kernel: 'validation' },
 ];
 export interface UnevaluatedRequirement {
   key: RequirementKey;
@@ -188,6 +191,7 @@ export function resolveRequirementsApplicability(
     animation: ['clips'],
     representation: ['precomputedTangents'],
     externalSupport: ['supports'],
+    validation: ['version', 'profileId', 'mode', 'checks'],
   };
   for (const [key, statement] of Object.entries(requirements.requirements)) {
     if (statement?.state !== 'requested') continue;

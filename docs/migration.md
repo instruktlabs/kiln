@@ -458,6 +458,87 @@ line and the connectivity observation becomes `GEO_PART_EXTERNAL_SUPPORT`, namin
 declaration. A named part at another height stays a floating part with the mismatch
 stated. Other parts and dispositions are unchanged. The declaration is part of the
 policy hash; its `reason` is not.
+
+### Host validation profile
+
+A host whose destination expects particular glTF facts can state them as the
+optional `requirements.validation` statement of the binding. The value is a closed
+`kiln.validation-profile.v1` record; import its schema and type from
+`@instruktlabs/kiln/requirements` (`ValidationProfileV1Schema`). Only a `requested`
+statement is evaluated. A binding without the key, including the neutral default,
+runs nothing new.
+
+```json
+"validation": {
+  "state": "requested",
+  "value": {
+    "version": "kiln.validation-profile.v1",
+    "profileId": "holodeck.palm",
+    "mode": "enforce",
+    "checks": [
+      {
+        "id": "frond-sway",
+        "select": { "names": ["Mesh_frond_*"] },
+        "primitives": { "exactly": 1 },
+        "attributes": ["POSITION", "NORMAL", "TEXCOORD_0"],
+        "gradient": {
+          "attribute": "TEXCOORD_0", "component": 1, "axis": "+Y",
+          "from": 0, "to": 1, "tolerance": 0.1, "monotonic": true
+        },
+        "material": { "alphaMode": "OPAQUE", "doubleSided": true }
+      }
+    ]
+  }
+}
+```
+
+The exact rule `HOST_VALIDATION_PROFILE` evaluates the profile on the final GLB
+bytes, after export and any optimization, never on the source scene:
+
+- `select.names` holds 1 to 8 patterns. A pattern matches a whole node name, case
+  sensitively, as written in the final GLB. That is the name `kiln_inspect` shows;
+  `createPart('frond_0', ...)` exports its mesh node as `Mesh_frond_0`. `*` matches
+  any run of characters and `?` exactly one; every other character is literal.
+  Patterns have at most 128 characters and four `*`. Candidates are mesh nodes of
+  the default scene; lower `MSFT_lod` levels are not candidates. `minMatches`
+  defaults to 1, so renaming every matched node is a finding, never a silent pass.
+  `maxMatches` is optional, at most 512.
+- `primitives` is `{ exactly }` or `{ max }`, counted per glTF mesh before any
+  runtime batching. Each material group exports as its own primitive.
+- `attributes` lists semantics required on every primitive of each matched node.
+- `gradient` reads an attribute component along a straight local axis in mesh
+  space, without the node transform. The mean value of vertices in the first and
+  last 5% of the extent must be within `tolerance` of `from` and `to`. With
+  `monotonic`, 16 equal bins must not move against the direction by more than
+  `tolerance`. A primitive with no extent along the axis is unmeasured.
+- `range` is a plain minimum and maximum over every vertex, within `tolerance`.
+- `material` checks `alphaMode` and `doubleSided`. A primitive without a material
+  reads as the glTF default, `OPAQUE` and single-sided.
+
+A profile has 1 to 16 checks with unique ids, each with at least one assertion,
+and serializes to at most 8 KiB. One profile-level `mode` applies in v1: `enforce`
+findings block, so `kiln_render` and `kiln_save` fail like any other enforced
+requirement, and `warn` findings are reported without blocking. `KILN_QA_MODE`
+relaxes the rule as it relaxes every other rule. Findings appear under
+`requirementReadiness` with the codes `HOST_VALIDATION_SELECTOR_UNMATCHED`,
+`HOST_VALIDATION_PRIMITIVE_COUNT`, `HOST_VALIDATION_ATTRIBUTE_MISSING`,
+`HOST_VALIDATION_ATTRIBUTE_RANGE`, `HOST_VALIDATION_ATTRIBUTE_GRADIENT`,
+`HOST_VALIDATION_MATERIAL_ALPHA_MODE` and `HOST_VALIDATION_MATERIAL_DOUBLE_SIDED`,
+each with the profile and the check and assertion as `measurement.name`. A finding
+about a node also names its delivery node path. Evaluation reads at most 4 million attribute elements per profile and
+measures at most 512 nodes per check. Past either limit, or when the GLB cannot be
+read, `HOST_VALIDATION_UNMEASURED` is reported as `observe` and acceptance stays
+`incomplete`. Findings are capped at 32 per check and code, followed by one summary
+finding that counts the rest.
+
+The profile is part of the binding's `policyHash`. Changing it requires the host
+store's `replace`, which appends history and changes the hash. Retained artifacts
+from the earlier revision then fail `kiln_finish` and Live Review save, and
+`kiln_save` evaluates again under the new profile. Within one MCP session the
+binding is fixed; a new profile needs a new session. `kiln_discover` with
+`capabilities: true` reports `requirements.declared.validationProfile`, labelled
+as host-declared, so an author can read the destination's checks before building.
+
 ## Review explicit legacy data conversion
 
 Library callers of `@instruktlabs/kiln/qa` now use `collectRequirementsSceneEvidence`

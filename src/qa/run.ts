@@ -27,6 +27,7 @@ import {
   type QaFinding,
 } from './types';
 import { UNIVERSAL_QA_RULES } from './universal';
+import { HOST_VALIDATION_QA_RULE } from './validation-profile';
 import type { KhronosGltfValidationReport } from './gltf';
 import type { KhronosGltfIssue } from './gltf';
 import type { MaterialBudgetWarningV1, MaterialMetricsV1 } from '../material-metrics';
@@ -46,6 +47,7 @@ export const DETERMINISTIC_QA_REGISTRY = new QaRegistry([
   SWEEP_QA_RULE,
   PART_CONNECTIVITY_QA_RULE,
   REFERENCE_COMPARISON_QA_RULE,
+  HOST_VALIDATION_QA_RULE,
 ]);
 
 export function runDeterministicSceneQa(

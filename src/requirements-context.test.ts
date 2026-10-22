@@ -108,3 +108,46 @@ test('checkpoint decoding rejects legacy policy and inconsistent hashes', () => 
   checkpoint.binding.requirements.requirements.grounding = requestedRequirement({});
   expect(() => readRequirementsCheckpoint(checkpoint)).toThrow(/binding|requirements/i);
 });
+test('a validation profile is host policy: replacing it changes both policy hashes', () => {
+  const profile = (doubleSided: boolean) => ({
+    version: 'kiln.validation-profile.v1' as const,
+    profileId: 'holodeck.palm',
+    mode: 'enforce' as const,
+    checks: [{ id: 'frond', select: { names: ['frond_*'] }, material: { doubleSided } }],
+  });
+  const store = createAssetRequirementsStore();
+  const key = { taskId: 'palm', lineageId: 'palm-a' };
+  const first = store.host.bind(
+    key,
+    createAssetRequirementsV1({
+      requirements: { validation: requestedRequirement(profile(false)) },
+    }),
+    authority,
+  );
+  const second = store.host.replace(
+    key,
+    first.revision,
+    createAssetRequirementsV1({
+      requirements: { validation: requestedRequirement(profile(true)) },
+    }),
+    { ...authority, reason: 'stricter destination' },
+  );
+  expect(second.policyHash).not.toBe(first.policyHash);
+  expect(second.history.map((change) => change.policyHash)).toEqual([
+    first.policyHash,
+    second.policyHash,
+  ]);
+  const before = resolveRequirementsContext(first);
+  const after = resolveRequirementsContext(second);
+  expect(after.policyHash).not.toBe(before.policyHash);
+  expect(after.adviceHash).toBe(before.adviceHash);
+  // Only a requested profile is policy; an inferred one is advice and never evaluates.
+  const inferred = resolveRequirementsContext(
+    binding(
+      createAssetRequirementsV1({
+        requirements: { validation: { state: 'inferred', value: profile(true) } },
+      }),
+    ),
+  );
+  expect(inferred.policyHash).toBe(resolveRequirementsContext(binding()).policyHash);
+});

@@ -46,6 +46,7 @@ import {
   ENVIRONMENT_QA_RULES,
 } from './environment';
 import { resolveRequirementsApplicability } from './requirements-applicability';
+import { evaluateValidationProfileGlb, HOST_VALIDATION_QA_RULE } from './validation-profile';
 import {
   createRequirementsQaReport,
   type AssetRequirementsQaReportV2,
@@ -75,6 +76,7 @@ const registry = new QaRegistry([
   VFX_EXACT_QA_RULE,
   VFX_ADVISORY_QA_RULE,
   ASSET_SCOPE_QA_RULE,
+  HOST_VALIDATION_QA_RULE,
 ]);
 
 interface RequirementsSceneEvidence {
@@ -255,6 +257,8 @@ export function runRequirementsSceneQa(
       continue;
     }
     if (decision.ruleId === ASSET_SCOPE_QA_RULE.id && !scopeObservation) continue;
+    // Only the final GLB shows the destination's primitives; appendRequirementsFinalQa runs it.
+    if (decision.ruleId === HOST_VALIDATION_QA_RULE.id) continue;
     if (decision.ruleId === PART_CONNECTIVITY_QA_RULE.id && !(scene instanceof Object3D)) continue;
     executedRules.push(decision.ruleId);
     if (decision.ruleId === PROP_EXACT_QA_RULE.id) {
@@ -369,6 +373,8 @@ export function appendRequirementsQa(
   report: AssetRequirementsQaReportV2,
   findings: readonly (QaFinding | RequirementsQaFinding)[],
   metrics: RequirementsQaReportOptions['metrics'] = {},
+  /** Rules measured only now, such as those that need final GLB bytes. */
+  executedRules: readonly string[] = [],
 ): AssetRequirementsQaReportV2 {
   const priorMetrics = Object.fromEntries(
     Object.entries(report.dimensions).flatMap(([dimension, value]) =>
@@ -380,7 +386,10 @@ export function appendRequirementsQa(
     merged[dimension] = { ...priorMetrics[dimension], ...value };
   return createRequirementsQaReport(context, {
     findings: [...Object.values(report.dimensions).flatMap((x) => x.findings), ...findings],
-    executedRules: report.rules.filter((x) => x.status === 'evaluated').map((x) => x.id),
+    executedRules: [
+      ...report.rules.filter((x) => x.status === 'evaluated').map((x) => x.id),
+      ...executedRules,
+    ],
     modes: Object.fromEntries(report.rules.map((x) => [x.id, x.mode])),
     evaluatedDimensions: [
       ...new Set([
@@ -470,6 +479,32 @@ export async function appendRequirementsFinalQa(
     result = appendRequirementsQa(context, result, findings, {
       exportIntegrity: finalEffectsMetrics(evidence),
     });
+  }
+  const validation = context.requirements.requirements.validation;
+  const hostRule = report.rules.find((r) => r.id === HOST_VALIDATION_QA_RULE.id);
+  if (
+    validation?.state === 'requested' &&
+    hostRule &&
+    hostRule.status !== 'notRequested' &&
+    hostRule.mode !== 'off'
+  ) {
+    const evaluation = await evaluateValidationProfileGlb(validation.value, bytes);
+    // The profile chooses block or warn; a relaxed rule mode (KILN_QA_MODE) only downgrades.
+    const findings =
+      hostRule.mode === 'enforce'
+        ? evaluation.findings
+        : evaluation.findings.map((f) => ({
+            ...f,
+            disposition:
+              f.disposition === 'observe' ? f.disposition : (hostRule.mode as 'observe' | 'warn'),
+          }));
+    result = appendRequirementsQa(
+      context,
+      result,
+      findings,
+      { requirementReadiness: evaluation.metrics },
+      evaluation.complete ? [HOST_VALIDATION_QA_RULE.id] : [],
+    );
   }
   return result;
 }

@@ -26,6 +26,7 @@ import {
   VFX_SUBTYPES,
   validateVfxIntentV1,
 } from './breadth';
+import { ValidationProfileV1Schema } from './validation-profile';
 
 const text = z
   .string()
@@ -250,6 +251,8 @@ const requirements = z.strictObject({
   access: statement(
     z.strictObject({ enterable: z.boolean().optional(), driveable: z.boolean().optional() }),
   ).optional(),
+  /** Host-declared destination checks on the final GLB (#208); never model-authored. */
+  validation: statement(ValidationProfileV1Schema).optional(),
 });
 
 export const AssetRequirementsV1Schema = z

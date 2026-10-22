@@ -100,6 +100,21 @@ does not publish a package.
   `GEO_PART_EXTERNAL_SUPPORT` naming the declaration. Undeclared parts, parts at another
   height and every other disposition are unchanged. The declaration is covered by the policy
   hash.
+- Add natural material presets `beach-sand`, `coral-limestone`, `coral-limestone-wet`,
+  `palm-frond`, `driftwood` and `thatch`, tagged by family (`ground`, `rock`, `foliage`,
+  `wood`, `fiber`). `palm-frond` is an alpha-tested, double-sided cutout saved as a
+  `schemaVersion:2` record; `createMaterialPresetDraftAny` returns any preset's draft, and
+  preset summaries report `recordSchemaVersion`. The docs list the presets as a table that a
+  test keeps in step with the catalog (#210).
+- Add an opt-in host validation profile to requirements ([#208](https://github.com/instruktlabs/kiln/issues/208)).
+  A host binding can carry `requirements.validation`, a closed `kiln.validation-profile.v1`
+  statement that selects final GLB nodes by name and checks primitive counts, required
+  attributes, an attribute range or gradient along a local axis, and material alpha mode
+  and sidedness. The exact rule `HOST_VALIDATION_PROFILE` evaluates it on the final bytes;
+  in `enforce` mode its findings block `kiln_render` and `kiln_save`. The profile is part
+  of the policy hash, so changing it refuses earlier reviewed artifacts. Tool input and
+  source cannot weaken it, and Discovery capabilities show it as host-declared. Bindings
+  without the key are unchanged.
 
 ## 1.3.1 (2026-10-17)
 

@@ -160,6 +160,14 @@ documented, qualified entrypoint rather than importing the entire Node host.
 These entries require 1.1 or later; 1.0.0 does not expose them.
 They contain no cloud-provider, account, tenant or hosted-service policy.
 
+The `requirements` entry exports the host requirements store, binding context and
+asset-requirements schema. Its optional `validation` statement
+(`ValidationProfileV1Schema`, `kiln.validation-profile.v1`) declares destination
+checks that the exact rule `HOST_VALIDATION_PROFILE` evaluates on the final GLB.
+The `qa` entry exports `evaluateValidationProfileGlb` to run the same evaluation
+on GLB bytes a host already holds. See the
+[host validation profile](migration.md#host-validation-profile).
+
 `renderGLB` defaults to trusted in-process execution. A hosted service accepting
 untrusted programs must inject or select the qualified isolated evaluator described
 in the runtime contract. A subprocess provides a worker boundary; it does not alone

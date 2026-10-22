@@ -156,6 +156,15 @@ impostor, baked attributes, a packed two-region atlas, a budget, a required soli
 instanced bolts. `src/__tests__/delivery-fixture.test.ts` renders it through both
 converters and loads its three.js runtime export through `GLTFLoader`.
 
+## Host validation profiles
+
+Nothing on this page requires a particular primitive count, attribute gradient or
+material flag. A host whose destination does can bind an opt-in
+[host validation profile](migration.md#host-validation-profile) in its requirements.
+That profile is the host's contract, evaluated on the final GLB by
+`HOST_VALIDATION_PROFILE`; its `enforce` findings block. Without such a binding,
+including in the neutral default, no profile runs and nothing on this page changes.
+
 ## Out of scope
 
 Not built in this cycle: a crash-damage or tearing helper, a kit snap solver or

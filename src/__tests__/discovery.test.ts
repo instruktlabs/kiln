@@ -3,6 +3,9 @@ import { createKilnProgramToolRegistry, createKilnNativeToolRegistry } from '../
 import { createLocalToolContext } from '../local-runtime';
 import type { DiscoveryResponse } from '../discovery/service';
 import { MemoryProgramStore } from '../program-store';
+import { createAssetRequirementsStore } from '../requirements-store';
+import { createAssetRequirementsV1, requestedRequirement } from '../contracts/requirements';
+import { resolveRequirementsContext } from '../requirements-context';
 
 const discovery = () =>
   createKilnProgramToolRegistry().find((tool) => tool.name === 'kiln_discover')!;
@@ -129,6 +132,46 @@ describe('progressive capability discovery', () => {
     })) as typeof result;
     expect(trusted.capabilities.execution.mode).toBe('trusted-local');
     expect(trusted.capabilities.execution.deadlineMs).toBeUndefined();
+  });
+  it('reports the host-bound requirements and declared validation profile separately from engine advice', async () => {
+    const profile = {
+      version: 'kiln.validation-profile.v1' as const,
+      profileId: 'holodeck.palm',
+      mode: 'enforce' as const,
+      checks: [{ id: 'frond', select: { names: ['Mesh_frond_*'] }, primitives: { exactly: 1 } }],
+    };
+    const requirements = createAssetRequirementsStore().host.bind(
+      { taskId: 'palm', lineageId: 'palm-a' },
+      createAssetRequirementsV1({ requirements: { validation: requestedRequirement(profile) } }),
+      { actor: 'holodeck', reason: 'Destination', source: 'brief' },
+    );
+    type Capabilities = {
+      capabilities: {
+        requirements: {
+          bound: boolean;
+          policyHash: string;
+          declared: { source: string; validationProfile: unknown } | null;
+        };
+      };
+    };
+    const bound = (await createKilnProgramToolRegistry({ requirements })
+      .find((t) => t.name === 'kiln_discover')!
+      .run({ capabilities: true })) as Capabilities;
+    expect(bound.capabilities.requirements).toEqual({
+      bound: true,
+      policyHash: resolveRequirementsContext(requirements).policyHash,
+      declared: { source: 'host-binding', validationProfile: profile },
+    });
+    const native = (await createKilnNativeToolRegistry({ requirements }, {})
+      .find((t) => t.name === 'kiln_discover')!
+      .run({ capabilities: true })) as Capabilities;
+    expect(native.capabilities.requirements).toEqual(bound.capabilities.requirements);
+    const neutral = (await discovery().run({ capabilities: true })) as Capabilities;
+    expect(neutral.capabilities.requirements).toEqual({
+      bound: false,
+      policyHash: resolveRequirementsContext().policyHash,
+      declared: null,
+    });
   });
   it('returns a compact complete overview and an exact lookup with a usable example', async () => {
     const tool = discovery();
