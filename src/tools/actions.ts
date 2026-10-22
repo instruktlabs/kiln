@@ -98,13 +98,39 @@ interface Issue {
   errors?: unknown[][];
 }
 
+/** zod's text for a refine that gave no message: it names no rule. */
+const BARE_REFINE_MESSAGE = 'Invalid input';
+
 /**
  * "field: what is wrong" per issue. A union reports only "Invalid input" at
  * its root; the branch that came closest (the fewest issues) says which field
- * was wrong, so that branch's issues stand in for it.
+ * was wrong, so that branch's issues stand in for it. A message-less refine's
+ * "Invalid input" is dropped when an issue inside the same record already says
+ * what is wrong (#198: a long procedural name also came back as a bare
+ * "maps.0.procedural: Invalid input").
  */
-function flattenIssues(issues: readonly unknown[], prefix: (string | number)[] = []): string[] {
-  const lines: string[] = [];
+function flattenIssues(issues: readonly unknown[]): string[] {
+  const flat = flattenIssuePaths(issues);
+  return flat
+    .filter(
+      ({ code, path, message }) =>
+        !(
+          code === 'custom' &&
+          message === BARE_REFINE_MESSAGE &&
+          flat.some(
+            (other) =>
+              other.path.length > path.length && path.every((key, i) => other.path[i] === key),
+          )
+        ),
+    )
+    .map(({ path, message }) => `${path.join('.') || 'input'}: ${message}`);
+}
+
+function flattenIssuePaths(
+  issues: readonly unknown[],
+  prefix: (string | number)[] = [],
+): { code?: string; path: (string | number)[]; message: string }[] {
+  const lines: { code?: string; path: (string | number)[]; message: string }[] = [];
   for (const raw of issues) {
     const issue = raw as Issue;
     const path = [...prefix, ...(issue.path ?? [])];
@@ -115,10 +141,10 @@ function flattenIssues(issues: readonly unknown[], prefix: (string | number)[] =
       const closest = branches.reduce((best, branch) =>
         branch.length < best.length ? branch : best,
       );
-      lines.push(...flattenIssues(closest, path));
+      lines.push(...flattenIssuePaths(closest, path));
       continue;
     }
-    lines.push(`${path.join('.') || 'input'}: ${issue.message ?? 'invalid'}`);
+    lines.push({ code: issue.code, path, message: issue.message ?? 'invalid' });
   }
   return lines;
 }

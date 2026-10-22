@@ -530,36 +530,39 @@ export function materialLibraryPortableSpec(
 
 /** New versions are explicit; every exported V1 schema/type above stays V1. */
 const authoringSchemas = makeMaterialAuthoringSchemas(materialProceduralSpecSchema);
-const samplerSchema = authoringSchemas.portableSamplerSchema.refine((value) => {
-  try {
-    return (
-      canonicalMaterialJson(value) === canonicalMaterialJson(canonicalizePortableSamplerV1(value))
-    );
-  } catch {
-    return false;
-  }
-});
-const v3SpecSchema = authoringSchemas.canonicalProceduralTextureSpecV3Schema.refine((value) => {
-  try {
-    return (
-      canonicalMaterialJson(value) ===
-      canonicalMaterialJson(canonicalizeProceduralTextureSpecV3(value))
-    );
-  } catch {
-    return false;
-  }
-});
-const atlasSpecSchema: z.ZodType<CanonicalTextureAtlasSpecV1> =
-  authoringSchemas.canonicalTextureAtlasSpecV1Schema.refine((value) => {
+/** Runs a canonicalizer check only on a value its structural schema accepted. */
+const afterShape = { when: (payload: { issues: readonly unknown[] }) => !payload.issues.length };
+const reason = (error: unknown) => (error instanceof Error ? error.message : String(error));
+/**
+ * Admits a value by its canonicalizer and reports the canonicalizer's own reason (#198). A
+ * bare refine reported zod's "Invalid input", which named no rule; one that ran beside a
+ * field issue repeated it as a second, vaguer line. `stored` also requires the value to
+ * be in canonical form already, as a saved record is.
+ */
+function admittedBy<T>(label: string, canonicalize: (value: T) => unknown, stored: boolean) {
+  return (value: T, context: z.RefinementCtx<T>) => {
     try {
-      return (
-        canonicalMaterialJson(value) ===
-        canonicalMaterialJson(canonicalizeTextureAtlasSpecV1(value))
-      );
-    } catch {
-      return false;
+      const canonical = canonicalize(value);
+      if (stored && canonicalMaterialJson(value) !== canonicalMaterialJson(canonical))
+        context.addIssue({ code: 'custom', message: `${label} must be stored in canonical form.` });
+    } catch (error) {
+      context.addIssue({ code: 'custom', message: reason(error) });
     }
-  });
+  };
+}
+const samplerSchema = authoringSchemas.portableSamplerSchema.superRefine(
+  admittedBy('sampler', canonicalizePortableSamplerV1, true),
+  afterShape,
+);
+const v3SpecSchema = authoringSchemas.canonicalProceduralTextureSpecV3Schema.superRefine(
+  admittedBy('procedural V3 spec', canonicalizeProceduralTextureSpecV3, true),
+  afterShape,
+);
+const atlasSpecSchema: z.ZodType<CanonicalTextureAtlasSpecV1> =
+  authoringSchemas.canonicalTextureAtlasSpecV1Schema.superRefine(
+    admittedBy('atlas spec', canonicalizeTextureAtlasSpecV1, true),
+    afterShape,
+  );
 const atlasManifestSchema: z.ZodType<TextureAtlasManifestV1> =
   authoringSchemas.textureAtlasManifestV1Schema;
 export const materialMapPinSchema = z
@@ -594,11 +597,14 @@ const materialRecipeV2Schema = z.discriminatedUnion('kind', [
     .superRefine((recipe, context) => {
       try {
         validateTextureAtlasManifestV1(recipe.manifest, recipe.spec);
-        if (recipe.compilerId !== recipe.manifest.compilerId) throw new Error('compiler id');
-      } catch {
-        context.addIssue({ code: 'custom', message: 'Invalid stored atlas manifest' });
+        if (recipe.compilerId !== recipe.manifest.compilerId)
+          throw new Error(
+            `recipe compilerId ${recipe.compilerId} does not match the manifest's ${recipe.manifest.compilerId}.`,
+          );
+      } catch (error) {
+        context.addIssue({ code: 'custom', message: `stored atlas manifest: ${reason(error)}` });
       }
-    }),
+    }, afterShape),
 ]);
 export const materialManifestV2Schema = materialManifestSchema
   .omit({ schemaVersion: true, maps: true })
@@ -669,25 +675,17 @@ export const proceduralMaterialDraftV2Schema = proceduralMaterialDraftSchema
             procedural: z
               .union([
                 materialProceduralSpecSchema,
-                authoringSchemas.proceduralTextureSpecV3Schema.refine((value) => {
-                  try {
-                    canonicalizeProceduralTextureSpecV3(value);
-                    return true;
-                  } catch {
-                    return false;
-                  }
-                }),
+                authoringSchemas.proceduralTextureSpecV3Schema.superRefine(
+                  admittedBy('procedural V3 spec', canonicalizeProceduralTextureSpecV3, false),
+                  afterShape,
+                ),
               ])
               .optional(),
             atlas: authoringSchemas.textureAtlasSpecV1Schema
-              .refine((value) => {
-                try {
-                  canonicalizeTextureAtlasSpecV1(value);
-                  return true;
-                } catch {
-                  return false;
-                }
-              })
+              .superRefine(
+                admittedBy('atlas spec', canonicalizeTextureAtlasSpecV1, false),
+                afterShape,
+              )
               .optional(),
           })
           .strict()

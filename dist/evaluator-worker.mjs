@@ -30690,6 +30690,17 @@ function materialLibraryResourceId(manifest, slot) {
     throw new Error("Unknown material slot");
   return `kiln.library.${manifest.revisionId.slice(7)}.${slotNames[slot]}`;
 }
+function admittedBy(label, canonicalize, stored) {
+  return (value, context) => {
+    try {
+      const canonical = canonicalize(value);
+      if (stored && canonicalMaterialJson(value) !== canonicalMaterialJson(canonical))
+        context.addIssue({ code: "custom", message: `${label} must be stored in canonical form.` });
+    } catch (error) {
+      context.addIssue({ code: "custom", message: reason(error) });
+    }
+  };
+}
 function materialRecordDependencyPins(manifest) {
   return manifest.schemaVersion === 1 ? [] : manifest.dependencies.map((pin) => ({ ...pin }));
 }
@@ -30764,7 +30775,7 @@ function validateMaterialRecordShapeAny(record) {
   }
   return manifest;
 }
-var MATERIAL_LIBRARY_LIMITS, MATERIAL_LIBRARY_SLOTS, MATERIAL_LIBRARY_USAGE, slotNames, materialLibraryIdSchema, materialLibraryHashSchema, text3, url, materialSourceSchema, materialTransformSchema, color2, count4, layerCommon, materialProceduralSpecSchema, materialNormalDerivationSchema, proceduralSchema, parametersSchema, materialManifestSchema, proceduralMaterialDraftSchema, materialLibraryPayloadSchema, authoringSchemas, samplerSchema, v3SpecSchema, atlasSpecSchema, atlasManifestSchema, materialMapPinSchema, materialRecipeV2Schema, materialManifestV2Schema, materialManifestAnySchema, materialLibraryPayloadV2Schema, materialLibraryPayloadAnySchema, proceduralMaterialDraftV2Schema, proceduralMaterialDraftAnySchema;
+var MATERIAL_LIBRARY_LIMITS, MATERIAL_LIBRARY_SLOTS, MATERIAL_LIBRARY_USAGE, slotNames, materialLibraryIdSchema, materialLibraryHashSchema, text3, url, materialSourceSchema, materialTransformSchema, color2, count4, layerCommon, materialProceduralSpecSchema, materialNormalDerivationSchema, proceduralSchema, parametersSchema, materialManifestSchema, proceduralMaterialDraftSchema, materialLibraryPayloadSchema, authoringSchemas, afterShape, reason = (error) => error instanceof Error ? error.message : String(error), samplerSchema, v3SpecSchema, atlasSpecSchema, atlasManifestSchema, materialMapPinSchema, materialRecipeV2Schema, materialManifestV2Schema, materialManifestAnySchema, materialLibraryPayloadV2Schema, materialLibraryPayloadAnySchema, proceduralMaterialDraftV2Schema, proceduralMaterialDraftAnySchema;
 var init_material_library = __esm(() => {
   init_procedural_material_v2();
   init_procedural_texture_v3_contract();
@@ -30986,27 +30997,10 @@ var init_material_library = __esm(() => {
     }).strict()).max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
   }).strict();
   authoringSchemas = makeMaterialAuthoringSchemas(materialProceduralSpecSchema);
-  samplerSchema = authoringSchemas.portableSamplerSchema.refine((value) => {
-    try {
-      return canonicalMaterialJson(value) === canonicalMaterialJson(canonicalizePortableSamplerV1(value));
-    } catch {
-      return false;
-    }
-  });
-  v3SpecSchema = authoringSchemas.canonicalProceduralTextureSpecV3Schema.refine((value) => {
-    try {
-      return canonicalMaterialJson(value) === canonicalMaterialJson(canonicalizeProceduralTextureSpecV3(value));
-    } catch {
-      return false;
-    }
-  });
-  atlasSpecSchema = authoringSchemas.canonicalTextureAtlasSpecV1Schema.refine((value) => {
-    try {
-      return canonicalMaterialJson(value) === canonicalMaterialJson(canonicalizeTextureAtlasSpecV1(value));
-    } catch {
-      return false;
-    }
-  });
+  afterShape = { when: (payload) => !payload.issues.length };
+  samplerSchema = authoringSchemas.portableSamplerSchema.superRefine(admittedBy("sampler", canonicalizePortableSamplerV1, true), afterShape);
+  v3SpecSchema = authoringSchemas.canonicalProceduralTextureSpecV3Schema.superRefine(admittedBy("procedural V3 spec", canonicalizeProceduralTextureSpecV3, true), afterShape);
+  atlasSpecSchema = authoringSchemas.canonicalTextureAtlasSpecV1Schema.superRefine(admittedBy("atlas spec", canonicalizeTextureAtlasSpecV1, true), afterShape);
   atlasManifestSchema = authoringSchemas.textureAtlasManifestV1Schema;
   materialMapPinSchema = z5.object({
     resourceId: materialLibraryIdSchema,
@@ -31033,11 +31027,11 @@ var init_material_library = __esm(() => {
       try {
         validateTextureAtlasManifestV1(recipe.manifest, recipe.spec);
         if (recipe.compilerId !== recipe.manifest.compilerId)
-          throw new Error("compiler id");
-      } catch {
-        context.addIssue({ code: "custom", message: "Invalid stored atlas manifest" });
+          throw new Error(`recipe compilerId ${recipe.compilerId} does not match the manifest's ${recipe.manifest.compilerId}.`);
+      } catch (error) {
+        context.addIssue({ code: "custom", message: `stored atlas manifest: ${reason(error)}` });
       }
-    })
+    }, afterShape)
   ]);
   materialManifestV2Schema = materialManifestSchema.omit({ schemaVersion: true, maps: true }).extend({
     schemaVersion: z5.literal(2),
@@ -31066,23 +31060,9 @@ var init_material_library = __esm(() => {
       sampler: samplerSchema,
       procedural: z5.union([
         materialProceduralSpecSchema,
-        authoringSchemas.proceduralTextureSpecV3Schema.refine((value) => {
-          try {
-            canonicalizeProceduralTextureSpecV3(value);
-            return true;
-          } catch {
-            return false;
-          }
-        })
+        authoringSchemas.proceduralTextureSpecV3Schema.superRefine(admittedBy("procedural V3 spec", canonicalizeProceduralTextureSpecV3, false), afterShape)
       ]).optional(),
-      atlas: authoringSchemas.textureAtlasSpecV1Schema.refine((value) => {
-        try {
-          canonicalizeTextureAtlasSpecV1(value);
-          return true;
-        } catch {
-          return false;
-        }
-      }).optional()
+      atlas: authoringSchemas.textureAtlasSpecV1Schema.superRefine(admittedBy("atlas spec", canonicalizeTextureAtlasSpecV1, false), afterShape).optional()
     }).strict().refine((map) => map.procedural !== undefined !== (map.atlas !== undefined), "Supply exactly one procedural or atlas recipe")).min(1).max(5)
   }).strict();
   proceduralMaterialDraftAnySchema = z5.union([

@@ -93,6 +93,10 @@ describe('markOpenShell', () => {
       () => markOpenShell(new THREE.Mesh(), 'x'.repeat(201)),
     ])
       expect(openShellError(run).message).toContain('markOpenShell(part, reason)');
+    // #198: a capped field names its limit.
+    expect(
+      openShellError(() => markOpenShell(new THREE.Mesh(), 'x'.repeat(201))).message,
+    ).toContain('at most 200 characters');
     expect(() => markOpenShell(new THREE.Mesh(), 'x'.repeat(200))).not.toThrow();
   });
 });

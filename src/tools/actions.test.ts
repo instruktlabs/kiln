@@ -52,6 +52,20 @@ describe('describeInputError', () => {
     expect(generic).toContain("nested shapes: kiln_discover({ ids: ['shape:...'] })");
   });
 
+  it("drops zod's bare parent line when an issue inside that record already says what is wrong", () => {
+    // #198: a 100-character procedural name came back as the size limit and a second
+    // "maps.0.procedural: Invalid input" that named no rule.
+    const nested = z.strictObject({
+      recipe: z.strictObject({ name: z.string().max(80) }).refine(() => false),
+      draft: z.strictObject({ name: z.string().max(80) }).refine(() => false, 'Draft is closed'),
+    });
+    const parsed = nested.safeParse({ recipe: { name: 'x'.repeat(100) }, draft: { name: 'y' } });
+    const message = describeInputError('kiln_material', parsed.error)!;
+    expect(message).toContain('recipe.name: Too big: expected string to have <=80 characters');
+    expect(message).not.toContain('Invalid input');
+    expect(message).toContain('draft: Draft is closed');
+  });
+
   it('reads the keys of an advertised object schema and nothing from any other schema', () => {
     expect(schemaFields(input)).toEqual(['action', 'materialId', 'revisionId']);
     expect(schemaFields(z.string())).toEqual([]);

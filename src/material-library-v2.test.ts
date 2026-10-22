@@ -3,9 +3,12 @@ import { createHash } from 'node:crypto';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import type { z } from 'zod';
 import {
   canonicalMaterialJson,
   materialLibraryPortableSpec,
+  materialManifestV2Schema,
+  proceduralMaterialDraftV2Schema,
   materialLibraryResourceId,
   validateMaterialManifestAny,
   type MaterialSourceV1,
@@ -24,6 +27,8 @@ import {
   resolveMaterialRecordClosure,
 } from './material-library-node';
 import { compilePortableMaterialSpecV3 } from './portable-material-runtime';
+import { describeInputError } from './tools/actions';
+import { TEXTURE_ATLAS_COMPILER_ID_V1_2 } from './texture-atlas-contract';
 const temporaryRoots: string[] = [];
 afterEach(async () => {
   for (const root of temporaryRoots.splice(0)) await rm(root, { recursive: true, force: true });
@@ -422,4 +427,122 @@ test('import deduplicates exact compound context identities and rejects conflict
   await expect(library.import([record], { materials: [bad] })).rejects.toThrow(
     /integrity|conflict|hash/i,
   );
+});
+
+// #198: a recipe only its canonicalizer rejects reached the agent as a bare
+// "maps.0.procedural: Invalid input". Each refine now reports the canonicalizer's
+// reason once, at the field it checked, in the text kiln_material returns.
+const toolError = (schema: z.ZodType, value: unknown): string => {
+  const parsed = schema.safeParse(value);
+  expect(parsed.success).toBe(false);
+  return describeInputError('kiln_material', parsed.error)!;
+};
+const stamps = {
+  op: 'stamps',
+  shape: { kind: 'rectangle', x: 0, y: 0, width: 1, height: 1 },
+  rgba: [1, 2, 3, 255],
+  opacity: 1,
+  count: 2,
+  seed: 1,
+  area: { x: 0, y: 0, width: 8, height: 4 },
+  periodic: false,
+};
+const withMap = (map: Record<string, unknown>) => {
+  const value = draft() as Record<string, unknown> & { maps: Record<string, unknown>[] };
+  value.maps = [{ ...value.maps[0]!, ...map }];
+  return value;
+};
+test('draft V3 recipe errors name the canonicalizer rule instead of Invalid input', () => {
+  const message = toolError(
+    proceduralMaterialDraftV2Schema,
+    withMap({ procedural: { ...recipe, usage: 'normal', operations: [stamps] } }),
+  );
+  expect(message).toContain(
+    'maps.0.procedural: proceduralTexture V3: stamps are supported only for color usages albedo and emissive',
+  );
+  expect(message).not.toContain('Invalid input');
+});
+test('a draft field the schema already bounds is reported once, without a parent line', () => {
+  const message = toolError(
+    proceduralMaterialDraftV2Schema,
+    withMap({ procedural: { ...recipe, name: 'x'.repeat(100) } }),
+  );
+  expect(message).toContain(
+    'maps.0.procedural.name: Too big: expected string to have <=80 characters',
+  );
+  expect(message).not.toContain('maps.0.procedural:');
+  expect(message).not.toContain('Invalid input');
+});
+test('draft atlas errors name the canonicalizer rule instead of Invalid input', () => {
+  const message = toolError(
+    proceduralMaterialDraftV2Schema,
+    withMap({
+      procedural: undefined,
+      atlas: {
+        schemaVersion: 1,
+        width: 8,
+        height: 8,
+        usage: 'albedo',
+        regions: [
+          {
+            name: 'a',
+            content: { x: 2, y: 2, width: 4, height: 4 },
+            source: { kind: 'procedural', spec: { ...recipe, width: 4, usage: 'roughness' } },
+          },
+        ],
+      },
+    }),
+  );
+  expect(message).toContain('maps.0.atlas: textureAtlas: source usage does not match atlas usage');
+  expect(message).not.toContain('Invalid input');
+});
+test('a sampler outside the portable set names the field and its options once', () => {
+  const message = toolError(
+    proceduralMaterialDraftV2Schema,
+    withMap({ sampler: { ...sampler, wrapS: 'clamp' } }),
+  );
+  expect(message).toContain('maps.0.sampler.wrapS');
+  expect(message).toContain('repeat');
+  expect(message).not.toContain('Invalid input');
+});
+test('stored V3 and atlas recipe errors carry the canonicalizer reason', async () => {
+  const v3 = (await createMaterialRecordV2(draft())).manifest;
+  const spec = structuredClone(v3);
+  const procedural = spec.maps[0]!.recipe as { spec: Record<string, unknown> };
+  procedural.spec = { ...procedural.spec, usage: 'normal', operations: [stamps] };
+  const v3Message = toolError(materialManifestV2Schema, spec);
+  expect(v3Message).toContain(
+    'maps.0.recipe.spec: proceduralTexture V3: stamps are supported only for color usages albedo and emissive',
+  );
+  expect(v3Message).not.toContain('Invalid input');
+
+  const child = await createMaterialRecordV2(draft());
+  const atlas = (await createMaterialRecordV2(atlasDraft(child), { materials: [child] })).manifest;
+  const dilated = structuredClone(atlas);
+  const dilatedSpec = (dilated.maps[0]!.recipe as { spec: Record<string, unknown> }).spec as {
+    usage: string;
+    regions: Record<string, unknown>[];
+  };
+  dilatedSpec.usage = 'normal';
+  dilatedSpec.regions[0]!.edgeMode = 'mask-rgb-dilate';
+  const specMessage = toolError(materialManifestV2Schema, dilated);
+  expect(specMessage).toContain(
+    'maps.0.recipe.spec: textureAtlas: mask RGB dilation requires color usage',
+  );
+  expect(specMessage).not.toContain('Invalid input');
+  expect(specMessage).not.toContain('Invalid stored atlas manifest');
+
+  const compiler = structuredClone(atlas);
+  (compiler.maps[0]!.recipe as { compilerId: string }).compilerId = TEXTURE_ATLAS_COMPILER_ID_V1_2;
+  const compilerMessage = toolError(materialManifestV2Schema, compiler);
+  expect(compilerMessage).toContain(
+    `maps.0.recipe: stored atlas manifest: recipe compilerId ${TEXTURE_ATLAS_COMPILER_ID_V1_2} does not match the manifest's`,
+  );
+
+  const layout = structuredClone(atlas);
+  (layout.maps[0]!.recipe as { manifest: { layoutHash: string } }).manifest.layoutHash =
+    `sha256:${'0'.repeat(64)}`;
+  const layoutMessage = toolError(materialManifestV2Schema, layout);
+  expect(layoutMessage).toContain('maps.0.recipe: stored atlas manifest: ');
+  expect(layoutMessage).not.toMatch(/stored atlas manifest\.?(;|$| Check)/);
 });

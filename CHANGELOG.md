@@ -7,6 +7,13 @@ does not publish a package.
 
 ## Unreleased
 
+- Name the rule in material validation errors ([#198](https://github.com/instruktlabs/kiln/issues/198)).
+  Sampler, procedural V3 and atlas checks now report the canonicalizer's reason (for
+  example "stamps are supported only for color usages albedo and emissive") instead of a
+  bare "Invalid input", and run only after the field checks pass. Tool input errors drop
+  a bare parent "Invalid input" line when an issue inside that record already explains
+  the failure.
+
 ## 1.3.1 (2026-10-17)
 
 - Document private security reporting, include the policy in distributed
