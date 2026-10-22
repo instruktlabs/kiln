@@ -7,7 +7,7 @@ does not publish a package.
 
 ## Unreleased
 
-## 1.3.1 (unpublished)
+## 1.3.1 (2026-10-17)
 
 - Document private security reporting, include the policy in distributed
   packages, complete Codex plugin website and repository metadata, and
