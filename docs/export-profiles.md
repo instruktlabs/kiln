@@ -191,7 +191,9 @@ What it does, in order:
 3. Vertices are reordered for compression, then quantized with `KHR_mesh_quantization`
    per mesh: position 14 bits, normal 10, texcoord 12, colour 8, weights 8.
    Underscore attributes such as `_EDGE` and `_CAVITY` are **not** quantized and stay
-   FLOAT. Buffers are written with `EXT_meshopt_compression` (required).
+   FLOAT. Buffers are written with `EXT_meshopt_compression` (required) unless the
+   caller passes `compression: 'none'` (CLI `--compression none`): then buffers stay plain,
+   no Meshopt decoder is needed, and quantization, instancing and everything below stay.
 4. Textures become KTX2 (`KHR_texture_basisu`) only when the library caller passes a
    `ktx2Encoder`; Kiln ships none, so the CLI reports `ktx2: { status: 'skipped' }` and
    textures stay PNG or JPEG.
@@ -202,6 +204,7 @@ Roles and kit extras, hidden collider nodes (`KHR_node_visibility`), anchors, po
 | Field | Meaning |
 | --- | --- |
 | `extensionsUsed`, `extensionsRequired` | The derived GLB's extension sets |
+| `compression` | `{ extension: 'EXT_meshopt_compression', method: 'quantize' }`, or `{ extension: 'none' }` |
 | `quantization` | Bits per attribute class; `customAttributes: 'float32'` |
 | `nodeScale` | Every node whose matrix now carries a dequantization `{ scale, offset }`, its `localScale`, and whether the mesh moved to a child (`meshMovedToChild`, `authoredNode`) |
 | `colliderProxies` | Collider node and proxy child paths |
@@ -211,8 +214,8 @@ Roles and kit extras, hidden collider nodes (`KHR_node_visibility`), anchors, po
 | `preserved` | Counts of LOD chains, hidden nodes, colliders, anchors, ports and kit modules |
 
 Quantization stores positions as normalized integers and moves the metre scale onto
-the node: read geometry through the node's world matrix. A loader needs the meshopt
-decoder; with three.js:
+the node: read geometry through the node's world matrix. With Meshopt compression (the
+default) a loader needs the meshopt decoder; with three.js:
 
 ```ts
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -222,7 +225,8 @@ await MeshoptDecoder.ready;
 const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(buffer, '');
 ```
 
-three's `GLTFLoader` keeps unknown node extensions in `userData.gltfExtensions`
+With `compression: 'none'`, `new GLTFLoader().parseAsync(buffer, '')` loads it without a
+decoder. three's `GLTFLoader` keeps unknown node extensions in `userData.gltfExtensions`
 (`KHR_node_visibility`, `MSFT_lod`) and lowercases custom attributes (`_edge`).
 Kiln's tests load the derived GLB from both converters this way. On a very small asset
 the extension JSON can outweigh the saved geometry; compare real assets.

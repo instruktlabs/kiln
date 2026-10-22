@@ -198,9 +198,34 @@ test('CLI saves, exports, imports, and restores a revision across independent st
         ktx2: { status: 'skipped' },
       },
     });
+    // Without Meshopt for loaders that have no decoder; the sidecar records the choice.
+    const plain = join(root, 'plain.glb');
+    const plainRun = run('first', [
+      'export',
+      asset.assetId,
+      asset.revisionId,
+      '--out',
+      plain,
+      '--profile',
+      'runtime',
+      '--target',
+      'three',
+      '--compression',
+      'none',
+      '--json',
+    ]);
+    expect(plainRun.status).toBe(0);
+    expect(JSON.parse(plainRun.stdout)).toMatchObject({ target: 'three', compression: 'none' });
+    const plainDelivery = JSON.parse(
+      await readFile(join(root, 'plain.kiln-metadata.json'), 'utf8'),
+    ).delivery;
+    expect(plainDelivery.compression).toEqual({ extension: 'none' });
+    expect(plainDelivery.extensionsRequired).not.toContain('EXT_meshopt_compression');
     for (const flags of [
       ['--profile', 'editable', '--target', 'three'],
       ['--profile', 'runtime', '--target', 'unity'],
+      ['--profile', 'runtime', '--compression', 'none'],
+      ['--profile', 'runtime', '--target', 'three', '--compression', 'zstd'],
       ['--profile', 'unknown'],
       ['--profile', 'runtime', '--format', 'bundle'],
       ['--profile', 'runtime', '--format', 'source'],

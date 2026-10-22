@@ -122,6 +122,8 @@ export async function exportAssetGlb(
     throw new Error('Unknown runtime export target');
   if (options.target !== undefined && profile !== 'runtime')
     throw new Error('A runtime export target requires the runtime profile');
+  if (options.compression !== undefined && options.target !== 'three')
+    throw new Error('Runtime compression requires the three runtime target');
   validateRecordShape(record);
   const bytes = record.files['asset.glb']!;
   if (profile === 'editable') return { profile, glb: bytes };
@@ -177,6 +179,7 @@ export async function exportAssetGlb(
   if (options.target === 'three') {
     const derived = await deliverThreeRuntimeGlb(writeGlbJson(bytes, jsonEnd, json), {
       ...(options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {}),
+      ...(options.compression ? { compression: options.compression } : {}),
     });
     metadata.target = 'three';
     metadata.delivery = derived.delivery;

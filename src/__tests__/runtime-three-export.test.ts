@@ -189,6 +189,69 @@ describe('three runtime target', () => {
       expect(cardBounds.getCenter(new THREE.Vector3()).y).toBeCloseTo(3.1, 3);
     });
 
+  test('compression none loads without a Meshopt decoder and keeps every other feature', async () => {
+    const rendered = await renderGLBInProcess(RUNTIME_PROGRAM);
+    const source = new Uint8Array(rendered.glb);
+    const derive = (compression?: 'meshopt' | 'none') =>
+      exportAssetGlb(assetRecord(source), {
+        profile: 'runtime',
+        target: 'three',
+        ...(compression ? { compression } : {}),
+      });
+    const [plain, meshopt, defaulted] = await Promise.all([
+      derive('none'),
+      derive('meshopt'),
+      derive(),
+    ]);
+    if (
+      plain.profile !== 'runtime' ||
+      meshopt.profile !== 'runtime' ||
+      defaulted.profile !== 'runtime'
+    )
+      throw new Error('expected runtime');
+    // The default is the Meshopt output, byte for byte.
+    expect(defaulted.glb).toEqual(meshopt.glb);
+    expect(defaulted.metadata.bytes).toEqual(meshopt.metadata.bytes);
+    const delivery = JSON.parse(new TextDecoder().decode(plain.metadata.bytes)).delivery;
+    expect(delivery.compression).toEqual({ extension: 'none' });
+    expect(delivery.extensionsUsed).not.toContain('EXT_meshopt_compression');
+    expect(delivery.extensionsRequired).not.toContain('EXT_meshopt_compression');
+    expect(delivery.extensionsRequired).toEqual(
+      expect.arrayContaining(['KHR_mesh_quantization', 'EXT_mesh_gpu_instancing']),
+    );
+    expect(delivery.customAttributes.map((a: { name: string }) => a.name)).toEqual([
+      '_EDGE',
+      '_CAVITY',
+    ]);
+    const meshoptDelivery = JSON.parse(new TextDecoder().decode(meshopt.metadata.bytes)).delivery;
+    expect({
+      ...delivery,
+      compression: undefined,
+      extensionsUsed: undefined,
+      extensionsRequired: undefined,
+    }).toEqual({
+      ...meshoptDelivery,
+      compression: undefined,
+      extensionsUsed: undefined,
+      extensionsRequired: undefined,
+    });
+    // A loader with no Meshopt decoder reads it, instancing included.
+    const gltf = await new GLTFLoader().parseAsync(Uint8Array.from(plain.glb).buffer, '');
+    const instanced: THREE.InstancedMesh[] = [];
+    gltf.scene.traverse((object) => {
+      if ((object as THREE.InstancedMesh).isInstancedMesh) instanced.push(object as never);
+    });
+    expect(instanced.map((mesh) => mesh.count)).toEqual([4]);
+    await expect(
+      new GLTFLoader().parseAsync(Uint8Array.from(meshopt.glb).buffer, ''),
+    ).rejects.toThrow(/meshopt/i);
+    await expect(
+      exportAssetGlb(assetRecord(source), { profile: 'runtime', compression: 'none' }),
+    ).rejects.toThrow('compression requires the three runtime target');
+    await expect(deliverThreeRuntimeGlb(source, { compression: 'zstd' as never })).rejects.toThrow(
+      'compression must be meshopt or none',
+    );
+  });
   test('KTX2 runs only through an injected encoder and the GLB library helper is equivalent', async () => {
     const texture = new THREE.DataTexture(
       new Uint8Array([255, 0, 0, 255, 0, 255, 0, 255, 0, 0, 255, 255, 255, 255, 255, 255]),

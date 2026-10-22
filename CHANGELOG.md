@@ -87,6 +87,12 @@ does not publish a package.
   beside the `UNKNOWN_ID` error, which names only the unknown IDs; no substitution is made and
   a request with no known ID still returns no entries. `pbrMaterial` now ranks first for
   roughness-map queries (#218).
+- Allow the three runtime target without Meshopt ([#219](https://github.com/instruktlabs/kiln/issues/219)).
+  `exportAssetGlb`/`deliverThreeRuntimeGlb` accept `compression: 'none'` and the CLI accepts
+  `--compression none` with `--target three`: buffers stay plain, so a loader without a
+  Meshopt decoder reads the GLB, while `KHR_mesh_quantization`, instancing and every
+  preserved feature stay. The sidecar `delivery.compression` records `{ extension: 'none' }`.
+  The default output is unchanged.
 
 ## 1.3.1 (2026-10-17)
 

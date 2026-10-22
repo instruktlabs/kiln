@@ -41961,6 +41961,9 @@ function decomposeDelta(before, after) {
   };
 }
 async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
+  const compression = options.compression ?? "meshopt";
+  if (compression !== "meshopt" && compression !== "none")
+    throw new Error("Runtime three compression must be meshopt or none");
   const io = createGltfIO().registerDependencies({
     "meshopt.encoder": meshoptEncoder
   });
@@ -41983,7 +41986,8 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
     quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
     quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight
   }));
-  doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  if (compression === "meshopt")
+    doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
   const ktx2 = await encodeKtx2(doc, options.ktx2Encoder);
   for (const node of doc.getRoot().listNodes()) {
     const mesh = node.getMesh();
@@ -42047,7 +42051,7 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
     target: "three",
     extensionsUsed: [...json.extensionsUsed ?? []].sort(),
     extensionsRequired: [...json.extensionsRequired ?? []].sort(),
-    compression: { extension: "EXT_meshopt_compression", method: "quantize" },
+    compression: compression === "meshopt" ? { extension: "EXT_meshopt_compression", method: "quantize" } : { extension: "none" },
     quantization: {
       extension: "KHR_mesh_quantization",
       volume: "mesh",
@@ -42166,6 +42170,8 @@ async function exportAssetGlb(record, options = {}) {
     throw new Error("Unknown runtime export target");
   if (options.target !== undefined && profile !== "runtime")
     throw new Error("A runtime export target requires the runtime profile");
+  if (options.compression !== undefined && options.target !== "three")
+    throw new Error("Runtime compression requires the three runtime target");
   validateRecordShape(record);
   const bytes = record.files["asset.glb"];
   if (profile === "editable")
@@ -42208,7 +42214,8 @@ async function exportAssetGlb(record, options = {}) {
   let base = bytes, baseJson = json, baseJsonEnd = jsonEnd;
   if (options.target === "three") {
     const derived = await deliverThreeRuntimeGlb(writeGlbJson(bytes, jsonEnd, json), {
-      ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {}
+      ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {},
+      ...options.compression ? { compression: options.compression } : {}
     });
     metadata.target = "three";
     metadata.delivery = derived.delivery;
@@ -53656,6 +53663,7 @@ async function assetMain(argv) {
     "format",
     "profile",
     "target",
+    "compression",
     "port",
     "render",
     "backdrop",
@@ -53858,6 +53866,11 @@ async function assetMain(argv) {
         throw new Error("Unknown export target");
       if (target !== undefined && profile !== "runtime")
         throw new Error("--target requires --profile runtime");
+      const compression = flags.compression;
+      if (compression !== undefined && compression !== "meshopt" && compression !== "none")
+        throw new Error("--compression must be meshopt or none");
+      if (compression !== undefined && target !== "three")
+        throw new Error("--compression requires --target three");
       const format = flags.format ?? (profile === "runtime" ? "glb" : "bundle");
       if (!["bundle", "glb", "source"].includes(format))
         throw new Error("Unknown export format");
@@ -53872,7 +53885,8 @@ async function assetMain(argv) {
         const output = await exportAssetGlb(record, {
           profile,
           metadataFileName,
-          ...target ? { target } : {}
+          ...target ? { target } : {},
+          ...compression ? { compression } : {}
         });
         if (output.profile !== "runtime")
           throw new Error("Expected runtime export");
@@ -53901,6 +53915,7 @@ async function assetMain(argv) {
           revisionId,
           profile,
           ...target ? { target } : {},
+          ...compression ? { compression } : {},
           format,
           ...format !== "source" ? {
             drawDiagnostics: await inspectDrawDiagnostics(written.find(({ kind }) => kind === "glb")?.data ?? record.files["asset.glb"])
@@ -54023,6 +54038,8 @@ ${SAVE_LINES}
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
        [--target three]   runtime only: meshopt + quantization, repeatInstances GPU
                           instancing, KTX2 skipped (no encoder); sidecar states node scales
+       [--compression meshopt|none]   with --target three: none writes plain buffers
+                          for loaders without a Meshopt decoder (default meshopt)
        [--json]   receipt naming each file with its bytes and sha256
        export never replaces an existing file: an export hands off one exact
        saved revision, while render --out replaces its own working output

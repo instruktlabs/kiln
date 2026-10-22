@@ -65,7 +65,14 @@ export interface RuntimeThreeOptionsV1 {
    * none; without one, textures stay PNG/JPEG and the report says `skipped`.
    */
   ktx2Encoder?: (input: RuntimeThreeKtx2InputV1) => Promise<Uint8Array>;
+  /**
+   * Buffer compression. `meshopt` (default) requires `EXT_meshopt_compression` and a
+   * Meshopt decoder in the loader. `none` writes plain buffers for loaders without one;
+   * quantization, instancing and every preserved feature stay.
+   */
+  compression?: RuntimeThreeCompression;
 }
+export type RuntimeThreeCompression = 'meshopt' | 'none';
 export interface RuntimeThreeNodeScaleV1 {
   /** Delivery path of the node whose matrix now carries the dequantization. */
   node: string;
@@ -83,7 +90,7 @@ export interface RuntimeThreeDeliveryV1 {
   target: 'three';
   extensionsUsed: string[];
   extensionsRequired: string[];
-  compression: { extension: 'EXT_meshopt_compression'; method: 'quantize' };
+  compression: { extension: 'EXT_meshopt_compression'; method: 'quantize' } | { extension: 'none' };
   quantization: {
     extension: 'KHR_mesh_quantization';
     volume: 'mesh';
@@ -301,6 +308,9 @@ export async function deliverRuntimeThreeGlb(
   meshoptEncoder: unknown,
   options: RuntimeThreeOptionsV1 = {},
 ): Promise<{ glb: Uint8Array; delivery: RuntimeThreeDeliveryV1 }> {
+  const compression = options.compression ?? 'meshopt';
+  if (compression !== 'meshopt' && compression !== 'none')
+    throw new Error('Runtime three compression must be meshopt or none');
   const io = createGltfIO().registerDependencies({
     'meshopt.encoder': meshoptEncoder,
   });
@@ -328,10 +338,11 @@ export async function deliverRuntimeThreeGlb(
       quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight,
     }),
   );
-  doc
-    .createExtension(EXTMeshoptCompression)
-    .setRequired(true)
-    .setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  if (compression === 'meshopt')
+    doc
+      .createExtension(EXTMeshoptCompression)
+      .setRequired(true)
+      .setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
   const ktx2 = await encodeKtx2(doc, options.ktx2Encoder);
 
   // The quantizer moves a mesh to a new unnamed child when its node has children or is
@@ -396,7 +407,10 @@ export async function deliverRuntimeThreeGlb(
     target: 'three',
     extensionsUsed: [...(json.extensionsUsed ?? [])].sort(),
     extensionsRequired: [...(json.extensionsRequired ?? [])].sort(),
-    compression: { extension: 'EXT_meshopt_compression', method: 'quantize' },
+    compression:
+      compression === 'meshopt'
+        ? { extension: 'EXT_meshopt_compression', method: 'quantize' }
+        : { extension: 'none' },
     quantization: {
       extension: 'KHR_mesh_quantization',
       volume: 'mesh',

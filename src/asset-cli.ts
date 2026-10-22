@@ -53,6 +53,8 @@ ${SAVE_LINES}
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
        [--target three]   runtime only: meshopt + quantization, repeatInstances GPU
                           instancing, KTX2 skipped (no encoder); sidecar states node scales
+       [--compression meshopt|none]   with --target three: none writes plain buffers
+                          for loaders without a Meshopt decoder (default meshopt)
        [--json]   receipt naming each file with its bytes and sha256
        export never replaces an existing file: an export hands off one exact
        saved revision, while render --out replaces its own working output
@@ -91,6 +93,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     'format',
     'profile',
     'target',
+    'compression',
     'port',
     'render',
     'backdrop',
@@ -379,6 +382,11 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
       if (target !== undefined && target !== 'three') throw new Error('Unknown export target');
       if (target !== undefined && profile !== 'runtime')
         throw new Error('--target requires --profile runtime');
+      const compression = flags.compression;
+      if (compression !== undefined && compression !== 'meshopt' && compression !== 'none')
+        throw new Error('--compression must be meshopt or none');
+      if (compression !== undefined && target !== 'three')
+        throw new Error('--compression requires --target three');
       const format = flags.format ?? (profile === 'runtime' ? 'glb' : 'bundle');
       if (!['bundle', 'glb', 'source'].includes(format)) throw new Error('Unknown export format');
       const written: { kind: string; path: string; data: Uint8Array }[] = [];
@@ -393,6 +401,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
           profile,
           metadataFileName,
           ...(target ? { target } : {}),
+          ...(compression ? { compression } : {}),
         });
         if (output.profile !== 'runtime') throw new Error('Expected runtime export');
         const metadataPath = resolve(dirname(destination), output.metadata.name);
@@ -425,6 +434,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
               revisionId,
               profile,
               ...(target ? { target } : {}),
+              ...(compression ? { compression } : {}),
               format,
               ...(format !== 'source'
                 ? {

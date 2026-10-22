@@ -8971,6 +8971,9 @@ function decomposeDelta(before, after) {
   };
 }
 async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
+  const compression = options.compression ?? "meshopt";
+  if (compression !== "meshopt" && compression !== "none")
+    throw new Error("Runtime three compression must be meshopt or none");
   const io = createGltfIO().registerDependencies({
     "meshopt.encoder": meshoptEncoder
   });
@@ -8993,7 +8996,8 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
     quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
     quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight
   }));
-  doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  if (compression === "meshopt")
+    doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
   const ktx2 = await encodeKtx2(doc, options.ktx2Encoder);
   for (const node of doc.getRoot().listNodes()) {
     const mesh = node.getMesh();
@@ -9057,7 +9061,7 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
     target: "three",
     extensionsUsed: [...json.extensionsUsed ?? []].sort(),
     extensionsRequired: [...json.extensionsRequired ?? []].sort(),
-    compression: { extension: "EXT_meshopt_compression", method: "quantize" },
+    compression: compression === "meshopt" ? { extension: "EXT_meshopt_compression", method: "quantize" } : { extension: "none" },
     quantization: {
       extension: "KHR_mesh_quantization",
       volume: "mesh",
@@ -9176,6 +9180,8 @@ async function exportAssetGlb(record, options = {}) {
     throw new Error("Unknown runtime export target");
   if (options.target !== undefined && profile !== "runtime")
     throw new Error("A runtime export target requires the runtime profile");
+  if (options.compression !== undefined && options.target !== "three")
+    throw new Error("Runtime compression requires the three runtime target");
   validateRecordShape(record);
   const bytes = record.files["asset.glb"];
   if (profile === "editable")
@@ -9218,7 +9224,8 @@ async function exportAssetGlb(record, options = {}) {
   let base = bytes, baseJson = json, baseJsonEnd = jsonEnd;
   if (options.target === "three") {
     const derived = await deliverThreeRuntimeGlb(writeGlbJson(bytes, jsonEnd, json), {
-      ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {}
+      ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {},
+      ...options.compression ? { compression: options.compression } : {}
     });
     metadata.target = "three";
     metadata.delivery = derived.delivery;

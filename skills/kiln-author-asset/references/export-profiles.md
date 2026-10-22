@@ -55,7 +55,9 @@ instances. Read the current Discovery export capability and the packaged
 Plain `--profile runtime` keeps the byte-preserving geometry policy described below;
 the additional target changes geometry encoding and can change hierarchy.
 
-Use this target only for a consumer configured with Meshopt decoding. Preserve
+Use this target with Meshopt decoding configured in the consumer, or add
+`--compression none` for a loader without a Meshopt decoder: buffers stay plain while
+quantization and instancing remain. Preserve
 loaded node transforms, skeletons and inverse bind matrices: they restore quantized
 positions to the intended dimensions. A loader does not automatically implement
 Kiln's LOD selection, collider behavior, anchors or kit snapping. Test those in the
