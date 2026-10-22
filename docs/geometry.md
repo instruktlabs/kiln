@@ -516,7 +516,8 @@ roughness, the report adds optional advice. The summary ends with "Optional advi
 not a requirement", each reason names the members, differing factors, parts using them
 and what a merge needs, and `instanceability.advice` holds the groups with the
 projected material count and grade. The advice never changes the grade or a QA
-disposition. Merging differing base colours needs a shared texture or atlas region;
+disposition. Merging differing base colours needs a shared texture, an atlas region or vertex
+colours (`COLOR_0`);
 the host's `KILN_BAKE_OPTIMIZE=palette` builds a palette texture for flat-colour
 materials. Byte-identical materials are already merged by deduplication.
 

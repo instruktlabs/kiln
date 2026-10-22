@@ -310,7 +310,7 @@ function differingFactors(group: readonly GltfMaterial[]): string[] {
 function mergeNeeds(differs: readonly string[]): string {
   const needs: string[] = [];
   if (differs.some((d) => d === 'baseColorFactor' || d === 'emissiveFactor'))
-    needs.push('colours in a shared texture or atlas region');
+    needs.push('colours in a shared texture, an atlas region or vertex colours');
   if (differs.some((d) => d === 'metallicFactor' || d === 'roughnessFactor'))
     needs.push('one metallic/roughness value or a shared metallicRoughness texture');
   if (differs.some((d) => d === 'normalScale' || d === 'occlusionStrength'))

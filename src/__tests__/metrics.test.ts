@@ -255,7 +255,7 @@ describe('material merge advice (optional)', () => {
         parts: [['Frond_0'], ['Frond_1']],
         alphaMode: 'OPAQUE',
         differs: ['baseColorFactor'],
-        needs: 'colours in a shared texture or atlas region',
+        needs: 'colours in a shared texture, an atlas region or vertex colours',
       },
     ]);
     const metrics = collectGlbMetrics(doc);
@@ -275,7 +275,7 @@ describe('material merge advice (optional)', () => {
       ' Optional advice, not a requirement: merging FrondA + FrondB (differ in baseColorFactor) would leave 3 materials (B at 2-3).',
     );
     expect(advised.reasons).toContain(
-      'optional advice: FrondA + FrondB share shading and differ in baseColorFactor; a merge needs colours in a shared texture or atlas region; parts: Frond_0, Frond_1',
+      'optional advice: FrondA + FrondB share shading and differ in baseColorFactor; a merge needs colours in a shared texture, an atlas region or vertex colours; parts: Frond_0, Frond_1',
     );
   });
 
