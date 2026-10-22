@@ -22,12 +22,12 @@ do not require a separate model API key.
 
 ## Used in live games
 
-I build Sheepdog Sim and OBJEKT-62 alongside Kiln, and use both games to test
-Kiln-authored assets in real gameplay.
+I build Sheepdog Sim, OBJEKT-62 and ski sim alongside Kiln, and use these games
+to test Kiln-authored assets in real gameplay.
 
-| Sheepdog Sim | OBJEKT-62 |
-| --- | --- |
-| [![The sheepdog facing a fenced pen, with the farmhouse, red barn and trees behind it](site/src/assets/live-games/sheepdog-sim.webp)](https://sheepdogsim.com/) | [![The survey rifle overlooking an outpost, with a monument on the distant horizon](site/src/assets/live-games/objekt62.webp)](https://objekt62.com/) |
+| Sheepdog Sim | OBJEKT-62 | ski sim |
+| --- | --- | --- |
+| [![The sheepdog facing a fenced pen, with the farmhouse, red barn and trees behind it](site/src/assets/live-games/sheepdog-sim.webp)](https://sheepdogsim.com/) | [![The survey rifle overlooking an outpost, with a monument on the distant horizon](site/src/assets/live-games/objekt62.webp)](https://objekt62.com/) | [![A skier grinding sideways beside a lit chalet, with pines, trail lights and a chairlift in the background](site/src/assets/live-games/ski-sim-village.webp)](https://skisim.app/) |
 
 **[Sheepdog Sim](https://sheepdogsim.com/)** uses Kiln-authored house, barn,
 fence and tree assets. The game is open source; [browse its repository](https://github.com/matthew-kissinger/sds)
@@ -36,6 +36,11 @@ to see how the assets fit into a working game.
 **[OBJEKT-62](https://objekt62.com/)** uses Kiln for most of its 3D assets,
 including guns, ship parts, vehicles, outpost modules and salvage. The shot shows
 the survey rifle and outpost in the live game, with a monument in the background.
+
+**[ski sim](https://skisim.app/)** is a freestyle skiing game for desktop and phone
+browsers. It uses Kiln for its skier and outfit variants, pines, rocks, modular
+village buildings, trail lights, sign frames and terrain-park equipment. The shot
+is staged in-game on Village Bend.
 
 ## Community and hosted access
 
