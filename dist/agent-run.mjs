@@ -23335,9 +23335,151 @@ function collectGlbMetrics(doc, triangles) {
     triangles: triangles ?? derivedTris
   };
 }
+function rubricGrade(m) {
+  const grade = materialBand(m.uniqueMaterials).grade;
+  return (grade === "A" || grade === "B") && lowersToC(m) ? "C" : grade;
+}
+function textureSlots(m) {
+  return [
+    [m.getBaseColorTexture(), m.getBaseColorTextureInfo()],
+    [m.getEmissiveTexture(), m.getEmissiveTextureInfo()],
+    [m.getNormalTexture(), m.getNormalTextureInfo()],
+    [m.getOcclusionTexture(), m.getOcclusionTextureInfo()],
+    [m.getMetallicRoughnessTexture(), m.getMetallicRoughnessTextureInfo()]
+  ];
+}
+function shadingKey(m, textures) {
+  const binding = (info) => info && [
+    info.getTexCoord(),
+    info.getWrapS(),
+    info.getWrapT(),
+    info.getMagFilter(),
+    info.getMinFilter(),
+    extensionNames(info)
+  ];
+  return JSON.stringify([
+    m.getAlphaMode(),
+    m.getAlphaMode() === "MASK" ? m.getAlphaCutoff() : null,
+    m.getDoubleSided(),
+    textureSlots(m).map(([texture, info]) => texture && [textures.indexOf(texture), binding(info)]),
+    extensionNames(m),
+    m.getExtras()
+  ]);
+}
+function differingFactors(group) {
+  const [first, ...rest] = group;
+  const differs = MERGE_FACTORS.filter(([, read]) => rest.some((m) => JSON.stringify(read(m)) !== JSON.stringify(read(first)))).map(([name]) => name);
+  for (const extension of first.listExtensions())
+    if (rest.some((m) => !m.getExtension(extension.extensionName)?.equals(extension)))
+      differs.push(extension.extensionName);
+  const slots = textureSlots(first);
+  slots.forEach(([, info], slot) => {
+    for (const extension of info?.listExtensions() ?? [])
+      if (rest.some((m) => !textureSlots(m)[slot]?.[1]?.getExtension(extension.extensionName)?.equals(extension)))
+        differs.push(extension.extensionName);
+  });
+  return [...new Set(differs)];
+}
+function mergeNeeds(differs) {
+  const needs = [];
+  if (differs.some((d) => d === "baseColorFactor" || d === "emissiveFactor"))
+    needs.push("colours in a shared texture or atlas region");
+  if (differs.some((d) => d === "metallicFactor" || d === "roughnessFactor"))
+    needs.push("one metallic/roughness value or a shared metallicRoughness texture");
+  if (differs.some((d) => d === "normalScale" || d === "occlusionStrength"))
+    needs.push("one normal scale and occlusion strength");
+  if (differs.some((d) => d.startsWith("KHR_") || d.startsWith("EXT_")))
+    needs.push("one setting for each differing extension");
+  return needs.length ? needs.join("; ") : "only reusing one material; the members already match";
+}
+function materialMergeCandidates(doc) {
+  const root = doc.getRoot();
+  const parts = new Map;
+  const visit = (node) => {
+    if (isHiddenGltfNode(node))
+      return;
+    const mesh = node.getMesh();
+    const name = node.getName() || mesh?.getName() || `node ${root.listNodes().indexOf(node)}`;
+    for (const primitive of mesh?.listPrimitives() ?? []) {
+      const material = primitive.getMaterial();
+      if (!material)
+        continue;
+      const list = parts.get(material) ?? [];
+      if (!list.includes(name))
+        list.push(name);
+      parts.set(material, list);
+    }
+    for (const child of node.listChildren())
+      visit(child);
+  };
+  for (const scene of root.listScenes())
+    for (const node of scene.listChildren())
+      visit(node);
+  const materials = root.listMaterials();
+  const textures = root.listTextures();
+  const groups = new Map;
+  for (const material of materials) {
+    if (!parts.has(material))
+      continue;
+    const key = shadingKey(material, textures);
+    const group = groups.get(key);
+    if (group)
+      group.push(material);
+    else
+      groups.set(key, [material]);
+  }
+  return [...groups.values()].filter((group) => group.length > 1).map((group) => {
+    const differs = differingFactors(group);
+    return {
+      materials: group.map((m) => m.getName() || `${parts.get(m)[0]} material`),
+      parts: group.map((m) => parts.get(m).slice(0, MERGE_PARTS_KEPT)),
+      alphaMode: group[0].getAlphaMode(),
+      differs,
+      needs: mergeNeeds(differs)
+    };
+  });
+}
+function shortList(names, shown, joiner) {
+  const head = names.slice(0, shown).join(joiner);
+  return names.length > shown ? `${head} and ${names.length - shown} more` : head;
+}
+function mergeAdvice(m, candidates) {
+  const merged = candidates.reduce((n, c) => n + c.materials.length - 1, 0);
+  const blendMerged = candidates.filter((c) => c.alphaMode === "BLEND").reduce((n, c) => n + c.materials.length - 1, 0);
+  const projected = {
+    ...m,
+    uniqueMaterials: Math.max(1, m.uniqueMaterials - merged),
+    transparentMaterials: Math.max(0, m.transparentMaterials - blendMerged)
+  };
+  const projectedGrade = rubricGrade(projected);
+  const band = materialBand(projected.uniqueMaterials);
+  const named = (c) => shortList(c.materials, 4, " + ");
+  const groups = candidates.slice(0, 3).map((c) => {
+    const why = c.differs.length ? `differ in ${c.differs.join(", ")}` : "identical shading";
+    return `${named(c)} (${why})`;
+  });
+  if (candidates.length > 3)
+    groups.push(`${candidates.length - 3} more groups`);
+  const otherFactors = projectedGrade === band.grade ? "" : `; other factors give ${projectedGrade}`;
+  const summary = ` Optional advice, not a requirement: merging ${groups.join("; ")} would leave ` + `${counted(projected.uniqueMaterials, "material", "materials")} (${band.grade} at ${band.range}${otherFactors}).`;
+  const reasons = candidates.map((c) => {
+    const why = c.differs.length ? ` and differ in ${c.differs.join(", ")}` : "";
+    return `optional advice: ${named(c)} share shading${why}; a merge needs ${c.needs}; parts: ${shortList(c.parts.flat(), 3, ", ")}`;
+  });
+  return {
+    advice: {
+      optional: true,
+      materialMerges: [...candidates],
+      projectedMaterials: projected.uniqueMaterials,
+      projectedGrade
+    },
+    summary,
+    reasons
+  };
+}
 function gradeInstanceability(metrics, opts = {}) {
   const m = metrics;
-  const band = MATERIAL_GRADE_BANDS.find((b) => m.uniqueMaterials <= b.max);
+  const band = materialBand(m.uniqueMaterials);
   let grade = band.grade;
   const materials = `${counted(m.uniqueMaterials, "distinct material", "distinct materials")} (${band.grade} at ${band.range})`;
   const transparency = m.transparentMaterials > 0 ? counted(m.transparentMaterials, "transparent material", "transparent materials") : undefined;
@@ -23375,9 +23517,18 @@ function gradeInstanceability(metrics, opts = {}) {
   if (opts.category)
     reasons.push(`category: ${opts.category}`);
   const summary = `${grade} (informational, not a QA verdict), set by ${setBy}. Also: ${also.join("; ")}.`;
-  return { grade, summary, reasons, metrics: m };
+  if (!opts.mergeCandidates?.length)
+    return { grade, summary, reasons, metrics: m };
+  const merge = mergeAdvice(m, opts.mergeCandidates);
+  return {
+    grade,
+    summary: summary + merge.summary,
+    reasons: [...reasons, ...merge.reasons],
+    metrics: m,
+    advice: merge.advice
+  };
 }
-var MATERIAL_GRADE_BANDS, counted = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+var MATERIAL_GRADE_BANDS, counted = (n, one, many) => `${n} ${n === 1 ? one : many}`, materialBand = (materials) => MATERIAL_GRADE_BANDS.find((b) => materials <= b.max), lowersToC = (m) => m.transparentMaterials > 0 || m.textureCount > 4, MERGE_PARTS_KEPT = 8, MERGE_FACTORS, extensionNames = (property) => property.listExtensions().map((extension) => extension.extensionName).sort();
 var init_metrics = __esm(() => {
   MATERIAL_GRADE_BANDS = [
     { grade: "A", max: 1, range: "0-1" },
@@ -23385,6 +23536,14 @@ var init_metrics = __esm(() => {
     { grade: "C", max: 6, range: "4-6" },
     { grade: "D", max: 12, range: "7-12" },
     { grade: "F", max: Number.POSITIVE_INFINITY, range: "13+" }
+  ];
+  MERGE_FACTORS = [
+    ["baseColorFactor", (m) => m.getBaseColorFactor()],
+    ["emissiveFactor", (m) => m.getEmissiveFactor()],
+    ["metallicFactor", (m) => m.getMetallicFactor()],
+    ["roughnessFactor", (m) => m.getRoughnessFactor()],
+    ["normalScale", (m) => m.getNormalScale()],
+    ["occlusionStrength", (m) => m.getOcclusionStrength()]
   ];
 });
 
@@ -37070,7 +37229,9 @@ async function renderSceneToGLB(root, opts = {}) {
   let metricsError;
   try {
     const metrics = collectGlbMetrics(doc, optimize || instancing ? undefined : tris);
-    instanceability = gradeInstanceability(metrics);
+    instanceability = gradeInstanceability(metrics, {
+      mergeCandidates: materialMergeCandidates(doc)
+    });
   } catch (err) {
     metricsError = err instanceof Error ? err.message : String(err);
   }

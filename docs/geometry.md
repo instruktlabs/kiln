@@ -510,6 +510,16 @@ which may differ from the source after optimization. The `instanceability` grade
 informational, not a QA verdict: its summary names the metric that set the grade, and
 a transparent material lowers only an A or B grade to C.
 
+When drawn materials share alpha mode and cutoff, sidedness, texture bindings and
+samplers, extensions and extras, and differ only in factors such as base colour or
+roughness, the report adds optional advice. The summary ends with "Optional advice,
+not a requirement", each reason names the members, differing factors, parts using them
+and what a merge needs, and `instanceability.advice` holds the groups with the
+projected material count and grade. The advice never changes the grade or a QA
+disposition. Merging differing base colours needs a shared texture or atlas region;
+the host's `KILN_BAKE_OPTIMIZE=palette` builds a palette texture for flat-colour
+materials. Byte-identical materials are already merged by deduplication.
+
 Specialized factories also check finite dimensions and bounded counts. Cards accept
 pivots outside their panel when the resulting coordinates remain finite. Wings
 accept a zero tip chord; stairs accept signed rise/run for descending or reversed

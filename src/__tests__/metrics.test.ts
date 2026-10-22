@@ -17,7 +17,12 @@ import {
   glassMaterial,
 } from '../primitives';
 import { renderSceneToGLB, renderGLB, gradeGlbBytes } from '../render';
-import { collectGlbMetrics, gradeInstanceability, type InstanceabilityMetrics } from '../metrics';
+import {
+  collectGlbMetrics,
+  gradeInstanceability,
+  materialMergeCandidates,
+  type InstanceabilityMetrics,
+} from '../metrics';
 import { Document } from '@gltf-transform/core';
 import { EXTMeshGPUInstancing } from '@gltf-transform/extensions';
 import * as THREE from 'three';
@@ -206,6 +211,110 @@ describe('gradeInstanceability (advisory rubric)', () => {
     expect(gradeInstanceability(baseMetrics({ uniqueMaterials: 13 })).summary).toStartWith(
       'F (informational, not a QA verdict), set by 13 distinct materials (F at 13+).',
     );
+  });
+});
+
+describe('material merge advice (optional)', () => {
+  /** One triangle per material, each on its own named node. */
+  function shadingDoc() {
+    const doc = new Document();
+    const position = doc
+      .createAccessor()
+      .setType('VEC3')
+      .setArray(new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0]));
+    const scene = doc.createScene();
+    const place = (name: string, material: ReturnType<Document['createMaterial']>) =>
+      scene.addChild(
+        doc
+          .createNode(name)
+          .setMesh(
+            doc
+              .createMesh(name)
+              .addPrimitive(
+                doc.createPrimitive().setAttribute('POSITION', position).setMaterial(material),
+              ),
+          ),
+      );
+    const red = [0.8, 0.1, 0.1, 1] as [number, number, number, number];
+    place('Frond_0', doc.createMaterial('FrondA').setBaseColorFactor(red));
+    place('Frond_1', doc.createMaterial('FrondB').setBaseColorFactor([0.1, 0.6, 0.1, 1]));
+    place('Leaf', doc.createMaterial('Cutout').setBaseColorFactor(red).setAlphaMode('MASK'));
+    place(
+      'Bark',
+      doc.createMaterial('Bark').setBaseColorFactor(red).setBaseColorTexture(doc.createTexture()),
+    );
+    return doc;
+  }
+
+  it('groups factor-only differences and projects the material band without changing the grade', () => {
+    const doc = shadingDoc();
+    const candidates = materialMergeCandidates(doc);
+    expect(candidates).toEqual([
+      {
+        materials: ['FrondA', 'FrondB'],
+        parts: [['Frond_0'], ['Frond_1']],
+        alphaMode: 'OPAQUE',
+        differs: ['baseColorFactor'],
+        needs: 'colours in a shared texture or atlas region',
+      },
+    ]);
+    const metrics = collectGlbMetrics(doc);
+    const plain = gradeInstanceability(metrics);
+    const advised = gradeInstanceability(metrics, { mergeCandidates: candidates });
+    expect(advised.grade).toBe(plain.grade);
+    expect(advised.grade).toBe('C');
+    expect(advised.reasons[0]).toBe(plain.reasons[0]);
+    expect(advised.advice).toEqual({
+      optional: true,
+      materialMerges: candidates,
+      projectedMaterials: 3,
+      projectedGrade: 'B',
+    });
+    expect(advised.summary).toStartWith(plain.summary);
+    expect(advised.summary).toEndWith(
+      ' Optional advice, not a requirement: merging FrondA + FrondB (differ in baseColorFactor) would leave 3 materials (B at 2-3).',
+    );
+    expect(advised.reasons).toContain(
+      'optional advice: FrondA + FrondB share shading and differ in baseColorFactor; a merge needs colours in a shared texture or atlas region; parts: Frond_0, Frond_1',
+    );
+  });
+
+  it('keeps alpha mode, texture bindings and extras apart and is silent without candidates', () => {
+    const doc = shadingDoc();
+    doc
+      .getRoot()
+      .listMaterials()
+      .find((m) => m.getName() === 'FrondB')!
+      .setExtras({ role: 'trim' });
+    expect(materialMergeCandidates(doc)).toEqual([]);
+    const report = gradeInstanceability(collectGlbMetrics(doc), { mergeCandidates: [] });
+    expect(report.advice).toBeUndefined();
+    expect(report.summary).not.toContain('Optional advice');
+  });
+
+  it('dedup keeps byte-identical materials merged, so they produce no candidate', async () => {
+    const root = createRoot('Palm');
+    for (let i = 0; i < 3; i++)
+      createPart(`Frond_${i}`, boxGeo(1, 0.1, 0.3), gameMaterial(0x2f7a2f), {
+        parent: root,
+        position: [i, 0, 0],
+      });
+    const same = await renderSceneToGLB(root, { optimize: 'off' });
+    expect(same.instanceability!.metrics.uniqueMaterials).toBe(1);
+    expect(same.instanceability!.advice).toBeUndefined();
+
+    createPart('Frond_3', boxGeo(1, 0.1, 0.3), gameMaterial(0x3f8a2f), { parent: root });
+    const varied = await renderSceneToGLB(root, { optimize: 'off' });
+    expect(varied.instanceability!.grade).toBe('B');
+    expect(varied.instanceability!.advice).toMatchObject({
+      projectedMaterials: 1,
+      projectedGrade: 'A',
+    });
+    expect(varied.instanceability!.advice!.materialMerges[0]!.materials).toEqual([
+      'Mesh_Frond_0 material',
+      'Mesh_Frond_3 material',
+    ]);
+    expect(varied.instanceability!.summary).toContain('Optional advice, not a requirement');
   });
 });
 

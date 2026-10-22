@@ -50,6 +50,11 @@ does not publish a package.
   viewers instead of being dropped with a warning. `docs/geometry.md` lists the attributes
   each converter keeps. A texture with `channel = 1` exports with `texCoord: 1`, and a mesh it
   samples must have `uv1` (#195).
+- Add optional material merge advice to the instanceability report: drawn materials that
+  share alpha, sidedness, texture bindings, extensions and extras but differ in factors are
+  listed with their parts, the differing factors, what a merge needs and the projected
+  material count and grade. The advice is labelled optional and never changes the grade or
+  any QA disposition (#209).
 
 ## 1.3.1 (2026-10-17)
 

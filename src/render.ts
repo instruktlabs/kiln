@@ -93,6 +93,7 @@ import {
 import {
   collectGlbMetrics,
   gradeInstanceability,
+  materialMergeCandidates,
   type InstanceabilityGrade,
   type InstanceabilityMetrics,
   type InstanceabilityReport,
@@ -1964,7 +1965,9 @@ export async function renderSceneToGLB(
       doc,
       optimize || instancing ? undefined : tris,
     );
-    instanceability = gradeInstanceability(metrics);
+    instanceability = gradeInstanceability(metrics, {
+      mergeCandidates: materialMergeCandidates(doc),
+    });
   } catch (err) {
     metricsError = err instanceof Error ? err.message : String(err);
   }
@@ -2249,7 +2252,10 @@ export async function gradeGlbBytes(
 ): Promise<InstanceabilityReport | undefined> {
   try {
     const doc = await engineIO().readBinary(bytes);
-    return gradeInstanceability(collectGlbMetrics(doc), opts);
+    return gradeInstanceability(collectGlbMetrics(doc), {
+      ...opts,
+      mergeCandidates: materialMergeCandidates(doc),
+    });
   } catch {
     return undefined;
   }
@@ -2321,7 +2327,10 @@ export async function optimizeGlbBytes(
     const gltfValidation = await assertFinalGlbValid(outBytes);
     let report: InstanceabilityReport | undefined;
     try {
-      report = gradeInstanceability(collectGlbMetrics(doc), { category: opts.category });
+      report = gradeInstanceability(collectGlbMetrics(doc), {
+        category: opts.category,
+        mergeCandidates: materialMergeCandidates(doc),
+      });
     } catch {
       report = undefined;
     }
@@ -2480,7 +2489,10 @@ export async function snapGlbToPalette(
     const gltfValidation = await assertFinalGlbValid(outBytes);
     let report: InstanceabilityReport | undefined;
     try {
-      report = gradeInstanceability(after, { category: opts.category });
+      report = gradeInstanceability(after, {
+        category: opts.category,
+        mergeCandidates: materialMergeCandidates(doc),
+      });
     } catch {
       report = undefined;
     }

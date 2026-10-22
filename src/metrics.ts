@@ -61,6 +61,31 @@ export interface InstanceabilityReport {
   /** Why the grade landed where it did (advisory bullet points); the first names the driver. */
   reasons: string[];
   metrics: InstanceabilityMetrics;
+  /** Optional suggestions; present only when there is something to suggest. Never moves the grade. */
+  advice?: InstanceabilityAdvice;
+}
+
+/** Materials that share every shading-relevant setting and differ only in factor values. */
+export interface MaterialMergeCandidate {
+  /** Member material names (`<first part> material` when unnamed), in document order. */
+  materials: string[];
+  /** Per member, the drawn nodes whose primitives use it (at most eight each). */
+  parts: string[][];
+  alphaMode: 'OPAQUE' | 'MASK' | 'BLEND';
+  /** Factors or material extensions whose values differ between members. */
+  differs: string[];
+  /** What a merge needs so the differing values survive. */
+  needs: string;
+}
+
+export interface InstanceabilityAdvice {
+  /** Advice is optional: it never changes the grade or any QA disposition. */
+  optional: true;
+  materialMerges: MaterialMergeCandidate[];
+  /** Distinct materials if every candidate group became one material. */
+  projectedMaterials: number;
+  /** The rubric's grade at `projectedMaterials`, other inputs unchanged. */
+  projectedGrade: InstanceabilityGrade;
 }
 
 function primTris(prim: import('@gltf-transform/core').Primitive): number {
@@ -201,6 +226,195 @@ const MATERIAL_GRADE_BANDS: readonly {
 
 const counted = (n: number, one: string, many: string): string => `${n} ${n === 1 ? one : many}`;
 
+const materialBand = (materials: number) => MATERIAL_GRADE_BANDS.find((b) => materials <= b.max)!;
+const lowersToC = (m: InstanceabilityMetrics) => m.transparentMaterials > 0 || m.textureCount > 4;
+
+/** The rubric alone: the material band, with transparency or texture sprawl lowering A/B to C. */
+function rubricGrade(m: InstanceabilityMetrics): InstanceabilityGrade {
+  const grade = materialBand(m.uniqueMaterials).grade;
+  return (grade === 'A' || grade === 'B') && lowersToC(m) ? 'C' : grade;
+}
+
+type GltfMaterial = import('@gltf-transform/core').Material;
+type GltfTextureInfo = import('@gltf-transform/core').TextureInfo;
+
+const MERGE_PARTS_KEPT = 8;
+const MERGE_FACTORS: readonly [string, (m: GltfMaterial) => unknown][] = [
+  ['baseColorFactor', (m) => m.getBaseColorFactor()],
+  ['emissiveFactor', (m) => m.getEmissiveFactor()],
+  ['metallicFactor', (m) => m.getMetallicFactor()],
+  ['roughnessFactor', (m) => m.getRoughnessFactor()],
+  ['normalScale', (m) => m.getNormalScale()],
+  ['occlusionStrength', (m) => m.getOcclusionStrength()],
+];
+
+function textureSlots(m: GltfMaterial) {
+  return [
+    [m.getBaseColorTexture(), m.getBaseColorTextureInfo()],
+    [m.getEmissiveTexture(), m.getEmissiveTextureInfo()],
+    [m.getNormalTexture(), m.getNormalTextureInfo()],
+    [m.getOcclusionTexture(), m.getOcclusionTextureInfo()],
+    [m.getMetallicRoughnessTexture(), m.getMetallicRoughnessTextureInfo()],
+  ] as const;
+}
+
+const extensionNames = (property: { listExtensions(): { extensionName: string }[] }) =>
+  property
+    .listExtensions()
+    .map((extension) => extension.extensionName)
+    .sort();
+
+/** Everything a merge cannot reconcile by choosing factor values: alpha, sidedness, bindings, extras. */
+function shadingKey(m: GltfMaterial, textures: readonly object[]): string {
+  const binding = (info: GltfTextureInfo | null) =>
+    info && [
+      info.getTexCoord(),
+      info.getWrapS(),
+      info.getWrapT(),
+      info.getMagFilter(),
+      info.getMinFilter(),
+      extensionNames(info),
+    ];
+  return JSON.stringify([
+    m.getAlphaMode(),
+    m.getAlphaMode() === 'MASK' ? m.getAlphaCutoff() : null,
+    m.getDoubleSided(),
+    textureSlots(m).map(([texture, info]) => texture && [textures.indexOf(texture), binding(info)]),
+    extensionNames(m),
+    m.getExtras(),
+  ]);
+}
+
+function differingFactors(group: readonly GltfMaterial[]): string[] {
+  const [first, ...rest] = group as [GltfMaterial, ...GltfMaterial[]];
+  const differs = MERGE_FACTORS.filter(([, read]) =>
+    rest.some((m) => JSON.stringify(read(m)) !== JSON.stringify(read(first))),
+  ).map(([name]) => name);
+  for (const extension of first.listExtensions())
+    if (rest.some((m) => !m.getExtension(extension.extensionName)?.equals(extension)))
+      differs.push(extension.extensionName);
+  const slots = textureSlots(first);
+  slots.forEach(([, info], slot) => {
+    for (const extension of info?.listExtensions() ?? [])
+      if (
+        rest.some(
+          (m) =>
+            !textureSlots(m)[slot]?.[1]?.getExtension(extension.extensionName)?.equals(extension),
+        )
+      )
+        differs.push(extension.extensionName);
+  });
+  return [...new Set(differs)];
+}
+
+function mergeNeeds(differs: readonly string[]): string {
+  const needs: string[] = [];
+  if (differs.some((d) => d === 'baseColorFactor' || d === 'emissiveFactor'))
+    needs.push('colours in a shared texture or atlas region');
+  if (differs.some((d) => d === 'metallicFactor' || d === 'roughnessFactor'))
+    needs.push('one metallic/roughness value or a shared metallicRoughness texture');
+  if (differs.some((d) => d === 'normalScale' || d === 'occlusionStrength'))
+    needs.push('one normal scale and occlusion strength');
+  if (differs.some((d) => d.startsWith('KHR_') || d.startsWith('EXT_')))
+    needs.push('one setting for each differing extension');
+  return needs.length ? needs.join('; ') : 'only reusing one material; the members already match';
+}
+
+/**
+ * Optional advice: drawn materials that share alpha mode and cutoff, sidedness, texture bindings and
+ * samplers, extensions and extras, so only factor values separate them. Call after dedup(), which
+ * already merges byte-identical materials.
+ */
+export function materialMergeCandidates(doc: Document): MaterialMergeCandidate[] {
+  const root = doc.getRoot();
+  const parts = new Map<GltfMaterial, string[]>();
+  const visit = (node: import('@gltf-transform/core').Node): void => {
+    if (isHiddenGltfNode(node)) return;
+    const mesh = node.getMesh();
+    const name = node.getName() || mesh?.getName() || `node ${root.listNodes().indexOf(node)}`;
+    for (const primitive of mesh?.listPrimitives() ?? []) {
+      const material = primitive.getMaterial();
+      if (!material) continue;
+      const list = parts.get(material) ?? [];
+      if (!list.includes(name)) list.push(name);
+      parts.set(material, list);
+    }
+    for (const child of node.listChildren()) visit(child);
+  };
+  for (const scene of root.listScenes()) for (const node of scene.listChildren()) visit(node);
+
+  const materials = root.listMaterials();
+  const textures = root.listTextures();
+  const groups = new Map<string, GltfMaterial[]>();
+  for (const material of materials) {
+    if (!parts.has(material)) continue;
+    const key = shadingKey(material, textures);
+    const group = groups.get(key);
+    if (group) group.push(material);
+    else groups.set(key, [material]);
+  }
+  return [...groups.values()]
+    .filter((group) => group.length > 1)
+    .map((group) => {
+      const differs = differingFactors(group);
+      return {
+        materials: group.map((m) => m.getName() || `${parts.get(m)![0]} material`),
+        parts: group.map((m) => parts.get(m)!.slice(0, MERGE_PARTS_KEPT)),
+        alphaMode: group[0]!.getAlphaMode(),
+        differs,
+        needs: mergeNeeds(differs),
+      };
+    });
+}
+
+/** First few names, then a count of the rest. */
+function shortList(names: readonly string[], shown: number, joiner: string): string {
+  const head = names.slice(0, shown).join(joiner);
+  return names.length > shown ? `${head} and ${names.length - shown} more` : head;
+}
+
+function mergeAdvice(
+  m: InstanceabilityMetrics,
+  candidates: readonly MaterialMergeCandidate[],
+): { advice: InstanceabilityAdvice; summary: string; reasons: string[] } {
+  const merged = candidates.reduce((n, c) => n + c.materials.length - 1, 0);
+  const blendMerged = candidates
+    .filter((c) => c.alphaMode === 'BLEND')
+    .reduce((n, c) => n + c.materials.length - 1, 0);
+  const projected: InstanceabilityMetrics = {
+    ...m,
+    uniqueMaterials: Math.max(1, m.uniqueMaterials - merged),
+    transparentMaterials: Math.max(0, m.transparentMaterials - blendMerged),
+  };
+  const projectedGrade = rubricGrade(projected);
+  const band = materialBand(projected.uniqueMaterials);
+  const named = (c: MaterialMergeCandidate) => shortList(c.materials, 4, ' + ');
+  const groups = candidates.slice(0, 3).map((c) => {
+    const why = c.differs.length ? `differ in ${c.differs.join(', ')}` : 'identical shading';
+    return `${named(c)} (${why})`;
+  });
+  if (candidates.length > 3) groups.push(`${candidates.length - 3} more groups`);
+  const otherFactors =
+    projectedGrade === band.grade ? '' : `; other factors give ${projectedGrade}`;
+  const summary =
+    ` Optional advice, not a requirement: merging ${groups.join('; ')} would leave ` +
+    `${counted(projected.uniqueMaterials, 'material', 'materials')} (${band.grade} at ${band.range}${otherFactors}).`;
+  const reasons = candidates.map((c) => {
+    const why = c.differs.length ? ` and differ in ${c.differs.join(', ')}` : '';
+    return `optional advice: ${named(c)} share shading${why}; a merge needs ${c.needs}; parts: ${shortList(c.parts.flat(), 3, ', ')}`;
+  });
+  return {
+    advice: {
+      optional: true,
+      materialMerges: [...candidates],
+      projectedMaterials: projected.uniqueMaterials,
+      projectedGrade,
+    },
+    summary,
+    reasons,
+  };
+}
+
 /**
  * Grade instanceability A–F. Kiln-tuned, advisory only.
  *
@@ -221,12 +435,12 @@ const counted = (n: number, one: string, many: string): string => `${n} ${n === 
  */
 export function gradeInstanceability(
   metrics: InstanceabilityMetrics,
-  opts: { category?: string } = {},
+  opts: { category?: string; mergeCandidates?: readonly MaterialMergeCandidate[] } = {},
 ): InstanceabilityReport {
   const m = metrics;
 
   // Base grade from distinct-material cardinality (the collapsible axis).
-  const band = MATERIAL_GRADE_BANDS.find((b) => m.uniqueMaterials <= b.max)!;
+  const band = materialBand(m.uniqueMaterials);
   let grade = band.grade;
   const materials = `${counted(m.uniqueMaterials, 'distinct material', 'distinct materials')} (${band.grade} at ${band.range})`;
 
@@ -273,5 +487,14 @@ export function gradeInstanceability(
   if (opts.category) reasons.push(`category: ${opts.category}`);
 
   const summary = `${grade} (informational, not a QA verdict), set by ${setBy}. Also: ${also.join('; ')}.`;
-  return { grade, summary, reasons, metrics: m };
+  if (!opts.mergeCandidates?.length) return { grade, summary, reasons, metrics: m };
+  // Advice follows the grade text and never feeds back into it.
+  const merge = mergeAdvice(m, opts.mergeCandidates);
+  return {
+    grade,
+    summary: summary + merge.summary,
+    reasons: [...reasons, ...merge.reasons],
+    metrics: m,
+    advice: merge.advice,
+  };
 }
