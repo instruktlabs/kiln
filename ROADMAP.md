@@ -1,6 +1,6 @@
 # Kiln roadmap
 
-Updated 17 October 2026 after the public 1.3.0 release.
+Updated 22 October 2026 after the public 1.3.1 maintenance release.
 Scene performance evidence below retains its original candidate scope; Cabin in
 the Woods carries its own 1.2.3 review report.
 [CHANGELOG.md](CHANGELOG.md) defines engine release behavior.
@@ -9,9 +9,11 @@ Dated plans and reviews retain their original candidate scopes.
 
 ## Delivered
 
-Kiln 1.3.0 is published on npm as `@instruktlabs/kiln`, with a matching
-[GitHub release and tag](https://github.com/instruktlabs/kiln/releases/tag/v1.3.0).
-The public site is deployed with the 1.3.0 publication record. Standalone authoring,
+Kiln 1.3.1 is published on npm as `@instruktlabs/kiln`, with a matching
+[GitHub release and tag](https://github.com/instruktlabs/kiln/releases/tag/v1.3.1).
+The public site is deployed with the 1.3.1 publication record. 1.3.1 is a
+maintenance release over 1.3.0 (security policy, plugin metadata, installation
+and gallery fixes). Standalone authoring,
 optional projects, materials, Live Review, calibrated review lighting, bounded
 tool results, the compiled SDK and shared CLI/MCP contracts remain the core.
 
