@@ -5,7 +5,9 @@ This is independent of the conversation or MCP connection.
 
 Pass `code` once to `kiln_validate` or `kiln_render`. Both return a `programRef`, even
 when the draft fails. Use it for later rendering, validation, inspection, animation
-and interior views. `kiln_source` reads the source; `kiln_edit` changes it.
+and interior views. `kiln_source` reads the source; `kiln_edit` changes it. From a
+shell, `kiln validate <program.js|ref>` runs the same `kiln_validate` check, prints the
+`programRef` and exits 1 when the source is invalid; `--json` prints the tool result.
 
 Copy the returned reference exactly. Built-in stores return compact handles such as
 `p_7c94a132b8e0`, so the model need not repeat a full hash. A handle always identifies

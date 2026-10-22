@@ -61,6 +61,14 @@ does not publish a package.
   `schemaVersion:2` record; `createMaterialPresetDraftAny` returns any preset's draft, and
   preset summaries report `recordSchemaVersion`. The docs list the presets as a table that a
   test keeps in step with the catalog (#210).
+- Name procedural texture usage errors and add `kiln validate` ([#215](https://github.com/instruktlabs/kiln/issues/215)).
+  An unknown `proceduralTexture` usage (such as `data`) or a usage that does not match its
+  portable material slot, in V2 or V3, now crosses the evaluator boundary as the closed
+  `PROCEDURAL_TEXTURE_USAGE` diagnostic; its advice lists the seven usages and the slots
+  that take them, instead of the bare rejection sentence. Discovery's `proceduralTexture`
+  contract lists them too. The new `kiln validate <program.js|ref> [--json]` serves the same
+  `kiln_validate` check from the CLI, prints the `programRef` and exits 1 when the source is
+  invalid; the generic rejection advice names both forms.
 
 ## 1.3.1 (2026-10-17)
 

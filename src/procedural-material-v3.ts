@@ -13,6 +13,7 @@ import {
   type CanonicalPortableSamplerV1,
   type PortableSamplerV1,
 } from './portable-sampler';
+import type { AuthoringDiagnostic } from './evaluator/authoring-diagnostic';
 import type { MaterialMapSlotV1 } from './pinned-material-map';
 
 export const PORTABLE_MATERIAL_V3_LIMITS = Object.freeze({
@@ -74,8 +75,8 @@ export interface CanonicalPortableMaterialSpecV3
   textures: Partial<Record<MaterialMapSlotV1, CanonicalPortableTextureRefV3>>;
 }
 export class PortableMaterialV3Error extends ProceduralTextureError {
-  constructor(message: string) {
-    super(`portableMaterial V3: ${message}`, 'PORTABLE_MATERIAL_V3_CONTRACT');
+  constructor(message: string, diagnostic: AuthoringDiagnostic = 'PORTABLE_MATERIAL_V3_CONTRACT') {
+    super(`portableMaterial V3: ${message}`, diagnostic);
     this.name = 'PortableMaterialV3Error';
   }
 }
@@ -172,7 +173,10 @@ function admitMaterial(input: unknown): PortableMaterialAdmissionV3 {
         fail('procedural references cannot carry a resource ID.');
       const admitted = admitProceduralTextureSpecV3(ref['spec']);
       if (admitted.spec.usage !== PORTABLE_MATERIAL_SLOT_USAGE[slot])
-        fail(`${slot} requires ${PORTABLE_MATERIAL_SLOT_USAGE[slot]} data.`);
+        throw new PortableMaterialV3Error(
+          `${slot} requires ${PORTABLE_MATERIAL_SLOT_USAGE[slot]} data.`,
+          'PROCEDURAL_TEXTURE_USAGE',
+        );
       texels += admitted.spec.width * admitted.spec.height;
       work += admitted.estimatedWorkUnits;
       bytes += admitted.conservativePixelAllocationBytes;
