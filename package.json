@@ -388,7 +388,7 @@
   },
   "devDependencies": {
     "@ai-sdk/provider": "^3.0.18",
-    "@anthropic-ai/sdk": "0.134.0",
+    "@anthropic-ai/sdk": "0.109.1",
     "@aws-sdk/client-bedrock-runtime": "^3.1146.0",
     "@biomejs/biome": "^2.5.15",
     "@google/genai": "^2.27.0",
