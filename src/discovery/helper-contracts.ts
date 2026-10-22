@@ -2699,7 +2699,7 @@ define(
     parameters: [
       'V1/V2 preserve opaque patterns: size power-of-two 4..1024 and at most 8 layers. Explicit schemaVersion 3 uses width/height integers 4..1024, byte RGBA, at most 64 ordered operations and 64 polygon vertices.',
       'V3 paint/mask use integer pixel-edge shapes with binary center coverage and fixed integer source-over rounding. A mask clears outside its shape; invert keeps outside. Zero-alpha pixels are transparent black.',
-      'V3 color-only palette colors are 1..32 RGB integers, optional fixed Bayer4 dither. Color-only stamps use bounded Xorshift32 seed/area placement; periodic wrapping is explicit and at most 256 expanded copies. Legacy-v2 layers delegate unchanged square V2 patterns with matching usage.',
+      'V3 color-only palette colors are 1..32 RGB integers, optional fixed Bayer4 dither. Stamps (any usage) use bounded Xorshift32 seed/area placement; periodic wrapping is explicit and at most 256 expanded copies. Legacy-v2 layers delegate unchanged square V2 patterns with matching usage.',
       'Pattern counts 1..256 and noise octaves 1..6; seeded patterns are deterministic.',
       'For stripes and gradient, angleDeg rotates the direction of color variation in UV space about the image center. At 0 degrees colors vary across U: stripe bands run along V. At 90 degrees colors vary across V: bands run along U. This does not rotate the mesh UVs.',
       'Stripes count is the number of alternating bands across one unit of the projected coordinate, not the number of colorA/colorB pairs. Gradient runs from its from color to its to color along that coordinate and clamps outside 0..1.',
