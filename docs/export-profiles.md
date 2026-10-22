@@ -28,7 +28,7 @@ is available: a runtime sidecar is **not** a replacement for it.
 
 | Setting | When it applies | Default | Optional choice | Why it exists |
 | --- | --- | --- | --- | --- |
-| GLB converter | Source render/build | Established converter (`legacy`) | Experimental Three.js converter (`three`) | Compare preservation of features such as skin/morph data, vertex colors, extra UV sets and material extensions |
+| GLB converter | Source render/build | Established converter (`legacy`) | Experimental Three.js converter (`three`) | Compare preservation of features such as skin/morph data, extra UV sets and material extensions |
 | Export profile | Delivery of an already-saved revision | `editable` | `runtime` | Keep exact authoring artifacts or externalize duplicate review data for application loading |
 
 The converter is selected through the host's `KILN_GLTF_EXPORTER` environment or the

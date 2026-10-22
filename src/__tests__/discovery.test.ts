@@ -39,15 +39,15 @@ describe('progressive capability discovery', () => {
       const bytes = Buffer.from(rendered.glb);
       const document = JSON.parse(bytes.subarray(20, 20 + bytes.readUInt32LE(12)).toString());
       const attributes = document.meshes[0].primitives[0].attributes;
-      for (const [sourceKey, gltfKey] of [
-        ['color', 'COLOR_0'],
-        ['uv1', 'TEXCOORD_1'],
-        ['uv2', 'TEXCOORD_2'],
-        ['uv3', 'TEXCOORD_3'],
-      ]) {
-        const reported = result.capabilities.geometry.attributes.includes(sourceKey!);
-        expect(reported).toBe(exporter === 'three');
-        expect(gltfKey! in attributes).toBe(reported);
+      for (const [sourceKey, gltfKey, both] of [
+        ['color', 'COLOR_0', true],
+        ['uv1', 'TEXCOORD_1', false],
+        ['uv2', 'TEXCOORD_2', false],
+        ['uv3', 'TEXCOORD_3', false],
+      ] as const) {
+        const reported = result.capabilities.geometry.attributes.includes(sourceKey);
+        expect(reported).toBe(both || exporter === 'three');
+        expect(gltfKey in attributes).toBe(reported);
       }
     }
   });

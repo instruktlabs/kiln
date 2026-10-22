@@ -445,6 +445,33 @@ geometry copy, because cavity depends on placement. The bake is deterministic an
 bounded by `GEOMETRY_ALLOCATION_LIMITS`; see the [delivery contract](delivery-contract.md#baked-vertex-attributes)
 for the formulas.
 
+## Carry vertex colours and author masks
+
+Export keeps these vertex attributes; anything else is reported as
+`EXPORT_ATTRIBUTE_UNSUPPORTED` (or rejected under `geometryPolicy: 'strict'`):
+
+| three.js attribute | glTF attribute | `legacy` (default) | `three` |
+| --- | --- | --- | --- |
+| `position`, `normal`, `uv`, `tangent` | `POSITION`, `NORMAL`, `TEXCOORD_0`, `TANGENT` | yes | yes |
+| `color` (3 or 4 components) | `COLOR_0` | yes | yes |
+| `_edge`, `_cavity` (baked) | `_EDGE`, `_CAVITY` | yes | yes |
+| lowercase `_name`, 1 to 4 float components | `_NAME` | yes | yes |
+| `uv1`..`uv3` | `TEXCOORD_1`..`TEXCOORD_3` | no | yes |
+| `skinIndex`, `skinWeight` | `JOINTS_0`, `WEIGHTS_0` | no | yes |
+
+An author attribute name is an underscore, a lowercase letter, then lowercase
+letters, digits or single underscores (at most 64 characters), such as `_wet` or
+`_flow_dir`. It is written as float32 under the uppercase name, and three.js
+`GLTFLoader` reads it back under the lowercase one. Use it for a per-vertex mask
+such as a wet line or wear instead of cutting triangles along the boundary.
+`runtime --target three` keeps author attributes as unquantized float32 and lists
+them in the sidecar `customAttributes`. Mixed-case names such as `_Wet` would not
+round-trip and stay unsupported.
+
+glTF multiplies base colour by `COLOR_0`, and loaders enable vertex colours when it
+is present, whether or not the authoring material set `vertexColors`. Remove a
+`color` attribute that is not meant to tint the surface.
+
 ## Declare a triangle budget
 
 `defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 })` records the asset's

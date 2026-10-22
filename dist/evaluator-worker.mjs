@@ -16663,6 +16663,11 @@ function collectAuthorExtras(root) {
 var MAX_USER_DATA_BYTES_PER_OBJECT = 4096, MAX_USER_DATA_BYTES_TOTAL = 65536, RESERVED_USER_DATA_PREFIX = "kiln", isReservedUserDataKey = (key) => key.startsWith(RESERVED_USER_DATA_PREFIX), MAX_LISTED = 8, utf8Bytes = (text) => new TextEncoder().encode(text).length, listed = (items) => items.length > MAX_LISTED ? `${items.slice(0, MAX_LISTED).join(", ")}, and ${items.length - MAX_LISTED} more` : items.join(", "), plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
 // src/geometry-export.ts
+function customAttributeSemantic(key) {
+  if (key.length > AUTHOR_ATTRIBUTE_MAX_NAME || !AUTHOR_ATTRIBUTE_PATTERN.test(key))
+    return null;
+  return CUSTOM_EXPORT_ATTRIBUTES[key] ?? key.toUpperCase();
+}
 function geometryExportAttributes(exporter) {
   return exporter === "three" ? THREE_GEOMETRY_ATTRIBUTES : EXPORTED_GEOMETRY_ATTRIBUTES;
 }
@@ -16732,8 +16737,8 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
       return;
     const geometry = mesh.geometry;
     const name = mesh.name || "<unnamed mesh>";
-    const unsupported = (feature) => {
-      const message = `EXPORT_ATTRIBUTE_UNSUPPORTED ${name}: ${feature} is not preserved by the GLB bridge.`;
+    const unsupported = (feature, hint = "") => {
+      const message = `EXPORT_ATTRIBUTE_UNSUPPORTED ${name}: ${feature} is not preserved by the GLB bridge.${hint}`;
       if (policy === "strict")
         throw new TypeError(message);
       warnings.push(message);
@@ -16742,9 +16747,9 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
     if (position?.itemSize !== 3)
       throw new TypeError(`${name}: position requires xyz vertices.`);
     for (const [key, attribute] of Object.entries(geometry.attributes)) {
-      const expected = attributes[key];
+      const expected = attributes[key] ?? (customAttributeSemantic(key) ? AUTHOR_ATTRIBUTE_COMPONENTS : undefined);
       if (expected === undefined) {
-        unsupported(key);
+        unsupported(key, key.startsWith("_") ? " Author attributes use a lowercase name such as _wet (exported as _WET) with 1 to 4 float components." : "");
         continue;
       }
       const sizes = typeof expected === "number" ? [expected] : expected;
@@ -16791,13 +16796,14 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
   });
   return warnings.map((warning) => typeof warning === "string" ? warning : formatNoteGroup(warning));
 }
-var EXPORTED_GEOMETRY_ATTRIBUTES, CUSTOM_EXPORT_ATTRIBUTES, THREE_GEOMETRY_ATTRIBUTES, NOTE_NAMES_SHOWN = 3;
+var EXPORTED_GEOMETRY_ATTRIBUTES, CUSTOM_EXPORT_ATTRIBUTES, AUTHOR_ATTRIBUTE_PATTERN, AUTHOR_ATTRIBUTE_COMPONENTS, AUTHOR_ATTRIBUTE_MAX_NAME = 64, THREE_GEOMETRY_ATTRIBUTES, NOTE_NAMES_SHOWN = 3;
 var init_geometry_export = __esm(() => {
   EXPORTED_GEOMETRY_ATTRIBUTES = {
     position: 3,
     normal: 3,
     uv: 2,
     tangent: 4,
+    color: [3, 4],
     _edge: 1,
     _cavity: 1
   };
@@ -16805,9 +16811,10 @@ var init_geometry_export = __esm(() => {
     _edge: "_EDGE",
     _cavity: "_CAVITY"
   };
+  AUTHOR_ATTRIBUTE_PATTERN = /^_[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/;
+  AUTHOR_ATTRIBUTE_COMPONENTS = [1, 2, 3, 4];
   THREE_GEOMETRY_ATTRIBUTES = {
     ...EXPORTED_GEOMETRY_ATTRIBUTES,
-    color: [3, 4],
     uv1: 2,
     uv2: 2,
     uv3: 2,
@@ -33007,11 +33014,20 @@ function bridgeGeometry(doc, buf, geometry, material, meshName, atlas) {
   if (tangentAttr?.itemSize === 4) {
     prim.setAttribute("TANGENT", doc.createAccessor(`${meshName}_tangent`).setArray(geometryAttributeValues(tangentAttr)).setType(TYPE_VEC4).setBuffer(buf));
   }
-  for (const [key, gltfName] of Object.entries(CUSTOM_EXPORT_ATTRIBUTES)) {
+  const colorAttr = geometry.getAttribute("color");
+  if (colorAttr?.itemSize === 3 || colorAttr?.itemSize === 4) {
+    prim.setAttribute("COLOR_0", doc.createAccessor(`${meshName}_color`).setArray(geometryAttributeValues(colorAttr)).setType(colorAttr.itemSize === 4 ? TYPE_VEC4 : TYPE_VEC3).setBuffer(buf));
+  }
+  const customKeys = [
+    ...Object.keys(CUSTOM_EXPORT_ATTRIBUTES),
+    ...Object.keys(geometry.attributes).filter((key) => !(key in CUSTOM_EXPORT_ATTRIBUTES)).sort()
+  ];
+  for (const key of customKeys) {
+    const gltfName = customAttributeSemantic(key);
     const custom = geometry.getAttribute(key);
-    if (custom?.itemSize !== 1)
+    if (!gltfName || !custom || custom.itemSize < 1 || custom.itemSize > 4)
       continue;
-    prim.setAttribute(gltfName, doc.createAccessor(`${meshName}${gltfName.toLowerCase()}`).setArray(geometryAttributeValues(custom)).setType(TYPE_SCALAR).setBuffer(buf));
+    prim.setAttribute(gltfName, doc.createAccessor(`${meshName}${gltfName.toLowerCase()}`).setArray(geometryAttributeValues(custom)).setType(ACCESSOR_TYPES[custom.itemSize - 1]).setBuffer(buf));
   }
   const indexAttr = geometry.getIndex();
   if (indexAttr) {
@@ -33803,7 +33819,7 @@ function inspectSceneStructure(root, opts = {}) {
   }
   return warnings;
 }
-var engineIO, TYPE_SCALAR = "SCALAR", TYPE_VEC2 = "VEC2", TYPE_VEC3 = "VEC3", TYPE_VEC4 = "VEC4", GROUND_CONTACT_TOLERANCE = 0.02, GLTF_MIN_FILTER, GLTF_MAG_FILTER, GLTF_WRAP, REVIEW_CLIPS_EXTRAS_KEY = "kilnReviewClipsV1", REVIEW_CLIP_LIMITS, PALETTE_MIN = 4, INSTANCE_MIN = 5, FLOATER_FIXES_SHOWN = 6, FLOATER_NAMES_SHOWN = 24;
+var engineIO, TYPE_SCALAR = "SCALAR", TYPE_VEC2 = "VEC2", TYPE_VEC3 = "VEC3", TYPE_VEC4 = "VEC4", ACCESSOR_TYPES, GROUND_CONTACT_TOLERANCE = 0.02, GLTF_MIN_FILTER, GLTF_MAG_FILTER, GLTF_WRAP, REVIEW_CLIPS_EXTRAS_KEY = "kilnReviewClipsV1", REVIEW_CLIP_LIMITS, PALETTE_MIN = 4, INSTANCE_MIN = 5, FLOATER_FIXES_SHOWN = 6, FLOATER_NAMES_SHOWN = 24;
 var init_render = __esm(() => {
   init_requirements_context();
   init_requirements_run();
@@ -33843,6 +33859,7 @@ var init_render = __esm(() => {
   init_kit();
   init_texture_bake();
   engineIO = createGltfIO;
+  ACCESSOR_TYPES = [TYPE_SCALAR, TYPE_VEC2, TYPE_VEC3, TYPE_VEC4];
   GLTF_MIN_FILTER = {
     [THREE54.NearestFilter]: 9728,
     [THREE54.LinearFilter]: 9729,

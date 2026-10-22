@@ -41,6 +41,12 @@ does not publish a package.
   usages such as `normal`, so a height recipe can emboss the albedo's stamped pits; palettes
   stay colour-only. V2 derivation identities and existing V3 recipe hashes are unchanged
   (#205).
+- Export vertex colours (`COLOR_0`) and lowercase underscore author attributes such as
+  `_wet` (as float `_WET`, 1 to 4 components) through the default `legacy` converter as
+  well as `three`; the runtime three target lists them in `customAttributes` in the same
+  order as delivery inspection. A `color` attribute now tints the exported surface in glTF
+  viewers instead of being dropped with a warning. `docs/geometry.md` lists the attributes
+  each converter keeps (#195).
 
 ## 1.3.1 (2026-10-17)
 

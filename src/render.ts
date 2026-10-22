@@ -57,6 +57,7 @@ import { rigExtrasForExport } from './rig-export';
 import { type AuthorExtras, collectAuthorExtras } from './user-data-extras';
 import {
   CUSTOM_EXPORT_ATTRIBUTES,
+  customAttributeSemantic,
   geometryAttributeValues,
   inspectGeometryExport,
   validateMaterialGroups,
@@ -236,6 +237,8 @@ const TYPE_SCALAR: AccessorTypeStr = 'SCALAR';
 const TYPE_VEC2: AccessorTypeStr = 'VEC2';
 const TYPE_VEC3: AccessorTypeStr = 'VEC3';
 const TYPE_VEC4: AccessorTypeStr = 'VEC4';
+/** Accessor type by component count, 1 to 4. */
+const ACCESSOR_TYPES = [TYPE_SCALAR, TYPE_VEC2, TYPE_VEC3, TYPE_VEC4] as const;
 
 // =============================================================================
 // Execution
@@ -826,15 +829,35 @@ function bridgeGeometry(
     );
   }
 
-  for (const [key, gltfName] of Object.entries(CUSTOM_EXPORT_ATTRIBUTES)) {
+  const colorAttr = geometry.getAttribute('color') as THREE.BufferAttribute | undefined;
+  if (colorAttr?.itemSize === 3 || colorAttr?.itemSize === 4) {
+    prim.setAttribute(
+      'COLOR_0',
+      doc
+        .createAccessor(`${meshName}_color`)
+        .setArray(geometryAttributeValues(colorAttr))
+        .setType(colorAttr.itemSize === 4 ? TYPE_VEC4 : TYPE_VEC3)
+        .setBuffer(buf),
+    );
+  }
+
+  // Baked attributes keep their established order; author attributes follow in name order.
+  const customKeys = [
+    ...Object.keys(CUSTOM_EXPORT_ATTRIBUTES),
+    ...Object.keys(geometry.attributes)
+      .filter((key) => !(key in CUSTOM_EXPORT_ATTRIBUTES))
+      .sort(),
+  ];
+  for (const key of customKeys) {
+    const gltfName = customAttributeSemantic(key);
     const custom = geometry.getAttribute(key) as THREE.BufferAttribute | undefined;
-    if (custom?.itemSize !== 1) continue;
+    if (!gltfName || !custom || custom.itemSize < 1 || custom.itemSize > 4) continue;
     prim.setAttribute(
       gltfName,
       doc
         .createAccessor(`${meshName}${gltfName.toLowerCase()}`)
         .setArray(geometryAttributeValues(custom))
-        .setType(TYPE_SCALAR)
+        .setType(ACCESSOR_TYPES[custom.itemSize - 1]!)
         .setBuffer(buf),
     );
   }

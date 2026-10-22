@@ -304,6 +304,11 @@ that convention when editing the path; arbitrary atlas rotations suit baked deta
 but can disrupt directional tiling. Caps and physical texture scale need separate
 decisions. Read the GPU image: CPU geometry feedback cannot establish texture direction.
 
+For a per-vertex mask such as a wet line, wear or moss, set a float attribute with a
+lowercase underscore name (`_wet`, 1 to 4 components) instead of cutting triangles
+along the boundary; both converters export it as `_WET` for the destination shader.
+A `color` attribute exports as `COLOR_0`, which glTF multiplies into base colour.
+
 ## Shape an existing mesh
 
 ```js

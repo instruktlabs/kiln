@@ -228,6 +228,58 @@ describe('three runtime target', () => {
     expect((await deliverThreeRuntimeGlb(bytes)).glb).toEqual(skipped.glb);
   });
 
+  test('an authored two-region mask survives save, editable export and the three runtime target', async () => {
+    const program = `const meta={name:'Wet Line'};
+function build(){
+  const root=createRoot('Root');
+  const geo=boxGeo(1,1,1);
+  const position=geo.getAttribute('position');
+  const wet=new Float32Array(position.count);
+  for(let i=0;i<position.count;i++) wet[i]=position.getY(i)<0?1:0;
+  geo.setAttribute('_wet',new THREE.BufferAttribute(wet,1));
+  geo.setAttribute('_aged',new THREE.BufferAttribute(new Float32Array(position.count).fill(0.5),1));
+  const rock=createPart('Rock',geo,gameMaterial('#888070'),{parent:root});
+  bakeSurfaceAttributes(rock,{cavity:{rays:8}});
+  return root;
+}`;
+    const rendered = await renderGLBInProcess(program);
+    expect(rendered.warnings.join('\n')).not.toContain('EXPORT_ATTRIBUTE_UNSUPPORTED');
+    const saved = new Uint8Array(rendered.glb);
+    const editable = await exportAssetGlb(assetRecord(saved), { profile: 'editable' });
+    const runtime = await exportAssetGlb(assetRecord(saved), {
+      profile: 'runtime',
+      target: 'three',
+      metadataFileName: 'rock.kiln-metadata.json',
+    });
+    if (runtime.profile !== 'runtime') throw new Error('expected runtime');
+    const delivery = JSON.parse(new TextDecoder().decode(runtime.metadata.bytes)).delivery;
+    expect(delivery.customAttributes.map((a: { name: string }) => a.name)).toEqual([
+      '_EDGE',
+      '_CAVITY',
+      '_AGED',
+      '_WET',
+    ]);
+    expect(delivery.customAttributes[3]).toEqual({
+      name: '_WET',
+      meshes: 1,
+      componentType: 'FLOAT',
+      normalized: false,
+    });
+    for (const bytes of [saved, editable.glb, runtime.glb]) {
+      const gltf = await loadWithGltfLoader(bytes);
+      let mesh: THREE.Mesh | undefined;
+      gltf.scene.traverse((node) => {
+        if ((node as THREE.Mesh).isMesh) mesh ??= node as THREE.Mesh;
+      });
+      if (!mesh) throw new Error('missing mesh');
+      const wet = mesh.geometry.getAttribute('_wet');
+      const position = mesh.geometry.getAttribute('position');
+      const regions = new Set<string>();
+      for (let i = 0; i < wet.count; i++) regions.add(`${position.getY(i) < 0}:${wet.getX(i)}`);
+      expect([...regions].sort()).toEqual(['false:0', 'true:1']);
+    }
+  });
+
   test('target three requires the runtime profile', async () => {
     const rendered = await renderGLBInProcess(RUNTIME_PROGRAM);
     await expect(

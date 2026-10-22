@@ -14,7 +14,7 @@ Copy shared primitive geometry with `copyGeometry` before modifying its buffers.
 
 ## Check what survives export
 
-Kiln exports triangle positions, normals, UV0, tangents, indices and material groups. Vertex colors, additional UV sets, skinning and morph targets are not supported by this bridge. The default policy reports unsupported data; `geometryPolicy: 'strict'` rejects it. Local CLI/MCP hosts can enforce the same policy with `KILN_GEOMETRY_POLICY=strict`.
+Kiln exports triangle positions, normals, UV0, tangents, vertex colors, lowercase underscore author attributes (such as `_wet`), indices and material groups; [geometry](geometry.md#carry-vertex-colours-and-author-masks) lists each converter's attributes. Additional UV sets, skinning and morph targets are not supported by the default bridge. The default policy reports unsupported data; `geometryPolicy: 'strict'` rejects it. Local CLI/MCP hosts can enforce the same policy with `KILN_GEOMETRY_POLICY=strict`.
 
 Inspect the exported GLB as well as the authored scene. Topology diagnostics do not prove that a model has no self-intersections, and CPU views do not establish material fidelity. A reusable part should include a small example that exercises its parameter limits and shows its attachments clearly.
 

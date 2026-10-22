@@ -156,8 +156,12 @@ async function currentCapabilities(
         exporter === undefined
           ? null
           : exporter === 'three'
-            ? ['custom attributes', 'UV4+', 'morph attributes other than position/normal']
-            : ['vertex colors', 'UV1+', 'skinning', 'morphs', 'custom attributes'],
+            ? ['UV4+', 'morph attributes other than position/normal']
+            : ['UV1+', 'skinning', 'morphs'],
+      customAttributes:
+        exporter === undefined
+          ? null
+          : 'Lowercase underscore names such as _wet with 1 to 4 float components export as _WET; GLTFLoader reads them back as _wet.',
       strictExport:
         'geometryPolicy:strict on GLB export or host context; local KILN_GEOMETRY_POLICY=strict',
       implicitSurfaces: 'experimental',

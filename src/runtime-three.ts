@@ -8,7 +8,7 @@
  * - KTX2 (`KHR_texture_basisu`) only when the host supplies an encoder, reported `skipped`
  *   otherwise.
  *
- * Kept: `_EDGE`/`_CAVITY` and every other underscore attribute (as float32, never quantized),
+ * Kept: `_EDGE`/`_CAVITY` and author underscore attributes such as `_WET` (float32, never quantized),
  * semantic roles and kit extras, hidden collider nodes, anchors, ports and `MSFT_lod` chains.
  * A collider node keeps its authored transform: its proxy mesh moves to a child first, so the
  * dequantization transform lands on that child instead of the collider's size. Static mesh
@@ -112,6 +112,7 @@ export interface RuntimeThreeDeliveryV1 {
   };
 }
 
+const customRank = (name: string) => (name === '_EDGE' ? 0 : name === '_CAVITY' ? 1 : 2);
 const rolesOf = (node: Node): string[] =>
   readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [];
 const isCollider = (node: Node) =>
@@ -414,7 +415,8 @@ export async function deliverRuntimeThreeGlb(
       proxy: pathOf(proxy),
     })),
     customAttributes: [...customAttributes]
-      .sort(([a], [b]) => (a === '_EDGE' ? -1 : b === '_EDGE' ? 1 : a < b ? -1 : a > b ? 1 : 0))
+      // Same order as delivery inspection: _EDGE, _CAVITY, then author attributes by name.
+      .sort(([a], [b]) => customRank(a) - customRank(b) || (a < b ? -1 : a > b ? 1 : 0))
       .map(([name, meshes]) => ({
         name,
         meshes: meshes.size,

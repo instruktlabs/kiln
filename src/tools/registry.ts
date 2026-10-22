@@ -510,8 +510,8 @@ async function renderDerivativeCell(
     // and adjudicated. Submitting it for judgement a second time fails on the
     // round trip rather than on the asset: see `derivative` in render.ts.
     derivative: true,
-    // Review reconstruction preserves vertex colors and secondary UVs; the legacy
-    // authored exporter does not carry those channels into the GPU derivative.
+    // Review reconstruction preserves secondary UVs; the legacy authored exporter
+    // does not carry them into the GPU derivative.
     gltfExporter: 'three',
     requirements: toolRequirements(context).binding,
   });
