@@ -119,3 +119,18 @@ test('everyday object words reach the reviewed structure and material entries', 
         ?.expandedTerms ?? [],
     ).not.toContain('cost');
 });
+
+test('Cove authoring words reach welding, crease, packed-roughness and V3 shape contracts', async () => {
+  // Cove quality pass (#218): each of these took several queries.
+  const run = createDiscoveryService(
+    entries,
+    createLexicalDiscoveryIndex(entries),
+    async () => ({}),
+  );
+  const first = async (query: string) => (await run({ query })).entries[0]?.id;
+  expect(await first('weld duplicate vertices')).toBe('operation:mergeVertices');
+  expect(await first('crease normals hard edges')).toBe('operation:creaseNormals');
+  expect(await first('roughness map')).toBe('operation:pbrMaterial');
+  expect(await first('packed roughness metalness texture')).toBe('operation:pbrMaterial');
+  expect(await first('V3 texture ellipse polygon shape')).toBe('operation:proceduralTexture');
+});

@@ -91,7 +91,7 @@ test('CLI capabilities report the collections and program store the MCP host inj
   }
 });
 
-test('CLI exact details preserve ordering and unknown IDs fail atomically', async () => {
+test('CLI exact details preserve ordering and report unknown IDs beside known ones', async () => {
   const detail = await command(['--id', 'copyGeometry', '--id', 'operation:boxGeo', '--json']);
   expect(detail.status).toBe(0);
   expect(JSON.parse(detail.stdout).entries.map((entry: { name: string }) => entry.name)).toEqual([
@@ -101,6 +101,11 @@ test('CLI exact details preserve ordering and unknown IDs fail atomically', asyn
   const unknown = await command(['--id', 'copyGeomtry', '--json']);
   expect(unknown.status).toBe(1);
   expect(JSON.parse(unknown.stdout).error.code).toBe('UNKNOWN_ID');
+  const partial = await command(['--id', 'boxGeo', '--id', 'copyGeomtry', '--json']);
+  expect(partial.status).toBe(1);
+  const body = JSON.parse(partial.stdout);
+  expect(body.error.code).toBe('UNKNOWN_ID');
+  expect(body.entries.map((entry: { name: string }) => entry.name)).toEqual(['boxGeo']);
 });
 
 test('CLI rejects retired or contradictory selectors and exposes bounded human overview', async () => {

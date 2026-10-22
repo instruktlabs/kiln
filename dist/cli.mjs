@@ -45317,7 +45317,12 @@ var init_helper_contracts = __esm(() => {
     ...materialMetadata,
     references: ["src/textures.ts"],
     aliases: ["textured PBR", "metallic roughness material"],
-    intents: ["bind portable material textures and scalar factors"],
+    intents: [
+      "bind portable material textures and scalar factors",
+      "roughness map",
+      "packed roughness and metalness texture",
+      "apply albedo normal and roughness maps"
+    ],
     limitations: ["CPU views do not prove texture/metalness appearance."]
   });
   define2("foliageMaterial", {
@@ -47918,6 +47923,7 @@ ${JSON.stringify(current)}`
     }
     if (input.mode === "detail") {
       const selected = input.ids.map(select);
+      let unresolved = {};
       const unknown = input.ids.filter((_, offset) => !selected[offset]);
       if (unknown.length) {
         const removed = unknown.flatMap((id) => {
@@ -47929,12 +47935,12 @@ ${JSON.stringify(current)}`
 ${removed.join(`
 `)}`));
         const suggestions = (await ranked(unknown[0])).slice(0, 3).map(({ entry }) => entry.id);
-        return finish({
-          ...error(input.mode, "UNKNOWN_ID", `Unknown exact Discovery IDs: ${unknown.join(", ")}. Use query for suggestions; no substitutions were made.`),
-          suggestions
-        });
+        const message = `Unknown exact Discovery IDs: ${unknown.join(", ")}. Use query for suggestions; no substitutions were made.`;
+        if (selected.every((entry) => !entry))
+          return finish({ ...error(input.mode, "UNKNOWN_ID", message), suggestions });
+        unresolved = { error: { code: "UNKNOWN_ID", message }, suggestions };
       }
-      const requested = selected;
+      const requested = selected.filter((entry) => !!entry);
       if (new Set(requested.map((entry) => entry.id)).size !== requested.length) {
         return error(input.mode, "DUPLICATE_ID", "Each exact selector must identify a different catalog entry. A name or unprefixed slug and its canonical ID refer to the same entry.");
       }
@@ -47955,7 +47961,9 @@ ${removed.join(`
         total: requested.length,
         nextOffset: null,
         ...omitted.length ? { omittedIds: omitted } : {},
-        text: JSON.stringify(details) + (omitted.length ? `
+        ...unresolved,
+        text: (unresolved.error ? `${unresolved.error.message}
+` : "") + JSON.stringify(details) + (omitted.length ? `
 Not returned, over the result size: ${omitted.join(", ")}. Fetch them with another kiln_discover ids call.` : "")
       });
     }

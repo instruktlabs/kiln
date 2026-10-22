@@ -83,6 +83,10 @@ does not publish a package.
   note naming the part and count, leaving the authored geometry and unit normals untouched.
   A zero-length normal fails naming the part and vertex, with `lathe`, `revolveGeo` or
   `creaseNormals` as the remedy.
+- Discovery: when some exact IDs are unknown, the known contracts are returned in request order
+  beside the `UNKNOWN_ID` error, which names only the unknown IDs; no substitution is made and
+  a request with no known ID still returns no entries. `pbrMaterial` now ranks first for
+  roughness-map queries (#218).
 
 ## 1.3.1 (2026-10-17)
 

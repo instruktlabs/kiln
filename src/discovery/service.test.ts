@@ -83,11 +83,18 @@ test('detail resolves exact IDs and names in requested order and returns detache
   expect((await run({ ids: ['sweepProfile'] })).entries[0]!.tags).not.toContain('mutation');
 });
 
-test('unknown exact names fail as a whole without silently substituting a related function', async () => {
-  const result = await make()({ ids: ['sweepProfile', 'sweepProfle'] });
+test('unknown exact names are reported beside the known entries, never substituted', async () => {
+  const result = await make()({ ids: ['copyGeometry', 'sweepProfle', 'sweepProfile'] });
   expect(result.error?.code).toBe('UNKNOWN_ID');
-  expect(result.entries).toHaveLength(0);
+  expect(result.error?.message).toContain('sweepProfle');
+  expect(result.error?.message).not.toContain('copyGeometry');
+  expect(result.entries.map((entry) => entry.name)).toEqual(['copyGeometry', 'sweepProfile']);
+  expect(result.total).toBe(2);
   expect(result.suggestions?.length).toBeGreaterThan(0);
+  expect(result.text).toStartWith('Unknown exact Discovery IDs: sweepProfle.');
+  const none = await make()({ ids: ['sweepProfle'] });
+  expect(none.error?.code).toBe('UNKNOWN_ID');
+  expect(none.entries).toHaveLength(0);
 });
 
 test('ranked search filters then paginates and never exposes numeric confidence', async () => {

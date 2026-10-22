@@ -99,7 +99,8 @@ describe('progressive capability discovery', () => {
     })) as Result;
     expect(missing.error?.message).toContain('inventedMesh');
     expect(missing.error?.message).toContain('unknownSurface');
-    expect(missing.entries).toHaveLength(0);
+    expect(missing.error?.message).not.toContain('boxGeo,');
+    expect(missing.entries.map((entry) => entry.name)).toEqual(['boxGeo']);
     await expect(tool.run({ ids: ['boxGeo'], family: 'geometry' })).rejects.toThrow('alone');
     await expect(tool.run({ ids: Array(7).fill('boxGeo') })).rejects.toThrow();
   });

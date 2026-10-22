@@ -169,6 +169,7 @@ export function createDiscoveryService(
     }
     if (input.mode === 'detail') {
       const selected = input.ids.map(select);
+      let unresolved: Pick<DiscoveryResponse, 'error' | 'suggestions'> = {};
       const unknown = input.ids.filter((_, offset) => !selected[offset]);
       if (unknown.length) {
         const removed = unknown.flatMap((id) => {
@@ -184,16 +185,13 @@ export function createDiscoveryService(
             ),
           );
         const suggestions = (await ranked(unknown[0]!)).slice(0, 3).map(({ entry }) => entry.id);
-        return finish({
-          ...error(
-            input.mode,
-            'UNKNOWN_ID',
-            `Unknown exact Discovery IDs: ${unknown.join(', ')}. Use query for suggestions; no substitutions were made.`,
-          ),
-          suggestions,
-        });
+        const message = `Unknown exact Discovery IDs: ${unknown.join(', ')}. Use query for suggestions; no substitutions were made.`;
+        // One typo must not hide the contracts that did resolve: report it beside them.
+        if (selected.every((entry) => !entry))
+          return finish({ ...error(input.mode, 'UNKNOWN_ID', message), suggestions });
+        unresolved = { error: { code: 'UNKNOWN_ID', message }, suggestions };
       }
-      const requested = selected as DiscoveryEntry[];
+      const requested = selected.filter((entry): entry is DiscoveryEntry => !!entry);
       if (new Set(requested.map((entry) => entry.id)).size !== requested.length) {
         return error(
           input.mode,
@@ -220,9 +218,11 @@ export function createDiscoveryService(
         total: requested.length,
         nextOffset: null,
         ...(omitted.length ? { omittedIds: omitted } : {}),
+        ...unresolved,
         // One JSON line: a contract is read whole, and one-line JSON costs
         // about a quarter fewer tokens than the indented form.
         text:
+          (unresolved.error ? `${unresolved.error.message}\n` : '') +
           JSON.stringify(details) +
           (omitted.length
             ? `\nNot returned, over the result size: ${omitted.join(', ')}. Fetch them with another kiln_discover ids call.`

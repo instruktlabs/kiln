@@ -1782,7 +1782,12 @@ define(
     ...materialMetadata,
     references: ['src/textures.ts'],
     aliases: ['textured PBR', 'metallic roughness material'],
-    intents: ['bind portable material textures and scalar factors'],
+    intents: [
+      'bind portable material textures and scalar factors',
+      'roughness map',
+      'packed roughness and metalness texture',
+      'apply albedo normal and roughness maps',
+    ],
     limitations: ['CPU views do not prove texture/metalness appearance.'],
   },
 );
