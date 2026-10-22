@@ -195,9 +195,10 @@ What it does, in order:
    FLOAT. Buffers are written with `EXT_meshopt_compression` (required) unless the
    caller passes `compression: 'none'` (CLI `--compression none`): then buffers stay plain,
    no Meshopt decoder is needed, and quantization, instancing and everything below stay.
-4. Textures become KTX2 (`KHR_texture_basisu`) only when the library caller passes a
-   `ktx2Encoder`; Kiln ships none, so the CLI reports `ktx2: { status: 'skipped' }` and
-   textures stay PNG or JPEG.
+4. Textures become KTX2 (`KHR_texture_basisu`, required, no PNG fallback) only with
+   `--ktx2` or a library `ktx2Encoder`; otherwise the sidecar reports
+   `ktx2: { status: 'skipped' }` and textures stay PNG or JPEG. See
+   [KTX2 textures](#ktx2-textures).
 
 Roles and kit extras, hidden collider nodes (`KHR_node_visibility`), anchors, ports and
 `MSFT_lod` chains are kept. The sidecar `delivery` block states what a consumer needs:
@@ -211,7 +212,7 @@ Roles and kit extras, hidden collider nodes (`KHR_node_visibility`), anchors, po
 | `colliderProxies` | Collider node and proxy child paths |
 | `customAttributes` | Each underscore attribute, its mesh count, `FLOAT`, not normalized |
 | `instancing` | Each batch node, its mesh, count and instance names in order |
-| `ktx2` | `encoded` or `skipped` with the texture count and reason |
+| `ktx2` | `encoded` or `skipped` with the texture count and reason; `encoder` (name, version, Basis WebAssembly hash and every setting) when the encoder declared it |
 | `preserved` | Counts of LOD chains, hidden nodes, colliders, anchors, ports and kit modules |
 
 Quantization stores positions as normalized integers and moves the metre scale onto
@@ -231,6 +232,69 @@ decoder. three's `GLTFLoader` keeps unknown node extensions in `userData.gltfExt
 (`KHR_node_visibility`, `MSFT_lod`) and lowercases custom attributes (`_edge`).
 Kiln's tests load the derived GLB from both converters this way. On a very small asset
 the extension JSON can outweigh the saved geometry; compare real assets.
+
+## KTX2 textures
+
+`--ktx2` (with `--target three`) encodes every PNG, JPEG or WebP image to KTX2 through
+the optional peer `ktx2-encoder@0.6.0`. Kiln does not install or bundle it; add it to the
+installation that runs `kiln`:
+
+```sh
+npm install ktx2-encoder@0.6.0
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --target three --ktx2   --textures manifest --out door.glb --json
+```
+
+Without the peer, `--ktx2` fails and names that install command. Another installed
+version is refused, because the settings below are qualified on 0.6.0. The mode follows
+the slot: ETC1S with the sRGB transfer function for base colour and emissive, UASTC with
+Zstandard supercompression for normal, metallic-roughness, occlusion and other linear
+maps (normal maps also use the encoder's normal-map preset). Every level gets mipmaps. An
+image used by both an sRGB and a linear slot stops the export, because one encoding
+cannot serve both; give each slot its own image.
+
+`delivery.ktx2.encoder` records `name`, `version`, `basisWasmSha256` and the exact
+`settings` per profile, and the `--json` receipt repeats `delivery.ktx2`. Because the
+sidecar hash is stamped into the GLB, these facts are bound to the delivered bytes. With
+`--textures manifest`, each entry's `sha256` is the KTX2 bytes and `sourceSha256` the
+image before encoding; a library pin is matched on the pre-encode bytes. Encoding the same
+image twice gives identical bytes in Kiln's tests; if a platform ever differs, the
+recorded version and settings are the contract, and the only cost is a new hash.
+
+Encoding runs inside the same document as the rest of the target, so `MSFT_lod` chains,
+roles and atlas provenance survive: every atlas reference is rebound to its KTX2 bytes and
+MIME type and validated as import will validate it. The library form is:
+
+```ts
+import { createKtx2Encoder, exportAssetGlb } from '@instruktlabs/kiln/asset-export';
+
+const output = await exportAssetGlb(record, {
+  profile: 'runtime',
+  target: 'three',
+  ktx2Encoder: await createKtx2Encoder(),
+});
+```
+
+A host may pass its own `ktx2Encoder` instead. It receives `{ image, mimeType, name,
+colorSpace, slot }`, must return bytes that start with the KTX2 identifier, and may carry
+an `identity` property that Kiln records as `delivery.ktx2.encoder`.
+
+A consumer needs `KTX2Loader` (with its Basis transcoder files served by the application)
+in addition to the meshopt decoder:
+
+```ts
+import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
+
+const ktx2 = new KTX2Loader().setTranscoderPath('/basis/').detectSupport(renderer);
+const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).setKTX2Loader(ktx2);
+```
+
+Licences: `ktx2-encoder` is MIT. Its package bundles a precompiled Basis Universal
+encoder (Apache-2.0, Binomial LLC) as WebAssembly, which links Zstandard (BSD-3-Clause)
+and MIT-licensed image loaders, and the package ships `THIRD_PARTY_NOTICES.md` reproducing
+the Basis Universal NOTICE. Kiln (MIT) only imports the peer that the user installed; it
+redistributes none of that code, so the notice travels with the installed package. Anyone
+who redistributes `ktx2-encoder` itself, for example inside a self-contained archive, must
+keep that notice file. KTX2 output is data produced by the encoder, not a copy of it.
 
 ## Runtime textures: manifest and shared files
 

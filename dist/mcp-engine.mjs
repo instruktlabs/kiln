@@ -9012,6 +9012,459 @@ var init_delivery_inspect = __esm(() => {
   init_node_visibility();
 });
 
+// src/gltf-texture-binding.ts
+import * as THREE7 from "three";
+function restoreGltfTextureBinding(texture, info) {
+  texture.minFilter = MIN[info.getMinFilter() ?? 9729];
+  texture.magFilter = info.getMagFilter() === 9728 ? THREE7.NearestFilter : THREE7.LinearFilter;
+  texture.wrapS = WRAP[info.getWrapS()];
+  texture.wrapT = WRAP[info.getWrapT()];
+  texture.generateMipmaps = [9984, 9985, 9986, 9987].includes(info.getMinFilter() ?? 9729);
+  texture.flipY = false;
+  const transform = info.getExtension("KHR_texture_transform");
+  texture.channel = transform?.getTexCoord() ?? info.getTexCoord();
+  if (transform) {
+    texture.offset.fromArray(transform.getOffset());
+    texture.repeat.fromArray(transform.getScale());
+    texture.rotation = transform.getRotation();
+    const c = Math.cos(texture.rotation), s = Math.sin(texture.rotation);
+    const [sx, sy] = transform.getScale(), [x, y] = transform.getOffset();
+    texture.matrix.set(sx * c, sy * s, x, -sx * s, sy * c, y, 0, 0, 1);
+    texture.matrixAutoUpdate = false;
+  }
+}
+function gltfTextureBindingKey(info) {
+  if (!info)
+    return "";
+  const transform = info.getExtension("KHR_texture_transform");
+  return JSON.stringify([
+    info.getMinFilter(),
+    info.getMagFilter(),
+    info.getWrapS(),
+    info.getWrapT(),
+    info.getTexCoord(),
+    transform?.getTexCoord(),
+    transform?.getOffset(),
+    transform?.getScale(),
+    transform?.getRotation(),
+    info.getExtras()["kilnAtlasReference"]
+  ]);
+}
+var MIN, WRAP;
+var init_gltf_texture_binding = __esm(() => {
+  MIN = {
+    9728: THREE7.NearestFilter,
+    9729: THREE7.LinearFilter,
+    9984: THREE7.NearestMipmapNearestFilter,
+    9985: THREE7.LinearMipmapNearestFilter,
+    9986: THREE7.NearestMipmapLinearFilter,
+    9987: THREE7.LinearMipmapLinearFilter
+  };
+  WRAP = {
+    33071: THREE7.ClampToEdgeWrapping,
+    33648: THREE7.MirroredRepeatWrapping,
+    10497: THREE7.RepeatWrapping
+  };
+});
+
+// src/atlas-provenance.ts
+import * as THREE8 from "three";
+function fail4(message) {
+  throw new TypeError(`atlas provenance: ${message}`);
+}
+function field(input, key) {
+  if (!input || typeof input !== "object" || Array.isArray(input))
+    fail4("plain metadata object required.");
+  const proto = Object.getPrototypeOf(input);
+  if (proto !== null && proto !== Object.prototype)
+    fail4("plain metadata prototype required.");
+  const d = Object.getOwnPropertyDescriptor(input, key);
+  if (!d)
+    return;
+  if (!d.enumerable || !("value" in d))
+    fail4("metadata accessors/hidden fields are unsupported.");
+  return d.value;
+}
+function closed(input, keys) {
+  for (const key of Reflect.ownKeys(input))
+    if (typeof key !== "string" || !keys.includes(key))
+      fail4("unsupported metadata field.");
+  for (const key of keys)
+    field(input, key);
+  return input;
+}
+function normalize(input) {
+  canonicalAtlasMetadataJsonV1(input);
+  const r = closed(input, ["spec", "manifest"]);
+  const spec = canonicalizeTextureAtlasSpecV1(r["spec"]);
+  return { spec, manifest: validateTextureAtlasManifestV1(r["manifest"], spec) };
+}
+function textureCandidates(texture) {
+  const direct = field(texture.userData, "kilnAtlas"), resource = field(texture.userData, "kilnMaterialResource");
+  const map = resource === undefined ? undefined : field(resource, "map"), recipe = map === undefined ? undefined : field(map, "recipe");
+  const candidates = [];
+  if (direct !== undefined)
+    candidates.push(direct);
+  if (recipe !== undefined && field(recipe, "kind") === "atlas")
+    candidates.push({ spec: field(recipe, "spec"), manifest: field(recipe, "manifest") });
+  return candidates;
+}
+function normalizeCandidates(candidates) {
+  let result;
+  for (const candidate of candidates) {
+    const p = normalize(candidate);
+    if (result && canonicalAtlasMetadataJsonV1(result) !== canonicalAtlasMetadataJsonV1(p))
+      fail4("direct and saved atlas identities disagree.");
+    result = p;
+  }
+  return result;
+}
+function readAtlasTextureProvenance(texture) {
+  return normalizeCandidates(textureCandidates(texture));
+}
+function admitTable(input) {
+  const r = closed(input, ["version", "atlases"]);
+  if (r["version"] !== ATLAS_PROVENANCE_VERSION)
+    fail4("unsupported version.");
+  const entries = r["atlases"];
+  if (!Array.isArray(entries) || Object.getPrototypeOf(entries) !== Array.prototype)
+    fail4("dense atlas array required.");
+  const n = Object.getOwnPropertyDescriptor(entries, "length").value;
+  if (n > ATLAS_PROVENANCE_LIMITS.atlases || Reflect.ownKeys(entries).length !== n + 1)
+    fail4("atlas count/density budget exceeded.");
+  let bytes = TABLE_ENVELOPE_BYTES;
+  const admitted = [];
+  for (let i = 0;i < n; i++) {
+    const d = Object.getOwnPropertyDescriptor(entries, String(i));
+    if (!d?.enumerable || !("value" in d))
+      fail4("atlas array accessors are unsupported.");
+    const json = canonicalAtlasMetadataJsonV1(d.value);
+    bytes += new TextEncoder().encode(json).length + (i > 0 ? 1 : 0);
+    if (bytes > ATLAS_PROVENANCE_LIMITS.bytes)
+      fail4("aggregate metadata byte budget exceeded.");
+    admitted.push(closed(d.value, ["id", "spec", "manifest"]));
+  }
+  return admitted;
+}
+function validateAtlasProvenanceTable(input) {
+  const admitted = admitTable(input), ids = new Set, atlases = [];
+  for (const e of admitted) {
+    const p = normalize({ spec: e["spec"], manifest: e["manifest"] });
+    if (e["id"] !== p.manifest.manifestHash || ids.has(e["id"]))
+      fail4("duplicate or mismatched atlas identity.");
+    ids.add(e["id"]);
+    atlases.push({ id: e["id"], ...p });
+  }
+  return { version: ATLAS_PROVENANCE_VERSION, atlases };
+}
+function lookup(table, id) {
+  const found = table.atlases.find((a) => a.id === id);
+  if (!found)
+    fail4("unknown atlas reference.");
+  return found;
+}
+function derivedBinding(p, regionName, origin, mode) {
+  if (!["top-left", "bottom-left"].includes(origin) || !["content-boundary", "texel-center"].includes(mode))
+    fail4("explicit binding origin/mode required.");
+  const r = p.manifest.regions.find((r) => r.name === regionName);
+  if (!r)
+    fail4("unknown named region.");
+  const { x, y, width: w, height: h } = r.content, center = mode === "texel-center", bottom = origin === "bottom-left";
+  return {
+    manifestHash: p.manifest.manifestHash,
+    specHash: p.manifest.specHash,
+    layoutHash: p.manifest.layoutHash,
+    region: r.name,
+    content: structuredClone(r.content),
+    allocation: structuredClone(r.allocation),
+    inputOrigin: origin,
+    mode,
+    scale: [
+      (w - (center ? 1 : 0)) / p.manifest.width,
+      (bottom ? -1 : 1) * (h - (center ? 1 : 0)) / p.manifest.height
+    ],
+    offset: [
+      (x + (center ? 0.5 : 0)) / p.manifest.width,
+      (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / p.manifest.height
+    ]
+  };
+}
+function expandAtlasBinding(input, table) {
+  canonicalAtlasMetadataJsonV1(input);
+  const r = closed(input, ["version", "atlasId", "region", "inputOrigin", "mode"]);
+  if (r["version"] !== ATLAS_PROVENANCE_VERSION)
+    fail4("unsupported binding version.");
+  return derivedBinding(lookup(table, r["atlasId"]), r["region"], r["inputOrigin"], r["mode"]);
+}
+function readAtlasGeometryBinding(geometry, provenance) {
+  const stamp = field(geometry.userData, "kilnAtlasBinding");
+  if (stamp === undefined)
+    return;
+  canonicalAtlasMetadataJsonV1(stamp);
+  const r = stamp, derived = derivedBinding(provenance, r["region"], r["inputOrigin"], r["mode"]);
+  if (canonicalAtlasMetadataJsonV1(stamp) !== canonicalAtlasMetadataJsonV1(derived))
+    fail4("named binding identity or remap formula mismatch.");
+  return {
+    version: ATLAS_PROVENANCE_VERSION,
+    atlasId: provenance.manifest.manifestHash,
+    region: r["region"],
+    inputOrigin: r["inputOrigin"],
+    mode: r["mode"]
+  };
+}
+function collectAtlasProvenance(root) {
+  const textures = new Map, geometries = new Map, candidates = new Map, sizes = new Map, pendingGeometry = new Map;
+  let total = TABLE_ENVELOPE_BYTES, pixelBytes = 0, bindings = 0;
+  root.traverse((node) => {
+    const mesh = node;
+    if (!mesh.isMesh && !node.isSprite)
+      return;
+    const meshIds = new Set, mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+    for (const mat of mats)
+      for (const slot of [
+        "map",
+        "normalMap",
+        "roughnessMap",
+        "metalnessMap",
+        "emissiveMap",
+        "aoMap"
+      ]) {
+        const texture = mat[slot];
+        if (!(texture instanceof THREE8.Texture))
+          continue;
+        let ref = textures.get(texture);
+        if (!ref) {
+          const raw = textureCandidates(texture);
+          if (!raw.length)
+            continue;
+          for (const candidate of raw) {
+            canonicalAtlasMetadataJsonV1(candidate);
+            const r = closed(candidate, ["spec", "manifest"]), id = field(r["manifest"], "manifestHash");
+            if (typeof id !== "string" || !/^sha256:[0-9a-f]{64}$/.test(id))
+              fail4("invalid atlas identity.");
+            const bytes = new TextEncoder().encode(canonicalAtlasMetadataJsonV1({ ...r, id })).length;
+            const prior = sizes.get(id) ?? 0;
+            total += Math.max(0, bytes - prior) + (prior === 0 && sizes.size > 0 ? 1 : 0);
+            sizes.set(id, Math.max(prior, bytes));
+            if (total > ATLAS_PROVENANCE_LIMITS.bytes || sizes.size > ATLAS_PROVENANCE_LIMITS.atlases)
+              fail4("aggregate metadata budget exceeded.");
+            ref ??= { version: ATLAS_PROVENANCE_VERSION, id };
+          }
+          const spec = field(raw[0], "spec"), width = field(spec, "width"), height = field(spec, "height");
+          if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width < 1 || height < 1)
+            fail4("invalid atlas image dimensions.");
+          pixelBytes += width * height * 4;
+          if (pixelBytes > ATLAS_PROVENANCE_LIMITS.bakeDecodedBytes)
+            fail4("aggregate atlas bake pixel budget exceeded.");
+          candidates.set(texture, raw);
+          textures.set(texture, ref);
+        }
+        if (++bindings > ATLAS_PROVENANCE_LIMITS.bindings)
+          fail4("texture binding budget exceeded.");
+        meshIds.add(ref.id);
+      }
+    if (!mesh.isMesh)
+      return;
+    const stamp = field(mesh.geometry.userData, "kilnAtlasBinding");
+    if (stamp === undefined)
+      return;
+    if (++bindings > ATLAS_PROVENANCE_LIMITS.bindings)
+      fail4("primitive binding budget exceeded.");
+    canonicalAtlasMetadataJsonV1(stamp);
+    const id = field(stamp, "manifestHash");
+    if (typeof id !== "string" || !meshIds.has(id))
+      fail4("named binding has no matching primary atlas texture on this mesh.");
+    pendingGeometry.set(mesh.geometry, id);
+  });
+  const identities = new Map;
+  for (const [texture, raw] of candidates) {
+    const p = normalizeCandidates(raw), id = p.manifest.manifestHash, prior = identities.get(id);
+    if (prior && canonicalAtlasMetadataJsonV1(prior) !== canonicalAtlasMetadataJsonV1(p))
+      fail4("conflicting atlas identity.");
+    identities.set(id, p);
+    textures.set(texture, { version: ATLAS_PROVENANCE_VERSION, id });
+  }
+  for (const [geometry, id] of pendingGeometry)
+    geometries.set(geometry, readAtlasGeometryBinding(geometry, identities.get(id)));
+  const table = identities.size ? {
+    version: ATLAS_PROVENANCE_VERSION,
+    atlases: [...identities].map(([id, p]) => ({ id, ...p }))
+  } : undefined;
+  return { table, texture: (t) => textures.get(t), binding: (g) => geometries.get(g) };
+}
+function rawDocumentTable(doc) {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  return scene ? field(scene.getExtras(), "kilnAtlasProvenance") : undefined;
+}
+function atlasDocumentTable(doc) {
+  const raw = rawDocumentTable(doc);
+  return raw === undefined ? undefined : validateAtlasProvenanceTable(raw);
+}
+function atlasMaterialUses(doc) {
+  const uses = [];
+  for (const mat of doc.getRoot().listMaterials())
+    for (const [texture, info] of [
+      [mat.getBaseColorTexture(), mat.getBaseColorTextureInfo()],
+      [mat.getNormalTexture(), mat.getNormalTextureInfo()],
+      [mat.getMetallicRoughnessTexture(), mat.getMetallicRoughnessTextureInfo()],
+      [mat.getEmissiveTexture(), mat.getEmissiveTextureInfo()],
+      [mat.getOcclusionTexture(), mat.getOcclusionTextureInfo()]
+    ])
+      if (texture && info && field(info.getExtras(), "kilnAtlasReference") !== undefined) {
+        if (uses.length >= ATLAS_PROVENANCE_LIMITS.bindings)
+          fail4("document binding budget exceeded.");
+        uses.push({ texture, info });
+      }
+  return uses;
+}
+async function imageHash(texture) {
+  const bytes = texture.getImage();
+  if (!bytes || bytes.byteLength > ATLAS_PROVENANCE_LIMITS.encodedBytes)
+    fail4("encoded image missing or over budget.");
+  const result = await crypto.subtle.digest("SHA-256", bytes);
+  return `sha256:${[...new Uint8Array(result)].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+}
+function sampler(info) {
+  const value = {
+    minFilter: info.getMinFilter(),
+    magFilter: info.getMagFilter(),
+    wrapS: info.getWrapS(),
+    wrapT: info.getWrapT()
+  };
+  if (![null, 9728, 9729, 9984, 9985, 9986, 9987].includes(value.minFilter) || ![null, 9728, 9729].includes(value.magFilter) || ![33071, 33648, 10497].includes(value.wrapS) || ![33071, 33648, 10497].includes(value.wrapT))
+    fail4("unsupported effective sampler.");
+  return value;
+}
+function reference(input, table) {
+  canonicalAtlasMetadataJsonV1(input);
+  const r = closed(input, ["version", "id", "effectiveSampler", "finalMime", "finalImageSha256"]);
+  if (r["version"] !== ATLAS_PROVENANCE_VERSION)
+    fail4("unsupported texture reference version.");
+  lookup(table, r["id"]);
+  return r;
+}
+function admitEncodedImages(uses) {
+  const seen = new Set;
+  let total = 0;
+  for (const { texture } of uses) {
+    if (seen.has(texture))
+      continue;
+    seen.add(texture);
+    const bytes = texture.getImage();
+    if (!bytes || bytes.byteLength > ATLAS_PROVENANCE_LIMITS.encodedBytes)
+      fail4("encoded image missing or over budget.");
+    total += bytes.byteLength;
+    if (total > ATLAS_PROVENANCE_LIMITS.aggregateEncodedBytes)
+      fail4("aggregate encoded image hash budget exceeded.");
+  }
+}
+async function refreshAtlasDocumentProvenance(doc) {
+  const table = atlasDocumentTable(doc), uses = atlasMaterialUses(doc);
+  if (!uses.length)
+    return;
+  if (!table)
+    fail4("atlas table missing.");
+  admitEncodedImages(uses);
+  const hashes = new Map;
+  for (const { texture, info } of uses) {
+    const r = reference(field(info.getExtras(), "kilnAtlasReference"), table);
+    let hash = hashes.get(texture);
+    if (!hash) {
+      hash = await imageHash(texture);
+      hashes.set(texture, hash);
+    }
+    info.setExtras({
+      ...info.getExtras(),
+      kilnAtlasReference: {
+        version: ATLAS_PROVENANCE_VERSION,
+        id: r.id,
+        effectiveSampler: sampler(info),
+        finalMime: texture.getMimeType(),
+        finalImageSha256: hash
+      }
+    });
+  }
+}
+async function validateAtlasDocumentProvenance(doc) {
+  const table = atlasDocumentTable(doc), uses = atlasMaterialUses(doc);
+  if (uses.length && !table)
+    fail4("atlas table missing.");
+  if (!table) {
+    for (const mesh of doc.getRoot().listMeshes())
+      for (const primitive of mesh.listPrimitives())
+        if (field(primitive.getExtras(), "kilnAtlasBinding") !== undefined)
+          fail4("atlas table missing.");
+    return;
+  }
+  admitEncodedImages(uses);
+  const hashes = new Map;
+  for (const { texture, info } of uses) {
+    const r = reference(field(info.getExtras(), "kilnAtlasReference"), table);
+    let hash = hashes.get(texture);
+    if (!hash) {
+      hash = await imageHash(texture);
+      hashes.set(texture, hash);
+    }
+    if (r.finalImageSha256 !== hash || r.finalMime !== texture.getMimeType() || canonicalAtlasMetadataJsonV1(r.effectiveSampler) !== canonicalAtlasMetadataJsonV1(sampler(info)))
+      fail4("final image or effective sampler identity mismatch.");
+  }
+  let bindings = 0;
+  for (const mesh of doc.getRoot().listMeshes())
+    for (const prim of mesh.listPrimitives()) {
+      const binding = field(prim.getExtras(), "kilnAtlasBinding");
+      if (binding !== undefined) {
+        if (++bindings > ATLAS_PROVENANCE_LIMITS.bindings)
+          fail4("primitive budget exceeded.");
+        expandAtlasBinding(binding, table);
+        const material = prim.getMaterial(), id = field(binding, "atlasId");
+        const infos = material ? [
+          material.getBaseColorTextureInfo(),
+          material.getNormalTextureInfo(),
+          material.getMetallicRoughnessTextureInfo(),
+          material.getEmissiveTextureInfo(),
+          material.getOcclusionTextureInfo()
+        ] : [];
+        if (!infos.some((info) => info && field(info.getExtras(), "kilnAtlasReference") !== undefined && field(field(info.getExtras(), "kilnAtlasReference"), "id") === id))
+          fail4("named binding has no matching material atlas reference.");
+      }
+    }
+}
+function readValidatedAtlasDelivery(texture) {
+  const ref = validatedDeliveries.get(texture);
+  return ref ? structuredClone(ref) : undefined;
+}
+function readAtlasEncodedTexture(texture) {
+  const encoded = field(texture.userData, "encoded");
+  if (encoded === undefined)
+    return;
+  const r = closed(encoded, ["mime", "bytes"]);
+  if (r["mime"] !== "image/png" || !(r["bytes"] instanceof Uint8Array) || r["bytes"].byteLength > ATLAS_PROVENANCE_LIMITS.encodedBytes)
+    fail4("bounded PNG encoding required.");
+  return { mime: "image/png", bytes: r["bytes"] };
+}
+function restoreAtlasTextureProvenance(texture, info, table) {
+  const r = reference(field(info.getExtras(), "kilnAtlasReference"), table), p = lookup(table, r.id);
+  texture.userData.kilnAtlas = structuredClone({ spec: p.spec, manifest: p.manifest });
+  validatedDeliveries.set(texture, Object.freeze(structuredClone(r)));
+  restoreGltfTextureBinding(texture, info);
+}
+var ATLAS_PROVENANCE_VERSION = "kiln.atlas-provenance.v1", TABLE_ENVELOPE_BYTES, ATLAS_PROVENANCE_LIMITS, validatedDeliveries;
+var init_atlas_provenance = __esm(() => {
+  init_gltf_texture_binding();
+  init_texture_atlas_contract();
+  TABLE_ENVELOPE_BYTES = new TextEncoder().encode(JSON.stringify({ version: ATLAS_PROVENANCE_VERSION, atlases: [] })).length;
+  ATLAS_PROVENANCE_LIMITS = Object.freeze({
+    atlases: 128,
+    bytes: 4194304,
+    bindings: 1024,
+    entryBytes: 262144,
+    encodedBytes: 16777216,
+    aggregateEncodedBytes: 67108864,
+    bakeDecodedBytes: 67108864
+  });
+  validatedDeliveries = new WeakMap;
+});
+
 // src/runtime-three.ts
 var exports_runtime_three = {};
 __export(exports_runtime_three, {
@@ -9028,7 +9481,7 @@ import {
   KHRTextureBasisu
 } from "@gltf-transform/extensions";
 import { dedup, quantize, reorder } from "@gltf-transform/functions";
-import * as THREE7 from "three";
+import * as THREE9 from "three";
 function meshSignature(mesh, ids) {
   const id = (property) => {
     if (!property)
@@ -9111,35 +9564,66 @@ async function encodeKtx2(doc, encoder, sources) {
       textures: textures.length,
       reason: "No KTX2 encoder was supplied; textures stay PNG or JPEG."
     };
-  const srgb = new Set;
+  const slots = new Map;
+  const use = (texture, slot) => {
+    if (texture)
+      slots.set(texture, (slots.get(texture) ?? new Set).add(slot));
+  };
   for (const material of doc.getRoot().listMaterials()) {
-    for (const texture of [material.getBaseColorTexture(), material.getEmissiveTexture()])
-      if (texture)
-        srgb.add(texture);
+    use(material.getBaseColorTexture(), "baseColor");
+    use(material.getEmissiveTexture(), "emissive");
+    use(material.getNormalTexture(), "normal");
+    use(material.getMetallicRoughnessTexture(), "metallicRoughness");
+    use(material.getOcclusionTexture(), "occlusion");
   }
+  const order = [
+    "baseColor",
+    "emissive",
+    "normal",
+    "metallicRoughness",
+    "occlusion"
+  ];
   for (const texture of textures) {
+    const used = slots.get(texture) ?? new Set;
+    const srgb = used.has("baseColor") || used.has("emissive");
+    const other = texture.listParents().some((parent) => parent.propertyType !== PropertyType3.ROOT && !isCoreMaterialUse(parent));
+    const linear = [...used].some((slot) => slot !== "baseColor" && slot !== "emissive") || other;
+    if (srgb && linear)
+      throw new Error(`Texture ${JSON.stringify(texture.getName())} is used by both sRGB and linear material slots; one KTX2 encoding cannot serve both. Use separate images.`);
     const original = texture.getImage();
     const image = await encoder({
       image: original,
       mimeType: texture.getMimeType(),
       name: texture.getName(),
-      colorSpace: srgb.has(texture) ? "srgb" : "linear"
+      colorSpace: srgb ? "srgb" : "linear",
+      slot: order.find((slot) => used.has(slot)) ?? "other"
     });
-    if (!(image instanceof Uint8Array) || image.byteLength < 12)
-      throw new Error("ktx2Encoder must return KTX2 bytes");
+    if (!(image instanceof Uint8Array) || !isKtx2(image))
+      throw new Error("ktx2Encoder must return KTX2 bytes starting with the KTX2 identifier");
     sources.set(texture, `sha256:${await sha256Hex2(original)}`);
     texture.setImage(image).setMimeType("image/ktx2");
     const uri = texture.getURI();
     if (uri)
       texture.setURI(uri.replace(/\.(png|jpe?g)$/i, ".ktx2"));
   }
-  if (textures.length)
+  if (textures.length) {
     doc.createExtension(KHRTextureBasisu).setRequired(true);
-  return { status: "encoded", textures: textures.length };
+    await Promise.resolve().then(() => init_atlas_provenance());
+    await refreshAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc);
+  }
+  return {
+    status: "encoded",
+    textures: textures.length,
+    ...encoder.identity ? { encoder: structuredClone(encoder.identity) } : {}
+  };
+}
+function isCoreMaterialUse(parent) {
+  return parent.propertyType === PropertyType3.MATERIAL;
 }
 function decomposeDelta(before, after) {
-  const delta = new THREE7.Matrix4().fromArray(before).invert().multiply(new THREE7.Matrix4().fromArray(after));
-  const position = new THREE7.Vector3, quaternion = new THREE7.Quaternion, scale = new THREE7.Vector3;
+  const delta = new THREE9.Matrix4().fromArray(before).invert().multiply(new THREE9.Matrix4().fromArray(after));
+  const position = new THREE9.Vector3, quaternion = new THREE9.Quaternion, scale = new THREE9.Vector3;
   delta.decompose(position, quaternion, scale);
   return {
     scale: scale.x,
@@ -9193,7 +9677,7 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layou
     const original = matrices.get(node);
     const moved = original === undefined;
     const split = moved || proxyNodes.has(node);
-    const reference = moved ? new THREE7.Matrix4().identity().toArray() : original;
+    const reference = moved ? new THREE9.Matrix4().identity().toArray() : original;
     const current = [...node.getMatrix()];
     const { scale, offset } = decomposeDelta(reference, current);
     if (!moved && Math.abs(scale - 1) < 0.000000000001 && offset.every((v) => v === 0))
@@ -10005,459 +10489,6 @@ var init_registry = __esm(() => {
   SHA256_PATTERN = /^[a-f0-9]{64}$/;
   OWNER_ID_PATTERN = /^[a-z0-9][a-z0-9:._/-]*$/;
   RENDERER_ID_PATTERN = /^[a-z0-9-]+:/;
-});
-
-// src/gltf-texture-binding.ts
-import * as THREE8 from "three";
-function restoreGltfTextureBinding(texture, info) {
-  texture.minFilter = MIN[info.getMinFilter() ?? 9729];
-  texture.magFilter = info.getMagFilter() === 9728 ? THREE8.NearestFilter : THREE8.LinearFilter;
-  texture.wrapS = WRAP[info.getWrapS()];
-  texture.wrapT = WRAP[info.getWrapT()];
-  texture.generateMipmaps = [9984, 9985, 9986, 9987].includes(info.getMinFilter() ?? 9729);
-  texture.flipY = false;
-  const transform = info.getExtension("KHR_texture_transform");
-  texture.channel = transform?.getTexCoord() ?? info.getTexCoord();
-  if (transform) {
-    texture.offset.fromArray(transform.getOffset());
-    texture.repeat.fromArray(transform.getScale());
-    texture.rotation = transform.getRotation();
-    const c = Math.cos(texture.rotation), s = Math.sin(texture.rotation);
-    const [sx, sy] = transform.getScale(), [x, y] = transform.getOffset();
-    texture.matrix.set(sx * c, sy * s, x, -sx * s, sy * c, y, 0, 0, 1);
-    texture.matrixAutoUpdate = false;
-  }
-}
-function gltfTextureBindingKey(info) {
-  if (!info)
-    return "";
-  const transform = info.getExtension("KHR_texture_transform");
-  return JSON.stringify([
-    info.getMinFilter(),
-    info.getMagFilter(),
-    info.getWrapS(),
-    info.getWrapT(),
-    info.getTexCoord(),
-    transform?.getTexCoord(),
-    transform?.getOffset(),
-    transform?.getScale(),
-    transform?.getRotation(),
-    info.getExtras()["kilnAtlasReference"]
-  ]);
-}
-var MIN, WRAP;
-var init_gltf_texture_binding = __esm(() => {
-  MIN = {
-    9728: THREE8.NearestFilter,
-    9729: THREE8.LinearFilter,
-    9984: THREE8.NearestMipmapNearestFilter,
-    9985: THREE8.LinearMipmapNearestFilter,
-    9986: THREE8.NearestMipmapLinearFilter,
-    9987: THREE8.LinearMipmapLinearFilter
-  };
-  WRAP = {
-    33071: THREE8.ClampToEdgeWrapping,
-    33648: THREE8.MirroredRepeatWrapping,
-    10497: THREE8.RepeatWrapping
-  };
-});
-
-// src/atlas-provenance.ts
-import * as THREE9 from "three";
-function fail4(message) {
-  throw new TypeError(`atlas provenance: ${message}`);
-}
-function field(input, key) {
-  if (!input || typeof input !== "object" || Array.isArray(input))
-    fail4("plain metadata object required.");
-  const proto = Object.getPrototypeOf(input);
-  if (proto !== null && proto !== Object.prototype)
-    fail4("plain metadata prototype required.");
-  const d = Object.getOwnPropertyDescriptor(input, key);
-  if (!d)
-    return;
-  if (!d.enumerable || !("value" in d))
-    fail4("metadata accessors/hidden fields are unsupported.");
-  return d.value;
-}
-function closed(input, keys) {
-  for (const key of Reflect.ownKeys(input))
-    if (typeof key !== "string" || !keys.includes(key))
-      fail4("unsupported metadata field.");
-  for (const key of keys)
-    field(input, key);
-  return input;
-}
-function normalize(input) {
-  canonicalAtlasMetadataJsonV1(input);
-  const r = closed(input, ["spec", "manifest"]);
-  const spec = canonicalizeTextureAtlasSpecV1(r["spec"]);
-  return { spec, manifest: validateTextureAtlasManifestV1(r["manifest"], spec) };
-}
-function textureCandidates(texture) {
-  const direct = field(texture.userData, "kilnAtlas"), resource = field(texture.userData, "kilnMaterialResource");
-  const map = resource === undefined ? undefined : field(resource, "map"), recipe = map === undefined ? undefined : field(map, "recipe");
-  const candidates = [];
-  if (direct !== undefined)
-    candidates.push(direct);
-  if (recipe !== undefined && field(recipe, "kind") === "atlas")
-    candidates.push({ spec: field(recipe, "spec"), manifest: field(recipe, "manifest") });
-  return candidates;
-}
-function normalizeCandidates(candidates) {
-  let result;
-  for (const candidate of candidates) {
-    const p = normalize(candidate);
-    if (result && canonicalAtlasMetadataJsonV1(result) !== canonicalAtlasMetadataJsonV1(p))
-      fail4("direct and saved atlas identities disagree.");
-    result = p;
-  }
-  return result;
-}
-function readAtlasTextureProvenance(texture) {
-  return normalizeCandidates(textureCandidates(texture));
-}
-function admitTable(input) {
-  const r = closed(input, ["version", "atlases"]);
-  if (r["version"] !== ATLAS_PROVENANCE_VERSION)
-    fail4("unsupported version.");
-  const entries = r["atlases"];
-  if (!Array.isArray(entries) || Object.getPrototypeOf(entries) !== Array.prototype)
-    fail4("dense atlas array required.");
-  const n = Object.getOwnPropertyDescriptor(entries, "length").value;
-  if (n > ATLAS_PROVENANCE_LIMITS.atlases || Reflect.ownKeys(entries).length !== n + 1)
-    fail4("atlas count/density budget exceeded.");
-  let bytes = TABLE_ENVELOPE_BYTES;
-  const admitted = [];
-  for (let i = 0;i < n; i++) {
-    const d = Object.getOwnPropertyDescriptor(entries, String(i));
-    if (!d?.enumerable || !("value" in d))
-      fail4("atlas array accessors are unsupported.");
-    const json = canonicalAtlasMetadataJsonV1(d.value);
-    bytes += new TextEncoder().encode(json).length + (i > 0 ? 1 : 0);
-    if (bytes > ATLAS_PROVENANCE_LIMITS.bytes)
-      fail4("aggregate metadata byte budget exceeded.");
-    admitted.push(closed(d.value, ["id", "spec", "manifest"]));
-  }
-  return admitted;
-}
-function validateAtlasProvenanceTable(input) {
-  const admitted = admitTable(input), ids = new Set, atlases = [];
-  for (const e of admitted) {
-    const p = normalize({ spec: e["spec"], manifest: e["manifest"] });
-    if (e["id"] !== p.manifest.manifestHash || ids.has(e["id"]))
-      fail4("duplicate or mismatched atlas identity.");
-    ids.add(e["id"]);
-    atlases.push({ id: e["id"], ...p });
-  }
-  return { version: ATLAS_PROVENANCE_VERSION, atlases };
-}
-function lookup(table, id) {
-  const found = table.atlases.find((a) => a.id === id);
-  if (!found)
-    fail4("unknown atlas reference.");
-  return found;
-}
-function derivedBinding(p, regionName, origin, mode) {
-  if (!["top-left", "bottom-left"].includes(origin) || !["content-boundary", "texel-center"].includes(mode))
-    fail4("explicit binding origin/mode required.");
-  const r = p.manifest.regions.find((r) => r.name === regionName);
-  if (!r)
-    fail4("unknown named region.");
-  const { x, y, width: w, height: h } = r.content, center = mode === "texel-center", bottom = origin === "bottom-left";
-  return {
-    manifestHash: p.manifest.manifestHash,
-    specHash: p.manifest.specHash,
-    layoutHash: p.manifest.layoutHash,
-    region: r.name,
-    content: structuredClone(r.content),
-    allocation: structuredClone(r.allocation),
-    inputOrigin: origin,
-    mode,
-    scale: [
-      (w - (center ? 1 : 0)) / p.manifest.width,
-      (bottom ? -1 : 1) * (h - (center ? 1 : 0)) / p.manifest.height
-    ],
-    offset: [
-      (x + (center ? 0.5 : 0)) / p.manifest.width,
-      (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / p.manifest.height
-    ]
-  };
-}
-function expandAtlasBinding(input, table) {
-  canonicalAtlasMetadataJsonV1(input);
-  const r = closed(input, ["version", "atlasId", "region", "inputOrigin", "mode"]);
-  if (r["version"] !== ATLAS_PROVENANCE_VERSION)
-    fail4("unsupported binding version.");
-  return derivedBinding(lookup(table, r["atlasId"]), r["region"], r["inputOrigin"], r["mode"]);
-}
-function readAtlasGeometryBinding(geometry, provenance) {
-  const stamp = field(geometry.userData, "kilnAtlasBinding");
-  if (stamp === undefined)
-    return;
-  canonicalAtlasMetadataJsonV1(stamp);
-  const r = stamp, derived = derivedBinding(provenance, r["region"], r["inputOrigin"], r["mode"]);
-  if (canonicalAtlasMetadataJsonV1(stamp) !== canonicalAtlasMetadataJsonV1(derived))
-    fail4("named binding identity or remap formula mismatch.");
-  return {
-    version: ATLAS_PROVENANCE_VERSION,
-    atlasId: provenance.manifest.manifestHash,
-    region: r["region"],
-    inputOrigin: r["inputOrigin"],
-    mode: r["mode"]
-  };
-}
-function collectAtlasProvenance(root) {
-  const textures = new Map, geometries = new Map, candidates = new Map, sizes = new Map, pendingGeometry = new Map;
-  let total = TABLE_ENVELOPE_BYTES, pixelBytes = 0, bindings = 0;
-  root.traverse((node) => {
-    const mesh = node;
-    if (!mesh.isMesh && !node.isSprite)
-      return;
-    const meshIds = new Set, mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-    for (const mat of mats)
-      for (const slot of [
-        "map",
-        "normalMap",
-        "roughnessMap",
-        "metalnessMap",
-        "emissiveMap",
-        "aoMap"
-      ]) {
-        const texture = mat[slot];
-        if (!(texture instanceof THREE9.Texture))
-          continue;
-        let ref = textures.get(texture);
-        if (!ref) {
-          const raw = textureCandidates(texture);
-          if (!raw.length)
-            continue;
-          for (const candidate of raw) {
-            canonicalAtlasMetadataJsonV1(candidate);
-            const r = closed(candidate, ["spec", "manifest"]), id = field(r["manifest"], "manifestHash");
-            if (typeof id !== "string" || !/^sha256:[0-9a-f]{64}$/.test(id))
-              fail4("invalid atlas identity.");
-            const bytes = new TextEncoder().encode(canonicalAtlasMetadataJsonV1({ ...r, id })).length;
-            const prior = sizes.get(id) ?? 0;
-            total += Math.max(0, bytes - prior) + (prior === 0 && sizes.size > 0 ? 1 : 0);
-            sizes.set(id, Math.max(prior, bytes));
-            if (total > ATLAS_PROVENANCE_LIMITS.bytes || sizes.size > ATLAS_PROVENANCE_LIMITS.atlases)
-              fail4("aggregate metadata budget exceeded.");
-            ref ??= { version: ATLAS_PROVENANCE_VERSION, id };
-          }
-          const spec = field(raw[0], "spec"), width = field(spec, "width"), height = field(spec, "height");
-          if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width < 1 || height < 1)
-            fail4("invalid atlas image dimensions.");
-          pixelBytes += width * height * 4;
-          if (pixelBytes > ATLAS_PROVENANCE_LIMITS.bakeDecodedBytes)
-            fail4("aggregate atlas bake pixel budget exceeded.");
-          candidates.set(texture, raw);
-          textures.set(texture, ref);
-        }
-        if (++bindings > ATLAS_PROVENANCE_LIMITS.bindings)
-          fail4("texture binding budget exceeded.");
-        meshIds.add(ref.id);
-      }
-    if (!mesh.isMesh)
-      return;
-    const stamp = field(mesh.geometry.userData, "kilnAtlasBinding");
-    if (stamp === undefined)
-      return;
-    if (++bindings > ATLAS_PROVENANCE_LIMITS.bindings)
-      fail4("primitive binding budget exceeded.");
-    canonicalAtlasMetadataJsonV1(stamp);
-    const id = field(stamp, "manifestHash");
-    if (typeof id !== "string" || !meshIds.has(id))
-      fail4("named binding has no matching primary atlas texture on this mesh.");
-    pendingGeometry.set(mesh.geometry, id);
-  });
-  const identities = new Map;
-  for (const [texture, raw] of candidates) {
-    const p = normalizeCandidates(raw), id = p.manifest.manifestHash, prior = identities.get(id);
-    if (prior && canonicalAtlasMetadataJsonV1(prior) !== canonicalAtlasMetadataJsonV1(p))
-      fail4("conflicting atlas identity.");
-    identities.set(id, p);
-    textures.set(texture, { version: ATLAS_PROVENANCE_VERSION, id });
-  }
-  for (const [geometry, id] of pendingGeometry)
-    geometries.set(geometry, readAtlasGeometryBinding(geometry, identities.get(id)));
-  const table = identities.size ? {
-    version: ATLAS_PROVENANCE_VERSION,
-    atlases: [...identities].map(([id, p]) => ({ id, ...p }))
-  } : undefined;
-  return { table, texture: (t) => textures.get(t), binding: (g) => geometries.get(g) };
-}
-function rawDocumentTable(doc) {
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  return scene ? field(scene.getExtras(), "kilnAtlasProvenance") : undefined;
-}
-function atlasDocumentTable(doc) {
-  const raw = rawDocumentTable(doc);
-  return raw === undefined ? undefined : validateAtlasProvenanceTable(raw);
-}
-function atlasMaterialUses(doc) {
-  const uses = [];
-  for (const mat of doc.getRoot().listMaterials())
-    for (const [texture, info] of [
-      [mat.getBaseColorTexture(), mat.getBaseColorTextureInfo()],
-      [mat.getNormalTexture(), mat.getNormalTextureInfo()],
-      [mat.getMetallicRoughnessTexture(), mat.getMetallicRoughnessTextureInfo()],
-      [mat.getEmissiveTexture(), mat.getEmissiveTextureInfo()],
-      [mat.getOcclusionTexture(), mat.getOcclusionTextureInfo()]
-    ])
-      if (texture && info && field(info.getExtras(), "kilnAtlasReference") !== undefined) {
-        if (uses.length >= ATLAS_PROVENANCE_LIMITS.bindings)
-          fail4("document binding budget exceeded.");
-        uses.push({ texture, info });
-      }
-  return uses;
-}
-async function imageHash(texture) {
-  const bytes = texture.getImage();
-  if (!bytes || bytes.byteLength > ATLAS_PROVENANCE_LIMITS.encodedBytes)
-    fail4("encoded image missing or over budget.");
-  const result = await crypto.subtle.digest("SHA-256", bytes);
-  return `sha256:${[...new Uint8Array(result)].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
-}
-function sampler(info) {
-  const value = {
-    minFilter: info.getMinFilter(),
-    magFilter: info.getMagFilter(),
-    wrapS: info.getWrapS(),
-    wrapT: info.getWrapT()
-  };
-  if (![null, 9728, 9729, 9984, 9985, 9986, 9987].includes(value.minFilter) || ![null, 9728, 9729].includes(value.magFilter) || ![33071, 33648, 10497].includes(value.wrapS) || ![33071, 33648, 10497].includes(value.wrapT))
-    fail4("unsupported effective sampler.");
-  return value;
-}
-function reference(input, table) {
-  canonicalAtlasMetadataJsonV1(input);
-  const r = closed(input, ["version", "id", "effectiveSampler", "finalMime", "finalImageSha256"]);
-  if (r["version"] !== ATLAS_PROVENANCE_VERSION)
-    fail4("unsupported texture reference version.");
-  lookup(table, r["id"]);
-  return r;
-}
-function admitEncodedImages(uses) {
-  const seen = new Set;
-  let total = 0;
-  for (const { texture } of uses) {
-    if (seen.has(texture))
-      continue;
-    seen.add(texture);
-    const bytes = texture.getImage();
-    if (!bytes || bytes.byteLength > ATLAS_PROVENANCE_LIMITS.encodedBytes)
-      fail4("encoded image missing or over budget.");
-    total += bytes.byteLength;
-    if (total > ATLAS_PROVENANCE_LIMITS.aggregateEncodedBytes)
-      fail4("aggregate encoded image hash budget exceeded.");
-  }
-}
-async function refreshAtlasDocumentProvenance(doc) {
-  const table = atlasDocumentTable(doc), uses = atlasMaterialUses(doc);
-  if (!uses.length)
-    return;
-  if (!table)
-    fail4("atlas table missing.");
-  admitEncodedImages(uses);
-  const hashes = new Map;
-  for (const { texture, info } of uses) {
-    const r = reference(field(info.getExtras(), "kilnAtlasReference"), table);
-    let hash = hashes.get(texture);
-    if (!hash) {
-      hash = await imageHash(texture);
-      hashes.set(texture, hash);
-    }
-    info.setExtras({
-      ...info.getExtras(),
-      kilnAtlasReference: {
-        version: ATLAS_PROVENANCE_VERSION,
-        id: r.id,
-        effectiveSampler: sampler(info),
-        finalMime: texture.getMimeType(),
-        finalImageSha256: hash
-      }
-    });
-  }
-}
-async function validateAtlasDocumentProvenance(doc) {
-  const table = atlasDocumentTable(doc), uses = atlasMaterialUses(doc);
-  if (uses.length && !table)
-    fail4("atlas table missing.");
-  if (!table) {
-    for (const mesh of doc.getRoot().listMeshes())
-      for (const primitive of mesh.listPrimitives())
-        if (field(primitive.getExtras(), "kilnAtlasBinding") !== undefined)
-          fail4("atlas table missing.");
-    return;
-  }
-  admitEncodedImages(uses);
-  const hashes = new Map;
-  for (const { texture, info } of uses) {
-    const r = reference(field(info.getExtras(), "kilnAtlasReference"), table);
-    let hash = hashes.get(texture);
-    if (!hash) {
-      hash = await imageHash(texture);
-      hashes.set(texture, hash);
-    }
-    if (r.finalImageSha256 !== hash || r.finalMime !== texture.getMimeType() || canonicalAtlasMetadataJsonV1(r.effectiveSampler) !== canonicalAtlasMetadataJsonV1(sampler(info)))
-      fail4("final image or effective sampler identity mismatch.");
-  }
-  let bindings = 0;
-  for (const mesh of doc.getRoot().listMeshes())
-    for (const prim of mesh.listPrimitives()) {
-      const binding = field(prim.getExtras(), "kilnAtlasBinding");
-      if (binding !== undefined) {
-        if (++bindings > ATLAS_PROVENANCE_LIMITS.bindings)
-          fail4("primitive budget exceeded.");
-        expandAtlasBinding(binding, table);
-        const material = prim.getMaterial(), id = field(binding, "atlasId");
-        const infos = material ? [
-          material.getBaseColorTextureInfo(),
-          material.getNormalTextureInfo(),
-          material.getMetallicRoughnessTextureInfo(),
-          material.getEmissiveTextureInfo(),
-          material.getOcclusionTextureInfo()
-        ] : [];
-        if (!infos.some((info) => info && field(info.getExtras(), "kilnAtlasReference") !== undefined && field(field(info.getExtras(), "kilnAtlasReference"), "id") === id))
-          fail4("named binding has no matching material atlas reference.");
-      }
-    }
-}
-function readValidatedAtlasDelivery(texture) {
-  const ref = validatedDeliveries.get(texture);
-  return ref ? structuredClone(ref) : undefined;
-}
-function readAtlasEncodedTexture(texture) {
-  const encoded = field(texture.userData, "encoded");
-  if (encoded === undefined)
-    return;
-  const r = closed(encoded, ["mime", "bytes"]);
-  if (r["mime"] !== "image/png" || !(r["bytes"] instanceof Uint8Array) || r["bytes"].byteLength > ATLAS_PROVENANCE_LIMITS.encodedBytes)
-    fail4("bounded PNG encoding required.");
-  return { mime: "image/png", bytes: r["bytes"] };
-}
-function restoreAtlasTextureProvenance(texture, info, table) {
-  const r = reference(field(info.getExtras(), "kilnAtlasReference"), table), p = lookup(table, r.id);
-  texture.userData.kilnAtlas = structuredClone({ spec: p.spec, manifest: p.manifest });
-  validatedDeliveries.set(texture, Object.freeze(structuredClone(r)));
-  restoreGltfTextureBinding(texture, info);
-}
-var ATLAS_PROVENANCE_VERSION = "kiln.atlas-provenance.v1", TABLE_ENVELOPE_BYTES, ATLAS_PROVENANCE_LIMITS, validatedDeliveries;
-var init_atlas_provenance = __esm(() => {
-  init_gltf_texture_binding();
-  init_texture_atlas_contract();
-  TABLE_ENVELOPE_BYTES = new TextEncoder().encode(JSON.stringify({ version: ATLAS_PROVENANCE_VERSION, atlases: [] })).length;
-  ATLAS_PROVENANCE_LIMITS = Object.freeze({
-    atlases: 128,
-    bytes: 4194304,
-    bindings: 1024,
-    entryBytes: 262144,
-    encodedBytes: 16777216,
-    aggregateEncodedBytes: 67108864,
-    bakeDecodedBytes: 67108864
-  });
-  validatedDeliveries = new WeakMap;
 });
 
 // src/qa/atlas.ts

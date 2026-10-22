@@ -131,6 +131,10 @@ Consumer rules that follow from it:
 - **Collider transforms are exact.** A collider's proxy mesh moves to a child named
   `<collider>_Proxy`, so the collider node's scale is still its size.
 - **Custom attributes stay float.** `_EDGE` and `_CAVITY` are never quantized.
+- **KTX2 needs `KTX2Loader`.** With `--ktx2`, `KHR_texture_basisu` is required and there is
+  no PNG fallback: configure `GLTFLoader.setKTX2Loader` with the Basis transcoder before
+  loading. `delivery.ktx2.encoder` names the encoder version and settings that produced
+  the images. See [KTX2 textures](export-profiles.md#ktx2-textures).
 - **Deduplicate textures by hash, not by name.** With `--textures manifest` the sidecar's
   `textures[]` gives each image's exact `sha256`; with `--textures external` the images are
   shared `textures/<sha256>.<ext>` files beside a `.gltf`. Keep `textures/` beside every

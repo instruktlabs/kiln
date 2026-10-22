@@ -5,6 +5,7 @@
 import { expect, test } from 'bun:test';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
 import { mkdtemp, readdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -169,3 +170,79 @@ test('CLI texture manifest and external content-addressed textures', async () =>
     await rm(root, { recursive: true, force: true });
   }
 }, 120_000); // Seven compiled-CLI runs; see asset-cli.test.ts for the measured range.
+
+const peer = existsSync(resolve('node_modules/ktx2-encoder/package.json'));
+
+test('CLI --ktx2 requires --target three and records the encoder in the sidecar and receipt', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-asset-cli-ktx2-'));
+  const run = (args: string[]) =>
+    spawnSync(process.execPath, [resolve('src/cli.ts'), ...args], {
+      cwd: root,
+      env: {
+        ...process.env,
+        KILN_RENDER: 'cpu',
+        KILN_PROGRAM_STORE: join(root, '.kiln', 'programs'),
+        KILN_COLLECTIONS: JSON.stringify({ project: join(root, 'collection') }),
+      },
+      encoding: 'utf8',
+      windowsHide: true,
+    });
+  try {
+    const source = join(root, 'wall.glb');
+    await writeFile(source, await texturedGlb());
+    const { assetId, revisionId } = JSON.parse(run(['import', source, '--name', 'Wall']).stdout)
+      .assets[0];
+    const exportArgs = (...args: string[]) => ['export', assetId, revisionId, ...args];
+    for (const flags of [
+      ['--profile', 'runtime', '--ktx2'],
+      ['--profile', 'editable', '--format', 'glb', '--ktx2'],
+    ]) {
+      const refused = run(exportArgs('--out', join(root, 'bad.glb'), ...flags));
+      expect(refused.status).toBe(1);
+      expect(refused.stderr).toContain('--ktx2 requires --target three');
+    }
+    if (!peer) return;
+    const encoded = run(
+      exportArgs(
+        '--out',
+        join(root, 'k.glb'),
+        '--profile',
+        'runtime',
+        '--target',
+        'three',
+        '--ktx2',
+        '--textures',
+        'manifest',
+        '--json',
+      ),
+    );
+    expect(encoded.stderr).toBe('');
+    // Stdout is the receipt alone: the encoder writes no progress there.
+    const receipt = JSON.parse(encoded.stdout);
+    const metadata = JSON.parse(await readFile(join(root, 'k.kiln-metadata.json'), 'utf8'));
+    expect(metadata.delivery.ktx2).toEqual({
+      status: 'encoded',
+      textures: 2,
+      encoder: {
+        name: 'ktx2-encoder',
+        version: '0.6.0',
+        basisWasmSha256: expect.stringMatching(/^sha256:[0-9a-f]{64}$/),
+        settings: expect.objectContaining({ srgb: expect.any(Object), linear: expect.any(Object) }),
+      },
+    });
+    expect(receipt.ktx2).toEqual(metadata.delivery.ktx2);
+    expect(metadata.delivery.extensionsRequired).toContain('KHR_texture_basisu');
+    expect(
+      metadata.textures.map((entry: { mimeType: string; colorSpace: string }) => [
+        entry.mimeType,
+        entry.colorSpace,
+      ]),
+    ).toEqual([
+      ['image/ktx2', 'srgb'],
+      ['image/ktx2', 'linear'],
+    ]);
+    for (const entry of metadata.textures) expect(entry.sourceSha256).toMatch(/^sha256:/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}, 120_000); // Three compiled-CLI runs plus a WebAssembly encoder start.

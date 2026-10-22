@@ -26,20 +26,21 @@ var __esm = (fn, res, err) => () => {
 };
 
 // src/cli-output.ts
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import {
   chmod,
   lstat,
   link,
   mkdir,
   open,
+  readFile,
   realpath,
   rename,
   stat,
   unlink,
   writeFile
 } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 async function prepareDestination(path) {
   await mkdir(dirname(path), { recursive: true });
   return path;
@@ -119,6 +120,67 @@ async function writeNewDestinationsAtomic(outputs) {
   } finally {
     await Promise.all(staged.map(({ temporary }) => unlink(temporary).catch(() => {})));
   }
+}
+async function writeContentAddressedFiles(files) {
+  const hex = (data) => createHash("sha256").update(data).digest("hex");
+  for (const { path, data } of files) {
+    const name = basename(path);
+    if (!/^[a-f0-9]{64}\.[a-z0-9]+$/.test(name) || name.slice(0, 64) !== hex(data))
+      throw new Error(`${path} is not the content address of its bytes`);
+  }
+  const published = [];
+  const same = async (path, data) => {
+    const existing = await readFile(path);
+    if (hex(existing) !== hex(data))
+      throw Object.assign(new Error(`${path} already exists with different bytes; a content-addressed file is never replaced.`), { code: "EEXIST" });
+  };
+  for (const { path, data } of files) {
+    try {
+      await same(path, data);
+      published.push({ path, reused: true });
+      continue;
+    } catch (error) {
+      if (error.code !== "ENOENT")
+        throw error;
+    }
+    await prepareDestination(path);
+    const temporary = join(dirname(path), `.kiln-write-${randomUUID()}.tmp`);
+    const file = await open(temporary, "wx");
+    try {
+      try {
+        await writeFile(file, data);
+      } finally {
+        await file.close();
+      }
+      try {
+        await link(temporary, path);
+        published.push({ path, reused: false });
+      } catch (error) {
+        if (error.code !== "EEXIST")
+          throw error;
+        await same(path, data);
+        published.push({ path, reused: true });
+      }
+    } finally {
+      await unlink(temporary).catch(() => {});
+    }
+  }
+  return published;
+}
+async function writeExternalTextureExport(textures, outputs) {
+  for (const { path } of outputs) {
+    try {
+      await lstat(path);
+    } catch (error) {
+      if (error.code === "ENOENT")
+        continue;
+      throw error;
+    }
+    throw Object.assign(new Error(`${path} already exists and is never replaced; choose a new output path or remove the file.`), { code: "EEXIST" });
+  }
+  const published = await writeContentAddressedFiles(textures);
+  await writeNewDestinationsAtomic(outputs);
+  return published;
 }
 var init_cli_output = () => {};
 
@@ -258,7 +320,7 @@ var init_solid_diagnostic = __esm(() => {
 });
 
 // src/qa/registry.ts
-import { createHash } from "node:crypto";
+import { createHash as createHash2 } from "node:crypto";
 function canonicalCalibrationReportEvidence(report) {
   return JSON.stringify({
     schemaVersion: report.schemaVersion,
@@ -291,7 +353,7 @@ function canonicalCalibrationReportEvidence(report) {
   });
 }
 function calibrationReportEvidenceSha256(report) {
-  return createHash("sha256").update(canonicalCalibrationReportEvidence(report)).digest("hex");
+  return createHash2("sha256").update(canonicalCalibrationReportEvidence(report)).digest("hex");
 }
 function conformancePromotionAuthorization(fixtureSetId, fixturePath, evidenceSha256, owner = KILN_ENGINE_QA_OWNER, frozenAt = "2026-07-09T00:00:00.000Z", authorizedMode = "enforce", rendererId = LEGACY_CPU_RASTER_RENDERER_ID) {
   return {
@@ -14517,7 +14579,7 @@ var init_requirements = __esm(() => {
 });
 
 // src/requirements-identity.ts
-import { createHash as createHash2 } from "node:crypto";
+import { createHash as createHash3 } from "node:crypto";
 function canonical(value) {
   if (Array.isArray(value))
     return `[${value.map(canonical).join(",")}]`;
@@ -14537,7 +14599,7 @@ function assetRequirementsPolicyHash(input) {
     ..."value" in value ? { value: value.value } : {}
   });
   const effective = Object.fromEntries(Object.entries(requirements.requirements).filter(([, value]) => value !== undefined).map(([key, value]) => [key, withoutReason(value)]));
-  return createHash2("sha256").update(canonical({
+  return createHash3("sha256").update(canonical({
     kind: requirements.kind,
     schemaVersion: requirements.schemaVersion,
     frame,
@@ -14598,7 +14660,7 @@ var init_requirements_json = __esm(() => {
 });
 
 // src/requirements-context.ts
-import { createHash as createHash3 } from "node:crypto";
+import { createHash as createHash4 } from "node:crypto";
 import { z as z2 } from "zod";
 function canonical2(value) {
   if (Array.isArray(value))
@@ -14618,7 +14680,7 @@ function contextHash(requirements, kind) {
     ...requirements.scope && includes(requirements.scope.state) ? { scope: statement(requirements.scope) } : {},
     requirements: Object.fromEntries(Object.entries(requirements.requirements).filter(([, value]) => value && includes(value.state)).map(([key, value]) => [key, statement(value)]))
   };
-  return `sha256:${createHash3("sha256").update(`kiln.requirements-${kind}.v1`).update(canonical2(semantic)).digest("hex")}`;
+  return `sha256:${createHash4("sha256").update(`kiln.requirements-${kind}.v1`).update(canonical2(semantic)).digest("hex")}`;
 }
 function validateRequirementsBinding(input) {
   const parsed = RequirementsBindingSchema.safeParse(input);
@@ -18218,7 +18280,7 @@ var init_material_recipes = __esm(() => {
 });
 
 // src/material-resources.ts
-import { createHash as createHash4 } from "node:crypto";
+import { createHash as createHash5 } from "node:crypto";
 function provenance(descriptor, hash) {
   return {
     schemaVersion: 1,
@@ -18479,7 +18541,7 @@ function collectMaterialResourceProvenance(root) {
   });
   return [...records.values()].sort((a, b) => `${a.resourceId}:${a.usage}`.localeCompare(`${b.resourceId}:${b.usage}`));
 }
-var TEXTURE_RESOLVER_LIMITS_V1, ApprovedTextureResourceUnavailableError, EMBEDDED_RESOURCE_BASE64, isApprovedId = (value) => APPROVED_TEXTURE_RESOURCE_IDS.includes(value), bytesFromBase64 = (value) => new Uint8Array(Buffer.from(value, "base64")), sha256 = (bytes) => createHash4("sha256").update(bytes).digest("hex"), DEFAULT_APPROVED_TEXTURE_CACHE, materialTextures2 = (material) => {
+var TEXTURE_RESOLVER_LIMITS_V1, ApprovedTextureResourceUnavailableError, EMBEDDED_RESOURCE_BASE64, isApprovedId = (value) => APPROVED_TEXTURE_RESOURCE_IDS.includes(value), bytesFromBase64 = (value) => new Uint8Array(Buffer.from(value, "base64")), sha256 = (bytes) => createHash5("sha256").update(bytes).digest("hex"), DEFAULT_APPROVED_TEXTURE_CACHE, materialTextures2 = (material) => {
   const standard = material;
   const candidates = [
     standard.map,
@@ -18808,8 +18870,8 @@ var init_procedural_material_v3 = __esm(() => {
 });
 
 // src/material-library-node.ts
-import { createHash as createHash5, randomUUID as randomUUID2 } from "node:crypto";
-import { lstat as lstat3, mkdir as mkdir2, readFile, readdir, realpath as realpath2, rm, writeFile as writeFile2 } from "node:fs/promises";
+import { createHash as createHash6, randomUUID as randomUUID2 } from "node:crypto";
+import { lstat as lstat3, mkdir as mkdir2, readFile as readFile2, readdir, realpath as realpath2, rm, writeFile as writeFile2 } from "node:fs/promises";
 import { dirname as dirname2, join as join2, relative, resolve as resolve4, sep } from "node:path";
 import sharp from "sharp";
 import { DataTexture as DataTexture3 } from "three";
@@ -19148,7 +19210,7 @@ class FileMaterialLibrary {
     const stat = await lstat3(path);
     if (!stat.isFile() || stat.isSymbolicLink() || stat.size > limit)
       throw new Error("Invalid material library file");
-    return new Uint8Array(await readFile(path));
+    return new Uint8Array(await readFile2(path));
   }
   async readManifest(materialId, revisionId) {
     materialLibraryIdSchema.parse(materialId);
@@ -19758,7 +19820,7 @@ async function createMaterialRecordV2(draft, options) {
   await verifyMaterialRecord(record, { materials: [...records, record] });
   return record;
 }
-var digest = (bytes) => `sha256:${createHash5("sha256").update(bytes).digest("hex")}`, encoder, normalDerivationBudget = (texels) => ({ work: texels * 16, allocation: texels * 8 }), identity = (manifest) => `${manifest.materialId}/${manifest.revisionId}`;
+var digest = (bytes) => `sha256:${createHash6("sha256").update(bytes).digest("hex")}`, encoder, normalDerivationBudget = (texels) => ({ work: texels * 16, allocation: texels * 8 }), identity = (manifest) => `${manifest.materialId}/${manifest.revisionId}`;
 var init_material_library_node = __esm(() => {
   init_atomic_directory();
   init_material_library();
@@ -32324,7 +32386,7 @@ var init_kit = __esm(() => {
 });
 
 // src/texture-bake.ts
-import { createHash as createHash6 } from "node:crypto";
+import { createHash as createHash7 } from "node:crypto";
 import * as THREE49 from "three";
 function readPixels(texture) {
   const image = texture.image;
@@ -32424,7 +32486,7 @@ async function bakeSceneTextures(root, warnings) {
       if (encoded) {
         const delivery = readValidatedAtlasDelivery(entry.texture);
         if (delivery) {
-          if (delivery.id !== atlasRef.id || delivery.finalMime !== encoded.mime || delivery.finalImageSha256 !== `sha256:${createHash6("sha256").update(encoded.bytes).digest("hex")}`)
+          if (delivery.id !== atlasRef.id || delivery.finalMime !== encoded.mime || delivery.finalImageSha256 !== `sha256:${createHash7("sha256").update(encoded.bytes).digest("hex")}`)
             throw stale();
         } else {
           const sharp = (await import("sharp")).default;
@@ -32435,10 +32497,10 @@ async function bakeSceneTextures(root, warnings) {
           if (metadata.width !== atlasRecord.spec.width || metadata.height !== atlasRecord.spec.height)
             throw stale();
           const decoded = await image.ensureAlpha().raw().toBuffer();
-          if (`sha256:${createHash6("sha256").update(decoded).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
+          if (`sha256:${createHash7("sha256").update(decoded).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
             throw stale();
         }
-      } else if (raw.width !== atlasRecord.spec.width || raw.height !== atlasRecord.spec.height || raw.channels !== 4 || `sha256:${createHash6("sha256").update(raw.data).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
+      } else if (raw.width !== atlasRecord.spec.width || raw.height !== atlasRecord.spec.height || raw.channels !== 4 || `sha256:${createHash7("sha256").update(raw.data).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
         throw stale();
     }
     let bytes;
@@ -32463,8 +32525,8 @@ async function bakeSceneTextures(root, warnings) {
         height: raw.height,
         hasAlpha: hasTranslucentPixel(raw)
       };
-    const sha1 = createHash6("sha1").update(bytes).digest("hex");
-    const imageSha256 = `sha256:${createHash6("sha256").update(bytes).digest("hex")}`;
+    const sha1 = createHash7("sha1").update(bytes).digest("hex");
+    const imageSha256 = `sha256:${createHash7("sha256").update(bytes).digest("hex")}`;
     baked.push({
       schemaVersion: 1,
       texture: name,
@@ -35166,7 +35228,7 @@ __export(exports_capture_cache, {
   captureCpuCell: () => captureCpuCell,
   createCachedRenderPort: () => createCachedRenderPort
 });
-import { createHash as createHash7 } from "node:crypto";
+import { createHash as createHash8 } from "node:crypto";
 function clone(entry) {
   const result = structuredClone(entry);
   if (result.kind === "cpu")
@@ -35371,7 +35433,7 @@ async function captureCpuCell(cache, identity, produce) {
   await cache.put(key, { kind: "cpu", result }).catch(() => {});
   return { ...result, png: Buffer.from(result.png), captureCache: { hit: false } };
 }
-var text4 = (value) => JSON.stringify(canonical4(value)), digest2 = (value) => `sha256:${createHash7("sha256").update(value).digest("hex")}`;
+var text4 = (value) => JSON.stringify(canonical4(value)), digest2 = (value) => `sha256:${createHash8("sha256").update(value).digest("hex")}`;
 var init_capture_cache = __esm(() => {
   init_render_port();
   init_png();
@@ -38846,7 +38908,7 @@ var init_render = __esm(() => {
 });
 
 // src/evaluator/protocol.ts
-import { createHash as createHash8 } from "node:crypto";
+import { createHash as createHash9 } from "node:crypto";
 function evaluatorOutcomeMessage(code) {
   return EVALUATOR_OUTCOME_MESSAGES[code];
 }
@@ -38999,7 +39061,7 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
     fail9("result");
   if (!isSha256(value.render.artifactGlbSha256))
     fail9("result");
-  const actualHash = `sha256:${createHash8("sha256").update(glb).digest("hex")}`;
+  const actualHash = `sha256:${createHash9("sha256").update(glb).digest("hex")}`;
   if (actualHash !== value.render.artifactGlbSha256)
     fail9("result");
   const diagnosticViews = value.render.diagnosticViews;
@@ -39397,7 +39459,7 @@ __export(exports_program_store_node, {
   FileProgramStore: () => FileProgramStore,
   localProgramStore: () => localProgramStore
 });
-import { link as link2, lstat as lstat4, mkdir as mkdir3, readFile as readFile2, readdir as readdir2, stat as stat2, unlink as unlink2, writeFile as writeFile3 } from "node:fs/promises";
+import { link as link2, lstat as lstat4, mkdir as mkdir3, readFile as readFile3, readdir as readdir2, stat as stat2, unlink as unlink2, writeFile as writeFile3 } from "node:fs/promises";
 import { randomUUID as randomUUID3 } from "node:crypto";
 import { join as join4 } from "node:path";
 
@@ -39438,7 +39500,7 @@ class FileProgramStore {
     try {
       if ((await stat2(path)).size > MAX_PROGRAM_BYTES)
         throw new Error("Stored program exceeds the 1 MiB source limit.");
-      code = await readFile2(path, "utf8");
+      code = await readFile3(path, "utf8");
     } catch (error) {
       if (error.code === "ENOENT")
         throw this.notFound(ref);
@@ -39457,7 +39519,7 @@ class FileProgramStore {
       const info = await lstat4(path);
       if (!info.isFile() || info.size !== 71)
         throw new Error(`Program handle integrity check failed: ${handle}`);
-      const canonical = await readFile2(path, "utf8");
+      const canonical = await readFile3(path, "utf8");
       if (!canonicalProgramRefPattern.test(canonical) || !canonical.slice(7).startsWith(handle.slice(2)))
         throw new Error(`Program handle integrity check failed: ${handle}`);
       return canonical;
@@ -39526,7 +39588,7 @@ var init_program_store_node = __esm(() => {
 });
 
 // src/build-cache.ts
-import { createHash as createHash9 } from "node:crypto";
+import { createHash as createHash10 } from "node:crypto";
 import * as acorn2 from "acorn";
 import * as walk5 from "acorn-walk";
 function sourceHasAmbientInputs(code) {
@@ -39672,7 +39734,7 @@ function createCachedEvaluatorPort(evaluator, options) {
       } catch {
         return evaluator.render(code, renderOptions, controls);
       }
-      const key = `sha256:${createHash9("sha256").update(serialized).digest("hex")}`;
+      const key = `sha256:${createHash10("sha256").update(serialized).digest("hex")}`;
       const cached = await options.cache.get(key).catch(() => {
         return;
       });
@@ -39723,10 +39785,10 @@ var init_build_cache = __esm(() => {
 });
 
 // src/build-cache-node.ts
-import { createHash as createHash10, randomUUID as randomUUID4 } from "node:crypto";
+import { createHash as createHash11, randomUUID as randomUUID4 } from "node:crypto";
 import {
   mkdir as mkdir4,
-  readFile as readFile3,
+  readFile as readFile4,
   readdir as readdir3,
   rename as rename3,
   stat as stat3,
@@ -39756,7 +39818,7 @@ class FileBuildCache {
       const entry = await stat3(path);
       if (entry.size > this.maxBytes || entry.size > 96 * 1024 * 1024)
         return;
-      const envelope = JSON.parse(await readFile3(path, "utf8"));
+      const envelope = JSON.parse(await readFile4(path, "utf8"));
       if (envelope.version !== 1 || envelope.key !== key || typeof envelope.payload !== "string" || envelope.checksum !== digest3(envelope.payload))
         return;
       const decoded = decodeEvaluatorResultV2(envelope.payload, 64 * 1024 * 1024);
@@ -39806,7 +39868,7 @@ class FileBuildCache {
     }
   }
 }
-var keyPattern, filePattern, digest3 = (text) => createHash10("sha256").update(text).digest("hex");
+var keyPattern, filePattern, digest3 = (text) => createHash11("sha256").update(text).digest("hex");
 var init_build_cache_node = __esm(() => {
   init_protocol();
   keyPattern = /^sha256:[a-f0-9]{64}$/;
@@ -39814,8 +39876,8 @@ var init_build_cache_node = __esm(() => {
 });
 
 // src/runtime-identity.ts
-import { createHash as createHash11 } from "node:crypto";
-import { lstat as lstat5, readFile as readFile4, readdir as readdir4, realpath as realpath3, stat as stat4 } from "node:fs/promises";
+import { createHash as createHash12 } from "node:crypto";
+import { lstat as lstat5, readFile as readFile5, readdir as readdir4, realpath as realpath3, stat as stat4 } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname as dirname4, join as join6, relative as relative2 } from "node:path";
 async function installedRuntimeIdentity(root, limits = {}) {
@@ -39824,7 +39886,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
   const absentPackages = [];
   const maxBytes = limits.maxBytes ?? 512 * 1024 * 1024;
   const maxFiles = limits.maxFiles ?? 40000;
-  const manifest = async (directory) => JSON.parse(await readFile4(join6(directory, "package.json"), "utf8"));
+  const manifest = async (directory) => JSON.parse(await readFile5(join6(directory, "package.json"), "utf8"));
   let readers = 0;
   const waiting = [];
   const read = async (path) => {
@@ -39837,7 +39899,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
       if (++files > maxFiles || bytes + info.size > maxBytes)
         throw new Error("Installed runtime fingerprint exceeds its scan budget.");
       bytes += info.size;
-      return await readFile4(path);
+      return await readFile5(path);
     } finally {
       const next = waiting.shift();
       if (next)
@@ -39850,7 +39912,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
     const pkg = await manifest(root);
     if (pkg.name !== "@instruktlabs/kiln")
       throw new Error("Not a Kiln installation.");
-    const build = JSON.parse(await readFile4(join6(root, "dist", "build.json"), "utf8"));
+    const build = JSON.parse(await readFile5(join6(root, "dist", "build.json"), "utf8"));
     const worker = build.entries?.worker;
     if (build.schemaVersion !== 1 || worker?.file !== "evaluator-worker.mjs" || !/^sha256:[a-f0-9]{64}$/.test(worker.identity))
       throw new Error("No valid packaged worker identity.");
@@ -39976,7 +40038,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
     };
   }
 }
-var digest4 = (bytes) => createHash11("sha256").update(bytes).digest("hex"), compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+var digest4 = (bytes) => createHash12("sha256").update(bytes).digest("hex"), compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 var init_runtime_identity = () => {};
 
 // src/projects.ts
@@ -40148,7 +40210,7 @@ var init_projects = __esm(() => {
 });
 
 // src/projects-node.ts
-import { createHash as createHash12, randomUUID as randomUUID5 } from "node:crypto";
+import { createHash as createHash13, randomUUID as randomUUID5 } from "node:crypto";
 import { link as link3, lstat as lstat6, mkdir as mkdir5, open as open3, readdir as readdir5, realpath as realpath4, unlink as unlink4 } from "node:fs/promises";
 import { join as join7, relative as relative3, resolve as resolve7, sep as sep2 } from "node:path";
 function sequenceOf(revisionId) {
@@ -40160,7 +40222,7 @@ function sequenceOf(revisionId) {
 }
 function digest5(record) {
   const { revisionId: _, ...payload } = record;
-  return createHash12("sha256").update(JSON.stringify(payload)).digest("hex");
+  return createHash13("sha256").update(JSON.stringify(payload)).digest("hex");
 }
 
 class FileProjectStore {
@@ -40681,13 +40743,13 @@ var init_assets = __esm(() => {
 
 // src/live-review-node.ts
 import { AsyncLocalStorage as AsyncLocalStorage2 } from "node:async_hooks";
-import { createHash as createHash13, randomUUID as randomUUID6 } from "node:crypto";
+import { createHash as createHash14, randomUUID as randomUUID6 } from "node:crypto";
 import {
   link as link4,
   mkdir as mkdir6,
   lstat as lstat7,
   readdir as readdir6,
-  readFile as readFile5,
+  readFile as readFile6,
   rename as rename4,
   rm as rm2,
   unlink as unlink5,
@@ -40916,7 +40978,7 @@ class FileLiveReview {
     const info = await lstat7(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid live file");
-    const data = new Uint8Array(await readFile5(path));
+    const data = new Uint8Array(await readFile6(path));
     if (data.length !== info.size || data.length > limit)
       throw new Error("Live file changed while reading");
     return data;
@@ -41475,7 +41537,7 @@ class FileLiveReview {
     });
   }
 }
-var operationPattern, filePattern2, hash5 = (value) => `sha256:${createHash13("sha256").update(value).digest("hex")}`, metadataLimit, evaluationLimit, staleMs = 120000, terminal = (op) => !["running", "evaluated"].includes(op.status), missing2 = (error) => error.code === "ENOENT", collision = (error) => error.code === "EEXIST", fileLimit = (name) => name === "asset.glb" ? ASSET_LIMIT : name === "source.kiln.js" ? 1024 * 1024 : name === "evaluation.json" ? evaluationLimit : 16 * 1024 * 1024, descriptorSchema, operationSchema, stateSchema;
+var operationPattern, filePattern2, hash5 = (value) => `sha256:${createHash14("sha256").update(value).digest("hex")}`, metadataLimit, evaluationLimit, staleMs = 120000, terminal = (op) => !["running", "evaluated"].includes(op.status), missing2 = (error) => error.code === "ENOENT", collision = (error) => error.code === "EEXIST", fileLimit = (name) => name === "asset.glb" ? ASSET_LIMIT : name === "source.kiln.js" ? 1024 * 1024 : name === "evaluation.json" ? evaluationLimit : 16 * 1024 * 1024, descriptorSchema, operationSchema, stateSchema;
 var init_live_review_node = __esm(() => {
   init_assets();
   operationPattern = /^op_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -41581,9 +41643,9 @@ __export(exports_assets_node, {
   localAssetLibrary: () => localAssetLibrary,
   verifyAssetRecord: () => verifyAssetRecord
 });
-import { createHash as createHash14, randomUUID as randomUUID7 } from "node:crypto";
+import { createHash as createHash15, randomUUID as randomUUID7 } from "node:crypto";
 import { readFileSync as readFileSync2 } from "node:fs";
-import { link as link5, lstat as lstat8, mkdir as mkdir7, readFile as readFile6, readdir as readdir7, realpath as realpath6, rm as rm3, writeFile as writeFile6 } from "node:fs/promises";
+import { link as link5, lstat as lstat8, mkdir as mkdir7, readFile as readFile7, readdir as readdir7, realpath as realpath6, rm as rm3, writeFile as writeFile6 } from "node:fs/promises";
 import { homedir, platform } from "node:os";
 import { dirname as dirname5, join as join10, relative as relative5, resolve as resolve9, sep as sep4, win32 } from "node:path";
 function assertMaterialAllocation(records) {
@@ -41685,7 +41747,7 @@ class FileAssetLibrary {
     const info = await lstat8(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid collection file");
-    return new Uint8Array(await readFile6(path));
+    return new Uint8Array(await readFile7(path));
   }
   async read(collection, assetId, revisionId) {
     const dir = await this.path(collection, assetId, "revisions", revisionId);
@@ -41891,7 +41953,7 @@ function localAssetLibrary(env = process.env, operatingSystem = platform()) {
     library: defaultUserLibraryRoot(env, homedir(), operatingSystem)
   }, materials);
 }
-var digest6 = (bytes) => `sha256:${createHash14("sha256").update(bytes).digest("hex")}`, windowsDrivePath, windowsSharePath;
+var digest6 = (bytes) => `sha256:${createHash15("sha256").update(bytes).digest("hex")}`, windowsDrivePath, windowsSharePath;
 var init_assets_node = __esm(() => {
   init_workspace_location();
   init_assets();
@@ -41904,12 +41966,292 @@ var init_assets_node = __esm(() => {
   windowsSharePath = /^[\\/]{2}[^\\/]+[\\/][^\\/]+/;
 });
 
+// src/runtime-textures.ts
+async function sha256Hex3(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+function imageDimensions(bytes) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const fail = () => {
+    throw new Error("Texture manifest cannot read image dimensions");
+  };
+  const at = (offset, length) => {
+    if (offset + length > bytes.byteLength)
+      fail();
+  };
+  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
+    at(16, 8);
+    return { width: view.getUint32(16), height: view.getUint32(20) };
+  }
+  if (isKtx2(bytes)) {
+    at(20, 8);
+    return { width: view.getUint32(20, true), height: view.getUint32(24, true) };
+  }
+  if (bytes[0] === 255 && bytes[1] === 216) {
+    let offset = 2;
+    while (offset + 4 <= bytes.byteLength) {
+      if (bytes[offset] !== 255)
+        fail();
+      const marker = bytes[offset + 1];
+      if (marker === 255) {
+        offset++;
+        continue;
+      }
+      if (marker === 216 || marker === 1 || marker >= 208 && marker <= 215) {
+        offset += 2;
+        continue;
+      }
+      const length = view.getUint16(offset + 2);
+      if (marker >= 192 && marker <= 207 && ![196, 200, 204].includes(marker)) {
+        at(offset + 5, 4);
+        return { width: view.getUint16(offset + 7), height: view.getUint16(offset + 5) };
+      }
+      offset += 2 + length;
+    }
+    fail();
+  }
+  const text = (offset) => String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 4, bytes.byteLength)));
+  if (text(0) === "RIFF" && text(8) === "WEBP") {
+    at(12, 19);
+    const chunk = text(12);
+    if (chunk === "VP8X")
+      return {
+        width: 1 + (view.getUint32(24, true) & 16777215),
+        height: 1 + (view.getUint32(27, true) & 16777215)
+      };
+    if (chunk === "VP8L") {
+      const bits = view.getUint32(21, true);
+      return { width: 1 + (bits & 16383), height: 1 + (bits >> 14 & 16383) };
+    }
+    if (chunk === "VP8 ") {
+      at(26, 4);
+      return {
+        width: view.getUint16(26, true) & 16383,
+        height: view.getUint16(28, true) & 16383
+      };
+    }
+  }
+  return fail();
+}
+function textureSource(texture) {
+  if (!object2(texture))
+    return;
+  const extensions = object2(texture.extensions) ? texture.extensions : {};
+  for (const name of ["KHR_texture_basisu", "EXT_texture_webp", "EXT_texture_avif"]) {
+    const extension = extensions[name];
+    if (object2(extension) && index(extension.source) !== undefined)
+      return index(extension.source);
+  }
+  return index(texture.source);
+}
+function srgbImages(json) {
+  const textures = Array.isArray(json.textures) ? json.textures : [];
+  const result = new Set;
+  for (const material of Array.isArray(json.materials) ? json.materials : []) {
+    if (!object2(material))
+      continue;
+    const pbr = object2(material.pbrMetallicRoughness) ? material.pbrMetallicRoughness : {};
+    for (const info of [pbr.baseColorTexture, material.emissiveTexture]) {
+      const texture = object2(info) ? index(info.index) : undefined;
+      const image = texture === undefined ? undefined : textureSource(textures[texture]);
+      if (image !== undefined)
+        result.add(image);
+    }
+  }
+  return result;
+}
+function base64(text) {
+  const binary = atob(text);
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+}
+function embeddedImages(json, binary) {
+  const views = Array.isArray(json.bufferViews) ? json.bufferViews : [];
+  return (Array.isArray(json.images) ? json.images : []).map((image) => {
+    if (!object2(image))
+      throw new Error("Invalid glTF image");
+    const view = index(image.bufferView);
+    if (view !== undefined) {
+      const def = views[view];
+      if (!object2(def) || index(def.buffer) !== 0 || !binary)
+        throw new Error("Texture manifest requires images embedded in the GLB binary chunk");
+      const offset = index(def.byteOffset) ?? 0;
+      const length = index(def.byteLength);
+      if (length === undefined || offset + length > binary.byteLength)
+        throw new Error("Invalid glTF image buffer view");
+      if (typeof image.mimeType !== "string")
+        throw new Error("Embedded image needs a mimeType");
+      return { bytes: binary.subarray(offset, offset + length), mimeType: image.mimeType };
+    }
+    const match = typeof image.uri === "string" ? /^data:([^;,]+);base64,(.*)$/s.exec(image.uri) : null;
+    if (!match)
+      throw new Error("Texture manifest requires embedded image bytes");
+    return { bytes: base64(match[2]), mimeType: match[1] };
+  });
+}
+async function runtimeTextureManifest(json, binary, options = {}) {
+  const srgb = srgbImages(json);
+  const entries = [];
+  for (const [image, { bytes, mimeType }] of embeddedImages(json, binary).entries()) {
+    const sha256 = `sha256:${await sha256Hex3(bytes)}`;
+    const sourceSha256 = options.sources?.get(image);
+    const original = sourceSha256 ?? sha256;
+    const map = options.maps?.find((candidate) => candidate.sha256 === original);
+    entries.push({
+      image,
+      sha256,
+      bytes: bytes.byteLength,
+      mimeType,
+      ...imageDimensions(bytes),
+      colorSpace: srgb.has(image) ? "srgb" : "linear",
+      ...sourceSha256 && sourceSha256 !== sha256 ? { sourceSha256 } : {},
+      ...map ? { material: { pin: { ...map.pin }, slot: map.slot } } : {}
+    });
+  }
+  return entries;
+}
+function textureFileExtension(mimeType) {
+  const extension = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/webp": "webp",
+    "image/ktx2": "ktx2"
+  }[mimeType];
+  if (!extension)
+    throw new Error(`External textures do not support ${mimeType}`);
+  return extension;
+}
+var object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), index = (value) => Number.isInteger(value) && value >= 0 ? value : undefined, KTX2_IDENTIFIER, isKtx2 = (bytes) => bytes.byteLength >= 12 && KTX2_IDENTIFIER.every((value, at) => bytes[at] === value);
+var init_runtime_textures = __esm(() => {
+  KTX2_IDENTIFIER = Object.freeze([
+    171,
+    75,
+    84,
+    88,
+    32,
+    50,
+    48,
+    187,
+    13,
+    10,
+    26,
+    10
+  ]);
+});
+
+// src/ktx2-basis.ts
+import { createHash as createHash16 } from "node:crypto";
+import { readFile as readFile8 } from "node:fs/promises";
+import { dirname as dirname6, join as join11 } from "node:path";
+import { fileURLToPath as fileURLToPath4, pathToFileURL } from "node:url";
+async function packageDirectory() {
+  let directory = dirname6(fileURLToPath4(import.meta.resolve(KTX2_ENCODER_PACKAGE.name)));
+  for (let depth = 0;depth < 6; depth++) {
+    try {
+      const manifest = JSON.parse(await readFile8(join11(directory, "package.json"), "utf8"));
+      if (manifest.name === KTX2_ENCODER_PACKAGE.name)
+        return directory;
+    } catch {}
+    directory = dirname6(directory);
+  }
+  throw new Error(`Cannot locate the installed ${KTX2_ENCODER_PACKAGE.name} package`);
+}
+async function loadKtx2Encoder(importer = () => import("ktx2-encoder")) {
+  let module;
+  try {
+    module = await importer();
+  } catch (error) {
+    throw new Error(`KTX2 encoding needs the optional peer ${KTX2_ENCODER_PACKAGE.name}@${KTX2_ENCODER_PACKAGE.version}. Install it with: ${INSTALL}`, { cause: error });
+  }
+  if (typeof module?.encodeToKTX2 !== "function")
+    throw new Error(`${KTX2_ENCODER_PACKAGE.name} has no encodeToKTX2 export. ${INSTALL}`);
+  const directory = await packageDirectory();
+  const { version } = JSON.parse(await readFile8(join11(directory, "package.json"), "utf8"));
+  if (version !== KTX2_ENCODER_PACKAGE.version)
+    throw new Error(`${KTX2_ENCODER_PACKAGE.name} ${version} is installed; Kiln's KTX2 settings are qualified on ${KTX2_ENCODER_PACKAGE.version}. ${INSTALL}`);
+  let basisWasmSha256;
+  try {
+    basisWasmSha256 = `sha256:${hex2(await readFile8(join11(directory, "dist", "basis", "basis_encoder.wasm")))}`;
+  } catch {}
+  const internal = (path) => import(pathToFileURL(join11(directory, "dist", path)).href);
+  const [factory, core] = await Promise.all([
+    internal("basis/basis_encoder.js"),
+    internal("encodeCore.js")
+  ]);
+  if (typeof factory.default !== "function" || typeof core.encodeWithModule !== "function")
+    throw new Error(`${KTX2_ENCODER_PACKAGE.name} ${version} has an unexpected layout. ${INSTALL}`);
+  basis ??= factory.default({ print: () => {}, printErr: () => {} }).then((instance) => {
+    instance.initializeBasis();
+    return instance;
+  });
+  const instance = basis;
+  return {
+    encode: async (image, options) => core.encodeWithModule(await instance, image, options),
+    version,
+    ...basisWasmSha256 ? { basisWasmSha256 } : {}
+  };
+}
+async function createKtx2Encoder(options = {}) {
+  const { encode: run, version, basisWasmSha256 } = await loadKtx2Encoder(options.importer);
+  const identity = {
+    name: KTX2_ENCODER_PACKAGE.name,
+    version,
+    ...basisWasmSha256 ? { basisWasmSha256 } : {},
+    settings: structuredClone({ ...SETTINGS })
+  };
+  const encode = async (input) => {
+    const { mode: _mode, ...settings } = profile(input);
+    return run(input.image, { ...settings, imageDecoder: decode });
+  };
+  return Object.assign(encode, { identity });
+}
+var KTX2_ENCODER_PACKAGE, INSTALL, SETTINGS, profile = (input) => input.colorSpace === "srgb" ? SETTINGS.srgb : input.slot === "normal" ? SETTINGS.normal : SETTINGS.linear, hex2 = (bytes) => createHash16("sha256").update(bytes).digest("hex"), basis, decode = async (buffer) => {
+  const { default: sharp } = await import("sharp");
+  const { data, info } = await sharp(buffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  return { data: new Uint8Array(data), width: info.width, height: info.height };
+};
+var init_ktx2_basis = __esm(() => {
+  KTX2_ENCODER_PACKAGE = Object.freeze({ name: "ktx2-encoder", version: "0.6.0" });
+  INSTALL = `npm install ${KTX2_ENCODER_PACKAGE.name}@${KTX2_ENCODER_PACKAGE.version}`;
+  SETTINGS = Object.freeze({
+    srgb: Object.freeze({
+      mode: "etc1s",
+      isUASTC: false,
+      qualityLevel: 128,
+      compressionLevel: 2,
+      generateMipmap: true,
+      isSetKTX2SRGBTransferFunc: true,
+      isPerceptual: true
+    }),
+    linear: Object.freeze({
+      mode: "uastc",
+      isUASTC: true,
+      uastcLDRQualityLevel: 2,
+      needSupercompression: true,
+      generateMipmap: true,
+      isSetKTX2SRGBTransferFunc: false,
+      isPerceptual: false
+    }),
+    normal: Object.freeze({
+      mode: "uastc",
+      isUASTC: true,
+      uastcLDRQualityLevel: 2,
+      needSupercompression: true,
+      generateMipmap: true,
+      isSetKTX2SRGBTransferFunc: false,
+      isPerceptual: false,
+      isNormalMap: true
+    })
+  });
+});
+
 // src/runtime-three.ts
 var exports_runtime_three = {};
 __export(exports_runtime_three, {
   deliverRuntimeThreeGlb: () => deliverRuntimeThreeGlb
 });
 import {
+  Format,
   Logger as Logger2,
   PropertyType as PropertyType5
 } from "@gltf-transform/core";
@@ -41994,7 +42336,7 @@ function splitColliderProxies(doc) {
   }
   return report;
 }
-async function encodeKtx2(doc, encoder) {
+async function encodeKtx2(doc, encoder, sources) {
   const textures = doc.getRoot().listTextures().filter((texture) => texture.getMimeType() !== "image/ktx2" && texture.getImage());
   if (!encoder)
     return {
@@ -42002,29 +42344,62 @@ async function encodeKtx2(doc, encoder) {
       textures: textures.length,
       reason: "No KTX2 encoder was supplied; textures stay PNG or JPEG."
     };
-  const srgb = new Set;
+  const slots = new Map;
+  const use = (texture, slot) => {
+    if (texture)
+      slots.set(texture, (slots.get(texture) ?? new Set).add(slot));
+  };
   for (const material of doc.getRoot().listMaterials()) {
-    for (const texture of [material.getBaseColorTexture(), material.getEmissiveTexture()])
-      if (texture)
-        srgb.add(texture);
+    use(material.getBaseColorTexture(), "baseColor");
+    use(material.getEmissiveTexture(), "emissive");
+    use(material.getNormalTexture(), "normal");
+    use(material.getMetallicRoughnessTexture(), "metallicRoughness");
+    use(material.getOcclusionTexture(), "occlusion");
   }
+  const order = [
+    "baseColor",
+    "emissive",
+    "normal",
+    "metallicRoughness",
+    "occlusion"
+  ];
   for (const texture of textures) {
+    const used = slots.get(texture) ?? new Set;
+    const srgb = used.has("baseColor") || used.has("emissive");
+    const other = texture.listParents().some((parent) => parent.propertyType !== PropertyType5.ROOT && !isCoreMaterialUse(parent));
+    const linear = [...used].some((slot) => slot !== "baseColor" && slot !== "emissive") || other;
+    if (srgb && linear)
+      throw new Error(`Texture ${JSON.stringify(texture.getName())} is used by both sRGB and linear material slots; one KTX2 encoding cannot serve both. Use separate images.`);
+    const original = texture.getImage();
     const image = await encoder({
-      image: texture.getImage(),
+      image: original,
       mimeType: texture.getMimeType(),
       name: texture.getName(),
-      colorSpace: srgb.has(texture) ? "srgb" : "linear"
+      colorSpace: srgb ? "srgb" : "linear",
+      slot: order.find((slot) => used.has(slot)) ?? "other"
     });
-    if (!(image instanceof Uint8Array) || image.byteLength < 12)
-      throw new Error("ktx2Encoder must return KTX2 bytes");
+    if (!(image instanceof Uint8Array) || !isKtx2(image))
+      throw new Error("ktx2Encoder must return KTX2 bytes starting with the KTX2 identifier");
+    sources.set(texture, `sha256:${await sha256Hex3(original)}`);
     texture.setImage(image).setMimeType("image/ktx2");
     const uri = texture.getURI();
     if (uri)
       texture.setURI(uri.replace(/\.(png|jpe?g)$/i, ".ktx2"));
   }
-  if (textures.length)
+  if (textures.length) {
     doc.createExtension(KHRTextureBasisu2).setRequired(true);
-  return { status: "encoded", textures: textures.length };
+    await Promise.resolve().then(() => init_atlas_provenance());
+    await refreshAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc);
+  }
+  return {
+    status: "encoded",
+    textures: textures.length,
+    ...encoder.identity ? { encoder: structuredClone(encoder.identity) } : {}
+  };
+}
+function isCoreMaterialUse(parent) {
+  return parent.propertyType === PropertyType5.MATERIAL;
 }
 function decomposeDelta(before, after) {
   const delta = new THREE55.Matrix4().fromArray(before).invert().multiply(new THREE55.Matrix4().fromArray(after));
@@ -42035,10 +42410,7 @@ function decomposeDelta(before, after) {
     offset: [position.x, position.y, position.z]
   };
 }
-async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
-  const compression = options.compression ?? "meshopt";
-  if (compression !== "meshopt" && compression !== "none")
-    throw new Error("Runtime three compression must be meshopt or none");
+async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layout = {}) {
   const io = createGltfIO().registerDependencies({
     "meshopt.encoder": meshoptEncoder
   });
@@ -42061,9 +42433,9 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
     quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
     quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight
   }));
-  if (compression === "meshopt")
-    doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
-  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder);
+  doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  const encodedSources = new Map;
+  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder, encodedSources);
   for (const node of doc.getRoot().listNodes()) {
     const mesh = node.getMesh();
     if (!mesh || matrices.has(node) || node.getName())
@@ -42122,11 +42494,18 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
   const all = doc.getRoot().listNodes();
   const glb = await io.writeBinary(doc);
   const json = (await io.binaryToJSON(glb)).json;
+  const imageSources = new Map;
+  doc.getRoot().listTextures().forEach((texture, image) => {
+    const source = encodedSources.get(texture);
+    if (source)
+      imageSources.set(image, source);
+  });
+  const gltf = layout.gltfBasename ? await io.writeJSON(doc, { format: Format.GLTF, basename: layout.gltfBasename }) : undefined;
   const delivery = {
     target: "three",
     extensionsUsed: [...json.extensionsUsed ?? []].sort(),
     extensionsRequired: [...json.extensionsRequired ?? []].sort(),
-    compression: compression === "meshopt" ? { extension: "EXT_meshopt_compression", method: "quantize" } : { extension: "none" },
+    compression: { extension: "EXT_meshopt_compression", method: "quantize" },
     quantization: {
       extension: "KHR_mesh_quantization",
       volume: "mesh",
@@ -42161,7 +42540,17 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
       kitModules: all.filter((node) => rolesOf4(node).includes(KILN_SEMANTIC_ROLES.kitModule)).length
     }
   };
-  return { glb, delivery };
+  return {
+    glb,
+    delivery,
+    imageSources,
+    ...gltf ? {
+      gltf: {
+        json: gltf.json,
+        resources: gltf.resources
+      }
+    } : {}
+  };
 }
 var RUNTIME_THREE_QUANTIZATION, QUANTIZED_SEMANTICS, customRank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2, rolesOf4 = (node) => readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [], isCollider = (node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.collider}.`));
 var init_runtime_three = __esm(() => {
@@ -42170,6 +42559,7 @@ var init_runtime_three = __esm(() => {
   init_delivery_inspect();
   init_delivery();
   init_metrics();
+  init_runtime_textures();
   RUNTIME_THREE_QUANTIZATION = Object.freeze({
     volume: "mesh",
     position: 14,
@@ -42184,6 +42574,7 @@ var init_runtime_three = __esm(() => {
 // src/asset-export.ts
 var exports_asset_export = {};
 __export(exports_asset_export, {
+  createKtx2Encoder: () => createKtx2Encoder2,
   exportAssetGlb: () => exportAssetGlb
 });
 async function sha2562(bytes) {
@@ -42193,6 +42584,36 @@ async function sha2562(bytes) {
 function validateMetadataFileName(name) {
   if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.kiln-metadata\.json$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
     throw new Error("Runtime metadata filename must be a portable sibling *.kiln-metadata.json filename");
+}
+function validateGltfFileName(name) {
+  if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.gltf$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
+    throw new Error("External texture output must be a portable sibling *.gltf filename");
+}
+function readGlbBinary(bytes, jsonEnd) {
+  if (jsonEnd + 8 > bytes.length)
+    return;
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  if (view.getUint32(jsonEnd + 4, true) !== 5130562)
+    return;
+  return bytes.subarray(jsonEnd + 8, jsonEnd + 8 + view.getUint32(jsonEnd, true));
+}
+function closureMaps(record) {
+  const manifests = new Map;
+  for (const manifest of [
+    ...assetMaterialRootManifests(record),
+    ...(record.materialResources?.records ?? []).map(({ manifest }) => manifest)
+  ])
+    manifests.set(`${manifest.materialId}/${manifest.revisionId}`, manifest);
+  const order = (value, other) => value < other ? -1 : value > other ? 1 : 0;
+  return [...manifests.values()].flatMap((manifest) => manifest.maps.map((map) => ({
+    sha256: map.sha256,
+    pin: {
+      resourceId: manifest.materialId,
+      revisionId: manifest.revisionId,
+      sha256: manifest.revisionId
+    },
+    slot: map.slot
+  }))).sort((a, b) => order(a.pin.resourceId, b.pin.resourceId) || order(a.pin.revisionId, b.pin.revisionId) || order(a.slot, b.slot));
 }
 function readGlbJson(bytes) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -42207,7 +42628,7 @@ function readGlbJson(bytes) {
   }
   const jsonEnd = 20 + view.getUint32(12, true);
   const json = JSON.parse(decoder.decode(bytes.subarray(20, jsonEnd)));
-  if (!object2(json) || !object2(json.asset) || json.asset.version !== "2.0")
+  if (!object3(json) || !object3(json.asset) || json.asset.version !== "2.0")
     throw new Error("Invalid glTF asset");
   return { json, jsonEnd };
 }
@@ -42226,13 +42647,17 @@ function writeGlbJson(bytes, jsonEnd, json) {
   result.set(bytes.subarray(jsonEnd), 20 + length);
   return result;
 }
-async function deliverThreeRuntimeGlb(glb, options = {}) {
+async function createKtx2Encoder2() {
+  await Promise.resolve().then(() => init_ktx2_basis());
+  return createKtx2Encoder();
+}
+async function deriveThree(glb, options, layout = {}) {
   const [{ deliverRuntimeThreeGlb }, { MeshoptEncoder }] = await Promise.all([
     Promise.resolve().then(() => (init_runtime_three(), exports_runtime_three)),
     import("meshoptimizer")
   ]);
   await MeshoptEncoder.ready;
-  const result = await deliverRuntimeThreeGlb(glb, MeshoptEncoder, options);
+  const result = await deliverRuntimeThreeGlb(glb, MeshoptEncoder, options, layout);
   if (result.glb.byteLength > ASSET_LIMIT)
     throw new Error("Runtime export exceeds 64 MiB");
   return result;
@@ -42245,8 +42670,16 @@ async function exportAssetGlb(record, options = {}) {
     throw new Error("Unknown runtime export target");
   if (options.target !== undefined && profile !== "runtime")
     throw new Error("A runtime export target requires the runtime profile");
-  if (options.compression !== undefined && options.target !== "three")
-    throw new Error("Runtime compression requires the three runtime target");
+  const textures = options.textures;
+  if (textures !== undefined && textures !== "manifest" && textures !== "external")
+    throw new Error("Unknown runtime texture option");
+  if (textures !== undefined && profile !== "runtime")
+    throw new Error("A texture manifest requires the runtime profile");
+  if (textures === "external" && options.target !== "three")
+    throw new Error("External textures require target three");
+  const gltfName = options.gltfFileName ?? "runtime.gltf";
+  if (textures === "external")
+    validateGltfFileName(gltfName);
   validateRecordShape(record);
   const bytes = record.files["asset.glb"];
   if (profile === "editable")
@@ -42259,7 +42692,7 @@ async function exportAssetGlb(record, options = {}) {
   }
   const { json, jsonEnd } = readGlbJson(bytes);
   const asset = json.asset;
-  if (owns(asset, "extras") && !object2(asset.extras))
+  if (owns(asset, "extras") && !object3(asset.extras))
     throw new Error("Cannot add provenance to non-object asset extras");
   const extras = asset.extras ?? {};
   if (owns(extras, "kilnProvenanceV1"))
@@ -42268,10 +42701,10 @@ async function exportAssetGlb(record, options = {}) {
   if (json.scenes !== undefined && !Array.isArray(json.scenes))
     throw new Error("Invalid glTF scenes");
   for (const [index, scene] of (json.scenes ?? []).entries()) {
-    if (!object2(scene) || !object2(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
+    if (!object3(scene) || !object3(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
       continue;
     const review = scene.extras.kilnReviewClipsV1;
-    if (!object2(review) || review.version !== 1 && review.version !== 2 || !Array.isArray(review.clips))
+    if (!object3(review) || review.version !== 1 && review.version !== 2 || !Array.isArray(review.clips))
       throw new Error("Unsupported scenes[].extras.kilnReviewClipsV1");
     scenes.push({ index, kilnReviewClipsV1: review });
     delete scene.extras.kilnReviewClipsV1;
@@ -42286,36 +42719,86 @@ async function exportAssetGlb(record, options = {}) {
     },
     scenes
   };
-  let base = bytes, baseJson = json, baseJsonEnd = jsonEnd;
+  let base = bytes, baseJson = json, baseJsonEnd = jsonEnd, imageSources, gltf;
   if (options.target === "three") {
-    const derived = await deliverThreeRuntimeGlb(writeGlbJson(bytes, jsonEnd, json), {
-      ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {},
-      ...options.compression ? { compression: options.compression } : {}
-    });
+    const derived = await deriveThree(writeGlbJson(bytes, jsonEnd, json), { ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {} }, textures === "external" ? { gltfBasename: gltfName.slice(0, -".gltf".length) } : {});
     metadata.target = "three";
     metadata.delivery = derived.delivery;
     base = derived.glb;
+    imageSources = derived.imageSources;
+    gltf = derived.gltf;
     ({ json: baseJson, jsonEnd: baseJsonEnd } = readGlbJson(base));
   }
+  if (textures !== undefined)
+    metadata.textures = await runtimeTextureManifest(baseJson, readGlbBinary(base, baseJsonEnd), {
+      ...imageSources ? { sources: imageSources } : {},
+      maps: closureMaps(record)
+    });
+  const external = gltf ? await externalLayout(gltf, metadata.textures ?? []) : undefined;
   const metadataBytes = encoder2.encode(JSON.stringify(metadata));
   if (metadataBytes.length > ASSET_LIMIT)
     throw new Error("Runtime export exceeds 64 MiB");
+  const provenance = {
+    version: "kiln.provenance.v1",
+    profile: "runtime",
+    ...options.target ? { target: options.target } : {},
+    metadata: { uri: name, sha256: await sha2562(metadataBytes) }
+  };
   const baseAsset = baseJson.asset;
   baseAsset.extras = {
     ...baseAsset.extras ?? extras,
-    kilnProvenanceV1: {
-      version: "kiln.provenance.v1",
-      profile: "runtime",
-      ...options.target ? { target: options.target } : {},
-      metadata: { uri: name, sha256: await sha2562(metadataBytes) }
-    }
+    kilnProvenanceV1: provenance
   };
   const result = writeGlbJson(base, baseJsonEnd, baseJson);
-  return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
+  if (!external)
+    return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
+  const gltfAsset = external.json.asset;
+  gltfAsset.extras = {
+    ...gltfAsset.extras ?? extras,
+    kilnProvenanceV1: provenance
+  };
+  const gltfBytes = encoder2.encode(JSON.stringify(external.json));
+  if (gltfBytes.length > ASSET_LIMIT)
+    throw new Error("Runtime export exceeds 64 MiB");
+  return {
+    profile,
+    layout: "gltf",
+    glb: result,
+    gltf: { name: gltfName, bytes: gltfBytes },
+    buffers: external.buffers,
+    textures: external.textures,
+    metadata: { name, bytes: metadataBytes }
+  };
 }
-var encoder2, decoder, object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
+async function externalLayout(gltf, manifest) {
+  const json = structuredClone(gltf.json);
+  const resources = new Map(Object.entries(gltf.resources));
+  const images = Array.isArray(json.images) ? json.images : [];
+  if (images.length !== manifest.length)
+    throw new Error("External texture layout mismatch");
+  const textures = new Map;
+  for (const [index, image] of images.entries()) {
+    const entry = manifest[index];
+    const written = typeof image.uri === "string" ? image.uri : "";
+    const bytes = resources.get(written);
+    if (!bytes || `sha256:${await sha256Hex3(bytes)}` !== entry.sha256)
+      throw new Error("External texture bytes differ from the delivered GLB");
+    resources.delete(written);
+    const uri = `textures/${entry.sha256.slice("sha256:".length)}.${textureFileExtension(entry.mimeType)}`;
+    image.uri = uri;
+    entry.uri = uri;
+    textures.set(uri, { uri, sha256: entry.sha256, bytes });
+  }
+  const buffers = [...resources].map(([uri, bytes]) => ({ uri, bytes }));
+  for (const { uri } of buffers)
+    if (!/^[a-z0-9][a-z0-9._-]*\.bin$/i.test(uri))
+      throw new Error(`Unexpected external glTF resource ${uri}`);
+  return { json, buffers, textures: [...textures.values()] };
+}
+var encoder2, decoder, object3 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
 var init_asset_export = __esm(() => {
   init_assets();
+  init_runtime_textures();
   encoder2 = new TextEncoder;
   decoder = new TextDecoder;
 });
@@ -42641,8 +43124,8 @@ var init_project_bundle = __esm(() => {
 
 // src/project-bundle-node.ts
 import { randomUUID as randomUUID8 } from "node:crypto";
-import { link as link6, lstat as lstat9, mkdir as mkdir8, readFile as readFile7, realpath as realpath7, unlink as unlink6, writeFile as writeFile7 } from "node:fs/promises";
-import { join as join11, relative as relative6, resolve as resolve10, sep as sep5 } from "node:path";
+import { link as link6, lstat as lstat9, mkdir as mkdir8, readFile as readFile9, realpath as realpath7, unlink as unlink6, writeFile as writeFile7 } from "node:fs/promises";
+import { join as join12, relative as relative6, resolve as resolve10, sep as sep5 } from "node:path";
 async function assetMaterials(workspace, asset) {
   return resolveSavedAssetMaterials(asset, workspace.materials);
 }
@@ -42739,7 +43222,7 @@ async function retainArchive(workspace, bytes, digest) {
   const canonical = await realpath7(root);
   let directory = root;
   for (const part of [".kiln", "imports"]) {
-    directory = join11(directory, part);
+    directory = join12(directory, part);
     await mkdir8(directory).catch((error) => {
       if (error.code !== "EEXIST")
         throw error;
@@ -42749,8 +43232,8 @@ async function retainArchive(workspace, bytes, digest) {
     if (!info.isDirectory() || info.isSymbolicLink() || rel === ".." || rel.startsWith(`..${sep5}`))
       throw new Error("Unsafe project import directory");
   }
-  const file = join11(directory, `${digest.slice(7)}.zip`);
-  const temporary = join11(directory, `.import-${randomUUID8()}.tmp`);
+  const file = join12(directory, `${digest.slice(7)}.zip`);
+  const temporary = join12(directory, `.import-${randomUUID8()}.tmp`);
   await writeFile7(temporary, bytes, { flag: "wx", mode: 384 });
   try {
     try {
@@ -42759,7 +43242,7 @@ async function retainArchive(workspace, bytes, digest) {
       if (error.code !== "EEXIST")
         throw error;
       const info = await lstat9(file);
-      if (!info.isFile() || info.isSymbolicLink() || info.size !== bytes.length || await projectBundleHash(new Uint8Array(await readFile7(file))) !== digest)
+      if (!info.isFile() || info.isSymbolicLink() || info.size !== bytes.length || await projectBundleHash(new Uint8Array(await readFile9(file))) !== digest)
         throw new Error("Imported archive integrity mismatch");
     }
   } finally {
@@ -42907,9 +43390,9 @@ var init_source_check = __esm(() => {
 });
 
 // src/local-runtime.ts
-import { readFile as readFile8, stat as stat5 } from "node:fs/promises";
-import { dirname as dirname6, isAbsolute, join as join12, resolve as resolve11 } from "node:path";
-import { fileURLToPath as fileURLToPath4 } from "node:url";
+import { readFile as readFile10, stat as stat5 } from "node:fs/promises";
+import { dirname as dirname7, isAbsolute, join as join13, resolve as resolve11 } from "node:path";
+import { fileURLToPath as fileURLToPath5 } from "node:url";
 import { Console } from "node:console";
 function workspaceSourceReader(root) {
   return async (file) => {
@@ -42924,7 +43407,7 @@ function workspaceSourceReader(root) {
       throw new Error(`file ${file} was not found inside the workspace. Check the relative path, or pass code or programRef.`);
     if (info.size > MAX_PROGRAM_BYTES)
       throw new Error(`file ${file} exceeds the ${MAX_PROGRAM_BYTES / (1024 * 1024)} MiB source limit.`);
-    return readFile8(path, "utf8");
+    return readFile10(path, "utf8");
   };
 }
 function integer4(env, name, fallback, min, max) {
@@ -42934,7 +43417,7 @@ function integer4(env, name, fallback, min, max) {
   return value;
 }
 function createLocalToolContext(base = {}, env = process.env) {
-  const workspaceRoot = env.KILN_WORKSPACE ? resolve11(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname6(dirname6(base.programStore.directory)) : localWorkspaceRoot(env);
+  const workspaceRoot = env.KILN_WORKSPACE ? resolve11(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname7(dirname7(base.programStore.directory)) : localWorkspaceRoot(env);
   const workspace = base.workspace ?? new FileWorkspace(workspaceRoot, env.KILN_PROJECT);
   const projectStore = base.projectStore ?? (workspace instanceof FileWorkspace ? workspace.projects : undefined);
   const liveReview = base.liveReview ?? (env.KILN_LIVE_REVIEW === "off" ? undefined : new FileLiveReview(workspaceRoot, {
@@ -43044,7 +43527,7 @@ function createLocalToolContext(base = {}, env = process.env) {
     localExecution
   };
 }
-async function createPackagedLocalToolContext(base = {}, env = process.env, installationRoot = fileURLToPath4(new URL("../", import.meta.url))) {
+async function createPackagedLocalToolContext(base = {}, env = process.env, installationRoot = fileURLToPath5(new URL("../", import.meta.url))) {
   const context = createLocalToolContext(base, env);
   const managed = () => {
     const identity = context.evaluatorCacheIdentity;
@@ -43099,7 +43582,7 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   }
   const cacheBytes = integer4(env, "KILN_BUILD_CACHE_MB", 128, 0, 1024) * 1024 * 1024;
   const store = context.programStore;
-  const directory = resolve11(env.KILN_BUILD_CACHE_DIR ?? join12(store instanceof FileProgramStore ? dirname6(store.directory) : ".kiln", "cache", "builds"));
+  const directory = resolve11(env.KILN_BUILD_CACHE_DIR ?? join13(store instanceof FileProgramStore ? dirname7(store.directory) : ".kiln", "cache", "builds"));
   context.buildCache = new FileBuildCache(directory, cacheBytes);
   context.evaluatorCacheIdentity = `${identity.identity}:${JSON.stringify({
     execution: context.localExecution,
@@ -50893,7 +51376,7 @@ var init_assets_resources = __esm(() => {
 
 // src/widget-transfer.ts
 import { deflateSync as deflateSync2, inflateSync as inflateSync2 } from "three/addons/libs/fflate.module.js";
-function base64(bytes) {
+function base642(bytes) {
   let binary = "";
   for (let index = 0;index < bytes.length; index += 8192)
     binary += String.fromCharCode(...bytes.subarray(index, index + 8192));
@@ -50903,8 +51386,8 @@ function encodeWidgetFiles(files) {
   if (Object.values(files).reduce((total, bytes) => total + bytes.length, 0) > WIDGET_TRANSFER_LIMIT)
     invalid("exceeds the decoded size limit");
   return Object.fromEntries(Object.entries(files).map(([name, bytes]) => {
-    const plain = base64(bytes);
-    const compressed = base64(deflateSync2(bytes, { level: 6 }));
+    const plain = base642(bytes);
+    const compressed = base642(deflateSync2(bytes, { level: 6 }));
     return [
       name,
       compressed.length + 64 < plain.length ? { encoding: "kiln.deflate-base64.v1", data: compressed } : plain
@@ -52588,18 +53071,18 @@ var init_registry2 = __esm(() => {
 });
 
 // render-service/src/instance.mjs
-import { createHash as createHash15 } from "node:crypto";
+import { createHash as createHash17 } from "node:crypto";
 import { readFileSync as readFileSync3, readdirSync, statSync } from "node:fs";
-import { join as join13, relative as relative7 } from "node:path";
+import { join as join14, relative as relative7 } from "node:path";
 function fingerprintSourceDir(dir) {
-  const hash = createHash15("sha256");
+  const hash = createHash17("sha256");
   hash.update("kiln.render-service-source.v1");
   const visit = (path) => {
     if (statSync(path).isDirectory()) {
       for (const name of readdirSync(path).sort()) {
         if (name === "node_modules")
           continue;
-        visit(join13(path, name));
+        visit(join14(path, name));
       }
       return;
     }
@@ -52613,9 +53096,9 @@ function fingerprintSourceDir(dir) {
 var init_instance = () => {};
 
 // render-service/src/build-identity.mjs
-import { createHash as createHash16 } from "node:crypto";
+import { createHash as createHash18 } from "node:crypto";
 import { readFileSync as readFileSync4 } from "node:fs";
-import { dirname as dirname7, join as join14 } from "node:path";
+import { dirname as dirname8, join as join15 } from "node:path";
 import { createRequire as createRequire2 } from "node:module";
 function compatibilityFingerprint({ sourceFingerprint, dependencies }) {
   if (typeof sourceFingerprint !== "string" || !/^sha256:[a-f0-9]{64}$/.test(sourceFingerprint))
@@ -52625,7 +53108,7 @@ function compatibilityFingerprint({ sourceFingerprint, dependencies }) {
       throw new Error(`Missing renderer dependency identity: ${name}`);
     return [name, dependencies[name]];
   }));
-  return `sha256:${createHash16("sha256").update(JSON.stringify({
+  return `sha256:${createHash18("sha256").update(JSON.stringify({
     version: "kiln.render-service-build.v1",
     sourceFingerprint,
     dependencies: pins
@@ -52636,20 +53119,20 @@ function resolvedRendererDependencies(anchorUrl = import.meta.url) {
   return Object.fromEntries(Object.entries(RENDER_SERVICE_DEPENDENCIES).map(([name, expected]) => {
     let dir;
     try {
-      dir = dirname7(require2.resolve(name));
+      dir = dirname8(require2.resolve(name));
     } catch {
       throw new Error(`Renderer dependency ${name}@${expected} is not installed`);
     }
     let found;
     for (;; ) {
       try {
-        const pkg = JSON.parse(readFileSync4(join14(dir, "package.json"), "utf8"));
+        const pkg = JSON.parse(readFileSync4(join15(dir, "package.json"), "utf8"));
         if (pkg.name === name) {
           found = pkg.version;
           break;
         }
       } catch {}
-      const parent = dirname7(dir);
+      const parent = dirname8(dir);
       if (parent === dir)
         break;
       dir = parent;
@@ -52675,11 +53158,11 @@ var init_build_identity = __esm(() => {
 });
 
 // src/render-service-client.ts
-import { createHash as createHash17 } from "node:crypto";
+import { createHash as createHash19 } from "node:crypto";
 import { existsSync as existsSync2 } from "node:fs";
-import { fileURLToPath as fileURLToPath5 } from "node:url";
+import { fileURLToPath as fileURLToPath6 } from "node:url";
 function packagedRendererSourceFingerprint() {
-  const source = fileURLToPath5(new URL("../render-service/src/", import.meta.url));
+  const source = fileURLToPath6(new URL("../render-service/src/", import.meta.url));
   return existsSync2(source) ? fingerprintSourceDir(source) : undefined;
 }
 function validateRenderServiceHealth(value) {
@@ -52764,7 +53247,7 @@ function makeRemoteRenderPort(url, token, sourceFingerprint) {
   return async (req, execution) => {
     const health = await verifiedHealth(url, token, sourceFingerprint, execution?.signal);
     execution?.signal?.throwIfAborted();
-    const inputGlbSha256 = `sha256:${createHash17("sha256").update(req.glb).digest("hex")}`;
+    const inputGlbSha256 = `sha256:${createHash19("sha256").update(req.glb).digest("hex")}`;
     const body = {
       glb_base64: Buffer.from(req.glb).toString("base64"),
       input_glb_sha256: inputGlbSha256,
@@ -52820,7 +53303,7 @@ var init_render_service_client = __esm(() => {
 
 // src/render-service-windows.ts
 import { spawn as spawn2 } from "node:child_process";
-import { join as join15 } from "node:path";
+import { join as join16 } from "node:path";
 function powerShellLiteral(value) {
   return `'${value.replaceAll("'", "''")}'`;
 }
@@ -52835,7 +53318,7 @@ function launchWindowsRenderService(executable, args, directory, env) {
   ].join(`
 `);
   const systemRoot = env.SystemRoot ?? env.SYSTEMROOT;
-  const powerShell = systemRoot ? join15(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe") : "powershell.exe";
+  const powerShell = systemRoot ? join16(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe") : "powershell.exe";
   const child = spawn2(powerShell, [
     "-NoProfile",
     "-NonInteractive",
@@ -52885,8 +53368,8 @@ var init_render_service_windows = () => {};
 // src/render-service-host.ts
 import { spawn as spawn3, spawnSync } from "node:child_process";
 import { existsSync as existsSync3 } from "node:fs";
-import { fileURLToPath as fileURLToPath6, pathToFileURL } from "node:url";
-import { join as join16 } from "node:path";
+import { fileURLToPath as fileURLToPath7, pathToFileURL as pathToFileURL2 } from "node:url";
+import { join as join17 } from "node:path";
 function localRenderServicePort(env = process.env) {
   const raw = Number(env["KILN_RENDER_SERVICE_PORT"]);
   return Number.isInteger(raw) && raw > 0 && raw < 65536 ? raw : DEFAULT_LOCAL_RENDER_SERVICE_PORT;
@@ -52904,18 +53387,18 @@ function namesLocalRenderService(url, env = process.env) {
 function renderServiceNodeArguments(dir) {
   return [
     "--import",
-    pathToFileURL(join16(dir, "src/register-hooks.mjs")).href,
-    join16(dir, "src/server.mjs")
+    pathToFileURL2(join17(dir, "src/register-hooks.mjs")).href,
+    join17(dir, "src/server.mjs")
   ];
 }
 function renderServiceDir() {
-  return process.env["KILN_RENDER_SERVICE_DIR"] || fileURLToPath6(new URL("../render-service", import.meta.url));
+  return process.env["KILN_RENDER_SERVICE_DIR"] || fileURLToPath7(new URL("../render-service", import.meta.url));
 }
 function localRenderServiceState(dir = renderServiceDir()) {
-  if (!existsSync3(join16(dir, "src/server.mjs")) || !existsSync3(join16(dir, "package.json")))
+  if (!existsSync3(join17(dir, "src/server.mjs")) || !existsSync3(join17(dir, "package.json")))
     return "not-packaged";
   try {
-    const anchor = pathToFileURL(join16(dir, "src/server.mjs")).href;
+    const anchor = pathToFileURL2(join17(dir, "src/server.mjs")).href;
     if (process.versions.bun) {
       const moduleUrl = new URL("../render-service/src/build-identity.mjs", import.meta.url).href;
       const result = spawnSync(nodeBinary(), [
@@ -52946,7 +53429,7 @@ function explainRenderServiceState(state, dir) {
   return "renderer dependencies are missing; reinstall the official Kiln package with optional dependencies enabled";
 }
 function renderServiceSourceFingerprint(dir) {
-  const source = join16(dir, "src");
+  const source = join17(dir, "src");
   return existsSync3(source) ? fingerprintSourceDir(source) : undefined;
 }
 async function inspectLocalRenderService(url, dir = renderServiceDir(), timeoutMs = 1500) {
@@ -53559,9 +54042,9 @@ var init_workspace_http = __esm(() => {
 
 // src/asset-viewer.ts
 import { createServer } from "node:http";
-import { readFile as readFile9 } from "node:fs/promises";
-import { dirname as dirname8, join as join17 } from "node:path";
-import { fileURLToPath as fileURLToPath7 } from "node:url";
+import { readFile as readFile11 } from "node:fs/promises";
+import { dirname as dirname9, join as join18 } from "node:path";
+import { fileURLToPath as fileURLToPath8 } from "node:url";
 function quoted(value) {
   if (value === undefined)
     return "(none)";
@@ -53573,7 +54056,7 @@ function refuse(res, message) {
 `);
 }
 async function startAssetViewer(library, options = {}) {
-  const staticDirectory = options.staticDirectory ?? (!import.meta.url.endsWith(".mjs") ? join17(dirname8(fileURLToPath7(import.meta.url)), "..", "dist", "viewer") : join17(dirname8(fileURLToPath7(import.meta.url)), "viewer"));
+  const staticDirectory = options.staticDirectory ?? (!import.meta.url.endsWith(".mjs") ? join18(dirname9(fileURLToPath8(import.meta.url)), "..", "dist", "viewer") : join18(dirname9(fileURLToPath8(import.meta.url)), "viewer"));
   const server = createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");
@@ -53643,7 +54126,7 @@ async function startAssetViewer(library, options = {}) {
         return;
       }
       res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' blob: data:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
-      return send(await readFile9(join17(staticDirectory, file[0])), file[1]);
+      return send(await readFile11(join18(staticDirectory, file[0])), file[1]);
     } catch (error) {
       res.statusCode = error instanceof WorkspaceHttpError ? error.status : error && typeof error === "object" && ("code" in error) && error.code === "PROJECT_CONFLICT" ? 409 : 400;
       send(JSON.stringify({ error: error instanceof Error ? error.message : "Asset unavailable" }));
@@ -53712,10 +54195,10 @@ __export(exports_asset_cli, {
   ASSET_USAGE: () => ASSET_USAGE,
   assetMain: () => assetMain
 });
-import { readFile as readFile10, writeFile as writeFile8, stat as stat6, mkdir as mkdir9, rename as rename5 } from "node:fs/promises";
-import { basename, resolve as resolve13, dirname as dirname9, isAbsolute as isAbsolute2 } from "node:path";
+import { readFile as readFile12, writeFile as writeFile8, stat as stat6, mkdir as mkdir9, rename as rename5 } from "node:fs/promises";
+import { basename as basename2, resolve as resolve13, dirname as dirname10, isAbsolute as isAbsolute2 } from "node:path";
 import { randomUUID as randomUUID9 } from "node:crypto";
-import { createHash as createHash18 } from "node:crypto";
+import { createHash as createHash20 } from "node:crypto";
 async function assetMain(argv) {
   const command = argv[0];
   const positional = [];
@@ -53738,7 +54221,7 @@ async function assetMain(argv) {
     "format",
     "profile",
     "target",
-    "compression",
+    "textures",
     "port",
     "render",
     "backdrop",
@@ -53772,6 +54255,10 @@ async function assetMain(argv) {
       flags.json = "true";
       continue;
     }
+    if (arg === "--ktx2" && command === "export") {
+      flags.ktx2 = "true";
+      continue;
+    }
     if (arg === "--restore" || arg === "--rebuild" || arg === "--no-project") {
       flags[arg.slice(2)] = "true";
       continue;
@@ -53802,7 +54289,7 @@ async function assetMain(argv) {
   const fileBytes = async (path) => {
     if ((await stat6(path)).size > ASSET_LIMIT)
       throw new Error("File exceeds 64 MiB");
-    return new Uint8Array(await readFile10(path));
+    return new Uint8Array(await readFile12(path));
   };
   if (command === "collections") {
     if (positional[0] === "add") {
@@ -53818,7 +54305,7 @@ async function assetMain(argv) {
         throw new Error("Collection name already points to another directory");
       roots[name] = resolve13(directory);
       const path = collectionConfigPath();
-      await mkdir9(dirname9(path), { recursive: true });
+      await mkdir9(dirname10(path), { recursive: true });
       const temporary = `${path}.${randomUUID9()}.tmp`;
       await writeFile8(temporary, JSON.stringify(roots, null, 2), { flag: "wx" });
       await rename5(temporary, path);
@@ -53941,36 +54428,75 @@ async function assetMain(argv) {
         throw new Error("Unknown export target");
       if (target !== undefined && profile !== "runtime")
         throw new Error("--target requires --profile runtime");
-      const compression = flags.compression;
-      if (compression !== undefined && compression !== "meshopt" && compression !== "none")
-        throw new Error("--compression must be meshopt or none");
-      if (compression !== undefined && target !== "three")
-        throw new Error("--compression requires --target three");
-      const format = flags.format ?? (profile === "runtime" ? "glb" : "bundle");
-      if (!["bundle", "glb", "source"].includes(format))
+      const textures = flags.textures;
+      if (textures !== undefined && textures !== "manifest" && textures !== "external")
+        throw new Error("Unknown --textures value; use manifest or external");
+      if (textures !== undefined && profile !== "runtime")
+        throw new Error("--textures requires --profile runtime");
+      if (textures === "external" && target !== "three")
+        throw new Error("--textures external requires --target three");
+      if (flags.ktx2 && (target !== "three" || profile !== "runtime"))
+        throw new Error("--ktx2 requires --target three with --profile runtime");
+      const gltfLayout = textures === "external";
+      const format = flags.format ?? (profile === "runtime" ? gltfLayout ? "gltf" : "glb" : "bundle");
+      if (!["bundle", "glb", "source", "gltf"].includes(format))
         throw new Error("Unknown export format");
+      if (format === "gltf" && !gltfLayout)
+        throw new Error("gltf format requires --textures external");
       const written = [];
+      let drawGlb;
+      let ktx2Receipt;
       if (profile === "runtime") {
-        if (format !== "glb")
-          throw new Error("Runtime profile requires GLB format; use editable for source or bundle");
+        if (format !== (gltfLayout ? "gltf" : "glb"))
+          throw new Error(gltfLayout ? "--textures external writes gltf format" : "Runtime profile requires GLB format; use editable for source or bundle");
         const destination = resolve13(flags.out);
-        if (!destination.toLowerCase().endsWith(".glb"))
-          throw new Error("Runtime output must end in .glb");
-        const metadataFileName = `${basename(destination).slice(0, -4)}.kiln-metadata.json`;
+        const extension = gltfLayout ? ".gltf" : ".glb";
+        if (!destination.toLowerCase().endsWith(extension))
+          throw new Error(`Runtime output must end in ${extension}`);
+        const stem = basename2(destination).slice(0, -extension.length);
+        const metadataFileName = `${stem}.kiln-metadata.json`;
         const output = await exportAssetGlb(record, {
           profile,
           metadataFileName,
           ...target ? { target } : {},
-          ...compression ? { compression } : {}
+          ...textures ? { textures } : {},
+          ...gltfLayout ? { gltfFileName: basename2(destination) } : {},
+          ...flags.ktx2 ? { ktx2Encoder: await createKtx2Encoder2() } : {}
         });
         if (output.profile !== "runtime")
           throw new Error("Expected runtime export");
-        const metadataPath = resolve13(dirname9(destination), output.metadata.name);
-        await writeNewDestinationsAtomic([
-          { path: metadataPath, data: output.metadata.bytes },
-          { path: destination, data: output.glb }
-        ]);
-        written.push({ kind: "glb", path: destination, data: output.glb }, { kind: "metadata", path: metadataPath, data: output.metadata.bytes });
+        const metadataPath = resolve13(dirname10(destination), output.metadata.name);
+        drawGlb = output.glb;
+        if (flags.ktx2)
+          ktx2Receipt = JSON.parse(new TextDecoder().decode(output.metadata.bytes)).delivery?.ktx2;
+        if (output.layout === "gltf") {
+          const directory = dirname10(destination);
+          const files = output.textures.map(({ uri, bytes }) => ({
+            path: resolve13(directory, ...uri.split("/")),
+            data: bytes
+          }));
+          const buffers = output.buffers.map(({ uri, bytes }) => ({
+            path: resolve13(directory, uri),
+            data: bytes
+          }));
+          const published = await writeExternalTextureExport(files, [
+            { path: metadataPath, data: output.metadata.bytes },
+            ...buffers,
+            { path: destination, data: output.gltf.bytes }
+          ]);
+          written.push({ kind: "gltf", path: destination, data: output.gltf.bytes }, ...buffers.map(({ path, data }) => ({ kind: "bin", path, data })), { kind: "metadata", path: metadataPath, data: output.metadata.bytes }, ...files.map(({ path, data }, index) => ({
+            kind: "texture",
+            path,
+            data,
+            reused: published[index].reused
+          })));
+        } else {
+          await writeNewDestinationsAtomic([
+            { path: metadataPath, data: output.metadata.bytes },
+            { path: destination, data: output.glb }
+          ]);
+          written.push({ kind: "glb", path: destination, data: output.glb }, { kind: "metadata", path: metadataPath, data: output.metadata.bytes });
+        }
       } else {
         const bytes = format === "bundle" ? await library.exportBundle([record]) : record.files[format === "glb" ? "asset.glb" : "source.kiln.js"];
         if (!bytes)
@@ -53980,7 +54506,7 @@ async function assetMain(argv) {
         written.push({ kind: format, path: destination, data: bytes });
       }
       if (!flags.json)
-        console.log(written.map(({ path }) => `Saved ${path}`).join(`
+        console.log(written.map(({ path, reused }) => `${reused ? "Reused" : "Saved"} ${path}`).join(`
 `));
       else
         console.log(JSON.stringify({
@@ -53990,16 +54516,17 @@ async function assetMain(argv) {
           revisionId,
           profile,
           ...target ? { target } : {},
-          ...compression ? { compression } : {},
           format,
+          ...ktx2Receipt ? { ktx2: ktx2Receipt } : {},
           ...format !== "source" ? {
-            drawDiagnostics: await inspectDrawDiagnostics(written.find(({ kind }) => kind === "glb")?.data ?? record.files["asset.glb"])
+            drawDiagnostics: await inspectDrawDiagnostics(drawGlb ?? written.find(({ kind }) => kind === "glb")?.data ?? record.files["asset.glb"])
           } : {},
-          files: written.map(({ kind, path, data }) => ({
+          files: written.map(({ kind, path, data, reused }) => ({
             kind,
             path,
             bytes: data.byteLength,
-            sha256: `sha256:${createHash18("sha256").update(data).digest("hex")}`
+            sha256: `sha256:${createHash20("sha256").update(data).digest("hex")}`,
+            ...reused === undefined ? {} : { reused }
           }))
         }, null, 2));
     }
@@ -54008,7 +54535,7 @@ async function assetMain(argv) {
     if (!file)
       throw new Error("import requires a ZIP or GLB file");
     const bytes = await fileBytes(file);
-    const assets = file.toLowerCase().endsWith(".glb") ? [await library.save(collection, { name: flags.name ?? basename(file, ".glb"), glb: bytes })] : await library.import(collection, decodeAssetBundle(bytes));
+    const assets = file.toLowerCase().endsWith(".glb") ? [await library.save(collection, { name: flags.name ?? basename2(file, ".glb"), glb: bytes })] : await library.import(collection, decodeAssetBundle(bytes));
     const directory = library.directory(collection);
     console.log(JSON.stringify({
       collection,
@@ -54027,7 +54554,7 @@ async function assetMain(argv) {
         await Promise.resolve().then(() => init_assets_node());
         target = new FileAssetLibrary({ project: resolve13(file) });
       } else
-        standalone = { name: basename(file), bytes: await fileBytes(file) };
+        standalone = { name: basename2(file), bytes: await fileBytes(file) };
     }
     const port = flags.port === undefined ? 4318 : Number(flags.port);
     if (!Number.isInteger(port) || port < 0 || port > 65535)
@@ -54044,8 +54571,8 @@ async function assetMain(argv) {
       const canonical = await realpath(path);
       if (canonical === currentRoot)
         continue;
-      const id = `w_${createHash18("sha256").update(canonical).digest("hex").slice(0, 16)}`;
-      reviewSources[id] = { label: basename(canonical), review: new FileLiveReview(canonical) };
+      const id = `w_${createHash20("sha256").update(canonical).digest("hex").slice(0, 16)}`;
+      reviewSources[id] = { label: basename2(canonical), review: new FileLiveReview(canonical) };
     }
     const viewer = await startAssetViewer(target, {
       port,
@@ -54112,9 +54639,12 @@ ${SAVE_LINES}
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
        [--target three]   runtime only: meshopt + quantization, repeatInstances GPU
-                          instancing, KTX2 skipped (no encoder); sidecar states node scales
-       [--compression meshopt|none]   with --target three: none writes plain buffers
-                          for loaders without a Meshopt decoder (default meshopt)
+                          instancing; sidecar states node scales; KTX2 skipped unless --ktx2
+       [--ktx2]   with --target three: KTX2 through the optional ktx2-encoder@0.6.0 peer
+                          (npm install ktx2-encoder@0.6.0), ETC1S colour, UASTC data maps
+       [--textures manifest]   runtime only: the sidecar names each image's exact bytes
+       [--textures external]   with --target three and --out x.gltf: x.gltf, x.bin and
+                          shared textures/<sha256>.<ext> files that are never replaced
        [--json]   receipt naming each file with its bytes and sha256
        export never replaces an existing file: an export hands off one exact
        saved revision, while render --out replaces its own working output
@@ -54735,7 +55265,7 @@ __export(exports_animation_cli, {
   ANIMATION_USAGE: () => ANIMATION_USAGE,
   animationMain: () => animationMain
 });
-import { open as open6, readFile as readFile11 } from "node:fs/promises";
+import { open as open6, readFile as readFile13 } from "node:fs/promises";
 import { extname, resolve as resolve15 } from "node:path";
 async function readReviewJson(path, option) {
   const file = await open6(resolve15(path), "r");
@@ -54859,7 +55389,7 @@ async function animationMain(argv) {
       ...await buildRenderPort(args.render, args.renderPort),
       requirements
     });
-    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile11(resolve15(args.source), "utf8") };
+    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile13(resolve15(args.source), "utf8") };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === "kiln_screenshot_animation");
     let output;
     try {
@@ -55081,7 +55611,7 @@ __export(exports_inspect_cli, {
   INSPECT_USAGE: () => INSPECT_USAGE,
   inspectMain: () => inspectMain
 });
-import { open as open8, readFile as readFile12 } from "node:fs/promises";
+import { open as open8, readFile as readFile14 } from "node:fs/promises";
 import { resolve as resolve17 } from "node:path";
 async function readControls(path) {
   const file = await open8(resolve17(path), "r");
@@ -55178,7 +55708,7 @@ async function inspectMain(argv) {
       ...controls.image === false ? {} : await buildRenderPort(args.render, args.renderPort),
       requirements
     });
-    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile12(resolve17(args.source), "utf8") };
+    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile14(resolve17(args.source), "utf8") };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === "kiln_inspect");
     let output;
     try {
@@ -55662,7 +56192,7 @@ __export(exports_migration_rebuild, {
   migrationRebuildMain: () => migrationRebuildMain
 });
 import { open as open9 } from "node:fs/promises";
-import { createHash as createHash19 } from "node:crypto";
+import { createHash as createHash21 } from "node:crypto";
 import { resolve as resolve18 } from "node:path";
 function parse6(argv) {
   if (argv.length === 1 && ["--help", "-h"].includes(argv[0]))
@@ -55752,7 +56282,7 @@ async function rebuildLegacyAsset(context, input) {
     authority,
     original: structuredClone(record.manifest),
     ...conversion.recoveredIntent ? { recoveredIntent: conversion.recoveredIntent } : {},
-    originalManifestCanonicalSha256: `sha256:${createHash19("sha256").update(canonical6(record.manifest)).digest("hex")}`,
+    originalManifestCanonicalSha256: `sha256:${createHash21("sha256").update(canonical6(record.manifest)).digest("hex")}`,
     proposedRequirements: conversion.proposal.requirements,
     policyChanges: changes,
     ruleDispositions: resolved.filter((issue) => issue.code === "RULE_MIGRATION_UNQUALIFIED").map((issue) => ({
@@ -55762,7 +56292,7 @@ async function rebuildLegacyAsset(context, input) {
     })),
     retainedBuildOptions: conversion.proposal.retainedBuildOptions,
     sourceChanged: code !== originalCode,
-    rebuiltSourceSha256: `sha256:${createHash19("sha256").update(code, "utf8").digest("hex")}`
+    rebuiltSourceSha256: `sha256:${createHash21("sha256").update(code, "utf8").digest("hex")}`
   };
   const draft = await buildProgramAssetDraft(code, currentContext, record.manifest.preview?.backdrop);
   const asset = await library.save(input.collection, {
@@ -55875,7 +56405,7 @@ __export(exports_migration_cli, {
 });
 import { open as open10 } from "node:fs/promises";
 import { resolve as resolve19 } from "node:path";
-import { createHash as createHash20 } from "node:crypto";
+import { createHash as createHash22 } from "node:crypto";
 function parse7(argv) {
   if (argv.length === 1 && ["--help", "-h"].includes(argv[0]))
     return { help: true };
@@ -55944,7 +56474,7 @@ async function migrationMain(argv) {
       input: {
         path,
         bytes: bytes.length,
-        sha256: `sha256:${createHash20("sha256").update(bytes).digest("hex")}`
+        sha256: `sha256:${createHash22("sha256").update(bytes).digest("hex")}`
       },
       conversion
     };
@@ -55979,7 +56509,7 @@ var init_migration_cli = __esm(() => {
 
 // src/cli.ts
 init_cli_output();
-import { open as open11, readFile as readFile13 } from "node:fs/promises";
+import { open as open11, readFile as readFile15 } from "node:fs/promises";
 import { resolve as resolvePath, extname as extname2 } from "node:path";
 
 // src/direct-entry.ts
@@ -56434,7 +56964,7 @@ async function cmdRender(args) {
   const receipt = { files: [] };
   let context;
   try {
-    const code = file.startsWith("sha256:") || programRefPattern.test(file) ? await localProgramStore().get(file) : await readFile13(resolvePath(file), "utf8");
+    const code = file.startsWith("sha256:") || programRefPattern.test(file) ? await localProgramStore().get(file) : await readFile15(resolvePath(file), "utf8");
     context = await createPackagedLocalToolContext({
       ...await buildRenderPort(args.render, args.renderPort),
       requirements: args.requirements
@@ -56605,10 +57135,10 @@ async function cmdSource(args) {
     if (isRef)
       process.stdout.write(await store.get(input));
     else
-      console.log(await retainProgram(store, await readFile13(resolvePath(input), "utf8")));
+      console.log(await retainProgram(store, await readFile15(resolvePath(input), "utf8")));
     return 0;
   }
-  const programRef = isRef ? input : await retainProgram(store, await readFile13(resolvePath(input), "utf8"));
+  const programRef = isRef ? input : await retainProgram(store, await readFile15(resolvePath(input), "utf8"));
   const offset = integerOption("--offset", args.offset);
   const limit = integerOption("--limit", args.limit);
   const result = await createKilnSourceDef(store).run({

@@ -38063,31 +38063,62 @@ async function encodeKtx2(doc, encoder, sources) {
       textures: textures.length,
       reason: "No KTX2 encoder was supplied; textures stay PNG or JPEG."
     };
-  const srgb = new Set;
+  const slots = new Map;
+  const use = (texture, slot) => {
+    if (texture)
+      slots.set(texture, (slots.get(texture) ?? new Set).add(slot));
+  };
   for (const material of doc.getRoot().listMaterials()) {
-    for (const texture of [material.getBaseColorTexture(), material.getEmissiveTexture()])
-      if (texture)
-        srgb.add(texture);
+    use(material.getBaseColorTexture(), "baseColor");
+    use(material.getEmissiveTexture(), "emissive");
+    use(material.getNormalTexture(), "normal");
+    use(material.getMetallicRoughnessTexture(), "metallicRoughness");
+    use(material.getOcclusionTexture(), "occlusion");
   }
+  const order = [
+    "baseColor",
+    "emissive",
+    "normal",
+    "metallicRoughness",
+    "occlusion"
+  ];
   for (const texture of textures) {
+    const used = slots.get(texture) ?? new Set;
+    const srgb = used.has("baseColor") || used.has("emissive");
+    const other = texture.listParents().some((parent) => parent.propertyType !== PropertyType5.ROOT && !isCoreMaterialUse(parent));
+    const linear = [...used].some((slot) => slot !== "baseColor" && slot !== "emissive") || other;
+    if (srgb && linear)
+      throw new Error(`Texture ${JSON.stringify(texture.getName())} is used by both sRGB and linear material slots; one KTX2 encoding cannot serve both. Use separate images.`);
     const original = texture.getImage();
     const image = await encoder({
       image: original,
       mimeType: texture.getMimeType(),
       name: texture.getName(),
-      colorSpace: srgb.has(texture) ? "srgb" : "linear"
+      colorSpace: srgb ? "srgb" : "linear",
+      slot: order.find((slot) => used.has(slot)) ?? "other"
     });
-    if (!(image instanceof Uint8Array) || image.byteLength < 12)
-      throw new Error("ktx2Encoder must return KTX2 bytes");
+    if (!(image instanceof Uint8Array) || !isKtx2(image))
+      throw new Error("ktx2Encoder must return KTX2 bytes starting with the KTX2 identifier");
     sources.set(texture, `sha256:${await sha256Hex3(original)}`);
     texture.setImage(image).setMimeType("image/ktx2");
     const uri = texture.getURI();
     if (uri)
       texture.setURI(uri.replace(/\.(png|jpe?g)$/i, ".ktx2"));
   }
-  if (textures.length)
+  if (textures.length) {
     doc.createExtension(KHRTextureBasisu2).setRequired(true);
-  return { status: "encoded", textures: textures.length };
+    await Promise.resolve().then(() => init_atlas_provenance());
+    await refreshAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc);
+  }
+  return {
+    status: "encoded",
+    textures: textures.length,
+    ...encoder.identity ? { encoder: structuredClone(encoder.identity) } : {}
+  };
+}
+function isCoreMaterialUse(parent) {
+  return parent.propertyType === PropertyType5.MATERIAL;
 }
 function decomposeDelta(before, after) {
   const delta = new THREE55.Matrix4().fromArray(before).invert().multiply(new THREE55.Matrix4().fromArray(after));

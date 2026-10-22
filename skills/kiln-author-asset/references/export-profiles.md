@@ -109,6 +109,13 @@ bytes: exports into one folder share them, an identical existing file is reused 
 true` in the receipt), a different one stops the export, and nothing ever replaces or
 removes a texture. Deliver the `.gltf`, `.bin`, sidecar and `textures/` together.
 
+`--ktx2` (with `--target three`) encodes textures to KTX2 only when the optional peer is
+installed (`npm install ktx2-encoder@0.6.0`); without it the export fails and names that
+command. Colour maps use ETC1S, normal and data maps UASTC, and an image shared by a
+colour and a data slot is refused. The sidecar's `delivery.ktx2.encoder` and the receipt
+record the encoder version and settings. The consumer then needs `KTX2Loader` as well as
+the Meshopt decoder. Use it only when the destination asks for KTX2.
+
 Runtime requires GLB format and an output ending in `.glb`, except `--textures external`,
 which writes `.gltf` (see runtime textures). Bundle/source formats
 use `editable`. Use a portable filename stem containing ASCII letters, digits,

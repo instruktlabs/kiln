@@ -11,6 +11,8 @@ import {
 import type { MaterialManifest } from './material-library';
 import type {
   RuntimeThreeDeliveryV1,
+  RuntimeThreeKtx2EncoderIdentityV1,
+  RuntimeThreeKtx2EncoderV1,
   RuntimeThreeOptionsV1,
   RuntimeThreeResult,
 } from './runtime-three';
@@ -22,7 +24,14 @@ import {
   type RuntimeTextureMaterialMapV1,
 } from './runtime-textures';
 
-export type { RuntimeThreeDeliveryV1, RuntimeThreeOptionsV1 } from './runtime-three';
+export type {
+  RuntimeThreeDeliveryV1,
+  RuntimeThreeKtx2EncoderIdentityV1,
+  RuntimeThreeKtx2EncoderV1,
+  RuntimeThreeKtx2InputV1,
+  RuntimeThreeKtx2SlotV1,
+  RuntimeThreeOptionsV1,
+} from './runtime-three';
 export type { RuntimeTextureManifestEntryV1 } from './runtime-textures';
 export type AssetExportProfile = 'editable' | 'runtime';
 /**
@@ -193,6 +202,18 @@ export async function deliverThreeRuntimeGlb(
 ): Promise<{ glb: Uint8Array; delivery: RuntimeThreeDeliveryV1 }> {
   const { glb: derived, delivery } = await deriveThree(glb, options);
   return { glb: derived, delivery };
+}
+/**
+ * A `ktx2Encoder` over the optional `ktx2-encoder@0.6.0` peer, which the caller installs:
+ * ETC1S for base colour and emissive, UASTC for normal and other linear maps. Its identity
+ * (name, version, Basis WebAssembly hash, settings) lands in `delivery.ktx2.encoder`. Loaded
+ * lazily; a missing peer fails with the install command.
+ */
+export async function createKtx2Encoder(): Promise<
+  RuntimeThreeKtx2EncoderV1 & { identity: RuntimeThreeKtx2EncoderIdentityV1 }
+> {
+  const { createKtx2Encoder: create } = await import('./ktx2-basis');
+  return create();
 }
 async function deriveThree(
   glb: Uint8Array,

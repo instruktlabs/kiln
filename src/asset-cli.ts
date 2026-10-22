@@ -9,7 +9,7 @@ import { localProgramStore } from './program-store-node';
 import { programRefPattern, retainProgram } from './program-store';
 import { createKilnProgramToolRegistry, newestRevision } from './tools/registry';
 import { writeExternalTextureExport, writeNewDestinationsAtomic } from './cli-output';
-import { exportAssetGlb } from './asset-export';
+import { createKtx2Encoder, exportAssetGlb } from './asset-export';
 import { inspectDrawDiagnostics } from './draw-diagnostics';
 import { createPackagedLocalToolContext } from './local-runtime';
 import { buildRenderPort, resolveRenderMode } from './cli-render-mode';
@@ -52,9 +52,11 @@ ${SAVE_LINES}
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
        [--target three]   runtime only: meshopt + quantization, repeatInstances GPU
-                          instancing, KTX2 skipped (no encoder); sidecar states node scales
+                          instancing; sidecar states node scales; KTX2 skipped unless --ktx2
        [--compression meshopt|none]   with --target three: none writes plain buffers
                           for loaders without a Meshopt decoder (default meshopt)
+       [--ktx2]   with --target three: KTX2 through the optional ktx2-encoder@0.6.0 peer
+                          (npm install ktx2-encoder@0.6.0), ETC1S colour, UASTC data maps
        [--textures manifest]   runtime only: the sidecar names each image's exact bytes
        [--textures external]   with --target three and --out x.gltf: x.gltf, x.bin and
                           shared textures/<sha256>.<ext> files that are never replaced
@@ -130,6 +132,10 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     // The CLI's --json rule (cli-json.ts) leaves the switch only on export's receipt.
     if (arg === '--json' && command === 'export') {
       flags.json = 'true';
+      continue;
+    }
+    if (arg === '--ktx2' && command === 'export') {
+      flags.ktx2 = 'true';
       continue;
     }
     if (arg === '--restore' || arg === '--rebuild' || arg === '--no-project') {
@@ -398,6 +404,8 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
         throw new Error('--textures requires --profile runtime');
       if (textures === 'external' && target !== 'three')
         throw new Error('--textures external requires --target three');
+      if (flags.ktx2 && (target !== 'three' || profile !== 'runtime'))
+        throw new Error('--ktx2 requires --target three with --profile runtime');
       const gltfLayout = textures === 'external';
       const format =
         flags.format ?? (profile === 'runtime' ? (gltfLayout ? 'gltf' : 'glb') : 'bundle');
@@ -407,6 +415,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
         throw new Error('gltf format requires --textures external');
       const written: { kind: string; path: string; data: Uint8Array; reused?: boolean }[] = [];
       let drawGlb: Uint8Array | undefined;
+      let ktx2Receipt: unknown;
       if (profile === 'runtime') {
         if (format !== (gltfLayout ? 'gltf' : 'glb'))
           throw new Error(
@@ -427,10 +436,13 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
           ...(compression ? { compression } : {}),
           ...(textures ? { textures } : {}),
           ...(gltfLayout ? { gltfFileName: basename(destination) } : {}),
+          ...(flags.ktx2 ? { ktx2Encoder: await createKtx2Encoder() } : {}),
         });
         if (output.profile !== 'runtime') throw new Error('Expected runtime export');
         const metadataPath = resolve(dirname(destination), output.metadata.name);
         drawGlb = output.glb;
+        if (flags.ktx2)
+          ktx2Receipt = JSON.parse(new TextDecoder().decode(output.metadata.bytes)).delivery?.ktx2;
         if (output.layout === 'gltf') {
           const directory = dirname(destination);
           const files = output.textures.map(({ uri, bytes }) => ({
@@ -493,6 +505,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
               ...(target ? { target } : {}),
               ...(compression ? { compression } : {}),
               format,
+              ...(ktx2Receipt ? { ktx2: ktx2Receipt } : {}),
               ...(format !== 'source'
                 ? {
                     drawDiagnostics: await inspectDrawDiagnostics(
