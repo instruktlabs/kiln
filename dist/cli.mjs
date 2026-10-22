@@ -48458,6 +48458,75 @@ function createMaterialPresetDraftAny(presetId, raw) {
     roughnessLow = 220;
     roughnessHigh = 250;
     strength = 2.5;
+  } else if (presetId === "lime-plaster") {
+    color = [noise(14275267, 15657437, 4), noise(12103323, 16052454, 32, 0.25)];
+    height = [noise(7368816, 9474192, 4), noise(5263440, 11579568, 32, 0.3)];
+    roughnessLow = 205;
+    roughnessHigh = 240;
+    strength = 1.5;
+  } else if (presetId === "oak") {
+    color = [
+      noise(9069110, 12094807, 4),
+      stripes(8017200, 12620896, 56, 0, 0.35),
+      noise(6177062, 10976586, 32, 0.15)
+    ];
+    height = [noise(6710886, 10066329, 4), stripes(5921370, 11053224, 56, 0, 0.35)];
+    roughnessLow = 140;
+    roughnessHigh = 200;
+    strength = 1.8;
+  } else if (presetId === "linen") {
+    color = [
+      noise(13221544, 14537921, 8),
+      stripes(12102804, 14998731, 48, 0, 0.25),
+      stripes(12102804, 14998731, 48, 90, 0.25),
+      noise(11050116, 15788506, 64, 0.15)
+    ];
+    height = [
+      noise(6316128, 10066329, 8),
+      stripes(4210752, 12632256, 48, 0, 0.35),
+      stripes(4210752, 12632256, 48, 90, 0.35)
+    ];
+    roughnessLow = 200;
+    roughnessHigh = 235;
+    strength = 1;
+  } else if (presetId === "jute" || presetId === "wicker") {
+    const jute = presetId === "jute";
+    const count = jute ? 16 : 24;
+    color = jute ? [
+      noise(10255951, 12558184, 8),
+      stripes(8217144, 13150323, count, 0, 0.4),
+      stripes(8217144, 13150323, count, 90, 0.4)
+    ] : [
+      stripes(11109456, 14202492, count, 0),
+      stripes(9333308, 13609324, count, 90, 0.5),
+      noise(7295792, 12819810, 16, 0.2)
+    ];
+    height = [
+      stripes(4210752, 12632256, count, 0),
+      stripes(4210752, 12632256, count, 90, 0.5),
+      noise(6316128, 10526880, 16, jute ? 0.35 : 0.15)
+    ];
+    roughnessLow = jute ? 225 : 170;
+    roughnessHigh = jute ? 250 : 215;
+    strength = 2.5;
+  } else if (presetId === "basalt") {
+    color = [noise(3026737, 4868941, 8), noise(1908256, 6053216, 32, 0.3)];
+    height = [noise(6316128, 10526880, 8), noise(4210752, 12632256, 32, 0.4)];
+    roughnessLow = 160;
+    roughnessHigh = 220;
+    strength = 2.5;
+  } else if (presetId === "terracotta") {
+    color = [noise(10902074, 12743501, 8), noise(9062960, 14260851, 32, 0.2)];
+    height = [noise(5263440, 11579568, 8), noise(4210752, 12632256, 32, 0.35)];
+    roughnessLow = 190;
+    roughnessHigh = 235;
+    strength = 2;
+  } else if (presetId === "brushed-brass") {
+    color = [noise(11570508, 13215842, 4), stripes(10518338, 13939822, 64, 0, 0.12)];
+    height = [noise(7368816, 9474192, 8), stripes(6710886, 10066329, 64, 0, 0.3)];
+    roughnessLow = 70;
+    roughnessHigh = 120;
+    strength = 1;
   } else {
     color = [noise(5061676, 8942420, 4), noise(3418656, 10850155, 32, 0.25)];
     height = [noise(5592405, 11184810, 8), noise(2236962, 14540253, 32, 0.3)];
@@ -48679,6 +48748,62 @@ var init_material_presets = __esm(() => {
       family: "fiber",
       physicalSizeMeters: { width: 1, height: 1 },
       description: "Vertical straw strands in horizontal courses for roofs and shelters."
+    },
+    {
+      id: "lime-plaster",
+      name: "Lime plaster",
+      family: "architecture",
+      physicalSizeMeters: { width: 2, height: 2 },
+      description: "Soft off-white lime render with trowel clouding and fine sand relief."
+    },
+    {
+      id: "oak",
+      name: "Honey oak",
+      family: "wood",
+      physicalSizeMeters: { width: 1, height: 1 },
+      description: "Tight straight grain with open pores for furniture and floors; no knots or rays."
+    },
+    {
+      id: "linen",
+      name: "Natural linen",
+      family: "fabric",
+      physicalSizeMeters: { width: 0.5, height: 0.5 },
+      description: "Fine flax weave with occasional slubs; matte dielectric, no drape or sheen."
+    },
+    {
+      id: "jute",
+      name: "Coarse jute weave",
+      family: "fiber",
+      physicalSizeMeters: { width: 0.5, height: 0.5 },
+      description: "Open basket weave of twisted fibre for rugs, sacking and wrapped handles."
+    },
+    {
+      id: "basalt",
+      name: "Dark basalt",
+      family: "rock",
+      physicalSizeMeters: { width: 2, height: 2 },
+      description: "Fine-grained volcanic stone with subtle vesicles and a dry finish."
+    },
+    {
+      id: "terracotta",
+      name: "Unglazed terracotta",
+      family: "architecture",
+      physicalSizeMeters: { width: 1, height: 1 },
+      description: "Warm fired clay with soft mottling for pots, tiles and planters; no glaze."
+    },
+    {
+      id: "wicker",
+      name: "Woven wicker",
+      family: "fiber",
+      physicalSizeMeters: { width: 0.5, height: 0.5 },
+      description: "Rattan strands passing over and under for chairs, baskets and screens."
+    },
+    {
+      id: "brushed-brass",
+      name: "Brushed brass",
+      family: "metal",
+      physicalSizeMeters: { width: 1, height: 1 },
+      description: "Warm yellow brass with fine directional brushing and a fully metallic channel."
     }
   ];
   RECORD_V2_PRESETS = new Set(["palm-frond"]);

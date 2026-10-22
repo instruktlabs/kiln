@@ -82,9 +82,20 @@ const NATURAL = [
   ['driftwood', 'wood'],
   ['thatch', 'fiber'],
 ] as const;
+// The second set (#221): interior and craft surfaces from the Cove pass.
+const SECOND = [
+  ['lime-plaster', 'architecture'],
+  ['oak', 'wood'],
+  ['linen', 'fabric'],
+  ['jute', 'fiber'],
+  ['basalt', 'rock'],
+  ['terracotta', 'architecture'],
+  ['wicker', 'fiber'],
+  ['brushed-brass', 'metal'],
+] as const;
 
-test('natural presets follow the three-map preset contract and are deterministic per seed', async () => {
-  for (const [id, family] of NATURAL) {
+test('natural and second-set presets follow the three-map contract and are deterministic per seed', async () => {
+  for (const [id, family] of [...NATURAL, ...SECOND]) {
     const summary = listMaterialPresets().find((item) => item.id === id);
     expect(summary).toMatchObject({ family, tags: [family, 'procedural'] });
     const record = await presetRecord(id);
@@ -134,6 +145,21 @@ test('wet limestone darkens and smooths the dry stone while keeping its relief',
     0.7 * (await mean(dry.files['metallicRoughness.png']!, 1)),
   );
   expect(wet.files['normal.png']).toEqual(dry.files['normal.png']);
+});
+
+test('brushed brass is a warm, fully metallic surface', async () => {
+  const record = await presetRecord('brushed-brass');
+  const raw = async (name: string) => sharp(record.files[name]).raw().toBuffer();
+  const color = await raw('baseColor.png');
+  let red = 0,
+    blue = 0;
+  for (let i = 0; i < color.length; i += 4) {
+    red += color[i]!;
+    blue += color[i + 2]!;
+  }
+  expect(red).toBeGreaterThan(1.5 * blue);
+  const packed = await raw('metallicRoughness.png');
+  for (let i = 2; i < packed.length; i += 4) expect(packed[i]).toBe(255);
 });
 
 test('the docs preset table matches the shipped catalog', () => {

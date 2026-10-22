@@ -61,6 +61,11 @@ does not publish a package.
   `schemaVersion:2` record; `createMaterialPresetDraftAny` returns any preset's draft, and
   preset summaries report `recordSchemaVersion`. The docs list the presets as a table that a
   test keeps in step with the catalog (#210).
+- Add a second set of material presets ([#221](https://github.com/instruktlabs/kiln/issues/221)).
+  `lime-plaster`, `oak`, `linen`, `jute`, `basalt`, `terracotta`, `wicker` and `brushed-brass`
+  follow the #210 contract: base colour, normal derived from height and packed metallic/roughness,
+  an explicit seed and licence, a stated repeat scale and a family tag. They are synthetic
+  starting points, not scans; the docs table and its test list them.
 
 ## 1.3.1 (2026-10-17)
 

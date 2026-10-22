@@ -92,6 +92,62 @@ const catalog = [
     physicalSizeMeters: { width: 1, height: 1 },
     description: 'Vertical straw strands in horizontal courses for roofs and shelters.',
   },
+  {
+    id: 'lime-plaster',
+    name: 'Lime plaster',
+    family: 'architecture',
+    physicalSizeMeters: { width: 2, height: 2 },
+    description: 'Soft off-white lime render with trowel clouding and fine sand relief.',
+  },
+  {
+    id: 'oak',
+    name: 'Honey oak',
+    family: 'wood',
+    physicalSizeMeters: { width: 1, height: 1 },
+    description: 'Tight straight grain with open pores for furniture and floors; no knots or rays.',
+  },
+  {
+    id: 'linen',
+    name: 'Natural linen',
+    family: 'fabric',
+    physicalSizeMeters: { width: 0.5, height: 0.5 },
+    description: 'Fine flax weave with occasional slubs; matte dielectric, no drape or sheen.',
+  },
+  {
+    id: 'jute',
+    name: 'Coarse jute weave',
+    family: 'fiber',
+    physicalSizeMeters: { width: 0.5, height: 0.5 },
+    description: 'Open basket weave of twisted fibre for rugs, sacking and wrapped handles.',
+  },
+  {
+    id: 'basalt',
+    name: 'Dark basalt',
+    family: 'rock',
+    physicalSizeMeters: { width: 2, height: 2 },
+    description: 'Fine-grained volcanic stone with subtle vesicles and a dry finish.',
+  },
+  {
+    id: 'terracotta',
+    name: 'Unglazed terracotta',
+    family: 'architecture',
+    physicalSizeMeters: { width: 1, height: 1 },
+    description: 'Warm fired clay with soft mottling for pots, tiles and planters; no glaze.',
+  },
+  {
+    id: 'wicker',
+    name: 'Woven wicker',
+    family: 'fiber',
+    physicalSizeMeters: { width: 0.5, height: 0.5 },
+    description: 'Rattan strands passing over and under for chairs, baskets and screens.',
+  },
+  {
+    id: 'brushed-brass',
+    name: 'Brushed brass',
+    family: 'metal',
+    physicalSizeMeters: { width: 1, height: 1 },
+    description: 'Warm yellow brass with fine directional brushing and a fully metallic channel.',
+  },
 ] as const;
 /** Presets whose output needs a schemaVersion 2 record (here, a V3 RGBA cutout). */
 const RECORD_V2_PRESETS: ReadonlySet<string> = new Set(['palm-frond']);
@@ -252,6 +308,78 @@ export function createMaterialPresetDraftAny(
     roughnessLow = 220;
     roughnessHigh = 250;
     strength = 2.5;
+  } else if (presetId === 'lime-plaster') {
+    color = [noise(0xd9d2c3, 0xeee9dd, 4), noise(0xb8ae9b, 0xf4f0e6, 32, 0.25)];
+    height = [noise(0x707070, 0x909090, 4), noise(0x505050, 0xb0b0b0, 32, 0.3)];
+    roughnessLow = 205;
+    roughnessHigh = 240;
+    strength = 1.5;
+  } else if (presetId === 'oak') {
+    color = [
+      noise(0x8a6236, 0xb88d57, 4),
+      stripes(0x7a5530, 0xc09460, 56, 0, 0.35),
+      noise(0x5e4126, 0xa77d4a, 32, 0.15),
+    ];
+    height = [noise(0x666666, 0x999999, 4), stripes(0x5a5a5a, 0xa8a8a8, 56, 0, 0.35)];
+    roughnessLow = 140;
+    roughnessHigh = 200;
+    strength = 1.8;
+  } else if (presetId === 'linen') {
+    color = [
+      noise(0xc9bea8, 0xddd4c1, 8),
+      stripes(0xb8ac94, 0xe4dccb, 48, 0, 0.25),
+      stripes(0xb8ac94, 0xe4dccb, 48, 90, 0.25),
+      noise(0xa89c84, 0xf0e9da, 64, 0.15),
+    ];
+    height = [
+      noise(0x606060, 0x999999, 8),
+      stripes(0x404040, 0xc0c0c0, 48, 0, 0.35),
+      stripes(0x404040, 0xc0c0c0, 48, 90, 0.35),
+    ];
+    roughnessLow = 200;
+    roughnessHigh = 235;
+    strength = 1;
+  } else if (presetId === 'jute' || presetId === 'wicker') {
+    // Basket weaves: few thick strands crossing, jute rough and fibrous, wicker smoother.
+    const jute = presetId === 'jute';
+    const count = jute ? 16 : 24;
+    color = jute
+      ? [
+          noise(0x9c7e4f, 0xbf9f68, 8),
+          stripes(0x7d6238, 0xc8a873, count, 0, 0.4),
+          stripes(0x7d6238, 0xc8a873, count, 90, 0.4),
+        ]
+      : [
+          stripes(0xa98450, 0xd8b67c, count, 0),
+          stripes(0x8e6a3c, 0xcfa96c, count, 90, 0.5),
+          noise(0x6f5330, 0xc39d62, 16, 0.2),
+        ];
+    height = [
+      stripes(0x404040, 0xc0c0c0, count, 0),
+      stripes(0x404040, 0xc0c0c0, count, 90, 0.5),
+      noise(0x606060, 0xa0a0a0, 16, jute ? 0.35 : 0.15),
+    ];
+    roughnessLow = jute ? 225 : 170;
+    roughnessHigh = jute ? 250 : 215;
+    strength = 2.5;
+  } else if (presetId === 'basalt') {
+    color = [noise(0x2e2f31, 0x4a4b4d, 8), noise(0x1d1e20, 0x5c5d60, 32, 0.3)];
+    height = [noise(0x606060, 0xa0a0a0, 8), noise(0x404040, 0xc0c0c0, 32, 0.4)];
+    roughnessLow = 160;
+    roughnessHigh = 220;
+    strength = 2.5;
+  } else if (presetId === 'terracotta') {
+    color = [noise(0xa65a3a, 0xc2734d, 8), noise(0x8a4a30, 0xd99a73, 32, 0.2)];
+    height = [noise(0x505050, 0xb0b0b0, 8), noise(0x404040, 0xc0c0c0, 32, 0.35)];
+    roughnessLow = 190;
+    roughnessHigh = 235;
+    strength = 2;
+  } else if (presetId === 'brushed-brass') {
+    color = [noise(0xb08d4c, 0xc9a862, 4), stripes(0xa07f42, 0xd4b46e, 64, 0, 0.12)];
+    height = [noise(0x707070, 0x909090, 8), stripes(0x666666, 0x999999, 64, 0, 0.3)];
+    roughnessLow = 70;
+    roughnessHigh = 120;
+    strength = 1;
   } else {
     color = [noise(0x4d3c2c, 0x887354, 4), noise(0x342a20, 0xa58f6b, 32, 0.25)];
     height = [noise(0x555555, 0xaaaaaa, 8), noise(0x222222, 0xdddddd, 32, 0.3)];

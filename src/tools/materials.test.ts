@@ -141,7 +141,7 @@ test('material tools discover and instantiate shipped presets without external p
   const catalog = (await tool.run({ action: 'presets', tag: 'wood' })) as {
     presets: { id: string }[];
   };
-  expect(catalog.presets.map((preset) => preset.id)).toEqual(['wood-grain', 'driftwood']);
+  expect(catalog.presets.map((preset) => preset.id)).toEqual(['wood-grain', 'driftwood', 'oak']);
   const input = {
     action: 'create-preset',
     presetId: catalog.presets[0]!.id,

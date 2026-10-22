@@ -23,6 +23,14 @@ synthetic starting points with stated physical repeat scales, not measured scans
 | `palm-frond` | `foliage` | 2 × 2 m | Alpha-tested (MASK), double-sided cutout card, not tileable |
 | `driftwood` | `wood` | 1 × 1 m | Bleached silver-grey grain, deep weathering |
 | `thatch` | `fiber` | 1 × 1 m | Vertical straw strands in horizontal courses |
+| `lime-plaster` | `architecture` | 2 × 2 m | Off-white render with trowel clouding |
+| `oak` | `wood` | 1 × 1 m | Honey oak, tight straight grain; no knots |
+| `linen` | `fabric` | 0.5 × 0.5 m | Fine flax weave with slubs, matte |
+| `jute` | `fiber` | 0.5 × 0.5 m | Coarse open basket weave |
+| `basalt` | `rock` | 2 × 2 m | Dark fine-grained volcanic stone |
+| `terracotta` | `architecture` | 1 × 1 m | Unglazed fired clay with warm mottling |
+| `wicker` | `fiber` | 0.5 × 0.5 m | Rattan strands over and under |
+| `brushed-brass` | `metal` | 1 × 1 m | Warm brass, directional brushing, fully metallic |
 
 `palm-frond` saves a `schemaVersion:2` record: its base color is a V3 RGBA silhouette with
 clamped sampling, so map it once across a card or a `foliageCardGeo` with the frond base at
