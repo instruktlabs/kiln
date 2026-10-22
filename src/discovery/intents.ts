@@ -14,6 +14,16 @@ export const discoveryIntents: Readonly<Record<string, readonly string[]>> = {
     'regular spacing',
     'bench or fence slats',
   ],
+  repeatAlongCurve: [
+    'leaflets along a stem',
+    'palm frond leaflets',
+    'fern frond',
+    'repeat cards along a curve',
+    'leaves along a branch',
+    'one merged primitive per frond',
+  ],
+  repeatInstances: ['many identical leaves instanced', 'instanced repeated parts', 'batch copies'],
+  crossedQuadsGeo: ['grass clump', 'bush or shrub cards', 'cross billboard plant'],
   wallWithOpening: ['wall aperture', 'cut a window', 'doorway opening', 'door or window in a wall'],
   room: ['hollow enclosure', 'walls and floor', 'room with doors and windows'],
   createGableShell: ['enclosed building shell', 'gable house with openings'],
@@ -57,7 +67,7 @@ export const discoveryIntents: Readonly<Record<string, readonly string[]>> = {
   boolIntersect: ['intersection of solids', 'overlapping volume'],
   beamBetween: ['beam between points', 'bar connecting endpoints'],
   autoUnwrap: ['unwrap texture coordinates', 'UV atlas', 'unfold mesh'],
-  foliageCardGeo: ['thin leaf cutout', 'foliage card'],
+  foliageCardGeo: ['thin leaf cutout', 'foliage card', 'single leaflet card', 'fern leaf'],
   foliageMaterial: ['leaf transparency', 'foliage cutout', 'alpha mask'],
 };
 

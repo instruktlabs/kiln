@@ -475,6 +475,17 @@ arrayRadial(namePrefix, source, count, axis?: 'x'|'y'|'z', parent?, center?: [x,
   // hierarchy-preserving assembly replication.
   // e.g. const bolt = createPart('Bolt0', cylinderGeo(0.02,0.02,0.1,6), steel, { position:
   // [1,0,0], parent: root }); arrayRadial('Bolt', bolt, 8, 'y', root);
+repeatAlongCurve(source: BufferGeometry | Mesh, points: [x,y,z][], opts: { count, align?: 'tangent'|'none', up?: [x,y,z], scale?: n | [attach, tip], twist?: deg | [attach, tip], opposite?: false, start?: 0..1, end?: 0..1, merge?: true, along?: false, name?, parent? })
+  // Copies one leaflet, card or stud along a sampled curve, evenly spaced by arc length. Each
+  // copy's local +X follows the tangent and +Y points toward up. merge: true (default) returns
+  // ONE geometry for one primitive per frond, with UVs kept per copy; merge: false returns
+  // shared-geometry nodes like arrayLinear.
+  // NOTE: One merged geometry is one part; name the frond, not each leaflet. opposite: true
+  // adds the second row in the same primitive. Merges are capped at 262,144 vertices.
+  // e.g. const rachis = bezierCurve([[0,0,0],[0.6,0.5,0],[1.4,0.3,0]], 32); const leaflet =
+  // foliageCardGeo({ width: 0.05, height: 0.35, yPivot: 0 }); const frond =
+  // repeatAlongCurve(leaflet, rachis, { count: 40, up: [0,0,1], scale: [1, 0.4], start: 0.1,
+  // opposite: true }); createPart('Frond_0', frond, foliageMaterial(albedo), { parent: root });
 mirror(name, source, axis: 'x'|'y'|'z', parent?)
   // Reflects source across the plane whose normal is \`axis\`. Uses negative scale (winding flip
   // handled by viewers).

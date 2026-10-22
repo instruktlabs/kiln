@@ -7,10 +7,18 @@
 
 import { describe, it, expect } from 'bun:test';
 import * as THREE from 'three';
-import { boxGeo, sphereGeo, cylinderGeo, createPart, gameMaterial } from '../primitives';
+import {
+  boxGeo,
+  sphereGeo,
+  cylinderGeo,
+  createPart,
+  foliageCardGeo,
+  gameMaterial,
+} from '../primitives';
 import {
   arrayLinear,
   arrayRadial,
+  repeatAlongCurve,
   mergeVertices,
   subdivide,
   revolveGeo,
@@ -366,5 +374,162 @@ describe('arrayRadial', () => {
     expect(copies[0]!.position.z).toBeCloseTo(-1, 10);
     expect(copies[1]!.position.x).toBeCloseTo(1, 10);
     expect(copies[1]!.position.z).toBeCloseTo(0, 10);
+  });
+});
+
+describe('repeatAlongCurve', () => {
+  // #211: a palm's ~600 leaflets were built by hand with meshGeo, because no helper
+  // copied one leaflet along a rachis and merged the copies with their UVs kept.
+  const leaflet = () => foliageCardGeo({ width: 0.04, height: 0.3, yPivot: 0 });
+  const rachis: [number, number, number][] = [
+    [0, 0, 0],
+    [1, 0, 0],
+    [2, 0, -1],
+  ];
+
+  it('merges copies into one primitive whose UVs equal the source per copy', () => {
+    const source = leaflet();
+    const merged = repeatAlongCurve(source, rachis, { count: 12 }) as THREE.BufferGeometry;
+    const sourceCount = source.getAttribute('position').count;
+    expect(merged.getAttribute('position').count).toBe(12 * sourceCount);
+    expect(merged.index!.count).toBe(12 * source.index!.count);
+    expect(merged.groups).toEqual([]);
+    const sourceUv = Array.from(source.getAttribute('uv').array);
+    const uv = merged.getAttribute('uv').array;
+    for (let copy = 0; copy < 12; copy++)
+      expect(Array.from(uv.slice(copy * sourceUv.length, (copy + 1) * sourceUv.length))).toEqual(
+        sourceUv,
+      );
+  });
+
+  it('turns each copy so its local +X follows the curve tangent and +Y points up', () => {
+    // Equal segments put the copies at the start, the corner and the end. A thin bar
+    // along local +X and a stub along local +Y show each copy's frame.
+    const path: [number, number, number][] = [
+      [0, 0, 0],
+      [1, 0, 0],
+      [1, 0, -1],
+    ];
+    const bar = boxGeo(0.1, 0.002, 0.002).translate(0.05, 0, 0);
+    const stub = boxGeo(0.002, 0.05, 0.002).translate(0, 0.025, 0);
+    const centroidTip = (geometry: THREE.BufferGeometry, copy: number) => {
+      const merged = repeatAlongCurve(geometry, path, { count: 3 }) as THREE.BufferGeometry;
+      const position = merged.getAttribute('position');
+      const perCopy = geometry.getAttribute('position').count;
+      const sum = new THREE.Vector3();
+      for (let i = copy * perCopy; i < (copy + 1) * perCopy; i++)
+        sum.add(new THREE.Vector3().fromBufferAttribute(position, i));
+      return sum.divideScalar(perCopy);
+    };
+    const bases = [
+      [0, 0, 0],
+      [1, 0, 0],
+      [1, 0, -1],
+    ];
+    // At the corner the outgoing segment's direction is the tangent.
+    const tangents = [
+      [1, 0, 0],
+      [0, 0, -1],
+      [0, 0, -1],
+    ];
+    for (const copy of [0, 1, 2]) {
+      const base = new THREE.Vector3(...(bases[copy] as [number, number, number]));
+      const along = centroidTip(bar, copy).sub(base);
+      const tangent = new THREE.Vector3(...(tangents[copy] as [number, number, number]));
+      expect(along.distanceTo(tangent.clone().multiplyScalar(0.05))).toBeLessThan(1e-6);
+      const up = centroidTip(stub, copy).sub(base);
+      expect(up.distanceTo(new THREE.Vector3(0, 0.025, 0))).toBeLessThan(1e-6);
+    }
+  });
+
+  it('places an opposite row in the same primitive with opposite: true', () => {
+    const stub = boxGeo(0.002, 0.05, 0.002).translate(0, 0.025, 0);
+    const perCopy = stub.getAttribute('position').count;
+    const merged = repeatAlongCurve(stub, [rachis[0]!, rachis[1]!], {
+      count: 2,
+      opposite: true,
+    }) as THREE.BufferGeometry;
+    expect(merged.getAttribute('position').count).toBe(4 * perCopy);
+    const centroidY = (copy: number) => {
+      let y = 0;
+      for (let i = copy * perCopy; i < (copy + 1) * perCopy; i++)
+        y += merged.getAttribute('position').getY(i);
+      return y / perCopy;
+    };
+    // Each position gets its copy, then the opposite copy twisted 180 degrees.
+    expect([0, 1, 2, 3].map((copy) => Math.round(centroidY(copy) * 1000) / 1000)).toEqual([
+      0.025, -0.025, 0.025, -0.025,
+    ]);
+  });
+
+  it('adds an optional _along attribute from attachment (0) to tip (1)', () => {
+    const merged = repeatAlongCurve(leaflet(), rachis, {
+      count: 5,
+      along: true,
+    }) as THREE.BufferGeometry;
+    const along = merged.getAttribute('_along');
+    const perCopy = leaflet().getAttribute('position').count;
+    expect([0, 1, 2, 3, 4].map((copy) => along.getX(copy * perCopy))).toEqual([
+      0, 0.25, 0.5, 0.75, 1,
+    ]);
+  });
+
+  it('tapers scale and twist from attachment to tip', () => {
+    const bar = boxGeo(0.1, 0.01, 0.01).translate(0.05, 0, 0);
+    const merged = repeatAlongCurve(bar, [rachis[0]!, rachis[1]!], {
+      count: 2,
+      scale: [1, 0.5],
+      twist: [0, 180],
+    }) as THREE.BufferGeometry;
+    merged.computeBoundingBox();
+    // The tip copy is half length: the whole span is 1 (spacing) + 0.05 (half bar).
+    expect(merged.boundingBox!.max.x).toBeCloseTo(1.05, 5);
+  });
+
+  it('creates shared-geometry nodes when merge is false', () => {
+    const root = new THREE.Object3D();
+    const source = new THREE.Mesh(leaflet(), gameMaterial(0x3f7a2c));
+    source.name = 'Leaflet';
+    const copies = repeatAlongCurve(source, rachis, {
+      count: 4,
+      merge: false,
+      name: 'Leaflet',
+      parent: root,
+    }) as THREE.Object3D[];
+    expect(copies).toHaveLength(4);
+    expect(copies.map((copy) => copy.name)).toEqual([
+      'Mesh_Leaflet0',
+      'Mesh_Leaflet1',
+      'Mesh_Leaflet2',
+      'Mesh_Leaflet3',
+    ]);
+    for (const copy of copies) {
+      expect((copy as THREE.Mesh).geometry).toBe(source.geometry);
+      expect(copy.parent).toBe(root);
+    }
+  });
+
+  it('refuses an over-budget merge with a bounded diagnostic', () => {
+    const dense = sphereGeo(0.1, 64, 64);
+    expect(() => repeatAlongCurve(dense, rachis, { count: 200 })).toThrow(
+      /repeatAlongCurve would produce \d+ vertices; the limit is 262144/,
+    );
+  });
+
+  it('rejects invalid curves and options', () => {
+    expect(() => repeatAlongCurve(leaflet(), [[0, 0, 0]], { count: 2 })).toThrow(/two points/);
+    expect(() =>
+      repeatAlongCurve(
+        leaflet(),
+        [
+          [0, 0, 0],
+          [0, 0, 0],
+        ],
+        { count: 2 },
+      ),
+    ).toThrow(/length/);
+    expect(() => repeatAlongCurve(leaflet(), rachis, { count: 0 })).toThrow(/count/);
+    expect(() => repeatAlongCurve(leaflet(), rachis, { count: 2, scale: -1 })).toThrow(/scale/);
+    expect(() => repeatAlongCurve(leaflet(), rachis, { count: 2, merge: false })).toThrow(/Mesh/);
   });
 });

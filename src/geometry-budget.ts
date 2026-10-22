@@ -5,6 +5,8 @@ export const GEOMETRY_ALLOCATION_LIMITS = Object.freeze({
   subdivisionAttributeBytes: 128 * 1024 * 1024,
   subdivisionIterations: 10,
   repeatedMeshes: 10_000,
+  // repeatAlongCurve merge: vertices in the one merged geometry it returns.
+  curveRepeatVertices: 262_144,
   primitiveSegments: 4096,
   primitiveGridVertices: 262_144,
   // xatlasjs 0.2 returns Uint16 indices and source-vertex correspondence.

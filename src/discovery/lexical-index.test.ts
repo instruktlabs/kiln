@@ -78,6 +78,28 @@ test('new catalog entries and aliases enter the next index without hand-maintain
   expect((await after.search('quasar frobnicator'))[0]?.id).toBe('operation:novelFixture');
 });
 
+test('foliage wording reaches the repetition and card helpers', async () => {
+  // #211: "palm frond leaflets" returned room and wall assemblies, "fern" returned
+  // nothing and "grass clump" returned glass materials.
+  const run = createDiscoveryService(
+    entries,
+    createLexicalDiscoveryIndex(entries),
+    async () => ({}),
+  );
+  const top = async (query: string) =>
+    (await run({ query })).entries.slice(0, 3).map((entry) => entry.id);
+  for (const query of [
+    'palm frond leaflets',
+    'leaflets along a stem',
+    'fern',
+    'repeat cards along a curve',
+  ])
+    expect(await top(query)).toContain('operation:repeatAlongCurve');
+  expect(await top('palm frond leaflets')).not.toContain('assembly:room');
+  expect(await top('grass clump')).toContain('operation:crossedQuadsGeo');
+  expect(await top('many identical leaves instanced')).toContain('operation:repeatInstances');
+});
+
 test('everyday object words reach the reviewed structure and material entries', async () => {
   // Dogfood run C (C-A2): "bench" found nothing and "cast iron" expanded to cost/caster.
   const run = createDiscoveryService(

@@ -2104,6 +2104,53 @@ define(
   },
 );
 define(
+  'repeatAlongCurve',
+  {
+    axes: "Each copy's local +X follows the curve tangent (the outgoing segment at a sample point); local +Y points toward up, default [0,1,0], made perpendicular to the tangent. twist rotates about the tangent in degrees.",
+    origin: 'Each copy is translated to its arc-length position on the curve.',
+    coordinates:
+      'Points, up and the merged geometry share one local space; no parent transform is applied.',
+    ownership:
+      'merge true returns a new BufferGeometry; merge false creates mesh nodes sharing the source geometry/material.',
+    parameters: [
+      'points: at least two finite [x,y,z] samples (bezierCurve, catmullRomPath) with positive total length.',
+      'count is a safe integer from 1 to 10,000 copies, evenly spaced by arc length from start to end (fractions, default 0 and 1). The source itself is not placed or moved.',
+      'scale and twist are a number or an [attachment, tip] pair interpolated across the copies; scale is positive. twist needs align: tangent.',
+      'opposite true adds a second copy twisted a further 180 degrees at each position (2 × count copies, same _along).',
+      'merge false needs a Mesh source and returns copies named Mesh_<name><i> under parent.',
+    ],
+    topology: [
+      'merge true: one primitive whose vertices and indices are the source repeated count times; copies are not welded.',
+    ],
+    preservation: [
+      'merge true copies every attribute per copy; UVs and other attributes are unchanged, position/normal/tangent are transformed. along: true adds float _along, 0 on the first copy and 1 on the last.',
+      'Material groups and morph targets are not copied; the merged geometry takes one material.',
+    ],
+    cost: 'merge true allocates count × source vertices, at most 262,144 vertices; larger merges fail before allocation.',
+  },
+  {
+    references: ['src/ops.ts', 'src/geometry-budget.ts'],
+    tags: ['repeat', 'curve', 'foliage', 'merge'],
+    aliases: ['leaflets along a stem', 'copies along a path', 'frond leaflets'],
+    intents: [
+      'repeat cards or leaflets along a curve',
+      'merge repeated copies into one primitive with UVs kept',
+    ],
+    limitations: [
+      'Tangents come from the polyline segments; sample curves densely for smooth turns.',
+      'The default legacy GLB converter does not export the _along attribute.',
+      'Merged copies are one part: they are not separately named or addressable.',
+    ],
+    related: [
+      { name: 'bezierCurve', relation: 'prerequisite' },
+      { name: 'catmullRomPath', relation: 'prerequisite' },
+      { name: 'foliageCardGeo', relation: 'companion' },
+      { name: 'repeatInstances', relation: 'alternative' },
+      { name: 'arrayLinear', relation: 'alternative' },
+    ],
+  },
+);
+define(
   'mirror',
   {
     ...reuseFacts,

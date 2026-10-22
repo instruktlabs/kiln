@@ -1002,6 +1002,19 @@ const PRIMITIVES: HelperSpec[] = [
       "const bolt = createPart('Bolt0', cylinderGeo(0.02,0.02,0.1,6), steel, { position: [1,0,0], parent: root });\narrayRadial('Bolt', bolt, 8, 'y', root);",
   },
   {
+    name: 'repeatAlongCurve',
+    signature:
+      "repeatAlongCurve(source: BufferGeometry | Mesh, points: [x,y,z][], opts: { count, align?: 'tangent'|'none', up?: [x,y,z], scale?: n | [attach, tip], twist?: deg | [attach, tip], opposite?: false, start?: 0..1, end?: 0..1, merge?: true, along?: false, name?, parent? })",
+    returns: 'THREE.BufferGeometry (merge: true) or THREE.Object3D[] (merge: false)',
+    category: 'arrays',
+    description:
+      "Copies one leaflet, card or stud along a sampled curve, evenly spaced by arc length. Each copy's local +X follows the tangent and +Y points toward up. merge: true (default) returns ONE geometry for one primitive per frond, with UVs kept per copy; merge: false returns shared-geometry nodes like arrayLinear.",
+    example:
+      "const rachis = bezierCurve([[0,0,0],[0.6,0.5,0],[1.4,0.3,0]], 32);\nconst leaflet = foliageCardGeo({ width: 0.05, height: 0.35, yPivot: 0 });\nconst frond = repeatAlongCurve(leaflet, rachis, { count: 40, up: [0,0,1], scale: [1, 0.4], start: 0.1, opposite: true });\ncreatePart('Frond_0', frond, foliageMaterial(albedo), { parent: root });",
+    promptNotes:
+      'One merged geometry is one part; name the frond, not each leaflet. opposite: true adds the second row in the same primitive. Merges are capped at 262,144 vertices.',
+  },
+  {
     name: 'mirror',
     signature: "mirror(name, source, axis: 'x'|'y'|'z', parent?)",
     returns: 'THREE.Object3D',

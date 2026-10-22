@@ -258,6 +258,16 @@ material capabilities before choosing a delivery resource, then inspect GPU view
 and destination filtering/backfaces. Raw `THREE.DataTexture` is not an available
 authoring route. Solid leaves and custom surfaces remain valid alternatives.
 
+For fronds, ferns and leaves along a stem, build one leaflet (`foliageCardGeo` or a
+small custom card), sample the stem with `bezierCurve` or `catmullRomPath`, and
+place copies with `repeatAlongCurve`. Each copy's +X follows the stem and +Y points
+toward `up`; `scale` and `twist` taper from attachment to tip, and `opposite: true`
+adds the second row. Choose the representation the destination needs: the default
+merge returns one geometry, so one primitive per frond with each copy's UVs kept;
+`merge: false` returns shared-geometry nodes, which `repeatInstances` can batch in a
+three.js runtime export. Do not hand-build hundreds of leaflets with `meshGeo`.
+Grass clumps and shrubs can use `crossedQuadsGeo` cards.
+
 For original cutouts, `proceduralTexture` V3 authors rectangular RGBA pixels;
 `textureAtlas` combines named fixed regions from V3 recipes or exact saved map
 revisions. Discover their full contracts before authoring. Atlas regions do not
@@ -377,7 +387,9 @@ choice belongs to export settings, not asset source.
 Put repeated assemblies in ordinary functions with JSDoc parameters and named return values. Pass parent/material explicitly; return the assembly root and attachment markers. Change one parameter at the call site for a variant. Give such a function a name prefix or suffix and use it for every part it creates (`Leg_L`, `Leg_R`); calling it twice with the same names makes duplicate node names, which QA reports as `UNIVERSAL_DUPLICATE_NODE_NAME`. The runnable [reusable-frame recipe](reusable-frame.kiln.js) demonstrates this without imports or hidden dependencies.
 
 Include the assembly and element index in repeated child names as well, so each
-leaflet, slat or fastener remains addressable during revision comparison. When a
+separately addressable slat, fastener or leaflet node remains addressable during
+revision comparison. This applies to parts, not to copies merged into one geometry:
+a frond built by `repeatAlongCurve` is one named part (`Frond_3`). When a
 resize must retain those children, keep their count explicit and redistribute
 their attachment positions; deriving the count from the new length can silently
 delete parts. Check the exported child inventory as well as the changed outline.

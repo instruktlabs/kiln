@@ -6548,6 +6548,7 @@ var init_geometry_budget = __esm(() => {
     subdivisionAttributeBytes: 128 * 1024 * 1024,
     subdivisionIterations: 10,
     repeatedMeshes: 1e4,
+    curveRepeatVertices: 262144,
     primitiveSegments: 4096,
     primitiveGridVertices: 262144,
     unwrapVertices: 65536,
@@ -18443,6 +18444,165 @@ function arrayRadial(namePrefix, source, count, axis = "y", parent, center, opti
   }
   return out;
 }
+function repeatAlongCurve(source, points, options) {
+  const name = "repeatAlongCurve";
+  if (!options || typeof options !== "object")
+    throw new TypeError(`${name} needs an options object with count.`);
+  const { count, align = "tangent", merge = true, opposite = false } = options;
+  assertRepetitionCount(name, opposite ? count * 2 : count);
+  if (opposite && align !== "tangent")
+    throw new RangeError(`${name} opposite needs align: tangent.`);
+  if (align !== "tangent" && align !== "none")
+    throw new RangeError(`${name} align must be tangent or none.`);
+  if (!Array.isArray(points) || points.length < 2)
+    throw new RangeError(`${name} needs at least two points; sample the curve first.`);
+  if (points.length > GEOMETRY_ALLOCATION_LIMITS.parametricSamples)
+    throw new RangeError(`${name} accepts at most ${GEOMETRY_ALLOCATION_LIMITS.parametricSamples} points.`);
+  for (const [i, point] of points.entries())
+    assertFiniteTriple(`${name} points[${i}]`, point);
+  const up = options.up ?? [0, 1, 0];
+  assertFiniteTriple(`${name} up`, up);
+  const upVector = new THREE33.Vector3(...up);
+  if (upVector.lengthSq() === 0)
+    throw new RangeError(`${name} up must not be zero.`);
+  upVector.normalize();
+  const span = (label, value, fallback) => {
+    const [a, b] = value === undefined ? [fallback, fallback] : Array.isArray(value) ? value : [value, value];
+    if (!Number.isFinite(a) || !Number.isFinite(b))
+      throw new RangeError(`${name} ${label} must be finite.`);
+    return [a, b];
+  };
+  const scale = span("scale", options.scale, 1);
+  if (scale[0] <= 0 || scale[1] <= 0)
+    throw new RangeError(`${name} scale must be positive.`);
+  const twist = span("twist", options.twist, 0);
+  if (align === "none" && (twist[0] !== 0 || twist[1] !== 0))
+    throw new RangeError(`${name} twist needs align: tangent.`);
+  const start = options.start ?? 0;
+  const end = options.end ?? 1;
+  if (!(start >= 0 && end <= 1 && start <= end))
+    throw new RangeError(`${name} start and end must satisfy 0 <= start <= end <= 1.`);
+  const cumulative = [0];
+  for (let i = 1;i < points.length; i++) {
+    const [ax, ay, az] = points[i - 1];
+    const [bx, by, bz] = points[i];
+    cumulative.push(cumulative[i - 1] + Math.hypot(bx - ax, by - ay, bz - az));
+  }
+  const length = cumulative.at(-1);
+  if (!(length > 0) || !Number.isFinite(length))
+    throw new RangeError(`${name} curve length must be positive and finite.`);
+  const frames = [];
+  let previousUp = upVector.clone();
+  for (let copy = 0;copy < count; copy++) {
+    const t = count === 1 ? 0 : copy / (count - 1);
+    const s = (start + (end - start) * t) * length;
+    let segment = 0;
+    while (segment < points.length - 2 && !(s < cumulative[segment + 1]))
+      segment++;
+    while (segment < points.length - 2 && cumulative[segment + 1] === cumulative[segment])
+      segment++;
+    const a = new THREE33.Vector3(...points[segment]);
+    const b = new THREE33.Vector3(...points[segment + 1]);
+    const segmentLength = cumulative[segment + 1] - cumulative[segment];
+    const local = segmentLength > 0 ? (s - cumulative[segment]) / segmentLength : 0;
+    const position = a.clone().lerp(b, Math.min(Math.max(local, 0), 1));
+    const k = THREE33.MathUtils.lerp(scale[0], scale[1], t);
+    const rotation = new THREE33.Matrix4;
+    let angle = 0;
+    if (align === "tangent") {
+      const tangent = b.clone().sub(a).normalize();
+      let side = upVector.clone().sub(tangent.clone().multiplyScalar(upVector.dot(tangent)));
+      if (side.lengthSq() < 0.000000000001)
+        side = previousUp.clone().sub(tangent.clone().multiplyScalar(previousUp.dot(tangent)));
+      if (side.lengthSq() < 0.000000000001)
+        side = new THREE33.Vector3(Math.abs(tangent.x) < 0.9 ? 1 : 0, Math.abs(tangent.x) < 0.9 ? 0 : 1, 0).sub(tangent.clone().multiplyScalar(Math.abs(tangent.x) < 0.9 ? tangent.x : tangent.y));
+      side.normalize();
+      previousUp = side;
+      rotation.makeBasis(tangent, side, new THREE33.Vector3().crossVectors(tangent, side));
+      angle = THREE33.MathUtils.degToRad(THREE33.MathUtils.lerp(twist[0], twist[1], t));
+    }
+    for (const extra of opposite ? [0, Math.PI] : [0]) {
+      const turned = rotation.clone();
+      if (angle + extra)
+        turned.multiply(new THREE33.Matrix4().makeRotationX(angle + extra));
+      const matrix = new THREE33.Matrix4().makeTranslation(position.x, position.y, position.z).multiply(turned).multiply(new THREE33.Matrix4().makeScale(k, k, k));
+      if (!matrix.elements.every(Number.isFinite))
+        throw new RangeError(`${name} produced a non-finite copy transform.`);
+      frames.push({ matrix, t });
+    }
+  }
+  if (!merge) {
+    const mesh = source.isMesh ? source : source.children?.find((child) => child.isMesh);
+    if (!mesh)
+      throw new TypeError(`${name} with merge: false needs a Mesh source.`);
+    const prefix = options.name ?? source.name ?? "Copy";
+    return frames.map((frame, i) => {
+      const copy = createInstance(`${prefix}${i}`, source, {
+        parent: options.parent
+      });
+      frame.matrix.decompose(copy.position, copy.quaternion, copy.scale);
+      return copy;
+    });
+  }
+  const copies = frames.length;
+  const geometry = source.isBufferGeometry ? source : source.isMesh ? source.geometry : undefined;
+  if (!geometry)
+    throw new TypeError(`${name} needs a BufferGeometry or Mesh source.`);
+  if (Object.keys(geometry.morphAttributes).length)
+    throw new RangeError(`${name} does not copy morph targets.`);
+  const positionAttribute = geometry.getAttribute("position");
+  if (!positionAttribute)
+    throw new RangeError(`${name} source has no position attribute.`);
+  const perCopy = positionAttribute.count;
+  const total = perCopy * copies;
+  if (total > GEOMETRY_ALLOCATION_LIMITS.curveRepeatVertices)
+    throw new RangeError(`${name} would produce ${total} vertices; the limit is ${GEOMETRY_ALLOCATION_LIMITS.curveRepeatVertices}. Reduce count, simplify the source, or use merge: false.`);
+  const merged = new THREE33.BufferGeometry;
+  const vector = new THREE33.Vector3;
+  const normalMatrix = new THREE33.Matrix3;
+  for (const [key, attribute] of Object.entries(geometry.attributes)) {
+    const size = attribute.itemSize;
+    const transformed = key === "position" || key === "normal" || key === "tangent";
+    const ArrayType = transformed ? Float32Array : attribute.array?.constructor ?? Float32Array;
+    const out = new ArrayType(total * size);
+    for (let copy = 0;copy < copies; copy++) {
+      const frame = frames[copy].matrix;
+      normalMatrix.getNormalMatrix(frame);
+      for (let i = 0;i < perCopy; i++) {
+        const target = (copy * perCopy + i) * size;
+        if (key === "position") {
+          vector.fromBufferAttribute(attribute, i).applyMatrix4(frame);
+          out.set([vector.x, vector.y, vector.z], target);
+        } else if (key === "normal" || key === "tangent") {
+          vector.set(attribute.getX(i), attribute.getY(i), attribute.getZ(i));
+          vector.applyMatrix3(normalMatrix).normalize();
+          out.set(size === 4 ? [vector.x, vector.y, vector.z, attribute.getW(i)] : [vector.x, vector.y, vector.z], target);
+        } else {
+          for (let c = 0;c < size; c++)
+            out[target + c] = attribute.getComponent(i, c);
+        }
+      }
+    }
+    merged.setAttribute(key, new THREE33.BufferAttribute(out, size, transformed ? false : attribute.normalized));
+  }
+  if (options.along) {
+    const along = new Float32Array(total);
+    for (let copy = 0;copy < copies; copy++)
+      along.fill(frames[copy].t, copy * perCopy, (copy + 1) * perCopy);
+    merged.setAttribute("_along", new THREE33.BufferAttribute(along, 1));
+  }
+  const index = geometry.getIndex();
+  if (index) {
+    const indices = total > 65535 ? new Uint32Array(index.count * copies) : new Uint16Array(index.count * copies);
+    for (let copy = 0;copy < copies; copy++)
+      for (let i = 0;i < index.count; i++)
+        indices[copy * index.count + i] = index.getX(i) + copy * perCopy;
+    merged.setIndex(new THREE33.BufferAttribute(indices, 1));
+  }
+  merged.computeBoundingBox();
+  merged.computeBoundingSphere();
+  return merged;
+}
 function mirror(name, source, axis, parent) {
   if (source.matrixAutoUpdate)
     source.updateMatrix();
@@ -25246,6 +25406,7 @@ function buildSandboxGlobals(usage, options = {}) {
     circleProfile: wrap("circleProfile", circleProfile),
     arrayLinear: wrap("arrayLinear", arrayLinear),
     arrayRadial: wrap("arrayRadial", arrayRadial),
+    repeatAlongCurve: wrap("repeatAlongCurve", repeatAlongCurve),
     mirror: wrap("mirror", mirror),
     subdivide: wrap("subdivide", subdivide),
     mergeVertices: wrap("mergeVertices", mergeVertices),
@@ -27133,6 +27294,18 @@ arrayLinear('Post', post, 10, [0.5, 0, 0], root);`
       description: "`count` is the TOTAL, source included: the source stays at its angle as copy 0 and the call returns count-1 new mesh instances. Copies preserve source scale. Default outward rotation follows the orbit; relative orientation composes the orbit with the source rotation. Copies orbit the parent's origin unless you pass center. This is mesh reuse, not hierarchy-preserving assembly replication.",
       example: `const bolt = createPart('Bolt0', cylinderGeo(0.02,0.02,0.1,6), steel, { position: [1,0,0], parent: root });
 arrayRadial('Bolt', bolt, 8, 'y', root);`
+    },
+    {
+      name: "repeatAlongCurve",
+      signature: "repeatAlongCurve(source: BufferGeometry | Mesh, points: [x,y,z][], opts: { count, align?: 'tangent'|'none', up?: [x,y,z], scale?: n | [attach, tip], twist?: deg | [attach, tip], opposite?: false, start?: 0..1, end?: 0..1, merge?: true, along?: false, name?, parent? })",
+      returns: "THREE.BufferGeometry (merge: true) or THREE.Object3D[] (merge: false)",
+      category: "arrays",
+      description: "Copies one leaflet, card or stud along a sampled curve, evenly spaced by arc length. Each copy's local +X follows the tangent and +Y points toward up. merge: true (default) returns ONE geometry for one primitive per frond, with UVs kept per copy; merge: false returns shared-geometry nodes like arrayLinear.",
+      example: `const rachis = bezierCurve([[0,0,0],[0.6,0.5,0],[1.4,0.3,0]], 32);
+const leaflet = foliageCardGeo({ width: 0.05, height: 0.35, yPivot: 0 });
+const frond = repeatAlongCurve(leaflet, rachis, { count: 40, up: [0,0,1], scale: [1, 0.4], start: 0.1, opposite: true });
+createPart('Frond_0', frond, foliageMaterial(albedo), { parent: root });`,
+      promptNotes: "One merged geometry is one part; name the frond, not each leaflet. opposite: true adds the second row in the same primitive. Merges are capped at 262,144 vertices."
     },
     {
       name: "mirror",

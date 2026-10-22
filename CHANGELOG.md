@@ -28,6 +28,13 @@ does not publish a package.
   `--check`, `--upgrade` and `--repair`, so a host with folder-scoped edit permissions
   no longer approves every root `KILN_PROGRESS.md` update. Absolute, traversal and managed
   paths are refused. The default guide is unchanged.
+- Add `repeatAlongCurve` for leaflets, cards and studs along a sampled curve
+  ([#211](https://github.com/instruktlabs/kiln/issues/211)). By default it merges the copies
+  into one geometry (one primitive per frond) with each copy's UVs kept, an optional `_along`
+  attribute and an `opposite` row; `merge: false` returns shared-geometry nodes. Merges are
+  bounded at 262,144 vertices. Discovery now answers foliage wording ("palm frond
+  leaflets", "fern", "grass clump") with the repetition and card helpers, and the authoring
+  skill describes the foliage workflow and when per-element naming applies.
 
 ## 1.3.1 (2026-10-17)
 

@@ -2418,6 +2418,7 @@ export function buildSandboxGlobals(
     // Array/mirror/subdivide/curve ops
     arrayLinear: wrap('arrayLinear', ops.arrayLinear),
     arrayRadial: wrap('arrayRadial', ops.arrayRadial),
+    repeatAlongCurve: wrap('repeatAlongCurve', ops.repeatAlongCurve),
     mirror: wrap('mirror', ops.mirror),
     subdivide: wrap('subdivide', ops.subdivide),
     mergeVertices: wrap('mergeVertices', ops.mergeVertices),
