@@ -26,6 +26,58 @@
       "bytes": 88322,
       "buildSha": "9d82bb927f951389291731e64e0803140e523ae9",
       "buildGeneratedAt": "2026-10-19T22:36:21.075Z"
+    },
+    {
+      "name": "ski-sim-village",
+      "game": "ski sim",
+      "source": "ski-sim-app/scratch/cinematic/village-rail-lit-entry.png",
+      "captured": "2026-10-21",
+      "note": "Staged in-engine Village Bend promotional capture. Existing Kiln rail and lamp placed beside the existing chalet, with a shaped snow entry. Source simulation enters a sideways grind; pose settled and paused for capture. HUD hidden. Staging is local only, not a claim that this rail placement is in the released trail. Full frame, WebP encoding only.",
+      "width": 1600,
+      "height": 1000,
+      "originalSha256": "d8a86d0c3912b1f79ad4d4aaf937bfb6abf5238dd23bdf4053deed3ebe15cc22",
+      "imageSha256": "e92a735f3d9f143654ec12a5e5e7a04df19b760787f80c933fc90bf4f3362e4f",
+      "bytes": 80484,
+      "buildSha": "5c90b528d12410015f7ae53ff0465a953da55acf",
+      "playUrl": "https://skisim.app/"
+    },
+    {
+      "name": "ski-sim-skier",
+      "game": "ski sim",
+      "source": "ski-sim-app/scratch/cinematic/mutex-flip-grab.png",
+      "captured": "2026-10-21",
+      "note": "Native in-game Mutex Ridge menu demonstration. Seed 268 selects a flip with mute grab; the original flight/contact and Jolt determine the crash. Camera downhill of landing, HUD hidden. Full frame, WebP encoding only.",
+      "width": 1600,
+      "height": 1000,
+      "originalSha256": "964329118bf5fc8a54f33a0ddd453914c0ab014a37ab798512846b6ee15b094c",
+      "imageSha256": "23caae870fb999d953b9d158bdf0d3ed8457d38d69e2a4e2a26510c9fab8b917",
+      "bytes": 35252,
+      "buildSha": "91f1c6c",
+      "playUrl": "https://skisim.app/"
+    }
+  ],
+  "motion": [
+    {
+      "game": "ski sim",
+      "path": "/live-games/ski-sim-flip-grab.mp4",
+      "sha256": "2b0db5cd33ffffe931042544ffbda64d898a3a5b7650d884cb43906bdc7e51ef",
+      "bytes": 1055635,
+      "duration": 5.8,
+      "source": "Native browser recording of the same seed-268 menu attempt; trimmed and encoded only.",
+      "buildSha": "91f1c6c",
+      "width": 1200,
+      "height": 750
+    },
+    {
+      "game": "ski sim",
+      "path": "/live-games/ski-sim-flip-grab.gif",
+      "sha256": "010b57a234cc2cfab10b0dfd2396db157b82c61a8e9fc748789f5605a0066705",
+      "bytes": 7509917,
+      "duration": 5.8,
+      "source": "Native browser recording of the same seed-268 menu attempt; trimmed and encoded only.",
+      "buildSha": "91f1c6c",
+      "width": 640,
+      "height": 400
     }
   ]
 }
