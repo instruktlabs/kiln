@@ -213,6 +213,18 @@ complete runtime-validated fields. Sources keep explicit creator and license
 records. The JSON authoring surface accepts no file paths, URLs to fetch, or
 raw image bytes. Existing external image records enter through verified import.
 
+A normal-slot map with a V3 recipe of `usage: 'normal'` may add
+`derive: {"kind":"normal-from-height","strength":4}`. The compiled pixels are
+read as height (Rec. 601 luma of RGB; alpha ignored) and converted by the same
+wrapped derivation as V2 recipes, so paint pits dark and ridges light. The
+recipe hash still identifies the V3 spec; the pixel hash identifies the derived
+normal pixels, and the saved recipe records `derive`. Derivation counts toward
+the V3 work and allocation budgets. A height recipe has data usage `normal`, so
+stamps and palettes are unavailable in it: place pits with `paint` operations
+(up to 64) or a `legacy-v2` noise layer. Authored-source
+`compilePortableMaterialSpecV3` references do not accept `derive`; save the
+material and bind the record instead.
+
 `textureAtlas(spec)` compiles named, fixed pixel rectangles. The atlas has
 `schemaVersion:1`, width, height, usage, an optional sampler, and regions.
 Coordinates are integer pixels from the top-left. Each region has a stable

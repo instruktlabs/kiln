@@ -745,11 +745,10 @@ export function validateMaterialManifestAny(value: unknown): MaterialManifest {
         if (spec.schemaVersion === 3) {
           if (
             recipe.compilerId !== PROCEDURAL_TEXTURE_V3_COMPILER_ID ||
-            recipe.derive ||
             spec.width !== map.width ||
             spec.height !== map.height
           )
-            throw Error('V3 compiler/dimensions/derivation mismatch');
+            throw Error('V3 compiler/dimensions mismatch');
         } else if (
           recipe.compilerId !== 'kiln.procedural-texture.v2' ||
           spec.size !== map.width ||

@@ -15,7 +15,9 @@ import {
   type MaterialRecord,
 } from './material-library';
 import type { PortableSamplerV1 } from './portable-sampler';
-import type { DataTexture } from 'three';
+import { DataTexture } from 'three';
+import { normalMapFromHeight } from './procedural-texture';
+import { compileProceduralTextureSpecV3 } from './procedural-texture-v3';
 import {
   createMaterialRecordV1,
   createMaterialRecordV2,
@@ -545,4 +547,102 @@ test('stored V3 and atlas recipe errors carry the canonicalizer reason', async (
   const layoutMessage = toolError(materialManifestV2Schema, layout);
   expect(layoutMessage).toContain('maps.0.recipe: stored atlas manifest: ');
   expect(layoutMessage).not.toMatch(/stored atlas manifest\.?(;|$| Check)/);
+});
+
+const heightSource = {
+  schemaVersion: 3,
+  width: 8,
+  height: 8,
+  usage: 'normal',
+  background: [200, 200, 200, 255],
+  operations: [
+    {
+      op: 'paint',
+      shape: { kind: 'ellipse', x: 2, y: 2, width: 4, height: 4 },
+      rgba: [40, 40, 40, 255],
+    },
+  ],
+} as const;
+const derivedDraft = (map: Record<string, unknown>) => ({
+  schemaVersion: 2,
+  materialId: 'pitted',
+  name: 'Pitted',
+  tileable: true,
+  sources: [structuredClone(source)],
+  maps: [{ slot: 'normal', sourceId: 'authored', transforms: [], sampler, ...map }],
+});
+test('V3 height derives a normal map that verifies and round-trips through a payload', async () => {
+  const derive = { kind: 'normal-from-height', strength: 4 } as const;
+  const record = await createMaterialRecordV2(
+    derivedDraft({ procedural: structuredClone(heightSource), derive }),
+  );
+  const compiled = compileProceduralTextureSpecV3(heightSource);
+  const height = new DataTexture(compiled.pixels, 8, 8);
+  const normal = normalMapFromHeight(height, { strength: 4 });
+  const map = record.manifest.maps[0]!;
+  expect(map.pixelHash).toBe(hash(normal.image.data as Uint8Array));
+  expect(map.pixelHash).not.toBe(hash(compiled.pixels));
+  expect(map.recipe).toMatchObject({ kind: 'procedural', recipeHash: compiled.recipeHash, derive });
+  await verifyMaterialRecord(record);
+  const read = await decodeMaterialLibraryPayload(await createMaterialLibraryPayload([record]));
+  expect(read[0]).toEqual(record);
+  const tampered = structuredClone(record);
+  (tampered.manifest.maps[0]!.recipe as { derive: { strength: number } }).derive.strength = 2;
+  const { revisionId: _, ...content } = tampered.manifest;
+  tampered.manifest.revisionId = hash(
+    canonicalMaterialJson(content),
+  ) as typeof tampered.manifest.revisionId;
+  await expect(verifyMaterialRecord(tampered)).rejects.toThrow(/pixel|recipe/);
+});
+test('normal derivation still requires a normal slot and refuses atlas sources', async () => {
+  await expect(
+    createMaterialRecordV2({
+      ...draft(),
+      maps: [
+        {
+          ...draft().maps[0]!,
+          derive: { kind: 'normal-from-height', strength: 2 },
+        },
+      ],
+    }),
+  ).rejects.toThrow(/normal map slot|usage/);
+  await expect(
+    createMaterialRecordV2(
+      derivedDraft({
+        procedural: { ...structuredClone(heightSource), usage: 'albedo' },
+        derive: { kind: 'normal-from-height', strength: 2 },
+      }),
+    ),
+  ).rejects.toThrow(/usage/);
+  const child = await createMaterialRecordV2(draft());
+  const atlas = atlasDraft(child);
+  await expect(
+    createMaterialRecordV2(
+      {
+        ...atlas,
+        maps: [{ ...atlas.maps[0]!, derive: { kind: 'normal-from-height', strength: 2 } }],
+      },
+      { materials: [child] },
+    ),
+  ).rejects.toThrow(/Atlas derivation unsupported/);
+});
+test('V2 normal derivation keeps its recorded identities', async () => {
+  const record = await createMaterialRecordV2(
+    derivedDraft({
+      procedural: {
+        schemaVersion: 2,
+        size: 8,
+        usage: 'normal',
+        layers: [{ op: 'noise', colorA: 0x202020, colorB: 0xe0e0e0, scale: 4, seed: 7 }],
+      },
+      derive: { kind: 'normal-from-height', strength: 3 },
+    }),
+  );
+  expect(record.manifest.maps[0]!.pixelHash).toBe(
+    'sha256:82ccc4035b46c5c224fe3ec50b4db8bdccda4f34cd7bb57ab9dac1c0dd2d2a74',
+  );
+  // The revision also covers the PNG encoder version, so only compiler identities are pinned.
+  expect(record.manifest.maps[0]!.recipe).toMatchObject({
+    recipeHash: 'sha256:30d6d7a740a6cc860148171b4ebce1288c09e0b9e95284936493df921e205578',
+  });
 });

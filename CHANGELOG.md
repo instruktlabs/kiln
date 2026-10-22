@@ -35,6 +35,10 @@ does not publish a package.
   bounded at 262,144 vertices. Discovery now answers foliage wording ("palm frond
   leaflets", "fern", "grass clump") with the repetition and card helpers, and the authoring
   skill describes the foliage workflow and when per-element naming applies.
+- Accept `derive: normal-from-height` on V3 normal-slot maps in `schemaVersion:2` material
+  drafts. Derivation reads compiled RGB luma as height, counts toward the V3 budgets, is
+  recorded in the saved recipe and reapplied by verification. V2 derivation identities are
+  unchanged (#205).
 
 ## 1.3.1 (2026-10-17)
 

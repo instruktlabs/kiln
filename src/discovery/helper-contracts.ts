@@ -1882,7 +1882,7 @@ define(
     aliases: ['portable RGBA material', 'explicit texture sampling'],
     intents: ['compile cutout or pixel-textured portable materials'],
     limitations: [
-      'Height-map derivation is not part of the V3 binding contract. V2 remains available for existing derive recipes.',
+      'Height-map derivation is not part of the V3 binding contract. Save a schemaVersion:2 material whose normal map has a V2 or V3 recipe with derive, then bind the saved record.',
     ],
   },
 );

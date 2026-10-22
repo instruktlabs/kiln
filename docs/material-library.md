@@ -50,8 +50,11 @@ drafts with `schemaVersion:2` also support RGBA recipes, named atlases and expli
 per-map samplers; see the [standalone texture workflow](procedural-surfaces-v3.md#standalone-saved-materials-and-atlases).
 An optional
 `derive: {"kind":"normal-from-height","strength":2}` on a normal map converts the recipe's
-height pixels through the existing wrapped normal derivation. `import` accepts a complete
-normalized payload. None of these operations acquires source images from a provider.
+height pixels through the existing wrapped normal derivation: Rec. 601 luma of the compiled RGB
+is read as height and alpha is ignored. It applies to V2 layer recipes and, in `schemaVersion:2`
+drafts, to V3 RGBA recipes with `usage: 'normal'`; atlases and supplied bytes do not accept it.
+The saved recipe records `derive`, and verification recompiles through it. `import` accepts a
+complete normalized payload. None of these operations acquires source images from a provider.
 
 Curated resource packs are complete normalized payloads: maps, recipes and source/license
 provenance, ready for explicit import. They are not npm package contents or public downloads;

@@ -112,16 +112,18 @@ function exactKeys(value: object, keys: string[]): void {
   if (Object.keys(value).some((key) => !keys.includes(key)))
     throw new Error('Unknown material draft field');
 }
-function materialPixels(
-  spec: ProceduralTextureSpecV2,
-  derive?: { kind: 'normal-from-height'; strength: number },
-) {
-  const compiled = compileProceduralTextureSpecV2(spec);
+type MaterialNormalDerivation = { kind: 'normal-from-height'; strength: number };
+/** Normal derivation reads four neighbours per texel and allocates the output plus its copy. */
+const normalDerivationBudget = (texels: number) => ({ work: texels * 16, allocation: texels * 8 });
+function derivedNormalPixels<T extends { pixels: Uint8Array }>(
+  compiled: T,
+  size: { width: number; height: number; usage: string },
+  derive: MaterialNormalDerivation | undefined,
+): T {
   if (!derive) return compiled;
   materialNormalDerivationSchema.parse(derive);
-  if (compiled.spec.usage !== 'normal')
-    throw new Error('Height derivation requires a normal map slot');
-  const height = new DataTexture(compiled.pixels, compiled.spec.size, compiled.spec.size);
+  if (size.usage !== 'normal') throw new Error('Height derivation requires a normal map slot');
+  const height = new DataTexture(compiled.pixels, size.width, size.height);
   const normal = normalMapFromHeight(height, { strength: derive.strength });
   if (!(normal.image.data instanceof Uint8Array))
     throw new Error('Normal derivation must produce RGBA8 pixels');
@@ -129,6 +131,15 @@ function materialPixels(
   height.dispose();
   normal.dispose();
   return { ...compiled, pixels };
+}
+function materialPixels(spec: ProceduralTextureSpecV2, derive?: MaterialNormalDerivation) {
+  const compiled = compileProceduralTextureSpecV2(spec);
+  const { size, usage } = compiled.spec;
+  return derivedNormalPixels(compiled, { width: size, height: size, usage }, derive);
+}
+function materialPixelsV3(spec: unknown, derive?: MaterialNormalDerivation) {
+  const compiled = compileProceduralTextureSpecV3(spec);
+  return derivedNormalPixels(compiled, compiled.spec, derive);
 }
 /** Bake existing bounded procedural recipes or accept normalized PNG bytes supplied by the host. */
 export async function createMaterialRecordV1(draft: MaterialDraftV1): Promise<MaterialRecordV1> {
@@ -863,7 +874,7 @@ async function verifyMaterialRecordContents(
     } else {
       const compiled =
         recipe.spec.schemaVersion === 3
-          ? compileProceduralTextureSpecV3(recipe.spec)
+          ? materialPixelsV3(recipe.spec, recipe.derive)
           : materialPixels(recipe.spec, recipe.derive);
       if (compiled.recipeHash !== recipe.recipeHash || digest(compiled.pixels) !== recipe.pixelHash)
         throw new Error('Procedural recipe/pixel hash mismatch');
@@ -897,9 +908,10 @@ function admitMaterialManifestRecipes(
     if (recipe?.kind === 'procedural') {
       if (recipe.spec.schemaVersion === 3) {
         const a = admitProceduralTextureSpecV3(recipe.spec);
+        const derived = normalDerivationBudget(recipe.derive ? a.spec.width * a.spec.height : 0);
         texels += a.spec.width * a.spec.height;
-        work += a.estimatedWorkUnits;
-        allocation += a.conservativePixelAllocationBytes;
+        work += a.estimatedWorkUnits + derived.work;
+        allocation += a.conservativePixelAllocationBytes + derived.allocation;
       } else {
         texels += recipe.spec.size ** 2;
         work += recipe.spec.size ** 2 * recipe.spec.layers.length * 16;
@@ -1134,13 +1146,17 @@ export async function createMaterialRecordV2(
     if (raw['procedural'] !== undefined) {
       const spec = raw['procedural'] as { schemaVersion?: number };
       if (spec.schemaVersion === 3) {
-        if (raw['derive'] !== undefined) throw new Error('V3 normal derivation is unsupported');
         const a = admitProceduralTextureSpecV3(spec);
         if (a.spec.usage !== MATERIAL_LIBRARY_USAGE[slot])
           throw new Error('Procedural usage mismatch');
+        if (raw['derive'] !== undefined && slot !== 'normal')
+          throw new Error('Height derivation requires a normal map slot');
+        const derived = normalDerivationBudget(
+          raw['derive'] !== undefined ? a.spec.width * a.spec.height : 0,
+        );
         texels += a.spec.width * a.spec.height;
-        work += a.estimatedWorkUnits;
-        allocation += a.conservativePixelAllocationBytes;
+        work += a.estimatedWorkUnits + derived.work;
+        allocation += a.conservativePixelAllocationBytes + derived.allocation;
         prepared.push({ raw, slot, sampler, procedural: a.spec });
       } else {
         const canonical = canonicalizeProceduralTextureSpecV2(spec);
@@ -1195,13 +1211,9 @@ export async function createMaterialRecordV2(
     let bytes: Uint8Array, pixelHash: `sha256:${string}`, recipe: MaterialMapV2['recipe'];
     if (item.procedural !== undefined) {
       const spec = item.procedural as ProceduralTextureSpecV2 | { schemaVersion: 3 };
+      const derive = raw['derive'] as MaterialNormalDerivation | undefined;
       const compiled =
-        spec.schemaVersion === 3
-          ? compileProceduralTextureSpecV3(spec)
-          : materialPixels(
-              spec,
-              raw['derive'] as { kind: 'normal-from-height'; strength: number } | undefined,
-            );
+        spec.schemaVersion === 3 ? materialPixelsV3(spec, derive) : materialPixels(spec, derive);
       const d =
         compiled.spec.schemaVersion === 3
           ? { width: compiled.spec.width, height: compiled.spec.height }
