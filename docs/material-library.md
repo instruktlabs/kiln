@@ -6,9 +6,27 @@ An evaluator receives only the complete pinned records selected by its host. Aut
 resolve their approved resource IDs, but cannot read paths, fetch URLs, or supply resolver code.
 
 `kiln_material` is advertised when a host supplies a material library. Its `presets` action lists
-five offline starting points: `warm-brick`, `wood-grain`, `brushed-metal`, `woven-fabric`, and
-`coarse-soil`. Each recipe produces base color, OpenGL normal, and packed metallic/roughness maps.
-They are synthetic starting points with stated physical repeat scales, not measured scans.
+these offline starting points; the `presets` and `list` actions accept a family `tag` such as `rock`.
+Each recipe produces base color, OpenGL normal, and packed metallic/roughness maps. They are
+synthetic starting points with stated physical repeat scales, not measured scans.
+
+| Preset | Family | Repeat scale | Notes |
+| --- | --- | --- | --- |
+| `warm-brick` | `architecture` | 2 × 2 m | Staggered masonry and shallow mortar relief |
+| `wood-grain` | `wood` | 1 × 1 m | Straight interior grain; no knots or end grain |
+| `brushed-metal` | `metal` | 1 × 1 m | Directional relief, fully metallic packed channel |
+| `woven-fabric` | `fabric` | 0.5 × 0.5 m | Crossed threads, matte dielectric |
+| `coarse-soil` | `ground` | 2 × 2 m | Granular soil for terrain and planting beds |
+| `beach-sand` | `ground` | 1 × 1 m | Fine pale grains with shallow wind ripples |
+| `coral-limestone` | `rock` | 2 × 2 m | Porous cream stone with pitted relief |
+| `coral-limestone-wet` | `rock` | 2 × 2 m | Darker, smoother wet stone; the same seed keeps the dry relief |
+| `palm-frond` | `foliage` | 2 × 2 m | Alpha-tested (MASK), double-sided cutout card, not tileable |
+| `driftwood` | `wood` | 1 × 1 m | Bleached silver-grey grain, deep weathering |
+| `thatch` | `fiber` | 1 × 1 m | Vertical straw strands in horizontal courses |
+
+`palm-frond` saves a `schemaVersion:2` record: its base color is a V3 RGBA silhouette with
+clamped sampling, so map it once across a card or a `foliageCardGeo` with the frond base at
+the bottom of the image. The other presets save V1 records and tile.
 
 Create one with an explicit seed, creator, and a license the caller is authorized to apply:
 
@@ -103,6 +121,7 @@ const record = await createMaterialRecordV1(createMaterialPresetDraft('wood-grai
     url: 'https://creativecommons.org/publicdomain/zero/1.0/', attribution: '' },
 }));
 await library.import([record]);
+// palm-frond needs createMaterialPresetDraftAny and createMaterialRecordV2.
 
 // The JSON payload includes every normalized PNG, recipe, source hash and license record.
 const payload = await createMaterialLibraryPayload([record]);

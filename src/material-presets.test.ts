@@ -1,7 +1,17 @@
 import { expect, test } from 'bun:test';
 import sharp from 'sharp';
-import { createMaterialPresetDraft, listMaterialPresets } from './material-presets';
-import { createMaterialRecordV1, verifyMaterialRecordV1 } from './material-library-node';
+import { readFileSync } from 'node:fs';
+import {
+  createMaterialPresetDraft,
+  createMaterialPresetDraftAny,
+  listMaterialPresets,
+} from './material-presets';
+import {
+  createMaterialRecordV1,
+  createMaterialRecordV2,
+  verifyMaterialRecord,
+  verifyMaterialRecordV1,
+} from './material-library-node';
 
 const options = {
   seed: 19,
@@ -13,10 +23,10 @@ const options = {
     attribution: '',
   },
 };
-test('shipped preset catalog covers five useful families with deterministic complete map recipes', async () => {
-  const presets = listMaterialPresets();
-  expect(new Set(presets.map((item) => item.family))).toEqual(
-    new Set(['architecture', 'wood', 'metal', 'fabric', 'ground']),
+test('shipped preset catalog covers its families with deterministic complete map recipes', async () => {
+  const presets = listMaterialPresets().filter((item) => item.recordSchemaVersion === 1);
+  expect(new Set(listMaterialPresets().map((item) => item.family))).toEqual(
+    new Set(['architecture', 'wood', 'metal', 'fabric', 'ground', 'rock', 'foliage', 'fiber']),
   );
   for (const preset of presets) {
     const draft = createMaterialPresetDraft(preset.id, options);
@@ -58,4 +68,85 @@ test('presets require explicit bounded seed and provenance and return independen
   const catalog = listMaterialPresets();
   catalog[0]!.name = 'mutated';
   expect(listMaterialPresets()[0]!.name).not.toBe('mutated');
+});
+
+const presetRecord = (id: string, seed = options.seed) => {
+  const draft = createMaterialPresetDraftAny(id, { ...options, seed });
+  return 'schemaVersion' in draft ? createMaterialRecordV2(draft) : createMaterialRecordV1(draft);
+};
+const NATURAL = [
+  ['beach-sand', 'ground'],
+  ['coral-limestone', 'rock'],
+  ['coral-limestone-wet', 'rock'],
+  ['palm-frond', 'foliage'],
+  ['driftwood', 'wood'],
+  ['thatch', 'fiber'],
+] as const;
+
+test('natural presets follow the three-map preset contract and are deterministic per seed', async () => {
+  for (const [id, family] of NATURAL) {
+    const summary = listMaterialPresets().find((item) => item.id === id);
+    expect(summary).toMatchObject({ family, tags: [family, 'procedural'] });
+    const record = await presetRecord(id);
+    expect(record).toEqual(await presetRecord(id));
+    expect((await presetRecord(id, 20)).manifest.revisionId).not.toBe(record.manifest.revisionId);
+    expect(record.manifest.maps.map((map) => [map.slot, map.usage, map.colorSpace])).toEqual([
+      ['baseColor', 'albedo', 'srgb'],
+      ['normal', 'normal', 'linear'],
+      ['metallicRoughness', 'metallicRoughness', 'linear'],
+    ]);
+    expect(record.manifest.tags).toEqual([family, 'procedural']);
+    expect(record.manifest.physicalSizeMeters).toEqual(summary!.physicalSizeMeters);
+    expect(record.manifest.sources[0]?.license).toEqual(options.license);
+    await verifyMaterialRecord(record);
+  }
+});
+
+test('the palm frond is an alpha-tested, double-sided cutout with a real silhouette', async () => {
+  expect(() => createMaterialPresetDraft('palm-frond', options)).toThrow(
+    /createMaterialPresetDraftAny/,
+  );
+  const record = await presetRecord('palm-frond');
+  expect(record.manifest.schemaVersion).toBe(2);
+  expect(record.manifest.parameters).toMatchObject({ alphaMode: 'mask', doubleSided: true });
+  expect(record.manifest.tileable).toBe(false);
+  const alpha = new Set<number>();
+  const pixels = await sharp(record.files['baseColor.png']).raw().toBuffer();
+  for (let i = 3; i < pixels.length; i += 4) alpha.add(pixels[i]!);
+  expect(alpha).toEqual(new Set([0, 255]));
+});
+
+test('wet limestone darkens and smooths the dry stone while keeping its relief', async () => {
+  const [dry, wet] = await Promise.all([
+    presetRecord('coral-limestone'),
+    presetRecord('coral-limestone-wet'),
+  ]);
+  const mean = async (bytes: Uint8Array, channel: number) => {
+    const raw = await sharp(bytes).raw().toBuffer();
+    let sum = 0;
+    for (let i = channel; i < raw.length; i += 4) sum += raw[i]!;
+    return sum / (raw.length / 4);
+  };
+  expect(await mean(wet.files['baseColor.png']!, 0)).toBeLessThan(
+    0.8 * (await mean(dry.files['baseColor.png']!, 0)),
+  );
+  expect(await mean(wet.files['metallicRoughness.png']!, 1)).toBeLessThan(
+    0.7 * (await mean(dry.files['metallicRoughness.png']!, 1)),
+  );
+  expect(wet.files['normal.png']).toEqual(dry.files['normal.png']);
+});
+
+test('the docs preset table matches the shipped catalog', () => {
+  const docs = readFileSync(new URL('../docs/material-library.md', import.meta.url), 'utf8');
+  const rows = [
+    ...docs.matchAll(/^\| `([a-z-]+)` \| `([a-z]+)` \| ([\d.]+) × ([\d.]+) m \|/gm),
+  ].map((row) => [row[1], row[2], Number(row[3]), Number(row[4])]);
+  expect(rows).toEqual(
+    listMaterialPresets().map((item) => [
+      item.id,
+      item.family,
+      item.physicalSizeMeters.width,
+      item.physicalSizeMeters.height,
+    ]),
+  );
 });

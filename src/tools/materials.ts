@@ -9,9 +9,13 @@ import {
   type MaterialLibrary,
   type MaterialManifest,
 } from '../material-library';
-import { createMaterialRecordV1, decodeMaterialLibraryPayload } from '../material-library-node';
+import {
+  createMaterialRecordV1,
+  createMaterialRecordV2,
+  decodeMaterialLibraryPayload,
+} from '../material-library-node';
 import { createProceduralMaterialRecord } from '../material-authoring-node';
-import { createMaterialPresetDraft, listMaterialPresets } from '../material-presets';
+import { createMaterialPresetDraftAny, listMaterialPresets } from '../material-presets';
 import { nestedRecordDescription, requireActionFields } from './actions';
 import type { KilnToolDef } from './registry';
 import type { KilnActionContract } from './operation-contract';
@@ -188,9 +192,11 @@ export function createKilnMaterialDef(
               materialId: input.materialId,
             }).filter(([, value]) => value !== undefined),
           );
-          const record = await createMaterialRecordV1(
-            createMaterialPresetDraft(input.presetId!, options as never),
-          );
+          const draft = createMaterialPresetDraftAny(input.presetId!, options as never);
+          const record =
+            'schemaVersion' in draft
+              ? await createMaterialRecordV2(draft)
+              : await createMaterialRecordV1(draft);
           const [material] = await library.import([record]);
           return materialResult(material!);
         }

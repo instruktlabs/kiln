@@ -4,6 +4,7 @@ import {
   assertMaterialJson,
   materialLibraryIdSchema,
   materialSourceSchema,
+  type ProceduralMaterialDraftV2,
 } from './material-library';
 import type { MaterialDraftV1 } from './material-library-node';
 import type { ProceduralLayer, ProceduralTextureSpecV2 } from './procedural-material-v2';
@@ -46,7 +47,54 @@ const catalog = [
     physicalSizeMeters: { width: 2, height: 2 },
     description: 'Layered granular soil variation and subtle relief for terrain and planting beds.',
   },
+  {
+    id: 'beach-sand',
+    name: 'Pale beach sand',
+    family: 'ground',
+    physicalSizeMeters: { width: 1, height: 1 },
+    description: 'Fine pale grains with shallow wind ripples; no shells, wet edge or footprints.',
+  },
+  {
+    id: 'coral-limestone',
+    name: 'Dry coral limestone',
+    family: 'rock',
+    physicalSizeMeters: { width: 2, height: 2 },
+    description: 'Porous cream stone with pitted relief for coastal rocks and walls.',
+  },
+  {
+    id: 'coral-limestone-wet',
+    name: 'Wet coral limestone',
+    family: 'rock',
+    physicalSizeMeters: { width: 2, height: 2 },
+    description:
+      'The dry limestone darkened and smoothed by water; the same seed keeps identical relief.',
+  },
+  {
+    id: 'palm-frond',
+    name: 'Palm frond cutout',
+    family: 'foliage',
+    physicalSizeMeters: { width: 2, height: 2 },
+    description:
+      'Alpha-tested, double-sided frond card: a central rachis with tapering leaflets, base at the image bottom. Not tileable.',
+  },
+  {
+    id: 'driftwood',
+    name: 'Weathered driftwood',
+    family: 'wood',
+    physicalSizeMeters: { width: 1, height: 1 },
+    description:
+      'Sun-bleached silver-grey grain with deep weathered relief and a dry matte finish.',
+  },
+  {
+    id: 'thatch',
+    name: 'Straw thatch',
+    family: 'fiber',
+    physicalSizeMeters: { width: 1, height: 1 },
+    description: 'Vertical straw strands in horizontal courses for roofs and shelters.',
+  },
 ] as const;
+/** Presets whose output needs a schemaVersion 2 record (here, a V3 RGBA cutout). */
+const RECORD_V2_PRESETS: ReadonlySet<string> = new Set(['palm-frond']);
 export const materialPresetOptionsSchema = z
   .object({
     seed: z.number().int().min(-2147483648).max(2147483647),
@@ -65,19 +113,35 @@ export interface MaterialPresetSummary {
   description: string;
   tags: string[];
   recipeVersion: number;
+  /** Material record version `create-preset` saves: 2 when the preset needs RGBA alpha. */
+  recordSchemaVersion: 1 | 2;
 }
+export type MaterialPresetDraft = MaterialDraftV1 | ProceduralMaterialDraftV2;
 export function listMaterialPresets(): MaterialPresetSummary[] {
   return catalog.map((item) => ({
     ...item,
     physicalSizeMeters: { ...item.physicalSizeMeters },
     tags: [item.family, 'procedural'],
     recipeVersion: 1,
+    recordSchemaVersion: RECORD_V2_PRESETS.has(item.id) ? 2 : 1,
   }));
 }
+/** A preset draft for `createMaterialRecordV1`. Presets that need a V2 record are refused. */
 export function createMaterialPresetDraft(
   presetId: string,
   raw: MaterialPresetOptions,
 ): MaterialDraftV1 {
+  if (RECORD_V2_PRESETS.has(presetId))
+    throw new Error(
+      `${presetId} creates a schemaVersion 2 record; use createMaterialPresetDraftAny with createMaterialRecordV2.`,
+    );
+  return createMaterialPresetDraftAny(presetId, raw) as MaterialDraftV1;
+}
+/** Any preset's draft: schemaVersion 2 drafts go to `createMaterialRecordV2`, others to V1. */
+export function createMaterialPresetDraftAny(
+  presetId: string,
+  raw: MaterialPresetOptions,
+): MaterialPresetDraft {
   assertMaterialJson(raw);
   const options = materialPresetOptionsSchema.parse(raw);
   const preset = catalog.find((item) => item.id === presetId);
@@ -147,6 +211,47 @@ export function createMaterialPresetDraft(
       stripes(0x333333, 0xcccccc, 32, 90, 0.4),
     ];
     strength = 1;
+  } else if (presetId === 'beach-sand') {
+    color = [noise(0xcfb98f, 0xeadbb6, 32), noise(0xa8916a, 0xf6ecd4, 64, 0.25)];
+    height = [noise(0x707070, 0x909090, 32), stripes(0x6c6c6c, 0x949494, 12, 15, 0.35)];
+    roughnessLow = 215;
+    roughnessHigh = 245;
+    strength = 1.5;
+  } else if (presetId === 'coral-limestone' || presetId === 'coral-limestone-wet') {
+    // Both variants share the pitted height, so one seed gives identical relief wet or dry.
+    height = [noise(0x606060, 0xa0a0a0, 8), noise(0x303030, 0xd0d0d0, 32, 0.6)];
+    strength = 3;
+    if (presetId === 'coral-limestone') {
+      color = [noise(0xc9bea4, 0xe9e1cd, 8), noise(0x8a806b, 0xd9d0bb, 32, 0.3)];
+      roughnessLow = 200;
+      roughnessHigh = 240;
+    } else {
+      color = [noise(0x6f6553, 0x8f8670, 8), noise(0x4a4337, 0x7d7461, 32, 0.3)];
+      roughnessLow = 70;
+      roughnessHigh = 130;
+    }
+  } else if (presetId === 'palm-frond') {
+    color = [];
+    height = [noise(0x707070, 0x909090, 16), stripes(0x6a6a6a, 0x969696, 24, 45, 0.4)];
+    roughnessLow = 140;
+    roughnessHigh = 190;
+    strength = 1;
+  } else if (presetId === 'driftwood') {
+    color = [noise(0x8b8376, 0xc9c1b2, 4), stripes(0x756d61, 0xd2cabb, 48, 0, 0.35)];
+    height = [noise(0x5a5a5a, 0xa5a5a5, 4), stripes(0x404040, 0xc0c0c0, 48, 0, 0.45)];
+    roughnessLow = 200;
+    roughnessHigh = 245;
+    strength = 2.5;
+  } else if (presetId === 'thatch') {
+    color = [
+      stripes(0xa1843f, 0xd6bb7a, 64, 90),
+      noise(0x6e5a32, 0xc8a868, 16, 0.35),
+      stripes(0x5f4c27, 0xb89c5c, 8, 0, 0.25),
+    ];
+    height = [stripes(0x404040, 0xc0c0c0, 64, 90), stripes(0x505050, 0xb0b0b0, 8, 0, 0.4)];
+    roughnessLow = 220;
+    roughnessHigh = 250;
+    strength = 2.5;
   } else {
     color = [noise(0x4d3c2c, 0x887354, 4), noise(0x342a20, 0xa58f6b, 32, 0.25)];
     height = [noise(0x555555, 0xaaaaaa, 8), noise(0x222222, 0xdddddd, 32, 0.3)];
@@ -169,17 +274,15 @@ export function createMaterialPresetDraft(
       },
     ],
   };
-  return {
+  const identity = {
     materialId: options.materialId ?? preset.id,
     name: preset.name,
     tags: [preset.family, 'procedural'],
-    tileable: true,
     physicalSizeMeters: { ...preset.physicalSizeMeters },
-    parameters: { metalness: 1, roughness: 1 },
     sources: [
       {
         id: 'preset',
-        kind: 'procedural',
+        kind: 'procedural' as const,
         provider: 'Kiln material presets v1',
         creator: options.creator,
         assetId: preset.id,
@@ -187,21 +290,117 @@ export function createMaterialPresetDraft(
         originalFiles: [],
       },
     ],
+  };
+  const derive = { kind: 'normal-from-height' as const, strength };
+  const roughnessMap = spec('metallicRoughness', [
+    noise(packed(roughnessLow), packed(roughnessHigh), 8),
+  ]);
+  if (presetId === 'palm-frond') {
+    const sampler = {
+      minFilter: 'linear-mipmap-linear',
+      magFilter: 'linear',
+      wrapS: 'clamp-to-edge',
+      wrapT: 'clamp-to-edge',
+    } as const;
+    return {
+      schemaVersion: 2,
+      ...identity,
+      tileable: false,
+      parameters: {
+        metalness: 1,
+        roughness: 1,
+        alphaMode: 'mask',
+        alphaCutoff: 0.5,
+        doubleSided: true,
+      },
+      maps: [
+        {
+          ...common,
+          slot: 'baseColor',
+          sampler,
+          procedural: frondCutout(options.size, options.seed),
+        },
+        { ...common, slot: 'normal', sampler, procedural: spec('normal', height), derive },
+        { ...common, slot: 'metallicRoughness', sampler, procedural: roughnessMap },
+      ],
+    } as ProceduralMaterialDraftV2;
+  }
+  return {
+    materialId: identity.materialId,
+    name: identity.name,
+    tags: identity.tags,
+    tileable: true,
+    physicalSizeMeters: identity.physicalSizeMeters,
+    parameters: { metalness: 1, roughness: 1 },
+    sources: identity.sources,
     maps: [
       { ...common, slot: 'baseColor', procedural: spec('albedo', color) },
-      {
-        ...common,
-        slot: 'normal',
-        procedural: spec('normal', height),
-        derive: { kind: 'normal-from-height', strength },
-      },
-      {
-        ...common,
-        slot: 'metallicRoughness',
-        procedural: spec('metallicRoughness', [
-          noise(packed(roughnessLow), packed(roughnessHigh), 8),
-        ]),
-      },
+      { ...common, slot: 'normal', procedural: spec('normal', height), derive },
+      { ...common, slot: 'metallicRoughness', procedural: roughnessMap },
     ],
+  };
+}
+
+/** Deterministic 32-bit generator for preset geometry; never Math.random. */
+function presetRandom(seed: number) {
+  let state = seed >>> 0;
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let t = state;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/**
+ * V3 RGBA frond silhouette: a rachis up the image centre from the bottom edge, with paired
+ * leaflets that shorten and narrow toward the tip. Everything else is fully transparent.
+ */
+function frondCutout(size: number, seed: number) {
+  const random = presetRandom(seed);
+  const unit = size / 64;
+  const centre = Math.round(size / 2);
+  const inside = (value: number) => Math.min(size - 2, Math.max(1, Math.round(value)));
+  const shade = (base: number, spread: number) =>
+    Math.min(255, Math.max(0, Math.round(base + (random() - 0.5) * spread)));
+  const operations: object[] = [];
+  const leaflets = 12;
+  for (let i = 0; i < leaflets; i++) {
+    const along = (i + 0.5) / leaflets;
+    const y = size - 3 * unit - along * (size - 8 * unit);
+    const width = Math.max(1, Math.round((2.4 - 1.4 * along) * unit));
+    for (const side of [-1, 1]) {
+      const reach = (0.44 - 0.3 * along) * size * (0.9 + 0.2 * random());
+      const rise = (0.08 + 0.06 * random()) * size;
+      operations.push({
+        op: 'paint',
+        shape: {
+          kind: 'line',
+          from: [centre, inside(y)],
+          to: [inside(centre + side * reach), inside(y - rise)],
+          width,
+        },
+        rgba: [shade(64, 24), shade(116, 30), shade(44, 18), 255],
+      });
+    }
+  }
+  operations.push({
+    op: 'paint',
+    shape: {
+      kind: 'line',
+      from: [centre, size - 1],
+      to: [centre, inside(2 * unit)],
+      width: Math.max(1, Math.round(1.5 * unit)),
+    },
+    rgba: [104, 98, 46, 255],
+  });
+  return {
+    schemaVersion: 3 as const,
+    width: size,
+    height: size,
+    usage: 'albedo' as const,
+    background: [0, 0, 0, 0],
+    operations,
   };
 }

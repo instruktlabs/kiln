@@ -141,7 +141,7 @@ test('material tools discover and instantiate shipped presets without external p
   const catalog = (await tool.run({ action: 'presets', tag: 'wood' })) as {
     presets: { id: string }[];
   };
-  expect(catalog.presets).toHaveLength(1);
+  expect(catalog.presets.map((preset) => preset.id)).toEqual(['wood-grain', 'driftwood']);
   const input = {
     action: 'create-preset',
     presetId: catalog.presets[0]!.id,
@@ -153,4 +153,12 @@ test('material tools discover and instantiate shipped presets without external p
   const result = (await tool.run(input)) as { material: { materialId: string } };
   expect(result.material.materialId).toBe('wood-grain');
   expect(await tool.run(input)).toEqual(result);
+  const frond = (await tool.run({ ...input, presetId: 'palm-frond' })) as {
+    material: { materialId: string; schemaVersion: number; parameters: object };
+  };
+  expect(frond.material).toMatchObject({
+    materialId: 'palm-frond',
+    schemaVersion: 2,
+    parameters: { alphaMode: 'mask', doubleSided: true },
+  });
 });

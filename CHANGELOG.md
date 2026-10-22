@@ -55,6 +55,12 @@ does not publish a package.
   listed with their parts, the differing factors, what a merge needs and the projected
   material count and grade. The advice is labelled optional and never changes the grade or
   any QA disposition (#209).
+- Add natural material presets `beach-sand`, `coral-limestone`, `coral-limestone-wet`,
+  `palm-frond`, `driftwood` and `thatch`, tagged by family (`ground`, `rock`, `foliage`,
+  `wood`, `fiber`). `palm-frond` is an alpha-tested, double-sided cutout saved as a
+  `schemaVersion:2` record; `createMaterialPresetDraftAny` returns any preset's draft, and
+  preset summaries report `recordSchemaVersion`. The docs list the presets as a table that a
+  test keeps in step with the catalog (#210).
 
 ## 1.3.1 (2026-10-17)
 

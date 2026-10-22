@@ -48349,10 +48349,11 @@ function listMaterialPresets() {
     ...item,
     physicalSizeMeters: { ...item.physicalSizeMeters },
     tags: [item.family, "procedural"],
-    recipeVersion: 1
+    recipeVersion: 1,
+    recordSchemaVersion: RECORD_V2_PRESETS.has(item.id) ? 2 : 1
   }));
 }
-function createMaterialPresetDraft(presetId, raw) {
+function createMaterialPresetDraftAny(presetId, raw) {
   assertMaterialJson(raw);
   const options = materialPresetOptionsSchema.parse(raw);
   const preset = catalog2.find((item) => item.id === presetId);
@@ -48417,6 +48418,46 @@ function createMaterialPresetDraft(presetId, raw) {
       stripes(3355443, 13421772, 32, 90, 0.4)
     ];
     strength = 1;
+  } else if (presetId === "beach-sand") {
+    color = [noise(13613455, 15391670, 32), noise(11047274, 16182484, 64, 0.25)];
+    height = [noise(7368816, 9474192, 32), stripes(7105644, 9737364, 12, 15, 0.35)];
+    roughnessLow = 215;
+    roughnessHigh = 245;
+    strength = 1.5;
+  } else if (presetId === "coral-limestone" || presetId === "coral-limestone-wet") {
+    height = [noise(6316128, 10526880, 8), noise(3158064, 13684944, 32, 0.6)];
+    strength = 3;
+    if (presetId === "coral-limestone") {
+      color = [noise(13221540, 15327693, 8), noise(9076843, 14274747, 32, 0.3)];
+      roughnessLow = 200;
+      roughnessHigh = 240;
+    } else {
+      color = [noise(7300435, 9406064, 8), noise(4866871, 8221793, 32, 0.3)];
+      roughnessLow = 70;
+      roughnessHigh = 130;
+    }
+  } else if (presetId === "palm-frond") {
+    color = [];
+    height = [noise(7368816, 9474192, 16), stripes(6974058, 9868950, 24, 45, 0.4)];
+    roughnessLow = 140;
+    roughnessHigh = 190;
+    strength = 1;
+  } else if (presetId === "driftwood") {
+    color = [noise(9143158, 13222322, 4), stripes(7695713, 13814459, 48, 0, 0.35)];
+    height = [noise(5921370, 10855845, 4), stripes(4210752, 12632256, 48, 0, 0.45)];
+    roughnessLow = 200;
+    roughnessHigh = 245;
+    strength = 2.5;
+  } else if (presetId === "thatch") {
+    color = [
+      stripes(10585151, 14072698, 64, 90),
+      noise(7232050, 13150312, 16, 0.35),
+      stripes(6245415, 12098652, 8, 0, 0.25)
+    ];
+    height = [stripes(4210752, 12632256, 64, 90), stripes(5263440, 11579568, 8, 0, 0.4)];
+    roughnessLow = 220;
+    roughnessHigh = 250;
+    strength = 2.5;
   } else {
     color = [noise(5061676, 8942420, 4), noise(3418656, 10850155, 32, 0.25)];
     height = [noise(5592405, 11184810, 8), noise(2236962, 14540253, 32, 0.3)];
@@ -48436,13 +48477,11 @@ function createMaterialPresetDraft(presetId, raw) {
       }
     ]
   };
-  return {
+  const identity = {
     materialId: options.materialId ?? preset.id,
     name: preset.name,
     tags: [preset.family, "procedural"],
-    tileable: true,
     physicalSizeMeters: { ...preset.physicalSizeMeters },
-    parameters: { metalness: 1, roughness: 1 },
     sources: [
       {
         id: "preset",
@@ -48453,26 +48492,114 @@ function createMaterialPresetDraft(presetId, raw) {
         license: options.license,
         originalFiles: []
       }
-    ],
+    ]
+  };
+  const derive = { kind: "normal-from-height", strength };
+  const roughnessMap = spec("metallicRoughness", [
+    noise(packed(roughnessLow), packed(roughnessHigh), 8)
+  ]);
+  if (presetId === "palm-frond") {
+    const sampler = {
+      minFilter: "linear-mipmap-linear",
+      magFilter: "linear",
+      wrapS: "clamp-to-edge",
+      wrapT: "clamp-to-edge"
+    };
+    return {
+      schemaVersion: 2,
+      ...identity,
+      tileable: false,
+      parameters: {
+        metalness: 1,
+        roughness: 1,
+        alphaMode: "mask",
+        alphaCutoff: 0.5,
+        doubleSided: true
+      },
+      maps: [
+        {
+          ...common,
+          slot: "baseColor",
+          sampler,
+          procedural: frondCutout(options.size, options.seed)
+        },
+        { ...common, slot: "normal", sampler, procedural: spec("normal", height), derive },
+        { ...common, slot: "metallicRoughness", sampler, procedural: roughnessMap }
+      ]
+    };
+  }
+  return {
+    materialId: identity.materialId,
+    name: identity.name,
+    tags: identity.tags,
+    tileable: true,
+    physicalSizeMeters: identity.physicalSizeMeters,
+    parameters: { metalness: 1, roughness: 1 },
+    sources: identity.sources,
     maps: [
       { ...common, slot: "baseColor", procedural: spec("albedo", color) },
-      {
-        ...common,
-        slot: "normal",
-        procedural: spec("normal", height),
-        derive: { kind: "normal-from-height", strength }
-      },
-      {
-        ...common,
-        slot: "metallicRoughness",
-        procedural: spec("metallicRoughness", [
-          noise(packed(roughnessLow), packed(roughnessHigh), 8)
-        ])
-      }
+      { ...common, slot: "normal", procedural: spec("normal", height), derive },
+      { ...common, slot: "metallicRoughness", procedural: roughnessMap }
     ]
   };
 }
-var catalog2, materialPresetOptionsSchema;
+function presetRandom(seed) {
+  let state = seed >>> 0;
+  return () => {
+    state = state + 1831565813 >>> 0;
+    let t = state;
+    t = Math.imul(t ^ t >>> 15, t | 1);
+    t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function frondCutout(size, seed) {
+  const random = presetRandom(seed);
+  const unit = size / 64;
+  const centre = Math.round(size / 2);
+  const inside = (value) => Math.min(size - 2, Math.max(1, Math.round(value)));
+  const shade = (base, spread) => Math.min(255, Math.max(0, Math.round(base + (random() - 0.5) * spread)));
+  const operations = [];
+  const leaflets = 12;
+  for (let i = 0;i < leaflets; i++) {
+    const along = (i + 0.5) / leaflets;
+    const y = size - 3 * unit - along * (size - 8 * unit);
+    const width = Math.max(1, Math.round((2.4 - 1.4 * along) * unit));
+    for (const side of [-1, 1]) {
+      const reach = (0.44 - 0.3 * along) * size * (0.9 + 0.2 * random());
+      const rise = (0.08 + 0.06 * random()) * size;
+      operations.push({
+        op: "paint",
+        shape: {
+          kind: "line",
+          from: [centre, inside(y)],
+          to: [inside(centre + side * reach), inside(y - rise)],
+          width
+        },
+        rgba: [shade(64, 24), shade(116, 30), shade(44, 18), 255]
+      });
+    }
+  }
+  operations.push({
+    op: "paint",
+    shape: {
+      kind: "line",
+      from: [centre, size - 1],
+      to: [centre, inside(2 * unit)],
+      width: Math.max(1, Math.round(1.5 * unit))
+    },
+    rgba: [104, 98, 46, 255]
+  });
+  return {
+    schemaVersion: 3,
+    width: size,
+    height: size,
+    usage: "albedo",
+    background: [0, 0, 0, 0],
+    operations
+  };
+}
+var catalog2, RECORD_V2_PRESETS, materialPresetOptionsSchema;
 var init_material_presets = __esm(() => {
   init_material_library();
   catalog2 = [
@@ -48510,8 +48637,51 @@ var init_material_presets = __esm(() => {
       family: "ground",
       physicalSizeMeters: { width: 2, height: 2 },
       description: "Layered granular soil variation and subtle relief for terrain and planting beds."
+    },
+    {
+      id: "beach-sand",
+      name: "Pale beach sand",
+      family: "ground",
+      physicalSizeMeters: { width: 1, height: 1 },
+      description: "Fine pale grains with shallow wind ripples; no shells, wet edge or footprints."
+    },
+    {
+      id: "coral-limestone",
+      name: "Dry coral limestone",
+      family: "rock",
+      physicalSizeMeters: { width: 2, height: 2 },
+      description: "Porous cream stone with pitted relief for coastal rocks and walls."
+    },
+    {
+      id: "coral-limestone-wet",
+      name: "Wet coral limestone",
+      family: "rock",
+      physicalSizeMeters: { width: 2, height: 2 },
+      description: "The dry limestone darkened and smoothed by water; the same seed keeps identical relief."
+    },
+    {
+      id: "palm-frond",
+      name: "Palm frond cutout",
+      family: "foliage",
+      physicalSizeMeters: { width: 2, height: 2 },
+      description: "Alpha-tested, double-sided frond card: a central rachis with tapering leaflets, base at the image bottom. Not tileable."
+    },
+    {
+      id: "driftwood",
+      name: "Weathered driftwood",
+      family: "wood",
+      physicalSizeMeters: { width: 1, height: 1 },
+      description: "Sun-bleached silver-grey grain with deep weathered relief and a dry matte finish."
+    },
+    {
+      id: "thatch",
+      name: "Straw thatch",
+      family: "fiber",
+      physicalSizeMeters: { width: 1, height: 1 },
+      description: "Vertical straw strands in horizontal courses for roofs and shelters."
     }
   ];
+  RECORD_V2_PRESETS = new Set(["palm-frond"]);
   materialPresetOptionsSchema = z18.object({
     seed: z18.number().int().min(-2147483648).max(2147483647),
     size: z18.union([z18.literal(64), z18.literal(128), z18.literal(256), z18.literal(512)]).default(256),
@@ -48572,7 +48742,8 @@ function createKilnMaterialDef(library, presentation = "grouped") {
             license: input.license,
             materialId: input.materialId
           }).filter(([, value]) => value !== undefined));
-          const record = await createMaterialRecordV1(createMaterialPresetDraft(input.presetId, options));
+          const draft = createMaterialPresetDraftAny(input.presetId, options);
+          const record = "schemaVersion" in draft ? await createMaterialRecordV2(draft) : await createMaterialRecordV1(draft);
           const [material] = await library.import([record]);
           return materialResult(material);
         }
