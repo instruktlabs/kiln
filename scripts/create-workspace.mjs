@@ -50,6 +50,47 @@ const skillRegistries = (harness) =>
 const allSkillRegistries = ['.claude/skills', '.agents/skills'];
 /** Claude Code reads CLAUDE.md and, by default, AGENTS.md only where no CLAUDE.md exists. */
 const claudeImport = '@AGENTS.md\n';
+/**
+ * The compaction handoff the guide names. A host that grants edits only under one folder
+ * asked for approval on every update of a root file (#212), and editing the guide to move
+ * it became an upgrade conflict, so setup records the path and renders it instead.
+ */
+export const DEFAULT_PROGRESS_FILE = 'KILN_PROGRESS.md';
+export function validateProgressFile(value) {
+  const segments = typeof value === 'string' ? value.split('/') : [];
+  if (
+    typeof value !== 'string' ||
+    value.length > 200 ||
+    !value.endsWith('.md') ||
+    value.includes('\\') ||
+    value.includes(':') ||
+    segments.some(
+      (s) =>
+        !s ||
+        s === '.' ||
+        s === '..' ||
+        [...s].some((c) => c.charCodeAt(0) < 32 || '<>"|?*'.includes(c)),
+    )
+  )
+    throw new Error(
+      '--progress-file must be a workspace-relative .md path with forward slashes, at most 200 characters, without absolute paths, drive letters, .. or empty segments.',
+    );
+  if (
+    ['AGENTS.md', 'CLAUDE.md', 'START.md'].includes(value) ||
+    ['.kiln/', 'skills/', ...allSkillRegistries.map((r) => `${r}/`)].some((p) =>
+      value.startsWith(p),
+    )
+  )
+    throw new Error(
+      '--progress-file cannot be a managed path: AGENTS.md, CLAUDE.md, START.md, .kiln/ or a skills folder.',
+    );
+  return value;
+}
+/** The default keeps the guide byte-identical; a configured path is named explicitly. */
+const progressPhrase = (progressFile) =>
+  progressFile === DEFAULT_PROGRESS_FILE
+    ? DEFAULT_PROGRESS_FILE
+    : `progress file at ${progressFile} in this workspace`;
 const core = ['kiln-author-asset', 'kiln-refine-asset', 'kiln-qa-asset'];
 const optional = { compose: 'kiln-compose-scene', batch: 'kiln-batch-dispatch' };
 const inside = (parent, child) => {
@@ -316,7 +357,14 @@ try {
   return { files, store, server };
 }
 
-function startGuide(root, runtime, harness, nodeExecutable, server) {
+function startGuide(
+  root,
+  runtime,
+  harness,
+  nodeExecutable,
+  server,
+  progressFile = DEFAULT_PROGRESS_FILE,
+) {
   const launchers = { agy: 'node agy.mjs', hermes: 'node hermes.mjs' };
   const command = launchers[harness] ?? harness;
   const launch =
@@ -327,10 +375,10 @@ function startGuide(root, runtime, harness, nodeExecutable, server) {
         : harness === 'codex'
           ? 'Codex reads this directory\'s `.codex/config.toml` only once your $CODEX_HOME/config.toml marks the project trusted, so `node codex.mjs` passes the same server, program store and directory as per-invocation `-c` overrides. It writes nothing outside this directory and leaves your $CODEX_HOME and its authentication untouched. Bare `codex` here reaches the Kiln tools only after you trust the project. For headless runs, add the prompt: node codex.mjs "Read AGENTS.md and the project skills, then YOUR TASK.".'
           : `This directory is configured for ${harness}.`;
-  return `# Start making assets\n\n\`\`\`bash\ncd ${root}\n${command}\n\`\`\`\n\n${launch} Accept the project/MCP trust prompts. Ask the agent to read AGENTS.md and create an asset. Kiln needs no separate model key.\n\nCore author/refine/QA skills are installed and registered for this harness. Optional compose/batch skills are selected at setup with --skills compose,batch.\n\nThese are shared CLI/MCP skills for your chosen harness. The optional built-in Strands agent adds its workflow internally; do not copy its prompt or native workflow into this workspace.\n\nLong-running and headless sessions may compact context automatically. AGENTS.md describes the harness-neutral KILN_PROGRESS.md handoff that preserves the current programRef and next action across compaction. Harness-specific thresholds are documented in Kiln's docs/harnesses.md; leave native automatic compaction enabled when the active model's context size is unknown.\n\nKeep assets here and engine source outside. This separates task context, not operating-system permissions. User instructions and authentication can still apply.\n\nRun repair after anything that invalidates the generated absolute paths: moving this workspace, moving or reinstalling the runtime, or removing the Node executable that setup recorded. The manifest pins the exact interpreter the preflight check validated. Invoking the CLI with another supported Node does not require repair while the recorded executable remains available.\n\n\`\`\`bash\nnode ${join(runtime, 'scripts/create-workspace.mjs')} ${root} --repair\n\`\`\`\n\nThat path is where the installation was at setup. If the installation itself moved, run the same command from its current location; \`runtime\` in .kiln/workspace.json records where this workspace last expected it.\n\nRepair updates generated runtime paths only and refuses edited configuration. For a runtime or skill update, stop the harness/MCP session, run kiln-init on this directory with --check and then --upgrade, and restart the session. Upgrade refreshes unchanged managed configuration, instructions and all skill copies; conflicting edits stop it before writing. Preserve and resolve the named files explicitly. Assets and saved revisions remain in place.\n`;
+  return `# Start making assets\n\n\`\`\`bash\ncd ${root}\n${command}\n\`\`\`\n\n${launch} Accept the project/MCP trust prompts. Ask the agent to read AGENTS.md and create an asset. Kiln needs no separate model key.\n\nCore author/refine/QA skills are installed and registered for this harness. Optional compose/batch skills are selected at setup with --skills compose,batch.\n\nThese are shared CLI/MCP skills for your chosen harness. The optional built-in Strands agent adds its workflow internally; do not copy its prompt or native workflow into this workspace.\n\nLong-running and headless sessions may compact context automatically. AGENTS.md describes the harness-neutral ${progressFile} handoff that preserves the current programRef and next action across compaction. Harness-specific thresholds are documented in Kiln's docs/harnesses.md; leave native automatic compaction enabled when the active model's context size is unknown.\n\nKeep assets here and engine source outside. This separates task context, not operating-system permissions. User instructions and authentication can still apply.\n\nRun repair after anything that invalidates the generated absolute paths: moving this workspace, moving or reinstalling the runtime, or removing the Node executable that setup recorded. The manifest pins the exact interpreter the preflight check validated. Invoking the CLI with another supported Node does not require repair while the recorded executable remains available.\n\n\`\`\`bash\nnode ${join(runtime, 'scripts/create-workspace.mjs')} ${root} --repair\n\`\`\`\n\nThat path is where the installation was at setup. If the installation itself moved, run the same command from its current location; \`runtime\` in .kiln/workspace.json records where this workspace last expected it.\n\nRepair updates generated runtime paths only and refuses edited configuration. For a runtime or skill update, stop the harness/MCP session, run kiln-init on this directory with --check and then --upgrade, and restart the session. Upgrade refreshes unchanged managed configuration, instructions and all skill copies; conflicting edits stop it before writing. Preserve and resolve the named files explicitly. Assets and saved revisions remain in place.\n`;
 }
 
-const guide = `# Kiln asset workspace
+const workspaceGuide = (progressFile = DEFAULT_PROGRESS_FILE) => `# Kiln asset workspace
 
 Author and refine assets here. The engine is installed elsewhere; do not read its source or examples to solve an asset task.
 
@@ -358,7 +406,7 @@ Render mode is auto: scenes with textures or metalness use a compatible GPU rend
 
 ## Context compaction
 
-Long sessions compact. Keep a short KILN_PROGRESS.md with the goal, the current programRef, what changed and the exact next action; after compaction read it and continue, copying the programRef from it or from the latest result, never from memory.
+Long sessions compact. Keep a short ${progressPhrase(progressFile)} with the goal, the current programRef, what changed and the exact next action; after compaction read it and continue, copying the programRef from it or from the latest result, never from memory.
 
 Skills and MCP servers from user-level configuration still load here; report anything registered that is unrelated to this task. Keep .kiln/programs while working: references resolve only in the store that holds their source.
 `;
@@ -428,9 +476,10 @@ async function managedHashes(root, manifest, files) {
 /** Explicit update: compare original, local and current bytes before writing any file. */
 async function upgradeWorkspace(root, runtime, previous, manifest, files, check) {
   if (previous.schemaVersion !== 1) throw new Error('Unsupported workspace manifest version.');
+  const progressFile = manifest.progressFile ?? DEFAULT_PROGRESS_FILE;
   const desired = {
     ...files,
-    'AGENTS.md': guide,
+    'AGENTS.md': workspaceGuide(progressFile),
     'CLAUDE.md': claudeImport,
     'START.md': startGuide(
       root,
@@ -438,6 +487,7 @@ async function upgradeWorkspace(root, runtime, previous, manifest, files, check)
       manifest.harness,
       manifest.node,
       join(runtime, 'dist/mcp-server.mjs'),
+      progressFile,
     ),
   };
   const skillHashes = {};
@@ -597,6 +647,9 @@ export async function createWorkspace(directory, harness = 'claude', options = {
     throw new Error('Choose only one of --repair, --upgrade or --check.');
   if ((options.repair || options.upgrade || (options.check && !options.adopt)) && options.skills)
     throw new Error('Maintenance does not change the installed skill selection.');
+  if (options.repair && options.progressFile !== undefined)
+    throw new Error('--repair updates runtime paths only; change --progress-file with --upgrade.');
+  if (options.progressFile !== undefined) validateProgressFile(options.progressFile);
   let previous;
   if (options.adopt) {
     const bytes = await workspaceFile(root, '.kiln/workspace.json');
@@ -667,6 +720,11 @@ export async function createWorkspace(directory, harness = 'claude', options = {
   if (!options.adopt && !previous && exists && (await readdir(root)).length)
     throw new Error('The destination must be empty; no existing files were changed.');
   const { files, store, server } = managedFiles(root, runtime, harness, nodeExecutable);
+  // Maintenance keeps the recorded path; an explicit option chooses a new one.
+  const progressFile = validateProgressFile(
+    options.progressFile ?? previous?.progressFile ?? DEFAULT_PROGRESS_FILE,
+  );
+  const guide = workspaceGuide(progressFile);
   const manifest = {
     schemaVersion: 1,
     harness,
@@ -684,6 +742,7 @@ export async function createWorkspace(directory, harness = 'claude', options = {
     },
     node: nodeExecutable,
     skills,
+    ...(progressFile === DEFAULT_PROGRESS_FILE ? {} : { progressFile }),
     skillHashes: previous?.skillHashes,
     managedHashes: previous?.managedHashes
       ? {
@@ -706,7 +765,8 @@ export async function createWorkspace(directory, harness = 'claude', options = {
       guide,
       allowedHarnesses: harnesses,
       projectFiles: (selected) => managedFiles(root, runtime, selected, nodeExecutable).files,
-      startGuide: (selected) => startGuide(root, runtime, selected, nodeExecutable, server),
+      startGuide: (selected) =>
+        startGuide(root, runtime, selected, nodeExecutable, server, progressFile),
       skillFiles: async () => {
         const result = {};
         for (const skill of skills)
@@ -785,7 +845,7 @@ export async function createWorkspace(directory, harness = 'claude', options = {
     // config only once the home marks it trusted, and so could not see the tools.
     await writeFile(
       join(stage, 'START.md'),
-      startGuide(root, runtime, harness, nodeExecutable, server),
+      startGuide(root, runtime, harness, nodeExecutable, server, progressFile),
     );
     manifest.managedHashes = await managedHashes(stage, manifest, files);
     await writeFile(join(stage, '.kiln/workspace.json'), quote(manifest));
@@ -829,7 +889,7 @@ if (isDirectSetupEntry()) {
     const args = process.argv.slice(2);
     if (args.includes('--help') || args.includes('-h')) {
       console.log(
-        `Usage: kiln-init <empty-directory> [--harness ${harnesses.join('|')}] [--skills compose,batch]\n       kiln-init <project-or-new-workspace> --adopt [--harness NAME] [--check]\n       kiln-init <managed-workspace> --repair|--check|--upgrade\n       kiln-init <project> --recover`,
+        `Usage: kiln-init <empty-directory> [--harness ${harnesses.join('|')}] [--skills compose,batch] [--progress-file PATH]\n       kiln-init <project-or-new-workspace> --adopt [--harness NAME] [--progress-file PATH] [--check]\n       kiln-init <managed-workspace> --repair|--check|--upgrade [--progress-file PATH with --check or --upgrade]\n       kiln-init <project> --recover`,
       );
     } else {
       const directory = args.shift();
@@ -844,10 +904,11 @@ if (isDirectSetupEntry()) {
         else if (flag === '--check') options.check = true;
         else if (flag === '--adopt') options.adopt = true;
         else if (flag === '--recover') options.recover = true;
-        else if (flag === '--harness' || flag === '--skills') {
+        else if (flag === '--harness' || flag === '--skills' || flag === '--progress-file') {
           const value = args.shift();
           if (!value || value.startsWith('--')) throw new Error(`${flag} requires a value.`);
           if (flag === '--harness') harness = value;
+          else if (flag === '--progress-file') options.progressFile = value;
           else options.skills = value.split(',');
         } else throw new Error(`Unknown option: ${flag}`);
       }

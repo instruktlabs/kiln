@@ -157,6 +157,15 @@ have the agent update `KILN_PROGRESS.md` with the active goal, current `programR
 validation and render results, unresolved errors, and the exact next action. The generated
 workspace `AGENTS.md` carries this instruction so it survives every harness's summary mechanism.
 
+The handoff defaults to `KILN_PROGRESS.md` at the workspace root. A host whose edit permissions
+are scoped to one folder should place it inside an editable folder at setup:
+`kiln-init <workspace> --progress-file src/KILN_PROGRESS.md`. The path is workspace-relative,
+ends in `.md` and cannot be absolute, contain `..`, or name `AGENTS.md`, `START.md`, `.kiln/` or
+a skills folder. Setup records it in `.kiln/workspace.json` and names it in `AGENTS.md` and
+`START.md`; `--check`, `--upgrade` and `--repair` keep it, so it is never a conflicting edit.
+`--upgrade --progress-file PATH` moves an existing workspace's handoff. Do not edit the guide to
+move it: a local edit becomes a conflict the next time an upgrade changes the guide.
+
 `333000` tokens is a useful **large-context evaluation ceiling**, not a portable default. Apply it
 only after confirming that the selected model exposes more than 333k usable context. A 128k or 200k
 route needs its native lower trigger. When the window is unknown, leave the harness default alone.

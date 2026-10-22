@@ -333,6 +333,7 @@ export async function setupProject({
     runtimeHashes: metadata.runtimeHashes,
     node: metadata.node,
     skills: metadata.skills,
+    ...(metadata.progressFile ? { progressFile: metadata.progressFile } : {}),
     skillHashes: options.repair && previous ? previous.skillHashes : skillHashes,
     ownedFiles,
     configEntries,

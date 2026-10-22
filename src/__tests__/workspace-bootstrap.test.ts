@@ -271,6 +271,78 @@ it('steers the session to the loop, the render service and its own inherited con
   }
 }, 30000);
 
+it('records a configured progress file and keeps it through check, upgrade and repair', async () => {
+  // #212: a host that granted edits only under src/ prompted on every update of a root
+  // KILN_PROGRESS.md, and editing AGENTS.md to move it made the next guide change an
+  // upgrade conflict. Setup now records the path and renders it into both guides.
+  const root = await mkdtemp(join(tmpdir(), 'kiln-progress-file-'));
+  try {
+    const plain = join(root, 'plain');
+    expect(run([plain, '--harness', 'claude'], root).status).toBe(0);
+    const defaultGuide = await readFile(join(plain, 'AGENTS.md'), 'utf8');
+    expect(defaultGuide).toContain('Keep a short KILN_PROGRESS.md with the goal');
+    expect(
+      JSON.parse(await readFile(join(plain, '.kiln/workspace.json'), 'utf8')),
+    ).not.toHaveProperty('progressFile');
+
+    const task = join(root, 'scoped');
+    const path = 'src/notes/KILN_PROGRESS.md';
+    expect(run([task, '--harness', 'claude', '--progress-file', path], root).status).toBe(0);
+    const guide = await readFile(join(task, 'AGENTS.md'), 'utf8');
+    expect(guide).toContain(`Keep a short progress file at ${path} in this workspace`);
+    expect(guide.length).toBeLessThanOrEqual(5_000);
+    expect(await readFile(join(task, 'START.md'), 'utf8')).toContain(
+      `harness-neutral ${path} handoff`,
+    );
+    const manifest = () => readFile(join(task, '.kiln/workspace.json'), 'utf8').then(JSON.parse);
+    expect((await manifest()).progressFile).toBe(path);
+
+    const check = run([task, '--check'], root);
+    expect(check.status).toBe(0);
+    expect(JSON.parse(check.stdout).status).toBe('current');
+    expect(run([task, '--upgrade'], root).status).toBe(0);
+    expect(run([task, '--repair'], root).status).toBe(0);
+    expect(await readFile(join(task, 'AGENTS.md'), 'utf8')).toBe(guide);
+    expect((await manifest()).progressFile).toBe(path);
+
+    // An explicit upgrade moves it without a conflict; --repair refuses to.
+    expect(run([task, '--upgrade', '--progress-file', 'docs/progress.md'], root).status).toBe(0);
+    expect(await readFile(join(task, 'AGENTS.md'), 'utf8')).toContain(
+      'progress file at docs/progress.md in this workspace',
+    );
+    expect(run([task, '--repair', '--progress-file', 'other.md'], root).status).toBe(1);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}, 60000);
+
+it('refuses progress files outside the workspace or on managed paths', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-progress-refused-'));
+  try {
+    for (const [index, path] of [
+      '/abs/KILN_PROGRESS.md',
+      'C:/KILN_PROGRESS.md',
+      '../KILN_PROGRESS.md',
+      'src/../../KILN_PROGRESS.md',
+      'src\\KILN_PROGRESS.md',
+      'src//KILN_PROGRESS.md',
+      'progress.txt',
+      'AGENTS.md',
+      '.kiln/KILN_PROGRESS.md',
+      'skills/KILN_PROGRESS.md',
+      '.claude/skills/KILN_PROGRESS.md',
+    ].entries()) {
+      const task = join(root, String(index));
+      const result = run([task, '--harness', 'claude', '--progress-file', path], root);
+      expect(result.status).toBe(1);
+      expect(result.stderr).toContain('--progress-file');
+      await expect(stat(task)).rejects.toThrow();
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}, 60000);
+
 it('registers skills once, in the one directory each harness reads', async () => {
   const root = await mkdtemp(join(tmpdir(), 'kiln-skill-registry-'));
   try {

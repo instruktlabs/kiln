@@ -278,6 +278,10 @@ and QA skills are included. Add scene composition and batch dispatch when needed
 node scripts/create-workspace.mjs ../my-scene --harness codex --skills compose,batch
 ```
 
+`--progress-file PATH` names the workspace-relative compaction handoff the guide tells the
+agent to keep (default `KILN_PROGRESS.md` at the root). Choose a folder the host lets the agent
+edit; see [long-running sessions](harnesses.md#long-running-sessions-and-compaction).
+
 Skills are ordinary Markdown files with supporting resources. Ask the agent to read
 `AGENTS.md` and the relevant skill; a special skill loader is not required. Setup does
 not change global skills, configuration, or authentication.

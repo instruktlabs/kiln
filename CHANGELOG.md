@@ -22,6 +22,12 @@ does not publish a package.
   Status and reprobe results add `ready`, `activeRoute` (`gpu` or `cpu`) and `fallback`
   (`active`, with `materialFaithful: false` and a `reason` when views will be CPU
   geometry). `kiln_discover({ capabilities: true })` is unchanged.
+- Add `kiln-init --progress-file PATH` for the compaction handoff
+  ([#212](https://github.com/instruktlabs/kiln/issues/212)). The workspace-relative path is
+  recorded in `.kiln/workspace.json`, named in `AGENTS.md` and `START.md`, and kept by
+  `--check`, `--upgrade` and `--repair`, so a host with folder-scoped edit permissions
+  no longer approves every root `KILN_PROGRESS.md` update. Absolute, traversal and managed
+  paths are refused. The default guide is unchanged.
 
 ## 1.3.1 (2026-10-17)
 
