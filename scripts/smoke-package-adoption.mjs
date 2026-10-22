@@ -62,10 +62,16 @@ export async function smokePackageAdoption({ runtime, root, command, connect, te
     "createPart('Body', boxGeo(1,1,1), gameMaterial(0x808080), {position:[0,0.5,0],parent:root});\n" +
     'return root; }\n';
   const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
-  let programRef, asset, sourceUri, glbUri, glbHash;
+  let programRef, asset, sourceUri, glbUri, glbHash, toolNames;
+  // The registry matrix also runs this against older releases, whose tool count differs:
+  // require the host-injected tools and the same surface for both clients instead.
+  const names = async (session) =>
+    (await session.call('tools/list', {})).tools.map((t) => t.name).sort();
   const first = await sessionFor(claude);
   try {
-    assert.equal((await first.call('tools/list', {})).tools.length, 18);
+    toolNames = await names(first);
+    for (const name of ['kiln_project', 'kiln_material', 'kiln_review', 'kiln_render'])
+      assert.ok(toolNames.includes(name), `adopted workspace serves ${name}`);
     programRef = (await tool(first, 'kiln_validate', { code: source })).programRef;
     assert.equal(typeof programRef, 'string');
     await tool(first, 'kiln_render', { programRef, capture: { preset: '1x1' } });
@@ -85,7 +91,7 @@ export async function smokePackageAdoption({ runtime, root, command, connect, te
   assert.equal(codex.env.KILN_PROGRAM_STORE, claude.env.KILN_PROGRAM_STORE);
   const second = await sessionFor(codex);
   try {
-    assert.equal((await second.call('tools/list', {})).tools.length, 18);
+    assert.deepEqual(await names(second), toolNames);
     assert.match(
       (await tool(second, 'kiln_source', { programRef, query: 'ContractCube' })).code,
       /ContractCube/,
