@@ -35,7 +35,8 @@ See [package.json](../package.json) for all exports.
 
 [src/tools/registry.ts](../src/tools/registry.ts) owns the current tool definitions.
 `createKilnProgramToolRegistry` supplies fifteen MCP tools; the packaged local host
-adds `kiln_project`, `kiln_material` and `kiln_review`, for eighteen over stdio.
+adds `kiln_project`, `kiln_material` and `kiln_review`, for eighteen over stdio, and
+`kiln_export_to` when `KILN_EXPORT_ROOT` is set.
 `createKilnNativeToolRegistry` reuses those definitions, removes unavailable delivery
 services and adds exact-reference completion. The retired mutable-buffer factories
 and separate `kiln_screenshot` are not the supported native workflow.

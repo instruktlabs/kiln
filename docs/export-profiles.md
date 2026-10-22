@@ -119,8 +119,41 @@ separate. Neither GLB contains the complete editable bundle. Gallery examples ar
 historical showcases and may still contain modeling defects.
 
 Runtime results do not reuse configured canonical download URLs: those would deliver
-the wrong GLB. Client support for saving MCP resources varies. Use the local CLI pair
-when the client cannot save them. No binary data is put into tool text.
+the wrong GLB. Client support for saving MCP resources varies. No binary data is put
+into tool text. To write files, configure an export root (below) or use the local CLI.
+
+### Writing files: `kiln_export_to`
+
+When the host sets `KILN_EXPORT_ROOT` on the MCP server, it also advertises
+`kiln_export_to`. Without the variable the tool list and `kiln_export` are unchanged.
+
+```js
+kiln_export_to({ collection: "project", assetId, revisionId, path: "game/door.glb" })
+// game/door.glb
+// game/door.kiln-metadata.json
+kiln_export_to({ assetId, revisionId, path: "web/door.glb", target: "three" })
+kiln_export_to({ assetId, revisionId, path: "archive/door.glb", profile: "editable" })
+```
+
+- `profile` is `runtime` (default) or `editable`, which writes the exact saved GLB only;
+  ZIP and source stay resources. `target: "three"` requires `runtime`, as in the CLI,
+  and produces the same bytes as `export --profile runtime --target three` with the
+  same file name.
+- `path` is relative to the root: forward slashes, at most 240 characters and 8
+  segments, each segment portable (the filename-stem rule above), ending in `.glb`.
+  `..`, absolute, drive-letter and UNC paths, backslashes and Windows device names
+  are refused. The sidecar name is derived, `<stem>.kiln-metadata.json`, beside it.
+- Existing files are never replaced, through the same writer as the CLI. Directories
+  that are symlinks or junctions are refused; missing directories are created.
+- The receipt is the CLI `--json` receipt with paths relative to the root:
+  `ok`, `collection`, `assetId`, `revisionId`, `profile`, `target?`, `format: "glb"`,
+  `drawDiagnostics` and `files[{ kind, path, bytes, sha256 }]`. No absolute path or
+  file bytes appear in tool text.
+
+The root is host configuration, never a tool input: an existing absolute directory
+(on Windows a drive or UNC path) that neither contains nor sits inside a collection
+directory or the workspace `.kiln/`. It is a destination, not project membership.
+Render output has no file destination: delivery starts from a saved revision.
 
 ## TypeScript library
 
@@ -447,7 +480,8 @@ of exporter backend qualification and optional geometry/texture compression.
    does not acquire editable source through either profile.
 3. Keep the editable ZIP when source is available. For runtime delivery, save the
    GLB and the named sidecar without renaming or reserializing the sidecar. The CLI
-   writes the pair; MCP resource delivery depends on the host's download support.
+   and, when the host sets an export root, `kiln_export_to` write the pair; other MCP
+   resource delivery depends on the host's download support.
 4. Verify that the runtime GLB loads and its native animations play independently.
    Verify the sidecar filename and byte hash when checking provenance. Use the
    canonical asset for Kiln's full review workflow; standard loaders do not fetch

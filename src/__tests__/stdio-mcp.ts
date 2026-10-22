@@ -86,6 +86,8 @@ export function startStdioServer(options: StartOptions): Promise<StdioServer> {
     KILN_PROGRAM_STORE: join(options.cwd, '.kiln', 'programs'),
     KILN_BUILD_CACHE: 'memory',
     KILN_EVALUATOR_MODE: 'in-process',
+    // An export root in the caller's shell must not change the advertised surface.
+    KILN_EXPORT_ROOT: '',
     ...options.env,
   };
   const child: ChildProcess = spawn(

@@ -138,6 +138,17 @@ does not publish a package.
   of the policy hash, so changing it refuses earlier reviewed artifacts. Tool input and
   source cannot weaken it, and Discovery capabilities show it as host-declared. Bindings
   without the key are unchanged.
+- Write exported files from MCP into a host-configured folder ([#207](https://github.com/instruktlabs/kiln/issues/207)).
+  When the MCP server's environment sets `KILN_EXPORT_ROOT` (an existing absolute
+  directory outside every collection and `.kiln/`), it also advertises `kiln_export_to`,
+  which writes one saved revision's GLB, and for the default runtime profile its
+  metadata sidecar, at a root-relative path. `profile: "editable"` writes the exact saved
+  GLB and `target: "three"` the three.js runtime GLB, byte-identical to CLI `export`.
+  Paths are relative, forward-slash and portable; links in the path and existing files
+  are refused, and the receipt is the CLI `--json` receipt with root-relative paths.
+  Without the variable the tool list is unchanged (eighteen tools), and `kiln_export`
+  stays read-only with the same schema. Native registries add it to the delivery tools
+  when an `exportRoot` writer is injected.
 
 ## 1.3.1 (2026-10-17)
 

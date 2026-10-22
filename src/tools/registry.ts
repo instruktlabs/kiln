@@ -186,6 +186,8 @@ export interface KilnToolContext {
   skillResourceReader?: import('./skill-resource').SkillResourceReader;
   /** Durable user collections, supplied by the host; never a disposable build cache. */
   assetLibrary?: import('../assets').AssetLibrary;
+  /** Host-configured export root; advertises kiln_export_to with an assetLibrary. No model-chosen root. */
+  exportRoot?: import('../export-root').ExportRootWriter;
   /** Host-owned delivery URLs, for example expiring HTTPS links or a running local viewer. */
   assetDownloadUrls?: (
     collection: string,
@@ -2667,6 +2669,7 @@ export function createKilnNativeToolRegistry(
     'kiln_save',
     'kiln_assets',
     'kiln_export',
+    'kiln_export_to',
     'kiln_import',
     'kiln_present',
   ]);
@@ -2959,6 +2962,22 @@ export function createKilnAssetDefs(
         'editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.',
       ),
   });
+  const exportToInput = exportInput.extend({
+    path: z
+      .string()
+      .max(240)
+      .describe(
+        'Root-relative .glb path with forward slashes, e.g. game/door.glb; runtime adds door.kiln-metadata.json beside it.',
+      ),
+    profile: z
+      .enum(['runtime', 'editable'])
+      .default('runtime')
+      .describe('runtime: standalone GLB plus metadata sidecar. editable: exact saved GLB only.'),
+    target: z
+      .enum(['three'])
+      .optional()
+      .describe('Runtime only: a three.js delivery GLB (instancing, quantization, meshopt).'),
+  });
   const importInput = z.object({
     ...selector,
     sourceCollection: selector.collection,
@@ -3195,6 +3214,9 @@ export function createKilnAssetDefs(
         };
       },
     },
+    ...(context.exportRoot && context.assetLibrary
+      ? [createKilnExportToDef(context.exportRoot, exportToInput, library, listCall)]
+      : []),
     {
       name: 'kiln_import',
       description:
@@ -3215,4 +3237,87 @@ export function createKilnAssetDefs(
       },
     },
   ];
+}
+
+/** `kiln_export_to` (#207): only with a host export root; the CLI export receipt, root-relative. */
+function createKilnExportToDef(
+  writer: import('../export-root').ExportRootWriter,
+  inputSchema: z.ZodType<{
+    collection: string;
+    assetId: string;
+    revisionId: string;
+    path: string;
+    profile: 'runtime' | 'editable';
+    target?: 'three';
+  }>,
+  library: () => import('../assets').AssetLibrary,
+  listCall: (collection: string) => string,
+): KilnToolDef {
+  return {
+    name: 'kiln_export_to',
+    description:
+      "Write one saved revision's GLB to a path under the host's export root. Default runtime writes the GLB plus its <stem>.kiln-metadata.json sidecar; editable writes the exact saved GLB; target three derives a three.js delivery GLB. Never replaces an existing file. Returns the CLI export receipt with root-relative paths, bytes and sha256.",
+    inputSchema,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
+    },
+    run: async (raw) => {
+      const input = inputSchema.parse(raw);
+      if (input.target !== undefined && input.profile !== 'runtime')
+        throw new Error('target requires profile runtime');
+      const { validateExportPath } = await import('../export-root');
+      const destination = validateExportPath(input.path);
+      const { exportAssetGlb, validateMetadataFileName } = await import('../asset-export');
+      if (input.profile === 'runtime') validateMetadataFileName(destination.metadataFileName);
+      const record = await readSavedRevision(
+        library(),
+        input.collection,
+        input.assetId,
+        input.revisionId,
+        listCall(input.collection),
+      );
+      const files: { kind: 'glb' | 'metadata'; path: string; data: Uint8Array }[] = [];
+      if (input.profile === 'runtime') {
+        const output = await exportAssetGlb(record, {
+          profile: 'runtime',
+          metadataFileName: destination.metadataFileName,
+          ...(input.target ? { target: input.target } : {}),
+        });
+        if (output.profile !== 'runtime') throw new Error('Expected runtime export');
+        files.push(
+          { kind: 'glb', path: destination.path, data: output.glb },
+          { kind: 'metadata', path: destination.metadataPath, data: output.metadata.bytes },
+        );
+      } else files.push({ kind: 'glb', path: destination.path, data: record.files['asset.glb']! });
+      // Sidecar first, as the CLI publishes: an interrupted pair never leaves a GLB alone.
+      await writer.writeNew([...files].reverse());
+      const { inspectDrawDiagnostics } = await import('../draw-diagnostics');
+      const digest = async (data: Uint8Array) =>
+        `sha256:${Array.from(
+          new Uint8Array(await crypto.subtle.digest('SHA-256', Uint8Array.from(data))),
+          (byte) => byte.toString(16).padStart(2, '0'),
+        ).join('')}`;
+      return {
+        ok: true,
+        collection: input.collection,
+        assetId: input.assetId,
+        revisionId: input.revisionId,
+        profile: input.profile,
+        ...(input.target ? { target: input.target } : {}),
+        format: 'glb',
+        drawDiagnostics: await inspectDrawDiagnostics(files[0]!.data),
+        files: await Promise.all(
+          files.map(async ({ kind, path, data }) => ({
+            kind,
+            path,
+            bytes: data.byteLength,
+            sha256: await digest(data),
+          })),
+        ),
+      };
+    },
+  };
 }

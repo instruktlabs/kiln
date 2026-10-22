@@ -15,6 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { localAssetLibrary } from './assets-node';
 import { type AssetLink, readAssetResource } from './assets-resources';
 import { buildRenderPort, resolveRenderMode } from './cli-render-mode';
+import { exportRootWriterFromEnv } from './export-root-node';
 import { FileLiveReview } from './live-review-node';
 import { createPackagedLocalToolContext } from './local-runtime';
 import { LOOPBACK_HOSTNAMES } from './loopback';
@@ -338,10 +339,17 @@ export async function createPackagedKilnHost(
   // back a port that starts the packaged renderer on the first view that needs
   // one, which is the only ordering a user can actually achieve: the harness owns
   // this process's lifecycle, so "start the renderer first" was never theirs to do.
+  const assetLibrary = localAssetLibrary();
+  // Checked at start: a bad root fails every call with the fix, never a write elsewhere.
+  const exportRoot = await exportRootWriterFromEnv(env, {
+    collectionRoots: assetLibrary.collections().map(({ id }) => assetLibrary.directory(id)),
+    workspaceRoot: localWorkspaceRoot(),
+  });
   const context = await createPackagedLocalToolContext({
     ...(await buildRenderPort(mode, env['KILN_RENDER_PORT_URL'], { autoSpawn: true })),
     requirements,
-    assetLibrary: localAssetLibrary(),
+    assetLibrary,
+    ...(exportRoot ? { exportRoot } : {}),
     ...(env.KILN_LIVE_REVIEW !== 'off'
       ? {
           liveReview: new FileLiveReview(localWorkspaceRoot(), {

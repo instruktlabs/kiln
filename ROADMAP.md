@@ -108,7 +108,7 @@ They are potential new scope, not prerequisites for the published scene.
 | Hide-node capture | `kiln.capture.v2` |
 | Intentional open shells | `markOpenShell`; measured overlap failures still apply |
 | LOD authoring/review | `defineLod`, `MSFT_lod`, LOD0 default views and per-level inspection; verify destination support |
-| MCP render file destination | Unadopted; CLI file output and MCP media/receipts remain supported |
+| MCP export file destination | Adopted (opt-in `KILN_EXPORT_ROOT`, `kiln_export_to`); render file output remains unadopted: delivery starts from a saved revision |
 
 Projects remain optional for standalone authoring.
 

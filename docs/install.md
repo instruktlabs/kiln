@@ -157,7 +157,8 @@ For agent-assisted installation, give your agent the repository URL and ask:
 
 The packaged local MCP server lists the fifteen base tools in the
 [generated tool reference](tools.md), plus `kiln_project`, `kiln_material` and
-`kiln_review` from the packaged local host: eighteen in all. When installing an
+`kiln_review` from the packaged local host: eighteen in all, and nineteen with
+`kiln_export_to` when `KILN_EXPORT_ROOT` is set. When installing an
 older release, use the documentation and receipt attached to that release; newer
 tools and migration changes are not retroactively available there.
 
@@ -476,6 +477,15 @@ an explicit store shared with your CLI:
 The table above names each client's native configuration location; their JSON/TOML
 shapes differ. Prefer generated configuration. Without an explicit store, the server
 uses `.kiln/programs` beneath its process working directory.
+
+To let the agent write exported files without a shell call, add `"KILN_EXPORT_ROOT"`
+to `env`: an existing absolute directory (on Windows a drive or UNC path, not Git Bash
+`/c/...`) outside every collection and the workspace `.kiln/`. The server then also
+advertises `kiln_export_to`, which writes a saved revision's GLB, and for the runtime
+profile its metadata sidecar, at a path relative to that directory and never replaces
+a file. Without the variable the tool list is unchanged. The server checks the
+directory when the engine starts; a wrong value fails each call with the fix. See
+[export profiles](export-profiles.md#mcp).
 
 For an explicitly bound asset brief, append `"--requirements"` and the absolute
 path to a host-binding JSON file to `args`. This optional policy is fixed for the

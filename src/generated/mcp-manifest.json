@@ -1992,6 +1992,61 @@
       }
     },
     {
+      "name": "kiln_export_to",
+      "description": "Write one saved revision's GLB to a path under the host's export root. Default runtime writes the GLB plus its <stem>.kiln-metadata.json sidecar; editable writes the exact saved GLB; target three derives a three.js delivery GLB. Never replaces an existing file. Returns the CLI export receipt with root-relative paths, bytes and sha256.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "default": "project",
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,79}$",
+            "description": "Collection ID (list with kiln_assets action=collections): the user destination, else project."
+          },
+          "assetId": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+          },
+          "revisionId": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+          },
+          "path": {
+            "type": "string",
+            "maxLength": 240,
+            "description": "Root-relative .glb path with forward slashes, e.g. game/door.glb; runtime adds door.kiln-metadata.json beside it."
+          },
+          "profile": {
+            "default": "runtime",
+            "description": "runtime: standalone GLB plus metadata sidecar. editable: exact saved GLB only.",
+            "type": "string",
+            "enum": [
+              "runtime",
+              "editable"
+            ]
+          },
+          "target": {
+            "description": "Runtime only: a three.js delivery GLB (instancing, quantization, meshopt).",
+            "type": "string",
+            "enum": [
+              "three"
+            ]
+          }
+        },
+        "required": [
+          "assetId",
+          "revisionId",
+          "path"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
       "name": "kiln_import",
       "description": "Copy a pinned asset revision between configured collections, preserving identity and provenance. Copies never track later edits automatically. For a GLB or downloaded ZIP on disk, use kiln import <file> --collection <name> in the CLI.",
       "inputSchema": {

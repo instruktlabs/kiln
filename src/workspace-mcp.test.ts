@@ -33,6 +33,7 @@ test('real MCP creates project materials, renders their exact closure, and expos
         KILN_RENDER: 'cpu',
         KILN_BUILD_CACHE: 'memory',
         KILN_EVALUATOR_MODE: 'in-process',
+        KILN_EXPORT_ROOT: '',
       } as Record<string, string>,
       stderr: 'pipe',
     });

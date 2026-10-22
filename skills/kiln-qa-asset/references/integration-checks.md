@@ -114,7 +114,7 @@ file as a derivative with its own hash and keep the editable source and baseline
 ## Performance evidence
 
 In builds that provide it, `drawDiagnostics` appears in `kiln_inspect` compact/full
-results, `kiln_export`, and CLI export JSON for GLBs/bundles. It is advisory output,
+results, `kiln_export`, `kiln_export_to` receipts, and CLI export JSON for GLBs/bundles. It is advisory output,
 not a QA rule or acceptance result. Read `status` and `reason` first: `input-limit`,
 `unreadable-glb` or `analysis-failed` means no assessment. An absent field in an older
 installation or a lean response is not a clean result.

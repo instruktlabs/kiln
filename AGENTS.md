@@ -69,11 +69,11 @@ The stdio executable is a thin entry: `src/mcp-server.ts` bundles the protocol l
 engine-loading problem is a tool result naming the next step, never a dead server.
 
 `createKilnProgramToolRegistry` supplies the fifteen base MCP tools. The packaged local host
-also injects `kiln_project`, `kiln_material` and `kiln_review` (eighteen); embeddings
-advertise these only when the host services exist, never as tools that always fail.
+also injects `kiln_project`, `kiln_material` and `kiln_review` (eighteen; `KILN_EXPORT_ROOT`
+adds `kiln_export_to`); embeddings advertise these only when the host services exist.
 `createKilnNativeToolRegistry` uses the same definitions and adds `kiln_finish`: eleven tools
-by default, sixteen with an injected `assetLibrary` (the five delivery tools). A configured
-skill-resource reader adds `kiln_skill_resource` to either native set.
+by default, sixteen with an injected `assetLibrary` (the five delivery tools; an `exportRoot`
+adds `kiln_export_to`). A skill-resource reader adds `kiln_skill_resource` to either set.
 
 Both skins use unified `kiln_render`: metrics, part paths, QA, images and fidelity share one
 evaluation. `kiln_validate` is the image-free syntax check. Review results are compact by

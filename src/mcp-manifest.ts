@@ -7,11 +7,12 @@
  * applies when it is handed a zod schema, so the manifest is what the library
  * would have advertised -- minus the `$schema` keyword, because 2020-12 is the
  * dialect MCP assumes when none is named, and the keyword costs 56 bytes in
- * every one of the eighteen definitions a harness sends with every request.
+ * every definition a harness sends with every request.
  */
 import type { z } from 'zod';
 
 import { localAssetLibrary } from './assets-node';
+import type { ExportRootWriter } from './export-root';
 import { createLocalToolContext } from './local-runtime';
 import {
   KILN_RESOURCE_TEMPLATES,
@@ -93,12 +94,22 @@ export function buildMcpManifest(defs: KilnToolDef[], context: KilnToolContext):
   };
 }
 
+const MANIFEST_EXPORT_ROOT: ExportRootWriter = {
+  writeNew: async () => {
+    throw new Error('The manifest export root writes nothing.');
+  },
+};
+
 /**
  * The manifest the packaged server advertises: the full surface with both
  * templates, built from a context shaped like the packaged host's but with no
  * environment of its own, so the file is the same on every machine.
  */
 export function packagedMcpManifest(): KilnMcpManifest {
-  const context = createLocalToolContext({ assetLibrary: localAssetLibrary() }, {});
+  const context = createLocalToolContext(
+    // The entry drops kiln_export_to unless KILN_EXPORT_ROOT is set; this writer is never called.
+    { assetLibrary: localAssetLibrary(), exportRoot: MANIFEST_EXPORT_ROOT },
+    {},
+  );
   return buildMcpManifest(createKilnProgramToolRegistry(context), context);
 }

@@ -43056,7 +43056,8 @@ var init_runtime_three = __esm(() => {
 var exports_asset_export = {};
 __export(exports_asset_export, {
   createKtx2Encoder: () => createKtx2Encoder2,
-  exportAssetGlb: () => exportAssetGlb
+  exportAssetGlb: () => exportAssetGlb,
+  validateMetadataFileName: () => validateMetadataFileName
 });
 async function sha2562(bytes) {
   const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
@@ -52050,6 +52051,44 @@ var init_asset_widget = __esm(() => {
   init_widget_transfer();
 });
 
+// src/export-root.ts
+function rootRelativeSegments(path) {
+  if (path.length > MAX_PATH_CHARS)
+    throw new Error(`Export path must be at most ${MAX_PATH_CHARS} characters.`);
+  if (path.includes("\\"))
+    throw new Error("Export path must use forward slashes, for example models/door.glb.");
+  if (path.startsWith("/") || /^[A-Za-z]:/.test(path))
+    throw new Error("Export path must be relative to the export root, for example models/door.glb.");
+  const segments = path.split("/");
+  if (segments.length > MAX_SEGMENTS)
+    throw new Error(`Export path must have at most ${MAX_SEGMENTS} segments.`);
+  for (const segment of segments) {
+    if (segment === "..")
+      throw new Error('Export path must stay inside the export root; ".." is not allowed.');
+    if (!PORTABLE_SEGMENT.test(segment) || segment.endsWith("."))
+      throw new Error(`Export path segment ${JSON.stringify(segment)} is not portable: use ASCII letters, digits, ".", "_" or "-", starting with a letter or digit.`);
+    if (DEVICE_NAME.test(segment))
+      throw new Error(`Export path segment ${JSON.stringify(segment)} is a Windows device name; choose another name.`);
+  }
+  return segments;
+}
+function validateExportPath(path) {
+  if (!path.toLowerCase().endsWith(".glb"))
+    throw new Error("Export path must name a .glb file, for example models/door.glb.");
+  const segments = rootRelativeSegments(path);
+  const metadataFileName = `${segments.at(-1).slice(0, -4)}.kiln-metadata.json`;
+  return {
+    path,
+    metadataPath: [...segments.slice(0, -1), metadataFileName].join("/"),
+    metadataFileName
+  };
+}
+var MAX_PATH_CHARS = 240, MAX_SEGMENTS = 8, PORTABLE_SEGMENT, DEVICE_NAME;
+var init_export_root = __esm(() => {
+  PORTABLE_SEGMENT = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+  DEVICE_NAME = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\.|$)/i;
+});
+
 // src/tools/registry.ts
 import { z as z25 } from "zod";
 import * as THREE58 from "three";
@@ -53333,6 +53372,11 @@ function createKilnAssetDefs(context, presentation = "grouped") {
   const profileExportInput = exportInput.extend({
     profile: z25.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
+  const exportToInput = exportInput.extend({
+    path: z25.string().max(240).describe("Root-relative .glb path with forward slashes, e.g. game/door.glb; runtime adds door.kiln-metadata.json beside it."),
+    profile: z25.enum(["runtime", "editable"]).default("runtime").describe("runtime: standalone GLB plus metadata sidecar. editable: exact saved GLB only."),
+    target: z25.enum(["three"]).optional().describe("Runtime only: a three.js delivery GLB (instancing, quantization, meshopt).")
+  });
   const importInput = z25.object({
     ...selector,
     sourceCollection: selector.collection
@@ -53509,6 +53553,7 @@ function createKilnAssetDefs(context, presentation = "grouped") {
         };
       }
     },
+    ...context.exportRoot && context.assetLibrary ? [createKilnExportToDef(context.exportRoot, exportToInput, library, listCall)] : [],
     {
       name: "kiln_import",
       description: "Copy a pinned asset revision between configured collections, preserving identity and provenance. Copies never track later edits automatically. For a GLB or downloaded ZIP on disk, use kiln import <file> --collection <name> in the CLI.",
@@ -53522,6 +53567,61 @@ function createKilnAssetDefs(context, presentation = "grouped") {
       }
     }
   ];
+}
+function createKilnExportToDef(writer, inputSchema, library, listCall) {
+  return {
+    name: "kiln_export_to",
+    description: "Write one saved revision's GLB to a path under the host's export root. Default runtime writes the GLB plus its <stem>.kiln-metadata.json sidecar; editable writes the exact saved GLB; target three derives a three.js delivery GLB. Never replaces an existing file. Returns the CLI export receipt with root-relative paths, bytes and sha256.",
+    inputSchema,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false
+    },
+    run: async (raw) => {
+      const input = inputSchema.parse(raw);
+      if (input.target !== undefined && input.profile !== "runtime")
+        throw new Error("target requires profile runtime");
+      await Promise.resolve().then(() => init_export_root());
+      const destination = validateExportPath(input.path);
+      await Promise.resolve().then(() => init_asset_export());
+      if (input.profile === "runtime")
+        validateMetadataFileName(destination.metadataFileName);
+      const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId, listCall(input.collection));
+      const files = [];
+      if (input.profile === "runtime") {
+        const output = await exportAssetGlb(record, {
+          profile: "runtime",
+          metadataFileName: destination.metadataFileName,
+          ...input.target ? { target: input.target } : {}
+        });
+        if (output.profile !== "runtime")
+          throw new Error("Expected runtime export");
+        files.push({ kind: "glb", path: destination.path, data: output.glb }, { kind: "metadata", path: destination.metadataPath, data: output.metadata.bytes });
+      } else
+        files.push({ kind: "glb", path: destination.path, data: record.files["asset.glb"] });
+      await writer.writeNew([...files].reverse());
+      await Promise.resolve().then(() => init_draw_diagnostics());
+      const digest = async (data) => `sha256:${Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(data))), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+      return {
+        ok: true,
+        collection: input.collection,
+        assetId: input.assetId,
+        revisionId: input.revisionId,
+        profile: input.profile,
+        ...input.target ? { target: input.target } : {},
+        format: "glb",
+        drawDiagnostics: await inspectDrawDiagnostics(files[0].data),
+        files: await Promise.all(files.map(async ({ kind, path, data }) => ({
+          kind,
+          path,
+          bytes: data.byteLength,
+          sha256: await digest(data)
+        })))
+      };
+    }
+  };
 }
 var DEFAULT_INLOOP_VIEW_RENDER_TIMEOUT_MS = 6000, viewEvidenceHistoryByContext, VIEW_EVIDENCE_GUIDANCE = " viewEvidence.current describes ONLY this request. lastFaithful is older hash-only evidence for reference, not reused pixels and not current verification.", validateInput, renderInput, renderViewsInput, reviewDetailOptions = (context) => ({
   retainedReport: () => {

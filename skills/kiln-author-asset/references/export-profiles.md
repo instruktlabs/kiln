@@ -145,8 +145,25 @@ a new revision. The local viewer host also serves those resource filenames throu
 its existing `/files/` endpoint. Existing viewer download buttons retain editable behavior.
 
 Runtime results do not reuse configured canonical download URLs: those would deliver
-the wrong GLB. Client support for saving MCP resources varies. Use the local CLI pair
-when the client cannot save them. No binary data is put into tool text.
+the wrong GLB. Client support for saving MCP resources varies. No binary data is put
+into tool text. To write files, use `kiln_export_to` when the host advertises it,
+otherwise the local CLI pair.
+
+### `kiln_export_to` (host opt-in)
+
+Present only when the host sets `KILN_EXPORT_ROOT`. It writes one saved revision under
+that root and returns the CLI `--json` receipt with root-relative paths:
+
+```js
+kiln_export_to({ assetId, revisionId, path: "game/door.glb" })                    // runtime pair
+kiln_export_to({ assetId, revisionId, path: "web/door.glb", target: "three" })    // three.js runtime
+kiln_export_to({ assetId, revisionId, path: "keep/door.glb", profile: "editable" }) // exact saved GLB
+```
+
+`path` is relative with forward slashes, portable segments and a `.glb` name; the
+sidecar `<stem>.kiln-metadata.json` is written beside it. It never replaces a file:
+choose a new path rather than retrying the same one. It has no project input; the
+root is a destination, not project membership.
 
 ## TypeScript library
 

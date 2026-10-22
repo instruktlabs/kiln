@@ -131,7 +131,7 @@ solely because a historical report used pending-release language.
 | Static scene export (GG-006) | Separate delivery-contract decision |
 | Vegetation cycle (D33) | Later per-tree culling exploration with visual and measured GPU-work checks |
 | R8 shadows, reflection cadence, output depth, extra merging | Optional measured follow-ups |
-| MCP render file destination | Unadopted; existing CLI output and MCP media/receipts remain valid |
+| MCP export file destination | Adopted (opt-in `KILN_EXPORT_ROOT`, `kiln_export_to`); render file output remains unadopted: delivery starts from a saved revision |
 | SEP-2640 resources and large present metadata | Recorded deferrals; see the roadmap and engine ledger |
 
 ## Maintaining this queue

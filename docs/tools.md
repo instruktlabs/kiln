@@ -8,6 +8,8 @@ Call `kiln_discover({capabilities:true})` for the current host limits, the confi
 
 kiln_project, kiln_material and kiln_review are injected by the packaged local host; an embedding advertises them only when it supplies the corresponding store, and the connected tools/list is authoritative. Projects are optional: authoring tools accept projectId, projectRevision and independent materialDependencies, and projectId:null selects standalone work. See [projects and live review](projects-and-live-review.md) for CLI equivalents, project packages and exact reviewed saves.
 
+kiln_export_to is advertised only when the host sets KILN_EXPORT_ROOT, an existing absolute directory outside every collection and .kiln/. It writes a saved revision under that root and never replaces a file; kiln_export stays read-only. See [export profiles](export-profiles.md#mcp).
+
 Renderer capabilities distinguish configured routing, dependency readiness, endpoint health and unverified authentication. Use kiln_renderer with action=reprobe after renderer setup or repair to refresh the current session. Material capabilities list approved texture IDs by allowed slot for the selected evaluator. Capability inspection never starts a renderer, requests an image or fetches texture bytes; ordinary catalog search is offline. See [renderer readiness and resources](rendering.md).
 
 ## kiln_discover
@@ -1843,6 +1845,64 @@ Export one saved revision. Default editable returns exact GLB, source, preview, 
   "required": [
     "assetId",
     "revisionId"
+  ]
+}
+```
+
+</details>
+
+## kiln_export_to
+
+Write one saved revision's GLB to a path under the host's export root. Default runtime writes the GLB plus its <stem>.kiln-metadata.json sidecar; editable writes the exact saved GLB; target three derives a three.js delivery GLB. Never replaces an existing file. Returns the CLI export receipt with root-relative paths, bytes and sha256.
+
+<details>
+<summary>Input JSON Schema</summary>
+
+
+```json
+{
+  "type": "object",
+  "properties": {
+    "collection": {
+      "default": "project",
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,79}$",
+      "description": "Collection ID (list with kiln_assets action=collections): the user destination, else project."
+    },
+    "assetId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+    },
+    "revisionId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_-]{0,79}$"
+    },
+    "path": {
+      "type": "string",
+      "maxLength": 240,
+      "description": "Root-relative .glb path with forward slashes, e.g. game/door.glb; runtime adds door.kiln-metadata.json beside it."
+    },
+    "profile": {
+      "default": "runtime",
+      "description": "runtime: standalone GLB plus metadata sidecar. editable: exact saved GLB only.",
+      "type": "string",
+      "enum": [
+        "runtime",
+        "editable"
+      ]
+    },
+    "target": {
+      "description": "Runtime only: a three.js delivery GLB (instancing, quantization, meshopt).",
+      "type": "string",
+      "enum": [
+        "three"
+      ]
+    }
+  },
+  "required": [
+    "assetId",
+    "revisionId",
+    "path"
   ]
 }
 ```

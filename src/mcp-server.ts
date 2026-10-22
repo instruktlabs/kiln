@@ -67,12 +67,19 @@ export function packagedEngineHost(options: {
       }));
 }
 
-/** `KILN_LIVE_REVIEW=off` removes the review store, and with it the one tool that needs it. */
-function manifestFor(env: Record<string, string | undefined>): KilnMcpManifest {
-  if (env['KILN_LIVE_REVIEW'] !== 'off') return KILN_MCP_MANIFEST;
+/**
+ * The definitions advertised for this environment. `KILN_LIVE_REVIEW=off`
+ * removes the review store, and with it the one tool that needs it;
+ * `kiln_export_to` is advertised only when the host sets `KILN_EXPORT_ROOT`.
+ */
+export function manifestFor(env: Record<string, string | undefined>): KilnMcpManifest {
+  const dropped = new Set([
+    ...(env['KILN_LIVE_REVIEW'] === 'off' ? ['kiln_review'] : []),
+    ...(env['KILN_EXPORT_ROOT'] ? [] : ['kiln_export_to']),
+  ]);
   return {
     ...KILN_MCP_MANIFEST,
-    tools: KILN_MCP_MANIFEST.tools.filter((tool) => tool.name !== 'kiln_review'),
+    tools: KILN_MCP_MANIFEST.tools.filter((tool) => !dropped.has(tool.name)),
   };
 }
 

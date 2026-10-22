@@ -9798,7 +9798,8 @@ var init_runtime_three = __esm(() => {
 // src/asset-export.ts
 var exports_asset_export = {};
 __export(exports_asset_export, {
-  exportAssetGlb: () => exportAssetGlb
+  exportAssetGlb: () => exportAssetGlb,
+  validateMetadataFileName: () => validateMetadataFileName
 });
 async function sha2562(bytes) {
   const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
@@ -10112,6 +10113,44 @@ var init_assets_resources = __esm(() => {
   };
 });
 
+// src/export-root.ts
+function rootRelativeSegments(path) {
+  if (path.length > MAX_PATH_CHARS)
+    throw new Error(`Export path must be at most ${MAX_PATH_CHARS} characters.`);
+  if (path.includes("\\"))
+    throw new Error("Export path must use forward slashes, for example models/door.glb.");
+  if (path.startsWith("/") || /^[A-Za-z]:/.test(path))
+    throw new Error("Export path must be relative to the export root, for example models/door.glb.");
+  const segments = path.split("/");
+  if (segments.length > MAX_SEGMENTS)
+    throw new Error(`Export path must have at most ${MAX_SEGMENTS} segments.`);
+  for (const segment of segments) {
+    if (segment === "..")
+      throw new Error('Export path must stay inside the export root; ".." is not allowed.');
+    if (!PORTABLE_SEGMENT.test(segment) || segment.endsWith("."))
+      throw new Error(`Export path segment ${JSON.stringify(segment)} is not portable: use ASCII letters, digits, ".", "_" or "-", starting with a letter or digit.`);
+    if (DEVICE_NAME.test(segment))
+      throw new Error(`Export path segment ${JSON.stringify(segment)} is a Windows device name; choose another name.`);
+  }
+  return segments;
+}
+function validateExportPath(path) {
+  if (!path.toLowerCase().endsWith(".glb"))
+    throw new Error("Export path must name a .glb file, for example models/door.glb.");
+  const segments = rootRelativeSegments(path);
+  const metadataFileName = `${segments.at(-1).slice(0, -4)}.kiln-metadata.json`;
+  return {
+    path,
+    metadataPath: [...segments.slice(0, -1), metadataFileName].join("/"),
+    metadataFileName
+  };
+}
+var MAX_PATH_CHARS = 240, MAX_SEGMENTS = 8, PORTABLE_SEGMENT, DEVICE_NAME;
+var init_export_root = __esm(() => {
+  PORTABLE_SEGMENT = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+  DEVICE_NAME = /^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\.|$)/i;
+});
+
 // src/evaluator/solid-diagnostic.ts
 function validSolidFailureDetails(value) {
   if (!record5(value) || !keys(value, ["total", "truncated", "meshes"]) || !count2(value.total) || value.total < 1 || !Array.isArray(value.meshes) || value.meshes.length !== Math.min(value.total, MAX_SOLID_FAILURE_MESHES) || value.truncated !== value.total > value.meshes.length)
@@ -10148,7 +10187,7 @@ var init_solid_diagnostic = __esm(() => {
 });
 
 // src/qa/registry.ts
-import { createHash as createHash8 } from "node:crypto";
+import { createHash as createHash9 } from "node:crypto";
 function canonicalCalibrationReportEvidence(report) {
   return JSON.stringify({
     schemaVersion: report.schemaVersion,
@@ -10181,7 +10220,7 @@ function canonicalCalibrationReportEvidence(report) {
   });
 }
 function calibrationReportEvidenceSha256(report) {
-  return createHash8("sha256").update(canonicalCalibrationReportEvidence(report)).digest("hex");
+  return createHash9("sha256").update(canonicalCalibrationReportEvidence(report)).digest("hex");
 }
 function conformancePromotionAuthorization(fixtureSetId, fixturePath, evidenceSha256, owner = KILN_ENGINE_QA_OWNER, frozenAt = "2026-07-09T00:00:00.000Z", authorizedMode = "enforce", rendererId = LEGACY_CPU_RASTER_RENDERER_ID) {
   return {
@@ -20905,12 +20944,12 @@ var init_requirements = __esm(() => {
 });
 
 // src/requirements-identity.ts
-import { createHash as createHash9 } from "node:crypto";
-function canonical(value) {
+import { createHash as createHash10 } from "node:crypto";
+function canonical2(value) {
   if (Array.isArray(value))
-    return `[${value.map(canonical).join(",")}]`;
+    return `[${value.map(canonical2).join(",")}]`;
   if (value !== null && typeof value === "object") {
-    return `{${Object.entries(value).filter(([, entry]) => entry !== undefined).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, entry]) => `${JSON.stringify(key)}:${canonical(entry)}`).join(",")}}`;
+    return `{${Object.entries(value).filter(([, entry]) => entry !== undefined).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, entry]) => `${JSON.stringify(key)}:${canonical2(entry)}`).join(",")}}`;
   }
   return JSON.stringify(value);
 }
@@ -20925,7 +20964,7 @@ function assetRequirementsPolicyHash(input) {
     ..."value" in value ? { value: value.value } : {}
   });
   const effective = Object.fromEntries(Object.entries(requirements.requirements).filter(([, value]) => value !== undefined).map(([key, value]) => [key, withoutReason(value)]));
-  return createHash9("sha256").update(canonical({
+  return createHash10("sha256").update(canonical2({
     kind: requirements.kind,
     schemaVersion: requirements.schemaVersion,
     frame,
@@ -20954,13 +20993,13 @@ var init_requirements_json = __esm(() => {
 });
 
 // src/requirements-context.ts
-import { createHash as createHash10 } from "node:crypto";
+import { createHash as createHash11 } from "node:crypto";
 import { z as z7 } from "zod";
-function canonical2(value) {
+function canonical3(value) {
   if (Array.isArray(value))
-    return `[${value.map(canonical2).join(",")}]`;
+    return `[${value.map(canonical3).join(",")}]`;
   if (value !== null && typeof value === "object")
-    return `{${Object.entries(value).filter(([, v]) => v !== undefined).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, v]) => `${JSON.stringify(key)}:${canonical2(v)}`).join(",")}}`;
+    return `{${Object.entries(value).filter(([, v]) => v !== undefined).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, v]) => `${JSON.stringify(key)}:${canonical3(v)}`).join(",")}}`;
   return JSON.stringify(value);
 }
 function contextHash(requirements, kind) {
@@ -20974,7 +21013,7 @@ function contextHash(requirements, kind) {
     ...requirements.scope && includes(requirements.scope.state) ? { scope: statement(requirements.scope) } : {},
     requirements: Object.fromEntries(Object.entries(requirements.requirements).filter(([, value]) => value && includes(value.state)).map(([key, value]) => [key, statement(value)]))
   };
-  return `sha256:${createHash10("sha256").update(`kiln.requirements-${kind}.v1`).update(canonical2(semantic)).digest("hex")}`;
+  return `sha256:${createHash11("sha256").update(`kiln.requirements-${kind}.v1`).update(canonical3(semantic)).digest("hex")}`;
 }
 function validateRequirementsBinding(input) {
   const parsed = RequirementsBindingSchema.safeParse(input);
@@ -21000,12 +21039,12 @@ function validateRequirementsContext(input) {
   if (Object.keys(raw).some((key) => !["kind", "requirements", "binding", "policyHash", "adviceHash"].includes(key)))
     throw new TypeError("Invalid requirements context fields.");
   const expected = resolveRequirementsContext(raw.binding);
-  if (canonical2(raw) !== canonical2(expected))
+  if (canonical3(raw) !== canonical3(expected))
     throw new TypeError("Requirements context does not match its binding.");
   return expected;
 }
 function requirementsContextsEqual(left, right) {
-  return canonical2(left) === canonical2(right);
+  return canonical3(left) === canonical3(right);
 }
 function createRequirementsCheckpoint(programRef, binding) {
   return CheckpointSchema.parse({ kind: "kiln.requirements-checkpoint.v1", programRef, binding });
@@ -21360,7 +21399,7 @@ function validateRequirementsQaReport(input, context) {
       evaluatedDimensions: evaluated,
       metrics
     });
-    if (canonical3(expected) !== canonical3(result))
+    if (canonical4(expected) !== canonical4(result))
       return fail();
   } else {
     const blocked = findings.some((finding) => finding.disposition === "block");
@@ -21369,7 +21408,7 @@ function validateRequirementsQaReport(input, context) {
   }
   return result;
 }
-var REQUIREMENTS_QA_DIMENSIONS, record8 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), canonical3 = (value) => Array.isArray(value) ? `[${value.map(canonical3).join(",")}]` : record8(value) ? `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonical3(value[key])}`).join(",")}}` : JSON.stringify(value);
+var REQUIREMENTS_QA_DIMENSIONS, record8 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), canonical4 = (value) => Array.isArray(value) ? `[${value.map(canonical4).join(",")}]` : record8(value) ? `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonical4(value[key])}`).join(",")}}` : JSON.stringify(value);
 var init_requirements_report = __esm(() => {
   init_requirements_applicability();
   init_types();
@@ -32691,7 +32730,7 @@ var init_kit = __esm(() => {
 });
 
 // src/texture-bake.ts
-import { createHash as createHash11 } from "node:crypto";
+import { createHash as createHash12 } from "node:crypto";
 import * as THREE50 from "three";
 function readPixels(texture) {
   const image = texture.image;
@@ -32791,7 +32830,7 @@ async function bakeSceneTextures(root, warnings) {
       if (encoded) {
         const delivery = readValidatedAtlasDelivery(entry.texture);
         if (delivery) {
-          if (delivery.id !== atlasRef.id || delivery.finalMime !== encoded.mime || delivery.finalImageSha256 !== `sha256:${createHash11("sha256").update(encoded.bytes).digest("hex")}`)
+          if (delivery.id !== atlasRef.id || delivery.finalMime !== encoded.mime || delivery.finalImageSha256 !== `sha256:${createHash12("sha256").update(encoded.bytes).digest("hex")}`)
             throw stale();
         } else {
           const sharp = (await import("sharp")).default;
@@ -32802,10 +32841,10 @@ async function bakeSceneTextures(root, warnings) {
           if (metadata.width !== atlasRecord.spec.width || metadata.height !== atlasRecord.spec.height)
             throw stale();
           const decoded = await image.ensureAlpha().raw().toBuffer();
-          if (`sha256:${createHash11("sha256").update(decoded).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
+          if (`sha256:${createHash12("sha256").update(decoded).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
             throw stale();
         }
-      } else if (raw.width !== atlasRecord.spec.width || raw.height !== atlasRecord.spec.height || raw.channels !== 4 || `sha256:${createHash11("sha256").update(raw.data).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
+      } else if (raw.width !== atlasRecord.spec.width || raw.height !== atlasRecord.spec.height || raw.channels !== 4 || `sha256:${createHash12("sha256").update(raw.data).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
         throw stale();
     }
     let bytes;
@@ -32830,8 +32869,8 @@ async function bakeSceneTextures(root, warnings) {
         height: raw.height,
         hasAlpha: hasTranslucentPixel(raw)
       };
-    const sha1 = createHash11("sha1").update(bytes).digest("hex");
-    const imageSha256 = `sha256:${createHash11("sha256").update(bytes).digest("hex")}`;
+    const sha1 = createHash12("sha1").update(bytes).digest("hex");
+    const imageSha256 = `sha256:${createHash12("sha256").update(bytes).digest("hex")}`;
     baked.push({
       schemaVersion: 1,
       texture: name,
@@ -35506,7 +35545,7 @@ __export(exports_capture_cache, {
   captureCpuCell: () => captureCpuCell,
   createCachedRenderPort: () => createCachedRenderPort
 });
-import { createHash as createHash12 } from "node:crypto";
+import { createHash as createHash13 } from "node:crypto";
 function clone(entry) {
   const result = structuredClone(entry);
   if (result.kind === "cpu")
@@ -35562,11 +35601,11 @@ class MemoryCaptureCache {
     return { entries: this.entries.size, bytes: this.bytes, maxBytes: this.maxBytes };
   }
 }
-function canonical4(value) {
+function canonical5(value) {
   if (Array.isArray(value))
-    return value.map(canonical4);
+    return value.map(canonical5);
   if (value && typeof value === "object")
-    return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([k, v]) => [k, canonical4(v)]));
+    return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([k, v]) => [k, canonical5(v)]));
   if (typeof value === "number" && !Number.isFinite(value))
     throw new Error("Non-finite capture identity");
   if (value === undefined || value === null || ["string", "number", "boolean"].includes(typeof value))
@@ -35711,7 +35750,7 @@ async function captureCpuCell(cache, identity, produce) {
   await cache.put(key, { kind: "cpu", result }).catch(() => {});
   return { ...result, png: Buffer.from(result.png), captureCache: { hit: false } };
 }
-var text4 = (value) => JSON.stringify(canonical4(value)), digest4 = (value) => `sha256:${createHash12("sha256").update(value).digest("hex")}`;
+var text4 = (value) => JSON.stringify(canonical5(value)), digest4 = (value) => `sha256:${createHash13("sha256").update(value).digest("hex")}`;
 var init_capture_cache = __esm(() => {
   init_render_port();
   init_png();
@@ -39186,7 +39225,7 @@ var init_render = __esm(() => {
 });
 
 // src/evaluator/protocol.ts
-import { createHash as createHash13 } from "node:crypto";
+import { createHash as createHash14 } from "node:crypto";
 function evaluatorOutcomeMessage(code) {
   return EVALUATOR_OUTCOME_MESSAGES[code];
 }
@@ -39339,7 +39378,7 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
     fail9("result");
   if (!isSha256(value.render.artifactGlbSha256))
     fail9("result");
-  const actualHash = `sha256:${createHash13("sha256").update(glb).digest("hex")}`;
+  const actualHash = `sha256:${createHash14("sha256").update(glb).digest("hex")}`;
   if (actualHash !== value.render.artifactGlbSha256)
     fail9("result");
   const diagnosticViews = value.render.diagnosticViews;
@@ -42442,27 +42481,201 @@ async function buildRenderPort(mode, portUrl, options) {
   return context;
 }
 
+// src/export-root-node.ts
+import { lstat as lstat5, realpath as realpath4, stat as stat2 } from "node:fs/promises";
+import { isAbsolute, join as join9, relative as relative4, resolve as resolve5, sep as sep3 } from "node:path";
+import { platform as platform2 } from "node:os";
+
+// src/cli-output.ts
+import { createHash as createHash7, randomUUID as randomUUID3 } from "node:crypto";
+import {
+  chmod,
+  lstat as lstat4,
+  link as link2,
+  mkdir as mkdir3,
+  open,
+  readFile as readFile3,
+  realpath as realpath3,
+  rename as rename2,
+  stat,
+  unlink,
+  writeFile as writeFile3
+} from "node:fs/promises";
+import { basename, dirname as dirname5, join as join8, resolve as resolve4 } from "node:path";
+async function prepareDestination(path) {
+  await mkdir3(dirname5(path), { recursive: true });
+  return path;
+}
+async function writeNewDestinationsAtomic(outputs) {
+  const paths = outputs.map(({ path }) => {
+    const absolute = resolve4(path);
+    return process.platform === "win32" ? absolute.toLowerCase() : absolute;
+  });
+  if (new Set(paths).size !== paths.length)
+    throw new Error("Export destinations must be distinct");
+  const staged = [];
+  try {
+    for (const { path, data } of outputs) {
+      await prepareDestination(path);
+      const temporary = join8(dirname5(path), `.kiln-write-${randomUUID3()}.tmp`);
+      const file = await open(temporary, "wx");
+      staged.push({ path, temporary, published: false });
+      try {
+        await writeFile3(file, data);
+      } finally {
+        await file.close();
+      }
+    }
+    for (const output of staged) {
+      try {
+        await link2(output.temporary, output.path);
+      } catch (error) {
+        if (error.code !== "EEXIST")
+          throw error;
+        throw Object.assign(new Error(`${output.path} already exists and is never replaced; choose a new output path or remove the file.`), { code: "EEXIST" });
+      }
+      output.published = true;
+    }
+  } catch (error) {
+    for (const output of staged.filter((item) => item.published).reverse()) {
+      try {
+        const [destination, temporary] = await Promise.all([
+          lstat4(output.path),
+          lstat4(output.temporary)
+        ]);
+        if (destination.dev === temporary.dev && destination.ino === temporary.ino)
+          await unlink(output.path);
+      } catch {}
+    }
+    throw error;
+  } finally {
+    await Promise.all(staged.map(({ temporary }) => unlink(temporary).catch(() => {})));
+  }
+}
+
+// src/export-root-node.ts
+init_export_root();
+var windowsDrivePath2 = /^[A-Za-z]:[\\/]/;
+var windowsSharePath2 = /^[\\/]{2}[^\\/]+[\\/][^\\/]+/;
+var RESTART = "Correct KILN_EXPORT_ROOT and restart the MCP session.";
+function inside(parent, child) {
+  const rel = relative4(parent, child);
+  return rel === "" || rel !== ".." && !rel.startsWith(`..${sep3}`) && !isAbsolute(rel);
+}
+async function canonical(path) {
+  try {
+    return await realpath4(path);
+  } catch (error) {
+    if (error.code === "ENOENT")
+      return resolve5(path);
+    throw error;
+  }
+}
+async function resolveExportRoot(value, options) {
+  const operatingSystem = options.operatingSystem ?? platform2();
+  if (operatingSystem === "win32" && !windowsDrivePath2.test(value) && !windowsSharePath2.test(value)) {
+    const gitBash = /^\/([A-Za-z])(?:\/|$)/.exec(value);
+    if (gitBash)
+      throw new Error(`KILN_EXPORT_ROOT is a Git Bash path (/${gitBash[1]}/...); Windows would resolve it against the current drive. Write it as ${gitBash[1].toUpperCase()}:/... or a UNC share. ${RESTART}`);
+    throw new Error(`KILN_EXPORT_ROOT must be an absolute directory: a Windows drive (C:/...) or UNC share. ${RESTART}`);
+  }
+  if (!isAbsolute(value))
+    throw new Error(`KILN_EXPORT_ROOT must be an absolute directory. ${RESTART}`);
+  let entry;
+  try {
+    entry = await stat2(value);
+  } catch (error) {
+    if (error.code === "ENOENT")
+      throw new Error(`KILN_EXPORT_ROOT does not exist; create the directory or ${RESTART[0].toLowerCase()}${RESTART.slice(1)}`);
+    throw new Error(`KILN_EXPORT_ROOT could not be read (${error.code ?? "error"}). ${RESTART}`);
+  }
+  if (!entry.isDirectory())
+    throw new Error(`KILN_EXPORT_ROOT is not a directory. ${RESTART}`);
+  const root = await realpath4(value);
+  for (const collection of options.collectionRoots) {
+    const directory = await canonical(collection);
+    if (inside(directory, root) || inside(root, directory))
+      throw new Error(`KILN_EXPORT_ROOT overlaps a collection directory; saved revisions never change. Choose a directory outside every collection and .kiln/. ${RESTART}`);
+  }
+  if (options.workspaceRoot !== undefined) {
+    const state = await canonical(join9(options.workspaceRoot, ".kiln"));
+    if (inside(state, root) || inside(root, state))
+      throw new Error(`KILN_EXPORT_ROOT overlaps the workspace .kiln/ directory. Choose a directory outside every collection and .kiln/. ${RESTART}`);
+  }
+  return root;
+}
+function createExportRootWriter(root) {
+  return {
+    async writeNew(files) {
+      const targets = files.map(({ path, data }) => ({
+        path,
+        segments: rootRelativeSegments(path),
+        absolute: join9(root, ...rootRelativeSegments(path)),
+        data
+      }));
+      for (const target of targets) {
+        let deepest = root;
+        for (const [index, segment] of target.segments.slice(0, -1).entries()) {
+          const next = join9(deepest, segment);
+          let entry;
+          try {
+            entry = await lstat5(next);
+          } catch (error) {
+            if (error.code === "ENOENT")
+              break;
+            throw error;
+          }
+          const shown = target.segments.slice(0, index + 1).join("/");
+          if (entry.isSymbolicLink())
+            throw new Error(`${shown} in the export root is a symlink or junction; links are not followed. Choose a path through ordinary directories.`);
+          if (!entry.isDirectory())
+            throw new Error(`${shown} in the export root is a file, not a directory.`);
+          deepest = next;
+        }
+        if (!inside(root, await realpath4(deepest)))
+          throw new Error(`${target.path} resolves outside the export root.`);
+      }
+      try {
+        await writeNewDestinationsAtomic(targets.map(({ absolute, data }) => ({ path: absolute, data })));
+      } catch (error) {
+        const failure = error;
+        if (failure.code === "EEXIST") {
+          const existing = targets.find(({ absolute }) => failure.message.startsWith(absolute));
+          throw new Error(`${existing?.path ?? "An export file"} already exists in the export root and is never replaced; choose a new path or remove the file.`);
+        }
+        throw new Error(`Could not write ${targets.map(({ path }) => path).join(" and ")} in the export root (${failure.code ?? failure.message.split(root).join("<export root>")}).`);
+      }
+    }
+  };
+}
+async function exportRootWriterFromEnv(env, options) {
+  const value = env["KILN_EXPORT_ROOT"];
+  if (!value)
+    return;
+  return createExportRootWriter(await resolveExportRoot(value, options));
+}
+
 // src/live-review-node.ts
 init_assets();
 import { AsyncLocalStorage } from "node:async_hooks";
-import { createHash as createHash7, randomUUID as randomUUID3 } from "node:crypto";
+import { createHash as createHash8, randomUUID as randomUUID4 } from "node:crypto";
 import {
-  link as link2,
-  mkdir as mkdir3,
-  lstat as lstat4,
+  link as link3,
+  mkdir as mkdir4,
+  lstat as lstat6,
   readdir as readdir3,
-  readFile as readFile3,
-  rename as rename2,
+  readFile as readFile4,
+  rename as rename3,
   rm as rm3,
-  unlink,
-  writeFile as writeFile3,
-  realpath as realpath3
+  unlink as unlink2,
+  writeFile as writeFile4,
+  realpath as realpath5
 } from "node:fs/promises";
-import { join as join8, resolve as resolve4, relative as relative4, sep as sep3 } from "node:path";
+import { join as join10, resolve as resolve6, relative as relative5, sep as sep4 } from "node:path";
 import { z as z4 } from "zod";
 var operationPattern = /^op_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
 var filePattern = /^(asset\.glb|source\.kiln\.js|evaluation\.json|capture-\d{1,2}\.png)$/;
-var hash3 = (value) => `sha256:${createHash7("sha256").update(value).digest("hex")}`;
+var hash3 = (value) => `sha256:${createHash8("sha256").update(value).digest("hex")}`;
 var metadataLimit = 256 * 1024;
 var evaluationLimit = 2 * 1024 * 1024;
 var staleMs = 120000;
@@ -42661,7 +42874,7 @@ function dead(pid) {
 
 class FileLiveReview {
   directory;
-  sessionId = randomUUID3();
+  sessionId = randomUUID4();
   workspace;
   current = new AsyncLocalStorage;
   queue = new Map;
@@ -42676,8 +42889,8 @@ class FileLiveReview {
   storedSizes = new WeakMap;
   unreportedIssues = [];
   constructor(workspace, options = {}) {
-    this.workspace = resolve4(workspace);
-    this.directory = join8(this.workspace, ".kiln", "review");
+    this.workspace = resolve6(workspace);
+    this.directory = join10(this.workspace, ".kiln", "review");
     this.maxOperations = options.maxOperations ?? 200;
     this.maxBytes = options.maxBytes ?? 256 * 1024 * 1024;
     this.maxQueuedBytes = options.maxQueuedBytes ?? 128 * 1024 * 1024;
@@ -42700,44 +42913,44 @@ class FileLiveReview {
   path(operationId, file) {
     if (!operationPattern.test(operationId))
       throw new Error("Invalid operation ID");
-    return join8(this.directory, operationId, ...file ? [file] : []);
+    return join10(this.directory, operationId, ...file ? [file] : []);
   }
   async root(create = false) {
     if (create)
-      await mkdir3(this.workspace, { recursive: true });
-    const canonical = await realpath3(this.workspace);
+      await mkdir4(this.workspace, { recursive: true });
+    const canonical = await realpath5(this.workspace);
     let path = this.workspace;
     for (const part of [".kiln", "review"]) {
-      path = join8(path, part);
+      path = join10(path, part);
       if (create)
-        await mkdir3(path).catch((error) => {
+        await mkdir4(path).catch((error) => {
           if (!collision(error))
             throw error;
         });
-      const info = await lstat4(path);
+      const info = await lstat6(path);
       if (!info.isDirectory() || info.isSymbolicLink())
         throw new Error("Unsafe live directory");
-      const rel = relative4(canonical, await realpath3(path));
-      if (rel === ".." || rel.startsWith(`..${sep3}`))
+      const rel = relative5(canonical, await realpath5(path));
+      if (rel === ".." || rel.startsWith(`..${sep4}`))
         throw new Error("Live directory escapes workspace");
     }
   }
   async boundedFile(path, limit) {
-    const info = await lstat4(path);
+    const info = await lstat6(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid live file");
-    const data = new Uint8Array(await readFile3(path));
+    const data = new Uint8Array(await readFile4(path));
     if (data.length !== info.size || data.length > limit)
       throw new Error("Live file changed while reading");
     return data;
   }
   async atomic(path, bytes) {
-    const temporary = `${path}.${randomUUID3()}.tmp`;
+    const temporary = `${path}.${randomUUID4()}.tmp`;
     try {
-      await writeFile3(temporary, bytes, { flag: "wx", mode: 384 });
-      await rename2(temporary, path);
+      await writeFile4(temporary, bytes, { flag: "wx", mode: 384 });
+      await rename3(temporary, path);
     } finally {
-      await unlink(temporary).catch((error) => {
+      await unlink2(temporary).catch((error) => {
         if (!missing(error))
           throw error;
       });
@@ -42745,18 +42958,18 @@ class FileLiveReview {
   }
   async locked(run) {
     await this.root(true);
-    const token = randomUUID3();
-    const directory = join8(this.directory, ".locks");
-    await mkdir3(directory).catch((error) => {
+    const token = randomUUID4();
+    const directory = join10(this.directory, ".locks");
+    await mkdir4(directory).catch((error) => {
       if (!collision(error))
         throw error;
     });
-    const info = await lstat4(directory);
+    const info = await lstat6(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live lock directory");
-    const candidate = join8(directory, `.candidate-${process.pid}-${token}.tmp`);
+    const candidate = join10(directory, `.candidate-${process.pid}-${token}.tmp`);
     const owner = JSON.stringify({ pid: process.pid, token });
-    await writeFile3(candidate, owner, { flag: "wx", mode: 384 });
+    await writeFile4(candidate, owner, { flag: "wx", mode: 384 });
     const generations = async () => (await readdir3(directory)).filter((name) => /^[0-9]{16}\.lock$/.test(name)).sort();
     const deadline = Date.now() + 3000;
     let acquired;
@@ -42771,8 +42984,8 @@ class FileLiveReview {
           throw new Error("Live lock generation exhausted");
         if (latest) {
           try {
-            const prior = z4.object({ pid: z4.number().int().positive(), token: z4.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join8(directory, latest), 1024))));
-            const released = await lstat4(join8(directory, `${latest}.released`)).then((entry) => {
+            const prior = z4.object({ pid: z4.number().int().positive(), token: z4.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(directory, latest), 1024))));
+            const released = await lstat6(join10(directory, `${latest}.released`)).then((entry) => {
               if (!entry.isFile() || entry.isSymbolicLink() || entry.size !== 0)
                 throw new Error("Invalid lock release");
               return true;
@@ -42793,9 +43006,9 @@ class FileLiveReview {
         }
         const name = `${String(sequence).padStart(16, "0")}.lock`;
         try {
-          await link2(candidate, join8(directory, name));
+          await link3(candidate, join10(directory, name));
           if ((await generations()).at(-1) !== name) {
-            await unlink(join8(directory, name));
+            await unlink2(join10(directory, name));
             continue;
           }
           acquired = name;
@@ -42805,8 +43018,8 @@ class FileLiveReview {
         }
       }
       for (const name of (await generations()).slice(0, -3)) {
-        await unlink(join8(directory, name));
-        await unlink(join8(directory, `${name}.released`)).catch((error) => {
+        await unlink2(join10(directory, name));
+        await unlink2(join10(directory, `${name}.released`)).catch((error) => {
           if (!missing(error))
             throw error;
         });
@@ -42814,18 +43027,18 @@ class FileLiveReview {
       for (const name of await readdir3(directory)) {
         const match = /^\.candidate-([0-9]+)-[a-f0-9-]+\.tmp$/.exec(name);
         if (match && dead(Number(match[1])))
-          await unlink(join8(directory, name)).catch(() => {});
+          await unlink2(join10(directory, name)).catch(() => {});
       }
       await this.limits(true);
       return await run();
     } finally {
       if (acquired)
-        await writeFile3(join8(directory, `${acquired}.released`), "", { flag: "wx", mode: 384 });
-      await unlink(candidate).catch(() => {});
+        await writeFile4(join10(directory, `${acquired}.released`), "", { flag: "wx", mode: 384 });
+      await unlink2(candidate).catch(() => {});
     }
   }
   async limits(create = false) {
-    const path = join8(this.directory, "limits.json");
+    const path = join10(this.directory, "limits.json");
     try {
       const value = JSON.parse(new TextDecoder().decode(await this.boundedFile(path, 1024)));
       const parsed = z4.object({
@@ -42899,7 +43112,7 @@ class FileLiveReview {
         try {
           await this.locked(async () => {
             const previous = await this.health();
-            await this.atomic(join8(this.directory, "health.json"), JSON.stringify([...new Set([...previous, ...issues])].slice(-20)));
+            await this.atomic(join10(this.directory, "health.json"), JSON.stringify([...new Set([...previous, ...issues])].slice(-20)));
           });
           this.unreportedIssues = this.unreportedIssues.filter((value) => !issues.includes(value));
         } catch {}
@@ -42938,7 +43151,7 @@ class FileLiveReview {
       heartbeatAt: now,
       operation: {
         version: "kiln.live.v1",
-        operationId: `op_${randomUUID3()}`,
+        operationId: `op_${randomUUID4()}`,
         revision: 0,
         tool: String(tool).slice(0, 120) || "unknown",
         transport: this.transport,
@@ -43059,10 +43272,10 @@ class FileLiveReview {
   async record(operationId) {
     await this.root();
     const directory = this.path(operationId);
-    const info = await lstat4(directory);
+    const info = await lstat6(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live directory");
-    const raw = JSON.parse(new TextDecoder().decode(await this.boundedFile(join8(directory, "record.json"), metadataLimit)));
+    const raw = JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(directory, "record.json"), metadataLimit)));
     const state = stateSchema.parse(jsonValue(raw, metadataLimit));
     if (state.operation.operationId !== operationId)
       throw new Error("Invalid live identity");
@@ -43081,7 +43294,7 @@ class FileLiveReview {
       throw new Error("Invalid artifact descriptor");
     if (state.operation.captures.some((file) => !/^capture-\d{1,2}\.png$/.test(file.name)))
       throw new Error("Invalid capture descriptor");
-    state.operation.pinned = await lstat4(join8(directory, "pinned")).then((s) => {
+    state.operation.pinned = await lstat6(join10(directory, "pinned")).then((s) => {
       if (!s.isFile() || s.isSymbolicLink())
         throw new Error("Invalid live pin");
       return true;
@@ -43103,7 +43316,7 @@ class FileLiveReview {
     for (const entry of await readdir3(directory, { withFileTypes: true })) {
       if (!entry.isFile() || entry.isSymbolicLink())
         throw new Error("Invalid live directory entry");
-      bytes += (await lstat4(join8(directory, entry.name))).size;
+      bytes += (await lstat6(join10(directory, entry.name))).size;
     }
     this.storedSizes.set(state, bytes);
     return state;
@@ -43154,7 +43367,7 @@ class FileLiveReview {
   }
   async health() {
     try {
-      return z4.array(z4.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join8(this.directory, "health.json"), 16384))));
+      return z4.array(z4.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(this.directory, "health.json"), 16384))));
     } catch (error) {
       if (missing(error))
         return [];
@@ -43171,7 +43384,7 @@ class FileLiveReview {
     for (const file of await readdir3(this.path(id), { withFileTypes: true })) {
       if (allowed.has(file.name) || !file.isFile() || file.isSymbolicLink())
         continue;
-      await unlink(this.path(id, file.name));
+      await unlink2(this.path(id, file.name));
       changed = true;
       this.report("Removed unpublished live payloads left by an interrupted storage transaction.");
     }
@@ -43214,20 +43427,20 @@ class FileLiveReview {
       return;
     }
     const directory = this.path(state.operation.operationId);
-    await mkdir3(directory).catch((error) => {
+    await mkdir4(directory).catch((error) => {
       if (!collision(error))
         throw error;
     });
-    if ((await lstat4(directory)).isSymbolicLink())
+    if ((await lstat6(directory)).isSymbolicLink())
       throw new Error("Unsafe live directory");
     for (const [name, data] of Object.entries(blobs))
-      await this.atomic(join8(directory, name), data);
-    await this.atomic(join8(directory, "record.json"), JSON.stringify(state));
+      await this.atomic(join10(directory, name), data);
+    await this.atomic(join10(directory, "record.json"), JSON.stringify(state));
     await this.cleanupRecord(await this.record(state.operation.operationId));
   }
   async remove(operationId) {
     const directory = this.path(operationId);
-    const info = await lstat4(directory);
+    const info = await lstat6(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live directory");
     await rm3(directory, { recursive: true, force: true });
@@ -43281,7 +43494,7 @@ class FileLiveReview {
           throw new Error("Pinned evidence exceeds the shared byte budget");
         await this.atomic(path, "pinned");
       } else
-        await unlink(path);
+        await unlink2(path);
     });
   }
 }
@@ -43292,9 +43505,9 @@ init_isolation();
 init_render();
 
 // src/program-store-node.ts
-import { link as link3, lstat as lstat5, mkdir as mkdir4, readFile as readFile4, readdir as readdir4, stat, unlink as unlink2, writeFile as writeFile4 } from "node:fs/promises";
-import { randomUUID as randomUUID4 } from "node:crypto";
-import { join as join9 } from "node:path";
+import { link as link4, lstat as lstat7, mkdir as mkdir5, readFile as readFile5, readdir as readdir4, stat as stat3, unlink as unlink3, writeFile as writeFile5 } from "node:fs/promises";
+import { randomUUID as randomUUID5 } from "node:crypto";
+import { join as join11 } from "node:path";
 
 // src/program-store.ts
 var MAX_PROGRAM_BYTES = 1024 * 1024;
@@ -43396,7 +43609,7 @@ class FileProgramStore {
         if (!entry.isFile() || !/^[a-f0-9]{64}\.js$/.test(entry.name))
           continue;
         try {
-          bytes += (await stat(join9(this.directory, entry.name))).size;
+          bytes += (await stat3(join11(this.directory, entry.name))).size;
           entries++;
         } catch (error) {
           if (error.code !== "ENOENT")
@@ -43414,12 +43627,12 @@ class FileProgramStore {
     const canonical = ref.startsWith("p_") ? await this.readHandle(ref) : ref;
     if (canonical === undefined)
       throw this.notFound(ref);
-    const path = join9(this.directory, `${canonical.slice(7)}.js`);
+    const path = join11(this.directory, `${canonical.slice(7)}.js`);
     let code;
     try {
-      if ((await stat(path)).size > MAX_PROGRAM_BYTES)
+      if ((await stat3(path)).size > MAX_PROGRAM_BYTES)
         throw new Error("Stored program exceeds the 1 MiB source limit.");
-      code = await readFile4(path, "utf8");
+      code = await readFile5(path, "utf8");
     } catch (error) {
       if (error.code === "ENOENT")
         throw this.notFound(ref);
@@ -43433,12 +43646,12 @@ class FileProgramStore {
     return programNotFound(ref, "This program store has no such reference; it was issued by another store (KILN_PROGRAM_STORE selects which) or its store was removed.");
   }
   async readHandle(handle) {
-    const path = join9(this.directory, "refs", `${handle}.ref`);
+    const path = join11(this.directory, "refs", `${handle}.ref`);
     try {
-      const info = await lstat5(path);
+      const info = await lstat7(path);
       if (!info.isFile() || info.size !== 71)
         throw new Error(`Program handle integrity check failed: ${handle}`);
-      const canonical = await readFile4(path, "utf8");
+      const canonical = await readFile5(path, "utf8");
       if (!canonicalProgramRefPattern.test(canonical) || !canonical.slice(7).startsWith(handle.slice(2)))
         throw new Error(`Program handle integrity check failed: ${handle}`);
       return canonical;
@@ -43452,19 +43665,19 @@ class FileProgramStore {
     await this.get(ref);
     if (ref.startsWith("p_"))
       return ref;
-    const directory = join9(this.directory, "refs");
-    await mkdir4(directory, { recursive: true });
+    const directory = join11(this.directory, "refs");
+    await mkdir5(directory, { recursive: true });
     for (const handle of shortProgramRefCandidates(ref)) {
       const owner = await this.readHandle(handle);
       if (owner === ref)
         return handle;
       if (owner !== undefined)
         continue;
-      const temporary = join9(directory, `.write-${randomUUID4()}`);
-      await writeFile4(temporary, ref, { encoding: "utf8", flag: "wx", mode: 384 });
+      const temporary = join11(directory, `.write-${randomUUID5()}`);
+      await writeFile5(temporary, ref, { encoding: "utf8", flag: "wx", mode: 384 });
       try {
         try {
-          await link3(temporary, join9(directory, `${handle}.ref`));
+          await link4(temporary, join11(directory, `${handle}.ref`));
           return handle;
         } catch (error) {
           if (error.code !== "EEXIST")
@@ -43473,27 +43686,27 @@ class FileProgramStore {
             return handle;
         }
       } finally {
-        await unlink2(temporary);
+        await unlink3(temporary);
       }
     }
     throw new Error("Unable to register an immutable program handle.");
   }
   async put(code) {
     const ref = await programReference(code);
-    await mkdir4(this.directory, { recursive: true });
-    const target = join9(this.directory, `${ref.slice(7)}.js`);
-    const temporary = join9(this.directory, `.write-${randomUUID4()}`);
-    await writeFile4(temporary, code, { encoding: "utf8", flag: "wx", mode: 384 });
+    await mkdir5(this.directory, { recursive: true });
+    const target = join11(this.directory, `${ref.slice(7)}.js`);
+    const temporary = join11(this.directory, `.write-${randomUUID5()}`);
+    await writeFile5(temporary, code, { encoding: "utf8", flag: "wx", mode: 384 });
     try {
       try {
-        await link3(temporary, target);
+        await link4(temporary, target);
       } catch (error) {
         if (error.code !== "EEXIST")
           throw error;
         await this.get(ref);
       }
     } finally {
-      await unlink2(temporary);
+      await unlink3(temporary);
     }
     return ref;
   }
@@ -43506,7 +43719,7 @@ function localProgramStore(env = process.env) {
 init_protocol();
 init_requirements_context();
 init_requirements_report();
-import { createHash as createHash14 } from "node:crypto";
+import { createHash as createHash15 } from "node:crypto";
 import * as acorn2 from "acorn";
 import * as walk5 from "acorn-walk";
 function sourceHasAmbientInputs(code) {
@@ -43592,15 +43805,15 @@ class MemoryBuildCache {
     return { entries: this.entries.size, bytes: this.bytes, maxBytes: this.maxBytes };
   }
 }
-function canonical5(value) {
+function canonical6(value) {
   if (value === undefined || value === null || typeof value === "string" || typeof value === "boolean")
     return value;
   if (typeof value === "number" && Number.isFinite(value))
     return value;
   if (Array.isArray(value))
-    return value.map(canonical5);
+    return value.map(canonical6);
   if (typeof value === "object")
-    return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([key, v]) => [key, canonical5(v)]));
+    return Object.fromEntries(Object.entries(value).filter(([, v]) => v !== undefined).sort(([a], [b]) => a.localeCompare(b)).map(([key, v]) => [key, canonical6(v)]));
   throw new Error("Build input contains a non-data dependency.");
 }
 function validateBuildRequirements(result, expected, exact) {
@@ -43636,7 +43849,7 @@ function createCachedEvaluatorPort(evaluator, options) {
         const { signal: _signal, ...dataControls } = controls ?? {};
         const snapshotControls = structuredClone(dataControls);
         controls = { ...snapshotControls, ...signal ? { signal } : {} };
-        serialized = JSON.stringify(canonical5({
+        serialized = JSON.stringify(canonical6({
           version: "kiln.build-requirements.v1",
           identity,
           code,
@@ -43652,7 +43865,7 @@ function createCachedEvaluatorPort(evaluator, options) {
       } catch {
         return evaluator.render(code, renderOptions, controls);
       }
-      const key = `sha256:${createHash14("sha256").update(serialized).digest("hex")}`;
+      const key = `sha256:${createHash15("sha256").update(serialized).digest("hex")}`;
       const cached = await options.cache.get(key).catch(() => {
         return;
       });
@@ -43702,43 +43915,43 @@ init_community_exporter();
 
 // src/build-cache-node.ts
 init_protocol();
-import { createHash as createHash15, randomUUID as randomUUID5 } from "node:crypto";
+import { createHash as createHash16, randomUUID as randomUUID6 } from "node:crypto";
 import {
-  mkdir as mkdir5,
-  readFile as readFile5,
+  mkdir as mkdir6,
+  readFile as readFile6,
   readdir as readdir5,
-  rename as rename3,
-  stat as stat2,
-  unlink as unlink3,
+  rename as rename4,
+  stat as stat4,
+  unlink as unlink4,
   utimes,
-  writeFile as writeFile5
+  writeFile as writeFile6
 } from "node:fs/promises";
-import { join as join10, resolve as resolve5 } from "node:path";
+import { join as join12, resolve as resolve7 } from "node:path";
 var keyPattern = /^sha256:[a-f0-9]{64}$/;
 var filePattern2 = /^[a-f0-9]{64}\.json$/;
-var digest5 = (text) => createHash15("sha256").update(text).digest("hex");
+var digest5 = (text) => createHash16("sha256").update(text).digest("hex");
 
 class FileBuildCache {
   maxBytes;
   directory;
   constructor(directory, maxBytes = 128 * 1024 * 1024) {
     this.maxBytes = maxBytes;
-    this.directory = resolve5(directory);
+    this.directory = resolve7(directory);
     if (!Number.isSafeInteger(maxBytes) || maxBytes < 0 || maxBytes > 1024 * 1024 * 1024)
       throw new Error("File build cache size must be 0..1 GiB.");
   }
   path(key) {
     if (!keyPattern.test(key))
       throw new Error("Invalid build cache key.");
-    return join10(this.directory, `${key.slice(7)}.json`);
+    return join12(this.directory, `${key.slice(7)}.json`);
   }
   async get(key) {
     const path = this.path(key);
     try {
-      const entry = await stat2(path);
+      const entry = await stat4(path);
       if (entry.size > this.maxBytes || entry.size > 96 * 1024 * 1024)
         return;
-      const envelope = JSON.parse(await readFile5(path, "utf8"));
+      const envelope = JSON.parse(await readFile6(path, "utf8"));
       if (envelope.version !== 1 || envelope.key !== key || typeof envelope.payload !== "string" || envelope.checksum !== digest5(envelope.payload))
         return;
       const decoded = decodeEvaluatorResultV2(envelope.payload, 64 * 1024 * 1024);
@@ -43757,13 +43970,13 @@ class FileBuildCache {
     const bytes = JSON.stringify({ version: 1, key, payload, checksum: digest5(payload) });
     if (Buffer.byteLength(bytes) > Math.min(this.maxBytes, 96 * 1024 * 1024))
       return;
-    await mkdir5(this.directory, { recursive: true });
-    const temporary = join10(this.directory, `.write-${randomUUID5()}`);
-    await writeFile5(temporary, bytes, { encoding: "utf8", flag: "wx", mode: 384 });
+    await mkdir6(this.directory, { recursive: true });
+    const temporary = join12(this.directory, `.write-${randomUUID6()}`);
+    await writeFile6(temporary, bytes, { encoding: "utf8", flag: "wx", mode: 384 });
     try {
-      await rename3(temporary, path);
+      await rename4(temporary, path);
     } finally {
-      await unlink3(temporary).catch(() => {});
+      await unlink4(temporary).catch(() => {});
     }
     await this.trim();
   }
@@ -43772,9 +43985,9 @@ class FileBuildCache {
     for (const name of await readdir5(this.directory)) {
       if (!filePattern2.test(name))
         continue;
-      const path = join10(this.directory, name);
+      const path = join12(this.directory, name);
       try {
-        const item = await stat2(path);
+        const item = await stat4(path);
         entries.push({ path, size: item.size, used: item.mtimeMs });
       } catch {}
     }
@@ -43783,18 +43996,18 @@ class FileBuildCache {
     for (const entry of entries) {
       if (bytes <= this.maxBytes)
         break;
-      await unlink3(entry.path).catch(() => {});
+      await unlink4(entry.path).catch(() => {});
       bytes -= entry.size;
     }
   }
 }
 
 // src/runtime-identity.ts
-import { createHash as createHash16 } from "node:crypto";
-import { lstat as lstat6, readFile as readFile6, readdir as readdir6, realpath as realpath4, stat as stat3 } from "node:fs/promises";
+import { createHash as createHash17 } from "node:crypto";
+import { lstat as lstat8, readFile as readFile7, readdir as readdir6, realpath as realpath6, stat as stat5 } from "node:fs/promises";
 import { createRequire as createRequire2 } from "node:module";
-import { dirname as dirname5, join as join11, relative as relative5 } from "node:path";
-var digest6 = (bytes) => createHash16("sha256").update(bytes).digest("hex");
+import { dirname as dirname6, join as join13, relative as relative6 } from "node:path";
+var digest6 = (bytes) => createHash17("sha256").update(bytes).digest("hex");
 var compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 async function installedRuntimeIdentity(root, limits = {}) {
   let bytes = 0;
@@ -43802,7 +44015,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
   const absentPackages = [];
   const maxBytes = limits.maxBytes ?? 512 * 1024 * 1024;
   const maxFiles = limits.maxFiles ?? 40000;
-  const manifest = async (directory) => JSON.parse(await readFile6(join11(directory, "package.json"), "utf8"));
+  const manifest = async (directory) => JSON.parse(await readFile7(join13(directory, "package.json"), "utf8"));
   let readers = 0;
   const waiting = [];
   const read = async (path) => {
@@ -43811,11 +44024,11 @@ async function installedRuntimeIdentity(root, limits = {}) {
     else
       readers++;
     try {
-      const info = await stat3(path);
+      const info = await stat5(path);
       if (++files > maxFiles || bytes + info.size > maxBytes)
         throw new Error("Installed runtime fingerprint exceeds its scan budget.");
       bytes += info.size;
-      return await readFile6(path);
+      return await readFile7(path);
     } finally {
       const next = waiting.shift();
       if (next)
@@ -43828,17 +44041,17 @@ async function installedRuntimeIdentity(root, limits = {}) {
     const pkg = await manifest(root);
     if (pkg.name !== "@instruktlabs/kiln")
       throw new Error("Not a Kiln installation.");
-    const build = JSON.parse(await readFile6(join11(root, "dist", "build.json"), "utf8"));
+    const build = JSON.parse(await readFile7(join13(root, "dist", "build.json"), "utf8"));
     const worker = build.entries?.worker;
     if (build.schemaVersion !== 1 || worker?.file !== "evaluator-worker.mjs" || !/^sha256:[a-f0-9]{64}$/.test(worker.identity))
       throw new Error("No valid packaged worker identity.");
-    const workerHash = `sha256:${digest6(await read(join11(root, "dist", worker.file)))}`;
+    const workerHash = `sha256:${digest6(await read(join13(root, "dist", worker.file)))}`;
     if (worker.bundleHash !== workerHash)
       throw new Error("Packaged worker differs from its build manifest.");
     const records = [];
     const visited = new Map;
     async function resolvePackage(parent, name) {
-      const require2 = createRequire2(join11(parent, "package.json"));
+      const require2 = createRequire2(join13(parent, "package.json"));
       let found;
       try {
         found = require2.resolve(`${name}/package.json`);
@@ -43847,9 +44060,9 @@ async function installedRuntimeIdentity(root, limits = {}) {
           found = require2.resolve(name);
         } catch {
           for (const modules of require2.resolve.paths(name) ?? []) {
-            const candidate = join11(modules, name);
+            const candidate = join13(modules, name);
             try {
-              await lstat6(candidate);
+              await lstat8(candidate);
             } catch (error) {
               if (error.code === "ENOENT")
                 continue;
@@ -43857,18 +44070,18 @@ async function installedRuntimeIdentity(root, limits = {}) {
             }
             if ((await manifest(candidate)).name !== name)
               throw new Error(`Cannot identify installed dependency ${name}.`);
-            return await realpath4(candidate);
+            return await realpath6(candidate);
           }
           return;
         }
       }
-      let directory = dirname5(found);
+      let directory = dirname6(found);
       for (;; ) {
         try {
           if ((await manifest(directory)).name === name)
-            return await realpath4(directory);
+            return await realpath6(directory);
         } catch {}
-        const next = dirname5(directory);
+        const next = dirname6(directory);
         if (next === directory)
           throw new Error(`Cannot identify installed dependency ${name}.`);
         directory = next;
@@ -43879,18 +44092,18 @@ async function installedRuntimeIdentity(root, limits = {}) {
       return (await Promise.all(entries.map(async (entry) => {
         if (entry.name === "node_modules" || entry.name === ".git")
           return [];
-        const path = join11(directory, entry.name);
+        const path = join13(directory, entry.name);
         if (entry.isSymbolicLink())
           throw new Error("Dependency contains an untracked internal symlink.");
         if (entry.isDirectory())
           return tree(path, base);
         if (entry.isFile())
-          return [[relative5(base, path).replaceAll("\\", "/"), digest6(await read(path))]];
+          return [[relative6(base, path).replaceAll("\\", "/"), digest6(await read(path))]];
         throw new Error("Dependency contains a non-file runtime input.");
       }))).flat();
     }
     async function visit(directory, path) {
-      const canonical = await realpath4(directory);
+      const canonical = await realpath6(directory);
       const previous = visited.get(canonical);
       if (previous) {
         records.push([path, `same-package:${previous}`]);
@@ -43956,20 +44169,20 @@ async function installedRuntimeIdentity(root, limits = {}) {
 }
 
 // src/local-runtime.ts
-import { readFile as readFile7, stat as stat4 } from "node:fs/promises";
-import { dirname as dirname6, isAbsolute, join as join14, resolve as resolve7 } from "node:path";
+import { readFile as readFile8, stat as stat6 } from "node:fs/promises";
+import { dirname as dirname7, isAbsolute as isAbsolute2, join as join16, resolve as resolve9 } from "node:path";
 import { fileURLToPath as fileURLToPath5 } from "node:url";
 import { Console } from "node:console";
 init_material_resources();
 
 // src/workspace-node.ts
 import { AsyncLocalStorage as AsyncLocalStorage2 } from "node:async_hooks";
-import { join as join13 } from "node:path";
+import { join as join15 } from "node:path";
 
 // src/projects-node.ts
-import { createHash as createHash17, randomUUID as randomUUID6 } from "node:crypto";
-import { link as link4, lstat as lstat7, mkdir as mkdir6, open, readdir as readdir7, realpath as realpath5, unlink as unlink4 } from "node:fs/promises";
-import { join as join12, relative as relative6, resolve as resolve6, sep as sep4 } from "node:path";
+import { createHash as createHash18, randomUUID as randomUUID7 } from "node:crypto";
+import { link as link5, lstat as lstat9, mkdir as mkdir7, open as open2, readdir as readdir7, realpath as realpath7, unlink as unlink5 } from "node:fs/promises";
+import { join as join14, relative as relative7, resolve as resolve8, sep as sep5 } from "node:path";
 init_projects();
 var missing2 = (error) => error.code === "ENOENT";
 var exists = (error) => error.code === "EEXIST";
@@ -43983,7 +44196,7 @@ function sequenceOf(revisionId) {
 }
 function digest7(record) {
   const { revisionId: _, ...payload } = record;
-  return createHash17("sha256").update(JSON.stringify(payload)).digest("hex");
+  return createHash18("sha256").update(JSON.stringify(payload)).digest("hex");
 }
 
 class FileProjectStore {
@@ -43992,30 +44205,30 @@ class FileProjectStore {
   constructor(workspace) {
     if (!workspace.trim())
       throw new Error("A workspace directory is required");
-    this.workspace = resolve6(workspace);
-    this.directory = join12(this.workspace, ".kiln", "projects");
+    this.workspace = resolve8(workspace);
+    this.directory = join14(this.workspace, ".kiln", "projects");
   }
   async path(projectId, create = false) {
     if (projectId !== undefined)
       projectIdSchema.parse(projectId);
     if (create)
-      await mkdir6(this.workspace, { recursive: true });
-    const canonical = await realpath5(this.workspace);
+      await mkdir7(this.workspace, { recursive: true });
+    const canonical = await realpath7(this.workspace);
     let path = this.workspace;
     for (const part of [".kiln", "projects", ...projectId ? [projectId, "revisions"] : []]) {
-      path = join12(path, part);
+      path = join14(path, part);
       if (create)
-        await mkdir6(path).catch((error) => {
+        await mkdir7(path).catch((error) => {
           if (!exists(error))
             throw error;
         });
-      const info = await lstat7(path);
+      const info = await lstat9(path);
       if (info.isSymbolicLink())
         throw new Error("Project symlinks are not supported");
       if (!info.isDirectory())
         throw new Error("Invalid project directory");
-      const rel = relative6(canonical, await realpath5(path));
-      if (rel === ".." || rel.startsWith(`..${sep4}`))
+      const rel = relative7(canonical, await realpath7(path));
+      if (rel === ".." || rel.startsWith(`..${sep5}`))
         throw new Error("Project path escapes workspace");
     }
     return path;
@@ -44035,11 +44248,11 @@ class FileProjectStore {
     return latest;
   }
   async load(projectId, directory, sequence) {
-    const path = join12(directory, filename(sequence));
-    const info = await lstat7(path);
+    const path = join14(directory, filename(sequence));
+    const info = await lstat9(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > MAX_PROJECT_BYTES)
       throw new Error("Invalid or oversized project revision file");
-    const handle = await open(path, "r");
+    const handle = await open2(path, "r");
     let bytes;
     try {
       const opened = await handle.stat();
@@ -44118,8 +44331,8 @@ class FileProjectStore {
     for (const revision of new Set(record.reviews.map((review) => review.projectRevisionId)))
       await this.read(record.projectId, revision);
     const directory = await this.path(record.projectId, true);
-    const temporary = join12(directory, `.write-${randomUUID6()}`);
-    const handle = await open(temporary, "wx", 384);
+    const temporary = join14(directory, `.write-${randomUUID7()}`);
+    const handle = await open2(temporary, "wx", 384);
     try {
       try {
         await handle.writeFile(bytes);
@@ -44128,7 +44341,7 @@ class FileProjectStore {
         await handle.close();
       }
       try {
-        await link4(temporary, join12(directory, filename(sequenceOf(record.revisionId))));
+        await link5(temporary, join14(directory, filename(sequenceOf(record.revisionId))));
       } catch (error) {
         if (!exists(error))
           throw error;
@@ -44138,7 +44351,7 @@ class FileProjectStore {
         throw new ProjectConflictError(record.projectId, expectedRevision, current.revisionId);
       }
     } finally {
-      await unlink4(temporary);
+      await unlink5(temporary);
     }
     return record;
   }
@@ -44158,7 +44371,7 @@ class FileProjectStore {
     return record;
   }
   async create(draft) {
-    const { projectId = `p_${randomUUID6().replaceAll("-", "")}`, ...data } = projectDraftSchema.parse(draft);
+    const { projectId = `p_${randomUUID7().replaceAll("-", "")}`, ...data } = projectDraftSchema.parse(draft);
     return this.publish(this.record(projectId, 1, data));
   }
   async update(projectId, expectedRevision, patch) {
@@ -44213,7 +44426,7 @@ class FileWorkspace {
     this.root = root;
     this.defaultProjectId = defaultProjectId;
     this.projects = new FileProjectStore(root);
-    this.materials = new FileMaterialLibrary(join13(root, ".kiln", "materials"));
+    this.materials = new FileMaterialLibrary(join15(root, ".kiln", "materials"));
   }
   current() {
     return this.active.getStore();
@@ -44351,17 +44564,17 @@ var scope = 0;
 function workspaceSourceReader(root) {
   return async (file) => {
     const segments = file.split(/[\\/]/u);
-    if (!file || isAbsolute(file) || /^[A-Za-z]:/u.test(file) || segments.includes("..") || segments.includes(""))
+    if (!file || isAbsolute2(file) || /^[A-Za-z]:/u.test(file) || segments.includes("..") || segments.includes(""))
       throw new Error('file must name a program inside the workspace, relative to its root: no absolute path and no "..". Use a path such as assets/asset.kiln.js, or pass code or programRef.');
-    const path = resolve7(root, file);
-    const info = await stat4(path).catch(() => {
+    const path = resolve9(root, file);
+    const info = await stat6(path).catch(() => {
       return;
     });
     if (!info?.isFile())
       throw new Error(`file ${file} was not found inside the workspace. Check the relative path, or pass code or programRef.`);
     if (info.size > MAX_PROGRAM_BYTES)
       throw new Error(`file ${file} exceeds the ${MAX_PROGRAM_BYTES / (1024 * 1024)} MiB source limit.`);
-    return readFile7(path, "utf8");
+    return readFile8(path, "utf8");
   };
 }
 function integer4(env, name, fallback, min, max) {
@@ -44371,7 +44584,7 @@ function integer4(env, name, fallback, min, max) {
   return value;
 }
 function createLocalToolContext(base = {}, env = process.env) {
-  const workspaceRoot = env.KILN_WORKSPACE ? resolve7(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname6(dirname6(base.programStore.directory)) : localWorkspaceRoot(env);
+  const workspaceRoot = env.KILN_WORKSPACE ? resolve9(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname7(dirname7(base.programStore.directory)) : localWorkspaceRoot(env);
   const workspace = base.workspace ?? new FileWorkspace(workspaceRoot, env.KILN_PROJECT);
   const projectStore = base.projectStore ?? (workspace instanceof FileWorkspace ? workspace.projects : undefined);
   const liveReview = base.liveReview ?? (env.KILN_LIVE_REVIEW === "off" ? undefined : new FileLiveReview(workspaceRoot, {
@@ -44536,7 +44749,7 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   }
   const cacheBytes = integer4(env, "KILN_BUILD_CACHE_MB", 128, 0, 1024) * 1024 * 1024;
   const store = context.programStore;
-  const directory = resolve7(env.KILN_BUILD_CACHE_DIR ?? join14(store instanceof FileProgramStore ? dirname6(store.directory) : ".kiln", "cache", "builds"));
+  const directory = resolve9(env.KILN_BUILD_CACHE_DIR ?? join16(store instanceof FileProgramStore ? dirname7(store.directory) : ".kiln", "cache", "builds"));
   context.buildCache = new FileBuildCache(directory, cacheBytes);
   context.evaluatorCacheIdentity = `${identity.identity}:${JSON.stringify({
     execution: context.localExecution,
@@ -44575,7 +44788,7 @@ import {
   StdioServerTransport,
   serveStdio
 } from "@modelcontextprotocol/server/stdio";
-import { readFile as readFile8 } from "node:fs/promises";
+import { readFile as readFile9 } from "node:fs/promises";
 
 // src/asset-widget-uri.ts
 var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v6.html";
@@ -44640,7 +44853,7 @@ function errorMessage(error) {
   return error instanceof Error ? error.message : String(error);
 }
 async function readPackagedWidgetHtml() {
-  return readFile8(new URL("../dist/viewer/chat.html", import.meta.url), "utf8");
+  return readFile9(new URL("../dist/viewer/chat.html", import.meta.url), "utf8");
 }
 function createKilnServer(options) {
   const { manifest } = options;
@@ -52828,6 +53041,11 @@ function createKilnAssetDefs(context, presentation = "grouped") {
   const profileExportInput = exportInput.extend({
     profile: z25.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
+  const exportToInput = exportInput.extend({
+    path: z25.string().max(240).describe("Root-relative .glb path with forward slashes, e.g. game/door.glb; runtime adds door.kiln-metadata.json beside it."),
+    profile: z25.enum(["runtime", "editable"]).default("runtime").describe("runtime: standalone GLB plus metadata sidecar. editable: exact saved GLB only."),
+    target: z25.enum(["three"]).optional().describe("Runtime only: a three.js delivery GLB (instancing, quantization, meshopt).")
+  });
   const importInput = z25.object({
     ...selector,
     sourceCollection: selector.collection
@@ -53004,6 +53222,7 @@ function createKilnAssetDefs(context, presentation = "grouped") {
         };
       }
     },
+    ...context.exportRoot && context.assetLibrary ? [createKilnExportToDef(context.exportRoot, exportToInput, library, listCall)] : [],
     {
       name: "kiln_import",
       description: "Copy a pinned asset revision between configured collections, preserving identity and provenance. Copies never track later edits automatically. For a GLB or downloaded ZIP on disk, use kiln import <file> --collection <name> in the CLI.",
@@ -53017,6 +53236,61 @@ function createKilnAssetDefs(context, presentation = "grouped") {
       }
     }
   ];
+}
+function createKilnExportToDef(writer, inputSchema, library, listCall) {
+  return {
+    name: "kiln_export_to",
+    description: "Write one saved revision's GLB to a path under the host's export root. Default runtime writes the GLB plus its <stem>.kiln-metadata.json sidecar; editable writes the exact saved GLB; target three derives a three.js delivery GLB. Never replaces an existing file. Returns the CLI export receipt with root-relative paths, bytes and sha256.",
+    inputSchema,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false
+    },
+    run: async (raw) => {
+      const input = inputSchema.parse(raw);
+      if (input.target !== undefined && input.profile !== "runtime")
+        throw new Error("target requires profile runtime");
+      await Promise.resolve().then(() => init_export_root());
+      const destination = validateExportPath(input.path);
+      await Promise.resolve().then(() => init_asset_export());
+      if (input.profile === "runtime")
+        validateMetadataFileName(destination.metadataFileName);
+      const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId, listCall(input.collection));
+      const files = [];
+      if (input.profile === "runtime") {
+        const output = await exportAssetGlb(record, {
+          profile: "runtime",
+          metadataFileName: destination.metadataFileName,
+          ...input.target ? { target: input.target } : {}
+        });
+        if (output.profile !== "runtime")
+          throw new Error("Expected runtime export");
+        files.push({ kind: "glb", path: destination.path, data: output.glb }, { kind: "metadata", path: destination.metadataPath, data: output.metadata.bytes });
+      } else
+        files.push({ kind: "glb", path: destination.path, data: record.files["asset.glb"] });
+      await writer.writeNew([...files].reverse());
+      await Promise.resolve().then(() => init_draw_diagnostics());
+      const digest = async (data) => `sha256:${Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(data))), (byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+      return {
+        ok: true,
+        collection: input.collection,
+        assetId: input.assetId,
+        revisionId: input.revisionId,
+        profile: input.profile,
+        ...input.target ? { target: input.target } : {},
+        format: "glb",
+        drawDiagnostics: await inspectDrawDiagnostics(files[0].data),
+        files: await Promise.all(files.map(async ({ kind, path, data }) => ({
+          kind,
+          path,
+          bytes: data.byteLength,
+          sha256: await digest(data)
+        })))
+      };
+    }
+  };
 }
 
 // src/mcp-manifest.ts
@@ -53226,10 +53500,16 @@ async function createPackagedKilnHost(options = {}) {
       throw new Error(`Kiln workspace is out of date${report.runtimeChanged ? " (runtime changed)" : ""}: ${report.files.filter((entry) => entry.status !== "customized").map((entry) => entry.path).join(", ")}. In the workspace folder run kiln-init . --check, then kiln-init . --upgrade (or kiln-init . --repair if the installation moved), and restart the MCP session.`);
   }
   const mode = resolveRenderMode();
+  const assetLibrary = localAssetLibrary();
+  const exportRoot = await exportRootWriterFromEnv(env, {
+    collectionRoots: assetLibrary.collections().map(({ id }) => assetLibrary.directory(id)),
+    workspaceRoot: localWorkspaceRoot()
+  });
   const context = await createPackagedLocalToolContext({
     ...await buildRenderPort(mode, env["KILN_RENDER_PORT_URL"], { autoSpawn: true }),
     requirements,
-    assetLibrary: localAssetLibrary(),
+    assetLibrary,
+    ...exportRoot ? { exportRoot } : {},
     ...env.KILN_LIVE_REVIEW !== "off" ? {
       liveReview: new FileLiveReview(localWorkspaceRoot(), {
         transport: "mcp",
