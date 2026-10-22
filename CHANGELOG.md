@@ -69,6 +69,13 @@ does not publish a package.
   contract lists them too. The new `kiln validate <program.js|ref> [--json]` serves the same
   `kiln_validate` check from the CLI, prints the `programRef` and exits 1 when the source is
   invalid; the generic rejection advice names both forms.
+- Add metric UV projection ([#216](https://github.com/instruktlabs/kiln/issues/216)).
+  `projectUV` accepts `metersPerUnit`: one UV unit maps to that length, measured from the
+  frame origin, so parts of different size tile at the same texel density and pieces that
+  share a frame keep the same phase. A full cylindrical wrap rounds to whole tiles at the
+  largest radius so the seam stays continuous. Calls without it are unchanged. The contract
+  and geometry docs say to weld the non-indexed output with `mergeVertices` where the
+  projection is continuous.
 
 ## 1.3.1 (2026-10-17)
 

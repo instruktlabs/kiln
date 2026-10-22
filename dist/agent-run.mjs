@@ -5581,7 +5581,7 @@ var REMOVED_AUTHORING_HELPERS, geometryPrimitives;
 var init_geometry_catalog = __esm(() => {
   REMOVED_AUTHORING_HELPERS = Object.freeze({
     boxUnwrap: 'Preserve existing UVs with direct geometry sharing or copyGeometry. Generate new face mappings explicitly with projectUV(geo, { projection: "box", frame? }); planar projection is a separate mode.',
-    cylinderUnwrap: 'Preserve valid built-in UVs with direct sharing or copyGeometry. For cylindrical mapping use projectUV(geo, { projection: "cylindrical", frame?, seamDegrees?, angularRange?, caps? }); partial arcs need an explicit angularRange.',
+    cylinderUnwrap: 'Preserve valid built-in UVs with direct sharing or copyGeometry. For cylindrical mapping use projectUV(geo, { projection: "cylindrical", frame?, seamDegrees?, angularRange?, caps?, metersPerUnit? }); partial arcs need an explicit angularRange; metersPerUnit fixes texel density.',
     planeUnwrap: 'Use projectUV(geo, { projection: "planar", frame? }) to generate frame-XY UVs. Preserve existing UVs with direct sharing or copyGeometry instead.',
     cloneGeometry: "Pass the original geometry directly for intentional sharing. Use copyGeometry only for independent editable buffers; the removed helper returned its input.",
     cloneMaterial: "Pass the original material directly for intentional sharing. Use copyMaterial for independent properties; referenced textures remain shared.",
@@ -5591,10 +5591,10 @@ var init_geometry_catalog = __esm(() => {
   geometryPrimitives = [
     {
       name: "projectUV",
-      signature: "projectUV(geometry: BufferGeometry, opts: { projection: 'planar'|'box'|'cylindrical', frame?: { origin?: [x,y,z], rotation?: [xDeg,yDeg,zDeg] }, seamDegrees?: number, angularRange?: [startDeg,sweepDeg], caps?: 'planar'|'side' })",
+      signature: "projectUV(geometry: BufferGeometry, opts: { projection: 'planar'|'box'|'cylindrical', frame?: { origin?: [x,y,z], rotation?: [xDeg,yDeg,zDeg] }, seamDegrees?: number, angularRange?: [startDeg,sweepDeg], caps?: 'planar'|'side', metersPerUnit?: number })",
       returns: "THREE.BufferGeometry (owned, non-indexed triangle corners)",
       category: "uv",
-      description: "Generates UV0 explicitly in a rigid geometry-local frame. Planar maps XY; box maps each face; cylindrical wraps frame Y with separate caps and split angular seams. Replaces existing UVs and removes stale tangents. To preserve good UVs use direct sharing or copyGeometry instead.",
+      description: "Generates UV0 explicitly in a rigid geometry-local frame. Planar maps XY; box maps each face; cylindrical wraps frame Y with separate caps and split angular seams. Replaces existing UVs and removes stale tangents. metersPerUnit maps one UV unit to a fixed length so parts of different size tile at the same density. To preserve good UVs use direct sharing or copyGeometry instead.",
       example: "const mapped = projectUV(rawGeometry, { projection: 'cylindrical', frame: { rotation: [0,0,-90] }, seamDegrees: 180 });"
     },
     {
@@ -29872,7 +29872,7 @@ var init_uv = __esm(() => {
 // src/uv-project.ts
 import * as THREE46 from "three";
 function projectUV(geometry, options) {
-  if (!options || typeof options !== "object" || Array.isArray(options) || !["planar", "box", "cylindrical"].includes(options.projection) || Object.keys(options).some((key) => !["projection", "frame", "seamDegrees", "angularRange", "caps"].includes(key)))
+  if (!options || typeof options !== "object" || Array.isArray(options) || !["planar", "box", "cylindrical"].includes(options.projection) || Object.keys(options).some((key) => !["projection", "frame", "seamDegrees", "angularRange", "caps", "metersPerUnit"].includes(key)))
     throw new Error("projectUV: select an explicit planar, box or cylindrical projection with documented options.");
   const cylinder = options.projection === "cylindrical";
   if (!cylinder && [options.seamDegrees, options.angularRange, options.caps].some((value) => value !== undefined))
@@ -29883,6 +29883,9 @@ function projectUV(geometry, options) {
     throw new Error("projectUV: angularRange must be [finite start degrees, positive sweep <=360].");
   if (options.caps !== undefined && options.caps !== "planar" && options.caps !== "side")
     throw new Error("projectUV: caps must be planar or side.");
+  const metric = options.metersPerUnit;
+  if (metric !== undefined && !(typeof metric === "number" && Number.isFinite(metric) && metric > 0))
+    throw new Error("projectUV: metersPerUnit must be a positive finite length.");
   const inverse = geometryFrameMatrix(options.frame).invert();
   const positions = geometry.getAttribute("position");
   if (positions?.itemSize !== 3 || positions.count < 1 || positions.count > MAX_CORNERS)
@@ -29917,13 +29920,19 @@ function projectUV(geometry, options) {
     bounds.expandByPoint(point);
   }
   const extent = bounds.getSize(new THREE46.Vector3);
-  const fit = (point, axis) => extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
+  const fit = (point, axis) => metric !== undefined ? point[axis] / metric : extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
+  const flip = (point, axis) => metric !== undefined ? -point[axis] / metric : 1 - fit(point, axis);
   const outputUVs = new Float32Array(corners * 2);
   const startDegrees = options.angularRange?.[0] ?? options.seamDegrees ?? 180;
   const start = startDegrees % 360 * Math.PI / 180;
   const sweep = (options.angularRange?.[1] ?? 360) * Math.PI / 180;
   const fullWrap = options.angularRange === undefined || options.angularRange[1] === 360;
   const wrap = (angle) => (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+  let uScale = 1;
+  if (metric !== undefined) {
+    const radius = points.reduce((max, point) => Math.max(max, Math.hypot(point.x, point.z)), 0);
+    uScale = fullWrap ? Math.max(1, Math.round(2 * Math.PI * radius / metric)) : sweep * radius / metric;
+  }
   const normal = new THREE46.Vector3;
   const edge = new THREE46.Vector3;
   for (let i = 0;i < corners; i += 3) {
@@ -29947,17 +29956,17 @@ function projectUV(geometry, options) {
       }
       if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5 + 0.000001)
         throw new Error("projectUV: side triangle spans more than half a revolution; add profile segments to resolve the mapping.");
-      pairs = triangle.map((point, j) => [angles[j], fit(point, "y")]);
+      pairs = triangle.map((point, j) => [angles[j] * uScale, fit(point, "y")]);
     } else if (cap) {
       pairs = triangle.map((point) => [fit(point, "x"), fit(point, "z")]);
     } else if (options.projection === "box") {
       const axis = Math.abs(normal.x) >= Math.abs(normal.y) && Math.abs(normal.x) >= Math.abs(normal.z) ? "x" : Math.abs(normal.y) >= Math.abs(normal.z) ? "y" : "z";
       pairs = triangle.map((point) => {
         if (axis === "x")
-          return [normal.x > 0 ? 1 - fit(point, "z") : fit(point, "z"), fit(point, "y")];
+          return [normal.x > 0 ? flip(point, "z") : fit(point, "z"), fit(point, "y")];
         if (axis === "y")
-          return [fit(point, "x"), normal.y > 0 ? 1 - fit(point, "z") : fit(point, "z")];
-        return [normal.z < 0 ? 1 - fit(point, "x") : fit(point, "x"), fit(point, "y")];
+          return [fit(point, "x"), normal.y > 0 ? flip(point, "z") : fit(point, "z")];
+        return [normal.z < 0 ? flip(point, "x") : fit(point, "x"), fit(point, "y")];
       });
     } else
       pairs = triangle.map((point) => [fit(point, "x"), fit(point, "y")]);
@@ -42612,7 +42621,8 @@ define2("projectUV", {
   axes: "Rigid frame in geometry-local coordinates: planar XY, box face planes, cylindrical around Y. Euler XYZ rotations are degrees.",
   origin: "Frame origin is explicit, default [0,0,0]; geometry positions are preserved.",
   parameters: [
-    "Planar/box axes and cylindrical height normalize each geometry extent to 0..1. This is not metre-scaled UV mapping; a shared frame does not preserve texel density or texture continuity across separate pieces. Preserve authored physical UVs or map each face with explicit dimensions when that is required.",
+    "By default planar/box axes and cylindrical height normalize each geometry extent to 0..1, so texel density changes with part size. metersPerUnit (positive length) instead maps one UV unit to that length measured from the frame origin: parts of any size tile at the same density, and parts sharing a frame keep the same phase. A full cylindrical wrap rounds its circumference at the largest radius to whole tiles so the seam stays continuous; a partial angularRange uses the exact arc length.",
+    "Output is non-indexed. Weld with mergeVertices afterwards where the projection is continuous (one planar face, cylindrical sides); it keeps corners split where UVs or normals differ, such as box faces and the cylindrical seam.",
     "projection is required. frame uses origin/rotation. Cylinder seamDegrees defaults to 180, measured from +X toward +Z; angularRange is [start degrees, positive sweep <=360] instead of seamDegrees.",
     "Cylindrical caps default to planar for triangle normals within 1e-6 of frame Y; caps:side uses side mapping. Partial ranges must cover side vertices, allowing 1e-6 radians of Float32 boundary roundoff.",
     "Nonempty finite positions, valid triangle indices and matching per-vertex attributes; morph targets are unsupported. At most 2000000 source samples/corners and 128 MiB expanded attribute storage."
@@ -42625,8 +42635,17 @@ define2("projectUV", {
 }, {
   ...uvMetadata,
   references: ["src/uv-project.ts"],
-  aliases: ["planar projection", "box mapping", "cylindrical UVs", "rotated UV frame"],
-  intents: ["generate directional texture coordinates in an explicit frame"],
+  aliases: [
+    "planar projection",
+    "box mapping",
+    "cylindrical UVs",
+    "rotated UV frame",
+    "metric UVs"
+  ],
+  intents: [
+    "generate directional texture coordinates in an explicit frame",
+    "keep the same texel density on parts of different size"
+  ],
   limitations: [
     "Full-wrap seam corners may use U above 1 and require repeat sampling. Side triangles spanning more than half a revolution fail; subdivide the profile. Zero extent maps to 0.5. This is projection, not an atlas or a stretch-free guarantee."
   ],

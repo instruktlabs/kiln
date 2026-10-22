@@ -690,11 +690,12 @@ bezierCurve(controlPoints: [x,y,z][], samples?: 32)
   // curveToMesh(path, 0.1);
 
 // UV unwrapping
-projectUV(geometry: BufferGeometry, opts: { projection: 'planar'|'box'|'cylindrical', frame?: { origin?: [x,y,z], rotation?: [xDeg,yDeg,zDeg] }, seamDegrees?: number, angularRange?: [startDeg,sweepDeg], caps?: 'planar'|'side' })
+projectUV(geometry: BufferGeometry, opts: { projection: 'planar'|'box'|'cylindrical', frame?: { origin?: [x,y,z], rotation?: [xDeg,yDeg,zDeg] }, seamDegrees?: number, angularRange?: [startDeg,sweepDeg], caps?: 'planar'|'side', metersPerUnit?: number })
   // Generates UV0 explicitly in a rigid geometry-local frame. Planar maps XY; box maps each
   // face; cylindrical wraps frame Y with separate caps and split angular seams. Replaces
-  // existing UVs and removes stale tangents. To preserve good UVs use direct sharing or
-  // copyGeometry instead.
+  // existing UVs and removes stale tangents. metersPerUnit maps one UV unit to a fixed length
+  // so parts of different size tile at the same density. To preserve good UVs use direct
+  // sharing or copyGeometry instead.
   // e.g. const mapped = projectUV(rawGeometry, { projection: 'cylindrical', frame: { rotation:
   // [0,0,-90] }, seamDegrees: 180 });
 remapUV(geometry: BufferGeometry, opts?: { scale?: [u, v], offset?: [u, v] })

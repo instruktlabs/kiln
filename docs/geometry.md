@@ -549,17 +549,27 @@ parallel to frame XZ use planar UVs by default; `caps: 'side'` opts into side ma
 Full-wrap seam triangles may use U above 1, requiring repeat texture sampling.
 Triangles spanning more than half a revolution fail with a subdivision hint.
 
-Planar/box coordinates and cylindrical height normalize each geometry's extents
-to 0..1. They do not use metres per texture repeat. A shared frame does not make
-separate wall pieces share texel density or continuous brick courses. Preserve
-existing physical UVs, or map faces with explicit dimensions; a planar XY face
-can use `remapUV` with scales `[width / tileWidth, height / tileHeight]` and an
-explicit offset to align its phase. Box faces use different axis pairs, so one
-uniform remap does not establish equal density on every face.
+By default, planar/box coordinates and cylindrical height normalize each geometry's
+extents to 0..1, so texel density changes with part size. Pass `metersPerUnit` to map
+one UV unit to a fixed length instead, measured from the frame origin:
+
+```js
+const wall = projectUV(wallGeometry, { projection: 'box', metersPerUnit: 0.5 });
+```
+
+Parts of any size then tile at the same density, and wall pieces that share a frame
+continue the same brick courses. A full cylindrical wrap rounds its circumference at
+the largest radius to a whole number of tiles, so the seam meets itself; on a cone the
+narrower rings are compressed accordingly. A partial `angularRange` uses the exact arc
+length at the largest radius.
 
 Output is owned and non-indexed to separate triangle-corner UVs. Positions, normals,
 matching attributes, material groups, draw range and triangle order are preserved;
-tangents are removed with a diagnostic. Zero projection extent maps to 0.5.
+tangents are removed with a diagnostic. Zero projection extent maps to 0.5. Where the
+projection is continuous (one planar face, cylindrical sides), weld the result with
+`mergeVertices`: it rejoins corners that share position, normal and UV and keeps box
+faces and the cylindrical seam split. Per-triangle UVs left unwelded multiply vertex
+count and file size.
 Inputs must be finite triangle geometry with matching per-vertex attributes;
 morph targets require a separate contract. Limits are two million source samples
 and output corners plus 128 MiB of expanded attributes. This projection does not

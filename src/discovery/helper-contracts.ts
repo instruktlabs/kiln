@@ -2597,7 +2597,8 @@ define(
     axes: 'Rigid frame in geometry-local coordinates: planar XY, box face planes, cylindrical around Y. Euler XYZ rotations are degrees.',
     origin: 'Frame origin is explicit, default [0,0,0]; geometry positions are preserved.',
     parameters: [
-      'Planar/box axes and cylindrical height normalize each geometry extent to 0..1. This is not metre-scaled UV mapping; a shared frame does not preserve texel density or texture continuity across separate pieces. Preserve authored physical UVs or map each face with explicit dimensions when that is required.',
+      'By default planar/box axes and cylindrical height normalize each geometry extent to 0..1, so texel density changes with part size. metersPerUnit (positive length) instead maps one UV unit to that length measured from the frame origin: parts of any size tile at the same density, and parts sharing a frame keep the same phase. A full cylindrical wrap rounds its circumference at the largest radius to whole tiles so the seam stays continuous; a partial angularRange uses the exact arc length.',
+      'Output is non-indexed. Weld with mergeVertices afterwards where the projection is continuous (one planar face, cylindrical sides); it keeps corners split where UVs or normals differ, such as box faces and the cylindrical seam.',
       'projection is required. frame uses origin/rotation. Cylinder seamDegrees defaults to 180, measured from +X toward +Z; angularRange is [start degrees, positive sweep <=360] instead of seamDegrees.',
       'Cylindrical caps default to planar for triangle normals within 1e-6 of frame Y; caps:side uses side mapping. Partial ranges must cover side vertices, allowing 1e-6 radians of Float32 boundary roundoff.',
       'Nonempty finite positions, valid triangle indices and matching per-vertex attributes; morph targets are unsupported. At most 2000000 source samples/corners and 128 MiB expanded attribute storage.',
@@ -2611,8 +2612,17 @@ define(
   {
     ...uvMetadata,
     references: ['src/uv-project.ts'],
-    aliases: ['planar projection', 'box mapping', 'cylindrical UVs', 'rotated UV frame'],
-    intents: ['generate directional texture coordinates in an explicit frame'],
+    aliases: [
+      'planar projection',
+      'box mapping',
+      'cylindrical UVs',
+      'rotated UV frame',
+      'metric UVs',
+    ],
+    intents: [
+      'generate directional texture coordinates in an explicit frame',
+      'keep the same texel density on parts of different size',
+    ],
     limitations: [
       'Full-wrap seam corners may use U above 1 and require repeat sampling. Side triangles spanning more than half a revolution fail; subdivide the profile. Zero extent maps to 0.5. This is projection, not an atlas or a stretch-free guarantee.',
     ],
