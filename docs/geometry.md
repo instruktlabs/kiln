@@ -465,10 +465,10 @@ refuses it when the mesh has no `uv1`, and reports channels a converter does not
 
 An author attribute name is an underscore, a lowercase letter, then lowercase
 letters, digits or single underscores (at most 64 characters), such as `_wet` or
-`_flow_dir`. It is written as float32 under the uppercase name, and three.js
+`_flow_dir`. It is written as 32-bit floats under the uppercase name, and three.js
 `GLTFLoader` reads it back under the lowercase one. Use it for a per-vertex mask
 such as a wet line or wear instead of cutting triangles along the boundary.
-`runtime --target three` keeps author attributes as unquantized float32 and lists
+`runtime --target three` keeps author attributes as unquantized 32-bit floats and lists
 them in the sidecar `customAttributes`. Mixed-case names such as `_Wet` would not
 round-trip and stay unsupported.
 
