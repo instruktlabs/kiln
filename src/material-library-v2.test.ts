@@ -439,16 +439,8 @@ const toolError = (schema: z.ZodType, value: unknown): string => {
   expect(parsed.success).toBe(false);
   return describeInputError('kiln_material', parsed.error)!;
 };
-const stamps = {
-  op: 'stamps',
-  shape: { kind: 'rectangle', x: 0, y: 0, width: 1, height: 1 },
-  rgba: [1, 2, 3, 255],
-  opacity: 1,
-  count: 2,
-  seed: 1,
-  area: { x: 0, y: 0, width: 8, height: 4 },
-  periodic: false,
-};
+// V3 stamps accept every usage since #205; a palette is still limited to colour usages.
+const palette = { colors: [0x102030], dither: 'none' };
 const withMap = (map: Record<string, unknown>) => {
   const value = draft() as Record<string, unknown> & { maps: Record<string, unknown>[] };
   value.maps = [{ ...value.maps[0]!, ...map }];
@@ -457,10 +449,10 @@ const withMap = (map: Record<string, unknown>) => {
 test('draft V3 recipe errors name the canonicalizer rule instead of Invalid input', () => {
   const message = toolError(
     proceduralMaterialDraftV2Schema,
-    withMap({ procedural: { ...recipe, usage: 'normal', operations: [stamps] } }),
+    withMap({ procedural: { ...recipe, usage: 'normal', palette } }),
   );
   expect(message).toContain(
-    'maps.0.procedural: proceduralTexture V3: stamps are supported only for color usages albedo and emissive',
+    'maps.0.procedural: proceduralTexture V3: palette and dither are supported only for color usages albedo and emissive',
   );
   expect(message).not.toContain('Invalid input');
 });
@@ -511,10 +503,10 @@ test('stored V3 and atlas recipe errors carry the canonicalizer reason', async (
   const v3 = (await createMaterialRecordV2(draft())).manifest;
   const spec = structuredClone(v3);
   const procedural = spec.maps[0]!.recipe as { spec: Record<string, unknown> };
-  procedural.spec = { ...procedural.spec, usage: 'normal', operations: [stamps] };
+  procedural.spec = { ...procedural.spec, usage: 'normal', palette };
   const v3Message = toolError(materialManifestV2Schema, spec);
   expect(v3Message).toContain(
-    'maps.0.recipe.spec: proceduralTexture V3: stamps are supported only for color usages albedo and emissive',
+    'maps.0.recipe.spec: proceduralTexture V3: palette and dither are supported only for color usages albedo and emissive',
   );
   expect(v3Message).not.toContain('Invalid input');
 

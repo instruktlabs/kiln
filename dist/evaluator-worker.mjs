@@ -31,7 +31,7 @@ function authoringDiagnosticAdvice(diagnostic) {
   if (diagnostic === "TEXTURE_ATLAS_CONTRACT")
     return 'textureAtlas requires bounded named integer content rectangles with nonoverlapping gutter allocations, matching source crops and usage, and explicit portable sampling. Sources are V3 recipes or exact host-injected library map pins. Split atlases exceeding aggregate work or allocation budgets. remapUVToAtlas requires finite unit UV0, a named content region, inputOrigin and mapping mode; it preserves topology and does not unwrap or tile a region. Read kiln_discover ids ["textureAtlas", "remapUVToAtlas"] for the exact contracts.';
   if (diagnostic === "PROCEDURAL_TEXTURE_V3_CONTRACT")
-    return 'proceduralTexture schemaVersion 3 requires bounded JSON: width/height 4..1024, byte RGBA, integer pixel shapes and at most 64 operations. Palette/dither and seeded stamps support only albedo/emissive. Work includes polygon edges and periodic copies. Read kiln_discover ids ["proceduralTexture"] for the V3 contract; keep schemaVersion 2 for existing opaque patterns.';
+    return 'proceduralTexture schemaVersion 3 requires bounded JSON: width/height 4..1024, byte RGBA, integer pixel shapes and at most 64 operations. Palette/dither supports only albedo/emissive; seeded stamps accept every usage. Work includes polygon edges and periodic copies. Read kiln_discover ids ["proceduralTexture"] for the V3 contract; keep schemaVersion 2 for existing opaque patterns.';
   if (diagnostic === "BONE_CHAIN_ARGUMENT")
     return 'createBoneChain requires 1..1024 valid local joint descriptors with unique roles and animation-safe names across the parent hierarchy. Use normalized perpendicular forward/bend axes and finite rest transforms; an explicit parentRole must match the declared parent. Read the retained source and kiln_discover ids ["createBoneChain"] for the exact contract.';
   if (diagnostic === "SKIN_BINDING_ARGUMENT")
@@ -4270,8 +4270,6 @@ function admitProceduralTextureSpecV3(input) {
       return { op: "paint", ...paint };
     }
     record5(op, ["op", "shape", "rgba", "opacity", "count", "seed", "area", "periodic"], path);
-    if (!colorUsage)
-      fail("stamps are supported only for color usages albedo and emissive.");
     const count = integer2(op["count"], 1, MAX_PROCEDURAL_V3_STAMPS, `${path}.count`);
     const periodic = boolean(op["periodic"], `${path}.periodic`);
     const [bx0, by0, bx1, by1] = proceduralShapeBoundsV3(s);
