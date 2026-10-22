@@ -98,15 +98,22 @@ describe('custom mesh export contract', () => {
     ao.needsUpdate = true;
     ao.channel = 1;
     (mesh.material as THREE.MeshStandardMaterial).aoMap = ao;
-    await expect(renderSceneToGLB(root)).rejects.toThrow(
+    // Pinned: CI also runs the suite with KILN_GLTF_EXPORTER=three, which names the set uv2.
+    const legacy = { gltfExporter: 'legacy' } as const;
+    await expect(renderSceneToGLB(root, legacy)).rejects.toThrow(
       'CustomPanel: aoMap samples uv1, which the geometry lacks.',
     );
     geometry.setAttribute('uv1', new THREE.Float32BufferAttribute([0, 0, 1, 0, 0, 1], 2));
-    const result = await renderSceneToGLB(root, { dedup: false, optimize: 'off', instance: 'off' });
+    const result = await renderSceneToGLB(root, {
+      ...legacy,
+      dedup: false,
+      optimize: 'off',
+      instance: 'off',
+    });
     const doc = await new WebIO().readBinary(result.bytes);
     expect(doc.getRoot().listMaterials()[0]!.getOcclusionTextureInfo()!.getTexCoord()).toBe(1);
     ao.channel = 2;
-    expect((await renderSceneToGLB(root)).warnings).toContain(
+    expect((await renderSceneToGLB(root, legacy)).warnings).toContain(
       'EXPORT_ATTRIBUTE_UNSUPPORTED CustomPanel: aoMap UV channel 2 is not preserved by the GLB bridge.',
     );
   });
