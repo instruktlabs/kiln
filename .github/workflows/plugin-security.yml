@@ -1,0 +1,84 @@
+name: Plugin Security Scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: plugin-security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: HOL plugin scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      # Pin from awesome-ai-plugins/SCANNER_GUIDE.md; bundles scanner 3.0.123.
+      # Keep the catalog's score gate: severity findings remain reviewable.
+      - name: Scan repository
+        uses: hashgraph-online/ai-plugin-scanner-action@caba2e96aa8ad2feb6cf6fca52442b52e22e779f # v1.2.635
+        with:
+          install_source: pypi
+          mode: scan
+          plugin_dir: "."
+          profile: default
+          min_score: 80
+          fail_on_severity: none
+          trust_repository_policy: false
+          online: false
+          # The pinned action installs Cisco 2.0.12 from its hash-locked dependencies.
+          # HOL uses its local static/bytecode/pipeline defaults, without cloud analyzers.
+          install_cisco: true
+          cisco_skill_scan: "on"
+          cisco_policy: balanced
+          format: json
+          output: ${{ runner.temp }}/kiln-plugin-scan.json
+          write_step_summary: true
+          pr_comment: "off"
+          submission_enabled: false
+          upload_sarif: false
+
+      - name: Verify Cisco skill coverage
+        env:
+          SCAN_REPORT: ${{ runner.temp }}/kiln-plugin-scan.json
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = json.loads(Path(os.environ["SCAN_REPORT"]).read_text())
+          manifest = json.loads(Path(".codex-plugin/plugin.json").read_text())
+          skills = sorted(Path(manifest["skills"]).glob("*/SKILL.md"))
+          assert skills, "No maintained skills found"
+          plugin, = [p for p in report["plugins"] if p["name"] == manifest["name"]]
+          integration, = [i for i in plugin["summary"]["integrations"]
+                          if i["name"] == "cisco-skill-scanner"]
+          assert integration["status"] == "enabled", integration
+          analyzers = set(integration["metadata"].get("analyzers", "").split(","))
+          assert "static_analyzer" in analyzers, analyzers
+          assert analyzers <= {"static_analyzer", "bytecode", "pipeline"}, analyzers
+          category, = [c for c in report["categories"]
+                       if c["name"] == "[codex:.] Skill Security"]
+          coverage, = [c for c in category["checks"] if c["name"] == "Skills analyzable"]
+          assert coverage["passed"] and coverage["points"] > 0, coverage
+          assert coverage["message"] == f"Cisco analyzed {len(skills)} skill(s).", coverage
+          summary = (f"Cisco analyzed all {len(skills)} maintained skills using "
+                     f"{', '.join(sorted(analyzers))}.\n"
+                     + "\n".join(f"- {skill.parent.name}" for skill in skills))
+          print(summary)
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as output:
+              output.write("\n### Cisco skill coverage\n\n" + summary + "\n")
+          PY

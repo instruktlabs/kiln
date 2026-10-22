@@ -400,6 +400,16 @@ ${extra}`;
     expect(headersErrors({ text: good, inlineScripts: [], files })).toEqual([`script-src lists ${scriptHashSource(script)}, which no page carries`]);
   });
 
+  test('Astro image transforms retain the source content hash before the short transform hash', () => {
+    const files = ['_astro/objekt62.CSWQHgbU_1CyNvS.webp', '_astro/sheepdog-sim.DRJTkRDj_UK19i.webp'];
+    expect(headersErrors({ text: good, inlineScripts: [script], files })).toEqual([]);
+    for (const path of ['_astro/objekt62_1CyNvS.webp', '_astro/objekt62.CSWQHgbU_.webp', '_astro/objekt62.CSWQHgbU_1CyNvS.js']) {
+      expect(headersErrors({ text: good, inlineScripts: [script], files: [path] })).toEqual([
+        `/${path} is cached as immutable but its name carries no content hash`,
+      ]);
+    }
+  });
+
   test('an enforced policy, a lost header, a blocked fullscreen or an unhashed immutable file are reported', () => {
     const enforced = good.replace('Content-Security-Policy-Report-Only', 'Content-Security-Policy');
     expect(headersErrors({ text: enforced, inlineScripts: [script] })).toEqual([

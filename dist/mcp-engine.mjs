@@ -43299,7 +43299,7 @@ import { readFile as readFile8 } from "node:fs/promises";
 var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v6.html";
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "1.3.0";
+var ENGINE_VERSION = "1.3.1";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };

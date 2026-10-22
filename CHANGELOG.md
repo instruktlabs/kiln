@@ -7,9 +7,13 @@ does not publish a package.
 
 ## Unreleased
 
+## 1.3.1 (unpublished)
+
 - Document private security reporting, include the policy in distributed
   packages, complete Codex plugin website and repository metadata, and
   configure monthly dependency update proposals.
+- Correct installation instructions to reference the published 1.3.0 plugin.
+- Use single-view posters for Cabin gallery assets on the website.
 
 ## 1.3.0 (2026-10-16)
 
