@@ -93,6 +93,13 @@ does not publish a package.
   Meshopt decoder reads the GLB, while `KHR_mesh_quantization`, instancing and every
   preserved feature stay. The sidecar `delivery.compression` records `{ extension: 'none' }`.
   The default output is unchanged.
+- Declare parts that rest on an external support ([#220](https://github.com/instruktlabs/kiln/issues/220)).
+  A requirements binding can list `externalSupport.supports`: named parts and the plane they
+  rest on outside the asset. A named part whose bottom meets that plane moves from the
+  floating-parts warning to an informational line, and its connectivity observation becomes
+  `GEO_PART_EXTERNAL_SUPPORT` naming the declaration. Undeclared parts, parts at another
+  height and every other disposition are unchanged. The declaration is covered by the policy
+  hash.
 
 ## 1.3.1 (2026-10-17)
 

@@ -440,6 +440,24 @@ session's policy; start a new session to select a reviewed binding. Each bound
 server serves one task/asset lineage. Omit the flag for ordinary neutral authoring.
 Tool arguments and source metadata cannot select or replace the host binding.
 
+A binding can state that named parts rest on a support composed outside the asset,
+such as cushions authored for the seat of a separate structure module:
+
+```json
+"externalSupport": {
+  "state": "requested",
+  "value": { "supports": [{ "parts": ["Cushion_L", "BackCushions"], "planeY": 0.45 }] },
+  "reason": "The seat is a separate module"
+}
+```
+
+A part matches by its name, its name without the `Mesh_` prefix that `createPart`
+adds, or an ancestor's name. When its world bottom lies within `tolerance` (default
+0.02 m) of `planeY`, the floating-parts warning lists it on a separate informational
+line and the connectivity observation becomes `GEO_PART_EXTERNAL_SUPPORT`, naming the
+declaration. A named part at another height stays a floating part with the mismatch
+stated. Other parts and dispositions are unchanged. The declaration is part of the
+policy hash; its `reason` is not.
 ## Review explicit legacy data conversion
 
 Library callers of `@instruktlabs/kiln/qa` now use `collectRequirementsSceneEvidence`

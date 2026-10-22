@@ -1,4 +1,5 @@
 import type { DuckClip } from './views/pose';
+import { declaredSupports, type ExternalSupportV1, restingSupport } from './external-support';
 import {
   assertNoLegacyRuntimePolicy,
   resolveRequirementsContext,
@@ -1791,7 +1792,13 @@ export async function renderSceneToGLB(
   // pivot" hint is first; the bridge also emits a briefer "target not
   // found - skipped" for each unresolved track (kept for compatibility).
   for (const w of inspectGeneratedAnimation(root, clips)) warnings.push(w);
-  for (const w of inspectSceneStructure(root)) warnings.push(w);
+  const externalSupport = requirements.requirements.requirements.externalSupport;
+  for (const w of inspectSceneStructure(root, {
+    ...(externalSupport?.state === 'requested'
+      ? { externalSupport: externalSupport.value.supports }
+      : {}),
+  }))
+    warnings.push(w);
 
   // T2.2 — encode in-memory textures to PNG BEFORE QA, so QA judges the file
   // that will actually be written. A procedural DataTexture used to reach the
@@ -2752,6 +2759,7 @@ export function inspectGeneratedAnimation(
 // =============================================================================
 
 interface MeshStats {
+  object: THREE.Object3D;
   name: string;
   triCount: number;
   isPlaneGeo: boolean;
@@ -2798,6 +2806,7 @@ function collectMeshStats(root: THREE.Object3D): MeshStats[] {
     box.getSize(size);
 
     out.push({
+      object: obj,
       name: obj.name || '(unnamed)',
       triCount: Math.floor(tri),
       isPlaneGeo: geo.type === 'PlaneGeometry',
@@ -2837,6 +2846,8 @@ function collectMeshStats(root: THREE.Object3D): MeshStats[] {
 export interface InspectStructureOptions {
   /** Asset kind for the orientation advisory. Omit to skip it. */
   category?: 'vehicle' | 'weapon' | 'boat' | 'aircraft' | (string & {});
+  /** requirements.externalSupport: named parts that rest on a support outside this asset. */
+  externalSupport?: readonly ExternalSupportV1[];
 }
 
 /** Floating parts named with their own fix; the rest share one line of names. */
@@ -2900,6 +2911,7 @@ export function inspectSceneStructure(
 
   if (meshes.length > 1) {
     const floaters: { name: string; fix: string }[] = [];
+    const supported: string[] = [];
     for (let i = 0; i < meshes.length; i++) {
       const a = meshes[i]!;
       const ax = a.box.clone().expandByScalar(FLOATING_EXPAND);
@@ -2913,6 +2925,13 @@ export function inspectSceneStructure(
         }
       }
       if (overlapsAny) continue;
+      // A declared external support whose plane this part's bottom meets is information.
+      const support = restingSupport(a.object, a.box.min.y, opts.externalSupport);
+      if (support) {
+        supported.push(`${a.name} at Y=${support.planeY.toFixed(3)}`);
+        continue;
+      }
+      const declared = declaredSupports(a.object, opts.externalSupport)[0];
 
       // Actionable fix: the minimal shift to the NEAREST sibling, plus the
       // snapTo call that applies it.
@@ -2930,7 +2949,10 @@ export function inspectSceneStructure(
         nearest && nearestGap
           ? ` Fix: shift "${a.name}" by [${nearestGap.x.toFixed(3)}, ${nearestGap.y.toFixed(3)}, ${nearestGap.z.toFixed(3)}] toward "${nearest.name}", or call snapTo(part, hostPart) to do it automatically.`
           : '';
-      floaters.push({ name: a.name, fix });
+      const mismatch = declared
+        ? ` It is named in a declared external support at Y=${declared.planeY.toFixed(3)}, but its bottom is at Y=${a.box.min.y.toFixed(3)}.`
+        : '';
+      floaters.push({ name: a.name, fix: fix + mismatch });
     }
     if (floaters.length > 0) {
       // The per-part fix text is 170 characters; a scattered asset repeated it
@@ -2949,6 +2971,13 @@ export function inspectSceneStructure(
       }
       warnings.push(
         `Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(' | ')}`,
+      );
+    }
+    if (supported.length > 0) {
+      const shown = supported.slice(0, FLOATER_NAMES_SHOWN);
+      if (supported.length > shown.length) shown.push(`+${supported.length - shown.length} more`);
+      warnings.push(
+        `Declared external support (requirements.externalSupport): ${shown.join(', ')} rest on a support composed outside this asset; information only, no action needed.`,
       );
     }
   }

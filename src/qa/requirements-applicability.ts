@@ -187,6 +187,7 @@ export function resolveRequirementsApplicability(
     bounds: ['units', 'x', 'y', 'z'],
     animation: ['clips'],
     representation: ['precomputedTangents'],
+    externalSupport: ['supports'],
   };
   for (const [key, statement] of Object.entries(requirements.requirements)) {
     if (statement?.state !== 'requested') continue;

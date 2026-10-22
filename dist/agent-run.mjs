@@ -561,7 +561,7 @@ function createAssetRequirementsV1(input = {}) {
     ...input
   });
 }
-var text, positive, nonnegative, count, names, marker, roof, structure, effects, requirements, AssetRequirementsV1Schema;
+var text, positive, nonnegative, count, names, marker, supportParts, roof, structure, effects, requirements, AssetRequirementsV1Schema;
 var init_requirements = __esm(() => {
   init_asset();
   init_breadth();
@@ -573,6 +573,9 @@ var init_requirements = __esm(() => {
     message: "Values must be unique."
   });
   marker = z.strictObject({});
+  supportParts = z.array(text).min(1).max(256).refine((values) => new Set(values).size === values.length, {
+    message: "Values must be unique."
+  });
   roof = z.strictObject({
     type: text.optional(),
     ridgeAxis: z.enum(["x", "z"]).optional(),
@@ -691,6 +694,13 @@ var init_requirements = __esm(() => {
       runtimeShader: z.boolean().optional(),
       precomputedTangents: z.boolean().optional(),
       skinned: z.boolean().optional()
+    })).optional(),
+    externalSupport: statement(z.strictObject({
+      supports: z.array(z.strictObject({
+        parts: supportParts,
+        planeY: z.number().finite(),
+        tolerance: nonnegative.max(0.5).optional()
+      })).min(1).max(32)
     })).optional(),
     access: statement(z.strictObject({ enterable: z.boolean().optional(), driveable: z.boolean().optional() })).optional()
   });
@@ -9929,7 +9939,8 @@ function resolveRequirementsApplicability(requirements) {
     grounding: ["planeY"],
     bounds: ["units", "x", "y", "z"],
     animation: ["clips"],
-    representation: ["precomputedTangents"]
+    representation: ["precomputedTangents"],
+    externalSupport: ["supports"]
   };
   for (const [key, statement] of Object.entries(requirements.requirements)) {
     if (statement?.state !== "requested")
@@ -12589,6 +12600,25 @@ var init_solid_diagnostic = __esm(() => {
     }
   };
 });
+
+// src/external-support.ts
+function restingSupport(mesh, bottomY, supports) {
+  return declaredSupports(mesh, supports).find((support) => Math.abs(bottomY - support.planeY) <= (support.tolerance ?? EXTERNAL_SUPPORT_TOLERANCE));
+}
+function declaredSupports(mesh, supports) {
+  if (!supports?.length)
+    return [];
+  const names = new Set;
+  for (let node = mesh;node; node = node.parent) {
+    if (!node.name)
+      continue;
+    names.add(node.name);
+    if (node.name.startsWith("Mesh_"))
+      names.add(node.name.slice(5));
+  }
+  return supports.filter((support) => support.parts.some((part) => names.has(part)));
+}
+var EXTERNAL_SUPPORT_TOLERANCE = 0.02;
 
 // src/qa/breadth-evidence.ts
 import * as THREE6 from "three";
@@ -16629,7 +16659,7 @@ var init_lod2 = __esm(() => {
 
 // src/qa/part-connectivity.ts
 import * as THREE14 from "three";
-function collectParts2(root, exempt) {
+function collectParts2(root, exempt, supports) {
   const parts = [];
   let lodExcluded = 0;
   root.updateWorldMatrix(true, true);
@@ -16649,7 +16679,8 @@ function collectParts2(root, exempt) {
     const box = new THREE14.Box3().setFromObject(mesh);
     if (box.isEmpty())
       return;
-    parts.push({ name, box });
+    const support = restingSupport(mesh, box.min.y, supports);
+    parts.push({ name, box, ...support ? { support } : {} });
   });
   return { parts, lodExcluded };
 }
@@ -16659,9 +16690,9 @@ function boxGap(a, b) {
   const dz = Math.max(0, Math.max(a.min.z - b.max.z, b.min.z - a.max.z));
   return Math.hypot(dx, dy, dz);
 }
-function analyzePartConnectivity(root) {
+function analyzePartConnectivity(root, supports) {
   const exempt = [];
-  const { parts, lodExcluded } = collectParts2(root, exempt);
+  const { parts, lodExcluded } = collectParts2(root, exempt, supports);
   const report = {
     partsAnalyzed: parts.length,
     mainComponentSize: parts.length,
@@ -16722,22 +16753,48 @@ function analyzePartConnectivity(root) {
         gap = Math.min(gap, boxGap(parts[m].box, parts[b].box));
       }
     }
+    const lowest = members.reduce((a, b) => parts[b].box.min.y < parts[a].box.min.y ? b : a);
+    const support = parts[lowest].support;
     report.groups.push({
       parts: members.map((m) => parts[m].name),
-      gap: Math.round(gap * 1e6) / 1e6
+      gap: Math.round(gap * 1e6) / 1e6,
+      ...support && members.every((m) => parts[m].support) ? {
+        externalSupport: {
+          planeY: support.planeY,
+          bottomY: Math.round(parts[lowest].box.min.y * 1e6) / 1e6,
+          tolerance: support.tolerance ?? CONNECTIVITY_TOLERANCE
+        }
+      } : {}
     });
   }
   report.groups.sort((a, b) => b.parts.length - a.parts.length || a.gap - b.gap);
   return report;
 }
-function inspectPartConnectivity(scene) {
+function inspectPartConnectivity(scene, supports) {
   if (!(scene instanceof THREE14.Object3D))
     return [];
-  const report = analyzePartConnectivity(scene);
+  const report = analyzePartConnectivity(scene, supports);
   const lodNote = report.lodExcluded === 1 ? " 1 part on an LOD level above 0 was not analyzed." : report.lodExcluded > 1 ? ` ${report.lodExcluded} parts on LOD levels above 0 were not analyzed.` : "";
   return report.groups.map((group) => {
     const listed = group.parts.map((p) => JSON.stringify(p)).join(", ");
     const subject = group.parts.length === 1 ? `Part ${listed} is` : `A group of ${group.parts.length} parts (${listed}) is`;
+    const declared = group.externalSupport;
+    if (declared)
+      return {
+        code: "GEO_PART_EXTERNAL_SUPPORT",
+        disposition: "observe",
+        dimension: "visualQuality",
+        profile: "geometry.partConnectivity",
+        message: `${subject} separate from the largest component and rests on the support declared in requirements.externalSupport at Y=${declared.planeY.toFixed(3)} m (bottom at Y=${declared.bottomY.toFixed(3)} m). Information only: the support is composed outside this asset.${lodNote}`,
+        affected: { node: group.parts[0] },
+        measurement: {
+          name: "bottomToSupportPlane",
+          actual: declared.bottomY,
+          expected: declared.planeY,
+          threshold: declared.tolerance
+        },
+        repairText: "No change is needed for a declared support. Remove the part from requirements.externalSupport if it should attach within this asset."
+      };
     return {
       code: "GEO_PART_CONNECTIVITY",
       disposition: "observe",
@@ -22901,7 +22958,7 @@ function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {
         findings.push(decision.mode === "observe" || decision.mode === "warn" ? { ...finding, disposition: decision.mode } : finding);
       continue;
     }
-    const measured = decision.ruleId === SWEEP_QA_RULE.id ? inspectSweepGeometry(scene) : decision.ruleId === PART_CONNECTIVITY_QA_RULE.id ? inspectPartConnectivity(scene) : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === "requested" ? inspectAssetScope({
+    const measured = decision.ruleId === SWEEP_QA_RULE.id ? inspectSweepGeometry(scene) : decision.ruleId === PART_CONNECTIVITY_QA_RULE.id ? inspectPartConnectivity(scene, needs.externalSupport?.state === "requested" ? needs.externalSupport.value.supports : undefined) : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === "requested" ? inspectAssetScope({
       profile: "asset.requirements.v1",
       scope: { schemaVersion: 1, scope: scope.value, explicit: true },
       derivedEvidence: { source: "engine-scene-analysis", assetScope: scopeObservation }
@@ -37165,7 +37222,10 @@ async function renderSceneToGLB(root, opts = {}) {
   const materialResourceProvenance = collectMaterialResourceProvenance(root);
   for (const w of inspectGeneratedAnimation(root, clips))
     warnings.push(w);
-  for (const w of inspectSceneStructure(root))
+  const externalSupport = requirements.requirements.requirements.externalSupport;
+  for (const w of inspectSceneStructure(root, {
+    ...externalSupport?.state === "requested" ? { externalSupport: externalSupport.value.supports } : {}
+  }))
     warnings.push(w);
   const atlas = collectAtlasProvenance(root);
   const bakedTextures = await bakeSceneTextures(root, warnings);
@@ -37491,6 +37551,7 @@ function collectMeshStats(root) {
     box.getCenter(center);
     box.getSize(size);
     out.push({
+      object: obj,
       name: obj.name || "(unnamed)",
       triCount: Math.floor(tri),
       isPlaneGeo: geo.type === "PlaneGeometry",
@@ -37549,6 +37610,7 @@ function inspectSceneStructure(root, opts = {}) {
   }
   if (meshes.length > 1) {
     const floaters = [];
+    const supported = [];
     for (let i = 0;i < meshes.length; i++) {
       const a = meshes[i];
       const ax = a.box.clone().expandByScalar(FLOATING_EXPAND);
@@ -37564,6 +37626,12 @@ function inspectSceneStructure(root, opts = {}) {
       }
       if (overlapsAny)
         continue;
+      const support = restingSupport(a.object, a.box.min.y, opts.externalSupport);
+      if (support) {
+        supported.push(`${a.name} at Y=${support.planeY.toFixed(3)}`);
+        continue;
+      }
+      const declared = declaredSupports(a.object, opts.externalSupport)[0];
       let nearest;
       let nearestGap;
       for (let j = 0;j < meshes.length; j++) {
@@ -37576,7 +37644,8 @@ function inspectSceneStructure(root, opts = {}) {
         }
       }
       const fix = nearest && nearestGap ? ` Fix: shift "${a.name}" by [${nearestGap.x.toFixed(3)}, ${nearestGap.y.toFixed(3)}, ${nearestGap.z.toFixed(3)}] toward "${nearest.name}", or call snapTo(part, hostPart) to do it automatically.` : "";
-      floaters.push({ name: a.name, fix });
+      const mismatch = declared ? ` It is named in a declared external support at Y=${declared.planeY.toFixed(3)}, but its bottom is at Y=${a.box.min.y.toFixed(3)}.` : "";
+      floaters.push({ name: a.name, fix: fix + mismatch });
     }
     if (floaters.length > 0) {
       const entries = floaters.slice(0, FLOATER_FIXES_SHOWN).map(({ name, fix }) => `${name}${fix ? ` —${fix}` : ""}`);
@@ -37588,6 +37657,12 @@ function inspectSceneStructure(root, opts = {}) {
         entries.push(`+${rest.length} more floating: ${names.join(", ")} — the same fix applies: shift each onto its nearest sibling, or call snapTo(part, hostPart).`);
       }
       warnings.push(`Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(" | ")}`);
+    }
+    if (supported.length > 0) {
+      const shown = supported.slice(0, FLOATER_NAMES_SHOWN);
+      if (supported.length > shown.length)
+        shown.push(`+${supported.length - shown.length} more`);
+      warnings.push(`Declared external support (requirements.externalSupport): ${shown.join(", ")} rest on a support composed outside this asset; information only, no action needed.`);
     }
   }
   return warnings;

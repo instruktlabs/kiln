@@ -274,7 +274,12 @@ export function runRequirementsSceneQa(
       decision.ruleId === SWEEP_QA_RULE.id
         ? inspectSweepGeometry(scene)
         : decision.ruleId === PART_CONNECTIVITY_QA_RULE.id
-          ? inspectPartConnectivity(scene)
+          ? inspectPartConnectivity(
+              scene,
+              needs.externalSupport?.state === 'requested'
+                ? needs.externalSupport.value.supports
+                : undefined,
+            )
           : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === 'requested'
             ? inspectAssetScope({
                 profile: 'asset.requirements.v1',
