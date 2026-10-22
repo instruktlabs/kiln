@@ -65,7 +65,7 @@ export async function smokePackageAdoption({ runtime, root, command, connect, te
   let programRef, asset, sourceUri, glbUri, glbHash;
   const first = await sessionFor(claude);
   try {
-    assert.equal((await first.call('tools/list', {})).tools.length, 17);
+    assert.equal((await first.call('tools/list', {})).tools.length, 18);
     programRef = (await tool(first, 'kiln_validate', { code: source })).programRef;
     assert.equal(typeof programRef, 'string');
     await tool(first, 'kiln_render', { programRef, capture: { preset: '1x1' } });
@@ -85,7 +85,7 @@ export async function smokePackageAdoption({ runtime, root, command, connect, te
   assert.equal(codex.env.KILN_PROGRAM_STORE, claude.env.KILN_PROGRAM_STORE);
   const second = await sessionFor(codex);
   try {
-    assert.equal((await second.call('tools/list', {})).tools.length, 17);
+    assert.equal((await second.call('tools/list', {})).tools.length, 18);
     assert.match(
       (await tool(second, 'kiln_source', { programRef, query: 'ContractCube' })).code,
       /ContractCube/,
