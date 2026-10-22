@@ -124,9 +124,10 @@ describe('always-on context cost', () => {
 
   it('the tool schemas stay within the context budget', async () => {
     const chars = schemaChars();
-    // 32,455 serialized characters for fourteen tools, including bounded part
-    // listing on inspect. This replaces guessed paths/repeated image calls for
-    // scenes over the 80-part preview. No new tool or loaded helper catalog.
+    // Bounded part listing on inspect replaces guessed paths/repeated image calls
+    // for scenes over the 80-part preview, without a loaded helper catalog. The
+    // read-only kiln_renderer_status (#206) measured 24,512 -> 24,936 serialized
+    // characters for fifteen tools on 2026-10-22.
     // Keep the new bound explicit; this is context cost, not a coverage gate.
     expect(chars).toBeLessThan(32 * 1024);
   });

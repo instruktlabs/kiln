@@ -48549,6 +48549,36 @@ var init_operations = __esm(() => {
   init_operation_contract();
 });
 
+// src/render-route.ts
+function nextRenderRoute(renderer) {
+  const fallback = (reason) => ({
+    active: true,
+    materialFaithful: false,
+    reason
+  });
+  if (!renderer.configured)
+    return {
+      ready: true,
+      activeRoute: "cpu",
+      fallback: fallback(renderer.reason ?? (renderer.mode === "cpu" ? "This host selected CPU rendering; views show geometry, not materials." : "No GPU renderer is attached to this session; views show geometry, not materials."))
+    };
+  if (GPU_SERVES.has(renderer.status))
+    return { ready: true, activeRoute: "gpu", fallback: { active: false } };
+  return {
+    ready: false,
+    activeRoute: "gpu",
+    fallback: renderer.required ? { active: false } : fallback(`GPU renderer ${renderer.status}${renderer.reason ? `: ${renderer.reason}` : ""}. Renders degrade to CPU geometry views.`)
+  };
+}
+var GPU_SERVES;
+var init_render_route = __esm(() => {
+  GPU_SERVES = new Set([
+    "available",
+    "on-demand",
+    "authentication-unverified"
+  ]);
+});
+
 // src/edit-buffer.ts
 class KilnDraftBuffer {
   buf;
@@ -51231,6 +51261,27 @@ function withCaptureCache(context) {
     } : {}
   };
 }
+async function runRenderer(context, action) {
+  if (action === "reprobe" && !context.reprobeRenderer)
+    return {
+      ok: false,
+      error: "Renderer reprobe is not provided by this host. Configure its render connection through the host, or read the declared configuration with kiln_discover({ capabilities: true })."
+    };
+  if (!context.renderCapabilities)
+    return {
+      ok: false,
+      error: "Renderer status is not provided by this host. Read the declared render configuration with kiln_discover({ capabilities: true })."
+    };
+  try {
+    const renderer = await (action === "reprobe" ? context.reprobeRenderer() : context.renderCapabilities());
+    return { ok: true, renderer: { ...renderer, ...nextRenderRoute(renderer) } };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error)
+    };
+  }
+}
 async function readSavedRevision(target, collection, assetId, revisionId, listCall = `kiln_assets { action: 'list', collection: '${collection}' }`) {
   try {
     return await target.read(collection, assetId, revisionId);
@@ -51250,33 +51301,19 @@ function createProgramDefs(suppliedContext, presentation) {
   return [
     createKilnDiscoveryDef({ ...suppliedContext, programStore: store }, presentation),
     {
-      name: "kiln_renderer",
-      description: "Inspect status, or reprobe after renderer setup/repair to refresh this session and reset failed starts. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart. Read viewFidelity after rendering.",
-      inputSchema: rendererInput,
+      name: "kiln_renderer_status",
+      description: "Read renderer status: ready, activeRoute (gpu or cpu) and fallback say what the next render uses; an active fallback means CPU geometry views, not material evidence. Read-only: never reprobes, installs, starts or renders. Read viewFidelity after rendering.",
+      inputSchema: rendererStatusInput,
       run: async (raw) => {
-        const { action } = rendererInput.parse(raw);
-        if (action === "reprobe" && !suppliedContext.reprobeRenderer)
-          return {
-            ok: false,
-            error: "Renderer reprobe is not provided by this host. Configure its render connection through the host, or read the declared configuration with kiln_discover({ capabilities: true })."
-          };
-        if (!suppliedContext.renderCapabilities)
-          return {
-            ok: false,
-            error: "Renderer status is not provided by this host. Read the declared render configuration with kiln_discover({ capabilities: true })."
-          };
-        try {
-          return {
-            ok: true,
-            renderer: await (action === "reprobe" ? suppliedContext.reprobeRenderer() : suppliedContext.renderCapabilities())
-          };
-        } catch (error) {
-          return {
-            ok: false,
-            error: error instanceof Error ? error.message : String(error)
-          };
-        }
+        rendererStatusInput.parse(raw);
+        return runRenderer(suppliedContext, "status");
       }
+    },
+    {
+      name: "kiln_renderer",
+      description: "Reprobe after renderer setup/repair to refresh this session and reset failed starts; check status with kiln_renderer_status. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart.",
+      inputSchema: rendererInput,
+      run: async (raw) => runRenderer(suppliedContext, rendererInput.parse(raw).action)
     },
     ...[
       createKilnValidateDef(context),
@@ -51300,7 +51337,13 @@ function createProgramDefs(suppliedContext, presentation) {
   ].map((def) => withWorkspaceContext(def, context)).map((def) => ({
     ...def,
     annotations: {
-      readOnlyHint: ["kiln_source", "kiln_discover", "kiln_export", "kiln_present"].includes(def.name),
+      readOnlyHint: [
+        "kiln_source",
+        "kiln_discover",
+        "kiln_renderer_status",
+        "kiln_export",
+        "kiln_present"
+      ].includes(def.name),
       destructiveHint: false,
       idempotentHint: def.name !== "kiln_save",
       openWorldHint: false,
@@ -51636,7 +51679,7 @@ var DEFAULT_INLOOP_VIEW_RENDER_TIMEOUT_MS = 6000, viewEvidenceHistoryByContext, 
       path: `.kiln/review/${operation.operationId}/evaluation.json`
     } : undefined;
   }
-}), renderViewsBufferInput, screenshotAnimationInput, screenshotAnimationAdvertisedInput, viewInteriorInput, viewInteriorAdvertisedInput, partListInput, PLACEMENT_PAGE_LIMIT = 50, lod0Views = (views) => Array.from({ length: views }, () => []), KILN_RENDER_VIEWS_DESCRIPTION, kilnRenderViewsDef, KILN_SCREENSHOT_ANIMATION_DESCRIPTION, kilnScreenshotAnimationDef, KILN_VIEW_INTERIOR_DESCRIPTION, kilnViewInteriorDef, attachmentEndpointInput, surfacePairInput, inspectInput, inspectBufferInput, inspectAdvertisedInput, KILN_INSPECT_DESCRIPTION, kilnInspectDef, editOperationInput, editInput, editAdvertisedInput, KILN_EDIT_DESCRIPTION = "Patch an EXISTING Kiln program with exact-string replacements and render the result in one call. This is the refine verb: use it to change an asset you already have rather than re-emitting the whole file, so every line you did not touch stays byte-for-byte identical and the reply carries a unified diff of what actually changed. Pass the full current source as `code` and one or more { oldString, newString } edits, copied verbatim from that source. Edits apply in order and the call is all-or-nothing: if any oldString does not match, or matches more than once without replaceAll, NOTHING is applied and the reply names the edit that failed -- fix it and call again. The patched program comes back as `code`; write it to your file to keep it. Renders by default, so you see the change immediately; pass render:false to patch without rendering. Writes no files.", kilnEditDef, localCacheScope = 0, NESTED_RECORD_SHAPES, rendererInput, assetSelector, ASSET_CONTRACT;
+}), renderViewsBufferInput, screenshotAnimationInput, screenshotAnimationAdvertisedInput, viewInteriorInput, viewInteriorAdvertisedInput, partListInput, PLACEMENT_PAGE_LIMIT = 50, lod0Views = (views) => Array.from({ length: views }, () => []), KILN_RENDER_VIEWS_DESCRIPTION, kilnRenderViewsDef, KILN_SCREENSHOT_ANIMATION_DESCRIPTION, kilnScreenshotAnimationDef, KILN_VIEW_INTERIOR_DESCRIPTION, kilnViewInteriorDef, attachmentEndpointInput, surfacePairInput, inspectInput, inspectBufferInput, inspectAdvertisedInput, KILN_INSPECT_DESCRIPTION, kilnInspectDef, editOperationInput, editInput, editAdvertisedInput, KILN_EDIT_DESCRIPTION = "Patch an EXISTING Kiln program with exact-string replacements and render the result in one call. This is the refine verb: use it to change an asset you already have rather than re-emitting the whole file, so every line you did not touch stays byte-for-byte identical and the reply carries a unified diff of what actually changed. Pass the full current source as `code` and one or more { oldString, newString } edits, copied verbatim from that source. Edits apply in order and the call is all-or-nothing: if any oldString does not match, or matches more than once without replaceAll, NOTHING is applied and the reply names the edit that failed -- fix it and call again. The patched program comes back as `code`; write it to your file to keep it. Renders by default, so you see the change immediately; pass render:false to patch without rendering. Writes no files.", kilnEditDef, localCacheScope = 0, NESTED_RECORD_SHAPES, rendererInput, rendererStatusInput, assetSelector, ASSET_CONTRACT;
 var init_registry2 = __esm(() => {
   init_capture_cache();
   init_assets();
@@ -51659,6 +51702,7 @@ var init_registry2 = __esm(() => {
   init_requirements_context();
   init_evaluator();
   init_material_resources();
+  init_render_route();
   init_edit_buffer();
   init_view_render_timeout();
   init_evidence_history();
@@ -51761,6 +51805,7 @@ var init_registry2 = __esm(() => {
   rendererInput = z24.strictObject({
     action: z24.enum(["status", "reprobe"]).default("status")
   });
+  rendererStatusInput = z24.strictObject({});
   assetSelector = {
     collection: z24.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Collection ID (list with kiln_assets action=collections): the user destination, else project.").default("project"),
     assetId: z24.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),

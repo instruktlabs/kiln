@@ -78,6 +78,7 @@ describe('makeKilnNativeTools media handling', () => {
   test('exposes shared source tools and a native terminal action', () => {
     expect(makeKilnNativeTools({}, {}).map((t) => t.name)).toEqual([
       'kiln_discover',
+      'kiln_renderer_status',
       'kiln_renderer',
       'kiln_validate',
       'kiln_render',

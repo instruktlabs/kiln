@@ -31,7 +31,7 @@ test('pilot host advertises a condition, delivers a real image and enforces the 
   await client.connect(transport);
   try {
     const listed = await client.listTools();
-    expect(listed.tools).toHaveLength(9);
+    expect(listed.tools).toHaveLength(10);
     const discovery = await client.callTool({
       name: 'kiln_discover',
       arguments: { category: 'geometry' },

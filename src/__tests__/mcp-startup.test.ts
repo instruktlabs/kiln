@@ -129,7 +129,7 @@ export function createPackagedKilnHost() { throw new Error('unused engine'); }
     legacy.notify('notifications/initialized');
     const listed = await legacy.request('tools/list', {});
     expect(listed.error).toBeUndefined();
-    expect((listed.result!['tools'] as unknown[]).length).toBe(17);
+    expect((listed.result!['tools'] as unknown[]).length).toBe(18);
     // The first call that needs the engine reports the missing bundle as a
     // tool result with the next step, and the process stays up.
     const call = await legacy.request('tools/call', {
@@ -153,7 +153,7 @@ export function createPackagedKilnHost() { throw new Error('unused engine'); }
     expect(discover.error, modern.stderr()).toBeUndefined();
     expect(discover.result!['supportedVersions']).toContain('2026-07-28');
     const tools = await modern.request('tools/list', { _meta: modernMeta() });
-    expect((tools.result!['tools'] as unknown[]).length).toBe(17);
+    expect((tools.result!['tools'] as unknown[]).length).toBe(18);
     await modern.close();
   });
 

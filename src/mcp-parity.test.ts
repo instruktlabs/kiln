@@ -10,7 +10,12 @@
 import { describe, expect, it } from 'bun:test';
 import { Client, InMemoryTransport } from '@modelcontextprotocol/client';
 
-import { createKilnNativeToolRegistry, createKilnProgramToolRegistry } from './tools/registry';
+import {
+  createKilnNativeToolRegistry,
+  createKilnOperationToolRegistry,
+  createKilnProgramToolRegistry,
+} from './tools/registry';
+import type { RenderCapabilities } from './render-capabilities';
 import { makeKilnNativeTools } from './agent/tools';
 import { runTool, kilnMcpToolDefs, createKilnMcpServer } from './mcp-engine';
 
@@ -51,6 +56,35 @@ describe('tool surface parity across transports', () => {
       expect(tools.find((t) => t.name === name)?.annotations?.readOnlyHint).toBe(true);
     expect(tools.find((t) => t.name === 'kiln_save')?.annotations?.readOnlyHint).toBe(false);
   });
+  it('advertises renderer status as read-only and reprobe as stateful on every surface', async () => {
+    // #206: one kiln_renderer served both, advertised readOnlyHint false, so a host that
+    // auto-allows reads asked the user every time the agent checked status.
+    const renderer: RenderCapabilities = {
+      mode: 'cpu',
+      target: 'cpu',
+      configured: false,
+      required: false,
+      status: 'disabled',
+      evidence: 'configuration-only',
+    };
+    const host = {
+      renderCapabilities: async () => renderer,
+      reprobeRenderer: async () => renderer,
+    };
+    const readOnly = (defs: { name: string; annotations?: { readOnlyHint?: boolean } }[]) =>
+      Object.fromEntries(
+        defs
+          .filter((def) => def.name.startsWith('kiln_renderer'))
+          .map((def) => [def.name, def.annotations?.readOnlyHint]),
+      );
+    const grouped = { kiln_renderer_status: true, kiln_renderer: false };
+    expect(readOnly(await listToolsOverMcp())).toEqual(grouped);
+    expect(readOnly(createKilnNativeToolRegistry(host, {}))).toEqual(grouped);
+    expect(readOnly(createKilnOperationToolRegistry(host))).toEqual({
+      kiln_renderer_status: true,
+      kiln_renderer_reprobe: false,
+    });
+  });
   it('the reference-based Strands skin shares every MCP definition plus terminal finish', () => {
     expect(makeKilnNativeTools({}, { assetLibrary: {} as never }).map((t) => t.name)).toEqual([
       ...kilnMcpToolDefs().map((d) => d.name),
@@ -85,6 +119,7 @@ describe('tool surface parity across transports', () => {
   it('the MCP surface carries one unified kiln_render and no native terminal', () => {
     expect(kilnMcpToolDefs().map((d) => d.name)).toEqual([
       'kiln_discover',
+      'kiln_renderer_status',
       'kiln_renderer',
       'kiln_validate',
       'kiln_render',

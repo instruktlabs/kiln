@@ -155,9 +155,9 @@ For agent-assisted installation, give your agent the repository URL and ask:
 
 ## Release compatibility
 
-The packaged local MCP server lists the fourteen base tools in the
+The packaged local MCP server lists the fifteen base tools in the
 [generated tool reference](tools.md), plus `kiln_project`, `kiln_material` and
-`kiln_review` from the packaged local host: seventeen in all. When installing an
+`kiln_review` from the packaged local host: eighteen in all. When installing an
 older release, use the documentation and receipt attached to that release; newer
 tools and migration changes are not retroactively available there.
 

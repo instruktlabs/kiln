@@ -130,6 +130,17 @@ and survives the session that started it. It exits after five minutes with no ad
 uploads, queued jobs or active renders. Health polling does not extend that timeout.
 `RENDER_SERVICE_IDLE_MS` configures managed idle time from 1 to 3,600,000 milliseconds.
 
+`kiln_renderer_status` reads the session's renderer state and is advertised read-only, so
+hosts that auto-allow reads do not prompt for it. Besides the readiness fields below, it
+states what the next render uses: `activeRoute` is `gpu` or `cpu`, `ready` says that route
+can serve now, and `fallback` is `{ active: true, materialFaithful: false, reason }` when
+views will be CPU geometry (a CPU-only host, a session that selected CPU before a service
+became healthy, or an attached GPU that stopped answering), otherwise `{ active: false }`.
+A host that requires the GPU fails the render instead, with `ready: false` and no
+fallback. A scene that needs no PBR shading still renders on CPU over a GPU route, so the
+returned `viewFidelity` remains the evidence. `kiln_renderer` with `action:"status"`
+returns the same result for existing callers.
+
 After renderer installation or repair, call `kiln_renderer({action:"reprobe"})` in
 the existing MCP or native session. It refreshes the connection and resets a failed
 local startup attempt; the next view starts the service if needed. Reprobe does not

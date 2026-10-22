@@ -91,8 +91,23 @@ var mcp_manifest_default = {
       }
     },
     {
+      name: "kiln_renderer_status",
+      description: "Read renderer status: ready, activeRoute (gpu or cpu) and fallback say what the next render uses; an active fallback means CPU geometry views, not material evidence. Read-only: never reprobes, installs, starts or renders. Read viewFidelity after rendering.",
+      inputSchema: {
+        type: "object",
+        properties: {},
+        additionalProperties: false
+      },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false
+      }
+    },
+    {
       name: "kiln_renderer",
-      description: "Inspect status, or reprobe after renderer setup/repair to refresh this session and reset failed starts. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart. Read viewFidelity after rendering.",
+      description: "Reprobe after renderer setup/repair to refresh this session and reset failed starts; check status with kiln_renderer_status. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart.",
       inputSchema: {
         type: "object",
         properties: {

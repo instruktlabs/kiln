@@ -53,7 +53,7 @@ draft with `node scripts/package-hosted-plugin.mjs FRESH_OUTPUT_DIRECTORY`.
 `tool-surface.json` records the 21-tool `kiln.hosted-tools.v2` presentation verified
 in production with engine 1.2.1. Its skill and review cases use those operation
 names. A parity test checks the snapshot against the shared engine registry to
-catch drift. The local package retains its seventeen-tool interface.
+catch drift. The local package retains its eighteen-tool interface.
 The draft plugin version and deployed hosted engine version are recorded
 separately; a new public package does not silently upgrade the hosted service.
 

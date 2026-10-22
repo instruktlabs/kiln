@@ -354,7 +354,7 @@ Standalone work needs no project. Omitted project selection stays standalone unl
 
 ## Material-faithful views
 
-Render mode is auto: scenes with textures or metalness use a compatible GPU render service (render-service/ in the Kiln installation), started on demand when its dependencies are installed; flat scenes use CPU geometry views, which is not a failure. node kiln.mjs service status reports readiness; after repairing dependencies call kiln_renderer { action: "reprobe" } (CLI: node kiln.mjs service reprobe). For a renderer on another device, configure KILN_RENDER_PORT_URL and, when required, KILN_RENDER_TOKEN on the server, or pass --render-port URL to the CLI. When a task is about appearance and only CPU views exist, say so.
+Render mode is auto: scenes with textures or metalness use a compatible GPU render service (render-service/ in the Kiln installation), started on demand when its dependencies are installed; flat scenes use CPU geometry views, which is not a failure. node kiln.mjs service status reports readiness; kiln_renderer_status is read-only, so check the session's activeRoute and fallback with it freely (an active fallback means CPU geometry views); only after repairing dependencies call kiln_renderer { action: "reprobe" } (CLI: node kiln.mjs service reprobe). For a renderer on another device, configure KILN_RENDER_PORT_URL and, when required, KILN_RENDER_TOKEN on the server, or pass --render-port URL to the CLI. When a task is about appearance and only CPU views exist, say so.
 
 ## Context compaction
 

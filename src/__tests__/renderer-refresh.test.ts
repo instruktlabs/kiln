@@ -4,6 +4,8 @@ import type { AddressInfo } from 'node:net';
 import sharp from 'sharp';
 import { buildRenderPort } from '../cli-render-mode';
 import { createLocalToolContext } from '../local-runtime';
+import type { RenderCapabilities } from '../render-capabilities';
+import { nextRenderRoute } from '../render-route';
 import { createKilnProgramToolRegistry, type KilnRenderViewsResult } from '../tools/registry';
 import { MemoryProgramStore } from '../program-store';
 import { fakeRenderHealth } from './helpers/fake-render-service';
@@ -99,9 +101,30 @@ test('existing registry refreshes a recovered renderer and never reuses its CPU 
     ok: true,
     renderer: { configured: false, reprobeRequired: true },
   });
+  // #206: the read-only status names what the next render uses without reading prose.
+  const status = tools.find((t) => t.name === 'kiln_renderer_status')!;
+  expect(status.annotations?.readOnlyHint).toBe(true);
+  expect(await status.run({})).toMatchObject({
+    ok: true,
+    renderer: {
+      configured: false,
+      reprobeRequired: true,
+      ready: true,
+      activeRoute: 'cpu',
+      fallback: {
+        active: true,
+        materialFaithful: false,
+        reason: expect.stringContaining('reprobe'),
+      },
+    },
+  });
   expect(await refresh!.run({ action: 'reprobe' })).toMatchObject({
     ok: true,
     renderer: { configured: true, status: 'available' },
+  });
+  expect(await status.run({})).toMatchObject({
+    ok: true,
+    renderer: { ready: true, activeRoute: 'gpu', fallback: { active: false } },
   });
   expect(state.renders).toBe(0);
   const after = (await render.run({
@@ -220,6 +243,89 @@ test('reprobe resets a failed lazy start without starting the service itself', a
   await expect(context.viewRenderPort!(request)).rejects.toThrow('temporarily unavailable');
   expect(starts).toBe(2);
   expect(state.renders).toBe(0);
+});
+
+test('status never reprobes, starts or renders, and names the on-demand GPU route', async () => {
+  const { state, url } = await service();
+  await new Promise<void>((r) => servers.at(-1)!.close(() => r()));
+  delete process.env.KILN_RENDER_PORT_URL;
+  process.env.KILN_RENDER_SERVICE_PORT = new URL(url).port;
+  let starts = 0;
+  const context = await buildRenderPort('auto', undefined, {
+    start: async () => {
+      starts++;
+      return url;
+    },
+  });
+  let reprobes = 0;
+  const reprobe = context.reprobeRenderer!;
+  context.reprobeRenderer = () => {
+    reprobes++;
+    return reprobe();
+  };
+  const tools = createKilnProgramToolRegistry(context);
+  const expected = {
+    ok: true,
+    renderer: {
+      status: 'on-demand',
+      ready: true,
+      activeRoute: 'gpu',
+      fallback: { active: false },
+    },
+  };
+  expect(await tools.find((t) => t.name === 'kiln_renderer_status')!.run({})).toMatchObject(
+    expected,
+  );
+  expect(
+    await tools.find((t) => t.name === 'kiln_renderer')!.run({ action: 'status' }),
+  ).toMatchObject(expected);
+  expect({ reprobes, starts, renders: state.renders, healthReads: state.healthReads }).toEqual({
+    reprobes: 0,
+    starts: 0,
+    renders: 0,
+    healthReads: 0,
+  });
+});
+
+test('a CPU-only host reports the CPU route as an active, non-material fallback', async () => {
+  const status = createKilnProgramToolRegistry(await buildRenderPort('cpu', undefined)).find(
+    (t) => t.name === 'kiln_renderer_status',
+  )!;
+  expect(await status.run({})).toMatchObject({
+    ok: true,
+    renderer: {
+      status: 'disabled',
+      ready: true,
+      activeRoute: 'cpu',
+      fallback: { active: true, materialFaithful: false, reason: expect.stringContaining('CPU') },
+    },
+  });
+});
+
+test('an attached GPU that stopped answering degrades, unless the host requires it', () => {
+  const attached: RenderCapabilities = {
+    mode: 'auto',
+    target: 'local',
+    configured: true,
+    required: false,
+    status: 'unavailable',
+    reason: 'No local service is listening and automatic startup is disabled.',
+    evidence: 'health-only',
+  };
+  expect(nextRenderRoute(attached)).toEqual({
+    ready: false,
+    activeRoute: 'gpu',
+    fallback: {
+      active: true,
+      materialFaithful: false,
+      reason: expect.stringContaining('No local service is listening'),
+    },
+  });
+  expect(nextRenderRoute({ ...attached, mode: 'gpu', required: true })).toEqual({
+    ready: false,
+    activeRoute: 'gpu',
+    fallback: { active: false },
+  });
 });
 
 test('CPU refresh stays CPU; opaque injected hosts reject unsupported reprobe', async () => {

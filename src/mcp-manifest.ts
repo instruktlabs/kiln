@@ -7,7 +7,7 @@
  * applies when it is handed a zod schema, so the manifest is what the library
  * would have advertised -- minus the `$schema` keyword, because 2020-12 is the
  * dialect MCP assumes when none is named, and the keyword costs 56 bytes in
- * every one of the seventeen definitions a harness sends with every request.
+ * every one of the eighteen definitions a harness sends with every request.
  */
 import type { z } from 'zod';
 

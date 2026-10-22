@@ -68,11 +68,11 @@ The stdio executable is a thin entry: `src/mcp-server.ts` bundles the protocol l
 `src/mcp-core.ts`. Never import the engine statically from the entry or the core; an
 engine-loading problem is a tool result naming the next step, never a dead server.
 
-`createKilnProgramToolRegistry` supplies the fourteen base MCP tools. The packaged local host
-also injects `kiln_project`, `kiln_material` and `kiln_review` (seventeen); embeddings
+`createKilnProgramToolRegistry` supplies the fifteen base MCP tools. The packaged local host
+also injects `kiln_project`, `kiln_material` and `kiln_review` (eighteen); embeddings
 advertise these only when the host services exist, never as tools that always fail.
-`createKilnNativeToolRegistry` uses the same definitions and adds `kiln_finish`: ten tools
-by default, fifteen with an injected `assetLibrary` (the five delivery tools). A configured
+`createKilnNativeToolRegistry` uses the same definitions and adds `kiln_finish`: eleven tools
+by default, sixteen with an injected `assetLibrary` (the five delivery tools). A configured
 skill-resource reader adds `kiln_skill_resource` to either native set.
 
 Both skins use unified `kiln_render`: metrics, part paths, QA, images and fidelity share one

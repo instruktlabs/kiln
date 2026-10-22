@@ -75,6 +75,7 @@ import type { ViewGridResult } from '../views';
 import type { EvaluatorExecutionProfileV2, EvaluatorPortV2 } from '../evaluator';
 import { resolveEvaluatorPortV2 } from '../evaluator';
 import { sceneNeedsPbrShading } from '../material-resources';
+import { nextRenderRoute } from '../render-route';
 import { KilnDraftBuffer } from '../edit-buffer';
 // `agent/diff` has no imports of its own -- it is pure string work -- so this
 // does not put an agent-SDK edge into the `kiln/tools` graph.
@@ -2500,6 +2501,40 @@ function withCaptureCache(context: KilnToolContext): KilnToolContext {
 const rendererInput = z.strictObject({
   action: z.enum(['status', 'reprobe']).default('status'),
 });
+const rendererStatusInput = z.strictObject({});
+
+/**
+ * Renderer status or reprobe for one host. Status is a read; reprobe refreshes session state,
+ * so they are advertised as separate tools (#206). Every result states the next render's route.
+ */
+async function runRenderer(
+  context: KilnToolContext,
+  action: 'status' | 'reprobe',
+): Promise<Record<string, unknown>> {
+  if (action === 'reprobe' && !context.reprobeRenderer)
+    return {
+      ok: false,
+      error:
+        'Renderer reprobe is not provided by this host. Configure its render connection through the host, or read the declared configuration with kiln_discover({ capabilities: true }).',
+    };
+  if (!context.renderCapabilities)
+    return {
+      ok: false,
+      error:
+        'Renderer status is not provided by this host. Read the declared render configuration with kiln_discover({ capabilities: true }).',
+    };
+  try {
+    const renderer = await (action === 'reprobe'
+      ? context.reprobeRenderer!()
+      : context.renderCapabilities());
+    return { ok: true, renderer: { ...renderer, ...nextRenderRoute(renderer) } };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
 
 /** A saved-revision read whose failure names the listing call instead of a filesystem path (rule 9). */
 async function readSavedRevision(
@@ -2536,38 +2571,21 @@ function createProgramDefs(
   return [
     createKilnDiscoveryDef({ ...suppliedContext, programStore: store }, presentation),
     {
+      name: 'kiln_renderer_status',
+      description:
+        'Read renderer status: ready, activeRoute (gpu or cpu) and fallback say what the next render uses; an active fallback means CPU geometry views, not material evidence. Read-only: never reprobes, installs, starts or renders. Read viewFidelity after rendering.',
+      inputSchema: rendererStatusInput,
+      run: async (raw: unknown) => {
+        rendererStatusInput.parse(raw);
+        return runRenderer(suppliedContext, 'status');
+      },
+    },
+    {
       name: 'kiln_renderer',
       description:
-        'Inspect status, or reprobe after renderer setup/repair to refresh this session and reset failed starts. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart. Read viewFidelity after rendering.',
+        'Reprobe after renderer setup/repair to refresh this session and reset failed starts; check status with kiln_renderer_status. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart.',
       inputSchema: rendererInput,
-      run: async (raw: unknown) => {
-        const { action } = rendererInput.parse(raw);
-        if (action === 'reprobe' && !suppliedContext.reprobeRenderer)
-          return {
-            ok: false,
-            error:
-              'Renderer reprobe is not provided by this host. Configure its render connection through the host, or read the declared configuration with kiln_discover({ capabilities: true }).',
-          };
-        if (!suppliedContext.renderCapabilities)
-          return {
-            ok: false,
-            error:
-              'Renderer status is not provided by this host. Read the declared render configuration with kiln_discover({ capabilities: true }).',
-          };
-        try {
-          return {
-            ok: true,
-            renderer: await (action === 'reprobe'
-              ? suppliedContext.reprobeRenderer!()
-              : suppliedContext.renderCapabilities()),
-          };
-        } catch (error) {
-          return {
-            ok: false,
-            error: error instanceof Error ? error.message : String(error),
-          };
-        }
-      },
+      run: async (raw: unknown) => runRenderer(suppliedContext, rendererInput.parse(raw).action),
     },
     ...[
       createKilnValidateDef(context),
@@ -2599,9 +2617,13 @@ function createProgramDefs(
     .map((def) => ({
       ...def,
       annotations: {
-        readOnlyHint: ['kiln_source', 'kiln_discover', 'kiln_export', 'kiln_present'].includes(
-          def.name,
-        ),
+        readOnlyHint: [
+          'kiln_source',
+          'kiln_discover',
+          'kiln_renderer_status',
+          'kiln_export',
+          'kiln_present',
+        ].includes(def.name),
         destructiveHint: false,
         idempotentHint: def.name !== 'kiln_save',
         openWorldHint: false,

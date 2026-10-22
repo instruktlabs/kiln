@@ -17,7 +17,7 @@ test('a Node consumer embeds the shared MCP host through a public package import
     import { createKilnMcpServer, createKilnToolHost, kilnMcpToolDefs } from '@instruktlabs/kiln/mcp';
     const host = createKilnToolHost();
     assert.deepEqual(host.defs.map(t => t.name), kilnMcpToolDefs().map(t => t.name));
-    assert.equal(host.defs.length, 14);
+    assert.equal(host.defs.length, 15);
     const result = await host.callTool('kiln_discover', { overview: true }, { signal: new AbortController().signal });
     assert.notEqual(result.isError, true);
     assert.ok(result.content.some(block => block.type === 'text' && block.text.includes('createRoot(name: string)')));

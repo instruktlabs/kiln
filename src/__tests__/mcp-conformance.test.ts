@@ -58,6 +58,7 @@ const EXPECTED_TOOLS = [
   'kiln_project',
   'kiln_render',
   'kiln_renderer',
+  'kiln_renderer_status',
   'kiln_review',
   'kiln_save',
   'kiln_screenshot_animation',

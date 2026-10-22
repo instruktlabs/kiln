@@ -13,6 +13,15 @@ does not publish a package.
   bare "Invalid input", and run only after the field checks pass. Tool input errors drop
   a bare parent "Invalid input" line when an issue inside that record already explains
   the failure.
+- Advertise renderer status separately from reprobe ([#206](https://github.com/instruktlabs/kiln/issues/206)).
+  The new read-only `kiln_renderer_status` (`readOnlyHint: true`) lets hosts that
+  auto-allow reads check status without a prompt; `kiln_renderer` stays stateful and
+  still accepts `action: "status"`. The packaged MCP server lists eighteen tools and the
+  native registry eleven (sixteen with delivery). In the named-operation presentation
+  `kiln_renderer_status` is now read-only and `kiln_renderer_reprobe` stays stateful.
+  Status and reprobe results add `ready`, `activeRoute` (`gpu` or `cpu`) and `fallback`
+  (`active`, with `materialFaithful: false` and a `reason` when views will be CPU
+  geometry). `kiln_discover({ capabilities: true })` is unchanged.
 
 ## 1.3.1 (2026-10-17)
 

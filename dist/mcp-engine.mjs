@@ -49317,6 +49317,8 @@ function projectOperationDefs(defs, context) {
       return [];
     if (def.name === "kiln_renderer")
       return rendererOperations(def, context);
+    if (def.name === "kiln_renderer_status")
+      return context.renderCapabilities ? [def] : [];
     if (def.name === "kiln_discover")
       return discoveryOperations(def);
     if (def.name === "kiln_material")
@@ -49414,20 +49416,21 @@ function materialOperations(def) {
   return [search, tools.get, create, tools.import];
 }
 function rendererOperations(def, context) {
-  if (!context.renderCapabilities)
+  if (!context.renderCapabilities || !context.reprobeRenderer)
     return [];
-  return ["status", ...context.reprobeRenderer ? ["reprobe"] : []].map((action) => {
-    const inputSchema = z23.strictObject({});
-    return {
+  const inputSchema = z23.strictObject({});
+  return [
+    {
       ...def,
-      name: `kiln_renderer_${action}`,
+      name: "kiln_renderer_reprobe",
+      description: "Reprobe after renderer setup/repair to refresh this session and reset failed starts; check status with kiln_renderer_status. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart.",
       inputSchema,
       run: async (raw) => {
         inputSchema.parse(raw);
-        return def.run({ action });
+        return def.run({ action: "reprobe" });
       }
-    };
-  });
+    }
+  ];
 }
 function discoveryOperations(def) {
   const original = def.inputSchema;
@@ -49462,6 +49465,33 @@ init_requirements_context();
 init_evaluator();
 init_material_resources();
 import * as THREE58 from "three";
+
+// src/render-route.ts
+var GPU_SERVES = new Set([
+  "available",
+  "on-demand",
+  "authentication-unverified"
+]);
+function nextRenderRoute(renderer) {
+  const fallback = (reason) => ({
+    active: true,
+    materialFaithful: false,
+    reason
+  });
+  if (!renderer.configured)
+    return {
+      ready: true,
+      activeRoute: "cpu",
+      fallback: fallback(renderer.reason ?? (renderer.mode === "cpu" ? "This host selected CPU rendering; views show geometry, not materials." : "No GPU renderer is attached to this session; views show geometry, not materials."))
+    };
+  if (GPU_SERVES.has(renderer.status))
+    return { ready: true, activeRoute: "gpu", fallback: { active: false } };
+  return {
+    ready: false,
+    activeRoute: "gpu",
+    fallback: renderer.required ? { active: false } : fallback(`GPU renderer ${renderer.status}${renderer.reason ? `: ${renderer.reason}` : ""}. Renders degrade to CPU geometry views.`)
+  };
+}
 
 // src/edit-buffer.ts
 class KilnDraftBuffer {
@@ -50863,6 +50893,28 @@ function withCaptureCache(context) {
 var rendererInput = z24.strictObject({
   action: z24.enum(["status", "reprobe"]).default("status")
 });
+var rendererStatusInput = z24.strictObject({});
+async function runRenderer(context, action) {
+  if (action === "reprobe" && !context.reprobeRenderer)
+    return {
+      ok: false,
+      error: "Renderer reprobe is not provided by this host. Configure its render connection through the host, or read the declared configuration with kiln_discover({ capabilities: true })."
+    };
+  if (!context.renderCapabilities)
+    return {
+      ok: false,
+      error: "Renderer status is not provided by this host. Read the declared render configuration with kiln_discover({ capabilities: true })."
+    };
+  try {
+    const renderer = await (action === "reprobe" ? context.reprobeRenderer() : context.renderCapabilities());
+    return { ok: true, renderer: { ...renderer, ...nextRenderRoute(renderer) } };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : String(error)
+    };
+  }
+}
 async function readSavedRevision(target, collection, assetId, revisionId, listCall = `kiln_assets { action: 'list', collection: '${collection}' }`) {
   try {
     return await target.read(collection, assetId, revisionId);
@@ -50882,33 +50934,19 @@ function createProgramDefs(suppliedContext, presentation) {
   return [
     createKilnDiscoveryDef({ ...suppliedContext, programStore: store }, presentation),
     {
-      name: "kiln_renderer",
-      description: "Inspect status, or reprobe after renderer setup/repair to refresh this session and reset failed starts. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart. Read viewFidelity after rendering.",
-      inputSchema: rendererInput,
+      name: "kiln_renderer_status",
+      description: "Read renderer status: ready, activeRoute (gpu or cpu) and fallback say what the next render uses; an active fallback means CPU geometry views, not material evidence. Read-only: never reprobes, installs, starts or renders. Read viewFidelity after rendering.",
+      inputSchema: rendererStatusInput,
       run: async (raw) => {
-        const { action } = rendererInput.parse(raw);
-        if (action === "reprobe" && !suppliedContext.reprobeRenderer)
-          return {
-            ok: false,
-            error: "Renderer reprobe is not provided by this host. Configure its render connection through the host, or read the declared configuration with kiln_discover({ capabilities: true })."
-          };
-        if (!suppliedContext.renderCapabilities)
-          return {
-            ok: false,
-            error: "Renderer status is not provided by this host. Read the declared render configuration with kiln_discover({ capabilities: true })."
-          };
-        try {
-          return {
-            ok: true,
-            renderer: await (action === "reprobe" ? suppliedContext.reprobeRenderer() : suppliedContext.renderCapabilities())
-          };
-        } catch (error) {
-          return {
-            ok: false,
-            error: error instanceof Error ? error.message : String(error)
-          };
-        }
+        rendererStatusInput.parse(raw);
+        return runRenderer(suppliedContext, "status");
       }
+    },
+    {
+      name: "kiln_renderer",
+      description: "Reprobe after renderer setup/repair to refresh this session and reset failed starts; check status with kiln_renderer_status. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart.",
+      inputSchema: rendererInput,
+      run: async (raw) => runRenderer(suppliedContext, rendererInput.parse(raw).action)
     },
     ...[
       createKilnValidateDef(context),
@@ -50932,7 +50970,13 @@ function createProgramDefs(suppliedContext, presentation) {
   ].map((def) => withWorkspaceContext(def, context)).map((def) => ({
     ...def,
     annotations: {
-      readOnlyHint: ["kiln_source", "kiln_discover", "kiln_export", "kiln_present"].includes(def.name),
+      readOnlyHint: [
+        "kiln_source",
+        "kiln_discover",
+        "kiln_renderer_status",
+        "kiln_export",
+        "kiln_present"
+      ].includes(def.name),
       destructiveHint: false,
       idempotentHint: def.name !== "kiln_save",
       openWorldHint: false,

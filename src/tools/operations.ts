@@ -14,6 +14,7 @@ export function projectOperationDefs(
     )
       return [];
     if (def.name === 'kiln_renderer') return rendererOperations(def, context);
+    if (def.name === 'kiln_renderer_status') return context.renderCapabilities ? [def] : [];
     if (def.name === 'kiln_discover') return discoveryOperations(def);
     if (def.name === 'kiln_material') return materialOperations(def);
     if (def.name === 'kiln_assets') return assetOperations(def, context);
@@ -133,20 +134,23 @@ function materialOperations(def: KilnToolDef): KilnToolDef[] {
   return [search, tools.get!, create, tools.import!];
 }
 
+/** Status is the shared read-only `kiln_renderer_status`; only reprobe derives from here. */
 function rendererOperations(def: KilnToolDef, context: KilnToolContext): KilnToolDef[] {
-  if (!context.renderCapabilities) return [];
-  return ['status', ...(context.reprobeRenderer ? ['reprobe'] : [])].map((action) => {
-    const inputSchema = z.strictObject({});
-    return {
+  if (!context.renderCapabilities || !context.reprobeRenderer) return [];
+  const inputSchema = z.strictObject({});
+  return [
+    {
       ...def,
-      name: `kiln_renderer_${action}`,
+      name: 'kiln_renderer_reprobe',
+      description:
+        'Reprobe after renderer setup/repair to refresh this session and reset failed starts; check status with kiln_renderer_status. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart.',
       inputSchema,
       run: async (raw: unknown) => {
         inputSchema.parse(raw);
-        return def.run({ action });
+        return def.run({ action: 'reprobe' });
       },
-    };
-  });
+    },
+  ];
 }
 
 function discoveryOperations(def: KilnToolDef): KilnToolDef[] {

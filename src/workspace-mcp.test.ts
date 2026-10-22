@@ -46,7 +46,7 @@ test('real MCP creates project materials, renders their exact closure, and expos
       throw new Error(`MCP startup failed: ${errors}`, { cause: error });
     }
     const names = (await client.listTools()).tools.map((tool) => tool.name);
-    // The fourteen program tools plus the three packaged host services (AGENTS.md).
+    // The fifteen program tools plus the three packaged host services (AGENTS.md).
     expect([...names].sort()).toEqual([
       'kiln_assets',
       'kiln_discover',
@@ -59,6 +59,7 @@ test('real MCP creates project materials, renders their exact closure, and expos
       'kiln_project',
       'kiln_render',
       'kiln_renderer',
+      'kiln_renderer_status',
       'kiln_review',
       'kiln_save',
       'kiln_screenshot_animation',

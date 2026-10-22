@@ -86,9 +86,27 @@ Discover Kiln operations, assemblies, recipes, tool-input shapes and current hos
 
 </details>
 
+## kiln_renderer_status
+
+Read renderer status: ready, activeRoute (gpu or cpu) and fallback say what the next render uses; an active fallback means CPU geometry views, not material evidence. Read-only: never reprobes, installs, starts or renders. Read viewFidelity after rendering.
+
+<details>
+<summary>Input JSON Schema</summary>
+
+
+```json
+{
+  "type": "object",
+  "properties": {},
+  "additionalProperties": false
+}
+```
+
+</details>
+
 ## kiln_renderer
 
-Inspect status, or reprobe after renderer setup/repair to refresh this session and reset failed starts. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart. Read viewFidelity after rendering.
+Reprobe after renderer setup/repair to refresh this session and reset failed starts; check status with kiln_renderer_status. Never installs, starts, stops or renders. Preserves CPU/local/remote selection; environment/credential changes require a host restart.
 
 <details>
 <summary>Input JSON Schema</summary>
