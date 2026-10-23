@@ -172,7 +172,7 @@ describe('Commons catalog bindings', () => {
     expect(build.models.filter((model) => 'path' in model && String(model.path).includes('golden-gate'))).toHaveLength(1);
     expect(JSON.stringify(build.models)).not.toContain('golden-gate-web');
     expect(JSON.stringify(build.models)).not.toContain('golden-gate-far');
-    expect(build.viewerModels).toEqual([bridge.tiers.find(tier=>tier.tier==='web')!.runtime.path]);
+    expect(build.viewerModels.filter((path) => path.startsWith('standalone/golden-gate-bridge/'))).toEqual([bridge.tiers.find(tier=>tier.tier==='web')!.runtime.path]);
     expect(bridge.licence.sha256).toBe(tiers.licence.sha256);
     expect(pinned(bridge.licence.path)).toMatchObject({ bytes: tiers.licence.bytes, sha256: tiers.licence.sha256 });
     // No old revision's file remains pinned beside the new delivery.

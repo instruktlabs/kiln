@@ -3,7 +3,7 @@ import ResponsiveImage from "./ResponsiveImage.astro";
 import { number, imageQualification } from "../lib/catalog";
 import type { GalleryCard } from "../lib/gallery";
 interface Props {
-  asset: Pick<GalleryCard, "slug" | "name" | "pack" | "category" | "poster" | "metrics" | "review"> & Partial<Pick<GalleryCard, "href" | "packs">>;
+  asset: Pick<GalleryCard, "slug" | "name" | "pack" | "category" | "poster" | "metrics" | "review"> & Partial<Pick<GalleryCard, "href" | "packs" | "scenes">>;
   headingLevel?: "h2" | "h3";
 }
 const { asset, headingLevel = "h3" } = Astro.props;
@@ -40,4 +40,11 @@ const Heading = headingLevel;
     <p class="mt-2 text-caption text-dim">Exterior view from the parent revision.</p>
   )}
   </a>
+  {asset.scenes?.length ? (
+    <div class="flex flex-col items-start">
+      {asset.scenes.map((scene) => (
+        <a class="text-link text-caption" href={scene.href}>{scene.label} <span aria-hidden="true">↗</span></a>
+      ))}
+    </div>
+  ) : null}
 </article>

@@ -1,0 +1,603 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_d8af3cee43454ee98083d9c670b1f4c5",
+  "revisionId": "r_7fd4e42104b14771a9108574848de5fd",
+  "parentRevision": "r_8905f6efa3b843ce8f3b31c8ac58a359",
+  "name": "Island Trial - resident",
+  "tags": [],
+  "createdAt": "2026-10-21T20:26:12.730Z",
+  "description": "Static named-joint GLB for host motion.gait@1. Geometry/materials/hierarchy preserved from GPU-reviewed parent motion study; native review clips removed for static-only asset admission. Source includes exact gait channel design; no skinning, IK or embedded animation.",
+  "attribution": {
+    "harness": "codex"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:07ef366785d37de58670a8bf8a8aeab3094dfc6f3dab09fe5eb76fc5ee627952",
+      "bytes": 55416
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:8460c60e23a0d329f1f18b17908b0705bb58a55e9791ed6c9fee51c145aa9a23",
+      "bytes": 4955
+    },
+    "preview.png": {
+      "sha256": "sha256:53f1e055d013c76a78b32020615f866e0fe3cdf55c92d8df4a95c2bc1a00e637",
+      "bytes": 27606
+    }
+  },
+  "build": {
+    "engine": "sha256:a76aa3c91adf9a9759ebff048aeeeed9cd2d4350bb083274c85574e38d0ee4c2",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "07ef366785d37de58670a8bf8a8aeab3094dfc6f3dab09fe5eb76fc5ee627952",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.30000001192092896,
+          0.0048679659665408215,
+          -0.3519387251138687
+        ],
+        "max": [
+          0.30000001192092896,
+          1.8149999916553496,
+          0.3519387251138687
+        ],
+        "size": [
+          0.6000000238418579,
+          1.8101320256888087,
+          0.7038774502277374
+        ],
+        "center": [
+          0,
+          0.9099339788109453,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": 0.0048679659665408215,
+        "offsetToGround": -0.0048679659665408215,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Tidemark island resident"
+      },
+      "requestedRole": "prop",
+      "renderMetrics": {
+        "triangles": 1512,
+        "drawCalls": 15,
+        "uniqueGeometries": 11,
+        "uniqueMaterials": 5,
+        "textureCount": 0,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "pass",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"head_skin\" and \"head_dark\" occupy the same space: they share 0.00387 m³, which is 71.0% of the smaller part.",
+              "affected": {
+                "node": "head_skin"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.709960189,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"shoulder_left_linen\" and \"Tidemark_island_resident_linen\" occupy the same space: they share 0.00135 m³, which is 32.3% of the smaller part.",
+              "affected": {
+                "node": "shoulder_left_linen"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.322919324,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"shoulder_right_linen\" and \"Tidemark_island_resident_linen\" occupy the same space: they share 0.00135 m³, which is 32.3% of the smaller part.",
+              "affected": {
+                "node": "shoulder_right_linen"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.32291932,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Tidemark_island_resident_linen\" and \"Tidemark_island_resident_cloth\" occupy the same space: they share 0.0101 m³, which is 29.7% of the smaller part.",
+              "affected": {
+                "node": "Tidemark_island_resident_linen"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.296662494,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"hip_left_cloth\" and \"Tidemark_island_resident_cloth\" occupy the same space: they share 0.00156 m³, which is 21.2% of the smaller part.",
+              "affected": {
+                "node": "hip_left_cloth"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.211754498,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"hip_right_cloth\" and \"Tidemark_island_resident_cloth\" occupy the same space: they share 0.00156 m³, which is 21.2% of the smaller part.",
+              "affected": {
+                "node": "hip_right_cloth"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.211754498,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"head_dark\" and \"head_straw\" occupy the same space: they share 0.000534 m³, which is 9.8% of the smaller part.",
+              "affected": {
+                "node": "head_dark"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.09796525,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"knee_left_skin\" and \"knee_left_dark\" occupy the same space: they share 0.000147 m³, which is 8.9% of the smaller part.",
+              "affected": {
+                "node": "knee_left_skin"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.088815694,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"knee_right_skin\" and \"knee_right_dark\" occupy the same space: they share 0.000147 m³, which is 8.9% of the smaller part.",
+              "affected": {
+                "node": "knee_right_skin"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.088815694,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"head_skin\" and \"Tidemark_island_resident_linen\" occupy the same space: they share 0.000768 m³, which is 6.5% of the smaller part.",
+              "affected": {
+                "node": "head_skin"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.065156762,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"head_skin\" and \"head_straw\" occupy the same space: they share 0.000302 m³, which is 2.6% of the smaller part.",
+              "affected": {
+                "node": "head_skin"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.025606457,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"knee_left_skin\" and \"hip_left_cloth\" occupy the same space: they share 0.0000320 m³, which is 1.1% of the smaller part.",
+              "affected": {
+                "node": "knee_left_skin"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.010714096,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"knee_right_skin\" and \"hip_right_cloth\" occupy the same space: they share 0.0000320 m³, which is 1.1% of the smaller part.",
+              "affected": {
+                "node": "knee_right_skin"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.010714096,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"elbow_left_skin\" and \"shoulder_left_linen\" occupy the same space: they share 0.0000191 m³, which is 1.0% of the smaller part.",
+              "affected": {
+                "node": "elbow_left_skin"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.009835547,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"elbow_right_skin\" and \"shoulder_right_linen\" occupy the same space: they share 0.0000191 m³, which is 1.0% of the smaller part.",
+              "affected": {
+                "node": "elbow_right_skin"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.009835547,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "complete-static-pairs",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 15,
+            "partVolumeCandidatePairs": 19,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 19,
+            "partVolumeUnmeasurablePairs": 0,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 0
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "C",
+            "instanceabilitySummary": "C (informational, not a QA verdict), set by 5 distinct materials (C at 4-6). Also: 11 geometries; 15 draw calls.",
+            "uniqueGeometries": 11,
+            "uniqueMaterials": 5,
+            "meshNodes": 15,
+            "meshInstances": 15,
+            "drawCalls": 15,
+            "textureCount": 0,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 1512,
+            "materialCount": 5,
+            "opaqueMaterials": 5,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 5,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 0,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 0,
+            "maxImageDimension": 0,
+            "decodedImageBytesRgba8": 0,
+            "estimatedGpuBytesWithMipmaps": 0,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "geometry-flat",
+      "materialFaithful": false,
+      "exactArtifact": true,
+      "rendererId": "cpu-raster:1.3.1",
+      "inputGlbSha256": "sha256:07ef366785d37de58670a8bf8a8aeab3094dfc6f3dab09fe5eb76fc5ee627952",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "site": "https://holodeck.kilnstudio.tools/",
+  "worldPath": "worlds/{id}/",
+  "worlds": {
+    "holodeck-tidemark": "tidemark",
+    "holodeck-courtyard": "courtyard",
+    "holodeck-cove": "cove",
+    "holodeck-crescent-cove": "crescent-cove"
+  }
+}

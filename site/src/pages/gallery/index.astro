@@ -3,6 +3,7 @@ import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AssetCard from "../../components/AssetCard.astro";
 import { galleryCards as assets } from "../../lib/gallery";
+import { holodeckPacks } from "../../lib/holodeck";
 const categories = [...new Set(assets.map((asset) => asset.category))].sort();
 ---
 
@@ -45,6 +46,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
               <option value="vehicles">Generic Road Vehicles</option>
               <option value="foundry-floor">Foundry Floor</option>
               <option value="cabin-woods-psx-horror">Cabin in the Woods: PSX Horror</option>
+              {holodeckPacks.map((pack) => <option value={pack.id}>Holodeck: {pack.name}</option>)}
               <option value="standalone">Standalone</option>
             </select>
           </label>

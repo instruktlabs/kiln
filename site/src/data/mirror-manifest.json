@@ -2575,6 +2575,976 @@
       "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries.png",
       "bytes": 1617464,
       "sha256": "08fc42724f083abe6c84c5582874d2c971b0627d14ec0bae4d099d9bd22e7413"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-palm.png",
+      "bytes": 1416053,
+      "sha256": "39d19a6f03eaadf0ac660128d1625a12af2a907e63a4dbeb3993b243c00077d0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-shrub.png",
+      "bytes": 1515768,
+      "sha256": "8bc48f71e4aa8539076ffe3f2bb93f7411f801df0eaa52702bfd9910e37d16e8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-grass.png",
+      "bytes": 1355556,
+      "sha256": "8a00cdf31b69c71fe12eec1755df9b2eb9d185aeabe32ce21694448641c5aa7a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-shore.png",
+      "bytes": 1415478,
+      "sha256": "00bf151cd3553e93a14a9a20571473effb59a6c7890db76cc890c267933dc65a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-frame.png",
+      "bytes": 1447121,
+      "sha256": "3bf0b9643703ddb4a375d666d8e200f01be341d64901b4865b77a8d84052d94c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof.png",
+      "bytes": 1429991,
+      "sha256": "bd871758db0ad54ca6d0824cf8e3b5ca758b12d7c5730dfb3e49a62b63d5fa85"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-furnishings.png",
+      "bytes": 1297721,
+      "sha256": "db373a18161e43b4cf58d3504d4732c2f7d4057763e0c61f1b23fd6e3070d784"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-resident.png",
+      "bytes": 1479166,
+      "sha256": "a054fd7be8a0febc9d1aae90efc56126baa1c7866629a22fe48b1771e6385e4e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-bird.png",
+      "bytes": 1480136,
+      "sha256": "824d612bf33b5a5f6f81e710f97422c139b19ca54da2423712fa388547accb79"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-crab.png",
+      "bytes": 1468027,
+      "sha256": "7a5ebc220dd1baf31e01da206fe737f50ac504d3d4b19ea70aefce243f5d5f75"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/jungle-sapling.png",
+      "bytes": 1434450,
+      "sha256": "8a8985f25d25c4819b8e2928c765c89dbd4538bea2ac9856b99545c6720279dc"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/jungle-fern.png",
+      "bytes": 1325952,
+      "sha256": "94640aa07799df02462613b87083984fba5b63c4bc81cd68d8de3d2cc63964fd"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/jungle-understory.png",
+      "bytes": 1499283,
+      "sha256": "7a654107f51762740a85dc24c88404af8338ae85da73570fc475337f90006751"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/jungle-groundcover.png",
+      "bytes": 1332774,
+      "sha256": "1d9da55131e446547fe140d99475c69ada91bc9f11fb6613db96b8a26117601b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/coastal-flybird.png",
+      "bytes": 1271871,
+      "sha256": "9d85decb1141bbad4b45ba07331bec88e196f2f519154fbf491a09183a411599"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/pave-field-a.png",
+      "bytes": 1342170,
+      "sha256": "d306c41349f7009f5f86a9fe8d47244a0c26e82749d0ac9bfca88c7c0c34d59a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/pave-field-b.png",
+      "bytes": 1353387,
+      "sha256": "980e580df20e025443b967b87490fd0e265053ee93a4c5d4f892da4ebdcd3e4c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/pave-curb.png",
+      "bytes": 1315826,
+      "sha256": "592f600f8ebba50a02c4a10f6de4db078ee5071508b33e2899a0675a7734e2d7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/pave-curb-corner.png",
+      "bytes": 1530941,
+      "sha256": "6d363d8a8a3f39433d3bbbb9f051e634b8cfe1c4c543ed2c2597329e9e863930"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/pave-step.png",
+      "bytes": 1344322,
+      "sha256": "fb219f8c714442c68d0a4ea7ae64f2a5d68db9f5c1cf38a385119517910d85a5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/plaza-fountain.png",
+      "bytes": 1495052,
+      "sha256": "effe74250b195178af712bbbb2cc30f5ff72859508df1ff892ae507a79a110d7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/fountain-cascade.png",
+      "bytes": 1507917,
+      "sha256": "78aaa5ba5a90ca659751407dbb58565144cb05f58956fa512f2bcf26c1f308aa"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/statue-figure.png",
+      "bytes": 1488762,
+      "sha256": "364f2a25ee6593e92dea2a190a15725e9f5abcbe27bb041430f885aa69241a3a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/statue-monolith.png",
+      "bytes": 1542917,
+      "sha256": "04106eceac7cee307820406f5c720949c74f8fae2fcd177c5774d2c3ef0ddb6c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/statue-bronze.png",
+      "bytes": 1510861,
+      "sha256": "94905b4df349f3de3bbf8de26953ee0a7eb2057b38d6afe26c7f3a28900ccdc5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/tree-plane.png",
+      "bytes": 1579315,
+      "sha256": "b2d877b9f083a5e27fcd62624c6cb89f2273cabb181488ec65f64a3fcfd3a47e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/tree-cypress.png",
+      "bytes": 1394390,
+      "sha256": "5462c35814210752be38c8abee20293e61ce988831414ac6ca676f1dc3f2571d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/tree-olive.png",
+      "bytes": 1555890,
+      "sha256": "7b11d9dcc576e9297b77b601943279e8dafdccca74a3d4b6354d66883c59f6d5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/shrub-box.png",
+      "bytes": 1742314,
+      "sha256": "bd031373081b6ab1546b57450d01c91ad4899a5702b07f303e6e949035da8b05"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/plant-lavender.png",
+      "bytes": 1574781,
+      "sha256": "42139a597ca7463bb0aede03f807d88c007a9220d1ec06095bb85d236f5320cf"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-stone.png",
+      "bytes": 1591925,
+      "sha256": "9b194e7e06a8e2fd0c39e129863c0e31f65e3bf90feca79522797aed21d908cb"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park.png",
+      "bytes": 1628997,
+      "sha256": "ed3452144d1dde6150f95b844c571c088d4093d3b0887e8a4ecb7e072f009ed8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/planter-square.png",
+      "bytes": 1944333,
+      "sha256": "3eb62f4ac8b2798557139903c11596c811b94477f29504b847592e1d12a381a9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/planter-urn.png",
+      "bytes": 1684961,
+      "sha256": "c04f7dc8daf247aa175f5bbc787732fffe51d604bd214f9aeaa687e6925b8631"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/lamp-post.png",
+      "bytes": 1273765,
+      "sha256": "9009156b5ad4ea97468943f8886929f8f3f293894fc676a751bb65fd2522e217"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/lamp-bollard.png",
+      "bytes": 1561654,
+      "sha256": "3d9dc17ee34a63a564b26c28697586201b86dec72ab71080971e400c6b216fd0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/wall-segment.png",
+      "bytes": 1665691,
+      "sha256": "d84c3e84e31a3d8d8b84d04f8b38b6b627dd7611dec0a84b7b687a4427d4a50e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/wall-pier.png",
+      "bytes": 1570841,
+      "sha256": "e62faa7cd1b813c3c3f19678c3ddb9bc30c39829734acf9930b5e7e8ac630ed2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/gate-pier.png",
+      "bytes": 1491606,
+      "sha256": "b52fdcc0ec4c3b305afb5de5c3434d935b1a2df03eb0312115272689ce8a262e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure.png",
+      "bytes": 1556606,
+      "sha256": "ba65e814d4a210c8f52b37338162c81219c4f06e36d97d52ed21d6b3330c3d42"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-canopy.png",
+      "bytes": 1509996,
+      "sha256": "b5aa332e8eaa72dd22ec1ad1358a06a4e1c60a52ee15ee0634795402b3dd3f70"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating.png",
+      "bytes": 1308848,
+      "sha256": "dbdc5c8ff58dc045a18394bca8bf6fcd1e73eeda3f17ab0b8c451167aee364d7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-hearth.png",
+      "bytes": 1651323,
+      "sha256": "b45a910ea3831d33ab0915ae30e5ac325384a33f237e0e0982a1eed167bc66e2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-planting.png",
+      "bytes": 1220048,
+      "sha256": "49fc1a5f1afe26fffb2f94e290557e62df219f0adece9fc9c2158fcb002847fc"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-rug.png",
+      "bytes": 1466126,
+      "sha256": "30a72aa1bd0aff65e64897246ace8b447b8cc7efbb54bbf502d04507123c6222"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-lamp.png",
+      "bytes": 1714784,
+      "sha256": "5f63249a80d0d06602e550467161918765a49dd5e34a26c784232bb2b21b9336"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-moodboard.png",
+      "bytes": 1641686,
+      "sha256": "49a3cafbedb5ec1b22ccf40735b44690f068b42d5e88643514670b85521199a9"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/cove-structure.glb",
+      "bytes": 1398488,
+      "sha256": "e24c494c4909393ec4d1f07a1285e3480376f379bd1ec66959d2c42984b4e22b"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/cove-structure.zip",
+      "bytes": 1176734,
+      "sha256": "dcbc9d2fd91ee39ff010857cd099e84ecd73b60550ecaa0f4f84675981b75772"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/cove-structure.zip",
+      "bytes": 1449452,
+      "sha256": "d73538060cc465e0ee0dd78f26d55fc71ea0124aebb7ccac4ccfffd41d8fb0b6"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/cove-canopy.glb",
+      "bytes": 929320,
+      "sha256": "0ce9505d1fa19aac3245ec98eeb53b04b2e91827a756e44f45a6e750419c60f4"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/cove-canopy.zip",
+      "bytes": 765366,
+      "sha256": "a15afa796a843789b3a2e97f070bb738128a5145ea0b5b8e1f6bceb5c660689d"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/cove-canopy.zip",
+      "bytes": 968606,
+      "sha256": "8cbfbc21d0f1d322b02638e8325bef41061e90742197a19853b75f685f2178ad"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/cove-seating.glb",
+      "bytes": 890368,
+      "sha256": "637e8a88b83eef46f223a7cb3588c8a1c958d31948965fa0997c50132c422f5c"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/cove-seating.zip",
+      "bytes": 712546,
+      "sha256": "4583ea0f226ccff07ab93be948b57b5b822b687a8fb1e18b5424cde300954b19"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/cove-seating.zip",
+      "bytes": 719005,
+      "sha256": "edafe3be9126fcae8091e4ac33a32feed3c21ee2c612cdefe56d6a7f935e205d"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/cove-hearth.glb",
+      "bytes": 1656524,
+      "sha256": "ec6111b3d85f5b565a8ee66189f2c4f3f04e3ef1c608eb2df78813164536a5b5"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/cove-hearth.zip",
+      "bytes": 1385937,
+      "sha256": "895281c2b88692f4923cfcac4240576e02dd82365eae3e5bc5005b314feddba7"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/cove-hearth.zip",
+      "bytes": 1856180,
+      "sha256": "e5eaa268ca681992453f1a3c263a5970ca1af3dbc1305867b00097b1e5768aa9"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/cove-planting.glb",
+      "bytes": 1053544,
+      "sha256": "c83ca8b8f9d6d9082f9b74a0ead42e2a6b649890dc7c94f1937ccbd3e2929565"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/cove-planting.zip",
+      "bytes": 746718,
+      "sha256": "f54703ea0698bec467f77da056da2851e2fb12d483553c74eecf075f2b72a765"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/cove-planting.zip",
+      "bytes": 805118,
+      "sha256": "118fbb75e5360e75a7c01428129c0c613b5102cbcb2ee5b93eda40a9a2c2bd1b"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/cove-rug.glb",
+      "bytes": 122092,
+      "sha256": "890ce230032523429eb57f2a1a9062a1824fa8ea30f8f94b1ed4fcc563c34555"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/cove-rug.zip",
+      "bytes": 89437,
+      "sha256": "07d639ffd815282f5665b8c4ad57d9af2bcefc6471862c2d8c191a281c201797"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/cove-rug.zip",
+      "bytes": 198419,
+      "sha256": "86770c4b20333f426c8be67f9a7a16d9a8ac46950f6e797cea808deb57d0b667"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/cove-lamp.glb",
+      "bytes": 254580,
+      "sha256": "966eba5901cee5a920939db5995d29ffec119d3562d511ac1a8731a9238ade4f"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/cove-lamp.zip",
+      "bytes": 200406,
+      "sha256": "6a6189ce5b0b454ce4001676e8e839b2c95ac2ec479e6e73e5934a62e341939b"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/cove-lamp.zip",
+      "bytes": 582279,
+      "sha256": "fbf3cb33ede587e65cfa18f2e866498759775b174ca8fc6d8982ee1ed92d3976"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/cove-moodboard.glb",
+      "bytes": 185156,
+      "sha256": "3246cfb09881a5043115fbb2f1f086b6e35aa4482737f2b28577d7df31a5eda5"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/cove-moodboard.zip",
+      "bytes": 159336,
+      "sha256": "947fc588a9f7c49bd16ba19371e7a2e34a742b08f3a2ad739b4556e6cc189b60"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/cove-moodboard.zip",
+      "bytes": 406878,
+      "sha256": "5bdd0aa80877d41acf873b29024cfc2dbca6a6a1195c0141cb277bbecdc227e6"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/island-palm.glb",
+      "bytes": 996340,
+      "sha256": "5a36941372ca8183548115cdcdfecc47bf95b935a4135e60600fc87d41624908"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/island-palm.zip",
+      "bytes": 569404,
+      "sha256": "be9cd541202b8830f6ae4fd2405c9968f3a04d464530c39d9192eb3ab3011722"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/island-palm.zip",
+      "bytes": 983700,
+      "sha256": "1b6f5abaf35440a77d4e8a88a1d9384a8113cd348369156ff122432e28de27a3"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/island-shrub.glb",
+      "bytes": 94584,
+      "sha256": "eb4d14645d6157aa3d2e2aaaeee885d0576b6b1df2f226ce334d6de81076ac79"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/island-shrub.zip",
+      "bytes": 58918,
+      "sha256": "a67329b68106b4152e41aa265b6f8f2887d8a0c4c3004aa2f49fb89b40f233d9"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/island-shrub.zip",
+      "bytes": 126339,
+      "sha256": "1f5ab99ea8fcc89e803e2b909b165ec8fe9f21058a7f4557946ece47f03230e7"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/island-grass.glb",
+      "bytes": 40276,
+      "sha256": "330d6ca24eba99a8fed9b07630f349d401e2f2016da0ff5b6f6a42fec3353759"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/island-grass.zip",
+      "bytes": 29330,
+      "sha256": "373baac96b59a127a681e876934b2771688c7e11bc155590298a656013d67652"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/island-grass.zip",
+      "bytes": 112125,
+      "sha256": "e65b05123dbcf4b0bb44aba92fb845e197c6c013f30f8bd258013bbf5eb3ac1e"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/island-shore.glb",
+      "bytes": 66496,
+      "sha256": "46fd091a378bcaded0bb98e0442eca9326714771d58ed00fa40613a7877a30c1"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/island-shore.zip",
+      "bytes": 27337,
+      "sha256": "508385c621cf1f73f2ac501f154498e97db88e1a2cdd3a942baa869aff3cc99a"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/island-shore.zip",
+      "bytes": 53647,
+      "sha256": "7614a7c177dd1592d631d94acaaf339c0f91ae4d673081e52d9686b20edc5801"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/island-hut-frame.glb",
+      "bytes": 83924,
+      "sha256": "8d2a332dd3ae3540c1d983fdefd4a01716579cdcc27e148146d6ab4370b10b8e"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/island-hut-frame.zip",
+      "bytes": 24556,
+      "sha256": "f33b569296ae6832070111bc3d9dce85afbe14f8f04f35b0dca6a7fb1e0fb64f"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/island-hut-frame.zip",
+      "bytes": 36876,
+      "sha256": "03af507792420d8275161178353c7211258c405ef9bcfb029e08915bb27ec485"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/island-hut-roof.glb",
+      "bytes": 376748,
+      "sha256": "8f71a6185a7712542419464ebae17ae0c545b69c753b69d275dd46e1fa48f9a7"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/island-hut-roof.zip",
+      "bytes": 111389,
+      "sha256": "760beff9d0aae10d8df89454576050ad270c48a74ae2818ab63f22f4b5deeacc"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/island-hut-roof.zip",
+      "bytes": 134694,
+      "sha256": "2565c5136e055122b6ae432099b45672a2a0944a81243461618ececb70b6b1a7"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/island-hut-furnishings.glb",
+      "bytes": 69372,
+      "sha256": "092cb1d69477f4623cff8ebce063d0209dfdb0ad7012ed60bb6caf9794ec2b8e"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/island-hut-furnishings.zip",
+      "bytes": 23256,
+      "sha256": "6e52ffbabb3da46fe5a2742607083e832c16292ce5e38afe2d5fccc9916fd972"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/island-hut-furnishings.zip",
+      "bytes": 32913,
+      "sha256": "148b6b01f6361dd136e9511391049d7dc4c7258e872257a20c630e7f2327658a"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/island-resident.glb",
+      "bytes": 55636,
+      "sha256": "d0eef1e714ada7830fc0db757ad5248bb90476c08e60a65462f01964092debd8"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/island-resident.zip",
+      "bytes": 20193,
+      "sha256": "312ef36ef4d359ff87cf21a0a0fcbff348ac850fbe791aeaeb571962aac8cc23"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/island-resident.zip",
+      "bytes": 45460,
+      "sha256": "2e5ef48493ada065ba5587f05e0fe66bb808166a6cbffefd784df6b21a1bb633"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/island-bird.glb",
+      "bytes": 28664,
+      "sha256": "1c05c8ee1e0b7ea8e3c954613c96c9574416deea2caab40a369932db107d0836"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/island-bird.zip",
+      "bytes": 13327,
+      "sha256": "ebe0f01c0b194912dd2899dda6d96f4eadd73125532dd2f759d620f3961e8628"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/island-bird.zip",
+      "bytes": 37543,
+      "sha256": "cded9d0e11caea23b5c93f5e5fef89754c9b4a6ab2c3890a22f3c1611862e16a"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/island-crab.glb",
+      "bytes": 32492,
+      "sha256": "42c0c35e48e9cedf93ef7c3e3998ffd8485be827515a84bf05217048c4cd67f6"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/island-crab.zip",
+      "bytes": 14042,
+      "sha256": "279cc4719126b276f0b85d1c47c7c2f728dc50636428624450750f479f4665ac"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/island-crab.zip",
+      "bytes": 40286,
+      "sha256": "d28ea8e94e81119ddac81802e40e25dfadf463fc806dc72e078e03bf30e80c7a"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/jungle-sapling.glb",
+      "bytes": 37704,
+      "sha256": "f30404c574b5253d276b48b58d6ad7599e4253848e393c2f217e6e7f8780d70c"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/jungle-sapling.zip",
+      "bytes": 25592,
+      "sha256": "9228f312e618688454c53af4c4f0c424b937cb9739b11e3d1466ece79d267427"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/jungle-sapling.zip",
+      "bytes": 259884,
+      "sha256": "3ff7a9a5b6ff881bb5f84229df5ae803940aa86c1629e7b7b0b6c9ac7c369291"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/jungle-fern.glb",
+      "bytes": 61000,
+      "sha256": "dc7c309ede0ff4a652ebcbf53be5bec897d4cbb30890b4909dc479b24b9f729e"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/jungle-fern.zip",
+      "bytes": 33330,
+      "sha256": "723b445d4c64c1208929963e6ab4ada850544a41fc2943db84f0608b388d9122"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/jungle-fern.zip",
+      "bytes": 221843,
+      "sha256": "cc0cd82359f59e840437b55542a95ba88cafd5672d711e6f464b961c778a9b9b"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/jungle-understory.glb",
+      "bytes": 31788,
+      "sha256": "43a246c4b403afcc9cd666bb95f3164e874f3cf29ada7a957569a4f209fcb97f"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/jungle-understory.zip",
+      "bytes": 22021,
+      "sha256": "0cffd31d33f08ba024a56a82e881e3c187a73e0415ef2d9c0c86bf0f612e862f"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/jungle-understory.zip",
+      "bytes": 286711,
+      "sha256": "919ecb9f2a0ec4531cce1a715c04fc297dbacadbe8f8f2c6aa7d976499794b54"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/jungle-groundcover.glb",
+      "bytes": 12516,
+      "sha256": "85d2ab5edfc9d6a59ee0f9aaa51f3b46702e2348cc911939cae140cfa3734abc"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/jungle-groundcover.zip",
+      "bytes": 13704,
+      "sha256": "9d5207b7bdd31d8bb5b9eaea182235dbc644daf1fb39f7519ed56ed20d9d225b"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/jungle-groundcover.zip",
+      "bytes": 140835,
+      "sha256": "aba05533432e6893e62a743e23965416d0aaf45285da8e8d6311b3454923f315"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/coastal-flybird.glb",
+      "bytes": 22784,
+      "sha256": "d7cb355cdb03cc639cdcdfa1dc14147568b62f2962e550ec472149678b4e2222"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/coastal-flybird.zip",
+      "bytes": 13139,
+      "sha256": "e3671316ec4e2a9d62a7ced8f47f513c6a8fa126b57e108e20d11bc1da256f91"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/coastal-flybird.zip",
+      "bytes": 27999,
+      "sha256": "fe1a65d8fdf7341b775f25708374e317adb4ea746b98a430acc23c251507c319"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/pave-field-a.glb",
+      "bytes": 76052,
+      "sha256": "f24cde5319ab5074e6e66361cac95f4dc7a18a8c1c54d6b340ebb3dedfb5df47"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/pave-field-a.zip",
+      "bytes": 24897,
+      "sha256": "228f9d95ad5c5f6972c16c2c6de7760b479e68daeac9298e2147a8cad15944df"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/pave-field-a.zip",
+      "bytes": 35873,
+      "sha256": "43a32092b072ffc5356cffc4b29793d84dcb6f1c97258c0febc0d7643d776155"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/pave-field-b.glb",
+      "bytes": 135152,
+      "sha256": "8e1d7970c096b912c2ceeddc9dcd5ea86806c3475e3e1de000991c587209cdcd"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/pave-field-b.zip",
+      "bytes": 40592,
+      "sha256": "70e8f5fcd324366b19737e4cc9a94d14320a3bfd50d2bc32c03ebd211a1579f1"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/pave-field-b.zip",
+      "bytes": 57572,
+      "sha256": "402e912de3ef998914ed5653b8ba49ddfc1d7b3ae132a595d892ab446838aed9"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/pave-curb.glb",
+      "bytes": 27076,
+      "sha256": "7f9d70d4ad0665cfc68a4735723b5f596f3e25528fbce50822348a948216f459"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/pave-curb.zip",
+      "bytes": 10675,
+      "sha256": "c1275664f8aad61190a8ea4d3fb1f92b82eb44a6233cfea76d994e681fdf55df"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/pave-curb.zip",
+      "bytes": 18719,
+      "sha256": "9deae099937bcb8b1d9ce2561a668e0e3052c4a82712a56a710fbdc824a7d314"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/pave-curb-corner.glb",
+      "bytes": 9380,
+      "sha256": "c41eda877f2741c49d05bda138a85edba3d1712580fb8bdcfce7e2f1c6718c4e"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/pave-curb-corner.zip",
+      "bytes": 7253,
+      "sha256": "de4967ab8c9f7a04d2a787508d27635a465f45407b8037efe57338fc2c5996f6"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/pave-curb-corner.zip",
+      "bytes": 17026,
+      "sha256": "281277eebce5d71486bde8769db1ec40e65b05a266f3e1934a2e33d0a0317d63"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/pave-step.glb",
+      "bytes": 33688,
+      "sha256": "2416c2fc74ce547cdd4ea027d89750299bf091641e658c4280af84e6ac9ef53c"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/pave-step.zip",
+      "bytes": 12097,
+      "sha256": "e2d33956af69257713489f469f82afaa6c0852b0793c1cc8d0f1ed2fffc4123f"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/pave-step.zip",
+      "bytes": 20829,
+      "sha256": "e79f65c0887b145328e099f3ec4413db722adc68232b7f633c899777d1592e99"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/plaza-fountain.glb",
+      "bytes": 1425092,
+      "sha256": "f0ef65b3e1a01f9c1ee09c12095985c716cecc6310ad4dfc76dc0ecf67d38c08"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/plaza-fountain.zip",
+      "bytes": 661891,
+      "sha256": "dd082c4bf0df40980f2c53ff19b3397cf54ab83c7f60d7e800097fa6e60598dd"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/plaza-fountain.zip",
+      "bytes": 710349,
+      "sha256": "e1de69b12ad6380bc373a81a28ece485c92465478b280564ccae3ae6c5c40034"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/fountain-cascade.glb",
+      "bytes": 76244,
+      "sha256": "5601ca3f8554d60e8c4b4992c7786cab3697087f099c38be1d1f6b2c714f11b5"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/fountain-cascade.zip",
+      "bytes": 56270,
+      "sha256": "9d5097e7dc557b684816f05ef6b68d8a25fcefeefcb42555ac3bcb2d976e35b2"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/fountain-cascade.zip",
+      "bytes": 155300,
+      "sha256": "d146eff64703d44e3cd4a9855679656b9f12dcd14ac9217f0ffd8d59a7767bdf"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/statue-figure.glb",
+      "bytes": 665780,
+      "sha256": "4ed5b57f7701beee7b400d8cc17331c11e813c38f7b033cd26ad6fa9c57f7517"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/statue-figure.zip",
+      "bytes": 495832,
+      "sha256": "4ad6af22814df1cc9fde7408cb74288011a1d41d3471d8c0bb04602f6bbd96a7"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/statue-figure.zip",
+      "bytes": 583258,
+      "sha256": "95d5de08fd007dc40f669e85528cd795b0f506ec0b0b5ef5de9d9fbe6570a02f"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/statue-monolith.glb",
+      "bytes": 116436,
+      "sha256": "886144c5099e05af8ed4bbc4d3aef39dfb88de8b4a2019ae8d08d42f00d1a672"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/statue-monolith.zip",
+      "bytes": 71829,
+      "sha256": "38f71f7ac24f7804856a1136121c513c622d9a557b47cd760cf006b3beb85121"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/statue-monolith.zip",
+      "bytes": 118882,
+      "sha256": "8e5df881d171c6db272d2ebfa537a2913eb16582c6398f72d071a180a2fba7c3"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/statue-bronze.glb",
+      "bytes": 275932,
+      "sha256": "7a686725e3aefcabeaf289fd7185f43bc85906d59f06617ff11828497de62e0f"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/statue-bronze.zip",
+      "bytes": 208426,
+      "sha256": "13cb92f5ef23977493613069881514ac6ef3bcfeea0fbf0a938ed212713bb2c3"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/statue-bronze.zip",
+      "bytes": 275380,
+      "sha256": "1434a677239ae2c10744c4d759e697dc9d3077dd4c8081e15cc271b6bedade59"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/tree-plane.glb",
+      "bytes": 1133088,
+      "sha256": "cdcbe20897cad45d4da47276d6c910f8c2a07fbc3c4c0c52cc0c7b3905012853"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/tree-plane.zip",
+      "bytes": 637462,
+      "sha256": "211ab3d60ae7b65a6853037df82e3dd127242e59f401e4b44d521c5cda6f000b"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/tree-plane.zip",
+      "bytes": 774503,
+      "sha256": "7a61ae3b32cc507a86af1e67248ca81e00aaf0a183214f7bddc28579d26f4cb0"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/tree-cypress.glb",
+      "bytes": 639676,
+      "sha256": "7d9ad2dbf60b4d11dcde095d4c696653bc399ef1e5a0a4824927f75846168419"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/tree-cypress.zip",
+      "bytes": 351158,
+      "sha256": "bf1cef2abb3c73715d21d0fd29e9c3b2c72594c316e0fa439470ff19431ab280"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/tree-cypress.zip",
+      "bytes": 407488,
+      "sha256": "547178050232612d4351d0cea767846d209d99c9b0f1935a06acf8e1025a13aa"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/tree-olive.glb",
+      "bytes": 1360408,
+      "sha256": "c377b3a29c41192345c65043798431a6fe96b5bbe87f51d38f519eb61d9a72a3"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/tree-olive.zip",
+      "bytes": 816997,
+      "sha256": "bcd77241810612e5848879293d241ec0c4b66d23a9ba362e65dfbd46a693d3ff"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/tree-olive.zip",
+      "bytes": 943864,
+      "sha256": "dc889e7420bea09d25719cd2dbb382ac54b21bef0aadf9cf23c5790b453050ae"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/shrub-box.glb",
+      "bytes": 174220,
+      "sha256": "43676314c563b9caf4918b310611a4cf3045c669787d9458a9f273baca359608"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/shrub-box.zip",
+      "bytes": 111571,
+      "sha256": "f57b8ca11bdffbdae6fc9be1a49e1dcb3d4fd381cba0e51deedf5b4f46bffd65"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/shrub-box.zip",
+      "bytes": 212750,
+      "sha256": "04520d6d1e04e60d2c7a2dd4e9091bf97712fe2158a2b8e811962d3e6d938518"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/plant-lavender.glb",
+      "bytes": 129272,
+      "sha256": "0b549f92bf9248abb8fcfa68e7f196237ad75d7189e359292e401c35c557b4b1"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/plant-lavender.zip",
+      "bytes": 73658,
+      "sha256": "8bc004b3dc8fc816aeb61623c41b5c53dc0c82e33cd280563e16d1b95d69cc53"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/plant-lavender.zip",
+      "bytes": 133199,
+      "sha256": "4bedd6ec56098cbd8c27fe1e6bf11d673b7f53b66850be13fb91b533d9cbba99"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/bench-stone.glb",
+      "bytes": 202192,
+      "sha256": "f864a64f52f49f5b7ea40638c5547484529e08c0a3feac8402552c28a83545ab"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/bench-stone.zip",
+      "bytes": 113958,
+      "sha256": "7c36f4ab531829df4ae888a1fb03aa1bd8ba6654e805cf786a0e22b0d0869b02"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/bench-stone.zip",
+      "bytes": 142193,
+      "sha256": "e8b5fdc8b3a92165aaf5ab8e6cd561aa505d8c3e2ba81cc8656db33dce0e6e04"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/bench-park.glb",
+      "bytes": 235568,
+      "sha256": "9a080375152bf2ac55e71c0235f3b52e67b3dd845eaba704e0e77eb2e9119819"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/bench-park.zip",
+      "bytes": 134423,
+      "sha256": "fb8c3cbb6a21ca195d4128b52fb0ce28b17b2e9ce0094becee848f7e3c4d0c6c"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/bench-park.zip",
+      "bytes": 162325,
+      "sha256": "c4666fe5ea243a44375b2105054583ee6faa4d9612868046eaf524e395c797af"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/planter-square.glb",
+      "bytes": 457920,
+      "sha256": "f22357a1e3e8a6f2fc688a6982b9ca17ece24204b453a29cc4678e2053b8fc4f"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/planter-square.zip",
+      "bytes": 328864,
+      "sha256": "df95e647fa87ca554b809f7e58b827f8c1c697b6cb3c68ceafc3a11a71d1315c"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/planter-square.zip",
+      "bytes": 413768,
+      "sha256": "4e1b66a6081aed4e0025aa1972bbe2dd9cf2a5d0e50f0611854e332b58ffe812"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/planter-urn.glb",
+      "bytes": 476744,
+      "sha256": "f2a2db5c75a2e659d05f6d14abfe69b0861332e3114be63627559ba63b474526"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/planter-urn.zip",
+      "bytes": 293427,
+      "sha256": "9b4d6045b3f6b42e28499d4334d8773c09dec2d708d3522bd38bd0b707d48543"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/planter-urn.zip",
+      "bytes": 371911,
+      "sha256": "17010ca45a0888885c42dd84ab0366ed35dafe8f937b88b3547bd7945bb15c56"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/lamp-post.glb",
+      "bytes": 180476,
+      "sha256": "cb55e64595e7543dda9c55eb3021945ea79c49aed5ca5862bc88d914459c620b"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/lamp-post.zip",
+      "bytes": 89315,
+      "sha256": "8152b7b3005018d0866c5e596b02b136c97e2a239b76f21c8f7bbb4f71c71ac7"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/lamp-post.zip",
+      "bytes": 109554,
+      "sha256": "8a8990a0facd2bf02b72d1b7f4c75e789c3d01c11a75d8605d6cd2521ba5bd09"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/lamp-bollard.glb",
+      "bytes": 158592,
+      "sha256": "44dcba7c65f689c03cb8a6695c6f515a9e1d03ff1feff955073e570d98ee1088"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/lamp-bollard.zip",
+      "bytes": 101736,
+      "sha256": "abe8566ed8bb9b0e2e137a73192ccc0c8f0073476e46d13c7069e4f9ca1615ec"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/lamp-bollard.zip",
+      "bytes": 128761,
+      "sha256": "cbb8672d6d95ab4787848a36ee3c7421e29efa3c656f898b0423b2afa7af3971"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/wall-segment.glb",
+      "bytes": 106056,
+      "sha256": "a45ac40d6ded1d1fcd90be9a6442373f7b08c0c0d46abe2e6d182c78fd9b1af9"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/wall-segment.zip",
+      "bytes": 30175,
+      "sha256": "153889923a7f740027d534d8928c16fb5b4471fbe91d1d8f11b4fffa25d8f4d6"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/wall-segment.zip",
+      "bytes": 46665,
+      "sha256": "b1060142cb89edddf18b272ace03f1dad4f5c97937054f144f3019d52d242804"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/wall-pier.glb",
+      "bytes": 94340,
+      "sha256": "6866b586fbb823a73b76216c6b1a8d777b56be5a35aff20bea8ceef5bb41a7e2"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/wall-pier.zip",
+      "bytes": 26385,
+      "sha256": "8dbcec244bb147e025bcd9c06e305e5f365510b97994910138c5002f27e741f8"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/wall-pier.zip",
+      "bytes": 45775,
+      "sha256": "b00ade29df3b69324789984faf0dccf369dd26bd80b4500023a85ba753b4383a"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/models/gate-pier.glb",
+      "bytes": 85152,
+      "sha256": "29a4221dc5ce4dbb85fdd43e6319ba5625ead8180b0fff7113f9146cc8d73a54"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/runtime/gate-pier.zip",
+      "bytes": 25731,
+      "sha256": "07ef018a8646df836343cdc536423254754ab877169686cd118083b9e25ab60c"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/editable/gate-pier.zip",
+      "bytes": 44414,
+      "sha256": "f12460572125f49e675f6db0871e6b99c040cd499baaaaed43f9f7cde22ef9f7"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/holodeck-tidemark-runtime.zip",
+      "bytes": 6148792,
+      "sha256": "42d703a0d4d0eca4e84c05edbe0815a378cfc87e8f6ac1c31631d80d8f07c793"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/holodeck-tidemark-editable.zip",
+      "bytes": 9417167,
+      "sha256": "b26272a6842b6ae0567cd97275a5aed2968c51ce2e9af1d94722d6ba41661dc1"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/holodeck-courtyard-runtime.zip",
+      "bytes": 9837754,
+      "sha256": "004702440b7d65018d6a13dd73da6daf29038b3e30d6c78960d3cdad97fbbf6d"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/holodeck-courtyard-editable.zip",
+      "bytes": 12625842,
+      "sha256": "7546a0c231d7f4ed056fc87d3b47fd5c399dede206d9335024198810b751f194"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/holodeck-cove-runtime.zip",
+      "bytes": 5208847,
+      "sha256": "772916d17b504cb166eed3ae4e2e179871e90e5e1c13dff86b46def773aaf1d6"
+    },
+    {
+      "path": "packs/holodeck/holodeck-20261022-02/holodeck-cove-editable.zip",
+      "bytes": 6932678,
+      "sha256": "bd0630e15d3a4e835d95a48d68679dda9f96cd1e09b56e4c85cc84fbf4723538"
     }
   ]
 }

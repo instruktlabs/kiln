@@ -4,6 +4,7 @@ import { catalogAssets, type CatalogImage } from './catalog';
 import { PACKS_ENABLED } from './config';
 import { isTroyGalleryAsset } from './troy-gallery.mjs';
 import { cabinWoodsAssets, cabinWoodsHref } from './cabin-woods';
+import { holodeckAssetHref, holodeckAssets, holodeckScenes } from './holodeck';
 
 export { foundry };
 export type FoundryAsset = (typeof foundry.assets)[number];
@@ -19,6 +20,8 @@ export interface GalleryCard {
   poster: CatalogImage;
   metrics: { triangles: number };
   review: { ownerAccepted: boolean; status: string };
+  /** Walkable scenes that place this asset, linked beside the card. */
+  scenes?: { label: string; href: string }[];
 }
 
 export function buildGallery(packsEnabled: boolean): GalleryCard[] {
@@ -59,6 +62,13 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
       ...asset,
       packs: ['cabin-woods-psx-horror'],
       href: cabinWoodsHref(asset),
+    })),
+  );
+  cards.push(
+    ...holodeckAssets.map((asset) => ({
+      ...asset,
+      href: holodeckAssetHref(asset),
+      scenes: holodeckScenes(asset).map(({ label, href }) => ({ label, href })),
     })),
   );
   return cards;
