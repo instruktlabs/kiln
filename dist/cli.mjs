@@ -46231,7 +46231,7 @@ var init_program_artifacts = __esm(() => {
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
 }
-var ENGINE_VERSION = "1.4.0", ENGINE_INSTALL_URL;
+var ENGINE_VERSION = "1.5.0", ENGINE_INSTALL_URL;
 var init_engine_identity = __esm(() => {
   ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 });
