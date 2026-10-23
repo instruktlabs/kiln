@@ -26,6 +26,12 @@ does not publish a package.
   delivery, and keep superseded entries as immutable `history[]` rather than rewriting them.
   Guidance only; standalone assets and the engine surface are unchanged
   ([#180](https://github.com/instruktlabs/kiln/issues/180)).
+- State plainly in Discovery that `extrudeProfile`, `revolveProfile` and `roundedBoxGeo`
+  output no UV0, and relate `projectUV` and `autoUnwrap` from the first two. The
+  `MAT_TEXTURE_UV_MISSING` repair now names both `projectUV` (for example box projection)
+  and `autoUnwrap` instead of a generic "unwrap". The block is unchanged: a texture-backed
+  material on geometry without UV0 still fails QA, and no projection is added
+  automatically ([#177](https://github.com/instruktlabs/kiln/issues/177)).
 
 ## 1.4.0 (2026-10-23)
 

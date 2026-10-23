@@ -2257,7 +2257,9 @@ const profileFacts: Facts = {
   topology: [
     'Manifold-backed solid generation from valid profiles; not a guarantee that any arbitrary input describes the intended solid.',
   ],
-  preservation: ['New geometry/normals/bounds; does not carry authored UVs from an input mesh.'],
+  preservation: [
+    'New geometry/normals/bounds. The output has no UV0 (no TEXCOORD_0), and input UVs are not carried. A texture-backed material on it is blocked by MAT_TEXTURE_UV_MISSING until you add UV0 with projectUV (for example box projection) or autoUnwrap.',
+  ],
   cost: 'WASM complexity depends on profile vertices, segments and divisions; no general allocation bound is claimed.',
 };
 const profileMetadata: Metadata = {
@@ -2301,6 +2303,8 @@ define(
     related: [
       { name: 'circleProfile', relation: 'companion' },
       { name: 'sweepProfile', relation: 'alternative' },
+      { name: 'projectUV', relation: 'companion' },
+      { name: 'autoUnwrap', relation: 'companion' },
     ],
   },
 );
@@ -2320,7 +2324,11 @@ define(
     ...profileMetadata,
     aliases: ['solid revolution', 'turned solid'],
     intents: ['turn a closed section into a solid vessel or knob'],
-    related: [{ name: 'revolveGeo', relation: 'alternative' }],
+    related: [
+      { name: 'revolveGeo', relation: 'alternative' },
+      { name: 'projectUV', relation: 'companion' },
+      { name: 'autoUnwrap', relation: 'companion' },
+    ],
   },
 );
 define(
