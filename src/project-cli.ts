@@ -12,6 +12,8 @@ import {
   resolveMaterialRecordClosure,
 } from './material-library-node';
 import { createProceduralMaterialRecord } from './material-authoring-node';
+import { exportMaterialMaps, validateMaterialMapExportOptions } from './material-map-export-node';
+import { buildRenderPort, resolveRenderMode } from './cli-render-mode';
 import { writeNewDestinationsAtomic } from './cli-output';
 import { localAssetLibrary } from './assets-node';
 import { exportWorkspaceProjectBundle, importWorkspaceProjectBundle } from './project-bundle-node';
@@ -35,6 +37,8 @@ MATERIALS
   kiln material procedural --file <procedural-material-draft.json>
   kiln material import --file <portable-material-payload.json>
   kiln material export <id> <sha256:revision> --out <portable-material-payload.json>
+  kiln material export <id> <sha256:revision> --maps <dir> --size <px> [--repeat <metres>]
+       [--tiles <n>] [--render auto|cpu|gpu]
 
 Project changes create immutable revisions. Updates require the current expected
 revision; supplied top-level fields replace their previous values.
@@ -51,6 +55,14 @@ Projects are optional. Authoring stays standalone unless --project or KILN_PROJE
 selects a project; --no-project overrides that configured default. Use --materials
 with an array of exact resourceId/revisionId/sha256 pins for standalone materials.
 All commands return JSON; export refuses to overwrite an existing destination.
+
+Material export --maps writes <id>.<slot>.png for each map at --size pixels square,
+<id>.preview.png (the material on a lit plane repeated --tiles × --tiles, default 3)
+and the <id>.maps.json sidecar: each map's slot, colour space, size, sha256 and how it
+was produced. A V2 layer recipe is recompiled at a power-of-two size up to 1024; other
+sizes resample with a wrapped Catmull-Rom filter. --repeat is the real-world edge of one
+tile in metres; it defaults to a square recorded physical size. The sidecar records the
+preview's renderer and viewFidelity: a CPU preview shows geometry, not material.
 `;
 
 /** Read only the file the operator explicitly named, with a hard allocation bound. */
@@ -76,6 +88,68 @@ async function inputFile(path: string, limit: number): Promise<Buffer> {
 }
 async function jsonFile(path: string, limit: number): Promise<unknown> {
   return JSON.parse((await inputFile(path, limit)).toString('utf8').replace(/^\uFEFF/, ''));
+}
+
+/** `material export --maps`: a strict decimal reading, then the SDK's own range checks. */
+async function exportMaterialMapsCommand(
+  materials: FileWorkspace['materials'],
+  positional: readonly string[],
+  flags: Record<string, string>,
+): Promise<unknown> {
+  const integer = (name: string) => {
+    const value = flags[name];
+    if (value === undefined) return undefined;
+    if (!/^[0-9]+$/.test(value)) throw new Error(`--${name} must be a whole number`);
+    return Number(value);
+  };
+  const size = integer('size');
+  if (size === undefined) throw new Error('material export --maps requires --size <px>');
+  const repeat = flags.repeat;
+  if (repeat !== undefined && !/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/.test(repeat))
+    throw new Error('--repeat must be a decimal number of metres');
+  const tiles = integer('tiles');
+  // Validate every option before reading the record or starting a renderer.
+  validateMaterialMapExportOptions({
+    size,
+    ...(repeat !== undefined ? { repeatMeters: Number(repeat) } : {}),
+    ...(tiles !== undefined ? { tiles } : {}),
+  });
+  const record = await materials.read(positional[0]!, positional[1]!);
+  const context = await buildRenderPort(resolveRenderMode(flags.render), undefined);
+  const result = await exportMaterialMaps(record, {
+    outDir: flags.maps!,
+    size,
+    ...(repeat !== undefined ? { repeatMeters: Number(repeat) } : {}),
+    ...(tiles !== undefined ? { tiles } : {}),
+    ...(context.viewRenderPort ? { viewRenderPort: context.viewRenderPort } : {}),
+    ...(context.viewRenderTimeoutMs ? { viewRenderTimeoutMs: context.viewRenderTimeoutMs } : {}),
+    ...(context.viewRenderRequired ? { viewRenderRequired: true } : {}),
+  });
+  const { preview } = result.sidecar;
+  return {
+    materialId: result.sidecar.material.materialId,
+    revisionId: result.sidecar.material.revisionId,
+    directory: result.directory,
+    sidecar: result.sidecarPath,
+    files: result.files,
+    size: result.sidecar.size,
+    repeatMeters: result.sidecar.repeatMeters,
+    maps: result.sidecar.maps.map(({ slot, file, colorSpace, method }) => ({
+      slot,
+      file,
+      colorSpace,
+      method,
+    })),
+    preview: {
+      file: result.previewPath,
+      rendererId: preview.rendererId,
+      materialFaithful: preview.viewFidelity.materialFaithful,
+      delivered: preview.viewFidelity.delivered,
+      ...(preview.viewFidelity.degradeReason
+        ? { degradeReason: preview.viewFidelity.degradeReason }
+        : {}),
+    },
+  };
 }
 
 export async function projectMain(argv: readonly string[]): Promise<number> {
@@ -105,7 +179,7 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
     'material:get': [],
     'material:procedural': ['file'],
     'material:import': ['file'],
-    'material:export': ['out'],
+    'material:export': ['out', 'maps', 'size', 'repeat', 'tiles', 'render'],
   };
   const flags: Record<string, string> = {};
   const positional: string[] = [];
@@ -223,8 +297,14 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
         manifest,
         portableSpec: materialLibraryPortableSpec(manifest),
       };
-    else {
-      if (!flags.out) throw new Error('material export requires --out');
+    else if (flags.maps !== undefined) {
+      if (flags.out) throw new Error('Use --out or --maps, not both');
+      output = await exportMaterialMapsCommand(materials, positional, flags);
+    } else {
+      for (const name of ['size', 'repeat', 'tiles', 'render'])
+        if (flags[name] !== undefined)
+          throw new Error(`--${name} applies only to material export --maps`);
+      if (!flags.out) throw new Error('material export requires --out or --maps');
       const records = await resolveMaterialRecordClosure([manifest], {
         readManifest: (id, revision) => materials.readManifest(id, revision),
         read: (id, revision) => materials.readRecordFiles(id, revision),

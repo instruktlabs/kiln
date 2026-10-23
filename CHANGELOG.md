@@ -92,6 +92,16 @@ does not publish a package.
   crosses the boundary, and `PROFILE_BEVEL_COLLAPSE` still names an over-large bevel. The
   generic rejection now says that `kiln_validate` checks syntax and static rules but cannot
   see execution-time failures, and points to reproducing them with `kiln_render`.
+- Export a saved material revision's maps as tiling textures with a planar preview
+  ([#246](https://github.com/instruktlabs/kiln/issues/246)). `material export <id> <revision>
+  --maps <dir> --size <px> [--repeat <metres>] [--tiles <n>]` writes one PNG per map at the
+  stated size, a lit `tiles` × `tiles` preview and a `kiln.material-maps.v1` sidecar naming
+  each map's slot, colour space, size, repeat, source revision and `sha256`. A V2 layer
+  recipe is recompiled at the new size; other maps resample with a wrapped Catmull-Rom filter.
+  The preview uses the GPU render port when one is configured and records its renderer and
+  `viewFidelity`, so a CPU preview is never read as material evidence. Existing files are
+  never replaced. `exportMaterialMaps` and `createMaterialMapExport` from
+  `material-library/node` do the same for hosts; `--out` and MCP are unchanged.
 
 ## 1.4.0 (2026-10-23)
 
