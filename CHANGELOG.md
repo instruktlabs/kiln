@@ -11,6 +11,10 @@ does not publish a package.
   `kiln_export_to` is advertised under Codex as under the other harnesses, and Discovery
   capabilities report the tool as `assets.exportTo` (`null` when absent, never the
   absolute root) ([#207](https://github.com/instruktlabs/kiln/issues/207)).
+- The delivery contract explains every delivery finding: what it checks, its tolerance
+  and units, and that all are advisory. `DELIVERY_COLLIDER_NO_OVERLAP` is
+  collider-to-geometry overlap, not contact between colliders
+  ([#199](https://github.com/instruktlabs/kiln/issues/199)).
 
 ## 1.4.0 (2026-10-23)
 
