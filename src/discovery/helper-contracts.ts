@@ -887,10 +887,13 @@ define(
     summary:
       'Declares LOD tiers (sibling nodes named Body_LOD0, Body_LOD1, ...) and their screen-coverage thresholds. Use only when the brief asks for LOD tiers.',
     limitations: [
-      'Tiers are authored, not generated: Kiln simplifies no geometry.',
+      'Tiers are authored: defineLod generates and simplifies nothing. Build each lower tier with less detail, or derive it explicitly per part with simplifyGeometry and place the result in the tier.',
       'Sets cannot nest inside another tier; material LOD chains are not created.',
     ],
-    related: [{ name: 'createPart', relation: 'companion' }],
+    related: [
+      { name: 'createPart', relation: 'companion' },
+      { name: 'simplifyGeometry', relation: 'companion' },
+    ],
   },
 );
 const deliveryMetadata = {
@@ -2406,6 +2409,57 @@ define(
     intents: ['add segments and smooth a coarse mesh'],
     limitations: [
       'Conservative per-operation budgets include presplit growth. They are not a peak-memory guarantee; host evaluation limits still apply.',
+    ],
+  },
+);
+define(
+  'simplifyGeometry',
+  {
+    ...ownedGeometry,
+    execution: 'async',
+    axes: 'Preserves source axes and the authored origin.',
+    parameters: [
+      'Exactly one of ratio (a number, 0 < ratio <= 1, the fraction of triangles to keep) or targetTriangles (a positive integer). A target at or above the input count returns a welded copy.',
+      'maxError: a fraction of the mesh extent, at least 0; default 1, no practical limit, so the ratio or target decides. lockBorder defaults true. Any other option key is rejected.',
+      'A triangle list with a finite three-component position attribute, per-vertex attributes and a draw range covering the whole geometry. Instanced attributes are rejected. At most 1,000,000 input triangles.',
+    ],
+    topology: [
+      'Collapses edges with the meshoptimizer simplifier (attribute-aware: normal weight 0.5, UV0 weight 0.5 per unit of UV extent) and removes unused vertices. Not a remesh: it keeps a subset of the input vertices and does not repair defects.',
+      'Each material group, and each run of triangles outside a group, is simplified on its own; vertices on a boundary between runs are locked.',
+      'Vertices are welded only where every attribute matches, after positions within 2^-20 of the extent are snapped together, so UV and normal seams stay split and hold; open borders are locked unless lockBorder: false.',
+    ],
+    preservation: [
+      'Surviving vertices keep their exact attribute values, storage types and normalized flags, including UVs, normals, tangents, colours, skin data and morph targets; nothing is interpolated. Normals are not recomputed; use creaseNormals for faceted shading.',
+      'Keeps material groups in order with their materialIndex, the geometry name and JSON userData. Source face/range provenance is dropped with SIMPLIFY_PROVENANCE_DROPPED.',
+    ],
+    semantics: [
+      'userData.kilnSimplify: { schemaVersion: 1, requested, trianglesBefore, trianglesAfter, ratio (achieved), error (fraction of scale), errorAbsolute (scene units), scale, maxError, lockBorder, runs, lockedVertices }.',
+      'A result more than 5% above the target adds SIMPLIFY_TARGET_NOT_REACHED to userData.kilnGeometryWarnings, which becomes a build note.',
+      'Explicit only: never runs implicitly or to meet a budget. Pass the result to a lower defineLod tier.',
+      noAssetSemantics,
+    ],
+    cost: 'Roughly linear in vertices and triangles plus WASM simplification; the simplifier loads once per process.',
+  },
+  {
+    references: ['src/simplify.ts'],
+    tags: ['mesh processing', 'lod', 'simplification', 'async'],
+    aliases: [
+      'decimate',
+      'decimation',
+      'mesh simplification',
+      'reduce triangles',
+      'lower detail copy',
+      'polygon reduction',
+    ],
+    intents: ['derive a lower-detail LOD tier from a part'],
+    limitations: [
+      "Error is meshoptimizer's estimate, including attribute deviation; inspect the lower tier as well.",
+      'Flat-shaded or heavily seamed meshes simplify less, because every seam stays split. Hard edges, seams and group boundaries can stop it short of the target.',
+    ],
+    related: [
+      { name: 'defineLod', relation: 'companion' },
+      { name: 'creaseNormals', relation: 'companion' },
+      { name: 'subdivide', relation: 'alternative' },
     ],
   },
 );

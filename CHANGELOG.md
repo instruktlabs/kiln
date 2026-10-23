@@ -62,6 +62,16 @@ does not publish a package.
   with mulberry32, the generator scene layout and material presets already used. Builds
   that use it stay cacheable; `Math.random` still bypasses build reuse. Discovery finds it
   for "seeded random".
+- Add `simplifyGeometry` to derive a lower-detail copy of a part for an LOD tier
+  ([#243](https://github.com/instruktlabs/kiln/issues/243)).
+  `await simplifyGeometry(geometry, { ratio })` (or `{ targetTriangles }`, with optional
+  `maxError` and `lockBorder`) uses the pinned meshoptimizer simplifier and returns new
+  geometry without changing the input. Material groups are simplified separately with
+  their boundaries locked, UV and normal seams and open borders hold, and surviving
+  vertices keep their exact attributes. `userData.kilnSimplify` records the triangle
+  counts, achieved ratio and the simplifier's error; a missed target is a
+  `SIMPLIFY_TARGET_NOT_REACHED` build note. It never runs implicitly or to meet a budget.
+  The `defineLod` contract no longer says Kiln simplifies no geometry and points to it.
 
 ## 1.4.0 (2026-10-23)
 

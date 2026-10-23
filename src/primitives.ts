@@ -61,6 +61,7 @@ import * as ops from './ops';
 import * as geometry from './geometry';
 import * as deform from './deform';
 import * as sweep from './sweep';
+import { simplifyGeometry } from './simplify';
 import { implicitSurface } from './implicit';
 import { catmullRomPath, metaballSurface, smoothOrganic, spiralPath, taperedTube } from './organic';
 import { smoothUnion, sphereInside } from './sdf';
@@ -323,7 +324,7 @@ function assertPartArgs(name: unknown, geometry: unknown, material: unknown): vo
         'a function -- geometry helpers have to be CALLED, so boxGeo(1, 1, 1) rather than boxGeo';
     } else if (geometry instanceof Promise) {
       got =
-        'a Promise -- roundedBoxGeo, extrudeProfile and revolveProfile are async, ' +
+        'a Promise -- roundedBoxGeo, extrudeProfile, revolveProfile and simplifyGeometry are async, ' +
         'so await the helper and mark build() async';
     } else {
       got =
@@ -2423,6 +2424,8 @@ export function buildSandboxGlobals(
     mirror: wrap('mirror', ops.mirror),
     subdivide: wrap('subdivide', ops.subdivide),
     mergeVertices: wrap('mergeVertices', ops.mergeVertices),
+    // Explicit lower-detail copy (async: meshoptimizer WASM). Never implicit.
+    simplifyGeometry: wrap('simplifyGeometry', simplifyGeometry),
     curveToMesh: wrap('curveToMesh', ops.curveToMesh),
     pipeAlongPath: wrap('pipeAlongPath', ops.pipeAlongPath),
     lathe: wrap('lathe', ops.lathe),

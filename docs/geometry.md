@@ -493,6 +493,32 @@ hosts: `KILN_INDEX_POLICY=asBuilt`) keeps helper buffers as built and requires
 optimization off. The receipt's `indexBuffers` reports vertex, morph and index payload
 bytes before and after this pass, not GLB file size.
 
+## Derive a lower-detail tier
+
+`defineLod` declares tiers you build; it never generates one. To derive a lower tier
+from a part, call `simplifyGeometry` on that part's geometry and place the result in
+the tier:
+
+```js
+const rock = sphereGeo(1, 32, 16);
+const far = await simplifyGeometry(rock, { ratio: 0.25 }); // or { targetTriangles: 240 }
+createPart('RockNear', rock, stone, { parent: nearTier });
+createPart('RockFar', far, stone, { parent: farTier });
+defineLod([nearTier, farTier], { screenCoverage: [0.05, 0.002] });
+```
+
+It is async, uses the pinned meshoptimizer simplifier and returns new geometry; the
+input is unchanged. Surviving vertices keep their exact attribute values. Each
+material group is simplified on its own with its boundary vertices locked, vertices
+are welded only where every attribute matches so UV and normal seams hold, and open
+borders stay locked unless `lockBorder: false`. `maxError` (a fraction of the mesh
+extent, default 1, no practical limit) can stop it short of the target.
+`userData.kilnSimplify` records `trianglesBefore`, `trianglesAfter`, the achieved
+`ratio` and the simplifier's `error` and `errorAbsolute`; a result more than 5% above
+the target adds a `SIMPLIFY_TARGET_NOT_REACHED` build note. It never runs implicitly
+or to meet a budget. Flat-shaded or heavily seamed meshes simplify less; inspect the
+lower tier through its `levelsOfDetail` path.
+
 ## Declare a triangle budget
 
 `defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 })` records the asset's
