@@ -13938,6 +13938,9 @@ var init_gltf_io = __esm(() => {
     listLevels() {
       return this.listRefs("levels");
     }
+    removeLevel(level) {
+      return this.removeRef("levels", level);
+    }
   };
   MSFTLod = class MSFTLod extends Extension {
     extensionName = MSFT_LOD;
@@ -24717,6 +24720,56 @@ function summarizeLodChains(doc) {
     };
   });
 }
+function trimLodChains(doc, maxLod) {
+  const chains = listLodChainNodes(doc);
+  const doomed = new Set;
+  for (const { levels } of chains)
+    for (const level of levels.slice(maxLod + 1))
+      level.traverse((node) => {
+        doomed.add(node);
+      });
+  for (const animation of doc.getRoot().listAnimations())
+    for (const channel of animation.listChannels()) {
+      const target = channel.getTargetNode();
+      if (target && doomed.has(target))
+        throw new Error(`maxLod ${maxLod} would drop ${target.getName() || "a node"}, which animation ${JSON.stringify(animation.getName())} targets; keep that level.`);
+    }
+  const trimmed = chains.map(({ levels, paths }) => {
+    const [base, ...lower] = levels;
+    const dropped = lower.slice(maxLod);
+    if (dropped.length > 0) {
+      const lod = base.getExtension(MSFT_LOD);
+      for (const level of dropped)
+        lod.removeLevel(level);
+      const extras = { ...base.getExtras() };
+      const coverage = screenCoverageOf(base);
+      if (maxLod === 0) {
+        base.setExtension(MSFT_LOD, null);
+        lod.dispose();
+        delete extras[MSFT_SCREENCOVERAGE];
+      } else if (coverage)
+        extras[MSFT_SCREENCOVERAGE] = coverage.slice(0, maxLod + 1);
+      base.setExtras(extras);
+      for (const level of dropped) {
+        const subtree = [];
+        level.traverse((node) => {
+          subtree.push(node);
+        });
+        for (const node of subtree.reverse())
+          node.dispose();
+      }
+    }
+    return {
+      path: paths[0],
+      levels: levels.length - dropped.length,
+      dropped: dropped.map((level) => level.getName())
+    };
+  });
+  const root = doc.getRoot();
+  if (!root.listNodes().some((node) => node.getExtension(MSFT_LOD)))
+    root.listExtensionsUsed().find((extension) => extension.extensionName === MSFT_LOD)?.dispose();
+  return trimmed;
+}
 var MSFT_SCREENCOVERAGE = "MSFT_screencoverage", segment4 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
 var init_lod_export = __esm(() => {
   init_semantic();
@@ -27214,6 +27267,7 @@ function readBudgetDeclaration(value) {
   }
 }
 function evaluateBudget(declaration, measuredLod0, chains) {
+  const instanced = measuredLod0.instancedDraws === undefined ? {} : { instancedDraws: measuredLod0.instancedDraws };
   const outside = measuredLod0.triangles - chains.reduce((sum, chain) => sum + chain.levels[0].triangles, 0);
   const tierTriangles = (level) => outside + chains.reduce((sum, chain) => sum + chain.levels[Math.min(level, chain.levels.length - 1)].triangles, 0);
   const tiers = Object.entries(declaration.triangles).map(([tier, limit]) => {
@@ -27229,7 +27283,7 @@ function evaluateBudget(declaration, measuredLod0, chains) {
       },
       measured: {
         triangles,
-        ...drawsDeclared === undefined ? {} : { draws: measuredLod0.draws }
+        ...drawsDeclared === undefined ? {} : { draws: measuredLod0.draws, ...instanced }
       },
       status: pass ? "pass" : "fail"
     };
@@ -27238,7 +27292,7 @@ function evaluateBudget(declaration, measuredLod0, chains) {
     tiers.unshift({
       tier: "LOD0",
       declared: { draws: declaration.draws },
-      measured: { triangles: measuredLod0.triangles, draws: measuredLod0.draws },
+      measured: { triangles: measuredLod0.triangles, draws: measuredLod0.draws, ...instanced },
       status: measuredLod0.draws <= declaration.draws ? "pass" : "fail"
     });
   return { status: tiers.every((tier) => tier.status === "pass") ? "pass" : "fail", tiers };
@@ -34251,6 +34305,652 @@ var init_texture_bake = __esm(() => {
   ];
 });
 
+// src/runtime-textures.ts
+async function sha256Hex2(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+function imageDimensions(bytes) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const fail = () => {
+    throw new Error("Texture manifest cannot read image dimensions");
+  };
+  const at = (offset, length) => {
+    if (offset + length > bytes.byteLength)
+      fail();
+  };
+  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
+    at(16, 8);
+    return { width: view.getUint32(16), height: view.getUint32(20) };
+  }
+  if (isKtx2(bytes)) {
+    at(20, 8);
+    return { width: view.getUint32(20, true), height: view.getUint32(24, true) };
+  }
+  if (bytes[0] === 255 && bytes[1] === 216) {
+    let offset = 2;
+    while (offset + 4 <= bytes.byteLength) {
+      if (bytes[offset] !== 255)
+        fail();
+      const marker = bytes[offset + 1];
+      if (marker === 255) {
+        offset++;
+        continue;
+      }
+      if (marker === 216 || marker === 1 || marker >= 208 && marker <= 215) {
+        offset += 2;
+        continue;
+      }
+      const length = view.getUint16(offset + 2);
+      if (marker >= 192 && marker <= 207 && ![196, 200, 204].includes(marker)) {
+        at(offset + 5, 4);
+        return { width: view.getUint16(offset + 7), height: view.getUint16(offset + 5) };
+      }
+      offset += 2 + length;
+    }
+    fail();
+  }
+  const text = (offset) => String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 4, bytes.byteLength)));
+  if (text(0) === "RIFF" && text(8) === "WEBP") {
+    at(12, 19);
+    const chunk = text(12);
+    if (chunk === "VP8X")
+      return {
+        width: 1 + (view.getUint32(24, true) & 16777215),
+        height: 1 + (view.getUint32(27, true) & 16777215)
+      };
+    if (chunk === "VP8L") {
+      const bits = view.getUint32(21, true);
+      return { width: 1 + (bits & 16383), height: 1 + (bits >> 14 & 16383) };
+    }
+    if (chunk === "VP8 ") {
+      at(26, 4);
+      return {
+        width: view.getUint16(26, true) & 16383,
+        height: view.getUint16(28, true) & 16383
+      };
+    }
+  }
+  return fail();
+}
+function textureSource(texture) {
+  if (!object2(texture))
+    return;
+  const extensions = object2(texture.extensions) ? texture.extensions : {};
+  for (const name of ["KHR_texture_basisu", "EXT_texture_webp", "EXT_texture_avif"]) {
+    const extension = extensions[name];
+    if (object2(extension) && index(extension.source) !== undefined)
+      return index(extension.source);
+  }
+  return index(texture.source);
+}
+function srgbImages(json) {
+  const textures = Array.isArray(json.textures) ? json.textures : [];
+  const result = new Set;
+  for (const material of Array.isArray(json.materials) ? json.materials : []) {
+    if (!object2(material))
+      continue;
+    const pbr = object2(material.pbrMetallicRoughness) ? material.pbrMetallicRoughness : {};
+    for (const info of [pbr.baseColorTexture, material.emissiveTexture]) {
+      const texture = object2(info) ? index(info.index) : undefined;
+      const image = texture === undefined ? undefined : textureSource(textures[texture]);
+      if (image !== undefined)
+        result.add(image);
+    }
+  }
+  return result;
+}
+function base64(text) {
+  const binary = atob(text);
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+}
+function embeddedImages(json, binary) {
+  const views = Array.isArray(json.bufferViews) ? json.bufferViews : [];
+  return (Array.isArray(json.images) ? json.images : []).map((image) => {
+    if (!object2(image))
+      throw new Error("Invalid glTF image");
+    const view = index(image.bufferView);
+    if (view !== undefined) {
+      const def = views[view];
+      if (!object2(def) || index(def.buffer) !== 0 || !binary)
+        throw new Error("Texture manifest requires images embedded in the GLB binary chunk");
+      const offset = index(def.byteOffset) ?? 0;
+      const length = index(def.byteLength);
+      if (length === undefined || offset + length > binary.byteLength)
+        throw new Error("Invalid glTF image buffer view");
+      if (typeof image.mimeType !== "string")
+        throw new Error("Embedded image needs a mimeType");
+      return { bytes: binary.subarray(offset, offset + length), mimeType: image.mimeType };
+    }
+    const match = typeof image.uri === "string" ? /^data:([^;,]+);base64,(.*)$/s.exec(image.uri) : null;
+    if (!match)
+      throw new Error("Texture manifest requires embedded image bytes");
+    return { bytes: base64(match[2]), mimeType: match[1] };
+  });
+}
+async function runtimeTextureManifest(json, binary, options = {}) {
+  const srgb = srgbImages(json);
+  const entries = [];
+  for (const [image, { bytes, mimeType }] of embeddedImages(json, binary).entries()) {
+    const sha256 = `sha256:${await sha256Hex2(bytes)}`;
+    const sourceSha256 = options.sources?.get(image);
+    const original = sourceSha256 ?? sha256;
+    const map = options.maps?.find((candidate) => candidate.sha256 === original);
+    entries.push({
+      image,
+      sha256,
+      bytes: bytes.byteLength,
+      mimeType,
+      ...imageDimensions(bytes),
+      colorSpace: srgb.has(image) ? "srgb" : "linear",
+      ...sourceSha256 && sourceSha256 !== sha256 ? { sourceSha256 } : {},
+      ...map ? { material: { pin: { ...map.pin }, slot: map.slot } } : {}
+    });
+  }
+  return entries;
+}
+function textureFileExtension(mimeType) {
+  const extension = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/webp": "webp",
+    "image/ktx2": "ktx2"
+  }[mimeType];
+  if (!extension)
+    throw new Error(`External textures do not support ${mimeType}`);
+  return extension;
+}
+var object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), index = (value) => Number.isInteger(value) && value >= 0 ? value : undefined, KTX2_IDENTIFIER, isKtx2 = (bytes) => bytes.byteLength >= 12 && KTX2_IDENTIFIER.every((value, at) => bytes[at] === value);
+var init_runtime_textures = __esm(() => {
+  KTX2_IDENTIFIER = Object.freeze([
+    171,
+    75,
+    84,
+    88,
+    32,
+    50,
+    48,
+    187,
+    13,
+    10,
+    26,
+    10
+  ]);
+});
+
+// src/runtime-three.ts
+var exports_runtime_three = {};
+__export(exports_runtime_three, {
+  deliverRuntimeThreeGlb: () => deliverRuntimeThreeGlb,
+  instancedDrawEstimate: () => instancedDrawEstimate
+});
+import {
+  Accessor,
+  Format,
+  Logger,
+  PropertyType as PropertyType5
+} from "@gltf-transform/core";
+import {
+  EXTMeshGPUInstancing,
+  EXTMeshoptCompression,
+  KHRMeshQuantization,
+  KHRTextureBasisu as KHRTextureBasisu2
+} from "@gltf-transform/extensions";
+import { cloneDocument, dedup, prune, quantize, reorder } from "@gltf-transform/functions";
+import * as THREE50 from "three";
+function meshSignature(mesh, ids) {
+  const id = (property) => {
+    if (!property)
+      return -1;
+    if (!ids.has(property))
+      ids.set(property, ids.size);
+    return ids.get(property);
+  };
+  return mesh.listPrimitives().map((primitive) => `${primitive.getMode()}:${id(primitive.getMaterial())}:${id(primitive.getIndices())}:${primitive.listSemantics().sort().map((semantic) => `${semantic}=${id(primitive.getAttribute(semantic))}`).join(",")}:${primitive.listTargets().length}`).join("|");
+}
+async function instancedDrawEstimate(doc) {
+  const copy = cloneDocument(doc);
+  copy.setLogger(new Logger(Logger.Verbosity.SILENT));
+  await copy.transform(dedup({ propertyTypes: [PropertyType5.ACCESSOR], keepUniqueNames: true }));
+  applyScopedInstancing(copy);
+  return collectGlbMetrics(copy).drawCalls;
+}
+function applyScopedInstancing(doc) {
+  const report = [];
+  const ids = new Map;
+  const parents = doc.getRoot().listNodes().filter((node) => node.getExtras()[KILN_REPEAT_INSTANCES_KEY] !== undefined);
+  let extension;
+  for (const parent of parents) {
+    const groups = new Map;
+    for (const child of parent.listChildren()) {
+      const mesh = child.getMesh();
+      if (!mesh || child.listChildren().length || child.getSkin() || child.listExtensions().length || isHiddenGltfNode(child) || rolesOf4(child).length || Object.keys(child.getExtras()).length || child.getWeights().length)
+        continue;
+      const signature = meshSignature(mesh, ids);
+      groups.set(signature, [...groups.get(signature) ?? [], child]);
+    }
+    let batchIndex = 0;
+    for (const nodes of groups.values()) {
+      if (nodes.length < 2)
+        continue;
+      const mesh = nodes[0].getMesh();
+      extension ??= doc.createExtension(EXTMeshGPUInstancing).setRequired(true);
+      const buffer = doc.getRoot().listBuffers()[0];
+      const accessor = (type, values) => doc.createAccessor().setType(type).setArray(new Float32Array(values)).setBuffer(buffer ?? null);
+      const t = [], r = [], s = [];
+      for (const node of nodes) {
+        t.push(...node.getTranslation());
+        r.push(...node.getRotation());
+        s.push(...node.getScale());
+      }
+      const batch = extension.createInstancedMesh().setAttribute("TRANSLATION", accessor("VEC3", t)).setAttribute("ROTATION", accessor("VEC4", r)).setAttribute("SCALE", accessor("VEC3", s));
+      const name = `${parent.getName() || "Node"}_Instances${batchIndex ? `_${batchIndex}` : ""}`;
+      batchIndex++;
+      const batchNode = doc.createNode(name).setMesh(mesh).setExtension("EXT_mesh_gpu_instancing", batch);
+      parent.addChild(batchNode);
+      report.push({
+        node: batchNode,
+        mesh: mesh.getName(),
+        count: nodes.length,
+        instances: nodes.map((node) => node.getName())
+      });
+      for (const node of nodes) {
+        const own = node.getMesh();
+        node.dispose();
+        if (own && own !== mesh && !own.listParents().some((p) => p.propertyType === PropertyType5.NODE))
+          own.dispose();
+      }
+    }
+    const extras = { ...parent.getExtras() };
+    delete extras[KILN_REPEAT_INSTANCES_KEY];
+    parent.setExtras(extras);
+  }
+  return report;
+}
+function splitColliderProxies(doc) {
+  const report = [];
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh || !isCollider(node))
+      continue;
+    const proxy = doc.createNode(`${node.getName()}_Proxy`).setMesh(mesh);
+    node.setMesh(null).addChild(proxy);
+    report.push({ collider: node, proxy });
+  }
+  return report;
+}
+async function encodeKtx2(doc, encoder, sources) {
+  const textures = doc.getRoot().listTextures().filter((texture) => texture.getMimeType() !== "image/ktx2" && texture.getImage());
+  if (!encoder)
+    return {
+      status: "skipped",
+      textures: textures.length,
+      reason: "No KTX2 encoder was supplied; textures stay PNG or JPEG."
+    };
+  const slots = new Map;
+  const use = (texture, slot) => {
+    if (texture)
+      slots.set(texture, (slots.get(texture) ?? new Set).add(slot));
+  };
+  for (const material of doc.getRoot().listMaterials()) {
+    use(material.getBaseColorTexture(), "baseColor");
+    use(material.getEmissiveTexture(), "emissive");
+    use(material.getNormalTexture(), "normal");
+    use(material.getMetallicRoughnessTexture(), "metallicRoughness");
+    use(material.getOcclusionTexture(), "occlusion");
+  }
+  const order = [
+    "baseColor",
+    "emissive",
+    "normal",
+    "metallicRoughness",
+    "occlusion"
+  ];
+  for (const texture of textures) {
+    const used = slots.get(texture) ?? new Set;
+    const srgb = used.has("baseColor") || used.has("emissive");
+    const other = texture.listParents().some((parent) => parent.propertyType !== PropertyType5.ROOT && !isCoreMaterialUse(parent));
+    const linear = [...used].some((slot) => slot !== "baseColor" && slot !== "emissive") || other;
+    if (srgb && linear)
+      throw new Error(`Texture ${JSON.stringify(texture.getName())} is used by both sRGB and linear material slots; one KTX2 encoding cannot serve both. Use separate images.`);
+    const original = texture.getImage();
+    const image = await encoder({
+      image: original,
+      mimeType: texture.getMimeType(),
+      name: texture.getName(),
+      colorSpace: srgb ? "srgb" : "linear",
+      slot: order.find((slot) => used.has(slot)) ?? "other"
+    });
+    if (!(image instanceof Uint8Array) || !isKtx2(image))
+      throw new Error("ktx2Encoder must return KTX2 bytes starting with the KTX2 identifier");
+    sources.set(texture, `sha256:${await sha256Hex2(original)}`);
+    texture.setImage(image).setMimeType("image/ktx2");
+    const uri = texture.getURI();
+    if (uri)
+      texture.setURI(uri.replace(/\.(png|jpe?g)$/i, ".ktx2"));
+  }
+  if (textures.length) {
+    doc.createExtension(KHRTextureBasisu2).setRequired(true);
+    await Promise.resolve().then(() => init_atlas_provenance());
+    await refreshAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc);
+  }
+  return {
+    status: "encoded",
+    textures: textures.length,
+    ...encoder.identity ? { encoder: structuredClone(encoder.identity) } : {}
+  };
+}
+function isCoreMaterialUse(parent) {
+  return parent.propertyType === PropertyType5.MATERIAL;
+}
+function decomposeDelta(before, after) {
+  const delta = new THREE50.Matrix4().fromArray(before).invert().multiply(new THREE50.Matrix4().fromArray(after));
+  const position = new THREE50.Vector3, quaternion = new THREE50.Quaternion, scale = new THREE50.Vector3;
+  delta.decompose(position, quaternion, scale);
+  return {
+    scale: scale.x,
+    offset: [position.x, position.y, position.z]
+  };
+}
+function hasQuantizedVertexData(doc) {
+  const quantized = (semantic, accessor) => {
+    if (accessor.getComponentSize() >= 4)
+      return false;
+    if (semantic === "POSITION" || semantic === "NORMAL" || semantic === "TANGENT")
+      return true;
+    if (!semantic.startsWith("TEXCOORD_"))
+      return false;
+    const type = accessor.getComponentType();
+    return !(accessor.getNormalized() && (type === Accessor.ComponentType.UNSIGNED_BYTE || type === Accessor.ComponentType.UNSIGNED_SHORT));
+  };
+  return doc.getRoot().listMeshes().flatMap((mesh) => mesh.listPrimitives()).flatMap((primitive) => [primitive, ...primitive.listTargets()]).some((target) => target.listSemantics().some((semantic) => quantized(semantic, target.getAttribute(semantic))));
+}
+function positionGridSteps(doc, bits) {
+  const levels = 2 ** (bits - 1) - 1;
+  const lodBase = new Map;
+  for (const node of doc.getRoot().listNodes())
+    for (const level of node.getExtension(MSFT_LOD)?.listLevels() ?? [])
+      if (level.propertyType === PropertyType5.NODE)
+        lodBase.set(level, node);
+  const world = (node) => {
+    const matrix = new THREE50.Matrix4().fromArray(node.getWorldMatrix());
+    let top = node;
+    while (top.getParentNode())
+      top = top.getParentNode();
+    const placed = lodBase.get(top)?.getParentNode();
+    return placed ? new THREE50.Matrix4().fromArray(placed.getWorldMatrix()).multiply(matrix) : matrix;
+  };
+  const halfExtent = (mesh) => {
+    const min = [Infinity, Infinity, Infinity];
+    const max = [-Infinity, -Infinity, -Infinity];
+    const widen = (values, doubleFromZero) => {
+      for (let axis = 0;axis < 3; axis++) {
+        const value = values[axis];
+        const candidates = doubleFromZero ? [value, value * 2, 0] : [value];
+        min[axis] = Math.min(min[axis], ...candidates);
+        max[axis] = Math.max(max[axis], ...candidates);
+      }
+    };
+    for (const primitive of mesh.listPrimitives()) {
+      const position = primitive.getAttribute("POSITION");
+      if (position) {
+        widen(position.getMin([]), false);
+        widen(position.getMax([]), false);
+      }
+      for (const target of primitive.listTargets()) {
+        const delta = target.getAttribute("POSITION");
+        if (delta) {
+          widen(delta.getMin([]), true);
+          widen(delta.getMax([]), true);
+        }
+      }
+    }
+    return Math.max(...[0, 1, 2].map((axis) => (max[axis] - min[axis]) / 2));
+  };
+  const instanceScale = (node) => {
+    const scale = node.getExtension("EXT_mesh_gpu_instancing")?.getAttribute("SCALE");
+    if (!scale)
+      return 1;
+    let largest = 0;
+    for (let i = 0;i < scale.getCount(); i++)
+      largest = Math.max(largest, ...scale.getElement(i, []).map(Math.abs));
+    return largest;
+  };
+  const steps = [];
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh?.listPrimitives().some((primitive) => primitive.getAttribute("POSITION")))
+      continue;
+    const scale = node.getSkin() ? 1 : world(node).getMaxScaleOnAxis() * instanceScale(node);
+    steps.push({ node, mesh: mesh.getName(), step: halfExtent(mesh) * scale / levels });
+  }
+  return steps;
+}
+async function trimLevels(doc, maxLod) {
+  const chains = trimLodChains(doc, maxLod);
+  const budgetTiersOmitted = [];
+  if (chains.some((chain) => chain.dropped.length > 0)) {
+    await doc.transform(prune({
+      propertyTypes: [
+        PropertyType5.MESH,
+        PropertyType5.PRIMITIVE,
+        PropertyType5.PRIMITIVE_TARGET,
+        PropertyType5.ACCESSOR,
+        PropertyType5.MATERIAL,
+        PropertyType5.TEXTURE
+      ],
+      keepAttributes: true,
+      keepIndices: true,
+      keepLeaves: true,
+      keepExtras: true,
+      keepSolidTextures: true
+    }));
+    const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+    const extras = { ...scene?.getExtras() ?? {} };
+    const budget = extras[KILN_BUDGET_KEY];
+    if (scene && budget?.triangles) {
+      const triangles = { ...budget.triangles };
+      for (const tier of Object.keys(triangles))
+        if (Number(tier.slice(3)) > maxLod) {
+          budgetTiersOmitted.push(tier);
+          delete triangles[tier];
+        }
+      if (Object.keys(triangles).length > 0)
+        extras[KILN_BUDGET_KEY] = { ...budget, triangles };
+      else
+        delete extras[KILN_BUDGET_KEY];
+      scene.setExtras(extras);
+    }
+  }
+  return { maxLod, chains, budgetTiersOmitted };
+}
+async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layout = {}) {
+  const compression = options.compression ?? "meshopt";
+  if (compression !== "meshopt" && compression !== "none")
+    throw new Error("Runtime three compression must be meshopt or none");
+  const { maxLod } = options;
+  if (maxLod !== undefined && !(Number.isSafeInteger(maxLod) && maxLod >= 0))
+    throw new Error("Runtime three maxLod must be a non-negative integer");
+  const positionBits = options.positionBits ?? RUNTIME_THREE_QUANTIZATION.position;
+  if (positionBits !== "float" && !(Number.isSafeInteger(positionBits) && positionBits >= 8 && positionBits <= 16))
+    throw new Error("Runtime three positionBits must be an integer from 8 to 16, or float");
+  const io = createGltfIO().registerDependencies({
+    "meshopt.encoder": meshoptEncoder
+  });
+  const doc = await io.readBinary(bytes);
+  doc.setLogger(new Logger(Logger.Verbosity.SILENT));
+  const lod = maxLod === undefined ? undefined : await trimLevels(doc, maxLod);
+  await doc.transform(dedup({ propertyTypes: [PropertyType5.ACCESSOR], keepUniqueNames: true }));
+  const instanced = applyScopedInstancing(doc);
+  const proxies = splitColliderProxies(doc);
+  const matrices = new Map;
+  for (const node of doc.getRoot().listNodes())
+    if (node.getMesh())
+      matrices.set(node, [...node.getMatrix()]);
+  const steps = positionBits === "float" ? [] : positionGridSteps(doc, positionBits);
+  const semantics = positionBits === "float" ? QUANTIZED_SEMANTICS_EXCEPT_POSITION : QUANTIZED_SEMANTICS;
+  await doc.transform(reorder({ encoder: meshoptEncoder, target: "size" }), quantize({
+    pattern: semantics,
+    patternTargets: semantics,
+    quantizationVolume: "mesh",
+    quantizePosition: positionBits === "float" ? RUNTIME_THREE_QUANTIZATION.position : positionBits,
+    quantizeNormal: RUNTIME_THREE_QUANTIZATION.normal,
+    quantizeTexcoord: RUNTIME_THREE_QUANTIZATION.texcoord,
+    quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
+    quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight
+  }));
+  if (positionBits === "float" && hasQuantizedVertexData(doc))
+    doc.createExtension(KHRMeshQuantization).setRequired(true);
+  if (compression === "meshopt")
+    doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  const encodedSources = new Map;
+  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder, encodedSources);
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh || matrices.has(node) || node.getName())
+      continue;
+    const parent = node.getParentNode();
+    node.setName(`${parent?.getName() || "Node"}_Mesh`);
+  }
+  const after = deliveryNodePaths(doc);
+  const pathOf = (node) => after.get(node) ?? `#${encodeURIComponent(node.getName())}`;
+  const proxyNodes = new Set(proxies.map((entry) => entry.proxy));
+  const nodeScale = [];
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh || node.getExtension("EXT_mesh_gpu_instancing"))
+      continue;
+    const path = after.get(node);
+    if (path === undefined)
+      continue;
+    const original = matrices.get(node);
+    const moved = original === undefined;
+    const split = moved || proxyNodes.has(node);
+    const reference = moved ? new THREE50.Matrix4().identity().toArray() : original;
+    const current = [...node.getMatrix()];
+    const { scale, offset } = decomposeDelta(reference, current);
+    if (!moved && Math.abs(scale - 1) < 0.000000000001 && offset.every((v) => v === 0))
+      continue;
+    const parent = node.getParentNode();
+    nodeScale.push({
+      node: path,
+      mesh: mesh.getName(),
+      meshMovedToChild: split,
+      ...split && parent ? { authoredNode: pathOf(parent) } : {},
+      dequantization: { scale, offset },
+      localScale: [...node.getScale()]
+    });
+  }
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh || after.has(node) || !matrices.has(node))
+      continue;
+    const { scale, offset } = decomposeDelta(matrices.get(node), [...node.getMatrix()]);
+    nodeScale.push({
+      node: `#lod/${encodeURIComponent(node.getName())}`,
+      mesh: mesh.getName(),
+      meshMovedToChild: false,
+      dequantization: { scale, offset },
+      localScale: [...node.getScale()]
+    });
+  }
+  const customAttributes = new Map;
+  for (const mesh of doc.getRoot().listMeshes())
+    for (const primitive of mesh.listPrimitives())
+      for (const semantic of primitive.listSemantics())
+        if (semantic.startsWith("_"))
+          customAttributes.set(semantic, (customAttributes.get(semantic) ?? new Set).add(mesh));
+  const all = doc.getRoot().listNodes();
+  const glb = await io.writeBinary(doc);
+  const json = (await io.binaryToJSON(glb)).json;
+  const imageSources = new Map;
+  doc.getRoot().listTextures().forEach((texture, image) => {
+    const source = encodedSources.get(texture);
+    if (source)
+      imageSources.set(image, source);
+  });
+  const gltf = layout.gltfBasename ? await io.writeJSON(doc, { format: Format.GLTF, basename: layout.gltfBasename }) : undefined;
+  const delivery = {
+    target: "three",
+    extensionsUsed: [...json.extensionsUsed ?? []].sort(),
+    extensionsRequired: [...json.extensionsRequired ?? []].sort(),
+    compression: compression === "meshopt" ? { extension: "EXT_meshopt_compression", method: "quantize" } : { extension: "none" },
+    quantization: {
+      extension: "KHR_mesh_quantization",
+      volume: "mesh",
+      bits: {
+        position: positionBits === "float" ? "float32" : positionBits,
+        normal: RUNTIME_THREE_QUANTIZATION.normal,
+        texcoord: RUNTIME_THREE_QUANTIZATION.texcoord,
+        color: RUNTIME_THREE_QUANTIZATION.color,
+        weight: RUNTIME_THREE_QUANTIZATION.weight
+      },
+      customAttributes: "float32",
+      positionSteps: steps.map(({ node, mesh, step }) => ({
+        node: after.get(node) ?? `#lod/${encodeURIComponent(node.getName())}`,
+        mesh,
+        step
+      })),
+      maxPositionStep: Math.max(0, ...steps.map(({ step }) => step))
+    },
+    nodeScale,
+    colliderProxies: proxies.map(({ collider, proxy }) => ({
+      collider: pathOf(collider),
+      proxy: pathOf(proxy)
+    })),
+    customAttributes: [...customAttributes].sort(([a], [b]) => customRank(a) - customRank(b) || (a < b ? -1 : a > b ? 1 : 0)).map(([name, meshes]) => ({
+      name,
+      meshes: meshes.size,
+      componentType: "FLOAT",
+      normalized: false
+    })),
+    instancing: instanced.map(({ node, ...rest }) => ({ node: pathOf(node), ...rest })),
+    ktx2,
+    ...lod ? { lod } : {},
+    preserved: {
+      lodChains: all.filter((node) => node.getExtension(MSFT_LOD)).length,
+      hiddenNodes: all.filter((node) => isHiddenGltfNode(node)).length,
+      colliders: all.filter(isCollider).length,
+      anchors: all.filter((node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.anchor}.`))).length,
+      ports: all.filter((node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.kitPort}.`))).length,
+      kitModules: all.filter((node) => rolesOf4(node).includes(KILN_SEMANTIC_ROLES.kitModule)).length
+    }
+  };
+  return {
+    glb,
+    delivery,
+    imageSources,
+    ...gltf ? {
+      gltf: {
+        json: gltf.json,
+        resources: gltf.resources
+      }
+    } : {}
+  };
+}
+var RUNTIME_THREE_QUANTIZATION, QUANTIZED_SEMANTICS, QUANTIZED_SEMANTICS_EXCEPT_POSITION, customRank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2, rolesOf4 = (node) => readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [], isCollider = (node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.collider}.`));
+var init_runtime_three = __esm(() => {
+  init_semantic();
+  init_gltf_io();
+  init_delivery_inspect();
+  init_delivery();
+  init_metrics();
+  init_runtime_textures();
+  init_lod_export();
+  init_budget();
+  RUNTIME_THREE_QUANTIZATION = Object.freeze({
+    volume: "mesh",
+    position: 14,
+    normal: 10,
+    texcoord: 12,
+    color: 8,
+    weight: 8
+  });
+  QUANTIZED_SEMANTICS = /^(POSITION|NORMAL|TANGENT|TEXCOORD_\d+|COLOR_\d+|JOINTS_\d+|WEIGHTS_\d+)$/;
+  QUANTIZED_SEMANTICS_EXCEPT_POSITION = /^(NORMAL|TANGENT|TEXCOORD_\d+|COLOR_\d+|JOINTS_\d+|WEIGHTS_\d+)$/;
+});
+
 // src/exporter-node.ts
 var exports_exporter_node = {};
 __export(exports_exporter_node, {
@@ -34323,7 +35023,7 @@ var init_exporter_node = __esm(() => {
 });
 
 // src/views/character.ts
-import * as THREE50 from "three";
+import * as THREE51 from "three";
 function rounded(value) {
   const result = Math.round(value * 1e9) / 1e9;
   return Object.is(result, -0) ? 0 : result;
@@ -34365,9 +35065,9 @@ function buildCharacterDiagnosticDescriptor(root, findings = []) {
   const invalidPaths = new Set(invalidFindingNodePaths);
   const joints = evidence.map((joint) => {
     const relative = rootInverse.clone().multiply(joint.node.matrixWorld);
-    const position = new THREE50.Vector3().setFromMatrixPosition(relative);
-    const forward = new THREE50.Vector3(...joint.descriptor.localForwardAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
-    const bend = new THREE50.Vector3(...joint.descriptor.localBendAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
+    const position = new THREE51.Vector3().setFromMatrixPosition(relative);
+    const forward = new THREE51.Vector3(...joint.descriptor.localForwardAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
+    const bend = new THREE51.Vector3(...joint.descriptor.localBendAxis).transformDirection(relative).multiplyScalar(0.2).add(position);
     const chainId = chainIdFor(joint.descriptor, descriptorByRole);
     return {
       role: joint.descriptor.role,
@@ -35334,7 +36034,7 @@ import {
   BufferAttribute as BufferAttribute12,
   BufferGeometry as BufferGeometry15,
   Group as Group5,
-  Matrix4 as Matrix417,
+  Matrix4 as Matrix418,
   Mesh as Mesh14,
   Bone as Bone2,
   SkinnedMesh as SkinnedMesh2,
@@ -35348,8 +36048,8 @@ import {
   NumberKeyframeTrack,
   PropertyBinding as PropertyBinding3,
   VectorKeyframeTrack as VectorKeyframeTrack2,
-  Quaternion as Quaternion19,
-  Vector3 as Vector339,
+  Quaternion as Quaternion20,
+  Vector3 as Vector340,
   InterpolateDiscrete as InterpolateDiscrete2,
   InterpolateLinear as InterpolateLinear2
 } from "three";
@@ -35510,7 +36210,7 @@ function noteMaterialTextures(material, reasons) {
   }
 }
 function instanceMatrices(node) {
-  const world = new Matrix417().fromArray(node.getWorldMatrix());
+  const world = new Matrix418().fromArray(node.getWorldMatrix());
   const extension = node.getExtension("EXT_mesh_gpu_instancing");
   if (!extension)
     return { matrices: [world], count: 1 };
@@ -35533,7 +36233,7 @@ function instanceMatrices(node) {
     translations?.getElement(index, translation);
     rotations?.getElement(index, rotation);
     scales?.getElement(index, scale);
-    const local = new Matrix417().compose(new Vector339(translations ? translation[0] : 0, translations ? translation[1] : 0, translations ? translation[2] : 0), new Quaternion19(rotations ? rotation[0] : 0, rotations ? rotation[1] : 0, rotations ? rotation[2] : 0, rotations ? rotation[3] : 1).normalize(), new Vector339(scales ? scale[0] : 1, scales ? scale[1] : 1, scales ? scale[2] : 1));
+    const local = new Matrix418().compose(new Vector340(translations ? translation[0] : 0, translations ? translation[1] : 0, translations ? translation[2] : 0), new Quaternion20(rotations ? rotation[0] : 0, rotations ? rotation[1] : 0, rotations ? rotation[2] : 0, rotations ? rotation[3] : 1).normalize(), new Vector340(scales ? scale[0] : 1, scales ? scale[1] : 1, scales ? scale[2] : 1));
     matrices.push(world.clone().multiply(local));
   }
   return { matrices, count };
@@ -35621,7 +36321,7 @@ async function loadGlbGeometryFlatScene(bytes) {
 function localInstanceMatrices(node) {
   const extension = node.getExtension("EXT_mesh_gpu_instancing");
   if (!extension)
-    return [new Matrix417];
+    return [new Matrix418];
   const attributes = extension.listAttributes();
   if (attributes.length === 0) {
     throw new GlbGeometryFlatError("GLB_FLAT_INVALID_INSTANCING", "Invalid empty instancing data.");
@@ -35640,7 +36340,7 @@ function localInstanceMatrices(node) {
     translations?.getElement(index, translation);
     rotations?.getElement(index, rotation);
     scales?.getElement(index, scale);
-    return new Matrix417().compose(new Vector339(...translations ? translation.slice(0, 3) : [0, 0, 0]), new Quaternion19(...rotations ? rotation.slice(0, 4) : [0, 0, 0, 1]).normalize(), new Vector339(...scales ? scale.slice(0, 3) : [1, 1, 1]));
+    return new Matrix418().compose(new Vector340(...translations ? translation.slice(0, 3) : [0, 0, 0]), new Quaternion20(...rotations ? rotation.slice(0, 4) : [0, 0, 0, 1]).normalize(), new Vector340(...scales ? scale.slice(0, 3) : [1, 1, 1]));
   });
 }
 async function loadGlbReviewScene(bytes) {
@@ -35851,8 +36551,8 @@ function reviewSceneFromDocument(document) {
     for (let i = 0;i < indices.array.length; i++)
       if (indices.array[i] >= bones.length || !Number.isFinite(weights.array[i]) || weights.array[i] < 0)
         throw new GlbGeometryFlatError("GLB_FLAT_PARSE_FAILED", `Invalid skin joint index or weight on ${source.getName()}.`);
-    const matrices = bones.map((_, index) => new Matrix417().fromArray(inverse ? inverse.getElement(index, []) : new Matrix417().elements));
-    mesh.bind(new Skeleton3(bones, matrices), new Matrix417);
+    const matrices = bones.map((_, index) => new Matrix418().fromArray(inverse ? inverse.getElement(index, []) : new Matrix418().elements));
+    mesh.bind(new Skeleton3(bones, matrices), new Matrix418);
   }
   root.updateMatrixWorld(true);
   const nativeClips = document.getRoot().listAnimations().map((animation) => withLoopIntent(new AnimationClip4(animation.getName(), -1, animation.listChannels().flatMap((channel) => {
@@ -36014,7 +36714,7 @@ var init_renderer_id = __esm(() => {
 });
 
 // src/views/scene-raster.ts
-import * as THREE51 from "three";
+import * as THREE52 from "three";
 var DEG2;
 var init_scene_raster = __esm(() => {
   init_evaluator();
@@ -36026,18 +36726,18 @@ var init_scene_raster = __esm(() => {
 });
 
 // src/views/vehicle.ts
-import * as THREE52 from "three";
+import * as THREE53 from "three";
 function hasRole2(node, prefix) {
   return readSemanticMetadataV1(node)?.roles.some((role) => role === prefix || role.startsWith(`${prefix}.`)) ?? false;
 }
 function chassisBounds(root, inverse) {
-  const bounds = new THREE52.Box3;
+  const bounds = new THREE53.Box3;
   let found = false;
   root.traverse((node) => {
     if (!hasRole2(node, "chassis"))
       return;
     node.traverse((part) => {
-      if (!(part instanceof THREE52.Mesh) || !(part.geometry instanceof THREE52.BufferGeometry))
+      if (!(part instanceof THREE53.Mesh) || !(part.geometry instanceof THREE53.BufferGeometry))
         return;
       part.geometry.computeBoundingBox();
       const box = part.geometry.boundingBox;
@@ -36047,7 +36747,7 @@ function chassisBounds(root, inverse) {
       for (const x of [box.min.x, box.max.x])
         for (const y of [box.min.y, box.max.y])
           for (const z of [box.min.z, box.max.z]) {
-            bounds.expandByPoint(new THREE52.Vector3(x, y, z).applyMatrix4(matrix));
+            bounds.expandByPoint(new THREE53.Vector3(x, y, z).applyMatrix4(matrix));
             found = true;
           }
     });
@@ -36115,33 +36815,33 @@ function tagDiagnostic(node, role) {
   stampSemanticMetadataV1(node, { roles: [role] });
 }
 function rod(name, start, end, radius, color, role) {
-  const from = new THREE52.Vector3(...start);
-  const to = new THREE52.Vector3(...end);
+  const from = new THREE53.Vector3(...start);
+  const to = new THREE53.Vector3(...end);
   const direction = to.clone().sub(from);
   const length = direction.length();
-  const geometry = length > 0.000000001 ? new THREE52.CylinderGeometry(radius, radius, length, 8) : new THREE52.SphereGeometry(radius, 8, 6);
-  const result = new THREE52.Mesh(geometry, new THREE52.MeshBasicMaterial({ color }));
+  const geometry = length > 0.000000001 ? new THREE53.CylinderGeometry(radius, radius, length, 8) : new THREE53.SphereGeometry(radius, 8, 6);
+  const result = new THREE53.Mesh(geometry, new THREE53.MeshBasicMaterial({ color }));
   result.name = name;
   result.position.copy(from).add(to).multiplyScalar(0.5);
   if (length > 0.000000001) {
-    result.quaternion.setFromUnitVectors(new THREE52.Vector3(0, 1, 0), direction.multiplyScalar(1 / length));
+    result.quaternion.setFromUnitVectors(new THREE53.Vector3(0, 1, 0), direction.multiplyScalar(1 / length));
   }
   tagDiagnostic(result, role);
   return result;
 }
 function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagnostics(root)) {
-  const overlay = new THREE52.Group;
+  const overlay = new THREE53.Group;
   overlay.name = "VehicleDiagnosticOverlay";
   const chassisSpan = descriptor.chassisBox ? Math.max(descriptor.chassisBox.max[0] - descriptor.chassisBox.min[0], descriptor.chassisBox.max[1] - descriptor.chassisBox.min[1], descriptor.chassisBox.max[2] - descriptor.chassisBox.min[2]) : 1;
   const thickness = Math.max(0.01, chassisSpan * 0.008);
-  const arrow = new THREE52.Group;
+  const arrow = new THREE53.Group;
   arrow.name = "Diagnostic_Forward_+X";
   tagDiagnostic(arrow, "diagnostic.vehicle.forward");
   arrow.add(rod("Diagnostic_Forward_Shaft", descriptor.forwardArrow.start, [descriptor.forwardArrow.end[0] - 0.12, 0, 0], thickness, 16724804, "diagnostic.vehicle.forward"));
-  const arrowHead = new THREE52.Mesh(new THREE52.ConeGeometry(thickness * 3.2, 0.24, 10), new THREE52.MeshBasicMaterial({ color: 16724804 }));
+  const arrowHead = new THREE53.Mesh(new THREE53.ConeGeometry(thickness * 3.2, 0.24, 10), new THREE53.MeshBasicMaterial({ color: 16724804 }));
   arrowHead.name = "Diagnostic_Forward_Head";
   arrowHead.position.set(descriptor.forwardArrow.end[0] - 0.12, 0, 0);
-  arrowHead.quaternion.setFromUnitVectors(new THREE52.Vector3(0, 1, 0), new THREE52.Vector3(1, 0, 0));
+  arrowHead.quaternion.setFromUnitVectors(new THREE53.Vector3(0, 1, 0), new THREE53.Vector3(1, 0, 0));
   tagDiagnostic(arrowHead, "diagnostic.vehicle.forward");
   arrow.add(arrowHead);
   overlay.add(arrow);
@@ -36149,18 +36849,18 @@ function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagno
     overlay.add(rod(`Diagnostic_Axle_${axle.id}`, axle.start, axle.end, thickness, 3386111, `diagnostic.vehicle.axle.${axle.id}`));
   }
   for (const wheel of descriptor.wheels) {
-    const ring = new THREE52.Mesh(new THREE52.TorusGeometry(wheel.radius, Math.min(thickness, wheel.radius * 0.15), 6, 32), new THREE52.MeshBasicMaterial({ color: 16763955 }));
+    const ring = new THREE53.Mesh(new THREE53.TorusGeometry(wheel.radius, Math.min(thickness, wheel.radius * 0.15), 6, 32), new THREE53.MeshBasicMaterial({ color: 16763955 }));
     ring.name = `Diagnostic_Wheel_${wheel.id}`;
     ring.position.set(...wheel.center);
-    const axle = new THREE52.Vector3(...wheel.axle);
+    const axle = new THREE53.Vector3(...wheel.axle);
     if (axle.lengthSq() > 0.000000000001) {
-      ring.quaternion.setFromUnitVectors(new THREE52.Vector3(0, 0, 1), axle.normalize());
+      ring.quaternion.setFromUnitVectors(new THREE53.Vector3(0, 0, 1), axle.normalize());
     }
     tagDiagnostic(ring, `diagnostic.vehicle.wheel.${wheel.id}`);
     overlay.add(ring);
   }
   if (descriptor.chassisBox) {
-    const chassis = new THREE52.Group;
+    const chassis = new THREE53.Group;
     chassis.name = "Diagnostic_ChassisBox";
     tagDiagnostic(chassis, "diagnostic.vehicle.chassis");
     const { min, max } = descriptor.chassisBox;
@@ -36194,7 +36894,7 @@ function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagno
     overlay.add(chassis);
   }
   if (descriptor.supportPlaneY !== undefined) {
-    const plane = new THREE52.Group;
+    const plane = new THREE53.Group;
     plane.name = "Diagnostic_SupportPlane";
     tagDiagnostic(plane, "diagnostic.vehicle.support-plane");
     const halfX = Math.max(1, ...descriptor.chassisBox ? [Math.abs(descriptor.chassisBox.min[0]), Math.abs(descriptor.chassisBox.max[0])] : [], ...descriptor.wheels.map((wheel) => Math.abs(wheel.center[0]) + wheel.radius)) + 0.2;
@@ -36792,7 +37492,7 @@ var init_views = __esm(() => {
 });
 
 // src/views/character-capture.ts
-import * as THREE53 from "three";
+import * as THREE54 from "three";
 function drawLine2(rgb, width, height, from, to, color) {
   let x0 = Math.round(from[0]);
   let y0 = Math.round(from[1]);
@@ -36829,22 +37529,22 @@ function drawCross(rgb, width, height, point, color, radius = 3) {
 }
 function projector(root, cameraId, size) {
   root.updateMatrixWorld(true);
-  const bounds = new THREE53.Box3().setFromObject(root);
+  const bounds = new THREE54.Box3().setFromObject(root);
   if (bounds.isEmpty())
-    bounds.set(new THREE53.Vector3(-0.5, 0, -0.5), new THREE53.Vector3(0.5, 1, 0.5));
-  const center = bounds.getCenter(new THREE53.Vector3);
-  const camera = cameraId === "front" ? new THREE53.Vector3(1, 0, 0) : new THREE53.Vector3(0, 0, 1);
-  const upHint = new THREE53.Vector3(0, 1, 0);
-  const xAxis = new THREE53.Vector3().crossVectors(upHint, camera).normalize();
-  const yAxis = new THREE53.Vector3().crossVectors(camera, xAxis).normalize();
+    bounds.set(new THREE54.Vector3(-0.5, 0, -0.5), new THREE54.Vector3(0.5, 1, 0.5));
+  const center = bounds.getCenter(new THREE54.Vector3);
+  const camera = cameraId === "front" ? new THREE54.Vector3(1, 0, 0) : new THREE54.Vector3(0, 0, 1);
+  const upHint = new THREE54.Vector3(0, 1, 0);
+  const xAxis = new THREE54.Vector3().crossVectors(upHint, camera).normalize();
+  const yAxis = new THREE54.Vector3().crossVectors(camera, xAxis).normalize();
   let extent = 0.000001;
   for (let corner = 0;corner < 8; corner++) {
-    const point = new THREE53.Vector3(corner & 1 ? bounds.max.x : bounds.min.x, corner & 2 ? bounds.max.y : bounds.min.y, corner & 4 ? bounds.max.z : bounds.min.z).sub(center);
+    const point = new THREE54.Vector3(corner & 1 ? bounds.max.x : bounds.min.x, corner & 2 ? bounds.max.y : bounds.min.y, corner & 4 ? bounds.max.z : bounds.min.z).sub(center);
     extent = Math.max(extent, Math.abs(point.dot(xAxis)), Math.abs(point.dot(yAxis)));
   }
   const scale = size * 0.45 / extent;
   return (assetPoint) => {
-    const world = new THREE53.Vector3(...assetPoint).applyMatrix4(root.matrixWorld).sub(center);
+    const world = new THREE54.Vector3(...assetPoint).applyMatrix4(root.matrixWorld).sub(center);
     return [size / 2 + world.dot(xAxis) * scale, size / 2 - world.dot(yAxis) * scale];
   };
 }
@@ -36970,10 +37670,10 @@ var init_character_capture = __esm(() => {
 });
 
 // src/render.ts
-import * as THREE54 from "three";
-import { Document, Logger } from "@gltf-transform/core";
+import * as THREE55 from "three";
+import { Document, Logger as Logger2 } from "@gltf-transform/core";
 import { KHRMaterialsEmissiveStrength } from "@gltf-transform/extensions";
-import { dedup, instance, palette, weld as weld2, prune, mergeDocuments } from "@gltf-transform/functions";
+import { dedup as dedup2, instance, palette, weld as weld2, prune as prune2, mergeDocuments } from "@gltf-transform/functions";
 function applySurfaceBakeExtras(root, doc) {
   const baked = [];
   root.traverse((node) => {
@@ -37013,7 +37713,7 @@ function ensureDefaultScene(doc) {
     root.setDefaultScene(scene);
   return scene;
 }
-async function sha256Hex2(bytes) {
+async function sha256Hex3(bytes) {
   const digest = await globalThis.crypto.subtle.digest("SHA-256", new Uint8Array(bytes).buffer);
   return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, "0")).join("");
 }
@@ -37039,13 +37739,18 @@ async function inspectGlbIntegration(bytes, opts = {}) {
   const delivery = inspectDelivery(doc);
   const vertexAttributes = summarizeVertexAttributes(doc);
   const budgetDeclaration = readBudgetDeclaration(scene.getExtras()[KILN_BUDGET_KEY]);
-  const budget = budgetDeclaration ? evaluateBudget(budgetDeclaration, { triangles: metrics.triangles, draws: metrics.drawCalls }, levelsOfDetail) : undefined;
+  const instancedDraws = budgetDeclaration?.draws === undefined ? undefined : await (await Promise.resolve().then(() => (init_runtime_three(), exports_runtime_three))).instancedDrawEstimate(doc);
+  const budget = budgetDeclaration ? evaluateBudget(budgetDeclaration, {
+    triangles: metrics.triangles,
+    draws: metrics.drawCalls,
+    ...instancedDraws === undefined ? {} : { instancedDraws }
+  }, levelsOfDetail) : undefined;
   const paletteDeclaration = readPaletteDeclaration(scene.getExtras()[KILN_PALETTE_KEY]);
   const palette = paletteDeclaration ? evaluatePalette(paletteDeclaration, doc) : undefined;
   return {
     schemaVersion: "kiln.integration-manifest.v1",
     analyzerVersion: 1,
-    artifactSha256: await sha256Hex2(bytes),
+    artifactSha256: await sha256Hex3(bytes),
     units: "m",
     axes: { forward: "+X", up: "+Y", right: "+Z" },
     bounds: {
@@ -37192,7 +37897,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache, authorExtras, atlas)
     } else if (stdMat.transparent) {
       mat.setAlphaMode("BLEND");
     }
-    if (stdMat.side === THREE54.DoubleSide) {
+    if (stdMat.side === THREE55.DoubleSide) {
       mat.setDoubleSided(true);
     }
     if (stdMat.map) {
@@ -37269,7 +37974,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache, authorExtras, atlas)
   } else if (common.transparent || (common.opacity ?? 1) < 1) {
     mat.setAlphaMode("BLEND");
   }
-  if (threeMat.side === THREE54.DoubleSide)
+  if (threeMat.side === THREE55.DoubleSide)
     mat.setDoubleSided(true);
   if (common.map && !mat.getBaseColorTexture()) {
     const texture = bridgeTexture(doc, common.map, textureCache);
@@ -37432,7 +38137,7 @@ function bridgeNode(doc, buf, threeObj, matCache, nodeMap, meshCache, texCache, 
     const cacheKey = `kiln-sprite-quad:${centerX}:${centerY}:${rotation}__${threeMat.uuid}`;
     let gtMesh = meshCache.get(cacheKey);
     if (!gtMesh) {
-      const geometry = new THREE54.PlaneGeometry(1, 1);
+      const geometry = new THREE55.PlaneGeometry(1, 1);
       if (centerX !== 0.5 || centerY !== 0.5) {
         geometry.translate(0.5 - centerX, 0.5 - centerY, 0);
       }
@@ -37456,9 +38161,9 @@ function animationInterpolation(track) {
   if (isCubicSplineTrack(track))
     return "CUBICSPLINE";
   const mode = track.getInterpolation();
-  if (mode === THREE54.InterpolateDiscrete)
+  if (mode === THREE55.InterpolateDiscrete)
     return "STEP";
-  if (mode === THREE54.InterpolateLinear)
+  if (mode === THREE55.InterpolateLinear)
     return "LINEAR";
   throw new Error(`Unsupported animation interpolation on ${track.name}; use LINEAR, STEP or CUBICSPLINE.`);
 }
@@ -37623,7 +38328,7 @@ async function applyGpuInstancing(doc, mode, role) {
   return { batches, instances, drawsBefore: before.drawCalls, drawsAfter: after.drawCalls };
 }
 async function consolidateMaterials(doc, mode, keep = []) {
-  doc.setLogger(new Logger(Logger.Verbosity.WARN));
+  doc.setLogger(new Logger2(Logger2.Verbosity.WARN));
   const before = collectGlbMetrics(doc);
   const root = doc.getRoot();
   const steps = root.listMaterials().some((material) => Object.keys(material.getExtras()).length > 0) ? [] : [palette({ min: PALETTE_MIN })];
@@ -37632,7 +38337,7 @@ async function consolidateMaterials(doc, mode, keep = []) {
     steps.push(rigidMerge({ keep }, (summary) => {
       merge = summary;
     }));
-  steps.push(weld2(), prune({ keepLeaves: true, keepExtras: true, keepSolidTextures: true }));
+  steps.push(weld2(), prune2({ keepLeaves: true, keepExtras: true, keepSolidTextures: true }));
   await doc.transform(...steps);
   const after = collectGlbMetrics(doc);
   return {
@@ -37774,7 +38479,7 @@ async function renderSceneToGLB(root, opts = {}) {
   const indexBuffers = applyIndexPolicy(doc, indexPolicy);
   if (opts.dedup !== false) {
     try {
-      await doc.transform(dedup());
+      await doc.transform(dedup2());
     } catch (err) {
       warnings.push(`dedup transform failed: ${err instanceof Error ? err.message : String(err)}`);
     }
@@ -37825,7 +38530,7 @@ async function renderSceneToGLB(root, opts = {}) {
   await refreshAtlasDocumentProvenance(doc);
   await validateAtlasDocumentProvenance(doc);
   const bytes = await io.writeBinary(doc);
-  const artifactGlbSha256 = `sha256:${await sha256Hex2(bytes)}`;
+  const artifactGlbSha256 = `sha256:${await sha256Hex3(bytes)}`;
   const boundBakedTextures = bakedTextures.map((entry) => ({
     ...entry,
     artifactGlbSha256
@@ -38023,8 +38728,8 @@ function collectMeshStats(root) {
     if (!Number.isFinite(box.min.x) || !Number.isFinite(box.max.x)) {
       return;
     }
-    const center = new THREE54.Vector3;
-    const size = new THREE54.Vector3;
+    const center = new THREE55.Vector3;
+    const size = new THREE55.Vector3;
     box.getCenter(center);
     box.getSize(size);
     out.push({
@@ -38040,7 +38745,7 @@ function collectMeshStats(root) {
   return out;
 }
 function minimalGapVector(a, b) {
-  const v = new THREE54.Vector3;
+  const v = new THREE55.Vector3;
   for (const axis of ["x", "y", "z"]) {
     if (a.min[axis] > b.max[axis])
       v[axis] = b.max[axis] - a.min[axis];
@@ -38058,10 +38763,10 @@ function inspectSceneStructure(root, opts = {}) {
     return warnings;
   const cat = opts.category?.toLowerCase();
   if (cat === "vehicle" || cat === "weapon" || cat === "boat" || cat === "aircraft") {
-    const all = new THREE54.Box3;
+    const all = new THREE55.Box3;
     for (const m of meshes)
       all.union(m.box);
-    const size = new THREE54.Vector3;
+    const size = new THREE55.Vector3;
     all.getSize(size);
     if (cat === "aircraft") {
       if (size.y > size.x * 1.2) {
@@ -38186,18 +38891,18 @@ var init_render = __esm(() => {
   engineIO = createGltfIO;
   ACCESSOR_TYPES = [TYPE_SCALAR, TYPE_VEC2, TYPE_VEC3, TYPE_VEC4];
   GLTF_MIN_FILTER = {
-    [THREE54.NearestFilter]: 9728,
-    [THREE54.LinearFilter]: 9729,
-    [THREE54.NearestMipmapNearestFilter]: 9984,
-    [THREE54.LinearMipmapNearestFilter]: 9985,
-    [THREE54.NearestMipmapLinearFilter]: 9986,
-    [THREE54.LinearMipmapLinearFilter]: 9987
+    [THREE55.NearestFilter]: 9728,
+    [THREE55.LinearFilter]: 9729,
+    [THREE55.NearestMipmapNearestFilter]: 9984,
+    [THREE55.LinearMipmapNearestFilter]: 9985,
+    [THREE55.NearestMipmapLinearFilter]: 9986,
+    [THREE55.LinearMipmapLinearFilter]: 9987
   };
-  GLTF_MAG_FILTER = { [THREE54.NearestFilter]: 9728, [THREE54.LinearFilter]: 9729 };
+  GLTF_MAG_FILTER = { [THREE55.NearestFilter]: 9728, [THREE55.LinearFilter]: 9729 };
   GLTF_WRAP = {
-    [THREE54.ClampToEdgeWrapping]: 33071,
-    [THREE54.MirroredRepeatWrapping]: 33648,
-    [THREE54.RepeatWrapping]: 10497
+    [THREE55.ClampToEdgeWrapping]: 33071,
+    [THREE55.MirroredRepeatWrapping]: 33648,
+    [THREE55.RepeatWrapping]: 10497
   };
   REVIEW_CLIP_LIMITS2 = {
     clips: 32,
@@ -38266,509 +38971,6 @@ var init_protocol = __esm(() => {
       return result;
     }
   };
-});
-
-// src/runtime-textures.ts
-async function sha256Hex3(bytes) {
-  const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
-  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-function imageDimensions(bytes) {
-  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  const fail = () => {
-    throw new Error("Texture manifest cannot read image dimensions");
-  };
-  const at = (offset, length) => {
-    if (offset + length > bytes.byteLength)
-      fail();
-  };
-  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
-    at(16, 8);
-    return { width: view.getUint32(16), height: view.getUint32(20) };
-  }
-  if (isKtx2(bytes)) {
-    at(20, 8);
-    return { width: view.getUint32(20, true), height: view.getUint32(24, true) };
-  }
-  if (bytes[0] === 255 && bytes[1] === 216) {
-    let offset = 2;
-    while (offset + 4 <= bytes.byteLength) {
-      if (bytes[offset] !== 255)
-        fail();
-      const marker = bytes[offset + 1];
-      if (marker === 255) {
-        offset++;
-        continue;
-      }
-      if (marker === 216 || marker === 1 || marker >= 208 && marker <= 215) {
-        offset += 2;
-        continue;
-      }
-      const length = view.getUint16(offset + 2);
-      if (marker >= 192 && marker <= 207 && ![196, 200, 204].includes(marker)) {
-        at(offset + 5, 4);
-        return { width: view.getUint16(offset + 7), height: view.getUint16(offset + 5) };
-      }
-      offset += 2 + length;
-    }
-    fail();
-  }
-  const text = (offset) => String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 4, bytes.byteLength)));
-  if (text(0) === "RIFF" && text(8) === "WEBP") {
-    at(12, 19);
-    const chunk = text(12);
-    if (chunk === "VP8X")
-      return {
-        width: 1 + (view.getUint32(24, true) & 16777215),
-        height: 1 + (view.getUint32(27, true) & 16777215)
-      };
-    if (chunk === "VP8L") {
-      const bits = view.getUint32(21, true);
-      return { width: 1 + (bits & 16383), height: 1 + (bits >> 14 & 16383) };
-    }
-    if (chunk === "VP8 ") {
-      at(26, 4);
-      return {
-        width: view.getUint16(26, true) & 16383,
-        height: view.getUint16(28, true) & 16383
-      };
-    }
-  }
-  return fail();
-}
-function textureSource(texture) {
-  if (!object2(texture))
-    return;
-  const extensions = object2(texture.extensions) ? texture.extensions : {};
-  for (const name of ["KHR_texture_basisu", "EXT_texture_webp", "EXT_texture_avif"]) {
-    const extension = extensions[name];
-    if (object2(extension) && index(extension.source) !== undefined)
-      return index(extension.source);
-  }
-  return index(texture.source);
-}
-function srgbImages(json) {
-  const textures = Array.isArray(json.textures) ? json.textures : [];
-  const result = new Set;
-  for (const material of Array.isArray(json.materials) ? json.materials : []) {
-    if (!object2(material))
-      continue;
-    const pbr = object2(material.pbrMetallicRoughness) ? material.pbrMetallicRoughness : {};
-    for (const info of [pbr.baseColorTexture, material.emissiveTexture]) {
-      const texture = object2(info) ? index(info.index) : undefined;
-      const image = texture === undefined ? undefined : textureSource(textures[texture]);
-      if (image !== undefined)
-        result.add(image);
-    }
-  }
-  return result;
-}
-function base64(text) {
-  const binary = atob(text);
-  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
-}
-function embeddedImages(json, binary) {
-  const views = Array.isArray(json.bufferViews) ? json.bufferViews : [];
-  return (Array.isArray(json.images) ? json.images : []).map((image) => {
-    if (!object2(image))
-      throw new Error("Invalid glTF image");
-    const view = index(image.bufferView);
-    if (view !== undefined) {
-      const def = views[view];
-      if (!object2(def) || index(def.buffer) !== 0 || !binary)
-        throw new Error("Texture manifest requires images embedded in the GLB binary chunk");
-      const offset = index(def.byteOffset) ?? 0;
-      const length = index(def.byteLength);
-      if (length === undefined || offset + length > binary.byteLength)
-        throw new Error("Invalid glTF image buffer view");
-      if (typeof image.mimeType !== "string")
-        throw new Error("Embedded image needs a mimeType");
-      return { bytes: binary.subarray(offset, offset + length), mimeType: image.mimeType };
-    }
-    const match = typeof image.uri === "string" ? /^data:([^;,]+);base64,(.*)$/s.exec(image.uri) : null;
-    if (!match)
-      throw new Error("Texture manifest requires embedded image bytes");
-    return { bytes: base64(match[2]), mimeType: match[1] };
-  });
-}
-async function runtimeTextureManifest(json, binary, options = {}) {
-  const srgb = srgbImages(json);
-  const entries = [];
-  for (const [image, { bytes, mimeType }] of embeddedImages(json, binary).entries()) {
-    const sha256 = `sha256:${await sha256Hex3(bytes)}`;
-    const sourceSha256 = options.sources?.get(image);
-    const original = sourceSha256 ?? sha256;
-    const map = options.maps?.find((candidate) => candidate.sha256 === original);
-    entries.push({
-      image,
-      sha256,
-      bytes: bytes.byteLength,
-      mimeType,
-      ...imageDimensions(bytes),
-      colorSpace: srgb.has(image) ? "srgb" : "linear",
-      ...sourceSha256 && sourceSha256 !== sha256 ? { sourceSha256 } : {},
-      ...map ? { material: { pin: { ...map.pin }, slot: map.slot } } : {}
-    });
-  }
-  return entries;
-}
-function textureFileExtension(mimeType) {
-  const extension = {
-    "image/png": "png",
-    "image/jpeg": "jpg",
-    "image/webp": "webp",
-    "image/ktx2": "ktx2"
-  }[mimeType];
-  if (!extension)
-    throw new Error(`External textures do not support ${mimeType}`);
-  return extension;
-}
-var object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), index = (value) => Number.isInteger(value) && value >= 0 ? value : undefined, KTX2_IDENTIFIER, isKtx2 = (bytes) => bytes.byteLength >= 12 && KTX2_IDENTIFIER.every((value, at) => bytes[at] === value);
-var init_runtime_textures = __esm(() => {
-  KTX2_IDENTIFIER = Object.freeze([
-    171,
-    75,
-    84,
-    88,
-    32,
-    50,
-    48,
-    187,
-    13,
-    10,
-    26,
-    10
-  ]);
-});
-
-// src/runtime-three.ts
-var exports_runtime_three = {};
-__export(exports_runtime_three, {
-  deliverRuntimeThreeGlb: () => deliverRuntimeThreeGlb
-});
-import {
-  Format,
-  Logger as Logger2,
-  PropertyType as PropertyType5
-} from "@gltf-transform/core";
-import {
-  EXTMeshGPUInstancing,
-  EXTMeshoptCompression,
-  KHRTextureBasisu as KHRTextureBasisu2
-} from "@gltf-transform/extensions";
-import { dedup as dedup2, quantize, reorder } from "@gltf-transform/functions";
-import * as THREE55 from "three";
-function meshSignature(mesh, ids) {
-  const id = (property) => {
-    if (!property)
-      return -1;
-    if (!ids.has(property))
-      ids.set(property, ids.size);
-    return ids.get(property);
-  };
-  return mesh.listPrimitives().map((primitive) => `${primitive.getMode()}:${id(primitive.getMaterial())}:${id(primitive.getIndices())}:${primitive.listSemantics().sort().map((semantic) => `${semantic}=${id(primitive.getAttribute(semantic))}`).join(",")}:${primitive.listTargets().length}`).join("|");
-}
-function applyScopedInstancing(doc) {
-  const report = [];
-  const ids = new Map;
-  const parents = doc.getRoot().listNodes().filter((node) => node.getExtras()[KILN_REPEAT_INSTANCES_KEY] !== undefined);
-  let extension;
-  for (const parent of parents) {
-    const groups = new Map;
-    for (const child of parent.listChildren()) {
-      const mesh = child.getMesh();
-      if (!mesh || child.listChildren().length || child.getSkin() || child.listExtensions().length || isHiddenGltfNode(child) || rolesOf4(child).length || Object.keys(child.getExtras()).length || child.getWeights().length)
-        continue;
-      const signature = meshSignature(mesh, ids);
-      groups.set(signature, [...groups.get(signature) ?? [], child]);
-    }
-    let batchIndex = 0;
-    for (const nodes of groups.values()) {
-      if (nodes.length < 2)
-        continue;
-      const mesh = nodes[0].getMesh();
-      extension ??= doc.createExtension(EXTMeshGPUInstancing).setRequired(true);
-      const buffer = doc.getRoot().listBuffers()[0];
-      const accessor = (type, values) => doc.createAccessor().setType(type).setArray(new Float32Array(values)).setBuffer(buffer ?? null);
-      const t = [], r = [], s = [];
-      for (const node of nodes) {
-        t.push(...node.getTranslation());
-        r.push(...node.getRotation());
-        s.push(...node.getScale());
-      }
-      const batch = extension.createInstancedMesh().setAttribute("TRANSLATION", accessor("VEC3", t)).setAttribute("ROTATION", accessor("VEC4", r)).setAttribute("SCALE", accessor("VEC3", s));
-      const name = `${parent.getName() || "Node"}_Instances${batchIndex ? `_${batchIndex}` : ""}`;
-      batchIndex++;
-      const batchNode = doc.createNode(name).setMesh(mesh).setExtension("EXT_mesh_gpu_instancing", batch);
-      parent.addChild(batchNode);
-      report.push({
-        node: batchNode,
-        mesh: mesh.getName(),
-        count: nodes.length,
-        instances: nodes.map((node) => node.getName())
-      });
-      for (const node of nodes) {
-        const own = node.getMesh();
-        node.dispose();
-        if (own && own !== mesh && !own.listParents().some((p) => p.propertyType === PropertyType5.NODE))
-          own.dispose();
-      }
-    }
-    const extras = { ...parent.getExtras() };
-    delete extras[KILN_REPEAT_INSTANCES_KEY];
-    parent.setExtras(extras);
-  }
-  return report;
-}
-function splitColliderProxies(doc) {
-  const report = [];
-  for (const node of doc.getRoot().listNodes()) {
-    const mesh = node.getMesh();
-    if (!mesh || !isCollider(node))
-      continue;
-    const proxy = doc.createNode(`${node.getName()}_Proxy`).setMesh(mesh);
-    node.setMesh(null).addChild(proxy);
-    report.push({ collider: node, proxy });
-  }
-  return report;
-}
-async function encodeKtx2(doc, encoder, sources) {
-  const textures = doc.getRoot().listTextures().filter((texture) => texture.getMimeType() !== "image/ktx2" && texture.getImage());
-  if (!encoder)
-    return {
-      status: "skipped",
-      textures: textures.length,
-      reason: "No KTX2 encoder was supplied; textures stay PNG or JPEG."
-    };
-  const slots = new Map;
-  const use = (texture, slot) => {
-    if (texture)
-      slots.set(texture, (slots.get(texture) ?? new Set).add(slot));
-  };
-  for (const material of doc.getRoot().listMaterials()) {
-    use(material.getBaseColorTexture(), "baseColor");
-    use(material.getEmissiveTexture(), "emissive");
-    use(material.getNormalTexture(), "normal");
-    use(material.getMetallicRoughnessTexture(), "metallicRoughness");
-    use(material.getOcclusionTexture(), "occlusion");
-  }
-  const order = [
-    "baseColor",
-    "emissive",
-    "normal",
-    "metallicRoughness",
-    "occlusion"
-  ];
-  for (const texture of textures) {
-    const used = slots.get(texture) ?? new Set;
-    const srgb = used.has("baseColor") || used.has("emissive");
-    const other = texture.listParents().some((parent) => parent.propertyType !== PropertyType5.ROOT && !isCoreMaterialUse(parent));
-    const linear = [...used].some((slot) => slot !== "baseColor" && slot !== "emissive") || other;
-    if (srgb && linear)
-      throw new Error(`Texture ${JSON.stringify(texture.getName())} is used by both sRGB and linear material slots; one KTX2 encoding cannot serve both. Use separate images.`);
-    const original = texture.getImage();
-    const image = await encoder({
-      image: original,
-      mimeType: texture.getMimeType(),
-      name: texture.getName(),
-      colorSpace: srgb ? "srgb" : "linear",
-      slot: order.find((slot) => used.has(slot)) ?? "other"
-    });
-    if (!(image instanceof Uint8Array) || !isKtx2(image))
-      throw new Error("ktx2Encoder must return KTX2 bytes starting with the KTX2 identifier");
-    sources.set(texture, `sha256:${await sha256Hex3(original)}`);
-    texture.setImage(image).setMimeType("image/ktx2");
-    const uri = texture.getURI();
-    if (uri)
-      texture.setURI(uri.replace(/\.(png|jpe?g)$/i, ".ktx2"));
-  }
-  if (textures.length) {
-    doc.createExtension(KHRTextureBasisu2).setRequired(true);
-    await Promise.resolve().then(() => init_atlas_provenance());
-    await refreshAtlasDocumentProvenance(doc);
-    await validateAtlasDocumentProvenance(doc);
-  }
-  return {
-    status: "encoded",
-    textures: textures.length,
-    ...encoder.identity ? { encoder: structuredClone(encoder.identity) } : {}
-  };
-}
-function isCoreMaterialUse(parent) {
-  return parent.propertyType === PropertyType5.MATERIAL;
-}
-function decomposeDelta(before, after) {
-  const delta = new THREE55.Matrix4().fromArray(before).invert().multiply(new THREE55.Matrix4().fromArray(after));
-  const position = new THREE55.Vector3, quaternion = new THREE55.Quaternion, scale = new THREE55.Vector3;
-  delta.decompose(position, quaternion, scale);
-  return {
-    scale: scale.x,
-    offset: [position.x, position.y, position.z]
-  };
-}
-async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layout = {}) {
-  const compression = options.compression ?? "meshopt";
-  if (compression !== "meshopt" && compression !== "none")
-    throw new Error("Runtime three compression must be meshopt or none");
-  const io = createGltfIO().registerDependencies({
-    "meshopt.encoder": meshoptEncoder
-  });
-  const doc = await io.readBinary(bytes);
-  doc.setLogger(new Logger2(Logger2.Verbosity.SILENT));
-  await doc.transform(dedup2({ propertyTypes: [PropertyType5.ACCESSOR], keepUniqueNames: true }));
-  const instanced = applyScopedInstancing(doc);
-  const proxies = splitColliderProxies(doc);
-  const matrices = new Map;
-  for (const node of doc.getRoot().listNodes())
-    if (node.getMesh())
-      matrices.set(node, [...node.getMatrix()]);
-  await doc.transform(reorder({ encoder: meshoptEncoder, target: "size" }), quantize({
-    pattern: QUANTIZED_SEMANTICS,
-    patternTargets: QUANTIZED_SEMANTICS,
-    quantizationVolume: "mesh",
-    quantizePosition: RUNTIME_THREE_QUANTIZATION.position,
-    quantizeNormal: RUNTIME_THREE_QUANTIZATION.normal,
-    quantizeTexcoord: RUNTIME_THREE_QUANTIZATION.texcoord,
-    quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
-    quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight
-  }));
-  if (compression === "meshopt")
-    doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
-  const encodedSources = new Map;
-  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder, encodedSources);
-  for (const node of doc.getRoot().listNodes()) {
-    const mesh = node.getMesh();
-    if (!mesh || matrices.has(node) || node.getName())
-      continue;
-    const parent = node.getParentNode();
-    node.setName(`${parent?.getName() || "Node"}_Mesh`);
-  }
-  const after = deliveryNodePaths(doc);
-  const pathOf = (node) => after.get(node) ?? `#${encodeURIComponent(node.getName())}`;
-  const proxyNodes = new Set(proxies.map((entry) => entry.proxy));
-  const nodeScale = [];
-  for (const node of doc.getRoot().listNodes()) {
-    const mesh = node.getMesh();
-    if (!mesh || node.getExtension("EXT_mesh_gpu_instancing"))
-      continue;
-    const path = after.get(node);
-    if (path === undefined)
-      continue;
-    const original = matrices.get(node);
-    const moved = original === undefined;
-    const split = moved || proxyNodes.has(node);
-    const reference = moved ? new THREE55.Matrix4().identity().toArray() : original;
-    const current = [...node.getMatrix()];
-    const { scale, offset } = decomposeDelta(reference, current);
-    if (!moved && Math.abs(scale - 1) < 0.000000000001 && offset.every((v) => v === 0))
-      continue;
-    const parent = node.getParentNode();
-    nodeScale.push({
-      node: path,
-      mesh: mesh.getName(),
-      meshMovedToChild: split,
-      ...split && parent ? { authoredNode: pathOf(parent) } : {},
-      dequantization: { scale, offset },
-      localScale: [...node.getScale()]
-    });
-  }
-  for (const node of doc.getRoot().listNodes()) {
-    const mesh = node.getMesh();
-    if (!mesh || after.has(node) || !matrices.has(node))
-      continue;
-    const { scale, offset } = decomposeDelta(matrices.get(node), [...node.getMatrix()]);
-    nodeScale.push({
-      node: `#lod/${encodeURIComponent(node.getName())}`,
-      mesh: mesh.getName(),
-      meshMovedToChild: false,
-      dequantization: { scale, offset },
-      localScale: [...node.getScale()]
-    });
-  }
-  const customAttributes = new Map;
-  for (const mesh of doc.getRoot().listMeshes())
-    for (const primitive of mesh.listPrimitives())
-      for (const semantic of primitive.listSemantics())
-        if (semantic.startsWith("_"))
-          customAttributes.set(semantic, (customAttributes.get(semantic) ?? new Set).add(mesh));
-  const all = doc.getRoot().listNodes();
-  const glb = await io.writeBinary(doc);
-  const json = (await io.binaryToJSON(glb)).json;
-  const imageSources = new Map;
-  doc.getRoot().listTextures().forEach((texture, image) => {
-    const source = encodedSources.get(texture);
-    if (source)
-      imageSources.set(image, source);
-  });
-  const gltf = layout.gltfBasename ? await io.writeJSON(doc, { format: Format.GLTF, basename: layout.gltfBasename }) : undefined;
-  const delivery = {
-    target: "three",
-    extensionsUsed: [...json.extensionsUsed ?? []].sort(),
-    extensionsRequired: [...json.extensionsRequired ?? []].sort(),
-    compression: compression === "meshopt" ? { extension: "EXT_meshopt_compression", method: "quantize" } : { extension: "none" },
-    quantization: {
-      extension: "KHR_mesh_quantization",
-      volume: "mesh",
-      bits: {
-        position: RUNTIME_THREE_QUANTIZATION.position,
-        normal: RUNTIME_THREE_QUANTIZATION.normal,
-        texcoord: RUNTIME_THREE_QUANTIZATION.texcoord,
-        color: RUNTIME_THREE_QUANTIZATION.color,
-        weight: RUNTIME_THREE_QUANTIZATION.weight
-      },
-      customAttributes: "float32"
-    },
-    nodeScale,
-    colliderProxies: proxies.map(({ collider, proxy }) => ({
-      collider: pathOf(collider),
-      proxy: pathOf(proxy)
-    })),
-    customAttributes: [...customAttributes].sort(([a], [b]) => customRank(a) - customRank(b) || (a < b ? -1 : a > b ? 1 : 0)).map(([name, meshes]) => ({
-      name,
-      meshes: meshes.size,
-      componentType: "FLOAT",
-      normalized: false
-    })),
-    instancing: instanced.map(({ node, ...rest }) => ({ node: pathOf(node), ...rest })),
-    ktx2,
-    preserved: {
-      lodChains: all.filter((node) => node.getExtension(MSFT_LOD)).length,
-      hiddenNodes: all.filter((node) => isHiddenGltfNode(node)).length,
-      colliders: all.filter(isCollider).length,
-      anchors: all.filter((node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.anchor}.`))).length,
-      ports: all.filter((node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.kitPort}.`))).length,
-      kitModules: all.filter((node) => rolesOf4(node).includes(KILN_SEMANTIC_ROLES.kitModule)).length
-    }
-  };
-  return {
-    glb,
-    delivery,
-    imageSources,
-    ...gltf ? {
-      gltf: {
-        json: gltf.json,
-        resources: gltf.resources
-      }
-    } : {}
-  };
-}
-var RUNTIME_THREE_QUANTIZATION, QUANTIZED_SEMANTICS, customRank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2, rolesOf4 = (node) => readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [], isCollider = (node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.collider}.`));
-var init_runtime_three = __esm(() => {
-  init_semantic();
-  init_gltf_io();
-  init_delivery_inspect();
-  init_delivery();
-  init_metrics();
-  init_runtime_textures();
-  RUNTIME_THREE_QUANTIZATION = Object.freeze({
-    volume: "mesh",
-    position: 14,
-    normal: 10,
-    texcoord: 12,
-    color: 8,
-    weight: 8
-  });
-  QUANTIZED_SEMANTICS = /^(POSITION|NORMAL|TANGENT|TEXCOORD_\d+|COLOR_\d+|JOINTS_\d+|WEIGHTS_\d+)$/;
 });
 
 // src/asset-export.ts
@@ -38868,6 +39070,10 @@ async function exportAssetGlb(record, options = {}) {
     throw new Error("A runtime export target requires the runtime profile");
   if (options.compression !== undefined && options.target !== "three")
     throw new Error("Runtime compression requires the three runtime target");
+  if (options.maxLod !== undefined && options.target !== "three")
+    throw new Error("Runtime maxLod requires the three runtime target");
+  if (options.positionBits !== undefined && options.target !== "three")
+    throw new Error("Runtime positionBits requires the three runtime target");
   const textures = options.textures;
   if (textures !== undefined && textures !== "manifest" && textures !== "external")
     throw new Error("Unknown runtime texture option");
@@ -38921,7 +39127,9 @@ async function exportAssetGlb(record, options = {}) {
   if (options.target === "three") {
     const derived = await deriveThree(writeGlbJson(bytes, jsonEnd, json), {
       ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {},
-      ...options.compression ? { compression: options.compression } : {}
+      ...options.compression ? { compression: options.compression } : {},
+      ...options.maxLod !== undefined ? { maxLod: options.maxLod } : {},
+      ...options.positionBits !== undefined ? { positionBits: options.positionBits } : {}
     }, textures === "external" ? { gltfBasename: gltfName.slice(0, -".gltf".length) } : {});
     metadata.target = "three";
     metadata.delivery = derived.delivery;
@@ -38982,7 +39190,7 @@ async function externalLayout(gltf, manifest) {
     const entry = manifest[index];
     const written = typeof image.uri === "string" ? image.uri : "";
     const bytes = resources.get(written);
-    if (!bytes || `sha256:${await sha256Hex3(bytes)}` !== entry.sha256)
+    if (!bytes || `sha256:${await sha256Hex2(bytes)}` !== entry.sha256)
       throw new Error("External texture bytes differ from the delivered GLB");
     resources.delete(written);
     const uri = `textures/${entry.sha256.slice("sha256:".length)}.${textureFileExtension(entry.mimeType)}`;
@@ -40079,7 +40287,7 @@ __export(exports_draw_diagnostics, {
   inspectDrawDiagnostics: () => inspectDrawDiagnostics
 });
 import { Primitive as Primitive3 } from "@gltf-transform/core";
-import { cloneDocument } from "@gltf-transform/functions";
+import { cloneDocument as cloneDocument2 } from "@gltf-transform/functions";
 import * as THREE57 from "three";
 function withinLimits(doc) {
   const root = doc.getRoot();
@@ -40235,7 +40443,7 @@ function analyzeDrawDiagnostics(doc, options = {}) {
       return skipped("input-limit");
     const keep = options.keep ?? [];
     const before = collect2(doc, keep);
-    const copy = cloneDocument(doc);
+    const copy = cloneDocument2(doc);
     const merge = mergeRigidGroups(copy, { keep });
     const after = collect2(copy, keep);
     const all = [...before.anchors.values()].map((anchor) => ({

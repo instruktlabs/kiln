@@ -7319,6 +7319,9 @@ var init_gltf_io = __esm(() => {
     listLevels() {
       return this.listRefs("levels");
     }
+    removeLevel(level) {
+      return this.removeRef("levels", level);
+    }
   };
   MSFTLod = class MSFTLod extends Extension {
     extensionName = MSFT_LOD;
@@ -9012,6 +9015,228 @@ var init_delivery_inspect = __esm(() => {
   init_node_visibility();
 });
 
+// src/lod-export.ts
+import { PropertyType as PropertyType3 } from "@gltf-transform/core";
+function applyLodChains(root, sets, doc) {
+  if (sets.length === 0)
+    return;
+  const exported = writtenNodeResolver(root, doc, "LOD export");
+  const chains = sets.map((set) => ({
+    set,
+    parent: exported(set.parent),
+    levels: set.levels.map(exported)
+  }));
+  const extension = doc.createExtension(MSFTLod);
+  for (const { set, parent, levels } of chains) {
+    const [base, ...lower] = levels;
+    const lod = extension.createLod();
+    for (const level of lower) {
+      parent.removeChild(level);
+      lod.addLevel(level);
+    }
+    base.setExtension(MSFT_LOD, lod);
+    base.setExtras({ ...base.getExtras(), [MSFT_SCREENCOVERAGE]: [...set.screenCoverage] });
+  }
+}
+function occurrence(siblings, index, name) {
+  let count = 0;
+  for (let i = 0;i < index; i++)
+    if (siblings[i].getName() === name)
+      count++;
+  return count;
+}
+function screenCoverageOf(node) {
+  const value = node.getExtras()[MSFT_SCREENCOVERAGE];
+  return Array.isArray(value) && value.every((item) => typeof item === "number") ? [...value] : undefined;
+}
+function listLodChainNodes(doc) {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return [];
+  const chains = [];
+  const visit = (siblings, parentPath) => {
+    siblings.forEach((node, index) => {
+      const at = (name) => `${parentPath}${segment4(name, occurrence(siblings, index, name))}`;
+      const path = at(node.getName());
+      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType3.NODE);
+      if (lower.length > 0)
+        chains.push({
+          levels: [node, ...lower],
+          paths: [path, ...lower.map((level) => at(level.getName()))]
+        });
+      visit(node.listChildren(), path);
+    });
+  };
+  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0));
+  return chains;
+}
+function isImpostorLevel(node) {
+  const roles = readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [];
+  return roles.includes(KILN_SEMANTIC_ROLES.lodImpostor);
+}
+function summarizeLodChains(doc) {
+  return listLodChainNodes(doc).map(({ levels, paths }) => {
+    const screenCoverage = screenCoverageOf(levels[0]);
+    return {
+      path: paths[0],
+      ...screenCoverage ? { screenCoverage } : {},
+      levels: levels.map((level, number) => ({
+        level: number,
+        name: level.getName(),
+        path: paths[number],
+        triangles: drawnNodeTriangles(level),
+        ...number > 0 && isImpostorLevel(level) ? { impostor: true } : {}
+      }))
+    };
+  });
+}
+function trimLodChains(doc, maxLod) {
+  const chains = listLodChainNodes(doc);
+  const doomed = new Set;
+  for (const { levels } of chains)
+    for (const level of levels.slice(maxLod + 1))
+      level.traverse((node) => {
+        doomed.add(node);
+      });
+  for (const animation of doc.getRoot().listAnimations())
+    for (const channel of animation.listChannels()) {
+      const target = channel.getTargetNode();
+      if (target && doomed.has(target))
+        throw new Error(`maxLod ${maxLod} would drop ${target.getName() || "a node"}, which animation ${JSON.stringify(animation.getName())} targets; keep that level.`);
+    }
+  const trimmed = chains.map(({ levels, paths }) => {
+    const [base, ...lower] = levels;
+    const dropped = lower.slice(maxLod);
+    if (dropped.length > 0) {
+      const lod = base.getExtension(MSFT_LOD);
+      for (const level of dropped)
+        lod.removeLevel(level);
+      const extras = { ...base.getExtras() };
+      const coverage = screenCoverageOf(base);
+      if (maxLod === 0) {
+        base.setExtension(MSFT_LOD, null);
+        lod.dispose();
+        delete extras[MSFT_SCREENCOVERAGE];
+      } else if (coverage)
+        extras[MSFT_SCREENCOVERAGE] = coverage.slice(0, maxLod + 1);
+      base.setExtras(extras);
+      for (const level of dropped) {
+        const subtree = [];
+        level.traverse((node) => {
+          subtree.push(node);
+        });
+        for (const node of subtree.reverse())
+          node.dispose();
+      }
+    }
+    return {
+      path: paths[0],
+      levels: levels.length - dropped.length,
+      dropped: dropped.map((level) => level.getName())
+    };
+  });
+  const root = doc.getRoot();
+  if (!root.listNodes().some((node) => node.getExtension(MSFT_LOD)))
+    root.listExtensionsUsed().find((extension) => extension.extensionName === MSFT_LOD)?.dispose();
+  return trimmed;
+}
+var MSFT_SCREENCOVERAGE = "MSFT_screencoverage", segment4 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
+var init_lod_export = __esm(() => {
+  init_semantic();
+  init_gltf_io();
+  init_metrics();
+});
+
+// src/budget.ts
+function normalizeBudget(spec) {
+  if (!spec || typeof spec !== "object" || Array.isArray(spec))
+    fail4("spec must be { triangles: number | { LOD0, LOD1, ... }, draws? }.");
+  const value = spec;
+  for (const key of Object.keys(value))
+    if (key !== "triangles" && key !== "draws" && key !== "schemaVersion")
+      fail4(`unknown field ${JSON.stringify(key)}.`);
+  const triangles = {};
+  if (typeof value.triangles === "number")
+    triangles.LOD0 = count2("triangles", value.triangles);
+  else if (value.triangles && typeof value.triangles === "object" && !Array.isArray(value.triangles)) {
+    const entries = Object.entries(value.triangles);
+    if (entries.length === 0)
+      fail4("triangles needs at least one tier.");
+    for (const [tier, limit] of entries) {
+      if (!/^LOD(0|[1-9][0-9]?)$/.test(tier))
+        fail4(`triangles tier ${JSON.stringify(tier)} must be named LOD0, LOD1, ...`);
+      triangles[tier] = count2(`triangles.${tier}`, limit);
+    }
+  } else
+    fail4("triangles must be a positive integer or a record of LOD tiers.");
+  const ordered = Object.fromEntries(Object.entries(triangles).sort(([a], [b]) => Number(a.slice(3)) - Number(b.slice(3))));
+  return {
+    schemaVersion: 1,
+    triangles: ordered,
+    ...value.draws === undefined ? {} : { draws: count2("draws", value.draws) }
+  };
+}
+function defineBudget(spec, target) {
+  const declaration = normalizeBudget(spec);
+  if (target !== undefined) {
+    if (target?.isObject3D !== true)
+      fail4("target must be a scene node, normally the root.");
+    target.userData[KILN_BUDGET_KEY] = structuredClone(declaration);
+  }
+  return declaration;
+}
+function readBudgetDeclaration(value) {
+  if (value === undefined)
+    return;
+  try {
+    const declaration = normalizeBudget(value);
+    return value.schemaVersion === 1 ? declaration : undefined;
+  } catch {
+    return;
+  }
+}
+function evaluateBudget(declaration, measuredLod0, chains) {
+  const instanced = measuredLod0.instancedDraws === undefined ? {} : { instancedDraws: measuredLod0.instancedDraws };
+  const outside = measuredLod0.triangles - chains.reduce((sum, chain) => sum + chain.levels[0].triangles, 0);
+  const tierTriangles = (level) => outside + chains.reduce((sum, chain) => sum + chain.levels[Math.min(level, chain.levels.length - 1)].triangles, 0);
+  const tiers = Object.entries(declaration.triangles).map(([tier, limit]) => {
+    const level = Number(tier.slice(3));
+    const triangles = level === 0 ? measuredLod0.triangles : tierTriangles(level);
+    const drawsDeclared = level === 0 ? declaration.draws : undefined;
+    const pass = triangles <= limit && (drawsDeclared === undefined || measuredLod0.draws <= drawsDeclared);
+    return {
+      tier,
+      declared: {
+        triangles: limit,
+        ...drawsDeclared === undefined ? {} : { draws: drawsDeclared }
+      },
+      measured: {
+        triangles,
+        ...drawsDeclared === undefined ? {} : { draws: measuredLod0.draws, ...instanced }
+      },
+      status: pass ? "pass" : "fail"
+    };
+  });
+  if (declaration.draws !== undefined && declaration.triangles.LOD0 === undefined)
+    tiers.unshift({
+      tier: "LOD0",
+      declared: { draws: declaration.draws },
+      measured: { triangles: measuredLod0.triangles, draws: measuredLod0.draws, ...instanced },
+      status: measuredLod0.draws <= declaration.draws ? "pass" : "fail"
+    });
+  return { status: tiers.every((tier) => tier.status === "pass") ? "pass" : "fail", tiers };
+}
+var KILN_BUDGET_KEY = "kilnBudgetV1", fail4 = (detail) => {
+  throw new AuthoringDiagnosticError("DELIVERY_CONTRACT", `defineBudget(spec): ${detail}`);
+}, count2 = (label, value) => {
+  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 1)
+    fail4(`${label} must be a positive integer, got ${String(value)}.`);
+  return value;
+};
+var init_budget = __esm(() => {
+  init_authoring_diagnostic();
+});
+
 // src/gltf-texture-binding.ts
 import * as THREE7 from "three";
 function restoreGltfTextureBinding(texture, info) {
@@ -9069,26 +9294,26 @@ var init_gltf_texture_binding = __esm(() => {
 
 // src/atlas-provenance.ts
 import * as THREE8 from "three";
-function fail4(message) {
+function fail5(message) {
   throw new TypeError(`atlas provenance: ${message}`);
 }
 function field(input, key) {
   if (!input || typeof input !== "object" || Array.isArray(input))
-    fail4("plain metadata object required.");
+    fail5("plain metadata object required.");
   const proto = Object.getPrototypeOf(input);
   if (proto !== null && proto !== Object.prototype)
-    fail4("plain metadata prototype required.");
+    fail5("plain metadata prototype required.");
   const d = Object.getOwnPropertyDescriptor(input, key);
   if (!d)
     return;
   if (!d.enumerable || !("value" in d))
-    fail4("metadata accessors/hidden fields are unsupported.");
+    fail5("metadata accessors/hidden fields are unsupported.");
   return d.value;
 }
 function closed(input, keys) {
   for (const key of Reflect.ownKeys(input))
     if (typeof key !== "string" || !keys.includes(key))
-      fail4("unsupported metadata field.");
+      fail5("unsupported metadata field.");
   for (const key of keys)
     field(input, key);
   return input;
@@ -9114,7 +9339,7 @@ function normalizeCandidates(candidates) {
   for (const candidate of candidates) {
     const p = normalize(candidate);
     if (result && canonicalAtlasMetadataJsonV1(result) !== canonicalAtlasMetadataJsonV1(p))
-      fail4("direct and saved atlas identities disagree.");
+      fail5("direct and saved atlas identities disagree.");
     result = p;
   }
   return result;
@@ -9125,23 +9350,23 @@ function readAtlasTextureProvenance(texture) {
 function admitTable(input) {
   const r = closed(input, ["version", "atlases"]);
   if (r["version"] !== ATLAS_PROVENANCE_VERSION)
-    fail4("unsupported version.");
+    fail5("unsupported version.");
   const entries = r["atlases"];
   if (!Array.isArray(entries) || Object.getPrototypeOf(entries) !== Array.prototype)
-    fail4("dense atlas array required.");
+    fail5("dense atlas array required.");
   const n = Object.getOwnPropertyDescriptor(entries, "length").value;
   if (n > ATLAS_PROVENANCE_LIMITS.atlases || Reflect.ownKeys(entries).length !== n + 1)
-    fail4("atlas count/density budget exceeded.");
+    fail5("atlas count/density budget exceeded.");
   let bytes = TABLE_ENVELOPE_BYTES;
   const admitted = [];
   for (let i = 0;i < n; i++) {
     const d = Object.getOwnPropertyDescriptor(entries, String(i));
     if (!d?.enumerable || !("value" in d))
-      fail4("atlas array accessors are unsupported.");
+      fail5("atlas array accessors are unsupported.");
     const json = canonicalAtlasMetadataJsonV1(d.value);
     bytes += new TextEncoder().encode(json).length + (i > 0 ? 1 : 0);
     if (bytes > ATLAS_PROVENANCE_LIMITS.bytes)
-      fail4("aggregate metadata byte budget exceeded.");
+      fail5("aggregate metadata byte budget exceeded.");
     admitted.push(closed(d.value, ["id", "spec", "manifest"]));
   }
   return admitted;
@@ -9151,7 +9376,7 @@ function validateAtlasProvenanceTable(input) {
   for (const e of admitted) {
     const p = normalize({ spec: e["spec"], manifest: e["manifest"] });
     if (e["id"] !== p.manifest.manifestHash || ids.has(e["id"]))
-      fail4("duplicate or mismatched atlas identity.");
+      fail5("duplicate or mismatched atlas identity.");
     ids.add(e["id"]);
     atlases.push({ id: e["id"], ...p });
   }
@@ -9160,15 +9385,15 @@ function validateAtlasProvenanceTable(input) {
 function lookup(table, id) {
   const found = table.atlases.find((a) => a.id === id);
   if (!found)
-    fail4("unknown atlas reference.");
+    fail5("unknown atlas reference.");
   return found;
 }
 function derivedBinding(p, regionName, origin, mode) {
   if (!["top-left", "bottom-left"].includes(origin) || !["content-boundary", "texel-center"].includes(mode))
-    fail4("explicit binding origin/mode required.");
+    fail5("explicit binding origin/mode required.");
   const r = p.manifest.regions.find((r) => r.name === regionName);
   if (!r)
-    fail4("unknown named region.");
+    fail5("unknown named region.");
   const { x, y, width: w, height: h } = r.content, center = mode === "texel-center", bottom = origin === "bottom-left";
   return {
     manifestHash: p.manifest.manifestHash,
@@ -9193,7 +9418,7 @@ function expandAtlasBinding(input, table) {
   canonicalAtlasMetadataJsonV1(input);
   const r = closed(input, ["version", "atlasId", "region", "inputOrigin", "mode"]);
   if (r["version"] !== ATLAS_PROVENANCE_VERSION)
-    fail4("unsupported binding version.");
+    fail5("unsupported binding version.");
   return derivedBinding(lookup(table, r["atlasId"]), r["region"], r["inputOrigin"], r["mode"]);
 }
 function readAtlasGeometryBinding(geometry, provenance) {
@@ -9203,7 +9428,7 @@ function readAtlasGeometryBinding(geometry, provenance) {
   canonicalAtlasMetadataJsonV1(stamp);
   const r = stamp, derived = derivedBinding(provenance, r["region"], r["inputOrigin"], r["mode"]);
   if (canonicalAtlasMetadataJsonV1(stamp) !== canonicalAtlasMetadataJsonV1(derived))
-    fail4("named binding identity or remap formula mismatch.");
+    fail5("named binding identity or remap formula mismatch.");
   return {
     version: ATLAS_PROVENANCE_VERSION,
     atlasId: provenance.manifest.manifestHash,
@@ -9241,26 +9466,26 @@ function collectAtlasProvenance(root) {
             canonicalAtlasMetadataJsonV1(candidate);
             const r = closed(candidate, ["spec", "manifest"]), id = field(r["manifest"], "manifestHash");
             if (typeof id !== "string" || !/^sha256:[0-9a-f]{64}$/.test(id))
-              fail4("invalid atlas identity.");
+              fail5("invalid atlas identity.");
             const bytes = new TextEncoder().encode(canonicalAtlasMetadataJsonV1({ ...r, id })).length;
             const prior = sizes.get(id) ?? 0;
             total += Math.max(0, bytes - prior) + (prior === 0 && sizes.size > 0 ? 1 : 0);
             sizes.set(id, Math.max(prior, bytes));
             if (total > ATLAS_PROVENANCE_LIMITS.bytes || sizes.size > ATLAS_PROVENANCE_LIMITS.atlases)
-              fail4("aggregate metadata budget exceeded.");
+              fail5("aggregate metadata budget exceeded.");
             ref ??= { version: ATLAS_PROVENANCE_VERSION, id };
           }
           const spec = field(raw[0], "spec"), width = field(spec, "width"), height = field(spec, "height");
           if (!Number.isSafeInteger(width) || !Number.isSafeInteger(height) || width < 1 || height < 1)
-            fail4("invalid atlas image dimensions.");
+            fail5("invalid atlas image dimensions.");
           pixelBytes += width * height * 4;
           if (pixelBytes > ATLAS_PROVENANCE_LIMITS.bakeDecodedBytes)
-            fail4("aggregate atlas bake pixel budget exceeded.");
+            fail5("aggregate atlas bake pixel budget exceeded.");
           candidates.set(texture, raw);
           textures.set(texture, ref);
         }
         if (++bindings > ATLAS_PROVENANCE_LIMITS.bindings)
-          fail4("texture binding budget exceeded.");
+          fail5("texture binding budget exceeded.");
         meshIds.add(ref.id);
       }
     if (!mesh.isMesh)
@@ -9269,18 +9494,18 @@ function collectAtlasProvenance(root) {
     if (stamp === undefined)
       return;
     if (++bindings > ATLAS_PROVENANCE_LIMITS.bindings)
-      fail4("primitive binding budget exceeded.");
+      fail5("primitive binding budget exceeded.");
     canonicalAtlasMetadataJsonV1(stamp);
     const id = field(stamp, "manifestHash");
     if (typeof id !== "string" || !meshIds.has(id))
-      fail4("named binding has no matching primary atlas texture on this mesh.");
+      fail5("named binding has no matching primary atlas texture on this mesh.");
     pendingGeometry.set(mesh.geometry, id);
   });
   const identities = new Map;
   for (const [texture, raw] of candidates) {
     const p = normalizeCandidates(raw), id = p.manifest.manifestHash, prior = identities.get(id);
     if (prior && canonicalAtlasMetadataJsonV1(prior) !== canonicalAtlasMetadataJsonV1(p))
-      fail4("conflicting atlas identity.");
+      fail5("conflicting atlas identity.");
     identities.set(id, p);
     textures.set(texture, { version: ATLAS_PROVENANCE_VERSION, id });
   }
@@ -9312,7 +9537,7 @@ function atlasMaterialUses(doc) {
     ])
       if (texture && info && field(info.getExtras(), "kilnAtlasReference") !== undefined) {
         if (uses.length >= ATLAS_PROVENANCE_LIMITS.bindings)
-          fail4("document binding budget exceeded.");
+          fail5("document binding budget exceeded.");
         uses.push({ texture, info });
       }
   return uses;
@@ -9320,7 +9545,7 @@ function atlasMaterialUses(doc) {
 async function imageHash(texture) {
   const bytes = texture.getImage();
   if (!bytes || bytes.byteLength > ATLAS_PROVENANCE_LIMITS.encodedBytes)
-    fail4("encoded image missing or over budget.");
+    fail5("encoded image missing or over budget.");
   const result = await crypto.subtle.digest("SHA-256", bytes);
   return `sha256:${[...new Uint8Array(result)].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
 }
@@ -9332,14 +9557,14 @@ function sampler(info) {
     wrapT: info.getWrapT()
   };
   if (![null, 9728, 9729, 9984, 9985, 9986, 9987].includes(value.minFilter) || ![null, 9728, 9729].includes(value.magFilter) || ![33071, 33648, 10497].includes(value.wrapS) || ![33071, 33648, 10497].includes(value.wrapT))
-    fail4("unsupported effective sampler.");
+    fail5("unsupported effective sampler.");
   return value;
 }
 function reference(input, table) {
   canonicalAtlasMetadataJsonV1(input);
   const r = closed(input, ["version", "id", "effectiveSampler", "finalMime", "finalImageSha256"]);
   if (r["version"] !== ATLAS_PROVENANCE_VERSION)
-    fail4("unsupported texture reference version.");
+    fail5("unsupported texture reference version.");
   lookup(table, r["id"]);
   return r;
 }
@@ -9352,10 +9577,10 @@ function admitEncodedImages(uses) {
     seen.add(texture);
     const bytes = texture.getImage();
     if (!bytes || bytes.byteLength > ATLAS_PROVENANCE_LIMITS.encodedBytes)
-      fail4("encoded image missing or over budget.");
+      fail5("encoded image missing or over budget.");
     total += bytes.byteLength;
     if (total > ATLAS_PROVENANCE_LIMITS.aggregateEncodedBytes)
-      fail4("aggregate encoded image hash budget exceeded.");
+      fail5("aggregate encoded image hash budget exceeded.");
   }
 }
 async function refreshAtlasDocumentProvenance(doc) {
@@ -9363,7 +9588,7 @@ async function refreshAtlasDocumentProvenance(doc) {
   if (!uses.length)
     return;
   if (!table)
-    fail4("atlas table missing.");
+    fail5("atlas table missing.");
   admitEncodedImages(uses);
   const hashes = new Map;
   for (const { texture, info } of uses) {
@@ -9388,12 +9613,12 @@ async function refreshAtlasDocumentProvenance(doc) {
 async function validateAtlasDocumentProvenance(doc) {
   const table = atlasDocumentTable(doc), uses = atlasMaterialUses(doc);
   if (uses.length && !table)
-    fail4("atlas table missing.");
+    fail5("atlas table missing.");
   if (!table) {
     for (const mesh of doc.getRoot().listMeshes())
       for (const primitive of mesh.listPrimitives())
         if (field(primitive.getExtras(), "kilnAtlasBinding") !== undefined)
-          fail4("atlas table missing.");
+          fail5("atlas table missing.");
     return;
   }
   admitEncodedImages(uses);
@@ -9406,7 +9631,7 @@ async function validateAtlasDocumentProvenance(doc) {
       hashes.set(texture, hash);
     }
     if (r.finalImageSha256 !== hash || r.finalMime !== texture.getMimeType() || canonicalAtlasMetadataJsonV1(r.effectiveSampler) !== canonicalAtlasMetadataJsonV1(sampler(info)))
-      fail4("final image or effective sampler identity mismatch.");
+      fail5("final image or effective sampler identity mismatch.");
   }
   let bindings = 0;
   for (const mesh of doc.getRoot().listMeshes())
@@ -9414,7 +9639,7 @@ async function validateAtlasDocumentProvenance(doc) {
       const binding = field(prim.getExtras(), "kilnAtlasBinding");
       if (binding !== undefined) {
         if (++bindings > ATLAS_PROVENANCE_LIMITS.bindings)
-          fail4("primitive budget exceeded.");
+          fail5("primitive budget exceeded.");
         expandAtlasBinding(binding, table);
         const material = prim.getMaterial(), id = field(binding, "atlasId");
         const infos = material ? [
@@ -9425,7 +9650,7 @@ async function validateAtlasDocumentProvenance(doc) {
           material.getOcclusionTextureInfo()
         ] : [];
         if (!infos.some((info) => info && field(info.getExtras(), "kilnAtlasReference") !== undefined && field(field(info.getExtras(), "kilnAtlasReference"), "id") === id))
-          fail4("named binding has no matching material atlas reference.");
+          fail5("named binding has no matching material atlas reference.");
       }
     }
 }
@@ -9439,7 +9664,7 @@ function readAtlasEncodedTexture(texture) {
     return;
   const r = closed(encoded, ["mime", "bytes"]);
   if (r["mime"] !== "image/png" || !(r["bytes"] instanceof Uint8Array) || r["bytes"].byteLength > ATLAS_PROVENANCE_LIMITS.encodedBytes)
-    fail4("bounded PNG encoding required.");
+    fail5("bounded PNG encoding required.");
   return { mime: "image/png", bytes: r["bytes"] };
 }
 function restoreAtlasTextureProvenance(texture, info, table) {
@@ -9468,19 +9693,22 @@ var init_atlas_provenance = __esm(() => {
 // src/runtime-three.ts
 var exports_runtime_three = {};
 __export(exports_runtime_three, {
-  deliverRuntimeThreeGlb: () => deliverRuntimeThreeGlb
+  deliverRuntimeThreeGlb: () => deliverRuntimeThreeGlb,
+  instancedDrawEstimate: () => instancedDrawEstimate
 });
 import {
+  Accessor,
   Format,
   Logger,
-  PropertyType as PropertyType3
+  PropertyType as PropertyType4
 } from "@gltf-transform/core";
 import {
   EXTMeshGPUInstancing,
   EXTMeshoptCompression,
+  KHRMeshQuantization,
   KHRTextureBasisu
 } from "@gltf-transform/extensions";
-import { dedup, quantize, reorder } from "@gltf-transform/functions";
+import { cloneDocument, dedup, prune, quantize, reorder } from "@gltf-transform/functions";
 import * as THREE9 from "three";
 function meshSignature(mesh, ids) {
   const id = (property) => {
@@ -9491,6 +9719,13 @@ function meshSignature(mesh, ids) {
     return ids.get(property);
   };
   return mesh.listPrimitives().map((primitive) => `${primitive.getMode()}:${id(primitive.getMaterial())}:${id(primitive.getIndices())}:${primitive.listSemantics().sort().map((semantic) => `${semantic}=${id(primitive.getAttribute(semantic))}`).join(",")}:${primitive.listTargets().length}`).join("|");
+}
+async function instancedDrawEstimate(doc) {
+  const copy = cloneDocument(doc);
+  copy.setLogger(new Logger(Logger.Verbosity.SILENT));
+  await copy.transform(dedup({ propertyTypes: [PropertyType4.ACCESSOR], keepUniqueNames: true }));
+  applyScopedInstancing(copy);
+  return collectGlbMetrics(copy).drawCalls;
 }
 function applyScopedInstancing(doc) {
   const report = [];
@@ -9534,7 +9769,7 @@ function applyScopedInstancing(doc) {
       for (const node of nodes) {
         const own = node.getMesh();
         node.dispose();
-        if (own && own !== mesh && !own.listParents().some((p) => p.propertyType === PropertyType3.NODE))
+        if (own && own !== mesh && !own.listParents().some((p) => p.propertyType === PropertyType4.NODE))
           own.dispose();
       }
     }
@@ -9586,7 +9821,7 @@ async function encodeKtx2(doc, encoder, sources) {
   for (const texture of textures) {
     const used = slots.get(texture) ?? new Set;
     const srgb = used.has("baseColor") || used.has("emissive");
-    const other = texture.listParents().some((parent) => parent.propertyType !== PropertyType3.ROOT && !isCoreMaterialUse(parent));
+    const other = texture.listParents().some((parent) => parent.propertyType !== PropertyType4.ROOT && !isCoreMaterialUse(parent));
     const linear = [...used].some((slot) => slot !== "baseColor" && slot !== "emissive") || other;
     if (srgb && linear)
       throw new Error(`Texture ${JSON.stringify(texture.getName())} is used by both sRGB and linear material slots; one KTX2 encoding cannot serve both. Use separate images.`);
@@ -9619,7 +9854,7 @@ async function encodeKtx2(doc, encoder, sources) {
   };
 }
 function isCoreMaterialUse(parent) {
-  return parent.propertyType === PropertyType3.MATERIAL;
+  return parent.propertyType === PropertyType4.MATERIAL;
 }
 function decomposeDelta(before, after) {
   const delta = new THREE9.Matrix4().fromArray(before).invert().multiply(new THREE9.Matrix4().fromArray(after));
@@ -9630,32 +9865,155 @@ function decomposeDelta(before, after) {
     offset: [position.x, position.y, position.z]
   };
 }
+function hasQuantizedVertexData(doc) {
+  const quantized = (semantic, accessor) => {
+    if (accessor.getComponentSize() >= 4)
+      return false;
+    if (semantic === "POSITION" || semantic === "NORMAL" || semantic === "TANGENT")
+      return true;
+    if (!semantic.startsWith("TEXCOORD_"))
+      return false;
+    const type = accessor.getComponentType();
+    return !(accessor.getNormalized() && (type === Accessor.ComponentType.UNSIGNED_BYTE || type === Accessor.ComponentType.UNSIGNED_SHORT));
+  };
+  return doc.getRoot().listMeshes().flatMap((mesh) => mesh.listPrimitives()).flatMap((primitive) => [primitive, ...primitive.listTargets()]).some((target) => target.listSemantics().some((semantic) => quantized(semantic, target.getAttribute(semantic))));
+}
+function positionGridSteps(doc, bits) {
+  const levels = 2 ** (bits - 1) - 1;
+  const lodBase = new Map;
+  for (const node of doc.getRoot().listNodes())
+    for (const level of node.getExtension(MSFT_LOD)?.listLevels() ?? [])
+      if (level.propertyType === PropertyType4.NODE)
+        lodBase.set(level, node);
+  const world = (node) => {
+    const matrix = new THREE9.Matrix4().fromArray(node.getWorldMatrix());
+    let top = node;
+    while (top.getParentNode())
+      top = top.getParentNode();
+    const placed = lodBase.get(top)?.getParentNode();
+    return placed ? new THREE9.Matrix4().fromArray(placed.getWorldMatrix()).multiply(matrix) : matrix;
+  };
+  const halfExtent = (mesh) => {
+    const min = [Infinity, Infinity, Infinity];
+    const max = [-Infinity, -Infinity, -Infinity];
+    const widen = (values, doubleFromZero) => {
+      for (let axis = 0;axis < 3; axis++) {
+        const value = values[axis];
+        const candidates = doubleFromZero ? [value, value * 2, 0] : [value];
+        min[axis] = Math.min(min[axis], ...candidates);
+        max[axis] = Math.max(max[axis], ...candidates);
+      }
+    };
+    for (const primitive of mesh.listPrimitives()) {
+      const position = primitive.getAttribute("POSITION");
+      if (position) {
+        widen(position.getMin([]), false);
+        widen(position.getMax([]), false);
+      }
+      for (const target of primitive.listTargets()) {
+        const delta = target.getAttribute("POSITION");
+        if (delta) {
+          widen(delta.getMin([]), true);
+          widen(delta.getMax([]), true);
+        }
+      }
+    }
+    return Math.max(...[0, 1, 2].map((axis) => (max[axis] - min[axis]) / 2));
+  };
+  const instanceScale = (node) => {
+    const scale = node.getExtension("EXT_mesh_gpu_instancing")?.getAttribute("SCALE");
+    if (!scale)
+      return 1;
+    let largest = 0;
+    for (let i = 0;i < scale.getCount(); i++)
+      largest = Math.max(largest, ...scale.getElement(i, []).map(Math.abs));
+    return largest;
+  };
+  const steps = [];
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh?.listPrimitives().some((primitive) => primitive.getAttribute("POSITION")))
+      continue;
+    const scale = node.getSkin() ? 1 : world(node).getMaxScaleOnAxis() * instanceScale(node);
+    steps.push({ node, mesh: mesh.getName(), step: halfExtent(mesh) * scale / levels });
+  }
+  return steps;
+}
+async function trimLevels(doc, maxLod) {
+  const chains = trimLodChains(doc, maxLod);
+  const budgetTiersOmitted = [];
+  if (chains.some((chain) => chain.dropped.length > 0)) {
+    await doc.transform(prune({
+      propertyTypes: [
+        PropertyType4.MESH,
+        PropertyType4.PRIMITIVE,
+        PropertyType4.PRIMITIVE_TARGET,
+        PropertyType4.ACCESSOR,
+        PropertyType4.MATERIAL,
+        PropertyType4.TEXTURE
+      ],
+      keepAttributes: true,
+      keepIndices: true,
+      keepLeaves: true,
+      keepExtras: true,
+      keepSolidTextures: true
+    }));
+    const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+    const extras = { ...scene?.getExtras() ?? {} };
+    const budget = extras[KILN_BUDGET_KEY];
+    if (scene && budget?.triangles) {
+      const triangles = { ...budget.triangles };
+      for (const tier of Object.keys(triangles))
+        if (Number(tier.slice(3)) > maxLod) {
+          budgetTiersOmitted.push(tier);
+          delete triangles[tier];
+        }
+      if (Object.keys(triangles).length > 0)
+        extras[KILN_BUDGET_KEY] = { ...budget, triangles };
+      else
+        delete extras[KILN_BUDGET_KEY];
+      scene.setExtras(extras);
+    }
+  }
+  return { maxLod, chains, budgetTiersOmitted };
+}
 async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layout = {}) {
   const compression = options.compression ?? "meshopt";
   if (compression !== "meshopt" && compression !== "none")
     throw new Error("Runtime three compression must be meshopt or none");
+  const { maxLod } = options;
+  if (maxLod !== undefined && !(Number.isSafeInteger(maxLod) && maxLod >= 0))
+    throw new Error("Runtime three maxLod must be a non-negative integer");
+  const positionBits = options.positionBits ?? RUNTIME_THREE_QUANTIZATION.position;
+  if (positionBits !== "float" && !(Number.isSafeInteger(positionBits) && positionBits >= 8 && positionBits <= 16))
+    throw new Error("Runtime three positionBits must be an integer from 8 to 16, or float");
   const io = createGltfIO().registerDependencies({
     "meshopt.encoder": meshoptEncoder
   });
   const doc = await io.readBinary(bytes);
   doc.setLogger(new Logger(Logger.Verbosity.SILENT));
-  await doc.transform(dedup({ propertyTypes: [PropertyType3.ACCESSOR], keepUniqueNames: true }));
+  const lod = maxLod === undefined ? undefined : await trimLevels(doc, maxLod);
+  await doc.transform(dedup({ propertyTypes: [PropertyType4.ACCESSOR], keepUniqueNames: true }));
   const instanced = applyScopedInstancing(doc);
   const proxies = splitColliderProxies(doc);
   const matrices = new Map;
   for (const node of doc.getRoot().listNodes())
     if (node.getMesh())
       matrices.set(node, [...node.getMatrix()]);
+  const steps = positionBits === "float" ? [] : positionGridSteps(doc, positionBits);
+  const semantics = positionBits === "float" ? QUANTIZED_SEMANTICS_EXCEPT_POSITION : QUANTIZED_SEMANTICS;
   await doc.transform(reorder({ encoder: meshoptEncoder, target: "size" }), quantize({
-    pattern: QUANTIZED_SEMANTICS,
-    patternTargets: QUANTIZED_SEMANTICS,
+    pattern: semantics,
+    patternTargets: semantics,
     quantizationVolume: "mesh",
-    quantizePosition: RUNTIME_THREE_QUANTIZATION.position,
+    quantizePosition: positionBits === "float" ? RUNTIME_THREE_QUANTIZATION.position : positionBits,
     quantizeNormal: RUNTIME_THREE_QUANTIZATION.normal,
     quantizeTexcoord: RUNTIME_THREE_QUANTIZATION.texcoord,
     quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
     quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight
   }));
+  if (positionBits === "float" && hasQuantizedVertexData(doc))
+    doc.createExtension(KHRMeshQuantization).setRequired(true);
   if (compression === "meshopt")
     doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
   const encodedSources = new Map;
@@ -9734,13 +10092,19 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layou
       extension: "KHR_mesh_quantization",
       volume: "mesh",
       bits: {
-        position: RUNTIME_THREE_QUANTIZATION.position,
+        position: positionBits === "float" ? "float32" : positionBits,
         normal: RUNTIME_THREE_QUANTIZATION.normal,
         texcoord: RUNTIME_THREE_QUANTIZATION.texcoord,
         color: RUNTIME_THREE_QUANTIZATION.color,
         weight: RUNTIME_THREE_QUANTIZATION.weight
       },
-      customAttributes: "float32"
+      customAttributes: "float32",
+      positionSteps: steps.map(({ node, mesh, step }) => ({
+        node: after.get(node) ?? `#lod/${encodeURIComponent(node.getName())}`,
+        mesh,
+        step
+      })),
+      maxPositionStep: Math.max(0, ...steps.map(({ step }) => step))
     },
     nodeScale,
     colliderProxies: proxies.map(({ collider, proxy }) => ({
@@ -9755,6 +10119,7 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layou
     })),
     instancing: instanced.map(({ node, ...rest }) => ({ node: pathOf(node), ...rest })),
     ktx2,
+    ...lod ? { lod } : {},
     preserved: {
       lodChains: all.filter((node) => node.getExtension(MSFT_LOD)).length,
       hiddenNodes: all.filter((node) => isHiddenGltfNode(node)).length,
@@ -9776,7 +10141,7 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layou
     } : {}
   };
 }
-var RUNTIME_THREE_QUANTIZATION, QUANTIZED_SEMANTICS, customRank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2, rolesOf = (node) => readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [], isCollider = (node) => rolesOf(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.collider}.`));
+var RUNTIME_THREE_QUANTIZATION, QUANTIZED_SEMANTICS, QUANTIZED_SEMANTICS_EXCEPT_POSITION, customRank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2, rolesOf = (node) => readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [], isCollider = (node) => rolesOf(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.collider}.`));
 var init_runtime_three = __esm(() => {
   init_semantic();
   init_gltf_io();
@@ -9784,6 +10149,8 @@ var init_runtime_three = __esm(() => {
   init_delivery();
   init_metrics();
   init_runtime_textures();
+  init_lod_export();
+  init_budget();
   RUNTIME_THREE_QUANTIZATION = Object.freeze({
     volume: "mesh",
     position: 14,
@@ -9793,6 +10160,7 @@ var init_runtime_three = __esm(() => {
     weight: 8
   });
   QUANTIZED_SEMANTICS = /^(POSITION|NORMAL|TANGENT|TEXCOORD_\d+|COLOR_\d+|JOINTS_\d+|WEIGHTS_\d+)$/;
+  QUANTIZED_SEMANTICS_EXCEPT_POSITION = /^(NORMAL|TANGENT|TEXCOORD_\d+|COLOR_\d+|JOINTS_\d+|WEIGHTS_\d+)$/;
 });
 
 // src/asset-export.ts
@@ -9892,6 +10260,10 @@ async function exportAssetGlb(record, options = {}) {
     throw new Error("A runtime export target requires the runtime profile");
   if (options.compression !== undefined && options.target !== "three")
     throw new Error("Runtime compression requires the three runtime target");
+  if (options.maxLod !== undefined && options.target !== "three")
+    throw new Error("Runtime maxLod requires the three runtime target");
+  if (options.positionBits !== undefined && options.target !== "three")
+    throw new Error("Runtime positionBits requires the three runtime target");
   const textures = options.textures;
   if (textures !== undefined && textures !== "manifest" && textures !== "external")
     throw new Error("Unknown runtime texture option");
@@ -9945,7 +10317,9 @@ async function exportAssetGlb(record, options = {}) {
   if (options.target === "three") {
     const derived = await deriveThree(writeGlbJson(bytes, jsonEnd, json), {
       ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {},
-      ...options.compression ? { compression: options.compression } : {}
+      ...options.compression ? { compression: options.compression } : {},
+      ...options.maxLod !== undefined ? { maxLod: options.maxLod } : {},
+      ...options.positionBits !== undefined ? { positionBits: options.positionBits } : {}
     }, textures === "external" ? { gltfBasename: gltfName.slice(0, -".gltf".length) } : {});
     metadata.target = "three";
     metadata.delivery = derived.delivery;
@@ -10153,7 +10527,7 @@ var init_export_root = __esm(() => {
 
 // src/evaluator/solid-diagnostic.ts
 function validSolidFailureDetails(value) {
-  if (!record5(value) || !keys(value, ["total", "truncated", "meshes"]) || !count2(value.total) || value.total < 1 || !Array.isArray(value.meshes) || value.meshes.length !== Math.min(value.total, MAX_SOLID_FAILURE_MESHES) || value.truncated !== value.total > value.meshes.length)
+  if (!record5(value) || !keys(value, ["total", "truncated", "meshes"]) || !count3(value.total) || value.total < 1 || !Array.isArray(value.meshes) || value.meshes.length !== Math.min(value.total, MAX_SOLID_FAILURE_MESHES) || value.truncated !== value.total > value.meshes.length)
     return false;
   return value.meshes.every((mesh) => record5(mesh) && keys(mesh, [
     "childPath",
@@ -10163,7 +10537,7 @@ function validSolidFailureDetails(value) {
     "boundaryEdges",
     "nonManifoldEdges",
     "orientationConflicts"
-  ]) && (mesh.childPath === null || Array.isArray(mesh.childPath) && mesh.childPath.length <= MAX_SOLID_FAILURE_PATH && mesh.childPath.every(count2)) && typeof mesh.closed === "boolean" && typeof mesh.manifold === "boolean" && typeof mesh.orientation === "string" && ["outward", "inward", "mixed"].includes(mesh.orientation) && count2(mesh.boundaryEdges) && count2(mesh.nonManifoldEdges) && count2(mesh.orientationConflicts));
+  ]) && (mesh.childPath === null || Array.isArray(mesh.childPath) && mesh.childPath.length <= MAX_SOLID_FAILURE_PATH && mesh.childPath.every(count3)) && typeof mesh.closed === "boolean" && typeof mesh.manifold === "boolean" && typeof mesh.orientation === "string" && ["outward", "inward", "mixed"].includes(mesh.orientation) && count3(mesh.boundaryEdges) && count3(mesh.nonManifoldEdges) && count3(mesh.orientationConflicts));
 }
 function solidFailureAdvice(value) {
   if (!value || !validSolidFailureDetails(value))
@@ -10174,7 +10548,7 @@ function solidFailureAdvice(value) {
   });
   return ` Required solid measurements (${value.meshes.length} of ${value.total} failing meshes): ${rows.join("; ")}. Child indices locate nodes in the authored build root before export; names are not forwarded. Read the retained source and check that node's geometryDiagnostics().solid.`;
 }
-var MAX_SOLID_FAILURE_MESHES = 4, MAX_SOLID_FAILURE_PATH = 64, RequiredSolidError, record5 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), keys = (value, names) => Object.keys(value).length === names.length && names.every((name) => Object.hasOwn(value, name)), count2 = (value) => typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
+var MAX_SOLID_FAILURE_MESHES = 4, MAX_SOLID_FAILURE_PATH = 64, RequiredSolidError, record5 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), keys = (value, names) => Object.keys(value).length === names.length && names.every((name) => Object.hasOwn(value, name)), count3 = (value) => typeof value === "number" && Number.isSafeInteger(value) && value >= 0;
 var init_solid_diagnostic = __esm(() => {
   init_authoring_diagnostic();
   RequiredSolidError = class RequiredSolidError extends AuthoringDiagnosticError {
@@ -17227,7 +17601,7 @@ function lodName(name) {
     pattern: `${name.slice(0, start)}${token}<n>${name.slice(end)}`
   };
 }
-function fail5(message) {
+function fail6(message) {
   throw new AuthoringDiagnosticError("LOD_SET", message);
 }
 function coverageProblem(values, levels) {
@@ -17250,25 +17624,25 @@ function format(values) {
 }
 function defineLod(levels, options) {
   if (!Array.isArray(levels) || levels.length < 2 || levels.some((level) => level?.isObject3D !== true))
-    fail5(`defineLod: levels must list at least two tier nodes, LOD0 first, as in ${EXAMPLE}.`);
+    fail6(`defineLod: levels must list at least two tier nodes, LOD0 first, as in ${EXAMPLE}.`);
   const first = lodName(levels[0].name);
   for (const [index, level] of levels.entries()) {
     const parsed = lodName(level.name);
     if (!parsed || parsed.level !== index || parsed.stem !== first?.stem) {
       const expected = first ? first.pattern.replace("<n>", String(index)) : `a name with the token LOD${index}`;
-      fail5(`defineLod: level ${index} is named ${JSON.stringify(level.name)}; name each tier with one stem and its level's token in order (${expected}).`);
+      fail6(`defineLod: level ${index} is named ${JSON.stringify(level.name)}; name each tier with one stem and its level's token in order (${expected}).`);
     }
   }
   const parents = new Set(levels.map((level) => level.parent));
   if (!parents.has(null) && parents.size > 1)
-    fail5(`defineLod: the tiers of ${JSON.stringify(first.pattern)} must share the same parent; lower levels replace LOD0 in place.`);
+    fail6(`defineLod: the tiers of ${JSON.stringify(first.pattern)} must share the same parent; lower levels replace LOD0 in place.`);
   const coverage = options?.screenCoverage;
   const problem = coverageProblem(coverage, levels.length);
   if (problem)
-    fail5(`defineLod: ${problem}; got ${format(coverage)}. For example ${EXAMPLE}.`);
+    fail6(`defineLod: ${problem}; got ${format(coverage)}. For example ${EXAMPLE}.`);
   const impostor = options?.impostor;
   if (impostor !== undefined && typeof impostor !== "boolean")
-    fail5(`defineLod: impostor must be true or false; got ${format(impostor)}.`);
+    fail6(`defineLod: impostor must be true or false; got ${format(impostor)}.`);
   const declaration = {
     screenCoverage: [...coverage],
     ...impostor ? { impostor: true } : {}
@@ -17305,18 +17679,18 @@ function collectLodSets(root) {
       const ordered = [...members].sort((a, b) => a.name.level - b.name.level);
       const found = ordered.map((member) => member.name.level);
       if (found.some((level, index) => level !== index))
-        fail5(`LOD set ${where} has levels ${found.join(", ")}; a set needs LOD0 and consecutive levels with no repeats.`);
+        fail6(`LOD set ${where} has levels ${found.join(", ")}; a set needs LOD0 and consecutive levels with no repeats.`);
       const levels = ordered.map((member) => member.node);
       const declaration = declarationOf(levels[0]);
       const names = levels.map((level) => level.name).join(", ");
       if (declaration === undefined)
-        fail5(`LOD set ${where} (${names}) has no screen coverage. Declare it once: defineLod([${names}], { screenCoverage: [...] }) with one value per level, from 0 to 1, strictly decreasing.`);
+        fail6(`LOD set ${where} (${names}) has no screen coverage. Declare it once: defineLod([${names}], { screenCoverage: [...] }) with one value per level, from 0 to 1, strictly decreasing.`);
       const coverage = declaration?.screenCoverage;
       if (Array.isArray(coverage) && coverage.length !== levels.length)
-        fail5(`LOD set ${where} declares ${coverage.length} levels but has ${levels.length} (${names}); call defineLod again with every tier.`);
+        fail6(`LOD set ${where} declares ${coverage.length} levels but has ${levels.length} (${names}); call defineLod again with every tier.`);
       const problem = coverageProblem(coverage, levels.length);
       if (problem)
-        fail5(`LOD set ${where}: ${problem}.`);
+        fail6(`LOD set ${where}: ${problem}.`);
       declaredBases.add(levels[0]);
       sets.push({ parent, levels, screenCoverage: [...coverage] });
     }
@@ -17330,7 +17704,7 @@ function collectLodSets(root) {
       return;
     const coverage = declaration?.screenCoverage;
     const count = Array.isArray(coverage) ? coverage.length : "its";
-    fail5(`${JSON.stringify(node.name)} declares ${count} levels with defineLod but is not the LOD0 of a set of sibling tiers; attach every tier under the same parent (sets cannot nest inside another tier).`);
+    fail6(`${JSON.stringify(node.name)} declares ${count} levels with defineLod but is not the LOD0 of a set of sibling tiers; attach every tier under the same parent (sets cannot nest inside another tier).`);
   });
   return sets;
 }
@@ -17603,10 +17977,10 @@ var init_reference_comparison = __esm(() => {
 function markOpenShell(part, reason) {
   const node = part;
   if (!node || typeof node !== "object" || node.isObject3D !== true)
-    fail6("part must be a scene node, such as the mesh createPart returned or a group.");
+    fail7("part must be a scene node, such as the mesh createPart returned or a group.");
   const kept = validReason(reason);
   if (kept === undefined)
-    fail6(`reason must be a non-empty string of at most ${MAX_OPEN_SHELL_REASON} characters saying why the shell is open.`);
+    fail7(`reason must be a non-empty string of at most ${MAX_OPEN_SHELL_REASON} characters saying why the shell is open.`);
   const target = node;
   if (!target.userData || typeof target.userData !== "object")
     target.userData = {};
@@ -17639,10 +18013,10 @@ function openShellExtras(node) {
     return {};
   const reason = markReason(value);
   if (reason === undefined)
-    fail6(`userData.${OPEN_SHELL_KEY} on ${JSON.stringify(target?.name || "(unnamed node)")} is not a mark this helper wrote; the engine owns that key, so set it only through markOpenShell.`);
+    fail7(`userData.${OPEN_SHELL_KEY} on ${JSON.stringify(target?.name || "(unnamed node)")} is not a mark this helper wrote; the engine owns that key, so set it only through markOpenShell.`);
   return { [OPEN_SHELL_KEY]: { schemaVersion: 1, reason } };
 }
-var OPEN_SHELL_KEY = "kilnOpenShell", MAX_OPEN_SHELL_REASON = 200, EXAMPLE2 = 'markOpenShell(rail, "C-channel closed by the end plates")', fail6 = (detail) => {
+var OPEN_SHELL_KEY = "kilnOpenShell", MAX_OPEN_SHELL_REASON = 200, EXAMPLE2 = 'markOpenShell(rail, "C-channel closed by the end plates")', fail7 = (detail) => {
   throw new AuthoringDiagnosticError("OPEN_SHELL", `markOpenShell(part, reason): ${detail} For example ${EXAMPLE2}.`);
 }, validReason = (reason) => {
   if (typeof reason !== "string")
@@ -20721,7 +21095,7 @@ function createAssetRequirementsV1(input = {}) {
     ...input
   });
 }
-var text2, positive2, nonnegative, count3, names, marker, supportParts, roof, structure, effects, requirements, AssetRequirementsV1Schema;
+var text2, positive2, nonnegative, count4, names, marker, supportParts, roof, structure, effects, requirements, AssetRequirementsV1Schema;
 var init_requirements = __esm(() => {
   init_asset();
   init_breadth();
@@ -20729,7 +21103,7 @@ var init_requirements = __esm(() => {
   text2 = z6.string().refine((value) => value.trim().length > 0, { message: "Must be non-empty." });
   positive2 = z6.number().finite().positive();
   nonnegative = z6.number().finite().nonnegative();
-  count3 = z6.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+  count4 = z6.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
   names = z6.array(text2).refine((values) => new Set(values).size === values.length, {
     message: "Values must be unique."
   });
@@ -20748,7 +21122,7 @@ var init_requirements = __esm(() => {
   structure = z6.strictObject({
     subtype: text2.optional(),
     enterable: z6.boolean().optional(),
-    storeyCount: count3.min(1).optional(),
+    storeyCount: count4.min(1).optional(),
     interiorMode: z6.enum(ARCHITECTURE_INTERIOR_MODES).optional(),
     roofMode: z6.enum(ARCHITECTURE_ROOF_MODES).optional(),
     footprint: z6.strictObject({ spanX: positive2, spanZ: positive2, units: z6.literal("m") }).optional(),
@@ -20796,8 +21170,8 @@ var init_requirements = __esm(() => {
       supportAssemblies: names.optional(),
       propulsionAssemblies: names.optional(),
       frontFrame: z6.literal("+X").optional(),
-      wheelCount: count3.optional(),
-      axleCount: count3.optional(),
+      wheelCount: count4.optional(),
+      axleCount: count4.optional(),
       steering: z6.enum(VEHICLE_STEERING_ARRANGEMENTS).optional(),
       supportPolicy: z6.enum(VEHICLE_SUPPORT_POLICIES).optional(),
       animationAssemblies: names.optional()
@@ -22240,88 +22614,6 @@ function inspectSkinIntegrity(root) {
 }
 var MAX_FINDINGS = 64, WEIGHT_TOLERANCE = 0.00001;
 var init_skin_integrity = () => {};
-
-// src/lod-export.ts
-import { PropertyType as PropertyType4 } from "@gltf-transform/core";
-function applyLodChains(root, sets, doc) {
-  if (sets.length === 0)
-    return;
-  const exported = writtenNodeResolver(root, doc, "LOD export");
-  const chains = sets.map((set) => ({
-    set,
-    parent: exported(set.parent),
-    levels: set.levels.map(exported)
-  }));
-  const extension = doc.createExtension(MSFTLod);
-  for (const { set, parent, levels } of chains) {
-    const [base, ...lower] = levels;
-    const lod = extension.createLod();
-    for (const level of lower) {
-      parent.removeChild(level);
-      lod.addLevel(level);
-    }
-    base.setExtension(MSFT_LOD, lod);
-    base.setExtras({ ...base.getExtras(), [MSFT_SCREENCOVERAGE]: [...set.screenCoverage] });
-  }
-}
-function occurrence(siblings, index, name) {
-  let count = 0;
-  for (let i = 0;i < index; i++)
-    if (siblings[i].getName() === name)
-      count++;
-  return count;
-}
-function screenCoverageOf(node) {
-  const value = node.getExtras()[MSFT_SCREENCOVERAGE];
-  return Array.isArray(value) && value.every((item) => typeof item === "number") ? [...value] : undefined;
-}
-function listLodChainNodes(doc) {
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  if (!scene)
-    return [];
-  const chains = [];
-  const visit = (siblings, parentPath) => {
-    siblings.forEach((node, index) => {
-      const at = (name) => `${parentPath}${segment4(name, occurrence(siblings, index, name))}`;
-      const path = at(node.getName());
-      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType4.NODE);
-      if (lower.length > 0)
-        chains.push({
-          levels: [node, ...lower],
-          paths: [path, ...lower.map((level) => at(level.getName()))]
-        });
-      visit(node.listChildren(), path);
-    });
-  };
-  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0));
-  return chains;
-}
-function isImpostorLevel(node) {
-  const roles = readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [];
-  return roles.includes(KILN_SEMANTIC_ROLES.lodImpostor);
-}
-function summarizeLodChains(doc) {
-  return listLodChainNodes(doc).map(({ levels, paths }) => {
-    const screenCoverage = screenCoverageOf(levels[0]);
-    return {
-      path: paths[0],
-      ...screenCoverage ? { screenCoverage } : {},
-      levels: levels.map((level, number) => ({
-        level: number,
-        name: level.getName(),
-        path: paths[number],
-        triangles: drawnNodeTriangles(level),
-        ...number > 0 && isImpostorLevel(level) ? { impostor: true } : {}
-      }))
-    };
-  });
-}
-var MSFT_SCREENCOVERAGE = "MSFT_screencoverage", segment4 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
-var init_lod_export = __esm(() => {
-  init_semantic();
-  init_gltf_io();
-  init_metrics();
-});
 
 // src/rig-export.ts
 function rigExtrasForExport(node) {
@@ -24648,25 +24940,25 @@ var init_assembly = __esm(() => {
 // src/palette-check.ts
 function hex(value, label) {
   if (typeof value !== "string" || !/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value))
-    fail7(`${label} must be a hex colour such as '#6b6f73', got ${JSON.stringify(value)}.`);
+    fail8(`${label} must be a hex colour such as '#6b6f73', got ${JSON.stringify(value)}.`);
   const digits = value.replace("#", "").toLowerCase();
   return `#${digits.length === 3 ? [...digits].map((d) => d + d).join("") : digits}`;
 }
 function normalizePalette(colors, opts) {
   if (!Array.isArray(colors) || colors.length === 0 || colors.length > PALETTE_MAX_COLORS)
-    fail7(`colors must be an array of 1..${PALETTE_MAX_COLORS} hex colours.`);
+    fail8(`colors must be an array of 1..${PALETTE_MAX_COLORS} hex colours.`);
   const entries = colors.map((value, i) => hex(value, `colors[${i}]`));
   let threshold = PALETTE_DEFAULT_THRESHOLD;
   if (opts !== undefined) {
     if (!opts || typeof opts !== "object" || Array.isArray(opts))
-      fail7("opts must be { threshold? }.");
+      fail8("opts must be { threshold? }.");
     for (const key of Object.keys(opts))
       if (key !== "threshold")
-        fail7(`unknown option ${JSON.stringify(key)}.`);
+        fail8(`unknown option ${JSON.stringify(key)}.`);
     const t = opts.threshold;
     if (t !== undefined) {
       if (typeof t !== "number" || !Number.isFinite(t) || t <= 0 || t > 100)
-        fail7(`threshold must be a delta E in (0, 100], got ${String(t)}.`);
+        fail8(`threshold must be a delta E in (0, 100], got ${String(t)}.`);
       threshold = t;
     }
   }
@@ -24676,7 +24968,7 @@ function definePalette(colors, opts, target) {
   const declaration = normalizePalette(colors, opts);
   if (target !== undefined) {
     if (target?.isObject3D !== true)
-      fail7("target must be a scene node, normally the root.");
+      fail8("target must be a scene node, normally the root.");
     target.userData[KILN_PALETTE_KEY] = structuredClone(declaration);
   }
   return declaration;
@@ -24752,7 +25044,7 @@ function evaluatePalette(declaration, doc) {
     offPalette
   };
 }
-var KILN_PALETTE_KEY = "kilnPaletteV1", PALETTE_DEFAULT_THRESHOLD = 10, PALETTE_MAX_COLORS = 64, fail7 = (detail) => {
+var KILN_PALETTE_KEY = "kilnPaletteV1", PALETTE_DEFAULT_THRESHOLD = 10, PALETTE_MAX_COLORS = 64, fail8 = (detail) => {
   throw new AuthoringDiagnosticError("DELIVERY_CONTRACT", `definePalette(colors, opts?): ${detail}`);
 }, srgbToLinear = (c) => c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4, linearToSrgb = (c) => c <= 0.0031308 ? c * 12.92 : 1.055 * Math.max(0, c) ** (1 / 2.4) - 0.055, hexToLinear = (value) => {
   const n = Number.parseInt(value.slice(1), 16);
@@ -24762,95 +25054,6 @@ var init_palette_check = __esm(() => {
   init_delivery();
   init_authoring_diagnostic();
   init_metrics();
-});
-
-// src/budget.ts
-function normalizeBudget(spec) {
-  if (!spec || typeof spec !== "object" || Array.isArray(spec))
-    fail8("spec must be { triangles: number | { LOD0, LOD1, ... }, draws? }.");
-  const value = spec;
-  for (const key of Object.keys(value))
-    if (key !== "triangles" && key !== "draws" && key !== "schemaVersion")
-      fail8(`unknown field ${JSON.stringify(key)}.`);
-  const triangles = {};
-  if (typeof value.triangles === "number")
-    triangles.LOD0 = count4("triangles", value.triangles);
-  else if (value.triangles && typeof value.triangles === "object" && !Array.isArray(value.triangles)) {
-    const entries = Object.entries(value.triangles);
-    if (entries.length === 0)
-      fail8("triangles needs at least one tier.");
-    for (const [tier, limit] of entries) {
-      if (!/^LOD(0|[1-9][0-9]?)$/.test(tier))
-        fail8(`triangles tier ${JSON.stringify(tier)} must be named LOD0, LOD1, ...`);
-      triangles[tier] = count4(`triangles.${tier}`, limit);
-    }
-  } else
-    fail8("triangles must be a positive integer or a record of LOD tiers.");
-  const ordered = Object.fromEntries(Object.entries(triangles).sort(([a], [b]) => Number(a.slice(3)) - Number(b.slice(3))));
-  return {
-    schemaVersion: 1,
-    triangles: ordered,
-    ...value.draws === undefined ? {} : { draws: count4("draws", value.draws) }
-  };
-}
-function defineBudget(spec, target) {
-  const declaration = normalizeBudget(spec);
-  if (target !== undefined) {
-    if (target?.isObject3D !== true)
-      fail8("target must be a scene node, normally the root.");
-    target.userData[KILN_BUDGET_KEY] = structuredClone(declaration);
-  }
-  return declaration;
-}
-function readBudgetDeclaration(value) {
-  if (value === undefined)
-    return;
-  try {
-    const declaration = normalizeBudget(value);
-    return value.schemaVersion === 1 ? declaration : undefined;
-  } catch {
-    return;
-  }
-}
-function evaluateBudget(declaration, measuredLod0, chains) {
-  const outside = measuredLod0.triangles - chains.reduce((sum, chain) => sum + chain.levels[0].triangles, 0);
-  const tierTriangles = (level) => outside + chains.reduce((sum, chain) => sum + chain.levels[Math.min(level, chain.levels.length - 1)].triangles, 0);
-  const tiers = Object.entries(declaration.triangles).map(([tier, limit]) => {
-    const level = Number(tier.slice(3));
-    const triangles = level === 0 ? measuredLod0.triangles : tierTriangles(level);
-    const drawsDeclared = level === 0 ? declaration.draws : undefined;
-    const pass = triangles <= limit && (drawsDeclared === undefined || measuredLod0.draws <= drawsDeclared);
-    return {
-      tier,
-      declared: {
-        triangles: limit,
-        ...drawsDeclared === undefined ? {} : { draws: drawsDeclared }
-      },
-      measured: {
-        triangles,
-        ...drawsDeclared === undefined ? {} : { draws: measuredLod0.draws }
-      },
-      status: pass ? "pass" : "fail"
-    };
-  });
-  if (declaration.draws !== undefined && declaration.triangles.LOD0 === undefined)
-    tiers.unshift({
-      tier: "LOD0",
-      declared: { draws: declaration.draws },
-      measured: { triangles: measuredLod0.triangles, draws: measuredLod0.draws },
-      status: measuredLod0.draws <= declaration.draws ? "pass" : "fail"
-    });
-  return { status: tiers.every((tier) => tier.status === "pass") ? "pass" : "fail", tiers };
-}
-var KILN_BUDGET_KEY = "kilnBudgetV1", fail8 = (detail) => {
-  throw new AuthoringDiagnosticError("DELIVERY_CONTRACT", `defineBudget(spec): ${detail}`);
-}, count4 = (label, value) => {
-  if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 1)
-    fail8(`${label} must be a positive integer, got ${String(value)}.`);
-  return value;
-};
-var init_budget = __esm(() => {
-  init_authoring_diagnostic();
 });
 
 // src/animation-cubic.ts
@@ -37980,7 +38183,7 @@ var init_character_capture = __esm(() => {
 import * as THREE55 from "three";
 import { Document, Logger as Logger2 } from "@gltf-transform/core";
 import { KHRMaterialsEmissiveStrength } from "@gltf-transform/extensions";
-import { dedup as dedup2, instance, palette, weld as weld2, prune, mergeDocuments } from "@gltf-transform/functions";
+import { dedup as dedup2, instance, palette, weld as weld2, prune as prune2, mergeDocuments } from "@gltf-transform/functions";
 function applySurfaceBakeExtras(root, doc) {
   const baked = [];
   root.traverse((node) => {
@@ -38046,7 +38249,12 @@ async function inspectGlbIntegration(bytes, opts = {}) {
   const delivery = inspectDelivery(doc);
   const vertexAttributes = summarizeVertexAttributes(doc);
   const budgetDeclaration = readBudgetDeclaration(scene.getExtras()[KILN_BUDGET_KEY]);
-  const budget = budgetDeclaration ? evaluateBudget(budgetDeclaration, { triangles: metrics.triangles, draws: metrics.drawCalls }, levelsOfDetail) : undefined;
+  const instancedDraws = budgetDeclaration?.draws === undefined ? undefined : await (await Promise.resolve().then(() => (init_runtime_three(), exports_runtime_three))).instancedDrawEstimate(doc);
+  const budget = budgetDeclaration ? evaluateBudget(budgetDeclaration, {
+    triangles: metrics.triangles,
+    draws: metrics.drawCalls,
+    ...instancedDraws === undefined ? {} : { instancedDraws }
+  }, levelsOfDetail) : undefined;
   const paletteDeclaration = readPaletteDeclaration(scene.getExtras()[KILN_PALETTE_KEY]);
   const palette = paletteDeclaration ? evaluatePalette(paletteDeclaration, doc) : undefined;
   return {
@@ -38639,7 +38847,7 @@ async function consolidateMaterials(doc, mode, keep = []) {
     steps.push(rigidMerge({ keep }, (summary) => {
       merge = summary;
     }));
-  steps.push(weld2(), prune({ keepLeaves: true, keepExtras: true, keepSolidTextures: true }));
+  steps.push(weld2(), prune2({ keepLeaves: true, keepExtras: true, keepSolidTextures: true }));
   await doc.transform(...steps);
   const after = collectGlbMetrics(doc);
   return {
@@ -41112,7 +41320,7 @@ __export(exports_draw_diagnostics, {
   inspectDrawDiagnostics: () => inspectDrawDiagnostics
 });
 import { Primitive as Primitive3 } from "@gltf-transform/core";
-import { cloneDocument } from "@gltf-transform/functions";
+import { cloneDocument as cloneDocument2 } from "@gltf-transform/functions";
 import * as THREE57 from "three";
 function withinLimits(doc) {
   const root = doc.getRoot();
@@ -41268,7 +41476,7 @@ function analyzeDrawDiagnostics(doc, options = {}) {
       return skipped("input-limit");
     const keep = options.keep ?? [];
     const before = collect2(doc, keep);
-    const copy = cloneDocument(doc);
+    const copy = cloneDocument2(doc);
     const merge = mergeRigidGroups(copy, { keep });
     const after = collect2(copy, keep);
     const all = [...before.anchors.values()].map((anchor) => ({
