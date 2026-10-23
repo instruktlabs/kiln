@@ -88,16 +88,18 @@ program crosses the worker boundary. The worker may add one closed cause, and th
 turns it into engine-written advice. Causes include a binding read before its
 declaration ran, a `build()` that is missing or returns no Object3D, a `materialRecipe`
 override the recipe does not allow, a procedural texture usage that is unknown or does not
-match its slot, and a TypeError or RangeError. The host still has
+match its slot, an `extrudeProfile` or `revolveProfile` outline that cannot become a solid
+(`PROFILE_SOLID_FAILED`), and a TypeError or RangeError. The host still has
 the source it sent. `kiln_render`, `kiln_inspect`, `kiln_view_interior`,
 `kiln_screenshot_animation` and the CLI parse that source and append `Source check:`
 with up to three codes and lines that `kiln_validate` reports for it. Examples are
 `TEMPORAL_DEAD_ZONE`, `MATERIAL_RECIPE_OVERRIDE`, `UNSAFE_GLOBAL_ACCESS` and
 `SYNTAX_ERROR`. An unrecognised exception stays generic: the sentence continues with a
-fixed engine-owned paragraph that says no message crosses the sandbox, that values are
-read with `kiln_inspect` on a rendered program rather than a thrown `Error`, and that
-`kiln_validate` (`kiln validate` from the CLI) names the line (`EXECUTION_REJECTED_ADVICE` in
-`src/evaluator/authoring-diagnostic.ts`).
+fixed engine-owned paragraph that says no message crosses the sandbox, that
+`kiln_validate` (`kiln validate` from the CLI) checks syntax and static rules but cannot see
+execution-time failures, which are reproduced with `kiln_render` by simplifying the failing
+part, and that values are read with `kiln_inspect` on a rendered program rather than a
+thrown `Error` (`EXECUTION_REJECTED_ADVICE` in `src/evaluator/authoring-diagnostic.ts`).
 
 ## Animation measurements
 

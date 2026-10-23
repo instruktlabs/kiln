@@ -2296,7 +2296,7 @@ define(
     parameters: [
       'Finite closed outline, optional finite hole outlines, positive depth.',
       'Twist is degrees; taper is dimensionless; divisions is a whole number >= 0 of intermediate rings, default 0 (16 when twisting).',
-      'Bevel uses profile units. If its inward offset empties the section, execution rejects with repair advice: reduce bevel below half the narrowest width, disable it, or widen the section.',
+      'Bevel uses profile units. If its inward offset empties the section, execution rejects with PROFILE_BEVEL_COLLAPSE repair advice: reduce bevel below half the narrowest width, disable it, or widen the section. Any other failure to build the solid rejects with PROFILE_SOLID_FAILED repair advice. kiln_validate cannot see either; reproduce with kiln_render.',
     ],
   },
   {
@@ -2320,7 +2320,7 @@ define(
     parameters: [
       'Closed finite profile; only nonnegative radial side is used.',
       'angle in (0,360] degrees; segments and bevel options control tessellation.',
-      'Bevel uses profile units. If its inward offset empties the section, execution rejects with repair advice: reduce bevel below half the narrowest width, disable it, or widen the section.',
+      'Bevel uses profile units. If its inward offset empties the section, execution rejects with PROFILE_BEVEL_COLLAPSE repair advice: reduce bevel below half the narrowest width, disable it, or widen the section. Any other failure to build the solid rejects with PROFILE_SOLID_FAILED repair advice. kiln_validate cannot see either; reproduce with kiln_render.',
     ],
   },
   {

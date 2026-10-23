@@ -151,6 +151,32 @@ function orientSweep(geo: THREE.BufferGeometry, axis: SweepAxis): THREE.BufferGe
   return geo;
 }
 
+/** Resolve the bevel join before the solid path, so a bad style stays an argument error. */
+function bevelJoin(style: BevelStyle, label: string): JoinType {
+  const join = JOIN_FOR_STYLE[style];
+  if (!join) {
+    throw new Error(`${label}: bevelStyle must be 'round' or 'chamfer' (got ${String(style)}).`);
+  }
+  return join;
+}
+
+/**
+ * Run the manifold-backed solid path of a profile helper: cross-section, bevel,
+ * extrude or revolve, and the geometry bridge. A closed cause raised inside
+ * (`PROFILE_BEVEL_COLLAPSE`, `SOLID_FLOAT32_COLLAPSE`) passes through unchanged.
+ * Anything else, including a raw WASM exception value or a manifold error, becomes
+ * the closed `PROFILE_SOLID_FAILED` cause, so it crosses the sandbox with
+ * engine-owned repair advice instead of the bare generic rejection (#178).
+ */
+function profileSolid(build: () => THREE.BufferGeometry): THREE.BufferGeometry {
+  try {
+    return build();
+  } catch (error) {
+    if (error instanceof AuthoringDiagnosticError) throw error;
+    throw new AuthoringDiagnosticError('PROFILE_SOLID_FAILED');
+  }
+}
+
 /**
  * Round or chamfer every corner of a cross-section without moving its outer
  * dimensions: erode by r, dilate by 2r, erode by r.
@@ -162,14 +188,9 @@ function orientSweep(geo: THREE.BufferGeometry, axis: SweepAxis): THREE.BufferGe
 function bevelCrossSection(
   cs: CrossSection,
   bevel: number,
-  style: BevelStyle,
+  join: JoinType,
   segments: number,
-  label: string,
 ): CrossSection {
-  const join = JOIN_FOR_STYLE[style];
-  if (!join) {
-    throw new Error(`${label}: bevelStyle must be 'round' or 'chamfer' (got ${String(style)}).`);
-  }
   const eroded = cs.offset(-bevel, join, 2, segments);
   if (eroded.isEmpty()) {
     eroded.delete();
@@ -269,6 +290,12 @@ export async function extrudeProfile(
   for (let i = 0; i < holes.length; i++) {
     assertFiniteProfile(holes[i] as Profile2D, `extrudeProfile: holes[${i}]`);
   }
+  const join = bevel > 0 ? bevelJoin(bevelStyle, 'extrudeProfile') : undefined;
+  const scaleTop = normalizeTaper(taper);
+  // Twist needs intermediate slices or it interpolates as a single shear. A
+  // straight or tapered sweep is exact with none: each ring would only add
+  // coplanar side triangles.
+  const nDivisions = divisions ?? (twist !== 0 ? 16 : 0);
 
   const mod = await getManifoldModule();
   const { CrossSection: CS } = mod;
@@ -279,37 +306,30 @@ export async function extrudeProfile(
     return cs;
   };
 
-  try {
-    let section: CrossSection = track(new CS([profile as Vec2[]], 'NonZero'));
-    if (holes.length > 0) {
-      // Subtract rather than relying on an EvenOdd fill rule: agent-written
-      // hole outlines have arbitrary winding, and a wrong winding under
-      // EvenOdd yields a filled disc instead of a hole with no error.
-      const holeSections = holes.map((h) => track(new CS([h as Vec2[]], 'NonZero')));
-      section = track(CS.difference(section, CS.union(holeSections)));
-      if (section.isEmpty()) {
-        throw new Error(
-          'extrudeProfile: the holes consume the whole profile — nothing left to extrude.',
-        );
-      }
-    }
-    if (bevel > 0) {
-      section = track(bevelCrossSection(section, bevel, bevelStyle, segments, 'extrudeProfile'));
-    }
-
-    // Twist needs intermediate slices or it interpolates as a single shear. A
-    // straight or tapered sweep is exact with none: each ring would only add
-    // coplanar side triangles.
-    const nDivisions = divisions ?? (twist !== 0 ? 16 : 0);
-    const solid = section.extrude(depth, nDivisions, twist, normalizeTaper(taper), center);
+  const geometry = profileSolid(() => {
     try {
-      return orientSweep(manifoldToGeometry(solid, { smooth }), axis);
+      let section: CrossSection = track(new CS([profile as Vec2[]], 'NonZero'));
+      if (holes.length > 0) {
+        // Subtract rather than relying on an EvenOdd fill rule: agent-written
+        // hole outlines have arbitrary winding, and a wrong winding under
+        // EvenOdd yields a filled disc instead of a hole with no error.
+        const holeSections = holes.map((h) => track(new CS([h as Vec2[]], 'NonZero')));
+        section = track(CS.difference(section, CS.union(holeSections)));
+        // The holes consume the whole profile: nothing is left to extrude.
+        if (section.isEmpty()) throw new AuthoringDiagnosticError('PROFILE_SOLID_FAILED');
+      }
+      if (join) section = track(bevelCrossSection(section, bevel, join, segments));
+      const solid = section.extrude(depth, nDivisions, twist, scaleTop, center);
+      try {
+        return manifoldToGeometry(solid, { smooth });
+      } finally {
+        solid.delete();
+      }
     } finally {
-      solid.delete();
+      for (const cs of disposable) cs.delete();
     }
-  } finally {
-    for (const cs of disposable) cs.delete();
-  }
+  });
+  return orientSweep(geometry, axis);
 }
 
 /**
@@ -350,27 +370,31 @@ export async function revolveProfile(
   if (!Number.isFinite(angle) || angle <= 0 || angle > 360) {
     throw new Error(`revolveProfile: angle must be in (0, 360] degrees (got ${angle}).`);
   }
+  const join = bevel > 0 ? bevelJoin(bevelStyle, 'revolveProfile') : undefined;
 
   const mod = await getManifoldModule();
   const { CrossSection: CS } = mod;
 
   const disposable: CrossSection[] = [];
-  try {
-    let section: CrossSection = new CS([profile as Vec2[]], 'NonZero');
-    disposable.push(section);
-    if (bevel > 0) {
-      section = bevelCrossSection(section, bevel, bevelStyle, bevelSegments, 'revolveProfile');
-      disposable.push(section);
-    }
-    const solid = section.revolve(segments, angle);
+  const geometry = profileSolid(() => {
     try {
-      return orientSweep(manifoldToGeometry(solid, { smooth }), axis);
+      let section: CrossSection = new CS([profile as Vec2[]], 'NonZero');
+      disposable.push(section);
+      if (join) {
+        section = bevelCrossSection(section, bevel, join, bevelSegments);
+        disposable.push(section);
+      }
+      const solid = section.revolve(segments, angle);
+      try {
+        return manifoldToGeometry(solid, { smooth });
+      } finally {
+        solid.delete();
+      }
     } finally {
-      solid.delete();
+      for (const cs of disposable) cs.delete();
     }
-  } finally {
-    for (const cs of disposable) cs.delete();
-  }
+  });
+  return orientSweep(geometry, axis);
 }
 
 /**

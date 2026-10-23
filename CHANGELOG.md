@@ -72,6 +72,14 @@ does not publish a package.
   counts, achieved ratio and the simplifier's error; a missed target is a
   `SIMPLIFY_TARGET_NOT_REACHED` build note. It never runs implicitly or to meet a budget.
   The `defineLod` contract no longer says Kiln simplifies no geometry and points to it.
+- Name profile solid failures across the sandbox ([#178](https://github.com/instruktlabs/kiln/issues/178)).
+  An `extrudeProfile` or `revolveProfile` call whose outline, holes or bevel cannot become
+  a solid now rejects with the closed cause `PROFILE_SOLID_FAILED` and engine-written repair
+  advice, instead of the bare generic rejection; out-of-scale coordinates and holes that
+  consume the outline are two reduced cases. No library message crosses the boundary, and
+  `PROFILE_BEVEL_COLLAPSE` still names an over-large bevel. The generic rejection now says
+  that `kiln_validate` checks syntax and static rules but cannot see execution-time
+  failures, and points to reproducing them with `kiln_render`.
 
 ## 1.4.0 (2026-10-23)
 

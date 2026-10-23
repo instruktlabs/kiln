@@ -7,7 +7,8 @@ import {
   createEvaluatorPortV2,
 } from './protocol';
 import { renderGLBViaSubprocess } from './subprocess';
-import { authoringDiagnosticAdvice } from './authoring-diagnostic';
+import { authoringDiagnosticAdvice, EXECUTION_REJECTED_ADVICE } from './authoring-diagnostic';
+import { helperContracts } from '../discovery/helper-contracts';
 import { TEXTURE_USAGES } from '../texture-contract';
 import {
   canonicalizeProceduralTextureSpecV2,
@@ -266,6 +267,71 @@ test('unsupported profile holes retain repair advice across the worker and share
   }
 });
 
+test('profile solid failures cross the worker as PROFILE_SOLID_FAILED without library text (#178)', async () => {
+  // Reduced from the grotto dogfood: out-of-scale coordinates make manifold throw a raw
+  // WASM exception, and holes that consume the outline throw a plain Error. Both used to
+  // reach the author as the bare generic rejection.
+  const square = '[[0,0],[1,0],[1,1],[0,1]]';
+  const huge = '[[0,0],[1e15,0],[1e15,1e15],[0,1e15]]';
+  const sources = [
+    `extrudeProfile(${huge},{depth:1})`,
+    `revolveProfile(${huge},{bevel:0.01})`,
+    `extrudeProfile(${square},{holes:[${square}]})`,
+  ].map(
+    (call) => `async function build(){await ${call};return createRoot('PRIVATE_SOURCE_MARKER');}`,
+  );
+  for (const source of sources) {
+    const wire = await evaluateEvaluatorRequestV2(
+      createEvaluatorRequestV2({ requestId: 'profile-solid', code: source }).json,
+    );
+    expect(JSON.parse(wire).error).toEqual({
+      code: 'EXECUTION_REJECTED',
+      message: 'Generated asset execution was rejected.',
+      diagnostic: 'PROFILE_SOLID_FAILED',
+    });
+  }
+  const defs = createKilnProgramToolRegistry({ evaluatorPort: { render: renderGLBViaSubprocess } });
+  const out = (await defs.find((d) => d.name === 'kiln_render')!.run({ code: sources[2]! })) as {
+    ok: boolean;
+    error: string;
+  };
+  expect(out.ok).toBe(false);
+  expect(out.error).toContain('PROFILE_SOLID_FAILED');
+  expect(out.error).toContain('twice the bevel');
+  expect(out.error).toContain('axis');
+  for (const privateValue of ['PRIVATE_SOURCE_MARKER', 'consume the whole profile', 'profile.ts'])
+    expect(out.error).not.toContain(privateValue);
+}, 20000);
+
+test('an over-large revolveProfile bevel keeps PROFILE_BEVEL_COLLAPSE and the repaired bevel renders', async () => {
+  const call = (bevel: number) =>
+    `async function build(){const root=createRoot('Beacon');createPart('Cap',await revolveProfile([[0,0],[0.02,0],[0.02,1],[0,1]],{bevel:${bevel}}),gameMaterial(0x888888),{parent:root});return root;}`;
+  const invalid = JSON.parse(
+    await evaluateEvaluatorRequestV2(
+      createEvaluatorRequestV2({ requestId: 'bevel', code: call(0.02) }).json,
+    ),
+  );
+  expect(invalid.error.diagnostic).toBe('PROFILE_BEVEL_COLLAPSE');
+  const repaired = JSON.parse(
+    await evaluateEvaluatorRequestV2(
+      createEvaluatorRequestV2({ requestId: 'bevel', code: call(0.005) }).json,
+    ),
+  );
+  expect(repaired.ok).toBe(true);
+}, 20000);
+
+test('generic rejection advice separates static validation from execution-time failures', () => {
+  expect(EXECUTION_REJECTED_ADVICE).toContain('kiln_validate');
+  expect(EXECUTION_REJECTED_ADVICE).toContain('cannot see execution-time');
+  expect(EXECUTION_REJECTED_ADVICE).toContain('kiln_render');
+  expect(EXECUTION_REJECTED_ADVICE).not.toContain('for the failing line and code');
+  for (const name of ['extrudeProfile', 'revolveProfile']) {
+    const parameters = helperContracts[name]!.contract.parameters.join(' ');
+    expect(parameters).toContain('PROFILE_BEVEL_COLLAPSE');
+    expect(parameters).toContain('PROFILE_SOLID_FAILED');
+  }
+});
+
 test('material fraction mistakes receive actionable private-value-free advice across evaluator and tools', async () => {
   const source = `function build(){proceduralTexture({schemaVersion:2,layers:[{op:'bricks',brick:0,mortar:0,mortarWidth:2}]});return createRoot('PRIVATE_SOURCE_MARKER');}`;
   const wire = await evaluateEvaluatorRequestV2(
@@ -505,6 +571,7 @@ test('arbitrary exceptions and safety denials retain generic rejection', async (
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'TUBE_RADIUS'});}`,
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'TAPER_CONE_AXIS'});}`,
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'PROFILE_BEVEL_COLLAPSE'});}`,
+    `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'PROFILE_SOLID_FAILED'});}`,
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'SOLID_FLOAT32_COLLAPSE'});}`,
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'MESH_DATA_NONFINITE'});}`,
     `function build(){return process.env.SECRET;}`,
