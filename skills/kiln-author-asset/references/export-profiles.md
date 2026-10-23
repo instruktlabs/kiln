@@ -151,8 +151,9 @@ otherwise the local CLI pair.
 
 ### `kiln_export_to` (host opt-in)
 
-Present only when the host sets `KILN_EXPORT_ROOT`. It writes one saved revision under
-that root and returns the CLI `--json` receipt with root-relative paths:
+Present only when the host sets `KILN_EXPORT_ROOT`; Discovery capabilities show it as a
+non-null `assets.exportTo`. It writes one saved revision under that root and returns the
+CLI `--json` receipt with root-relative paths:
 
 ```js
 kiln_export_to({ assetId, revisionId, path: "game/door.glb" })                    // runtime pair

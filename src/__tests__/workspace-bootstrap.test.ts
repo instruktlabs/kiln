@@ -575,6 +575,9 @@ it('emits names-only Codex renderer forwarding for initial and resume launches w
     // project that every other harness's server inherits from the shell was
     // invisible under Codex alone (finding S7, 2026-10-01).
     'KILN_PROJECT',
+    // The same gap hid kiln_export_to, which the server advertises only when
+    // KILN_EXPORT_ROOT reaches it (#207).
+    'KILN_EXPORT_ROOT',
   ];
   const fixture = {
     KILN_RENDER_TOKEN: 'synthetic-client-token-not-a-real-credential',
@@ -583,6 +586,7 @@ it('emits names-only Codex renderer forwarding for initial and resume launches w
     KILN_RENDER_SERVICE_PORT: '43123',
     KILN_WORK_ITEM: 'cow',
     KILN_PROJECT: 'pack-fixture',
+    KILN_EXPORT_ROOT: 'C:/fixture-exports',
   };
   try {
     const task = join(root, 'assets');
@@ -625,6 +629,7 @@ it('emits names-only Codex renderer forwarding for initial and resume launches w
       fixture,
       { KILN_RENDER_TOKEN: '', RENDER_SERVICE_TOKEN: fixture.RENDER_SERVICE_TOKEN },
       { KILN_PROJECT: fixture.KILN_PROJECT },
+      { KILN_EXPORT_ROOT: fixture.KILN_EXPORT_ROOT },
     ];
     for (const values of cases) {
       const env = { ...process.env };

@@ -49992,6 +49992,7 @@ async function currentCapabilities(context, presentation) {
       save: "kiln_save persists exact GLB, source and provenance; draft renders do not populate collections",
       resume: `${presentation === "operations" ? "kiln_assets_restore" : "kiln_assets action=restore"} imports a saved revision into the current program store`,
       downloads: "kiln_export returns GLB/source/ZIP resource links; client presentation varies",
+      exportTo: context.exportRoot && context.assetLibrary ? "kiln_export_to writes a saved revision as files at a path relative to the host export root and never replaces a file" : null,
       viewer: "kiln_present opens a saved revision in supporting chat clients with 3D viewing and downloads; kiln view opens a local collection or standalone GLB/ZIP"
     },
     geometry: {

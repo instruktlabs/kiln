@@ -7,6 +7,11 @@ does not publish a package.
 
 ## Unreleased
 
+- Generated Codex workspaces forward `KILN_EXPORT_ROOT` to the MCP server, so
+  `kiln_export_to` is advertised under Codex as under the other harnesses, and Discovery
+  capabilities report the tool as `assets.exportTo` (`null` when absent, never the
+  absolute root) ([#207](https://github.com/instruktlabs/kiln/issues/207)).
+
 ## 1.4.0 (2026-10-23)
 
 - Encode KTX2 through an optional `ktx2-encoder` peer

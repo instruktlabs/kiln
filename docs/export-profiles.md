@@ -126,6 +126,9 @@ into tool text. To write files, configure an export root (below) or use the loca
 
 When the host sets `KILN_EXPORT_ROOT` on the MCP server, it also advertises
 `kiln_export_to`. Without the variable the tool list and `kiln_export` are unchanged.
+Discovery capabilities report it as `assets.exportTo`, which is `null` when the tool is
+absent and never shows the absolute root. Generated Codex workspaces forward the
+variable from the shell that starts Codex, as the other harnesses' servers inherit it.
 
 ```js
 kiln_export_to({ collection: "project", assetId, revisionId, path: "game/door.glb" })

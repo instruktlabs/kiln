@@ -126,6 +126,25 @@ describe('kiln_export_to advertisement', () => {
       await server.close();
     }
   });
+
+  test('Discovery capabilities name kiln_export_to exactly when it is advertised', async () => {
+    const exportTo = async (context: Parameters<typeof createKilnProgramToolRegistry>[0]) => {
+      const discover = createKilnProgramToolRegistry(context).find(
+        (def) => def.name === 'kiln_discover',
+      )!;
+      const output = (await discover.run({ capabilities: true })) as {
+        capabilities: { assets: { exportTo: unknown } };
+      };
+      return output.capabilities.assets.exportTo;
+    };
+    expect(await exportTo({ assetLibrary: library })).toBeNull();
+    expect(await exportTo({ exportRoot: unusedWriter })).toBeNull();
+    const enabled = await exportTo({ assetLibrary: library, exportRoot: unusedWriter });
+    expect(enabled).toBeString();
+    expect(enabled as string).toStartWith('kiln_export_to ');
+    // Root-relative only: the host's absolute root is never shown to the agent.
+    expect(enabled as string).toContain('relative to the host export root');
+  });
 });
 
 describe('kiln_export_to writes', () => {

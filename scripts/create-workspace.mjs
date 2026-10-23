@@ -204,6 +204,8 @@ function managedFiles(root, runtime, harness, nodeExecutable) {
       'KILN_RENDER_SERVICE_PORT',
       'KILN_WORK_ITEM',
       'KILN_PROJECT',
+      // Without it the server never advertises kiln_export_to (#207).
+      'KILN_EXPORT_ROOT',
     ];
     // Codex 0.160 reads a project's `.codex/config.toml` only once its own
     // $CODEX_HOME/config.toml marks that project trusted (measured 2026-10-01:
