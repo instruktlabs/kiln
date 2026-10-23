@@ -27,3 +27,7 @@ Call `inspectGlbIntegration(bytes)` for actual bounds and integration metadata. 
 `findOverlaps(boxes, options)` returns candidate AABB intersections; `isOverlapFree` returns a boolean, and `summarizeOverlaps(violations)` formats findings. Options select `mode: 'footprint'` (default, ignores Y) or `'volume'`, with optional tolerance. Use world-space boxes and stable instance IDs. Footprint checks are insufficient for stacked or overhead objects.
 
 The simpler `worldAabbFromLocal` path assumes uniform scale and Y rotation. For arbitrary rotated/nonuniform placements, compute world bounds from all eight local corners with the full transform rather than forcing that shape into a narrower helper.
+
+## Optional SDK use
+
+SDK composition is optional; CLI/MCP-only authoring never needs it. A generated workspace has no `package.json`, so a script that imports `@instruktlabs/kiln/render` or `@instruktlabs/kiln/composer` fails with `ERR_MODULE_NOT_FOUND` until the author installs the package in the workspace (or another project that script runs from): `npm install @instruktlabs/kiln@<version>`, pinned to the Kiln runtime in use. Read that version from `kiln --version` when it exists, from the `serverInfo.version` the MCP server reports, or from the `version` in the `package.json` beside the `dist/` folder holding the `dist/mcp-server.mjs` the MCP config names; `npm ls @instruktlabs/kiln` shows an existing install. Import only the public subpaths above; do not guess files under `dist/` or `lib/`.

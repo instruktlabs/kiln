@@ -11,6 +11,11 @@ does not publish a package.
   `kiln_export_to` is advertised under Codex as under the other harnesses, and Discovery
   capabilities report the tool as `assets.exportTo` (`null` when absent, never the
   absolute root) ([#207](https://github.com/instruktlabs/kiln/issues/207)).
+- Document optional SDK setup for generated workspaces. The compose and QA integration
+  references gain an "Optional SDK use" paragraph: a workspace has no `package.json`, so
+  `@instruktlabs/kiln/render` and `/composer` fail with `ERR_MODULE_NOT_FOUND` until the
+  author installs `@instruktlabs/kiln` pinned to the runtime version in use; CLI/MCP-only
+  authoring is unchanged ([#179](https://github.com/instruktlabs/kiln/issues/179)).
 
 ## 1.4.0 (2026-10-23)
 

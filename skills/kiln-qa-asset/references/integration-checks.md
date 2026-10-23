@@ -6,6 +6,10 @@ These library APIs run in the destination project's TypeScript toolchain, not in
 
 Kiln authors metres, +X forward, +Y up, +Z right. Confirm importer conversion in the destination. Ground correction must be applied in the frame it describes, especially under rotated/scaled parents. Bounds alone cannot prove that feet, wheels, or collision geometry make the intended contact.
 
+## Optional SDK use
+
+Library checks are optional; CLI/MCP-only QA never needs them. A generated workspace has no `package.json`, so a script importing `@instruktlabs/kiln/render` fails with `ERR_MODULE_NOT_FOUND` until the package is installed where the script runs: `npm install @instruktlabs/kiln@<version>`, pinned to the Kiln runtime in use. Take the version from `kiln --version` when it exists, the MCP server's `serverInfo.version`, or the `version` in the `package.json` beside the `dist/` folder holding the `dist/mcp-server.mjs` the MCP config names; `npm ls @instruktlabs/kiln` shows an existing install. Import only documented public subpaths, never guessed `dist/` or `lib/` files.
+
 ## Host-declared checks
 
 Before authoring, read `kiln_discover({ capabilities: true })`. When
