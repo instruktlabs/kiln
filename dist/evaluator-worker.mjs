@@ -32674,9 +32674,36 @@ var init_material_library = __esm(() => {
   ]);
 });
 
+// src/cli-output.ts
+var init_cli_output = () => {};
+
+// src/material-map-export-node.ts
+import sharp from "sharp";
+import * as THREE53 from "three";
+var MATERIAL_MAP_EXPORT_LIMITS, PREVIEW_CAMERA, SRGB_TO_LINEAR;
+var init_material_map_export_node = __esm(() => {
+  init_cli_output();
+  init_material_library();
+  init_procedural_texture();
+  init_textures();
+  MATERIAL_MAP_EXPORT_LIMITS = Object.freeze({
+    minSize: 4,
+    maxSize: MATERIAL_LIBRARY_LIMITS.maxMapEdge,
+    maxRepeatMeters: 1e5,
+    defaultTiles: 3,
+    maxTiles: 8,
+    maxPreviewMapSize: 1024
+  });
+  PREVIEW_CAMERA = Object.freeze({ azimuthDeg: 30, elevationDeg: 50 });
+  SRGB_TO_LINEAR = Float64Array.from({ length: 256 }, (_, value) => {
+    const c = value / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+});
+
 // src/material-library-node.ts
 import { createHash as createHash6, randomUUID } from "node:crypto";
-import sharp from "sharp";
+import sharp2 from "sharp";
 import { DataTexture as DataTexture4 } from "three";
 function revisionHash(manifest) {
   const { revisionId: _, ...content } = manifest;
@@ -32721,7 +32748,7 @@ async function verifyMaterialRecordV1(record) {
     const bytes = record.files[map.file];
     if (digest(bytes) !== map.sha256)
       throw new Error(`Material integrity hash mismatch: ${map.file}`);
-    const { data, info } = await sharp(bytes, {
+    const { data, info } = await sharp2(bytes, {
       limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
       failOn: "warning"
     }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
@@ -33022,7 +33049,7 @@ function createPinnedMaterialMapPort(records) {
       const descriptor = describe(resourceId, pin), entry = find(resourceId, pin);
       if (!descriptor || !entry)
         throw new Error("Missing verified pinned-library map; approved resources cannot be atlas sources");
-      const { data, info } = await sharp(entry.record.files[entry.map.file], {
+      const { data, info } = await sharp2(entry.record.files[entry.map.file], {
         limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
         failOn: "warning"
       }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
@@ -33049,7 +33076,7 @@ async function verifyMaterialRecordContents(record, options) {
     const bytes = record.files[map.file];
     if (digest(bytes) !== map.sha256)
       throw new Error("Material integrity hash mismatch");
-    const { data, info } = await sharp(bytes, {
+    const { data, info } = await sharp2(bytes, {
       limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
       failOn: "warning"
     }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
@@ -33207,7 +33234,8 @@ var init_material_library_node = __esm(() => {
   init_textures();
   init_texture_resolver();
   init_procedural_material_v3();
-  encoder = { name: "sharp", version: sharp.versions.sharp };
+  init_material_map_export_node();
+  encoder = { name: "sharp", version: sharp2.versions.sharp };
 });
 
 // src/evaluator/protocol.ts
@@ -33409,7 +33437,7 @@ var init_renderer_id = __esm(() => {
 });
 
 // src/views/scene-raster.ts
-import * as THREE53 from "three";
+import * as THREE54 from "three";
 var DEG2;
 var init_scene_raster = __esm(() => {
   init_evaluator();
@@ -33421,18 +33449,18 @@ var init_scene_raster = __esm(() => {
 });
 
 // src/views/vehicle.ts
-import * as THREE54 from "three";
+import * as THREE55 from "three";
 function hasRole2(node, prefix) {
   return readSemanticMetadataV1(node)?.roles.some((role) => role === prefix || role.startsWith(`${prefix}.`)) ?? false;
 }
 function chassisBounds(root, inverse) {
-  const bounds = new THREE54.Box3;
+  const bounds = new THREE55.Box3;
   let found = false;
   root.traverse((node) => {
     if (!hasRole2(node, "chassis"))
       return;
     node.traverse((part) => {
-      if (!(part instanceof THREE54.Mesh) || !(part.geometry instanceof THREE54.BufferGeometry))
+      if (!(part instanceof THREE55.Mesh) || !(part.geometry instanceof THREE55.BufferGeometry))
         return;
       part.geometry.computeBoundingBox();
       const box = part.geometry.boundingBox;
@@ -33442,7 +33470,7 @@ function chassisBounds(root, inverse) {
       for (const x of [box.min.x, box.max.x])
         for (const y of [box.min.y, box.max.y])
           for (const z of [box.min.z, box.max.z]) {
-            bounds.expandByPoint(new THREE54.Vector3(x, y, z).applyMatrix4(matrix));
+            bounds.expandByPoint(new THREE55.Vector3(x, y, z).applyMatrix4(matrix));
             found = true;
           }
     });
@@ -33510,33 +33538,33 @@ function tagDiagnostic(node, role) {
   stampSemanticMetadataV1(node, { roles: [role] });
 }
 function rod(name, start, end, radius, color, role) {
-  const from = new THREE54.Vector3(...start);
-  const to = new THREE54.Vector3(...end);
+  const from = new THREE55.Vector3(...start);
+  const to = new THREE55.Vector3(...end);
   const direction = to.clone().sub(from);
   const length = direction.length();
-  const geometry = length > 0.000000001 ? new THREE54.CylinderGeometry(radius, radius, length, 8) : new THREE54.SphereGeometry(radius, 8, 6);
-  const result = new THREE54.Mesh(geometry, new THREE54.MeshBasicMaterial({ color }));
+  const geometry = length > 0.000000001 ? new THREE55.CylinderGeometry(radius, radius, length, 8) : new THREE55.SphereGeometry(radius, 8, 6);
+  const result = new THREE55.Mesh(geometry, new THREE55.MeshBasicMaterial({ color }));
   result.name = name;
   result.position.copy(from).add(to).multiplyScalar(0.5);
   if (length > 0.000000001) {
-    result.quaternion.setFromUnitVectors(new THREE54.Vector3(0, 1, 0), direction.multiplyScalar(1 / length));
+    result.quaternion.setFromUnitVectors(new THREE55.Vector3(0, 1, 0), direction.multiplyScalar(1 / length));
   }
   tagDiagnostic(result, role);
   return result;
 }
 function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagnostics(root)) {
-  const overlay = new THREE54.Group;
+  const overlay = new THREE55.Group;
   overlay.name = "VehicleDiagnosticOverlay";
   const chassisSpan = descriptor.chassisBox ? Math.max(descriptor.chassisBox.max[0] - descriptor.chassisBox.min[0], descriptor.chassisBox.max[1] - descriptor.chassisBox.min[1], descriptor.chassisBox.max[2] - descriptor.chassisBox.min[2]) : 1;
   const thickness = Math.max(0.01, chassisSpan * 0.008);
-  const arrow = new THREE54.Group;
+  const arrow = new THREE55.Group;
   arrow.name = "Diagnostic_Forward_+X";
   tagDiagnostic(arrow, "diagnostic.vehicle.forward");
   arrow.add(rod("Diagnostic_Forward_Shaft", descriptor.forwardArrow.start, [descriptor.forwardArrow.end[0] - 0.12, 0, 0], thickness, 16724804, "diagnostic.vehicle.forward"));
-  const arrowHead = new THREE54.Mesh(new THREE54.ConeGeometry(thickness * 3.2, 0.24, 10), new THREE54.MeshBasicMaterial({ color: 16724804 }));
+  const arrowHead = new THREE55.Mesh(new THREE55.ConeGeometry(thickness * 3.2, 0.24, 10), new THREE55.MeshBasicMaterial({ color: 16724804 }));
   arrowHead.name = "Diagnostic_Forward_Head";
   arrowHead.position.set(descriptor.forwardArrow.end[0] - 0.12, 0, 0);
-  arrowHead.quaternion.setFromUnitVectors(new THREE54.Vector3(0, 1, 0), new THREE54.Vector3(1, 0, 0));
+  arrowHead.quaternion.setFromUnitVectors(new THREE55.Vector3(0, 1, 0), new THREE55.Vector3(1, 0, 0));
   tagDiagnostic(arrowHead, "diagnostic.vehicle.forward");
   arrow.add(arrowHead);
   overlay.add(arrow);
@@ -33544,18 +33572,18 @@ function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagno
     overlay.add(rod(`Diagnostic_Axle_${axle.id}`, axle.start, axle.end, thickness, 3386111, `diagnostic.vehicle.axle.${axle.id}`));
   }
   for (const wheel of descriptor.wheels) {
-    const ring = new THREE54.Mesh(new THREE54.TorusGeometry(wheel.radius, Math.min(thickness, wheel.radius * 0.15), 6, 32), new THREE54.MeshBasicMaterial({ color: 16763955 }));
+    const ring = new THREE55.Mesh(new THREE55.TorusGeometry(wheel.radius, Math.min(thickness, wheel.radius * 0.15), 6, 32), new THREE55.MeshBasicMaterial({ color: 16763955 }));
     ring.name = `Diagnostic_Wheel_${wheel.id}`;
     ring.position.set(...wheel.center);
-    const axle = new THREE54.Vector3(...wheel.axle);
+    const axle = new THREE55.Vector3(...wheel.axle);
     if (axle.lengthSq() > 0.000000000001) {
-      ring.quaternion.setFromUnitVectors(new THREE54.Vector3(0, 0, 1), axle.normalize());
+      ring.quaternion.setFromUnitVectors(new THREE55.Vector3(0, 0, 1), axle.normalize());
     }
     tagDiagnostic(ring, `diagnostic.vehicle.wheel.${wheel.id}`);
     overlay.add(ring);
   }
   if (descriptor.chassisBox) {
-    const chassis = new THREE54.Group;
+    const chassis = new THREE55.Group;
     chassis.name = "Diagnostic_ChassisBox";
     tagDiagnostic(chassis, "diagnostic.vehicle.chassis");
     const { min, max } = descriptor.chassisBox;
@@ -33589,7 +33617,7 @@ function createVehicleDiagnosticOverlay(root, descriptor = describeVehicleDiagno
     overlay.add(chassis);
   }
   if (descriptor.supportPlaneY !== undefined) {
-    const plane = new THREE54.Group;
+    const plane = new THREE55.Group;
     plane.name = "Diagnostic_SupportPlane";
     tagDiagnostic(plane, "diagnostic.vehicle.support-plane");
     const halfX = Math.max(1, ...descriptor.chassisBox ? [Math.abs(descriptor.chassisBox.min[0]), Math.abs(descriptor.chassisBox.max[0])] : [], ...descriptor.wheels.map((wheel) => Math.abs(wheel.center[0]) + wheel.radius)) + 0.2;
@@ -33918,7 +33946,7 @@ var init_views = __esm(() => {
 });
 
 // src/views/character-capture.ts
-import * as THREE55 from "three";
+import * as THREE56 from "three";
 function drawLine2(rgb, width, height, from, to, color) {
   let x0 = Math.round(from[0]);
   let y0 = Math.round(from[1]);
@@ -33955,22 +33983,22 @@ function drawCross(rgb, width, height, point, color, radius = 3) {
 }
 function projector(root, cameraId, size) {
   root.updateMatrixWorld(true);
-  const bounds = new THREE55.Box3().setFromObject(root);
+  const bounds = new THREE56.Box3().setFromObject(root);
   if (bounds.isEmpty())
-    bounds.set(new THREE55.Vector3(-0.5, 0, -0.5), new THREE55.Vector3(0.5, 1, 0.5));
-  const center = bounds.getCenter(new THREE55.Vector3);
-  const camera = cameraId === "front" ? new THREE55.Vector3(1, 0, 0) : new THREE55.Vector3(0, 0, 1);
-  const upHint = new THREE55.Vector3(0, 1, 0);
-  const xAxis = new THREE55.Vector3().crossVectors(upHint, camera).normalize();
-  const yAxis = new THREE55.Vector3().crossVectors(camera, xAxis).normalize();
+    bounds.set(new THREE56.Vector3(-0.5, 0, -0.5), new THREE56.Vector3(0.5, 1, 0.5));
+  const center = bounds.getCenter(new THREE56.Vector3);
+  const camera = cameraId === "front" ? new THREE56.Vector3(1, 0, 0) : new THREE56.Vector3(0, 0, 1);
+  const upHint = new THREE56.Vector3(0, 1, 0);
+  const xAxis = new THREE56.Vector3().crossVectors(upHint, camera).normalize();
+  const yAxis = new THREE56.Vector3().crossVectors(camera, xAxis).normalize();
   let extent = 0.000001;
   for (let corner = 0;corner < 8; corner++) {
-    const point = new THREE55.Vector3(corner & 1 ? bounds.max.x : bounds.min.x, corner & 2 ? bounds.max.y : bounds.min.y, corner & 4 ? bounds.max.z : bounds.min.z).sub(center);
+    const point = new THREE56.Vector3(corner & 1 ? bounds.max.x : bounds.min.x, corner & 2 ? bounds.max.y : bounds.min.y, corner & 4 ? bounds.max.z : bounds.min.z).sub(center);
     extent = Math.max(extent, Math.abs(point.dot(xAxis)), Math.abs(point.dot(yAxis)));
   }
   const scale = size * 0.45 / extent;
   return (assetPoint) => {
-    const world = new THREE55.Vector3(...assetPoint).applyMatrix4(root.matrixWorld).sub(center);
+    const world = new THREE56.Vector3(...assetPoint).applyMatrix4(root.matrixWorld).sub(center);
     return [size / 2 + world.dot(xAxis) * scale, size / 2 - world.dot(yAxis) * scale];
   };
 }
@@ -34096,7 +34124,7 @@ var init_character_capture = __esm(() => {
 });
 
 // src/render.ts
-import * as THREE56 from "three";
+import * as THREE57 from "three";
 import { Document, Logger as Logger2 } from "@gltf-transform/core";
 import { KHRMaterialsEmissiveStrength } from "@gltf-transform/extensions";
 import { dedup as dedup2, instance, palette, weld as weld2, prune as prune2, mergeDocuments } from "@gltf-transform/functions";
@@ -34323,7 +34351,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache, authorExtras, atlas)
     } else if (stdMat.transparent) {
       mat.setAlphaMode("BLEND");
     }
-    if (stdMat.side === THREE56.DoubleSide) {
+    if (stdMat.side === THREE57.DoubleSide) {
       mat.setDoubleSided(true);
     }
     if (stdMat.map) {
@@ -34400,7 +34428,7 @@ function bridgeMaterial(doc, threeMat, cache, textureCache, authorExtras, atlas)
   } else if (common.transparent || (common.opacity ?? 1) < 1) {
     mat.setAlphaMode("BLEND");
   }
-  if (threeMat.side === THREE56.DoubleSide)
+  if (threeMat.side === THREE57.DoubleSide)
     mat.setDoubleSided(true);
   if (common.map && !mat.getBaseColorTexture()) {
     const texture = bridgeTexture(doc, common.map, textureCache);
@@ -34563,7 +34591,7 @@ function bridgeNode(doc, buf, threeObj, matCache, nodeMap, meshCache, texCache, 
     const cacheKey = `kiln-sprite-quad:${centerX}:${centerY}:${rotation}__${threeMat.uuid}`;
     let gtMesh = meshCache.get(cacheKey);
     if (!gtMesh) {
-      const geometry = new THREE56.PlaneGeometry(1, 1);
+      const geometry = new THREE57.PlaneGeometry(1, 1);
       if (centerX !== 0.5 || centerY !== 0.5) {
         geometry.translate(0.5 - centerX, 0.5 - centerY, 0);
       }
@@ -34587,9 +34615,9 @@ function animationInterpolation(track) {
   if (isCubicSplineTrack(track))
     return "CUBICSPLINE";
   const mode = track.getInterpolation();
-  if (mode === THREE56.InterpolateDiscrete)
+  if (mode === THREE57.InterpolateDiscrete)
     return "STEP";
-  if (mode === THREE56.InterpolateLinear)
+  if (mode === THREE57.InterpolateLinear)
     return "LINEAR";
   throw new Error(`Unsupported animation interpolation on ${track.name}; use LINEAR, STEP or CUBICSPLINE.`);
 }
@@ -35154,8 +35182,8 @@ function collectMeshStats(root) {
     if (!Number.isFinite(box.min.x) || !Number.isFinite(box.max.x)) {
       return;
     }
-    const center = new THREE56.Vector3;
-    const size = new THREE56.Vector3;
+    const center = new THREE57.Vector3;
+    const size = new THREE57.Vector3;
     box.getCenter(center);
     box.getSize(size);
     out.push({
@@ -35171,7 +35199,7 @@ function collectMeshStats(root) {
   return out;
 }
 function minimalGapVector(a, b) {
-  const v = new THREE56.Vector3;
+  const v = new THREE57.Vector3;
   for (const axis of ["x", "y", "z"]) {
     if (a.min[axis] > b.max[axis])
       v[axis] = b.max[axis] - a.min[axis];
@@ -35189,10 +35217,10 @@ function inspectSceneStructure(root, opts = {}) {
     return warnings;
   const cat = opts.category?.toLowerCase();
   if (cat === "vehicle" || cat === "weapon" || cat === "boat" || cat === "aircraft") {
-    const all = new THREE56.Box3;
+    const all = new THREE57.Box3;
     for (const m of meshes)
       all.union(m.box);
-    const size = new THREE56.Vector3;
+    const size = new THREE57.Vector3;
     all.getSize(size);
     if (cat === "aircraft") {
       if (size.y > size.x * 1.2) {
@@ -35317,18 +35345,18 @@ var init_render = __esm(() => {
   engineIO = createGltfIO;
   ACCESSOR_TYPES = [TYPE_SCALAR, TYPE_VEC2, TYPE_VEC3, TYPE_VEC4];
   GLTF_MIN_FILTER = {
-    [THREE56.NearestFilter]: 9728,
-    [THREE56.LinearFilter]: 9729,
-    [THREE56.NearestMipmapNearestFilter]: 9984,
-    [THREE56.LinearMipmapNearestFilter]: 9985,
-    [THREE56.NearestMipmapLinearFilter]: 9986,
-    [THREE56.LinearMipmapLinearFilter]: 9987
+    [THREE57.NearestFilter]: 9728,
+    [THREE57.LinearFilter]: 9729,
+    [THREE57.NearestMipmapNearestFilter]: 9984,
+    [THREE57.LinearMipmapNearestFilter]: 9985,
+    [THREE57.NearestMipmapLinearFilter]: 9986,
+    [THREE57.LinearMipmapLinearFilter]: 9987
   };
-  GLTF_MAG_FILTER = { [THREE56.NearestFilter]: 9728, [THREE56.LinearFilter]: 9729 };
+  GLTF_MAG_FILTER = { [THREE57.NearestFilter]: 9728, [THREE57.LinearFilter]: 9729 };
   GLTF_WRAP = {
-    [THREE56.ClampToEdgeWrapping]: 33071,
-    [THREE56.MirroredRepeatWrapping]: 33648,
-    [THREE56.RepeatWrapping]: 10497
+    [THREE57.ClampToEdgeWrapping]: 33071,
+    [THREE57.MirroredRepeatWrapping]: 33648,
+    [THREE57.RepeatWrapping]: 10497
   };
   REVIEW_CLIP_LIMITS = {
     clips: 32,

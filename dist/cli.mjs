@@ -20274,972 +20274,318 @@ var init_procedural_material_v3 = __esm(() => {
   };
 });
 
-// src/material-library-node.ts
-import { createHash as createHash6, randomUUID as randomUUID2 } from "node:crypto";
-import { lstat as lstat3, mkdir as mkdir2, readFile as readFile2, readdir, realpath as realpath2, rm, writeFile as writeFile2 } from "node:fs/promises";
-import { dirname as dirname2, join as join2, relative, resolve as resolve4, sep } from "node:path";
-import sharp from "sharp";
-import { DataTexture as DataTexture3 } from "three";
-function revisionHash(manifest) {
-  const { revisionId: _, ...content } = manifest;
-  return digest(canonicalMaterialJson(content));
-}
-function snapshot(record) {
-  validateMaterialRecordShape(record);
-  return {
-    manifest: structuredClone(record.manifest),
-    files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [name, Uint8Array.from(bytes)]))
-  };
-}
-function exactKeys(value, keys) {
-  if (Object.keys(value).some((key) => !keys.includes(key)))
-    throw new Error("Unknown material draft field");
-}
-function derivedNormalPixels(compiled, size, derive) {
-  if (!derive)
-    return compiled;
-  materialNormalDerivationSchema.parse(derive);
-  if (size.usage !== "normal")
-    throw new Error("Height derivation requires a normal map slot");
-  const height = new DataTexture3(compiled.pixels, size.width, size.height);
-  const normal = normalMapFromHeight(height, { strength: derive.strength });
-  if (!(normal.image.data instanceof Uint8Array))
-    throw new Error("Normal derivation must produce RGBA8 pixels");
-  const pixels = Uint8Array.from(normal.image.data);
-  height.dispose();
-  normal.dispose();
-  return { ...compiled, pixels };
-}
-function materialPixels(spec, derive) {
-  const compiled = compileProceduralTextureSpecV2(spec);
-  const { size, usage } = compiled.spec;
-  return derivedNormalPixels(compiled, { width: size, height: size, usage }, derive);
-}
-function materialPixelsV3(spec, derive) {
-  const compiled = compileProceduralTextureSpecV3(spec);
-  return derivedNormalPixels(compiled, compiled.spec, derive);
-}
-async function createMaterialRecordV1(draft) {
-  assertMaterialJson(draft, true);
-  exactKeys(draft, [
-    "materialId",
-    "name",
-    "tags",
-    "tileable",
-    "physicalSizeMeters",
-    "parameters",
-    "sources",
-    "maps"
-  ]);
-  if (!Array.isArray(draft.maps) || !draft.maps.length || draft.maps.length > 5)
-    throw new Error("Material requires 1..5 maps");
-  const files = {};
-  const maps = [];
-  let totalPixels = 0;
-  for (const input of draft.maps) {
-    exactKeys(input, [
-      "slot",
-      "sourceId",
-      "transforms",
-      "normalConvention",
-      "channelPacking",
-      "bytes",
-      "originalFile",
-      "procedural",
-      "derive"
-    ]);
-    if (!MATERIAL_LIBRARY_SLOTS.includes(input.slot))
-      throw new Error("Unsupported material map slot");
-    if (input.bytes !== undefined === (input.procedural !== undefined))
-      throw new Error("Supply exactly one map byte source or procedural recipe");
-    let bytes;
-    let procedural;
-    if (input.procedural) {
-      const compiled = materialPixels(input.procedural, input.derive);
-      if (compiled.spec.usage !== MATERIAL_LIBRARY_USAGE[input.slot])
-        throw new Error("Procedural map usage mismatch");
-      bytes = new Uint8Array(await sharp(compiled.pixels, {
-        raw: { width: compiled.spec.size, height: compiled.spec.size, channels: 4 }
-      }).png({ compressionLevel: 9, adaptiveFiltering: false }).toBuffer());
-      procedural = {
-        compiler: "kiln.procedural-texture.v2",
-        spec: compiled.spec,
-        ...input.derive ? { derive: structuredClone(input.derive) } : {},
-        recipeHash: compiled.recipeHash,
-        pixelHash: digest(compiled.pixels),
-        encoder
-      };
-    } else {
-      if ("derive" in input)
-        throw new Error("External maps cannot declare a procedural derivation");
-      if (!(input.bytes instanceof Uint8Array))
-        throw new Error("Material map bytes must be Uint8Array");
-      bytes = Uint8Array.from(input.bytes);
-    }
-    if (bytes.length > MATERIAL_LIBRARY_LIMITS.maxMapBytes)
-      throw new Error("Material map exceeds encoded byte limit");
-    const dimensions = materialPngDimensions(bytes);
-    totalPixels += dimensions.width * dimensions.height;
-    if (dimensions.width < 1 || dimensions.height < 1 || dimensions.width > MATERIAL_LIBRARY_LIMITS.maxMapEdge || dimensions.height > MATERIAL_LIBRARY_LIMITS.maxMapEdge || totalPixels > MATERIAL_LIBRARY_LIMITS.maxRecordPixels)
-      throw new Error("Material maps exceed pixel budget");
-    const file = `${input.slot}.png`;
-    if (files[file])
-      throw new Error("Duplicate material map slot");
-    files[file] = bytes;
-    maps.push({
-      slot: input.slot,
-      file,
-      ...dimensions,
-      sha256: digest(bytes),
-      bytes: bytes.length,
-      usage: MATERIAL_LIBRARY_USAGE[input.slot],
-      colorSpace: input.slot === "baseColor" || input.slot === "emissive" ? "srgb" : "linear",
-      ...input.slot === "normal" ? { normalConvention: input.normalConvention ?? (procedural ? "opengl" : undefined) } : {},
-      ...input.slot === "metallicRoughness" ? {
-        channelPacking: input.channelPacking ?? (procedural ? "r-occlusion-g-roughness-b-metallic" : undefined)
-      } : {},
-      sourceId: input.sourceId,
-      ...input.originalFile ? { originalFile: input.originalFile } : {},
-      transforms: structuredClone(input.transforms),
-      ...procedural ? { procedural } : {}
-    });
-  }
-  const manifest = materialManifestSchema.parse({
-    schemaVersion: 1,
-    materialId: draft.materialId,
-    revisionId: `sha256:${"0".repeat(64)}`,
-    name: draft.name,
-    tags: draft.tags ?? [],
-    tileable: draft.tileable,
-    ...draft.physicalSizeMeters ? { physicalSizeMeters: draft.physicalSizeMeters } : {},
-    parameters: draft.parameters ?? {},
-    sources: draft.sources,
-    maps
-  });
-  manifest.revisionId = revisionHash(manifest);
-  const record = { manifest, files };
-  await verifyMaterialRecordV1(record);
-  return record;
-}
-async function verifyMaterialRecordV1(record) {
-  const manifest = validateMaterialRecordShape(record);
-  if (revisionHash(manifest) !== manifest.revisionId)
-    throw new Error("Material identity hash mismatch");
-  for (const map of manifest.maps) {
-    const bytes = record.files[map.file];
-    if (digest(bytes) !== map.sha256)
-      throw new Error(`Material integrity hash mismatch: ${map.file}`);
-    const { data, info } = await sharp(bytes, {
-      limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
-      failOn: "warning"
-    }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-    if (info.width !== map.width || info.height !== map.height || info.channels !== 4)
-      throw new Error("Material decoded image mismatch");
-    if (map.procedural) {
-      const compiled = materialPixels(map.procedural.spec, map.procedural.derive);
-      if (compiled.recipeHash !== map.procedural.recipeHash || digest(compiled.pixels) !== map.procedural.pixelHash || digest(data) !== map.procedural.pixelHash)
-        throw new Error("Procedural material recipe or pixel hash mismatch");
-    }
-  }
-}
-function validateMaterialLibraryPayload(value) {
-  assertMaterialJson(value);
-  if (!value || typeof value !== "object" || Array.isArray(value))
-    throw new Error("Invalid material resource payload");
-  const payload = value;
-  if (Object.keys(payload).some((key) => !["schemaVersion", "records"].includes(key)) || payload.schemaVersion !== 1 || !Array.isArray(payload.records) || payload.records.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
-    throw new Error("Invalid material resource payload");
-  let total = 0;
-  let pixels = 0;
-  const identities = new Set;
-  for (const wire of payload.records) {
-    if (!wire || typeof wire !== "object" || Object.keys(wire).some((key) => !["manifest", "files"].includes(key)))
-      throw new Error("Invalid material resource record");
-    const manifest = materialManifestSchema.parse(wire.manifest);
-    if (identities.has(manifest.revisionId))
-      throw new Error("Duplicate material resource revision");
-    identities.add(manifest.revisionId);
-    if (!wire.files || typeof wire.files !== "object" || Array.isArray(wire.files) || Object.keys(wire.files).length !== manifest.maps.length)
-      throw new Error("Material payload inventory mismatch");
-    for (const map of manifest.maps) {
-      const encoded = wire.files[map.file];
-      if (typeof encoded !== "string" || encoded.length !== Math.ceil(map.bytes / 3) * 4 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))
-        throw new Error("Invalid material map base64");
-      total += map.bytes;
-      pixels += map.width * map.height;
-    }
-  }
-  if (total > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
-    throw new Error("Material resource payload exceeds byte or pixel budget");
-  return payload;
-}
-async function createMaterialLibraryPayloadV1(records) {
-  const snapshots = records.map(snapshot);
-  for (const record of snapshots)
-    await verifyMaterialRecordV1(record);
-  return validateMaterialLibraryPayload({
-    schemaVersion: 1,
-    records: snapshots.map((record) => ({
-      manifest: record.manifest,
-      files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [
-        name,
-        Buffer.from(bytes).toString("base64")
-      ]))
-    }))
-  });
-}
-async function decodeMaterialLibraryPayloadV1(value) {
-  const payload = validateMaterialLibraryPayload(value);
-  const records = payload.records.map((wire) => ({
-    manifest: structuredClone(wire.manifest),
-    files: Object.fromEntries(Object.entries(wire.files).map(([name, encoded]) => [
-      name,
-      new Uint8Array(Buffer.from(encoded, "base64"))
-    ]))
-  }));
-  for (const record of records)
-    await verifyMaterialRecordV1(record);
-  return records;
-}
-async function createMaterialLibraryTextureResolver(records, fallback = DEFAULT_TEXTURE_RESOLVER) {
-  const snapshots = await decodeMaterialLibraryPayload(await createMaterialLibraryPayload(records));
-  const maps = new Map;
-  for (const record of snapshots)
-    for (const map of record.manifest.maps)
-      maps.set(materialLibraryResourceId(record.manifest, map.slot), { record, map });
-  return Object.freeze({
-    pinnedMaterialMaps: createPinnedMaterialMapPort(snapshots),
-    describeApprovedTexture(id) {
-      const entry = typeof id === "string" ? maps.get(id) : undefined;
-      return entry ? { usage: entry.map.usage, allowedSlots: [entry.map.slot] } : fallback.describeApprovedTexture?.(id);
-    },
-    async loadApprovedTexture(id) {
-      const entry = typeof id === "string" ? maps.get(id) : undefined;
-      if (!entry)
-        return fallback.loadApprovedTexture(id);
-      const texture = await loadTexture(entry.record.files[entry.map.file].slice(), {
-        usage: entry.map.usage,
-        name: id
-      });
-      texture.userData["kilnMaterialResource"] = {
-        schemaVersion: entry.record.manifest.schemaVersion,
-        materialId: entry.record.manifest.materialId,
-        revisionId: entry.record.manifest.revisionId,
-        resourceId: id,
-        map: structuredClone(entry.map),
-        sources: structuredClone(entry.record.manifest.sources),
-        ...entry.record.manifest.physicalSizeMeters ? { physicalSizeMeters: { ...entry.record.manifest.physicalSizeMeters } } : {}
-      };
-      if ("sampler" in entry.map)
-        applyPortableSamplerV1(texture, entry.map.sampler);
-      if ("recipe" in entry.map && entry.map.recipe?.kind === "atlas")
-        texture.userData["kilnAtlas"] = {
-          spec: structuredClone(entry.map.recipe.spec),
-          manifest: structuredClone(entry.map.recipe.manifest)
-        };
-      return texture;
-    },
-    async preparePortableTexture(id, context) {
-      context?.signal?.throwIfAborted();
-      const entry = typeof id === "string" ? maps.get(id) : undefined;
-      if (!entry) {
-        if (!fallback.preparePortableTexture)
-          throw new Error("Portable texture preparation unavailable");
-        return fallback.preparePortableTexture(id, context);
+// src/qa/breadth-final.ts
+import * as THREE26 from "three";
+function bytesContainAscii(bytes, value) {
+  const needle = new TextEncoder().encode(value);
+  outer:
+    for (let index = 0;index <= bytes.length - needle.length; index++) {
+      for (let offset = 0;offset < needle.length; offset++) {
+        if (bytes[index + offset] !== needle[offset])
+          continue outer;
       }
-      const { record, map } = entry;
-      return {
-        descriptor: {
-          resourceId: id,
-          usage: map.usage,
-          allowedSlots: [map.slot],
-          colorSpace: map.colorSpace,
-          width: map.width,
-          height: map.height,
-          encodedByteLength: map.bytes,
-          imageSha256: map.sha256
-        },
-        bytes: record.files[map.file].slice(),
-        userData: {
-          ..."recipe" in map && map.recipe?.kind === "atlas" ? {
-            kilnAtlas: {
-              spec: structuredClone(map.recipe.spec),
-              manifest: structuredClone(map.recipe.manifest)
-            }
-          } : {},
-          kilnMaterialResource: {
-            schemaVersion: record.manifest.schemaVersion,
-            materialId: record.manifest.materialId,
-            revisionId: record.manifest.revisionId,
-            resourceId: id,
-            map: structuredClone(map),
-            sources: structuredClone(record.manifest.sources),
-            ...record.manifest.physicalSizeMeters ? { physicalSizeMeters: structuredClone(record.manifest.physicalSizeMeters) } : {}
-          }
-        }
-      };
-    },
-    materialRecipe: (id, overrides) => fallback.materialRecipe(id, overrides)
-  });
+      return true;
+    }
+  return false;
 }
-
-class FileMaterialLibrary {
-  root;
-  constructor(root) {
-    this.root = resolve4(root);
+function encodedTextureHasAlpha(mimeType, bytes) {
+  if (mimeType === "image/png") {
+    const colorType = bytes[25];
+    return colorType === 4 || colorType === 6 || bytesContainAscii(bytes, "tRNS");
   }
-  async path(...parts) {
-    await mkdir2(this.root, { recursive: true });
-    const canonical = await realpath2(this.root);
-    let current = canonical;
-    for (const part of parts) {
-      if (!/^[a-z0-9][a-z0-9_-]{0,79}$/.test(part))
-        throw new Error("Invalid material path identity");
-      current = join2(current, part);
-      try {
-        const stat = await lstat3(current);
-        if (stat.isSymbolicLink() || !stat.isDirectory())
-          throw new Error("Material library requires real directories");
-        const rel = relative(canonical, await realpath2(current));
-        if (rel === ".." || rel.startsWith(`..${sep}`))
-          throw new Error("Material path escapes library");
-      } catch (error) {
-        if (error.code !== "ENOENT")
-          throw error;
+  if (mimeType === "image/webp") {
+    if (bytesContainAscii(bytes, "ALPH"))
+      return true;
+    const vp8xIndex = (() => {
+      const marker = new TextEncoder().encode("VP8X");
+      for (let index = 0;index <= bytes.length - marker.length; index++) {
+        if (marker.every((value, offset) => bytes[index + offset] === value))
+          return index;
       }
-    }
-    return current;
+      return -1;
+    })();
+    return vp8xIndex >= 0 && ((bytes[vp8xIndex + 8] ?? 0) & 16) !== 0;
   }
-  async file(dir, name, limit) {
-    const path = join2(dir, name);
-    const stat = await lstat3(path);
-    if (!stat.isFile() || stat.isSymbolicLink() || stat.size > limit)
-      throw new Error("Invalid material library file");
-    return new Uint8Array(await readFile2(path));
-  }
-  async readManifest(materialId, revisionId) {
-    materialLibraryIdSchema.parse(materialId);
-    materialLibraryHashSchema.parse(revisionId);
-    const dir = await this.path(materialId, revisionId.slice(7));
-    const manifest = validateMaterialManifestIdentityAny(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(await this.file(dir, "manifest.json", MATERIAL_LIBRARY_LIMITS.maxManifestBytes))));
-    if (manifest.materialId !== materialId || manifest.revisionId !== revisionId)
-      throw new Error("Material identity mismatch");
-    return manifest;
-  }
-  async readRecordFiles(materialId, revisionId) {
-    const manifest = await this.readManifest(materialId, revisionId);
-    const dir = await this.path(materialId, revisionId.slice(7));
-    const files = {};
-    for (const map of manifest.maps)
-      files[map.file] = await this.file(dir, map.file, MATERIAL_LIBRARY_LIMITS.maxMapBytes);
-    const record = { manifest, files };
-    validateMaterialRecordShapeAny(record);
-    for (const map of manifest.maps)
-      if (digest(files[map.file]) !== map.sha256)
-        throw new Error("Material integrity hash mismatch");
-    return record;
-  }
-  async read(materialId, revisionId) {
-    const root = await this.readManifest(materialId, revisionId);
-    if (root.schemaVersion === 1) {
-      const record = await this.readRecordFiles(materialId, revisionId);
-      await verifyMaterialRecordV1(record);
-      return record;
-    }
-    const closure = await resolveMaterialRecordClosure([root], {
-      readManifest: this.readManifest.bind(this),
-      read: this.readRecordFiles.bind(this)
-    });
-    return closure.find((record) => record.manifest.materialId === materialId && record.manifest.revisionId === revisionId);
-  }
-  async list() {
-    const manifests = [];
-    for (const material of await readdir(await this.path(), { withFileTypes: true })) {
-      if (!material.isDirectory() || !materialLibraryIdSchema.safeParse(material.name).success)
-        continue;
-      for (const revision of await readdir(await this.path(material.name), {
-        withFileTypes: true
-      })) {
-        if (!revision.isDirectory() || !/^[a-f0-9]{64}$/.test(revision.name))
-          continue;
-        manifests.push((await this.read(material.name, `sha256:${revision.name}`)).manifest);
-      }
-    }
-    return manifests.sort((a, b) => a.materialId.localeCompare(b.materialId) || a.revisionId.localeCompare(b.revisionId));
-  }
-  async import(records, options) {
-    if (!Array.isArray(records) || !records.length || records.length > 100)
-      throw new Error("Material import requires 1..100 records");
-    let snapshots;
-    if (records.every((record) => record.manifest.schemaVersion === 1) && !options?.materials) {
-      snapshots = records.map(snapshot);
-      for (const record of snapshots)
-        await verifyMaterialRecordV1(record);
-    } else {
-      const candidates = [...records, ...options?.materials ?? []];
-      if (new Set(candidates.map((record) => identity(record.manifest))).size > 1024)
-        throw new Error("Material import context count limit exceeded");
-      const context = await resolveMaterialRecordClosure(records.map((r) => r.manifest), recordClosureReader(candidates, this), {
-        maxRecords: 1024,
-        maxBytes: 256 * 1024 * 1024,
-        maxPixels: 1024 * MATERIAL_LIBRARY_LIMITS.maxRecordPixels
-      });
-      const admitted = new Map(context.map((record) => [identity(record.manifest), record]));
-      snapshots = records.map((record) => admitted.get(identity(record.manifest)));
-    }
-    for (const record of snapshots) {
-      const { manifest, files } = record;
-      const dest = await this.path(manifest.materialId, manifest.revisionId.slice(7));
-      const parent = dirname2(dest);
-      await mkdir2(parent, { recursive: true });
-      const stage = join2(parent, `.stage-${randomUUID2()}`);
-      await mkdir2(stage);
-      try {
-        for (const [name, bytes] of Object.entries(files))
-          await writeFile2(join2(stage, name), bytes, { flag: "wx" });
-        await writeFile2(join2(stage, "manifest.json"), canonicalMaterialJson(manifest), {
-          flag: "wx"
-        });
-        try {
-          await renameDirectoryAtomically(stage, dest);
-        } catch (error) {
-          const existing = await this.read(manifest.materialId, manifest.revisionId).catch(() => {
-            return;
-          });
-          if (!existing || canonicalMaterialJson(existing.manifest) !== canonicalMaterialJson(manifest))
-            throw error;
-        }
-      } finally {
-        const rel = relative(parent, resolve4(stage));
-        if (rel.startsWith(".stage-") && !rel.includes(sep))
-          await rm(stage, { recursive: true, force: true });
-      }
-    }
-    return snapshots.map((record) => record.manifest);
-  }
+  return false;
 }
-function validateMaterialManifestIdentityAny(value) {
-  const manifest = validateMaterialManifestAny(value);
-  if (revisionHash(manifest) !== manifest.revisionId)
-    throw new Error("Material identity hash mismatch");
-  return manifest;
-}
-function snapshotAny(record) {
-  validateMaterialRecordShapeAny(record);
-  return {
-    manifest: structuredClone(record.manifest),
-    files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [name, bytes.slice()]))
-  };
-}
-async function resolveMaterialRecordClosure(roots, reader, limits = {
-  maxRecords: MATERIAL_LIBRARY_LIMITS.maxPayloadRecords,
-  maxBytes: MATERIAL_LIBRARY_LIMITS.maxPayloadBytes,
-  maxPixels: MATERIAL_LIBRARY_LIMITS.maxPayloadPixels
-}) {
-  for (const n of Object.values(limits))
-    if (!Number.isSafeInteger(n) || n < 1)
-      throw new Error("Invalid material closure limits");
-  const manifests = new Map, active = new Set;
-  let bytes = 0, pixels = 0;
-  const visit = async (value) => {
-    const manifest = validateMaterialManifestIdentityAny(value), key = identity(manifest);
-    if (active.has(key))
-      throw new Error("Material dependency cycle");
-    const existing = manifests.get(key);
-    if (existing) {
-      if (canonicalMaterialJson(existing) !== canonicalMaterialJson(manifest))
-        throw new Error("Conflicting material dependency identity");
-      return;
-    }
-    manifests.set(key, structuredClone(manifest));
-    active.add(key);
-    for (const map of manifest.maps) {
-      bytes += map.bytes;
-      pixels += map.width * map.height;
-    }
-    if (manifests.size > limits.maxRecords || bytes > limits.maxBytes || pixels > limits.maxPixels)
-      throw new Error("Material closure count/byte/pixel limit exceeded");
-    for (const pin of materialRecordDependencyPins(manifest)) {
-      const child = await reader.readManifest(pin.resourceId, pin.revisionId);
-      if (child.materialId !== pin.resourceId || child.revisionId !== pin.revisionId || pin.sha256 !== pin.revisionId)
-        throw new Error("Material dependency pin mismatch");
-      await visit(child);
-    }
-    active.delete(key);
-  };
-  for (const root of roots)
-    await visit(root);
-  const records = [];
-  for (const [key, manifest] of manifests) {
-    const record = snapshotAny(await reader.read(manifest.materialId, manifest.revisionId));
-    if (identity(record.manifest) !== key || canonicalMaterialJson(record.manifest) !== canonicalMaterialJson(manifest))
-      throw new Error("Material closure manifest changed during read");
-    validateMaterialManifestIdentityAny(record.manifest);
-    for (const map of record.manifest.maps)
-      if (digest(record.files[map.file]) !== map.sha256)
-        throw new Error("Material integrity hash mismatch");
-    records.push(record);
-  }
-  for (const record of records)
-    await verifyMaterialRecordContents(record, { materials: records });
-  return records;
-}
-function recordClosureReader(records, fallback) {
-  const byId = new Map;
-  const duplicates = new Map;
-  for (const record of records) {
-    const key = identity(record.manifest), existing = byId.get(key);
-    if (existing && canonicalMaterialJson(existing.manifest) !== canonicalMaterialJson(record.manifest))
-      throw new Error("Conflicting material record identity");
-    if (!existing)
-      byId.set(key, record);
-    else if (existing !== record)
-      duplicates.set(key, [...duplicates.get(key) ?? [], record]);
-  }
-  return {
-    async readManifest(id, revision) {
-      const record = byId.get(`${id}/${revision}`);
-      if (record)
-        return record.manifest;
-      if (fallback)
-        return fallback.readManifest(id, revision);
-      throw new Error(`Missing pinned material revision: ${id} at ${revision}`);
-    },
-    async read(id, revision) {
-      const key = `${id}/${revision}`, record = byId.get(key);
-      if (record) {
-        for (const candidate of [record, ...duplicates.get(key) ?? []]) {
-          const manifest = validateMaterialRecordShapeAny(candidate);
-          if (canonicalMaterialJson(manifest) !== canonicalMaterialJson(record.manifest))
-            throw new Error("Conflicting material record identity");
-          for (const map of manifest.maps)
-            if (digest(candidate.files[map.file]) !== map.sha256)
-              throw new Error("Conflicting material record encoded integrity hash");
-        }
-        return record;
-      }
-      if (fallback)
-        return fallback.readRecordFiles(id, revision);
-      throw new Error(`Missing pinned material revision: ${id} at ${revision}`);
-    }
-  };
-}
-function createPinnedMaterialMapPort(records) {
-  const entries = new Map;
-  for (const record of records) {
-    validateMaterialRecordShapeAny(record);
-    validateMaterialManifestIdentityAny(record.manifest);
-    for (const map of record.manifest.maps) {
-      if (digest(record.files[map.file]) !== map.sha256)
-        throw new Error("Material integrity hash mismatch");
-      entries.set(`${identity(record.manifest)}/${materialLibraryResourceId(record.manifest, map.slot)}`, { record, map });
+function animationDuration(animation) {
+  let duration = 0;
+  for (const sampler of animation.listSamplers()) {
+    const max = sampler.getInput()?.getMax([]);
+    if (max && typeof max[0] === "number" && Number.isFinite(max[0])) {
+      duration = Math.max(duration, max[0]);
     }
   }
-  const find = (resourceId, pin) => {
-    if (typeof resourceId !== "string" || pin.sha256 !== pin.revisionId)
-      return;
-    return entries.get(`${pin.resourceId}/${pin.revisionId}/${resourceId}`);
-  };
-  const describe = (resourceId, pin) => {
-    const entry = find(resourceId, pin);
-    if (!entry)
-      return;
-    const { record, map } = entry;
-    return {
-      materialId: record.manifest.materialId,
-      revisionId: record.manifest.revisionId,
-      resourceId,
-      slot: map.slot,
-      usage: map.usage,
-      colorSpace: map.colorSpace,
-      width: map.width,
-      height: map.height,
-      encodedByteLength: map.bytes,
-      imageSha256: map.sha256,
-      ..."pixelHash" in map ? { decodedPixelHash: map.pixelHash } : {}
-    };
-  };
-  return {
-    describePinnedMaterialMap: describe,
-    async resolvePinnedMaterialMapPixels(resourceId, pin, context) {
-      context?.signal?.throwIfAborted();
-      const descriptor = describe(resourceId, pin), entry = find(resourceId, pin);
-      if (!descriptor || !entry)
-        throw new Error("Missing verified pinned-library map; approved resources cannot be atlas sources");
-      const { data, info } = await sharp(entry.record.files[entry.map.file], {
-        limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
-        failOn: "warning"
-      }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-      context?.signal?.throwIfAborted();
-      if (info.width !== descriptor.width || info.height !== descriptor.height || info.channels !== 4)
-        throw new Error("Pinned material decoded dimensions mismatch");
-      const decodedPixelHash = digest(data);
-      if (descriptor.decodedPixelHash && descriptor.decodedPixelHash !== decodedPixelHash)
-        throw new Error("Pinned material pixel hash mismatch");
-      return { descriptor, pixels: Uint8Array.from(data), decodedPixelHash };
-    }
-  };
+  return stable8(duration);
 }
-async function verifyMaterialRecordContents(record, options) {
-  if (record.manifest.schemaVersion === 1)
-    return verifyMaterialRecordV1(record);
-  const manifest = validateMaterialRecordShapeAny(record);
-  validateMaterialManifestIdentityAny(manifest);
-  const pins = new Set(materialRecordDependencyPins(manifest).map((pin) => `${pin.resourceId}/${pin.revisionId}`));
-  pins.add(identity(manifest));
-  const resources = createPinnedMaterialMapPort((options?.materials ?? [record]).filter((candidate) => pins.has(identity(candidate.manifest))));
-  admitMaterialManifestRecipes(manifest, resources);
-  for (const map of manifest.maps) {
-    const bytes = record.files[map.file];
-    if (digest(bytes) !== map.sha256)
-      throw new Error("Material integrity hash mismatch");
-    const { data, info } = await sharp(bytes, {
-      limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
-      failOn: "warning"
-    }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-    if (info.width !== map.width || info.height !== map.height || info.channels !== 4 || digest(data) !== map.pixelHash)
-      throw new Error("Material decoded pixel hash/dimensions mismatch");
-    const recipe = map.recipe;
-    if (!recipe)
+function signedAxis2(vector) {
+  const values = [
+    { axis: "X", value: vector.x },
+    { axis: "Y", value: vector.y },
+    { axis: "Z", value: vector.z }
+  ];
+  const dominant = [...values].sort((a, b) => Math.abs(b.value) - Math.abs(a.value))[0];
+  return `${dominant.value < 0 ? "-" : "+"}${dominant.axis}`;
+}
+function finalEffectAxis(nodes, mode) {
+  let best;
+  for (const node of nodes) {
+    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
+    if (!(semantic?.roles ?? []).some((role) => /^vfx\.effect\.surface(?:\.|$)/.test(role))) {
       continue;
-    if (recipe.kind === "atlas") {
-      const compiled = await compileTextureAtlasSpecV1(recipe.spec, { resources });
-      if (canonicalMaterialJson(compiled.manifest) !== canonicalMaterialJson(recipe.manifest) || digest(compiled.pixels) !== map.pixelHash)
-        throw new Error("Atlas recipe/manifest/pixel hash mismatch");
-    } else {
-      const compiled = recipe.spec.schemaVersion === 3 ? materialPixelsV3(recipe.spec, recipe.derive) : materialPixels(recipe.spec, recipe.derive);
-      if (compiled.recipeHash !== recipe.recipeHash || digest(compiled.pixels) !== recipe.pixelHash)
-        throw new Error("Procedural recipe/pixel hash mismatch");
     }
-  }
-}
-async function verifyMaterialRecord(record, options) {
-  if (record.manifest.schemaVersion === 1)
-    return verifyMaterialRecordV1(record);
-  await resolveMaterialRecordClosure([record.manifest], recordClosureReader([record, ...options?.materials ?? []]));
-}
-function admitMaterialManifestRecipes(manifest, resources) {
-  let texels = 0, work = 0, allocation = 0, encoded = 0;
-  for (const map of manifest.maps) {
-    encoded += map.bytes;
-    const recipe = map.recipe;
-    if (recipe?.kind === "procedural") {
-      if (recipe.spec.schemaVersion === 3) {
-        const a = admitProceduralTextureSpecV3(recipe.spec);
-        const derived = normalDerivationBudget(recipe.derive ? a.spec.width * a.spec.height : 0);
-        texels += a.spec.width * a.spec.height;
-        work += a.estimatedWorkUnits + derived.work;
-        allocation += a.conservativePixelAllocationBytes + derived.allocation;
-      } else {
-        texels += recipe.spec.size ** 2;
-        work += recipe.spec.size ** 2 * recipe.spec.layers.length * 16;
-        allocation += recipe.spec.size ** 2 * 12;
+    const matrix = new THREE26.Matrix4().fromArray(node.getWorldMatrix());
+    const scale = node.getWorldScale();
+    const scaleMagnitude = Math.hypot(scale[0], scale[1], scale[2]);
+    for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
+      const position = primitive.getAttribute("POSITION");
+      if (!position)
+        continue;
+      const min = position.getMin([]);
+      const max = position.getMax([]);
+      const axes = [
+        { score: (max[0] ?? 0) - (min[0] ?? 0), direction: new THREE26.Vector3(1, 0, 0) },
+        { score: (max[1] ?? 0) - (min[1] ?? 0), direction: new THREE26.Vector3(0, 1, 0) },
+        { score: (max[2] ?? 0) - (min[2] ?? 0), direction: new THREE26.Vector3(0, 0, 1) }
+      ];
+      const selected = axes.reduce((candidate, value) => mode === "length" ? value.score > candidate.score ? value : candidate : value.score < candidate.score ? value : candidate);
+      const candidate = {
+        score: selected.score * scaleMagnitude,
+        direction: selected.direction.transformDirection(matrix)
+      };
+      if (!best || (mode === "length" ? candidate.score > best.score : candidate.score < best.score)) {
+        best = candidate;
       }
-    } else if (recipe?.kind === "atlas") {
-      const a = admitTextureAtlasSpecV1(recipe.spec, { resources });
-      texels += a.spec.width * a.spec.height + a.budget.sourceTexels;
-      work += a.budget.workUnits;
-      allocation += a.budget.conservativePixelAllocationBytes;
-      encoded += a.budget.encodedBytes;
-    } else {
-      texels += map.width * map.height;
-      work += map.width * map.height * 12 + map.bytes * 8;
-      allocation += map.width * map.height * 12 + map.bytes * 2;
     }
   }
-  if (texels > PORTABLE_MATERIAL_V3_LIMITS.maxTexels || work > PORTABLE_MATERIAL_V3_LIMITS.maxWork || allocation > PORTABLE_MATERIAL_V3_LIMITS.maxTransientBytes || encoded > PORTABLE_MATERIAL_V3_LIMITS.maxEncodedBytes)
-    throw new Error("Material recipe aggregate texel/work/allocation/encoded budget exceeded");
+  return best ? signedAxis2(best.direction) : undefined;
 }
-function validateMaterialLibraryPayloadAny(value) {
-  assertMaterialJson(value);
-  if (!value || typeof value !== "object" || Array.isArray(value))
-    throw new Error("Invalid material resource payload");
-  if (value["schemaVersion"] === 1)
-    return validateMaterialLibraryPayload(value);
-  const payload = value;
-  if (Object.keys(payload).some((k) => !["schemaVersion", "records"].includes(k)) || payload.schemaVersion !== 2 || !Array.isArray(payload.records) || payload.records.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
-    throw new Error("Invalid material resource payload");
-  let bytes = 0, pixels = 0;
-  const seen = new Set;
-  for (const wire of payload.records) {
-    if (!wire || typeof wire !== "object" || Object.keys(wire).some((k) => !["manifest", "files"].includes(k)))
-      throw new Error("Invalid material resource record");
-    const manifest = validateMaterialManifestIdentityAny(wire.manifest), key = identity(manifest);
-    if (seen.has(key))
-      throw new Error("Duplicate material resource revision");
-    seen.add(key);
-    if (!wire.files || typeof wire.files !== "object" || Array.isArray(wire.files) || Object.keys(wire.files).length !== manifest.maps.length)
-      throw new Error("Material payload inventory mismatch");
-    for (const map of manifest.maps) {
-      const encoded = wire.files[map.file];
-      if (typeof encoded !== "string" || encoded.length !== Math.ceil(map.bytes / 3) * 4 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))
-        throw new Error("Invalid material map base64");
-      bytes += map.bytes;
-      pixels += map.width * map.height;
+async function analyzeFinalVfxGlbBytesV1(bytes) {
+  const io = createGltfIO();
+  const document = await io.readBinary(bytes);
+  const root = document.getRoot();
+  const renderableNodes = root.listNodes().filter((node) => node.getMesh() !== null);
+  const meshes = [...new Set(renderableNodes.map((node) => node.getMesh()).filter(Boolean))];
+  const primitives = meshes.flatMap((mesh) => mesh?.listPrimitives() ?? []);
+  let triangleCount = 0;
+  for (const primitive of primitives) {
+    const indices = primitive.getIndices();
+    const position = primitive.getAttribute("POSITION");
+    triangleCount += indices ? indices.getCount() / 3 : (position?.getCount() ?? 0) / 3;
+  }
+  const effectSurfaceMaterials = new Set;
+  for (const node of renderableNodes) {
+    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
+    if (!(semantic?.roles ?? []).some((role) => /^vfx\.effect\.surface(?:\.|$)/.test(role))) {
+      continue;
+    }
+    for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
+      const material = primitive.getMaterial();
+      if (material)
+        effectSurfaceMaterials.add(material);
     }
   }
-  if (bytes > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
-    throw new Error("Material resource payload exceeds byte/pixel budget");
-  return payload;
-}
-async function createMaterialLibraryPayload(records) {
-  if (records.every((r) => r.manifest.schemaVersion === 1))
-    return createMaterialLibraryPayloadV1(records);
-  let bytes = 0, pixels = 0;
-  if (records.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
-    throw new Error("Material payload record limit exceeded");
-  for (const record of records)
-    for (const map of validateMaterialManifestIdentityAny(record.manifest).maps) {
-      bytes += map.bytes;
-      pixels += map.width * map.height;
+  const materials = [
+    ...new Set(primitives.map((primitive) => primitive.getMaterial()).filter(Boolean))
+  ].map((material, index) => {
+    const baseColor = material.getBaseColorFactor();
+    const texture = material.getBaseColorTexture();
+    const image = texture?.getImage();
+    const mimeType = texture?.getMimeType() ?? "";
+    const mode = material.getAlphaMode().toLowerCase();
+    return {
+      id: material.getName() || `material.${index}`,
+      effectSurface: effectSurfaceMaterials.has(material),
+      alphaMode: mode,
+      alphaData: (baseColor[3] ?? 1) < 1 || image !== null && image !== undefined && encodedTextureHasAlpha(mimeType, image),
+      doubleSided: material.getDoubleSided(),
+      ...mode === "mask" ? { alphaCutoff: material.getAlphaCutoff() } : {}
+    };
+  });
+  const facingSemantics = new Set;
+  for (const node of renderableNodes) {
+    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
+    for (const role of semantic?.roles ?? []) {
+      const match = /^vfx\.facing\.(fixed|camera-spherical|camera-y-axis)$/.exec(role);
+      if (match)
+        facingSemantics.add(match[1]);
     }
-  if (bytes > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
-    throw new Error("Material payload byte/pixel budget exceeded");
-  const admitted = await resolveMaterialRecordClosure(records.map((r) => r.manifest), recordClosureReader(records));
-  const byIdentity = new Map(admitted.map((r) => [identity(r.manifest), r]));
-  const snapshots = records.map((r) => byIdentity.get(identity(r.manifest)));
-  return validateMaterialLibraryPayloadAny({
-    schemaVersion: 2,
-    records: snapshots.map((r) => ({
-      manifest: r.manifest,
-      files: Object.fromEntries(Object.entries(r.files).map(([name, bytes]) => [
-        name,
-        Buffer.from(bytes).toString("base64")
-      ]))
+  }
+  const normalAxis = finalEffectAxis(renderableNodes, "normal");
+  const directionAxis = finalEffectAxis(renderableNodes, "length");
+  return {
+    schemaVersion: 1,
+    meshCount: meshes.length,
+    primitiveCount: primitives.length,
+    triangleCount: Math.floor(triangleCount),
+    materials,
+    facingSemantics: [...facingSemantics].sort(),
+    ...normalAxis ? { normalAxis } : {},
+    ...directionAxis ? { directionAxis } : {},
+    clips: root.listAnimations().map((animation) => ({
+      name: animation.getName(),
+      durationSeconds: animationDuration(animation)
     }))
-  });
-}
-async function decodeMaterialLibraryPayload(value) {
-  const payload = validateMaterialLibraryPayloadAny(value);
-  if (payload.schemaVersion === 1)
-    return decodeMaterialLibraryPayloadV1(payload);
-  const wires = payload.records.map((w) => ({
-    manifest: validateMaterialManifestIdentityAny(w.manifest),
-    files: { ...w.files }
-  }));
-  const byIdentity = new Map(wires.map((w) => [identity(w.manifest), w]));
-  const reader = {
-    async readManifest(id, revision) {
-      const wire = byIdentity.get(`${id}/${revision}`);
-      if (!wire)
-        throw new Error("Missing pinned material revision");
-      return wire.manifest;
-    },
-    async read(id, revision) {
-      const wire = byIdentity.get(`${id}/${revision}`);
-      if (!wire)
-        throw new Error("Missing pinned material revision");
-      return {
-        manifest: wire.manifest,
-        files: Object.fromEntries(Object.entries(wire.files).map(([name, encoded]) => [
-          name,
-          new Uint8Array(Buffer.from(encoded, "base64"))
-        ]))
-      };
-    }
   };
-  const admitted = await resolveMaterialRecordClosure(wires.map((w) => w.manifest), reader);
-  const result = new Map(admitted.map((r) => [identity(r.manifest), r]));
-  return wires.map((w) => result.get(identity(w.manifest)));
 }
-async function createMaterialRecordV2(draft, options) {
-  assertMaterialJson(draft, true);
-  if (!draft || typeof draft !== "object" || Array.isArray(draft))
-    throw new Error("Invalid material draft");
-  exactKeys(draft, [
-    "schemaVersion",
-    "materialId",
-    "name",
-    "tags",
-    "tileable",
-    "physicalSizeMeters",
-    "parameters",
-    "sources",
-    "maps"
-  ]);
-  const input = draft;
-  if (input["schemaVersion"] !== 2 || !Array.isArray(input["maps"]) || input["maps"].length < 1 || input["maps"].length > 5)
-    throw new Error("V2 material requires schemaVersion2 and1..5 maps");
-  const candidates = options?.materials ?? [];
-  if (candidates.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
-    throw new Error("Material source closure count limit exceeded");
-  const records = candidates.length ? await resolveMaterialRecordClosure(candidates.map((r) => r.manifest), recordClosureReader(candidates)) : [];
-  const resources = createPinnedMaterialMapPort(records), prepared = [];
-  let texels = 0, work = 0, allocation = 0, encoded = 0;
-  for (const value of input["maps"]) {
-    if (!value || typeof value !== "object" || Array.isArray(value))
-      throw new Error("Invalid material map draft");
-    exactKeys(value, [
-      "slot",
-      "sourceId",
-      "transforms",
-      "normalConvention",
-      "channelPacking",
-      "sampler",
-      "bytes",
-      "originalFile",
-      "procedural",
-      "derive",
-      "atlas"
-    ]);
-    const raw = value, slot = raw["slot"];
-    if (!MATERIAL_LIBRARY_SLOTS.includes(slot))
-      throw new Error("Unsupported material map slot");
-    const sampler = canonicalizePortableSamplerV1(raw["sampler"]);
-    if (["bytes", "procedural", "atlas"].filter((k) => raw[k] !== undefined).length !== 1)
-      throw new Error("Supply exactly one map bytes/procedural/atlas source");
-    if (raw["procedural"] !== undefined) {
-      const spec = raw["procedural"];
-      if (spec.schemaVersion === 3) {
-        const a = admitProceduralTextureSpecV3(spec);
-        if (a.spec.usage !== MATERIAL_LIBRARY_USAGE[slot])
-          throw new Error("Procedural usage mismatch");
-        if (raw["derive"] !== undefined && slot !== "normal")
-          throw new Error("Height derivation requires a normal map slot");
-        const derived = normalDerivationBudget(raw["derive"] !== undefined ? a.spec.width * a.spec.height : 0);
-        texels += a.spec.width * a.spec.height;
-        work += a.estimatedWorkUnits + derived.work;
-        allocation += a.conservativePixelAllocationBytes + derived.allocation;
-        prepared.push({ raw, slot, sampler, procedural: a.spec });
-      } else {
-        const canonical = canonicalizeProceduralTextureSpecV2(spec);
-        if (canonical.usage !== MATERIAL_LIBRARY_USAGE[slot])
-          throw new Error("Procedural usage mismatch");
-        texels += canonical.size ** 2;
-        work += canonical.size ** 2 * canonical.layers.length * 16;
-        allocation += canonical.size ** 2 * 12;
-        prepared.push({ raw, slot, sampler, procedural: canonical });
+function finalFinding(profile, value) {
+  return { ...value, profile };
+}
+function inspectFinalEffects(contract, evidence, profile = "asset.requirements.v1") {
+  const findings = [];
+  if (evidence.meshCount === 0 || evidence.primitiveCount === 0 || evidence.triangleCount === 0) {
+    findings.push(finalFinding(profile, {
+      code: "VFX_GLTF_RENDERABLE_MISSING",
+      disposition: "block",
+      dimension: "exportIntegrity",
+      message: "Final GLB contains no renderable VFX geometry.",
+      measurement: {
+        name: "finalVfxTriangles",
+        actual: evidence.triangleCount,
+        expected: ">=1"
+      },
+      repairText: "Export the effect surface as portable geometry before final-byte approval."
+    }));
+  }
+  const effectMaterials = evidence.materials.filter((material) => material.effectSurface);
+  if (effectMaterials.length === 0) {
+    findings.push(finalFinding(profile, {
+      code: "VFX_GLTF_EFFECT_SURFACE_MISSING",
+      disposition: "block",
+      dimension: "exportIntegrity",
+      message: "Final GLB contains no material attached to a vfx.effect.surface.* node.",
+      repairText: "Preserve an explicit vfx.effect.surface.* semantic on each renderable effect node; use vfx.support.* for opaque support geometry."
+    }));
+  }
+  for (const material of effectMaterials) {
+    if (material.alphaMode !== contract.transparency) {
+      findings.push(finalFinding(profile, {
+        code: "VFX_GLTF_TRANSPARENCY_MODE_MISMATCH",
+        disposition: "block",
+        dimension: "exportIntegrity",
+        message: `${material.id} final GLB alpha mode is ${material.alphaMode}; expected ${contract.transparency}.`,
+        affected: { material: material.id },
+        measurement: {
+          name: "finalAlphaMode",
+          actual: material.alphaMode,
+          expected: contract.transparency
+        }
+      }));
+    }
+    if (contract.transparency !== "opaque" && !material.alphaData) {
+      findings.push(finalFinding(profile, {
+        code: "VFX_GLTF_ALPHA_DATA_MISSING",
+        disposition: "block",
+        dimension: "exportIntegrity",
+        message: `${material.id} final GLB has no alpha-bearing factor or embedded texture.`,
+        affected: { material: material.id },
+        measurement: { name: "finalAlphaData", actual: false, expected: true },
+        repairText: "Pack a standalone alphaMap into the exported base-color texture alpha channel, or use an alpha-bearing base-color factor."
+      }));
+    }
+    if (material.doubleSided !== contract.doubleSided) {
+      findings.push(finalFinding(profile, {
+        code: "VFX_GLTF_SIDEDNESS_MISMATCH",
+        disposition: "block",
+        dimension: "exportIntegrity",
+        message: `${material.id} final GLB sidedness differs from trusted VFX intent.`,
+        affected: { material: material.id },
+        measurement: {
+          name: "finalDoubleSided",
+          actual: material.doubleSided,
+          expected: contract.doubleSided
+        }
+      }));
+    }
+    if (contract.transparency === "mask" && (material.alphaCutoff === undefined || material.alphaCutoff <= 0 || material.alphaCutoff > 1)) {
+      findings.push(finalFinding(profile, {
+        code: "VFX_GLTF_ALPHA_CUTOFF_INVALID",
+        disposition: "block",
+        dimension: "exportIntegrity",
+        message: `${material.id} final GLB MASK cutoff is outside (0, 1].`,
+        affected: { material: material.id }
+      }));
+    }
+  }
+  if (contract.facing.mode !== "fixed" && !evidence.facingSemantics.includes(contract.facing.mode)) {
+    findings.push(finalFinding(profile, {
+      code: "VFX_GLTF_FACING_SEMANTIC_MISSING",
+      disposition: "block",
+      dimension: "exportIntegrity",
+      message: `Final GLB does not carry the ${contract.facing.mode} runtime-facing semantic.`,
+      measurement: {
+        name: "finalFacingSemantics",
+        actual: evidence.facingSemantics.join(",") || null,
+        expected: contract.facing.mode
+      },
+      repairText: "Preserve the exporter-derived billboard semantic on the renderable quad node."
+    }));
+  }
+  if (contract.facing.source === "explicit" && contract.facing.mode === "fixed" && contract.facing.normalAxis !== evidence.normalAxis) {
+    findings.push(finalFinding(profile, {
+      code: "VFX_GLTF_NORMAL_AXIS_MISMATCH",
+      disposition: "block",
+      dimension: "exportIntegrity",
+      message: "Final GLB effect-surface normal axis differs from explicit VFX intent.",
+      measurement: {
+        name: "finalNormalAxis",
+        actual: evidence.normalAxis ?? null,
+        expected: contract.facing.normalAxis ?? null
       }
-    } else if (raw["atlas"] !== undefined) {
-      if (raw["derive"] !== undefined)
-        throw new Error("Atlas derivation unsupported");
-      const a = admitTextureAtlasSpecV1(raw["atlas"], { resources });
-      if (a.spec.usage !== MATERIAL_LIBRARY_USAGE[slot] || canonicalMaterialJson(a.spec.sampler) !== canonicalMaterialJson(sampler))
-        throw new Error("Atlas usage/sampler mismatch");
-      texels += a.spec.width * a.spec.height + a.budget.sourceTexels;
-      work += a.budget.workUnits;
-      allocation += a.budget.conservativePixelAllocationBytes;
-      encoded += a.budget.encodedBytes;
-      prepared.push({ raw, slot, sampler, atlas: a.spec });
-    } else {
-      if (raw["derive"] !== undefined || !(raw["bytes"] instanceof Uint8Array))
-        throw new Error("Invalid external map bytes/derivation");
-      const bytes = raw["bytes"];
-      if (bytes.length > MATERIAL_LIBRARY_LIMITS.maxMapBytes)
-        throw new Error("Material map encoded byte limit");
-      const d = materialPngDimensions(bytes);
-      if (d.width < 1 || d.height < 1 || d.width > 4096 || d.height > 4096)
-        throw new Error("Material map dimensions limit");
-      texels += d.width * d.height;
-      encoded += bytes.length;
-      work += d.width * d.height * 12 + bytes.length * 8;
-      allocation += d.width * d.height * 12 + bytes.length * 2;
-      prepared.push({ raw, slot, sampler, bytes });
+    }));
+  }
+  if (contract.facing.source === "explicit" && contract.facing.directionAxis !== undefined && contract.facing.directionAxis !== evidence.directionAxis) {
+    findings.push(finalFinding(profile, {
+      code: "VFX_GLTF_DIRECTION_AXIS_MISMATCH",
+      disposition: "block",
+      dimension: "exportIntegrity",
+      message: "Final GLB effect-surface direction axis differs from explicit VFX intent.",
+      measurement: {
+        name: "finalDirectionAxis",
+        actual: evidence.directionAxis ?? null,
+        expected: contract.facing.directionAxis
+      }
+    }));
+  }
+  if (contract.animation.driver === "clip") {
+    const clip = evidence.clips.find((candidate) => candidate.name === contract.animation.clipName);
+    if (!clip || Math.abs(clip.durationSeconds - contract.animation.durationSeconds) > 0.000001) {
+      findings.push(finalFinding(profile, {
+        code: "VFX_GLTF_REQUIRED_CLIP_MISSING",
+        disposition: "block",
+        dimension: "exportIntegrity",
+        message: "Final GLB dropped or changed the declared VFX animation clip.",
+        affected: { clip: contract.animation.clipName ?? "<missing>" },
+        measurement: {
+          name: "finalClipDurationSeconds",
+          actual: clip?.durationSeconds ?? null,
+          expected: contract.animation.durationSeconds,
+          threshold: 0.000001,
+          unit: "s"
+        }
+      }));
     }
   }
-  if (texels > 4 * 1024 * 1024 || work > PORTABLE_MATERIAL_V3_LIMITS.maxWork || allocation > 64 * 1024 * 1024 || encoded > 16 * 1024 * 1024)
-    throw new Error("Material aggregate texel/work/allocation limit exceeded");
-  const maps = [], files = {}, pins = new Map;
-  for (const item of prepared) {
-    const { raw, slot, sampler } = item;
-    let bytes, pixelHash, recipe;
-    if (item.procedural !== undefined) {
-      const spec = item.procedural;
-      const derive = raw["derive"];
-      const compiled = spec.schemaVersion === 3 ? materialPixelsV3(spec, derive) : materialPixels(spec, derive);
-      const d = compiled.spec.schemaVersion === 3 ? { width: compiled.spec.width, height: compiled.spec.height } : { width: compiled.spec.size, height: compiled.spec.size };
-      pixelHash = digest(compiled.pixels);
-      bytes = new Uint8Array(await sharp(compiled.pixels, { raw: { ...d, channels: 4 } }).png({ compressionLevel: 9, adaptiveFiltering: false }).toBuffer());
-      recipe = {
-        kind: "procedural",
-        compilerId: compiled.spec.schemaVersion === 3 ? PROCEDURAL_TEXTURE_V3_COMPILER_ID : "kiln.procedural-texture.v2",
-        spec: compiled.spec,
-        recipeHash: compiled.recipeHash,
-        pixelHash,
-        encoder,
-        ...raw["derive"] ? {
-          derive: structuredClone(raw["derive"])
-        } : {}
-      };
-    } else if (item.atlas !== undefined) {
-      const compiled = await compileTextureAtlasSpecV1(item.atlas, { resources });
-      pixelHash = compiled.manifest.decodedPixelHash;
-      bytes = new Uint8Array(await sharp(compiled.pixels, {
-        raw: { width: compiled.spec.width, height: compiled.spec.height, channels: 4 }
-      }).png({ compressionLevel: 9, adaptiveFiltering: false }).toBuffer());
-      recipe = {
-        kind: "atlas",
-        compilerId: compiled.manifest.compilerId,
-        spec: compiled.spec,
-        manifest: compiled.manifest,
-        encoder
-      };
-      for (const r of compiled.spec.regions)
-        if (r.source.kind === "resource")
-          pins.set(`${r.source.pin.resourceId}/${r.source.pin.revisionId}`, r.source.pin);
-    } else {
-      bytes = item.bytes.slice();
-      const decoded = await sharp(bytes, {
-        limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
-        failOn: "warning"
-      }).ensureAlpha().raw().toBuffer();
-      pixelHash = digest(decoded);
-    }
-    const d = materialPngDimensions(bytes), file = `${slot}.png`;
-    if (files[file])
-      throw new Error("Duplicate material map slot");
-    files[file] = bytes;
-    maps.push({
-      slot,
-      file,
-      ...d,
-      sha256: digest(bytes),
-      bytes: bytes.length,
-      usage: MATERIAL_LIBRARY_USAGE[slot],
-      colorSpace: slot === "baseColor" || slot === "emissive" ? "srgb" : "linear",
-      sampler,
-      pixelHash,
-      sourceId: raw["sourceId"],
-      transforms: structuredClone(raw["transforms"]),
-      ...slot === "normal" ? {
-        normalConvention: raw["normalConvention"] ?? (recipe ? "opengl" : undefined)
-      } : {},
-      ...slot === "metallicRoughness" ? {
-        channelPacking: raw["channelPacking"] ?? (recipe ? "r-occlusion-g-roughness-b-metallic" : undefined)
-      } : {},
-      ...raw["originalFile"] ? { originalFile: raw["originalFile"] } : {},
-      ...recipe ? { recipe } : {}
-    });
-  }
-  const manifest = materialManifestV2Schema.parse({
-    ...input,
-    schemaVersion: 2,
-    revisionId: `sha256:${"0".repeat(64)}`,
-    tags: input["tags"] ?? [],
-    parameters: input["parameters"] ?? {},
-    maps,
-    dependencies: [...pins.values()]
-  });
-  manifest.revisionId = revisionHash(manifest);
-  const record = { manifest, files };
-  await verifyMaterialRecord(record, { materials: [...records, record] });
-  return record;
+  return findings;
 }
-var digest = (bytes) => `sha256:${createHash6("sha256").update(bytes).digest("hex")}`, encoder, normalDerivationBudget = (texels) => ({ work: texels * 16, allocation: texels * 8 }), identity = (manifest) => `${manifest.materialId}/${manifest.revisionId}`;
-var init_material_library_node = __esm(() => {
-  init_atomic_directory();
-  init_material_library();
-  init_portable_sampler();
-  init_portable_sampler_runtime();
-  init_procedural_texture_v3();
-  init_procedural_texture_v3_contract();
-  init_texture_atlas_pixels();
-  init_procedural_texture();
-  init_procedural_material_v2();
-  init_textures();
-  init_texture_resolver();
-  init_procedural_material_v3();
-  encoder = { name: "sharp", version: sharp.versions.sharp };
+function finalEffectsMetrics(evidence) {
+  return {
+    finalVfxMeshCount: evidence.meshCount,
+    finalVfxPrimitiveCount: evidence.primitiveCount,
+    finalVfxTriangles: evidence.triangleCount,
+    finalVfxMaterialCount: evidence.materials.length,
+    finalVfxEffectMaterialCount: evidence.materials.filter((material) => material.effectSurface).length,
+    finalVfxFacingSemantics: evidence.facingSemantics.join(","),
+    finalVfxNormalAxis: evidence.normalAxis ?? null,
+    finalVfxDirectionAxis: evidence.directionAxis ?? null,
+    finalVfxClipCount: evidence.clips.length
+  };
+}
+var stable8 = (value) => Math.round(value * 1e6) / 1e6;
+var init_breadth_final = __esm(() => {
+  init_gltf_io();
+  init_contracts();
+  init_types();
 });
 
 // src/qa/requirements-applicability.ts
@@ -21558,334 +20904,6 @@ var init_requirements_report = __esm(() => {
     "visualQuality",
     "runtimeCost"
   ];
-});
-
-// src/rebuild-options.ts
-import { z as z6 } from "zod";
-var FULL_OPTIMIZATION_PIPELINE = "rigid-v1", rebuildOptionsSchema;
-var init_rebuild_options = __esm(() => {
-  rebuildOptionsSchema = z6.object({
-    indexPolicy: z6.enum(["indexed", "asBuilt"]).optional(),
-    gltfExporter: z6.enum(["legacy", "three"]),
-    geometryPolicy: z6.enum(["warn", "strict"]),
-    optimize: z6.enum(["off", "auto", "palette", "full"]),
-    optimizationPipeline: z6.literal(FULL_OPTIMIZATION_PIPELINE).optional(),
-    instance: z6.enum(["off", "auto", "on"])
-  });
-});
-
-// src/qa/breadth-final.ts
-import * as THREE26 from "three";
-function bytesContainAscii(bytes, value) {
-  const needle = new TextEncoder().encode(value);
-  outer:
-    for (let index = 0;index <= bytes.length - needle.length; index++) {
-      for (let offset = 0;offset < needle.length; offset++) {
-        if (bytes[index + offset] !== needle[offset])
-          continue outer;
-      }
-      return true;
-    }
-  return false;
-}
-function encodedTextureHasAlpha(mimeType, bytes) {
-  if (mimeType === "image/png") {
-    const colorType = bytes[25];
-    return colorType === 4 || colorType === 6 || bytesContainAscii(bytes, "tRNS");
-  }
-  if (mimeType === "image/webp") {
-    if (bytesContainAscii(bytes, "ALPH"))
-      return true;
-    const vp8xIndex = (() => {
-      const marker = new TextEncoder().encode("VP8X");
-      for (let index = 0;index <= bytes.length - marker.length; index++) {
-        if (marker.every((value, offset) => bytes[index + offset] === value))
-          return index;
-      }
-      return -1;
-    })();
-    return vp8xIndex >= 0 && ((bytes[vp8xIndex + 8] ?? 0) & 16) !== 0;
-  }
-  return false;
-}
-function animationDuration(animation) {
-  let duration = 0;
-  for (const sampler of animation.listSamplers()) {
-    const max = sampler.getInput()?.getMax([]);
-    if (max && typeof max[0] === "number" && Number.isFinite(max[0])) {
-      duration = Math.max(duration, max[0]);
-    }
-  }
-  return stable8(duration);
-}
-function signedAxis2(vector) {
-  const values = [
-    { axis: "X", value: vector.x },
-    { axis: "Y", value: vector.y },
-    { axis: "Z", value: vector.z }
-  ];
-  const dominant = [...values].sort((a, b) => Math.abs(b.value) - Math.abs(a.value))[0];
-  return `${dominant.value < 0 ? "-" : "+"}${dominant.axis}`;
-}
-function finalEffectAxis(nodes, mode) {
-  let best;
-  for (const node of nodes) {
-    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
-    if (!(semantic?.roles ?? []).some((role) => /^vfx\.effect\.surface(?:\.|$)/.test(role))) {
-      continue;
-    }
-    const matrix = new THREE26.Matrix4().fromArray(node.getWorldMatrix());
-    const scale = node.getWorldScale();
-    const scaleMagnitude = Math.hypot(scale[0], scale[1], scale[2]);
-    for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
-      const position = primitive.getAttribute("POSITION");
-      if (!position)
-        continue;
-      const min = position.getMin([]);
-      const max = position.getMax([]);
-      const axes = [
-        { score: (max[0] ?? 0) - (min[0] ?? 0), direction: new THREE26.Vector3(1, 0, 0) },
-        { score: (max[1] ?? 0) - (min[1] ?? 0), direction: new THREE26.Vector3(0, 1, 0) },
-        { score: (max[2] ?? 0) - (min[2] ?? 0), direction: new THREE26.Vector3(0, 0, 1) }
-      ];
-      const selected = axes.reduce((candidate, value) => mode === "length" ? value.score > candidate.score ? value : candidate : value.score < candidate.score ? value : candidate);
-      const candidate = {
-        score: selected.score * scaleMagnitude,
-        direction: selected.direction.transformDirection(matrix)
-      };
-      if (!best || (mode === "length" ? candidate.score > best.score : candidate.score < best.score)) {
-        best = candidate;
-      }
-    }
-  }
-  return best ? signedAxis2(best.direction) : undefined;
-}
-async function analyzeFinalVfxGlbBytesV1(bytes) {
-  const io = createGltfIO();
-  const document = await io.readBinary(bytes);
-  const root = document.getRoot();
-  const renderableNodes = root.listNodes().filter((node) => node.getMesh() !== null);
-  const meshes = [...new Set(renderableNodes.map((node) => node.getMesh()).filter(Boolean))];
-  const primitives = meshes.flatMap((mesh) => mesh?.listPrimitives() ?? []);
-  let triangleCount = 0;
-  for (const primitive of primitives) {
-    const indices = primitive.getIndices();
-    const position = primitive.getAttribute("POSITION");
-    triangleCount += indices ? indices.getCount() / 3 : (position?.getCount() ?? 0) / 3;
-  }
-  const effectSurfaceMaterials = new Set;
-  for (const node of renderableNodes) {
-    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
-    if (!(semantic?.roles ?? []).some((role) => /^vfx\.effect\.surface(?:\.|$)/.test(role))) {
-      continue;
-    }
-    for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
-      const material = primitive.getMaterial();
-      if (material)
-        effectSurfaceMaterials.add(material);
-    }
-  }
-  const materials = [
-    ...new Set(primitives.map((primitive) => primitive.getMaterial()).filter(Boolean))
-  ].map((material, index) => {
-    const baseColor = material.getBaseColorFactor();
-    const texture = material.getBaseColorTexture();
-    const image = texture?.getImage();
-    const mimeType = texture?.getMimeType() ?? "";
-    const mode = material.getAlphaMode().toLowerCase();
-    return {
-      id: material.getName() || `material.${index}`,
-      effectSurface: effectSurfaceMaterials.has(material),
-      alphaMode: mode,
-      alphaData: (baseColor[3] ?? 1) < 1 || image !== null && image !== undefined && encodedTextureHasAlpha(mimeType, image),
-      doubleSided: material.getDoubleSided(),
-      ...mode === "mask" ? { alphaCutoff: material.getAlphaCutoff() } : {}
-    };
-  });
-  const facingSemantics = new Set;
-  for (const node of renderableNodes) {
-    const semantic = readSemanticMetadataV1FromExtras(node.getExtras());
-    for (const role of semantic?.roles ?? []) {
-      const match = /^vfx\.facing\.(fixed|camera-spherical|camera-y-axis)$/.exec(role);
-      if (match)
-        facingSemantics.add(match[1]);
-    }
-  }
-  const normalAxis = finalEffectAxis(renderableNodes, "normal");
-  const directionAxis = finalEffectAxis(renderableNodes, "length");
-  return {
-    schemaVersion: 1,
-    meshCount: meshes.length,
-    primitiveCount: primitives.length,
-    triangleCount: Math.floor(triangleCount),
-    materials,
-    facingSemantics: [...facingSemantics].sort(),
-    ...normalAxis ? { normalAxis } : {},
-    ...directionAxis ? { directionAxis } : {},
-    clips: root.listAnimations().map((animation) => ({
-      name: animation.getName(),
-      durationSeconds: animationDuration(animation)
-    }))
-  };
-}
-function finalFinding(profile, value) {
-  return { ...value, profile };
-}
-function inspectFinalEffects(contract, evidence, profile = "asset.requirements.v1") {
-  const findings = [];
-  if (evidence.meshCount === 0 || evidence.primitiveCount === 0 || evidence.triangleCount === 0) {
-    findings.push(finalFinding(profile, {
-      code: "VFX_GLTF_RENDERABLE_MISSING",
-      disposition: "block",
-      dimension: "exportIntegrity",
-      message: "Final GLB contains no renderable VFX geometry.",
-      measurement: {
-        name: "finalVfxTriangles",
-        actual: evidence.triangleCount,
-        expected: ">=1"
-      },
-      repairText: "Export the effect surface as portable geometry before final-byte approval."
-    }));
-  }
-  const effectMaterials = evidence.materials.filter((material) => material.effectSurface);
-  if (effectMaterials.length === 0) {
-    findings.push(finalFinding(profile, {
-      code: "VFX_GLTF_EFFECT_SURFACE_MISSING",
-      disposition: "block",
-      dimension: "exportIntegrity",
-      message: "Final GLB contains no material attached to a vfx.effect.surface.* node.",
-      repairText: "Preserve an explicit vfx.effect.surface.* semantic on each renderable effect node; use vfx.support.* for opaque support geometry."
-    }));
-  }
-  for (const material of effectMaterials) {
-    if (material.alphaMode !== contract.transparency) {
-      findings.push(finalFinding(profile, {
-        code: "VFX_GLTF_TRANSPARENCY_MODE_MISMATCH",
-        disposition: "block",
-        dimension: "exportIntegrity",
-        message: `${material.id} final GLB alpha mode is ${material.alphaMode}; expected ${contract.transparency}.`,
-        affected: { material: material.id },
-        measurement: {
-          name: "finalAlphaMode",
-          actual: material.alphaMode,
-          expected: contract.transparency
-        }
-      }));
-    }
-    if (contract.transparency !== "opaque" && !material.alphaData) {
-      findings.push(finalFinding(profile, {
-        code: "VFX_GLTF_ALPHA_DATA_MISSING",
-        disposition: "block",
-        dimension: "exportIntegrity",
-        message: `${material.id} final GLB has no alpha-bearing factor or embedded texture.`,
-        affected: { material: material.id },
-        measurement: { name: "finalAlphaData", actual: false, expected: true },
-        repairText: "Pack a standalone alphaMap into the exported base-color texture alpha channel, or use an alpha-bearing base-color factor."
-      }));
-    }
-    if (material.doubleSided !== contract.doubleSided) {
-      findings.push(finalFinding(profile, {
-        code: "VFX_GLTF_SIDEDNESS_MISMATCH",
-        disposition: "block",
-        dimension: "exportIntegrity",
-        message: `${material.id} final GLB sidedness differs from trusted VFX intent.`,
-        affected: { material: material.id },
-        measurement: {
-          name: "finalDoubleSided",
-          actual: material.doubleSided,
-          expected: contract.doubleSided
-        }
-      }));
-    }
-    if (contract.transparency === "mask" && (material.alphaCutoff === undefined || material.alphaCutoff <= 0 || material.alphaCutoff > 1)) {
-      findings.push(finalFinding(profile, {
-        code: "VFX_GLTF_ALPHA_CUTOFF_INVALID",
-        disposition: "block",
-        dimension: "exportIntegrity",
-        message: `${material.id} final GLB MASK cutoff is outside (0, 1].`,
-        affected: { material: material.id }
-      }));
-    }
-  }
-  if (contract.facing.mode !== "fixed" && !evidence.facingSemantics.includes(contract.facing.mode)) {
-    findings.push(finalFinding(profile, {
-      code: "VFX_GLTF_FACING_SEMANTIC_MISSING",
-      disposition: "block",
-      dimension: "exportIntegrity",
-      message: `Final GLB does not carry the ${contract.facing.mode} runtime-facing semantic.`,
-      measurement: {
-        name: "finalFacingSemantics",
-        actual: evidence.facingSemantics.join(",") || null,
-        expected: contract.facing.mode
-      },
-      repairText: "Preserve the exporter-derived billboard semantic on the renderable quad node."
-    }));
-  }
-  if (contract.facing.source === "explicit" && contract.facing.mode === "fixed" && contract.facing.normalAxis !== evidence.normalAxis) {
-    findings.push(finalFinding(profile, {
-      code: "VFX_GLTF_NORMAL_AXIS_MISMATCH",
-      disposition: "block",
-      dimension: "exportIntegrity",
-      message: "Final GLB effect-surface normal axis differs from explicit VFX intent.",
-      measurement: {
-        name: "finalNormalAxis",
-        actual: evidence.normalAxis ?? null,
-        expected: contract.facing.normalAxis ?? null
-      }
-    }));
-  }
-  if (contract.facing.source === "explicit" && contract.facing.directionAxis !== undefined && contract.facing.directionAxis !== evidence.directionAxis) {
-    findings.push(finalFinding(profile, {
-      code: "VFX_GLTF_DIRECTION_AXIS_MISMATCH",
-      disposition: "block",
-      dimension: "exportIntegrity",
-      message: "Final GLB effect-surface direction axis differs from explicit VFX intent.",
-      measurement: {
-        name: "finalDirectionAxis",
-        actual: evidence.directionAxis ?? null,
-        expected: contract.facing.directionAxis
-      }
-    }));
-  }
-  if (contract.animation.driver === "clip") {
-    const clip = evidence.clips.find((candidate) => candidate.name === contract.animation.clipName);
-    if (!clip || Math.abs(clip.durationSeconds - contract.animation.durationSeconds) > 0.000001) {
-      findings.push(finalFinding(profile, {
-        code: "VFX_GLTF_REQUIRED_CLIP_MISSING",
-        disposition: "block",
-        dimension: "exportIntegrity",
-        message: "Final GLB dropped or changed the declared VFX animation clip.",
-        affected: { clip: contract.animation.clipName ?? "<missing>" },
-        measurement: {
-          name: "finalClipDurationSeconds",
-          actual: clip?.durationSeconds ?? null,
-          expected: contract.animation.durationSeconds,
-          threshold: 0.000001,
-          unit: "s"
-        }
-      }));
-    }
-  }
-  return findings;
-}
-function finalEffectsMetrics(evidence) {
-  return {
-    finalVfxMeshCount: evidence.meshCount,
-    finalVfxPrimitiveCount: evidence.primitiveCount,
-    finalVfxTriangles: evidence.triangleCount,
-    finalVfxMaterialCount: evidence.materials.length,
-    finalVfxEffectMaterialCount: evidence.materials.filter((material) => material.effectSurface).length,
-    finalVfxFacingSemantics: evidence.facingSemantics.join(","),
-    finalVfxNormalAxis: evidence.normalAxis ?? null,
-    finalVfxDirectionAxis: evidence.directionAxis ?? null,
-    finalVfxClipCount: evidence.clips.length
-  };
-}
-var stable8 = (value) => Math.round(value * 1e6) / 1e6;
-var init_breadth_final = __esm(() => {
-  init_gltf_io();
-  init_contracts();
-  init_types();
 });
 
 // src/qa/requirements-run.ts
@@ -30416,6 +29434,20 @@ var init_material_metrics = __esm(() => {
   });
 });
 
+// src/rebuild-options.ts
+import { z as z6 } from "zod";
+var FULL_OPTIMIZATION_PIPELINE = "rigid-v1", rebuildOptionsSchema;
+var init_rebuild_options = __esm(() => {
+  rebuildOptionsSchema = z6.object({
+    indexPolicy: z6.enum(["indexed", "asBuilt"]).optional(),
+    gltfExporter: z6.enum(["legacy", "three"]),
+    geometryPolicy: z6.enum(["warn", "strict"]),
+    optimize: z6.enum(["off", "auto", "palette", "full"]),
+    optimizationPipeline: z6.literal(FULL_OPTIMIZATION_PIPELINE).optional(),
+    instance: z6.enum(["off", "auto", "on"])
+  });
+});
+
 // src/rigid-merge.ts
 import {
   ComponentTypeToTypedArray,
@@ -33441,7 +32473,7 @@ var init_kit = __esm(() => {
 });
 
 // src/texture-bake.ts
-import { createHash as createHash7 } from "node:crypto";
+import { createHash as createHash6 } from "node:crypto";
 import * as THREE50 from "three";
 function readPixels(texture) {
   const image = texture.image;
@@ -33541,7 +32573,7 @@ async function bakeSceneTextures(root, warnings) {
       if (encoded) {
         const delivery = readValidatedAtlasDelivery(entry.texture);
         if (delivery) {
-          if (delivery.id !== atlasRef.id || delivery.finalMime !== encoded.mime || delivery.finalImageSha256 !== `sha256:${createHash7("sha256").update(encoded.bytes).digest("hex")}`)
+          if (delivery.id !== atlasRef.id || delivery.finalMime !== encoded.mime || delivery.finalImageSha256 !== `sha256:${createHash6("sha256").update(encoded.bytes).digest("hex")}`)
             throw stale();
         } else {
           const sharp = (await import("sharp")).default;
@@ -33552,10 +32584,10 @@ async function bakeSceneTextures(root, warnings) {
           if (metadata.width !== atlasRecord.spec.width || metadata.height !== atlasRecord.spec.height)
             throw stale();
           const decoded = await image.ensureAlpha().raw().toBuffer();
-          if (`sha256:${createHash7("sha256").update(decoded).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
+          if (`sha256:${createHash6("sha256").update(decoded).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
             throw stale();
         }
-      } else if (raw.width !== atlasRecord.spec.width || raw.height !== atlasRecord.spec.height || raw.channels !== 4 || `sha256:${createHash7("sha256").update(raw.data).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
+      } else if (raw.width !== atlasRecord.spec.width || raw.height !== atlasRecord.spec.height || raw.channels !== 4 || `sha256:${createHash6("sha256").update(raw.data).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
         throw stale();
     }
     let bytes;
@@ -33580,8 +32612,8 @@ async function bakeSceneTextures(root, warnings) {
         height: raw.height,
         hasAlpha: hasTranslucentPixel(raw)
       };
-    const sha1 = createHash7("sha1").update(bytes).digest("hex");
-    const imageSha256 = `sha256:${createHash7("sha256").update(bytes).digest("hex")}`;
+    const sha1 = createHash6("sha1").update(bytes).digest("hex");
+    const imageSha256 = `sha256:${createHash6("sha256").update(bytes).digest("hex")}`;
     baked.push({
       schemaVersion: 1,
       texture: name,
@@ -36929,7 +35961,7 @@ __export(exports_capture_cache, {
   captureCpuCell: () => captureCpuCell,
   createCachedRenderPort: () => createCachedRenderPort
 });
-import { createHash as createHash8 } from "node:crypto";
+import { createHash as createHash7 } from "node:crypto";
 function clone(entry) {
   const result = structuredClone(entry);
   if (result.kind === "cpu")
@@ -37027,9 +36059,9 @@ function createCachedRenderPort(port, options) {
       return port(input, execution);
     const validated = validatePbrRenderRequest(input);
     const request = { ...validated, glb: Uint8Array.from(validated.glb) };
-    const hash = digest2(request.glb);
+    const hash = digest(request.glb);
     const selectors = request.cameras ?? request.viewDirs;
-    const keys = selectors.map((selector) => digest2(text5({
+    const keys = selectors.map((selector) => digest(text5({
       version: "kiln.capture-cache.v1",
       kind: "gpu",
       identity,
@@ -37113,7 +36145,7 @@ function createCachedRenderPort(port, options) {
 }
 async function captureCpuCell(cache, identity, produce) {
   const snapshot = structuredClone(identity);
-  const key = digest2(text5({ version: "kiln.capture-cache.v1", kind: "cpu", ...snapshot }));
+  const key = digest(text5({ version: "kiln.capture-cache.v1", kind: "cpu", ...snapshot }));
   const valid = (result) => {
     try {
       enforcePngCaptureBudget([result.png]);
@@ -37134,7 +36166,7 @@ async function captureCpuCell(cache, identity, produce) {
   await cache.put(key, { kind: "cpu", result }).catch(() => {});
   return { ...result, png: Buffer.from(result.png), captureCache: { hit: false } };
 }
-var text5 = (value) => JSON.stringify(canonical4(value)), digest2 = (value) => `sha256:${createHash8("sha256").update(value).digest("hex")}`;
+var text5 = (value) => JSON.stringify(canonical4(value)), digest = (value) => `sha256:${createHash7("sha256").update(value).digest("hex")}`;
 var init_capture_cache = __esm(() => {
   init_render_port();
   init_png();
@@ -38122,6 +37154,257 @@ var init_glb = __esm(() => {
     }
   };
   glbIO = createGltfIO;
+});
+
+// src/evaluator/protocol.ts
+import { createHash as createHash8 } from "node:crypto";
+function evaluatorOutcomeMessage(code) {
+  return EVALUATOR_OUTCOME_MESSAGES[code];
+}
+function resolveEvaluatorPortV2(port, profile) {
+  if (port)
+    return port;
+  if (profile === "evaluator-required") {
+    throw new EvaluatorPortError("ISOLATION_UNAVAILABLE", "Evaluator port is required.");
+  }
+  return trustedInProcessEvaluatorPortV2;
+}
+function isRecord6(value) {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+function hasExactKeys(value, allowed) {
+  return Object.keys(value).every((key) => allowed.includes(key));
+}
+function fail10(kind) {
+  throw new Error(`invalid evaluator ${kind}`);
+}
+function validRequestId(value) {
+  return typeof value === "string" && /^[A-Za-z0-9._-]{1,64}$/.test(value);
+}
+function validInteger(value, min, max) {
+  return Number.isInteger(value) && Number(value) >= min && Number(value) <= max;
+}
+function validRequirementsQaReport(value) {
+  try {
+    validateRequirementsQaReport(value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+function validGltfValidation(value) {
+  const issues = isRecord6(value) && isRecord6(value.issues) ? value.issues : undefined;
+  if (!issues || !Array.isArray(issues.messages)) {
+    return false;
+  }
+  return ["numErrors", "numWarnings", "numInfos", "numHints"].every((key) => validInteger(issues[key], 0, Number.MAX_SAFE_INTEGER)) && issues.messages.length <= 1000 && issues.messages.every((issue) => isRecord6(issue) && typeof issue.code === "string" && typeof issue.message === "string" && typeof issue.severity === "number" && Number.isFinite(issue.severity));
+}
+function encodeRenderResultV2(requestId, render) {
+  const { glb, diagnosticViews, buildCache: _hostCacheReceipt, ...rest } = render;
+  return {
+    version: EVALUATOR_RESULT_VERSION,
+    requestId,
+    ok: true,
+    render: {
+      ...rest,
+      glbBase64: glb.toString("base64"),
+      ...diagnosticViews ? {
+        diagnosticViews: diagnosticViews.map(({ png, ...view }) => ({
+          ...view,
+          pngBase64: Buffer.from(png).toString("base64")
+        }))
+      } : {}
+    }
+  };
+}
+function isSha256(value) {
+  return typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value);
+}
+function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
+  let value;
+  try {
+    value = JSON.parse(json);
+  } catch {
+    return fail10("result");
+  }
+  if (!isRecord6(value) || !hasExactKeys(value, ["version", "requestId", "ok", "render", "error"]) || value.version !== EVALUATOR_RESULT_VERSION || !validRequestId(value.requestId) || typeof value.ok !== "boolean") {
+    return fail10("result");
+  }
+  if (expectedRequestId !== undefined && value.requestId !== expectedRequestId)
+    fail10("result");
+  if (!value.ok) {
+    if (value.render !== undefined)
+      return fail10("result");
+    if (!isRecord6(value.error) || !hasExactKeys(value.error, ["code", "message", "qa", "diagnostic", "solid"])) {
+      return fail10("result");
+    }
+    const codes = [
+      "INPUT_INVALID",
+      "EXECUTION_REJECTED",
+      "QA_BLOCKED",
+      "DEADLINE_EXCEEDED",
+      "CANCELLED",
+      "OUTPUT_LIMIT_EXCEEDED",
+      "ISOLATION_UNAVAILABLE",
+      "WORKER_FAILED",
+      "PROTOCOL_ERROR"
+    ];
+    if (!codes.includes(value.error.code) || typeof value.error.message !== "string" || value.error.message !== evaluatorOutcomeMessage(value.error.code)) {
+      return fail10("result");
+    }
+    if (value.error.diagnostic !== undefined && (value.error.code !== "EXECUTION_REJECTED" || value.error.diagnostic !== "UNBOUND_VARIABLE" && value.error.diagnostic !== "GEAR_RADII_ORDER" && value.error.diagnostic !== "ROUNDED_BOX_RADIUS" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_UNKNOWN_KEY" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_BLEND" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_USAGE" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_V3_CONTRACT" && value.error.diagnostic !== "PORTABLE_MATERIAL_V3_CONTRACT" && value.error.diagnostic !== "TEXTURE_ATLAS_CONTRACT" && value.error.diagnostic !== "MATERIAL_FRACTION_RANGE" && value.error.diagnostic !== "MATERIAL_RECIPE_TEXTURE_BINDING" && value.error.diagnostic !== "PORTABLE_TEXTURE_REFERENCE" && value.error.diagnostic !== "PORTABLE_COLOR_ARGUMENT" && value.error.diagnostic !== "PARAMETRIC_PERIODIC_ENDPOINT" && value.error.diagnostic !== "PROFILE_HOLES_UNSUPPORTED" && value.error.diagnostic !== "PROFILE_BEVEL_COLLAPSE" && value.error.diagnostic !== "PROFILE_SOLID_FAILED" && value.error.diagnostic !== "PROFILE_CORRESPONDENCE_COLLAPSE" && value.error.diagnostic !== "REMOVED_HELPER" && value.error.diagnostic !== "TUBE_RADIUS" && value.error.diagnostic !== "TAPER_CONE_AXIS" && value.error.diagnostic !== "SOLID_FLOAT32_COLLAPSE" && value.error.diagnostic !== "MESH_DATA_NONFINITE" && value.error.diagnostic !== "MATERIAL_ALPHA_MODE" && value.error.diagnostic !== "MATERIAL_COLOR_ARGUMENT" && value.error.diagnostic !== "PART_NAME_ARGUMENT" && value.error.diagnostic !== "PART_GEOMETRY_ARGUMENT" && value.error.diagnostic !== "PART_MATERIAL_ARGUMENT" && value.error.diagnostic !== "MATERIAL_PACKED_CHANNELS" && value.error.diagnostic !== "UNINITIALIZED_BINDING" && value.error.diagnostic !== "BUILD_RESULT" && value.error.diagnostic !== "MATERIAL_RECIPE_OVERRIDE" && value.error.diagnostic !== "PROGRAM_TYPE_ERROR" && value.error.diagnostic !== "PROGRAM_RANGE_ERROR" && value.error.diagnostic !== "LOD_SET" && value.error.diagnostic !== "OPEN_SHELL" && value.error.diagnostic !== "DELIVERY_CONTRACT" && value.error.diagnostic !== "REQUIRE_SOLID" && value.error.diagnostic !== "EXPORT_MATERIAL_SIDE_UNSUPPORTED" && value.error.diagnostic !== "BONE_CHAIN_ARGUMENT" && value.error.diagnostic !== "SKIN_BINDING_ARGUMENT"))
+      return fail10("result");
+    if (value.error.solid !== undefined && (value.error.diagnostic !== "REQUIRE_SOLID" || !validSolidFailureDetails(value.error.solid)))
+      return fail10("result");
+    if (value.error.qa !== undefined) {
+      if (value.error.code !== "QA_BLOCKED" || !isRecord6(value.error.qa) || !hasExactKeys(value.error.qa, ["report", "stage", "gltfValidation"]) || !validRequirementsQaReport(value.error.qa.report) || !["scene", "final-glb"].includes(String(value.error.qa.stage)) || value.error.qa.gltfValidation !== undefined && !validGltfValidation(value.error.qa.gltfValidation)) {
+        return fail10("result");
+      }
+    } else if (value.error.code === "QA_BLOCKED") {
+      return fail10("result");
+    }
+    return value;
+  }
+  if (value.error !== undefined || !isRecord6(value.render))
+    fail10("result");
+  const renderKeys = [
+    "glbBase64",
+    "artifactGlbSha256",
+    "tris",
+    "meta",
+    "warnings",
+    "diagnosticViews",
+    "materialMetrics",
+    "materialRecipeApplications",
+    "materialResourceProvenance",
+    "materialLibraryDependencies",
+    "bakedTextures",
+    "integrationManifest",
+    "requirements",
+    "rebuildOptions"
+  ];
+  if (!hasExactKeys(value.render, renderKeys) || typeof value.render.glbBase64 !== "string" || !validInteger(value.render.tris, 0, Number.MAX_SAFE_INTEGER) || !isRecord6(value.render.meta) || !Array.isArray(value.render.warnings) || !value.render.warnings.every((warning) => typeof warning === "string") || !isRecord6(value.render.integrationManifest)) {
+    fail10("result");
+  }
+  let requirements;
+  if (value.render.rebuildOptions !== undefined && !rebuildOptionsSchema.strict().safeParse(value.render.rebuildOptions).success)
+    fail10("result");
+  if (value.render.materialLibraryDependencies !== undefined) {
+    if (!Array.isArray(value.render.materialLibraryDependencies) || value.render.materialLibraryDependencies.length > 16)
+      fail10("result");
+    try {
+      for (const manifest of value.render.materialLibraryDependencies)
+        validateMaterialManifestIdentityAny(manifest);
+    } catch {
+      return fail10("result");
+    }
+  }
+  try {
+    requirements = validateRequirementsContext(value.render.requirements);
+    validateRequirementsQaReport(value.render.meta.qaReport, requirements);
+  } catch {
+    return fail10("result");
+  }
+  const glb = Buffer.from(value.render.glbBase64, "base64");
+  if (glb.byteLength > maxGlbBytes || glb.toString("base64") !== value.render.glbBase64)
+    fail10("result");
+  if (!isSha256(value.render.artifactGlbSha256))
+    fail10("result");
+  const actualHash = `sha256:${createHash8("sha256").update(glb).digest("hex")}`;
+  if (actualHash !== value.render.artifactGlbSha256)
+    fail10("result");
+  const diagnosticViews = value.render.diagnosticViews;
+  if (diagnosticViews !== undefined && !Array.isArray(diagnosticViews))
+    fail10("result");
+  const decodedViews = diagnosticViews?.map((candidate) => {
+    if (!isRecord6(candidate) || typeof candidate.pngBase64 !== "string")
+      return fail10("result");
+    const png = Buffer.from(candidate.pngBase64, "base64");
+    if (png.toString("base64") !== candidate.pngBase64)
+      return fail10("result");
+    const { pngBase64: _, ...view } = candidate;
+    return { ...view, png };
+  });
+  const { glbBase64: _, diagnosticViews: __, ...rest } = value.render;
+  return {
+    version: EVALUATOR_RESULT_VERSION,
+    requestId: value.requestId,
+    ok: true,
+    render: {
+      ...rest,
+      glb,
+      ...decodedViews ? { diagnosticViews: decodedViews } : {}
+    }
+  };
+}
+function assertEvaluatorResultMaterialResources(result, expected) {
+  if (!result.ok)
+    return;
+  const actual = result.render.materialLibraryDependencies ?? [];
+  const wanted = expected?.records.map((record) => record.manifest) ?? [];
+  const identity = (manifest) => `${manifest.materialId}/${manifest.revisionId}`;
+  if (new Set(actual.map(identity)).size !== actual.length || JSON.stringify(actual.map(canonicalMaterialJson).sort()) !== JSON.stringify(wanted.map(canonicalMaterialJson).sort()))
+    throw new EvaluatorPortError("PROTOCOL_ERROR");
+}
+function assertEvaluatorResultRequirements(result, expected) {
+  try {
+    if (result.ok) {
+      if (!requirementsContextsEqual(result.render.requirements, expected))
+        throw new Error("Requirements mismatch.");
+    } else if (result.error.code === "QA_BLOCKED" && result.error.qa) {
+      validateRequirementsQaReport(result.error.qa.report, expected);
+    }
+  } catch {
+    throw new EvaluatorPortError("PROTOCOL_ERROR", "Evaluator requirements context differs from the host request.");
+  }
+}
+var EVALUATOR_REQUEST_VERSION = "kiln.evaluator.request.v2", EVALUATOR_RESULT_VERSION = "kiln.evaluator.result.v2", MAX_EVALUATOR_CODE_BYTES, MAX_EVALUATOR_REQUEST_BYTES, DEFAULT_EVALUATOR_MAX_GLB_BYTES, DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES, EVALUATOR_OUTCOME_MESSAGES, EvaluatorPortError, trustedInProcessEvaluatorPortV2;
+var init_protocol = __esm(() => {
+  init_authoring_diagnostic();
+  init_requirements_context();
+  init_requirements_report();
+  init_material_library_node();
+  init_material_library();
+  init_rebuild_options();
+  init_solid_diagnostic();
+  MAX_EVALUATOR_CODE_BYTES = 512 * 1024;
+  MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
+  DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
+  DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
+  EVALUATOR_OUTCOME_MESSAGES = {
+    INPUT_INVALID: "Evaluator request was invalid. Use kiln.evaluator.request.v2 and update the host and worker together. Retired category/intent options require explicit requirements migration; see docs/migration.md.",
+    EXECUTION_REJECTED: "Generated asset execution was rejected.",
+    QA_BLOCKED: "Generated asset did not pass quality checks.",
+    DEADLINE_EXCEEDED: "Evaluator deadline exceeded.",
+    CANCELLED: "Evaluator request was cancelled.",
+    OUTPUT_LIMIT_EXCEEDED: "Evaluator output limit exceeded.",
+    ISOLATION_UNAVAILABLE: "Isolated evaluator is unavailable.",
+    WORKER_FAILED: "Evaluator worker failed.",
+    PROTOCOL_ERROR: "Evaluator returned invalid data."
+  };
+  EvaluatorPortError = class EvaluatorPortError extends Error {
+    code;
+    diagnostic;
+    solid;
+    constructor(code, message = evaluatorOutcomeMessage(code), diagnostic, solid) {
+      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}` : code === "EXECUTION_REJECTED" ? `${message} ${EXECUTION_REJECTED_ADVICE}` : message);
+      this.code = code;
+      this.diagnostic = diagnostic;
+      this.solid = solid;
+      this.name = "EvaluatorPortError";
+    }
+  };
+  trustedInProcessEvaluatorPortV2 = {
+    async render(code, options = {}, controls = {}) {
+      if (controls.signal?.aborted)
+        throw new EvaluatorPortError("CANCELLED");
+      await Promise.resolve().then(() => init_render());
+      const result = await renderGLBInProcess(code, options);
+      if (controls.signal?.aborted)
+        throw new EvaluatorPortError("CANCELLED");
+      return result;
+    }
+  };
 });
 
 // src/evaluator/handler.ts
@@ -40613,255 +39896,1564 @@ var init_render = __esm(() => {
   };
 });
 
-// src/evaluator/protocol.ts
-import { createHash as createHash9 } from "node:crypto";
-function evaluatorOutcomeMessage(code) {
-  return EVALUATOR_OUTCOME_MESSAGES[code];
+// src/views/port.ts
+async function sha256Bytes(bytes) {
+  const input = new Uint8Array(bytes.byteLength);
+  input.set(bytes);
+  const digest = new Uint8Array(await globalThis.crypto.subtle.digest("SHA-256", input));
+  return `sha256:${[...digest].map((byte) => byte.toString(16).padStart(2, "0")).join("")}`;
 }
-function resolveEvaluatorPortV2(port, profile) {
-  if (port)
-    return port;
-  if (profile === "evaluator-required") {
-    throw new EvaluatorPortError("ISOLATION_UNAVAILABLE", "Evaluator port is required.");
-  }
-  return trustedInProcessEvaluatorPortV2;
-}
-function isRecord6(value) {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-function hasExactKeys(value, allowed) {
-  return Object.keys(value).every((key) => allowed.includes(key));
-}
-function fail10(kind) {
-  throw new Error(`invalid evaluator ${kind}`);
-}
-function validRequestId(value) {
-  return typeof value === "string" && /^[A-Za-z0-9._-]{1,64}$/.test(value);
-}
-function validInteger(value, min, max) {
-  return Number.isInteger(value) && Number(value) >= min && Number(value) <= max;
-}
-function validRequirementsQaReport(value) {
+async function captureViewPngsViaPort(port, glb, timeoutMs, viewDirs, size, cameras, limits, backdrop, execution) {
+  let timer;
+  const controller = new AbortController;
+  let abort;
   try {
-    validateRequirementsQaReport(value);
-    return true;
-  } catch {
-    return false;
-  }
-}
-function validGltfValidation(value) {
-  const issues = isRecord6(value) && isRecord6(value.issues) ? value.issues : undefined;
-  if (!issues || !Array.isArray(issues.messages)) {
-    return false;
-  }
-  return ["numErrors", "numWarnings", "numInfos", "numHints"].every((key) => validInteger(issues[key], 0, Number.MAX_SAFE_INTEGER)) && issues.messages.length <= 1000 && issues.messages.every((issue) => isRecord6(issue) && typeof issue.code === "string" && typeof issue.message === "string" && typeof issue.severity === "number" && Number.isFinite(issue.severity));
-}
-function encodeRenderResultV2(requestId, render) {
-  const { glb, diagnosticViews, buildCache: _hostCacheReceipt, ...rest } = render;
-  return {
-    version: EVALUATOR_RESULT_VERSION,
-    requestId,
-    ok: true,
-    render: {
-      ...rest,
-      glbBase64: glb.toString("base64"),
-      ...diagnosticViews ? {
-        diagnosticViews: diagnosticViews.map(({ png, ...view }) => ({
-          ...view,
-          pngBase64: Buffer.from(png).toString("base64")
-        }))
-      } : {}
+    execution?.signal?.throwIfAborted();
+    const exactCameras = cameras?.map(validateResolvedAssetCamera);
+    if (exactCameras && exactCameras.length !== viewDirs.length)
+      throw new Error("camera and view count mismatch");
+    const requestGlb = Uint8Array.from(glb);
+    const inputGlbSha256 = await sha256Bytes(requestGlb);
+    execution?.signal?.throwIfAborted();
+    const deadline = new Promise((_, reject) => {
+      abort = () => {
+        const error = execution?.signal?.reason ?? new Error("View request cancelled.");
+        reject(error);
+        controller.abort(error);
+      };
+      execution?.signal?.addEventListener("abort", abort, { once: true });
+      timer = setTimeout(() => {
+        const error = new Error(`view render port timed out after ${timeoutMs}ms`);
+        reject(error);
+        controller.abort(error);
+      }, timeoutMs);
+    });
+    const result = await Promise.race([
+      port({
+        glb: requestGlb,
+        ...backdrop ? { backdrop } : {},
+        ...exactCameras ? { cameras: exactCameras, width: size, height: size } : { viewDirs: viewDirs.map((dir) => [...dir]), size }
+      }, { signal: controller.signal }),
+      deadline
+    ]);
+    execution?.signal?.throwIfAborted();
+    if (!result?.ok) {
+      return { ok: false, reason: result?.error ?? "view render port returned ok: false" };
     }
-  };
-}
-function isSha256(value) {
-  return typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value);
-}
-function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
-  let value;
-  try {
-    value = JSON.parse(json);
-  } catch {
-    return fail10("result");
-  }
-  if (!isRecord6(value) || !hasExactKeys(value, ["version", "requestId", "ok", "render", "error"]) || value.version !== EVALUATOR_RESULT_VERSION || !validRequestId(value.requestId) || typeof value.ok !== "boolean") {
-    return fail10("result");
-  }
-  if (expectedRequestId !== undefined && value.requestId !== expectedRequestId)
-    fail10("result");
-  if (!value.ok) {
-    if (value.render !== undefined)
-      return fail10("result");
-    if (!isRecord6(value.error) || !hasExactKeys(value.error, ["code", "message", "qa", "diagnostic", "solid"])) {
-      return fail10("result");
+    if (typeof result.rendererId !== "string" || !result.rendererId.trim()) {
+      return { ok: false, reason: "view render port returned no rendererId" };
     }
-    const codes = [
-      "INPUT_INVALID",
-      "EXECUTION_REJECTED",
-      "QA_BLOCKED",
-      "DEADLINE_EXCEEDED",
-      "CANCELLED",
-      "OUTPUT_LIMIT_EXCEEDED",
-      "ISOLATION_UNAVAILABLE",
-      "WORKER_FAILED",
-      "PROTOCOL_ERROR"
-    ];
-    if (!codes.includes(value.error.code) || typeof value.error.message !== "string" || value.error.message !== evaluatorOutcomeMessage(value.error.code)) {
-      return fail10("result");
+    if (!result.viewsPng || result.viewsPng.length !== viewDirs.length) {
+      return {
+        ok: false,
+        reason: `view render port returned ${result.viewsPng?.length ?? 0} view PNGs, expected ${viewDirs.length}`
+      };
     }
-    if (value.error.diagnostic !== undefined && (value.error.code !== "EXECUTION_REJECTED" || value.error.diagnostic !== "UNBOUND_VARIABLE" && value.error.diagnostic !== "GEAR_RADII_ORDER" && value.error.diagnostic !== "ROUNDED_BOX_RADIUS" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_UNKNOWN_KEY" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_BLEND" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_USAGE" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_V3_CONTRACT" && value.error.diagnostic !== "PORTABLE_MATERIAL_V3_CONTRACT" && value.error.diagnostic !== "TEXTURE_ATLAS_CONTRACT" && value.error.diagnostic !== "MATERIAL_FRACTION_RANGE" && value.error.diagnostic !== "MATERIAL_RECIPE_TEXTURE_BINDING" && value.error.diagnostic !== "PORTABLE_TEXTURE_REFERENCE" && value.error.diagnostic !== "PORTABLE_COLOR_ARGUMENT" && value.error.diagnostic !== "PARAMETRIC_PERIODIC_ENDPOINT" && value.error.diagnostic !== "PROFILE_HOLES_UNSUPPORTED" && value.error.diagnostic !== "PROFILE_BEVEL_COLLAPSE" && value.error.diagnostic !== "PROFILE_SOLID_FAILED" && value.error.diagnostic !== "PROFILE_CORRESPONDENCE_COLLAPSE" && value.error.diagnostic !== "REMOVED_HELPER" && value.error.diagnostic !== "TUBE_RADIUS" && value.error.diagnostic !== "TAPER_CONE_AXIS" && value.error.diagnostic !== "SOLID_FLOAT32_COLLAPSE" && value.error.diagnostic !== "MESH_DATA_NONFINITE" && value.error.diagnostic !== "MATERIAL_ALPHA_MODE" && value.error.diagnostic !== "MATERIAL_COLOR_ARGUMENT" && value.error.diagnostic !== "PART_NAME_ARGUMENT" && value.error.diagnostic !== "PART_GEOMETRY_ARGUMENT" && value.error.diagnostic !== "PART_MATERIAL_ARGUMENT" && value.error.diagnostic !== "MATERIAL_PACKED_CHANNELS" && value.error.diagnostic !== "UNINITIALIZED_BINDING" && value.error.diagnostic !== "BUILD_RESULT" && value.error.diagnostic !== "MATERIAL_RECIPE_OVERRIDE" && value.error.diagnostic !== "PROGRAM_TYPE_ERROR" && value.error.diagnostic !== "PROGRAM_RANGE_ERROR" && value.error.diagnostic !== "LOD_SET" && value.error.diagnostic !== "OPEN_SHELL" && value.error.diagnostic !== "DELIVERY_CONTRACT" && value.error.diagnostic !== "REQUIRE_SOLID" && value.error.diagnostic !== "EXPORT_MATERIAL_SIDE_UNSUPPORTED" && value.error.diagnostic !== "BONE_CHAIN_ARGUMENT" && value.error.diagnostic !== "SKIN_BINDING_ARGUMENT"))
-      return fail10("result");
-    if (value.error.solid !== undefined && (value.error.diagnostic !== "REQUIRE_SOLID" || !validSolidFailureDetails(value.error.solid)))
-      return fail10("result");
-    if (value.error.qa !== undefined) {
-      if (value.error.code !== "QA_BLOCKED" || !isRecord6(value.error.qa) || !hasExactKeys(value.error.qa, ["report", "stage", "gltfValidation"]) || !validRequirementsQaReport(value.error.qa.report) || !["scene", "final-glb"].includes(String(value.error.qa.stage)) || value.error.qa.gltfValidation !== undefined && !validGltfValidation(value.error.qa.gltfValidation)) {
-        return fail10("result");
+    if (exactCameras) {
+      if (result.width !== size || result.height !== size || !result.cameras || result.cameras.length !== exactCameras.length)
+        return { ok: false, reason: "camera receipt missing or dimensions mismatch" };
+      for (let i = 0;i < exactCameras.length; i++) {
+        const echoed = validateResolvedAssetCamera(result.cameras[i]);
+        const wanted = exactCameras[i];
+        for (const key of Object.keys(wanted))
+          if (JSON.stringify(echoed[key]) !== JSON.stringify(wanted[key]))
+            return { ok: false, reason: "camera receipt does not match requested camera" };
       }
-    } else if (value.error.code === "QA_BLOCKED") {
-      return fail10("result");
     }
-    return value;
+    if (result.derivativeFidelity && result.derivativeFidelity.inputGlbSha256 !== inputGlbSha256) {
+      return {
+        ok: false,
+        reason: `view render port derivative receipt hash mismatch (${result.derivativeFidelity.inputGlbSha256} != ${inputGlbSha256})`
+      };
+    }
+    enforcePngCaptureBudget(result.viewsPng, limits);
+    for (const png of result.viewsPng) {
+      const decoded = decodePng(png);
+      if (exactCameras && (decoded.width !== size || decoded.height !== size))
+        return { ok: false, reason: "camera PNG dimensions mismatch" };
+      if (decoded.width !== decoded.height) {
+        return {
+          ok: false,
+          reason: `view render port returned non-square ${decoded.width}x${decoded.height} PNG`
+        };
+      }
+    }
+    return {
+      ok: true,
+      pngs: result.viewsPng.map((png) => Uint8Array.from(png)),
+      rendererId: result.rendererId,
+      ...result.captureCache ? { captureCache: result.captureCache } : {},
+      derivativeFidelityAttested: result.derivativeFidelity?.materialFaithful === true,
+      ...result.derivativeFidelity ? { inputGlbSha256 } : {}
+    };
+  } catch (err) {
+    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
+  } finally {
+    if (timer !== undefined)
+      clearTimeout(timer);
+    if (abort)
+      execution?.signal?.removeEventListener("abort", abort);
   }
-  if (value.error !== undefined || !isRecord6(value.render))
-    fail10("result");
-  const renderKeys = [
-    "glbBase64",
-    "artifactGlbSha256",
-    "tris",
-    "meta",
-    "warnings",
-    "diagnosticViews",
-    "materialMetrics",
-    "materialRecipeApplications",
-    "materialResourceProvenance",
-    "materialLibraryDependencies",
-    "bakedTextures",
-    "integrationManifest",
-    "requirements",
-    "rebuildOptions"
-  ];
-  if (!hasExactKeys(value.render, renderKeys) || typeof value.render.glbBase64 !== "string" || !validInteger(value.render.tris, 0, Number.MAX_SAFE_INTEGER) || !isRecord6(value.render.meta) || !Array.isArray(value.render.warnings) || !value.render.warnings.every((warning) => typeof warning === "string") || !isRecord6(value.render.integrationManifest)) {
-    fail10("result");
-  }
-  let requirements;
-  if (value.render.rebuildOptions !== undefined && !rebuildOptionsSchema.strict().safeParse(value.render.rebuildOptions).success)
-    fail10("result");
-  if (value.render.materialLibraryDependencies !== undefined) {
-    if (!Array.isArray(value.render.materialLibraryDependencies) || value.render.materialLibraryDependencies.length > 16)
-      fail10("result");
+}
+async function captureViewsViaPort(port, glb, timeoutMs = DEFAULT_VIEW_RENDER_TIMEOUT_MS, capture, limits, execution) {
+  if (capture?.shots || capture?.version) {
     try {
-      for (const manifest of value.render.materialLibraryDependencies)
-        validateMaterialManifestIdentityAny(manifest);
-    } catch {
-      return fail10("result");
-    }
-  }
-  try {
-    requirements = validateRequirementsContext(value.render.requirements);
-    validateRequirementsQaReport(value.render.meta.qaReport, requirements);
-  } catch {
-    return fail10("result");
-  }
-  const glb = Buffer.from(value.render.glbBase64, "base64");
-  if (glb.byteLength > maxGlbBytes || glb.toString("base64") !== value.render.glbBase64)
-    fail10("result");
-  if (!isSha256(value.render.artifactGlbSha256))
-    fail10("result");
-  const actualHash = `sha256:${createHash9("sha256").update(glb).digest("hex")}`;
-  if (actualHash !== value.render.artifactGlbSha256)
-    fail10("result");
-  const diagnosticViews = value.render.diagnosticViews;
-  if (diagnosticViews !== undefined && !Array.isArray(diagnosticViews))
-    fail10("result");
-  const decodedViews = diagnosticViews?.map((candidate) => {
-    if (!isRecord6(candidate) || typeof candidate.pngBase64 !== "string")
-      return fail10("result");
-    const png = Buffer.from(candidate.pngBase64, "base64");
-    if (png.toString("base64") !== candidate.pngBase64)
-      return fail10("result");
-    const { pngBase64: _, ...view } = candidate;
-    return { ...view, png };
-  });
-  const { glbBase64: _, diagnosticViews: __, ...rest } = value.render;
-  return {
-    version: EVALUATOR_RESULT_VERSION,
-    requestId: value.requestId,
-    ok: true,
-    render: {
-      ...rest,
-      glb,
-      ...decodedViews ? { diagnosticViews: decodedViews } : {}
-    }
-  };
-}
-function assertEvaluatorResultMaterialResources(result, expected) {
-  if (!result.ok)
-    return;
-  const actual = result.render.materialLibraryDependencies ?? [];
-  const wanted = expected?.records.map((record) => record.manifest) ?? [];
-  const identity = (manifest) => `${manifest.materialId}/${manifest.revisionId}`;
-  if (new Set(actual.map(identity)).size !== actual.length || JSON.stringify(actual.map(canonicalMaterialJson).sort()) !== JSON.stringify(wanted.map(canonicalMaterialJson).sort()))
-    throw new EvaluatorPortError("PROTOCOL_ERROR");
-}
-function assertEvaluatorResultRequirements(result, expected) {
-  try {
-    if (result.ok) {
-      if (!requirementsContextsEqual(result.render.requirements, expected))
-        throw new Error("Requirements mismatch.");
-    } else if (result.error.code === "QA_BLOCKED" && result.error.qa) {
-      validateRequirementsQaReport(result.error.qa.report, expected);
-    }
-  } catch {
-    throw new EvaluatorPortError("PROTOCOL_ERROR", "Evaluator requirements context differs from the host request.");
-  }
-}
-var EVALUATOR_REQUEST_VERSION = "kiln.evaluator.request.v2", EVALUATOR_RESULT_VERSION = "kiln.evaluator.result.v2", MAX_EVALUATOR_CODE_BYTES, MAX_EVALUATOR_REQUEST_BYTES, DEFAULT_EVALUATOR_MAX_GLB_BYTES, DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES, EVALUATOR_OUTCOME_MESSAGES, EvaluatorPortError, trustedInProcessEvaluatorPortV2;
-var init_protocol = __esm(() => {
-  init_authoring_diagnostic();
-  init_requirements_context();
-  init_requirements_report();
-  init_material_library_node();
-  init_material_library();
-  init_rebuild_options();
-  init_solid_diagnostic();
-  MAX_EVALUATOR_CODE_BYTES = 512 * 1024;
-  MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
-  DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
-  DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
-  EVALUATOR_OUTCOME_MESSAGES = {
-    INPUT_INVALID: "Evaluator request was invalid. Use kiln.evaluator.request.v2 and update the host and worker together. Retired category/intent options require explicit requirements migration; see docs/migration.md.",
-    EXECUTION_REJECTED: "Generated asset execution was rejected.",
-    QA_BLOCKED: "Generated asset did not pass quality checks.",
-    DEADLINE_EXCEEDED: "Evaluator deadline exceeded.",
-    CANCELLED: "Evaluator request was cancelled.",
-    OUTPUT_LIMIT_EXCEEDED: "Evaluator output limit exceeded.",
-    ISOLATION_UNAVAILABLE: "Isolated evaluator is unavailable.",
-    WORKER_FAILED: "Evaluator worker failed.",
-    PROTOCOL_ERROR: "Evaluator returned invalid data."
-  };
-  EvaluatorPortError = class EvaluatorPortError extends Error {
-    code;
-    diagnostic;
-    solid;
-    constructor(code, message = evaluatorOutcomeMessage(code), diagnostic, solid) {
-      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}` : code === "EXECUTION_REJECTED" ? `${message} ${EXECUTION_REJECTED_ADVICE}` : message);
-      this.code = code;
-      this.diagnostic = diagnostic;
-      this.solid = solid;
-      this.name = "EvaluatorPortError";
-    }
-  };
-  trustedInProcessEvaluatorPortV2 = {
-    async render(code, options = {}, controls = {}) {
-      if (controls.signal?.aborted)
-        throw new EvaluatorPortError("CANCELLED");
+      execution?.signal?.throwIfAborted();
+      await Promise.resolve().then(() => init_views());
+      await Promise.resolve().then(() => init_camera_capture());
+      await Promise.resolve().then(() => init_camera());
       await Promise.resolve().then(() => init_render());
-      const result = await renderGLBInProcess(code, options);
-      if (controls.signal?.aborted)
-        throw new EvaluatorPortError("CANCELLED");
-      return result;
+      const loaded = await loadGlbReviewScene(Uint8Array.from(glb));
+      let rendererId = "";
+      const grid = await renderCaptureGrid(loaded.root, capture, async (input) => {
+        execution?.signal?.throwIfAborted();
+        const derivative = await renderSceneToGLB(withoutHiddenMeshes(input.root), { derivative: true, gltfExporter: "three" });
+        const result = await captureViewPngsViaPort(port, derivative.bytes, timeoutMs, [input.view.dir], input.size, [input.camera], limits, input.backdrop, execution);
+        if (!result.ok)
+          throw new Error(result.reason);
+        if (!result.derivativeFidelityAttested || !result.inputGlbSha256)
+          throw new Error("advanced capture requires derivative material receipt");
+        if (rendererId && rendererId !== result.rendererId)
+          throw new Error("capture renderer changed between cells");
+        rendererId = result.rendererId;
+        return {
+          png: Buffer.from(result.pngs[0]),
+          receipt: {
+            version: "kiln.view-fidelity.v1",
+            derivativeLabel: input.label,
+            requested: "full-preferred",
+            delivered: "full-material",
+            exactArtifact: false,
+            rendererId: result.rendererId,
+            materialFaithful: true,
+            degraded: false,
+            inputGlbSha256: result.inputGlbSha256,
+            camera: input.camera,
+            cameraFidelity: "echo-validated",
+            ...result.captureCache ? { captureCache: result.captureCache } : {}
+          }
+        };
+      }, limits);
+      return {
+        ok: true,
+        png: grid.png,
+        rendererId,
+        capture: grid.capture,
+        width: grid.width,
+        height: grid.height,
+        cameraShots: grid.cameraShots,
+        derivativeReceipts: grid.derivativeReceipts,
+        perFramePngs: grid.perFramePngs,
+        ...grid.captureCache ? { captureCache: grid.captureCache } : {}
+      };
+    } catch (error) {
+      return { ok: false, reason: error instanceof Error ? error.message : String(error) };
+    }
+  }
+  let resolved;
+  try {
+    execution?.signal?.throwIfAborted();
+    resolved = resolveGridCapture(capture, process.env["KILN_GRID_VARIANT"]);
+    enforceCapturePixels(resolved.views.length, 384, resolved.cols, limits);
+  } catch (err) {
+    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
+  }
+  const views = resolved.views;
+  const shape = {
+    preset: resolved.preset,
+    cols: resolved.cols,
+    cells: views.length,
+    backdrop: resolved.backdrop
+  };
+  let cameras;
+  if (resolved.zooms.some((z) => z !== undefined)) {
+    try {
+      await Promise.resolve().then(() => init_views());
+      const loaded = await loadGlbReviewScene(Uint8Array.from(glb));
+      const bounds = measureBounds(loaded.root);
+      cameras = views.map((view, i) => cameraFromBounds(bounds, view.dir, resolved.zooms[i] ?? 1));
+    } catch (error) {
+      return { ok: false, reason: error instanceof Error ? error.message : String(error) };
+    }
+  }
+  const result = await captureViewPngsViaPort(port, glb, timeoutMs, views.map((view) => view.dir), 384, cameras, limits, resolved.backdrop, execution);
+  if (!result.ok)
+    return result;
+  try {
+    const grid = compositeViewPngGrid(result.pngs, resolved.cols, views);
+    enforceCaptureBytes([grid.png], limits);
+    return {
+      ok: true,
+      png: grid.png,
+      rendererId: result.rendererId,
+      ...result.captureCache ? { captureCache: result.captureCache } : {},
+      capture: shape,
+      width: grid.width,
+      height: grid.height
+    };
+  } catch (err) {
+    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
+  }
+}
+var DEFAULT_VIEW_RENDER_TIMEOUT_MS = 8000;
+var init_port = __esm(() => {
+  init_capture_limits();
+  init_camera();
+  init_capture();
+  init_png();
+  init_grid();
+});
+
+// src/material-map-export-node.ts
+import { createHash as createHash9 } from "node:crypto";
+import { join as join2, resolve as resolve4 } from "node:path";
+import sharp from "sharp";
+import * as THREE57 from "three";
+async function decodePng2(bytes) {
+  const { data, info } = await sharp(bytes, {
+    limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
+    failOn: "warning"
+  }).ensureAlpha().raw({ depth: "uchar" }).toBuffer({ resolveWithObject: true });
+  if (info.channels !== 4)
+    throw new Error("Material map must decode to RGBA");
+  return { pixels: new Uint8Array(data), width: info.width, height: info.height };
+}
+function validateMaterialMapExportOptions(options, material) {
+  const limits = MATERIAL_MAP_EXPORT_LIMITS;
+  const { size } = options;
+  if (!Number.isInteger(size) || size < limits.minSize || size > limits.maxSize)
+    throw new Error(`size must be an integer from ${limits.minSize} to ${limits.maxSize} pixels`);
+  const tiles = options.tiles ?? limits.defaultTiles;
+  if (!Number.isInteger(tiles) || tiles < 1 || tiles > limits.maxTiles)
+    throw new Error(`tiles must be an integer from 1 to ${limits.maxTiles}`);
+  let repeat = options.repeatMeters;
+  if (repeat === undefined && material) {
+    const physical = material.physicalSizeMeters;
+    if (!physical || physical.width !== physical.height)
+      throw new Error(`repeatMeters is required: material ${material.materialId} records no square physicalSizeMeters (CLI: --repeat <metres>)`);
+    repeat = physical.width;
+  }
+  if (repeat !== undefined && (!Number.isFinite(repeat) || repeat <= 0 || repeat > limits.maxRepeatMeters))
+    throw new Error(`repeatMeters must be a positive number of metres up to ${limits.maxRepeatMeters}`);
+  return { size, tiles, ...repeat !== undefined ? { repeat } : {} };
+}
+function axisTaps(source, target, wrap) {
+  const scale = source / target;
+  const stretch = Math.max(1, scale);
+  const support = 2 * stretch;
+  const kernel = (x) => {
+    const a = Math.abs(x);
+    if (a < 1)
+      return 1.5 * a * a * a - 2.5 * a * a + 1;
+    if (a < 2)
+      return -0.5 * a * a * a + 2.5 * a * a - 4 * a + 2;
+    return 0;
+  };
+  const address = (index) => {
+    if (wrap === "repeat")
+      return (index % source + source) % source;
+    if (wrap === "mirrored-repeat") {
+      const period = 2 * source;
+      const folded = (index % period + period) % period;
+      return folded < source ? folded : period - 1 - folded;
+    }
+    return Math.min(source - 1, Math.max(0, index));
+  };
+  const taps = [];
+  for (let out = 0;out < target; out++) {
+    const center = (out + 0.5) * scale - 0.5;
+    const first = Math.ceil(center - support);
+    const last = Math.floor(center + support);
+    const index = new Int32Array(last - first + 1);
+    const weight = new Float64Array(last - first + 1);
+    let total = 0;
+    for (let i = first;i <= last; i++) {
+      const w = kernel((i - center) / stretch);
+      index[i - first] = address(i);
+      weight[i - first] = w;
+      total += w;
+    }
+    for (let i = 0;i < weight.length; i++)
+      weight[i] /= total;
+    taps.push({ index, weight });
+  }
+  return taps;
+}
+function resampleMaterialMapPixels(pixels, width, height, target, options) {
+  const horizontal = axisTaps(width, target, options.wrap.s);
+  const vertical = axisTaps(height, target, options.wrap.t);
+  const srgb = options.colorSpace === "srgb";
+  const decode = (channel, value) => srgb && channel < 3 ? SRGB_TO_LINEAR[value] : value / 255;
+  const column = new Float64Array(width * 4);
+  const row = new Float64Array(4);
+  const out = new Uint8Array(target * target * 4);
+  for (let y = 0;y < target; y++) {
+    const { index: rows, weight: rowWeights } = vertical[y];
+    column.fill(0);
+    for (let tap = 0;tap < rows.length; tap++) {
+      const offset = rows[tap] * width * 4;
+      const w = rowWeights[tap];
+      for (let i = 0;i < width * 4; i++)
+        column[i] += decode(i & 3, pixels[offset + i]) * w;
+    }
+    for (let x = 0;x < target; x++) {
+      const { index: cols, weight: colWeights } = horizontal[x];
+      row.fill(0);
+      for (let tap = 0;tap < cols.length; tap++) {
+        const offset = cols[tap] * 4;
+        const w = colWeights[tap];
+        for (let c = 0;c < 4; c++)
+          row[c] += column[offset + c] * w;
+      }
+      const o = (y * target + x) * 4;
+      if (options.normal) {
+        let nx = row[0] * 2 - 1;
+        let ny = row[1] * 2 - 1;
+        let nz = row[2] * 2 - 1;
+        const length = Math.hypot(nx, ny, nz);
+        if (length > 0.000001) {
+          nx /= length;
+          ny /= length;
+          nz /= length;
+        } else
+          [nx, ny, nz] = [0, 0, 1];
+        out[o] = toByte(nx * 0.5 + 0.5);
+        out[o + 1] = toByte(ny * 0.5 + 0.5);
+        out[o + 2] = toByte(nz * 0.5 + 0.5);
+      } else
+        for (let c = 0;c < 3; c++)
+          out[o + c] = toByte(srgb ? linearToSrgb3(row[c]) : row[c]);
+      out[o + 3] = toByte(row[3]);
+    }
+  }
+  return out;
+}
+function regenerableRecipe(map) {
+  if ("procedural" in map && map.procedural && !map.procedural.derive)
+    return map.procedural.spec;
+  if ("recipe" in map && map.recipe?.kind === "procedural" && map.recipe.compilerId === "kiln.procedural-texture.v2" && !map.recipe.derive && map.recipe.spec.schemaVersion === 2)
+    return map.recipe.spec;
+  return;
+}
+async function exportMap(record, map, size) {
+  const manifest = record.manifest;
+  const stored = record.files[map.file];
+  const fallbackWrap = manifest.tileable ? "repeat" : "clamp-to-edge";
+  const wrap = "sampler" in map && map.sampler ? { s: map.sampler.wrapS, t: map.sampler.wrapT } : { s: fallbackWrap, t: fallbackWrap };
+  let bytes;
+  let pixels;
+  let method;
+  let recipe;
+  const spec = regenerableRecipe(map);
+  if (map.width === size && map.height === size) {
+    bytes = stored.slice();
+    pixels = (await decodePng2(bytes)).pixels;
+    method = "copy";
+  } else if (spec && size <= 1024 && (size & size - 1) === 0) {
+    const compiled = compileProceduralTextureSpecV2({ ...spec, size });
+    pixels = compiled.pixels;
+    bytes = await encodePng2(pixels, size, size);
+    method = "recipe";
+    recipe = { compilerId: "kiln.procedural-texture.v2", recipeHash: compiled.recipeHash };
+  } else {
+    const decoded = await decodePng2(stored);
+    pixels = resampleMaterialMapPixels(decoded.pixels, decoded.width, decoded.height, size, {
+      colorSpace: map.colorSpace,
+      normal: map.slot === "normal",
+      wrap
+    });
+    bytes = await encodePng2(pixels, size, size);
+    method = "resampled";
+  }
+  return {
+    bytes,
+    pixels,
+    entry: {
+      slot: map.slot,
+      usage: map.usage,
+      colorSpace: map.colorSpace,
+      ...map.normalConvention ? { normalConvention: map.normalConvention } : {},
+      ...map.channelPacking ? { channelPacking: map.channelPacking } : {},
+      width: size,
+      height: size,
+      bytes: bytes.length,
+      sha256: digest2(bytes),
+      method,
+      wrap,
+      ...recipe ? { recipe } : {},
+      source: {
+        file: map.file,
+        sha256: map.sha256,
+        width: map.width,
+        height: map.height
+      }
     }
   };
+}
+async function previewGlb(manifest, maps, tiles, planeMeters) {
+  const textures = new Map;
+  for (const map of maps)
+    textures.set(map.slot, await loadTexture(map.png, {
+      usage: map.usage,
+      name: `${manifest.materialId}.${map.slot}`
+    }));
+  const p = manifest.parameters;
+  const options = {
+    roughness: p.roughness,
+    metalness: p.metalness,
+    emissiveIntensity: p.emissiveIntensity,
+    alphaMode: p.alphaMode,
+    ...p.alphaMode === "mask" ? { alphaCutoff: p.alphaCutoff } : {},
+    doubleSided: p.doubleSided,
+    ...textures.get("baseColor") ? { albedo: textures.get("baseColor") } : p.baseColor !== undefined ? { albedo: p.baseColor } : {},
+    ...textures.get("normal") ? { normal: textures.get("normal") } : {},
+    ...textures.get("metallicRoughness") ? { metallicRoughness: textures.get("metallicRoughness") } : {},
+    ...textures.get("emissive") ? { emissive: textures.get("emissive") } : p.emissive !== undefined ? { emissive: p.emissive } : {},
+    ...textures.get("occlusion") ? { aoMap: textures.get("occlusion") } : {}
+  };
+  const material = pbrMaterial(options);
+  material.name = manifest.name;
+  if (textures.has("baseColor") && p.baseColor !== undefined)
+    material.color.setHex(p.baseColor);
+  if (textures.has("emissive") && p.emissive !== undefined)
+    material.emissive.setHex(p.emissive);
+  const geometry = new THREE57.PlaneGeometry(planeMeters, planeMeters);
+  geometry.rotateX(-Math.PI / 2);
+  const uv = geometry.getAttribute("uv");
+  for (let i = 0;i < uv.count; i++)
+    uv.setXY(i, uv.getX(i) * tiles, uv.getY(i) * tiles);
+  const root = new THREE57.Group;
+  root.name = `${manifest.materialId}-preview`;
+  const mesh = new THREE57.Mesh(geometry, material);
+  mesh.name = "tiles";
+  root.add(mesh);
+  await Promise.resolve().then(() => init_render());
+  return (await renderSceneToGLB(root, { derivative: true })).bytes;
+}
+async function renderPreview(glb, options) {
+  await Promise.resolve().then(() => init_port());
+  const capture = { preset: "1x1", cells: [{ ...PREVIEW_CAMERA }] };
+  const inputGlbSha256 = await sha256Bytes(glb);
+  let degradeReason = "material-faithful view render port unavailable";
+  if (options.viewRenderPort) {
+    const ported = await captureViewsViaPort(options.viewRenderPort, glb, options.viewRenderTimeoutMs ?? DEFAULT_VIEW_RENDER_TIMEOUT_MS, capture);
+    if (ported.ok)
+      return {
+        png: new Uint8Array(ported.png),
+        rendererId: ported.rendererId,
+        viewFidelity: {
+          version: "kiln.view-fidelity.v1",
+          requested: "full-preferred",
+          delivered: "full-material",
+          materialFaithful: true,
+          exactArtifact: false,
+          rendererId: ported.rendererId,
+          inputGlbSha256,
+          degraded: false
+        }
+      };
+    degradeReason = ported.reason;
+  }
+  if (options.viewRenderRequired)
+    throw new Error(`Required GPU render failed: ${degradeReason}`);
+  await Promise.resolve().then(() => init_views());
+  const grid = await renderGlbViewGrid(glb, { capture });
+  return {
+    png: new Uint8Array(grid.png),
+    rendererId: CPU_RASTER_RENDERER_ID,
+    viewFidelity: {
+      version: "kiln.view-fidelity.v1",
+      requested: "full-preferred",
+      delivered: "geometry-flat",
+      materialFaithful: false,
+      exactArtifact: false,
+      rendererId: CPU_RASTER_RENDERER_ID,
+      inputGlbSha256: grid.inputGlbSha256,
+      degraded: true,
+      degradeReason,
+      reasonCodes: ["FULL_MATERIAL_RENDER_UNAVAILABLE", ...grid.reasonCodes]
+    }
+  };
+}
+async function createMaterialMapExport(record, options) {
+  if (typeof options.outDir !== "string" || !options.outDir)
+    throw new Error("outDir must name a directory");
+  validateMaterialMapExportOptions(options);
+  const manifest = validateMaterialRecordShapeAny(record);
+  const checked = validateMaterialMapExportOptions(options, manifest);
+  const { size, tiles } = checked;
+  const repeat = checked.repeat;
+  for (const map of manifest.maps)
+    if (digest2(record.files[map.file]) !== map.sha256)
+      throw new Error(`Material integrity hash mismatch: ${map.file}`);
+  const id = manifest.materialId;
+  const ordered = MATERIAL_LIBRARY_SLOTS.flatMap((slot) => manifest.maps.filter((map) => map.slot === slot));
+  const files = [];
+  const maps = [];
+  const previewMaps = [];
+  const previewSize = Math.min(size, MATERIAL_MAP_EXPORT_LIMITS.maxPreviewMapSize);
+  for (const map of ordered) {
+    const exported = await exportMap(record, map, size);
+    const file = `${id}.${map.slot}.png`;
+    const { slot, ...entry } = exported.entry;
+    maps.push({ slot, file, ...entry });
+    files.push({ name: file, bytes: exported.bytes });
+    previewMaps.push({
+      slot: map.slot,
+      usage: map.usage,
+      png: previewSize === size ? exported.bytes : await encodePng2(resampleMaterialMapPixels(exported.pixels, size, size, previewSize, {
+        colorSpace: map.colorSpace,
+        normal: map.slot === "normal",
+        wrap: exported.entry.wrap
+      }), previewSize, previewSize)
+    });
+  }
+  const planeMeters = tiles * repeat;
+  const rendered = await renderPreview(await previewGlb(manifest, previewMaps, tiles, planeMeters), options);
+  const previewFile = `${id}.preview.png`;
+  files.push({ name: previewFile, bytes: rendered.png });
+  const sidecar = {
+    version: "kiln.material-maps.v1",
+    material: {
+      materialId: id,
+      revisionId: manifest.revisionId,
+      name: manifest.name,
+      tileable: manifest.tileable,
+      ...manifest.physicalSizeMeters ? { physicalSizeMeters: { ...manifest.physicalSizeMeters } } : {},
+      parameters: structuredClone(manifest.parameters),
+      sources: structuredClone(manifest.sources)
+    },
+    size: { width: size, height: size },
+    repeatMeters: { width: repeat, height: repeat },
+    resampleFilter: MATERIAL_MAP_RESAMPLE_FILTER,
+    maps,
+    preview: {
+      file: previewFile,
+      sha256: digest2(rendered.png),
+      bytes: rendered.png.length,
+      ...materialPngDimensions(rendered.png),
+      tiles,
+      planeMeters,
+      mapSize: previewSize,
+      camera: { ...PREVIEW_CAMERA },
+      rendererId: rendered.rendererId,
+      viewFidelity: rendered.viewFidelity
+    }
+  };
+  files.push({
+    name: `${id}.maps.json`,
+    bytes: new TextEncoder().encode(`${JSON.stringify(sidecar, null, 2)}
+`)
+  });
+  return { sidecar, files };
+}
+async function exportMaterialMaps(record, options) {
+  const created = await createMaterialMapExport(record, options);
+  const directory = resolve4(options.outDir);
+  const outputs = created.files.map(({ name, bytes }) => ({
+    path: join2(directory, name),
+    data: bytes
+  }));
+  await writeNewDestinationsAtomic(outputs);
+  return {
+    directory,
+    sidecarPath: outputs.at(-1).path,
+    previewPath: outputs.at(-2).path,
+    files: outputs.map(({ path }) => path),
+    sidecar: created.sidecar
+  };
+}
+var MATERIAL_MAP_EXPORT_LIMITS, MATERIAL_MAP_RESAMPLE_FILTER = "catmull-rom", PREVIEW_CAMERA, digest2 = (bytes) => `sha256:${createHash9("sha256").update(bytes).digest("hex")}`, encodePng2 = async (pixels, width, height) => new Uint8Array(await sharp(pixels, { raw: { width, height, channels: 4 } }).png({ compressionLevel: 9, adaptiveFiltering: false }).toBuffer()), SRGB_TO_LINEAR, linearToSrgb3 = (value) => {
+  const c = Math.min(1, Math.max(0, value));
+  return c <= 0.0031308 ? c * 12.92 : 1.055 * c ** (1 / 2.4) - 0.055;
+}, toByte = (value) => Math.round(Math.min(1, Math.max(0, value)) * 255);
+var init_material_map_export_node = __esm(() => {
+  init_cli_output();
+  init_material_library();
+  init_procedural_texture();
+  init_textures();
+  MATERIAL_MAP_EXPORT_LIMITS = Object.freeze({
+    minSize: 4,
+    maxSize: MATERIAL_LIBRARY_LIMITS.maxMapEdge,
+    maxRepeatMeters: 1e5,
+    defaultTiles: 3,
+    maxTiles: 8,
+    maxPreviewMapSize: 1024
+  });
+  PREVIEW_CAMERA = Object.freeze({ azimuthDeg: 30, elevationDeg: 50 });
+  SRGB_TO_LINEAR = Float64Array.from({ length: 256 }, (_, value) => {
+    const c = value / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+});
+
+// src/material-library-node.ts
+import { createHash as createHash10, randomUUID as randomUUID2 } from "node:crypto";
+import { lstat as lstat3, mkdir as mkdir2, readFile as readFile2, readdir, realpath as realpath2, rm, writeFile as writeFile2 } from "node:fs/promises";
+import { dirname as dirname2, join as join3, relative, resolve as resolve5, sep } from "node:path";
+import sharp2 from "sharp";
+import { DataTexture as DataTexture4 } from "three";
+function revisionHash(manifest) {
+  const { revisionId: _, ...content } = manifest;
+  return digest3(canonicalMaterialJson(content));
+}
+function snapshot(record) {
+  validateMaterialRecordShape(record);
+  return {
+    manifest: structuredClone(record.manifest),
+    files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [name, Uint8Array.from(bytes)]))
+  };
+}
+function exactKeys(value, keys) {
+  if (Object.keys(value).some((key) => !keys.includes(key)))
+    throw new Error("Unknown material draft field");
+}
+function derivedNormalPixels(compiled, size, derive) {
+  if (!derive)
+    return compiled;
+  materialNormalDerivationSchema.parse(derive);
+  if (size.usage !== "normal")
+    throw new Error("Height derivation requires a normal map slot");
+  const height = new DataTexture4(compiled.pixels, size.width, size.height);
+  const normal = normalMapFromHeight(height, { strength: derive.strength });
+  if (!(normal.image.data instanceof Uint8Array))
+    throw new Error("Normal derivation must produce RGBA8 pixels");
+  const pixels = Uint8Array.from(normal.image.data);
+  height.dispose();
+  normal.dispose();
+  return { ...compiled, pixels };
+}
+function materialPixels(spec, derive) {
+  const compiled = compileProceduralTextureSpecV2(spec);
+  const { size, usage } = compiled.spec;
+  return derivedNormalPixels(compiled, { width: size, height: size, usage }, derive);
+}
+function materialPixelsV3(spec, derive) {
+  const compiled = compileProceduralTextureSpecV3(spec);
+  return derivedNormalPixels(compiled, compiled.spec, derive);
+}
+async function createMaterialRecordV1(draft) {
+  assertMaterialJson(draft, true);
+  exactKeys(draft, [
+    "materialId",
+    "name",
+    "tags",
+    "tileable",
+    "physicalSizeMeters",
+    "parameters",
+    "sources",
+    "maps"
+  ]);
+  if (!Array.isArray(draft.maps) || !draft.maps.length || draft.maps.length > 5)
+    throw new Error("Material requires 1..5 maps");
+  const files = {};
+  const maps = [];
+  let totalPixels = 0;
+  for (const input of draft.maps) {
+    exactKeys(input, [
+      "slot",
+      "sourceId",
+      "transforms",
+      "normalConvention",
+      "channelPacking",
+      "bytes",
+      "originalFile",
+      "procedural",
+      "derive"
+    ]);
+    if (!MATERIAL_LIBRARY_SLOTS.includes(input.slot))
+      throw new Error("Unsupported material map slot");
+    if (input.bytes !== undefined === (input.procedural !== undefined))
+      throw new Error("Supply exactly one map byte source or procedural recipe");
+    let bytes;
+    let procedural;
+    if (input.procedural) {
+      const compiled = materialPixels(input.procedural, input.derive);
+      if (compiled.spec.usage !== MATERIAL_LIBRARY_USAGE[input.slot])
+        throw new Error("Procedural map usage mismatch");
+      bytes = new Uint8Array(await sharp2(compiled.pixels, {
+        raw: { width: compiled.spec.size, height: compiled.spec.size, channels: 4 }
+      }).png({ compressionLevel: 9, adaptiveFiltering: false }).toBuffer());
+      procedural = {
+        compiler: "kiln.procedural-texture.v2",
+        spec: compiled.spec,
+        ...input.derive ? { derive: structuredClone(input.derive) } : {},
+        recipeHash: compiled.recipeHash,
+        pixelHash: digest3(compiled.pixels),
+        encoder
+      };
+    } else {
+      if ("derive" in input)
+        throw new Error("External maps cannot declare a procedural derivation");
+      if (!(input.bytes instanceof Uint8Array))
+        throw new Error("Material map bytes must be Uint8Array");
+      bytes = Uint8Array.from(input.bytes);
+    }
+    if (bytes.length > MATERIAL_LIBRARY_LIMITS.maxMapBytes)
+      throw new Error("Material map exceeds encoded byte limit");
+    const dimensions = materialPngDimensions(bytes);
+    totalPixels += dimensions.width * dimensions.height;
+    if (dimensions.width < 1 || dimensions.height < 1 || dimensions.width > MATERIAL_LIBRARY_LIMITS.maxMapEdge || dimensions.height > MATERIAL_LIBRARY_LIMITS.maxMapEdge || totalPixels > MATERIAL_LIBRARY_LIMITS.maxRecordPixels)
+      throw new Error("Material maps exceed pixel budget");
+    const file = `${input.slot}.png`;
+    if (files[file])
+      throw new Error("Duplicate material map slot");
+    files[file] = bytes;
+    maps.push({
+      slot: input.slot,
+      file,
+      ...dimensions,
+      sha256: digest3(bytes),
+      bytes: bytes.length,
+      usage: MATERIAL_LIBRARY_USAGE[input.slot],
+      colorSpace: input.slot === "baseColor" || input.slot === "emissive" ? "srgb" : "linear",
+      ...input.slot === "normal" ? { normalConvention: input.normalConvention ?? (procedural ? "opengl" : undefined) } : {},
+      ...input.slot === "metallicRoughness" ? {
+        channelPacking: input.channelPacking ?? (procedural ? "r-occlusion-g-roughness-b-metallic" : undefined)
+      } : {},
+      sourceId: input.sourceId,
+      ...input.originalFile ? { originalFile: input.originalFile } : {},
+      transforms: structuredClone(input.transforms),
+      ...procedural ? { procedural } : {}
+    });
+  }
+  const manifest = materialManifestSchema.parse({
+    schemaVersion: 1,
+    materialId: draft.materialId,
+    revisionId: `sha256:${"0".repeat(64)}`,
+    name: draft.name,
+    tags: draft.tags ?? [],
+    tileable: draft.tileable,
+    ...draft.physicalSizeMeters ? { physicalSizeMeters: draft.physicalSizeMeters } : {},
+    parameters: draft.parameters ?? {},
+    sources: draft.sources,
+    maps
+  });
+  manifest.revisionId = revisionHash(manifest);
+  const record = { manifest, files };
+  await verifyMaterialRecordV1(record);
+  return record;
+}
+async function verifyMaterialRecordV1(record) {
+  const manifest = validateMaterialRecordShape(record);
+  if (revisionHash(manifest) !== manifest.revisionId)
+    throw new Error("Material identity hash mismatch");
+  for (const map of manifest.maps) {
+    const bytes = record.files[map.file];
+    if (digest3(bytes) !== map.sha256)
+      throw new Error(`Material integrity hash mismatch: ${map.file}`);
+    const { data, info } = await sharp2(bytes, {
+      limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
+      failOn: "warning"
+    }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    if (info.width !== map.width || info.height !== map.height || info.channels !== 4)
+      throw new Error("Material decoded image mismatch");
+    if (map.procedural) {
+      const compiled = materialPixels(map.procedural.spec, map.procedural.derive);
+      if (compiled.recipeHash !== map.procedural.recipeHash || digest3(compiled.pixels) !== map.procedural.pixelHash || digest3(data) !== map.procedural.pixelHash)
+        throw new Error("Procedural material recipe or pixel hash mismatch");
+    }
+  }
+}
+function validateMaterialLibraryPayload(value) {
+  assertMaterialJson(value);
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new Error("Invalid material resource payload");
+  const payload = value;
+  if (Object.keys(payload).some((key) => !["schemaVersion", "records"].includes(key)) || payload.schemaVersion !== 1 || !Array.isArray(payload.records) || payload.records.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+    throw new Error("Invalid material resource payload");
+  let total = 0;
+  let pixels = 0;
+  const identities = new Set;
+  for (const wire of payload.records) {
+    if (!wire || typeof wire !== "object" || Object.keys(wire).some((key) => !["manifest", "files"].includes(key)))
+      throw new Error("Invalid material resource record");
+    const manifest = materialManifestSchema.parse(wire.manifest);
+    if (identities.has(manifest.revisionId))
+      throw new Error("Duplicate material resource revision");
+    identities.add(manifest.revisionId);
+    if (!wire.files || typeof wire.files !== "object" || Array.isArray(wire.files) || Object.keys(wire.files).length !== manifest.maps.length)
+      throw new Error("Material payload inventory mismatch");
+    for (const map of manifest.maps) {
+      const encoded = wire.files[map.file];
+      if (typeof encoded !== "string" || encoded.length !== Math.ceil(map.bytes / 3) * 4 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))
+        throw new Error("Invalid material map base64");
+      total += map.bytes;
+      pixels += map.width * map.height;
+    }
+  }
+  if (total > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
+    throw new Error("Material resource payload exceeds byte or pixel budget");
+  return payload;
+}
+async function createMaterialLibraryPayloadV1(records) {
+  const snapshots = records.map(snapshot);
+  for (const record of snapshots)
+    await verifyMaterialRecordV1(record);
+  return validateMaterialLibraryPayload({
+    schemaVersion: 1,
+    records: snapshots.map((record) => ({
+      manifest: record.manifest,
+      files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [
+        name,
+        Buffer.from(bytes).toString("base64")
+      ]))
+    }))
+  });
+}
+async function decodeMaterialLibraryPayloadV1(value) {
+  const payload = validateMaterialLibraryPayload(value);
+  const records = payload.records.map((wire) => ({
+    manifest: structuredClone(wire.manifest),
+    files: Object.fromEntries(Object.entries(wire.files).map(([name, encoded]) => [
+      name,
+      new Uint8Array(Buffer.from(encoded, "base64"))
+    ]))
+  }));
+  for (const record of records)
+    await verifyMaterialRecordV1(record);
+  return records;
+}
+async function createMaterialLibraryTextureResolver(records, fallback = DEFAULT_TEXTURE_RESOLVER) {
+  const snapshots = await decodeMaterialLibraryPayload(await createMaterialLibraryPayload(records));
+  const maps = new Map;
+  for (const record of snapshots)
+    for (const map of record.manifest.maps)
+      maps.set(materialLibraryResourceId(record.manifest, map.slot), { record, map });
+  return Object.freeze({
+    pinnedMaterialMaps: createPinnedMaterialMapPort(snapshots),
+    describeApprovedTexture(id) {
+      const entry = typeof id === "string" ? maps.get(id) : undefined;
+      return entry ? { usage: entry.map.usage, allowedSlots: [entry.map.slot] } : fallback.describeApprovedTexture?.(id);
+    },
+    async loadApprovedTexture(id) {
+      const entry = typeof id === "string" ? maps.get(id) : undefined;
+      if (!entry)
+        return fallback.loadApprovedTexture(id);
+      const texture = await loadTexture(entry.record.files[entry.map.file].slice(), {
+        usage: entry.map.usage,
+        name: id
+      });
+      texture.userData["kilnMaterialResource"] = {
+        schemaVersion: entry.record.manifest.schemaVersion,
+        materialId: entry.record.manifest.materialId,
+        revisionId: entry.record.manifest.revisionId,
+        resourceId: id,
+        map: structuredClone(entry.map),
+        sources: structuredClone(entry.record.manifest.sources),
+        ...entry.record.manifest.physicalSizeMeters ? { physicalSizeMeters: { ...entry.record.manifest.physicalSizeMeters } } : {}
+      };
+      if ("sampler" in entry.map)
+        applyPortableSamplerV1(texture, entry.map.sampler);
+      if ("recipe" in entry.map && entry.map.recipe?.kind === "atlas")
+        texture.userData["kilnAtlas"] = {
+          spec: structuredClone(entry.map.recipe.spec),
+          manifest: structuredClone(entry.map.recipe.manifest)
+        };
+      return texture;
+    },
+    async preparePortableTexture(id, context) {
+      context?.signal?.throwIfAborted();
+      const entry = typeof id === "string" ? maps.get(id) : undefined;
+      if (!entry) {
+        if (!fallback.preparePortableTexture)
+          throw new Error("Portable texture preparation unavailable");
+        return fallback.preparePortableTexture(id, context);
+      }
+      const { record, map } = entry;
+      return {
+        descriptor: {
+          resourceId: id,
+          usage: map.usage,
+          allowedSlots: [map.slot],
+          colorSpace: map.colorSpace,
+          width: map.width,
+          height: map.height,
+          encodedByteLength: map.bytes,
+          imageSha256: map.sha256
+        },
+        bytes: record.files[map.file].slice(),
+        userData: {
+          ..."recipe" in map && map.recipe?.kind === "atlas" ? {
+            kilnAtlas: {
+              spec: structuredClone(map.recipe.spec),
+              manifest: structuredClone(map.recipe.manifest)
+            }
+          } : {},
+          kilnMaterialResource: {
+            schemaVersion: record.manifest.schemaVersion,
+            materialId: record.manifest.materialId,
+            revisionId: record.manifest.revisionId,
+            resourceId: id,
+            map: structuredClone(map),
+            sources: structuredClone(record.manifest.sources),
+            ...record.manifest.physicalSizeMeters ? { physicalSizeMeters: structuredClone(record.manifest.physicalSizeMeters) } : {}
+          }
+        }
+      };
+    },
+    materialRecipe: (id, overrides) => fallback.materialRecipe(id, overrides)
+  });
+}
+
+class FileMaterialLibrary {
+  root;
+  constructor(root) {
+    this.root = resolve5(root);
+  }
+  async path(...parts) {
+    await mkdir2(this.root, { recursive: true });
+    const canonical = await realpath2(this.root);
+    let current = canonical;
+    for (const part of parts) {
+      if (!/^[a-z0-9][a-z0-9_-]{0,79}$/.test(part))
+        throw new Error("Invalid material path identity");
+      current = join3(current, part);
+      try {
+        const stat = await lstat3(current);
+        if (stat.isSymbolicLink() || !stat.isDirectory())
+          throw new Error("Material library requires real directories");
+        const rel = relative(canonical, await realpath2(current));
+        if (rel === ".." || rel.startsWith(`..${sep}`))
+          throw new Error("Material path escapes library");
+      } catch (error) {
+        if (error.code !== "ENOENT")
+          throw error;
+      }
+    }
+    return current;
+  }
+  async file(dir, name, limit) {
+    const path = join3(dir, name);
+    const stat = await lstat3(path);
+    if (!stat.isFile() || stat.isSymbolicLink() || stat.size > limit)
+      throw new Error("Invalid material library file");
+    return new Uint8Array(await readFile2(path));
+  }
+  async readManifest(materialId, revisionId) {
+    materialLibraryIdSchema.parse(materialId);
+    materialLibraryHashSchema.parse(revisionId);
+    const dir = await this.path(materialId, revisionId.slice(7));
+    const manifest = validateMaterialManifestIdentityAny(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(await this.file(dir, "manifest.json", MATERIAL_LIBRARY_LIMITS.maxManifestBytes))));
+    if (manifest.materialId !== materialId || manifest.revisionId !== revisionId)
+      throw new Error("Material identity mismatch");
+    return manifest;
+  }
+  async readRecordFiles(materialId, revisionId) {
+    const manifest = await this.readManifest(materialId, revisionId);
+    const dir = await this.path(materialId, revisionId.slice(7));
+    const files = {};
+    for (const map of manifest.maps)
+      files[map.file] = await this.file(dir, map.file, MATERIAL_LIBRARY_LIMITS.maxMapBytes);
+    const record = { manifest, files };
+    validateMaterialRecordShapeAny(record);
+    for (const map of manifest.maps)
+      if (digest3(files[map.file]) !== map.sha256)
+        throw new Error("Material integrity hash mismatch");
+    return record;
+  }
+  async read(materialId, revisionId) {
+    const root = await this.readManifest(materialId, revisionId);
+    if (root.schemaVersion === 1) {
+      const record = await this.readRecordFiles(materialId, revisionId);
+      await verifyMaterialRecordV1(record);
+      return record;
+    }
+    const closure = await resolveMaterialRecordClosure([root], {
+      readManifest: this.readManifest.bind(this),
+      read: this.readRecordFiles.bind(this)
+    });
+    return closure.find((record) => record.manifest.materialId === materialId && record.manifest.revisionId === revisionId);
+  }
+  async list() {
+    const manifests = [];
+    for (const material of await readdir(await this.path(), { withFileTypes: true })) {
+      if (!material.isDirectory() || !materialLibraryIdSchema.safeParse(material.name).success)
+        continue;
+      for (const revision of await readdir(await this.path(material.name), {
+        withFileTypes: true
+      })) {
+        if (!revision.isDirectory() || !/^[a-f0-9]{64}$/.test(revision.name))
+          continue;
+        manifests.push((await this.read(material.name, `sha256:${revision.name}`)).manifest);
+      }
+    }
+    return manifests.sort((a, b) => a.materialId.localeCompare(b.materialId) || a.revisionId.localeCompare(b.revisionId));
+  }
+  async import(records, options) {
+    if (!Array.isArray(records) || !records.length || records.length > 100)
+      throw new Error("Material import requires 1..100 records");
+    let snapshots;
+    if (records.every((record) => record.manifest.schemaVersion === 1) && !options?.materials) {
+      snapshots = records.map(snapshot);
+      for (const record of snapshots)
+        await verifyMaterialRecordV1(record);
+    } else {
+      const candidates = [...records, ...options?.materials ?? []];
+      if (new Set(candidates.map((record) => identity(record.manifest))).size > 1024)
+        throw new Error("Material import context count limit exceeded");
+      const context = await resolveMaterialRecordClosure(records.map((r) => r.manifest), recordClosureReader(candidates, this), {
+        maxRecords: 1024,
+        maxBytes: 256 * 1024 * 1024,
+        maxPixels: 1024 * MATERIAL_LIBRARY_LIMITS.maxRecordPixels
+      });
+      const admitted = new Map(context.map((record) => [identity(record.manifest), record]));
+      snapshots = records.map((record) => admitted.get(identity(record.manifest)));
+    }
+    for (const record of snapshots) {
+      const { manifest, files } = record;
+      const dest = await this.path(manifest.materialId, manifest.revisionId.slice(7));
+      const parent = dirname2(dest);
+      await mkdir2(parent, { recursive: true });
+      const stage = join3(parent, `.stage-${randomUUID2()}`);
+      await mkdir2(stage);
+      try {
+        for (const [name, bytes] of Object.entries(files))
+          await writeFile2(join3(stage, name), bytes, { flag: "wx" });
+        await writeFile2(join3(stage, "manifest.json"), canonicalMaterialJson(manifest), {
+          flag: "wx"
+        });
+        try {
+          await renameDirectoryAtomically(stage, dest);
+        } catch (error) {
+          const existing = await this.read(manifest.materialId, manifest.revisionId).catch(() => {
+            return;
+          });
+          if (!existing || canonicalMaterialJson(existing.manifest) !== canonicalMaterialJson(manifest))
+            throw error;
+        }
+      } finally {
+        const rel = relative(parent, resolve5(stage));
+        if (rel.startsWith(".stage-") && !rel.includes(sep))
+          await rm(stage, { recursive: true, force: true });
+      }
+    }
+    return snapshots.map((record) => record.manifest);
+  }
+}
+function validateMaterialManifestIdentityAny(value) {
+  const manifest = validateMaterialManifestAny(value);
+  if (revisionHash(manifest) !== manifest.revisionId)
+    throw new Error("Material identity hash mismatch");
+  return manifest;
+}
+function snapshotAny(record) {
+  validateMaterialRecordShapeAny(record);
+  return {
+    manifest: structuredClone(record.manifest),
+    files: Object.fromEntries(Object.entries(record.files).map(([name, bytes]) => [name, bytes.slice()]))
+  };
+}
+async function resolveMaterialRecordClosure(roots, reader, limits = {
+  maxRecords: MATERIAL_LIBRARY_LIMITS.maxPayloadRecords,
+  maxBytes: MATERIAL_LIBRARY_LIMITS.maxPayloadBytes,
+  maxPixels: MATERIAL_LIBRARY_LIMITS.maxPayloadPixels
+}) {
+  for (const n of Object.values(limits))
+    if (!Number.isSafeInteger(n) || n < 1)
+      throw new Error("Invalid material closure limits");
+  const manifests = new Map, active = new Set;
+  let bytes = 0, pixels = 0;
+  const visit = async (value) => {
+    const manifest = validateMaterialManifestIdentityAny(value), key = identity(manifest);
+    if (active.has(key))
+      throw new Error("Material dependency cycle");
+    const existing = manifests.get(key);
+    if (existing) {
+      if (canonicalMaterialJson(existing) !== canonicalMaterialJson(manifest))
+        throw new Error("Conflicting material dependency identity");
+      return;
+    }
+    manifests.set(key, structuredClone(manifest));
+    active.add(key);
+    for (const map of manifest.maps) {
+      bytes += map.bytes;
+      pixels += map.width * map.height;
+    }
+    if (manifests.size > limits.maxRecords || bytes > limits.maxBytes || pixels > limits.maxPixels)
+      throw new Error("Material closure count/byte/pixel limit exceeded");
+    for (const pin of materialRecordDependencyPins(manifest)) {
+      const child = await reader.readManifest(pin.resourceId, pin.revisionId);
+      if (child.materialId !== pin.resourceId || child.revisionId !== pin.revisionId || pin.sha256 !== pin.revisionId)
+        throw new Error("Material dependency pin mismatch");
+      await visit(child);
+    }
+    active.delete(key);
+  };
+  for (const root of roots)
+    await visit(root);
+  const records = [];
+  for (const [key, manifest] of manifests) {
+    const record = snapshotAny(await reader.read(manifest.materialId, manifest.revisionId));
+    if (identity(record.manifest) !== key || canonicalMaterialJson(record.manifest) !== canonicalMaterialJson(manifest))
+      throw new Error("Material closure manifest changed during read");
+    validateMaterialManifestIdentityAny(record.manifest);
+    for (const map of record.manifest.maps)
+      if (digest3(record.files[map.file]) !== map.sha256)
+        throw new Error("Material integrity hash mismatch");
+    records.push(record);
+  }
+  for (const record of records)
+    await verifyMaterialRecordContents(record, { materials: records });
+  return records;
+}
+function recordClosureReader(records, fallback) {
+  const byId = new Map;
+  const duplicates = new Map;
+  for (const record of records) {
+    const key = identity(record.manifest), existing = byId.get(key);
+    if (existing && canonicalMaterialJson(existing.manifest) !== canonicalMaterialJson(record.manifest))
+      throw new Error("Conflicting material record identity");
+    if (!existing)
+      byId.set(key, record);
+    else if (existing !== record)
+      duplicates.set(key, [...duplicates.get(key) ?? [], record]);
+  }
+  return {
+    async readManifest(id, revision) {
+      const record = byId.get(`${id}/${revision}`);
+      if (record)
+        return record.manifest;
+      if (fallback)
+        return fallback.readManifest(id, revision);
+      throw new Error(`Missing pinned material revision: ${id} at ${revision}`);
+    },
+    async read(id, revision) {
+      const key = `${id}/${revision}`, record = byId.get(key);
+      if (record) {
+        for (const candidate of [record, ...duplicates.get(key) ?? []]) {
+          const manifest = validateMaterialRecordShapeAny(candidate);
+          if (canonicalMaterialJson(manifest) !== canonicalMaterialJson(record.manifest))
+            throw new Error("Conflicting material record identity");
+          for (const map of manifest.maps)
+            if (digest3(candidate.files[map.file]) !== map.sha256)
+              throw new Error("Conflicting material record encoded integrity hash");
+        }
+        return record;
+      }
+      if (fallback)
+        return fallback.readRecordFiles(id, revision);
+      throw new Error(`Missing pinned material revision: ${id} at ${revision}`);
+    }
+  };
+}
+function createPinnedMaterialMapPort(records) {
+  const entries = new Map;
+  for (const record of records) {
+    validateMaterialRecordShapeAny(record);
+    validateMaterialManifestIdentityAny(record.manifest);
+    for (const map of record.manifest.maps) {
+      if (digest3(record.files[map.file]) !== map.sha256)
+        throw new Error("Material integrity hash mismatch");
+      entries.set(`${identity(record.manifest)}/${materialLibraryResourceId(record.manifest, map.slot)}`, { record, map });
+    }
+  }
+  const find = (resourceId, pin) => {
+    if (typeof resourceId !== "string" || pin.sha256 !== pin.revisionId)
+      return;
+    return entries.get(`${pin.resourceId}/${pin.revisionId}/${resourceId}`);
+  };
+  const describe = (resourceId, pin) => {
+    const entry = find(resourceId, pin);
+    if (!entry)
+      return;
+    const { record, map } = entry;
+    return {
+      materialId: record.manifest.materialId,
+      revisionId: record.manifest.revisionId,
+      resourceId,
+      slot: map.slot,
+      usage: map.usage,
+      colorSpace: map.colorSpace,
+      width: map.width,
+      height: map.height,
+      encodedByteLength: map.bytes,
+      imageSha256: map.sha256,
+      ..."pixelHash" in map ? { decodedPixelHash: map.pixelHash } : {}
+    };
+  };
+  return {
+    describePinnedMaterialMap: describe,
+    async resolvePinnedMaterialMapPixels(resourceId, pin, context) {
+      context?.signal?.throwIfAborted();
+      const descriptor = describe(resourceId, pin), entry = find(resourceId, pin);
+      if (!descriptor || !entry)
+        throw new Error("Missing verified pinned-library map; approved resources cannot be atlas sources");
+      const { data, info } = await sharp2(entry.record.files[entry.map.file], {
+        limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
+        failOn: "warning"
+      }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+      context?.signal?.throwIfAborted();
+      if (info.width !== descriptor.width || info.height !== descriptor.height || info.channels !== 4)
+        throw new Error("Pinned material decoded dimensions mismatch");
+      const decodedPixelHash = digest3(data);
+      if (descriptor.decodedPixelHash && descriptor.decodedPixelHash !== decodedPixelHash)
+        throw new Error("Pinned material pixel hash mismatch");
+      return { descriptor, pixels: Uint8Array.from(data), decodedPixelHash };
+    }
+  };
+}
+async function verifyMaterialRecordContents(record, options) {
+  if (record.manifest.schemaVersion === 1)
+    return verifyMaterialRecordV1(record);
+  const manifest = validateMaterialRecordShapeAny(record);
+  validateMaterialManifestIdentityAny(manifest);
+  const pins = new Set(materialRecordDependencyPins(manifest).map((pin) => `${pin.resourceId}/${pin.revisionId}`));
+  pins.add(identity(manifest));
+  const resources = createPinnedMaterialMapPort((options?.materials ?? [record]).filter((candidate) => pins.has(identity(candidate.manifest))));
+  admitMaterialManifestRecipes(manifest, resources);
+  for (const map of manifest.maps) {
+    const bytes = record.files[map.file];
+    if (digest3(bytes) !== map.sha256)
+      throw new Error("Material integrity hash mismatch");
+    const { data, info } = await sharp2(bytes, {
+      limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
+      failOn: "warning"
+    }).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+    if (info.width !== map.width || info.height !== map.height || info.channels !== 4 || digest3(data) !== map.pixelHash)
+      throw new Error("Material decoded pixel hash/dimensions mismatch");
+    const recipe = map.recipe;
+    if (!recipe)
+      continue;
+    if (recipe.kind === "atlas") {
+      const compiled = await compileTextureAtlasSpecV1(recipe.spec, { resources });
+      if (canonicalMaterialJson(compiled.manifest) !== canonicalMaterialJson(recipe.manifest) || digest3(compiled.pixels) !== map.pixelHash)
+        throw new Error("Atlas recipe/manifest/pixel hash mismatch");
+    } else {
+      const compiled = recipe.spec.schemaVersion === 3 ? materialPixelsV3(recipe.spec, recipe.derive) : materialPixels(recipe.spec, recipe.derive);
+      if (compiled.recipeHash !== recipe.recipeHash || digest3(compiled.pixels) !== recipe.pixelHash)
+        throw new Error("Procedural recipe/pixel hash mismatch");
+    }
+  }
+}
+async function verifyMaterialRecord(record, options) {
+  if (record.manifest.schemaVersion === 1)
+    return verifyMaterialRecordV1(record);
+  await resolveMaterialRecordClosure([record.manifest], recordClosureReader([record, ...options?.materials ?? []]));
+}
+function admitMaterialManifestRecipes(manifest, resources) {
+  let texels = 0, work = 0, allocation = 0, encoded = 0;
+  for (const map of manifest.maps) {
+    encoded += map.bytes;
+    const recipe = map.recipe;
+    if (recipe?.kind === "procedural") {
+      if (recipe.spec.schemaVersion === 3) {
+        const a = admitProceduralTextureSpecV3(recipe.spec);
+        const derived = normalDerivationBudget(recipe.derive ? a.spec.width * a.spec.height : 0);
+        texels += a.spec.width * a.spec.height;
+        work += a.estimatedWorkUnits + derived.work;
+        allocation += a.conservativePixelAllocationBytes + derived.allocation;
+      } else {
+        texels += recipe.spec.size ** 2;
+        work += recipe.spec.size ** 2 * recipe.spec.layers.length * 16;
+        allocation += recipe.spec.size ** 2 * 12;
+      }
+    } else if (recipe?.kind === "atlas") {
+      const a = admitTextureAtlasSpecV1(recipe.spec, { resources });
+      texels += a.spec.width * a.spec.height + a.budget.sourceTexels;
+      work += a.budget.workUnits;
+      allocation += a.budget.conservativePixelAllocationBytes;
+      encoded += a.budget.encodedBytes;
+    } else {
+      texels += map.width * map.height;
+      work += map.width * map.height * 12 + map.bytes * 8;
+      allocation += map.width * map.height * 12 + map.bytes * 2;
+    }
+  }
+  if (texels > PORTABLE_MATERIAL_V3_LIMITS.maxTexels || work > PORTABLE_MATERIAL_V3_LIMITS.maxWork || allocation > PORTABLE_MATERIAL_V3_LIMITS.maxTransientBytes || encoded > PORTABLE_MATERIAL_V3_LIMITS.maxEncodedBytes)
+    throw new Error("Material recipe aggregate texel/work/allocation/encoded budget exceeded");
+}
+function validateMaterialLibraryPayloadAny(value) {
+  assertMaterialJson(value);
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    throw new Error("Invalid material resource payload");
+  if (value["schemaVersion"] === 1)
+    return validateMaterialLibraryPayload(value);
+  const payload = value;
+  if (Object.keys(payload).some((k) => !["schemaVersion", "records"].includes(k)) || payload.schemaVersion !== 2 || !Array.isArray(payload.records) || payload.records.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+    throw new Error("Invalid material resource payload");
+  let bytes = 0, pixels = 0;
+  const seen = new Set;
+  for (const wire of payload.records) {
+    if (!wire || typeof wire !== "object" || Object.keys(wire).some((k) => !["manifest", "files"].includes(k)))
+      throw new Error("Invalid material resource record");
+    const manifest = validateMaterialManifestIdentityAny(wire.manifest), key = identity(manifest);
+    if (seen.has(key))
+      throw new Error("Duplicate material resource revision");
+    seen.add(key);
+    if (!wire.files || typeof wire.files !== "object" || Array.isArray(wire.files) || Object.keys(wire.files).length !== manifest.maps.length)
+      throw new Error("Material payload inventory mismatch");
+    for (const map of manifest.maps) {
+      const encoded = wire.files[map.file];
+      if (typeof encoded !== "string" || encoded.length !== Math.ceil(map.bytes / 3) * 4 || !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))
+        throw new Error("Invalid material map base64");
+      bytes += map.bytes;
+      pixels += map.width * map.height;
+    }
+  }
+  if (bytes > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
+    throw new Error("Material resource payload exceeds byte/pixel budget");
+  return payload;
+}
+async function createMaterialLibraryPayload(records) {
+  if (records.every((r) => r.manifest.schemaVersion === 1))
+    return createMaterialLibraryPayloadV1(records);
+  let bytes = 0, pixels = 0;
+  if (records.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+    throw new Error("Material payload record limit exceeded");
+  for (const record of records)
+    for (const map of validateMaterialManifestIdentityAny(record.manifest).maps) {
+      bytes += map.bytes;
+      pixels += map.width * map.height;
+    }
+  if (bytes > MATERIAL_LIBRARY_LIMITS.maxPayloadBytes || pixels > MATERIAL_LIBRARY_LIMITS.maxPayloadPixels)
+    throw new Error("Material payload byte/pixel budget exceeded");
+  const admitted = await resolveMaterialRecordClosure(records.map((r) => r.manifest), recordClosureReader(records));
+  const byIdentity = new Map(admitted.map((r) => [identity(r.manifest), r]));
+  const snapshots = records.map((r) => byIdentity.get(identity(r.manifest)));
+  return validateMaterialLibraryPayloadAny({
+    schemaVersion: 2,
+    records: snapshots.map((r) => ({
+      manifest: r.manifest,
+      files: Object.fromEntries(Object.entries(r.files).map(([name, bytes]) => [
+        name,
+        Buffer.from(bytes).toString("base64")
+      ]))
+    }))
+  });
+}
+async function decodeMaterialLibraryPayload(value) {
+  const payload = validateMaterialLibraryPayloadAny(value);
+  if (payload.schemaVersion === 1)
+    return decodeMaterialLibraryPayloadV1(payload);
+  const wires = payload.records.map((w) => ({
+    manifest: validateMaterialManifestIdentityAny(w.manifest),
+    files: { ...w.files }
+  }));
+  const byIdentity = new Map(wires.map((w) => [identity(w.manifest), w]));
+  const reader = {
+    async readManifest(id, revision) {
+      const wire = byIdentity.get(`${id}/${revision}`);
+      if (!wire)
+        throw new Error("Missing pinned material revision");
+      return wire.manifest;
+    },
+    async read(id, revision) {
+      const wire = byIdentity.get(`${id}/${revision}`);
+      if (!wire)
+        throw new Error("Missing pinned material revision");
+      return {
+        manifest: wire.manifest,
+        files: Object.fromEntries(Object.entries(wire.files).map(([name, encoded]) => [
+          name,
+          new Uint8Array(Buffer.from(encoded, "base64"))
+        ]))
+      };
+    }
+  };
+  const admitted = await resolveMaterialRecordClosure(wires.map((w) => w.manifest), reader);
+  const result = new Map(admitted.map((r) => [identity(r.manifest), r]));
+  return wires.map((w) => result.get(identity(w.manifest)));
+}
+async function createMaterialRecordV2(draft, options) {
+  assertMaterialJson(draft, true);
+  if (!draft || typeof draft !== "object" || Array.isArray(draft))
+    throw new Error("Invalid material draft");
+  exactKeys(draft, [
+    "schemaVersion",
+    "materialId",
+    "name",
+    "tags",
+    "tileable",
+    "physicalSizeMeters",
+    "parameters",
+    "sources",
+    "maps"
+  ]);
+  const input = draft;
+  if (input["schemaVersion"] !== 2 || !Array.isArray(input["maps"]) || input["maps"].length < 1 || input["maps"].length > 5)
+    throw new Error("V2 material requires schemaVersion2 and1..5 maps");
+  const candidates = options?.materials ?? [];
+  if (candidates.length > MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+    throw new Error("Material source closure count limit exceeded");
+  const records = candidates.length ? await resolveMaterialRecordClosure(candidates.map((r) => r.manifest), recordClosureReader(candidates)) : [];
+  const resources = createPinnedMaterialMapPort(records), prepared = [];
+  let texels = 0, work = 0, allocation = 0, encoded = 0;
+  for (const value of input["maps"]) {
+    if (!value || typeof value !== "object" || Array.isArray(value))
+      throw new Error("Invalid material map draft");
+    exactKeys(value, [
+      "slot",
+      "sourceId",
+      "transforms",
+      "normalConvention",
+      "channelPacking",
+      "sampler",
+      "bytes",
+      "originalFile",
+      "procedural",
+      "derive",
+      "atlas"
+    ]);
+    const raw = value, slot = raw["slot"];
+    if (!MATERIAL_LIBRARY_SLOTS.includes(slot))
+      throw new Error("Unsupported material map slot");
+    const sampler = canonicalizePortableSamplerV1(raw["sampler"]);
+    if (["bytes", "procedural", "atlas"].filter((k) => raw[k] !== undefined).length !== 1)
+      throw new Error("Supply exactly one map bytes/procedural/atlas source");
+    if (raw["procedural"] !== undefined) {
+      const spec = raw["procedural"];
+      if (spec.schemaVersion === 3) {
+        const a = admitProceduralTextureSpecV3(spec);
+        if (a.spec.usage !== MATERIAL_LIBRARY_USAGE[slot])
+          throw new Error("Procedural usage mismatch");
+        if (raw["derive"] !== undefined && slot !== "normal")
+          throw new Error("Height derivation requires a normal map slot");
+        const derived = normalDerivationBudget(raw["derive"] !== undefined ? a.spec.width * a.spec.height : 0);
+        texels += a.spec.width * a.spec.height;
+        work += a.estimatedWorkUnits + derived.work;
+        allocation += a.conservativePixelAllocationBytes + derived.allocation;
+        prepared.push({ raw, slot, sampler, procedural: a.spec });
+      } else {
+        const canonical = canonicalizeProceduralTextureSpecV2(spec);
+        if (canonical.usage !== MATERIAL_LIBRARY_USAGE[slot])
+          throw new Error("Procedural usage mismatch");
+        texels += canonical.size ** 2;
+        work += canonical.size ** 2 * canonical.layers.length * 16;
+        allocation += canonical.size ** 2 * 12;
+        prepared.push({ raw, slot, sampler, procedural: canonical });
+      }
+    } else if (raw["atlas"] !== undefined) {
+      if (raw["derive"] !== undefined)
+        throw new Error("Atlas derivation unsupported");
+      const a = admitTextureAtlasSpecV1(raw["atlas"], { resources });
+      if (a.spec.usage !== MATERIAL_LIBRARY_USAGE[slot] || canonicalMaterialJson(a.spec.sampler) !== canonicalMaterialJson(sampler))
+        throw new Error("Atlas usage/sampler mismatch");
+      texels += a.spec.width * a.spec.height + a.budget.sourceTexels;
+      work += a.budget.workUnits;
+      allocation += a.budget.conservativePixelAllocationBytes;
+      encoded += a.budget.encodedBytes;
+      prepared.push({ raw, slot, sampler, atlas: a.spec });
+    } else {
+      if (raw["derive"] !== undefined || !(raw["bytes"] instanceof Uint8Array))
+        throw new Error("Invalid external map bytes/derivation");
+      const bytes = raw["bytes"];
+      if (bytes.length > MATERIAL_LIBRARY_LIMITS.maxMapBytes)
+        throw new Error("Material map encoded byte limit");
+      const d = materialPngDimensions(bytes);
+      if (d.width < 1 || d.height < 1 || d.width > 4096 || d.height > 4096)
+        throw new Error("Material map dimensions limit");
+      texels += d.width * d.height;
+      encoded += bytes.length;
+      work += d.width * d.height * 12 + bytes.length * 8;
+      allocation += d.width * d.height * 12 + bytes.length * 2;
+      prepared.push({ raw, slot, sampler, bytes });
+    }
+  }
+  if (texels > 4 * 1024 * 1024 || work > PORTABLE_MATERIAL_V3_LIMITS.maxWork || allocation > 64 * 1024 * 1024 || encoded > 16 * 1024 * 1024)
+    throw new Error("Material aggregate texel/work/allocation limit exceeded");
+  const maps = [], files = {}, pins = new Map;
+  for (const item of prepared) {
+    const { raw, slot, sampler } = item;
+    let bytes, pixelHash, recipe;
+    if (item.procedural !== undefined) {
+      const spec = item.procedural;
+      const derive = raw["derive"];
+      const compiled = spec.schemaVersion === 3 ? materialPixelsV3(spec, derive) : materialPixels(spec, derive);
+      const d = compiled.spec.schemaVersion === 3 ? { width: compiled.spec.width, height: compiled.spec.height } : { width: compiled.spec.size, height: compiled.spec.size };
+      pixelHash = digest3(compiled.pixels);
+      bytes = new Uint8Array(await sharp2(compiled.pixels, { raw: { ...d, channels: 4 } }).png({ compressionLevel: 9, adaptiveFiltering: false }).toBuffer());
+      recipe = {
+        kind: "procedural",
+        compilerId: compiled.spec.schemaVersion === 3 ? PROCEDURAL_TEXTURE_V3_COMPILER_ID : "kiln.procedural-texture.v2",
+        spec: compiled.spec,
+        recipeHash: compiled.recipeHash,
+        pixelHash,
+        encoder,
+        ...raw["derive"] ? {
+          derive: structuredClone(raw["derive"])
+        } : {}
+      };
+    } else if (item.atlas !== undefined) {
+      const compiled = await compileTextureAtlasSpecV1(item.atlas, { resources });
+      pixelHash = compiled.manifest.decodedPixelHash;
+      bytes = new Uint8Array(await sharp2(compiled.pixels, {
+        raw: { width: compiled.spec.width, height: compiled.spec.height, channels: 4 }
+      }).png({ compressionLevel: 9, adaptiveFiltering: false }).toBuffer());
+      recipe = {
+        kind: "atlas",
+        compilerId: compiled.manifest.compilerId,
+        spec: compiled.spec,
+        manifest: compiled.manifest,
+        encoder
+      };
+      for (const r of compiled.spec.regions)
+        if (r.source.kind === "resource")
+          pins.set(`${r.source.pin.resourceId}/${r.source.pin.revisionId}`, r.source.pin);
+    } else {
+      bytes = item.bytes.slice();
+      const decoded = await sharp2(bytes, {
+        limitInputPixels: MATERIAL_LIBRARY_LIMITS.maxRecordPixels,
+        failOn: "warning"
+      }).ensureAlpha().raw().toBuffer();
+      pixelHash = digest3(decoded);
+    }
+    const d = materialPngDimensions(bytes), file = `${slot}.png`;
+    if (files[file])
+      throw new Error("Duplicate material map slot");
+    files[file] = bytes;
+    maps.push({
+      slot,
+      file,
+      ...d,
+      sha256: digest3(bytes),
+      bytes: bytes.length,
+      usage: MATERIAL_LIBRARY_USAGE[slot],
+      colorSpace: slot === "baseColor" || slot === "emissive" ? "srgb" : "linear",
+      sampler,
+      pixelHash,
+      sourceId: raw["sourceId"],
+      transforms: structuredClone(raw["transforms"]),
+      ...slot === "normal" ? {
+        normalConvention: raw["normalConvention"] ?? (recipe ? "opengl" : undefined)
+      } : {},
+      ...slot === "metallicRoughness" ? {
+        channelPacking: raw["channelPacking"] ?? (recipe ? "r-occlusion-g-roughness-b-metallic" : undefined)
+      } : {},
+      ...raw["originalFile"] ? { originalFile: raw["originalFile"] } : {},
+      ...recipe ? { recipe } : {}
+    });
+  }
+  const manifest = materialManifestV2Schema.parse({
+    ...input,
+    schemaVersion: 2,
+    revisionId: `sha256:${"0".repeat(64)}`,
+    tags: input["tags"] ?? [],
+    parameters: input["parameters"] ?? {},
+    maps,
+    dependencies: [...pins.values()]
+  });
+  manifest.revisionId = revisionHash(manifest);
+  const record = { manifest, files };
+  await verifyMaterialRecord(record, { materials: [...records, record] });
+  return record;
+}
+var digest3 = (bytes) => `sha256:${createHash10("sha256").update(bytes).digest("hex")}`, encoder, normalDerivationBudget = (texels) => ({ work: texels * 16, allocation: texels * 8 }), identity = (manifest) => `${manifest.materialId}/${manifest.revisionId}`;
+var init_material_library_node = __esm(() => {
+  init_atomic_directory();
+  init_material_library();
+  init_portable_sampler();
+  init_portable_sampler_runtime();
+  init_procedural_texture_v3();
+  init_procedural_texture_v3_contract();
+  init_texture_atlas_pixels();
+  init_procedural_texture();
+  init_procedural_material_v2();
+  init_textures();
+  init_texture_resolver();
+  init_procedural_material_v3();
+  init_material_map_export_node();
+  encoder = { name: "sharp", version: sharp2.versions.sharp };
 });
 
 // src/evaluator/subprocess.ts
@@ -41062,12 +41654,12 @@ var init_subprocess = __esm(() => {
 });
 
 // src/workspace-location.ts
-import { dirname as dirname3, join as join3, resolve as resolve5 } from "node:path";
+import { dirname as dirname3, join as join4, resolve as resolve6 } from "node:path";
 function localWorkspaceRoot(env = process.env) {
-  return env.KILN_WORKSPACE ? resolve5(env.KILN_WORKSPACE) : env.KILN_PROGRAM_STORE ? dirname3(dirname3(resolve5(env.KILN_PROGRAM_STORE))) : process.cwd();
+  return env.KILN_WORKSPACE ? resolve6(env.KILN_WORKSPACE) : env.KILN_PROGRAM_STORE ? dirname3(dirname3(resolve6(env.KILN_PROGRAM_STORE))) : process.cwd();
 }
 function localProgramStoreDirectory(env = process.env) {
-  return env.KILN_PROGRAM_STORE ? resolve5(env.KILN_PROGRAM_STORE) : join3(localWorkspaceRoot(env), ".kiln", "programs");
+  return env.KILN_PROGRAM_STORE ? resolve6(env.KILN_PROGRAM_STORE) : join4(localWorkspaceRoot(env), ".kiln", "programs");
 }
 var init_workspace_location = () => {};
 
@@ -41167,7 +41759,7 @@ __export(exports_program_store_node, {
 });
 import { link as link2, lstat as lstat4, mkdir as mkdir3, readFile as readFile3, readdir as readdir2, stat as stat2, unlink as unlink2, writeFile as writeFile3 } from "node:fs/promises";
 import { randomUUID as randomUUID3 } from "node:crypto";
-import { join as join4 } from "node:path";
+import { join as join5 } from "node:path";
 
 class FileProgramStore {
   directory;
@@ -41183,7 +41775,7 @@ class FileProgramStore {
         if (!entry.isFile() || !/^[a-f0-9]{64}\.js$/.test(entry.name))
           continue;
         try {
-          bytes += (await stat2(join4(this.directory, entry.name))).size;
+          bytes += (await stat2(join5(this.directory, entry.name))).size;
           entries++;
         } catch (error) {
           if (error.code !== "ENOENT")
@@ -41201,7 +41793,7 @@ class FileProgramStore {
     const canonical = ref.startsWith("p_") ? await this.readHandle(ref) : ref;
     if (canonical === undefined)
       throw this.notFound(ref);
-    const path = join4(this.directory, `${canonical.slice(7)}.js`);
+    const path = join5(this.directory, `${canonical.slice(7)}.js`);
     let code;
     try {
       if ((await stat2(path)).size > MAX_PROGRAM_BYTES)
@@ -41220,7 +41812,7 @@ class FileProgramStore {
     return programNotFound(ref, "This program store has no such reference; it was issued by another store (KILN_PROGRAM_STORE selects which) or its store was removed.");
   }
   async readHandle(handle) {
-    const path = join4(this.directory, "refs", `${handle}.ref`);
+    const path = join5(this.directory, "refs", `${handle}.ref`);
     try {
       const info = await lstat4(path);
       if (!info.isFile() || info.size !== 71)
@@ -41239,7 +41831,7 @@ class FileProgramStore {
     await this.get(ref);
     if (ref.startsWith("p_"))
       return ref;
-    const directory = join4(this.directory, "refs");
+    const directory = join5(this.directory, "refs");
     await mkdir3(directory, { recursive: true });
     for (const handle of shortProgramRefCandidates(ref)) {
       const owner = await this.readHandle(handle);
@@ -41247,11 +41839,11 @@ class FileProgramStore {
         return handle;
       if (owner !== undefined)
         continue;
-      const temporary = join4(directory, `.write-${randomUUID3()}`);
+      const temporary = join5(directory, `.write-${randomUUID3()}`);
       await writeFile3(temporary, ref, { encoding: "utf8", flag: "wx", mode: 384 });
       try {
         try {
-          await link2(temporary, join4(directory, `${handle}.ref`));
+          await link2(temporary, join5(directory, `${handle}.ref`));
           return handle;
         } catch (error) {
           if (error.code !== "EEXIST")
@@ -41268,8 +41860,8 @@ class FileProgramStore {
   async put(code) {
     const ref = await programReference(code);
     await mkdir3(this.directory, { recursive: true });
-    const target = join4(this.directory, `${ref.slice(7)}.js`);
-    const temporary = join4(this.directory, `.write-${randomUUID3()}`);
+    const target = join5(this.directory, `${ref.slice(7)}.js`);
+    const temporary = join5(this.directory, `.write-${randomUUID3()}`);
     await writeFile3(temporary, code, { encoding: "utf8", flag: "wx", mode: 384 });
     try {
       try {
@@ -41294,7 +41886,7 @@ var init_program_store_node = __esm(() => {
 });
 
 // src/build-cache.ts
-import { createHash as createHash10 } from "node:crypto";
+import { createHash as createHash11 } from "node:crypto";
 import * as acorn2 from "acorn";
 import * as walk5 from "acorn-walk";
 function sourceHasAmbientInputs(code) {
@@ -41440,7 +42032,7 @@ function createCachedEvaluatorPort(evaluator, options) {
       } catch {
         return evaluator.render(code, renderOptions, controls);
       }
-      const key = `sha256:${createHash10("sha256").update(serialized).digest("hex")}`;
+      const key = `sha256:${createHash11("sha256").update(serialized).digest("hex")}`;
       const cached = await options.cache.get(key).catch(() => {
         return;
       });
@@ -41491,7 +42083,7 @@ var init_build_cache = __esm(() => {
 });
 
 // src/build-cache-node.ts
-import { createHash as createHash11, randomUUID as randomUUID4 } from "node:crypto";
+import { createHash as createHash12, randomUUID as randomUUID4 } from "node:crypto";
 import {
   mkdir as mkdir4,
   readFile as readFile4,
@@ -41502,21 +42094,21 @@ import {
   utimes,
   writeFile as writeFile4
 } from "node:fs/promises";
-import { join as join5, resolve as resolve6 } from "node:path";
+import { join as join6, resolve as resolve7 } from "node:path";
 
 class FileBuildCache {
   maxBytes;
   directory;
   constructor(directory, maxBytes = 128 * 1024 * 1024) {
     this.maxBytes = maxBytes;
-    this.directory = resolve6(directory);
+    this.directory = resolve7(directory);
     if (!Number.isSafeInteger(maxBytes) || maxBytes < 0 || maxBytes > 1024 * 1024 * 1024)
       throw new Error("File build cache size must be 0..1 GiB.");
   }
   path(key) {
     if (!keyPattern.test(key))
       throw new Error("Invalid build cache key.");
-    return join5(this.directory, `${key.slice(7)}.json`);
+    return join6(this.directory, `${key.slice(7)}.json`);
   }
   async get(key) {
     const path = this.path(key);
@@ -41525,7 +42117,7 @@ class FileBuildCache {
       if (entry.size > this.maxBytes || entry.size > 96 * 1024 * 1024)
         return;
       const envelope = JSON.parse(await readFile4(path, "utf8"));
-      if (envelope.version !== 1 || envelope.key !== key || typeof envelope.payload !== "string" || envelope.checksum !== digest3(envelope.payload))
+      if (envelope.version !== 1 || envelope.key !== key || typeof envelope.payload !== "string" || envelope.checksum !== digest4(envelope.payload))
         return;
       const decoded = decodeEvaluatorResultV2(envelope.payload, 64 * 1024 * 1024);
       if (!decoded.ok)
@@ -41540,11 +42132,11 @@ class FileBuildCache {
   async put(key, result) {
     const path = this.path(key);
     const payload = JSON.stringify(encodeRenderResultV2("cached-build", result));
-    const bytes = JSON.stringify({ version: 1, key, payload, checksum: digest3(payload) });
+    const bytes = JSON.stringify({ version: 1, key, payload, checksum: digest4(payload) });
     if (Buffer.byteLength(bytes) > Math.min(this.maxBytes, 96 * 1024 * 1024))
       return;
     await mkdir4(this.directory, { recursive: true });
-    const temporary = join5(this.directory, `.write-${randomUUID4()}`);
+    const temporary = join6(this.directory, `.write-${randomUUID4()}`);
     await writeFile4(temporary, bytes, { encoding: "utf8", flag: "wx", mode: 384 });
     try {
       await rename3(temporary, path);
@@ -41558,7 +42150,7 @@ class FileBuildCache {
     for (const name of await readdir3(this.directory)) {
       if (!filePattern.test(name))
         continue;
-      const path = join5(this.directory, name);
+      const path = join6(this.directory, name);
       try {
         const item = await stat3(path);
         entries.push({ path, size: item.size, used: item.mtimeMs });
@@ -41574,7 +42166,7 @@ class FileBuildCache {
     }
   }
 }
-var keyPattern, filePattern, digest3 = (text) => createHash11("sha256").update(text).digest("hex");
+var keyPattern, filePattern, digest4 = (text) => createHash12("sha256").update(text).digest("hex");
 var init_build_cache_node = __esm(() => {
   init_protocol();
   keyPattern = /^sha256:[a-f0-9]{64}$/;
@@ -41582,17 +42174,17 @@ var init_build_cache_node = __esm(() => {
 });
 
 // src/runtime-identity.ts
-import { createHash as createHash12 } from "node:crypto";
+import { createHash as createHash13 } from "node:crypto";
 import { lstat as lstat5, readFile as readFile5, readdir as readdir4, realpath as realpath3, stat as stat4 } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { dirname as dirname4, join as join6, relative as relative2 } from "node:path";
+import { dirname as dirname4, join as join7, relative as relative2 } from "node:path";
 async function installedRuntimeIdentity(root, limits = {}) {
   let bytes = 0;
   let files = 0;
   const absentPackages = [];
   const maxBytes = limits.maxBytes ?? 512 * 1024 * 1024;
   const maxFiles = limits.maxFiles ?? 40000;
-  const manifest = async (directory) => JSON.parse(await readFile5(join6(directory, "package.json"), "utf8"));
+  const manifest = async (directory) => JSON.parse(await readFile5(join7(directory, "package.json"), "utf8"));
   let readers = 0;
   const waiting = [];
   const read = async (path) => {
@@ -41618,17 +42210,17 @@ async function installedRuntimeIdentity(root, limits = {}) {
     const pkg = await manifest(root);
     if (pkg.name !== "@instruktlabs/kiln")
       throw new Error("Not a Kiln installation.");
-    const build = JSON.parse(await readFile5(join6(root, "dist", "build.json"), "utf8"));
+    const build = JSON.parse(await readFile5(join7(root, "dist", "build.json"), "utf8"));
     const worker = build.entries?.worker;
     if (build.schemaVersion !== 1 || worker?.file !== "evaluator-worker.mjs" || !/^sha256:[a-f0-9]{64}$/.test(worker.identity))
       throw new Error("No valid packaged worker identity.");
-    const workerHash = `sha256:${digest4(await read(join6(root, "dist", worker.file)))}`;
+    const workerHash = `sha256:${digest5(await read(join7(root, "dist", worker.file)))}`;
     if (worker.bundleHash !== workerHash)
       throw new Error("Packaged worker differs from its build manifest.");
     const records = [];
     const visited = new Map;
     async function resolvePackage(parent, name) {
-      const require2 = createRequire(join6(parent, "package.json"));
+      const require2 = createRequire(join7(parent, "package.json"));
       let found;
       try {
         found = require2.resolve(`${name}/package.json`);
@@ -41637,7 +42229,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
           found = require2.resolve(name);
         } catch {
           for (const modules of require2.resolve.paths(name) ?? []) {
-            const candidate = join6(modules, name);
+            const candidate = join7(modules, name);
             try {
               await lstat5(candidate);
             } catch (error) {
@@ -41669,13 +42261,13 @@ async function installedRuntimeIdentity(root, limits = {}) {
       return (await Promise.all(entries.map(async (entry) => {
         if (entry.name === "node_modules" || entry.name === ".git")
           return [];
-        const path = join6(directory, entry.name);
+        const path = join7(directory, entry.name);
         if (entry.isSymbolicLink())
           throw new Error("Dependency contains an untracked internal symlink.");
         if (entry.isDirectory())
           return tree(path, base);
         if (entry.isFile())
-          return [[relative2(base, path).replaceAll("\\", "/"), digest4(await read(path))]];
+          return [[relative2(base, path).replaceAll("\\", "/"), digest5(await read(path))]];
         throw new Error("Dependency contains a non-file runtime input.");
       }))).flat();
     }
@@ -41688,7 +42280,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
       }
       visited.set(canonical, path);
       const metadata = await manifest(canonical);
-      records.push([path, digest4(JSON.stringify(await tree(canonical, canonical)))]);
+      records.push([path, digest5(JSON.stringify(await tree(canonical, canonical)))]);
       await dependencies(canonical, metadata, path);
     }
     async function dependencies(directory, metadata, prefix) {
@@ -41729,7 +42321,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
       dependencies: records
     };
     return {
-      identity: `sha256:${digest4(JSON.stringify(inputs))}`,
+      identity: `sha256:${digest5(JSON.stringify(inputs))}`,
       buildIdentity: worker.identity,
       files,
       bytes,
@@ -41744,7 +42336,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
     };
   }
 }
-var digest4 = (bytes) => createHash12("sha256").update(bytes).digest("hex"), compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+var digest5 = (bytes) => createHash13("sha256").update(bytes).digest("hex"), compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 var init_runtime_identity = () => {};
 
 // src/projects.ts
@@ -41916,9 +42508,9 @@ var init_projects = __esm(() => {
 });
 
 // src/projects-node.ts
-import { createHash as createHash13, randomUUID as randomUUID5 } from "node:crypto";
+import { createHash as createHash14, randomUUID as randomUUID5 } from "node:crypto";
 import { link as link3, lstat as lstat6, mkdir as mkdir5, open as open3, readdir as readdir5, realpath as realpath4, unlink as unlink4 } from "node:fs/promises";
-import { join as join7, relative as relative3, resolve as resolve7, sep as sep2 } from "node:path";
+import { join as join8, relative as relative3, resolve as resolve8, sep as sep2 } from "node:path";
 function sequenceOf(revisionId) {
   projectRevisionIdSchema.parse(revisionId);
   const sequence = Number(revisionId.slice(2, 12));
@@ -41926,9 +42518,9 @@ function sequenceOf(revisionId) {
     throw new Error("Invalid project revision sequence");
   return sequence;
 }
-function digest5(record) {
+function digest6(record) {
   const { revisionId: _, ...payload } = record;
-  return createHash13("sha256").update(JSON.stringify(payload)).digest("hex");
+  return createHash14("sha256").update(JSON.stringify(payload)).digest("hex");
 }
 
 class FileProjectStore {
@@ -41937,8 +42529,8 @@ class FileProjectStore {
   constructor(workspace) {
     if (!workspace.trim())
       throw new Error("A workspace directory is required");
-    this.workspace = resolve7(workspace);
-    this.directory = join7(this.workspace, ".kiln", "projects");
+    this.workspace = resolve8(workspace);
+    this.directory = join8(this.workspace, ".kiln", "projects");
   }
   async path(projectId, create = false) {
     if (projectId !== undefined)
@@ -41948,7 +42540,7 @@ class FileProjectStore {
     const canonical = await realpath4(this.workspace);
     let path = this.workspace;
     for (const part of [".kiln", "projects", ...projectId ? [projectId, "revisions"] : []]) {
-      path = join7(path, part);
+      path = join8(path, part);
       if (create)
         await mkdir5(path).catch((error) => {
           if (!exists(error))
@@ -41980,7 +42572,7 @@ class FileProjectStore {
     return latest;
   }
   async load(projectId, directory, sequence) {
-    const path = join7(directory, filename(sequence));
+    const path = join8(directory, filename(sequence));
     const info = await lstat6(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > MAX_PROJECT_BYTES)
       throw new Error("Invalid or oversized project revision file");
@@ -42004,7 +42596,7 @@ class FileProjectStore {
       await handle.close();
     }
     const record = projectRevisionSchema.parse(JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)));
-    if (record.projectId !== projectId || sequenceOf(record.revisionId) !== sequence || record.revisionId.slice(13) !== digest5(record))
+    if (record.projectId !== projectId || sequenceOf(record.revisionId) !== sequence || record.revisionId.slice(13) !== digest6(record))
       throw new Error("Project revision integrity failure");
     if (sequence === 1 && record.parentRevision !== undefined || sequence > 1 && (!record.parentRevision || sequenceOf(record.parentRevision) !== sequence - 1))
       throw new Error("Project revision parent integrity failure");
@@ -42063,7 +42655,7 @@ class FileProjectStore {
     for (const revision of new Set(record.reviews.map((review) => review.projectRevisionId)))
       await this.read(record.projectId, revision);
     const directory = await this.path(record.projectId, true);
-    const temporary = join7(directory, `.write-${randomUUID5()}`);
+    const temporary = join8(directory, `.write-${randomUUID5()}`);
     const handle = await open3(temporary, "wx", 384);
     try {
       try {
@@ -42073,7 +42665,7 @@ class FileProjectStore {
         await handle.close();
       }
       try {
-        await link3(temporary, join7(directory, filename(sequenceOf(record.revisionId))));
+        await link3(temporary, join8(directory, filename(sequenceOf(record.revisionId))));
       } catch (error) {
         if (!exists(error))
           throw error;
@@ -42099,7 +42691,7 @@ class FileProjectStore {
       parentRevision,
       createdAt: new Date().toISOString()
     });
-    record.revisionId = `${prefix}${digest5(record)}`;
+    record.revisionId = `${prefix}${digest6(record)}`;
     return record;
   }
   async create(draft) {
@@ -42151,7 +42743,7 @@ var init_workspace = __esm(() => {
 
 // src/workspace-node.ts
 import { AsyncLocalStorage } from "node:async_hooks";
-import { join as join8 } from "node:path";
+import { join as join9 } from "node:path";
 
 class FileWorkspace {
   root;
@@ -42163,7 +42755,7 @@ class FileWorkspace {
     this.root = root;
     this.defaultProjectId = defaultProjectId;
     this.projects = new FileProjectStore(root);
-    this.materials = new FileMaterialLibrary(join8(root, ".kiln", "materials"));
+    this.materials = new FileMaterialLibrary(join9(root, ".kiln", "materials"));
   }
   current() {
     return this.active.getStore();
@@ -42449,7 +43041,7 @@ var init_assets = __esm(() => {
 
 // src/live-review-node.ts
 import { AsyncLocalStorage as AsyncLocalStorage2 } from "node:async_hooks";
-import { createHash as createHash14, randomUUID as randomUUID6 } from "node:crypto";
+import { createHash as createHash15, randomUUID as randomUUID6 } from "node:crypto";
 import {
   link as link4,
   mkdir as mkdir6,
@@ -42462,7 +43054,7 @@ import {
   writeFile as writeFile5,
   realpath as realpath5
 } from "node:fs/promises";
-import { join as join9, resolve as resolve8, relative as relative4, sep as sep3 } from "node:path";
+import { join as join10, resolve as resolve9, relative as relative4, sep as sep3 } from "node:path";
 import { z as z10 } from "zod";
 function notify(run) {
   try {
@@ -42634,8 +43226,8 @@ class FileLiveReview {
   storedSizes = new WeakMap;
   unreportedIssues = [];
   constructor(workspace, options = {}) {
-    this.workspace = resolve8(workspace);
-    this.directory = join9(this.workspace, ".kiln", "review");
+    this.workspace = resolve9(workspace);
+    this.directory = join10(this.workspace, ".kiln", "review");
     this.maxOperations = options.maxOperations ?? 200;
     this.maxBytes = options.maxBytes ?? 256 * 1024 * 1024;
     this.maxQueuedBytes = options.maxQueuedBytes ?? 128 * 1024 * 1024;
@@ -42658,7 +43250,7 @@ class FileLiveReview {
   path(operationId, file) {
     if (!operationPattern.test(operationId))
       throw new Error("Invalid operation ID");
-    return join9(this.directory, operationId, ...file ? [file] : []);
+    return join10(this.directory, operationId, ...file ? [file] : []);
   }
   async root(create = false) {
     if (create)
@@ -42666,7 +43258,7 @@ class FileLiveReview {
     const canonical = await realpath5(this.workspace);
     let path = this.workspace;
     for (const part of [".kiln", "review"]) {
-      path = join9(path, part);
+      path = join10(path, part);
       if (create)
         await mkdir6(path).catch((error) => {
           if (!collision(error))
@@ -42704,7 +43296,7 @@ class FileLiveReview {
   async locked(run) {
     await this.root(true);
     const token = randomUUID6();
-    const directory = join9(this.directory, ".locks");
+    const directory = join10(this.directory, ".locks");
     await mkdir6(directory).catch((error) => {
       if (!collision(error))
         throw error;
@@ -42712,7 +43304,7 @@ class FileLiveReview {
     const info = await lstat7(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live lock directory");
-    const candidate = join9(directory, `.candidate-${process.pid}-${token}.tmp`);
+    const candidate = join10(directory, `.candidate-${process.pid}-${token}.tmp`);
     const owner = JSON.stringify({ pid: process.pid, token });
     await writeFile5(candidate, owner, { flag: "wx", mode: 384 });
     const generations = async () => (await readdir6(directory)).filter((name) => /^[0-9]{16}\.lock$/.test(name)).sort();
@@ -42729,8 +43321,8 @@ class FileLiveReview {
           throw new Error("Live lock generation exhausted");
         if (latest) {
           try {
-            const prior = z10.object({ pid: z10.number().int().positive(), token: z10.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join9(directory, latest), 1024))));
-            const released = await lstat7(join9(directory, `${latest}.released`)).then((entry) => {
+            const prior = z10.object({ pid: z10.number().int().positive(), token: z10.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(directory, latest), 1024))));
+            const released = await lstat7(join10(directory, `${latest}.released`)).then((entry) => {
               if (!entry.isFile() || entry.isSymbolicLink() || entry.size !== 0)
                 throw new Error("Invalid lock release");
               return true;
@@ -42751,9 +43343,9 @@ class FileLiveReview {
         }
         const name = `${String(sequence).padStart(16, "0")}.lock`;
         try {
-          await link4(candidate, join9(directory, name));
+          await link4(candidate, join10(directory, name));
           if ((await generations()).at(-1) !== name) {
-            await unlink5(join9(directory, name));
+            await unlink5(join10(directory, name));
             continue;
           }
           acquired = name;
@@ -42763,8 +43355,8 @@ class FileLiveReview {
         }
       }
       for (const name of (await generations()).slice(0, -3)) {
-        await unlink5(join9(directory, name));
-        await unlink5(join9(directory, `${name}.released`)).catch((error) => {
+        await unlink5(join10(directory, name));
+        await unlink5(join10(directory, `${name}.released`)).catch((error) => {
           if (!missing2(error))
             throw error;
         });
@@ -42772,18 +43364,18 @@ class FileLiveReview {
       for (const name of await readdir6(directory)) {
         const match = /^\.candidate-([0-9]+)-[a-f0-9-]+\.tmp$/.exec(name);
         if (match && dead(Number(match[1])))
-          await unlink5(join9(directory, name)).catch(() => {});
+          await unlink5(join10(directory, name)).catch(() => {});
       }
       await this.limits(true);
       return await run();
     } finally {
       if (acquired)
-        await writeFile5(join9(directory, `${acquired}.released`), "", { flag: "wx", mode: 384 });
+        await writeFile5(join10(directory, `${acquired}.released`), "", { flag: "wx", mode: 384 });
       await unlink5(candidate).catch(() => {});
     }
   }
   async limits(create = false) {
-    const path = join9(this.directory, "limits.json");
+    const path = join10(this.directory, "limits.json");
     try {
       const value = JSON.parse(new TextDecoder().decode(await this.boundedFile(path, 1024)));
       const parsed = z10.object({
@@ -42857,7 +43449,7 @@ class FileLiveReview {
         try {
           await this.locked(async () => {
             const previous = await this.health();
-            await this.atomic(join9(this.directory, "health.json"), JSON.stringify([...new Set([...previous, ...issues])].slice(-20)));
+            await this.atomic(join10(this.directory, "health.json"), JSON.stringify([...new Set([...previous, ...issues])].slice(-20)));
           });
           this.unreportedIssues = this.unreportedIssues.filter((value) => !issues.includes(value));
         } catch {}
@@ -43020,7 +43612,7 @@ class FileLiveReview {
     const info = await lstat7(directory);
     if (!info.isDirectory() || info.isSymbolicLink())
       throw new Error("Unsafe live directory");
-    const raw = JSON.parse(new TextDecoder().decode(await this.boundedFile(join9(directory, "record.json"), metadataLimit)));
+    const raw = JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(directory, "record.json"), metadataLimit)));
     const state = stateSchema.parse(jsonValue(raw, metadataLimit));
     if (state.operation.operationId !== operationId)
       throw new Error("Invalid live identity");
@@ -43039,7 +43631,7 @@ class FileLiveReview {
       throw new Error("Invalid artifact descriptor");
     if (state.operation.captures.some((file) => !/^capture-\d{1,2}\.png$/.test(file.name)))
       throw new Error("Invalid capture descriptor");
-    state.operation.pinned = await lstat7(join9(directory, "pinned")).then((s) => {
+    state.operation.pinned = await lstat7(join10(directory, "pinned")).then((s) => {
       if (!s.isFile() || s.isSymbolicLink())
         throw new Error("Invalid live pin");
       return true;
@@ -43061,7 +43653,7 @@ class FileLiveReview {
     for (const entry of await readdir6(directory, { withFileTypes: true })) {
       if (!entry.isFile() || entry.isSymbolicLink())
         throw new Error("Invalid live directory entry");
-      bytes += (await lstat7(join9(directory, entry.name))).size;
+      bytes += (await lstat7(join10(directory, entry.name))).size;
     }
     this.storedSizes.set(state, bytes);
     return state;
@@ -43112,7 +43704,7 @@ class FileLiveReview {
   }
   async health() {
     try {
-      return z10.array(z10.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join9(this.directory, "health.json"), 16384))));
+      return z10.array(z10.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join10(this.directory, "health.json"), 16384))));
     } catch (error) {
       if (missing2(error))
         return [];
@@ -43179,8 +43771,8 @@ class FileLiveReview {
     if ((await lstat7(directory)).isSymbolicLink())
       throw new Error("Unsafe live directory");
     for (const [name, data] of Object.entries(blobs))
-      await this.atomic(join9(directory, name), data);
-    await this.atomic(join9(directory, "record.json"), JSON.stringify(state));
+      await this.atomic(join10(directory, name), data);
+    await this.atomic(join10(directory, "record.json"), JSON.stringify(state));
     await this.cleanupRecord(await this.record(state.operation.operationId));
   }
   async remove(operationId) {
@@ -43243,7 +43835,7 @@ class FileLiveReview {
     });
   }
 }
-var operationPattern, filePattern2, hash5 = (value) => `sha256:${createHash14("sha256").update(value).digest("hex")}`, metadataLimit, evaluationLimit, staleMs = 120000, terminal = (op) => !["running", "evaluated"].includes(op.status), missing2 = (error) => error.code === "ENOENT", collision = (error) => error.code === "EEXIST", fileLimit = (name) => name === "asset.glb" ? ASSET_LIMIT : name === "source.kiln.js" ? 1024 * 1024 : name === "evaluation.json" ? evaluationLimit : 16 * 1024 * 1024, descriptorSchema, operationSchema, stateSchema;
+var operationPattern, filePattern2, hash5 = (value) => `sha256:${createHash15("sha256").update(value).digest("hex")}`, metadataLimit, evaluationLimit, staleMs = 120000, terminal = (op) => !["running", "evaluated"].includes(op.status), missing2 = (error) => error.code === "ENOENT", collision = (error) => error.code === "EEXIST", fileLimit = (name) => name === "asset.glb" ? ASSET_LIMIT : name === "source.kiln.js" ? 1024 * 1024 : name === "evaluation.json" ? evaluationLimit : 16 * 1024 * 1024, descriptorSchema, operationSchema, stateSchema;
 var init_live_review_node = __esm(() => {
   init_assets();
   operationPattern = /^op_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -43349,11 +43941,11 @@ __export(exports_assets_node, {
   localAssetLibrary: () => localAssetLibrary,
   verifyAssetRecord: () => verifyAssetRecord
 });
-import { createHash as createHash15, randomUUID as randomUUID7 } from "node:crypto";
+import { createHash as createHash16, randomUUID as randomUUID7 } from "node:crypto";
 import { readFileSync as readFileSync2 } from "node:fs";
 import { link as link5, lstat as lstat8, mkdir as mkdir7, readFile as readFile7, readdir as readdir7, realpath as realpath6, rm as rm3, writeFile as writeFile6 } from "node:fs/promises";
 import { homedir, platform } from "node:os";
-import { dirname as dirname5, join as join10, relative as relative5, resolve as resolve9, sep as sep4, win32 } from "node:path";
+import { dirname as dirname5, join as join11, relative as relative5, resolve as resolve10, sep as sep4, win32 } from "node:path";
 function assertMaterialAllocation(records) {
   let bytes = 0;
   for (const record of records)
@@ -43367,7 +43959,7 @@ function assertMaterialAllocation(records) {
 async function verifyAssetRecord(record) {
   for (const [name, info] of Object.entries(record.manifest.files)) {
     const bytes = record.files[name];
-    if (!bytes || bytes.length !== info.bytes || digest6(bytes) !== info.sha256)
+    if (!bytes || bytes.length !== info.bytes || digest7(bytes) !== info.sha256)
       throw new Error(`Asset integrity failure: ${name}`);
   }
   validateRecordShape(record);
@@ -43382,7 +43974,7 @@ class FileAssetLibrary {
     this.materials = materials;
     if (!Object.keys(roots).length)
       throw new Error("Configure at least one collection");
-    this.roots = Object.fromEntries(Object.entries(roots).map(([id, path]) => [assetIdSchema.parse(id), resolve9(path)]));
+    this.roots = Object.fromEntries(Object.entries(roots).map(([id, path]) => [assetIdSchema.parse(id), resolve10(path)]));
   }
   collections() {
     return Object.keys(this.roots).map((id) => ({
@@ -43397,7 +43989,7 @@ class FileAssetLibrary {
     return root;
   }
   revisionDirectory(collection, assetId, revisionId) {
-    return join10(this.directory(collection), assetIdSchema.parse(assetId), "revisions", assetIdSchema.parse(revisionId));
+    return join11(this.directory(collection), assetIdSchema.parse(assetId), "revisions", assetIdSchema.parse(revisionId));
   }
   async path(collection, ...parts) {
     const root = this.directory(collection);
@@ -43406,7 +43998,7 @@ class FileAssetLibrary {
     let path = root;
     for (const part of parts) {
       assetIdSchema.parse(part);
-      path = join10(path, part);
+      path = join11(path, part);
       try {
         const entry = await lstat8(path);
         if (entry.isSymbolicLink())
@@ -43449,7 +44041,7 @@ class FileAssetLibrary {
     return records.sort((a, b) => b.createdAt.localeCompare(a.createdAt) || a.revisionId.localeCompare(b.revisionId));
   }
   async file(dir, name, limit = ASSET_LIMIT) {
-    const path = join10(dir, name);
+    const path = join11(dir, name);
     const info = await lstat8(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid collection file");
@@ -43518,7 +44110,7 @@ class FileAssetLibrary {
       editable: draft.code !== undefined,
       files: Object.fromEntries(Object.entries(files).map(([name, bytes]) => [
         name,
-        { sha256: digest6(bytes), bytes: bytes.length }
+        { sha256: digest7(bytes), bytes: bytes.length }
       ])),
       build: draft.build ? { ...draft.build, rebuild: draft.build.rebuild ?? "engine-required" } : undefined,
       preview: draft.previewInfo
@@ -43570,14 +44162,14 @@ class FileAssetLibrary {
       const dest = await this.path(collection, manifest.assetId, "revisions", manifest.revisionId);
       const parent = dirname5(dest);
       await mkdir7(parent, { recursive: true });
-      const stage = join10(parent, `.write-${randomUUID7()}`);
+      const stage = join11(parent, `.write-${randomUUID7()}`);
       await mkdir7(stage);
       try {
         for (const [name, bytes] of Object.entries(files))
-          await writeFile6(join10(stage, name), bytes, { flag: "wx" });
+          await writeFile6(join11(stage, name), bytes, { flag: "wx" });
         if (record.materialResources)
-          await writeFile6(join10(stage, ASSET_MATERIAL_FILE), JSON.stringify(record.materialResources), { flag: "wx" });
-        await writeFile6(join10(stage, "manifest.json"), `${JSON.stringify(manifest, null, 2)}
+          await writeFile6(join11(stage, ASSET_MATERIAL_FILE), JSON.stringify(record.materialResources), { flag: "wx" });
+        await writeFile6(join11(stage, "manifest.json"), `${JSON.stringify(manifest, null, 2)}
 `, {
           flag: "wx"
         });
@@ -43591,7 +44183,7 @@ class FileAssetLibrary {
             throw error;
           if (record.materialResources && !existing.materialResources) {
             try {
-              await link5(join10(stage, ASSET_MATERIAL_FILE), join10(dest, ASSET_MATERIAL_FILE));
+              await link5(join11(stage, ASSET_MATERIAL_FILE), join11(dest, ASSET_MATERIAL_FILE));
             } catch (enrichmentError) {
               if (enrichmentError.code !== "EEXIST")
                 throw enrichmentError;
@@ -43609,17 +44201,17 @@ class FileAssetLibrary {
   }
 }
 function collectionConfigPath(env = process.env) {
-  return join10(localWorkspaceRoot(env), ".kiln", "collections.json");
+  return join11(localWorkspaceRoot(env), ".kiln", "collections.json");
 }
 function defaultUserLibraryRoot(env = process.env, home = homedir(), operatingSystem = platform()) {
   const dataRoot = env.XDG_DATA_HOME?.trim();
   if (dataRoot)
-    return join10(dataRoot, "kiln", "library");
+    return join11(dataRoot, "kiln", "library");
   if (operatingSystem === "darwin")
-    return join10(home, "Library", "Application Support", "Kiln", "library");
+    return join11(home, "Library", "Application Support", "Kiln", "library");
   if (operatingSystem === "win32")
-    return join10(env.LOCALAPPDATA?.trim() || join10(home, "AppData", "Local"), "Kiln", "library");
-  return join10(home, ".local", "share", "kiln", "library");
+    return join11(env.LOCALAPPDATA?.trim() || join11(home, "AppData", "Local"), "Kiln", "library");
+  return join11(home, ".local", "share", "kiln", "library");
 }
 function assertCollectionRoot(id, path, operatingSystem = platform(), source) {
   if (operatingSystem !== "win32" || windowsDrivePath.test(path) || windowsSharePath.test(path))
@@ -43638,10 +44230,10 @@ function configuredRoots(text, source, operatingSystem) {
 }
 function localAssetLibrary(env = process.env, operatingSystem = platform()) {
   if (env.KILN_COLLECTIONS)
-    return new FileAssetLibrary(configuredRoots(env.KILN_COLLECTIONS, "KILN_COLLECTIONS", operatingSystem), new FileMaterialLibrary(join10(localWorkspaceRoot(env), ".kiln", "materials")));
+    return new FileAssetLibrary(configuredRoots(env.KILN_COLLECTIONS, "KILN_COLLECTIONS", operatingSystem), new FileMaterialLibrary(join11(localWorkspaceRoot(env), ".kiln", "materials")));
   const config = collectionConfigPath(env);
   const workspace = dirname5(dirname5(config));
-  const materials = new FileMaterialLibrary(join10(workspace, ".kiln", "materials"));
+  const materials = new FileMaterialLibrary(join11(workspace, ".kiln", "materials"));
   let text;
   try {
     text = readFileSync2(config, "utf8");
@@ -43655,11 +44247,11 @@ function localAssetLibrary(env = process.env, operatingSystem = platform()) {
     return new FileAssetLibrary(configuredRoots(text, config, operatingSystem), materials);
   }
   return new FileAssetLibrary({
-    project: join10(workspace, "assets", "kiln"),
+    project: join11(workspace, "assets", "kiln"),
     library: defaultUserLibraryRoot(env, homedir(), operatingSystem)
   }, materials);
 }
-var digest6 = (bytes) => `sha256:${createHash15("sha256").update(bytes).digest("hex")}`, windowsDrivePath, windowsSharePath;
+var digest7 = (bytes) => `sha256:${createHash16("sha256").update(bytes).digest("hex")}`, windowsDrivePath, windowsSharePath;
 var init_assets_node = __esm(() => {
   init_workspace_location();
   init_assets();
@@ -43673,15 +44265,15 @@ var init_assets_node = __esm(() => {
 });
 
 // src/ktx2-basis.ts
-import { createHash as createHash16 } from "node:crypto";
+import { createHash as createHash17 } from "node:crypto";
 import { readFile as readFile8 } from "node:fs/promises";
-import { dirname as dirname6, join as join11 } from "node:path";
+import { dirname as dirname6, join as join12 } from "node:path";
 import { fileURLToPath as fileURLToPath4, pathToFileURL } from "node:url";
 async function packageDirectory() {
   let directory = dirname6(fileURLToPath4(import.meta.resolve(KTX2_ENCODER_PACKAGE.name)));
   for (let depth = 0;depth < 6; depth++) {
     try {
-      const manifest = JSON.parse(await readFile8(join11(directory, "package.json"), "utf8"));
+      const manifest = JSON.parse(await readFile8(join12(directory, "package.json"), "utf8"));
       if (manifest.name === KTX2_ENCODER_PACKAGE.name)
         return directory;
     } catch {}
@@ -43699,14 +44291,14 @@ async function loadKtx2Encoder(importer = () => import("ktx2-encoder")) {
   if (typeof module?.encodeToKTX2 !== "function")
     throw new Error(`${KTX2_ENCODER_PACKAGE.name} has no encodeToKTX2 export. ${INSTALL}`);
   const directory = await packageDirectory();
-  const { version } = JSON.parse(await readFile8(join11(directory, "package.json"), "utf8"));
+  const { version } = JSON.parse(await readFile8(join12(directory, "package.json"), "utf8"));
   if (version !== KTX2_ENCODER_PACKAGE.version)
     throw new Error(`${KTX2_ENCODER_PACKAGE.name} ${version} is installed; Kiln's KTX2 settings are qualified on ${KTX2_ENCODER_PACKAGE.version}. ${INSTALL}`);
   let basisWasmSha256;
   try {
-    basisWasmSha256 = `sha256:${hex2(await readFile8(join11(directory, "dist", "basis", "basis_encoder.wasm")))}`;
+    basisWasmSha256 = `sha256:${hex2(await readFile8(join12(directory, "dist", "basis", "basis_encoder.wasm")))}`;
   } catch {}
-  const internal = (path) => import(pathToFileURL(join11(directory, "dist", path)).href);
+  const internal = (path) => import(pathToFileURL(join12(directory, "dist", path)).href);
   const [factory, core] = await Promise.all([
     internal("basis/basis_encoder.js"),
     internal("encodeCore.js")
@@ -43738,7 +44330,7 @@ async function createKtx2Encoder(options = {}) {
   };
   return Object.assign(encode, { identity });
 }
-var KTX2_ENCODER_PACKAGE, INSTALL, SETTINGS, profile = (input) => input.colorSpace === "srgb" ? SETTINGS.srgb : input.slot === "normal" ? SETTINGS.normal : SETTINGS.linear, hex2 = (bytes) => createHash16("sha256").update(bytes).digest("hex"), basis, decode = async (buffer) => {
+var KTX2_ENCODER_PACKAGE, INSTALL, SETTINGS, profile = (input) => input.colorSpace === "srgb" ? SETTINGS.srgb : input.slot === "normal" ? SETTINGS.normal : SETTINGS.linear, hex2 = (bytes) => createHash17("sha256").update(bytes).digest("hex"), basis, decode = async (buffer) => {
   const { default: sharp } = await import("sharp");
   const { data, info } = await sharp(buffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
   return { data: new Uint8Array(data), width: info.width, height: info.height };
@@ -44344,7 +44936,7 @@ var init_project_bundle = __esm(() => {
 // src/project-bundle-node.ts
 import { randomUUID as randomUUID8 } from "node:crypto";
 import { link as link6, lstat as lstat9, mkdir as mkdir8, readFile as readFile9, realpath as realpath7, unlink as unlink6, writeFile as writeFile7 } from "node:fs/promises";
-import { join as join12, relative as relative6, resolve as resolve10, sep as sep5 } from "node:path";
+import { join as join13, relative as relative6, resolve as resolve11, sep as sep5 } from "node:path";
 async function assetMaterials(workspace, asset) {
   return resolveSavedAssetMaterials(asset, workspace.materials);
 }
@@ -44436,12 +45028,12 @@ async function exportWorkspaceProjectBundle(workspace, library, projectId, optio
   return encodeProjectBundle({ project, assets, materials }, profile);
 }
 async function retainArchive(workspace, bytes, digest) {
-  const root = resolve10(workspace.root);
+  const root = resolve11(workspace.root);
   await mkdir8(root, { recursive: true });
   const canonical = await realpath7(root);
   let directory = root;
   for (const part of [".kiln", "imports"]) {
-    directory = join12(directory, part);
+    directory = join13(directory, part);
     await mkdir8(directory).catch((error) => {
       if (error.code !== "EEXIST")
         throw error;
@@ -44451,8 +45043,8 @@ async function retainArchive(workspace, bytes, digest) {
     if (!info.isDirectory() || info.isSymbolicLink() || rel === ".." || rel.startsWith(`..${sep5}`))
       throw new Error("Unsafe project import directory");
   }
-  const file = join12(directory, `${digest.slice(7)}.zip`);
-  const temporary = join12(directory, `.import-${randomUUID8()}.tmp`);
+  const file = join13(directory, `${digest.slice(7)}.zip`);
+  const temporary = join13(directory, `.import-${randomUUID8()}.tmp`);
   await writeFile7(temporary, bytes, { flag: "wx", mode: 384 });
   try {
     try {
@@ -44610,7 +45202,7 @@ var init_source_check = __esm(() => {
 
 // src/local-runtime.ts
 import { readFile as readFile10, stat as stat5 } from "node:fs/promises";
-import { dirname as dirname7, isAbsolute, join as join13, resolve as resolve11 } from "node:path";
+import { dirname as dirname7, isAbsolute, join as join14, resolve as resolve12 } from "node:path";
 import { fileURLToPath as fileURLToPath5 } from "node:url";
 import { Console } from "node:console";
 function workspaceSourceReader(root) {
@@ -44618,7 +45210,7 @@ function workspaceSourceReader(root) {
     const segments = file.split(/[\\/]/u);
     if (!file || isAbsolute(file) || /^[A-Za-z]:/u.test(file) || segments.includes("..") || segments.includes(""))
       throw new Error('file must name a program inside the workspace, relative to its root: no absolute path and no "..". Use a path such as assets/asset.kiln.js, or pass code or programRef.');
-    const path = resolve11(root, file);
+    const path = resolve12(root, file);
     const info = await stat5(path).catch(() => {
       return;
     });
@@ -44636,7 +45228,7 @@ function integer4(env, name, fallback, min, max) {
   return value;
 }
 function createLocalToolContext(base = {}, env = process.env) {
-  const workspaceRoot = env.KILN_WORKSPACE ? resolve11(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname7(dirname7(base.programStore.directory)) : localWorkspaceRoot(env);
+  const workspaceRoot = env.KILN_WORKSPACE ? resolve12(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname7(dirname7(base.programStore.directory)) : localWorkspaceRoot(env);
   const workspace = base.workspace ?? new FileWorkspace(workspaceRoot, env.KILN_PROJECT);
   const projectStore = base.projectStore ?? (workspace instanceof FileWorkspace ? workspace.projects : undefined);
   const liveReview = base.liveReview ?? (env.KILN_LIVE_REVIEW === "off" ? undefined : new FileLiveReview(workspaceRoot, {
@@ -44801,7 +45393,7 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   }
   const cacheBytes = integer4(env, "KILN_BUILD_CACHE_MB", 128, 0, 1024) * 1024 * 1024;
   const store = context.programStore;
-  const directory = resolve11(env.KILN_BUILD_CACHE_DIR ?? join13(store instanceof FileProgramStore ? dirname7(store.directory) : ".kiln", "cache", "builds"));
+  const directory = resolve12(env.KILN_BUILD_CACHE_DIR ?? join14(store instanceof FileProgramStore ? dirname7(store.directory) : ".kiln", "cache", "builds"));
   context.buildCache = new FileBuildCache(directory, cacheBytes);
   context.evaluatorCacheIdentity = `${identity.identity}:${JSON.stringify({
     execution: context.localExecution,
@@ -51490,225 +52082,17 @@ var init_view_render_timeout = __esm(() => {
 // src/asset-widget-uri.ts
 var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v6.html";
 
-// src/views/port.ts
-async function sha256Bytes(bytes) {
-  const input = new Uint8Array(bytes.byteLength);
-  input.set(bytes);
-  const digest = new Uint8Array(await globalThis.crypto.subtle.digest("SHA-256", input));
-  return `sha256:${[...digest].map((byte) => byte.toString(16).padStart(2, "0")).join("")}`;
-}
-async function captureViewPngsViaPort(port, glb, timeoutMs, viewDirs, size, cameras, limits, backdrop, execution) {
-  let timer;
-  const controller = new AbortController;
-  let abort;
-  try {
-    execution?.signal?.throwIfAborted();
-    const exactCameras = cameras?.map(validateResolvedAssetCamera);
-    if (exactCameras && exactCameras.length !== viewDirs.length)
-      throw new Error("camera and view count mismatch");
-    const requestGlb = Uint8Array.from(glb);
-    const inputGlbSha256 = await sha256Bytes(requestGlb);
-    execution?.signal?.throwIfAborted();
-    const deadline = new Promise((_, reject) => {
-      abort = () => {
-        const error = execution?.signal?.reason ?? new Error("View request cancelled.");
-        reject(error);
-        controller.abort(error);
-      };
-      execution?.signal?.addEventListener("abort", abort, { once: true });
-      timer = setTimeout(() => {
-        const error = new Error(`view render port timed out after ${timeoutMs}ms`);
-        reject(error);
-        controller.abort(error);
-      }, timeoutMs);
-    });
-    const result = await Promise.race([
-      port({
-        glb: requestGlb,
-        ...backdrop ? { backdrop } : {},
-        ...exactCameras ? { cameras: exactCameras, width: size, height: size } : { viewDirs: viewDirs.map((dir) => [...dir]), size }
-      }, { signal: controller.signal }),
-      deadline
-    ]);
-    execution?.signal?.throwIfAborted();
-    if (!result?.ok) {
-      return { ok: false, reason: result?.error ?? "view render port returned ok: false" };
-    }
-    if (typeof result.rendererId !== "string" || !result.rendererId.trim()) {
-      return { ok: false, reason: "view render port returned no rendererId" };
-    }
-    if (!result.viewsPng || result.viewsPng.length !== viewDirs.length) {
-      return {
-        ok: false,
-        reason: `view render port returned ${result.viewsPng?.length ?? 0} view PNGs, expected ${viewDirs.length}`
-      };
-    }
-    if (exactCameras) {
-      if (result.width !== size || result.height !== size || !result.cameras || result.cameras.length !== exactCameras.length)
-        return { ok: false, reason: "camera receipt missing or dimensions mismatch" };
-      for (let i = 0;i < exactCameras.length; i++) {
-        const echoed = validateResolvedAssetCamera(result.cameras[i]);
-        const wanted = exactCameras[i];
-        for (const key of Object.keys(wanted))
-          if (JSON.stringify(echoed[key]) !== JSON.stringify(wanted[key]))
-            return { ok: false, reason: "camera receipt does not match requested camera" };
-      }
-    }
-    if (result.derivativeFidelity && result.derivativeFidelity.inputGlbSha256 !== inputGlbSha256) {
-      return {
-        ok: false,
-        reason: `view render port derivative receipt hash mismatch (${result.derivativeFidelity.inputGlbSha256} != ${inputGlbSha256})`
-      };
-    }
-    enforcePngCaptureBudget(result.viewsPng, limits);
-    for (const png of result.viewsPng) {
-      const decoded = decodePng(png);
-      if (exactCameras && (decoded.width !== size || decoded.height !== size))
-        return { ok: false, reason: "camera PNG dimensions mismatch" };
-      if (decoded.width !== decoded.height) {
-        return {
-          ok: false,
-          reason: `view render port returned non-square ${decoded.width}x${decoded.height} PNG`
-        };
-      }
-    }
-    return {
-      ok: true,
-      pngs: result.viewsPng.map((png) => Uint8Array.from(png)),
-      rendererId: result.rendererId,
-      ...result.captureCache ? { captureCache: result.captureCache } : {},
-      derivativeFidelityAttested: result.derivativeFidelity?.materialFaithful === true,
-      ...result.derivativeFidelity ? { inputGlbSha256 } : {}
-    };
-  } catch (err) {
-    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
-  } finally {
-    if (timer !== undefined)
-      clearTimeout(timer);
-    if (abort)
-      execution?.signal?.removeEventListener("abort", abort);
-  }
-}
-async function captureViewsViaPort(port, glb, timeoutMs = DEFAULT_VIEW_RENDER_TIMEOUT_MS, capture, limits, execution) {
-  if (capture?.shots || capture?.version) {
-    try {
-      execution?.signal?.throwIfAborted();
-      await Promise.resolve().then(() => init_views());
-      await Promise.resolve().then(() => init_camera_capture());
-      await Promise.resolve().then(() => init_camera());
-      await Promise.resolve().then(() => init_render());
-      const loaded = await loadGlbReviewScene(Uint8Array.from(glb));
-      let rendererId = "";
-      const grid = await renderCaptureGrid(loaded.root, capture, async (input) => {
-        execution?.signal?.throwIfAborted();
-        const derivative = await renderSceneToGLB(withoutHiddenMeshes(input.root), { derivative: true, gltfExporter: "three" });
-        const result = await captureViewPngsViaPort(port, derivative.bytes, timeoutMs, [input.view.dir], input.size, [input.camera], limits, input.backdrop, execution);
-        if (!result.ok)
-          throw new Error(result.reason);
-        if (!result.derivativeFidelityAttested || !result.inputGlbSha256)
-          throw new Error("advanced capture requires derivative material receipt");
-        if (rendererId && rendererId !== result.rendererId)
-          throw new Error("capture renderer changed between cells");
-        rendererId = result.rendererId;
-        return {
-          png: Buffer.from(result.pngs[0]),
-          receipt: {
-            version: "kiln.view-fidelity.v1",
-            derivativeLabel: input.label,
-            requested: "full-preferred",
-            delivered: "full-material",
-            exactArtifact: false,
-            rendererId: result.rendererId,
-            materialFaithful: true,
-            degraded: false,
-            inputGlbSha256: result.inputGlbSha256,
-            camera: input.camera,
-            cameraFidelity: "echo-validated",
-            ...result.captureCache ? { captureCache: result.captureCache } : {}
-          }
-        };
-      }, limits);
-      return {
-        ok: true,
-        png: grid.png,
-        rendererId,
-        capture: grid.capture,
-        width: grid.width,
-        height: grid.height,
-        cameraShots: grid.cameraShots,
-        derivativeReceipts: grid.derivativeReceipts,
-        perFramePngs: grid.perFramePngs,
-        ...grid.captureCache ? { captureCache: grid.captureCache } : {}
-      };
-    } catch (error) {
-      return { ok: false, reason: error instanceof Error ? error.message : String(error) };
-    }
-  }
-  let resolved;
-  try {
-    execution?.signal?.throwIfAborted();
-    resolved = resolveGridCapture(capture, process.env["KILN_GRID_VARIANT"]);
-    enforceCapturePixels(resolved.views.length, 384, resolved.cols, limits);
-  } catch (err) {
-    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
-  }
-  const views = resolved.views;
-  const shape = {
-    preset: resolved.preset,
-    cols: resolved.cols,
-    cells: views.length,
-    backdrop: resolved.backdrop
-  };
-  let cameras;
-  if (resolved.zooms.some((z) => z !== undefined)) {
-    try {
-      await Promise.resolve().then(() => init_views());
-      const loaded = await loadGlbReviewScene(Uint8Array.from(glb));
-      const bounds = measureBounds(loaded.root);
-      cameras = views.map((view, i) => cameraFromBounds(bounds, view.dir, resolved.zooms[i] ?? 1));
-    } catch (error) {
-      return { ok: false, reason: error instanceof Error ? error.message : String(error) };
-    }
-  }
-  const result = await captureViewPngsViaPort(port, glb, timeoutMs, views.map((view) => view.dir), 384, cameras, limits, resolved.backdrop, execution);
-  if (!result.ok)
-    return result;
-  try {
-    const grid = compositeViewPngGrid(result.pngs, resolved.cols, views);
-    enforceCaptureBytes([grid.png], limits);
-    return {
-      ok: true,
-      png: grid.png,
-      rendererId: result.rendererId,
-      ...result.captureCache ? { captureCache: result.captureCache } : {},
-      capture: shape,
-      width: grid.width,
-      height: grid.height
-    };
-  } catch (err) {
-    return { ok: false, reason: err instanceof Error ? err.message : String(err) };
-  }
-}
-var DEFAULT_VIEW_RENDER_TIMEOUT_MS = 8000;
-var init_port = __esm(() => {
-  init_capture_limits();
-  init_camera();
-  init_capture();
-  init_png();
-  init_grid();
-});
-
 // src/views/part-placement.ts
 var exports_part_placement = {};
 __export(exports_part_placement, {
   createPartPlacementReader: () => createPartPlacementReader
 });
-import * as THREE57 from "three";
+import * as THREE58 from "three";
 function createPartPlacementReader(root) {
   const bounds = createPartBoundsReader(root);
-  const position = new THREE57.Vector3;
-  const quaternion = new THREE57.Quaternion;
-  const scale = new THREE57.Vector3;
+  const position = new THREE58.Vector3;
+  const quaternion = new THREE58.Quaternion;
+  const scale = new THREE58.Vector3;
   return (node) => {
     node.matrixWorld.decompose(position, quaternion, scale);
     const box = bounds(node);
@@ -51933,7 +52317,7 @@ async function accessorFingerprint(accessor) {
     accessor.getType(),
     accessor.getComponentType(),
     accessor.getNormalized(),
-    await digest7(new Uint8Array(array.buffer, array.byteOffset, array.byteLength))
+    await digest8(new Uint8Array(array.buffer, array.byteOffset, array.byteLength))
   ];
 }
 function lowerLevels(node) {
@@ -51946,7 +52330,7 @@ function bounds(box) {
     size: box.getSize(new Vector346).toArray()
   };
 }
-async function digest7(bytes) {
+async function digest8(bytes) {
   const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes)));
   return `sha256:${[...hash].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
 }
@@ -52064,7 +52448,7 @@ async function snapshot3(bytes) {
       });
     }
   }
-  return { parts, animation, scenePath, bounds: bounds(box), glbSha256: await digest7(bytes) };
+  return { parts, animation, scenePath, bounds: bounds(box), glbSha256: await digest8(bytes) };
 }
 function accessorEqual(a, b) {
   return a === b || Boolean(a && b && a.equals(b, ACCESSOR_IGNORED));
@@ -52513,7 +52897,7 @@ __export(exports_draw_diagnostics, {
 });
 import { Primitive as Primitive3 } from "@gltf-transform/core";
 import { cloneDocument as cloneDocument2 } from "@gltf-transform/functions";
-import * as THREE58 from "three";
+import * as THREE59 from "three";
 function withinLimits(doc) {
   const root = doc.getRoot();
   if (root.listNodes().length > MAX_NODES2 || root.listAccessors().length > 4096 || root.listMaterials().length > 2048 || root.listTextures().length > 256 || root.listScenes().length > 32 || doc.getGraph().listEdges().length > 32768)
@@ -52566,7 +52950,7 @@ function collect2(doc, keep) {
 function overlaps(a, b) {
   if (Math.abs(a.normal.dot(b.normal)) < 1 - 0.00000001 || !a.bounds.intersectsBox(b.bounds))
     return false;
-  const tolerance = Math.max(a.bounds.getSize(new THREE58.Vector3).length(), b.bounds.getSize(new THREE58.Vector3).length(), 0.000000000001) * 0.000001;
+  const tolerance = Math.max(a.bounds.getSize(new THREE59.Vector3).length(), b.bounds.getSize(new THREE59.Vector3).length(), 0.000000000001) * 0.000001;
   if (b.points.some((p) => Math.abs(a.normal.dot(p.clone().sub(a.points[0]))) > tolerance))
     return false;
   const normal = a.normal.toArray().map(Math.abs);
@@ -52608,7 +52992,7 @@ function observe(uses) {
       unexaminedPrimitiveUses++;
       continue;
     }
-    const matrix = new THREE58.Matrix4().fromArray(node.getWorldMatrix());
+    const matrix = new THREE59.Matrix4().fromArray(node.getWorldMatrix());
     if (primitive.getAttribute("TANGENT") && matrix.determinant() < 0)
       mirrored.set(part.id, part);
     const position = primitive.getAttribute("POSITION");
@@ -52622,14 +53006,14 @@ function observe(uses) {
     const amount = Math.min(count, 8, MAX_SAMPLES - samples.length);
     for (let i = 0;i < amount; i++) {
       const start = Math.floor(i * count / amount) * 3;
-      const points = [0, 1, 2].map((j) => new THREE58.Vector3().fromArray(position.getElement(indices ? indices.getScalar(start + j) : start + j, [])).applyMatrix4(matrix));
+      const points = [0, 1, 2].map((j) => new THREE59.Vector3().fromArray(position.getElement(indices ? indices.getScalar(start + j) : start + j, [])).applyMatrix4(matrix));
       const normal = points[1].clone().sub(points[0]).cross(points[2].clone().sub(points[0]));
       if (!Number.isFinite(normal.lengthSq()) || normal.lengthSq() === 0)
         continue;
       samples.push({
         points,
         normal: normal.normalize(),
-        bounds: new THREE58.Box3().setFromPoints(points),
+        bounds: new THREE59.Box3().setFromPoints(points),
         part
       });
     }
@@ -52920,7 +53304,7 @@ var init_export_root = __esm(() => {
 
 // src/tools/registry.ts
 import { z as z25 } from "zod";
-import * as THREE59 from "three";
+import * as THREE60 from "three";
 function proceduralTextureMaterialContract(rendered, context) {
   const required = [...new Set(context.requiredProceduralTextureUsages ?? [])];
   if (required.length === 0)
@@ -53201,8 +53585,8 @@ function collectSceneMetrics(root) {
   let meshes = 0;
   const materialSet = new Set;
   let lowestPart;
-  const box = new THREE59.Box3;
-  const point = new THREE59.Vector3;
+  const box = new THREE60.Box3;
+  const point = new THREE60.Vector3;
   root.updateWorldMatrix(true, true);
   root.traverseVisible((node) => {
     const n = node;
@@ -53218,7 +53602,7 @@ function collectSceneMetrics(root) {
       const mesh = node;
       const position = mesh.geometry.getAttribute("position");
       const index = mesh.geometry.index;
-      const mb = new THREE59.Box3;
+      const mb = new THREE60.Box3;
       if (position) {
         for (let i = 0;i < (index?.count ?? position.count); i++) {
           point.fromBufferAttribute(position, index ? index.getX(i) : i);
@@ -53233,7 +53617,7 @@ function collectSceneMetrics(root) {
   });
   let bbox;
   if (!box.isEmpty()) {
-    const size = new THREE59.Vector3;
+    const size = new THREE60.Vector3;
     box.getSize(size);
     bbox = {
       min: [box.min.x, box.min.y, box.min.z],
@@ -54622,18 +55006,18 @@ var init_registry2 = __esm(() => {
 });
 
 // render-service/src/instance.mjs
-import { createHash as createHash17 } from "node:crypto";
+import { createHash as createHash18 } from "node:crypto";
 import { readFileSync as readFileSync3, readdirSync, statSync } from "node:fs";
-import { join as join14, relative as relative7 } from "node:path";
+import { join as join15, relative as relative7 } from "node:path";
 function fingerprintSourceDir(dir) {
-  const hash = createHash17("sha256");
+  const hash = createHash18("sha256");
   hash.update("kiln.render-service-source.v1");
   const visit = (path) => {
     if (statSync(path).isDirectory()) {
       for (const name of readdirSync(path).sort()) {
         if (name === "node_modules")
           continue;
-        visit(join14(path, name));
+        visit(join15(path, name));
       }
       return;
     }
@@ -54647,9 +55031,9 @@ function fingerprintSourceDir(dir) {
 var init_instance = () => {};
 
 // render-service/src/build-identity.mjs
-import { createHash as createHash18 } from "node:crypto";
+import { createHash as createHash19 } from "node:crypto";
 import { readFileSync as readFileSync4 } from "node:fs";
-import { dirname as dirname8, join as join15 } from "node:path";
+import { dirname as dirname8, join as join16 } from "node:path";
 import { createRequire as createRequire2 } from "node:module";
 function compatibilityFingerprint({ sourceFingerprint, dependencies }) {
   if (typeof sourceFingerprint !== "string" || !/^sha256:[a-f0-9]{64}$/.test(sourceFingerprint))
@@ -54659,7 +55043,7 @@ function compatibilityFingerprint({ sourceFingerprint, dependencies }) {
       throw new Error(`Missing renderer dependency identity: ${name}`);
     return [name, dependencies[name]];
   }));
-  return `sha256:${createHash18("sha256").update(JSON.stringify({
+  return `sha256:${createHash19("sha256").update(JSON.stringify({
     version: "kiln.render-service-build.v1",
     sourceFingerprint,
     dependencies: pins
@@ -54677,7 +55061,7 @@ function resolvedRendererDependencies(anchorUrl = import.meta.url) {
     let found;
     for (;; ) {
       try {
-        const pkg = JSON.parse(readFileSync4(join15(dir, "package.json"), "utf8"));
+        const pkg = JSON.parse(readFileSync4(join16(dir, "package.json"), "utf8"));
         if (pkg.name === name) {
           found = pkg.version;
           break;
@@ -54709,7 +55093,7 @@ var init_build_identity = __esm(() => {
 });
 
 // src/render-service-client.ts
-import { createHash as createHash19 } from "node:crypto";
+import { createHash as createHash20 } from "node:crypto";
 import { existsSync as existsSync2 } from "node:fs";
 import { fileURLToPath as fileURLToPath6 } from "node:url";
 function packagedRendererSourceFingerprint() {
@@ -54728,12 +55112,12 @@ function validateRenderServiceHealth(value) {
   if (typeof raw.authRequired !== "boolean")
     return bad("renderer authentication policy is missing or invalid");
   const instance = raw.instance;
-  if (instance?.version !== "kiln.render-service-instance.v2" || !pid(instance.pid) || !(instance.ownerPid === null || pid(instance.ownerPid)) || !nonempty(instance.startedAt) || !Number.isFinite(Date.parse(instance.startedAt)) || !nonempty(instance.sourceDir) || !digest8(instance.sourceFingerprint) || !(instance.mode === "manual" && instance.idleTimeoutMs === null || instance.mode === "managed" && typeof instance.idleTimeoutMs === "number" && Number.isSafeInteger(instance.idleTimeoutMs) && instance.idleTimeoutMs > 0))
+  if (instance?.version !== "kiln.render-service-instance.v2" || !pid(instance.pid) || !(instance.ownerPid === null || pid(instance.ownerPid)) || !nonempty(instance.startedAt) || !Number.isFinite(Date.parse(instance.startedAt)) || !nonempty(instance.sourceDir) || !digest9(instance.sourceFingerprint) || !(instance.mode === "manual" && instance.idleTimeoutMs === null || instance.mode === "managed" && typeof instance.idleTimeoutMs === "number" && Number.isSafeInteger(instance.idleTimeoutMs) && instance.idleTimeoutMs > 0))
     return bad("renderer instance identity is missing or invalid");
   if (!Array.isArray(raw.capabilities) || !REQUIRED_RENDER_CAPABILITIES.every((name) => raw.capabilities.includes(name)))
     return bad("renderer required capabilities are missing");
   const build = raw.compatibility;
-  if (build?.version !== "kiln.render-service-build.v1" || !digest8(build.sourceFingerprint) || !digest8(build.fingerprint) || build.sourceFingerprint !== instance.sourceFingerprint)
+  if (build?.version !== "kiln.render-service-build.v1" || !digest9(build.sourceFingerprint) || !digest9(build.fingerprint) || build.sourceFingerprint !== instance.sourceFingerprint)
     return bad("renderer build identity is missing or inconsistent");
   for (const [name, expected] of Object.entries(RENDER_SERVICE_DEPENDENCIES))
     if (build.dependencies?.[name] !== expected)
@@ -54741,7 +55125,7 @@ function validateRenderServiceHealth(value) {
   if (build.fingerprint !== compatibilityFingerprint(build))
     return bad("renderer build fingerprint is invalid");
   const capture = raw.captureIdentity;
-  if (capture?.version !== "kiln.capture-producer.v1" || !digest8(capture.fingerprint) || !nonempty(capture.instanceId))
+  if (capture?.version !== "kiln.capture-producer.v1" || !digest9(capture.fingerprint) || !nonempty(capture.instanceId))
     return bad("renderer capture identity is missing or invalid");
   return { kind: "service", health: raw };
 }
@@ -54798,7 +55182,7 @@ function makeRemoteRenderPort(url, token, sourceFingerprint) {
   return async (req, execution) => {
     const health = await verifiedHealth(url, token, sourceFingerprint, execution?.signal);
     execution?.signal?.throwIfAborted();
-    const inputGlbSha256 = `sha256:${createHash19("sha256").update(req.glb).digest("hex")}`;
+    const inputGlbSha256 = `sha256:${createHash20("sha256").update(req.glb).digest("hex")}`;
     const body = {
       glb_base64: Buffer.from(req.glb).toString("base64"),
       input_glb_sha256: inputGlbSha256,
@@ -54845,7 +55229,7 @@ function makeRemoteRenderPort(url, token, sourceFingerprint) {
     };
   };
 }
-var digest8 = (value) => typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value), nonempty = (value) => typeof value === "string" && value.trim().length > 0, pid = (value) => typeof value === "number" && Number.isSafeInteger(value) && value > 0;
+var digest9 = (value) => typeof value === "string" && /^sha256:[a-f0-9]{64}$/.test(value), nonempty = (value) => typeof value === "string" && value.trim().length > 0, pid = (value) => typeof value === "number" && Number.isSafeInteger(value) && value > 0;
 var init_render_service_client = __esm(() => {
   init_build_identity();
   init_instance();
@@ -54854,7 +55238,7 @@ var init_render_service_client = __esm(() => {
 
 // src/render-service-windows.ts
 import { spawn as spawn2 } from "node:child_process";
-import { join as join16 } from "node:path";
+import { join as join17 } from "node:path";
 function powerShellLiteral(value) {
   return `'${value.replaceAll("'", "''")}'`;
 }
@@ -54869,7 +55253,7 @@ function launchWindowsRenderService(executable, args, directory, env) {
   ].join(`
 `);
   const systemRoot = env.SystemRoot ?? env.SYSTEMROOT;
-  const powerShell = systemRoot ? join16(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe") : "powershell.exe";
+  const powerShell = systemRoot ? join17(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe") : "powershell.exe";
   const child = spawn2(powerShell, [
     "-NoProfile",
     "-NonInteractive",
@@ -54920,7 +55304,7 @@ var init_render_service_windows = () => {};
 import { spawn as spawn3, spawnSync } from "node:child_process";
 import { existsSync as existsSync3 } from "node:fs";
 import { fileURLToPath as fileURLToPath7, pathToFileURL as pathToFileURL2 } from "node:url";
-import { join as join17 } from "node:path";
+import { join as join18 } from "node:path";
 function localRenderServicePort(env = process.env) {
   const raw = Number(env["KILN_RENDER_SERVICE_PORT"]);
   return Number.isInteger(raw) && raw > 0 && raw < 65536 ? raw : DEFAULT_LOCAL_RENDER_SERVICE_PORT;
@@ -54938,18 +55322,18 @@ function namesLocalRenderService(url, env = process.env) {
 function renderServiceNodeArguments(dir) {
   return [
     "--import",
-    pathToFileURL2(join17(dir, "src/register-hooks.mjs")).href,
-    join17(dir, "src/server.mjs")
+    pathToFileURL2(join18(dir, "src/register-hooks.mjs")).href,
+    join18(dir, "src/server.mjs")
   ];
 }
 function renderServiceDir() {
   return process.env["KILN_RENDER_SERVICE_DIR"] || fileURLToPath7(new URL("../render-service", import.meta.url));
 }
 function localRenderServiceState(dir = renderServiceDir()) {
-  if (!existsSync3(join17(dir, "src/server.mjs")) || !existsSync3(join17(dir, "package.json")))
+  if (!existsSync3(join18(dir, "src/server.mjs")) || !existsSync3(join18(dir, "package.json")))
     return "not-packaged";
   try {
-    const anchor = pathToFileURL2(join17(dir, "src/server.mjs")).href;
+    const anchor = pathToFileURL2(join18(dir, "src/server.mjs")).href;
     if (process.versions.bun) {
       const moduleUrl = new URL("../render-service/src/build-identity.mjs", import.meta.url).href;
       const result = spawnSync(nodeBinary(), [
@@ -54980,7 +55364,7 @@ function explainRenderServiceState(state, dir) {
   return "renderer dependencies are missing; reinstall the official Kiln package with optional dependencies enabled";
 }
 function renderServiceSourceFingerprint(dir) {
-  const source = join17(dir, "src");
+  const source = join18(dir, "src");
   return existsSync3(source) ? fingerprintSourceDir(source) : undefined;
 }
 async function inspectLocalRenderService(url, dir = renderServiceDir(), timeoutMs = 1500) {
@@ -55371,7 +55755,7 @@ var init_cli_render_mode = __esm(() => {
 
 // src/workspace-cli.ts
 import { open as open4 } from "node:fs/promises";
-import { resolve as resolve12 } from "node:path";
+import { resolve as resolve13 } from "node:path";
 function cliWorkspaceSelection(projectId, projectRevision, noProject = false) {
   if (noProject && (projectId !== undefined || projectRevision !== undefined))
     throw new Error("--no-project cannot be combined with --project or --project-revision.");
@@ -55381,7 +55765,7 @@ function cliWorkspaceSelection(projectId, projectRevision, noProject = false) {
   });
 }
 async function readMaterialDependencies(path) {
-  const file = await open4(resolve12(path), "r");
+  const file = await open4(resolve13(path), "r");
   try {
     const limit = 1024 * 1024;
     const info = await file.stat();
@@ -55594,7 +55978,7 @@ var init_workspace_http = __esm(() => {
 // src/asset-viewer.ts
 import { createServer } from "node:http";
 import { readFile as readFile11 } from "node:fs/promises";
-import { dirname as dirname9, join as join18 } from "node:path";
+import { dirname as dirname9, join as join19 } from "node:path";
 import { fileURLToPath as fileURLToPath8 } from "node:url";
 function quoted(value) {
   if (value === undefined)
@@ -55607,7 +55991,7 @@ function refuse(res, message) {
 `);
 }
 async function startAssetViewer(library, options = {}) {
-  const staticDirectory = options.staticDirectory ?? (!import.meta.url.endsWith(".mjs") ? join18(dirname9(fileURLToPath8(import.meta.url)), "..", "dist", "viewer") : join18(dirname9(fileURLToPath8(import.meta.url)), "viewer"));
+  const staticDirectory = options.staticDirectory ?? (!import.meta.url.endsWith(".mjs") ? join19(dirname9(fileURLToPath8(import.meta.url)), "..", "dist", "viewer") : join19(dirname9(fileURLToPath8(import.meta.url)), "viewer"));
   const server = createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");
@@ -55677,7 +56061,7 @@ async function startAssetViewer(library, options = {}) {
         return;
       }
       res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' blob: data:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
-      return send(await readFile11(join18(staticDirectory, file[0])), file[1]);
+      return send(await readFile11(join19(staticDirectory, file[0])), file[1]);
     } catch (error) {
       res.statusCode = error instanceof WorkspaceHttpError ? error.status : error && typeof error === "object" && ("code" in error) && error.code === "PROJECT_CONFLICT" ? 409 : 400;
       send(JSON.stringify({ error: error instanceof Error ? error.message : "Asset unavailable" }));
@@ -55747,9 +56131,9 @@ __export(exports_asset_cli, {
   assetMain: () => assetMain
 });
 import { readFile as readFile12, writeFile as writeFile8, stat as stat6, mkdir as mkdir9, rename as rename5 } from "node:fs/promises";
-import { basename as basename2, resolve as resolve13, dirname as dirname10, isAbsolute as isAbsolute2 } from "node:path";
+import { basename as basename2, resolve as resolve14, dirname as dirname10, isAbsolute as isAbsolute2 } from "node:path";
 import { randomUUID as randomUUID9 } from "node:crypto";
-import { createHash as createHash20 } from "node:crypto";
+import { createHash as createHash21 } from "node:crypto";
 async function assetMain(argv) {
   const command = argv[0];
   const positional = [];
@@ -55790,7 +56174,7 @@ async function assetMain(argv) {
       const path = argv[++i];
       if (command !== "view" || !path || path.startsWith("--") || observeWorkspaces.length >= 32)
         throw new Error("view accepts up to 32 --observe-workspace directories");
-      observeWorkspaces.push(resolve13(path));
+      observeWorkspaces.push(resolve14(path));
       continue;
     }
     if (arg === "--all") {
@@ -55853,11 +56237,11 @@ async function assetMain(argv) {
       if (!name || !directory)
         throw new Error("collections add requires name and directory");
       assetIdSchema.parse(name);
-      assertCollectionRoot(name, isAbsolute2(directory) ? directory : resolve13(directory));
+      assertCollectionRoot(name, isAbsolute2(directory) ? directory : resolve14(directory));
       const roots = Object.fromEntries(library.collections().map((c) => [c.id, library.directory(c.id)]));
-      if (roots[name] && roots[name] !== resolve13(directory))
+      if (roots[name] && roots[name] !== resolve14(directory))
         throw new Error("Collection name already points to another directory");
-      roots[name] = resolve13(directory);
+      roots[name] = resolve14(directory);
       const path = collectionConfigPath();
       await mkdir9(dirname10(path), { recursive: true });
       const temporary = `${path}.${randomUUID9()}.tmp`;
@@ -55937,10 +56321,10 @@ async function assetMain(argv) {
           try {
             context.liveReview?.artifact(code, rendered);
           } catch {}
-          await writeNewDestinationsAtomic([{ path: resolve13(flags.out), data: rendered.glb }]);
+          await writeNewDestinationsAtomic([{ path: resolve14(flags.out), data: rendered.glb }]);
           return {
             ok: true,
-            file: resolve13(flags.out),
+            file: resolve14(flags.out),
             artifactGlbSha256: rendered.artifactGlbSha256,
             savedArtifactGlbSha256: record.manifest.files["asset.glb"].sha256,
             matchesSavedArtifact: rendered.artifactGlbSha256 === record.manifest.files["asset.glb"].sha256,
@@ -56020,7 +56404,7 @@ async function assetMain(argv) {
       if (profile === "runtime") {
         if (format !== (gltfLayout ? "gltf" : "glb"))
           throw new Error(gltfLayout ? "--textures external writes gltf format" : "Runtime profile requires GLB format; use editable for source or bundle");
-        const destination = resolve13(flags.out);
+        const destination = resolve14(flags.out);
         const extension = gltfLayout ? ".gltf" : ".glb";
         if (!destination.toLowerCase().endsWith(extension))
           throw new Error(`Runtime output must end in ${extension}`);
@@ -56039,18 +56423,18 @@ async function assetMain(argv) {
         });
         if (output.profile !== "runtime")
           throw new Error("Expected runtime export");
-        const metadataPath = resolve13(dirname10(destination), output.metadata.name);
+        const metadataPath = resolve14(dirname10(destination), output.metadata.name);
         drawGlb = output.glb;
         if (flags.ktx2)
           ktx2Receipt = JSON.parse(new TextDecoder().decode(output.metadata.bytes)).delivery?.ktx2;
         if (output.layout === "gltf") {
           const directory = dirname10(destination);
           const files = output.textures.map(({ uri, bytes }) => ({
-            path: resolve13(directory, ...uri.split("/")),
+            path: resolve14(directory, ...uri.split("/")),
             data: bytes
           }));
           const buffers = output.buffers.map(({ uri, bytes }) => ({
-            path: resolve13(directory, uri),
+            path: resolve14(directory, uri),
             data: bytes
           }));
           const published = await writeExternalTextureExport(files, [
@@ -56075,7 +56459,7 @@ async function assetMain(argv) {
         const bytes = format === "bundle" ? await library.exportBundle([record]) : record.files[format === "glb" ? "asset.glb" : "source.kiln.js"];
         if (!bytes)
           throw new Error("Source unavailable");
-        const destination = resolve13(flags.out);
+        const destination = resolve14(flags.out);
         await writeNewDestinationsAtomic([{ path: destination, data: bytes }]);
         written.push({ kind: format, path: destination, data: bytes });
       }
@@ -56102,7 +56486,7 @@ async function assetMain(argv) {
             kind,
             path,
             bytes: data.byteLength,
-            sha256: `sha256:${createHash20("sha256").update(data).digest("hex")}`,
+            sha256: `sha256:${createHash21("sha256").update(data).digest("hex")}`,
             ...reused === undefined ? {} : { reused }
           }))
         }, null, 2));
@@ -56129,7 +56513,7 @@ async function assetMain(argv) {
     if (file) {
       if ((await stat6(file)).isDirectory()) {
         await Promise.resolve().then(() => init_assets_node());
-        target = new FileAssetLibrary({ project: resolve13(file) });
+        target = new FileAssetLibrary({ project: resolve14(file) });
       } else
         standalone = { name: basename2(file), bytes: await fileBytes(file) };
     }
@@ -56148,7 +56532,7 @@ async function assetMain(argv) {
       const canonical = await realpath(path);
       if (canonical === currentRoot)
         continue;
-      const id = `w_${createHash20("sha256").update(canonical).digest("hex").slice(0, 16)}`;
+      const id = `w_${createHash21("sha256").update(canonical).digest("hex").slice(0, 16)}`;
       reviewSources[id] = { label: basename2(canonical), review: new FileLiveReview(canonical) };
     }
     const viewer = await startAssetViewer(target, {
@@ -56253,9 +56637,9 @@ __export(exports_project_cli, {
   projectMain: () => projectMain
 });
 import { open as open5 } from "node:fs/promises";
-import { resolve as resolve14 } from "node:path";
+import { resolve as resolve15 } from "node:path";
 async function inputFile(path, limit) {
-  const file = await open5(resolve14(path), "r");
+  const file = await open5(resolve15(path), "r");
   try {
     const stat = await file.stat();
     if (!stat.isFile())
@@ -56279,6 +56663,62 @@ async function inputFile(path, limit) {
 }
 async function jsonFile(path, limit) {
   return JSON.parse((await inputFile(path, limit)).toString("utf8").replace(/^\uFEFF/, ""));
+}
+async function exportMaterialMapsCommand(materials, positional, flags) {
+  const integer = (name) => {
+    const value = flags[name];
+    if (value === undefined)
+      return;
+    if (!/^[0-9]+$/.test(value))
+      throw new Error(`--${name} must be a whole number`);
+    return Number(value);
+  };
+  const size = integer("size");
+  if (size === undefined)
+    throw new Error("material export --maps requires --size <px>");
+  const repeat = flags.repeat;
+  if (repeat !== undefined && !/^(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)$/.test(repeat))
+    throw new Error("--repeat must be a decimal number of metres");
+  const tiles = integer("tiles");
+  validateMaterialMapExportOptions({
+    size,
+    ...repeat !== undefined ? { repeatMeters: Number(repeat) } : {},
+    ...tiles !== undefined ? { tiles } : {}
+  });
+  const record = await materials.read(positional[0], positional[1]);
+  const context = await buildRenderPort(resolveRenderMode(flags.render), undefined);
+  const result = await exportMaterialMaps(record, {
+    outDir: flags.maps,
+    size,
+    ...repeat !== undefined ? { repeatMeters: Number(repeat) } : {},
+    ...tiles !== undefined ? { tiles } : {},
+    ...context.viewRenderPort ? { viewRenderPort: context.viewRenderPort } : {},
+    ...context.viewRenderTimeoutMs ? { viewRenderTimeoutMs: context.viewRenderTimeoutMs } : {},
+    ...context.viewRenderRequired ? { viewRenderRequired: true } : {}
+  });
+  const { preview } = result.sidecar;
+  return {
+    materialId: result.sidecar.material.materialId,
+    revisionId: result.sidecar.material.revisionId,
+    directory: result.directory,
+    sidecar: result.sidecarPath,
+    files: result.files,
+    size: result.sidecar.size,
+    repeatMeters: result.sidecar.repeatMeters,
+    maps: result.sidecar.maps.map(({ slot, file, colorSpace, method }) => ({
+      slot,
+      file,
+      colorSpace,
+      method
+    })),
+    preview: {
+      file: result.previewPath,
+      rendererId: preview.rendererId,
+      materialFaithful: preview.viewFidelity.materialFaithful,
+      delivered: preview.viewFidelity.delivered,
+      ...preview.viewFidelity.degradeReason ? { degradeReason: preview.viewFidelity.degradeReason } : {}
+    }
+  };
 }
 async function projectMain(argv) {
   const [family, action] = argv;
@@ -56304,7 +56744,7 @@ async function projectMain(argv) {
     "material:get": [],
     "material:procedural": ["file"],
     "material:import": ["file"],
-    "material:export": ["out"]
+    "material:export": ["out", "maps", "size", "repeat", "tiles", "render"]
   };
   const flags = {};
   const positional = [];
@@ -56337,7 +56777,7 @@ async function projectMain(argv) {
       if (profile !== "editable" && profile !== "runtime")
         throw new Error("Project profile must be editable or runtime");
       const bytes = await exportWorkspaceProjectBundle(workspace, localAssetLibrary(), positional[0], { revisionId: flags.revision, profile });
-      const path = resolve14(flags.out);
+      const path = resolve15(flags.out);
       await writeNewDestinationsAtomic([{ path, data: bytes }]);
       console.log(JSON.stringify({ ok: true, profile, path, bytes: bytes.length }));
       return 0;
@@ -56404,15 +56844,22 @@ async function projectMain(argv) {
         manifest,
         portableSpec: materialLibraryPortableSpec(manifest)
       };
-    else {
+    else if (flags.maps !== undefined) {
+      if (flags.out)
+        throw new Error("Use --out or --maps, not both");
+      output = await exportMaterialMapsCommand(materials, positional, flags);
+    } else {
+      for (const name of ["size", "repeat", "tiles", "render"])
+        if (flags[name] !== undefined)
+          throw new Error(`--${name} applies only to material export --maps`);
       if (!flags.out)
-        throw new Error("material export requires --out");
+        throw new Error("material export requires --out or --maps");
       const records = await resolveMaterialRecordClosure([manifest], {
         readManifest: (id, revision) => materials.readManifest(id, revision),
         read: (id, revision) => materials.readRecordFiles(id, revision)
       });
       const payload = await createMaterialLibraryPayload(records);
-      const path = resolve14(flags.out);
+      const path = resolve15(flags.out);
       await writeNewDestinationsAtomic([{ path, data: JSON.stringify(payload, null, 2) }]);
       output = {
         file: path,
@@ -56453,6 +56900,8 @@ MATERIALS
   kiln material procedural --file <procedural-material-draft.json>
   kiln material import --file <portable-material-payload.json>
   kiln material export <id> <sha256:revision> --out <portable-material-payload.json>
+  kiln material export <id> <sha256:revision> --maps <dir> --size <px> [--repeat <metres>]
+       [--tiles <n>] [--render auto|cpu|gpu]
 
 Project changes create immutable revisions. Updates require the current expected
 revision; supplied top-level fields replace their previous values.
@@ -56469,6 +56918,14 @@ Projects are optional. Authoring stays standalone unless --project or KILN_PROJE
 selects a project; --no-project overrides that configured default. Use --materials
 with an array of exact resourceId/revisionId/sha256 pins for standalone materials.
 All commands return JSON; export refuses to overwrite an existing destination.
+
+Material export --maps writes <id>.<slot>.png for each map at --size pixels square,
+<id>.preview.png (the material on a lit plane repeated --tiles × --tiles, default 3)
+and the <id>.maps.json sidecar: each map's slot, colour space, size, sha256 and how it
+was produced. A V2 layer recipe is recompiled at a power-of-two size up to 1024; other
+sizes resample with a wrapped Catmull-Rom filter. --repeat is the real-world edge of one
+tile in metres; it defaults to a square recorded physical size. The sidecar records the
+preview's renderer and viewFidelity: a CPU preview shows geometry, not material.
 `;
 var init_project_cli = __esm(() => {
   init_workspace_node();
@@ -56478,6 +56935,8 @@ var init_project_cli = __esm(() => {
   init_material_library();
   init_material_library_node();
   init_material_authoring_node();
+  init_material_map_export_node();
+  init_cli_render_mode();
   init_cli_output();
   init_assets_node();
   init_project_bundle_node();
@@ -56849,9 +57308,9 @@ __export(exports_animation_cli, {
   animationMain: () => animationMain
 });
 import { open as open6, readFile as readFile13 } from "node:fs/promises";
-import { extname, resolve as resolve15 } from "node:path";
+import { extname, resolve as resolve16 } from "node:path";
 async function readReviewJson(path, option) {
-  const file = await open6(resolve15(path), "r");
+  const file = await open6(resolve16(path), "r");
   try {
     const limit = 1024 * 1024;
     const info = await file.stat();
@@ -56972,7 +57431,7 @@ async function animationMain(argv) {
       ...await buildRenderPort(args.render, args.renderPort),
       requirements
     });
-    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile13(resolve15(args.source), "utf8") };
+    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile13(resolve16(args.source), "utf8") };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === "kiln_screenshot_animation");
     let output;
     try {
@@ -56998,7 +57457,7 @@ async function animationMain(argv) {
     const suffix = extname(args.views);
     const stem = suffix ? args.views.slice(0, -suffix.length) : args.views;
     const images = pngs.map((_, i) => ({
-      path: resolve15(separate ? `${stem}.frame-${String(i + 1).padStart(2, "0")}.png` : args.views),
+      path: resolve16(separate ? `${stem}.frame-${String(i + 1).padStart(2, "0")}.png` : args.views),
       ...separate ? { phase: output.frameTimes?.[i] } : {}
     }));
     const inputPaths = [
@@ -57007,7 +57466,7 @@ async function animationMain(argv) {
       args.measureParts,
       args.requirements,
       args.materials
-    ].filter((p) => p !== undefined).map((p) => resolve15(p));
+    ].filter((p) => p !== undefined).map((p) => resolve16(p));
     const samePath = (a, b) => process.platform === "win32" ? a.toLowerCase() === b.toLowerCase() : a === b;
     if (images.some((image) => inputPaths.some((path) => samePath(path, image.path))))
       throw new Error("Animation image destinations must differ from the input files.");
@@ -57080,9 +57539,9 @@ __export(exports_edit_cli, {
   editMain: () => editMain
 });
 import { open as open7 } from "node:fs/promises";
-import { resolve as resolve16 } from "node:path";
+import { resolve as resolve17 } from "node:path";
 async function readEdits(path) {
-  const file = await open7(resolve16(path), "r");
+  const file = await open7(resolve17(path), "r");
   try {
     const limit = 1024 * 1024;
     const info = await file.stat();
@@ -57195,9 +57654,9 @@ __export(exports_inspect_cli, {
   inspectMain: () => inspectMain
 });
 import { open as open8, readFile as readFile14 } from "node:fs/promises";
-import { resolve as resolve17 } from "node:path";
+import { resolve as resolve18 } from "node:path";
 async function readControls(path) {
-  const file = await open8(resolve17(path), "r");
+  const file = await open8(resolve18(path), "r");
   try {
     const limit = 1024 * 1024;
     const info = await file.stat();
@@ -57282,7 +57741,7 @@ async function inspectMain(argv) {
     if (controls.image === false && args.views)
       throw new Error("--views cannot be combined with image:false.");
     if (args.views) {
-      const normalize = (path) => process.platform === "win32" ? resolve17(path).toLowerCase() : resolve17(path);
+      const normalize = (path) => process.platform === "win32" ? resolve18(path).toLowerCase() : resolve18(path);
       if ([args.source, args.request, args.requirements, args.materials].some((path) => path && normalize(path) === normalize(args.views)))
         throw new Error("Inspection image destination must differ from the input files.");
     }
@@ -57291,7 +57750,7 @@ async function inspectMain(argv) {
       ...controls.image === false ? {} : await buildRenderPort(args.render, args.renderPort),
       requirements
     });
-    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile14(resolve17(args.source), "utf8") };
+    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile14(resolve18(args.source), "utf8") };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === "kiln_inspect");
     let output;
     try {
@@ -57314,7 +57773,7 @@ async function inspectMain(argv) {
     const media = tool.media?.(output);
     if (!media && controls.image !== false)
       throw new Error("Inspection returned no image.");
-    const images = args.views ? [{ path: resolve17(args.views) }] : [];
+    const images = args.views ? [{ path: resolve18(args.views) }] : [];
     if (args.views)
       await writeDestinationAtomic(args.views, media.png);
     if (args.json)
@@ -57775,8 +58234,8 @@ __export(exports_migration_rebuild, {
   migrationRebuildMain: () => migrationRebuildMain
 });
 import { open as open9 } from "node:fs/promises";
-import { createHash as createHash21 } from "node:crypto";
-import { resolve as resolve18 } from "node:path";
+import { createHash as createHash22 } from "node:crypto";
+import { resolve as resolve19 } from "node:path";
 function parse6(argv) {
   if (argv.length === 1 && ["--help", "-h"].includes(argv[0]))
     return { help: true };
@@ -57865,7 +58324,7 @@ async function rebuildLegacyAsset(context, input) {
     authority,
     original: structuredClone(record.manifest),
     ...conversion.recoveredIntent ? { recoveredIntent: conversion.recoveredIntent } : {},
-    originalManifestCanonicalSha256: `sha256:${createHash21("sha256").update(canonical6(record.manifest)).digest("hex")}`,
+    originalManifestCanonicalSha256: `sha256:${createHash22("sha256").update(canonical6(record.manifest)).digest("hex")}`,
     proposedRequirements: conversion.proposal.requirements,
     policyChanges: changes,
     ruleDispositions: resolved.filter((issue) => issue.code === "RULE_MIGRATION_UNQUALIFIED").map((issue) => ({
@@ -57875,7 +58334,7 @@ async function rebuildLegacyAsset(context, input) {
     })),
     retainedBuildOptions: conversion.proposal.retainedBuildOptions,
     sourceChanged: code !== originalCode,
-    rebuiltSourceSha256: `sha256:${createHash21("sha256").update(code, "utf8").digest("hex")}`
+    rebuiltSourceSha256: `sha256:${createHash22("sha256").update(code, "utf8").digest("hex")}`
   };
   const draft = await buildProgramAssetDraft(code, currentContext, record.manifest.preview?.backdrop);
   const asset = await library.save(input.collection, {
@@ -57901,7 +58360,7 @@ async function rebuildLegacyAsset(context, input) {
   };
 }
 async function readMigrationText(path, option) {
-  const file = await open9(resolve18(path), "r");
+  const file = await open9(resolve19(path), "r");
   try {
     const info = await file.stat();
     if (!info.isFile() || info.size > 1024 * 1024)
@@ -57987,8 +58446,8 @@ __export(exports_migration_cli, {
   migrationMain: () => migrationMain
 });
 import { open as open10 } from "node:fs/promises";
-import { resolve as resolve19 } from "node:path";
-import { createHash as createHash22 } from "node:crypto";
+import { resolve as resolve20 } from "node:path";
+import { createHash as createHash23 } from "node:crypto";
 function parse7(argv) {
   if (argv.length === 1 && ["--help", "-h"].includes(argv[0]))
     return { help: true };
@@ -58023,7 +58482,7 @@ async function migrationMain(argv) {
   }
   try {
     const limit = 1048576;
-    const path = resolve19(args.input);
+    const path = resolve20(args.input);
     const file = await open10(path, "r");
     let bytes;
     try {
@@ -58057,14 +58516,14 @@ async function migrationMain(argv) {
       input: {
         path,
         bytes: bytes.length,
-        sha256: `sha256:${createHash22("sha256").update(bytes).digest("hex")}`
+        sha256: `sha256:${createHash23("sha256").update(bytes).digest("hex")}`
       },
       conversion
     };
     const json = `${JSON.stringify(receipt, null, 2)}
 `;
     if (args.out)
-      await writeNewDestinationsAtomic([{ path: resolve19(args.out), data: json }]);
+      await writeNewDestinationsAtomic([{ path: resolve20(args.out), data: json }]);
     console.log(json.trimEnd());
     console.error("Migration not activated. Review the proposed changes and every unresolved obligation in docs/migration.md.");
     return conversion.status === "invalid" ? 1 : 3;
