@@ -42,8 +42,9 @@ Kiln and Holodeck software keep their own licences.
   byte-identical to the canonical `asset.glb` of the revision its world names.
 - `sources/project/<asset>/<revision>/` keeps each source program and saved manifest.
 - `HOLODECK_APPROVAL` in `site/scripts/holodeck-spec.mjs` records owner approval by slug and
-  exact revision: on 2026-10-23 the 47 Tidemark, Courtyard and Cove cards. A pack is available
-  only when every asset it lists is approved, so Crescent Cove's pack waits on its 41 new cards.
+  exact revision: on 2026-10-23 the 47 Tidemark, Courtyard and Cove cards, then Crescent Cove's
+  41 new cards. A pack is available only when every asset it lists is approved, so a new card
+  or revision makes its pack wait for review again.
 - `site/src/data/holodeck.json` is the gallery catalog. Downloads and posters are pinned in
   `site/src/data/mirror-manifest.json`; posters are rendered under the `review-neutral-v1` rig
   and recorded in `site/src/data/rig-posters.json`.

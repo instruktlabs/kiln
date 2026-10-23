@@ -183,8 +183,8 @@
       "scene": "crescent-cove",
       "name": "Crescent Cove",
       "description": "A crescent of palm-lined beach around a turquoise lagoon, with seagrass meadows, coral heads, a jetty and a rocky headland, built in Holodeck around the Cove.",
-      "available": false,
-      "status": "Owner review pending",
+      "available": true,
+      "status": "Available",
       "assetCount": 49,
       "source": {
         "kind": "holodeck-example",
@@ -4207,8 +4207,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4286,8 +4286,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4365,8 +4365,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4444,8 +4444,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4522,8 +4522,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4600,8 +4600,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4678,8 +4678,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4756,8 +4756,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4834,8 +4834,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4912,8 +4912,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4990,8 +4990,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5068,8 +5068,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5146,8 +5146,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5224,8 +5224,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5303,8 +5303,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5381,8 +5381,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5459,8 +5459,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5537,8 +5537,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5615,8 +5615,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5693,8 +5693,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5771,8 +5771,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5849,8 +5849,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -5928,8 +5928,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6007,8 +6007,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6086,8 +6086,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6165,8 +6165,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6244,8 +6244,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6323,8 +6323,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6402,8 +6402,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6481,8 +6481,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6559,8 +6559,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6637,8 +6637,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6716,8 +6716,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6795,8 +6795,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6874,8 +6874,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -6953,8 +6953,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -7032,8 +7032,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -7110,8 +7110,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -7188,8 +7188,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -7266,8 +7266,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -7345,8 +7345,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     }

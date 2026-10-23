@@ -43,8 +43,8 @@ export const HOLODECK_PLANNED = [];
 
 /**
  * Owner approval, by gallery slug and the exact revision approved. On 2026-10-23 the owner approved the 47 staged
- * Courtyard, Cove and Tidemark cards as staged, and their packs for delivery. The approval covers these revisions
- * only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
+ * Courtyard, Cove and Tidemark cards as staged, and their packs for delivery, then the 41 new Crescent Cove cards as
+ * staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
  * when every asset it lists is approved.
  */
 export const HOLODECK_APPROVAL = {
@@ -97,6 +97,47 @@ export const HOLODECK_APPROVAL = {
     'wall-segment': 'r_32e8228756ac4367bb8783e522e10e27',
     'wall-pier': 'r_100777af4e4247c18c3eb70df5e97a82',
     'gate-pier': 'r_2f7983fabd9249ba819388b106eda57f',
+    'crescent-palm-tall': 'r_833811c9eae048acac736131aa951660',
+    'crescent-palm-lean': 'r_0ba7b32ad3ee4bd494e55146b8312ed7',
+    'crescent-palm-arch': 'r_5593211abef14ebab49f45b57a8b8758',
+    'crescent-palm-young': 'r_8bdbc20277274140a7ba5c2dfe005f61',
+    'crescent-debris-coconuts': 'r_6de480afa2fc43d3bc431cb2a1d3de1a',
+    'crescent-debris-driftwood-log': 'r_4f84e09ff60342108adcb640ff365c08',
+    'crescent-debris-driftwood-pile': 'r_d95c8307fe3b4f648d35c627b601a112',
+    'crescent-debris-fronds': 'r_dabf789f83a84d039243505e7afe4341',
+    'crescent-debris-shells': 'r_362b7d0ce6904b4cbe8a63acc3296e6b',
+    'crescent-plant-alocasia': 'r_7bffd8155ce74118b9787484e19e833b',
+    'crescent-plant-grass-patch': 'r_ef23b16ec9514cf7bb859c5ef2b64f65',
+    'crescent-plant-grass-tuft': 'r_a07d0bbd28614cceb799753079243899',
+    'crescent-plant-hibiscus': 'r_a2ca902ed3da474db9ced0bacbdfc8ab',
+    'crescent-plant-naupaka': 'r_1d96a48e3a614801849560a0b2cbe5bf',
+    'crescent-plant-nest-fern': 'r_f01c7040381a418b9f65a71882e0867e',
+    'crescent-plant-purslane': 'r_8ba9fde90b3f476195106a2b5d98c016',
+    'crescent-plant-scrub': 'r_c7f5ab339ad54cecacab349c3e3ced17',
+    'crescent-plant-sword-fern': 'r_0e03667d27c84677ad2a52b4ca612cbb',
+    'crescent-plant-vine-fringe': 'r_0580ebaeab84471096a92f75f5328acf',
+    'crescent-plant-vine-mat': 'r_aff5d9d5047942e6be26dffe4151b898',
+    'crescent-rock-beach-a': 'r_bdac00d03fee4445aca94ae2e8ca3eff',
+    'crescent-rock-beach-b': 'r_35db268edac1478cadd145d5a557c06c',
+    'crescent-rock-boulder-a': 'r_13a7eaad34e045aaae69b28fc12c715f',
+    'crescent-rock-boulder-b': 'r_d312230034114640b10018ac9b305178',
+    'crescent-rock-boulder-c': 'r_1838d6178a334cb08c7cebf6e4ec56f3',
+    'crescent-rock-cliff-a': 'r_8631328505ff44fc99d7024890f29618',
+    'crescent-rock-cliff-b': 'r_a2cbc91aca4342bcb3409047704717e1',
+    'crescent-rock-cliff-c': 'r_7d4e3f6643fe4a2c9aa5ce024b20d670',
+    'crescent-rock-outcrop-a': 'r_1e467cce279f49c19b65ebe800bb7f91',
+    'crescent-rock-outcrop-b': 'r_adac0cd34d614259aca962e05b6c551f',
+    'crescent-rock-reef-a': 'r_506b9771f15d49cd9c3a8ef2028e30dc',
+    'crescent-rock-reef-b': 'r_f90c4f3d2acc4c46a06c1929f1211ba1',
+    'crescent-coral-rubble-patch': 'r_0004b73b61ce4dbb8650b2170ca6739e',
+    'crescent-coral-brain-heads': 'r_5ba43855c2d44c2288950b79928cc8d4',
+    'crescent-coral-staghorn': 'r_5fc00554f8aa445e94baa7f2dd736042',
+    'crescent-coral-table': 'r_92d597470e844905abeeec904b174049',
+    'crescent-shelter': 'r_23af584103ec4c8788c0dcfb9e263d99',
+    'crescent-jetty-deck': 'r_dd77ec41c8a148749d079173dc110e78',
+    'crescent-jetty-platform': 'r_90dc37891b9f41dd843e20762d57b523',
+    'crescent-jetty-stair': 'r_2f615af8a589400e9cb9b2ca602c4619',
+    'crescent-seagrass': 'r_cd79d419d444441a8299b6739e6435d7',
   },
 };
 /** Whether the owner approved this exact revision of a card. */

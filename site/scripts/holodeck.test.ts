@@ -63,13 +63,13 @@ test('assets that use saved materials carry their frozen closure into the editab
 test('owner approval covers exact revisions, and a pack is available only when every asset it lists is approved', () => {
   const approved = catalog.assets.filter((asset) => asset.review.ownerAccepted).map((asset) => asset.slug).sort();
   expect(approved).toEqual(Object.keys(HOLODECK_APPROVAL.revisions).sort());
-  expect(approved).toHaveLength(47);
+  expect(approved).toHaveLength(88);
   for (const asset of catalog.assets) {
     expect(asset.review).toEqual(holodeckApproved(asset.slug, asset.revisionId) ? { ownerAccepted: true, status: 'accepted' } : { ownerAccepted: false, status: 'awaiting-owner-review' });
-    if (asset.slug.startsWith('crescent-')) expect(asset.review.ownerAccepted).toBe(false);
   }
   expect(holodeckApproved('cove-hearth', 'r_' + '0'.repeat(32))).toBe(false);
-  expect(catalog.packs.map((pack) => [pack.id, pack.available])).toEqual([['holodeck-tidemark', true], ['holodeck-courtyard', true], ['holodeck-cove', true], ['holodeck-crescent-cove', false]]);
+  for (const pack of catalog.packs) expect(pack.available).toBe(pack.assets.every((slug) => catalog.assets.find((asset) => asset.slug === slug)?.review.ownerAccepted));
+  expect(catalog.packs.every((pack) => pack.available)).toBe(true);
 });
 
 test('catalog assets name the selected revisions under CC0', async () => {
