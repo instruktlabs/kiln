@@ -69,7 +69,7 @@ export function imageOf(bytes) {
   if (!width || !height || width * height > 16 * 1024 * 1024) throw new Error('Saved preview exceeds image budget');
   return { width, height };
 }
-function materialClosure(payload, roots) {
+export function materialClosure(payload, roots) {
   if (![1, 2].includes(payload.schemaVersion) || !Array.isArray(payload.records) || payload.records.length > 1024) throw new Error('Invalid material payload');
   const records = new Map();
   for (const record of payload.records) {

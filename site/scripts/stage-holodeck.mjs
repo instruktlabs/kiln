@@ -8,7 +8,7 @@ import { readJson, writeJson } from './media-pins.mjs';
 import { ASSET_BASE, assetPath, hashBytes, verifyArchive, verifyBytes } from './mirror-core.mjs';
 import { applyRigPosters } from './rig-posters-core.mjs';
 import { HOLODECK_ASSETS, HOLODECK_ID, HOLODECK_PACKS, HOLODECK_PLANNED } from './holodeck-spec.mjs';
-import { metricsOf, verifyRuntimeProfile } from './stage-cabin-woods.mjs';
+import { materialClosure, metricsOf, verifyRuntimeProfile } from './stage-cabin-woods.mjs';
 
 /**
  * Stage the Holodeck scene packs from the frozen selection (`packs/holodeck/selection.json`) and the read-only Kiln
@@ -16,7 +16,7 @@ import { metricsOf, verifyRuntimeProfile } from './stage-cabin-woods.mjs';
  * Runtime GLBs come from Kiln's own runtime export profile and must keep the canonical binary exactly.
  *
  *   node scripts/stage-holodeck.mjs --kiln KILN_PACKAGE_DIR --mirror .localdata/holodeck-delivery \
- *     --store island-trial=DIR --store holodeck-assets=DIR --store courtyard-plaza=DIR
+ *     --store island-trial=DIR --store holodeck-assets=DIR --store courtyard-plaza=DIR --store tropical-island=DIR
  *   node scripts/stage-holodeck.mjs --upload-list --mirror .localdata/holodeck-delivery
  *
  * Generated downloads go to the ignored mirror under `packs/holodeck/<release>/` and are pinned in
@@ -103,7 +103,14 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
     const manifestBytes = verifyBytes(await readFile(join(revisionDir, 'manifest.json')), chosen.manifest, `${slug} manifest`);
     const manifest = json(manifestBytes);
     if (manifest.assetId !== chosen.assetId || manifest.revisionId !== chosen.revisionId || !manifest.editable) throw new Error(`${slug}: saved revision identity differs from the selection`);
-    if ((manifest.build?.dependencies ?? []).some(isSavedMaterialDependency)) throw new Error(`${slug}: saved material closures are not staged for Holodeck packs yet`);
+    // A revision that uses saved materials ships their closure in its editable bundle, verified against the selection.
+    const dependencies = (manifest.build?.dependencies ?? []).filter(isSavedMaterialDependency);
+    if (Boolean(dependencies.length) !== Boolean(chosen.materials)) throw new Error(`${slug}: the selection and the saved revision disagree about a material closure`);
+    let materialResources;
+    if (dependencies.length) {
+      materialResources = json(verifyBytes(await readFile(join(revisionDir, 'materials.kiln.json')), chosen.materials, `${slug} material closure`));
+      materialClosure(materialResources, dependencies.map((dependency) => dependency.manifest));
+    }
     const files = {};
     for (const [name, seal] of Object.entries(manifest.files)) files[name] = verifyBytes(await readFile(join(revisionDir, name)), { bytes: seal.bytes, sha256: strip(seal.sha256) }, `${slug}/${name}`);
     const canonical = verifyBytes(files['asset.glb'], chosen.canonical, `${slug} canonical`);
@@ -122,7 +129,7 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
       ...(manifest.parentRevision ? { omission: HOLODECK_OMISSION } : {}),
       historyScope: 'selected-only', sourceSha256: hashBytes(source),
     };
-    const editable = revisionBundle({ manifest, files });
+    const editable = revisionBundle({ manifest, files, ...(materialResources ? { materialResources } : {}) });
     verifyArchive(editable, 'editable');
     const runtimeFiles = { [`models/${slug}.glb`]: runtime, [`models/${slug}.kiln-metadata.json`]: metadata, 'LICENSE.txt': licence, 'LICENSES/CC0-1.0.txt': cc0 };
     const identity = `${chosen.collection}/${manifest.assetId}/${manifest.revisionId}`;
@@ -166,6 +173,7 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
       id: spec.id, scene: spec.scene, name: spec.name, description: spec.description,
       available: false, status: 'Owner review pending', assetCount: members.length,
       source: chosen.source, assets: chosen.assets,
+      ...(chosen.sceneStillPlacesEarlier ? { sceneStillPlacesEarlier: chosen.sceneStillPlacesEarlier } : {}),
       downloads: [
         { profile: 'runtime', label: 'Runtime assets', ...add(`${spec.id}-runtime.zip`, buildDeliveryArchive({ profile: 'runtime', group: spec.id, assets: inventory, files: runtimeMembers })) },
         { profile: 'editable', label: 'Full Kiln assets (remixable)', ...add(`${spec.id}-editable.zip`, buildDeliveryArchive({ profile: 'editable', group: spec.id, assets: inventory, files: editableMembers })) },

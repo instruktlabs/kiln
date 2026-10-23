@@ -1,0 +1,386 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_a81882dd8c9c4b6aa936614f592987a7",
+  "revisionId": "r_833811c9eae048acac736131aa951660",
+  "parentRevision": "r_62da0d2b2f25445a8bad9409540639b5",
+  "name": "Crescent Cove coconut palm - tall",
+  "tags": [
+    "palm",
+    "coconut",
+    "foliage-wind",
+    "crescent-cove",
+    "tropical"
+  ],
+  "createdAt": "2026-10-23T12:19:50.578Z",
+  "description": "Three mesh parts instead of six: the four frond groups are merged into one primitive named \"fronds\" with one material. The group tints are baked into a 256x4 frond texture as four 64 px colour bands (in linear light); TEXCOORD_0.x selects the band per group, TEXCOORD_0.y stays the wind weight (0 at the crown, 1 at the tip). Same geometry, random stream, trunk and crown_husk; 9,238 triangles. Old vs new lineup renders differ by at most 6/255.",
+  "attribution": {
+    "model": "claude-opus-5-5",
+    "harness": "Claude Code"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:2a92fe3faa55784724b04c679db2ff10de6b9bc1f9d4213f1a902436280ee8ba",
+      "bytes": 407600
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:c16a44ab03100462c0478829fc29787bab881de4af87e6d87892d320e2e33a03",
+      "bytes": 24852
+    },
+    "preview.png": {
+      "sha256": "sha256:c32a8b230fc8c4c3474f7a93232ffc02babec58048f0289c9b0d26e9d8a915da",
+      "bytes": 264654
+    }
+  },
+  "build": {
+    "engine": "sha256:a76aa3c91adf9a9759ebff048aeeeed9cd2d4350bb083274c85574e38d0ee4c2",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "2a92fe3faa55784724b04c679db2ff10de6b9bc1f9d4213f1a902436280ee8ba",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -4.350668430328369,
+          -0.8599990010261536,
+          -5.366239547729492
+        ],
+        "max": [
+          5.581902027130127,
+          17.778526306152344,
+          4.8584489822387695
+        ],
+        "size": [
+          9.932570457458496,
+          18.638525307178497,
+          10.224688529968262
+        ],
+        "center": [
+          0.6156167984008789,
+          8.459263652563095,
+          -0.25389528274536133
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -0.8599990010261536,
+        "offsetToGround": 0.8599990010261536,
+        "grounded": false
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Coconut palm tall"
+      },
+      "requestedRole": "fill",
+      "renderMetrics": {
+        "triangles": 9238,
+        "drawCalls": 3,
+        "uniqueGeometries": 3,
+        "uniqueMaterials": 3,
+        "textureCount": 3,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "2 parts marked intentionally open (markOpenShell) were not measured as closed solids. 1 marked \"Open-bottomed sheath bulb over the trunk top, closed coconuts and single-sheet dead fronds.\", because a valid closed solid could not be measured (Not manifold): \"crown_husk\". 1 marked \"Single-sheet leaflets on a thin rachis; double-sided foliage.\", because a valid closed solid could not be measured (Not manifold): \"fronds\". 3 overlapping part pairs were not measured because of these parts alone; overlap there is not ruled out.",
+              "measurement": {
+                "name": "acknowledgedOpenShells",
+                "actual": 2,
+                "breakdown": {
+                  "pairsUnmeasurable": 3
+                }
+              }
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 3,
+            "partVolumeCandidatePairs": 3,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeUnmeasurablePairs": 3,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 0,
+            "partVolumeAcknowledgedParts": 2,
+            "partVolumeAcknowledgedPairs": 3
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "B",
+            "instanceabilitySummary": "B (informational, not a QA verdict), set by 3 distinct materials (B at 2-3). Also: 3 geometries; 3 draw calls.",
+            "uniqueGeometries": 3,
+            "uniqueMaterials": 3,
+            "meshNodes": 3,
+            "meshInstances": 3,
+            "drawCalls": 3,
+            "textureCount": 3,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 9238,
+            "materialCount": 3,
+            "opaqueMaterials": 3,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 2,
+            "doubleSidedMaterials": 1,
+            "texturedMaterials": 3,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 3,
+            "maxImageDimension": 256,
+            "decodedImageBytesRgba8": 69952,
+            "estimatedGpuBytesWithMipmaps": 93271,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "inputGlbSha256": "sha256:2a92fe3faa55784724b04c679db2ff10de6b9bc1f9d4213f1a902436280ee8ba",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

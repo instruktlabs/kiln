@@ -209,10 +209,10 @@
         }
       },
       "holodeck": {
-        "renderedOn": "2026-10-22",
+        "renderedOn": "2026-10-23",
         "engine": {
-          "commit": "9949c84062c8cf829c1a162917383836d16eeda0",
-          "subject": "feat(geometry): repeat leaflets along a curve and surface foliage helpers (#211) (#224)",
+          "commit": "3c34ea5cfdc82eff33394f2301c94c326683943b",
+          "subject": "fix(site): the Holodeck scenes place the final Cove modules",
           "dirty": true
         },
         "service": {
@@ -236,7 +236,7 @@
           "captureIdentity": [
             "kiln.capture-producer.v1",
             "sha256:f664529ba31d5c026cc6e629a3d355468dd4cb8e1f7fee0f3e4dd1cced67fc70",
-            "8291debf-a2f8-4d8e-b0bd-38c1c27b5254",
+            "7d8ca1f1-729f-40e9-a371-5a01550dbee3",
             "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
             "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
           ]
@@ -5458,6 +5458,1072 @@
         "padding": 1.05,
         "projection": "orthographic",
         "halfHeight": 1.9641081942441694
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-palm-tall": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-palm-tall.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1320477,
+      "sha256": "c08205c71c6943b502fd0e110995f46a3380a30ed7f5765b54a36667ba88a146",
+      "assetId": "a_a81882dd8c9c4b6aa936614f592987a7",
+      "revisionId": "r_833811c9eae048acac736131aa951660",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-palm-tall.glb",
+        "bytes": 407824,
+        "sha256": "79efdaf034b9bd515a2f5f0df75da1b3837cbd2bbefe3ad2b76b283c9ebdbfd8",
+        "triangles": 9238
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 13.453291277511862
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-palm-lean": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-palm-lean.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1326044,
+      "sha256": "860f3bbdcfdde8c3b1f0dd51c772419696ae6e35adb86d4583f0054bfe96a7f6",
+      "assetId": "a_26aa8b78264d45f2bf79d6dff7188cb4",
+      "revisionId": "r_0ba7b32ad3ee4bd494e55146b8312ed7",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-palm-lean.glb",
+        "bytes": 357724,
+        "sha256": "d20704129d46f97f395f56f1ae5808dffccda0c9524ab67b1fe691ab0c9470c1",
+        "triangles": 7982
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 11.717028920343237
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-palm-arch": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-palm-arch.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1337031,
+      "sha256": "6ecb21ccb156b1cea61459806b502c270259fbb119c04b389d752368c5e84941",
+      "assetId": "a_bb596df66efe4eae8214d48bca2b787e",
+      "revisionId": "r_5593211abef14ebab49f45b57a8b8758",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-palm-arch.glb",
+        "bytes": 345544,
+        "sha256": "c60e98a398388f4cdaa2c1db4a1bb1a605702a0a1b855cd8a0e404f66a8b970e",
+        "triangles": 7702
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 10.534832953673108
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-palm-young": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-palm-young.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1405870,
+      "sha256": "3a5fda4d51b4bc17772a0dff214f8ed81e8df998c07575706af746910618ba2a",
+      "assetId": "a_6eb503ebdea045718159089428df57f7",
+      "revisionId": "r_8bdbc20277274140a7ba5c2dfe005f61",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-palm-young.glb",
+        "bytes": 188896,
+        "sha256": "b700f853b7c8cd80cf0b7ecae82b26788a6d93114cec8272aa25e3ea393e3648",
+        "triangles": 3854
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.070481752018624
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-debris-coconuts": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-coconuts.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1338293,
+      "sha256": "067fad1fa12a1384ceddfa372e0b8b2c9673e473099c8dfc7f4dfd72d2bdc829",
+      "assetId": "a_0246f882b372470d8950d331b077798e",
+      "revisionId": "r_6de480afa2fc43d3bc431cb2a1d3de1a",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-debris-coconuts.glb",
+        "bytes": 14916,
+        "sha256": "7922e2d7515d050fca74e77a28f266db5129cd578eab365c37826dca1dbf4ae3",
+        "triangles": 524
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.1018161127598503
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-debris-driftwood-log": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-driftwood-log.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1307037,
+      "sha256": "fca6ef071df3bd2e5c7cb99ea197b3f17614dab02f35fefc7fff22ebb6605340",
+      "assetId": "a_dc17081088e042729846298d3d1e1ed0",
+      "revisionId": "r_4f84e09ff60342108adcb640ff365c08",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-debris-driftwood-log.glb",
+        "bytes": 179360,
+        "sha256": "0a707a70d99abd9762fef36c9196f6c5134e640973ae5b6e8c89f16568fba2c0",
+        "triangles": 912
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.4621137511805813
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-debris-driftwood-pile": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-driftwood-pile.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1285714,
+      "sha256": "6cfdf42bddbdc046cf87a745569b5cdb681b68a2b59e083216a3079cd5314c21",
+      "assetId": "a_9aac97cc66a648efbb27c1a41ff294ea",
+      "revisionId": "r_d95c8307fe3b4f648d35c627b601a112",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-debris-driftwood-pile.glb",
+        "bytes": 185496,
+        "sha256": "4ce9eff2ac967533259295fe7a547beb333b163a1ae1dfedfab7cd9d43de2cff",
+        "triangles": 1022
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.7381484764462927
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-debris-fronds": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-fronds.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1265680,
+      "sha256": "8528d89d4cf3cc6a03ebb65111863d2d4f24754c46deafb647f0da2264784c48",
+      "assetId": "a_365867ac52424e3894f092142c528e44",
+      "revisionId": "r_dabf789f83a84d039243505e7afe4341",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-debris-fronds.glb",
+        "bytes": 42236,
+        "sha256": "bbdd3ab116523545d49c5fe5d2f6daa2370340efc8fc5e66d868f903fbb17e1c",
+        "triangles": 1040
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.503900111118603
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-debris-shells": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1227944,
+      "sha256": "6c0d1bf807ce3b9d8bd1c201546175e93f8bf0d6d7738623d9693476573ee58c",
+      "assetId": "a_f618554ec7034438843ccfc6af2fbb4d",
+      "revisionId": "r_362b7d0ce6904b4cbe8a63acc3296e6b",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-debris-shells.glb",
+        "bytes": 27892,
+        "sha256": "22487b5fd5c78c812740aacd3d3136134c500d9db04944ec505830618cd3760b",
+        "triangles": 862
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.2899697509755306
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-alocasia": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-alocasia.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1482062,
+      "sha256": "fcd043bdddca4d656206fe58d278ab14196cace158a954467e1f571602040088",
+      "assetId": "a_32d0a864f9024ab1897ec55063b80629",
+      "revisionId": "r_7bffd8155ce74118b9787484e19e833b",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-alocasia.glb",
+        "bytes": 36400,
+        "sha256": "d97f6b38d3ee73ef016b3843460c55848987ff0c717179a533d1dfbdaccc1809",
+        "triangles": 1296
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.4478824599144269
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-grass-patch": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-grass-patch.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1258767,
+      "sha256": "14b0d6deb027cc4cb0368700b537e92e72003bff713834616343650a38fe18b4",
+      "assetId": "a_871e27e2f3094155a669185d147fbb6c",
+      "revisionId": "r_ef23b16ec9514cf7bb859c5ef2b64f65",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-grass-patch.glb",
+        "bytes": 59436,
+        "sha256": "2f939510cdfdb626e18237b0dfa90dea074c1a98bd64127e4470993f9f48ec38",
+        "triangles": 1056
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.162523081590468
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-grass-tuft": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-grass-tuft.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1350629,
+      "sha256": "54ad571767ac42413d2d4d6485f765413e805442129399839ec08dd12223beb1",
+      "assetId": "a_7814909d10b14af883dd1d1784945fb2",
+      "revisionId": "r_a07d0bbd28614cceb799753079243899",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-grass-tuft.glb",
+        "bytes": 23428,
+        "sha256": "3643f0da29c24b761c6c181e52318e6bc0f304c21a2981d8d114d6d809a4bd8f",
+        "triangles": 432
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.7926482584880435
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-hibiscus": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-hibiscus.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1513444,
+      "sha256": "56ed1d4e4046e4738323bc53375243a6e9edc20a112d46f888b82af42cc62f11",
+      "assetId": "a_8617cf6b219a4512b28d6d50487367be",
+      "revisionId": "r_a2ca902ed3da474db9ced0bacbdfc8ab",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-hibiscus.glb",
+        "bytes": 78356,
+        "sha256": "fd984120e92b30bd6efe0e56788ae29bb1ee7947672e3bbd942478160d5efd87",
+        "triangles": 1776
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.367513116112439
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-naupaka": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-naupaka.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1668113,
+      "sha256": "19dc8baaf8834a4937995b1062802131151c4447b8ff38534829284d314a55e0",
+      "assetId": "a_59a636b7132c4b3aaf998d3a58a21485",
+      "revisionId": "r_1d96a48e3a614801849560a0b2cbe5bf",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-naupaka.glb",
+        "bytes": 92768,
+        "sha256": "c4aaa27906e6e3cc56208e7a284e8e9beb535094063f556b2444d594f567ca3d",
+        "triangles": 1741
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.9498735317012186
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-nest-fern": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-nest-fern.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1371089,
+      "sha256": "c007db27121a5d33c5cc1d612eb08a822b9bf212b69e9fdcb1f0901dd9839f24",
+      "assetId": "a_3f9add2dac064c7a90fad22e93bad572",
+      "revisionId": "r_f01c7040381a418b9f65a71882e0867e",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-nest-fern.glb",
+        "bytes": 20152,
+        "sha256": "ac16e815cb401d55efc582f8824f4f1a032a75f2170100a99fe710d18951f231",
+        "triangles": 564
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.4768217259218002
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-purslane": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-purslane.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1320373,
+      "sha256": "e719345bdef96fd4f5165f919212630df0243c0b10ea5eaafc5f58afb1a5bbb8",
+      "assetId": "a_bf8498c34499429e845af038456f9cce",
+      "revisionId": "r_8ba9fde90b3f476195106a2b5d98c016",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-purslane.glb",
+        "bytes": 91964,
+        "sha256": "25fa200b8451b646a09e8c5a8385a6900a0b6bb452bf7795fb5cb29c1f4dfbcf",
+        "triangles": 1452
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.2782893858695825
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-scrub": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-scrub.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1540253,
+      "sha256": "f889c0ddead754aa4e60f4d09c5e40339408d6f85a594f21f92c207abaa1328f",
+      "assetId": "a_2c3211cbca87469dafd2e1cf0fe066a9",
+      "revisionId": "r_c7f5ab339ad54cecacab349c3e3ced17",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-scrub.glb",
+        "bytes": 93312,
+        "sha256": "e0c15a577514d7e8e9ffe0b71ef68ee7e13aa03f59c7cc5c741b81c1b54958c4",
+        "triangles": 1582
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.4816758697829717
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-sword-fern": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-sword-fern.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1288432,
+      "sha256": "fc05bb9cd8cde48238f7044a9a8969f3f70715bef25f76eef8f497d1a5191c77",
+      "assetId": "a_bf73dfe6255a44fdb76d38897f1cb118",
+      "revisionId": "r_0e03667d27c84677ad2a52b4ca612cbb",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-sword-fern.glb",
+        "bytes": 76664,
+        "sha256": "5f0312923e2230afcc614b70242dcaac7e99628e648f4306f0335b7dbc1a81de",
+        "triangles": 1144
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.056984134189413
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-vine-fringe": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-vine-fringe.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1254447,
+      "sha256": "570dca81aa5df0d327b55a5b79004c1296ba3dfda1160a036b99b276d948a3b2",
+      "assetId": "a_beb20786481b4c69bfed4dae3ab727b4",
+      "revisionId": "r_0580ebaeab84471096a92f75f5328acf",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-vine-fringe.glb",
+        "bytes": 78860,
+        "sha256": "489bb6792b96a8156077b16112979e48b2cab60658a0381111d8f81607355fc6",
+        "triangles": 1498
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.435361936911857
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-plant-vine-mat": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-vine-mat.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1296772,
+      "sha256": "b66c6dbc9698c8d4b4d931b3f54e493a862f64b64ed2983298a797e8dfbb25dc",
+      "assetId": "a_d56dab2fc46c40fb8c57336a2fd5a451",
+      "revisionId": "r_aff5d9d5047942e6be26dffe4151b898",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-plant-vine-mat.glb",
+        "bytes": 86512,
+        "sha256": "78d553c9f8be4afa12b45100e010696807afcc08db0b6226ad755cbf1c5f81cc",
+        "triangles": 1640
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.610008036568486
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-beach-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-beach-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1613903,
+      "sha256": "f2b32a71572418d486967ce7860c15366b0f469e503c42fb32775705e7f0e032",
+      "assetId": "a_446e7eee61b5401e82a330b23d1c1fee",
+      "revisionId": "r_bdac00d03fee4445aca94ae2e8ca3eff",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-beach-a.glb",
+        "bytes": 1501048,
+        "sha256": "37f5422cb620006792dc8f90d6034107fd6aa0bf1a430a214d8629687e8ba1e5",
+        "triangles": 2572
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.2070767298447302
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-beach-b": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-beach-b.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1629557,
+      "sha256": "52a1f3da1203ddad0a111e138a84fb4a88d2a5e3b77f9c1720d19215dbb45742",
+      "assetId": "a_fe4b9406ebc54e4fb2343deec9807eb3",
+      "revisionId": "r_35db268edac1478cadd145d5a557c06c",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-beach-b.glb",
+        "bytes": 1505552,
+        "sha256": "3fa1747ae131b1c6f2c3706b258e0595e2f253a4b4ca9d8fdff4f06adf9878fa",
+        "triangles": 2739
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.966803119957923
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-boulder-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-boulder-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1759782,
+      "sha256": "f62920916a0ab9c7c1a8461734750680dacdd5809f9551cfffba288731205a4e",
+      "assetId": "a_a0a880f9ca6944c09ab92d68c232fcfb",
+      "revisionId": "r_13a7eaad34e045aaae69b28fc12c715f",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-boulder-a.glb",
+        "bytes": 1408732,
+        "sha256": "006dcb6ddd95dbdfbf6e043e78bc4ce69039eab727b4cf81b5d32fd9042520d8",
+        "triangles": 1237
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.5099157099768705
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-boulder-b": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-boulder-b.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1625933,
+      "sha256": "3287f4e84afb83e5f057f05a0e7902772ffd88f1ff53f1260972f4b9f97845aa",
+      "assetId": "a_72223547a8a74607aac69ef01260fbab",
+      "revisionId": "r_d312230034114640b10018ac9b305178",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-boulder-b.glb",
+        "bytes": 1400028,
+        "sha256": "1f66d779d0d9a58dc6c41788b2cfd6852a5765cd2f317349c52f8b1d28979a2e",
+        "triangles": 1004
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.5991838508768659
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-boulder-c": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-boulder-c.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1370174,
+      "sha256": "54e0765094af4dac5e50c1ed39f5e8af30dfa195995d6f21b1f7642f241cbf75",
+      "assetId": "a_4e5d54fadc5e4254bc4f72521318eb38",
+      "revisionId": "r_1838d6178a334cb08c7cebf6e4ec56f3",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-boulder-c.glb",
+        "bytes": 1443724,
+        "sha256": "c5a729356aa3c34d0a7d0e60b1e386ad1b37c86c2077d585bfc20f8a2f5ac359",
+        "triangles": 1972
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.9273505087380878
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-cliff-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-cliff-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1862736,
+      "sha256": "f9c2a88658e11e441e7808609651e67a1973ef6d4f6510a483cda8268394a74f",
+      "assetId": "a_0a7d3f64a8574abb92dce6b0463db1a3",
+      "revisionId": "r_8631328505ff44fc99d7024890f29618",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-cliff-a.glb",
+        "bytes": 1700028,
+        "sha256": "4e47daf1cfa9095431ee8515c56e8b9d98ff137288ea9baba616902833fce6c7",
+        "triangles": 5931
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 9.331616955052526
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-cliff-b": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-cliff-b.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1767246,
+      "sha256": "e29d624adfa54657a3336e40837ba575cbd6ba87d816d861d59f3cc0275277b1",
+      "assetId": "a_bd5c4f25e70a4a38b4da1fa7efe967d4",
+      "revisionId": "r_a2cbc91aca4342bcb3409047704717e1",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-cliff-b.glb",
+        "bytes": 1565692,
+        "sha256": "0f0ea067d6bf5746e4d3a746199c17c6d6470fec120eb8fe834ced16637c2bff",
+        "triangles": 3741
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 8.677929235123349
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-cliff-c": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-cliff-c.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1750605,
+      "sha256": "685bc3ae2be01b462958973d8a1593e3c696f367b8965311c806ffb6c49c8947",
+      "assetId": "a_c7921e001461409eae3d8fa233d839b0",
+      "revisionId": "r_7d4e3f6643fe4a2c9aa5ce024b20d670",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-cliff-c.glb",
+        "bytes": 1570416,
+        "sha256": "8f13ccb9ef9f3d13840141d2fb021456e9b67a2d6fa1ca6442dc43661fe9a6a4",
+        "triangles": 3945
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 7.193470352136026
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-outcrop-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-outcrop-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1708619,
+      "sha256": "b9729579f5538bbc288fbce7dc66a93716afb8de5a52123eecb73b619e20ff62",
+      "assetId": "a_a2d3b08d12804a49a2e8a78e619bbd3f",
+      "revisionId": "r_1e467cce279f49c19b65ebe800bb7f91",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-outcrop-a.glb",
+        "bytes": 1621128,
+        "sha256": "92eef1949afa3bf5d8a3a276516f14ead47a05854ae9eb4541a10fb84d1e7be7",
+        "triangles": 4316
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.207786350474554
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-outcrop-b": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-outcrop-b.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1586149,
+      "sha256": "fa62a253d8b4f8ac6a2d55d74609142bd370e8725f9bd1827c703395e067d199",
+      "assetId": "a_4beb66b219c64d98ae722b98024e7424",
+      "revisionId": "r_adac0cd34d614259aca962e05b6c551f",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-outcrop-b.glb",
+        "bytes": 1540244,
+        "sha256": "11fb285045ca2892c7c1032d8f0ab89ec417ee976d25a183f6a90245cb6d3be7",
+        "triangles": 3346
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.1100056576980375
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-reef-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-reef-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1755108,
+      "sha256": "5496d787134e6883bc3bb8d84bf5bbcd74ec7dfd7e5bd5ad4851904501714f2d",
+      "assetId": "a_e8cdfd102c4a4a9db4d7481f067e8f22",
+      "revisionId": "r_506b9771f15d49cd9c3a8ef2028e30dc",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-reef-a.glb",
+        "bytes": 1446228,
+        "sha256": "f2f304e625b71389eb04763c8b19c3bb624b0d048376262acef894fdd6f41e0a",
+        "triangles": 1749
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.0326327041155734
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-rock-reef-b": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-reef-b.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1438943,
+      "sha256": "f7471889fa85c7c6694aa6d9d671d9a6ab27a8a66262ed0c57962685ebbf7fd7",
+      "assetId": "a_0a78d5760cd1466099ea1e8bbf692b81",
+      "revisionId": "r_f90c4f3d2acc4c46a06c1929f1211ba1",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-rock-reef-b.glb",
+        "bytes": 724440,
+        "sha256": "a93309d0b17df7a404e5870e39b8558c7e25f6608fde36d7e8824be414bbb019",
+        "triangles": 1835
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.5006249076187204
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-coral-rubble-patch": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-coral-rubble-patch.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1448356,
+      "sha256": "6b5d262be7590bef57639a80a0413698ffc2f5086a60def3ec2adaf104392cc3",
+      "assetId": "a_7776b270e7aa4afeb4e972b4fab93823",
+      "revisionId": "r_0004b73b61ce4dbb8650b2170ca6739e",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-coral-rubble-patch.glb",
+        "bytes": 54140,
+        "sha256": "ac23f56a97f2c92d117e5a886c22b9dbb03ed8b6b034e5e6a8590c94d5cf104b",
+        "triangles": 2234
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.782413377982154
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-coral-brain-heads": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-coral-brain-heads.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1472167,
+      "sha256": "2beea914e6a6d84323d5e5c8b9595091455a01bbb740a9b52467b667da388322",
+      "assetId": "a_28fcfc20b1f04104a433f7a06a11f49b",
+      "revisionId": "r_5ba43855c2d44c2288950b79928cc8d4",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-coral-brain-heads.glb",
+        "bytes": 89152,
+        "sha256": "0fc15e361dbeef9d9def792ef9bfee3b7889cbdc5d10a4271a816cbc7fc2833c",
+        "triangles": 3758
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.246286487858123
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-coral-staghorn": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-coral-staghorn.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1518142,
+      "sha256": "08aa042dfb19d37179ce9cd5fdd105d410ea39f0dfadea738be4bf2b29abf8a2",
+      "assetId": "a_8f0379e263004bb68de8dcb9414f263e",
+      "revisionId": "r_5fc00554f8aa445e94baa7f2dd736042",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-coral-staghorn.glb",
+        "bytes": 95344,
+        "sha256": "6420818578340c02d471d30f58d0a4ad4a24a93c77da4067a95d3089980c6d6a",
+        "triangles": 3658
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.218603565827468
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-coral-table": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-coral-table.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1508853,
+      "sha256": "8f5f7dbe7e1f9a289a941d4e8d8a083f72580d9d464fdd5ec74a8336eb9d4d50",
+      "assetId": "a_a06d11aa32e34fc6a8d49bd628e6716a",
+      "revisionId": "r_92d597470e844905abeeec904b174049",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-coral-table.glb",
+        "bytes": 79752,
+        "sha256": "3588b7fa68fb705c36e61d56b5aab54be614537bed3f81dc4c63a5f4ab086846",
+        "triangles": 2876
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.4805337507901934
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-shelter": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-shelter.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1774058,
+      "sha256": "ba2b68ef35729ea98eeb60808dbfcdce677224a8dd12be069d35eb236adca42d",
+      "assetId": "a_75d41771e0764dcbbbae941025f714f8",
+      "revisionId": "r_23af584103ec4c8788c0dcfb9e263d99",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-shelter.glb",
+        "bytes": 640716,
+        "sha256": "59abd15417a009b6c991decc313fdaf52f3a618906d86ed11326b9de503373d0",
+        "triangles": 11674
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.362612175396976
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-jetty-deck": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-jetty-deck.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1590629,
+      "sha256": "f5c6658402b1c610365edbe7f6925dba55fbea17b03fa94826603921a15a0eee",
+      "assetId": "a_b9253672bd024b40bc8a943a056ba6a3",
+      "revisionId": "r_dd77ec41c8a148749d079173dc110e78",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-jetty-deck.glb",
+        "bytes": 187160,
+        "sha256": "88efe01bccfd3f3ce58a62f6d30639f2516646d0de6813a76e672d6e954df930",
+        "triangles": 1912
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.38865732599996
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-jetty-platform": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-jetty-platform.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1729883,
+      "sha256": "c18e075b2f2b2370a60919050482b87437329b9f703c49cc084903fba78aa632",
+      "assetId": "a_133257abcba744caa887e07895f932ec",
+      "revisionId": "r_90dc37891b9f41dd843e20762d57b523",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-jetty-platform.glb",
+        "bytes": 259020,
+        "sha256": "d940c64a05da8c1ae0c19ba3c824efe7fef84dd126e301bd6b9d09bff17f21c9",
+        "triangles": 3880
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.993772267100944
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-jetty-stair": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-jetty-stair.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1526924,
+      "sha256": "23acfd0c7873aa900f6bea6bf95b2d9531ea4ca874dc9c5487e695cd09aa35b6",
+      "assetId": "a_3fc9db18b10c41ca927300d4cf73b8c1",
+      "revisionId": "r_2f615af8a589400e9cb9b2ca602c4619",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-jetty-stair.glb",
+        "bytes": 146300,
+        "sha256": "d516a7c2314d3a7072088a73795a5f5125e25b280ad29c698e053d0b5c88435e",
+        "triangles": 1180
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.9148665831944447
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-seagrass": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1370289,
+      "sha256": "f2d972c800b475bc42a5848de688a489b025f03f9c3f19043857fb88bdf1c564",
+      "assetId": "a_675613e1a07241bfac5e903469b306a4",
+      "revisionId": "r_cd79d419d444441a8299b6739e6435d7",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-seagrass.glb",
+        "bytes": 16816,
+        "sha256": "72cd28b6a1f0ee9f63bc40af07770ed105676da26a3f3f958ee21cb91d0e3fd8",
+        "triangles": 300
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.6271813837419588
       },
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
     }

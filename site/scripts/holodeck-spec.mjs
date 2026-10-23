@@ -5,7 +5,7 @@
  */
 
 export const HOLODECK_ID = 'holodeck';
-export const HOLODECK_RELEASE = 'holodeck-20261022-02';
+export const HOLODECK_RELEASE = 'holodeck-20261023-01';
 
 export const HOLODECK_PACKS = [
   {
@@ -29,17 +29,17 @@ export const HOLODECK_PACKS = [
     description: 'Holodeck’s starter Cove after its quality pass: a sheltered platform with a linen canopy, cushions, a hearth table, fern planters, a rug, a lamp and a mood board.',
     expectedAssets: 8,
   },
-];
-
-/** Scenes whose packs are not built yet. Their pages say so; nothing is staged for them. */
-export const HOLODECK_PLANNED = [
   {
     id: 'holodeck-crescent-cove',
     scene: 'crescent-cove',
     name: 'Crescent Cove',
-    description: 'A tropical island that is still being built. Its assets join the gallery when the island is finished.',
+    description: 'A crescent of palm-lined beach around a turquoise lagoon, with seagrass meadows, coral heads, a jetty and a rocky headland, built in Holodeck around the Cove.',
+    expectedAssets: 49,
   },
 ];
+
+/** Scenes whose packs are not built yet. Their pages say so; nothing is staged for them. */
+export const HOLODECK_PLANNED = [];
 
 const COVE = 'Cove modules';
 const ISLAND_PLANTS = 'Island plants';
@@ -49,6 +49,11 @@ const PAVING = 'Courtyard paving and walls';
 const FEATURES = 'Courtyard fountain and statues';
 const PLANTING = 'Courtyard planting';
 const FURNITURE = 'Courtyard furniture and lighting';
+const CRESCENT_PALMS = 'Crescent Cove palms and beach debris';
+const CRESCENT_PLANTS = 'Crescent Cove undergrowth';
+const CRESCENT_ROCKS = 'Crescent Cove rocks and cliffs';
+const CRESCENT_REEF = 'Crescent Cove reef';
+const CRESCENT_BUILT = 'Crescent Cove shelter and jetty';
 
 const coveModules = {
   structure: ['Cove platform and seating shell', 'The circular platform and curved seating shell that hold the rest of the Cove.'],
@@ -62,7 +67,7 @@ const coveModules = {
 };
 
 /**
- * Gallery presentation by slug. Packs deliver final versions only: every scene places the Cove modules at their
+ * Gallery presentation by slug. Packs deliver final versions only: every scene lists the Cove modules at their
  * quality-pass revision, so each module has one page shared by the scenes that place it.
  */
 export const HOLODECK_ASSETS = {
@@ -106,11 +111,53 @@ export const HOLODECK_ASSETS = {
   'bench-park': { name: 'Park bench', category: FURNITURE, description: 'An oak-slat bench with wrought-iron scroll-arm frames.' },
   'lamp-post': { name: 'Lantern post', category: FURNITURE, description: 'A fluted iron post with a warm glazed lantern.' },
   'lamp-bollard': { name: 'Path bollard', category: FURNITURE, description: 'A stone and iron bollard with a warm glow band.' },
+  'crescent-palm-tall': { name: 'Tall coconut palm', category: CRESCENT_PALMS, description: 'A tall coconut palm. Its four frond groups share one mesh and one banded texture.' },
+  'crescent-palm-lean': { name: 'Leaning coconut palm', category: CRESCENT_PALMS, description: 'A coconut palm leaning out over the sand, with merged frond groups and one banded texture.' },
+  'crescent-palm-arch': { name: 'Arching coconut palm', category: CRESCENT_PALMS, description: 'A coconut palm with an arched trunk, with merged frond groups and one banded texture.' },
+  'crescent-palm-young': { name: 'Young coconut palm', category: CRESCENT_PALMS, description: 'A young coconut palm, with merged frond groups and one banded texture.' },
+  'crescent-debris-coconuts': { name: 'Coconuts and husks', category: CRESCENT_PALMS, description: 'Fallen coconuts under a palm: four husked nuts, one sprouting, and a split husk showing the pale fibre.' },
+  'crescent-debris-driftwood-log': { name: 'Driftwood log', category: CRESCENT_PALMS, description: 'A bleached driftwood log with a gnarled root plate, half sunk in the sand.' },
+  'crescent-debris-driftwood-pile': { name: 'Driftwood pile', category: CRESCENT_PALMS, description: 'A tangle of seven bleached driftwood branches and side twigs.' },
+  'crescent-debris-fronds': { name: 'Fallen palm fronds', category: CRESCENT_PALMS, description: 'Two dry coconut fronds crossing on the ground, with broken and missing leaflets.' },
+  'crescent-debris-shells': { name: 'Shells and wrack', category: CRESCENT_PALMS, description: 'A strand-line scatter of shells, coral rubble and seaweed wrack.' },
+  'crescent-plant-alocasia': { name: 'Alocasia clump', category: CRESCENT_PLANTS, description: 'An elephant-ear clump of nine arrow-shaped blades on curved stems. It moves in Holodeck’s wind.' },
+  'crescent-plant-grass-patch': { name: 'Strand grass patch', category: CRESCENT_PLANTS, description: 'A sparse patch of strand grass tufts for the upper sand. It moves in Holodeck’s wind.' },
+  'crescent-plant-grass-tuft': { name: 'Strand grass tuft', category: CRESCENT_PLANTS, description: 'A single strand grass tuft of green, straw and dry blades. It moves in Holodeck’s wind.' },
+  'crescent-plant-hibiscus': { name: 'Beach hibiscus thicket', category: CRESCENT_PLANTS, description: 'Leaning woody stems with hanging heart leaves and yellow cup flowers. It moves in Holodeck’s wind.' },
+  'crescent-plant-naupaka': { name: 'Naupaka mound', category: CRESCENT_PLANTS, description: 'A beach-hedge mound of pale spoon-leaf rosettes with white half-flowers. It moves in Holodeck’s wind.' },
+  'crescent-plant-nest-fern': { name: 'Bird’s-nest fern', category: CRESCENT_PLANTS, description: 'Upright and arching strap fronds rising from a low brown nest. It moves in Holodeck’s wind.' },
+  'crescent-plant-purslane': { name: 'Sea purslane mat', category: CRESCENT_PLANTS, description: 'Red runners with fleshy leaf pairs and small pink flowers, for headlands and the upper beach.' },
+  'crescent-plant-scrub': { name: 'Headland scrub cushion', category: CRESCENT_PLANTS, description: 'Low wind-pruned scrub with narrow grey-green leaves and a few yellow flowers.' },
+  'crescent-plant-sword-fern': { name: 'Sword fern', category: CRESCENT_PLANTS, description: 'A clump of thirteen arching pinnate fronds. It moves in Holodeck’s wind.' },
+  'crescent-plant-vine-fringe': { name: 'Morning glory fringe', category: CRESCENT_PLANTS, description: 'Beach morning glory runners trailing from the back of the sand toward the sea, with pink flowers.' },
+  'crescent-plant-vine-mat': { name: 'Morning glory mat', category: CRESCENT_PLANTS, description: 'A mat of red runners with goat’s-foot leaves and pink trumpet flowers on the sand.' },
+  'crescent-rock-beach-a': { name: 'Notched beach slab', category: CRESCENT_ROCKS, description: 'A low waterline limestone slab with a flat dry top, a wave-cut notch and a darker wet base.' },
+  'crescent-rock-beach-b': { name: 'Waterline rock cluster', category: CRESCENT_ROCKS, description: 'Three faceted waterline limestone rocks with a darker wet base.' },
+  'crescent-rock-boulder-a': { name: 'Limestone boulder', category: CRESCENT_ROCKS, description: 'A weathered limestone boulder.' },
+  'crescent-rock-boulder-b': { name: 'Half-buried boulder pair', category: CRESCENT_ROCKS, description: 'Two weathered limestone boulders half sunk in the ground.' },
+  'crescent-rock-boulder-c': { name: 'Stone scatter', category: CRESCENT_ROCKS, description: 'A scatter of small weathered limestone stones.' },
+  'crescent-rock-cliff-a': { name: 'Wide cliff face', category: CRESCENT_ROCKS, description: 'A wide weathered limestone cliff face for the headland.' },
+  'crescent-rock-cliff-b': { name: 'Tall cliff buttress', category: CRESCENT_ROCKS, description: 'A tall weathered limestone buttress for the headland.' },
+  'crescent-rock-cliff-c': { name: 'Sea-cave ledge', category: CRESCENT_ROCKS, description: 'A low limestone cliff with a sea-cave ledge.' },
+  'crescent-rock-outcrop-a': { name: 'Karst outcrop', category: CRESCENT_ROCKS, description: 'A cluster of weathered karst limestone.' },
+  'crescent-rock-outcrop-b': { name: 'Boulder group outcrop', category: CRESCENT_ROCKS, description: 'A grouped outcrop of weathered limestone boulders.' },
+  'crescent-rock-reef-a': { name: 'Notched reef head', category: CRESCENT_REEF, description: 'A wet reef-edge limestone head with a deep wave-cut notch.' },
+  'crescent-rock-reef-b': { name: 'Awash reef platform', category: CRESCENT_REEF, description: 'A flat reef-rim platform of three wet limestone slabs, just proud of the water.' },
+  'crescent-coral-rubble-patch': { name: 'Coral rubble patch', category: CRESCENT_REEF, description: 'A patch of coral rubble for the lagoon floor, in its living colour.' },
+  'crescent-coral-brain-heads': { name: 'Brain coral heads', category: CRESCENT_REEF, description: 'A group of brain coral heads, in their living colour.' },
+  'crescent-coral-staghorn': { name: 'Staghorn coral thicket', category: CRESCENT_REEF, description: 'A branching staghorn coral thicket, in its living colour.' },
+  'crescent-coral-table': { name: 'Table corals', category: CRESCENT_REEF, description: 'Table and plate corals, in their living colour.' },
+  'crescent-seagrass': { name: 'Seagrass clump', category: CRESCENT_REEF, description: 'A clump of broad tape-grass blades for the lagoon’s seagrass meadows.' },
+  'crescent-shelter': { name: 'Thatched beach shelter', category: CRESCENT_BUILT, description: 'An open thatched shelter of weathered timber with a table and benches, facing the lagoon.' },
+  'crescent-jetty-deck': { name: 'Jetty deck module', category: CRESCENT_BUILT, description: 'A 3 m timber deck module with mooring posts, made to repeat into a jetty.' },
+  'crescent-jetty-platform': { name: 'Jetty platform', category: CRESCENT_BUILT, description: 'A 3 m square timber platform for the end of the jetty.' },
+  'crescent-jetty-stair': { name: 'Jetty stair', category: CRESCENT_BUILT, description: 'A timber stair that descends from the jetty deck to the seabed.' },
 };
 
-/** A world placement id to its gallery slug. Every scene's Cove module shares the Cove pack's slug. */
+/** A world placement id to its gallery slug. Every scene's Cove module shares the Cove pack's slug; Crescent Cove's own assets are prefixed. */
 export function holodeckSlug(pack, worldAssetId) {
   const cove = Object.hasOwn(coveModules, worldAssetId);
   if (pack === 'holodeck-cove' && !cove) throw new Error(`Unknown Cove module ${worldAssetId}`);
-  return cove ? `cove-${worldAssetId}` : worldAssetId;
+  if (cove) return `cove-${worldAssetId}`;
+  return pack === 'holodeck-crescent-cove' ? `crescent-${worldAssetId}` : worldAssetId;
 }

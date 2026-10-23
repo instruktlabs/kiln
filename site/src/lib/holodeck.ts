@@ -17,6 +17,13 @@ export interface HolodeckPack {
   status: string;
   assetCount: number;
   assets: string[];
+  /** Modules this pack lists at their final revision while the walkable world still places an earlier one. */
+  sceneStillPlacesEarlier?: {
+    id: string;
+    slug: string;
+    placedRevisionId: string;
+    finalRevisionId: string;
+  }[];
   downloads: (DownloadFile & { profile: 'runtime' | 'editable'; label: string; url: string })[];
 }
 export interface HolodeckPlannedPack {

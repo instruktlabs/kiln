@@ -21,27 +21,43 @@ const sha256 = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex
 const pins = new Map(mirror.files.map((record) => [record.path, record]));
 
 test('each scene pack holds every placed Kiln asset once, at its final version', () => {
-  expect(Object.fromEntries(Object.entries(selection.packs).map(([id, pack]) => [id, pack.assets.length]))).toEqual({ 'holodeck-tidemark': 23, 'holodeck-courtyard': 32, 'holodeck-cove': 8 });
+  expect(Object.fromEntries(Object.entries(selection.packs).map(([id, pack]) => [id, pack.assets.length]))).toEqual({ 'holodeck-tidemark': 23, 'holodeck-courtyard': 32, 'holodeck-cove': 8, 'holodeck-crescent-cove': 49 });
   expect(catalog.packs.map((pack) => [pack.id, pack.assetCount])).toEqual(HOLODECK_PACKS.map((pack) => [pack.id, pack.expectedAssets]));
   expect(selection.versions).toBe('final-only');
-  expect(catalog.assets).toHaveLength(47);
+  expect(catalog.assets).toHaveLength(88);
   expect(catalog.assets).toHaveLength(Object.keys(selection.assets).length);
   const shared = catalog.assets.filter((asset) => asset.packs.length > 1);
   expect(shared.map((asset) => asset.slug).sort()).toEqual(Object.keys(HOLODECK_ASSETS).filter((slug) => slug.startsWith('cove-')).sort());
-  for (const asset of shared) expect(asset.packs).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard']);
+  for (const asset of shared) expect(asset.packs).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove']);
   expect(holodeckSlug('holodeck-courtyard', 'canopy')).toBe('cove-canopy');
   expect(holodeckSlug('holodeck-cove', 'canopy')).toBe('cove-canopy');
+  expect(holodeckSlug('holodeck-crescent-cove', 'canopy')).toBe('cove-canopy');
   expect(holodeckSlug('holodeck-tidemark', 'island-palm')).toBe('island-palm');
+  expect(holodeckSlug('holodeck-crescent-cove', 'shelter')).toBe('crescent-shelter');
 });
 
-test('every scene places the Cove modules at their final revision, read from the walkable sources', () => {
+test('scenes list the Cove modules at their final revision, and say when the walkable scene places an earlier one', () => {
   const tidemark = selection.packs['holodeck-tidemark'].source, cove = selection.packs['holodeck-cove'].source;
   expect(tidemark).toMatchObject({ kind: 'holodeck-example', path: 'examples/tidemark', commit: cove.commit });
-  for (const pack of [...Object.values(selection.packs), ...catalog.packs]) expect(pack).not.toHaveProperty('sceneStillPlacesEarlier');
+  expect(selection.packs['holodeck-crescent-cove'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/crescent-cove', sourceRevision: 15 });
   for (const slug of selection.packs['holodeck-cove'].assets) {
     const record = selection.assets[slug as keyof typeof selection.assets];
-    expect(record.placements.map((placement) => placement.pack)).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard']);
+    expect(record.placements.map((placement) => placement.pack)).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove']);
   }
+  for (const pack of catalog.packs) {
+    const earlier = (pack as { sceneStillPlacesEarlier?: { slug: string; placedRevisionId: string; finalRevisionId: string }[] }).sceneStillPlacesEarlier ?? [];
+    expect(earlier.map((entry) => entry.slug).sort()).toEqual(pack.id === 'holodeck-crescent-cove' ? selection.packs['holodeck-cove'].assets.slice().sort() : []);
+    for (const entry of earlier) {
+      expect(catalog.assets.find((candidate) => candidate.slug === entry.slug)?.revisionId).toBe(entry.finalRevisionId);
+      expect(entry.placedRevisionId).not.toBe(entry.finalRevisionId);
+    }
+  }
+});
+
+test('assets that use saved materials carry their frozen closure into the editable downloads', () => {
+  const closures = Object.entries(selection.assets).filter(([, record]) => 'materials' in record).map(([slug]) => slug);
+  expect(closures).toHaveLength(14);
+  for (const slug of closures) expect(slug.startsWith('crescent-')).toBe(true);
 });
 
 test('catalog assets name the selected revisions and stay awaiting owner review under CC0', async () => {
@@ -96,7 +112,7 @@ test('gallery cards link to their pages and to every scene that places them', ()
     expect(card.scenes?.map((scene) => scene.href)).toEqual(card.packs.map((pack) => holodeckWorldUrl(pack)));
   }
   const shared = cards.find((card) => card.slug === 'cove-hearth')!;
-  expect(holodeckScenes(shared).map((scene) => scene.label)).toEqual(['Walk Cove', 'Walk Tidemark Island', 'Walk Courtyard']);
+  expect(holodeckScenes(shared).map((scene) => scene.label)).toEqual(['Walk Cove', 'Walk Tidemark Island', 'Walk Courtyard', 'Walk Crescent Cove']);
   expect(buildGallery(false)).toEqual([]);
 });
 

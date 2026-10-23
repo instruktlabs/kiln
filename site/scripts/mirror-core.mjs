@@ -74,6 +74,15 @@ export function verifyArchive(bytes, profile = 'delivery') {
     verifyBytes(files[path], record, path);
     sealed.add(path);
   }
+  // Kiln's import format keeps a revision's saved-material closure beside its manifest, outside its file seals. It
+  // belongs there exactly when the manifest uses saved materials, and must hold every material the manifest pins.
+  const materials = (manifest.build?.dependencies ?? []).filter((item) => item?.kind === 'kiln.material.v1' || item?.kind === 'kiln.material.v2');
+  if (profile === 'editable' && !deliveryEnvelope && materials.length && files[`${prefix}materials.kiln.json`]) {
+    const closure = JSON.parse(new TextDecoder().decode(files[`${prefix}materials.kiln.json`]));
+    const held = new Set((closure.records ?? []).map((item) => `${item.manifest?.materialId}/${item.manifest?.revisionId}`));
+    for (const { manifest: pin } of materials) if (!held.has(`${pin.materialId}/${pin.revisionId}`)) throw new Error(`Material closure lacks ${pin.materialId}`);
+    sealed.add(`${prefix}materials.kiln.json`);
+  }
   for (const path of Object.keys(files)) {
     if (!path.endsWith('/') && !sealed.has(path)) throw new Error(`Unsealed archive member: ${path}`);
   }

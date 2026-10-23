@@ -1,0 +1,386 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_b9253672bd024b40bc8a943a056ba6a3",
+  "revisionId": "r_dd77ec41c8a148749d079173dc110e78",
+  "name": "Crescent Cove jetty deck module",
+  "tags": [
+    "crescent-cove",
+    "jetty",
+    "timber",
+    "modular",
+    "turn-7"
+  ],
+  "createdAt": "2026-10-22T20:40:08.860Z",
+  "description": "3.0 x 1.8 m deck module, origin at the module centre on the deck top. Owns the post pair at its landward end (x = -1.5), posts protruding 0.42/0.34 m as mooring posts and reaching 1.65 m below the deck; its seaward stringer ends rest on the next module's landward headstock. Three materials: WeatheredTimber, WetTimber (below y = -0.5), RustyIron. 1,912 triangles.",
+  "brief": "Crescent Cove (Holodeck tropical-island) jetty deck module per the kit sheet and the approved eye-level view: low, weathered, silver-brown timber deck on round posts, planks across with visible gaps, bolts and nail heads, stringers on twin headstocks, X-braced post pair, algae-stained timber below the splash line. Chains with itself and the platform along the jetty line.",
+  "attribution": {
+    "model": "claude-opus-5-5",
+    "harness": "Claude Code"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:d0dbc1c46058ae479491f5b87ba6e6a55871b47f714b799734286b4c438b1a16",
+      "bytes": 186932
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:4c10bcabb4b023b87fcbbeb484214c0955c9eb292863b7367b6b65c8e2ff43e1",
+      "bytes": 20443
+    },
+    "preview.png": {
+      "sha256": "sha256:9527e0ee69ff7a142d2c5a4d20a332e7c4fae3060eec6f57eef1c5e68f6c2205",
+      "bytes": 315657
+    }
+  },
+  "build": {
+    "engine": "sha256:a76aa3c91adf9a9759ebff048aeeeed9cd2d4350bb083274c85574e38d0ee4c2",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "d0dbc1c46058ae479491f5b87ba6e6a55871b47f714b799734286b4c438b1a16",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -1.781000018119812,
+          -1.649999976158142,
+          -1.2599999904632568
+        ],
+        "max": [
+          1.489979863166809,
+          0.43380001187324524,
+          1.2599999904632568
+        ],
+        "size": [
+          3.270979881286621,
+          2.0837999880313873,
+          2.5199999809265137
+        ],
+        "center": [
+          -0.14551007747650146,
+          -0.6080999821424484,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -1.649999976158142,
+        "offsetToGround": 1.649999976158142,
+        "grounded": false
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Crescent Cove jetty deck"
+      },
+      "requestedRole": "fill",
+      "renderMetrics": {
+        "triangles": 1912,
+        "drawCalls": 3,
+        "uniqueGeometries": 3,
+        "uniqueMaterials": 3,
+        "textureCount": 3,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "3 parts marked intentionally open (markOpenShell) were not measured as closed solids. 2 marked \"Closed timber pieces that touch or interpenetrate at joints; post feet sit below the seabed.\", because a valid closed solid could not be measured (Not manifold): \"timber\", \"wet\". 1 marked \"Bolt and nail heads are capped prisms whose open bases sit in the timber.\", because a valid closed solid could not be measured (Not manifold): \"iron\". 3 overlapping part pairs were not measured because of these parts alone; overlap there is not ruled out.",
+              "measurement": {
+                "name": "acknowledgedOpenShells",
+                "actual": 3,
+                "breakdown": {
+                  "pairsUnmeasurable": 3
+                }
+              }
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 3,
+            "partVolumeCandidatePairs": 3,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeUnmeasurablePairs": 3,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 0,
+            "partVolumeAcknowledgedParts": 3,
+            "partVolumeAcknowledgedPairs": 3
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "B",
+            "instanceabilitySummary": "B (informational, not a QA verdict), set by 3 distinct materials (B at 2-3). Also: 3 geometries; 3 draw calls.",
+            "uniqueGeometries": 3,
+            "uniqueMaterials": 3,
+            "meshNodes": 3,
+            "meshInstances": 3,
+            "drawCalls": 3,
+            "textureCount": 3,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 1912,
+            "materialCount": 3,
+            "opaqueMaterials": 3,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 3,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 3,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 3,
+            "maxImageDimension": 256,
+            "decodedImageBytesRgba8": 524352,
+            "estimatedGpuBytesWithMipmaps": 699138,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "inputGlbSha256": "sha256:d0dbc1c46058ae479491f5b87ba6e6a55871b47f714b799734286b4c438b1a16",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

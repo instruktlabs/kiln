@@ -1,0 +1,394 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_75d41771e0764dcbbbae941025f714f8",
+  "revisionId": "r_23af584103ec4c8788c0dcfb9e263d99",
+  "parentRevision": "r_e4b59e837dd14b60bdb3a60967c39d9e",
+  "name": "Crescent Cove thatched shelter",
+  "tags": [
+    "crescent-cove",
+    "shelter",
+    "thatch",
+    "timber",
+    "turn-7"
+  ],
+  "createdAt": "2026-10-22T21:03:26.359Z",
+  "description": "Origin on the sand at the shelter centre, +X faces the lagoon. Eaves underside 2.38 m, ridge roll to 4.22 m, table 0.75 m, benches 0.45 m, floor top 0.045 m. Materials: WeatheredTimber, DryThatch, ThatchUnderside, RustyIron. 11,674 triangles (12,154 in the parent).",
+  "brief": "Same shelter with the thatch's perimeter sampling trimmed (56/46 samples per face instead of 60/50, about 0.1 m at the eaves) so the turn keeps the catalogue reserve; shape and materials otherwise unchanged.",
+  "attribution": {
+    "model": "claude-opus-5-5",
+    "harness": "Claude Code"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:c09bc1b3a273e8e5dc12f6410c99ca8b8abb68fc59f89eda0e73c6777a8b5562",
+      "bytes": 640492
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:3ee3d7d3771ea781573ee233350e66625de288d387a7e731e071a703a472d761",
+      "bytes": 27846
+    },
+    "preview.png": {
+      "sha256": "sha256:7fc37be7d39f80b595cb72488ed2a12d57581a0f5cbd3a5384c104eaab264839",
+      "bytes": 541113
+    }
+  },
+  "build": {
+    "engine": "sha256:a76aa3c91adf9a9759ebff048aeeeed9cd2d4350bb083274c85574e38d0ee4c2",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "c09bc1b3a273e8e5dc12f6410c99ca8b8abb68fc59f89eda0e73c6777a8b5562",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -2.353672742843628,
+          -0.5,
+          -2.7580881118774414
+        ],
+        "max": [
+          2.369424343109131,
+          4.2171525955200195,
+          2.7707526683807373
+        ],
+        "size": [
+          4.723097085952759,
+          4.7171525955200195,
+          5.528840780258179
+        ],
+        "center": [
+          0.007875800132751465,
+          1.8585762977600098,
+          0.006332278251647949
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -0.5,
+        "offsetToGround": 0.5,
+        "grounded": false
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Crescent Cove thatched shelter"
+      },
+      "requestedRole": "hero",
+      "renderMetrics": {
+        "triangles": 11674,
+        "drawCalls": 4,
+        "uniqueGeometries": 4,
+        "uniqueMaterials": 4,
+        "textureCount": 4,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "1 part-volume measurement was unavailable. 1 because compound solid exceeds the component budget or contains an unsupported inward shell: \"timber\". 3 overlapping part pairs include this part and were not measured. This part is not certified clear."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "3 parts marked intentionally open (markOpenShell) were not measured as closed solids. 2 marked \"Thatch courses are overlapping open sheets closed by the underside and the ridge roll.\", because a valid closed solid could not be measured (Not manifold): \"thatch\", \"under\". 1 marked \"Bolt and nail heads are capped prisms whose open bases sit in the timber.\", because a valid closed solid could not be measured (Not manifold): \"iron\". 3 overlapping part pairs were not measured because of these parts alone; overlap there is not ruled out.",
+              "measurement": {
+                "name": "acknowledgedOpenShells",
+                "actual": 3,
+                "breakdown": {
+                  "pairsUnmeasurable": 3
+                }
+              }
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 4,
+            "partVolumeCandidatePairs": 6,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeUnmeasurablePairs": 6,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 1,
+            "partVolumeAcknowledgedParts": 3,
+            "partVolumeAcknowledgedPairs": 3
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "C",
+            "instanceabilitySummary": "C (informational, not a QA verdict), set by 4 distinct materials (C at 4-6). Also: 4 geometries; 4 draw calls.",
+            "uniqueGeometries": 4,
+            "uniqueMaterials": 4,
+            "meshNodes": 4,
+            "meshInstances": 4,
+            "drawCalls": 4,
+            "textureCount": 4,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 11674,
+            "materialCount": 4,
+            "opaqueMaterials": 4,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 4,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 4,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 4,
+            "maxImageDimension": 256,
+            "decodedImageBytesRgba8": 786496,
+            "estimatedGpuBytesWithMipmaps": 1048664,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "inputGlbSha256": "sha256:c09bc1b3a273e8e5dc12f6410c99ca8b8abb68fc59f89eda0e73c6777a8b5562",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

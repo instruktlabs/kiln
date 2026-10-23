@@ -9,20 +9,21 @@ addresses are configured in one place, [`site/src/data/holodeck-worlds.json`](..
 | `holodeck-tidemark` | Holodeck's bundled `examples/tidemark` (commit recorded in `selection.json`), the walkable Tidemark Island | 23 |
 | `holodeck-courtyard` | Courtyard world, revision 8 | 32 |
 | `holodeck-cove` | Holodeck's Cove modules at the same commit, the Cove quality pass | 8 |
+| `holodeck-crescent-cove` | Holodeck's bundled `examples/crescent-cove` (commit recorded in `selection.json`), the tropical-island world at revision 15 | 49 |
 
-Packs deliver final versions only: one gallery page and one download per asset. All three
-scenes place the eight Cove modules at their quality-pass revisions, so each Cove module has
-one page shared by the three packs; the selection fails if a scene places any other revision.
-Holodeck's static site exports leave the Cove mood board out of the walkable scenes, but the
-worlds place it, so the packs keep it. Each download's `delivery.json` lists the parent of every revision
-under `omittedParents`: earlier revisions are left out by choice, not missing.
+Packs deliver final versions only: one gallery page and one download per asset. Every scene
+lists the eight Cove modules at their quality-pass revisions, so each Cove module has one page
+shared by the four packs. Tidemark, the Courtyard and the Cove place those revisions. Crescent
+Cove still places the earlier ones: `selection.json` records each under
+`sceneStillPlacesEarlier`, its pack and module pages say so, and the selection checks that every
+final revision descends from the revision the scene places. Holodeck's static site exports leave
+the Cove mood board out of the walkable scenes, but the worlds place it, so the packs keep it.
+Each download's `delivery.json` lists the parent of every revision under `omittedParents`:
+earlier revisions are left out by choice, not missing.
 
-## Planned: Crescent Cove
-
-Crescent Cove (`holodeck-worlds/tropical-island`, 48 Kiln assets at the time of writing) is
-still being built. Its pack is not staged. When the island is finished, add it to
-`HOLODECK_PACKS` in `site/scripts/holodeck-spec.mjs` with its asset presentation, add its world
-to `select-holodeck.mjs`, and stage a new release. Its scene address is already in the map.
+Fourteen Crescent Cove assets use saved Kiln materials. Their editable downloads carry the
+material closure (`materials.kiln.json`) beside the revision manifest, as Kiln's import format
+expects; `selection.json` freezes its SHA-256.
 
 ## Licence
 
@@ -49,10 +50,10 @@ Kiln and Holodeck software keep their own licences.
 Every input is read-only. From `site/`:
 
 ```sh
-node scripts/select-holodeck.mjs --courtyard WORLD --holodeck HOLODECK_REPO --ref main \
-  --store island-trial=STORE --store holodeck-assets=STORE --store courtyard-plaza=STORE
+node scripts/select-holodeck.mjs --courtyard WORLD --holodeck HOLODECK_REPO --ref main --crescent-ref COMMIT \
+  --store island-trial=STORE --store holodeck-assets=STORE --store courtyard-plaza=STORE --store tropical-island=STORE
 node scripts/stage-holodeck.mjs --kiln KILN_PACKAGE_DIR --mirror .localdata/holodeck-delivery \
-  --store island-trial=STORE --store holodeck-assets=STORE --store courtyard-plaza=STORE
+  --store island-trial=STORE --store holodeck-assets=STORE --store courtyard-plaza=STORE --store tropical-island=STORE
 bun scripts/rig-posters.mjs holodeck --service RENDER_SERVICE_URL --mirror .localdata/holodeck-delivery
 node scripts/stage-holodeck.mjs --upload-list --mirror .localdata/holodeck-delivery
 ```
