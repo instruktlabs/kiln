@@ -41,4 +41,6 @@ through a supported part/variant rather than burying the whole plant or prop.
 
 For a scene GLB, export with `composeSceneGLB(parts, options)`. Select material optimization and animation retention deliberately. Review skipped-part warnings and confirm required inputs survived. For an application, retain the individual inputs and reproducible placement/runtime configuration. Inspect either result in its destination scene, including traversal, collision, contact, and relevant camera paths.
 
+When a selected asset's revision changes and is re-exported, regenerate the scene's aggregate export receipt from fresh `kiln export … --json` receipts and verify it before claiming delivery; keep superseded entries as history ([export receipts](references/runtime-scenes.md#export-receipts-after-a-revision-changes)).
+
 Report input assets, important transforms, intentional intersections, exporter warnings, and interactions actually checked. Do not infer playability from an overlap-free layout alone.

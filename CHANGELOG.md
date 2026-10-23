@@ -11,6 +11,12 @@ does not publish a package.
   `kiln_export_to` is advertised under Codex as under the other harnesses, and Discovery
   capabilities report the tool as `assets.exportTo` (`null` when absent, never the
   absolute root) ([#207](https://github.com/instruktlabs/kiln/issues/207)).
+- The optional compose-scene workflow now says how a scene's aggregate export receipt follows
+  a changed asset revision: regenerate it from fresh `kiln export … --json` receipts, check
+  revision id, GLB bytes and hash and sidecar hash against the emitted files before claiming
+  delivery, and keep superseded entries as immutable `history[]` rather than rewriting them.
+  Guidance only; standalone assets and the engine surface are unchanged
+  ([#180](https://github.com/instruktlabs/kiln/issues/180)).
 
 ## 1.4.0 (2026-10-23)
 
