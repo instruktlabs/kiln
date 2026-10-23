@@ -37,7 +37,7 @@ To review that motion, `kiln_screenshot_animation` needs the clip **by name** --
 
 Custom `THREE.BufferGeometry` is available. `meshGeo` helps validate flat positions, indices, normals, UV0, and tangents. Read export warnings for unsupported attributes; arbitrary Three.js features do not automatically survive GLB export. The host may select `geometryPolicy: 'strict'` to reject unsupported attributes instead of dropping them with warnings. In a local runtime, `KILN_GEOMETRY_POLICY=strict` configures this host policy; generated source and tool arguments cannot weaken it.
 
-Use deterministic equations or explicit seeded recipes when repeatable builds matter. Avoid ambient state in reusable geometry functions.
+Use deterministic equations or explicit seeded recipes when repeatable builds matter. Avoid ambient state in reusable geometry functions. For random variation call `seededRandom(seed)` instead of `Math.random`, which makes every build uncached; give each varied feature its own `fork(label)` so a variant with the same seed and label replays those draws.
 
 The source policy rejects host-global access, network access, dynamic imports/evaluation, constructor chains, and raw `THREE.DataTexture`, `ShaderMaterial`, or `RawShaderMaterial`. Use approved texture/material helpers. Generated code runs in strict mode: `this` is allowed inside object-literal and class methods (an object whose `add` method reads `this.parts`), not at the top level or in a plain function; an assignment to an undeclared name, `with` or a legacy octal literal is an error. Source checks are not an operating-system sandbox; evaluator process boundaries belong to the host.
 

@@ -53,6 +53,15 @@ does not publish a package.
   positions. With float positions, `KHR_mesh_quantization` is still declared for the
   quantized normals and texture coordinates
   ([#197](https://github.com/instruktlabs/kiln/issues/197)).
+- Add the `seededRandom(seed)` sandbox global for reproducible random variation
+  ([#244](https://github.com/instruktlabs/kiln/issues/244)). It takes a finite number or a
+  non-empty string and returns `next()`, `range(min, max)`, `int(min, max)` (both ends
+  included, like `THREE.MathUtils.randInt`), `pick(array)` and `fork(label)`, an
+  independent stream derived from the seed and label rather than from how many draws were
+  made, so a variant can replay a parent's draws. Seeds are hashed with FNV-1a and drawn
+  with mulberry32, the generator scene layout and material presets already used. Builds
+  that use it stay cacheable; `Math.random` still bypasses build reuse. Discovery finds it
+  for "seeded random".
 
 ## 1.4.0 (2026-10-23)
 

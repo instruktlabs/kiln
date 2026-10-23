@@ -73,6 +73,7 @@ export * from './geometry';
 import * as profile from './profile';
 import * as solids from './solids';
 import * as proceduralTextures from './procedural-texture';
+import { seededRandom } from './seeded-random';
 import * as textures from './textures';
 import { textureAtlas, remapUVToAtlas } from './texture-atlas';
 import type { TextureResolver } from './texture-resolver';
@@ -2453,6 +2454,7 @@ export function buildSandboxGlobals(
     countMaterials: wrap('countMaterials', countMaterials),
     getJointNames: wrap('getJointNames', getJointNames),
     materialBudgetAdvisory: wrap('materialBudgetAdvisory', materialBudgetAdvisory),
+    seededRandom: wrap('seededRandom', seededRandom),
     // THREE namespace is exposed so agents can `new THREE.Mesh(geo, mat)`
     // as operands to CSG and other ops that expect Object3D inputs.
     THREE,

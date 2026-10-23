@@ -874,5 +874,14 @@ countTriangles(root: Object3D)
 countMaterials(root: Object3D)  // Unique material count (by reference) across the subtree.
   // e.g. const mats = countMaterials(root);
 getJointNames(root: Object3D)  // All node names beginning with \`Joint_\`. Use to sanity-check animation targets.
-  // e.g. const joints = getJointNames(root);"
+  // e.g. const joints = getJointNames(root);
+seededRandom(seed: number | string)
+  // Deterministic random numbers from a seed: the same seed gives the same draws, so builds
+  // stay cacheable (Math.random marks a build ambient and uncached). fork(label) is an
+  // independent stream from the seed and label, not from how many draws were made.
+  // NOTE: Use instead of Math.random. Give each varied feature its own fork(label) so adding a
+  // draw elsewhere does not shift it; a variant that reuses the seed and label replays the
+  // stream.
+  // e.g. const rng = seededRandom('palm-3'); const crown = rng.fork('crown'); const lean =
+  // rng.range(-8, 8); const fronds = crown.int(7, 9); const look = rng.pick(['fan', 'droop']);"
 `;

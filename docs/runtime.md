@@ -212,7 +212,7 @@ cannot promise reproducible output. Function-bearing material resolvers bypass
 generic caching unless encapsulated by a host evaluator with a complete dependency
 identity.
 
-The cache bypasses known ambient time and random APIs, including `Date`, `performance`, `crypto`, `Math.random` and Three.js random helpers. This conservative source check is not a proof that arbitrary JavaScript is pure. Prefer an explicit seed and ordinary deterministic functions when reproducible revisions matter.
+The cache bypasses known ambient time and random APIs, including `Date`, `performance`, `crypto`, `Math.random` and Three.js random helpers. This conservative source check is not a proof that arbitrary JavaScript is pure. Prefer an explicit seed and ordinary deterministic functions when reproducible revisions matter. The sandbox global `seededRandom(seed)` is such a generator: its draws depend only on the source, so builds that use it stay cacheable.
 
 `buildCache.hit` reports a completed build reuse. The CLI prints `build reused` or `build created`. Camera changes reuse the same compatible GLB. Edits, changed build options and changed runtime identities produce different keys. Simultaneous requests without cancellation can share a build; cancellable misses own independent workers.
 

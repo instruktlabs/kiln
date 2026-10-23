@@ -32,6 +32,29 @@ test('does not reuse source that explicitly depends on ambient randomness or tim
   await port.render(deterministic);
   expect(calls).toBe(11);
 });
+test('a program using seededRandom builds deterministically and stays cacheable', async () => {
+  // #244: Math.random marks a build ambient; the seeded sandbox generator must not.
+  const seeded =
+    "const meta={name:'seeded-review'};function build(){const r=createRoot('Root');const rng=seededRandom('palm');const crown=rng.fork('crown');const m=gameMaterial('#888888');for(let i=0;i<4;i++){createPart('Leaf'+i,boxGeo(rng.range(0.2,0.6),0.1,crown.range(0.5,1)),m,{parent:r,position:[rng.int(-3,3),0,crown.next()]});}return r;}";
+  const first = await renderGLBInProcess(seeded);
+  const second = await renderGLBInProcess(seeded);
+  expect(Buffer.from(second.glb).equals(Buffer.from(first.glb))).toBe(true);
+  let calls = 0;
+  const port = createCachedEvaluatorPort(
+    {
+      render: async (code, options) => {
+        calls++;
+        return renderGLBInProcess(code, options);
+      },
+    },
+    { cache: new MemoryBuildCache(), identity: () => 'seeded-review' },
+  );
+  const built = await port.render(seeded);
+  const reused = await port.render(seeded);
+  expect(calls).toBe(1);
+  expect(Buffer.from(reused.glb).equals(Buffer.from(built.glb))).toBe(true);
+  expect(Buffer.from(built.glb).equals(Buffer.from(first.glb))).toBe(true);
+});
 test('cache is optional for a successful result containing non-cloneable metadata', async () => {
   const code = source.replace("name:'cache-review'", "name:'cache-review',note:()=>1");
   const original = await renderGLBInProcess(code);

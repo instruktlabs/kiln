@@ -1236,6 +1236,19 @@ const PRIMITIVES: HelperSpec[] = [
     description: 'All node names beginning with `Joint_`. Use to sanity-check animation targets.',
     example: 'const joints = getJointNames(root);',
   },
+  {
+    name: 'seededRandom',
+    signature: 'seededRandom(seed: number | string)',
+    returns:
+      '{ next(): [0,1), range(min, max): [min,max), int(min, max): min..max inclusive, pick(array), fork(label) }',
+    category: 'utility',
+    description:
+      'Deterministic random numbers from a seed: the same seed gives the same draws, so builds stay cacheable (Math.random marks a build ambient and uncached). fork(label) is an independent stream from the seed and label, not from how many draws were made.',
+    example:
+      "const rng = seededRandom('palm-3');\nconst crown = rng.fork('crown');\nconst lean = rng.range(-8, 8);\nconst fronds = crown.int(7, 9);\nconst look = rng.pick(['fan', 'droop']);",
+    promptNotes:
+      'Use instead of Math.random. Give each varied feature its own fork(label) so adding a draw elsewhere does not shift it; a variant that reuses the seed and label replays the stream.',
+  },
 ];
 
 /**

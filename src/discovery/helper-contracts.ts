@@ -2970,6 +2970,52 @@ define(
   },
 );
 
+define(
+  'seededRandom',
+  {
+    units: 'Unitless numbers; range and int use the caller units of their bounds.',
+    axes: 'Not applicable.',
+    origin: 'Not applicable.',
+    ownership: 'Returns a new frozen generator object; it holds only its own 32-bit state.',
+    coordinates: 'Not applicable; no scene or transform is read.',
+    parameters: [
+      'seed is a finite number or a non-empty string of at most 256 characters; a number is hashed from its decimal text, so 7 and "7" are the same seed. Other values throw.',
+      'next() returns a float in [0, 1). range(min, max) returns min + (max - min) * next(), in [min, max); bounds are finite and min <= max.',
+      'int(min, max) returns an integer from min to max with both ends included (like THREE.MathUtils.randInt); bounds are safe integers, min <= max, at most 2^32 values.',
+      'pick(array) returns one element of a non-empty array.',
+      'fork(label) takes a non-empty string of at most 256 characters and returns an independent generator.',
+    ],
+    topology: [noMesh],
+    preservation: ['Reads and changes no scene state.'],
+    semantics: [
+      'Seeds are hashed with FNV-1a (32-bit) over UTF-8; draws use mulberry32. next, range, int and pick each consume exactly one draw.',
+      'fork(label) derives its seed from the parent seed and the label only. It does not consume or depend on parent draws, so the same seed and label always replay the same stream.',
+      'The output depends only on the program source, so a build using seededRandom remains eligible for build reuse; Math.random, Date and THREE.MathUtils random helpers bypass it.',
+    ],
+    cost: 'Constant time per draw; hashing is linear in seed or label length.',
+  },
+  {
+    references: ['src/seeded-random.ts', 'src/build-cache.ts'],
+    tags: ['random', 'seed', 'deterministic', 'variation'],
+    aliases: [
+      'seeded random',
+      'random number generator',
+      'random numbers',
+      'deterministic random',
+      'PRNG',
+    ],
+    intents: [
+      'reproducible random variants',
+      'replay a parent asset random draws in a variant',
+      'random variation that keeps builds cacheable',
+    ],
+    limitations: [
+      'Not cryptographic. 32-bit state: streams are reproducible, not statistically perfect.',
+      'Ranges with very large magnitude and tiny span can round up to max.',
+    ],
+  },
+);
+
 /** Every retained helper must be explicitly listed; missing facts fail catalog construction. */
 const assemblyAccess: Facts = {
   units: lengthUnits,
