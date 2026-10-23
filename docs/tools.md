@@ -1853,7 +1853,7 @@ Export one saved revision. Default editable returns exact GLB, source, preview, 
 
 ## kiln_export_to
 
-Write one saved revision's GLB to a path under the host's export root. Default runtime writes the GLB plus its <stem>.kiln-metadata.json sidecar; editable writes the exact saved GLB; target three derives a three.js delivery GLB. Never replaces an existing file. Returns the CLI export receipt with root-relative paths, bytes and sha256.
+Write one saved revision's GLB to a path under the host's export root. Default runtime writes the GLB plus a matching .kiln-metadata.json sidecar; editable writes the exact saved GLB; target three derives a three.js delivery GLB. Never replaces an existing file. Returns the CLI export receipt with root-relative paths, bytes and sha256.
 
 <details>
 <summary>Input JSON Schema</summary>
