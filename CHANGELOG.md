@@ -7,7 +7,7 @@ does not publish a package.
 
 ## Unreleased
 
-## 1.4.0 (unpublished)
+## 1.4.0 (2026-10-23)
 
 - Encode KTX2 through an optional `ktx2-encoder` peer
   ([#201](https://github.com/instruktlabs/kiln/issues/201)). `export --target three --ktx2`

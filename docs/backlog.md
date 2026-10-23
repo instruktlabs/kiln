@@ -1,8 +1,8 @@
 # Kiln current backlog
 
-Current release status (22 October 2026): npm 1.3.1 and
-[GitHub v1.3.1](https://github.com/instruktlabs/kiln/releases/tag/v1.3.1) are published,
-and the public site is deployed. 1.3.1 is a maintenance release over 1.3.0.
+Current release status (23 October 2026): npm 1.4.0 and
+[GitHub v1.4.0](https://github.com/instruktlabs/kiln/releases/tag/v1.4.0) are published,
+and the public site is deployed. 1.4.0 adds the Holodeck dogfood fixes and features.
 Open work is listed under [Cycle handoff](#cycle-handoff-17-october).
 Scene performance evidence retains its original candidate scope; Cabin carries
 its own review report.
