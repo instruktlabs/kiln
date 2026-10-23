@@ -9243,33 +9243,326 @@ var init_lod_export = __esm(() => {
   init_metrics();
 });
 
+// src/material-metrics.ts
+function primitiveSurfaceArea(primitive, node) {
+  if (primitive.getMode() !== 4)
+    return 0;
+  const position = primitive.getAttribute("POSITION");
+  if (!position)
+    return 0;
+  const indices = primitive.getIndices()?.getArray();
+  const count = indices?.length ?? position.getCount();
+  const matrix = node.getWorldMatrix();
+  let area = 0;
+  for (let offset = 0;offset + 2 < count; offset += 3) {
+    const aIndex = indices ? Number(indices[offset]) : offset;
+    const bIndex = indices ? Number(indices[offset + 1]) : offset + 1;
+    const cIndex = indices ? Number(indices[offset + 2]) : offset + 2;
+    area += triangleArea(accessorPoint(position, aIndex, matrix), accessorPoint(position, bIndex, matrix), accessorPoint(position, cIndex, matrix));
+  }
+  return area;
+}
+function collectMaterialMetricsV1(document) {
+  const root = document.getRoot();
+  const materials = root.listMaterials();
+  const images = root.listTextures().map((texture, index) => {
+    const size = texture.getSize() ?? [0, 0];
+    const width = size[0] ?? 0;
+    const height = size[1] ?? 0;
+    const decodedBytesRgba8 = width * height * 4;
+    return {
+      name: texture.getName() || `image-${index + 1}`,
+      width,
+      height,
+      maxDimension: Math.max(width, height),
+      decodedBytesRgba8,
+      estimatedGpuBytesWithMipmaps: Math.ceil(decodedBytesRgba8 * 4 / 3)
+    };
+  });
+  let totalSurfaceArea = 0;
+  let blendedSurfaceArea = 0;
+  const blendedAreaByMaterial = new Map;
+  const visit = (node) => {
+    const mesh = node.getMesh();
+    if (mesh) {
+      for (const primitive of mesh.listPrimitives()) {
+        const area = primitiveSurfaceArea(primitive, node);
+        totalSurfaceArea += area;
+        const material = primitive.getMaterial();
+        if (material?.getAlphaMode() === "BLEND") {
+          blendedSurfaceArea += area;
+          blendedAreaByMaterial.set(material, (blendedAreaByMaterial.get(material) ?? 0) + area);
+        }
+      }
+    }
+    node.listChildren().forEach(visit);
+  };
+  for (const scene of root.listScenes())
+    scene.listChildren().forEach(visit);
+  const blendedMaterialAreas = materials.map((material, index) => ({
+    name: material.getName() || `material-${index + 1}`,
+    area: blendedAreaByMaterial.get(material) ?? 0
+  })).filter(({ area }) => area > 0).sort((a, b) => b.area - a.area).map(({ name, area }) => ({ name, area, ratio: area / totalSurfaceArea }));
+  const extensionsUsed = root.listExtensionsUsed().map((extension) => extension.extensionName).sort();
+  const materialExtensionsUsed = extensionsUsed.filter((name) => /^(?:KHR|EXT)_materials_/.test(name));
+  const opaqueMaterials = materials.filter((material) => material.getAlphaMode() === "OPAQUE").length;
+  const maskedMaterials = materials.filter((material) => material.getAlphaMode() === "MASK").length;
+  const blendedMaterials = materials.filter((material) => material.getAlphaMode() === "BLEND").length;
+  const doubleSidedMaterials = materials.filter((material) => material.getDoubleSided()).length;
+  const texturedMaterials = materials.filter(hasTexture).length;
+  return {
+    schemaVersion: 1,
+    materialCount: materials.length,
+    opaqueMaterials,
+    maskedMaterials,
+    blendedMaterials,
+    singleSidedMaterials: materials.length - doubleSidedMaterials,
+    doubleSidedMaterials,
+    texturedMaterials,
+    untexturedMaterials: materials.length - texturedMaterials,
+    extensionCount: extensionsUsed.length,
+    extensionsUsed,
+    materialExtensionCount: materialExtensionsUsed.length,
+    materialExtensionsUsed,
+    imageCount: images.length,
+    images,
+    maxImageDimension: Math.max(0, ...images.map((image) => image.maxDimension)),
+    totalImagePixels: images.reduce((sum, image) => sum + image.width * image.height, 0),
+    decodedImageBytesRgba8: images.reduce((sum, image) => sum + image.decodedBytesRgba8, 0),
+    estimatedGpuBytesWithMipmaps: images.reduce((sum, image) => sum + image.estimatedGpuBytesWithMipmaps, 0),
+    totalSurfaceArea,
+    blendedSurfaceArea,
+    blendedSurfaceAreaRatio: totalSurfaceArea > 0 ? blendedSurfaceArea / totalSurfaceArea : 0,
+    blendedMaterialAreas
+  };
+}
+function adviseMaterialsV1(metrics, options) {
+  const limits = MATERIAL_BUDGET_PROFILES_V1[options.profile][options.tier];
+  const reference = `${options.profile}/${options.tier}`;
+  const tierDeclaration = `{ materialTier: '${reference}' }`;
+  const advice = [];
+  if (metrics.maxImageDimension > limits.maxImageDimension) {
+    const offenders = metrics.images.filter((image) => image.maxDimension > limits.maxImageDimension).map((image) => `${image.name} ${image.width}x${image.height}`).join(", ");
+    advice.push({
+      code: "MATERIAL_TEXTURE_RESOLUTION_ADVICE",
+      disposition: "advisory",
+      reference,
+      message: `Largest image edge is ${metrics.maxImageDimension}px; the reference figure is ${limits.maxImageDimension}px. Larger: ${offenders}.${noteSuffix(reference, tierDeclaration)}`,
+      measurement: {
+        name: "maxImageDimension",
+        actual: metrics.maxImageDimension,
+        reference: limits.maxImageDimension,
+        unit: "px"
+      },
+      advice: `To reduce it, downscale the named images so their longest edge is at most ${limits.maxImageDimension}px; preserve aspect ratio and rerun glTF validation.`
+    });
+  }
+  if (metrics.imageCount > limits.maxImageCount) {
+    advice.push({
+      code: "MATERIAL_IMAGE_COUNT_ADVICE",
+      disposition: "advisory",
+      reference,
+      message: `${metrics.imageCount} images; the reference figure is ${limits.maxImageCount}.${noteSuffix(reference, "{ images }")}`,
+      measurement: {
+        name: "imageCount",
+        actual: metrics.imageCount,
+        reference: limits.maxImageCount,
+        unit: "images"
+      },
+      advice: "To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image."
+    });
+  }
+  if (metrics.decodedImageBytesRgba8 > limits.maxDecodedBytesRgba8) {
+    const scale = Math.sqrt(limits.maxDecodedBytesRgba8 / metrics.decodedImageBytesRgba8);
+    advice.push({
+      code: "MATERIAL_DECODED_MEMORY_ADVICE",
+      disposition: "advisory",
+      reference,
+      message: `Decoded RGBA8 image memory is ${mib(metrics.decodedImageBytesRgba8)}; the reference figure is ${mib(limits.maxDecodedBytesRgba8)} before mip overhead.${noteSuffix(reference, "{ decodedBytes }")}`,
+      measurement: {
+        name: "decodedImageBytesRgba8",
+        actual: metrics.decodedImageBytesRgba8,
+        reference: limits.maxDecodedBytesRgba8,
+        unit: "bytes"
+      },
+      advice: `To reduce it, downscale image width and height by approximately ${(Math.min(1, scale) * 100).toFixed(0)}% in aggregate, then verify small details and alpha cutouts remain legible.`
+    });
+  }
+  if (metrics.blendedSurfaceAreaRatio > limits.maxBlendedSurfaceAreaRatio) {
+    const blended = metrics.blendedMaterialAreas ?? [];
+    const named = blended.slice(0, BLEND_MATERIALS_NAMED).map(({ name, ratio }) => `${JSON.stringify(name)} ${(ratio * 100).toFixed(1)}%`);
+    const more = blended.length > BLEND_MATERIALS_NAMED ? `, and ${blended.length - BLEND_MATERIALS_NAMED} more` : "";
+    const drivers = named.length ? ` Largest BLEND materials by share of surface area: ${named.join(", ")}${more}.` : "";
+    advice.push({
+      code: "MATERIAL_BLEND_AREA_ADVICE",
+      disposition: "advisory",
+      reference,
+      message: `Blended primitive surface area is ${(metrics.blendedSurfaceAreaRatio * 100).toFixed(1)}% (${metrics.blendedSurfaceArea.toFixed(3)} of ${metrics.totalSurfaceArea.toFixed(3)} square asset units); the reference figure is ${(limits.maxBlendedSurfaceAreaRatio * 100).toFixed(1)}%.${drivers}${noteSuffix(reference, tierDeclaration)}`,
+      measurement: {
+        name: "blendedSurfaceAreaRatio",
+        actual: metrics.blendedSurfaceAreaRatio,
+        reference: limits.maxBlendedSurfaceAreaRatio,
+        unit: "ratio"
+      },
+      advice: "To reduce it, use MASK for binary cutouts such as foliage, reduce layered transparent surfaces, and reserve BLEND for genuinely translucent glass/effects."
+    });
+  }
+  return advice;
+}
+var DEFAULT_MATERIAL_REFERENCE, MATERIAL_BUDGET_PROFILES_V1, materialTextures2 = (material) => [
+  material.getBaseColorTexture(),
+  material.getMetallicRoughnessTexture(),
+  material.getNormalTexture(),
+  material.getOcclusionTexture(),
+  material.getEmissiveTexture()
+], hasTexture = (material) => materialTextures2(material).some(Boolean), transformPoint = (matrix, x, y, z) => {
+  const w = matrix[3] * x + matrix[7] * y + matrix[11] * z + matrix[15];
+  const reciprocal = w === 0 ? 1 : 1 / w;
+  return [
+    (matrix[0] * x + matrix[4] * y + matrix[8] * z + matrix[12]) * reciprocal,
+    (matrix[1] * x + matrix[5] * y + matrix[9] * z + matrix[13]) * reciprocal,
+    (matrix[2] * x + matrix[6] * y + matrix[10] * z + matrix[14]) * reciprocal
+  ];
+}, accessorPoint = (accessor, index, matrix) => {
+  const array = accessor.getArray();
+  if (!array)
+    return [0, 0, 0];
+  const size = accessor.getElementSize();
+  const offset = index * size;
+  return transformPoint(matrix, Number(array[offset]), Number(array[offset + 1]), Number(array[offset + 2]));
+}, triangleArea = (a, b, c) => {
+  const abx = b[0] - a[0];
+  const aby = b[1] - a[1];
+  const abz = b[2] - a[2];
+  const acx = c[0] - a[0];
+  const acy = c[1] - a[1];
+  const acz = c[2] - a[2];
+  const crossX = aby * acz - abz * acy;
+  const crossY = abz * acx - abx * acz;
+  const crossZ = abx * acy - aby * acx;
+  return Math.hypot(crossX, crossY, crossZ) / 2;
+}, BLEND_MATERIALS_NAMED = 3, mib = (bytes) => `${(bytes / (1024 * 1024)).toFixed(2)} MiB`, noteSuffix = (reference, declare) => ` This is an optimization note from the ${reference} reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget(${declare}).`;
+var init_material_metrics = __esm(() => {
+  DEFAULT_MATERIAL_REFERENCE = Object.freeze({ profile: "web.portable.v1", tier: "standard" });
+  MATERIAL_BUDGET_PROFILES_V1 = Object.freeze({
+    "web.portable.v1": Object.freeze({
+      hero: Object.freeze({
+        maxImageDimension: 4096,
+        maxImageCount: 8,
+        maxDecodedBytesRgba8: 128 * 1024 * 1024,
+        maxBlendedSurfaceAreaRatio: 0.35
+      }),
+      standard: Object.freeze({
+        maxImageDimension: 2048,
+        maxImageCount: 4,
+        maxDecodedBytesRgba8: 32 * 1024 * 1024,
+        maxBlendedSurfaceAreaRatio: 0.15
+      }),
+      background: Object.freeze({
+        maxImageDimension: 1024,
+        maxImageCount: 2,
+        maxDecodedBytesRgba8: 8 * 1024 * 1024,
+        maxBlendedSurfaceAreaRatio: 0.05
+      })
+    }),
+    "mobile.portable.v1": Object.freeze({
+      hero: Object.freeze({
+        maxImageDimension: 2048,
+        maxImageCount: 6,
+        maxDecodedBytesRgba8: 48 * 1024 * 1024,
+        maxBlendedSurfaceAreaRatio: 0.2
+      }),
+      standard: Object.freeze({
+        maxImageDimension: 1024,
+        maxImageCount: 3,
+        maxDecodedBytesRgba8: 16 * 1024 * 1024,
+        maxBlendedSurfaceAreaRatio: 0.1
+      }),
+      background: Object.freeze({
+        maxImageDimension: 512,
+        maxImageCount: 1,
+        maxDecodedBytesRgba8: 4 * 1024 * 1024,
+        maxBlendedSurfaceAreaRatio: 0.03
+      })
+    })
+  });
+});
+
 // src/budget.ts
+function materialLimits(value) {
+  const tierName = value.materialTier;
+  const materials = {};
+  if (tierName !== undefined) {
+    const [profile, tier] = typeof tierName === "string" ? tierName.split("/") : [];
+    const figures = MATERIAL_BUDGET_PROFILES_V1[profile ?? ""]?.[tier ?? ""];
+    if (!figures)
+      fail4(`materialTier must be one of ${Object.entries(MATERIAL_BUDGET_PROFILES_V1).flatMap(([p, tiers]) => Object.keys(tiers).map((t) => `${p}/${t}`)).join(", ")}, got ${JSON.stringify(tierName)}.`);
+    Object.assign(materials, {
+      tier: tierName,
+      images: figures.maxImageCount,
+      decodedBytes: figures.maxDecodedBytesRgba8,
+      imageSize: figures.maxImageDimension,
+      blendedAreaRatio: figures.maxBlendedSurfaceAreaRatio
+    });
+  }
+  if (value.images !== undefined)
+    materials.images = count2("images", value.images);
+  if (value.decodedBytes !== undefined)
+    materials.decodedBytes = count2("decodedBytes", value.decodedBytes);
+  return Object.keys(materials).length ? materials : undefined;
+}
+function storedMaterials(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value))
+    fail4("materials is malformed.");
+  const stored = value;
+  const materials = {};
+  for (const key of Object.keys(stored))
+    if (!["tier", "images", "decodedBytes", "imageSize", "blendedAreaRatio"].includes(key))
+      fail4(`unknown materials field ${JSON.stringify(key)}.`);
+  if (stored.tier !== undefined)
+    materials.tier = stored.tier;
+  if (stored.images !== undefined)
+    materials.images = count2("images", stored.images);
+  if (stored.decodedBytes !== undefined)
+    materials.decodedBytes = count2("decodedBytes", stored.decodedBytes);
+  if (stored.imageSize !== undefined)
+    materials.imageSize = count2("imageSize", stored.imageSize);
+  if (stored.blendedAreaRatio !== undefined)
+    materials.blendedAreaRatio = ratio("blendedAreaRatio", stored.blendedAreaRatio);
+  return materials;
+}
 function normalizeBudget(spec) {
   if (!spec || typeof spec !== "object" || Array.isArray(spec))
-    fail4("spec must be { triangles: number | { LOD0, LOD1, ... }, draws? }.");
+    fail4(`spec must be ${SPEC_SHAPE}.`);
   const value = spec;
+  const stored = value.schemaVersion !== undefined;
+  const allowed = ["triangles", "draws", "images", "decodedBytes", "materialTier", "schemaVersion"];
   for (const key of Object.keys(value))
-    if (key !== "triangles" && key !== "draws" && key !== "schemaVersion")
+    if (!allowed.includes(key) && !(stored && key === "materials"))
       fail4(`unknown field ${JSON.stringify(key)}.`);
+  const materials = stored && value.materials !== undefined ? storedMaterials(value.materials) : materialLimits(value);
   const triangles = {};
   if (typeof value.triangles === "number")
     triangles.LOD0 = count2("triangles", value.triangles);
   else if (value.triangles && typeof value.triangles === "object" && !Array.isArray(value.triangles)) {
     const entries = Object.entries(value.triangles);
-    if (entries.length === 0)
+    if (entries.length === 0 && !(stored && (materials || value.draws !== undefined)))
       fail4("triangles needs at least one tier.");
     for (const [tier, limit] of entries) {
       if (!/^LOD(0|[1-9][0-9]?)$/.test(tier))
         fail4(`triangles tier ${JSON.stringify(tier)} must be named LOD0, LOD1, ...`);
       triangles[tier] = count2(`triangles.${tier}`, limit);
     }
-  } else
+  } else if (value.triangles !== undefined)
     fail4("triangles must be a positive integer or a record of LOD tiers.");
+  else if (value.draws === undefined && !materials)
+    fail4(`spec must declare triangles, draws or a material limit: ${SPEC_SHAPE}.`);
   const ordered = Object.fromEntries(Object.entries(triangles).sort(([a], [b]) => Number(a.slice(3)) - Number(b.slice(3))));
   return {
     schemaVersion: 1,
     triangles: ordered,
-    ...value.draws === undefined ? {} : { draws: count2("draws", value.draws) }
+    ...value.draws === undefined ? {} : { draws: count2("draws", value.draws) },
+    ...materials ? { materials } : {}
   };
 }
 function defineBudget(spec, target) {
@@ -9291,7 +9584,7 @@ function readBudgetDeclaration(value) {
     return;
   }
 }
-function evaluateBudget(declaration, measuredLod0, chains) {
+function evaluateBudget(declaration, measuredLod0, chains, material) {
   const instanced = measuredLod0.instancedDraws === undefined ? {} : { instancedDraws: measuredLod0.instancedDraws };
   const outside = measuredLod0.triangles - chains.reduce((sum, chain) => sum + chain.levels[0].triangles, 0);
   const tierTriangles = (level) => outside + chains.reduce((sum, chain) => sum + chain.levels[Math.min(level, chain.levels.length - 1)].triangles, 0);
@@ -9320,17 +9613,48 @@ function evaluateBudget(declaration, measuredLod0, chains) {
       measured: { triangles: measuredLod0.triangles, draws: measuredLod0.draws, ...instanced },
       status: measuredLod0.draws <= declaration.draws ? "pass" : "fail"
     });
-  return { status: tiers.every((tier) => tier.status === "pass") ? "pass" : "fail", tiers };
+  const materials = material ? evaluateMaterialLimits(declaration, material) : [];
+  const pass = [...tiers, ...materials].every((entry) => entry.status === "pass");
+  return {
+    status: pass ? "pass" : "fail",
+    tiers,
+    ...materials.length ? { materials } : {}
+  };
 }
-var KILN_BUDGET_KEY = "kilnBudgetV1", fail4 = (detail) => {
+function evaluateMaterialLimits(declaration, metrics) {
+  const declared = declaration.materials ?? {};
+  const measured = {
+    images: metrics.imageCount,
+    decodedBytes: metrics.decodedImageBytesRgba8,
+    imageSize: metrics.maxImageDimension,
+    blendedAreaRatio: metrics.blendedSurfaceAreaRatio
+  };
+  return Object.keys(measured).flatMap((limit) => {
+    const value = declared[limit];
+    return value === undefined ? [] : [
+      {
+        limit,
+        declared: value,
+        measured: measured[limit],
+        status: measured[limit] <= value ? "pass" : "fail"
+      }
+    ];
+  });
+}
+var KILN_BUDGET_KEY = "kilnBudgetV1", declaresMaterialLimits = (declaration) => declaration?.materials !== undefined, fail4 = (detail) => {
   throw new AuthoringDiagnosticError("DELIVERY_CONTRACT", `defineBudget(spec): ${detail}`);
 }, count2 = (label, value) => {
   if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 1)
     fail4(`${label} must be a positive integer, got ${String(value)}.`);
   return value;
+}, SPEC_SHAPE = "{ triangles?: number | { LOD0, LOD1, ... }, draws?, images?, decodedBytes?, materialTier? }", ratio = (label, value) => {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0 || value > 1)
+    fail4(`${label} must be a number in (0, 1], got ${String(value)}.`);
+  return value;
 };
 var init_budget = __esm(() => {
   init_authoring_diagnostic();
+  init_material_metrics();
 });
 
 // src/gltf-texture-binding.ts
@@ -19932,7 +20256,7 @@ function textureHasAlpha2(texture) {
   }
   return false;
 }
-function materialTextures2(material) {
+function materialTextures3(material) {
   const candidate = material;
   const textures = new Set;
   for (const key of [
@@ -19951,7 +20275,7 @@ function materialTextures2(material) {
   return [...textures];
 }
 function materialTextureBytes(material) {
-  return materialTextures2(material).reduce((sum, texture) => {
+  return materialTextures3(material).reduce((sum, texture) => {
     const dimensions = textureDimensions(texture);
     return sum + (dimensions ? Math.ceil(dimensions[0] * dimensions[1] * 4 * (4 / 3)) : 0);
   }, 0);
@@ -21104,7 +21428,19 @@ function qaBlockingEnabled(env = process.env) {
   const mode = env["KILN_QA_MODE"];
   return mode !== "observe" && mode !== "off";
 }
-var DETERMINISTIC_QA_REGISTRY, MAX_DETAILED_BLOCKERS = 6, AssetQaBlockedError;
+var DETERMINISTIC_QA_REGISTRY, materialAdviceFinding = (advice) => ({
+  code: advice.code,
+  disposition: "observe",
+  dimension: "runtimeCost",
+  profile: advice.reference,
+  message: `${advice.message} ${advice.advice}`,
+  measurement: {
+    name: advice.measurement.name,
+    actual: advice.measurement.actual,
+    expected: advice.measurement.reference,
+    unit: advice.measurement.unit
+  }
+}), MAX_DETAILED_BLOCKERS = 6, AssetQaBlockedError;
 var init_run = __esm(() => {
   init_material();
   init_architecture();
@@ -22405,19 +22741,9 @@ function appendRequirementsQa(context, report, findings, metrics = {}, executedR
     metrics: merged
   });
 }
-async function appendRequirementsFinalQa(context, report, gltf, bytes, instanceability, metricsError, material, warnings = []) {
+async function appendRequirementsFinalQa(context, report, gltf, bytes, instanceability, metricsError, material, materialAdvice = []) {
   const gltfFindings = gltfReportFindings(gltf, report.qaProfile);
-  const findings = [
-    ...gltfFindings,
-    ...warnings.map((w) => ({
-      code: w.code,
-      disposition: "warn",
-      dimension: "runtimeCost",
-      profile: `${w.profile}.${w.tier}`,
-      message: `${w.message} ${w.advice}`,
-      measurement: w.measurement
-    }))
-  ];
+  const findings = [...gltfFindings, ...materialAdvice.map(materialAdviceFinding)];
   if (metricsError)
     findings.push({
       code: "RUNTIME_COST_METRICS_FAILED",
@@ -30279,252 +30605,6 @@ async function validateFinalGlbBytes(bytes, uri = "model.glb") {
 }
 var init_gltf = () => {};
 
-// src/material-metrics.ts
-function primitiveSurfaceArea(primitive, node) {
-  if (primitive.getMode() !== 4)
-    return 0;
-  const position = primitive.getAttribute("POSITION");
-  if (!position)
-    return 0;
-  const indices = primitive.getIndices()?.getArray();
-  const count = indices?.length ?? position.getCount();
-  const matrix = node.getWorldMatrix();
-  let area = 0;
-  for (let offset = 0;offset + 2 < count; offset += 3) {
-    const aIndex = indices ? Number(indices[offset]) : offset;
-    const bIndex = indices ? Number(indices[offset + 1]) : offset + 1;
-    const cIndex = indices ? Number(indices[offset + 2]) : offset + 2;
-    area += triangleArea(accessorPoint(position, aIndex, matrix), accessorPoint(position, bIndex, matrix), accessorPoint(position, cIndex, matrix));
-  }
-  return area;
-}
-function collectMaterialMetricsV1(document) {
-  const root = document.getRoot();
-  const materials = root.listMaterials();
-  const images = root.listTextures().map((texture, index) => {
-    const size = texture.getSize() ?? [0, 0];
-    const width = size[0] ?? 0;
-    const height = size[1] ?? 0;
-    const decodedBytesRgba8 = width * height * 4;
-    return {
-      name: texture.getName() || `image-${index + 1}`,
-      width,
-      height,
-      maxDimension: Math.max(width, height),
-      decodedBytesRgba8,
-      estimatedGpuBytesWithMipmaps: Math.ceil(decodedBytesRgba8 * 4 / 3)
-    };
-  });
-  let totalSurfaceArea = 0;
-  let blendedSurfaceArea = 0;
-  const blendedAreaByMaterial = new Map;
-  const visit = (node) => {
-    const mesh = node.getMesh();
-    if (mesh) {
-      for (const primitive of mesh.listPrimitives()) {
-        const area = primitiveSurfaceArea(primitive, node);
-        totalSurfaceArea += area;
-        const material = primitive.getMaterial();
-        if (material?.getAlphaMode() === "BLEND") {
-          blendedSurfaceArea += area;
-          blendedAreaByMaterial.set(material, (blendedAreaByMaterial.get(material) ?? 0) + area);
-        }
-      }
-    }
-    node.listChildren().forEach(visit);
-  };
-  for (const scene of root.listScenes())
-    scene.listChildren().forEach(visit);
-  const blendedMaterialAreas = materials.map((material, index) => ({
-    name: material.getName() || `material-${index + 1}`,
-    area: blendedAreaByMaterial.get(material) ?? 0
-  })).filter(({ area }) => area > 0).sort((a, b) => b.area - a.area).map(({ name, area }) => ({ name, area, ratio: area / totalSurfaceArea }));
-  const extensionsUsed = root.listExtensionsUsed().map((extension) => extension.extensionName).sort();
-  const materialExtensionsUsed = extensionsUsed.filter((name) => /^(?:KHR|EXT)_materials_/.test(name));
-  const opaqueMaterials = materials.filter((material) => material.getAlphaMode() === "OPAQUE").length;
-  const maskedMaterials = materials.filter((material) => material.getAlphaMode() === "MASK").length;
-  const blendedMaterials = materials.filter((material) => material.getAlphaMode() === "BLEND").length;
-  const doubleSidedMaterials = materials.filter((material) => material.getDoubleSided()).length;
-  const texturedMaterials = materials.filter(hasTexture).length;
-  return {
-    schemaVersion: 1,
-    materialCount: materials.length,
-    opaqueMaterials,
-    maskedMaterials,
-    blendedMaterials,
-    singleSidedMaterials: materials.length - doubleSidedMaterials,
-    doubleSidedMaterials,
-    texturedMaterials,
-    untexturedMaterials: materials.length - texturedMaterials,
-    extensionCount: extensionsUsed.length,
-    extensionsUsed,
-    materialExtensionCount: materialExtensionsUsed.length,
-    materialExtensionsUsed,
-    imageCount: images.length,
-    images,
-    maxImageDimension: Math.max(0, ...images.map((image) => image.maxDimension)),
-    totalImagePixels: images.reduce((sum, image) => sum + image.width * image.height, 0),
-    decodedImageBytesRgba8: images.reduce((sum, image) => sum + image.decodedBytesRgba8, 0),
-    estimatedGpuBytesWithMipmaps: images.reduce((sum, image) => sum + image.estimatedGpuBytesWithMipmaps, 0),
-    totalSurfaceArea,
-    blendedSurfaceArea,
-    blendedSurfaceAreaRatio: totalSurfaceArea > 0 ? blendedSurfaceArea / totalSurfaceArea : 0,
-    blendedMaterialAreas
-  };
-}
-function evaluateMaterialBudgetV1(metrics, options) {
-  const limits = MATERIAL_BUDGET_PROFILES_V1[options.profile][options.tier];
-  const warnings = [];
-  if (metrics.maxImageDimension > limits.maxImageDimension) {
-    const offenders = metrics.images.filter((image) => image.maxDimension > limits.maxImageDimension).map((image) => `${image.name} ${image.width}x${image.height}`).join(", ");
-    warnings.push({
-      code: "MATERIAL_TEXTURE_RESOLUTION_BUDGET",
-      disposition: "warn",
-      profile: options.profile,
-      tier: options.tier,
-      message: `Maximum image dimension is ${metrics.maxImageDimension}px; ${options.profile}/${options.tier} allows ${limits.maxImageDimension}px. Offenders: ${offenders}.`,
-      measurement: {
-        name: "maxImageDimension",
-        actual: metrics.maxImageDimension,
-        threshold: limits.maxImageDimension,
-        unit: "px"
-      },
-      advice: `Downscale the named images so their longest edge is at most ${limits.maxImageDimension}px; preserve aspect ratio and rerun glTF validation.`
-    });
-  }
-  if (metrics.imageCount > limits.maxImageCount) {
-    warnings.push({
-      code: "MATERIAL_IMAGE_COUNT_BUDGET",
-      disposition: "warn",
-      profile: options.profile,
-      tier: options.tier,
-      message: `${metrics.imageCount} images exceed the ${limits.maxImageCount}-image ${options.profile}/${options.tier} budget.`,
-      measurement: {
-        name: "imageCount",
-        actual: metrics.imageCount,
-        threshold: limits.maxImageCount,
-        unit: "images"
-      },
-      advice: "Reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image."
-    });
-  }
-  if (metrics.decodedImageBytesRgba8 > limits.maxDecodedBytesRgba8) {
-    const scale = Math.sqrt(limits.maxDecodedBytesRgba8 / metrics.decodedImageBytesRgba8);
-    warnings.push({
-      code: "MATERIAL_DECODED_MEMORY_BUDGET",
-      disposition: "warn",
-      profile: options.profile,
-      tier: options.tier,
-      message: `Decoded RGBA8 image memory is ${mib(metrics.decodedImageBytesRgba8)}; ${options.profile}/${options.tier} allows ${mib(limits.maxDecodedBytesRgba8)} before mip overhead.`,
-      measurement: {
-        name: "decodedImageBytesRgba8",
-        actual: metrics.decodedImageBytesRgba8,
-        threshold: limits.maxDecodedBytesRgba8,
-        unit: "bytes"
-      },
-      advice: `Downscale image width and height by approximately ${(Math.min(1, scale) * 100).toFixed(0)}% in aggregate, then verify small details and alpha cutouts remain legible.`
-    });
-  }
-  if (metrics.blendedSurfaceAreaRatio > limits.maxBlendedSurfaceAreaRatio) {
-    const blended = metrics.blendedMaterialAreas ?? [];
-    const named = blended.slice(0, BLEND_MATERIALS_NAMED).map(({ name, ratio }) => `${JSON.stringify(name)} ${(ratio * 100).toFixed(1)}%`);
-    const more = blended.length > BLEND_MATERIALS_NAMED ? `, and ${blended.length - BLEND_MATERIALS_NAMED} more` : "";
-    const drivers = named.length ? ` Largest BLEND materials by share of surface area: ${named.join(", ")}${more}.` : "";
-    warnings.push({
-      code: "MATERIAL_BLEND_AREA_BUDGET",
-      disposition: "warn",
-      profile: options.profile,
-      tier: options.tier,
-      message: `Blended primitive surface area is ${(metrics.blendedSurfaceAreaRatio * 100).toFixed(1)}% (${metrics.blendedSurfaceArea.toFixed(3)} of ${metrics.totalSurfaceArea.toFixed(3)} square asset units); the budget is ${(limits.maxBlendedSurfaceAreaRatio * 100).toFixed(1)}%.${drivers}`,
-      measurement: {
-        name: "blendedSurfaceAreaRatio",
-        actual: metrics.blendedSurfaceAreaRatio,
-        threshold: limits.maxBlendedSurfaceAreaRatio,
-        unit: "ratio"
-      },
-      advice: "Use MASK for binary cutouts such as foliage, reduce layered transparent surfaces, and reserve BLEND for genuinely translucent glass/effects."
-    });
-  }
-  return warnings;
-}
-var MATERIAL_BUDGET_PROFILES_V1, materialTextures3 = (material) => [
-  material.getBaseColorTexture(),
-  material.getMetallicRoughnessTexture(),
-  material.getNormalTexture(),
-  material.getOcclusionTexture(),
-  material.getEmissiveTexture()
-], hasTexture = (material) => materialTextures3(material).some(Boolean), transformPoint = (matrix, x, y, z) => {
-  const w = matrix[3] * x + matrix[7] * y + matrix[11] * z + matrix[15];
-  const reciprocal = w === 0 ? 1 : 1 / w;
-  return [
-    (matrix[0] * x + matrix[4] * y + matrix[8] * z + matrix[12]) * reciprocal,
-    (matrix[1] * x + matrix[5] * y + matrix[9] * z + matrix[13]) * reciprocal,
-    (matrix[2] * x + matrix[6] * y + matrix[10] * z + matrix[14]) * reciprocal
-  ];
-}, accessorPoint = (accessor, index, matrix) => {
-  const array = accessor.getArray();
-  if (!array)
-    return [0, 0, 0];
-  const size = accessor.getElementSize();
-  const offset = index * size;
-  return transformPoint(matrix, Number(array[offset]), Number(array[offset + 1]), Number(array[offset + 2]));
-}, triangleArea = (a, b, c) => {
-  const abx = b[0] - a[0];
-  const aby = b[1] - a[1];
-  const abz = b[2] - a[2];
-  const acx = c[0] - a[0];
-  const acy = c[1] - a[1];
-  const acz = c[2] - a[2];
-  const crossX = aby * acz - abz * acy;
-  const crossY = abz * acx - abx * acz;
-  const crossZ = abx * acy - aby * acx;
-  return Math.hypot(crossX, crossY, crossZ) / 2;
-}, BLEND_MATERIALS_NAMED = 3, mib = (bytes) => `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
-var init_material_metrics = __esm(() => {
-  MATERIAL_BUDGET_PROFILES_V1 = Object.freeze({
-    "web.portable.v1": Object.freeze({
-      hero: Object.freeze({
-        maxImageDimension: 4096,
-        maxImageCount: 8,
-        maxDecodedBytesRgba8: 128 * 1024 * 1024,
-        maxBlendedSurfaceAreaRatio: 0.35
-      }),
-      standard: Object.freeze({
-        maxImageDimension: 2048,
-        maxImageCount: 4,
-        maxDecodedBytesRgba8: 32 * 1024 * 1024,
-        maxBlendedSurfaceAreaRatio: 0.15
-      }),
-      background: Object.freeze({
-        maxImageDimension: 1024,
-        maxImageCount: 2,
-        maxDecodedBytesRgba8: 8 * 1024 * 1024,
-        maxBlendedSurfaceAreaRatio: 0.05
-      })
-    }),
-    "mobile.portable.v1": Object.freeze({
-      hero: Object.freeze({
-        maxImageDimension: 2048,
-        maxImageCount: 6,
-        maxDecodedBytesRgba8: 48 * 1024 * 1024,
-        maxBlendedSurfaceAreaRatio: 0.2
-      }),
-      standard: Object.freeze({
-        maxImageDimension: 1024,
-        maxImageCount: 3,
-        maxDecodedBytesRgba8: 16 * 1024 * 1024,
-        maxBlendedSurfaceAreaRatio: 0.1
-      }),
-      background: Object.freeze({
-        maxImageDimension: 512,
-        maxImageCount: 1,
-        maxDecodedBytesRgba8: 4 * 1024 * 1024,
-        maxBlendedSurfaceAreaRatio: 0.03
-      })
-    })
-  });
-});
-
 // src/rigid-merge.ts
 import {
   ComponentTypeToTypedArray,
@@ -31439,12 +31519,12 @@ bakeSurfaceAttributes(root, { edge: { thresholdDegrees: 35 }, cavity: { rays: 32
     },
     {
       name: "defineBudget",
-      signature: "defineBudget(spec: { triangles: number | { LOD0, LOD1, ... }, draws?: number }, target?: Object3D)",
-      returns: "{ schemaVersion: 1, triangles: { LOD0, ... }, draws? } (the normalised declaration)",
+      signature: "defineBudget(spec: { triangles?: number | { LOD0, LOD1, ... }, draws?: number, images?: number, decodedBytes?: number, materialTier?: 'web.portable.v1/standard' | ... }, target?: Object3D)",
+      returns: "{ schemaVersion: 1, triangles: { LOD0, ... }, draws?, materials? } (the normalised declaration)",
       category: "utility",
-      description: "Declares a triangle budget (one number for LOD0, or per LOD tier) and an optional LOD0 draw-call budget. Receipts report budget: { status, tiers: [{ tier, declared, measured, status }] } measured from the GLB. Advisory: never QA acceptance.",
-      example: "defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 });",
-      promptNotes: "Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching defineLod levels."
+      description: "Declares a triangle budget (one number for LOD0, or per LOD tier), an optional LOD0 draw-call budget, and optional material limits: images, decodedBytes (RGBA8), or materialTier, which adopts a reference tier's image count, decoded bytes, image size and blended-area figures. Receipts report budget: { status, tiers, materials? } measured from the GLB. Without a material limit, receipts carry materialAdvice notes against web.portable.v1/standard instead: optional, never a requirement. Advisory: never QA acceptance.",
+      example: "defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3, images: 6 });",
+      promptNotes: "Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching defineLod levels. Material notes are not a budget: do not remove textures that carry the look to clear them."
     },
     {
       name: "definePalette",
@@ -38867,11 +38947,13 @@ async function inspectGlbIntegration(bytes, opts = {}) {
   const vertexAttributes = summarizeVertexAttributes(doc);
   const budgetDeclaration = readBudgetDeclaration(scene.getExtras()[KILN_BUDGET_KEY]);
   const instancedDraws = budgetDeclaration?.draws === undefined ? undefined : await (await Promise.resolve().then(() => (init_runtime_three(), exports_runtime_three))).instancedDrawEstimate(doc);
+  const materialMetrics = collectMaterialMetricsV1(doc);
   const budget = budgetDeclaration ? evaluateBudget(budgetDeclaration, {
     triangles: metrics.triangles,
     draws: metrics.drawCalls,
     ...instancedDraws === undefined ? {} : { instancedDraws }
-  }, levelsOfDetail) : undefined;
+  }, levelsOfDetail, materialMetrics) : undefined;
+  const materialAdvice = declaresMaterialLimits(budgetDeclaration) ? [] : adviseMaterialsV1(materialMetrics, DEFAULT_MATERIAL_REFERENCE);
   const paletteDeclaration = readPaletteDeclaration(scene.getExtras()[KILN_PALETTE_KEY]);
   const palette = paletteDeclaration ? evaluatePalette(paletteDeclaration, doc) : undefined;
   return {
@@ -38917,6 +38999,7 @@ async function inspectGlbIntegration(bytes, opts = {}) {
     ...delivery.kit ? { kit: delivery.kit } : {},
     ...delivery.ports.length ? { ports: delivery.ports } : {},
     ...budget ? { budget } : {},
+    ...materialAdvice.length ? { materialAdvice } : {},
     ...palette ? { palette } : {},
     ...vertexAttributes.length ? { vertexAttributes } : {},
     ...delivery.diagnostics.length ? { deliveryDiagnostics: delivery.diagnostics } : {},
@@ -39642,13 +39725,12 @@ async function renderSceneToGLB(root, opts = {}) {
     metricsError = err instanceof Error ? err.message : String(err);
   }
   let materialMetrics;
-  let materialBudgetWarnings = [];
+  let materialAdvice = [];
   try {
     materialMetrics = collectMaterialMetricsV1(doc);
-    materialBudgetWarnings = evaluateMaterialBudgetV1(materialMetrics, {
-      profile: "web.portable.v1",
-      tier: "standard"
-    });
+    const declaration = readBudgetDeclaration(doc.getRoot().getDefaultScene()?.getExtras()?.[KILN_BUDGET_KEY]);
+    if (!declaresMaterialLimits(declaration))
+      materialAdvice = adviseMaterialsV1(materialMetrics, DEFAULT_MATERIAL_REFERENCE);
   } catch (error) {
     warnings.push(`material metrics failed: ${error instanceof Error ? error.message : String(error)}`);
   }
@@ -39663,7 +39745,7 @@ async function renderSceneToGLB(root, opts = {}) {
     artifactGlbSha256
   }));
   const gltfValidation = await validateFinalGlbBytes(bytes);
-  const qaReport = await appendRequirementsFinalQa(requirements, sceneQaReport, gltfValidation, bytes, instanceability, metricsError, materialMetrics, materialBudgetWarnings);
+  const qaReport = await appendRequirementsFinalQa(requirements, sceneQaReport, gltfValidation, bytes, instanceability, metricsError, materialMetrics, materialAdvice);
   if (qaReport.disposition === "block") {
     const blocked = new AssetQaBlockedError(qaReport, "final-glb", gltfValidation);
     if (qaBlocks)
@@ -41349,7 +41431,7 @@ import {
   PropertyType as PropertyType6
 } from "@gltf-transform/core";
 import { ALL_EXTENSIONS as ALL_EXTENSIONS2 } from "@gltf-transform/extensions";
-import { Box3 as Box327, Matrix4 as Matrix419, Vector3 as Vector346 } from "three";
+import { Box3 as Box327, Matrix4 as Matrix419, Quaternion as Quaternion23, Vector3 as Vector346 } from "three";
 async function accessorFingerprint(accessor) {
   const array = accessor?.getArray();
   if (!accessor || !array)
@@ -41374,6 +41456,213 @@ function bounds(box) {
 async function digest8(bytes) {
   const hash = new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes)));
   return `sha256:${[...hash].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
+}
+function placements(node) {
+  const world = new Matrix419().fromArray(node.getWorldMatrix());
+  const instances = node.getExtension("EXT_mesh_gpu_instancing");
+  if (!instances)
+    return [world];
+  const translation = instances.getAttribute("TRANSLATION");
+  const rotation = instances.getAttribute("ROTATION");
+  const scale = instances.getAttribute("SCALE");
+  const count = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
+  return Array.from({ length: count }, (_, i) => world.clone().multiply(new Matrix419().compose(new Vector346().fromArray(translation?.getElement(i, []) ?? [0, 0, 0]), new Quaternion23().fromArray(rotation?.getElement(i, []) ?? [0, 0, 0, 1]), new Vector346().fromArray(scale?.getElement(i, []) ?? [1, 1, 1]))));
+}
+function triangleCorners(mode, count) {
+  const corners = [];
+  if (mode === 4)
+    for (let i = 0;i + 2 < count; i += 3)
+      corners.push(i, i + 1, i + 2);
+  else if (mode === 5)
+    for (let i = 0;i + 2 < count; i++)
+      corners.push(...i % 2 ? [i + 1, i, i + 2] : [i, i + 1, i + 2]);
+  else if (mode === 6)
+    for (let i = 1;i + 1 < count; i++)
+      corners.push(i, i + 1, 0);
+  else
+    return null;
+  return corners;
+}
+function compareRecords(data, a, b) {
+  for (let k = 0;k < RECORD; k++) {
+    const d = data[a + k] - data[b + k];
+    if (d)
+      return d;
+  }
+  return 0;
+}
+function compareRotations(corner, r, s) {
+  for (const [offset, width] of [
+    [0, 3],
+    [9, 2]
+  ])
+    for (let c = 0;c < 3; c++)
+      for (let k = 0;k < width; k++) {
+        const d = corner[offset + (c + r) % 3 * width + k] - corner[offset + (c + s) % 3 * width + k];
+        if (d)
+          return d;
+      }
+  return 0;
+}
+async function drawnGeometryDigests(doc) {
+  const drawn = [];
+  const visit = (node) => {
+    if (isHiddenGltfNode(node))
+      return;
+    const mesh = node.getMesh();
+    if (mesh) {
+      const matrices = placements(node);
+      for (const primitive of mesh.listPrimitives())
+        drawn.push({ primitive, matrices });
+    }
+    for (const child of node.listChildren())
+      visit(child);
+  };
+  for (const scene of doc.getRoot().listScenes())
+    for (const node of scene.listChildren())
+      visit(node);
+  let triangles = 0;
+  let vertices = 0;
+  for (const { primitive, matrices } of drawn) {
+    const position = primitive.getAttribute("POSITION");
+    const count = primitive.getIndices()?.getCount() ?? position?.getCount() ?? 0;
+    vertices += (position?.getCount() ?? 0) * matrices.length;
+    triangles += (triangleCorners(primitive.getMode(), count)?.length ?? 0) / 3 * matrices.length;
+    if (vertices > MAX_VERTICES2 || triangles * 3 > MAX_VERTICES2)
+      throw new Error("Revision comparison exceeds 2,000,000 placed vertices.");
+  }
+  const data = new Float32Array(triangles * RECORD);
+  const others = [];
+  const point = new Vector346;
+  const element = [0, 0, 0];
+  const texcoord = [0, 0];
+  const corner = new Float32Array(15);
+  let written = 0;
+  for (const { primitive, matrices } of drawn) {
+    const position = primitive.getAttribute("POSITION");
+    if (!position)
+      continue;
+    const uv = primitive.getAttribute("TEXCOORD_0");
+    const indices = primitive.getIndices();
+    const count = indices?.getCount() ?? position.getCount();
+    const corners = triangleCorners(primitive.getMode(), count);
+    const vertexAt = (i) => indices?.getScalar(i) ?? i;
+    for (const matrix of matrices) {
+      const world = (vertex) => {
+        position.getElement(vertex, element);
+        point.fromArray(element).applyMatrix4(matrix);
+        if (!Number.isFinite(point.x + point.y + point.z))
+          throw new Error("Revision comparison requires finite positions and valid indices.");
+        return point;
+      };
+      if (!corners) {
+        const sequence = new Float32Array(count * 3);
+        for (let i = 0;i < count; i++) {
+          const p = world(vertexAt(i));
+          sequence.set([exact(p.x), exact(p.y), exact(p.z)], i * 3);
+        }
+        others.push(`${primitive.getMode()}:${await digest8(new Uint8Array(sequence.buffer))}`);
+        continue;
+      }
+      for (let t = 0;t < corners.length; t += 3) {
+        for (let c = 0;c < 3; c++) {
+          const vertex = vertexAt(corners[t + c]);
+          const p = world(vertex);
+          corner[c * 3] = exact(p.x);
+          corner[c * 3 + 1] = exact(p.y);
+          corner[c * 3 + 2] = exact(p.z);
+          const value = uv ? uv.getElement(vertex, texcoord) : [0, 0];
+          corner[9 + c * 2] = exact(value[0]);
+          corner[10 + c * 2] = exact(value[1]);
+        }
+        let best = 0;
+        for (const r of [1, 2])
+          if (compareRotations(corner, r, best) < 0)
+            best = r;
+        const at = written * RECORD;
+        for (let c = 0;c < 3; c++) {
+          const from = (c + best) % 3;
+          data.set(corner.subarray(from * 3, from * 3 + 3), at + c * 3);
+          data.set(corner.subarray(9 + from * 2, 11 + from * 2), at + 9 + c * 2);
+        }
+        data[at + 15] = uv ? 1 : 0;
+        written++;
+      }
+    }
+  }
+  const order = new Uint32Array(written).map((_, i) => i);
+  order.sort((a, b) => compareRecords(data, a * RECORD, b * RECORD));
+  const positions = new Float32Array(written * 9);
+  const sorted = new Float32Array(written * RECORD);
+  order.forEach((record, i) => {
+    positions.set(data.subarray(record * RECORD, record * RECORD + 9), i * 9);
+    sorted.set(data.subarray(record * RECORD, (record + 1) * RECORD), i * RECORD);
+  });
+  const tail = new TextEncoder().encode(`|${others.sort().join(",")}`);
+  const joined = (bytes) => {
+    const out = new Uint8Array(bytes.byteLength + tail.byteLength);
+    out.set(new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength));
+    out.set(tail, bytes.byteLength);
+    return out;
+  };
+  return {
+    vertices,
+    geometry: await digest8(joined(positions)),
+    uv: await digest8(joined(sorted))
+  };
+}
+async function revisionTotals(doc) {
+  const metrics = collectGlbMetrics(doc);
+  const { vertices, geometry, uv } = await drawnGeometryDigests(doc);
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  const drawnBounds = scene ? drawnSceneBounds(scene) : null;
+  const box = drawnBounds && [...drawnBounds.min, ...drawnBounds.max].every(Number.isFinite) ? new Box327(new Vector346(...drawnBounds.min), new Vector346(...drawnBounds.max)) : new Box327;
+  return {
+    triangles: metrics.triangles,
+    vertices,
+    drawCalls: metrics.drawCalls,
+    materials: metrics.uniqueMaterials,
+    bounds: bounds(box),
+    geometry,
+    uv
+  };
+}
+function totalsDelta(before, after) {
+  const counts = Object.fromEntries(COUNTS.map((key) => [
+    key,
+    { before: before[key], after: after[key], delta: after[key] - before[key] }
+  ]));
+  const geometryIdentical = before.geometry === after.geometry;
+  return {
+    counts,
+    geometryIdentical,
+    ...geometryIdentical ? { uvIdentical: before.uv === after.uv } : {},
+    boundsDelta: boundsDelta(before.bounds, after.bounds)
+  };
+}
+function boundsDelta(before, after) {
+  if (!before || !after)
+    return null;
+  const minus = (a, b) => a.map((value, i) => value - b[i]);
+  return {
+    min: minus(after.min, before.min),
+    max: minus(after.max, before.max),
+    size: minus(after.size, before.size)
+  };
+}
+async function readComparisonDocument(bytes) {
+  if (bytes.byteLength > MAX_GLB_BYTES)
+    throw new Error("Revision comparison GLB exceeds 64 MiB.");
+  const io = createGltfIO();
+  const json = await io.binaryToJSON(bytes);
+  if (json.json.buffers?.some((b) => b.uri && !json.resources[b.uri]) || json.json.images?.some((i) => i.uri))
+    throw new Error("Revision comparison requires embedded GLB resources.");
+  return io.readJSON(json);
+}
+async function compareRevisionTotals(parent, child) {
+  const before = await revisionTotals(await readComparisonDocument(parent));
+  const after = await revisionTotals(await readComparisonDocument(child));
+  return { before, after, ...totalsDelta(before, after) };
 }
 async function snapshot3(bytes) {
   if (bytes.byteLength > MAX_GLB_BYTES)
@@ -41489,7 +41778,14 @@ async function snapshot3(bytes) {
       });
     }
   }
-  return { parts, animation, scenePath, bounds: bounds(box), glbSha256: await digest8(bytes) };
+  return {
+    parts,
+    animation,
+    scenePath,
+    bounds: bounds(box),
+    totals: { ...await revisionTotals(doc), bounds: bounds(box) },
+    glbSha256: await digest8(bytes)
+  };
 }
 function accessorEqual(a, b) {
   return a === b || Boolean(a && b && a.equals(b, ACCESSOR_IGNORED));
@@ -41592,7 +41888,7 @@ async function compareRevisionGlbs(before, after, page = {}) {
   }
   return {
     version: "kiln.revision-comparison.v1",
-    scope: "Exact exported static mesh data and rest transforms; named hierarchy paths. MSFT_lod lower levels are compared at the path they take beside LOD0, and bounds are LOD0 only. A KHR_node_visibility flag is compared as visibility; the bounds of a part are where it draws when shown, and the bounds of its ancestors count only what draws. Animation channels are reported separately. Metadata (including LOD switch thresholds), visual equivalence, intent and physical fit are not assessed.",
+    scope: "Exact exported static mesh data and rest transforms; named hierarchy paths. MSFT_lod lower levels are compared at the path they take beside LOD0, and bounds are LOD0 only. A KHR_node_visibility flag is compared as visibility; the bounds of a part are where it draws when shown, and the bounds of its ancestors count only what draws. Animation channels are reported separately. counts are the drawn triangles, vertices, draw calls and materials render metrics report; geometryIdentical compares the sorted drawn world-space triangles at float32 precision, so node, primitive and vertex order do not count; uvIdentical adds TEXCOORD_0 when the geometry is identical. Normals, colours, skin weights and morph targets are not in the geometry hash. Metadata (including LOD switch thresholds), visual equivalence, intent and physical fit are not assessed.",
     animation: {
       scope: "Exact exported channel target, interpolation, key times and values, matched by clip name and node path. Renames are add/remove. Equivalent motions may have different key data; metadata and playback behavior are not assessed.",
       summary: animationSummary,
@@ -41608,6 +41904,7 @@ async function compareRevisionGlbs(before, after, page = {}) {
     },
     after: { glbSha256: current.glbSha256, bounds: current.bounds, scenePath: current.scenePath },
     summary,
+    ...totalsDelta(previous.totals, current.totals),
     ...subtrees ? {
       subtrees: subtrees.map(({ key, ...subtree }) => ({
         ...subtree,
@@ -41619,13 +41916,15 @@ async function compareRevisionGlbs(before, after, page = {}) {
     nextOffset: offset + limit < changes.length ? offset + limit : null
   };
 }
-var MAX_GLB_BYTES, MAX_NODES = 1e4, MAX_VERTICES2 = 2000000, ACCESSOR_IGNORED, MATERIAL_IGNORED;
+var MAX_GLB_BYTES, MAX_NODES = 1e4, MAX_VERTICES2 = 2000000, ACCESSOR_IGNORED, MATERIAL_IGNORED, RECORD = 16, exact = (value) => Math.fround(value) + 0, COUNTS;
 var init_revision_comparison = __esm(() => {
   init_gltf_io();
   init_metrics();
+  init_node_visibility();
   MAX_GLB_BYTES = 64 * 1024 * 1024;
   ACCESSOR_IGNORED = new Set(["name", "extras", "buffer"]);
   MATERIAL_IGNORED = new Set(["name", "extras"]);
+  COUNTS = ["triangles", "vertices", "drawCalls", "materials"];
 });
 
 // src/views/surface-distance.ts
@@ -46187,7 +46486,19 @@ var LEAN_DIFF = 2000;
 var COMPACT_COMPARISON_CHANGES = 12;
 function compactComparison(comparison, hint, limit) {
   const out = {};
-  for (const key of ["programRef", "version", "units", "summary", "before", "after", "subtrees"])
+  for (const key of [
+    "programRef",
+    "version",
+    "units",
+    "summary",
+    "counts",
+    "geometryIdentical",
+    "uvIdentical",
+    "boundsDelta",
+    "before",
+    "after",
+    "subtrees"
+  ])
     if (comparison[key] !== undefined)
       out[key] = comparison[key];
   if (isRecord6(comparison.animation)) {
@@ -50000,7 +50311,7 @@ var materialWords = {
   glass: ["transparent", "window", "translucent"],
   emissive: ["glowing", "lamp", "light source"]
 };
-var materialLimits = {
+var materialLimits2 = {
   leaf: "MASK mode alone does not create a cutout. Supply alpha data and UVs for shaped leaf cards.",
   glass: "Core glTF BLEND approximates transparency; this is not refraction or physical transmission. Sorting depends on the destination renderer.",
   skin: "This baseline has no subsurface scattering.",
@@ -50025,7 +50336,7 @@ var materialRecipes = MATERIAL_RECIPE_IDS.map((id) => {
     limitations: [
       "Defaults contain no texture resources or geometric detail. Material naming alone does not establish realism.",
       "Uses core glTF metallic-roughness fields; visually check the actual destination importer and renderer.",
-      ...materialLimits[slug] ? [materialLimits[slug]] : []
+      ...materialLimits2[slug] ? [materialLimits2[slug]] : []
     ],
     recipe: {
       prerequisites: ["operation:materialRecipe", "operation:createRoot", "operation:createPart"],
@@ -52856,7 +53167,11 @@ function levelsOfDetailField(rendered, viewLevels) {
 function budgetField(rendered) {
   if (!rendered.integrationManifest)
     return {};
-  return { budget: rendered.integrationManifest.budget ?? { status: "none", tiers: [] } };
+  const advice = rendered.integrationManifest.materialAdvice;
+  return {
+    budget: rendered.integrationManifest.budget ?? { status: "none", tiers: [] },
+    ...advice?.length ? { materialAdvice: advice } : {}
+  };
 }
 function hiddenNodesField(rendered) {
   const hidden = rendered.integrationManifest?.hiddenNodes;
@@ -53774,6 +54089,37 @@ async function newestRevision(target, collection, assetId, listCall = `kiln_asse
   const newest = (heads.length ? heads : revisions).sort((a, b) => a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0);
   return newest[0].revisionId;
 }
+var roundCompact = (value) => Number(value.toFixed(COMPACT_DECIMALS));
+async function parentRevisionComparison(parent, child) {
+  try {
+    if (!parent)
+      throw new Error("the parent revision has no asset.glb.");
+    await Promise.resolve().then(() => init_revision_comparison());
+    const compared = await compareRevisionTotals(parent, child);
+    const size = (bounds) => bounds?.size.map(roundCompact) ?? null;
+    return {
+      counts: Object.fromEntries(Object.entries(compared.counts).map(([key, count]) => [
+        key,
+        { parent: count.before, child: count.after, delta: count.delta }
+      ])),
+      bounds: {
+        parent: size(compared.before.bounds),
+        child: size(compared.after.bounds),
+        delta: compared.boundsDelta && {
+          min: compared.boundsDelta.min.map(roundCompact),
+          max: compared.boundsDelta.max.map(roundCompact),
+          size: compared.boundsDelta.size.map(roundCompact)
+        }
+      },
+      geometryIdentical: compared.geometryIdentical,
+      ...compared.uvIdentical === undefined ? {} : { uvIdentical: compared.uvIdentical }
+    };
+  } catch (error) {
+    return {
+      unavailable: `Parent comparison unavailable: ${error instanceof Error ? error.message : String(error)}`
+    };
+  }
+}
 async function buildProgramAssetDraft(code, context, backdrop) {
   await context.prepareBuildProvenance?.();
   const callContext = {
@@ -53907,7 +54253,7 @@ function createKilnAssetDefs(context, presentation = "grouped") {
   return [
     {
       name: "kiln_save",
-      description: "Save a completed source revision into the user-requested collection, or project when none was requested. Persists exact GLB, source, preview and build record. Use programRef returned by render/edit. To revise an asset, pass assetId and parentRevision; earlier revisions stay intact. Returns downloadable resources; draft renders never populate collections.",
+      description: "Save a completed source revision into the user-requested collection, or project when none was requested. Persists exact GLB, source, preview and build record. Use programRef returned by render/edit. To revise an asset, pass assetId and parentRevision; earlier revisions stay intact, and the result comparison gives triangle, vertex, draw and material deltas, the bounds delta and geometryIdentical against the parent. Returns downloadable resources; draft renders never populate collections.",
       inputSchema: saveInput,
       run: async (raw) => {
         const { backdrop, ...input } = saveInput.parse(raw);
@@ -53917,16 +54263,18 @@ function createKilnAssetDefs(context, presentation = "grouped") {
           ...context,
           requirements: activeRequirements.binding
         };
+        let parent;
         if (input.assetId && input.parentRevision) {
-          const previous = await readSavedRevision(target, input.collection, input.assetId, input.parentRevision, listCall(input.collection));
-          assertSavedRequirementsAuthorized(previous.manifest, activeRequirements);
+          parent = await readSavedRevision(target, input.collection, input.assetId, input.parentRevision, listCall(input.collection));
+          assertSavedRequirementsAuthorized(parent.manifest, activeRequirements);
         }
         const code = await context.programStore.get(input.programRef);
-        const asset = await target.save(input.collection, {
-          ...input,
-          ...await buildProgramAssetDraft(code, callContext, backdrop)
-        });
-        return links(input.collection, asset);
+        const draft = await buildProgramAssetDraft(code, callContext, backdrop);
+        const asset = await target.save(input.collection, { ...input, ...draft });
+        return {
+          ...await links(input.collection, asset),
+          ...parent ? { comparison: await parentRevisionComparison(parent.files["asset.glb"], draft.glb) } : {}
+        };
       }
     },
     {

@@ -35,6 +35,7 @@ import {
   captureRecordInput,
 } from './capture-input';
 import {
+  COMPACT_DECIMALS,
   compactEditResult,
   compactReviewResult,
   type DetailOptions,
@@ -1079,6 +1080,9 @@ export interface KilnRenderViewsResult extends PartPreview {
   /** The defineBudget declaration measured against the written GLB; `none` when undeclared.
    *  Advisory: never QA acceptance. */
   budget?: import('../contracts').BudgetReportV1;
+  /** Optional material notes against a reference tier when no material limit was declared:
+   *  advice, never a requirement. */
+  materialAdvice?: import('../contracts').MaterialAdviceV1[];
   /** Post-dedup instanceability grade (informational): how cheap to render at scale. */
   instanceability?: { grade: string; summary: string };
   /** Structured deterministic report; five dimensions remain separate. */
@@ -1127,10 +1131,18 @@ function levelsOfDetailField(
 }
 
 /** The hidden subtrees the headline leaves out, when the GLB has any. */
-/** The declared budget against the bytes, or status none: always present on a render. */
-function budgetField(rendered: RenderResult): { budget?: import('../contracts').BudgetReportV1 } {
+/** The declared budget against the bytes, or status none: always present on a render. Optional
+ *  reference-tier material notes sit beside it, apart from anything declared. */
+function budgetField(rendered: RenderResult): {
+  budget?: import('../contracts').BudgetReportV1;
+  materialAdvice?: import('../contracts').MaterialAdviceV1[];
+} {
   if (!rendered.integrationManifest) return {};
-  return { budget: rendered.integrationManifest.budget ?? { status: 'none', tiers: [] } };
+  const advice = rendered.integrationManifest.materialAdvice;
+  return {
+    budget: rendered.integrationManifest.budget ?? { status: 'none', tiers: [] },
+    ...(advice?.length ? { materialAdvice: advice } : {}),
+  };
 }
 
 function hiddenNodesField(rendered: RenderResult): { hiddenNodes?: HiddenNodeV1[] } {
@@ -2793,6 +2805,50 @@ export async function newestRevision(
   return newest[0]!.revisionId;
 }
 
+const roundCompact = (value: number) => Number(value.toFixed(COMPACT_DECIMALS));
+
+/**
+ * What a child save changed against its parent revision (#245): triangle, vertex, draw and
+ * material counts as parent, child and delta, the drawn bounds sizes and delta, and whether
+ * the drawn world-space triangles are identical whatever their node, primitive or vertex
+ * order. Per-node changes stay with `kiln_inspect` compare; a silhouette or image delta stays
+ * a review question. A comparison that cannot be made never fails the save.
+ */
+async function parentRevisionComparison(
+  parent: Uint8Array | undefined,
+  child: Uint8Array,
+): Promise<Record<string, unknown>> {
+  try {
+    if (!parent) throw new Error('the parent revision has no asset.glb.');
+    const { compareRevisionTotals } = await import('../revision-comparison');
+    const compared = await compareRevisionTotals(parent, child);
+    const size = (bounds: typeof compared.before.bounds) => bounds?.size.map(roundCompact) ?? null;
+    return {
+      counts: Object.fromEntries(
+        Object.entries(compared.counts).map(([key, count]) => [
+          key,
+          { parent: count.before, child: count.after, delta: count.delta },
+        ]),
+      ),
+      bounds: {
+        parent: size(compared.before.bounds),
+        child: size(compared.after.bounds),
+        delta: compared.boundsDelta && {
+          min: compared.boundsDelta.min.map(roundCompact),
+          max: compared.boundsDelta.max.map(roundCompact),
+          size: compared.boundsDelta.size.map(roundCompact),
+        },
+      },
+      geometryIdentical: compared.geometryIdentical,
+      ...(compared.uvIdentical === undefined ? {} : { uvIdentical: compared.uvIdentical }),
+    };
+  } catch (error) {
+    return {
+      unavailable: `Parent comparison unavailable: ${error instanceof Error ? error.message : String(error)}`,
+    };
+  }
+}
+
 /** Build one current-policy revision for ordinary save or explicit migration. */
 export async function buildProgramAssetDraft(
   code: string,
@@ -2986,7 +3042,7 @@ export function createKilnAssetDefs(
     {
       name: 'kiln_save',
       description:
-        'Save a completed source revision into the user-requested collection, or project when none was requested. Persists exact GLB, source, preview and build record. Use programRef returned by render/edit. To revise an asset, pass assetId and parentRevision; earlier revisions stay intact. Returns downloadable resources; draft renders never populate collections.',
+        'Save a completed source revision into the user-requested collection, or project when none was requested. Persists exact GLB, source, preview and build record. Use programRef returned by render/edit. To revise an asset, pass assetId and parentRevision; earlier revisions stay intact, and the result comparison gives triangle, vertex, draw and material deltas, the bounds delta and geometryIdentical against the parent. Returns downloadable resources; draft renders never populate collections.',
       inputSchema: saveInput,
       run: async (raw) => {
         const { backdrop, ...input } = saveInput.parse(raw);
@@ -2996,22 +3052,26 @@ export function createKilnAssetDefs(
           ...context,
           requirements: activeRequirements.binding,
         };
+        let parent: import('../assets').AssetRecord | undefined;
         if (input.assetId && input.parentRevision) {
-          const previous = await readSavedRevision(
+          parent = await readSavedRevision(
             target,
             input.collection,
             input.assetId,
             input.parentRevision,
             listCall(input.collection),
           );
-          assertSavedRequirementsAuthorized(previous.manifest, activeRequirements);
+          assertSavedRequirementsAuthorized(parent.manifest, activeRequirements);
         }
         const code = await context.programStore!.get(input.programRef);
-        const asset = await target.save(input.collection, {
-          ...input,
-          ...(await buildProgramAssetDraft(code, callContext, backdrop)),
-        });
-        return links(input.collection, asset);
+        const draft = await buildProgramAssetDraft(code, callContext, backdrop);
+        const asset = await target.save(input.collection, { ...input, ...draft });
+        return {
+          ...(await links(input.collection, asset)),
+          ...(parent
+            ? { comparison: await parentRevisionComparison(parent.files['asset.glb'], draft.glb) }
+            : {}),
+        };
       },
     },
     {

@@ -30,7 +30,7 @@ import { UNIVERSAL_QA_RULES } from './universal';
 import { HOST_VALIDATION_QA_RULE } from './validation-profile';
 import type { KhronosGltfValidationReport } from './gltf';
 import type { KhronosGltfIssue } from './gltf';
-import type { MaterialBudgetWarningV1, MaterialMetricsV1 } from '../material-metrics';
+import type { MaterialAdviceV1, MaterialMetricsV1 } from '../material-metrics';
 
 export const DETERMINISTIC_QA_REGISTRY = new QaRegistry([
   ...UNIVERSAL_QA_RULES,
@@ -172,27 +172,31 @@ export function appendRuntimeCostQa(
   });
 }
 
-/** Attach portable material metrics and advisory budget findings to runtimeCost
+/** A reference-tier optimization note as an `observe` runtimeCost finding: never a warning. */
+export const materialAdviceFinding = (advice: MaterialAdviceV1): QaFinding => ({
+  code: advice.code,
+  disposition: 'observe',
+  dimension: 'runtimeCost',
+  profile: advice.reference,
+  message: `${advice.message} ${advice.advice}`,
+  measurement: {
+    name: advice.measurement.name,
+    actual: advice.measurement.actual,
+    expected: advice.measurement.reference,
+    unit: advice.measurement.unit,
+  },
+});
+
+/** Attach portable material metrics and optional material notes to runtimeCost
  * without collapsing them into the independent instanceability grade. */
 export function appendMaterialMetricsQa(
   intent: AssetIntentV1,
   report: AssetQaReportV1,
   materialMetrics: MaterialMetricsV1,
-  budgetWarnings: readonly MaterialBudgetWarningV1[] = [],
+  materialAdvice: readonly MaterialAdviceV1[] = [],
 ): AssetQaReportV1 {
   const findings = Object.values(report.dimensions).flatMap((dimension) => dimension.findings);
-  findings.push(
-    ...budgetWarnings.map(
-      (warning): QaFinding => ({
-        code: warning.code,
-        disposition: 'warn',
-        dimension: 'runtimeCost',
-        profile: `${warning.profile}.${warning.tier}`,
-        message: `${warning.message} ${warning.advice}`,
-        measurement: warning.measurement,
-      }),
-    ),
-  );
+  findings.push(...materialAdvice.map(materialAdviceFinding));
   const evaluatedDimensions = Object.entries(report.dimensions)
     .filter(([, dimension]) => dimension.status !== 'notEvaluated')
     .map(([dimension]) => dimension as keyof AssetQaReportV1['dimensions']);

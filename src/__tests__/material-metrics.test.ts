@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { applyMaterialRecipeV1 } from '../material-recipe-runtime';
 import {
   collectMaterialMetricsV1,
-  evaluateMaterialBudgetV1,
+  adviseMaterialsV1,
   materialBudgetProfileForQaProfile,
   type MaterialMetricsV1,
 } from '../material-metrics';
@@ -137,27 +137,27 @@ describe('MAT-018 advisory texture budgets', () => {
     };
     expect(materialBudgetProfileForQaProfile('vehicle.mobile')).toBe('mobile.portable.v1');
     expect(materialBudgetProfileForQaProfile('architecture.default')).toBe('web.portable.v1');
-    const warnings = evaluateMaterialBudgetV1(over, {
+    const warnings = adviseMaterialsV1(over, {
       profile: 'web.portable.v1',
       tier: 'standard',
     });
     expect(warnings.map((warning) => warning.code)).toEqual([
-      'MATERIAL_TEXTURE_RESOLUTION_BUDGET',
-      'MATERIAL_IMAGE_COUNT_BUDGET',
-      'MATERIAL_DECODED_MEMORY_BUDGET',
-      'MATERIAL_BLEND_AREA_BUDGET',
+      'MATERIAL_TEXTURE_RESOLUTION_ADVICE',
+      'MATERIAL_IMAGE_COUNT_ADVICE',
+      'MATERIAL_DECODED_MEMORY_ADVICE',
+      'MATERIAL_BLEND_AREA_ADVICE',
     ]);
-    expect(warnings.every((warning) => warning.disposition === 'warn')).toBe(true);
+    expect(warnings.every((warning) => warning.disposition === 'advisory')).toBe(true);
     expect(
-      warnings.every((warning) => warning.measurement.actual > warning.measurement.threshold),
+      warnings.every((warning) => warning.measurement.actual > warning.measurement.reference),
     ).toBe(true);
-    expect(warnings.map((warning) => warning.advice).join(' ')).toMatch(/Downscale.*atlas.*MASK/is);
+    expect(warnings.map((warning) => warning.advice).join(' ')).toMatch(/downscale.*atlas.*MASK/is);
     expect(warnings.map((warning) => warning.message).join(' ')).toMatch(
       /8192px.*9 images.*256\.00 MiB.*80\.0%/s,
     );
   });
 
-  test('names the BLEND materials that drive the blend-area budget', () => {
+  test('names the BLEND materials that drive the blend-area note', () => {
     const document = new Document();
     const buffer = document.createBuffer();
     const scene = document.createScene('Scene');
@@ -189,19 +189,19 @@ describe('MAT-018 advisory texture budgets', () => {
       { name: 'Smoke', area: 1, ratio: 1 / 31 },
       { name: 'material-5', area: 1, ratio: 1 / 31 },
     ]);
-    const warnings = evaluateMaterialBudgetV1(metrics, {
+    const warnings = adviseMaterialsV1(metrics, {
       profile: 'web.portable.v1',
       tier: 'standard',
     });
     expect(warnings.map((warning) => [warning.code, warning.disposition])).toEqual([
-      ['MATERIAL_BLEND_AREA_BUDGET', 'warn'],
+      ['MATERIAL_BLEND_AREA_ADVICE', 'advisory'],
     ]);
     expect(warnings[0]!.message).toBe(
-      'Blended primitive surface area is 48.4% (15.000 of 31.000 square asset units); the budget is 15.0%. Largest BLEND materials by share of surface area: "Glass" 29.0%, "Water" 12.9%, "Smoke" 3.2%, and 1 more.',
+      'Blended primitive surface area is 48.4% (15.000 of 31.000 square asset units); the reference figure is 15.0%. Largest BLEND materials by share of surface area: "Glass" 29.0%, "Water" 12.9%, "Smoke" 3.2%, and 1 more. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ materialTier: \'web.portable.v1/standard\' }).',
     );
   });
 
-  test('stays advisory and quiet within the selected budget', async () => {
+  test('stays quiet within the reference tier', async () => {
     const measured = await materialGalleryMetrics();
     const metrics = {
       ...measured,
@@ -209,7 +209,7 @@ describe('MAT-018 advisory texture budgets', () => {
       blendedSurfaceAreaRatio: 0.3,
     };
     expect(
-      evaluateMaterialBudgetV1(metrics, {
+      adviseMaterialsV1(metrics, {
         profile: 'web.portable.v1',
         tier: 'hero',
       }),

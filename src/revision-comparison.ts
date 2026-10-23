@@ -1,14 +1,16 @@
 import {
   type Accessor,
+  type Document,
   type Material,
   type Node,
   type Primitive,
   PropertyType,
 } from '@gltf-transform/core';
-import { ALL_EXTENSIONS } from '@gltf-transform/extensions';
-import { Box3, Matrix4, Vector3 } from 'three';
+import { ALL_EXTENSIONS, type InstancedMesh } from '@gltf-transform/extensions';
+import { Box3, Matrix4, Quaternion, Vector3 } from 'three';
 import { createGltfIO, type Lod, MSFT_LOD } from './gltf-io';
-import { isHiddenGltfNode } from './metrics';
+import { collectGlbMetrics, isHiddenGltfNode } from './metrics';
+import { drawnSceneBounds } from './node-visibility';
 
 type Bounds = { min: number[]; max: number[]; size: number[] } | null;
 type Field = 'geometry' | 'material' | 'transform' | 'bounds' | 'visibility';
@@ -77,6 +79,272 @@ function bounds(box: Box3): Bounds {
 async function digest(bytes: Uint8Array) {
   const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', Uint8Array.from(bytes)));
   return `sha256:${[...hash].map((b) => b.toString(16).padStart(2, '0')).join('')}`;
+}
+
+/** What one revision draws, counted the way render metrics count it. */
+export interface RevisionTotals {
+  triangles: number;
+  /** POSITION entries of every drawn primitive, once per placement and GPU instance. */
+  vertices: number;
+  drawCalls: number;
+  materials: number;
+  bounds: Bounds;
+  /** Content hash of the drawn world-space triangles; see `drawnGeometryDigests`. */
+  geometry: string;
+  /** The same triangles with the TEXCOORD_0 value at each corner. */
+  uv: string;
+}
+
+/** Placement matrices of a drawn mesh node: its world matrix, once per GPU instance. */
+function placements(node: Node): Matrix4[] {
+  const world = new Matrix4().fromArray(node.getWorldMatrix());
+  const instances = node.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
+  if (!instances) return [world];
+  const translation = instances.getAttribute('TRANSLATION');
+  const rotation = instances.getAttribute('ROTATION');
+  const scale = instances.getAttribute('SCALE');
+  const count = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
+  return Array.from({ length: count }, (_, i) =>
+    world
+      .clone()
+      .multiply(
+        new Matrix4().compose(
+          new Vector3().fromArray(translation?.getElement(i, []) ?? [0, 0, 0]),
+          new Quaternion().fromArray(rotation?.getElement(i, []) ?? [0, 0, 0, 1]),
+          new Vector3().fromArray(scale?.getElement(i, []) ?? [1, 1, 1]),
+        ),
+      ),
+  );
+}
+
+/** Corner indices of a triangle-mode primitive as glTF orders them, or null for points/lines. */
+function triangleCorners(mode: number, count: number): number[] | null {
+  const corners: number[] = [];
+  if (mode === 4) for (let i = 0; i + 2 < count; i += 3) corners.push(i, i + 1, i + 2);
+  else if (mode === 5)
+    for (let i = 0; i + 2 < count; i++)
+      corners.push(...(i % 2 ? [i + 1, i, i + 2] : [i, i + 1, i + 2]));
+  else if (mode === 6) for (let i = 1; i + 1 < count; i++) corners.push(i, i + 1, 0);
+  else return null;
+  return corners;
+}
+
+/** Floats per triangle record: three corners of position (9), TEXCOORD_0 (6) and a UV flag. */
+const RECORD = 16;
+const exact = (value: number) => Math.fround(value) + 0; // float32, and -0 reads as 0
+
+function compareRecords(data: Float32Array, a: number, b: number) {
+  for (let k = 0; k < RECORD; k++) {
+    const d = data[a + k]! - data[b + k]!;
+    if (d) return d;
+  }
+  return 0;
+}
+
+/** Order two starting corners of one triangle: positions [0, 9), then UVs [9, 15). */
+function compareRotations(corner: Float32Array, r: number, s: number) {
+  for (const [offset, width] of [
+    [0, 3],
+    [9, 2],
+  ] as const)
+    for (let c = 0; c < 3; c++)
+      for (let k = 0; k < width; k++) {
+        const d =
+          corner[offset + ((c + r) % 3) * width + k]! - corner[offset + ((c + s) % 3) * width + k]!;
+        if (d) return d;
+      }
+  return 0;
+}
+
+/**
+ * Two content hashes of what a revision draws, independent of node, primitive, vertex and
+ * triangle order. Each drawn triangle is taken to world space (node world matrix and GPU
+ * instance, float64), each corner rounded to float32 exactly as glTF stores positions, then
+ * rotated (never reflected, so winding counts) to start at its smallest corner; the sorted
+ * triangles are hashed. No tolerance: equal means the same float32 world coordinates, so a
+ * merge that bakes transforms with different float rounding can read as a change, while one
+ * that keeps the same coordinates in fewer primitives reads as identical. Points and lines
+ * are hashed per primitive. The second hash adds TEXCOORD_0 at each corner. Normals, colours,
+ * skin weights and morph targets are not hashed; materials are counted separately.
+ */
+async function drawnGeometryDigests(doc: Document) {
+  const drawn: { primitive: Primitive; matrices: Matrix4[] }[] = [];
+  const visit = (node: Node): void => {
+    if (isHiddenGltfNode(node)) return;
+    const mesh = node.getMesh();
+    if (mesh) {
+      const matrices = placements(node);
+      for (const primitive of mesh.listPrimitives()) drawn.push({ primitive, matrices });
+    }
+    for (const child of node.listChildren()) visit(child);
+  };
+  for (const scene of doc.getRoot().listScenes())
+    for (const node of scene.listChildren()) visit(node);
+  let triangles = 0;
+  let vertices = 0;
+  for (const { primitive, matrices } of drawn) {
+    const position = primitive.getAttribute('POSITION');
+    const count = primitive.getIndices()?.getCount() ?? position?.getCount() ?? 0;
+    vertices += (position?.getCount() ?? 0) * matrices.length;
+    triangles += ((triangleCorners(primitive.getMode(), count)?.length ?? 0) / 3) * matrices.length;
+    // The per-node comparison's budget, counted the same way: one visit per triangle corner.
+    if (vertices > MAX_VERTICES || triangles * 3 > MAX_VERTICES)
+      throw new Error('Revision comparison exceeds 2,000,000 placed vertices.');
+  }
+  const data = new Float32Array(triangles * RECORD);
+  const others: string[] = [];
+  const point = new Vector3();
+  const element = [0, 0, 0];
+  const texcoord = [0, 0];
+  const corner = new Float32Array(15);
+  let written = 0;
+  for (const { primitive, matrices } of drawn) {
+    const position = primitive.getAttribute('POSITION');
+    if (!position) continue;
+    const uv = primitive.getAttribute('TEXCOORD_0');
+    const indices = primitive.getIndices();
+    const count = indices?.getCount() ?? position.getCount();
+    const corners = triangleCorners(primitive.getMode(), count);
+    const vertexAt = (i: number) => indices?.getScalar(i) ?? i;
+    for (const matrix of matrices) {
+      const world = (vertex: number) => {
+        position.getElement(vertex, element);
+        point.fromArray(element).applyMatrix4(matrix);
+        if (!Number.isFinite(point.x + point.y + point.z))
+          throw new Error('Revision comparison requires finite positions and valid indices.');
+        return point;
+      };
+      if (!corners) {
+        const sequence = new Float32Array(count * 3);
+        for (let i = 0; i < count; i++) {
+          const p = world(vertexAt(i));
+          sequence.set([exact(p.x), exact(p.y), exact(p.z)], i * 3);
+        }
+        others.push(`${primitive.getMode()}:${await digest(new Uint8Array(sequence.buffer))}`);
+        continue;
+      }
+      for (let t = 0; t < corners.length; t += 3) {
+        for (let c = 0; c < 3; c++) {
+          const vertex = vertexAt(corners[t + c]!);
+          const p = world(vertex);
+          corner[c * 3] = exact(p.x);
+          corner[c * 3 + 1] = exact(p.y);
+          corner[c * 3 + 2] = exact(p.z);
+          const value = uv ? uv.getElement(vertex, texcoord) : [0, 0];
+          corner[9 + c * 2] = exact(value[0]!);
+          corner[10 + c * 2] = exact(value[1]!);
+        }
+        // Start at the smallest corner sequence, positions first, then UVs.
+        let best = 0;
+        for (const r of [1, 2]) if (compareRotations(corner, r, best) < 0) best = r;
+        const at = written * RECORD;
+        for (let c = 0; c < 3; c++) {
+          const from = (c + best) % 3;
+          data.set(corner.subarray(from * 3, from * 3 + 3), at + c * 3);
+          data.set(corner.subarray(9 + from * 2, 11 + from * 2), at + 9 + c * 2);
+        }
+        data[at + 15] = uv ? 1 : 0;
+        written++;
+      }
+    }
+  }
+  const order = new Uint32Array(written).map((_, i) => i);
+  order.sort((a, b) => compareRecords(data, a * RECORD, b * RECORD));
+  const positions = new Float32Array(written * 9);
+  const sorted = new Float32Array(written * RECORD);
+  order.forEach((record, i) => {
+    positions.set(data.subarray(record * RECORD, record * RECORD + 9), i * 9);
+    sorted.set(data.subarray(record * RECORD, (record + 1) * RECORD), i * RECORD);
+  });
+  const tail = new TextEncoder().encode(`|${others.sort().join(',')}`);
+  const joined = (bytes: Float32Array) => {
+    const out = new Uint8Array(bytes.byteLength + tail.byteLength);
+    out.set(new Uint8Array(bytes.buffer, bytes.byteOffset, bytes.byteLength));
+    out.set(tail, bytes.byteLength);
+    return out;
+  };
+  return {
+    vertices,
+    geometry: await digest(joined(positions)),
+    uv: await digest(joined(sorted)),
+  };
+}
+
+/** Render-metric counts, drawn bounds and geometry hashes of one revision's document. */
+export async function revisionTotals(doc: Document): Promise<RevisionTotals> {
+  const metrics = collectGlbMetrics(doc);
+  const { vertices, geometry, uv } = await drawnGeometryDigests(doc);
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  const drawnBounds = scene ? drawnSceneBounds(scene) : null;
+  const box =
+    drawnBounds && [...drawnBounds.min, ...drawnBounds.max].every(Number.isFinite)
+      ? new Box3(new Vector3(...drawnBounds.min), new Vector3(...drawnBounds.max))
+      : new Box3();
+  return {
+    triangles: metrics.triangles,
+    vertices,
+    drawCalls: metrics.drawCalls,
+    materials: metrics.uniqueMaterials,
+    bounds: bounds(box),
+    geometry,
+    uv,
+  };
+}
+
+type Count = 'triangles' | 'vertices' | 'drawCalls' | 'materials';
+const COUNTS: Count[] = ['triangles', 'vertices', 'drawCalls', 'materials'];
+
+/** Each count before and after with its signed delta, and whether drawn geometry matches. */
+export function totalsDelta(before: RevisionTotals, after: RevisionTotals) {
+  const counts = Object.fromEntries(
+    COUNTS.map((key) => [
+      key,
+      { before: before[key], after: after[key], delta: after[key] - before[key] },
+    ]),
+  ) as Record<Count, { before: number; after: number; delta: number }>;
+  const geometryIdentical = before.geometry === after.geometry;
+  return {
+    counts,
+    geometryIdentical,
+    // Corners only correspond when the triangles do; a UV verdict on changed geometry
+    // would be a guess.
+    ...(geometryIdentical ? { uvIdentical: before.uv === after.uv } : {}),
+    boundsDelta: boundsDelta(before.bounds, after.bounds),
+  };
+}
+
+function boundsDelta(before: Bounds, after: Bounds) {
+  if (!before || !after) return null;
+  const minus = (a: number[], b: number[]) => a.map((value, i) => value - b[i]!);
+  return {
+    min: minus(after.min, before.min),
+    max: minus(after.max, before.max),
+    size: minus(after.size, before.size),
+  };
+}
+
+/** Read a saved or evaluated GLB for counting; self-contained only, never fetching. */
+async function readComparisonDocument(bytes: Uint8Array) {
+  if (bytes.byteLength > MAX_GLB_BYTES) throw new Error('Revision comparison GLB exceeds 64 MiB.');
+  const io = createGltfIO();
+  const json = await io.binaryToJSON(bytes);
+  if (
+    json.json.buffers?.some((b) => b.uri && !json.resources[b.uri]) ||
+    json.json.images?.some((i) => i.uri)
+  )
+    throw new Error('Revision comparison requires embedded GLB resources.');
+  return io.readJSON(json);
+}
+
+/**
+ * The counts, bounds and geometry identity of a child revision against its parent, without
+ * the per-node match `compareRevisionGlbs` needs: any GLB a save accepts can be counted,
+ * including repeated sibling names.
+ */
+export async function compareRevisionTotals(parent: Uint8Array, child: Uint8Array) {
+  const before = await revisionTotals(await readComparisonDocument(parent));
+  const after = await revisionTotals(await readComparisonDocument(child));
+  return { before, after, ...totalsDelta(before, after) };
 }
 
 async function snapshot(bytes: Uint8Array) {
@@ -224,7 +492,15 @@ async function snapshot(bytes: Uint8Array) {
       });
     }
   }
-  return { parts, animation, scenePath, bounds: bounds(box), glbSha256: await digest(bytes) };
+  return {
+    parts,
+    animation,
+    scenePath,
+    bounds: bounds(box),
+    // Counted on the same document; the bounds are the ones this comparison reports.
+    totals: { ...(await revisionTotals(doc)), bounds: bounds(box) },
+    glbSha256: await digest(bytes),
+  };
 }
 
 function accessorEqual(a: Accessor | null, b: Accessor | null) {
@@ -389,7 +665,7 @@ export async function compareRevisionGlbs(
   return {
     version: 'kiln.revision-comparison.v1' as const,
     scope:
-      'Exact exported static mesh data and rest transforms; named hierarchy paths. MSFT_lod lower levels are compared at the path they take beside LOD0, and bounds are LOD0 only. A KHR_node_visibility flag is compared as visibility; the bounds of a part are where it draws when shown, and the bounds of its ancestors count only what draws. Animation channels are reported separately. Metadata (including LOD switch thresholds), visual equivalence, intent and physical fit are not assessed.',
+      'Exact exported static mesh data and rest transforms; named hierarchy paths. MSFT_lod lower levels are compared at the path they take beside LOD0, and bounds are LOD0 only. A KHR_node_visibility flag is compared as visibility; the bounds of a part are where it draws when shown, and the bounds of its ancestors count only what draws. Animation channels are reported separately. counts are the drawn triangles, vertices, draw calls and materials render metrics report; geometryIdentical compares the sorted drawn world-space triangles at float32 precision, so node, primitive and vertex order do not count; uvIdentical adds TEXCOORD_0 when the geometry is identical. Normals, colours, skin weights and morph targets are not in the geometry hash. Metadata (including LOD switch thresholds), visual equivalence, intent and physical fit are not assessed.',
     animation: {
       scope:
         'Exact exported channel target, interpolation, key times and values, matched by clip name and node path. Renames are add/remove. Equivalent motions may have different key data; metadata and playback behavior are not assessed.',
@@ -406,6 +682,7 @@ export async function compareRevisionGlbs(
     },
     after: { glbSha256: current.glbSha256, bounds: current.bounds, scenePath: current.scenePath },
     summary,
+    ...totalsDelta(previous.totals, current.totals),
     ...(subtrees
       ? {
           subtrees: subtrees.map(({ key, ...subtree }) => ({

@@ -1,6 +1,9 @@
-/** Deterministic material/texture metrics and advisory tier/profile budgets. */
+/** Deterministic material/texture metrics and reference profile tiers for advice. */
 
 import type { Accessor, Document, Material, Node, Primitive, Texture } from '@gltf-transform/core';
+import type { MaterialAdviceV1 } from './contracts/integration';
+
+export type { MaterialAdviceV1 };
 
 export interface MaterialImageMetricV1 {
   name: string;
@@ -54,24 +57,14 @@ export interface MaterialBudgetLimitsV1 {
   maxBlendedSurfaceAreaRatio: number;
 }
 
-export interface MaterialBudgetWarningV1 {
-  code:
-    | 'MATERIAL_TEXTURE_RESOLUTION_BUDGET'
-    | 'MATERIAL_IMAGE_COUNT_BUDGET'
-    | 'MATERIAL_DECODED_MEMORY_BUDGET'
-    | 'MATERIAL_BLEND_AREA_BUDGET';
-  disposition: 'warn';
+/** A reference profile tier, such as `web.portable.v1/standard`. */
+export type MaterialReferenceTier = `${MaterialBudgetProfileId}/${MaterialAssetTier}`;
+
+/** The tier the render path compares undeclared material costs against. */
+export const DEFAULT_MATERIAL_REFERENCE: {
   profile: MaterialBudgetProfileId;
   tier: MaterialAssetTier;
-  message: string;
-  measurement: {
-    name: string;
-    actual: number;
-    threshold: number;
-    unit: 'px' | 'images' | 'bytes' | 'ratio';
-  };
-  advice: string;
-}
+} = Object.freeze({ profile: 'web.portable.v1', tier: 'standard' });
 
 export const MATERIAL_BUDGET_PROFILES_V1: Readonly<
   Record<MaterialBudgetProfileId, Readonly<Record<MaterialAssetTier, MaterialBudgetLimitsV1>>>
@@ -298,65 +291,71 @@ export function materialBudgetProfileForQaProfile(qaProfile: string): MaterialBu
     : 'web.portable.v1';
 }
 
-/** Advisory-only budget evaluation with measured costs and concrete remediation. */
-export function evaluateMaterialBudgetV1(
+/** Says what a note is and how to make the limit binding; ends every advice message. */
+const noteSuffix = (reference: MaterialReferenceTier, declare: string): string =>
+  ` This is an optimization note from the ${reference} reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget(${declare}).`;
+
+/**
+ * Compare measured material costs with a reference profile tier. Each result is optional
+ * advice with concrete remediation, for assets that declared no material limit.
+ */
+export function adviseMaterialsV1(
   metrics: MaterialMetricsV1,
   options: { profile: MaterialBudgetProfileId; tier: MaterialAssetTier },
-): MaterialBudgetWarningV1[] {
+): MaterialAdviceV1[] {
   const limits = MATERIAL_BUDGET_PROFILES_V1[options.profile][options.tier];
-  const warnings: MaterialBudgetWarningV1[] = [];
+  const reference: MaterialReferenceTier = `${options.profile}/${options.tier}`;
+  const tierDeclaration = `{ materialTier: '${reference}' }`;
+  const advice: MaterialAdviceV1[] = [];
   if (metrics.maxImageDimension > limits.maxImageDimension) {
     const offenders = metrics.images
       .filter((image) => image.maxDimension > limits.maxImageDimension)
       .map((image) => `${image.name} ${image.width}x${image.height}`)
       .join(', ');
-    warnings.push({
-      code: 'MATERIAL_TEXTURE_RESOLUTION_BUDGET',
-      disposition: 'warn',
-      profile: options.profile,
-      tier: options.tier,
-      message: `Maximum image dimension is ${metrics.maxImageDimension}px; ${options.profile}/${options.tier} allows ${limits.maxImageDimension}px. Offenders: ${offenders}.`,
+    advice.push({
+      code: 'MATERIAL_TEXTURE_RESOLUTION_ADVICE',
+      disposition: 'advisory',
+      reference,
+      message: `Largest image edge is ${metrics.maxImageDimension}px; the reference figure is ${limits.maxImageDimension}px. Larger: ${offenders}.${noteSuffix(reference, tierDeclaration)}`,
       measurement: {
         name: 'maxImageDimension',
         actual: metrics.maxImageDimension,
-        threshold: limits.maxImageDimension,
+        reference: limits.maxImageDimension,
         unit: 'px',
       },
-      advice: `Downscale the named images so their longest edge is at most ${limits.maxImageDimension}px; preserve aspect ratio and rerun glTF validation.`,
+      advice: `To reduce it, downscale the named images so their longest edge is at most ${limits.maxImageDimension}px; preserve aspect ratio and rerun glTF validation.`,
     });
   }
   if (metrics.imageCount > limits.maxImageCount) {
-    warnings.push({
-      code: 'MATERIAL_IMAGE_COUNT_BUDGET',
-      disposition: 'warn',
-      profile: options.profile,
-      tier: options.tier,
-      message: `${metrics.imageCount} images exceed the ${limits.maxImageCount}-image ${options.profile}/${options.tier} budget.`,
+    advice.push({
+      code: 'MATERIAL_IMAGE_COUNT_ADVICE',
+      disposition: 'advisory',
+      reference,
+      message: `${metrics.imageCount} images; the reference figure is ${limits.maxImageCount}.${noteSuffix(reference, '{ images }')}`,
       measurement: {
         name: 'imageCount',
         actual: metrics.imageCount,
-        threshold: limits.maxImageCount,
+        reference: limits.maxImageCount,
         unit: 'images',
       },
       advice:
-        'Reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.',
+        'To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.',
     });
   }
   if (metrics.decodedImageBytesRgba8 > limits.maxDecodedBytesRgba8) {
     const scale = Math.sqrt(limits.maxDecodedBytesRgba8 / metrics.decodedImageBytesRgba8);
-    warnings.push({
-      code: 'MATERIAL_DECODED_MEMORY_BUDGET',
-      disposition: 'warn',
-      profile: options.profile,
-      tier: options.tier,
-      message: `Decoded RGBA8 image memory is ${mib(metrics.decodedImageBytesRgba8)}; ${options.profile}/${options.tier} allows ${mib(limits.maxDecodedBytesRgba8)} before mip overhead.`,
+    advice.push({
+      code: 'MATERIAL_DECODED_MEMORY_ADVICE',
+      disposition: 'advisory',
+      reference,
+      message: `Decoded RGBA8 image memory is ${mib(metrics.decodedImageBytesRgba8)}; the reference figure is ${mib(limits.maxDecodedBytesRgba8)} before mip overhead.${noteSuffix(reference, '{ decodedBytes }')}`,
       measurement: {
         name: 'decodedImageBytesRgba8',
         actual: metrics.decodedImageBytesRgba8,
-        threshold: limits.maxDecodedBytesRgba8,
+        reference: limits.maxDecodedBytesRgba8,
         unit: 'bytes',
       },
-      advice: `Downscale image width and height by approximately ${(Math.min(1, scale) * 100).toFixed(0)}% in aggregate, then verify small details and alpha cutouts remain legible.`,
+      advice: `To reduce it, downscale image width and height by approximately ${(Math.min(1, scale) * 100).toFixed(0)}% in aggregate, then verify small details and alpha cutouts remain legible.`,
     });
   }
   if (metrics.blendedSurfaceAreaRatio > limits.maxBlendedSurfaceAreaRatio) {
@@ -372,21 +371,20 @@ export function evaluateMaterialBudgetV1(
     const drivers = named.length
       ? ` Largest BLEND materials by share of surface area: ${named.join(', ')}${more}.`
       : '';
-    warnings.push({
-      code: 'MATERIAL_BLEND_AREA_BUDGET',
-      disposition: 'warn',
-      profile: options.profile,
-      tier: options.tier,
-      message: `Blended primitive surface area is ${(metrics.blendedSurfaceAreaRatio * 100).toFixed(1)}% (${metrics.blendedSurfaceArea.toFixed(3)} of ${metrics.totalSurfaceArea.toFixed(3)} square asset units); the budget is ${(limits.maxBlendedSurfaceAreaRatio * 100).toFixed(1)}%.${drivers}`,
+    advice.push({
+      code: 'MATERIAL_BLEND_AREA_ADVICE',
+      disposition: 'advisory',
+      reference,
+      message: `Blended primitive surface area is ${(metrics.blendedSurfaceAreaRatio * 100).toFixed(1)}% (${metrics.blendedSurfaceArea.toFixed(3)} of ${metrics.totalSurfaceArea.toFixed(3)} square asset units); the reference figure is ${(limits.maxBlendedSurfaceAreaRatio * 100).toFixed(1)}%.${drivers}${noteSuffix(reference, tierDeclaration)}`,
       measurement: {
         name: 'blendedSurfaceAreaRatio',
         actual: metrics.blendedSurfaceAreaRatio,
-        threshold: limits.maxBlendedSurfaceAreaRatio,
+        reference: limits.maxBlendedSurfaceAreaRatio,
         unit: 'ratio',
       },
       advice:
-        'Use MASK for binary cutouts such as foliage, reduce layered transparent surfaces, and reserve BLEND for genuinely translucent glass/effects.',
+        'To reduce it, use MASK for binary cutouts such as foliage, reduce layered transparent surfaces, and reserve BLEND for genuinely translucent glass/effects.',
     });
   }
-  return warnings;
+  return advice;
 }

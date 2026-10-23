@@ -102,6 +102,25 @@ does not publish a package.
   `viewFidelity`, so a CPU preview is never read as material evidence. Existing files are
   never replaced. `exportMaterialMaps` and `createMaterialMapExport` from
   `material-library/node` do the same for hosts; `--out` and MCP are unchanged.
+- Material measurements no longer read as a budget nobody declared. Without a material
+  limit, receipts list `materialAdvice[]` beside `budget` and QA reports `observe`
+  findings `MATERIAL_TEXTURE_RESOLUTION_ADVICE`, `MATERIAL_IMAGE_COUNT_ADVICE`,
+  `MATERIAL_DECODED_MEMORY_ADVICE` and `MATERIAL_BLEND_AREA_ADVICE` (formerly `*_BUDGET`
+  warnings) against the `web.portable.v1/standard` reference tier, worded as optional
+  advice. `defineBudget` gains `images`, `decodedBytes` and `materialTier`, measured in
+  `budget.materials` and covered by `--strict-budget`; `triangles` is now optional when
+  another limit is declared ([#176](https://github.com/instruktlabs/kiln/issues/176)).
+- Report geometry deltas against the parent revision on save
+  ([#245](https://github.com/instruktlabs/kiln/issues/245)). A `kiln_save` (and
+  `kiln save --parent`) with `parentRevision` now returns `comparison`: the drawn
+  triangle, vertex, draw-call and material counts as `parent`, `child` and `delta`, the
+  drawn bounds sizes and their delta, and `geometryIdentical`, a hash of the sorted drawn
+  world-space triangles at float32 precision that ignores node, primitive and vertex
+  order, with `uvIdentical` when the geometry matches. Merging four primitives into one
+  without moving a vertex now reads as identical geometry with three fewer draws instead
+  of only a changed part. A comparison that cannot be made reports `unavailable` and
+  never fails the save. `kiln_inspect` compare (and `kiln_edit` preservation) gain the
+  same `counts`, `geometryIdentical`, `uvIdentical` and `boundsDelta`. No input changed.
 
 ## 1.4.0 (2026-10-23)
 

@@ -863,13 +863,18 @@ geometryDiagnostics(geometry: BufferGeometry, tolerance?: number)
   // tolerance and scale. Open boundaries are valid for sheets; closed edges do not certify a
   // self-intersection-free solid.
   // e.g. const topology = geometryDiagnostics(shell);
-defineBudget(spec: { triangles: number | { LOD0, LOD1, ... }, draws?: number }, target?: Object3D)
-  // Declares a triangle budget (one number for LOD0, or per LOD tier) and an optional LOD0
-  // draw-call budget. Receipts report budget: { status, tiers: [{ tier, declared, measured,
-  // status }] } measured from the GLB. Advisory: never QA acceptance.
+defineBudget(spec: { triangles?: number | { LOD0, LOD1, ... }, draws?: number, images?: number, decodedBytes?: number, materialTier?: 'web.portable.v1/standard' | ... }, target?: Object3D)
+  // Declares a triangle budget (one number for LOD0, or per LOD tier), an optional LOD0
+  // draw-call budget, and optional material limits: images, decodedBytes (RGBA8), or
+  // materialTier, which adopts a reference tier's image count, decoded bytes, image size and
+  // blended-area figures. Receipts report budget: { status, tiers, materials? } measured from
+  // the GLB. Without a material limit, receipts carry materialAdvice notes against
+  // web.portable.v1/standard instead: optional, never a requirement. Advisory: never QA
+  // acceptance.
   // NOTE: Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching
-  // defineLod levels.
-  // e.g. defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 });
+  // defineLod levels. Material notes are not a budget: do not remove textures that carry the
+  // look to clear them.
+  // e.g. defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3, images: 6 });
 definePalette(colors: string[], opts?: { threshold?: 10 }, target?: Object3D)
   // Declares the asset palette (1..64 hex colours). Receipts list every drawn material whose
   // base colour is farther than threshold (CIE76 delta E, default 10) from the nearest entry as

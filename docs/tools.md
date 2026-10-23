@@ -1576,7 +1576,7 @@ Read persisted Kiln observation history, pin an operation against normal retenti
 
 ## kiln_save
 
-Save a completed source revision into the user-requested collection, or project when none was requested. Persists exact GLB, source, preview and build record. Use programRef returned by render/edit. To revise an asset, pass assetId and parentRevision; earlier revisions stay intact. Returns downloadable resources; draft renders never populate collections.
+Save a completed source revision into the user-requested collection, or project when none was requested. Persists exact GLB, source, preview and build record. Use programRef returned by render/edit. To revise an asset, pass assetId and parentRevision; earlier revisions stay intact, and the result comparison gives triangle, vertex, draw and material deltas, the bounds delta and geometryIdentical against the parent. Returns downloadable resources; draft renders never populate collections.
 
 <details>
 <summary>Input JSON Schema</summary>

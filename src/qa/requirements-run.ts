@@ -54,10 +54,10 @@ import {
   type RequirementsQaFinding,
 } from './requirements-report';
 import type { QaFinding } from './types';
-import { gltfReportFindings } from './run';
+import { gltfReportFindings, materialAdviceFinding } from './run';
 import type { KhronosGltfValidationReport } from './gltf';
 import type { InstanceabilityReport } from '../metrics';
-import type { MaterialMetricsV1, MaterialBudgetWarningV1 } from '../material-metrics';
+import type { MaterialMetricsV1, MaterialAdviceV1 } from '../material-metrics';
 
 const registry = new QaRegistry([
   ...UNIVERSAL_QA_RULES,
@@ -411,20 +411,10 @@ export async function appendRequirementsFinalQa(
   instanceability?: InstanceabilityReport,
   metricsError?: string,
   material?: MaterialMetricsV1,
-  warnings: readonly MaterialBudgetWarningV1[] = [],
+  materialAdvice: readonly MaterialAdviceV1[] = [],
 ): Promise<AssetRequirementsQaReportV2> {
   const gltfFindings = gltfReportFindings(gltf, report.qaProfile);
-  const findings: QaFinding[] = [
-    ...gltfFindings,
-    ...warnings.map((w) => ({
-      code: w.code,
-      disposition: 'warn' as const,
-      dimension: 'runtimeCost' as const,
-      profile: `${w.profile}.${w.tier}`,
-      message: `${w.message} ${w.advice}`,
-      measurement: w.measurement,
-    })),
-  ];
+  const findings: QaFinding[] = [...gltfFindings, ...materialAdvice.map(materialAdviceFinding)];
   if (metricsError)
     findings.push({
       code: 'RUNTIME_COST_METRICS_FAILED',

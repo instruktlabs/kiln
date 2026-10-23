@@ -146,11 +146,47 @@ export interface BudgetTierV1 {
   status: 'pass' | 'fail';
 }
 
+/**
+ * Optional optimization advice measured against a reference profile tier when the asset
+ * declares no material limit. Never a requirement and never QA acceptance; a
+ * `defineBudget` material limit replaces it.
+ */
+export interface MaterialAdviceV1 {
+  code:
+    | 'MATERIAL_TEXTURE_RESOLUTION_ADVICE'
+    | 'MATERIAL_IMAGE_COUNT_ADVICE'
+    | 'MATERIAL_DECODED_MEMORY_ADVICE'
+    | 'MATERIAL_BLEND_AREA_ADVICE';
+  disposition: 'advisory';
+  /** The reference profile tier, such as `web.portable.v1/standard`. */
+  reference: string;
+  message: string;
+  measurement: {
+    name: string;
+    actual: number;
+    /** The reference tier's figure: a comparison point, not a cap. */
+    reference: number;
+    unit: 'px' | 'images' | 'bytes' | 'ratio';
+  };
+  advice: string;
+}
+
+/** One declared material limit against the written GLB. */
+export interface MaterialBudgetCheckV1 {
+  /** `images` count, `decodedBytes` RGBA8, `imageSize` longest edge px, `blendedAreaRatio`. */
+  limit: 'images' | 'decodedBytes' | 'imageSize' | 'blendedAreaRatio';
+  declared: number;
+  measured: number;
+  status: 'pass' | 'fail';
+}
+
 /** A `defineBudget` declaration against the bytes. Advisory: never QA acceptance. */
 export interface BudgetReportV1 {
-  /** `none` when no budget was declared; `fail` when any tier fails. */
+  /** `none` when no budget was declared; `fail` when any tier or material limit fails. */
   status: 'pass' | 'fail' | 'none';
   tiers: BudgetTierV1[];
+  /** Declared material limits, when the declaration has any. */
+  materials?: MaterialBudgetCheckV1[];
 }
 
 /** One drawn material whose base colour is off the declared palette. */
@@ -226,6 +262,9 @@ export interface IntegrationManifestV1 {
   ports?: DeliveryPortV1[];
   /** The declared budget measured against these bytes, when source declared one. */
   budget?: BudgetReportV1;
+  /** Optional optimization notes against a reference profile tier, when no material limit
+   *  was declared and a figure is passed. Never a requirement. */
+  materialAdvice?: MaterialAdviceV1[];
   /** The declared palette against the drawn materials, when source declared one. */
   palette?: PaletteReportV1;
   /** Custom vertex attributes (`_EDGE`, `_CAVITY`) grouped by name and parameters. */
