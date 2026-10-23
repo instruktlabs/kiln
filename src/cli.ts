@@ -350,6 +350,9 @@ async function emit(
       ? { vertexAttributes: result.integrationManifest.vertexAttributes }
       : {}),
     budget: result.integrationManifest.budget ?? { status: 'none', tiers: [] },
+    ...(result.integrationManifest.materialAdvice
+      ? { materialAdvice: result.integrationManifest.materialAdvice }
+      : {}),
     ...(result.integrationManifest.palette ? { palette: result.integrationManifest.palette } : {}),
     artifactGlbSha256: result.artifactGlbSha256,
     glbBytes: result.glb.length,
@@ -401,8 +404,16 @@ async function emit(
           `${tier.tier} ${tier.measured.triangles}/${tier.declared.triangles ?? '-'} tris${tier.declared.draws === undefined ? '' : ` ${tier.measured.draws}/${tier.declared.draws} draws`} ${tier.status}`,
       )
       .join('; ');
-    log(`  budget ${budget.status}  ${tiers}`);
+    const materials = (budget.materials ?? [])
+      .map((check) => `${check.limit} ${check.measured}/${check.declared} ${check.status}`)
+      .join('; ');
+    log(`  budget ${budget.status}  ${[tiers, materials].filter(Boolean).join('; ')}`);
   }
+  // Reference-tier material notes: optional advice, never a declared budget.
+  for (const note of result.integrationManifest.materialAdvice ?? [])
+    log(
+      `  material note (advisory, ${note.reference})  ${note.measurement.name} ${note.measurement.actual}; reference ${note.measurement.reference}`,
+    );
   // A declared palette: advisory, off-palette materials farthest first.
   const palette = result.integrationManifest.palette;
   if (palette)

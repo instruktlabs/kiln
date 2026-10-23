@@ -85,7 +85,13 @@ import {
   SANDBOX_DECLARATIONS,
   type SandboxDeclarations,
 } from './primitives';
-import { evaluateBudget, KILN_BUDGET_KEY, normalizeBudget, readBudgetDeclaration } from './budget';
+import {
+  declaresMaterialLimits,
+  evaluateBudget,
+  KILN_BUDGET_KEY,
+  normalizeBudget,
+  readBudgetDeclaration,
+} from './budget';
 import {
   evaluatePalette,
   KILN_PALETTE_KEY,
@@ -118,8 +124,10 @@ import {
 } from './qa/gltf';
 import { AssetQaBlockedError, qaBlockingEnabled, qaPolicyFromEnv } from './qa/run';
 import {
+  adviseMaterialsV1,
   collectMaterialMetricsV1,
-  evaluateMaterialBudgetV1,
+  DEFAULT_MATERIAL_REFERENCE,
+  type MaterialAdviceV1,
   type MaterialMetricsV1,
 } from './material-metrics';
 import {
@@ -308,6 +316,7 @@ export async function inspectGlbIntegration(
     budgetDeclaration?.draws === undefined
       ? undefined
       : await (await import('./runtime-three')).instancedDrawEstimate(doc);
+  const materialMetrics = collectMaterialMetricsV1(doc);
   const budget = budgetDeclaration
     ? evaluateBudget(
         budgetDeclaration,
@@ -317,8 +326,13 @@ export async function inspectGlbIntegration(
           ...(instancedDraws === undefined ? {} : { instancedDraws }),
         },
         levelsOfDetail,
+        materialMetrics,
       )
     : undefined;
+  // Reference-tier notes only where the author declared no material limit of their own.
+  const materialAdvice = declaresMaterialLimits(budgetDeclaration)
+    ? []
+    : adviseMaterialsV1(materialMetrics, DEFAULT_MATERIAL_REFERENCE);
   const paletteDeclaration = readPaletteDeclaration(
     (scene.getExtras() as Record<string, unknown>)[KILN_PALETTE_KEY],
   );
@@ -367,6 +381,7 @@ export async function inspectGlbIntegration(
     ...(delivery.kit ? { kit: delivery.kit } : {}),
     ...(delivery.ports.length ? { ports: delivery.ports } : {}),
     ...(budget ? { budget } : {}),
+    ...(materialAdvice.length ? { materialAdvice } : {}),
     ...(palette ? { palette } : {}),
     ...(vertexAttributes.length ? { vertexAttributes } : {}),
     ...(delivery.diagnostics.length ? { deliveryDiagnostics: delivery.diagnostics } : {}),
@@ -1991,13 +2006,17 @@ export async function renderSceneToGLB(
   }
 
   let materialMetrics: MaterialMetricsV1 | undefined;
-  let materialBudgetWarnings = [] as ReturnType<typeof evaluateMaterialBudgetV1>;
+  let materialAdvice: MaterialAdviceV1[] = [];
   try {
     materialMetrics = collectMaterialMetricsV1(doc);
-    materialBudgetWarnings = evaluateMaterialBudgetV1(materialMetrics, {
-      profile: 'web.portable.v1',
-      tier: 'standard',
-    });
+    // A declared material limit is measured in the budget receipt instead of these notes.
+    const declaration = readBudgetDeclaration(
+      (doc.getRoot().getDefaultScene()?.getExtras() as Record<string, unknown> | undefined)?.[
+        KILN_BUDGET_KEY
+      ],
+    );
+    if (!declaresMaterialLimits(declaration))
+      materialAdvice = adviseMaterialsV1(materialMetrics, DEFAULT_MATERIAL_REFERENCE);
   } catch (error) {
     warnings.push(
       `material metrics failed: ${error instanceof Error ? error.message : String(error)}`,
@@ -2023,7 +2042,7 @@ export async function renderSceneToGLB(
     instanceability,
     metricsError,
     materialMetrics,
-    materialBudgetWarnings,
+    materialAdvice,
   );
   if (qaReport.disposition === 'block') {
     const blocked = new AssetQaBlockedError(qaReport, 'final-glb', gltfValidation);

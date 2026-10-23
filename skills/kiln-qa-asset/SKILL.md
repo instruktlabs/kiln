@@ -29,7 +29,10 @@ numeric child locators in the authored build root; use the retained source's chi
 order to find a failure, since a failed build has no exported inspection artifact.
 An open card, cloth sheet or intentionally open shell can be valid for its purpose.
 Keep budget and palette observations separate from requirements explicitly requested
-by the user; strict budget enforcement is opt-in.
+by the user; strict budget enforcement is opt-in. `materialAdvice` notes and
+`MATERIAL_*_ADVICE` findings compare textures with a reference tier when no material
+limit is declared: they are optional advice, so do not strip textures that carry the
+look to clear them.
 
 An intentional boundary can use `markOpenShell(part, 'specific reason')`. Read the
 overlap report's acknowledgment and reason; this is an explicit measurement limit,

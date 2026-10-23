@@ -291,14 +291,15 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'defineBudget',
     signature:
-      'defineBudget(spec: { triangles: number | { LOD0, LOD1, ... }, draws?: number }, target?: Object3D)',
-    returns: '{ schemaVersion: 1, triangles: { LOD0, ... }, draws? } (the normalised declaration)',
+      "defineBudget(spec: { triangles?: number | { LOD0, LOD1, ... }, draws?: number, images?: number, decodedBytes?: number, materialTier?: 'web.portable.v1/standard' | ... }, target?: Object3D)",
+    returns:
+      '{ schemaVersion: 1, triangles: { LOD0, ... }, draws?, materials? } (the normalised declaration)',
     category: 'utility',
     description:
-      'Declares a triangle budget (one number for LOD0, or per LOD tier) and an optional LOD0 draw-call budget. Receipts report budget: { status, tiers: [{ tier, declared, measured, status }] } measured from the GLB. Advisory: never QA acceptance.',
-    example: 'defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 });',
+      "Declares a triangle budget (one number for LOD0, or per LOD tier), an optional LOD0 draw-call budget, and optional material limits: images, decodedBytes (RGBA8), or materialTier, which adopts a reference tier's image count, decoded bytes, image size and blended-area figures. Receipts report budget: { status, tiers, materials? } measured from the GLB. Without a material limit, receipts carry materialAdvice notes against web.portable.v1/standard instead: optional, never a requirement. Advisory: never QA acceptance.",
+    example: 'defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3, images: 6 });',
     promptNotes:
-      'Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching defineLod levels.',
+      'Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching defineLod levels. Material notes are not a budget: do not remove textures that carry the look to clear them.',
   },
   {
     name: 'definePalette',

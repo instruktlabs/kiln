@@ -1079,6 +1079,9 @@ export interface KilnRenderViewsResult extends PartPreview {
   /** The defineBudget declaration measured against the written GLB; `none` when undeclared.
    *  Advisory: never QA acceptance. */
   budget?: import('../contracts').BudgetReportV1;
+  /** Optional material notes against a reference tier when no material limit was declared:
+   *  advice, never a requirement. */
+  materialAdvice?: import('../contracts').MaterialAdviceV1[];
   /** Post-dedup instanceability grade (informational): how cheap to render at scale. */
   instanceability?: { grade: string; summary: string };
   /** Structured deterministic report; five dimensions remain separate. */
@@ -1127,10 +1130,18 @@ function levelsOfDetailField(
 }
 
 /** The hidden subtrees the headline leaves out, when the GLB has any. */
-/** The declared budget against the bytes, or status none: always present on a render. */
-function budgetField(rendered: RenderResult): { budget?: import('../contracts').BudgetReportV1 } {
+/** The declared budget against the bytes, or status none: always present on a render. Optional
+ *  reference-tier material notes sit beside it, apart from anything declared. */
+function budgetField(rendered: RenderResult): {
+  budget?: import('../contracts').BudgetReportV1;
+  materialAdvice?: import('../contracts').MaterialAdviceV1[];
+} {
   if (!rendered.integrationManifest) return {};
-  return { budget: rendered.integrationManifest.budget ?? { status: 'none', tiers: [] } };
+  const advice = rendered.integrationManifest.materialAdvice;
+  return {
+    budget: rendered.integrationManifest.budget ?? { status: 'none', tiers: [] },
+    ...(advice?.length ? { materialAdvice: advice } : {}),
+  };
 }
 
 function hiddenNodesField(rendered: RenderResult): { hiddenNodes?: HiddenNodeV1[] } {

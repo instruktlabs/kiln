@@ -61,7 +61,16 @@ attribute names, so shaders read `_edge` and `_cavity`.
   stores them, before any consumer batching, so each child of a `repeatInstances` group
   counts. Beside the measured `draws`, the LOD0 tier reports `instancedDraws`: the draws
   the three runtime target leaves after batching each group into one instanced draw.
-  It is informational and never changes the tier's status.
+  It is informational and never changes the tier's status. Optional
+  material limits are `images`, `decodedBytes` (RGBA8, before mips) and `materialTier`,
+  which adopts a reference tier's image count, decoded bytes, image size and
+  blended-area figures; explicit limits override the tier. They report in
+  `budget.materials` and count toward `budget.status`.
+- With no material limit declared, receipts compare the GLB with the
+  `web.portable.v1/standard` reference tier and list any figure passed in
+  `materialAdvice[]` beside `budget`, with matching `observe` QA findings
+  (`MATERIAL_*_ADVICE`). These are optimization notes, never a requirement, and a
+  declared material limit replaces them.
 - `definePalette(colors, { threshold? })` stores scene extras `kilnPaletteV1`. Each
   material drawn by a visible node is compared by its base colour factor in CIELAB
   (CIE 1976 delta E, default threshold 10). Off-palette materials become

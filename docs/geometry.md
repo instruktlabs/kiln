@@ -531,6 +531,12 @@ batched export would meet; raise the cap or note the difference instead. The res
 is `budget: { status, tiers }` in render results, `kiln_render` and CLI receipts. It
 is advisory; `kiln render --strict-budget` exits 1 when a tier fails.
 
+Material limits are declared the same way: `defineBudget({ images: 6 })`,
+`decodedBytes`, or `materialTier: 'web.portable.v1/hero'` for a reference tier's
+figures. They report in `budget.materials`. Without one, `materialAdvice` notes
+compare the textures with the `web.portable.v1/standard` reference tier; they are
+optional optimization advice, not a budget, so keep textures that carry the look.
+
 ## Joint discovery and resource counts
 
 `describeAssembly(root).joints` finds validated articulated joints, wheel-spin pivots,

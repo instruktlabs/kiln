@@ -102,6 +102,14 @@ does not publish a package.
   `viewFidelity`, so a CPU preview is never read as material evidence. Existing files are
   never replaced. `exportMaterialMaps` and `createMaterialMapExport` from
   `material-library/node` do the same for hosts; `--out` and MCP are unchanged.
+- Material measurements no longer read as a budget nobody declared. Without a material
+  limit, receipts list `materialAdvice[]` beside `budget` and QA reports `observe`
+  findings `MATERIAL_TEXTURE_RESOLUTION_ADVICE`, `MATERIAL_IMAGE_COUNT_ADVICE`,
+  `MATERIAL_DECODED_MEMORY_ADVICE` and `MATERIAL_BLEND_AREA_ADVICE` (formerly `*_BUDGET`
+  warnings) against the `web.portable.v1/standard` reference tier, worded as optional
+  advice. `defineBudget` gains `images`, `decodedBytes` and `materialTier`, measured in
+  `budget.materials` and covered by `--strict-budget`; `triangles` is now optional when
+  another limit is declared ([#176](https://github.com/instruktlabs/kiln/issues/176)).
 
 ## 1.4.0 (2026-10-23)
 

@@ -8,15 +8,41 @@
  * tier never changes QA acceptance; only CLI `--strict-budget` turns it into an exit code.
  */
 import type * as THREE from 'three';
-import type { BudgetReportV1, BudgetTierV1, LevelOfDetailChainV1 } from './contracts/integration';
+import type {
+  BudgetReportV1,
+  BudgetTierV1,
+  LevelOfDetailChainV1,
+  MaterialBudgetCheckV1,
+} from './contracts/integration';
 import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
+import {
+  MATERIAL_BUDGET_PROFILES_V1,
+  type MaterialBudgetLimitsV1,
+  type MaterialMetricsV1,
+  type MaterialReferenceTier,
+} from './material-metrics';
 
 /** Where a declaration lives: root userData until export, then default-scene extras. */
 export const KILN_BUDGET_KEY = 'kilnBudgetV1';
 
 export interface BudgetSpecV1 {
-  triangles: number | Record<string, number>;
+  triangles?: number | Record<string, number>;
   draws?: number;
+  /** Maximum embedded images. */
+  images?: number;
+  /** Maximum decoded RGBA8 image bytes, before mip overhead. */
+  decodedBytes?: number;
+  /** Adopt every figure of a reference tier, such as `web.portable.v1/standard`. */
+  materialTier?: MaterialReferenceTier;
+}
+
+/** Declared material limits; a tier's figures are resolved into the fields it sets. */
+export interface MaterialBudgetDeclarationV1 {
+  tier?: MaterialReferenceTier;
+  images?: number;
+  decodedBytes?: number;
+  imageSize?: number;
+  blendedAreaRatio?: number;
 }
 
 export interface BudgetDeclarationV1 {
@@ -25,7 +51,12 @@ export interface BudgetDeclarationV1 {
   triangles: Record<string, number>;
   /** Maximum LOD0 draw calls. */
   draws?: number;
+  materials?: MaterialBudgetDeclarationV1;
 }
+
+/** True when a declaration replaces the reference-profile material notes. */
+export const declaresMaterialLimits = (declaration: BudgetDeclarationV1 | undefined): boolean =>
+  declaration?.materials !== undefined;
 
 /** The report when no budget was declared. */
 export const noBudget = (): BudgetReportV1 => ({ status: 'none', tiers: [] });
@@ -40,14 +71,78 @@ const count = (label: string, value: unknown): number => {
   return value as number;
 };
 
+const SPEC_SHAPE =
+  '{ triangles?: number | { LOD0, LOD1, ... }, draws?, images?, decodedBytes?, materialTier? }';
+
+const ratio = (label: string, value: unknown): number => {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0 || value > 1)
+    fail(`${label} must be a number in (0, 1], got ${String(value)}.`);
+  return value as number;
+};
+
+/** A reference tier's figures; explicit limits in `value` override them. */
+function materialLimits(value: Record<string, unknown>): MaterialBudgetDeclarationV1 | undefined {
+  const tierName = value.materialTier;
+  const materials: MaterialBudgetDeclarationV1 = {};
+  if (tierName !== undefined) {
+    const [profile, tier] = typeof tierName === 'string' ? tierName.split('/') : [];
+    const figures = (
+      MATERIAL_BUDGET_PROFILES_V1 as Partial<
+        Record<string, Partial<Record<string, MaterialBudgetLimitsV1>>>
+      >
+    )[profile ?? '']?.[tier ?? ''];
+    if (!figures)
+      fail(
+        `materialTier must be one of ${Object.entries(MATERIAL_BUDGET_PROFILES_V1)
+          .flatMap(([p, tiers]) => Object.keys(tiers).map((t) => `${p}/${t}`))
+          .join(', ')}, got ${JSON.stringify(tierName)}.`,
+      );
+    Object.assign(materials, {
+      tier: tierName as MaterialReferenceTier,
+      images: figures!.maxImageCount,
+      decodedBytes: figures!.maxDecodedBytesRgba8,
+      imageSize: figures!.maxImageDimension,
+      blendedAreaRatio: figures!.maxBlendedSurfaceAreaRatio,
+    });
+  }
+  if (value.images !== undefined) materials.images = count('images', value.images);
+  if (value.decodedBytes !== undefined)
+    materials.decodedBytes = count('decodedBytes', value.decodedBytes);
+  return Object.keys(materials).length ? materials : undefined;
+}
+
+/** A stored declaration's resolved material limits, as `materialLimits` wrote them. */
+function storedMaterials(value: unknown): MaterialBudgetDeclarationV1 {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) fail('materials is malformed.');
+  const stored = value as Record<string, unknown>;
+  const materials: MaterialBudgetDeclarationV1 = {};
+  for (const key of Object.keys(stored))
+    if (!['tier', 'images', 'decodedBytes', 'imageSize', 'blendedAreaRatio'].includes(key))
+      fail(`unknown materials field ${JSON.stringify(key)}.`);
+  if (stored.tier !== undefined) materials.tier = stored.tier as MaterialReferenceTier;
+  if (stored.images !== undefined) materials.images = count('images', stored.images);
+  if (stored.decodedBytes !== undefined)
+    materials.decodedBytes = count('decodedBytes', stored.decodedBytes);
+  if (stored.imageSize !== undefined) materials.imageSize = count('imageSize', stored.imageSize);
+  if (stored.blendedAreaRatio !== undefined)
+    materials.blendedAreaRatio = ratio('blendedAreaRatio', stored.blendedAreaRatio);
+  return materials;
+}
+
 /** Validate a spec into its detached declaration. Tier keys are LOD0, LOD1, ... */
 export function normalizeBudget(spec: unknown): BudgetDeclarationV1 {
-  if (!spec || typeof spec !== 'object' || Array.isArray(spec))
-    fail('spec must be { triangles: number | { LOD0, LOD1, ... }, draws? }.');
+  if (!spec || typeof spec !== 'object' || Array.isArray(spec)) fail(`spec must be ${SPEC_SHAPE}.`);
   const value = spec as Record<string, unknown>;
+  // `materials` and an empty `triangles` record are the stored form a GLB carries back.
+  const stored = value.schemaVersion !== undefined;
+  const allowed = ['triangles', 'draws', 'images', 'decodedBytes', 'materialTier', 'schemaVersion'];
   for (const key of Object.keys(value))
-    if (key !== 'triangles' && key !== 'draws' && key !== 'schemaVersion')
+    if (!allowed.includes(key) && !(stored && key === 'materials'))
       fail(`unknown field ${JSON.stringify(key)}.`);
+  const materials =
+    stored && value.materials !== undefined
+      ? storedMaterials(value.materials)
+      : materialLimits(value);
   const triangles: Record<string, number> = {};
   if (typeof value.triangles === 'number') triangles.LOD0 = count('triangles', value.triangles);
   else if (
@@ -56,13 +151,17 @@ export function normalizeBudget(spec: unknown): BudgetDeclarationV1 {
     !Array.isArray(value.triangles)
   ) {
     const entries = Object.entries(value.triangles as Record<string, unknown>);
-    if (entries.length === 0) fail('triangles needs at least one tier.');
+    if (entries.length === 0 && !(stored && (materials || value.draws !== undefined)))
+      fail('triangles needs at least one tier.');
     for (const [tier, limit] of entries) {
       if (!/^LOD(0|[1-9][0-9]?)$/.test(tier))
         fail(`triangles tier ${JSON.stringify(tier)} must be named LOD0, LOD1, ...`);
       triangles[tier] = count(`triangles.${tier}`, limit);
     }
-  } else fail('triangles must be a positive integer or a record of LOD tiers.');
+  } else if (value.triangles !== undefined)
+    fail('triangles must be a positive integer or a record of LOD tiers.');
+  else if (value.draws === undefined && !materials)
+    fail(`spec must declare triangles, draws or a material limit: ${SPEC_SHAPE}.`);
   const ordered = Object.fromEntries(
     Object.entries(triangles).sort(([a], [b]) => Number(a.slice(3)) - Number(b.slice(3))),
   );
@@ -70,6 +169,7 @@ export function normalizeBudget(spec: unknown): BudgetDeclarationV1 {
     schemaVersion: 1,
     triangles: ordered,
     ...(value.draws === undefined ? {} : { draws: count('draws', value.draws) }),
+    ...(materials ? { materials } : {}),
   };
 }
 
@@ -107,6 +207,7 @@ export function evaluateBudget(
   declaration: BudgetDeclarationV1,
   measuredLod0: { triangles: number; draws: number; instancedDraws?: number },
   chains: readonly LevelOfDetailChainV1[],
+  material?: MaterialMetricsV1,
 ): BudgetReportV1 {
   // Reported beside draws, never judged (#200).
   const instanced =
@@ -147,5 +248,38 @@ export function evaluateBudget(
       measured: { triangles: measuredLod0.triangles, draws: measuredLod0.draws, ...instanced },
       status: measuredLod0.draws <= declaration.draws ? 'pass' : 'fail',
     });
-  return { status: tiers.every((tier) => tier.status === 'pass') ? 'pass' : 'fail', tiers };
+  const materials = material ? evaluateMaterialLimits(declaration, material) : [];
+  const pass = [...tiers, ...materials].every((entry) => entry.status === 'pass');
+  return {
+    status: pass ? 'pass' : 'fail',
+    tiers,
+    ...(materials.length ? { materials } : {}),
+  };
+}
+
+/** Each declared material limit against the written GLB's material metrics. */
+function evaluateMaterialLimits(
+  declaration: BudgetDeclarationV1,
+  metrics: MaterialMetricsV1,
+): MaterialBudgetCheckV1[] {
+  const declared = declaration.materials ?? {};
+  const measured: Record<MaterialBudgetCheckV1['limit'], number> = {
+    images: metrics.imageCount,
+    decodedBytes: metrics.decodedImageBytesRgba8,
+    imageSize: metrics.maxImageDimension,
+    blendedAreaRatio: metrics.blendedSurfaceAreaRatio,
+  };
+  return (Object.keys(measured) as MaterialBudgetCheckV1['limit'][]).flatMap((limit) => {
+    const value = declared[limit];
+    return value === undefined
+      ? []
+      : [
+          {
+            limit,
+            declared: value,
+            measured: measured[limit],
+            status: measured[limit] <= value ? ('pass' as const) : ('fail' as const),
+          },
+        ];
+  });
 }
