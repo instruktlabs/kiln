@@ -380,3 +380,22 @@ shader is not automatically portable through a GLB export. Check the delivered
 consumer path and portable resource closure; an older sealed archive does not
 contain later development-scene changes. Keep technical qualification separate
 from the owner's visual acceptance.
+
+### Export receipts after a revision changes
+
+A scene that records its selected assets in an aggregate export receipt must
+regenerate that receipt whenever a selected asset's revision changes and is
+re-exported. Never edit the old entry in place or carry its hashes forward.
+Re-run `kiln export <id> <revision> --profile runtime --out <file>.glb --json`
+and build each entry from that fresh output: `revisionId`, and for the GLB and
+metadata entries of `files[]` their `bytes` and `sha256`. The sidecar's `source`
+(`revisionId`, `glbSha256`, `sourceSha256`) names the saved revision it came
+from; `glbSha256` there is the saved editable GLB, not the runtime GLB.
+
+Before claiming delivery, check each entry against the files on disk: the
+revision id equals the scene's selection, the GLB bytes and hash equal the
+emitted file, and the sidecar hash equals both the file and the
+`kilnProvenanceV1.metadata.sha256` stamped in the runtime GLB. Move a superseded
+entry into immutable `history[]` with its revision id and hashes, so earlier proof
+stays visible without posing as current. Dependent manifests that quote the same
+revision or hashes are regenerated with the receipt.

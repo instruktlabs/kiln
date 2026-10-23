@@ -20,6 +20,12 @@ does not publish a package.
   `@instruktlabs/kiln/render` and `/composer` fail with `ERR_MODULE_NOT_FOUND` until the
   author installs `@instruktlabs/kiln` pinned to the runtime version in use; CLI/MCP-only
   authoring is unchanged ([#179](https://github.com/instruktlabs/kiln/issues/179)).
+- The optional compose-scene workflow now says how a scene's aggregate export receipt follows
+  a changed asset revision: regenerate it from fresh `kiln export … --json` receipts, check
+  revision id, GLB bytes and hash and sidecar hash against the emitted files before claiming
+  delivery, and keep superseded entries as immutable `history[]` rather than rewriting them.
+  Guidance only; standalone assets and the engine surface are unchanged
+  ([#180](https://github.com/instruktlabs/kiln/issues/180)).
 
 ## 1.4.0 (2026-10-23)
 
