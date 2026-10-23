@@ -18,6 +18,7 @@
  */
 import {
   type Document,
+  Format,
   Logger,
   type Mesh,
   type Node,
@@ -37,6 +38,7 @@ import { createGltfIO, MSFT_LOD } from './gltf-io';
 import { deliveryNodePaths } from './delivery-inspect';
 import { KILN_REPEAT_INSTANCES_KEY } from './delivery';
 import { isHiddenGltfNode } from './metrics';
+import { isKtx2, sha256Hex } from './runtime-textures';
 
 /** Bits per quantized attribute class; custom underscore attributes stay float32. */
 export const RUNTIME_THREE_QUANTIZATION = Object.freeze({
@@ -50,6 +52,14 @@ export const RUNTIME_THREE_QUANTIZATION = Object.freeze({
 const QUANTIZED_SEMANTICS =
   /^(POSITION|NORMAL|TANGENT|TEXCOORD_\d+|COLOR_\d+|JOINTS_\d+|WEIGHTS_\d+)$/;
 
+/** The material slot an image serves; `other` covers extension textures. */
+export type RuntimeThreeKtx2SlotV1 =
+  | 'baseColor'
+  | 'emissive'
+  | 'normal'
+  | 'metallicRoughness'
+  | 'occlusion'
+  | 'other';
 export interface RuntimeThreeKtx2InputV1 {
   /** The encoded source image (PNG or JPEG). */
   image: Uint8Array;
@@ -58,13 +68,34 @@ export interface RuntimeThreeKtx2InputV1 {
   name: string;
   /** sRGB for base colour and emissive slots, linear otherwise. */
   colorSpace: 'srgb' | 'linear';
+  /**
+   * The slot this image serves. An image in several linear slots reports the first of
+   * normal, metallicRoughness, occlusion, other. An image in both an sRGB and a linear slot
+   * is refused, because one encoding cannot serve both.
+   */
+  slot: RuntimeThreeKtx2SlotV1;
 }
+/** What an encoder records about itself: the receipt binds these facts to the bytes. */
+export interface RuntimeThreeKtx2EncoderIdentityV1 {
+  name: string;
+  version: string;
+  /** `sha256:` of the Basis Universal WebAssembly the encoder ran, when known. */
+  basisWasmSha256?: string;
+  /** Every mode, quality, mipmap and supercompression setting, per colour space. */
+  settings: Record<string, unknown>;
+}
+/** A KTX2 encoder function, optionally carrying its identity for `delivery.ktx2.encoder`. */
+export type RuntimeThreeKtx2EncoderV1 = ((
+  input: RuntimeThreeKtx2InputV1,
+) => Promise<Uint8Array>) & {
+  identity?: RuntimeThreeKtx2EncoderIdentityV1;
+};
 export interface RuntimeThreeOptionsV1 {
   /**
-   * Optional host KTX2 encoder (for example a Basis Universal or toktx binding). Kiln ships
-   * none; without one, textures stay PNG/JPEG and the report says `skipped`.
+   * Optional KTX2 encoder: a host binding, or `createKtx2Encoder()` over the optional
+   * `ktx2-encoder` peer. Without one, textures stay PNG/JPEG and the report says `skipped`.
    */
-  ktx2Encoder?: (input: RuntimeThreeKtx2InputV1) => Promise<Uint8Array>;
+  ktx2Encoder?: RuntimeThreeKtx2EncoderV1;
   /**
    * Buffer compression. `meshopt` (default) requires `EXT_meshopt_compression` and a
    * Meshopt decoder in the loader. `none` writes plain buffers for loaders without one;
@@ -108,7 +139,13 @@ export interface RuntimeThreeDeliveryV1 {
   colliderProxies: { collider: string; proxy: string }[];
   customAttributes: { name: string; meshes: number; componentType: 'FLOAT'; normalized: false }[];
   instancing: { node: string; mesh: string; count: number; instances: string[] }[];
-  ktx2: { status: 'encoded' | 'skipped'; textures: number; reason?: string };
+  ktx2: {
+    status: 'encoded' | 'skipped';
+    textures: number;
+    reason?: string;
+    /** The encoder's own identity, when it declared one. */
+    encoder?: RuntimeThreeKtx2EncoderIdentityV1;
+  };
   preserved: {
     lodChains: number;
     hiddenNodes: number;
@@ -250,6 +287,7 @@ function splitColliderProxies(doc: Document) {
 async function encodeKtx2(
   doc: Document,
   encoder: RuntimeThreeOptionsV1['ktx2Encoder'],
+  sources: Map<Texture, string>,
 ): Promise<RuntimeThreeDeliveryV1['ktx2']> {
   const textures = doc
     .getRoot()
@@ -261,26 +299,71 @@ async function encodeKtx2(
       textures: textures.length,
       reason: 'No KTX2 encoder was supplied; textures stay PNG or JPEG.',
     };
-  const srgb = new Set<Texture>();
+  const slots = new Map<Texture, Set<RuntimeThreeKtx2SlotV1>>();
+  const use = (texture: Texture | null, slot: RuntimeThreeKtx2SlotV1) => {
+    if (texture) slots.set(texture, (slots.get(texture) ?? new Set()).add(slot));
+  };
   for (const material of doc.getRoot().listMaterials()) {
-    for (const texture of [material.getBaseColorTexture(), material.getEmissiveTexture()])
-      if (texture) srgb.add(texture);
+    use(material.getBaseColorTexture(), 'baseColor');
+    use(material.getEmissiveTexture(), 'emissive');
+    use(material.getNormalTexture(), 'normal');
+    use(material.getMetallicRoughnessTexture(), 'metallicRoughness');
+    use(material.getOcclusionTexture(), 'occlusion');
   }
+  const order: RuntimeThreeKtx2SlotV1[] = [
+    'baseColor',
+    'emissive',
+    'normal',
+    'metallicRoughness',
+    'occlusion',
+  ];
   for (const texture of textures) {
+    const used = slots.get(texture) ?? new Set<RuntimeThreeKtx2SlotV1>();
+    const srgb = used.has('baseColor') || used.has('emissive');
+    // Any other parent (an extension texture info) is a linear use the core slots do not name.
+    const other = texture
+      .listParents()
+      .some((parent) => parent.propertyType !== PropertyType.ROOT && !isCoreMaterialUse(parent));
+    const linear = [...used].some((slot) => slot !== 'baseColor' && slot !== 'emissive') || other;
+    if (srgb && linear)
+      throw new Error(
+        `Texture ${JSON.stringify(texture.getName())} is used by both sRGB and linear material slots; one KTX2 encoding cannot serve both. Use separate images.`,
+      );
+    const original = texture.getImage()!;
     const image = await encoder({
-      image: texture.getImage()!,
+      image: original,
       mimeType: texture.getMimeType(),
       name: texture.getName(),
-      colorSpace: srgb.has(texture) ? 'srgb' : 'linear',
+      colorSpace: srgb ? 'srgb' : 'linear',
+      slot: order.find((slot) => used.has(slot)) ?? 'other',
     });
-    if (!(image instanceof Uint8Array) || image.byteLength < 12)
-      throw new Error('ktx2Encoder must return KTX2 bytes');
+    if (!(image instanceof Uint8Array) || !isKtx2(image))
+      throw new Error('ktx2Encoder must return KTX2 bytes starting with the KTX2 identifier');
+    sources.set(texture, `sha256:${await sha256Hex(original)}`);
     texture.setImage(image).setMimeType('image/ktx2');
     const uri = texture.getURI();
     if (uri) texture.setURI(uri.replace(/\.(png|jpe?g)$/i, '.ktx2'));
   }
-  if (textures.length) doc.createExtension(KHRTextureBasisu).setRequired(true);
-  return { status: 'encoded', textures: textures.length };
+  if (textures.length) {
+    doc.createExtension(KHRTextureBasisu).setRequired(true);
+    // Atlas references name the final image bytes and MIME type: rebind them to the KTX2
+    // bytes, then check exactly as import will.
+    const { refreshAtlasDocumentProvenance, validateAtlasDocumentProvenance } = await import(
+      './atlas-provenance'
+    );
+    await refreshAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc);
+  }
+  return {
+    status: 'encoded',
+    textures: textures.length,
+    ...(encoder.identity ? { encoder: structuredClone(encoder.identity) } : {}),
+  };
+}
+
+/** A material's core texture info, as opposed to an extension property's. */
+function isCoreMaterialUse(parent: Property): boolean {
+  return parent.propertyType === PropertyType.MATERIAL;
 }
 
 function decomposeDelta(before: number[], after: number[]) {
@@ -298,16 +381,29 @@ function decomposeDelta(before: number[], after: number[]) {
   };
 }
 
+/** What the derivation returns beside the GLB: facts and, on request, the `.gltf` layout. */
+export interface RuntimeThreeResult {
+  glb: Uint8Array;
+  delivery: RuntimeThreeDeliveryV1;
+  /** Pre-encode `sha256:` of each image index KTX2 encoding replaced. */
+  imageSources: Map<number, string>;
+  /** The same document as JSON glTF, when `layout.gltfBasename` was given. */
+  gltf?: { json: Record<string, unknown>; resources: Record<string, Uint8Array> };
+}
+
 /**
  * Transform written GLB bytes into the three.js runtime delivery GLB. `meshoptEncoder` is the
  * `MeshoptEncoder` from the `meshoptimizer` package (loaded by the caller so this module stays
- * import-light).
+ * import-light). `layout.gltfBasename` also writes the same document as JSON glTF, whose
+ * buffers are named `<basename>.bin`; its image URIs are the writer's and are renamed by the
+ * caller.
  */
 export async function deliverRuntimeThreeGlb(
   bytes: Uint8Array,
   meshoptEncoder: unknown,
   options: RuntimeThreeOptionsV1 = {},
-): Promise<{ glb: Uint8Array; delivery: RuntimeThreeDeliveryV1 }> {
+  layout: { gltfBasename?: string } = {},
+): Promise<RuntimeThreeResult> {
   const compression = options.compression ?? 'meshopt';
   if (compression !== 'meshopt' && compression !== 'none')
     throw new Error('Runtime three compression must be meshopt or none');
@@ -343,7 +439,8 @@ export async function deliverRuntimeThreeGlb(
       .createExtension(EXTMeshoptCompression)
       .setRequired(true)
       .setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
-  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder);
+  const encodedSources = new Map<Texture, string>();
+  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder, encodedSources);
 
   // The quantizer moves a mesh to a new unnamed child when its node has children or is
   // animated; name it after its authored node so the delivery path is stable.
@@ -403,6 +500,18 @@ export async function deliverRuntimeThreeGlb(
   const all = doc.getRoot().listNodes();
   const glb = await io.writeBinary(doc);
   const json = (await io.binaryToJSON(glb)).json;
+  // The writer emits one glTF image per texture, in list order.
+  const imageSources = new Map<number, string>();
+  doc
+    .getRoot()
+    .listTextures()
+    .forEach((texture, image) => {
+      const source = encodedSources.get(texture);
+      if (source) imageSources.set(image, source);
+    });
+  const gltf = layout.gltfBasename
+    ? await io.writeJSON(doc, { format: Format.GLTF, basename: layout.gltfBasename })
+    : undefined;
   const delivery: RuntimeThreeDeliveryV1 = {
     target: 'three',
     extensionsUsed: [...(json.extensionsUsed ?? [])].sort(),
@@ -453,5 +562,17 @@ export async function deliverRuntimeThreeGlb(
         .length,
     },
   };
-  return { glb, delivery };
+  return {
+    glb,
+    delivery,
+    imageSources,
+    ...(gltf
+      ? {
+          gltf: {
+            json: gltf.json as unknown as Record<string, unknown>,
+            resources: gltf.resources,
+          },
+        }
+      : {}),
+  };
 }

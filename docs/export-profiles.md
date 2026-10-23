@@ -82,7 +82,8 @@ node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --out mech.glb
 # mech.kiln-metadata.json
 ```
 
-Runtime requires GLB format and an output ending in `.glb`. Bundle/source formats
+Runtime requires GLB format and an output ending in `.glb`, except `--textures external`,
+which writes `.gltf` (see runtime textures). Bundle/source formats
 use `editable`. Use a portable filename stem containing ASCII letters, digits,
 periods, underscores or hyphens, beginning with a letter or digit. The generated
 sidecar filename must be at most 200 characters; Windows device names are rejected.
@@ -194,9 +195,10 @@ What it does, in order:
    FLOAT. Buffers are written with `EXT_meshopt_compression` (required) unless the
    caller passes `compression: 'none'` (CLI `--compression none`): then buffers stay plain,
    no Meshopt decoder is needed, and quantization, instancing and everything below stay.
-4. Textures become KTX2 (`KHR_texture_basisu`) only when the library caller passes a
-   `ktx2Encoder`; Kiln ships none, so the CLI reports `ktx2: { status: 'skipped' }` and
-   textures stay PNG or JPEG.
+4. Textures become KTX2 (`KHR_texture_basisu`, required, no PNG fallback) only with
+   `--ktx2` or a library `ktx2Encoder`; otherwise the sidecar reports
+   `ktx2: { status: 'skipped' }` and textures stay PNG or JPEG. See
+   [KTX2 textures](#ktx2-textures).
 
 Roles and kit extras, hidden collider nodes (`KHR_node_visibility`), anchors, ports and
 `MSFT_lod` chains are kept. The sidecar `delivery` block states what a consumer needs:
@@ -210,7 +212,7 @@ Roles and kit extras, hidden collider nodes (`KHR_node_visibility`), anchors, po
 | `colliderProxies` | Collider node and proxy child paths |
 | `customAttributes` | Each underscore attribute, its mesh count, `FLOAT`, not normalized |
 | `instancing` | Each batch node, its mesh, count and instance names in order |
-| `ktx2` | `encoded` or `skipped` with the texture count and reason |
+| `ktx2` | `encoded` or `skipped` with the texture count and reason; `encoder` (name, version, Basis WebAssembly hash and every setting) when the encoder declared it |
 | `preserved` | Counts of LOD chains, hidden nodes, colliders, anchors, ports and kit modules |
 
 Quantization stores positions as normalized integers and moves the metre scale onto
@@ -230,6 +232,148 @@ decoder. three's `GLTFLoader` keeps unknown node extensions in `userData.gltfExt
 (`KHR_node_visibility`, `MSFT_lod`) and lowercases custom attributes (`_edge`).
 Kiln's tests load the derived GLB from both converters this way. On a very small asset
 the extension JSON can outweigh the saved geometry; compare real assets.
+
+## KTX2 textures
+
+`--ktx2` (with `--target three`) encodes every PNG, JPEG or WebP image to KTX2 through
+the optional peer `ktx2-encoder@0.6.0`. Kiln does not install or bundle it; add it to the
+installation that runs `kiln`:
+
+```sh
+npm install ktx2-encoder@0.6.0
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --target three --ktx2   --textures manifest --out door.glb --json
+```
+
+Without the peer, `--ktx2` fails and names that install command. Another installed
+version is refused, because the settings below are qualified on 0.6.0. The mode follows
+the slot: ETC1S with the sRGB transfer function for base colour and emissive, UASTC with
+Zstandard supercompression for normal, metallic-roughness, occlusion and other linear
+maps (normal maps also use the encoder's normal-map preset). Every level gets mipmaps. An
+image used by both an sRGB and a linear slot stops the export, because one encoding
+cannot serve both; give each slot its own image.
+
+`delivery.ktx2.encoder` records `name`, `version`, `basisWasmSha256` and the exact
+`settings` per profile, and the `--json` receipt repeats `delivery.ktx2`. Because the
+sidecar hash is stamped into the GLB, these facts are bound to the delivered bytes. With
+`--textures manifest`, each entry's `sha256` is the KTX2 bytes and `sourceSha256` the
+image before encoding; a library pin is matched on the pre-encode bytes. Encoding the same
+image twice gives identical bytes in Kiln's tests; if a platform ever differs, the
+recorded version and settings are the contract, and the only cost is a new hash.
+
+Encoding runs inside the same document as the rest of the target, so `MSFT_lod` chains,
+roles and atlas provenance survive: every atlas reference is rebound to its KTX2 bytes and
+MIME type and validated as import will validate it. The library form is:
+
+```ts
+import { createKtx2Encoder, exportAssetGlb } from '@instruktlabs/kiln/asset-export';
+
+const output = await exportAssetGlb(record, {
+  profile: 'runtime',
+  target: 'three',
+  ktx2Encoder: await createKtx2Encoder(),
+});
+```
+
+A host may pass its own `ktx2Encoder` instead. It receives `{ image, mimeType, name,
+colorSpace, slot }`, must return bytes that start with the KTX2 identifier, and may carry
+an `identity` property that Kiln records as `delivery.ktx2.encoder`.
+
+A consumer needs `KTX2Loader` (with its Basis transcoder files served by the application)
+in addition to the meshopt decoder:
+
+```ts
+import { KTX2Loader } from 'three/addons/loaders/KTX2Loader.js';
+
+const ktx2 = new KTX2Loader().setTranscoderPath('/basis/').detectSupport(renderer);
+const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).setKTX2Loader(ktx2);
+```
+
+Licences: `ktx2-encoder` is MIT. Its package bundles a precompiled Basis Universal
+encoder (Apache-2.0, Binomial LLC) as WebAssembly, which links Zstandard (BSD-3-Clause)
+and MIT-licensed image loaders, and the package ships `THIRD_PARTY_NOTICES.md` reproducing
+the Basis Universal NOTICE. Kiln (MIT) only imports the peer that the user installed; it
+redistributes none of that code, so the notice travels with the installed package. Anyone
+who redistributes `ktx2-encoder` itself, for example inside a self-contained archive, must
+keep that notice file. KTX2 output is data produced by the encoder, not a copy of it.
+
+## Runtime textures: manifest and shared files
+
+Runtime GLBs embed every texture, so forty assets that use one library material carry
+forty copies of its maps. Two opt-in choices let a host share them. Neither is the
+default: without `--textures`, the GLB, sidecar and `--json` receipt bytes are unchanged.
+
+**Manifest.** `--textures manifest` (runtime profile, with or without `--target three`)
+adds `textures[]` to the sidecar. The GLB is unchanged apart from the provenance hash of
+that larger sidecar.
+
+```sh
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --textures manifest --out wall.glb
+```
+
+```ts
+const output = await exportAssetGlb(record, { profile: 'runtime', textures: 'manifest' });
+```
+
+One entry per glTF image, sorted by image index:
+
+| Field | Meaning |
+| --- | --- |
+| `image` | glTF image index |
+| `sha256`, `bytes`, `mimeType` | Identity of the exact delivered bytes |
+| `width`, `height` | Pixel size read from the image header |
+| `colorSpace` | `srgb` when a base colour or emissive slot uses the image, otherwise `linear` |
+| `sourceSha256` | The bytes before KTX2 encoding, only when encoding changed them |
+| `material` | `{ pin: { resourceId, revisionId, sha256 }, slot }`, only when the pre-encode bytes exactly equal a map in the record's saved material closure (`materials.kiln.json`). Never inferred from names |
+| `uri` | External layout only: the image file relative to the `.gltf` |
+
+Equal `sha256` means equal bytes, so a host can deduplicate images across assets on that
+key without decoding a GLB. Library textures keep their encoded bytes in the GLB, so two
+assets that use one library map report the same `sha256` and the same `material.pin`.
+
+**External textures.** `--textures external` (requires `--target three` and `--out`
+ending in `.gltf`) writes standard JSON glTF with content-addressed images instead of a
+GLB, and implies the manifest with a `uri` on each entry:
+
+```sh
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --target three \
+  --textures external --out assets/wall.gltf --json
+# assets/wall.gltf               (asset.extras.kilnProvenanceV1 points at the sidecar)
+# assets/wall.bin
+# assets/wall.kiln-metadata.json
+# assets/textures/<sha256>.png   (or .jpg, .webp, .ktx2)
+```
+
+The file name of each texture is the hex SHA-256 of its exact bytes. Exports into one
+folder share those files:
+
+- Textures are published first, then the sidecar, the `.bin` and the `.gltf` last.
+- An existing texture with the same bytes is reused and never rewritten; the receipt
+  marks it `"reused": true`. A file with that name but different bytes stops the export
+  before any model file is published.
+- The model files keep the never-replace rule: an existing `.gltf`, `.bin` or sidecar
+  stops the export before any texture is written.
+- A failed export rolls back its model files but never removes a texture, even one it
+  created, because a concurrent export may already reference it. A leftover texture is
+  harmless.
+
+The library form returns `layout: 'gltf'` with `gltf`, `buffers`, `textures` and
+`metadata` to write, plus the equivalent embedded `glb` for inspection:
+
+```ts
+const output = await exportAssetGlb(record, {
+  profile: 'runtime',
+  target: 'three',
+  textures: 'external',
+  gltfFileName: 'wall.gltf',
+  metadataFileName: 'wall.kiln-metadata.json',
+});
+```
+
+three.js loads the `.gltf` and resolves `wall.bin` and `textures/...` relative to it:
+`new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync('assets/wall.gltf')`.
+Plain `--profile runtime` keeps `.glb` only, because that profile copies the binary chunk
+byte for byte. Kiln's tests validate the `.gltf` with `gltf-validator` and load it through
+`GLTFLoader`. MCP `kiln_export` does not offer these options.
 
 ## Pointer and hash contract
 
@@ -268,7 +412,9 @@ sidecar points back to the canonical input GLB hash, not the derived runtime GLB
 so there is no circular hash dependency. IDs and hashes let a tool locate and verify
 the corresponding editable revision; they are integrity/provenance data, not signatures
 or authenticated authorship. The sidecar deliberately does not embed the full manifest,
-source or build record.
+source or build record. Optional fields appear only when requested: `target` and
+`delivery` with `--target three`, `textures` with `--textures`. In the external layout the
+same record sits in the `.gltf` file's `asset.extras`.
 
 The URI is informational, not a glTF buffer/image URI. Kiln does not automatically
 fetch it or execute its contents. Standard glTF playback works without the sidecar,

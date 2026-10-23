@@ -8,8 +8,8 @@ import { ASSET_LIMIT, assetIdSchema, decodeAssetBundle } from './assets';
 import { localProgramStore } from './program-store-node';
 import { programRefPattern, retainProgram } from './program-store';
 import { createKilnProgramToolRegistry, newestRevision } from './tools/registry';
-import { writeNewDestinationsAtomic } from './cli-output';
-import { exportAssetGlb } from './asset-export';
+import { writeExternalTextureExport, writeNewDestinationsAtomic } from './cli-output';
+import { createKtx2Encoder, exportAssetGlb } from './asset-export';
 import { inspectDrawDiagnostics } from './draw-diagnostics';
 import { createPackagedLocalToolContext } from './local-runtime';
 import { buildRenderPort, resolveRenderMode } from './cli-render-mode';
@@ -52,9 +52,14 @@ ${SAVE_LINES}
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
        [--target three]   runtime only: meshopt + quantization, repeatInstances GPU
-                          instancing, KTX2 skipped (no encoder); sidecar states node scales
+                          instancing; sidecar states node scales; KTX2 skipped unless --ktx2
        [--compression meshopt|none]   with --target three: none writes plain buffers
                           for loaders without a Meshopt decoder (default meshopt)
+       [--ktx2]   with --target three: KTX2 through the optional ktx2-encoder@0.6.0 peer
+                          (npm install ktx2-encoder@0.6.0), ETC1S colour, UASTC data maps
+       [--textures manifest]   runtime only: the sidecar names each image's exact bytes
+       [--textures external]   with --target three and --out x.gltf: x.gltf, x.bin and
+                          shared textures/<sha256>.<ext> files that are never replaced
        [--json]   receipt naming each file with its bytes and sha256
        export never replaces an existing file: an export hands off one exact
        saved revision, while render --out replaces its own working output
@@ -94,6 +99,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     'profile',
     'target',
     'compression',
+    'textures',
     'port',
     'render',
     'backdrop',
@@ -126,6 +132,10 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     // The CLI's --json rule (cli-json.ts) leaves the switch only on export's receipt.
     if (arg === '--json' && command === 'export') {
       flags.json = 'true';
+      continue;
+    }
+    if (arg === '--ktx2' && command === 'export') {
+      flags.ktx2 = 'true';
       continue;
     }
     if (arg === '--restore' || arg === '--rebuild' || arg === '--no-project') {
@@ -387,32 +397,88 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
         throw new Error('--compression must be meshopt or none');
       if (compression !== undefined && target !== 'three')
         throw new Error('--compression requires --target three');
-      const format = flags.format ?? (profile === 'runtime' ? 'glb' : 'bundle');
-      if (!['bundle', 'glb', 'source'].includes(format)) throw new Error('Unknown export format');
-      const written: { kind: string; path: string; data: Uint8Array }[] = [];
+      const textures = flags.textures;
+      if (textures !== undefined && textures !== 'manifest' && textures !== 'external')
+        throw new Error('Unknown --textures value; use manifest or external');
+      if (textures !== undefined && profile !== 'runtime')
+        throw new Error('--textures requires --profile runtime');
+      if (textures === 'external' && target !== 'three')
+        throw new Error('--textures external requires --target three');
+      if (flags.ktx2 && (target !== 'three' || profile !== 'runtime'))
+        throw new Error('--ktx2 requires --target three with --profile runtime');
+      const gltfLayout = textures === 'external';
+      const format =
+        flags.format ?? (profile === 'runtime' ? (gltfLayout ? 'gltf' : 'glb') : 'bundle');
+      if (!['bundle', 'glb', 'source', 'gltf'].includes(format))
+        throw new Error('Unknown export format');
+      if (format === 'gltf' && !gltfLayout)
+        throw new Error('gltf format requires --textures external');
+      const written: { kind: string; path: string; data: Uint8Array; reused?: boolean }[] = [];
+      let drawGlb: Uint8Array | undefined;
+      let ktx2Receipt: unknown;
       if (profile === 'runtime') {
-        if (format !== 'glb')
-          throw new Error('Runtime profile requires GLB format; use editable for source or bundle');
+        if (format !== (gltfLayout ? 'gltf' : 'glb'))
+          throw new Error(
+            gltfLayout
+              ? '--textures external writes gltf format'
+              : 'Runtime profile requires GLB format; use editable for source or bundle',
+          );
         const destination = resolve(flags.out);
-        if (!destination.toLowerCase().endsWith('.glb'))
-          throw new Error('Runtime output must end in .glb');
-        const metadataFileName = `${basename(destination).slice(0, -4)}.kiln-metadata.json`;
+        const extension = gltfLayout ? '.gltf' : '.glb';
+        if (!destination.toLowerCase().endsWith(extension))
+          throw new Error(`Runtime output must end in ${extension}`);
+        const stem = basename(destination).slice(0, -extension.length);
+        const metadataFileName = `${stem}.kiln-metadata.json`;
         const output = await exportAssetGlb(record, {
           profile,
           metadataFileName,
           ...(target ? { target } : {}),
           ...(compression ? { compression } : {}),
+          ...(textures ? { textures } : {}),
+          ...(gltfLayout ? { gltfFileName: basename(destination) } : {}),
+          ...(flags.ktx2 ? { ktx2Encoder: await createKtx2Encoder() } : {}),
         });
         if (output.profile !== 'runtime') throw new Error('Expected runtime export');
         const metadataPath = resolve(dirname(destination), output.metadata.name);
-        await writeNewDestinationsAtomic([
-          { path: metadataPath, data: output.metadata.bytes },
-          { path: destination, data: output.glb },
-        ]);
-        written.push(
-          { kind: 'glb', path: destination, data: output.glb },
-          { kind: 'metadata', path: metadataPath, data: output.metadata.bytes },
-        );
+        drawGlb = output.glb;
+        if (flags.ktx2)
+          ktx2Receipt = JSON.parse(new TextDecoder().decode(output.metadata.bytes)).delivery?.ktx2;
+        if (output.layout === 'gltf') {
+          const directory = dirname(destination);
+          const files = output.textures.map(({ uri, bytes }) => ({
+            path: resolve(directory, ...uri.split('/')),
+            data: bytes,
+          }));
+          const buffers = output.buffers.map(({ uri, bytes }) => ({
+            path: resolve(directory, uri),
+            data: bytes,
+          }));
+          const published = await writeExternalTextureExport(files, [
+            { path: metadataPath, data: output.metadata.bytes },
+            ...buffers,
+            { path: destination, data: output.gltf.bytes },
+          ]);
+          written.push(
+            { kind: 'gltf', path: destination, data: output.gltf.bytes },
+            ...buffers.map(({ path, data }) => ({ kind: 'bin', path, data })),
+            { kind: 'metadata', path: metadataPath, data: output.metadata.bytes },
+            ...files.map(({ path, data }, index) => ({
+              kind: 'texture',
+              path,
+              data,
+              reused: published[index]!.reused,
+            })),
+          );
+        } else {
+          await writeNewDestinationsAtomic([
+            { path: metadataPath, data: output.metadata.bytes },
+            { path: destination, data: output.glb },
+          ]);
+          written.push(
+            { kind: 'glb', path: destination, data: output.glb },
+            { kind: 'metadata', path: metadataPath, data: output.metadata.bytes },
+          );
+        }
       } else {
         const bytes =
           format === 'bundle'
@@ -423,7 +489,10 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
         await writeNewDestinationsAtomic([{ path: destination, data: bytes }]);
         written.push({ kind: format, path: destination, data: bytes });
       }
-      if (!flags.json) console.log(written.map(({ path }) => `Saved ${path}`).join('\n'));
+      if (!flags.json)
+        console.log(
+          written.map(({ path, reused }) => `${reused ? 'Reused' : 'Saved'} ${path}`).join('\n'),
+        );
       else
         console.log(
           JSON.stringify(
@@ -436,19 +505,22 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
               ...(target ? { target } : {}),
               ...(compression ? { compression } : {}),
               format,
+              ...(ktx2Receipt ? { ktx2: ktx2Receipt } : {}),
               ...(format !== 'source'
                 ? {
                     drawDiagnostics: await inspectDrawDiagnostics(
-                      written.find(({ kind }) => kind === 'glb')?.data ??
+                      drawGlb ??
+                        written.find(({ kind }) => kind === 'glb')?.data ??
                         record.files['asset.glb']!,
                     ),
                   }
                 : {}),
-              files: written.map(({ kind, path, data }) => ({
+              files: written.map(({ kind, path, data, reused }) => ({
                 kind,
                 path,
                 bytes: data.byteLength,
                 sha256: `sha256:${createHash('sha256').update(data).digest('hex')}`,
+                ...(reused === undefined ? {} : { reused }),
               })),
             },
             null,

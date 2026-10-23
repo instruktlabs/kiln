@@ -370,7 +370,8 @@
   "peerDependencies": {
     "@ai-sdk/provider": "^3.0.0",
     "@strands-agents/sdk": "^1.18.0",
-    "@openrouter/ai-sdk-provider": "^2.10.0"
+    "@openrouter/ai-sdk-provider": "^2.10.0",
+    "ktx2-encoder": "0.6.0"
   },
   "overrides": {
     "sharp": "^0.35.5"
@@ -384,6 +385,9 @@
     },
     "@openrouter/ai-sdk-provider": {
       "optional": true
+    },
+    "ktx2-encoder": {
+      "optional": true
     }
   },
   "devDependencies": {
@@ -396,6 +400,7 @@
     "@strands-agents/sdk": "1.21.0",
     "@types/bun": "^1.4.2",
     "ai": "^6.0.300",
+    "ktx2-encoder": "0.6.0",
     "openai": "^6.49.0",
     "typescript": "^7.0.2"
   },

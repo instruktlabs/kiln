@@ -4,9 +4,18 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 await mkdir(join(root, 'dist/viewer'), { recursive: true });
+// The viewer exports through asset-export, which lazily loads the Node-only KTX2 encoder
+// (#201); the viewer never encodes KTX2, so that module stays out of the browser bundle.
 const result = spawnSync(
   'bun',
-  ['build', 'src/viewer/app.ts', '--target=browser', '--minify', '--outfile=dist/viewer/app.js'],
+  [
+    'build',
+    'src/viewer/app.ts',
+    '--target=browser',
+    '--minify',
+    '--external=./ktx2-basis*',
+    '--outfile=dist/viewer/app.js',
+  ],
   { cwd: root, stdio: 'inherit', windowsHide: true },
 );
 if (result.status !== 0) process.exit(result.status ?? 1);

@@ -9,6 +9,9 @@
  */
 import { describe, expect, test } from 'bun:test';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { Document, WebIO } from '@gltf-transform/core';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
@@ -17,6 +20,11 @@ import type { AssetRecord } from '../assets';
 import { KILN_REPEAT_INSTANCES_KEY, repeatInstances } from '../delivery';
 import { buildSandboxGlobals } from '../primitives';
 import { renderGLBInProcess, renderSceneToGLB } from '../render';
+import { validateAtlasDocumentProvenance } from '../atlas-provenance';
+import { createGltfIO } from '../gltf-io';
+import { encodePng } from '../views/png';
+
+const BUNKER = readFileSync(resolve('src/__tests__/fixtures/bunker-door-frame.kiln.js'), 'utf8');
 
 /** Bytes of the GLB's binary chunk: the geometry the compression acts on. */
 const binaryChunkBytes = (glb: Uint8Array) =>
@@ -412,5 +420,102 @@ function build(){
           0.001,
         );
     }
+  });
+});
+
+/** A KTX2 header with the identifier and pixel size; enough for the manifest to read. */
+function fakeKtx2(width: number, height: number, marker = 0): Uint8Array {
+  const bytes = new Uint8Array(80);
+  bytes.set([0xab, 0x4b, 0x54, 0x58, 0x20, 0x32, 0x30, 0xbb, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const view = new DataView(bytes.buffer);
+  view.setUint32(20, width, true);
+  view.setUint32(24, height, true);
+  bytes[79] = marker;
+  return bytes;
+}
+/** Read a delivered GLB back as a glTF-Transform document. */
+async function readDelivered(glb: Uint8Array) {
+  await MeshoptDecoder.ready;
+  return createGltfIO().registerDependencies({ 'meshopt.decoder': MeshoptDecoder }).readBinary(glb);
+}
+/** One triangle whose material uses `base` as base colour and `normal` as normal map. */
+async function twoSlotGlb(shared: boolean) {
+  const doc = new Document();
+  const buffer = doc.createBuffer();
+  const accessor = (type: 'VEC2' | 'VEC3', values: number[]) =>
+    doc.createAccessor().setType(type).setArray(new Float32Array(values)).setBuffer(buffer);
+  const png = (value: number) => new Uint8Array(encodePng(new Uint8Array(12).fill(value), 2, 2));
+  const base = doc.createTexture('base').setImage(png(200)).setMimeType('image/png');
+  const normal = shared
+    ? base
+    : doc.createTexture('normal').setImage(png(128)).setMimeType('image/png');
+  const primitive = doc
+    .createPrimitive()
+    .setAttribute('POSITION', accessor('VEC3', [0, 0, 0, 1, 0, 0, 0, 1, 0]))
+    .setAttribute('TEXCOORD_0', accessor('VEC2', [0, 0, 1, 0, 0, 1]))
+    .setMaterial(doc.createMaterial('M').setBaseColorTexture(base).setNormalTexture(normal));
+  doc
+    .createScene('S')
+    .addChild(doc.createNode('N').setMesh(doc.createMesh('N').addPrimitive(primitive)));
+  return new WebIO().writeBinary(doc);
+}
+
+describe('KTX2 encoding through the hook', () => {
+  test('atlas references are refreshed to the encoded KTX2 bytes and match the manifest', async () => {
+    const rendered = await renderGLBInProcess(BUNKER);
+    const source = new Uint8Array(rendered.glb);
+    const output = await exportAssetGlb(assetRecord(source), {
+      profile: 'runtime',
+      target: 'three',
+      textures: 'manifest',
+      ktx2Encoder: async ({ image }) => fakeKtx2(1024, 1024, image.byteLength % 251),
+    });
+    if (output.profile !== 'runtime') throw new Error('expected runtime');
+    const metadata = JSON.parse(new TextDecoder().decode(output.metadata.bytes));
+    expect(metadata.delivery.ktx2).toMatchObject({ status: 'encoded' });
+    expect(metadata.delivery.preserved.lodChains).toBeGreaterThan(0);
+    const doc = await readDelivered(output.glb);
+    // Import validation accepts the delivered atlas: its final image identity is the KTX2.
+    await validateAtlasDocumentProvenance(doc);
+    const references = doc
+      .getRoot()
+      .listMaterials()
+      .flatMap((material) => [material.getBaseColorTextureInfo()])
+      .map((info) => info?.getExtras().kilnAtlasReference as Record<string, string> | undefined)
+      .filter((reference) => reference !== undefined);
+    expect(references.length).toBeGreaterThan(0);
+    for (const reference of references) {
+      const entry = metadata.textures.find(
+        (candidate: { sha256: string }) => candidate.sha256 === reference.finalImageSha256,
+      );
+      expect(entry).toMatchObject({ mimeType: 'image/ktx2', width: 1024, height: 1024 });
+      expect(reference.finalMime).toBe(entry.mimeType);
+      expect(entry.sourceSha256).toMatch(/^sha256:[0-9a-f]{64}$/);
+      expect(entry.sourceSha256).not.toBe(entry.sha256);
+    }
+  });
+
+  test('the hook input names the slot and the output must carry the KTX2 identifier', async () => {
+    const bytes = await twoSlotGlb(false);
+    const calls: string[] = [];
+    await deliverThreeRuntimeGlb(bytes, {
+      ktx2Encoder: async ({ slot, colorSpace }) => {
+        calls.push(`${slot}:${colorSpace}`);
+        return fakeKtx2(2, 2);
+      },
+    });
+    expect(calls).toEqual(['baseColor:srgb', 'normal:linear']);
+    await expect(
+      deliverThreeRuntimeGlb(bytes, { ktx2Encoder: async () => new Uint8Array(80) }),
+    ).rejects.toThrow(/KTX2 identifier/);
+  });
+
+  test('an image used by both an sRGB and a linear slot cannot be encoded once', async () => {
+    const bytes = await twoSlotGlb(true);
+    // Without an encoder the image is delivered unchanged.
+    expect((await deliverThreeRuntimeGlb(bytes)).delivery.ktx2.status).toBe('skipped');
+    await expect(
+      deliverThreeRuntimeGlb(bytes, { ktx2Encoder: async () => fakeKtx2(2, 2) }),
+    ).rejects.toThrow(/both sRGB and linear/);
   });
 });

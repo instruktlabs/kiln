@@ -100,6 +100,11 @@ project ZIPs carry resources for their selected saved inventory as well as the c
 Both preserve normalized maps, recipes and provenance without fetching original source URLs.
 Runtime GLBs already embed their rendering resources. An editable export fails clearly if a
 declared library dependency is unavailable; creating a project is not a workaround or requirement.
+Runtime exports can opt in to a texture manifest (`--textures manifest`) that names each
+embedded image by its exact `sha256` and, when those bytes equal a map of the saved closure,
+by that material pin and slot. `--textures external` writes the images once as shared
+`textures/<sha256>.<ext>` files beside a `.gltf`. See
+[runtime textures](export-profiles.md#runtime-textures-manifest-and-shared-files).
 
 Physical repeat scale is recorded metadata. The author still chooses UV scale appropriate to the
 mesh. Repeating a one-meter material across a ten-meter wall requires corresponding UV repeats;

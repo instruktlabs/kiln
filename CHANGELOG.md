@@ -7,6 +7,24 @@ does not publish a package.
 
 ## Unreleased
 
+- Encode KTX2 through an optional `ktx2-encoder` peer
+  ([#201](https://github.com/instruktlabs/kiln/issues/201)). `export --target three --ktx2`
+  (or `ktx2Encoder: await createKtx2Encoder()`) uses ETC1S for base colour and emissive and
+  UASTC for normal and other linear maps, refuses an image shared by both kinds of slot, and
+  records the encoder name, version, Basis WebAssembly hash and settings in
+  `delivery.ktx2.encoder` and the `--json` receipt. Kiln does not install or bundle the
+  peer: run `npm install ktx2-encoder@0.6.0` (MIT; its bundled Basis Universal encoder is
+  Apache-2.0 with its notice in the package). The KTX2 hook now receives the slot, requires
+  the KTX2 identifier in its output, and rebinds atlas provenance to the encoded bytes, so
+  an encoded atlas passes import validation.
+- Add an opt-in runtime texture manifest and content-addressed external textures
+  ([#213](https://github.com/instruktlabs/kiln/issues/213)). `export --profile runtime
+  --textures manifest` adds sidecar `textures[]` naming each image's exact `sha256`, size,
+  colour space and, when its bytes equal a saved library map, that material pin.
+  `--target three --textures external --out x.gltf` writes JSON glTF whose images are shared
+  `textures/<sha256>.<ext>` files: an identical existing file is reused, a different one
+  stops the export, and rollback never removes a texture. Without `--textures`, runtime GLB,
+  sidecar and receipt bytes are unchanged; MCP does not offer the options.
 - Name the rule in material validation errors ([#198](https://github.com/instruktlabs/kiln/issues/198)).
   Sampler, procedural V3 and atlas checks now report the canonicalizer's reason (for
   example "stamps are supported only for color usages albedo and emissive") instead of a

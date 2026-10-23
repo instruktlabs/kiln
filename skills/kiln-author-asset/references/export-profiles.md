@@ -94,9 +94,30 @@ node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --out mech.glb
 
 # Optional Three.js derivative, with a machine-readable export receipt.
 node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --target three --out mech-three.glb --json
+
+# Optional texture identities in the sidecar (any runtime export).
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --textures manifest --out mech.glb
+
+# Optional shared textures: JSON glTF plus textures/<sha256>.<ext> files.
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --target three   --textures external --out assets/mech.gltf --json
 ```
 
-Runtime requires GLB format and an output ending in `.glb`. Bundle/source formats
+Both texture options are opt-in; without them the runtime files are unchanged. The
+manifest lists each image's exact `sha256`, size, colour space and, when its bytes equal
+a saved library map, that material pin. External textures are named by the hash of their
+bytes: exports into one folder share them, an identical existing file is reused (`reused:
+true` in the receipt), a different one stops the export, and nothing ever replaces or
+removes a texture. Deliver the `.gltf`, `.bin`, sidecar and `textures/` together.
+
+`--ktx2` (with `--target three`) encodes textures to KTX2 only when the optional peer is
+installed (`npm install ktx2-encoder@0.6.0`); without it the export fails and names that
+command. Colour maps use ETC1S, normal and data maps UASTC, and an image shared by a
+colour and a data slot is refused. The sidecar's `delivery.ktx2.encoder` and the receipt
+record the encoder version and settings. The consumer then needs `KTX2Loader` as well as
+the Meshopt decoder. Use it only when the destination asks for KTX2.
+
+Runtime requires GLB format and an output ending in `.glb`, except `--textures external`,
+which writes `.gltf` (see runtime textures). Bundle/source formats
 use `editable`. Use a portable filename stem containing ASCII letters, digits,
 periods, underscores or hyphens, beginning with a letter or digit. The generated
 sidecar filename must be at most 200 characters; Windows device names are rejected.

@@ -92,7 +92,7 @@ its own review and completion boundary.
 | Directory submissions | Separate from package publication and hosted deployment; the HOL catalog listing is merged. Vendor review remains separate from local plugin distribution |
 | Further packs | Separate product work; ten-pack production is not a Troy release chore |
 | Broader importer qualification | Actual destination tests for LOD, visibility and supported export profiles |
-| Optional compressed runtime derivatives | Explicit loader/profile adoption and measured size/startup/render tradeoffs; current shared runtime loading is not universal Meshopt/Draco/KTX2 support |
+| Optional compressed runtime derivatives | Explicit loader/profile adoption and measured size/startup/render tradeoffs; current shared runtime loading is not universal Meshopt/Draco/KTX2 support. Opt-in texture manifests and content-addressed external textures ([#213](https://github.com/instruktlabs/kiln/issues/213)) give hosts a dedup key, and `--ktx2` encodes through the optional `ktx2-encoder` peer ([#201](https://github.com/instruktlabs/kiln/issues/201)); measured savings and KTX2 visual quality on a real asset set remain open, as does an external `ktx create` fallback if the WebAssembly encoder falls short |
 | New derivative guidance | Demonstrated authoring/workflow evidence beyond Troy before promoting a scene-specific lesson to shared guidance |
 
 Full optimization preserves semantic nodes while potentially emptying ordinary
