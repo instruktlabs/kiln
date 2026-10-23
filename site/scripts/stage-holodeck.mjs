@@ -166,7 +166,6 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
       id: spec.id, scene: spec.scene, name: spec.name, description: spec.description,
       available: false, status: 'Owner review pending', assetCount: members.length,
       source: chosen.source, assets: chosen.assets,
-      ...(chosen.sceneStillPlacesEarlier ? { sceneStillPlacesEarlier: chosen.sceneStillPlacesEarlier } : {}),
       downloads: [
         { profile: 'runtime', label: 'Runtime assets', ...add(`${spec.id}-runtime.zip`, buildDeliveryArchive({ profile: 'runtime', group: spec.id, assets: inventory, files: runtimeMembers })) },
         { profile: 'editable', label: 'Full Kiln assets (remixable)', ...add(`${spec.id}-editable.zip`, buildDeliveryArchive({ profile: 'editable', group: spec.id, assets: inventory, files: editableMembers })) },

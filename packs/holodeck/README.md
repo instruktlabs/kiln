@@ -6,16 +6,15 @@ addresses are configured in one place, [`site/src/data/holodeck-worlds.json`](..
 
 | Pack | Scene source | Assets |
 | --- | --- | --- |
-| `holodeck-tidemark` | Tidemark Island world (revision recorded in `selection.json`); Holodeck's bundled `examples/tidemark` places the same GLB bytes | 23 |
-| `holodeck-courtyard` | Courtyard world, revision 7 | 32 |
-| `holodeck-cove` | Holodeck branch `claude/cove-aaa` (commit recorded in `selection.json`), the Cove quality pass | 8 |
+| `holodeck-tidemark` | Holodeck's bundled `examples/tidemark` (commit recorded in `selection.json`), the walkable Tidemark Island | 23 |
+| `holodeck-courtyard` | Courtyard world, revision 8 | 32 |
+| `holodeck-cove` | Holodeck's Cove modules at the same commit, the Cove quality pass | 8 |
 
-Packs deliver final versions only: one gallery page and one download per asset. Tidemark
-Island and the Courtyard still place earlier revisions of the eight Cove modules; their packs
-list the Cove pack's quality-pass revisions instead, so each Cove module has one page shared
-by all three packs. `selection.json` records each such placement under
-`sceneStillPlacesEarlier`, and the selection checks that every final revision descends from the
-revision its world places. Each download's `delivery.json` lists the parent of every revision
+Packs deliver final versions only: one gallery page and one download per asset. All three
+scenes place the eight Cove modules at their quality-pass revisions, so each Cove module has
+one page shared by the three packs; the selection fails if a scene places any other revision.
+Holodeck's static site exports leave the Cove mood board out of the walkable scenes, but the
+worlds place it, so the packs keep it. Each download's `delivery.json` lists the parent of every revision
 under `omittedParents`: earlier revisions are left out by choice, not missing.
 
 ## Planned: Crescent Cove
@@ -50,8 +49,8 @@ Kiln and Holodeck software keep their own licences.
 Every input is read-only. From `site/`:
 
 ```sh
-node scripts/select-holodeck.mjs --tidemark WORLD --courtyard WORLD --holodeck HOLODECK_REPO \
-  --cove-ref claude/cove-aaa --store island-trial=STORE --store holodeck-assets=STORE --store courtyard-plaza=STORE
+node scripts/select-holodeck.mjs --courtyard WORLD --holodeck HOLODECK_REPO --ref main \
+  --store island-trial=STORE --store holodeck-assets=STORE --store courtyard-plaza=STORE
 node scripts/stage-holodeck.mjs --kiln KILN_PACKAGE_DIR --mirror .localdata/holodeck-delivery \
   --store island-trial=STORE --store holodeck-assets=STORE --store courtyard-plaza=STORE
 bun scripts/rig-posters.mjs holodeck --service RENDER_SERVICE_URL --mirror .localdata/holodeck-delivery

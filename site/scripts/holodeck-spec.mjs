@@ -62,8 +62,8 @@ const coveModules = {
 };
 
 /**
- * Gallery presentation by slug. Packs deliver final versions only: every scene that places a Cove module lists its
- * quality-pass revision, even where the walkable world still places an earlier one.
+ * Gallery presentation by slug. Packs deliver final versions only: every scene places the Cove modules at their
+ * quality-pass revision, so each module has one page shared by the scenes that place it.
  */
 export const HOLODECK_ASSETS = {
   ...Object.fromEntries(Object.entries(coveModules).map(([id, [name, description]]) => [`cove-${id}`, { name, description: `${description} Quality-pass revision with procedural texture maps, derived normals and packed roughness.`, category: COVE }])),

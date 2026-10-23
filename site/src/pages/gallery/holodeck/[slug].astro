@@ -10,7 +10,7 @@ import StatRow from '../../../components/StatRow.astro';
 import EngineNote from '../../../components/EngineNote.astro';
 import { bounds, number } from '../../../lib/catalog';
 import { PACKS_ENABLED, SITE } from '../../../lib/config';
-import { holodeck, holodeckAssetHref, holodeckAssets, holodeckPacks, holodeckScenes, type HolodeckAsset } from '../../../lib/holodeck';
+import { holodeck, holodeckAssetHref, holodeckAssets, holodeckScenes, type HolodeckAsset } from '../../../lib/holodeck';
 
 export function getStaticPaths() {
   return PACKS_ENABLED ? holodeckAssets.map(asset => ({ params: { slug: asset.slug }, props: { asset } })) : [];
@@ -19,8 +19,6 @@ interface Props { asset: HolodeckAsset; }
 const { asset } = Astro.props;
 const source = await readFile(resolve('..', asset.sourcePath), 'utf8');
 const scenes = holodeckScenes(asset);
-// Worlds that still place an earlier version of this module; the page names them rather than implying they match.
-const earlierIn = holodeckPacks.filter(pack => pack.sceneStillPlacesEarlier?.some(entry => entry.slug === asset.slug)).map(pack => pack.name);
 const sceneNames = scenes.map(scene => scene.name).join(' and ');
 const description = `${asset.name}: a Kiln asset from the Holodeck ${sceneNames} ${scenes.length > 1 ? 'scenes' : 'scene'}. GLB, editable Kiln source and a link to walk the scene.`;
 const schema = {
@@ -46,7 +44,6 @@ const schema = {
       {scenes.map(scene => <a class="text-link" href={scene.packHref}>{scene.name} pack</a>)}
       {scenes.map(scene => <a class="text-link" href={scene.href}>{scene.label} <span aria-hidden="true">↗</span></a>)}
     </div>
-    {earlierIn.length > 0 && <p class="mt-2 max-w-reading text-sm text-dim">The walkable {earlierIn.join(' and ')} {earlierIn.length > 1 ? 'scenes still place' : 'scene still places'} an earlier version of this module until {earlierIn.length > 1 ? 'those worlds are' : 'that world is'} updated.</p>}
     <div class="drawing-sheet mt-8"><AssetViewer name={asset.name} modelUrl={`${asset.runtimeModelDownload.url}?revision=${encodeURIComponent(asset.revisionId)}`} poster={asset.poster.src} posterAlt={asset.poster.alt} posterWidth={asset.poster.width} posterHeight={asset.poster.height} srcsetWebp={asset.poster.srcsetWebp} srcsetAvif={asset.poster.srcsetAvif} /></div>
     <EngineNote extensions={asset.metrics.extensions} />
     <StatRow values={[{label:'Triangles',value:number(asset.metrics.triangles)},{label:'Meshes',value:asset.metrics.meshes},{label:'Materials',value:asset.metrics.materials},{label:'Dimensions (m)',value:bounds(asset.metrics.bounds)}]} />
