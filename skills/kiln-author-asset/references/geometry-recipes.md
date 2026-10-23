@@ -477,6 +477,9 @@ requireSolid(frame);
 - Place ports inside the module footprint. One module per asset.
 - Bake after every occluding part is attached. `_edge` is 1 on rims and chamfers,
   `_cavity` is 1 when exposed; both are 0..1 floats.
+- A `draws` cap counts each child of a `repeatInstances` group; the LOD0 tier's
+  `instancedDraws` shows the count after the three.js export batches them. Do not merge
+  repeated parts by hand only to meet the cap.
 - Budgets and palettes are advisory. `requireSolid` fails the build unless the part
   is closed, manifold and outward; build it from solid helpers (`boxGeo`,
   `extrudeProfile`, `revolveProfile`, `roundedBoxGeo`) rather than open sheets.

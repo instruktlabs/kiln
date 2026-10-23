@@ -30,14 +30,14 @@ import {
   EXTMeshoptCompression,
   KHRTextureBasisu,
 } from '@gltf-transform/extensions';
-import { dedup, quantize, reorder } from '@gltf-transform/functions';
+import { cloneDocument, dedup, quantize, reorder } from '@gltf-transform/functions';
 import type { Property } from '@gltf-transform/core';
 import * as THREE from 'three';
 import { KILN_SEMANTIC_ROLES, readSemanticMetadataV1FromExtras } from './contracts/semantic';
 import { createGltfIO, MSFT_LOD } from './gltf-io';
 import { deliveryNodePaths } from './delivery-inspect';
 import { KILN_REPEAT_INSTANCES_KEY } from './delivery';
-import { isHiddenGltfNode } from './metrics';
+import { collectGlbMetrics, isHiddenGltfNode } from './metrics';
 import { isKtx2, sha256Hex } from './runtime-textures';
 
 /** Bits per quantized attribute class; custom underscore attributes stay float32. */
@@ -187,6 +187,17 @@ function meshSignature(mesh: Mesh, ids: Map<Property, number>): string {
           .join(',')}:${primitive.listTargets().length}`,
     )
     .join('|');
+}
+/**
+ * The draw calls this target leaves after batching `repeatInstances` groups (#200): the same
+ * accessor merge and instancing pass, run on a copy, counted the way the budget counts draws.
+ */
+export async function instancedDrawEstimate(doc: Document): Promise<number> {
+  const copy = cloneDocument(doc);
+  copy.setLogger(new Logger(Logger.Verbosity.SILENT));
+  await copy.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR], keepUniqueNames: true }));
+  applyScopedInstancing(copy);
+  return collectGlbMetrics(copy).drawCalls;
 }
 function applyScopedInstancing(doc: Document): InstancingRecord[] {
   const report: InstancingRecord[] = [];

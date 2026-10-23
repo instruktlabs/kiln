@@ -105,9 +105,14 @@ export function readBudgetDeclaration(value: unknown): BudgetDeclarationV1 | und
  */
 export function evaluateBudget(
   declaration: BudgetDeclarationV1,
-  measuredLod0: { triangles: number; draws: number },
+  measuredLod0: { triangles: number; draws: number; instancedDraws?: number },
   chains: readonly LevelOfDetailChainV1[],
 ): BudgetReportV1 {
+  // Reported beside draws, never judged (#200).
+  const instanced =
+    measuredLod0.instancedDraws === undefined
+      ? {}
+      : { instancedDraws: measuredLod0.instancedDraws };
   const outside =
     measuredLod0.triangles - chains.reduce((sum, chain) => sum + chain.levels[0]!.triangles, 0);
   const tierTriangles = (level: number) =>
@@ -130,7 +135,7 @@ export function evaluateBudget(
       },
       measured: {
         triangles,
-        ...(drawsDeclared === undefined ? {} : { draws: measuredLod0.draws }),
+        ...(drawsDeclared === undefined ? {} : { draws: measuredLod0.draws, ...instanced }),
       },
       status: pass ? 'pass' : 'fail',
     };
@@ -139,7 +144,7 @@ export function evaluateBudget(
     tiers.unshift({
       tier: 'LOD0',
       declared: { draws: declaration.draws },
-      measured: { triangles: measuredLod0.triangles, draws: measuredLod0.draws },
+      measured: { triangles: measuredLod0.triangles, draws: measuredLod0.draws, ...instanced },
       status: measuredLod0.draws <= declaration.draws ? 'pass' : 'fail',
     });
   return { status: tiers.every((tier) => tier.status === 'pass') ? 'pass' : 'fail', tiers };

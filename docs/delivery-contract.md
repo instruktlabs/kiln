@@ -57,7 +57,11 @@ attribute names, so shaders read `_edge` and `_cavity`.
 
 - `defineBudget({ triangles: n | { LOD0, LOD1, ... }, draws? })` stores scene extras
   `kilnBudgetV1`. Tier n is measured as level `min(n, last)` of every `MSFT_lod`
-  chain plus everything outside the chains; `draws` caps LOD0 draw calls.
+  chain plus everything outside the chains; `draws` caps LOD0 draw calls as the GLB
+  stores them, before any consumer batching, so each child of a `repeatInstances` group
+  counts. Beside the measured `draws`, the LOD0 tier reports `instancedDraws`: the draws
+  the three runtime target leaves after batching each group into one instanced draw.
+  It is informational and never changes the tier's status.
 - `definePalette(colors, { threshold? })` stores scene extras `kilnPaletteV1`. Each
   material drawn by a visible node is compared by its base colour factor in CIELAB
   (CIE 1976 delta E, default threshold 10). Off-palette materials become

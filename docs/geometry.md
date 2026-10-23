@@ -497,7 +497,11 @@ bytes before and after this pass, not GLB file size.
 
 `defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 })` records the asset's
 budget. Receipts measure the written GLB: tier n is level `min(n, last)` of every
-`MSFT_lod` chain plus everything outside the chains, and draws count LOD0. The result
+`MSFT_lod` chain plus everything outside the chains, and draws count LOD0 as stored,
+before batching: each child of a `repeatInstances` group is a draw. The LOD0 tier also
+reports `instancedDraws`, the count after the three runtime target batches those groups,
+for information only. Do not merge repeated parts by hand to meet a draws cap that the
+batched export would meet; raise the cap or note the difference instead. The result
 is `budget: { status, tiers }` in render results, `kiln_render` and CLI receipts. It
 is advisory; `kiln render --strict-budget` exits 1 when a tier fails.
 

@@ -36,6 +36,11 @@ does not publish a package.
   ([#202](https://github.com/instruktlabs/kiln/issues/202)). `docs/programs.md` lists the
   sandbox globals and refused host capabilities, and `docs/geometry.md` states the
   exact-equality export weld that was documented only in the migration notes.
+- Budget receipts state that `draws` caps unbatched LOD0 draws (unchanged) and add
+  `measured.instancedDraws` on the LOD0 tier when a draws cap is declared: the draws the
+  three runtime target leaves after batching each `repeatInstances` group. It is
+  informational and never changes the tier's status
+  ([#200](https://github.com/instruktlabs/kiln/issues/200)).
 
 ## 1.4.0 (2026-10-23)
 

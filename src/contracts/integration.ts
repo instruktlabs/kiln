@@ -137,7 +137,12 @@ export interface BudgetTierV1 {
   /** `LOD0`, `LOD1`, ...: tier n draws level min(n, last) of every chain. */
   tier: string;
   declared: { triangles?: number; draws?: number };
-  measured: { triangles: number; draws?: number };
+  /**
+   * `draws` is the LOD0 draw calls in the GLB before any consumer batching; the cap is
+   * judged on it. `instancedDraws` (beside `draws`) is informational: the draws after the
+   * three runtime target batches each `repeatInstances` group, never judged.
+   */
+  measured: { triangles: number; draws?: number; instancedDraws?: number };
   status: 'pass' | 'fail';
 }
 

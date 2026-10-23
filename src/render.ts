@@ -302,10 +302,20 @@ export async function inspectGlbIntegration(
   const budgetDeclaration = readBudgetDeclaration(
     (scene.getExtras() as Record<string, unknown>)[KILN_BUDGET_KEY],
   );
+  // The instanced estimate runs the three target's batching on a copy, so it is loaded
+  // only when a draws cap is declared.
+  const instancedDraws =
+    budgetDeclaration?.draws === undefined
+      ? undefined
+      : await (await import('./runtime-three')).instancedDrawEstimate(doc);
   const budget = budgetDeclaration
     ? evaluateBudget(
         budgetDeclaration,
-        { triangles: metrics.triangles, draws: metrics.drawCalls },
+        {
+          triangles: metrics.triangles,
+          draws: metrics.drawCalls,
+          ...(instancedDraws === undefined ? {} : { instancedDraws }),
+        },
         levelsOfDetail,
       )
     : undefined;
