@@ -119,7 +119,9 @@ frame, or fewer phases or parts per call).
 `kiln_inspect` accepts `compare: {programRef: OLD_REF, offset: 0, limit: 50}`
 alongside the current source/reference and camera controls. It reports exact
 exported static geometry, material, rest-transform and bounds changes with GLB
-hashes. Follow `comparison.nextOffset` to read every change. Both revisions use
+hashes, the drawn triangle, vertex, draw-call and material `counts`, `boundsDelta`, and
+`geometryIdentical`, which ignores node and primitive order, so a merge that moves no
+vertex reads as identical. Follow `comparison.nextOffset` to read every change. Both revisions use
 current host settings; comparison does not certify intent, animation or physical
 fit. Unsupported or ambiguous structures fail explicitly. See
 [the comparison workflow and limits](../skills/kiln-refine-asset/references/revision-and-views.md#compare-exported-revisions).

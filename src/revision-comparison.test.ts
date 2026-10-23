@@ -1,7 +1,8 @@
 import { expect, test } from 'bun:test';
 import { Document } from '@gltf-transform/core';
 import { createGltfIO } from './gltf-io';
-import { compareRevisionGlbs } from './revision-comparison';
+import { EXTMeshGPUInstancing, KHRNodeVisibility } from '@gltf-transform/extensions';
+import { compareRevisionGlbs, compareRevisionTotals } from './revision-comparison';
 import { loadGlbReviewScene } from './views/glb';
 import { listCameraSubjects } from './views/camera';
 import { renderGLBInProcess as render } from './render';
@@ -265,4 +266,90 @@ test('hiding a part is a visibility change, and bounds count what draws', async 
   expect(change('Mesh_Body')).toBeUndefined();
   expect(result.before.bounds!.max[1]).toBeCloseTo(3.1, 6);
   expect(result.after.bounds!.max[1]).toBeCloseTo(1, 6);
+});
+
+/** One unit quad drawn four ways: the drawn world-space triangles are what count. */
+async function quads(
+  form: 'list' | 'strip' | 'flipped' | 'instanced' | 'hidden-extra',
+): Promise<Uint8Array> {
+  const doc = new Document();
+  const buffer = doc.createBuffer();
+  const accessor = (
+    type: 'VEC3' | 'SCALAR',
+    array: Float32Array<ArrayBuffer> | Uint16Array<ArrayBuffer>,
+  ) => doc.createAccessor().setType(type).setArray(array).setBuffer(buffer);
+  const scene = doc.createScene('Quads');
+  const corners = (x: number) => [x, 0, 0, x + 1, 0, 0, x, 1, 0, x + 1, 1, 0];
+  const listed = (x: number, order: number[]) =>
+    doc
+      .createPrimitive()
+      .setAttribute('POSITION', accessor('VEC3', new Float32Array(corners(x))))
+      .setIndices(accessor('SCALAR', new Uint16Array(order)));
+  if (form === 'strip') {
+    // Both quads baked into one strip each; strips alternate winding, as glTF defines.
+    const mesh = doc.createMesh();
+    for (const x of [1, 3])
+      mesh.addPrimitive(
+        doc
+          .createPrimitive()
+          .setMode(5)
+          .setAttribute('POSITION', accessor('VEC3', new Float32Array(corners(x)))),
+      );
+    scene.addChild(doc.createNode('Strip').setMesh(mesh));
+  } else if (form === 'instanced') {
+    const extension = doc.createExtension(EXTMeshGPUInstancing);
+    const mesh = doc.createMesh().addPrimitive(listed(0, [0, 1, 2, 2, 1, 3]));
+    scene.addChild(
+      doc
+        .createNode('Copies')
+        .setMesh(mesh)
+        .setExtension(
+          'EXT_mesh_gpu_instancing',
+          extension
+            .createInstancedMesh()
+            .setAttribute('TRANSLATION', accessor('VEC3', new Float32Array([1, 0, 0, 3, 0, 0]))),
+        ),
+    );
+  } else {
+    // Two nodes, each a local quad at the origin moved into place by its translation.
+    for (const [index, x] of [3, 1].entries()) {
+      const order = form === 'flipped' && index === 0 ? [0, 2, 1, 2, 3, 1] : [1, 2, 0, 1, 3, 2];
+      scene.addChild(
+        doc
+          .createNode(`Quad${x}`)
+          .setTranslation([x, 0, 0])
+          .setMesh(doc.createMesh().addPrimitive(listed(0, order))),
+      );
+    }
+    if (form === 'hidden-extra') {
+      const extension = doc.createExtension(KHRNodeVisibility);
+      scene.addChild(
+        doc
+          .createNode('Hidden')
+          .setMesh(doc.createMesh().addPrimitive(listed(7, [0, 1, 2])))
+          .setExtension('KHR_node_visibility', extension.createVisibility().setVisible(false)),
+      );
+    }
+  }
+  return createGltfIO().writeBinary(doc);
+}
+
+test('geometry identity ignores node, primitive, mode, instancing and triangle order but not winding', async () => {
+  const list = await quads('list');
+  for (const form of ['strip', 'instanced', 'hidden-extra'] as const) {
+    const compared = await compareRevisionTotals(list, await quads(form));
+    expect(compared.geometryIdentical, form).toBe(true);
+    expect(compared.counts.triangles, form).toEqual({ before: 4, after: 4, delta: 0 });
+    expect(compared.boundsDelta, form).toEqual({ min: [0, 0, 0], max: [0, 0, 0], size: [0, 0, 0] });
+  }
+  const strip = await compareRevisionTotals(list, await quads('strip'));
+  expect(strip.counts.vertices).toEqual({ before: 8, after: 8, delta: 0 });
+  expect(strip.counts.drawCalls).toEqual({ before: 2, after: 2, delta: 0 });
+  // Neither revision has TEXCOORD_0, so their corners agree.
+  expect(strip.uvIdentical).toBe(true);
+  const flipped = await compareRevisionTotals(list, await quads('flipped'));
+  expect(flipped.geometryIdentical).toBe(false);
+  expect(flipped.uvIdentical).toBeUndefined();
+  const instanced = await compareRevisionTotals(list, await quads('instanced'));
+  expect(instanced.counts.drawCalls).toEqual({ before: 2, after: 1, delta: -1 });
 });
