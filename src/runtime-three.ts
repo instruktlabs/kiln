@@ -30,7 +30,7 @@ import {
   EXTMeshoptCompression,
   KHRTextureBasisu,
 } from '@gltf-transform/extensions';
-import { cloneDocument, dedup, quantize, reorder } from '@gltf-transform/functions';
+import { cloneDocument, dedup, prune, quantize, reorder } from '@gltf-transform/functions';
 import type { Property } from '@gltf-transform/core';
 import * as THREE from 'three';
 import { KILN_SEMANTIC_ROLES, readSemanticMetadataV1FromExtras } from './contracts/semantic';
@@ -39,6 +39,8 @@ import { deliveryNodePaths } from './delivery-inspect';
 import { KILN_REPEAT_INSTANCES_KEY } from './delivery';
 import { collectGlbMetrics, isHiddenGltfNode } from './metrics';
 import { isKtx2, sha256Hex } from './runtime-textures';
+import { trimLodChains, type TrimmedLodChain } from './lod-export';
+import { KILN_BUDGET_KEY } from './budget';
 
 /** Bits per quantized attribute class; custom underscore attributes stay float32. */
 export const RUNTIME_THREE_QUANTIZATION = Object.freeze({
@@ -102,6 +104,12 @@ export interface RuntimeThreeOptionsV1 {
    * quantization, instancing and every preserved feature stay.
    */
   compression?: RuntimeThreeCompression;
+  /**
+   * Keep LOD0..LOD`maxLod` of every `MSFT_lod` chain and drop the lower levels, for loaders
+   * that never select a level (`0` keeps LOD0 alone). Budget tiers above it are left out of
+   * the shipped declaration. Omitted keeps every level.
+   */
+  maxLod?: number;
 }
 export type RuntimeThreeCompression = 'meshopt' | 'none';
 export interface RuntimeThreeNodeScaleV1 {
@@ -145,6 +153,13 @@ export interface RuntimeThreeDeliveryV1 {
     reason?: string;
     /** The encoder's own identity, when it declared one. */
     encoder?: RuntimeThreeKtx2EncoderIdentityV1;
+  };
+  /** Present when `maxLod` was given: what each chain kept and dropped. */
+  lod?: {
+    maxLod: number;
+    chains: TrimmedLodChain[];
+    /** Budget tiers above `maxLod`, removed from the shipped declaration, not judged. */
+    budgetTiersOmitted: string[];
   };
   preserved: {
     lodChains: number;
@@ -392,6 +407,51 @@ function decomposeDelta(before: number[], after: number[]) {
   };
 }
 
+/**
+ * Drop levels above `maxLod` (#196), then the meshes, materials and textures only they used.
+ * Budget tiers above `maxLod` no longer describe the file once a chain lost levels, so they
+ * leave the shipped declaration and are listed instead of being judged against fewer levels.
+ */
+async function trimLevels(doc: Document, maxLod: number) {
+  const chains = trimLodChains(doc, maxLod);
+  const budgetTiersOmitted: string[] = [];
+  if (chains.some((chain) => chain.dropped.length > 0)) {
+    await doc.transform(
+      prune({
+        // A pruned mesh leaves its primitives holding their accessors and material.
+        propertyTypes: [
+          PropertyType.MESH,
+          PropertyType.PRIMITIVE,
+          PropertyType.PRIMITIVE_TARGET,
+          PropertyType.ACCESSOR,
+          PropertyType.MATERIAL,
+          PropertyType.TEXTURE,
+        ],
+        keepAttributes: true,
+        keepIndices: true,
+        keepLeaves: true,
+        keepExtras: true,
+        keepSolidTextures: true,
+      }),
+    );
+    const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+    const extras = { ...((scene?.getExtras() ?? {}) as Record<string, unknown>) };
+    const budget = extras[KILN_BUDGET_KEY] as { triangles?: Record<string, number> } | undefined;
+    if (scene && budget?.triangles) {
+      const triangles = { ...budget.triangles };
+      for (const tier of Object.keys(triangles))
+        if (Number(tier.slice(3)) > maxLod) {
+          budgetTiersOmitted.push(tier);
+          delete triangles[tier];
+        }
+      if (Object.keys(triangles).length > 0) extras[KILN_BUDGET_KEY] = { ...budget, triangles };
+      else delete extras[KILN_BUDGET_KEY];
+      scene.setExtras(extras);
+    }
+  }
+  return { maxLod, chains, budgetTiersOmitted };
+}
+
 /** What the derivation returns beside the GLB: facts and, on request, the `.gltf` layout. */
 export interface RuntimeThreeResult {
   glb: Uint8Array;
@@ -418,11 +478,15 @@ export async function deliverRuntimeThreeGlb(
   const compression = options.compression ?? 'meshopt';
   if (compression !== 'meshopt' && compression !== 'none')
     throw new Error('Runtime three compression must be meshopt or none');
+  const { maxLod } = options;
+  if (maxLod !== undefined && !(Number.isSafeInteger(maxLod) && maxLod >= 0))
+    throw new Error('Runtime three maxLod must be a non-negative integer');
   const io = createGltfIO().registerDependencies({
     'meshopt.encoder': meshoptEncoder,
   });
   const doc = await io.readBinary(bytes);
   doc.setLogger(new Logger(Logger.Verbosity.SILENT));
+  const lod = maxLod === undefined ? undefined : await trimLevels(doc, maxLod);
   // Merge identical accessors so equal children are recognisable by content; names stay.
   await doc.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR], keepUniqueNames: true }));
   const instanced = applyScopedInstancing(doc);
@@ -559,6 +623,7 @@ export async function deliverRuntimeThreeGlb(
       })),
     instancing: instanced.map(({ node, ...rest }) => ({ node: pathOf(node), ...rest })),
     ktx2,
+    ...(lod ? { lod } : {}),
     preserved: {
       lodChains: all.filter((node) => node.getExtension(MSFT_LOD)).length,
       hiddenNodes: all.filter((node) => isHiddenGltfNode(node)).length,

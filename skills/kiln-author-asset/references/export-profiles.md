@@ -57,7 +57,9 @@ the additional target changes geometry encoding and can change hierarchy.
 
 Use this target with Meshopt decoding configured in the consumer, or add
 `--compression none` for a loader without a Meshopt decoder: buffers stay plain while
-quantization and instancing remain. Preserve
+quantization and instancing remain. For a loader that never switches levels, add
+`--max-lod 0` (or a higher level) so lower `MSFT_lod` levels are not shipped; the
+sidecar's `delivery.lod` lists what was dropped. Preserve
 loaded node transforms, skeletons and inverse bind matrices: they restore quantized
 positions to the intended dimensions. A loader does not automatically implement
 Kiln's LOD selection, collider behavior, anchors or kit snapping. Test those in the

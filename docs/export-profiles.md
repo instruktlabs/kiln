@@ -237,7 +237,18 @@ What it does, in order:
    [KTX2 textures](#ktx2-textures).
 
 Roles and kit extras, hidden collider nodes (`KHR_node_visibility`), anchors, ports and
-`MSFT_lod` chains are kept. The sidecar `delivery` block states what a consumer needs:
+`MSFT_lod` chains are kept.
+
+A loader that never selects a level still downloads every lower one. `maxLod: n` (CLI
+`--max-lod n`) keeps LOD0 to LODn of each chain in the default scene and removes the
+rest, with the meshes, materials and textures only they used; `0` keeps LOD0 alone and
+removes `MSFT_lod`. Thresholds in `MSFT_screencoverage` are cut to the kept levels. When a
+chain loses levels, budget tiers above `n` leave the shipped `kilnBudgetV1` declaration,
+since they would otherwise be measured against fewer levels; the sidecar lists them as
+`budgetTiersOmitted`. A dropped level that an animation targets is refused. Kiln still
+does not select a level at runtime.
+
+The sidecar `delivery` block states what a consumer needs:
 
 | Field | Meaning |
 | --- | --- |
@@ -249,6 +260,7 @@ Roles and kit extras, hidden collider nodes (`KHR_node_visibility`), anchors, po
 | `customAttributes` | Each underscore attribute, its mesh count, `FLOAT`, not normalized |
 | `instancing` | Each batch node, its mesh, count and instance names in order |
 | `ktx2` | `encoded` or `skipped` with the texture count and reason; `encoder` (name, version, Basis WebAssembly hash and every setting) when the encoder declared it |
+| `lod` | With `maxLod` only: `{ maxLod, chains: [{ path, levels, dropped }], budgetTiersOmitted }`, where `levels` counts the kept levels and `dropped` names the removed ones |
 | `preserved` | Counts of LOD chains, hidden nodes, colliders, anchors, ports and kit modules |
 
 Quantization stores positions as normalized integers and moves the metre scale onto

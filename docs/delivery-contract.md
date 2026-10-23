@@ -175,7 +175,8 @@ Consumer rules that follow from it:
   under the appropriate authored parent. Your application chooses one active tier
   using the retained `MSFT_screencoverage` policy or its own documented policy.
   Do not show all levels together. A final impostor marker does not implement
-  billboarding or distance-based switching.
+  billboarding or distance-based switching. A consumer that draws LOD0 only can export
+  with `--max-lod 0` so the lower levels are not shipped at all.
 
 `src/__tests__/runtime-three-export.test.ts` qualifies static geometry, role data,
 instancing, explicit lower-tier selection and a quantized skin through Three's

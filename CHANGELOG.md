@@ -41,6 +41,11 @@ does not publish a package.
   three runtime target leaves after batching each `repeatInstances` group. It is
   informational and never changes the tier's status
   ([#200](https://github.com/instruktlabs/kiln/issues/200)).
+- The three runtime target takes `maxLod` (CLI `--max-lod N`): it keeps LOD0..LODN of each
+  `MSFT_lod` chain and removes the lower levels with what only they used, trims their
+  thresholds, leaves budget tiers above N out of the shipped declaration and records all
+  of it in the sidecar's `delivery.lod`. The default keeps every level
+  ([#196](https://github.com/instruktlabs/kiln/issues/196)).
 
 ## 1.4.0 (2026-10-23)
 

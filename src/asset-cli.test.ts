@@ -221,7 +221,31 @@ test('CLI saves, exports, imports, and restores a revision across independent st
     ).delivery;
     expect(plainDelivery.compression).toEqual({ extension: 'none' });
     expect(plainDelivery.extensionsRequired).not.toContain('EXT_meshopt_compression');
+    // #196: --max-lod passes through to the sidecar, which records the choice.
+    const lod0Run = run('first', [
+      'export',
+      asset.assetId,
+      asset.revisionId,
+      '--out',
+      join(root, 'lod0.glb'),
+      '--profile',
+      'runtime',
+      '--target',
+      'three',
+      '--max-lod',
+      '0',
+      '--json',
+    ]);
+    expect(lod0Run.status, lod0Run.stderr).toBe(0);
+    expect(JSON.parse(lod0Run.stdout)).toMatchObject({ target: 'three', maxLod: 0 });
+    expect(
+      JSON.parse(await readFile(join(root, 'lod0.kiln-metadata.json'), 'utf8')).delivery.lod,
+    ).toMatchObject({ maxLod: 0, budgetTiersOmitted: [] });
     for (const flags of [
+      ['--profile', 'runtime', '--max-lod', '0'],
+      ['--profile', 'runtime', '--target', 'three', '--max-lod', '-1'],
+      ['--profile', 'runtime', '--target', 'three', '--max-lod', '1.5'],
+      ['--profile', 'runtime', '--target', 'three', '--max-lod', 'all'],
       ['--profile', 'editable', '--target', 'three'],
       ['--profile', 'runtime', '--target', 'unity'],
       ['--profile', 'runtime', '--compression', 'none'],
