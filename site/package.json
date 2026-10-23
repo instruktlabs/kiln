@@ -13,9 +13,9 @@
     "test": "bun test scripts --timeout 20000"
   },
   "dependencies": {
-    "astro": "7.3.8",
-    "@astrojs/react": "7.0.1",
-    "@astrojs/markdown-remark": "7.3.2",
+    "astro": "7.4.1",
+    "@astrojs/react": "7.1.0",
+    "@astrojs/markdown-remark": "7.3.3",
     "@react-three/drei": "10.7.9",
     "@react-three/fiber": "9.8.2",
     "react": "19.3.1",
@@ -28,7 +28,7 @@
     "@tailwindcss/typography": "0.5.20"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.10",
+    "@astrojs/check": "0.9.11",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "0.186.0",
@@ -37,10 +37,10 @@
     "fflate": "0.8.3",
     "fontkitten": "1.0.3",
     "fontverter": "2.0.0",
-    "html-validate": "11.16.2",
+    "html-validate": "11.17.0",
     "lighthouse": "13.5.0",
     "parse5": "8.0.1",
-    "puppeteer-core": "25.14.0",
+    "puppeteer-core": "25.15.0",
     "sharp": "0.35.5",
     "subset-font": "2.9.0",
     "typescript": "6.0.3",

@@ -39,7 +39,7 @@
     "npm": "12.2.0",
     "pixelmatch": "7.2.0",
     "pngjs": "7.0.0",
-    "puppeteer-core": "25.14.0",
+    "puppeteer-core": "25.15.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "three": "0.186.1",
