@@ -7,6 +7,8 @@ does not publish a package.
 
 ## Unreleased
 
+## 1.5.0 (unpublished)
+
 - Generated Codex workspaces forward `KILN_EXPORT_ROOT` to the MCP server, so
   `kiln_export_to` is advertised under Codex as under the other harnesses, and Discovery
   capabilities report the tool as `assets.exportTo` (`null` when absent, never the
