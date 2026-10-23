@@ -6,6 +6,10 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 1
+    ignore:
+      # plugin-security.yml pins the scanner the awesome-ai-plugins SCANNER_GUIDE names;
+      # move it when that guide moves.
+      - dependency-name: "hashgraph-online/ai-plugin-scanner-action"
     groups:
       actions-minor-and-patch:
         patterns:
@@ -27,6 +31,9 @@ updates:
       # Raise this together with the Strands pin once its peer range moves.
       - dependency-name: "@anthropic-ai/sdk"
         versions: [">=0.110.0"]
+      # scenes pins npm as a toolchain version (scenes/toolchain.json); it moves with the
+      # maintainer toolchain, never on its own.
+      - dependency-name: "npm"
     groups:
       bun-minor-and-patch:
         patterns:
