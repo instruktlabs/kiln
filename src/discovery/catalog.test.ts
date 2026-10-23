@@ -11,6 +11,7 @@ import {
 } from '../primitives';
 import { geometryDiagnostics } from '../geometry';
 import { sweepProfile } from '../sweep';
+import { extrudeProfile, revolveProfile, roundedBoxGeo } from '../profile';
 import { listHelperSpecs } from './helper-specs';
 import { parseCatalog, type DiscoveryEntry } from './catalog-schema';
 import { listDiscoveryEntries, DISCOVERY_HELPER_RETIREMENTS } from './catalog';
@@ -27,6 +28,43 @@ describe('executable Discovery catalog', () => {
       const entry = byName().get(name);
       if (!entry || !executable(entry)) throw new Error(`Missing helper ${name}`);
       expect(entry.contract.parameters.join(' ')).toContain('4x4 teaching placeholder');
+    }
+  });
+
+  test('manifold-backed profile solids state that they output no UV0 and lead to the UV helpers', async () => {
+    const outline: Array<[number, number]> = [
+      [-1, -1],
+      [1, -1],
+      [1, 1],
+      [-1, 1],
+    ];
+    const built = {
+      extrudeProfile: await extrudeProfile(outline, { depth: 0.2 }),
+      revolveProfile: await revolveProfile([
+        [0, 0],
+        [1, 0],
+        [1, 1],
+        [0, 1],
+      ]),
+      roundedBoxGeo: await roundedBoxGeo(1, 1, 1, 0.1),
+    };
+    for (const [name, geometry] of Object.entries(built)) {
+      // The claim below is only true while the helper really emits no UV0.
+      expect(geometry.getAttribute('uv')).toBeUndefined();
+      const entry = byName().get(name);
+      if (!entry || !executable(entry)) throw new Error(`Missing helper ${name}`);
+      const preservation = entry.contract.preservation.join(' ');
+      expect(preservation).toContain('no UV0');
+      expect(preservation).toContain('projectUV');
+      expect(preservation).toContain('autoUnwrap');
+      expect(preservation).not.toContain('does not carry authored UVs');
+    }
+    for (const name of ['extrudeProfile', 'revolveProfile']) {
+      const related = byName()
+        .get(name)!
+        .related.map((link) => link.id);
+      expect(related).toContain('operation:projectUV');
+      expect(related).toContain('operation:autoUnwrap');
     }
   });
 

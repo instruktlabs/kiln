@@ -547,6 +547,8 @@ For textures, preserve valid primitive UVs. Use `copyGeometry` before independen
 buffer edits, `remapUV` to scale/offset UVs, and `projectUV` for explicit planar,
 box or cylindrical mapping in a geometry-local frame. Fetch its exact Discovery
 contract for rotated frames, partial angular ranges, caps and seam sampling.
+`extrudeProfile`, `revolveProfile` and `roundedBoxGeo` output no UV0, so a
+texture-backed material on them is blocked until `projectUV` or `autoUnwrap` adds it.
 `autoUnwrap` is the separate atlas operation. Removed shape unwrap names do not
 select a preservation or projection fallback.
 

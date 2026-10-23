@@ -31,7 +31,9 @@ test.each(['in-process', 'worker'] as const)(
     expect(failed.error).toContain('"material":"Wood"');
     expect(failed.error).toContain('"attribute":"map"');
     expect(failed.error).not.toContain('GoodRail');
-    expect(failed.error).toContain('FIX: Unwrap the geometry');
+    expect(failed.error).toContain('FIX: ');
+    expect(failed.error).toContain('projectUV');
+    expect(failed.error).toContain('autoUnwrap');
 
     const repaired = (await render.run({
       code: code.replace("geometry.deleteAttribute('uv');", ''),

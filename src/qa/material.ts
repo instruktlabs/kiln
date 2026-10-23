@@ -151,7 +151,8 @@ function validateTextureSlot(
       profile: 'material.portablePbr',
       message: `${slot} texture is used on geometry without TEXCOORD_0 UVs.`,
       affected: affected(mesh, material, texture, slot),
-      repairText: 'Unwrap the geometry before assigning a texture-backed material.',
+      repairText:
+        'Add UV0 to this geometry before assigning a texture-backed material: projectUV (for example box projection) for directional or tiling textures, or autoUnwrap for a baked atlas.',
     });
   }
 }

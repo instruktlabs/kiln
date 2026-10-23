@@ -11,6 +11,12 @@ does not publish a package.
   `kiln_export_to` is advertised under Codex as under the other harnesses, and Discovery
   capabilities report the tool as `assets.exportTo` (`null` when absent, never the
   absolute root) ([#207](https://github.com/instruktlabs/kiln/issues/207)).
+- State plainly in Discovery that `extrudeProfile`, `revolveProfile` and `roundedBoxGeo`
+  output no UV0, and relate `projectUV` and `autoUnwrap` from the first two. The
+  `MAT_TEXTURE_UV_MISSING` repair now names both `projectUV` (for example box projection)
+  and `autoUnwrap` instead of a generic "unwrap". The block is unchanged: a texture-backed
+  material on geometry without UV0 still fails QA, and no projection is added
+  automatically ([#177](https://github.com/instruktlabs/kiln/issues/177)).
 
 ## 1.4.0 (2026-10-23)
 

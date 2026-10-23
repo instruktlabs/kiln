@@ -2997,7 +2997,7 @@ function validateTextureSlot(findings, mesh, material, texture, slot, expected) 
       profile: "material.portablePbr",
       message: `${slot} texture is used on geometry without TEXCOORD_0 UVs.`,
       affected: affected(mesh, material, texture, slot),
-      repairText: "Unwrap the geometry before assigning a texture-backed material."
+      repairText: "Add UV0 to this geometry before assigning a texture-backed material: projectUV (for example box projection) for directional or tiling textures, or autoUnwrap for a baked atlas."
     });
   }
 }
@@ -46750,7 +46750,9 @@ var init_helper_contracts = __esm(() => {
     topology: [
       "Manifold-backed solid generation from valid profiles; not a guarantee that any arbitrary input describes the intended solid."
     ],
-    preservation: ["New geometry/normals/bounds; does not carry authored UVs from an input mesh."],
+    preservation: [
+      "New geometry/normals/bounds. The output has no UV0 (no TEXCOORD_0), and input UVs are not carried. A texture-backed material on it is blocked by MAT_TEXTURE_UV_MISSING until you add UV0 with projectUV (for example box projection) or autoUnwrap."
+    ],
     cost: "WASM complexity depends on profile vertices, segments and divisions; no general allocation bound is claimed."
   };
   profileMetadata = {
@@ -46786,7 +46788,9 @@ var init_helper_contracts = __esm(() => {
     intents: ["make a solid from a planar cross-section with optional holes"],
     related: [
       { name: "circleProfile", relation: "companion" },
-      { name: "sweepProfile", relation: "alternative" }
+      { name: "sweepProfile", relation: "alternative" },
+      { name: "projectUV", relation: "companion" },
+      { name: "autoUnwrap", relation: "companion" }
     ]
   });
   define2("revolveProfile", {
@@ -46802,7 +46806,11 @@ var init_helper_contracts = __esm(() => {
     ...profileMetadata,
     aliases: ["solid revolution", "turned solid"],
     intents: ["turn a closed section into a solid vessel or knob"],
-    related: [{ name: "revolveGeo", relation: "alternative" }]
+    related: [
+      { name: "revolveGeo", relation: "alternative" },
+      { name: "projectUV", relation: "companion" },
+      { name: "autoUnwrap", relation: "companion" }
+    ]
   });
   define2("circleProfile", {
     units: lengthUnits,
