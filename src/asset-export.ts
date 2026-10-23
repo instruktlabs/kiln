@@ -249,6 +249,8 @@ export async function exportAssetGlb(
     throw new Error('Runtime compression requires the three runtime target');
   if (options.maxLod !== undefined && options.target !== 'three')
     throw new Error('Runtime maxLod requires the three runtime target');
+  if (options.positionBits !== undefined && options.target !== 'three')
+    throw new Error('Runtime positionBits requires the three runtime target');
   const textures = options.textures;
   if (textures !== undefined && textures !== 'manifest' && textures !== 'external')
     throw new Error('Unknown runtime texture option');
@@ -319,6 +321,7 @@ export async function exportAssetGlb(
         ...(options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {}),
         ...(options.compression ? { compression: options.compression } : {}),
         ...(options.maxLod !== undefined ? { maxLod: options.maxLod } : {}),
+        ...(options.positionBits !== undefined ? { positionBits: options.positionBits } : {}),
       },
       textures === 'external' ? { gltfBasename: gltfName.slice(0, -'.gltf'.length) } : {},
     );

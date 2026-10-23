@@ -227,6 +227,13 @@ What it does, in order:
    keeps its authored transform (its scale is the collider size).
 3. Vertices are reordered for compression, then quantized with `KHR_mesh_quantization`
    per mesh: position 14 bits, normal 10, texcoord 12, colour 8, weights 8.
+   Position bits divide each mesh's largest half-extent into `2^(bits-1) - 1` steps, so
+   14 bits on a 10 m mesh is a grid of about 0.61 mm: enough to close a modelled seam or
+   move a measured clearance. `positionBits` (CLI `--position-bits`) takes 8 to 16, or
+   `float` to keep positions as 32-bit floats while the other classes stay quantized.
+   The sidecar reports the step in metres for each mesh node (`positionSteps`) and the
+   largest (`maxPositionStep`); a vertex moves by at most half its step. Check it against
+   the smallest gap or clearance that matters before shipping.
    Underscore attributes such as `_EDGE` and `_CAVITY` are **not** quantized and stay
    FLOAT. Buffers are written with `EXT_meshopt_compression` (required) unless the
    caller passes `compression: 'none'` (CLI `--compression none`): then buffers stay plain,
@@ -254,7 +261,7 @@ The sidecar `delivery` block states what a consumer needs:
 | --- | --- |
 | `extensionsUsed`, `extensionsRequired` | The derived GLB's extension sets |
 | `compression` | `{ extension: 'EXT_meshopt_compression', method: 'quantize' }`, or `{ extension: 'none' }` |
-| `quantization` | Bits per attribute class; `customAttributes: 'float32'` |
+| `quantization` | Bits per attribute class (`position` is `'float32'` when unquantized); `customAttributes: 'float32'`; `positionSteps: [{ node, mesh, step }]` in metres (skinned meshes in mesh units) and `maxPositionStep` |
 | `nodeScale` | Every node whose matrix now carries a dequantization `{ scale, offset }`, its `localScale`, and whether the mesh moved to a child (`meshMovedToChild`, `authoredNode`) |
 | `colliderProxies` | Collider node and proxy child paths |
 | `customAttributes` | Each underscore attribute, its mesh count, `FLOAT`, not normalized |

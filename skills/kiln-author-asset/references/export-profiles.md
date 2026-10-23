@@ -59,7 +59,10 @@ Use this target with Meshopt decoding configured in the consumer, or add
 `--compression none` for a loader without a Meshopt decoder: buffers stay plain while
 quantization and instancing remain. For a loader that never switches levels, add
 `--max-lod 0` (or a higher level) so lower `MSFT_lod` levels are not shipped; the
-sidecar's `delivery.lod` lists what was dropped. Preserve
+sidecar's `delivery.lod` lists what was dropped. Positions are quantized to 14 bits per
+mesh by default; read `delivery.quantization.maxPositionStep` (metres) and, when it
+approaches a seam or clearance that matters, re-export with `--position-bits 16` or
+`--position-bits float` instead of reshaping the asset. Preserve
 loaded node transforms, skeletons and inverse bind matrices: they restore quantized
 positions to the intended dimensions. A loader does not automatically implement
 Kiln's LOD selection, collider behavior, anchors or kit snapping. Test those in the

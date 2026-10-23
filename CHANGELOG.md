@@ -46,6 +46,13 @@ does not publish a package.
   thresholds, leaves budget tiers above N out of the shipped declaration and records all
   of it in the sidecar's `delivery.lod`. The default keeps every level
   ([#196](https://github.com/instruktlabs/kiln/issues/196)).
+- The three runtime target takes `positionBits` (CLI `--position-bits 8..16|float`) for
+  position quantization; other attribute classes are unchanged and the default stays 14
+  bits. The sidecar's `delivery.quantization` adds `positionSteps` (the grid step in metres
+  per mesh node) and `maxPositionStep`, and `bits.position` is `'float32'` for float
+  positions. With float positions, `KHR_mesh_quantization` is still declared for the
+  quantized normals and texture coordinates
+  ([#197](https://github.com/instruktlabs/kiln/issues/197)).
 
 ## 1.4.0 (2026-10-23)
 

@@ -241,7 +241,32 @@ test('CLI saves, exports, imports, and restores a revision across independent st
     expect(
       JSON.parse(await readFile(join(root, 'lod0.kiln-metadata.json'), 'utf8')).delivery.lod,
     ).toMatchObject({ maxLod: 0, budgetTiersOmitted: [] });
+    // #197: --position-bits reaches the sidecar, which reports the grid step it produced.
+    const floatRun = run('first', [
+      'export',
+      asset.assetId,
+      asset.revisionId,
+      '--out',
+      join(root, 'float.glb'),
+      '--profile',
+      'runtime',
+      '--target',
+      'three',
+      '--position-bits',
+      'float',
+      '--json',
+    ]);
+    expect(floatRun.status, floatRun.stderr).toBe(0);
+    expect(JSON.parse(floatRun.stdout)).toMatchObject({ target: 'three', positionBits: 'float' });
+    expect(
+      JSON.parse(await readFile(join(root, 'float.kiln-metadata.json'), 'utf8')).delivery
+        .quantization,
+    ).toMatchObject({ bits: { position: 'float32' }, maxPositionStep: 0 });
     for (const flags of [
+      ['--profile', 'runtime', '--position-bits', '16'],
+      ['--profile', 'runtime', '--target', 'three', '--position-bits', '7'],
+      ['--profile', 'runtime', '--target', 'three', '--position-bits', '17'],
+      ['--profile', 'runtime', '--target', 'three', '--position-bits', 'half'],
       ['--profile', 'runtime', '--max-lod', '0'],
       ['--profile', 'runtime', '--target', 'three', '--max-lod', '-1'],
       ['--profile', 'runtime', '--target', 'three', '--max-lod', '1.5'],
