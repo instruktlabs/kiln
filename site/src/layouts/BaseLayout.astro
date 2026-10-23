@@ -1,7 +1,7 @@
 ---
 import "../styles/global.css";
 import Logo from "../components/Logo.astro";
-import { DISCORD, REPO, SITE, VERSION } from "../lib/config";
+import { DISCORD, HOLODECK_SITE, REPO, SITE, VERSION } from "../lib/config";
 import { socialCard } from "../lib/social";
 interface Props {
   title: string;
@@ -179,6 +179,12 @@ const structured = [
               {label}
             </a>
           ))}
+          <a
+            href={HOLODECK_SITE}
+            class="flex min-h-12 items-center gap-1 whitespace-nowrap border-t border-rule px-1 py-2 text-base font-medium no-underline nav:min-h-11 nav:border-t-0 nav:px-3"
+          >
+            Holodeck <span aria-hidden="true">↗</span>
+          </a>
           <a
             href={REPO}
             class="flex min-h-12 items-center gap-1 whitespace-nowrap border-t border-rule px-1 py-2 text-base font-medium no-underline nav:min-h-11 nav:border-t-0 nav:px-3"
