@@ -6,6 +6,7 @@ import {
   ProceduralTextureError,
   sha256Hex,
 } from './procedural-material-v2';
+import type { AuthoringDiagnostic } from './evaluator/authoring-diagnostic';
 import { TEXTURE_USAGES, type TextureUsage } from './texture-contract';
 
 export const PROCEDURAL_TEXTURE_V3_COMPILER_ID = 'kiln.procedural-rgba.v3.1' as const;
@@ -81,11 +82,11 @@ export interface CanonicalProceduralTextureSpecV3 {
   palette?: { colors: number[]; dither: 'none' | 'bayer4' };
 }
 
-function fail(message: string): never {
-  throw new ProceduralTextureError(
-    `proceduralTexture V3: ${message}`,
-    'PROCEDURAL_TEXTURE_V3_CONTRACT',
-  );
+function fail(
+  message: string,
+  diagnostic: AuthoringDiagnostic = 'PROCEDURAL_TEXTURE_V3_CONTRACT',
+): never {
+  throw new ProceduralTextureError(`proceduralTexture V3: ${message}`, diagnostic);
 }
 const forbidden = new Set(['__proto__', 'prototype', 'constructor']);
 
@@ -265,7 +266,7 @@ export function admitProceduralTextureSpecV3(input: unknown): ProceduralTextureA
   if (texels > MAX_PROCEDURAL_V3_TEXELS) fail('output texel budget exceeded.');
   const usage = r['usage'] === undefined ? 'albedo' : r['usage'];
   if (!(TEXTURE_USAGES as readonly unknown[]).includes(usage))
-    fail('usage must be a known texture usage.');
+    fail('usage must be a known texture usage.', 'PROCEDURAL_TEXTURE_USAGE');
   const colorUsage = usage === 'albedo' || usage === 'emissive';
   const name = r['name'];
   if (

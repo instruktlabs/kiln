@@ -1,4 +1,4 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import type { Stats } from 'node:fs';
 import {
   chmod,
@@ -6,13 +6,14 @@ import {
   link,
   mkdir,
   open,
+  readFile,
   realpath,
   rename,
   stat,
   unlink,
   writeFile,
 } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 
 /**
  * Prepare the directories leading to a CLI destination.
@@ -132,4 +133,91 @@ export async function writeNewDestinationsAtomic(
   } finally {
     await Promise.all(staged.map(({ temporary }) => unlink(temporary).catch(() => {})));
   }
+}
+
+/**
+ * Publish content-addressed files (`<sha256 hex>.<ext>`). A file that already exists with the
+ * same bytes is reused and never rewritten; one with different bytes is an error. Nothing here
+ * ever removes a published file, including one this call created: another export may already
+ * reference it, and a leftover file is harmless.
+ */
+export async function writeContentAddressedFiles(
+  files: { path: string; data: Uint8Array }[],
+): Promise<{ path: string; reused: boolean }[]> {
+  const hex = (data: Uint8Array) => createHash('sha256').update(data).digest('hex');
+  for (const { path, data } of files) {
+    const name = basename(path);
+    if (!/^[a-f0-9]{64}\.[a-z0-9]+$/.test(name) || name.slice(0, 64) !== hex(data))
+      throw new Error(`${path} is not the content address of its bytes`);
+  }
+  const published: { path: string; reused: boolean }[] = [];
+  const same = async (path: string, data: Uint8Array) => {
+    const existing = await readFile(path);
+    if (hex(existing) !== hex(data))
+      throw Object.assign(
+        new Error(
+          `${path} already exists with different bytes; a content-addressed file is never replaced.`,
+        ),
+        { code: 'EEXIST' },
+      );
+  };
+  for (const { path, data } of files) {
+    try {
+      await same(path, data);
+      published.push({ path, reused: true });
+      continue;
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    }
+    await prepareDestination(path);
+    const temporary = join(dirname(path), `.kiln-write-${randomUUID()}.tmp`);
+    const file = await open(temporary, 'wx');
+    try {
+      try {
+        await writeFile(file, data);
+      } finally {
+        await file.close();
+      }
+      try {
+        await link(temporary, path);
+        published.push({ path, reused: false });
+      } catch (error) {
+        // A concurrent export published the same name first: reuse it only if identical.
+        if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
+        await same(path, data);
+        published.push({ path, reused: true });
+      }
+    } finally {
+      await unlink(temporary).catch(() => {});
+    }
+  }
+  return published;
+}
+
+/**
+ * External glTF export: content-addressed textures first, then the exclusive model files
+ * (sidecar, buffers, `.gltf` last) under `writeNewDestinationsAtomic`'s never-replace and
+ * rollback rules. An existing model destination is refused before any texture is written.
+ */
+export async function writeExternalTextureExport(
+  textures: { path: string; data: Uint8Array }[],
+  outputs: { path: string; data: Parameters<typeof writeFile>[1] }[],
+): Promise<{ path: string; reused: boolean }[]> {
+  for (const { path } of outputs) {
+    try {
+      await lstat(path);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code === 'ENOENT') continue;
+      throw error;
+    }
+    throw Object.assign(
+      new Error(
+        `${path} already exists and is never replaced; choose a new output path or remove the file.`,
+      ),
+      { code: 'EEXIST' },
+    );
+  }
+  const published = await writeContentAddressedFiles(textures);
+  await writeNewDestinationsAtomic(outputs);
+  return published;
 }

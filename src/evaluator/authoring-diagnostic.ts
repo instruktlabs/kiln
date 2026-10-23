@@ -19,6 +19,7 @@ export type AuthoringDiagnostic =
   | 'ROUNDED_BOX_RADIUS'
   | 'PROCEDURAL_TEXTURE_UNKNOWN_KEY'
   | 'PROCEDURAL_TEXTURE_BLEND'
+  | 'PROCEDURAL_TEXTURE_USAGE'
   | 'PROCEDURAL_TEXTURE_V3_CONTRACT'
   | 'PORTABLE_MATERIAL_V3_CONTRACT'
   | 'TEXTURE_ATLAS_CONTRACT'
@@ -53,6 +54,8 @@ export const ROUNDED_BOX_RADIUS_ADVICE =
   'roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.';
 export const PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE =
   'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.';
+export const PROCEDURAL_TEXTURE_USAGE_ADVICE =
+  'proceduralTexture usage is one of albedo (the default), emissive, normal, roughness, metalness, metallicRoughness or occlusion; there is no data or height usage. Match it to the slot it fills: portable material baseColor takes albedo, normal takes normal, metallicRoughness takes metallicRoughness (G roughness, B metalness), emissive takes emissive and occlusion takes occlusion; pbrMaterial albedo, normal, roughness, metalness, metallicRoughness, emissive and aoMap take the matching usage. Call kiln_discover with ids ["proceduralTexture"].';
 export const MATERIAL_FRACTION_RANGE_ADVICE =
   'Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.';
 export const PARAMETRIC_PERIODIC_ENDPOINT_ADVICE =
@@ -86,7 +89,7 @@ export const REQUIRE_SOLID_ADVICE =
  * bounding boxes and got the bare sentence, H30; decision 24).
  */
 export const EXECUTION_REJECTED_ADVICE =
-  'No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.';
+  'No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate (CLI: kiln validate <program.js|ref>) on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.';
 export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | undefined): string {
   if (diagnostic === 'PORTABLE_MATERIAL_V3_CONTRACT')
     return 'compilePortableMaterialSpecV3 requires schemaVersion 3, model pbrMetallicRoughness, typed V3 procedural or injected resource references, and complete minFilter/magFilter/wrapS/wrapT samplers. Match texture usage to its slot and split work exceeding the material budget. Resource bindings need a host with verified-byte admission. V2 remains available unchanged. Shader code, paths, raw textures and V3 height derivation are unsupported. Read kiln_discover ids ["compilePortableMaterialSpecV3"] for the exact contract.';
@@ -145,6 +148,7 @@ export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | unde
   if (diagnostic === 'ROUNDED_BOX_RADIUS') return ROUNDED_BOX_RADIUS_ADVICE;
   if (diagnostic === 'GEAR_RADII_ORDER') return GEAR_RADII_ORDER_ADVICE;
   if (diagnostic === 'PROCEDURAL_TEXTURE_UNKNOWN_KEY') return PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE;
+  if (diagnostic === 'PROCEDURAL_TEXTURE_USAGE') return PROCEDURAL_TEXTURE_USAGE_ADVICE;
   if (diagnostic === 'MATERIAL_FRACTION_RANGE') return MATERIAL_FRACTION_RANGE_ADVICE;
   if (diagnostic === 'PROFILE_HOLES_UNSUPPORTED') return PROFILE_HOLES_UNSUPPORTED_ADVICE;
   if (diagnostic === 'PROFILE_CORRESPONDENCE_COLLAPSE')

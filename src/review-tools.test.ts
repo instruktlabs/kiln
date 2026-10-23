@@ -16,6 +16,8 @@ import {
 } from './material-library-node';
 import { materialLibraryPortableSpec } from './material-library';
 import { decodeAssetBundle } from './assets';
+import { createAssetRequirementsStore } from './requirements-store';
+import { createAssetRequirementsV1, requestedRequirement } from './contracts/requirements';
 
 test('review save preserves recorded GLB/source and refuses revision or policy mismatch', async () => {
   const root = await mkdtemp(join(tmpdir(), 'kiln-exact-review-'));
@@ -281,6 +283,74 @@ test('reviewed save preserves mixed V1/V2 material identities and editable closu
     expect(
       (await targetMaterials.read(legacy.manifest.materialId, legacy.manifest.revisionId)).manifest,
     ).toEqual(legacy.manifest);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('review save refuses an artifact reviewed under an earlier validation profile (#208)', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-review-profile-'));
+  try {
+    const profile = (doubleSided?: boolean) => ({
+      version: 'kiln.validation-profile.v1' as const,
+      profileId: 'holodeck.palm',
+      mode: 'enforce' as const,
+      checks: [
+        {
+          id: 'frond',
+          select: { names: ['Mesh_frond_*'] },
+          primitives: { exactly: 1 },
+          ...(doubleSided === undefined ? {} : { material: { doubleSided } }),
+        },
+      ],
+    });
+    const store = createAssetRequirementsStore();
+    const key = { taskId: 'palm', lineageId: 'palm-a' };
+    const authority = { actor: 'holodeck', reason: 'Destination', source: 'brief' as const };
+    const v1 = store.host.bind(
+      key,
+      createAssetRequirementsV1({ requirements: { validation: requestedRequirement(profile()) } }),
+      authority,
+    );
+    const v2 = store.host.replace(
+      key,
+      v1.revision,
+      createAssetRequirementsV1({
+        requirements: { validation: requestedRequirement(profile(true)) },
+      }),
+      { ...authority, reason: 'Stricter destination' },
+    );
+    const code =
+      "function build(){const r=createRoot('Palm');createPart('frond_0',boxGeo(0.2,2,0.05),gameMaterial('#336633'),{parent:r});return r;}";
+    const rendered = await renderGLBInProcess(code, { requirements: v1 });
+    const review = new FileLiveReview(root);
+    await review.observe('fixture', {}, async () => {
+      review.artifact(code, rendered);
+      return { ok: true };
+    });
+    await review.flush();
+    const operation = (await review.snapshot()).operations[0]!;
+    const library = new FileAssetLibrary({ project: root });
+    const input = {
+      action: 'save',
+      operationId: operation.operationId,
+      expectedRevision: operation.revision,
+      name: 'Palm',
+    };
+    const stale = createKilnReviewDef({
+      reviewStore: review,
+      assetLibrary: library,
+      requirements: v2,
+    });
+    await expect(stale.run(input)).rejects.toThrow(/requirements/i);
+    expect(await library.list('project')).toHaveLength(0);
+    const current = createKilnReviewDef({
+      reviewStore: review,
+      assetLibrary: library,
+      requirements: v1,
+    });
+    await current.run(input);
+    expect(await library.list('project')).toHaveLength(1);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

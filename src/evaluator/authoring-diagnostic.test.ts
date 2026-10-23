@@ -7,6 +7,8 @@ import {
   createEvaluatorPortV2,
 } from './protocol';
 import { renderGLBViaSubprocess } from './subprocess';
+import { authoringDiagnosticAdvice } from './authoring-diagnostic';
+import { TEXTURE_USAGES } from '../texture-contract';
 import {
   canonicalizeProceduralTextureSpecV2,
   canonicalizePortableMaterialSpecV2,
@@ -488,6 +490,7 @@ test('arbitrary exceptions and safety denials retain generic rejection', async (
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'ROUNDED_BOX_RADIUS'});}`,
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'PROCEDURAL_TEXTURE_UNKNOWN_KEY'});}`,
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'PROCEDURAL_TEXTURE_BLEND'});}`,
+    `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'PROCEDURAL_TEXTURE_USAGE'});}`,
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'MATERIAL_FRACTION_RANGE'});}`,
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'MATERIAL_COLOR_ARGUMENT'});}`,
     `function build(){throw Object.assign(new Error('SECRET_HOST_PATH'),{name:'AuthoringDiagnosticError',diagnostic:'MATERIAL_PACKED_CHANNELS'});}`,
@@ -528,3 +531,33 @@ test('shipping registry exposes repair advice from its isolated evaluator', asyn
   expect(out.error).toContain('Check variable spelling and scope');
   expect(out.error).not.toContain('uv');
 }, 15000);
+
+test('procedural texture usage errors list the accepted usages without crossing the message', async () => {
+  const sources = [
+    `function build(){proceduralTexture({schemaVersion:2,usage:'data',name:'PRIVATE_SOURCE_MARKER',layers:[{op:'solid',color:0}]});return createRoot('Cove');}`,
+    `function build(){proceduralTexture({schemaVersion:3,width:4,height:4,usage:'height',operations:[]});return createRoot('Cove');}`,
+    `async function build(){await compilePortableMaterialSpecV2({schemaVersion:2,model:'pbrMetallicRoughness',textures:{normal:{kind:'procedural',spec:{schemaVersion:2,usage:'albedo',layers:[{op:'solid',color:0}]}}}});return createRoot('Cove');}`,
+    `async function build(){await compilePortableMaterialSpecV3({schemaVersion:3,model:'pbrMetallicRoughness',textures:{normal:{kind:'procedural',sampler:{minFilter:'linear',magFilter:'linear',wrapS:'repeat',wrapT:'repeat'},spec:{schemaVersion:3,width:4,height:4,usage:'albedo',operations:[]}}}});return createRoot('Cove');}`,
+  ];
+  for (const source of sources) {
+    const wire = await evaluateEvaluatorRequestV2(
+      createEvaluatorRequestV2({ requestId: 'procedural-usage', code: source }).json,
+    );
+    expect(JSON.parse(wire).error).toEqual({
+      code: 'EXECUTION_REJECTED',
+      message: 'Generated asset execution was rejected.',
+      diagnostic: 'PROCEDURAL_TEXTURE_USAGE',
+    });
+    for (const secret of ['PRIVATE_SOURCE_MARKER', 'data', 'height'])
+      expect(wire).not.toContain(secret);
+  }
+  await expect(renderGLBViaSubprocess(sources[0]!)).rejects.toMatchObject({
+    code: 'EXECUTION_REJECTED',
+    diagnostic: 'PROCEDURAL_TEXTURE_USAGE',
+  });
+  const advice = authoringDiagnosticAdvice('PROCEDURAL_TEXTURE_USAGE');
+  for (const usage of TEXTURE_USAGES) expect(advice).toContain(usage);
+  for (const slot of ['baseColor', 'normal', 'metallicRoughness', 'emissive', 'occlusion'])
+    expect(advice).toContain(slot);
+  await expect(renderGLBViaSubprocess(sources[0]!)).rejects.toThrow(advice);
+}, 20000);

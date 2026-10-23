@@ -252,6 +252,7 @@ const report = geometryDiagnostics(shaded);
 - `subdivide(..., { preserveUV: true })` keeps per-corner UV charts while smoothing positions. The default position-only weld reports UV loss with `SUBDIVIDE_UV_DROPPED`; losses of other attributes, groups and morphs are also explicit.
 - `mergeVertices` normally keeps separate vertices where normals or UVs differ. `{ positionOnly: true }` explicitly drops other attributes to weld geometric topology.
 - `creaseNormals` preserves UV corners, averages neighboring face normals within the degree threshold, and invalidates tangents. Its position tolerance defaults to `1e-8` times the bounding-box diagonal, with no world-unit floor. An explicit positive `tolerance` overrides that distance.
+- Export writes unit normals. A non-unit normal, such as a pole ring from raw `THREE.LatheGeometry`, is scaled to unit length in the written file with one `NORMALS_NORMALISED` note naming the part and count; your geometry is not changed and shading is identical. A zero-length normal has no direction, so export fails naming the part and vertex; build revolved profiles with `lathe` or `revolveGeo`, or recompute with `creaseNormals`.
 - `geometryDiagnostics` reports boundary edges, non-manifold edges, inconsistent edge orientation, degenerate triangles, invalid indices, and nonfinite vertices. Default seam tolerance is `1e-6` times the finite-position bounding-box diagonal. A supplied positive tolerance remains an absolute geometry-local distance. The result exposes `tolerance`, `toleranceMode`, and `positionScale`. Open boundaries are expected for sheets; the counts do not certify a valid solid or detect general self-intersections.
 - `collapsedByToleranceTriangles` reports faces whose vertices merge in that diagnostic grid. Those faces are excluded from edge counts so their remaining edges are not counted twice. This is separate from the area-based `degenerateTriangles` count. A nonzero value means topology detail was lost at the chosen tolerance; inspect at a finer deliberate tolerance before interpreting the edge counts. The helper does not weld, remove or repair geometry.
 
@@ -549,17 +550,27 @@ parallel to frame XZ use planar UVs by default; `caps: 'side'` opts into side ma
 Full-wrap seam triangles may use U above 1, requiring repeat texture sampling.
 Triangles spanning more than half a revolution fail with a subdivision hint.
 
-Planar/box coordinates and cylindrical height normalize each geometry's extents
-to 0..1. They do not use metres per texture repeat. A shared frame does not make
-separate wall pieces share texel density or continuous brick courses. Preserve
-existing physical UVs, or map faces with explicit dimensions; a planar XY face
-can use `remapUV` with scales `[width / tileWidth, height / tileHeight]` and an
-explicit offset to align its phase. Box faces use different axis pairs, so one
-uniform remap does not establish equal density on every face.
+By default, planar/box coordinates and cylindrical height normalize each geometry's
+extents to 0..1, so texel density changes with part size. Pass `metersPerUnit` to map
+one UV unit to a fixed length instead, measured from the frame origin:
+
+```js
+const wall = projectUV(wallGeometry, { projection: 'box', metersPerUnit: 0.5 });
+```
+
+Parts of any size then tile at the same density, and wall pieces that share a frame
+continue the same brick courses. A full cylindrical wrap rounds its circumference at
+the largest radius to a whole number of tiles, so the seam meets itself; on a cone the
+narrower rings are compressed accordingly. A partial `angularRange` uses the exact arc
+length at the largest radius.
 
 Output is owned and non-indexed to separate triangle-corner UVs. Positions, normals,
 matching attributes, material groups, draw range and triangle order are preserved;
-tangents are removed with a diagnostic. Zero projection extent maps to 0.5.
+tangents are removed with a diagnostic. Zero projection extent maps to 0.5. Where the
+projection is continuous (one planar face, cylindrical sides), weld the result with
+`mergeVertices`: it rejoins corners that share position, normal and UV and keeps box
+faces and the cylindrical seam split. Per-triangle UVs left unwelded multiply vertex
+count and file size.
 Inputs must be finite triangle geometry with matching per-vertex attributes;
 morph targets require a separate contract. Limits are two million source samples
 and output corners plus 128 MiB of expanded attributes. This projection does not

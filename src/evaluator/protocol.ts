@@ -444,6 +444,7 @@ export function decodeEvaluatorResultV2(
           value.error.diagnostic !== 'ROUNDED_BOX_RADIUS' &&
           value.error.diagnostic !== 'PROCEDURAL_TEXTURE_UNKNOWN_KEY' &&
           value.error.diagnostic !== 'PROCEDURAL_TEXTURE_BLEND' &&
+          value.error.diagnostic !== 'PROCEDURAL_TEXTURE_USAGE' &&
           value.error.diagnostic !== 'PROCEDURAL_TEXTURE_V3_CONTRACT' &&
           value.error.diagnostic !== 'PORTABLE_MATERIAL_V3_CONTRACT' &&
           value.error.diagnostic !== 'TEXTURE_ATLAS_CONTRACT' &&

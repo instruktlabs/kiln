@@ -34,6 +34,7 @@
  */
 
 import * as THREE from 'three';
+import { type ExternalSupportV1, restingSupport } from '../external-support';
 import { lodLevel } from './lod';
 import { KILN_ENGINE_QA_OWNER, type QaRule } from './registry';
 import type { QaContext, QaFinding } from './types';
@@ -56,6 +57,8 @@ const EXEMPT_NAME = /(?:^|_)(?:leaf|leaves|foliage|frond|card|decal|billboard|pe
 interface ConnectivityPart {
   name: string;
   box: THREE.Box3;
+  /** The requirements-declared external support this part's bottom meets, if any. */
+  support?: ExternalSupportV1;
 }
 
 export interface DisconnectedGroupV1 {
@@ -63,6 +66,8 @@ export interface DisconnectedGroupV1 {
   parts: string[];
   /** Shortest distance from this component to the main one, in meters. */
   gap: number;
+  /** Present when every part rests on a requirements-declared external support. */
+  externalSupport?: { planeY: number; bottomY: number; tolerance: number };
 }
 
 export interface PartConnectivityReportV1 {
@@ -83,6 +88,7 @@ export interface PartConnectivityReportV1 {
 function collectParts(
   root: THREE.Object3D,
   exempt: string[],
+  supports?: readonly ExternalSupportV1[],
 ): { parts: ConnectivityPart[]; lodExcluded: number } {
   const parts: ConnectivityPart[] = [];
   let lodExcluded = 0;
@@ -101,7 +107,8 @@ function collectParts(
     }
     const box = new THREE.Box3().setFromObject(mesh);
     if (box.isEmpty()) return;
-    parts.push({ name, box });
+    const support = restingSupport(mesh, box.min.y, supports);
+    parts.push({ name, box, ...(support ? { support } : {}) });
   });
   return { parts, lodExcluded };
 }
@@ -120,9 +127,12 @@ function boxGap(a: THREE.Box3, b: THREE.Box3): number {
  * Exported for testing and for anything that wants the structure rather than
  * the finding.
  */
-export function analyzePartConnectivity(root: THREE.Object3D): PartConnectivityReportV1 {
+export function analyzePartConnectivity(
+  root: THREE.Object3D,
+  supports?: readonly ExternalSupportV1[],
+): PartConnectivityReportV1 {
   const exempt: string[] = [];
-  const { parts, lodExcluded } = collectParts(root, exempt);
+  const { parts, lodExcluded } = collectParts(root, exempt, supports);
   const report: PartConnectivityReportV1 = {
     partsAnalyzed: parts.length,
     mainComponentSize: parts.length,
@@ -187,9 +197,21 @@ export function analyzePartConnectivity(root: THREE.Object3D): PartConnectivityR
         gap = Math.min(gap, boxGap(parts[m]!.box, parts[b]!.box));
       }
     }
+    // The lowest part names the plane the group rests on when all of it is declared.
+    const lowest = members.reduce((a, b) => (parts[b]!.box.min.y < parts[a]!.box.min.y ? b : a));
+    const support = parts[lowest]!.support;
     report.groups.push({
       parts: members.map((m) => parts[m]!.name),
       gap: Math.round(gap * 1e6) / 1e6,
+      ...(support && members.every((m) => parts[m]!.support)
+        ? {
+            externalSupport: {
+              planeY: support.planeY,
+              bottomY: Math.round(parts[lowest]!.box.min.y * 1e6) / 1e6,
+              tolerance: support.tolerance ?? CONNECTIVITY_TOLERANCE,
+            },
+          }
+        : {}),
     });
   }
 
@@ -205,9 +227,12 @@ export function analyzePartConnectivity(root: THREE.Object3D): PartConnectivityR
  * `exact` is reserved for rules already enforcing on frozen conformance
  * evidence, so a new gate is `heuristic` however precise its arithmetic.
  */
-export function inspectPartConnectivity(scene: unknown): readonly QaFinding[] {
+export function inspectPartConnectivity(
+  scene: unknown,
+  supports?: readonly ExternalSupportV1[],
+): readonly QaFinding[] {
   if (!(scene instanceof THREE.Object3D)) return [];
-  const report = analyzePartConnectivity(scene);
+  const report = analyzePartConnectivity(scene, supports);
   const lodNote =
     report.lodExcluded === 1
       ? ' 1 part on an LOD level above 0 was not analyzed.'
@@ -220,6 +245,24 @@ export function inspectPartConnectivity(scene: unknown): readonly QaFinding[] {
       group.parts.length === 1
         ? `Part ${listed} is`
         : `A group of ${group.parts.length} parts (${listed}) is`;
+    const declared = group.externalSupport;
+    if (declared)
+      return {
+        code: 'GEO_PART_EXTERNAL_SUPPORT',
+        disposition: 'observe' as const,
+        dimension: 'visualQuality' as const,
+        profile: 'geometry.partConnectivity',
+        message: `${subject} separate from the largest component and rests on the support declared in requirements.externalSupport at Y=${declared.planeY.toFixed(3)} m (bottom at Y=${declared.bottomY.toFixed(3)} m). Information only: the support is composed outside this asset.${lodNote}`,
+        affected: { node: group.parts[0]! },
+        measurement: {
+          name: 'bottomToSupportPlane',
+          actual: declared.bottomY,
+          expected: declared.planeY,
+          threshold: declared.tolerance,
+        },
+        repairText:
+          'No change is needed for a declared support. Remove the part from requirements.externalSupport if it should attach within this asset.',
+      };
     return {
       code: 'GEO_PART_CONNECTIVITY',
       disposition: 'observe' as const,

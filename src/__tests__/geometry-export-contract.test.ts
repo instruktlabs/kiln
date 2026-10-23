@@ -2,7 +2,9 @@ import { describe, expect, it } from 'bun:test';
 import * as THREE from 'three';
 import { WebIO } from '@gltf-transform/core';
 import { inspectGeometryExport } from '../geometry-export';
+import { mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { renderSceneToGLB } from '../render';
+import { validateFinalGlbBytes } from '../qa/gltf';
 
 function fixture() {
   const root = new THREE.Group();
@@ -27,7 +29,11 @@ function fixture() {
 describe('custom mesh export contract', () => {
   it('round trips supported indexed attributes', async () => {
     const { root, geometry } = fixture();
-    const result = await renderSceneToGLB(root, { dedup: false, optimize: 'off', instance: 'off' });
+    const result = await renderSceneToGLB(root, {
+      dedup: false,
+      optimize: 'off',
+      instance: 'off',
+    });
     const doc = await new WebIO().readBinary(result.bytes);
     const primitive = doc.getRoot().listMeshes()[0]!.listPrimitives()[0]!;
     for (const [attribute, semantic] of [
@@ -145,7 +151,11 @@ describe('custom mesh export contract', () => {
       4,
     );
     geometry.setAttribute('position', new THREE.InterleavedBufferAttribute(data, 3, 0));
-    const result = await renderSceneToGLB(root, { dedup: false, optimize: 'off', instance: 'off' });
+    const result = await renderSceneToGLB(root, {
+      dedup: false,
+      optimize: 'off',
+      instance: 'off',
+    });
     const doc = await new WebIO().readBinary(result.bytes);
     expect(
       Array.from(
@@ -165,7 +175,10 @@ describe('geometry notes', () => {
   }
 
   it('reports a note repeated across meshes once, naming a few of them', () => {
-    const loft = { code: 'LOFT_SELF_INTERSECTION_UNCHECKED', message: 'Loft advisory.' };
+    const loft = {
+      code: 'LOFT_SELF_INTERSECTION_UNCHECKED',
+      message: 'Loft advisory.',
+    };
     const root = new THREE.Group();
     root.add(noted('Rib_0', [loft]));
     root.add(noted('Turn_A', [{ code: 'SWEEP_TIGHT_TURN', message: 'Station 3 turns.' }]));
@@ -204,5 +217,81 @@ describe('geometry notes', () => {
       'EXPERIMENTAL_IMPLICIT_SURFACE (2 meshes: Blob_A, Blob_B): Sampled.',
       'EXPORT_ATTRIBUTE_UNSUPPORTED Blob_B: customDisplacement is not preserved by the GLB bridge.',
     ]);
+  });
+});
+
+describe('non-unit normals on export', () => {
+  // A cup whose profile starts and ends a millimetre from the axis, as in the Cove pass.
+  const cup = () => {
+    const points = [
+      [0.001, 0],
+      [0.04, 0],
+      [0.045, 0.06],
+      [0.03, 0.09],
+      [0.001, 0.09],
+    ].map(([x, y]) => new THREE.Vector2(x, y));
+    return mergeVertices(new THREE.LatheGeometry(points, 24));
+  };
+  const lengths = (values: ArrayLike<number>) =>
+    Array.from({ length: values.length / 3 }, (_, i) =>
+      Math.hypot(values[i * 3]!, values[i * 3 + 1]!, values[i * 3 + 2]!),
+    );
+
+  for (const exporter of ['legacy', 'three'] as const) {
+    it(`normalises raw LatheGeometry normals with one note naming the part (${exporter})`, async () => {
+      const geometry = cup();
+      const before = Array.from(geometry.getAttribute('normal').array);
+      const bad = lengths(before).filter((length) => Math.abs(length - 1) > 0.0005).length;
+      expect(bad).toBeGreaterThan(0);
+      const root = new THREE.Group();
+      const mesh = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial());
+      mesh.name = 'LampBase';
+      root.add(mesh);
+      const result = await renderSceneToGLB(root, {
+        dedup: false,
+        optimize: 'off',
+        instance: 'off',
+        gltfExporter: exporter,
+      });
+      const notes = result.warnings.filter((warning) => warning.includes('normal'));
+      expect(notes).toEqual([
+        `LampBase: NORMALS_NORMALISED ${bad} non-unit normals were scaled to unit length on export.`,
+      ]);
+      const doc = await new WebIO().readBinary(result.bytes);
+      const written = doc.getRoot().listMeshes()[0]!.listPrimitives()[0]!.getAttribute('NORMAL')!;
+      for (const length of lengths(written.getArray()!))
+        expect(Math.abs(length - 1)).toBeLessThan(0.0005);
+      expect(Array.from(geometry.getAttribute('normal').array)).toEqual(before);
+      const report = await validateFinalGlbBytes(result.bytes);
+      expect(report.issues.messages.map((issue) => issue.code)).not.toContain(
+        'ACCESSOR_VECTOR3_NON_UNIT',
+      );
+    });
+  }
+
+  it('fails on a zero-length normal, naming the part and a remedy', async () => {
+    const { root, geometry } = fixture();
+    geometry.getAttribute('normal').setXYZ(1, 0, 0, 0);
+    await expect(renderSceneToGLB(root)).rejects.toThrow(
+      'CustomPanel: normal at vertex 1 has zero length',
+    );
+    await expect(renderSceneToGLB(root)).rejects.toThrow('revolveGeo');
+  });
+
+  it('writes unit normals byte for byte', async () => {
+    const { root, geometry } = fixture();
+    const result = await renderSceneToGLB(root, {
+      dedup: false,
+      optimize: 'off',
+      instance: 'off',
+    });
+    expect(result.warnings.filter((warning) => warning.includes('NORMALS_NORMALISED'))).toEqual([]);
+    const doc = await new WebIO().readBinary(result.bytes);
+    const written = doc.getRoot().listMeshes()[0]!.listPrimitives()[0]!.getAttribute('NORMAL')!;
+    const bytes = (array: ArrayLike<number> & ArrayBufferView) =>
+      Array.from(new Uint8Array(array.buffer, array.byteOffset, array.byteLength));
+    expect(bytes(written.getArray()!)).toEqual(
+      bytes(geometry.getAttribute('normal').array as Float32Array),
+    );
   });
 });

@@ -51,6 +51,7 @@ and are not required for CLI/MCP authoring.
 | `@img/sharp-win32-x64@0.35.5` | Apache-2.0 AND LGPL-3.0-or-later | package `LICENSE` and `versions.json`; the inspected binary includes libvips 8.18.7 and additional native libraries |
 | `manifold-3d@3.5.4` | Apache-2.0 | `manifold-3d/LICENSE`, JavaScript and WASM distribution |
 | `xatlasjs@0.2.0` | MIT | `xatlasjs/LICENSE`, copyright Jonathan Young; JavaScript and WASM distribution |
+| `ktx2-encoder@0.6.0` (optional peer, inspected October 22, 2026) | MIT | `ktx2-encoder/LICENSE` and `ktx2-encoder/THIRD_PARTY_NOTICES.md`: bundled Basis Universal encoder WASM under Apache-2.0 with its NOTICE reproduced, linking Zstandard (BSD-3-Clause) and MIT image loaders. Not installed by Kiln; the user installs it for `--ktx2` |
 
 Sharp selects platform-specific binaries during installation; consult the
 [upstream installation documentation](https://sharp.pixelplumbing.com/install/)

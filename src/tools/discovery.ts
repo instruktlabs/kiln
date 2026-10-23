@@ -9,6 +9,7 @@ import { MAX_CAPTURE_SHOT_SIZE, resolveCaptureLimits } from '../views/capture-li
 import { geometryExportAttributes } from '../geometry-export';
 import { resolveGltfExporter } from '../community-exporter';
 import { approvedTextureCatalogV1 } from '../material-resources';
+import { resolveRequirementsContext } from '../requirements-context';
 
 /** Shared native tool definition; all transports use the same Discovery service. */
 export function createKilnDiscoveryDef(
@@ -41,6 +42,20 @@ export function createKilnDiscoveryDef(
 /** The project an omitted `projectId` selects, named where the agent orients itself (F1, F8). */
 function configuredProject(context: KilnToolContext): string | null {
   return context.workspace?.configured?.() ?? null;
+}
+
+/** Host-declared obligations, kept apart from engine advice (#176, #208). */
+function hostRequirements(context: KilnToolContext) {
+  const active = resolveRequirementsContext(context.requirements);
+  const validation = active.requirements.requirements.validation;
+  return {
+    bound: active.binding !== undefined,
+    policyHash: active.policyHash,
+    declared:
+      validation?.state === 'requested'
+        ? { source: 'host-binding', validationProfile: validation.value }
+        : null,
+  };
 }
 
 function projectNotes(context: KilnToolContext): string[] {
@@ -119,6 +134,7 @@ async function currentCapabilities(
             read: 'kiln_project { action: "get", projectId } returns the brief, design, inventory and material pins',
           },
     renderer,
+    requirements: hostRequirements(context),
     execution:
       context.localExecution ??
       (context.evaluatorPort

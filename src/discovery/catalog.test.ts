@@ -14,6 +14,7 @@ import { sweepProfile } from '../sweep';
 import { listHelperSpecs } from './helper-specs';
 import { parseCatalog, type DiscoveryEntry } from './catalog-schema';
 import { listDiscoveryEntries, DISCOVERY_HELPER_RETIREMENTS } from './catalog';
+import { TEXTURE_USAGES } from '../texture-contract';
 import { helperContracts } from './helper-contracts';
 
 const byName = () => new Map(listDiscoveryEntries().map((entry) => [entry.name, entry]));
@@ -198,4 +199,13 @@ describe('executable Discovery catalog', () => {
     if (!roomContract || !('contract' in roomContract)) throw new Error('missing room contract');
     expect(roomContract.contract.axes).toContain('Width spans Z');
   });
+});
+
+test('the proceduralTexture contract lists every accepted usage and its slots', () => {
+  const entry = byName().get('proceduralTexture');
+  if (!entry || !executable(entry)) throw new Error('Missing helper proceduralTexture');
+  const usage = entry.contract.parameters.find((line) => line.startsWith('usage '));
+  expect(usage).toBeDefined();
+  for (const name of TEXTURE_USAGES) expect(usage).toContain(name);
+  for (const slot of ['baseColor', 'aoMap', 'occlusion']) expect(usage).toContain(slot);
 });

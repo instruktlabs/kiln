@@ -316,6 +316,7 @@ function usage(value: unknown, path: string, fallback: TextureUsage): TextureUsa
   if (!(TEXTURE_USAGES as readonly unknown[]).includes(value)) {
     throw new ProceduralTextureError(
       `${path} must be one of ${TEXTURE_USAGES.join(', ')}, got ${JSON.stringify(value)}.`,
+      'PROCEDURAL_TEXTURE_USAGE',
     );
   }
   return value as TextureUsage;
@@ -597,6 +598,7 @@ function canonicalTextureRef(
     if (spec.usage !== expected) {
       throw new ProceduralTextureError(
         `${path} requires procedural usage ${JSON.stringify(expected)}, got ${JSON.stringify(spec.usage)}.`,
+        'PROCEDURAL_TEXTURE_USAGE',
       );
     }
     return { kind: 'procedural', spec };

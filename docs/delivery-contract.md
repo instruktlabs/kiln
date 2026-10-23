@@ -131,6 +131,15 @@ Consumer rules that follow from it:
 - **Collider transforms are exact.** A collider's proxy mesh moves to a child named
   `<collider>_Proxy`, so the collider node's scale is still its size.
 - **Custom attributes stay float.** `_EDGE` and `_CAVITY` are never quantized.
+- **KTX2 needs `KTX2Loader`.** With `--ktx2`, `KHR_texture_basisu` is required and there is
+  no PNG fallback: configure `GLTFLoader.setKTX2Loader` with the Basis transcoder before
+  loading. `delivery.ktx2.encoder` names the encoder version and settings that produced
+  the images. See [KTX2 textures](export-profiles.md#ktx2-textures).
+- **Deduplicate textures by hash, not by name.** With `--textures manifest` the sidecar's
+  `textures[]` gives each image's exact `sha256`; with `--textures external` the images are
+  shared `textures/<sha256>.<ext>` files beside a `.gltf`. Keep `textures/` beside every
+  `.gltf` that references it, and never rewrite a file in place: its name is its content.
+  See [runtime textures](export-profiles.md#runtime-textures-manifest-and-shared-files).
 - **Find nodes by role, not by name alone.** three's `GLTFLoader` makes object names
   unique, so an asset root that shares the scene's name loads with a numeric suffix.
 - **Choose LOD levels in the consumer.** `GLTFLoader` preserves `MSFT_lod` extension
@@ -155,6 +164,15 @@ module with two ports, a box collider, three anchors, a two-tier `defineLod` plu
 impostor, baked attributes, a packed two-region atlas, a budget, a required solid and
 instanced bolts. `src/__tests__/delivery-fixture.test.ts` renders it through both
 converters and loads its three.js runtime export through `GLTFLoader`.
+
+## Host validation profiles
+
+Nothing on this page requires a particular primitive count, attribute gradient or
+material flag. A host whose destination does can bind an opt-in
+[host validation profile](migration.md#host-validation-profile) in its requirements.
+That profile is the host's contract, evaluated on the final GLB by
+`HOST_VALIDATION_PROFILE`; its `enforce` findings block. Without such a binding,
+including in the neutral default, no profile runs and nothing on this page changes.
 
 ## Out of scope
 

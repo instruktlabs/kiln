@@ -26,6 +26,7 @@ import {
   VFX_SUBTYPES,
   validateVfxIntentV1,
 } from './breadth';
+import { ValidationProfileV1Schema } from './validation-profile';
 
 const text = z
   .string()
@@ -37,6 +38,13 @@ const names = z.array(text).refine((values) => new Set(values).size === values.l
   message: 'Values must be unique.',
 });
 const marker = z.strictObject({});
+const supportParts = z
+  .array(text)
+  .min(1)
+  .max(256)
+  .refine((values) => new Set(values).size === values.length, {
+    message: 'Values must be unique.',
+  });
 
 /** An absent statement is unspecified. Inference is advice, never an enforced demand. */
 export type RequirementStatement<T> =
@@ -221,10 +229,30 @@ const requirements = z.strictObject({
       skinned: z.boolean().optional(),
     }),
   ).optional(),
+  /**
+   * Named parts rest on a support composed outside this asset, such as cushions on a separate
+   * seat module. A detached part whose bottom meets its plane is reported as information.
+   */
+  externalSupport: statement(
+    z.strictObject({
+      supports: z
+        .array(
+          z.strictObject({
+            parts: supportParts,
+            planeY: z.number().finite(),
+            tolerance: nonnegative.max(0.5).optional(),
+          }),
+        )
+        .min(1)
+        .max(32),
+    }),
+  ).optional(),
   /** Preserve explicit functional capabilities without a semantic category. */
   access: statement(
     z.strictObject({ enterable: z.boolean().optional(), driveable: z.boolean().optional() }),
   ).optional(),
+  /** Host-declared destination checks on the final GLB (#208); never model-authored. */
+  validation: statement(ValidationProfileV1Schema).optional(),
 });
 
 export const AssetRequirementsV1Schema = z

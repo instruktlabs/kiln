@@ -201,3 +201,74 @@ test('projected UVs and material face coverage survive both GLB converters', asy
     else process.env['KILN_GLTF_EXPORTER'] = previous;
   }
 });
+
+test('metersPerUnit maps one UV unit to a fixed length from the frame origin', () => {
+  const extents = (geometry: THREE.BufferGeometry) => {
+    const uv = geometry.getAttribute('uv');
+    const u = Array.from({ length: uv.count }, (_, i) => uv.getX(i));
+    const v = Array.from({ length: uv.count }, (_, i) => uv.getY(i));
+    return [Math.max(...u) - Math.min(...u), Math.max(...v) - Math.min(...v)];
+  };
+  // Two crates of different size get the same texel density: 0.5 m per tile.
+  const small = projectUV(new THREE.BoxGeometry(1, 1, 1), {
+    projection: 'box',
+    metersPerUnit: 0.5,
+  });
+  const large = projectUV(new THREE.BoxGeometry(3, 2, 3), {
+    projection: 'box',
+    metersPerUnit: 0.5,
+  });
+  expect(extents(small)).toEqual([2, 2]);
+  expect(extents(large)).toEqual([6, 6]);
+  // Wall pieces sharing a frame continue the same courses: U is measured from the frame origin.
+  const left = projectUV(new THREE.PlaneGeometry(2, 1).translate(1, 0.5, 0), {
+    projection: 'planar',
+    metersPerUnit: 0.25,
+  });
+  const right = projectUV(new THREE.PlaneGeometry(2, 1).translate(3, 0.5, 0), {
+    projection: 'planar',
+    metersPerUnit: 0.25,
+  });
+  const u = (geometry: THREE.BufferGeometry) =>
+    Array.from({ length: geometry.getAttribute('uv').count }, (_, i) =>
+      geometry.getAttribute('uv').getX(i),
+    );
+  expect(Math.max(...u(left))).toBe(8);
+  expect(Math.min(...u(right))).toBe(8);
+  expect(Math.max(...u(right))).toBe(16);
+  for (const metersPerUnit of [0, -1, Number.NaN, Number.POSITIVE_INFINITY])
+    expect(() => projectUV(new THREE.BoxGeometry(), { projection: 'box', metersPerUnit })).toThrow(
+      'metersPerUnit',
+    );
+});
+
+test('metric cylindrical projection keeps the full-wrap seam on a whole tile', () => {
+  // Circumference 2*pi*0.4 = 2.513 m at 0.3 m per tile is 8.38 tiles; the wrap rounds to 8.
+  const source = new THREE.CylinderGeometry(0.4, 0.4, 0.9, 24, 1, true);
+  const projected = projectUV(source, { projection: 'cylindrical', metersPerUnit: 0.3 });
+  const uv = projected.getAttribute('uv');
+  const p = projected.getAttribute('position');
+  let seam = 0;
+  for (let i = 0; i < uv.count; i++) {
+    expect(uv.getX(i)).toBeGreaterThanOrEqual(0);
+    expect(uv.getX(i)).toBeLessThanOrEqual(8);
+    // The default seam is the -X direction: those corners sit exactly on 0 or 8.
+    if (Math.abs(p.getZ(i)) < 1e-6 && p.getX(i) < 0) {
+      seam++;
+      expect([0, 8]).toContain(uv.getX(i));
+    }
+    expect(uv.getY(i)).toBeCloseTo(p.getY(i) / 0.3, 5);
+  }
+  expect(seam).toBeGreaterThan(0);
+  // A partial arc has no seam to close: U is the arc length at the largest radius.
+  const halfShell = new THREE.CylinderGeometry(0.4, 0.4, 0.9, 12, 1, true, Math.PI / 2, Math.PI);
+  const half = projectUV(halfShell, {
+    projection: 'cylindrical',
+    angularRange: [180, 180],
+    metersPerUnit: 0.3,
+  });
+  const halfU = Array.from({ length: half.getAttribute('uv').count }, (_, i) =>
+    half.getAttribute('uv').getX(i),
+  );
+  expect(Math.max(...halfU)).toBeCloseTo((Math.PI * 0.4) / 0.3, 5);
+});

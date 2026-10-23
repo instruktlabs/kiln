@@ -6,6 +6,21 @@ These library APIs run in the destination project's TypeScript toolchain, not in
 
 Kiln authors metres, +X forward, +Y up, +Z right. Confirm importer conversion in the destination. Ground correction must be applied in the frame it describes, especially under rotated/scaled parents. Bounds alone cannot prove that feet, wheels, or collision geometry make the intended contact.
 
+## Host-declared checks
+
+Before authoring, read `kiln_discover({ capabilities: true })`. When
+`requirements.declared.validationProfile` is present, the host has bound
+destination checks, such as primitive counts, required attributes, an attribute
+gradient along a local axis, or material alpha mode and sidedness, for the nodes
+its patterns name. Patterns match final GLB node names; `createPart('frond_0')`
+exports `Mesh_frond_0`. The rule `HOST_VALIDATION_PROFILE` checks the final GLB on
+every `kiln_render` and `kiln_save`. In `enforce` mode its findings block, and
+each names the check, assertion and node path. Meet the check in the asset;
+renaming nodes so nothing matches is reported as
+`HOST_VALIDATION_SELECTOR_UNMATCHED`. Tool arguments and source metadata cannot
+change the profile. Without a declared profile these checks do not exist; do not
+apply another destination's checks to a standalone asset.
+
 ## What to measure
 
 | Question | Evidence |

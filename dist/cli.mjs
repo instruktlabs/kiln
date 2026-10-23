@@ -26,20 +26,21 @@ var __esm = (fn, res, err) => () => {
 };
 
 // src/cli-output.ts
-import { randomUUID } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
 import {
   chmod,
   lstat,
   link,
   mkdir,
   open,
+  readFile,
   realpath,
   rename,
   stat,
   unlink,
   writeFile
 } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 async function prepareDestination(path) {
   await mkdir(dirname(path), { recursive: true });
   return path;
@@ -120,6 +121,67 @@ async function writeNewDestinationsAtomic(outputs) {
     await Promise.all(staged.map(({ temporary }) => unlink(temporary).catch(() => {})));
   }
 }
+async function writeContentAddressedFiles(files) {
+  const hex = (data) => createHash("sha256").update(data).digest("hex");
+  for (const { path, data } of files) {
+    const name = basename(path);
+    if (!/^[a-f0-9]{64}\.[a-z0-9]+$/.test(name) || name.slice(0, 64) !== hex(data))
+      throw new Error(`${path} is not the content address of its bytes`);
+  }
+  const published = [];
+  const same = async (path, data) => {
+    const existing = await readFile(path);
+    if (hex(existing) !== hex(data))
+      throw Object.assign(new Error(`${path} already exists with different bytes; a content-addressed file is never replaced.`), { code: "EEXIST" });
+  };
+  for (const { path, data } of files) {
+    try {
+      await same(path, data);
+      published.push({ path, reused: true });
+      continue;
+    } catch (error) {
+      if (error.code !== "ENOENT")
+        throw error;
+    }
+    await prepareDestination(path);
+    const temporary = join(dirname(path), `.kiln-write-${randomUUID()}.tmp`);
+    const file = await open(temporary, "wx");
+    try {
+      try {
+        await writeFile(file, data);
+      } finally {
+        await file.close();
+      }
+      try {
+        await link(temporary, path);
+        published.push({ path, reused: false });
+      } catch (error) {
+        if (error.code !== "EEXIST")
+          throw error;
+        await same(path, data);
+        published.push({ path, reused: true });
+      }
+    } finally {
+      await unlink(temporary).catch(() => {});
+    }
+  }
+  return published;
+}
+async function writeExternalTextureExport(textures, outputs) {
+  for (const { path } of outputs) {
+    try {
+      await lstat(path);
+    } catch (error) {
+      if (error.code === "ENOENT")
+        continue;
+      throw error;
+    }
+    throw Object.assign(new Error(`${path} already exists and is never replaced; choose a new output path or remove the file.`), { code: "EEXIST" });
+  }
+  const published = await writeContentAddressedFiles(textures);
+  await writeNewDestinationsAtomic(outputs);
+  return published;
+}
 var init_cli_output = () => {};
 
 // src/evaluator/authoring-diagnostic.ts
@@ -194,6 +256,8 @@ function authoringDiagnosticAdvice(diagnostic) {
     return GEAR_RADII_ORDER_ADVICE;
   if (diagnostic === "PROCEDURAL_TEXTURE_UNKNOWN_KEY")
     return PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE;
+  if (diagnostic === "PROCEDURAL_TEXTURE_USAGE")
+    return PROCEDURAL_TEXTURE_USAGE_ADVICE;
   if (diagnostic === "MATERIAL_FRACTION_RANGE")
     return MATERIAL_FRACTION_RANGE_ADVICE;
   if (diagnostic === "PROFILE_HOLES_UNSUPPORTED")
@@ -208,7 +272,7 @@ function rethrowAuthoringError(error) {
   }
   throw error;
 }
-var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', OPEN_SHELL_ADVICE = 'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].', DELIVERY_CONTRACT_ADVICE = 'Delivery helpers: colliderBox(size, { id }), colliderCapsule(radius, height, { id }) with height the total height of at least 2 * radius, colliderHull(mesh, { id }), anchor(kind, id), port(id) and defineModule(root, { footprint: [w, d], height, snapAxis: "x"|"y"|"z", origin: "corner"|"center" }). Ids and kinds are one segment of letters, digits, "_" or "-" with no dots; sizes are positive metres. The engine owns the kilnKit userData key; set it only through defineModule. defineBudget({ triangles: n | { LOD0, LOD1, ... }, draws? }) takes positive integers; definePalette(colors, { threshold? }) takes 1..64 hex colours. Call kiln_discover with ids ["colliderBox", "anchor", "defineModule", "defineBudget"].', REQUIRE_SOLID_ADVICE = 'REQUIRE_SOLID: a part marked with requireSolid(part) is not a closed, manifold, outward solid. Close every boundary (caps, end plates, a hull or a solid helper such as boxGeo or extrudeProfile), remove faces shared by three or more triangles, and keep one consistent outward winding; do not flip normals alone. Check the part with geometryDiagnostics(geometry).solid, or remove the requireSolid mark if the part is open on purpose. Call kiln_discover with ids ["requireSolid", "geometryDiagnostics"].', EXECUTION_REJECTED_ADVICE = "No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.", AuthoringDiagnosticError;
+var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', PROCEDURAL_TEXTURE_USAGE_ADVICE = 'proceduralTexture usage is one of albedo (the default), emissive, normal, roughness, metalness, metallicRoughness or occlusion; there is no data or height usage. Match it to the slot it fills: portable material baseColor takes albedo, normal takes normal, metallicRoughness takes metallicRoughness (G roughness, B metalness), emissive takes emissive and occlusion takes occlusion; pbrMaterial albedo, normal, roughness, metalness, metallicRoughness, emissive and aoMap take the matching usage. Call kiln_discover with ids ["proceduralTexture"].', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', OPEN_SHELL_ADVICE = 'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].', DELIVERY_CONTRACT_ADVICE = 'Delivery helpers: colliderBox(size, { id }), colliderCapsule(radius, height, { id }) with height the total height of at least 2 * radius, colliderHull(mesh, { id }), anchor(kind, id), port(id) and defineModule(root, { footprint: [w, d], height, snapAxis: "x"|"y"|"z", origin: "corner"|"center" }). Ids and kinds are one segment of letters, digits, "_" or "-" with no dots; sizes are positive metres. The engine owns the kilnKit userData key; set it only through defineModule. defineBudget({ triangles: n | { LOD0, LOD1, ... }, draws? }) takes positive integers; definePalette(colors, { threshold? }) takes 1..64 hex colours. Call kiln_discover with ids ["colliderBox", "anchor", "defineModule", "defineBudget"].', REQUIRE_SOLID_ADVICE = 'REQUIRE_SOLID: a part marked with requireSolid(part) is not a closed, manifold, outward solid. Close every boundary (caps, end plates, a hull or a solid helper such as boxGeo or extrudeProfile), remove faces shared by three or more triangles, and keep one consistent outward winding; do not flip normals alone. Check the part with geometryDiagnostics(geometry).solid, or remove the requireSolid mark if the part is open on purpose. Call kiln_discover with ids ["requireSolid", "geometryDiagnostics"].', EXECUTION_REJECTED_ADVICE = "No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate (CLI: kiln validate <program.js|ref>) on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.", AuthoringDiagnosticError;
 var init_authoring_diagnostic = __esm(() => {
   AuthoringDiagnosticError = class AuthoringDiagnosticError extends Error {
     diagnostic;
@@ -256,7 +320,7 @@ var init_solid_diagnostic = __esm(() => {
 });
 
 // src/qa/registry.ts
-import { createHash } from "node:crypto";
+import { createHash as createHash2 } from "node:crypto";
 function canonicalCalibrationReportEvidence(report) {
   return JSON.stringify({
     schemaVersion: report.schemaVersion,
@@ -289,7 +353,7 @@ function canonicalCalibrationReportEvidence(report) {
   });
 }
 function calibrationReportEvidenceSha256(report) {
-  return createHash("sha256").update(canonicalCalibrationReportEvidence(report)).digest("hex");
+  return createHash2("sha256").update(canonicalCalibrationReportEvidence(report)).digest("hex");
 }
 function conformancePromotionAuthorization(fixtureSetId, fixturePath, evidenceSha256, owner = KILN_ENGINE_QA_OWNER, frozenAt = "2026-07-09T00:00:00.000Z", authorizedMode = "enforce", rendererId = LEGACY_CPU_RASTER_RENDERER_ID) {
   return {
@@ -773,7 +837,7 @@ function usage(value, path, fallback) {
   if (value === undefined)
     return fallback;
   if (!TEXTURE_USAGES.includes(value)) {
-    throw new ProceduralTextureError(`${path} must be one of ${TEXTURE_USAGES.join(", ")}, got ${JSON.stringify(value)}.`);
+    throw new ProceduralTextureError(`${path} must be one of ${TEXTURE_USAGES.join(", ")}, got ${JSON.stringify(value)}.`, "PROCEDURAL_TEXTURE_USAGE");
   }
   return value;
 }
@@ -981,7 +1045,7 @@ function canonicalTextureRef(value, slot) {
     const spec = canonicalizeProceduralTextureSpecV2(record["spec"]);
     const expected = MATERIAL_TEXTURE_USAGE[slot];
     if (spec.usage !== expected) {
-      throw new ProceduralTextureError(`${path} requires procedural usage ${JSON.stringify(expected)}, got ${JSON.stringify(spec.usage)}.`);
+      throw new ProceduralTextureError(`${path} requires procedural usage ${JSON.stringify(expected)}, got ${JSON.stringify(spec.usage)}.`, "PROCEDURAL_TEXTURE_USAGE");
     }
     return { kind: "procedural", spec };
   }
@@ -1200,8 +1264,8 @@ var init_portable_sampler = __esm(() => {
 });
 
 // src/procedural-texture-v3-contract.ts
-function fail(message) {
-  throw new ProceduralTextureError(`proceduralTexture V3: ${message}`, "PROCEDURAL_TEXTURE_V3_CONTRACT");
+function fail(message, diagnostic = "PROCEDURAL_TEXTURE_V3_CONTRACT") {
+  throw new ProceduralTextureError(`proceduralTexture V3: ${message}`, diagnostic);
 }
 function assertProceduralJsonV3(input) {
   let nodes = 0;
@@ -1354,7 +1418,7 @@ function admitProceduralTextureSpecV3(input) {
     fail("output texel budget exceeded.");
   const usage = r["usage"] === undefined ? "albedo" : r["usage"];
   if (!TEXTURE_USAGES.includes(usage))
-    fail("usage must be a known texture usage.");
+    fail("usage must be a known texture usage.", "PROCEDURAL_TEXTURE_USAGE");
   const colorUsage = usage === "albedo" || usage === "emissive";
   const name = r["name"];
   if (name !== undefined && (typeof name !== "string" || !name.length || name.length > 80 || [...name].some((c) => c.charCodeAt(0) < 32 || c.charCodeAt(0) === 127)))
@@ -11002,6 +11066,25 @@ var init_prop = __esm(() => {
   ];
 });
 
+// src/external-support.ts
+function restingSupport(mesh, bottomY, supports) {
+  return declaredSupports(mesh, supports).find((support) => Math.abs(bottomY - support.planeY) <= (support.tolerance ?? EXTERNAL_SUPPORT_TOLERANCE));
+}
+function declaredSupports(mesh, supports) {
+  if (!supports?.length)
+    return [];
+  const names = new Set;
+  for (let node = mesh;node; node = node.parent) {
+    if (!node.name)
+      continue;
+    names.add(node.name);
+    if (node.name.startsWith("Mesh_"))
+      names.add(node.name.slice(5));
+  }
+  return supports.filter((support) => support.parts.some((part) => names.has(part)));
+}
+var EXTERNAL_SUPPORT_TOLERANCE = 0.02;
+
 // src/delivery.ts
 import * as THREE15 from "three";
 import { ConvexGeometry } from "three/addons/geometries/ConvexGeometry.js";
@@ -11373,7 +11456,7 @@ var init_lod2 = __esm(() => {
 
 // src/qa/part-connectivity.ts
 import * as THREE16 from "three";
-function collectParts2(root, exempt) {
+function collectParts2(root, exempt, supports) {
   const parts = [];
   let lodExcluded = 0;
   root.updateWorldMatrix(true, true);
@@ -11393,7 +11476,8 @@ function collectParts2(root, exempt) {
     const box = new THREE16.Box3().setFromObject(mesh);
     if (box.isEmpty())
       return;
-    parts.push({ name, box });
+    const support = restingSupport(mesh, box.min.y, supports);
+    parts.push({ name, box, ...support ? { support } : {} });
   });
   return { parts, lodExcluded };
 }
@@ -11403,9 +11487,9 @@ function boxGap(a, b) {
   const dz = Math.max(0, Math.max(a.min.z - b.max.z, b.min.z - a.max.z));
   return Math.hypot(dx, dy, dz);
 }
-function analyzePartConnectivity(root) {
+function analyzePartConnectivity(root, supports) {
   const exempt = [];
-  const { parts, lodExcluded } = collectParts2(root, exempt);
+  const { parts, lodExcluded } = collectParts2(root, exempt, supports);
   const report = {
     partsAnalyzed: parts.length,
     mainComponentSize: parts.length,
@@ -11466,22 +11550,48 @@ function analyzePartConnectivity(root) {
         gap = Math.min(gap, boxGap(parts[m].box, parts[b].box));
       }
     }
+    const lowest = members.reduce((a, b) => parts[b].box.min.y < parts[a].box.min.y ? b : a);
+    const support = parts[lowest].support;
     report.groups.push({
       parts: members.map((m) => parts[m].name),
-      gap: Math.round(gap * 1e6) / 1e6
+      gap: Math.round(gap * 1e6) / 1e6,
+      ...support && members.every((m) => parts[m].support) ? {
+        externalSupport: {
+          planeY: support.planeY,
+          bottomY: Math.round(parts[lowest].box.min.y * 1e6) / 1e6,
+          tolerance: support.tolerance ?? CONNECTIVITY_TOLERANCE
+        }
+      } : {}
     });
   }
   report.groups.sort((a, b) => b.parts.length - a.parts.length || a.gap - b.gap);
   return report;
 }
-function inspectPartConnectivity(scene) {
+function inspectPartConnectivity(scene, supports) {
   if (!(scene instanceof THREE16.Object3D))
     return [];
-  const report = analyzePartConnectivity(scene);
+  const report = analyzePartConnectivity(scene, supports);
   const lodNote = report.lodExcluded === 1 ? " 1 part on an LOD level above 0 was not analyzed." : report.lodExcluded > 1 ? ` ${report.lodExcluded} parts on LOD levels above 0 were not analyzed.` : "";
   return report.groups.map((group) => {
     const listed = group.parts.map((p) => JSON.stringify(p)).join(", ");
     const subject = group.parts.length === 1 ? `Part ${listed} is` : `A group of ${group.parts.length} parts (${listed}) is`;
+    const declared = group.externalSupport;
+    if (declared)
+      return {
+        code: "GEO_PART_EXTERNAL_SUPPORT",
+        disposition: "observe",
+        dimension: "visualQuality",
+        profile: "geometry.partConnectivity",
+        message: `${subject} separate from the largest component and rests on the support declared in requirements.externalSupport at Y=${declared.planeY.toFixed(3)} m (bottom at Y=${declared.bottomY.toFixed(3)} m). Information only: the support is composed outside this asset.${lodNote}`,
+        affected: { node: group.parts[0] },
+        measurement: {
+          name: "bottomToSupportPlane",
+          actual: declared.bottomY,
+          expected: declared.planeY,
+          threshold: declared.tolerance
+        },
+        repairText: "No change is needed for a declared support. Remove the part from requirements.externalSupport if it should attach within this asset."
+      };
     return {
       code: "GEO_PART_CONNECTIVITY",
       disposition: "observe",
@@ -14132,6 +14242,1401 @@ var init_universal = __esm(() => {
   };
 });
 
+// src/gltf-io.ts
+import {
+  Extension,
+  ExtensionProperty,
+  PropertyType,
+  RefList,
+  WebIO
+} from "@gltf-transform/core";
+import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
+function createGltfIO() {
+  return new WebIO().registerExtensions([...ALL_EXTENSIONS, MSFTLod]);
+}
+var MSFT_LOD = "MSFT_lod", Lod, MSFTLod;
+var init_gltf_io = __esm(() => {
+  Lod = class Lod extends ExtensionProperty {
+    static EXTENSION_NAME = MSFT_LOD;
+    init() {
+      this.extensionName = MSFT_LOD;
+      this.propertyType = "Lod";
+      this.parentTypes = [PropertyType.NODE, PropertyType.MATERIAL];
+    }
+    getDefaults() {
+      return Object.assign(super.getDefaults(), {
+        levels: new RefList
+      });
+    }
+    addLevel(level) {
+      return this.addRef("levels", level);
+    }
+    listLevels() {
+      return this.listRefs("levels");
+    }
+  };
+  MSFTLod = class MSFTLod extends Extension {
+    extensionName = MSFT_LOD;
+    static EXTENSION_NAME = MSFT_LOD;
+    createLod(name = "") {
+      return new Lod(this.document.getGraph(), name);
+    }
+    read(context) {
+      const json = context.jsonDoc.json;
+      this.readLevels(json.nodes, context.nodes);
+      this.readLevels(json.materials, context.materials);
+      return this;
+    }
+    readLevels(defs, targets) {
+      (defs ?? []).forEach((def, index) => {
+        const ids = def.extensions?.[MSFT_LOD]?.ids;
+        const target = targets[index];
+        if (!target || !Array.isArray(ids))
+          return;
+        const lod = this.createLod();
+        for (const id of ids) {
+          const level = typeof id === "number" ? targets[id] : undefined;
+          if (level && level !== target)
+            lod.addLevel(level);
+        }
+        target.setExtension(MSFT_LOD, lod);
+      });
+    }
+    write(context) {
+      const json = context.jsonDoc.json;
+      const root = this.document.getRoot();
+      for (const node of root.listNodes()) {
+        const index = context.nodeIndexMap.get(node);
+        const ids = node.getExtension(MSFT_LOD)?.listLevels().filter((level) => level.propertyType === PropertyType.NODE).map((level) => context.nodeIndexMap.get(level)).filter((id) => id !== undefined);
+        const def = index === undefined ? undefined : json.nodes?.[index];
+        if (def && ids?.length)
+          def.extensions = { ...def.extensions, [MSFT_LOD]: { ids } };
+      }
+      for (const material of root.listMaterials()) {
+        const index = context.materialIndexMap.get(material);
+        const ids = material.getExtension(MSFT_LOD)?.listLevels().filter((level) => level.propertyType === PropertyType.MATERIAL).map((level) => context.materialIndexMap.get(level)).filter((id) => id !== undefined);
+        const def = index === undefined ? undefined : json.materials?.[index];
+        if (def && ids?.length)
+          def.extensions = { ...def.extensions, [MSFT_LOD]: { ids } };
+      }
+      return this;
+    }
+  };
+});
+
+// src/metrics.ts
+function primTris(prim) {
+  const count = prim.getIndices()?.getCount() ?? prim.getAttribute("POSITION")?.getCount() ?? 0;
+  switch (prim.getMode()) {
+    case 4:
+      return Math.floor(count / 3);
+    case 5:
+    case 6:
+      return Math.max(0, count - 2);
+    default:
+      return 0;
+  }
+}
+function instanceCopies(node) {
+  const ext = node.getExtension("EXT_mesh_gpu_instancing");
+  if (!ext)
+    return 1;
+  return ext.getAttribute?.("TRANSLATION")?.getCount() ?? ext.getAttribute?.("ROTATION")?.getCount() ?? ext.getAttribute?.("SCALE")?.getCount() ?? 1;
+}
+function isHiddenGltfNode(node) {
+  const visibility = node.getExtension("KHR_node_visibility");
+  return visibility?.getVisible?.() === false;
+}
+function nodeTriangles(node) {
+  return subtreeTriangles(node, false);
+}
+function drawnNodeTriangles(node) {
+  return subtreeTriangles(node, true);
+}
+function subtreeTriangles(node, drawn) {
+  if (drawn && isHiddenGltfNode(node))
+    return 0;
+  let triangles = 0;
+  const mesh = node.getMesh();
+  if (mesh) {
+    const copies = instanceCopies(node);
+    for (const prim of mesh.listPrimitives())
+      triangles += primTris(prim) * copies;
+  }
+  for (const child of node.listChildren())
+    triangles += subtreeTriangles(child, drawn);
+  return triangles;
+}
+function collectGlbMetrics(doc, triangles) {
+  const root = doc.getRoot();
+  const geomSet = new Set;
+  const matSet = new Set;
+  let drawCalls = 0;
+  let derivedTris = 0;
+  let meshNodes = 0;
+  let meshInstances = 0;
+  const visit = (node) => {
+    if (isHiddenGltfNode(node))
+      return;
+    const mesh = node.getMesh();
+    if (mesh) {
+      const copies = instanceCopies(node);
+      meshNodes += 1;
+      meshInstances += copies;
+      for (const prim of mesh.listPrimitives()) {
+        drawCalls += 1;
+        geomSet.add(prim);
+        derivedTris += primTris(prim) * copies;
+        const mat = prim.getMaterial();
+        if (mat)
+          matSet.add(mat);
+      }
+    }
+    for (const child of node.listChildren())
+      visit(child);
+  };
+  for (const scene of root.listScenes()) {
+    for (const node of scene.listChildren())
+      visit(node);
+  }
+  const transparentMaterials = root.listMaterials().filter((m) => m.getAlphaMode() === "BLEND").length;
+  return {
+    uniqueGeometries: geomSet.size,
+    uniqueMaterials: matSet.size,
+    meshNodes,
+    meshInstances,
+    drawCalls,
+    textureCount: root.listTextures().length,
+    skinned: root.listSkins().length > 0,
+    transparentMaterials,
+    triangles: triangles ?? derivedTris
+  };
+}
+function rubricGrade(m) {
+  const grade = materialBand(m.uniqueMaterials).grade;
+  return (grade === "A" || grade === "B") && lowersToC(m) ? "C" : grade;
+}
+function textureSlots(m) {
+  return [
+    [m.getBaseColorTexture(), m.getBaseColorTextureInfo()],
+    [m.getEmissiveTexture(), m.getEmissiveTextureInfo()],
+    [m.getNormalTexture(), m.getNormalTextureInfo()],
+    [m.getOcclusionTexture(), m.getOcclusionTextureInfo()],
+    [m.getMetallicRoughnessTexture(), m.getMetallicRoughnessTextureInfo()]
+  ];
+}
+function shadingKey(m, textures) {
+  const binding = (info) => info && [
+    info.getTexCoord(),
+    info.getWrapS(),
+    info.getWrapT(),
+    info.getMagFilter(),
+    info.getMinFilter(),
+    extensionNames(info)
+  ];
+  return JSON.stringify([
+    m.getAlphaMode(),
+    m.getAlphaMode() === "MASK" ? m.getAlphaCutoff() : null,
+    m.getDoubleSided(),
+    textureSlots(m).map(([texture, info]) => texture && [textures.indexOf(texture), binding(info)]),
+    extensionNames(m),
+    m.getExtras()
+  ]);
+}
+function differingFactors(group) {
+  const [first, ...rest] = group;
+  const differs = MERGE_FACTORS.filter(([, read]) => rest.some((m) => JSON.stringify(read(m)) !== JSON.stringify(read(first)))).map(([name]) => name);
+  for (const extension of first.listExtensions())
+    if (rest.some((m) => !m.getExtension(extension.extensionName)?.equals(extension)))
+      differs.push(extension.extensionName);
+  const slots = textureSlots(first);
+  slots.forEach(([, info], slot) => {
+    for (const extension of info?.listExtensions() ?? [])
+      if (rest.some((m) => !textureSlots(m)[slot]?.[1]?.getExtension(extension.extensionName)?.equals(extension)))
+        differs.push(extension.extensionName);
+  });
+  return [...new Set(differs)];
+}
+function mergeNeeds(differs) {
+  const needs = [];
+  if (differs.some((d) => d === "baseColorFactor" || d === "emissiveFactor"))
+    needs.push("colours in a shared texture, an atlas region or vertex colours");
+  if (differs.some((d) => d === "metallicFactor" || d === "roughnessFactor"))
+    needs.push("one metallic/roughness value or a shared metallicRoughness texture");
+  if (differs.some((d) => d === "normalScale" || d === "occlusionStrength"))
+    needs.push("one normal scale and occlusion strength");
+  if (differs.some((d) => d.startsWith("KHR_") || d.startsWith("EXT_")))
+    needs.push("one setting for each differing extension");
+  return needs.length ? needs.join("; ") : "only reusing one material; the members already match";
+}
+function materialMergeCandidates(doc) {
+  const root = doc.getRoot();
+  const parts = new Map;
+  const visit = (node) => {
+    if (isHiddenGltfNode(node))
+      return;
+    const mesh = node.getMesh();
+    const name = node.getName() || mesh?.getName() || `node ${root.listNodes().indexOf(node)}`;
+    for (const primitive of mesh?.listPrimitives() ?? []) {
+      const material = primitive.getMaterial();
+      if (!material)
+        continue;
+      const list = parts.get(material) ?? [];
+      if (!list.includes(name))
+        list.push(name);
+      parts.set(material, list);
+    }
+    for (const child of node.listChildren())
+      visit(child);
+  };
+  for (const scene of root.listScenes())
+    for (const node of scene.listChildren())
+      visit(node);
+  const materials = root.listMaterials();
+  const textures = root.listTextures();
+  const groups = new Map;
+  for (const material of materials) {
+    if (!parts.has(material))
+      continue;
+    const key = shadingKey(material, textures);
+    const group = groups.get(key);
+    if (group)
+      group.push(material);
+    else
+      groups.set(key, [material]);
+  }
+  return [...groups.values()].filter((group) => group.length > 1).map((group) => {
+    const differs = differingFactors(group);
+    return {
+      materials: group.map((m) => m.getName() || `${parts.get(m)[0]} material`),
+      parts: group.map((m) => parts.get(m).slice(0, MERGE_PARTS_KEPT)),
+      alphaMode: group[0].getAlphaMode(),
+      differs,
+      needs: mergeNeeds(differs)
+    };
+  });
+}
+function shortList(names, shown, joiner) {
+  const head = names.slice(0, shown).join(joiner);
+  return names.length > shown ? `${head} and ${names.length - shown} more` : head;
+}
+function mergeAdvice(m, candidates) {
+  const merged = candidates.reduce((n, c) => n + c.materials.length - 1, 0);
+  const blendMerged = candidates.filter((c) => c.alphaMode === "BLEND").reduce((n, c) => n + c.materials.length - 1, 0);
+  const projected = {
+    ...m,
+    uniqueMaterials: Math.max(1, m.uniqueMaterials - merged),
+    transparentMaterials: Math.max(0, m.transparentMaterials - blendMerged)
+  };
+  const projectedGrade = rubricGrade(projected);
+  const band = materialBand(projected.uniqueMaterials);
+  const named = (c) => shortList(c.materials, 4, " + ");
+  const groups = candidates.slice(0, 3).map((c) => {
+    const why = c.differs.length ? `differ in ${c.differs.join(", ")}` : "identical shading";
+    return `${named(c)} (${why})`;
+  });
+  if (candidates.length > 3)
+    groups.push(`${candidates.length - 3} more groups`);
+  const otherFactors = projectedGrade === band.grade ? "" : `; other factors give ${projectedGrade}`;
+  const summary = ` Optional advice, not a requirement: merging ${groups.join("; ")} would leave ` + `${counted(projected.uniqueMaterials, "material", "materials")} (${band.grade} at ${band.range}${otherFactors}).`;
+  const reasons = candidates.map((c) => {
+    const why = c.differs.length ? ` and differ in ${c.differs.join(", ")}` : "";
+    return `optional advice: ${named(c)} share shading${why}; a merge needs ${c.needs}; parts: ${shortList(c.parts.flat(), 3, ", ")}`;
+  });
+  return {
+    advice: {
+      optional: true,
+      materialMerges: [...candidates],
+      projectedMaterials: projected.uniqueMaterials,
+      projectedGrade
+    },
+    summary,
+    reasons
+  };
+}
+function gradeInstanceability(metrics, opts = {}) {
+  const m = metrics;
+  const band = materialBand(m.uniqueMaterials);
+  let grade = band.grade;
+  const materials = `${counted(m.uniqueMaterials, "distinct material", "distinct materials")} (${band.grade} at ${band.range})`;
+  const transparency = m.transparentMaterials > 0 ? counted(m.transparentMaterials, "transparent material", "transparent materials") : undefined;
+  const textures = m.textureCount > 4 ? `${m.textureCount} textures` : undefined;
+  const drivers = [];
+  const also = [];
+  if ((grade === "A" || grade === "B") && (transparency || textures)) {
+    grade = "C";
+    if (transparency)
+      drivers.push(`${transparency} (lowers A/B to C)`);
+    if (textures)
+      drivers.push(`${textures} (over 4 lowers A/B to C)`);
+    also.push(materials);
+  } else {
+    drivers.push(materials);
+    if (transparency)
+      also.push(`${transparency} (lowers only A/B to C)`);
+    if (textures)
+      also.push(`${textures} (over 4 lowers only A/B to C)`);
+  }
+  also.push(counted(m.uniqueGeometries, "geometry", "geometries"), counted(m.drawCalls, "draw call", "draw calls"));
+  if (m.skinned)
+    also.push("skinned (clone-rendered, not penalized)");
+  const setBy = drivers.join(" and ");
+  const reasons = [
+    `grade ${grade} set by ${setBy}`,
+    `${m.uniqueMaterials} material${m.uniqueMaterials === 1 ? "" : "s"}, ` + `${m.uniqueGeometries} geometr${m.uniqueGeometries === 1 ? "y" : "ies"}, ` + `${m.drawCalls} draw call${m.drawCalls === 1 ? "" : "s"}`
+  ];
+  if (transparency)
+    reasons.push(`${m.transparentMaterials} transparent material(s) force per-object sort`);
+  if (textures)
+    reasons.push(`${m.textureCount} textures (consider atlasing)`);
+  if (m.skinned)
+    reasons.push("skinned/animated — clone-rendered (not statically GPU-instanced); fine at low counts");
+  if (opts.category)
+    reasons.push(`category: ${opts.category}`);
+  const summary = `${grade} (informational, not a QA verdict), set by ${setBy}. Also: ${also.join("; ")}.`;
+  if (!opts.mergeCandidates?.length)
+    return { grade, summary, reasons, metrics: m };
+  const merge = mergeAdvice(m, opts.mergeCandidates);
+  return {
+    grade,
+    summary: summary + merge.summary,
+    reasons: [...reasons, ...merge.reasons],
+    metrics: m,
+    advice: merge.advice
+  };
+}
+var MATERIAL_GRADE_BANDS, counted = (n, one, many) => `${n} ${n === 1 ? one : many}`, materialBand = (materials) => MATERIAL_GRADE_BANDS.find((b) => materials <= b.max), lowersToC = (m) => m.transparentMaterials > 0 || m.textureCount > 4, MERGE_PARTS_KEPT = 8, MERGE_FACTORS, extensionNames = (property) => property.listExtensions().map((extension) => extension.extensionName).sort();
+var init_metrics = __esm(() => {
+  MATERIAL_GRADE_BANDS = [
+    { grade: "A", max: 1, range: "0-1" },
+    { grade: "B", max: 3, range: "2-3" },
+    { grade: "C", max: 6, range: "4-6" },
+    { grade: "D", max: 12, range: "7-12" },
+    { grade: "F", max: Number.POSITIVE_INFINITY, range: "13+" }
+  ];
+  MERGE_FACTORS = [
+    ["baseColorFactor", (m) => m.getBaseColorFactor()],
+    ["emissiveFactor", (m) => m.getEmissiveFactor()],
+    ["metallicFactor", (m) => m.getMetallicFactor()],
+    ["roughnessFactor", (m) => m.getRoughnessFactor()],
+    ["normalScale", (m) => m.getNormalScale()],
+    ["occlusionStrength", (m) => m.getOcclusionStrength()]
+  ];
+});
+
+// src/written-nodes.ts
+function exportedRoot(doc, purpose) {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  const top = scene?.listChildren() ?? [];
+  if (top.length !== 1)
+    throw new Error(`${purpose} expects the exporter to write one root node.`);
+  return top[0];
+}
+function writtenNodeResolver(root, doc, purpose) {
+  const top = exportedRoot(doc, purpose);
+  return (node) => {
+    const path = [];
+    for (let current = node;current !== root; current = current.parent) {
+      if (!current.parent)
+        throw new Error(`${purpose}: ${node.name} is outside the asset root.`);
+      path.unshift(current.parent.children.indexOf(current));
+    }
+    let target = top;
+    for (const index of path)
+      target = target?.listChildren()[index];
+    if (!target || (target.getName() || "") !== (node.name || ""))
+      throw new Error(`${purpose} could not find the written node for ${JSON.stringify(node.name)}.`);
+    return target;
+  };
+}
+
+// src/node-visibility.ts
+import { KHRNodeVisibility } from "@gltf-transform/extensions";
+import * as THREE21 from "three";
+function applyNodeVisibility(root, doc) {
+  const hidden = [];
+  root.traverse((node) => {
+    if (node.visible === false)
+      hidden.push(node);
+  });
+  if (hidden.length === 0)
+    return;
+  const written = hidden.map(writtenNodeResolver(root, doc, "Visibility export"));
+  const extension = doc.createExtension(KHRNodeVisibility);
+  for (const node of written)
+    node.setExtension(KHR_NODE_VISIBILITY, extension.createVisibility().setVisible(false));
+}
+function summarizeHiddenNodes(doc) {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return [];
+  const found = [];
+  const visit = (siblings, parentPath) => {
+    const seen = new Map;
+    for (const node of siblings) {
+      const name = node.getName();
+      const occurrence = seen.get(name) ?? 0;
+      seen.set(name, occurrence + 1);
+      const path = `${parentPath}${segment2(name, occurrence)}`;
+      if (isHiddenGltfNode(node))
+        found.push({ path, name, triangles: nodeTriangles(node) });
+      else
+        visit(node.listChildren(), path);
+    }
+  };
+  visit(scene.listChildren(), segment2(scene.getName() || "Scene", 0));
+  return found;
+}
+function drawnSceneBounds(scene) {
+  const min = [Infinity, Infinity, Infinity];
+  const max = [-Infinity, -Infinity, -Infinity];
+  const visit = (node) => {
+    if (isHiddenGltfNode(node))
+      return;
+    const mesh = node.getMesh();
+    if (mesh) {
+      const base = new THREE21.Matrix4().fromArray(node.getWorldMatrix());
+      const instances = node.getExtension("EXT_mesh_gpu_instancing");
+      const translation = instances?.getAttribute("TRANSLATION");
+      const rotation = instances?.getAttribute("ROTATION");
+      const scale = instances?.getAttribute("SCALE");
+      const countInstances = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
+      const matrices = [];
+      for (let i = 0;i < countInstances; i++) {
+        const t = translation?.getElement(i, []) ?? [0, 0, 0];
+        const r = rotation?.getElement(i, []) ?? [0, 0, 0, 1];
+        const s = scale?.getElement(i, []) ?? [1, 1, 1];
+        const localMatrix = new THREE21.Matrix4().compose(new THREE21.Vector3().fromArray(t), new THREE21.Quaternion().fromArray(r), new THREE21.Vector3().fromArray(s));
+        matrices.push(base.clone().multiply(localMatrix).toArray());
+      }
+      const local = [0, 0, 0];
+      for (const primitive of mesh.listPrimitives()) {
+        const position = primitive.getAttribute("POSITION");
+        if (!position)
+          continue;
+        const indices = primitive.getIndices();
+        const count = indices ? indices.getCount() : position.getCount();
+        for (const m of matrices)
+          for (let i = 0;i < count; i++) {
+            position.getElement(indices ? indices.getScalar(i) : i, local);
+            const [x, y, z] = local;
+            const world = [
+              m[0] * x + m[4] * y + m[8] * z + m[12],
+              m[1] * x + m[5] * y + m[9] * z + m[13],
+              m[2] * x + m[6] * y + m[10] * z + m[14]
+            ];
+            for (let k = 0;k < 3; k++) {
+              if (world[k] < min[k])
+                min[k] = world[k];
+              if (world[k] > max[k])
+                max[k] = world[k];
+            }
+          }
+      }
+    }
+    for (const child of node.listChildren())
+      visit(child);
+  };
+  for (const node of scene.listChildren())
+    visit(node);
+  return { min, max };
+}
+var KHR_NODE_VISIBILITY = "KHR_node_visibility", segment2 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
+var init_node_visibility = __esm(() => {
+  init_metrics();
+});
+
+// src/delivery-inspect.ts
+import * as THREE22 from "three";
+import { PropertyType as PropertyType2 } from "@gltf-transform/core";
+function decompose(matrix) {
+  const translation = new THREE22.Vector3;
+  const rotation = new THREE22.Quaternion;
+  const scale = new THREE22.Vector3;
+  matrix.decompose(translation, rotation, scale);
+  const clean = (value) => Object.is(value, -0) ? 0 : value;
+  return {
+    translation: translation.toArray().map(clean),
+    rotation: rotation.toArray().map(clean),
+    scale: scale.toArray().map(clean)
+  };
+}
+function drawnTriangles(visited) {
+  const values = [];
+  const local = [0, 0, 0];
+  const point = new THREE22.Vector3;
+  for (const { node, roles, hidden } of visited) {
+    const mesh = node.getMesh();
+    if (!mesh || hidden || roles.some((role) => role.startsWith("collider.")))
+      continue;
+    const base = worldMatrix(node);
+    const instances = node.getExtension("EXT_mesh_gpu_instancing");
+    const translation = instances?.getAttribute("TRANSLATION");
+    const rotation = instances?.getAttribute("ROTATION");
+    const scale = instances?.getAttribute("SCALE");
+    const copies = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
+    const matrices = [];
+    for (let i = 0;i < copies; i++) {
+      const instance = new THREE22.Matrix4().compose(new THREE22.Vector3().fromArray(translation?.getElement(i, []) ?? [0, 0, 0]), new THREE22.Quaternion().fromArray(rotation?.getElement(i, []) ?? [0, 0, 0, 1]), new THREE22.Vector3().fromArray(scale?.getElement(i, []) ?? [1, 1, 1]));
+      matrices.push(base.clone().multiply(instance));
+    }
+    for (const primitive of mesh.listPrimitives()) {
+      if (primitive.getMode() !== 4)
+        continue;
+      const position = primitive.getAttribute("POSITION");
+      if (!position)
+        continue;
+      const indices = primitive.getIndices();
+      const count = indices ? indices.getCount() : position.getCount();
+      for (const matrix of matrices)
+        for (let i = 0;i + 2 < count; i += 3)
+          for (let k = 0;k < 3; k++) {
+            position.getElement(indices ? indices.getScalar(i + k) : i + k, local);
+            point.fromArray(local).applyMatrix4(matrix);
+            values.push(point.x, point.y, point.z);
+          }
+    }
+  }
+  return Float64Array.from(values);
+}
+function triangleOverlapsBox(a, b, c, h, tolerance) {
+  const verts = [a, b, c];
+  const he = [h.x + tolerance, h.y + tolerance, h.z + tolerance];
+  for (let axis = 0;axis < 3; axis++) {
+    const values = verts.map((v) => v.getComponent(axis));
+    if (Math.min(...values) > he[axis] || Math.max(...values) < -he[axis])
+      return false;
+  }
+  const e = [
+    new THREE22.Vector3().subVectors(b, a),
+    new THREE22.Vector3().subVectors(c, b),
+    new THREE22.Vector3().subVectors(a, c)
+  ];
+  const normal = new THREE22.Vector3().crossVectors(e[0], e[1]);
+  const axes = [normal];
+  const units = [
+    new THREE22.Vector3(1, 0, 0),
+    new THREE22.Vector3(0, 1, 0),
+    new THREE22.Vector3(0, 0, 1)
+  ];
+  for (const unit of units)
+    for (const edge of e)
+      axes.push(new THREE22.Vector3().crossVectors(unit, edge));
+  for (const axis of axes) {
+    if (axis.lengthSq() < 0.000000000000000000000001)
+      continue;
+    const projections = verts.map((v) => v.dot(axis));
+    const radius = he[0] * Math.abs(axis.x) + he[1] * Math.abs(axis.y) + he[2] * Math.abs(axis.z);
+    if (Math.min(...projections) > radius || Math.max(...projections) < -radius)
+      return false;
+  }
+  return true;
+}
+function closestPointOnTriangle(p, a, b, c) {
+  const ab = new THREE22.Vector3().subVectors(b, a);
+  const ac = new THREE22.Vector3().subVectors(c, a);
+  const ap = new THREE22.Vector3().subVectors(p, a);
+  const d1 = ab.dot(ap);
+  const d2 = ac.dot(ap);
+  if (d1 <= 0 && d2 <= 0)
+    return a.clone();
+  const bp = new THREE22.Vector3().subVectors(p, b);
+  const d3 = ab.dot(bp);
+  const d4 = ac.dot(bp);
+  if (d3 >= 0 && d4 <= d3)
+    return b.clone();
+  const vc = d1 * d4 - d3 * d2;
+  if (vc <= 0 && d1 >= 0 && d3 <= 0)
+    return a.clone().addScaledVector(ab, d1 / (d1 - d3));
+  const cp = new THREE22.Vector3().subVectors(p, c);
+  const d5 = ab.dot(cp);
+  const d6 = ac.dot(cp);
+  if (d6 >= 0 && d5 <= d6)
+    return c.clone();
+  const vb = d5 * d2 - d1 * d6;
+  if (vb <= 0 && d2 >= 0 && d6 <= 0)
+    return a.clone().addScaledVector(ac, d2 / (d2 - d6));
+  const va = d3 * d6 - d5 * d4;
+  if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0)
+    return b.clone().addScaledVector(new THREE22.Vector3().subVectors(c, b), (d4 - d3) / (d4 - d3 + (d5 - d6)));
+  const denominator = 1 / (va + vb + vc);
+  return a.clone().addScaledVector(ab, vb * denominator).addScaledVector(ac, vc * denominator);
+}
+function segmentSegmentDistanceSq(p1, q1, p2, q2) {
+  const d1 = new THREE22.Vector3().subVectors(q1, p1);
+  const d2 = new THREE22.Vector3().subVectors(q2, p2);
+  const r = new THREE22.Vector3().subVectors(p1, p2);
+  const a = d1.dot(d1);
+  const e = d2.dot(d2);
+  const f = d2.dot(r);
+  let s = 0;
+  let t = 0;
+  if (a <= 0.000000000000000000000001 && e <= 0.000000000000000000000001)
+    return r.lengthSq();
+  if (a <= 0.000000000000000000000001)
+    t = THREE22.MathUtils.clamp(f / e, 0, 1);
+  else {
+    const c = d1.dot(r);
+    if (e <= 0.000000000000000000000001)
+      s = THREE22.MathUtils.clamp(-c / a, 0, 1);
+    else {
+      const b = d1.dot(d2);
+      const denominator = a * e - b * b;
+      s = denominator !== 0 ? THREE22.MathUtils.clamp((b * f - c * e) / denominator, 0, 1) : 0;
+      t = (b * s + f) / e;
+      if (t < 0) {
+        t = 0;
+        s = THREE22.MathUtils.clamp(-c / a, 0, 1);
+      } else if (t > 1) {
+        t = 1;
+        s = THREE22.MathUtils.clamp((b - c) / a, 0, 1);
+      }
+    }
+  }
+  const c1 = p1.clone().addScaledVector(d1, s);
+  const c2 = p2.clone().addScaledVector(d2, t);
+  return c1.distanceToSquared(c2);
+}
+function segmentCrossesTriangle(p, q, a, b, c) {
+  const hit = new THREE22.Vector3;
+  const ray = new THREE22.Ray(p, new THREE22.Vector3().subVectors(q, p));
+  const length = ray.direction.length();
+  if (length === 0)
+    return false;
+  ray.direction.divideScalar(length);
+  return ray.intersectTriangle(a, b, c, false, hit) !== null && hit.distanceTo(p) <= length;
+}
+function triangleTouchesCapsule(a, b, c, p, q, radius) {
+  const r2 = radius * radius;
+  if (closestPointOnTriangle(p, a, b, c).distanceToSquared(p) <= r2)
+    return true;
+  if (closestPointOnTriangle(q, a, b, c).distanceToSquared(q) <= r2)
+    return true;
+  for (const [s, e] of [
+    [a, b],
+    [b, c],
+    [c, a]
+  ])
+    if (segmentSegmentDistanceSq(p, q, s, e) <= r2)
+      return true;
+  return segmentCrossesTriangle(p, q, a, b, c);
+}
+function deliveryNodePaths(doc) {
+  const paths = new Map;
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return paths;
+  const visit = (siblings, parentPath) => {
+    const seen = new Map;
+    for (const node of siblings) {
+      const name = node.getName();
+      const occurrence = seen.get(name) ?? 0;
+      seen.set(name, occurrence + 1);
+      const path = `${parentPath}${segment3(name, occurrence)}`;
+      paths.set(node, path);
+      visit(node.listChildren(), path);
+    }
+  };
+  visit(scene.listChildren(), segment3(scene.getName() || "Scene", 0));
+  return paths;
+}
+function summarizeVertexAttributes(doc) {
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return [];
+  const groups = new Map;
+  const order = [];
+  const record = (node, path) => {
+    const mesh = node.getMesh();
+    if (!mesh)
+      return;
+    const bake = mesh.getExtras().kilnSurfaceBakeV1;
+    const names = new Set;
+    for (const primitive of mesh.listPrimitives())
+      for (const semantic of primitive.listSemantics())
+        if (semantic.startsWith("_"))
+          names.add(semantic);
+    for (const name of names) {
+      const params = bake && typeof bake === "object" ? bake[name] : undefined;
+      const key = `${name}\x00${JSON.stringify(params ?? null)}`;
+      let group = groups.get(key);
+      if (!group) {
+        group = { name, meshes: [], ...params ? { params: { ...params } } : {} };
+        groups.set(key, group);
+        order.push(key);
+      }
+      if (!group.meshes.includes(path))
+        group.meshes.push(path);
+    }
+  };
+  const visit = (siblings, parentPath) => {
+    siblings.forEach((node, index) => {
+      const at = (name) => {
+        let occurrence = 0;
+        for (let i = 0;i < index; i++)
+          if (siblings[i].getName() === name)
+            occurrence++;
+        return `${parentPath}${segment3(name, occurrence)}`;
+      };
+      const path = at(node.getName());
+      record(node, path);
+      visit(node.listChildren(), path);
+      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType2.NODE);
+      for (const level of lower) {
+        const levelPath = at(level.getName());
+        record(level, levelPath);
+        visit(level.listChildren(), levelPath);
+      }
+    });
+  };
+  visit(scene.listChildren(), segment3(scene.getName() || "Scene", 0));
+  const rank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2;
+  return order.map((key, position) => ({ group: groups.get(key), position })).sort((a, b) => rank(a.group.name) - rank(b.group.name) || (rank(a.group.name) === 2 ? a.group.name.localeCompare(b.group.name) : 0) || a.position - b.position).map(({ group }) => group);
+}
+function inspectDelivery(doc) {
+  const summary = { colliders: [], anchors: [], ports: [], diagnostics: [] };
+  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+  if (!scene)
+    return summary;
+  const visited = [];
+  const visit = (siblings, parentPath, hidden, module) => {
+    const seen = new Map;
+    for (const node of siblings) {
+      const name = node.getName();
+      const occurrence = seen.get(name) ?? 0;
+      seen.set(name, occurrence + 1);
+      const path = `${parentPath}${segment3(name, occurrence)}`;
+      const roles = readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [];
+      const nodeHidden = hidden || isHiddenGltfNode(node);
+      const nodeModule = roles.includes(KILN_SEMANTIC_ROLES.kitModule) ? { node, path } : module;
+      visited.push({ node, path, roles, hidden: nodeHidden, module: nodeModule });
+      visit(node.listChildren(), path, nodeHidden, nodeModule);
+    }
+  };
+  visit(scene.listChildren(), segment3(scene.getName() || "Scene", 0), false, undefined);
+  const finding = (code, path, message) => summary.diagnostics.push({ code, path, message });
+  const { min, max } = drawnSceneBounds(scene);
+  const bounds = new THREE22.Box3(new THREE22.Vector3(...min), new THREE22.Vector3(...max));
+  const finiteBounds = [...min, ...max].every(Number.isFinite);
+  const diagonal = finiteBounds ? bounds.getSize(new THREE22.Vector3).length() : 0;
+  const tolerance = Math.max(0.0001, diagonal * 0.0001);
+  const colliderNodes = [];
+  for (const entry of visited) {
+    const { node, path, roles } = entry;
+    for (const role of roles) {
+      const matrix = worldMatrix(node);
+      const transform = decompose(matrix);
+      for (const shape of ["box", "capsule", "hull"]) {
+        const id = roleTail(role, `${KILN_SEMANTIC_ROLES.collider}.${shape}`);
+        if (id === undefined)
+          continue;
+        const scale = transform.scale;
+        const record = {
+          role,
+          id,
+          path,
+          name: node.getName(),
+          transform,
+          shape: shape === "box" ? { kind: "box", size: [...scale] } : shape === "capsule" ? { kind: "capsule", radius: scale[0] / 2, height: scale[1] } : {
+            kind: "hull",
+            vertices: node.getMesh()?.listPrimitives().reduce((sum, primitive) => sum + (primitive.getAttribute("POSITION")?.getCount() ?? 0), 0) ?? 0
+          }
+        };
+        summary.colliders.push(record);
+        colliderNodes.push({ visit: entry, record });
+      }
+      const anchorTail = roleTail(role, KILN_SEMANTIC_ROLES.anchor);
+      if (anchorTail !== undefined) {
+        const [kind, ...rest] = anchorTail.split(".");
+        summary.anchors.push({
+          role,
+          kind,
+          id: rest.join("."),
+          path,
+          name: node.getName(),
+          transform
+        });
+      }
+      const portId = roleTail(role, KILN_SEMANTIC_ROLES.kitPort);
+      if (portId !== undefined)
+        summary.ports.push({
+          role,
+          id: portId,
+          path,
+          name: node.getName(),
+          ...entry.module && entry.module.node !== node ? { module: entry.module.path } : {},
+          transform
+        });
+      if (role === KILN_SEMANTIC_ROLES.kitModule) {
+        const extras = node.getExtras()[KILN_KIT_KEY];
+        let spec;
+        try {
+          const { schemaVersion, ...rest } = extras ?? {};
+          spec = schemaVersion === 1 ? kitModuleExtras(rest) : undefined;
+        } catch {
+          spec = undefined;
+        }
+        if (!spec)
+          finding("DELIVERY_KIT_INVALID", path, `kit module has no valid ${KILN_KIT_KEY} extras; mark it with defineModule.`);
+        else if (summary.kit)
+          finding("DELIVERY_KIT_MULTIPLE", path, `a GLB delivers one kit module; ${summary.kit.path} is listed and this one is not.`);
+        else
+          summary.kit = {
+            role,
+            path,
+            name: node.getName(),
+            footprint: spec.footprint,
+            height: spec.height,
+            snapAxis: spec.snapAxis,
+            origin: spec.origin,
+            transform
+          };
+      }
+    }
+  }
+  const triangles = colliderNodes.some(({ record }) => record.shape.kind !== "hull") ? drawnTriangles(visited) : new Float64Array;
+  const triangleCount = triangles.length / 9;
+  let overlapTests = 0;
+  const a = new THREE22.Vector3;
+  const b = new THREE22.Vector3;
+  const c = new THREE22.Vector3;
+  for (const { visit: entry, record } of colliderNodes) {
+    if (!entry.hidden)
+      finding("DELIVERY_COLLIDER_NOT_HIDDEN", record.path, "collider proxy draws; hide it (the delivery helpers do) so importers that ignore roles draw only the asset.");
+    const matrix = worldMatrix(entry.node);
+    const proxyBounds = new THREE22.Box3;
+    const mesh = entry.node.getMesh();
+    const local = [0, 0, 0];
+    for (const primitive of mesh?.listPrimitives() ?? []) {
+      const position = primitive.getAttribute("POSITION");
+      for (let i = 0;i < (position?.getCount() ?? 0); i++)
+        proxyBounds.expandByPoint(new THREE22.Vector3().fromArray(position.getElement(i, local)).applyMatrix4(matrix));
+    }
+    if (proxyBounds.isEmpty())
+      proxyBounds.expandByPoint(new THREE22.Vector3().setFromMatrixPosition(matrix));
+    const expanded = bounds.clone().expandByScalar(tolerance);
+    if (!finiteBounds || !expanded.containsBox(proxyBounds))
+      finding("DELIVERY_COLLIDER_OUTSIDE_BOUNDS", record.path, "collider proxy reaches outside the bounds of the drawn asset.");
+    if (record.shape.kind === "hull")
+      continue;
+    if (overlapTests + triangleCount > DELIVERY_OVERLAP_TEST_LIMIT) {
+      finding("DELIVERY_COLLIDER_OVERLAP_UNMEASURED", record.path, `overlap with drawn triangles was not measured: the check stops at ${DELIVERY_OVERLAP_TEST_LIMIT} collider-triangle tests.`);
+      continue;
+    }
+    overlapTests += triangleCount;
+    const toLocal = new THREE22.Matrix4;
+    let touches = false;
+    if (record.shape.kind === "box") {
+      toLocal.copy(matrix).invert();
+      const half = new THREE22.Vector3(0.5, 0.5, 0.5);
+      const scale = Math.max(...record.transform.scale.map(Math.abs), 0.000000001);
+      for (let t = 0;t < triangleCount && !touches; t++) {
+        a.fromArray(triangles, t * 9).applyMatrix4(toLocal);
+        b.fromArray(triangles, t * 9 + 3).applyMatrix4(toLocal);
+        c.fromArray(triangles, t * 9 + 6).applyMatrix4(toLocal);
+        touches = triangleOverlapsBox(a, b, c, half, tolerance / scale);
+      }
+    } else {
+      const { translation, rotation } = record.transform;
+      toLocal.compose(new THREE22.Vector3(...translation), new THREE22.Quaternion(...rotation), new THREE22.Vector3(1, 1, 1)).invert();
+      const { radius, height } = record.shape;
+      const p = new THREE22.Vector3(0, -height / 2 + radius, 0);
+      const q = new THREE22.Vector3(0, height / 2 - radius, 0);
+      for (let t = 0;t < triangleCount && !touches; t++) {
+        a.fromArray(triangles, t * 9).applyMatrix4(toLocal);
+        b.fromArray(triangles, t * 9 + 3).applyMatrix4(toLocal);
+        c.fromArray(triangles, t * 9 + 6).applyMatrix4(toLocal);
+        touches = triangleTouchesCapsule(a, b, c, p, q, radius + tolerance);
+      }
+    }
+    if (!touches)
+      finding("DELIVERY_COLLIDER_NO_OVERLAP", record.path, "collider proxy overlaps no drawn triangle; a box or capsule normally wraps or crosses the surface it stands for.");
+  }
+  for (const record of summary.ports) {
+    const entry = visited.find((item) => item.path === record.path);
+    const moduleEntry = entry.module && entry.module.node !== entry.node ? entry.module : undefined;
+    const spec = moduleEntry && summary.kit?.path === moduleEntry.path ? summary.kit : undefined;
+    if (!spec) {
+      finding("DELIVERY_PORT_WITHOUT_MODULE", record.path, "port is not under a valid kit module; place ports under the root defineModule marked.");
+      continue;
+    }
+    const point = new THREE22.Vector3(...record.transform.translation).applyMatrix4(worldMatrix(moduleEntry.node).invert());
+    const [width, depth] = spec.footprint;
+    const [x0, x1, z0, z1] = spec.origin === "corner" ? [0, width, 0, depth] : [-width / 2, width / 2, -depth / 2, depth / 2];
+    const slack = Math.max(0.0001, Math.max(width, depth, spec.height) * 0.00001);
+    if (point.x < x0 - slack || point.x > x1 + slack || point.z < z0 - slack || point.z > z1 + slack || point.y < -slack || point.y > spec.height + slack)
+      finding("DELIVERY_PORT_OUTSIDE_FOOTPRINT", record.path, `port lies outside its module footprint (${width} x ${depth} m from the ${spec.origin}, 0..${spec.height} m high).`);
+  }
+  for (const record of summary.anchors) {
+    const entry = visited.find((item) => item.path === record.path);
+    if (entry.node.listChildren().length > 0)
+      finding("DELIVERY_ANCHOR_NOT_LEAF", record.path, "anchor has children; an anchor is an empty leaf node, so attach parts beside it instead.");
+  }
+  return summary;
+}
+var DELIVERY_OVERLAP_TEST_LIMIT = 50000000, segment3 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`, roleTail = (role, base) => role.startsWith(`${base}.`) ? role.slice(base.length + 1) : undefined, worldMatrix = (node) => new THREE22.Matrix4().fromArray(node.getWorldMatrix());
+var init_delivery_inspect = __esm(() => {
+  init_gltf_io();
+  init_semantic();
+  init_delivery();
+  init_metrics();
+  init_node_visibility();
+});
+
+// src/contracts/validation-profile.ts
+import { z } from "zod";
+var VALIDATION_PROFILE_VERSION = "kiln.validation-profile.v1", MAX_VALIDATION_PROFILE_BYTES, MAX_VALIDATION_CHECKS = 16, MAX_VALIDATION_PATTERN_CHARS = 128, MAX_VALIDATION_PATTERN_STARS = 4, MAX_VALIDATION_MATCHES = 512, VALIDATION_SEMANTICS, VALIDATION_SEMANTIC_SIZE, VALIDATION_AXES, finite2, id = (max) => z.string().min(1).max(max).regex(/^[A-Za-z0-9._-]+$/, 'Use letters, digits, ".", "_" or "-".'), pattern, componentFits = (value) => value.component < VALIDATION_SEMANTIC_SIZE[value.attribute], componentMessage, gradient, range, check, ValidationProfileV1Schema;
+var init_validation_profile = __esm(() => {
+  MAX_VALIDATION_PROFILE_BYTES = 8 * 1024;
+  VALIDATION_SEMANTICS = [
+    "POSITION",
+    "NORMAL",
+    "TANGENT",
+    "TEXCOORD_0",
+    "TEXCOORD_1",
+    "COLOR_0",
+    "JOINTS_0",
+    "WEIGHTS_0"
+  ];
+  VALIDATION_SEMANTIC_SIZE = {
+    POSITION: 3,
+    NORMAL: 3,
+    TANGENT: 4,
+    TEXCOORD_0: 2,
+    TEXCOORD_1: 2,
+    COLOR_0: 4,
+    JOINTS_0: 4,
+    WEIGHTS_0: 4
+  };
+  VALIDATION_AXES = ["+X", "-X", "+Y", "-Y", "+Z", "-Z"];
+  finite2 = z.number().finite();
+  pattern = z.string().min(1).refine((value) => Array.from(value).length <= MAX_VALIDATION_PATTERN_CHARS, {
+    message: `A pattern has at most ${MAX_VALIDATION_PATTERN_CHARS} characters.`
+  }).refine((value) => value.split("*").length - 1 <= MAX_VALIDATION_PATTERN_STARS, {
+    message: `A pattern has at most ${MAX_VALIDATION_PATTERN_STARS} "*".`
+  });
+  componentMessage = {
+    message: "component is outside the attribute.",
+    path: ["component"]
+  };
+  gradient = z.strictObject({
+    attribute: z.enum(["TEXCOORD_0", "TEXCOORD_1", "COLOR_0"]),
+    component: z.number().int().min(0).max(3),
+    axis: z.enum(VALIDATION_AXES),
+    from: finite2,
+    to: finite2,
+    tolerance: finite2.positive().max(0.5),
+    monotonic: z.boolean()
+  }).refine((value) => value.from !== value.to, {
+    message: "from and to must differ."
+  }).refine(componentFits, componentMessage);
+  range = z.strictObject({
+    attribute: z.enum(VALIDATION_SEMANTICS),
+    component: z.number().int().min(0).max(3),
+    min: finite2,
+    max: finite2,
+    tolerance: finite2.nonnegative()
+  }).refine((value) => value.min <= value.max, {
+    message: "min must not exceed max."
+  }).refine(componentFits, componentMessage);
+  check = z.strictObject({
+    id: id(48),
+    select: z.strictObject({
+      names: z.array(pattern).min(1).max(8),
+      minMatches: z.number().int().min(0).max(MAX_VALIDATION_MATCHES).optional(),
+      maxMatches: z.number().int().min(0).max(MAX_VALIDATION_MATCHES).optional()
+    }).refine((value) => value.maxMatches === undefined || (value.minMatches ?? 1) <= value.maxMatches, { message: "minMatches must not exceed maxMatches." }),
+    primitives: z.union([
+      z.strictObject({ exactly: z.number().int().min(1).max(64) }),
+      z.strictObject({ max: z.number().int().min(1).max(64) })
+    ]).optional(),
+    attributes: z.array(z.enum(VALIDATION_SEMANTICS)).min(1).max(8).refine((values) => new Set(values).size === values.length, {
+      message: "Attributes must be unique."
+    }).optional(),
+    gradient: gradient.optional(),
+    range: range.optional(),
+    material: z.strictObject({
+      alphaMode: z.enum(["OPAQUE", "MASK", "BLEND"]).optional(),
+      doubleSided: z.boolean().optional()
+    }).refine((value) => value.alphaMode !== undefined || value.doubleSided !== undefined, {
+      message: "A material check needs alphaMode or doubleSided."
+    }).optional()
+  }).refine((value) => value.primitives !== undefined || value.attributes !== undefined || value.gradient !== undefined || value.range !== undefined || value.material !== undefined, { message: "A check needs at least one assertion." });
+  ValidationProfileV1Schema = z.strictObject({
+    version: z.literal(VALIDATION_PROFILE_VERSION),
+    profileId: id(64).regex(/^[a-z0-9._-]+$/, 'Use lowercase letters, digits, ".", "_" or "-".'),
+    mode: z.enum(["warn", "enforce"]),
+    checks: z.array(check).min(1).max(MAX_VALIDATION_CHECKS)
+  }).superRefine((value, context) => {
+    const ids = value.checks.map((item) => item.id);
+    if (new Set(ids).size !== ids.length)
+      context.addIssue({
+        code: "custom",
+        path: ["checks"],
+        message: "Check ids must be unique."
+      });
+    const bytes = new TextEncoder().encode(JSON.stringify(value)).byteLength;
+    if (bytes > MAX_VALIDATION_PROFILE_BYTES)
+      context.addIssue({
+        code: "custom",
+        message: `A validation profile serializes to at most ${MAX_VALIDATION_PROFILE_BYTES} bytes (got ${bytes}).`
+      });
+  });
+});
+
+// src/qa/validation-profile.ts
+function matchValidationPattern(pattern, name) {
+  const p = Array.from(pattern);
+  const s = Array.from(name);
+  let pi = 0;
+  let si = 0;
+  let star = -1;
+  let resume = 0;
+  while (si < s.length) {
+    if (pi < p.length && (p[pi] === "?" || p[pi] !== "*" && p[pi] === s[si])) {
+      pi++;
+      si++;
+    } else if (pi < p.length && p[pi] === "*") {
+      star = pi++;
+      resume = si;
+    } else if (star >= 0) {
+      pi = star + 1;
+      si = ++resume;
+    } else
+      return false;
+  }
+  while (pi < p.length && p[pi] === "*")
+    pi++;
+  return pi === p.length;
+}
+function component(accessor, index, slot, element) {
+  accessor.getElement(index, element);
+  return element[slot];
+}
+function evaluateValidationProfileDocument(profile, doc, options = {}) {
+  const disposition = profile.mode === "enforce" ? "block" : "warn";
+  const profileName = `${VALIDATION_PROFILE_VERSION}:${profile.profileId}`;
+  const budget = options.maxAttributeReads ?? MAX_VALIDATION_ATTRIBUTE_READS;
+  const paths = deliveryNodePaths(doc);
+  const candidates = [...paths.entries()].filter(([node]) => node.getMesh() !== null);
+  const findings = [];
+  let complete = true;
+  let reads = 0;
+  let matchedNodes = 0;
+  let notMeasured = 0;
+  for (const check of profile.checks) {
+    const kept = new Map;
+    const omitted = new Map;
+    const push = (code, assertion, message, measurement, affected, findingDisposition) => findings.push({
+      code,
+      disposition: findingDisposition,
+      dimension: "categoryReadiness",
+      profile: profileName,
+      message: `Host validation check ${check.id}: ${message}`,
+      ...affected ? { affected } : {},
+      measurement: {
+        name: `checks.${check.id}.${assertion}`,
+        ...measurement
+      }
+    });
+    const report = (code, assertion, message, { affected, measurement }, findingDisposition = disposition) => {
+      const used = kept.get(code) ?? 0;
+      if (used < MAX_VALIDATION_FINDINGS_PER_CODE) {
+        kept.set(code, used + 1);
+        push(code, assertion, message, measurement, affected, findingDisposition);
+        return;
+      }
+      const entry = omitted.get(code) ?? {
+        count: 0,
+        assertion,
+        disposition: findingDisposition
+      };
+      entry.count++;
+      omitted.set(code, entry);
+    };
+    const matched = candidates.filter(([node]) => check.select.names.some((pattern) => matchValidationPattern(pattern, node.getName())));
+    const minMatches = check.select.minMatches ?? 1;
+    if (matched.length < minMatches || check.select.maxMatches !== undefined && matched.length > check.select.maxMatches) {
+      const expected = check.select.maxMatches === undefined ? `>= ${minMatches}` : minMatches === check.select.maxMatches ? `${minMatches}` : `${minMatches}..${check.select.maxMatches}`;
+      report("HOST_VALIDATION_SELECTOR_UNMATCHED", "select", `${matched.length} default-scene mesh node(s) match ${JSON.stringify(check.select.names)}; the host expects ${expected}. Node names come from the final GLB.`, { measurement: { actual: matched.length, expected } });
+    }
+    const measured = matched.slice(0, MAX_VALIDATION_MATCHES);
+    if (matched.length > measured.length) {
+      complete = false;
+      report("HOST_VALIDATION_UNMEASURED", "select", `${matched.length - measured.length} matched node(s) beyond the ${MAX_VALIDATION_MATCHES}-node limit were not measured.`, {
+        measurement: {
+          actual: matched.length,
+          threshold: MAX_VALIDATION_MATCHES,
+          breakdown: { nodesNotMeasured: matched.length - measured.length }
+        }
+      }, "observe");
+    }
+    for (const [node, nodePath] of measured) {
+      const primitives = node.getMesh().listPrimitives();
+      const cost = primitives.reduce((sum, primitive) => sum + (primitive.getAttribute("POSITION")?.getCount() ?? 0) * ((check.gradient ? 2 : 0) + (check.range ? 1 : 0)), 0);
+      if (notMeasured > 0 || reads + cost > budget) {
+        notMeasured++;
+        continue;
+      }
+      reads += cost;
+      matchedNodes++;
+      const affected = { node: node.getName(), nodePath };
+      if (check.primitives) {
+        const limit = "exactly" in check.primitives ? check.primitives.exactly : check.primitives.max;
+        const fails = "exactly" in check.primitives ? primitives.length !== limit : primitives.length > limit;
+        if (fails)
+          report("HOST_VALIDATION_PRIMITIVE_COUNT", "primitives", `${node.getName()} has ${primitives.length} primitive(s) in the final GLB; the host expects ${"exactly" in check.primitives ? "exactly" : "at most"} ${limit}. Each material group exports as its own primitive.`, {
+            affected,
+            measurement: {
+              actual: primitives.length,
+              expected: limit
+            }
+          });
+      }
+      primitives.forEach((primitive, index) => {
+        const where = `${node.getName()} primitive ${index}`;
+        for (const semantic of check.attributes ?? []) {
+          if (primitive.getAttribute(semantic))
+            continue;
+          report("HOST_VALIDATION_ATTRIBUTE_MISSING", "attributes", `${where} has no ${semantic} attribute.`, {
+            affected: { ...affected, attribute: semantic },
+            measurement: { actual: false, expected: true }
+          });
+        }
+        if (check.gradient) {
+          const outcome = measureGradient(primitive, check.gradient);
+          if (outcome.kind === "missing")
+            report("HOST_VALIDATION_ATTRIBUTE_MISSING", "gradient", `${where} cannot be measured: ${outcome.reason}.`, {
+              affected: { ...affected, attribute: outcome.attribute },
+              measurement: { actual: false, expected: true }
+            });
+          else if (outcome.kind === "unmeasured") {
+            complete = false;
+            report("HOST_VALIDATION_UNMEASURED", "gradient", `${where} has no extent along ${check.gradient.axis}; the gradient is unmeasured.`, {
+              affected: { ...affected, attribute: check.gradient.attribute },
+              measurement: { actual: null }
+            }, "observe");
+          } else if (outcome.failures.length > 0)
+            report("HOST_VALIDATION_ATTRIBUTE_GRADIENT", "gradient", `${where} ${check.gradient.attribute}[${check.gradient.component}] fails the ${outcome.failures.join(" and ")} test along local ${check.gradient.axis}: ${round2(outcome.fromMean)} to ${round2(outcome.toMean)}, expected ${check.gradient.from} to ${check.gradient.to} within ${check.gradient.tolerance}.`, {
+              affected: { ...affected, attribute: check.gradient.attribute },
+              measurement: {
+                actual: `${round2(outcome.fromMean)}..${round2(outcome.toMean)}`,
+                expected: `${check.gradient.from}..${check.gradient.to}`,
+                threshold: check.gradient.tolerance,
+                breakdown: {
+                  fromMean: round2(outcome.fromMean),
+                  toMean: round2(outcome.toMean),
+                  worstRegression: round2(outcome.worstRegression)
+                }
+              }
+            });
+        }
+        if (check.range) {
+          const accessor = primitive.getAttribute(check.range.attribute);
+          if (!accessor || check.range.component >= accessor.getElementSize())
+            report("HOST_VALIDATION_ATTRIBUTE_MISSING", "range", `${where} has no ${check.range.attribute}[${check.range.component}].`, {
+              affected: { ...affected, attribute: check.range.attribute },
+              measurement: { actual: false, expected: true }
+            });
+          else {
+            const element = [];
+            let min = Infinity;
+            let max = -Infinity;
+            for (let i = 0;i < accessor.getCount(); i++) {
+              const value = component(accessor, i, check.range.component, element);
+              if (value < min)
+                min = value;
+              if (value > max)
+                max = value;
+            }
+            const { tolerance } = check.range;
+            if (accessor.getCount() > 0 && (min < check.range.min - tolerance || max > check.range.max + tolerance))
+              report("HOST_VALIDATION_ATTRIBUTE_RANGE", "range", `${where} ${check.range.attribute}[${check.range.component}] spans ${round2(min)}..${round2(max)}; the host allows ${check.range.min}..${check.range.max} within ${tolerance}.`, {
+                affected: { ...affected, attribute: check.range.attribute },
+                measurement: {
+                  actual: `${round2(min)}..${round2(max)}`,
+                  expected: `${check.range.min}..${check.range.max}`,
+                  threshold: tolerance
+                }
+              });
+          }
+        }
+        if (check.material) {
+          const material = primitive.getMaterial();
+          const label = material?.getName() || (material ? `materials[${doc.getRoot().listMaterials().indexOf(material)}]` : "(glTF default)");
+          const alphaMode = material?.getAlphaMode() ?? "OPAQUE";
+          const doubleSided = material?.getDoubleSided() ?? false;
+          if (check.material.alphaMode !== undefined && alphaMode !== check.material.alphaMode)
+            report("HOST_VALIDATION_MATERIAL_ALPHA_MODE", "material", `${where} uses alphaMode ${alphaMode}; the host expects ${check.material.alphaMode}.`, {
+              affected: { ...affected, material: label },
+              measurement: {
+                actual: alphaMode,
+                expected: check.material.alphaMode
+              }
+            });
+          if (check.material.doubleSided !== undefined && doubleSided !== check.material.doubleSided)
+            report("HOST_VALIDATION_MATERIAL_DOUBLE_SIDED", "material", `${where} is ${doubleSided ? "double-sided" : "single-sided"}; the host expects ${check.material.doubleSided ? "double-sided" : "single-sided"}.`, {
+              affected: { ...affected, material: label },
+              measurement: {
+                actual: doubleSided,
+                expected: check.material.doubleSided
+              }
+            });
+        }
+      });
+    }
+    for (const [code, entry] of omitted)
+      push(code, entry.assertion, `${entry.count} more ${code} finding(s) omitted after the first ${MAX_VALIDATION_FINDINGS_PER_CODE}.`, { actual: entry.count, breakdown: { omitted: entry.count } }, undefined, entry.disposition);
+  }
+  if (notMeasured > 0) {
+    complete = false;
+    findings.push({
+      code: "HOST_VALIDATION_UNMEASURED",
+      disposition: "observe",
+      dimension: "categoryReadiness",
+      profile: profileName,
+      message: `Host validation stopped at its ${budget} attribute-read budget; ${notMeasured} matched node(s) were not measured.`,
+      measurement: {
+        name: "checks.*.budget",
+        actual: reads,
+        threshold: budget,
+        breakdown: { nodesNotMeasured: notMeasured }
+      }
+    });
+  }
+  return {
+    findings,
+    complete,
+    metrics: {
+      hostValidationProfile: profileName,
+      hostValidationChecks: profile.checks.length,
+      hostValidationMatchedNodes: matchedNodes,
+      hostValidationAttributeReads: reads,
+      hostValidationComplete: complete
+    }
+  };
+}
+function measureGradient(primitive, gradient) {
+  const position = primitive.getAttribute("POSITION");
+  if (!position)
+    return {
+      kind: "missing",
+      attribute: "POSITION",
+      reason: "no POSITION attribute"
+    };
+  const values = primitive.getAttribute(gradient.attribute);
+  if (!values || gradient.component >= values.getElementSize())
+    return {
+      kind: "missing",
+      attribute: gradient.attribute,
+      reason: `no ${gradient.attribute}[${gradient.component}]`
+    };
+  const count = Math.min(position.getCount(), values.getCount());
+  const axis = AXIS_INDEX[gradient.axis[1]];
+  const sign = gradient.axis[0] === "-" ? -1 : 1;
+  const t = new Float64Array(count);
+  const v = new Float64Array(count);
+  const element = [];
+  let tMin = Infinity;
+  let tMax = -Infinity;
+  for (let i = 0;i < count; i++) {
+    t[i] = sign * component(position, i, axis, element);
+    v[i] = component(values, i, gradient.component, element);
+    if (t[i] < tMin)
+      tMin = t[i];
+    if (t[i] > tMax)
+      tMax = t[i];
+  }
+  if (!(tMax - tMin >= MIN_AXIS_EXTENT))
+    return { kind: "unmeasured" };
+  const sums = new Float64Array(GRADIENT_BINS);
+  const counts = new Uint32Array(GRADIENT_BINS);
+  let fromSum = 0;
+  let fromCount = 0;
+  let toSum = 0;
+  let toCount = 0;
+  for (let i = 0;i < count; i++) {
+    const s = (t[i] - tMin) / (tMax - tMin);
+    if (s <= ENDPOINT_BAND) {
+      fromSum += v[i];
+      fromCount++;
+    }
+    if (s >= 1 - ENDPOINT_BAND) {
+      toSum += v[i];
+      toCount++;
+    }
+    const bin = Math.min(GRADIENT_BINS - 1, Math.floor(s * GRADIENT_BINS));
+    sums[bin] = sums[bin] + v[i];
+    counts[bin] = counts[bin] + 1;
+  }
+  const fromMean = fromSum / fromCount;
+  const toMean = toSum / toCount;
+  const direction = Math.sign(gradient.to - gradient.from);
+  let worstRegression = 0;
+  let previous;
+  for (let bin = 0;bin < GRADIENT_BINS; bin++) {
+    if (counts[bin] === 0)
+      continue;
+    const mean = sums[bin] / counts[bin];
+    if (previous !== undefined)
+      worstRegression = Math.max(worstRegression, (previous - mean) * direction);
+    previous = mean;
+  }
+  const failures = [];
+  if (Math.abs(fromMean - gradient.from) > gradient.tolerance || Math.abs(toMean - gradient.to) > gradient.tolerance)
+    failures.push("endpoints");
+  if (gradient.monotonic && worstRegression > gradient.tolerance)
+    failures.push("monotonic");
+  return { kind: "measured", fromMean, toMean, worstRegression, failures };
+}
+async function evaluateValidationProfileGlb(profile, bytes, options = {}) {
+  let doc;
+  try {
+    doc = await createGltfIO().readBinary(bytes);
+  } catch (error) {
+    const profileName = `${VALIDATION_PROFILE_VERSION}:${profile.profileId}`;
+    return {
+      findings: [
+        {
+          code: "HOST_VALIDATION_UNMEASURED",
+          disposition: "observe",
+          dimension: "categoryReadiness",
+          profile: profileName,
+          message: `Host validation could not read the final GLB: ${error instanceof Error ? error.message : String(error)}`,
+          measurement: { name: "checks.*.read", actual: null }
+        }
+      ],
+      complete: false,
+      metrics: {
+        hostValidationProfile: profileName,
+        hostValidationChecks: profile.checks.length,
+        hostValidationMatchedNodes: 0,
+        hostValidationAttributeReads: 0,
+        hostValidationComplete: false
+      }
+    };
+  }
+  return evaluateValidationProfileDocument(profile, doc, options);
+}
+var HOST_VALIDATION_RULE_ID = "HOST_VALIDATION_PROFILE", MAX_VALIDATION_ATTRIBUTE_READS = 4000000, MAX_VALIDATION_FINDINGS_PER_CODE = 32, ENDPOINT_BAND = 0.05, GRADIENT_BINS = 16, MIN_AXIS_EXTENT = 0.000001, HOST_VALIDATION_QA_RULE, round2 = (value) => Math.round(value * 1e6) / 1e6, AXIS_INDEX;
+var init_validation_profile2 = __esm(() => {
+  init_gltf_io();
+  init_delivery_inspect();
+  init_validation_profile();
+  init_registry();
+  HOST_VALIDATION_QA_RULE = Object.freeze({
+    id: HOST_VALIDATION_RULE_ID,
+    profile: "host.validation-profile",
+    scope: { kind: "universal" },
+    ruleClass: "exact",
+    owner: KILN_ENGINE_QA_OWNER,
+    promotion: conformancePromotionAuthorization("host-validation-profile-v1", "src/qa/validation-profile.test.ts", "b6b60fcbba0238688cb0d3ef497fa3ed837757422b43207f18fc8cbe0a412ffc", KILN_ENGINE_QA_OWNER, "2026-10-22T00:00:00.000Z", "enforce", "cpu-raster:1.3.1"),
+    defaultMode: "enforce",
+    evaluate: () => []
+  });
+  AXIS_INDEX = { X: 0, Y: 1, Z: 2 };
+});
+
 // src/qa/run.ts
 function gltfReportFindings(report, profile) {
   return report.issues.messages.filter((issue) => issue.severity === 0 || issue.severity === 1).filter((issue) => !isExpectedKtx2ValidatorLimitation(report, issue)).map((issue) => ({
@@ -14179,6 +15684,7 @@ var init_run = __esm(() => {
   init_registry();
   init_types();
   init_universal();
+  init_validation_profile2();
   DETERMINISTIC_QA_REGISTRY = new QaRegistry([
     ...UNIVERSAL_QA_RULES,
     MATERIAL_QA_RULE,
@@ -14193,7 +15699,8 @@ var init_run = __esm(() => {
     SELF_INTERSECTION_QA_RULE,
     SWEEP_QA_RULE,
     PART_CONNECTIVITY_QA_RULE,
-    REFERENCE_COMPARISON_QA_RULE
+    REFERENCE_COMPARISON_QA_RULE,
+    HOST_VALIDATION_QA_RULE
   ]);
   AssetQaBlockedError = class AssetQaBlockedError extends Error {
     report;
@@ -14213,16 +15720,16 @@ var init_run = __esm(() => {
 });
 
 // src/contracts/requirements.ts
-import { z } from "zod";
+import { z as z2 } from "zod";
 function requestedRequirement(value, reason) {
   return { state: "requested", value, ...reason === undefined ? {} : { reason } };
 }
 function statement(value) {
-  return z.discriminatedUnion("state", [
-    z.strictObject({ state: z.literal("requested"), value, reason: text.optional() }),
-    z.strictObject({ state: z.literal("inferred"), value, reason: text.optional() }),
-    z.strictObject({ state: z.literal("unknown"), reason: text.optional() }),
-    z.strictObject({ state: z.literal("inapplicable"), reason: text.optional() })
+  return z2.discriminatedUnion("state", [
+    z2.strictObject({ state: z2.literal("requested"), value, reason: text.optional() }),
+    z2.strictObject({ state: z2.literal("inferred"), value, reason: text.optional() }),
+    z2.strictObject({ state: z2.literal("unknown"), reason: text.optional() }),
+    z2.strictObject({ state: z2.literal("inapplicable"), reason: text.optional() })
   ]);
 }
 function validateAssetRequirementsV1(value) {
@@ -14248,151 +15755,163 @@ function createAssetRequirementsV1(input = {}) {
     ...input
   });
 }
-var text, positive2, nonnegative, count2, names, marker, roof, structure, effects, requirements, AssetRequirementsV1Schema;
+var text, positive2, nonnegative, count2, names, marker, supportParts, roof, structure, effects, requirements, AssetRequirementsV1Schema;
 var init_requirements = __esm(() => {
   init_asset();
   init_breadth();
-  text = z.string().refine((value) => value.trim().length > 0, { message: "Must be non-empty." });
-  positive2 = z.number().finite().positive();
-  nonnegative = z.number().finite().nonnegative();
-  count2 = z.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
-  names = z.array(text).refine((values) => new Set(values).size === values.length, {
+  init_validation_profile();
+  text = z2.string().refine((value) => value.trim().length > 0, { message: "Must be non-empty." });
+  positive2 = z2.number().finite().positive();
+  nonnegative = z2.number().finite().nonnegative();
+  count2 = z2.number().int().nonnegative().max(Number.MAX_SAFE_INTEGER);
+  names = z2.array(text).refine((values) => new Set(values).size === values.length, {
     message: "Values must be unique."
   });
-  marker = z.strictObject({});
-  roof = z.strictObject({
-    type: text.optional(),
-    ridgeAxis: z.enum(["x", "z"]).optional(),
-    rise: nonnegative.optional(),
-    pitchDegrees: z.number().min(0).max(90).optional(),
-    overhang: nonnegative.optional(),
-    closedEnds: z.boolean().optional()
+  marker = z2.strictObject({});
+  supportParts = z2.array(text).min(1).max(256).refine((values) => new Set(values).size === values.length, {
+    message: "Values must be unique."
   });
-  structure = z.strictObject({
+  roof = z2.strictObject({
+    type: text.optional(),
+    ridgeAxis: z2.enum(["x", "z"]).optional(),
+    rise: nonnegative.optional(),
+    pitchDegrees: z2.number().min(0).max(90).optional(),
+    overhang: nonnegative.optional(),
+    closedEnds: z2.boolean().optional()
+  });
+  structure = z2.strictObject({
     subtype: text.optional(),
-    enterable: z.boolean().optional(),
+    enterable: z2.boolean().optional(),
     storeyCount: count2.min(1).optional(),
-    interiorMode: z.enum(ARCHITECTURE_INTERIOR_MODES).optional(),
-    roofMode: z.enum(ARCHITECTURE_ROOF_MODES).optional(),
-    footprint: z.strictObject({ spanX: positive2, spanZ: positive2, units: z.literal("m") }).optional(),
+    interiorMode: z2.enum(ARCHITECTURE_INTERIOR_MODES).optional(),
+    roofMode: z2.enum(ARCHITECTURE_ROOF_MODES).optional(),
+    footprint: z2.strictObject({ spanX: positive2, spanZ: positive2, units: z2.literal("m") }).optional(),
     wallHeight: positive2.optional(),
-    scaleMode: z.enum(ARCHITECTURE_SCALE_MODES).optional(),
+    scaleMode: z2.enum(ARCHITECTURE_SCALE_MODES).optional(),
     roof: roof.optional(),
-    portal: z.strictObject({ width: positive2, height: positive2, depth: positive2 }).optional()
+    portal: z2.strictObject({ width: positive2, height: positive2, depth: positive2 }).optional()
   }).refine((value) => value.enterable === undefined || value.interiorMode === undefined || value.enterable === (value.interiorMode === "navigable"), {
     message: "enterable and interiorMode must agree when both are specified."
   });
-  effects = z.strictObject({
-    schemaVersion: z.literal(1),
-    subtype: z.enum(VFX_SUBTYPES),
-    portability: z.enum(VFX_PORTABILITY_MODES),
-    transparency: z.enum(MATERIAL_TRANSPARENCY_MODES),
-    doubleSided: z.boolean(),
-    facing: z.strictObject({
-      source: z.enum(["explicit", "inferred"]),
-      mode: z.enum(VFX_FACING_MODES),
-      normalAxis: z.enum(VFX_AXIS_DIRECTIONS).optional(),
-      directionAxis: z.enum(VFX_AXIS_DIRECTIONS).optional()
+  effects = z2.strictObject({
+    schemaVersion: z2.literal(1),
+    subtype: z2.enum(VFX_SUBTYPES),
+    portability: z2.enum(VFX_PORTABILITY_MODES),
+    transparency: z2.enum(MATERIAL_TRANSPARENCY_MODES),
+    doubleSided: z2.boolean(),
+    facing: z2.strictObject({
+      source: z2.enum(["explicit", "inferred"]),
+      mode: z2.enum(VFX_FACING_MODES),
+      normalAxis: z2.enum(VFX_AXIS_DIRECTIONS).optional(),
+      directionAxis: z2.enum(VFX_AXIS_DIRECTIONS).optional()
     }),
-    animation: z.strictObject({
-      playback: z.enum(VFX_PLAYBACK_POLICIES),
+    animation: z2.strictObject({
+      playback: z2.enum(VFX_PLAYBACK_POLICIES),
       durationSeconds: nonnegative,
-      endpointBehavior: z.enum(VFX_ENDPOINT_BEHAVIORS),
-      driver: z.enum(VFX_RUNTIME_DRIVERS),
+      endpointBehavior: z2.enum(VFX_ENDPOINT_BEHAVIORS),
+      driver: z2.enum(VFX_RUNTIME_DRIVERS),
       clipName: text.optional(),
       timeUniformName: text.optional()
     }),
-    sidecar: z.strictObject({ kind: z.literal("tsl"), id: text, version: text }).optional()
+    sidecar: z2.strictObject({ kind: z2.literal("tsl"), id: text, version: text }).optional()
   }).superRefine((value, context) => {
     for (const issue of validateVfxIntentV1(value).issues) {
       context.addIssue({ code: "custom", path: issue.path.split("."), message: issue.message });
     }
   });
-  requirements = z.strictObject({
-    grounding: statement(z.strictObject({ planeY: z.number().finite().optional() })).optional(),
+  requirements = z2.strictObject({
+    grounding: statement(z2.strictObject({ planeY: z2.number().finite().optional() })).optional(),
     articulation: statement(marker).optional(),
     opening: statement(marker).optional(),
-    navigation: statement(z.strictObject({ minWidth: positive2.optional(), minHeight: positive2.optional() })).optional(),
+    navigation: statement(z2.strictObject({ minWidth: positive2.optional(), minHeight: positive2.optional() })).optional(),
     tiling: statement(marker).optional(),
-    mobility: statement(z.strictObject({
+    mobility: statement(z2.strictObject({
       subtype: text.optional(),
       supportAssemblies: names.optional(),
       propulsionAssemblies: names.optional(),
-      frontFrame: z.literal("+X").optional(),
+      frontFrame: z2.literal("+X").optional(),
       wheelCount: count2.optional(),
       axleCount: count2.optional(),
-      steering: z.enum(VEHICLE_STEERING_ARRANGEMENTS).optional(),
-      supportPolicy: z.enum(VEHICLE_SUPPORT_POLICIES).optional(),
+      steering: z2.enum(VEHICLE_STEERING_ARRANGEMENTS).optional(),
+      supportPolicy: z2.enum(VEHICLE_SUPPORT_POLICIES).optional(),
       animationAssemblies: names.optional()
     })).optional(),
     structure: statement(structure).optional(),
-    rig: statement(z.strictObject({
-      bodyPlan: z.enum(CHARACTER_BODY_PLANS).optional(),
-      grounded: z.boolean().optional(),
-      locomotion: z.enum(CHARACTER_LOCOMOTION_MODES).optional(),
+    rig: statement(z2.strictObject({
+      bodyPlan: z2.enum(CHARACTER_BODY_PLANS).optional(),
+      grounded: z2.boolean().optional(),
+      locomotion: z2.enum(CHARACTER_LOCOMOTION_MODES).optional(),
       gait: text.optional(),
-      rootMotion: z.enum(["inPlace", "forward"]).optional(),
-      clips: z.array(z.strictObject({ name: text, playback: z.enum(["loop", "oneShot"]) })).optional(),
-      heldItem: z.strictObject({ required: z.boolean(), attachmentRole: text }).optional()
+      rootMotion: z2.enum(["inPlace", "forward"]).optional(),
+      clips: z2.array(z2.strictObject({ name: text, playback: z2.enum(["loop", "oneShot"]) })).optional(),
+      heldItem: z2.strictObject({ required: z2.boolean(), attachmentRole: text }).optional()
     })).optional(),
-    foliage: statement(z.strictObject({
+    foliage: statement(z2.strictObject({
       subtype: text.optional(),
-      growthState: z.enum(VEGETATION_GROWTH_STATES).optional(),
-      canopyProfile: z.enum(VEGETATION_CANOPY_PROFILES).optional(),
-      standalone: z.boolean().optional(),
-      grounded: z.boolean().optional()
+      growthState: z2.enum(VEGETATION_GROWTH_STATES).optional(),
+      canopyProfile: z2.enum(VEGETATION_CANOPY_PROFILES).optional(),
+      standalone: z2.boolean().optional(),
+      grounded: z2.boolean().optional()
     })).optional(),
-    spatialLayout: statement(z.strictObject({
+    spatialLayout: statement(z2.strictObject({
       subtype: text.optional(),
-      tileable: z.boolean().optional(),
-      navigable: z.boolean().optional()
+      tileable: z2.boolean().optional(),
+      navigable: z2.boolean().optional()
     })).optional(),
     effects: statement(effects).optional(),
-    material: statement(z.strictObject({
-      mode: z.enum(MATERIAL_INTENT_MODES).optional(),
+    material: statement(z2.strictObject({
+      mode: z2.enum(MATERIAL_INTENT_MODES).optional(),
       recipeId: text.optional(),
       paletteId: text.optional(),
-      transparency: z.enum(MATERIAL_TRANSPARENCY_MODES).optional()
+      transparency: z2.enum(MATERIAL_TRANSPARENCY_MODES).optional()
     })).optional(),
-    animation: statement(z.strictObject({
+    animation: statement(z2.strictObject({
       clips: names,
-      locomotionDirection: z.literal("+X").optional(),
-      rootMotion: z.enum(["inPlace", "forward"]).optional(),
-      loop: z.boolean().optional(),
+      locomotionDirection: z2.literal("+X").optional(),
+      rootMotion: z2.enum(["inPlace", "forward"]).optional(),
+      loop: z2.boolean().optional(),
       gait: text.optional()
     })).optional(),
-    bounds: statement(z.strictObject({
-      units: z.literal("m"),
+    bounds: statement(z2.strictObject({
+      units: z2.literal("m"),
       x: positive2.optional(),
       y: positive2.optional(),
       z: positive2.optional()
     })).optional(),
-    parts: statement(z.strictObject({ required: names, forbiddenExtras: names })).optional(),
-    modular: statement(z.strictObject({
-      schemaVersion: z.literal(1),
-      units: z.literal("m"),
-      grid: z.tuple([positive2, positive2, positive2])
+    parts: statement(z2.strictObject({ required: names, forbiddenExtras: names })).optional(),
+    modular: statement(z2.strictObject({
+      schemaVersion: z2.literal(1),
+      units: z2.literal("m"),
+      grid: z2.tuple([positive2, positive2, positive2])
     })).optional(),
-    representation: statement(z.strictObject({
-      transparentSurface: z.boolean().optional(),
-      runtimeShader: z.boolean().optional(),
-      precomputedTangents: z.boolean().optional(),
-      skinned: z.boolean().optional()
+    representation: statement(z2.strictObject({
+      transparentSurface: z2.boolean().optional(),
+      runtimeShader: z2.boolean().optional(),
+      precomputedTangents: z2.boolean().optional(),
+      skinned: z2.boolean().optional()
     })).optional(),
-    access: statement(z.strictObject({ enterable: z.boolean().optional(), driveable: z.boolean().optional() })).optional()
+    externalSupport: statement(z2.strictObject({
+      supports: z2.array(z2.strictObject({
+        parts: supportParts,
+        planeY: z2.number().finite(),
+        tolerance: nonnegative.max(0.5).optional()
+      })).min(1).max(32)
+    })).optional(),
+    access: statement(z2.strictObject({ enterable: z2.boolean().optional(), driveable: z2.boolean().optional() })).optional(),
+    validation: statement(ValidationProfileV1Schema).optional()
   });
-  AssetRequirementsV1Schema = z.strictObject({
-    kind: z.literal("kiln.asset-requirements"),
-    schemaVersion: z.literal(1),
+  AssetRequirementsV1Schema = z2.strictObject({
+    kind: z2.literal("kiln.asset-requirements"),
+    schemaVersion: z2.literal(1),
     labels: names,
-    frame: z.strictObject({
-      units: z.literal("m"),
-      forward: z.literal("+X"),
-      up: z.literal("+Y"),
-      right: z.literal("+Z"),
-      groundY: z.literal(0)
+    frame: z2.strictObject({
+      units: z2.literal("m"),
+      forward: z2.literal("+X"),
+      up: z2.literal("+Y"),
+      right: z2.literal("+Z"),
+      groundY: z2.literal(0)
     }),
-    scope: statement(z.enum(ASSET_SCOPES)).optional(),
+    scope: statement(z2.enum(ASSET_SCOPES)).optional(),
     requirements
   }).superRefine((record, context) => {
     const requests = record.requirements;
@@ -14459,7 +15978,7 @@ var init_requirements = __esm(() => {
 });
 
 // src/requirements-identity.ts
-import { createHash as createHash2 } from "node:crypto";
+import { createHash as createHash3 } from "node:crypto";
 function canonical(value) {
   if (Array.isArray(value))
     return `[${value.map(canonical).join(",")}]`;
@@ -14479,7 +15998,7 @@ function assetRequirementsPolicyHash(input) {
     ..."value" in value ? { value: value.value } : {}
   });
   const effective = Object.fromEntries(Object.entries(requirements.requirements).filter(([, value]) => value !== undefined).map(([key, value]) => [key, withoutReason(value)]));
-  return createHash2("sha256").update(canonical({
+  return createHash3("sha256").update(canonical({
     kind: requirements.kind,
     schemaVersion: requirements.schemaVersion,
     frame,
@@ -14540,8 +16059,8 @@ var init_requirements_json = __esm(() => {
 });
 
 // src/requirements-context.ts
-import { createHash as createHash3 } from "node:crypto";
-import { z as z2 } from "zod";
+import { createHash as createHash4 } from "node:crypto";
+import { z as z3 } from "zod";
 function canonical2(value) {
   if (Array.isArray(value))
     return `[${value.map(canonical2).join(",")}]`;
@@ -14560,7 +16079,7 @@ function contextHash(requirements, kind) {
     ...requirements.scope && includes(requirements.scope.state) ? { scope: statement(requirements.scope) } : {},
     requirements: Object.fromEntries(Object.entries(requirements.requirements).filter(([, value]) => value && includes(value.state)).map(([key, value]) => [key, statement(value)]))
   };
-  return `sha256:${createHash3("sha256").update(`kiln.requirements-${kind}.v1`).update(canonical2(semantic)).digest("hex")}`;
+  return `sha256:${createHash4("sha256").update(`kiln.requirements-${kind}.v1`).update(canonical2(semantic)).digest("hex")}`;
 }
 function validateRequirementsBinding(input) {
   const parsed = RequirementsBindingSchema.safeParse(input);
@@ -14609,26 +16128,26 @@ var init_requirements_context = __esm(() => {
   init_requirements();
   init_requirements_identity();
   init_requirements_json();
-  text2 = z2.string().refine((value) => value.trim().length > 0, "Must be non-empty.");
-  hash2 = z2.string().regex(/^[a-f0-9]{64}$/);
-  revision = z2.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
-  change = z2.strictObject({
+  text2 = z3.string().refine((value) => value.trim().length > 0, "Must be non-empty.");
+  hash2 = z3.string().regex(/^[a-f0-9]{64}$/);
+  revision = z3.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
+  change = z3.strictObject({
     actor: text2,
     reason: text2,
-    source: z2.enum(["brief", "automation", "migration", "restore"]),
+    source: z3.enum(["brief", "automation", "migration", "restore"]),
     revision,
     policyHash: hash2,
     previousPolicyHash: hash2.optional()
   });
-  RequirementsBindingSchema = z2.strictObject({
-    kind: z2.literal("kiln.requirements-binding"),
-    schemaVersion: z2.literal(1),
+  RequirementsBindingSchema = z3.strictObject({
+    kind: z3.literal("kiln.requirements-binding"),
+    schemaVersion: z3.literal(1),
     taskId: text2,
     lineageId: text2,
     revision,
     policyHash: hash2,
     requirements: AssetRequirementsV1Schema,
-    history: z2.array(change).min(1)
+    history: z3.array(change).min(1)
   }).superRefine((binding, context) => {
     const issue = (message) => context.addIssue({ code: "custom", message });
     if (binding.policyHash !== assetRequirementsPolicyHash(binding.requirements))
@@ -14643,9 +16162,9 @@ var init_requirements_context = __esm(() => {
     if (binding.history.at(-1)?.policyHash !== binding.policyHash)
       issue("Requirements binding history does not end at its current policy.");
   });
-  CheckpointSchema = z2.strictObject({
-    kind: z2.literal("kiln.requirements-checkpoint.v1"),
-    programRef: z2.string().regex(/^sha256:[a-f0-9]{64}$/),
+  CheckpointSchema = z3.strictObject({
+    kind: z3.literal("kiln.requirements-checkpoint.v1"),
+    programRef: z3.string().regex(/^sha256:[a-f0-9]{64}$/),
     binding: RequirementsBindingSchema
   });
 });
@@ -14677,58 +16196,58 @@ async function renameDirectoryAtomically(source, destination, controls = {}) {
 var init_atomic_directory = () => {};
 
 // src/material-authoring-schema.ts
-import { z as z3 } from "zod";
+import { z as z4 } from "zod";
 function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = canonicalLegacyV2FieldSchema) {
-  const integer = (min, max) => z3.number().int().min(min).max(max);
+  const integer = (min, max) => z4.number().int().min(min).max(max);
   const byte = integer(0, 255);
   const coordinate = integer(-4096, 4096);
-  const point = z3.tuple([coordinate, coordinate]);
-  const rgba = z3.tuple([byte, byte, byte, byte]);
-  const usage = z3.enum(TEXTURE_USAGES);
-  const hash = z3.templateLiteral(["sha256:", z3.string().regex(/^[a-f0-9]{64}$/)]);
-  const name = z3.string().min(1).max(80);
-  const stableId = z3.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
-  const mapId = z3.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$/);
+  const point = z4.tuple([coordinate, coordinate]);
+  const rgba = z4.tuple([byte, byte, byte, byte]);
+  const usage = z4.enum(TEXTURE_USAGES);
+  const hash = z4.templateLiteral(["sha256:", z4.string().regex(/^[a-f0-9]{64}$/)]);
+  const name = z4.string().min(1).max(80);
+  const stableId = z4.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  const mapId = z4.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$/);
   const dimensions = { width: integer(1, 4096), height: integer(1, 4096) };
-  const pixelRectangleSchema = z3.object({ x: coordinate, y: coordinate, width: integer(1, 2048), height: integer(1, 2048) }).strict();
-  const atlasRectangleSchema = z3.object({ x: integer(0, 4096), y: integer(0, 4096), ...dimensions }).strict();
-  const shape = z3.discriminatedUnion("kind", [
-    pixelRectangleSchema.extend({ kind: z3.literal("rectangle") }).strict(),
-    pixelRectangleSchema.extend({ kind: z3.literal("ellipse") }).strict(),
-    z3.object({
-      kind: z3.literal("polygon"),
-      points: z3.array(point).min(3).max(MAX_PROCEDURAL_V3_VERTICES)
+  const pixelRectangleSchema = z4.object({ x: coordinate, y: coordinate, width: integer(1, 2048), height: integer(1, 2048) }).strict();
+  const atlasRectangleSchema = z4.object({ x: integer(0, 4096), y: integer(0, 4096), ...dimensions }).strict();
+  const shape = z4.discriminatedUnion("kind", [
+    pixelRectangleSchema.extend({ kind: z4.literal("rectangle") }).strict(),
+    pixelRectangleSchema.extend({ kind: z4.literal("ellipse") }).strict(),
+    z4.object({
+      kind: z4.literal("polygon"),
+      points: z4.array(point).min(3).max(MAX_PROCEDURAL_V3_VERTICES)
     }).strict(),
-    z3.object({ kind: z3.literal("line"), from: point, to: point, width: integer(1, 2048) }).strict()
+    z4.object({ kind: z4.literal("line"), from: point, to: point, width: integer(1, 2048) }).strict()
   ]);
-  const paint = z3.object({ op: z3.literal("paint"), shape, rgba, opacity: byte }).strict();
-  const mask = z3.object({ op: z3.literal("mask"), shape, alpha: byte, invert: z3.boolean() }).strict();
-  const stamps = z3.object({
-    op: z3.literal("stamps"),
+  const paint = z4.object({ op: z4.literal("paint"), shape, rgba, opacity: byte }).strict();
+  const mask = z4.object({ op: z4.literal("mask"), shape, alpha: byte, invert: z4.boolean() }).strict();
+  const stamps = z4.object({
+    op: z4.literal("stamps"),
     shape,
     rgba,
     opacity: byte,
     count: integer(1, MAX_PROCEDURAL_V3_STAMPS),
     seed: integer(0, 4294967295),
     area: pixelRectangleSchema,
-    periodic: z3.boolean()
+    periodic: z4.boolean()
   }).strict();
-  const legacy = z3.object({ op: z3.literal("legacy-v2"), spec: legacyV2Schema, alpha: byte, opacity: byte }).strict();
-  const palette = z3.object({
-    colors: z3.array(integer(0, 16777215)).min(1).max(MAX_PROCEDURAL_V3_PALETTE),
-    dither: z3.enum(["none", "bayer4"])
+  const legacy = z4.object({ op: z4.literal("legacy-v2"), spec: legacyV2Schema, alpha: byte, opacity: byte }).strict();
+  const palette = z4.object({
+    colors: z4.array(integer(0, 16777215)).min(1).max(MAX_PROCEDURAL_V3_PALETTE),
+    dither: z4.enum(["none", "bayer4"])
   }).strict();
   const proceduralBase = {
-    schemaVersion: z3.literal(3),
+    schemaVersion: z4.literal(3),
     width: integer(4, MAX_PROCEDURAL_V3_EDGE),
     height: integer(4, MAX_PROCEDURAL_V3_EDGE),
     usage,
     name: name.optional(),
     background: rgba
   };
-  const canonicalProceduralTextureSpecV3Schema = z3.object({
+  const canonicalProceduralTextureSpecV3Schema = z4.object({
     ...proceduralBase,
-    operations: z3.array(z3.discriminatedUnion("op", [
+    operations: z4.array(z4.discriminatedUnion("op", [
       paint,
       mask,
       stamps,
@@ -14736,11 +16255,11 @@ function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = 
     ])).max(MAX_PROCEDURAL_V3_OPERATIONS),
     palette: palette.optional()
   }).strict();
-  const proceduralTextureSpecV3Schema = z3.object({
+  const proceduralTextureSpecV3Schema = z4.object({
     ...proceduralBase,
     usage: usage.optional(),
     background: rgba.optional(),
-    operations: z3.array(z3.discriminatedUnion("op", [
+    operations: z4.array(z4.discriminatedUnion("op", [
       paint.partial({ opacity: true }),
       mask.partial({ alpha: true, invert: true }),
       stamps.partial({ opacity: true, periodic: true }),
@@ -14748,110 +16267,110 @@ function makeMaterialAuthoringSchemas(legacyV2Schema, canonicalLegacyV2Schema = 
     ])).max(MAX_PROCEDURAL_V3_OPERATIONS),
     palette: palette.partial({ dither: true }).optional()
   }).strict();
-  const portableSamplerSchema = z3.object({
-    minFilter: z3.enum(PORTABLE_MIN_FILTERS_V1),
-    magFilter: z3.enum(PORTABLE_MAG_FILTERS_V1),
-    wrapS: z3.enum(PORTABLE_WRAPS_V1),
-    wrapT: z3.enum(PORTABLE_WRAPS_V1)
+  const portableSamplerSchema = z4.object({
+    minFilter: z4.enum(PORTABLE_MIN_FILTERS_V1),
+    magFilter: z4.enum(PORTABLE_MAG_FILTERS_V1),
+    wrapS: z4.enum(PORTABLE_WRAPS_V1),
+    wrapT: z4.enum(PORTABLE_WRAPS_V1)
   }).strict();
-  const materialMapPinSchema = z3.object({ resourceId: stableId, revisionId: hash, sha256: hash }).strict();
-  const resourceSource = z3.object({
-    kind: z3.literal("resource"),
+  const materialMapPinSchema = z4.object({ resourceId: stableId, revisionId: hash, sha256: hash }).strict();
+  const resourceSource = z4.object({
+    kind: z4.literal("resource"),
     resourceId: mapId,
     pin: materialMapPinSchema,
-    expected: z3.object({ ...dimensions, imageSha256: hash, decodedPixelHash: hash }).partial().strict().optional()
+    expected: z4.object({ ...dimensions, imageSha256: hash, decodedPixelHash: hash }).partial().strict().optional()
   }).strict();
-  const region = z3.object({
+  const region = z4.object({
     name: stableId,
     content: atlasRectangleSchema,
     gutter: integer(0, 32),
-    edgeMode: z3.enum(["copy-edge", "mask-rgb-dilate"]),
-    source: z3.discriminatedUnion("kind", [
-      z3.object({ kind: z3.literal("procedural"), spec: canonicalProceduralTextureSpecV3Schema }).strict(),
+    edgeMode: z4.enum(["copy-edge", "mask-rgb-dilate"]),
+    source: z4.discriminatedUnion("kind", [
+      z4.object({ kind: z4.literal("procedural"), spec: canonicalProceduralTextureSpecV3Schema }).strict(),
       resourceSource
     ]),
     crop: atlasRectangleSchema.optional(),
-    packed: z3.literal(true).optional()
+    packed: z4.literal(true).optional()
   }).strict();
   const atlasBase = {
-    schemaVersion: z3.literal(1),
+    schemaVersion: z4.literal(1),
     width: integer(4, TEXTURE_ATLAS_LIMITS_V1_2.edge),
     height: integer(4, TEXTURE_ATLAS_LIMITS_V1_2.edge),
     usage,
     sampler: portableSamplerSchema
   };
-  const packEdge = z3.union(TEXTURE_ATLAS_PACK_EDGES.map((edge) => z3.literal(edge)));
-  const canonicalTextureAtlasSpecV1Schema = z3.object({
+  const packEdge = z4.union(TEXTURE_ATLAS_PACK_EDGES.map((edge) => z4.literal(edge)));
+  const canonicalTextureAtlasSpecV1Schema = z4.object({
     ...atlasBase,
-    regions: z3.array(region).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
-    pack: z3.object({ edge: packEdge, gutter: integer(0, 32), algorithm: z3.literal("maxrects") }).strict().optional()
+    regions: z4.array(region).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
+    pack: z4.object({ edge: packEdge, gutter: integer(0, 32), algorithm: z4.literal("maxrects") }).strict().optional()
   }).strict();
-  const textureAtlasSpecV1Schema = z3.object({
+  const textureAtlasSpecV1Schema = z4.object({
     ...atlasBase,
     width: atlasBase.width.optional(),
     height: atlasBase.height.optional(),
-    pack: z3.object({
+    pack: z4.object({
       edge: packEdge,
       gutter: integer(0, 32).optional(),
-      algorithm: z3.literal("maxrects").optional()
+      algorithm: z4.literal("maxrects").optional()
     }).strict().optional(),
     sampler: portableSamplerSchema.optional(),
-    regions: z3.array(region.extend({
-      source: z3.discriminatedUnion("kind", [
-        z3.object({ kind: z3.literal("procedural"), spec: proceduralTextureSpecV3Schema }).strict(),
+    regions: z4.array(region.extend({
+      source: z4.discriminatedUnion("kind", [
+        z4.object({ kind: z4.literal("procedural"), spec: proceduralTextureSpecV3Schema }).strict(),
         resourceSource
       ])
     }).partial({ content: true, gutter: true, edgeMode: true })).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions)
   }).strict();
-  const verifiedPinnedMaterialMapDescriptorSchema = z3.object({
+  const verifiedPinnedMaterialMapDescriptorSchema = z4.object({
     materialId: stableId,
     revisionId: hash,
     resourceId: mapId,
-    slot: z3.enum(["baseColor", "normal", "metallicRoughness", "emissive", "occlusion"]),
+    slot: z4.enum(["baseColor", "normal", "metallicRoughness", "emissive", "occlusion"]),
     usage,
-    colorSpace: z3.enum(["srgb", "linear"]),
+    colorSpace: z4.enum(["srgb", "linear"]),
     ...dimensions,
     encodedByteLength: integer(1, TEXTURE_ATLAS_LIMITS.encodedSourceBytes),
     imageSha256: hash,
     decodedPixelHash: hash.optional()
   }).strict();
   const sourceManifestBase = {
-    id: z3.string().min(1).max(1024),
+    id: z4.string().min(1).max(1024),
     ...dimensions,
     decodedPixelHash: hash
   };
-  const sourceManifest = z3.discriminatedUnion("kind", [
-    z3.object({
+  const sourceManifest = z4.discriminatedUnion("kind", [
+    z4.object({
       ...sourceManifestBase,
-      kind: z3.literal("procedural"),
+      kind: z4.literal("procedural"),
       recipeHash: hash,
-      compilerId: z3.literal(PROCEDURAL_TEXTURE_V3_COMPILER_ID)
+      compilerId: z4.literal(PROCEDURAL_TEXTURE_V3_COMPILER_ID)
     }).strict(),
-    z3.object({
+    z4.object({
       ...sourceManifestBase,
-      kind: z3.literal("resource"),
+      kind: z4.literal("resource"),
       descriptor: verifiedPinnedMaterialMapDescriptorSchema
     }).strict()
   ]);
-  const textureAtlasManifestV1Schema = z3.object({
-    version: z3.literal("kiln.atlas-manifest.v1"),
-    compilerId: z3.enum(TEXTURE_ATLAS_COMPILER_IDS),
+  const textureAtlasManifestV1Schema = z4.object({
+    version: z4.literal("kiln.atlas-manifest.v1"),
+    compilerId: z4.enum(TEXTURE_ATLAS_COMPILER_IDS),
     width: atlasBase.width,
     height: atlasBase.height,
     usage,
-    origin: z3.literal("top-left"),
+    origin: z4.literal("top-left"),
     sampler: portableSamplerSchema,
     specHash: hash,
     layoutHash: hash,
     decodedPixelHash: hash,
     atlasPixelHash: hash,
-    sources: z3.array(sourceManifest).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.sources),
-    regions: z3.array(z3.object({
+    sources: z4.array(sourceManifest).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.sources),
+    regions: z4.array(z4.object({
       name: stableId,
       content: atlasRectangleSchema,
       allocation: atlasRectangleSchema,
       crop: atlasRectangleSchema,
-      sourceId: z3.string().min(1).max(1024)
+      sourceId: z4.string().min(1).max(1024)
     }).strict()).min(1).max(TEXTURE_ATLAS_LIMITS_V1_2.regions),
     manifestHash: hash
   }).strict();
@@ -14874,36 +16393,36 @@ var init_material_authoring_schema = __esm(() => {
   init_portable_sampler();
   init_texture_contract();
   canonicalLegacyV2FieldSchema = (() => {
-    const color = z3.number().int().min(0).max(16777215);
-    const count = z3.number().int().min(1).max(MAX_PROCEDURAL_PATTERN_COUNT);
-    const angleDeg = z3.number().min(-36000).max(36000);
-    const unit = z3.number().min(0).max(1);
-    const common = { blend: z3.enum(["normal", "multiply", "screen", "overlay"]), opacity: unit };
-    return z3.object({
-      schemaVersion: z3.literal(2),
-      size: z3.number().int().min(MIN_PROCEDURAL_SIZE).max(MAX_PROCEDURAL_SIZE),
-      usage: z3.enum(TEXTURE_USAGES),
-      name: z3.string().min(1).max(80).optional(),
-      layers: z3.array(z3.discriminatedUnion("op", [
-        z3.object({ op: z3.literal("solid"), color, ...common }).strict(),
-        z3.object({
-          op: z3.literal("checker"),
+    const color = z4.number().int().min(0).max(16777215);
+    const count = z4.number().int().min(1).max(MAX_PROCEDURAL_PATTERN_COUNT);
+    const angleDeg = z4.number().min(-36000).max(36000);
+    const unit = z4.number().min(0).max(1);
+    const common = { blend: z4.enum(["normal", "multiply", "screen", "overlay"]), opacity: unit };
+    return z4.object({
+      schemaVersion: z4.literal(2),
+      size: z4.number().int().min(MIN_PROCEDURAL_SIZE).max(MAX_PROCEDURAL_SIZE),
+      usage: z4.enum(TEXTURE_USAGES),
+      name: z4.string().min(1).max(80).optional(),
+      layers: z4.array(z4.discriminatedUnion("op", [
+        z4.object({ op: z4.literal("solid"), color, ...common }).strict(),
+        z4.object({
+          op: z4.literal("checker"),
           colorA: color,
           colorB: color,
           squares: count,
           ...common
         }).strict(),
-        z3.object({
-          op: z3.literal("stripes"),
+        z4.object({
+          op: z4.literal("stripes"),
           colorA: color,
           colorB: color,
           count,
           angleDeg,
           ...common
         }).strict(),
-        z3.object({ op: z3.literal("gradient"), from: color, to: color, angleDeg, ...common }).strict(),
-        z3.object({
-          op: z3.literal("bricks"),
+        z4.object({ op: z4.literal("gradient"), from: color, to: color, angleDeg, ...common }).strict(),
+        z4.object({
+          op: z4.literal("bricks"),
           brick: color,
           mortar: color,
           rows: count,
@@ -14912,13 +16431,13 @@ var init_material_authoring_schema = __esm(() => {
           stagger: unit,
           ...common
         }).strict(),
-        z3.object({
-          op: z3.literal("noise"),
+        z4.object({
+          op: z4.literal("noise"),
           colorA: color,
           colorB: color,
           scale: count,
-          octaves: z3.number().int().min(1).max(MAX_NOISE_OCTAVES),
-          seed: z3.number().int().min(-2147483648).max(2147483647),
+          octaves: z4.number().int().min(1).max(MAX_NOISE_OCTAVES),
+          seed: z4.number().int().min(-2147483648).max(2147483647),
           ...common
         }).strict()
       ])).min(1).max(MAX_PROCEDURAL_LAYERS)
@@ -14927,7 +16446,7 @@ var init_material_authoring_schema = __esm(() => {
 });
 
 // src/material-library.ts
-import { z as z4 } from "zod";
+import { z as z5 } from "zod";
 function assertMaterialJson(value, allowBytes = false, depth = 0) {
   if (depth > 30)
     throw new Error("Material JSON exceeds nesting limit");
@@ -15184,23 +16703,23 @@ var init_material_library = __esm(() => {
     emissive: "emissive",
     occlusion: "occlusion"
   };
-  materialLibraryIdSchema = z4.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
-  materialLibraryHashSchema = z4.string().regex(/^sha256:[a-f0-9]{64}$/);
-  text3 = z4.string().min(1).max(1000);
-  url = z4.string().max(2000).url().refine((value) => /^https?:\/\//.test(value), "Provenance URL must be HTTP(S)");
-  materialSourceSchema = z4.object({
+  materialLibraryIdSchema = z5.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  materialLibraryHashSchema = z5.string().regex(/^sha256:[a-f0-9]{64}$/);
+  text3 = z5.string().min(1).max(1000);
+  url = z5.string().max(2000).url().refine((value) => /^https?:\/\//.test(value), "Provenance URL must be HTTP(S)");
+  materialSourceSchema = z5.object({
     id: materialLibraryIdSchema,
-    kind: z4.enum(["external", "procedural"]),
+    kind: z5.enum(["external", "procedural"]),
     provider: text3,
     creator: text3,
     assetId: text3.optional(),
     assetUrl: url.optional(),
-    accessedAt: z4.string().datetime().optional(),
-    license: z4.object({ spdx: text3, url, attribution: z4.string().max(4000) }).strict(),
-    originalFiles: z4.array(z4.object({
-      name: z4.string().min(1).max(200),
+    accessedAt: z5.string().datetime().optional(),
+    license: z5.object({ spdx: text3, url, attribution: z5.string().max(4000) }).strict(),
+    originalFiles: z5.array(z5.object({
+      name: z5.string().min(1).max(200),
       sha256: materialLibraryHashSchema,
-      bytes: z4.number().int().positive().max(1024 * 1024 * 1024)
+      bytes: z5.number().int().positive().max(1024 * 1024 * 1024)
     }).strict()).max(20)
   }).strict().superRefine((source, context) => {
     if (source.kind === "external" && (!source.assetUrl || !source.originalFiles.length))
@@ -15211,22 +16730,22 @@ var init_material_library = __esm(() => {
     if (new Set(source.originalFiles.map((file) => file.name)).size !== source.originalFiles.length)
       context.addIssue({ code: "custom", message: "Duplicate original filename" });
   });
-  materialTransformSchema = z4.object({
+  materialTransformSchema = z5.object({
     operation: text3,
     tool: text3,
     version: text3,
-    parameters: z4.record(z4.string().max(100), z4.union([z4.string().max(2000), z4.number().finite(), z4.boolean()])).optional()
+    parameters: z5.record(z5.string().max(100), z5.union([z5.string().max(2000), z5.number().finite(), z5.boolean()])).optional()
   }).strict();
-  color2 = z4.number().int().min(0).max(16777215);
-  count3 = z4.number().int().min(1).max(256);
+  color2 = z5.number().int().min(0).max(16777215);
+  count3 = z5.number().int().min(1).max(256);
   layerCommon = {
-    blend: z4.enum(["normal", "multiply", "screen", "overlay"]).default("normal"),
-    opacity: z4.number().min(0).max(1).default(1)
+    blend: z5.enum(["normal", "multiply", "screen", "overlay"]).default("normal"),
+    opacity: z5.number().min(0).max(1).default(1)
   };
-  materialProceduralSpecSchema = z4.object({
-    schemaVersion: z4.literal(2),
-    size: z4.number().int().min(4).max(1024).default(256),
-    usage: z4.enum([
+  materialProceduralSpecSchema = z5.object({
+    schemaVersion: z5.literal(2),
+    size: z5.number().int().min(4).max(1024).default(256),
+    usage: z5.enum([
       "albedo",
       "normal",
       "roughness",
@@ -15235,90 +16754,90 @@ var init_material_library = __esm(() => {
       "emissive",
       "occlusion"
     ]).default("albedo"),
-    name: z4.string().min(1).max(80).optional(),
-    layers: z4.array(z4.discriminatedUnion("op", [
-      z4.object({ op: z4.literal("solid"), color: color2, ...layerCommon }).strict(),
-      z4.object({
-        op: z4.literal("checker"),
+    name: z5.string().min(1).max(80).optional(),
+    layers: z5.array(z5.discriminatedUnion("op", [
+      z5.object({ op: z5.literal("solid"), color: color2, ...layerCommon }).strict(),
+      z5.object({
+        op: z5.literal("checker"),
         colorA: color2,
         colorB: color2,
         squares: count3.default(8),
         ...layerCommon
       }).strict(),
-      z4.object({
-        op: z4.literal("stripes"),
+      z5.object({
+        op: z5.literal("stripes"),
         colorA: color2,
         colorB: color2,
         count: count3.default(8),
-        angleDeg: z4.number().min(-36000).max(36000).default(0),
+        angleDeg: z5.number().min(-36000).max(36000).default(0),
         ...layerCommon
       }).strict(),
-      z4.object({
-        op: z4.literal("gradient"),
+      z5.object({
+        op: z5.literal("gradient"),
         from: color2,
         to: color2,
-        angleDeg: z4.number().min(-36000).max(36000).default(0),
+        angleDeg: z5.number().min(-36000).max(36000).default(0),
         ...layerCommon
       }).strict(),
-      z4.object({
-        op: z4.literal("bricks"),
+      z5.object({
+        op: z5.literal("bricks"),
         brick: color2,
         mortar: color2,
         rows: count3.default(8),
         cols: count3.default(4),
-        mortarWidth: z4.number().min(0).max(1).default(0.06),
-        stagger: z4.number().min(0).max(1).default(0.5),
+        mortarWidth: z5.number().min(0).max(1).default(0.06),
+        stagger: z5.number().min(0).max(1).default(0.5),
         ...layerCommon
       }).strict(),
-      z4.object({
-        op: z4.literal("noise"),
+      z5.object({
+        op: z5.literal("noise"),
         colorA: color2,
         colorB: color2,
         scale: count3.default(8),
-        octaves: z4.number().int().min(1).max(6).default(3),
-        seed: z4.number().int().min(-2147483648).max(2147483647).default(0),
+        octaves: z5.number().int().min(1).max(6).default(3),
+        seed: z5.number().int().min(-2147483648).max(2147483647).default(0),
         ...layerCommon
       }).strict()
     ])).min(1).max(8)
   }).strict();
-  materialNormalDerivationSchema = z4.object({
-    kind: z4.literal("normal-from-height"),
-    strength: z4.number().finite().positive().max(64)
+  materialNormalDerivationSchema = z5.object({
+    kind: z5.literal("normal-from-height"),
+    strength: z5.number().finite().positive().max(64)
   }).strict();
-  proceduralSchema = z4.object({
-    compiler: z4.literal("kiln.procedural-texture.v2"),
+  proceduralSchema = z5.object({
+    compiler: z5.literal("kiln.procedural-texture.v2"),
     spec: materialProceduralSpecSchema,
     derive: materialNormalDerivationSchema.optional(),
     recipeHash: materialLibraryHashSchema,
     pixelHash: materialLibraryHashSchema,
-    encoder: z4.object({ name: z4.literal("sharp"), version: text3 }).strict()
+    encoder: z5.object({ name: z5.literal("sharp"), version: text3 }).strict()
   }).strict();
-  parametersSchema = z4.object({
-    baseColor: z4.number().int().min(0).max(16777215).optional(),
-    roughness: z4.number().min(0).max(1).default(1),
-    metalness: z4.number().min(0).max(1).default(0),
-    emissive: z4.number().int().min(0).max(16777215).optional(),
-    emissiveIntensity: z4.number().min(0).max(64).default(1),
-    alphaMode: z4.enum(["opaque", "mask", "blend"]).default("opaque"),
-    alphaCutoff: z4.number().min(0).max(1).default(0.5),
-    doubleSided: z4.boolean().default(false)
+  parametersSchema = z5.object({
+    baseColor: z5.number().int().min(0).max(16777215).optional(),
+    roughness: z5.number().min(0).max(1).default(1),
+    metalness: z5.number().min(0).max(1).default(0),
+    emissive: z5.number().int().min(0).max(16777215).optional(),
+    emissiveIntensity: z5.number().min(0).max(64).default(1),
+    alphaMode: z5.enum(["opaque", "mask", "blend"]).default("opaque"),
+    alphaCutoff: z5.number().min(0).max(1).default(0.5),
+    doubleSided: z5.boolean().default(false)
   }).strict();
-  materialManifestSchema = z4.object({
-    schemaVersion: z4.literal(1),
+  materialManifestSchema = z5.object({
+    schemaVersion: z5.literal(1),
     materialId: materialLibraryIdSchema,
     revisionId: materialLibraryHashSchema,
-    name: z4.string().min(1).max(200),
-    tags: z4.array(z4.string().min(1).max(80)).max(30),
-    tileable: z4.boolean(),
-    physicalSizeMeters: z4.object({
-      width: z4.number().finite().positive().max(1e5),
-      height: z4.number().finite().positive().max(1e5)
+    name: z5.string().min(1).max(200),
+    tags: z5.array(z5.string().min(1).max(80)).max(30),
+    tileable: z5.boolean(),
+    physicalSizeMeters: z5.object({
+      width: z5.number().finite().positive().max(1e5),
+      height: z5.number().finite().positive().max(1e5)
     }).strict().optional(),
     parameters: parametersSchema,
-    sources: z4.array(materialSourceSchema).min(1).max(20),
-    maps: z4.array(z4.object({
-      slot: z4.enum(MATERIAL_LIBRARY_SLOTS),
-      file: z4.enum([
+    sources: z5.array(materialSourceSchema).min(1).max(20),
+    maps: z5.array(z5.object({
+      slot: z5.enum(MATERIAL_LIBRARY_SLOTS),
+      file: z5.enum([
         "baseColor.png",
         "normal.png",
         "metallicRoughness.png",
@@ -15326,45 +16845,45 @@ var init_material_library = __esm(() => {
         "occlusion.png"
       ]),
       sha256: materialLibraryHashSchema,
-      bytes: z4.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapBytes),
-      width: z4.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
-      height: z4.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
-      usage: z4.enum(["albedo", "normal", "metallicRoughness", "emissive", "occlusion"]),
-      colorSpace: z4.enum(["srgb", "linear"]),
-      normalConvention: z4.literal("opengl").optional(),
-      channelPacking: z4.literal("r-occlusion-g-roughness-b-metallic").optional(),
+      bytes: z5.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapBytes),
+      width: z5.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
+      height: z5.number().int().positive().max(MATERIAL_LIBRARY_LIMITS.maxMapEdge),
+      usage: z5.enum(["albedo", "normal", "metallicRoughness", "emissive", "occlusion"]),
+      colorSpace: z5.enum(["srgb", "linear"]),
+      normalConvention: z5.literal("opengl").optional(),
+      channelPacking: z5.literal("r-occlusion-g-roughness-b-metallic").optional(),
       sourceId: materialLibraryIdSchema,
-      originalFile: z4.string().min(1).max(200).optional(),
-      transforms: z4.array(materialTransformSchema).max(30),
+      originalFile: z5.string().min(1).max(200).optional(),
+      transforms: z5.array(materialTransformSchema).max(30),
       procedural: proceduralSchema.optional()
     }).strict()).min(1).max(5)
   }).strict();
-  proceduralMaterialDraftSchema = z4.object({
+  proceduralMaterialDraftSchema = z5.object({
     materialId: materialLibraryIdSchema,
-    name: z4.string().min(1).max(200),
-    tags: z4.array(z4.string().min(1).max(80)).max(30).optional(),
-    tileable: z4.boolean(),
-    physicalSizeMeters: z4.object({
-      width: z4.number().finite().positive().max(1e5),
-      height: z4.number().finite().positive().max(1e5)
+    name: z5.string().min(1).max(200),
+    tags: z5.array(z5.string().min(1).max(80)).max(30).optional(),
+    tileable: z5.boolean(),
+    physicalSizeMeters: z5.object({
+      width: z5.number().finite().positive().max(1e5),
+      height: z5.number().finite().positive().max(1e5)
     }).strict().optional(),
     parameters: parametersSchema.partial().optional(),
-    sources: z4.array(materialSourceSchema).min(1).max(20),
-    maps: z4.array(z4.object({
-      slot: z4.enum(MATERIAL_LIBRARY_SLOTS),
+    sources: z5.array(materialSourceSchema).min(1).max(20),
+    maps: z5.array(z5.object({
+      slot: z5.enum(MATERIAL_LIBRARY_SLOTS),
       sourceId: materialLibraryIdSchema,
-      transforms: z4.array(materialTransformSchema).max(30),
-      normalConvention: z4.literal("opengl").optional(),
-      channelPacking: z4.literal("r-occlusion-g-roughness-b-metallic").optional(),
+      transforms: z5.array(materialTransformSchema).max(30),
+      normalConvention: z5.literal("opengl").optional(),
+      channelPacking: z5.literal("r-occlusion-g-roughness-b-metallic").optional(),
       procedural: materialProceduralSpecSchema,
       derive: materialNormalDerivationSchema.optional()
     }).strict()).min(1).max(5)
   }).strict();
-  materialLibraryPayloadSchema = z4.object({
-    schemaVersion: z4.literal(1),
-    records: z4.array(z4.object({
+  materialLibraryPayloadSchema = z5.object({
+    schemaVersion: z5.literal(1),
+    records: z5.array(z5.object({
       manifest: materialManifestSchema,
-      files: z4.record(z4.string().regex(/^(baseColor|normal|metallicRoughness|emissive|occlusion)\.png$/), z4.string().max(Math.ceil(MATERIAL_LIBRARY_LIMITS.maxMapBytes / 3) * 4))
+      files: z5.record(z5.string().regex(/^(baseColor|normal|metallicRoughness|emissive|occlusion)\.png$/), z5.string().max(Math.ceil(MATERIAL_LIBRARY_LIMITS.maxMapBytes / 3) * 4))
     }).strict()).max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
   }).strict();
   authoringSchemas = makeMaterialAuthoringSchemas(materialProceduralSpecSchema);
@@ -15373,27 +16892,27 @@ var init_material_library = __esm(() => {
   v3SpecSchema = authoringSchemas.canonicalProceduralTextureSpecV3Schema.superRefine(admittedBy("procedural V3 spec", canonicalizeProceduralTextureSpecV3, true), afterShape);
   atlasSpecSchema = authoringSchemas.canonicalTextureAtlasSpecV1Schema.superRefine(admittedBy("atlas spec", canonicalizeTextureAtlasSpecV1, true), afterShape);
   atlasManifestSchema = authoringSchemas.textureAtlasManifestV1Schema;
-  materialMapPinSchema = z4.object({
+  materialMapPinSchema = z5.object({
     resourceId: materialLibraryIdSchema,
     revisionId: materialLibraryHashSchema,
     sha256: materialLibraryHashSchema
   }).strict().refine((pin) => pin.sha256 === pin.revisionId, "Material pin hash must match revision");
-  materialRecipeV2Schema = z4.discriminatedUnion("kind", [
-    z4.object({
-      kind: z4.literal("procedural"),
-      compilerId: z4.enum(["kiln.procedural-texture.v2", PROCEDURAL_TEXTURE_V3_COMPILER_ID]),
-      spec: z4.union([materialProceduralSpecSchema, v3SpecSchema]),
+  materialRecipeV2Schema = z5.discriminatedUnion("kind", [
+    z5.object({
+      kind: z5.literal("procedural"),
+      compilerId: z5.enum(["kiln.procedural-texture.v2", PROCEDURAL_TEXTURE_V3_COMPILER_ID]),
+      spec: z5.union([materialProceduralSpecSchema, v3SpecSchema]),
       recipeHash: materialLibraryHashSchema,
       pixelHash: materialLibraryHashSchema,
-      encoder: z4.object({ name: z4.literal("sharp"), version: text3 }).strict(),
+      encoder: z5.object({ name: z5.literal("sharp"), version: text3 }).strict(),
       derive: materialNormalDerivationSchema.optional()
     }).strict(),
-    z4.object({
-      kind: z4.literal("atlas"),
-      compilerId: z4.enum(TEXTURE_ATLAS_COMPILER_IDS),
+    z5.object({
+      kind: z5.literal("atlas"),
+      compilerId: z5.enum(TEXTURE_ATLAS_COMPILER_IDS),
       spec: atlasSpecSchema,
       manifest: atlasManifestSchema,
-      encoder: z4.object({ name: z4.literal("sharp"), version: text3 }).strict()
+      encoder: z5.object({ name: z5.literal("sharp"), version: text3 }).strict()
     }).strict().superRefine((recipe, context) => {
       try {
         validateTextureAtlasManifestV1(recipe.manifest, recipe.spec);
@@ -15405,38 +16924,38 @@ var init_material_library = __esm(() => {
     }, afterShape)
   ]);
   materialManifestV2Schema = materialManifestSchema.omit({ schemaVersion: true, maps: true }).extend({
-    schemaVersion: z4.literal(2),
-    dependencies: z4.array(materialMapPinSchema).max(16),
-    maps: z4.array(materialManifestSchema.shape.maps.element.omit({ procedural: true }).extend({
+    schemaVersion: z5.literal(2),
+    dependencies: z5.array(materialMapPinSchema).max(16),
+    maps: z5.array(materialManifestSchema.shape.maps.element.omit({ procedural: true }).extend({
       sampler: samplerSchema,
       pixelHash: materialLibraryHashSchema,
       recipe: materialRecipeV2Schema.optional()
     }).strict()).min(1).max(5)
   }).strict();
-  materialManifestAnySchema = z4.discriminatedUnion("schemaVersion", [
+  materialManifestAnySchema = z5.discriminatedUnion("schemaVersion", [
     materialManifestSchema,
     materialManifestV2Schema
   ]);
   materialLibraryPayloadV2Schema = materialLibraryPayloadSchema.extend({
-    schemaVersion: z4.literal(2),
-    records: z4.array(materialLibraryPayloadSchema.shape.records.element.extend({ manifest: materialManifestAnySchema }).strict()).max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
+    schemaVersion: z5.literal(2),
+    records: z5.array(materialLibraryPayloadSchema.shape.records.element.extend({ manifest: materialManifestAnySchema }).strict()).max(MATERIAL_LIBRARY_LIMITS.maxPayloadRecords)
   }).strict();
-  materialLibraryPayloadAnySchema = z4.discriminatedUnion("schemaVersion", [
+  materialLibraryPayloadAnySchema = z5.discriminatedUnion("schemaVersion", [
     materialLibraryPayloadSchema,
     materialLibraryPayloadV2Schema
   ]);
   proceduralMaterialDraftV2Schema = proceduralMaterialDraftSchema.extend({
-    schemaVersion: z4.literal(2),
-    maps: z4.array(proceduralMaterialDraftSchema.shape.maps.element.omit({ procedural: true }).extend({
+    schemaVersion: z5.literal(2),
+    maps: z5.array(proceduralMaterialDraftSchema.shape.maps.element.omit({ procedural: true }).extend({
       sampler: samplerSchema,
-      procedural: z4.union([
+      procedural: z5.union([
         materialProceduralSpecSchema,
         authoringSchemas.proceduralTextureSpecV3Schema.superRefine(admittedBy("procedural V3 spec", canonicalizeProceduralTextureSpecV3, false), afterShape)
       ]).optional(),
       atlas: authoringSchemas.textureAtlasSpecV1Schema.superRefine(admittedBy("atlas spec", canonicalizeTextureAtlasSpecV1, false), afterShape).optional()
     }).strict().refine((map) => map.procedural !== undefined !== (map.atlas !== undefined), "Supply exactly one procedural or atlas recipe")).min(1).max(5)
   }).strict();
-  proceduralMaterialDraftAnySchema = z4.union([
+  proceduralMaterialDraftAnySchema = z5.union([
     proceduralMaterialDraftSchema,
     proceduralMaterialDraftV2Schema
   ]);
@@ -16015,7 +17534,7 @@ var init_texture_atlas_pixels = __esm(() => {
 });
 
 // src/procedural-texture.ts
-import * as THREE21 from "three";
+import * as THREE23 from "three";
 function proceduralTextureSchemaVersion(input) {
   if (!input || typeof input !== "object" || Array.isArray(input))
     throw new ProceduralTextureError("proceduralTexture requires a plain JSON object.", "PROCEDURAL_TEXTURE_V3_CONTRACT");
@@ -16036,14 +17555,14 @@ function proceduralTexture(spec) {
   if (proceduralTextureSchemaVersion(spec) === 3) {
     const compiled = compileProceduralTextureSpecV3(spec);
     const { width, height, usage, name } = compiled.spec;
-    const tex = new THREE21.DataTexture(compiled.pixels, width, height, THREE21.RGBAFormat, THREE21.UnsignedByteType);
+    const tex = new THREE23.DataTexture(compiled.pixels, width, height, THREE23.RGBAFormat, THREE23.UnsignedByteType);
     if (name)
       tex.name = name;
-    tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE21.SRGBColorSpace : THREE21.NoColorSpace;
-    tex.wrapS = THREE21.RepeatWrapping;
-    tex.wrapT = THREE21.RepeatWrapping;
-    tex.minFilter = THREE21.LinearMipmapLinearFilter;
-    tex.magFilter = THREE21.LinearFilter;
+    tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE23.SRGBColorSpace : THREE23.NoColorSpace;
+    tex.wrapS = THREE23.RepeatWrapping;
+    tex.wrapT = THREE23.RepeatWrapping;
+    tex.minFilter = THREE23.LinearMipmapLinearFilter;
+    tex.magFilter = THREE23.LinearFilter;
     tex.generateMipmaps = true;
     tex.needsUpdate = true;
     tex.userData["kilnProcedural"] = {
@@ -16056,14 +17575,14 @@ function proceduralTexture(spec) {
   }
   const compiled = compileProceduralTextureSpecV2(spec);
   const { size, usage, name, layers } = compiled.spec;
-  const tex = new THREE21.DataTexture(compiled.pixels, size, size, THREE21.RGBAFormat, THREE21.UnsignedByteType);
+  const tex = new THREE23.DataTexture(compiled.pixels, size, size, THREE23.RGBAFormat, THREE23.UnsignedByteType);
   if (name)
     tex.name = name;
-  tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE21.SRGBColorSpace : THREE21.NoColorSpace;
-  tex.wrapS = THREE21.RepeatWrapping;
-  tex.wrapT = THREE21.RepeatWrapping;
-  tex.minFilter = THREE21.LinearMipmapLinearFilter;
-  tex.magFilter = THREE21.LinearFilter;
+  tex.colorSpace = usage === "albedo" || usage === "emissive" ? THREE23.SRGBColorSpace : THREE23.NoColorSpace;
+  tex.wrapS = THREE23.RepeatWrapping;
+  tex.wrapT = THREE23.RepeatWrapping;
+  tex.minFilter = THREE23.LinearMipmapLinearFilter;
+  tex.magFilter = THREE23.LinearFilter;
   tex.generateMipmaps = true;
   tex.needsUpdate = true;
   tex.userData["kilnProcedural"] = {
@@ -16117,13 +17636,13 @@ function normalMapFromHeight(source, opts = {}) {
       out[o + 3] = 255;
     }
   }
-  const tex = new THREE21.DataTexture(out, width, height, THREE21.RGBAFormat, THREE21.UnsignedByteType);
+  const tex = new THREE23.DataTexture(out, width, height, THREE23.RGBAFormat, THREE23.UnsignedByteType);
   tex.name = opts.name ?? (source.name ? `${source.name}_Normal` : "");
-  tex.colorSpace = THREE21.NoColorSpace;
-  tex.wrapS = THREE21.RepeatWrapping;
-  tex.wrapT = THREE21.RepeatWrapping;
-  tex.minFilter = THREE21.LinearMipmapLinearFilter;
-  tex.magFilter = THREE21.LinearFilter;
+  tex.colorSpace = THREE23.NoColorSpace;
+  tex.wrapS = THREE23.RepeatWrapping;
+  tex.wrapT = THREE23.RepeatWrapping;
+  tex.minFilter = THREE23.LinearMipmapLinearFilter;
+  tex.magFilter = THREE23.LinearFilter;
   tex.generateMipmaps = true;
   tex.needsUpdate = true;
   return tex;
@@ -16138,7 +17657,7 @@ var init_procedural_texture = __esm(() => {
 });
 
 // src/textures.ts
-import * as THREE22 from "three";
+import * as THREE24 from "three";
 async function loadTexture(source, opts = {}) {
   let bytes;
   if (typeof source === "string") {
@@ -16159,7 +17678,7 @@ async function loadTexture(source, opts = {}) {
   if (!meta.width || !meta.height) {
     throw new Error("loadTexture: could not read image dimensions");
   }
-  const tex = new THREE22.DataTexture(new Uint8Array(data), meta.width, meta.height, THREE22.RGBAFormat, THREE22.UnsignedByteType);
+  const tex = new THREE24.DataTexture(new Uint8Array(data), meta.width, meta.height, THREE24.RGBAFormat, THREE24.UnsignedByteType);
   const usage = opts.usage ?? "albedo";
   const colorSpace = usage === "albedo" || usage === "emissive" ? "srgb" : "linear";
   let hasAlpha = false;
@@ -16169,14 +17688,14 @@ async function loadTexture(source, opts = {}) {
       break;
     }
   }
-  tex.colorSpace = colorSpace === "srgb" ? THREE22.SRGBColorSpace : THREE22.NoColorSpace;
+  tex.colorSpace = colorSpace === "srgb" ? THREE24.SRGBColorSpace : THREE24.NoColorSpace;
   if (opts.name)
     tex.name = opts.name;
   tex.needsUpdate = true;
-  tex.wrapS = THREE22.RepeatWrapping;
-  tex.wrapT = THREE22.RepeatWrapping;
-  tex.minFilter = THREE22.LinearMipmapLinearFilter;
-  tex.magFilter = THREE22.LinearFilter;
+  tex.wrapS = THREE24.RepeatWrapping;
+  tex.wrapT = THREE24.RepeatWrapping;
+  tex.minFilter = THREE24.LinearMipmapLinearFilter;
+  tex.magFilter = THREE24.LinearFilter;
   tex.generateMipmaps = true;
   tex.userData["encoded"] = {
     mime,
@@ -16211,17 +17730,17 @@ function requireTextureUsage(texture, usage) {
   if (meta && meta.usage !== usage) {
     throw new TypeError(`Texture ${JSON.stringify(texture.name || "(unnamed)")} was loaded for ${meta.usage}, not ${usage}.`);
   }
-  texture.colorSpace = usage === "albedo" || usage === "emissive" ? THREE22.SRGBColorSpace : THREE22.NoColorSpace;
+  texture.colorSpace = usage === "albedo" || usage === "emissive" ? THREE24.SRGBColorSpace : THREE24.NoColorSpace;
 }
 function pbrMaterial(opts = {}) {
-  const mat = new THREE22.MeshStandardMaterial;
+  const mat = new THREE24.MeshStandardMaterial;
   const isTex = (v) => !!v?.isTexture;
   if (isTex(opts.albedo)) {
     requireTextureUsage(opts.albedo, "albedo");
     mat.map = opts.albedo;
-    mat.color = new THREE22.Color(16777215);
+    mat.color = new THREE24.Color(16777215);
   } else if (opts.albedo !== undefined) {
-    mat.color = new THREE22.Color(opts.albedo);
+    mat.color = new THREE24.Color(opts.albedo);
   }
   if (opts.normal) {
     requireTextureUsage(opts.normal, "normal");
@@ -16259,9 +17778,9 @@ function pbrMaterial(opts = {}) {
   if (isTex(opts.emissive)) {
     requireTextureUsage(opts.emissive, "emissive");
     mat.emissiveMap = opts.emissive;
-    mat.emissive = new THREE22.Color(16777215);
+    mat.emissive = new THREE24.Color(16777215);
   } else if (opts.emissive !== undefined) {
-    mat.emissive = new THREE22.Color(opts.emissive);
+    mat.emissive = new THREE24.Color(opts.emissive);
   }
   if (opts.emissiveIntensity !== undefined) {
     mat.emissiveIntensity = opts.emissiveIntensity;
@@ -16293,7 +17812,7 @@ function pbrMaterial(opts = {}) {
     mat.transparent = true;
   }
   if (opts.doubleSided)
-    mat.side = THREE22.DoubleSide;
+    mat.side = THREE24.DoubleSide;
   mat.userData["kilnMaterial"] = {
     alphaMode,
     ...alphaMode === "mask" ? { alphaCutoff: mat.alphaTest } : {},
@@ -18160,7 +19679,7 @@ var init_material_recipes = __esm(() => {
 });
 
 // src/material-resources.ts
-import { createHash as createHash4 } from "node:crypto";
+import { createHash as createHash5 } from "node:crypto";
 function provenance(descriptor, hash) {
   return {
     schemaVersion: 1,
@@ -18421,7 +19940,7 @@ function collectMaterialResourceProvenance(root) {
   });
   return [...records.values()].sort((a, b) => `${a.resourceId}:${a.usage}`.localeCompare(`${b.resourceId}:${b.usage}`));
 }
-var TEXTURE_RESOLVER_LIMITS_V1, ApprovedTextureResourceUnavailableError, EMBEDDED_RESOURCE_BASE64, isApprovedId = (value) => APPROVED_TEXTURE_RESOURCE_IDS.includes(value), bytesFromBase64 = (value) => new Uint8Array(Buffer.from(value, "base64")), sha256 = (bytes) => createHash4("sha256").update(bytes).digest("hex"), DEFAULT_APPROVED_TEXTURE_CACHE, materialTextures2 = (material) => {
+var TEXTURE_RESOLVER_LIMITS_V1, ApprovedTextureResourceUnavailableError, EMBEDDED_RESOURCE_BASE64, isApprovedId = (value) => APPROVED_TEXTURE_RESOURCE_IDS.includes(value), bytesFromBase64 = (value) => new Uint8Array(Buffer.from(value, "base64")), sha256 = (bytes) => createHash5("sha256").update(bytes).digest("hex"), DEFAULT_APPROVED_TEXTURE_CACHE, materialTextures2 = (material) => {
   const standard = material;
   const candidates = [
     standard.map,
@@ -18467,7 +19986,7 @@ var init_material_resources = __esm(() => {
 });
 
 // src/material-recipe-runtime.ts
-import * as THREE23 from "three";
+import * as THREE25 from "three";
 async function applyMaterialRecipeV1(request, options = {}) {
   const resolved = resolveMaterialRecipeV1(request);
   const cache = options.cache ?? DEFAULT_APPROVED_TEXTURE_CACHE;
@@ -18490,9 +20009,9 @@ async function applyMaterialRecipeV1(request, options = {}) {
   };
   const material = pbrMaterial(materialOptions);
   material.name = options.name ?? request.id;
-  material.color.setRGB(resolved.baseColorFactor[0], resolved.baseColorFactor[1], resolved.baseColorFactor[2], THREE23.LinearSRGBColorSpace);
+  material.color.setRGB(resolved.baseColorFactor[0], resolved.baseColorFactor[1], resolved.baseColorFactor[2], THREE25.LinearSRGBColorSpace);
   material.opacity = resolved.baseColorFactor[3];
-  material.emissive.setRGB(resolved.emissiveFactor[0], resolved.emissiveFactor[1], resolved.emissiveFactor[2], THREE23.LinearSRGBColorSpace);
+  material.emissive.setRGB(resolved.emissiveFactor[0], resolved.emissiveFactor[1], resolved.emissiveFactor[2], THREE25.LinearSRGBColorSpace);
   const resources = [...loaded.values()].map((entry) => entry.provenance).sort((a, b) => `${a.resourceId}:${a.usage}`.localeCompare(`${b.resourceId}:${b.usage}`));
   const provenance = {
     schemaVersion: 1,
@@ -18685,7 +20204,7 @@ function admitMaterial(input) {
         fail6("procedural references cannot carry a resource ID.");
       const admitted = admitProceduralTextureSpecV3(ref["spec"]);
       if (admitted.spec.usage !== PORTABLE_MATERIAL_SLOT_USAGE[slot])
-        fail6(`${slot} requires ${PORTABLE_MATERIAL_SLOT_USAGE[slot]} data.`);
+        throw new PortableMaterialV3Error(`${slot} requires ${PORTABLE_MATERIAL_SLOT_USAGE[slot]} data.`, "PROCEDURAL_TEXTURE_USAGE");
       texels += admitted.spec.width * admitted.spec.height;
       work += admitted.estimatedWorkUnits;
       bytes += admitted.conservativePixelAllocationBytes;
@@ -18742,16 +20261,16 @@ var init_procedural_material_v3 = __esm(() => {
     occlusion: "occlusion"
   };
   PortableMaterialV3Error = class PortableMaterialV3Error extends ProceduralTextureError {
-    constructor(message) {
-      super(`portableMaterial V3: ${message}`, "PORTABLE_MATERIAL_V3_CONTRACT");
+    constructor(message, diagnostic = "PORTABLE_MATERIAL_V3_CONTRACT") {
+      super(`portableMaterial V3: ${message}`, diagnostic);
       this.name = "PortableMaterialV3Error";
     }
   };
 });
 
 // src/material-library-node.ts
-import { createHash as createHash5, randomUUID as randomUUID2 } from "node:crypto";
-import { lstat as lstat3, mkdir as mkdir2, readFile, readdir, realpath as realpath2, rm, writeFile as writeFile2 } from "node:fs/promises";
+import { createHash as createHash6, randomUUID as randomUUID2 } from "node:crypto";
+import { lstat as lstat3, mkdir as mkdir2, readFile as readFile2, readdir, realpath as realpath2, rm, writeFile as writeFile2 } from "node:fs/promises";
 import { dirname as dirname2, join as join2, relative, resolve as resolve4, sep } from "node:path";
 import sharp from "sharp";
 import { DataTexture as DataTexture3 } from "three";
@@ -19090,7 +20609,7 @@ class FileMaterialLibrary {
     const stat = await lstat3(path);
     if (!stat.isFile() || stat.isSymbolicLink() || stat.size > limit)
       throw new Error("Invalid material library file");
-    return new Uint8Array(await readFile(path));
+    return new Uint8Array(await readFile2(path));
   }
   async readManifest(materialId, revisionId) {
     materialLibraryIdSchema.parse(materialId);
@@ -19700,7 +21219,7 @@ async function createMaterialRecordV2(draft, options) {
   await verifyMaterialRecord(record, { materials: [...records, record] });
   return record;
 }
-var digest = (bytes) => `sha256:${createHash5("sha256").update(bytes).digest("hex")}`, encoder, normalDerivationBudget = (texels) => ({ work: texels * 16, allocation: texels * 8 }), identity = (manifest) => `${manifest.materialId}/${manifest.revisionId}`;
+var digest = (bytes) => `sha256:${createHash6("sha256").update(bytes).digest("hex")}`, encoder, normalDerivationBudget = (texels) => ({ work: texels * 16, allocation: texels * 8 }), identity = (manifest) => `${manifest.materialId}/${manifest.revisionId}`;
 var init_material_library_node = __esm(() => {
   init_atomic_directory();
   init_material_library();
@@ -19774,7 +21293,9 @@ function resolveRequirementsApplicability(requirements) {
     grounding: ["planeY"],
     bounds: ["units", "x", "y", "z"],
     animation: ["clips"],
-    representation: ["precomputedTangents"]
+    representation: ["precomputedTangents"],
+    externalSupport: ["supports"],
+    validation: ["version", "profileId", "mode", "checks"]
   };
   for (const [key, statement] of Object.entries(requirements.requirements)) {
     if (statement?.state !== "requested")
@@ -19891,7 +21412,8 @@ var init_requirements_applicability = __esm(() => {
       kernel: "connectivity"
     },
     { id: "REF_COMPARISON", mode: "observe", keys: [], observation: true },
-    { id: "SWEEP_SELF_INTERSECTION", mode: "observe", keys: [], observation: true, kernel: "sweep" }
+    { id: "SWEEP_SELF_INTERSECTION", mode: "observe", keys: [], observation: true, kernel: "sweep" },
+    { id: "HOST_VALIDATION_PROFILE", mode: "enforce", keys: ["validation"], kernel: "validation" }
   ];
 });
 
@@ -20033,103 +21555,21 @@ var init_requirements_report = __esm(() => {
 });
 
 // src/rebuild-options.ts
-import { z as z5 } from "zod";
+import { z as z6 } from "zod";
 var FULL_OPTIMIZATION_PIPELINE = "rigid-v1", rebuildOptionsSchema;
 var init_rebuild_options = __esm(() => {
-  rebuildOptionsSchema = z5.object({
-    indexPolicy: z5.enum(["indexed", "asBuilt"]).optional(),
-    gltfExporter: z5.enum(["legacy", "three"]),
-    geometryPolicy: z5.enum(["warn", "strict"]),
-    optimize: z5.enum(["off", "auto", "palette", "full"]),
-    optimizationPipeline: z5.literal(FULL_OPTIMIZATION_PIPELINE).optional(),
-    instance: z5.enum(["off", "auto", "on"])
+  rebuildOptionsSchema = z6.object({
+    indexPolicy: z6.enum(["indexed", "asBuilt"]).optional(),
+    gltfExporter: z6.enum(["legacy", "three"]),
+    geometryPolicy: z6.enum(["warn", "strict"]),
+    optimize: z6.enum(["off", "auto", "palette", "full"]),
+    optimizationPipeline: z6.literal(FULL_OPTIMIZATION_PIPELINE).optional(),
+    instance: z6.enum(["off", "auto", "on"])
   });
 });
 
-// src/gltf-io.ts
-import {
-  Extension,
-  ExtensionProperty,
-  PropertyType,
-  RefList,
-  WebIO
-} from "@gltf-transform/core";
-import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
-function createGltfIO() {
-  return new WebIO().registerExtensions([...ALL_EXTENSIONS, MSFTLod]);
-}
-var MSFT_LOD = "MSFT_lod", Lod, MSFTLod;
-var init_gltf_io = __esm(() => {
-  Lod = class Lod extends ExtensionProperty {
-    static EXTENSION_NAME = MSFT_LOD;
-    init() {
-      this.extensionName = MSFT_LOD;
-      this.propertyType = "Lod";
-      this.parentTypes = [PropertyType.NODE, PropertyType.MATERIAL];
-    }
-    getDefaults() {
-      return Object.assign(super.getDefaults(), {
-        levels: new RefList
-      });
-    }
-    addLevel(level) {
-      return this.addRef("levels", level);
-    }
-    listLevels() {
-      return this.listRefs("levels");
-    }
-  };
-  MSFTLod = class MSFTLod extends Extension {
-    extensionName = MSFT_LOD;
-    static EXTENSION_NAME = MSFT_LOD;
-    createLod(name = "") {
-      return new Lod(this.document.getGraph(), name);
-    }
-    read(context) {
-      const json = context.jsonDoc.json;
-      this.readLevels(json.nodes, context.nodes);
-      this.readLevels(json.materials, context.materials);
-      return this;
-    }
-    readLevels(defs, targets) {
-      (defs ?? []).forEach((def, index) => {
-        const ids = def.extensions?.[MSFT_LOD]?.ids;
-        const target = targets[index];
-        if (!target || !Array.isArray(ids))
-          return;
-        const lod = this.createLod();
-        for (const id of ids) {
-          const level = typeof id === "number" ? targets[id] : undefined;
-          if (level && level !== target)
-            lod.addLevel(level);
-        }
-        target.setExtension(MSFT_LOD, lod);
-      });
-    }
-    write(context) {
-      const json = context.jsonDoc.json;
-      const root = this.document.getRoot();
-      for (const node of root.listNodes()) {
-        const index = context.nodeIndexMap.get(node);
-        const ids = node.getExtension(MSFT_LOD)?.listLevels().filter((level) => level.propertyType === PropertyType.NODE).map((level) => context.nodeIndexMap.get(level)).filter((id) => id !== undefined);
-        const def = index === undefined ? undefined : json.nodes?.[index];
-        if (def && ids?.length)
-          def.extensions = { ...def.extensions, [MSFT_LOD]: { ids } };
-      }
-      for (const material of root.listMaterials()) {
-        const index = context.materialIndexMap.get(material);
-        const ids = material.getExtension(MSFT_LOD)?.listLevels().filter((level) => level.propertyType === PropertyType.MATERIAL).map((level) => context.materialIndexMap.get(level)).filter((id) => id !== undefined);
-        const def = index === undefined ? undefined : json.materials?.[index];
-        if (def && ids?.length)
-          def.extensions = { ...def.extensions, [MSFT_LOD]: { ids } };
-      }
-      return this;
-    }
-  };
-});
-
 // src/qa/breadth-final.ts
-import * as THREE24 from "three";
+import * as THREE26 from "three";
 function bytesContainAscii(bytes, value) {
   const needle = new TextEncoder().encode(value);
   outer:
@@ -20188,7 +21628,7 @@ function finalEffectAxis(nodes, mode) {
     if (!(semantic?.roles ?? []).some((role) => /^vfx\.effect\.surface(?:\.|$)/.test(role))) {
       continue;
     }
-    const matrix = new THREE24.Matrix4().fromArray(node.getWorldMatrix());
+    const matrix = new THREE26.Matrix4().fromArray(node.getWorldMatrix());
     const scale = node.getWorldScale();
     const scaleMagnitude = Math.hypot(scale[0], scale[1], scale[2]);
     for (const primitive of node.getMesh()?.listPrimitives() ?? []) {
@@ -20198,9 +21638,9 @@ function finalEffectAxis(nodes, mode) {
       const min = position.getMin([]);
       const max = position.getMax([]);
       const axes = [
-        { score: (max[0] ?? 0) - (min[0] ?? 0), direction: new THREE24.Vector3(1, 0, 0) },
-        { score: (max[1] ?? 0) - (min[1] ?? 0), direction: new THREE24.Vector3(0, 1, 0) },
-        { score: (max[2] ?? 0) - (min[2] ?? 0), direction: new THREE24.Vector3(0, 0, 1) }
+        { score: (max[0] ?? 0) - (min[0] ?? 0), direction: new THREE26.Vector3(1, 0, 0) },
+        { score: (max[1] ?? 0) - (min[1] ?? 0), direction: new THREE26.Vector3(0, 1, 0) },
+        { score: (max[2] ?? 0) - (min[2] ?? 0), direction: new THREE26.Vector3(0, 0, 1) }
       ];
       const selected = axes.reduce((candidate, value) => mode === "length" ? value.score > candidate.score ? value : candidate : value.score < candidate.score ? value : candidate);
       const candidate = {
@@ -20557,6 +21997,8 @@ function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {
     }
     if (decision.ruleId === ASSET_SCOPE_QA_RULE.id && !scopeObservation)
       continue;
+    if (decision.ruleId === HOST_VALIDATION_QA_RULE.id)
+      continue;
     if (decision.ruleId === PART_CONNECTIVITY_QA_RULE.id && !(scene instanceof Object3D15))
       continue;
     executedRules.push(decision.ruleId);
@@ -20569,7 +22011,7 @@ function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {
         findings.push(decision.mode === "observe" || decision.mode === "warn" ? { ...finding, disposition: decision.mode } : finding);
       continue;
     }
-    const measured = decision.ruleId === SWEEP_QA_RULE.id ? inspectSweepGeometry(scene) : decision.ruleId === PART_CONNECTIVITY_QA_RULE.id ? inspectPartConnectivity(scene) : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === "requested" ? inspectAssetScope({
+    const measured = decision.ruleId === SWEEP_QA_RULE.id ? inspectSweepGeometry(scene) : decision.ruleId === PART_CONNECTIVITY_QA_RULE.id ? inspectPartConnectivity(scene, needs.externalSupport?.state === "requested" ? needs.externalSupport.value.supports : undefined) : decision.ruleId === ASSET_SCOPE_QA_RULE.id && scope?.state === "requested" ? inspectAssetScope({
       profile: "asset.requirements.v1",
       scope: { schemaVersion: 1, scope: scope.value, explicit: true },
       derivedEvidence: { source: "engine-scene-analysis", assetScope: scopeObservation }
@@ -20605,14 +22047,17 @@ function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {
     } : {}
   });
 }
-function appendRequirementsQa(context, report, findings, metrics = {}) {
+function appendRequirementsQa(context, report, findings, metrics = {}, executedRules = []) {
   const priorMetrics = Object.fromEntries(Object.entries(report.dimensions).flatMap(([dimension, value]) => value.metrics ? [[dimension, value.metrics]] : []));
   const merged = { ...priorMetrics };
   for (const [dimension, value] of Object.entries(metrics ?? {}))
     merged[dimension] = { ...priorMetrics[dimension], ...value };
   return createRequirementsQaReport(context, {
     findings: [...Object.values(report.dimensions).flatMap((x) => x.findings), ...findings],
-    executedRules: report.rules.filter((x) => x.status === "evaluated").map((x) => x.id),
+    executedRules: [
+      ...report.rules.filter((x) => x.status === "evaluated").map((x) => x.id),
+      ...executedRules
+    ],
     modes: Object.fromEntries(report.rules.map((x) => [x.id, x.mode])),
     evaluatedDimensions: [
       ...new Set([
@@ -20688,6 +22133,16 @@ async function appendRequirementsFinalQa(context, report, gltf, bytes, instancea
       exportIntegrity: finalEffectsMetrics(evidence)
     });
   }
+  const validation = context.requirements.requirements.validation;
+  const hostRule = report.rules.find((r) => r.id === HOST_VALIDATION_QA_RULE.id);
+  if (validation?.state === "requested" && hostRule && hostRule.status !== "notRequested" && hostRule.mode !== "off") {
+    const evaluation = await evaluateValidationProfileGlb(validation.value, bytes);
+    const findings = hostRule.mode === "enforce" ? evaluation.findings : evaluation.findings.map((f) => ({
+      ...f,
+      disposition: f.disposition === "observe" ? f.disposition : hostRule.mode
+    }));
+    result = appendRequirementsQa(context, result, findings, { requirementReadiness: evaluation.metrics }, evaluation.complete ? [HOST_VALIDATION_QA_RULE.id] : []);
+  }
   return result;
 }
 var registry;
@@ -20710,6 +22165,7 @@ var init_requirements_run = __esm(() => {
   init_architecture();
   init_environment2();
   init_requirements_applicability();
+  init_validation_profile2();
   init_requirements_report();
   init_run();
   registry = new QaRegistry([
@@ -20728,12 +22184,13 @@ var init_requirements_run = __esm(() => {
     CHARACTER_ADVISORY_QA_RULE,
     VFX_EXACT_QA_RULE,
     VFX_ADVISORY_QA_RULE,
-    ASSET_SCOPE_QA_RULE
+    ASSET_SCOPE_QA_RULE,
+    HOST_VALIDATION_QA_RULE
   ]);
 });
 
 // src/qa/skin-integrity.ts
-import * as THREE25 from "three";
+import * as THREE27 from "three";
 function validAttribute(a, count, size) {
   if (!a || a.itemSize !== size || a.count !== count || !Number.isSafeInteger(count) || count < 1)
     return false;
@@ -20780,9 +22237,9 @@ function inspectSkinIntegrity(root) {
     }
     while (chain.length) {
       const n = chain.pop();
-      const local = n.matrixAutoUpdate ? new THREE25.Matrix4().compose(n.position, n.quaternion, n.scale) : n.matrix.clone();
+      const local = n.matrixAutoUpdate ? new THREE27.Matrix4().compose(n.position, n.quaternion, n.scale) : n.matrix.clone();
       const parent = n.parent ? worlds.get(n.parent) : undefined;
-      const value = n.matrixWorldAutoUpdate === false ? n.matrixWorld.clone() : parent ? new THREE25.Matrix4().multiplyMatrices(parent, local) : local;
+      const value = n.matrixWorldAutoUpdate === false ? n.matrixWorld.clone() : parent ? new THREE27.Matrix4().multiplyMatrices(parent, local) : local;
       worlds.set(n, value);
     }
     return worlds.get(node);
@@ -20832,7 +22289,7 @@ function inspectSkinIntegrity(root) {
       if (result.truncated)
         break;
     }
-    if (!finiteAffine(mesh.bindMatrix) || !Number.isFinite(mesh.bindMatrix.determinant()) || mesh.bindMatrix.determinant() === 0 || ![THREE25.AttachedBindMode, THREE25.DetachedBindMode].includes(mesh.bindMode)) {
+    if (!finiteAffine(mesh.bindMatrix) || !Number.isFinite(mesh.bindMatrix.determinant()) || mesh.bindMatrix.determinant() === 0 || ![THREE27.AttachedBindMode, THREE27.DetachedBindMode].includes(mesh.bindMode)) {
       add("SKIN_BIND_MATRIX", "Mesh requires a finite invertible affine bind matrix and an attached or detached bind mode.", "bindMatrix");
     }
     const position = mesh.geometry?.getAttribute("position"), count = position?.count ?? 0;
@@ -20881,7 +22338,7 @@ function inspectSkinIntegrity(root) {
       add("SKIN_POSE_TRANSFORM", "Current mesh world transform must be finite and affine.");
       continue;
     }
-    const inverse = mesh.bindMode === THREE25.AttachedBindMode ? meshWorld.clone().invert() : mesh.bindMatrix.clone().invert();
+    const inverse = mesh.bindMode === THREE27.AttachedBindMode ? meshWorld.clone().invert() : mesh.bindMatrix.clone().invert();
     const matrices = [];
     for (let joint = 0;joint < bones.length; joint++) {
       const boneWorld = world(bones[joint]);
@@ -20889,13 +22346,13 @@ function inspectSkinIntegrity(root) {
         add("SKIN_POSE_TRANSFORM", `Current transform for joint ${joint} must be finite and affine.`, `joints[${joint}]`);
         break;
       }
-      matrices.push(new THREE25.Matrix4().multiplyMatrices(boneWorld, skeleton.boneInverses[joint]).multiply(mesh.bindMatrix));
+      matrices.push(new THREE27.Matrix4().multiplyMatrices(boneWorld, skeleton.boneInverses[joint]).multiply(mesh.bindMatrix));
     }
     if (result.findings.length !== start)
       continue;
-    const base = new THREE25.Vector3, posed = new THREE25.Vector3, temp = new THREE25.Vector3, box = new THREE25.Box3;
+    const base = new THREE27.Vector3, posed = new THREE27.Vector3, temp = new THREE27.Vector3, box = new THREE27.Box3;
     for (let vertex = 0;vertex < count; vertex++) {
-      THREE25.Mesh.prototype.getVertexPosition.call(mesh, vertex, base);
+      THREE27.Mesh.prototype.getVertexPosition.call(mesh, vertex, base);
       posed.set(0, 0, 0);
       for (let lane = 0;lane < 4; lane++) {
         const weight = weights.getComponent(vertex, lane);
@@ -20917,334 +22374,8 @@ function inspectSkinIntegrity(root) {
 var MAX_FINDINGS = 64, WEIGHT_TOLERANCE = 0.00001;
 var init_skin_integrity = () => {};
 
-// src/metrics.ts
-function primTris(prim) {
-  const count = prim.getIndices()?.getCount() ?? prim.getAttribute("POSITION")?.getCount() ?? 0;
-  switch (prim.getMode()) {
-    case 4:
-      return Math.floor(count / 3);
-    case 5:
-    case 6:
-      return Math.max(0, count - 2);
-    default:
-      return 0;
-  }
-}
-function instanceCopies(node) {
-  const ext = node.getExtension("EXT_mesh_gpu_instancing");
-  if (!ext)
-    return 1;
-  return ext.getAttribute?.("TRANSLATION")?.getCount() ?? ext.getAttribute?.("ROTATION")?.getCount() ?? ext.getAttribute?.("SCALE")?.getCount() ?? 1;
-}
-function isHiddenGltfNode(node) {
-  const visibility = node.getExtension("KHR_node_visibility");
-  return visibility?.getVisible?.() === false;
-}
-function nodeTriangles(node) {
-  return subtreeTriangles(node, false);
-}
-function drawnNodeTriangles(node) {
-  return subtreeTriangles(node, true);
-}
-function subtreeTriangles(node, drawn) {
-  if (drawn && isHiddenGltfNode(node))
-    return 0;
-  let triangles = 0;
-  const mesh = node.getMesh();
-  if (mesh) {
-    const copies = instanceCopies(node);
-    for (const prim of mesh.listPrimitives())
-      triangles += primTris(prim) * copies;
-  }
-  for (const child of node.listChildren())
-    triangles += subtreeTriangles(child, drawn);
-  return triangles;
-}
-function collectGlbMetrics(doc, triangles) {
-  const root = doc.getRoot();
-  const geomSet = new Set;
-  const matSet = new Set;
-  let drawCalls = 0;
-  let derivedTris = 0;
-  let meshNodes = 0;
-  let meshInstances = 0;
-  const visit = (node) => {
-    if (isHiddenGltfNode(node))
-      return;
-    const mesh = node.getMesh();
-    if (mesh) {
-      const copies = instanceCopies(node);
-      meshNodes += 1;
-      meshInstances += copies;
-      for (const prim of mesh.listPrimitives()) {
-        drawCalls += 1;
-        geomSet.add(prim);
-        derivedTris += primTris(prim) * copies;
-        const mat = prim.getMaterial();
-        if (mat)
-          matSet.add(mat);
-      }
-    }
-    for (const child of node.listChildren())
-      visit(child);
-  };
-  for (const scene of root.listScenes()) {
-    for (const node of scene.listChildren())
-      visit(node);
-  }
-  const transparentMaterials = root.listMaterials().filter((m) => m.getAlphaMode() === "BLEND").length;
-  return {
-    uniqueGeometries: geomSet.size,
-    uniqueMaterials: matSet.size,
-    meshNodes,
-    meshInstances,
-    drawCalls,
-    textureCount: root.listTextures().length,
-    skinned: root.listSkins().length > 0,
-    transparentMaterials,
-    triangles: triangles ?? derivedTris
-  };
-}
-function rubricGrade(m) {
-  const grade = materialBand(m.uniqueMaterials).grade;
-  return (grade === "A" || grade === "B") && lowersToC(m) ? "C" : grade;
-}
-function textureSlots(m) {
-  return [
-    [m.getBaseColorTexture(), m.getBaseColorTextureInfo()],
-    [m.getEmissiveTexture(), m.getEmissiveTextureInfo()],
-    [m.getNormalTexture(), m.getNormalTextureInfo()],
-    [m.getOcclusionTexture(), m.getOcclusionTextureInfo()],
-    [m.getMetallicRoughnessTexture(), m.getMetallicRoughnessTextureInfo()]
-  ];
-}
-function shadingKey(m, textures) {
-  const binding = (info) => info && [
-    info.getTexCoord(),
-    info.getWrapS(),
-    info.getWrapT(),
-    info.getMagFilter(),
-    info.getMinFilter(),
-    extensionNames(info)
-  ];
-  return JSON.stringify([
-    m.getAlphaMode(),
-    m.getAlphaMode() === "MASK" ? m.getAlphaCutoff() : null,
-    m.getDoubleSided(),
-    textureSlots(m).map(([texture, info]) => texture && [textures.indexOf(texture), binding(info)]),
-    extensionNames(m),
-    m.getExtras()
-  ]);
-}
-function differingFactors(group) {
-  const [first, ...rest] = group;
-  const differs = MERGE_FACTORS.filter(([, read]) => rest.some((m) => JSON.stringify(read(m)) !== JSON.stringify(read(first)))).map(([name]) => name);
-  for (const extension of first.listExtensions())
-    if (rest.some((m) => !m.getExtension(extension.extensionName)?.equals(extension)))
-      differs.push(extension.extensionName);
-  const slots = textureSlots(first);
-  slots.forEach(([, info], slot) => {
-    for (const extension of info?.listExtensions() ?? [])
-      if (rest.some((m) => !textureSlots(m)[slot]?.[1]?.getExtension(extension.extensionName)?.equals(extension)))
-        differs.push(extension.extensionName);
-  });
-  return [...new Set(differs)];
-}
-function mergeNeeds(differs) {
-  const needs = [];
-  if (differs.some((d) => d === "baseColorFactor" || d === "emissiveFactor"))
-    needs.push("colours in a shared texture, an atlas region or vertex colours");
-  if (differs.some((d) => d === "metallicFactor" || d === "roughnessFactor"))
-    needs.push("one metallic/roughness value or a shared metallicRoughness texture");
-  if (differs.some((d) => d === "normalScale" || d === "occlusionStrength"))
-    needs.push("one normal scale and occlusion strength");
-  if (differs.some((d) => d.startsWith("KHR_") || d.startsWith("EXT_")))
-    needs.push("one setting for each differing extension");
-  return needs.length ? needs.join("; ") : "only reusing one material; the members already match";
-}
-function materialMergeCandidates(doc) {
-  const root = doc.getRoot();
-  const parts = new Map;
-  const visit = (node) => {
-    if (isHiddenGltfNode(node))
-      return;
-    const mesh = node.getMesh();
-    const name = node.getName() || mesh?.getName() || `node ${root.listNodes().indexOf(node)}`;
-    for (const primitive of mesh?.listPrimitives() ?? []) {
-      const material = primitive.getMaterial();
-      if (!material)
-        continue;
-      const list = parts.get(material) ?? [];
-      if (!list.includes(name))
-        list.push(name);
-      parts.set(material, list);
-    }
-    for (const child of node.listChildren())
-      visit(child);
-  };
-  for (const scene of root.listScenes())
-    for (const node of scene.listChildren())
-      visit(node);
-  const materials = root.listMaterials();
-  const textures = root.listTextures();
-  const groups = new Map;
-  for (const material of materials) {
-    if (!parts.has(material))
-      continue;
-    const key = shadingKey(material, textures);
-    const group = groups.get(key);
-    if (group)
-      group.push(material);
-    else
-      groups.set(key, [material]);
-  }
-  return [...groups.values()].filter((group) => group.length > 1).map((group) => {
-    const differs = differingFactors(group);
-    return {
-      materials: group.map((m) => m.getName() || `${parts.get(m)[0]} material`),
-      parts: group.map((m) => parts.get(m).slice(0, MERGE_PARTS_KEPT)),
-      alphaMode: group[0].getAlphaMode(),
-      differs,
-      needs: mergeNeeds(differs)
-    };
-  });
-}
-function shortList(names, shown, joiner) {
-  const head = names.slice(0, shown).join(joiner);
-  return names.length > shown ? `${head} and ${names.length - shown} more` : head;
-}
-function mergeAdvice(m, candidates) {
-  const merged = candidates.reduce((n, c) => n + c.materials.length - 1, 0);
-  const blendMerged = candidates.filter((c) => c.alphaMode === "BLEND").reduce((n, c) => n + c.materials.length - 1, 0);
-  const projected = {
-    ...m,
-    uniqueMaterials: Math.max(1, m.uniqueMaterials - merged),
-    transparentMaterials: Math.max(0, m.transparentMaterials - blendMerged)
-  };
-  const projectedGrade = rubricGrade(projected);
-  const band = materialBand(projected.uniqueMaterials);
-  const named = (c) => shortList(c.materials, 4, " + ");
-  const groups = candidates.slice(0, 3).map((c) => {
-    const why = c.differs.length ? `differ in ${c.differs.join(", ")}` : "identical shading";
-    return `${named(c)} (${why})`;
-  });
-  if (candidates.length > 3)
-    groups.push(`${candidates.length - 3} more groups`);
-  const otherFactors = projectedGrade === band.grade ? "" : `; other factors give ${projectedGrade}`;
-  const summary = ` Optional advice, not a requirement: merging ${groups.join("; ")} would leave ` + `${counted(projected.uniqueMaterials, "material", "materials")} (${band.grade} at ${band.range}${otherFactors}).`;
-  const reasons = candidates.map((c) => {
-    const why = c.differs.length ? ` and differ in ${c.differs.join(", ")}` : "";
-    return `optional advice: ${named(c)} share shading${why}; a merge needs ${c.needs}; parts: ${shortList(c.parts.flat(), 3, ", ")}`;
-  });
-  return {
-    advice: {
-      optional: true,
-      materialMerges: [...candidates],
-      projectedMaterials: projected.uniqueMaterials,
-      projectedGrade
-    },
-    summary,
-    reasons
-  };
-}
-function gradeInstanceability(metrics, opts = {}) {
-  const m = metrics;
-  const band = materialBand(m.uniqueMaterials);
-  let grade = band.grade;
-  const materials = `${counted(m.uniqueMaterials, "distinct material", "distinct materials")} (${band.grade} at ${band.range})`;
-  const transparency = m.transparentMaterials > 0 ? counted(m.transparentMaterials, "transparent material", "transparent materials") : undefined;
-  const textures = m.textureCount > 4 ? `${m.textureCount} textures` : undefined;
-  const drivers = [];
-  const also = [];
-  if ((grade === "A" || grade === "B") && (transparency || textures)) {
-    grade = "C";
-    if (transparency)
-      drivers.push(`${transparency} (lowers A/B to C)`);
-    if (textures)
-      drivers.push(`${textures} (over 4 lowers A/B to C)`);
-    also.push(materials);
-  } else {
-    drivers.push(materials);
-    if (transparency)
-      also.push(`${transparency} (lowers only A/B to C)`);
-    if (textures)
-      also.push(`${textures} (over 4 lowers only A/B to C)`);
-  }
-  also.push(counted(m.uniqueGeometries, "geometry", "geometries"), counted(m.drawCalls, "draw call", "draw calls"));
-  if (m.skinned)
-    also.push("skinned (clone-rendered, not penalized)");
-  const setBy = drivers.join(" and ");
-  const reasons = [
-    `grade ${grade} set by ${setBy}`,
-    `${m.uniqueMaterials} material${m.uniqueMaterials === 1 ? "" : "s"}, ` + `${m.uniqueGeometries} geometr${m.uniqueGeometries === 1 ? "y" : "ies"}, ` + `${m.drawCalls} draw call${m.drawCalls === 1 ? "" : "s"}`
-  ];
-  if (transparency)
-    reasons.push(`${m.transparentMaterials} transparent material(s) force per-object sort`);
-  if (textures)
-    reasons.push(`${m.textureCount} textures (consider atlasing)`);
-  if (m.skinned)
-    reasons.push("skinned/animated — clone-rendered (not statically GPU-instanced); fine at low counts");
-  if (opts.category)
-    reasons.push(`category: ${opts.category}`);
-  const summary = `${grade} (informational, not a QA verdict), set by ${setBy}. Also: ${also.join("; ")}.`;
-  if (!opts.mergeCandidates?.length)
-    return { grade, summary, reasons, metrics: m };
-  const merge = mergeAdvice(m, opts.mergeCandidates);
-  return {
-    grade,
-    summary: summary + merge.summary,
-    reasons: [...reasons, ...merge.reasons],
-    metrics: m,
-    advice: merge.advice
-  };
-}
-var MATERIAL_GRADE_BANDS, counted = (n, one, many) => `${n} ${n === 1 ? one : many}`, materialBand = (materials) => MATERIAL_GRADE_BANDS.find((b) => materials <= b.max), lowersToC = (m) => m.transparentMaterials > 0 || m.textureCount > 4, MERGE_PARTS_KEPT = 8, MERGE_FACTORS, extensionNames = (property) => property.listExtensions().map((extension) => extension.extensionName).sort();
-var init_metrics = __esm(() => {
-  MATERIAL_GRADE_BANDS = [
-    { grade: "A", max: 1, range: "0-1" },
-    { grade: "B", max: 3, range: "2-3" },
-    { grade: "C", max: 6, range: "4-6" },
-    { grade: "D", max: 12, range: "7-12" },
-    { grade: "F", max: Number.POSITIVE_INFINITY, range: "13+" }
-  ];
-  MERGE_FACTORS = [
-    ["baseColorFactor", (m) => m.getBaseColorFactor()],
-    ["emissiveFactor", (m) => m.getEmissiveFactor()],
-    ["metallicFactor", (m) => m.getMetallicFactor()],
-    ["roughnessFactor", (m) => m.getRoughnessFactor()],
-    ["normalScale", (m) => m.getNormalScale()],
-    ["occlusionStrength", (m) => m.getOcclusionStrength()]
-  ];
-});
-
-// src/written-nodes.ts
-function exportedRoot(doc, purpose) {
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  const top = scene?.listChildren() ?? [];
-  if (top.length !== 1)
-    throw new Error(`${purpose} expects the exporter to write one root node.`);
-  return top[0];
-}
-function writtenNodeResolver(root, doc, purpose) {
-  const top = exportedRoot(doc, purpose);
-  return (node) => {
-    const path = [];
-    for (let current = node;current !== root; current = current.parent) {
-      if (!current.parent)
-        throw new Error(`${purpose}: ${node.name} is outside the asset root.`);
-      path.unshift(current.parent.children.indexOf(current));
-    }
-    let target = top;
-    for (const index of path)
-      target = target?.listChildren()[index];
-    if (!target || (target.getName() || "") !== (node.name || ""))
-      throw new Error(`${purpose} could not find the written node for ${JSON.stringify(node.name)}.`);
-    return target;
-  };
-}
-
 // src/lod-export.ts
-import { PropertyType as PropertyType2 } from "@gltf-transform/core";
+import { PropertyType as PropertyType3 } from "@gltf-transform/core";
 function applyLodChains(root, sets, doc) {
   if (sets.length === 0)
     return;
@@ -21284,9 +22415,9 @@ function listLodChainNodes(doc) {
   const chains = [];
   const visit = (siblings, parentPath) => {
     siblings.forEach((node, index) => {
-      const at = (name) => `${parentPath}${segment2(name, occurrence(siblings, index, name))}`;
+      const at = (name) => `${parentPath}${segment4(name, occurrence(siblings, index, name))}`;
       const path = at(node.getName());
-      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType2.NODE);
+      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType3.NODE);
       if (lower.length > 0)
         chains.push({
           levels: [node, ...lower],
@@ -21295,7 +22426,7 @@ function listLodChainNodes(doc) {
       visit(node.listChildren(), path);
     });
   };
-  visit(scene.listChildren(), segment2(scene.getName() || "Scene", 0));
+  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0));
   return chains;
 }
 function isImpostorLevel(node) {
@@ -21318,106 +22449,10 @@ function summarizeLodChains(doc) {
     };
   });
 }
-var MSFT_SCREENCOVERAGE = "MSFT_screencoverage", segment2 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
+var MSFT_SCREENCOVERAGE = "MSFT_screencoverage", segment4 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
 var init_lod_export = __esm(() => {
   init_semantic();
   init_gltf_io();
-  init_metrics();
-});
-
-// src/node-visibility.ts
-import { KHRNodeVisibility } from "@gltf-transform/extensions";
-import * as THREE26 from "three";
-function applyNodeVisibility(root, doc) {
-  const hidden = [];
-  root.traverse((node) => {
-    if (node.visible === false)
-      hidden.push(node);
-  });
-  if (hidden.length === 0)
-    return;
-  const written = hidden.map(writtenNodeResolver(root, doc, "Visibility export"));
-  const extension = doc.createExtension(KHRNodeVisibility);
-  for (const node of written)
-    node.setExtension(KHR_NODE_VISIBILITY, extension.createVisibility().setVisible(false));
-}
-function summarizeHiddenNodes(doc) {
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  if (!scene)
-    return [];
-  const found = [];
-  const visit = (siblings, parentPath) => {
-    const seen = new Map;
-    for (const node of siblings) {
-      const name = node.getName();
-      const occurrence = seen.get(name) ?? 0;
-      seen.set(name, occurrence + 1);
-      const path = `${parentPath}${segment3(name, occurrence)}`;
-      if (isHiddenGltfNode(node))
-        found.push({ path, name, triangles: nodeTriangles(node) });
-      else
-        visit(node.listChildren(), path);
-    }
-  };
-  visit(scene.listChildren(), segment3(scene.getName() || "Scene", 0));
-  return found;
-}
-function drawnSceneBounds(scene) {
-  const min = [Infinity, Infinity, Infinity];
-  const max = [-Infinity, -Infinity, -Infinity];
-  const visit = (node) => {
-    if (isHiddenGltfNode(node))
-      return;
-    const mesh = node.getMesh();
-    if (mesh) {
-      const base = new THREE26.Matrix4().fromArray(node.getWorldMatrix());
-      const instances = node.getExtension("EXT_mesh_gpu_instancing");
-      const translation = instances?.getAttribute("TRANSLATION");
-      const rotation = instances?.getAttribute("ROTATION");
-      const scale = instances?.getAttribute("SCALE");
-      const countInstances = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
-      const matrices = [];
-      for (let i = 0;i < countInstances; i++) {
-        const t = translation?.getElement(i, []) ?? [0, 0, 0];
-        const r = rotation?.getElement(i, []) ?? [0, 0, 0, 1];
-        const s = scale?.getElement(i, []) ?? [1, 1, 1];
-        const localMatrix = new THREE26.Matrix4().compose(new THREE26.Vector3().fromArray(t), new THREE26.Quaternion().fromArray(r), new THREE26.Vector3().fromArray(s));
-        matrices.push(base.clone().multiply(localMatrix).toArray());
-      }
-      const local = [0, 0, 0];
-      for (const primitive of mesh.listPrimitives()) {
-        const position = primitive.getAttribute("POSITION");
-        if (!position)
-          continue;
-        const indices = primitive.getIndices();
-        const count = indices ? indices.getCount() : position.getCount();
-        for (const m of matrices)
-          for (let i = 0;i < count; i++) {
-            position.getElement(indices ? indices.getScalar(i) : i, local);
-            const [x, y, z] = local;
-            const world = [
-              m[0] * x + m[4] * y + m[8] * z + m[12],
-              m[1] * x + m[5] * y + m[9] * z + m[13],
-              m[2] * x + m[6] * y + m[10] * z + m[14]
-            ];
-            for (let k = 0;k < 3; k++) {
-              if (world[k] < min[k])
-                min[k] = world[k];
-              if (world[k] > max[k])
-                max[k] = world[k];
-            }
-          }
-      }
-    }
-    for (const child of node.listChildren())
-      visit(child);
-  };
-  for (const node of scene.listChildren())
-    visit(node);
-  return { min, max };
-}
-var KHR_NODE_VISIBILITY = "KHR_node_visibility", segment3 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`;
-var init_node_visibility = __esm(() => {
   init_metrics();
 });
 
@@ -21464,7 +22499,7 @@ var init_material_export = __esm(() => {
 });
 
 // src/community-exporter.ts
-import * as THREE27 from "three";
+import * as THREE28 from "three";
 import { GLTFExporter } from "three/addons/exporters/GLTFExporter.js";
 import { GLB_BUFFER } from "@gltf-transform/core";
 function resolveGltfExporter(value = typeof process !== "undefined" ? process.env["KILN_GLTF_EXPORTER"] : undefined) {
@@ -21494,7 +22529,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       return found;
     const copy = cleanClone(source);
     normalizeTextureTransform(copy);
-    copy.source = new THREE27.TextureSource(source.image);
+    copy.source = new THREE28.TextureSource(source.image);
     textures.set(source, copy);
     const bytes = source.userData["encoded"];
     if (bytes?.bytes) {
@@ -21503,8 +22538,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       encoded.push((async () => {
         copy.image = await platform.decode(bytes.bytes);
         Object.defineProperty(copy, "isDataTexture", { value: true });
-        copy.format = THREE27.RGBAFormat;
-        copy.type = THREE27.UnsignedByteType;
+        copy.format = THREE28.RGBAFormat;
+        copy.type = THREE28.UnsignedByteType;
       })());
     }
     return copy;
@@ -21521,7 +22556,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       physical.sheen = 1;
     }
     for (const [key, value] of Object.entries(copy)) {
-      if (value instanceof THREE27.Texture)
+      if (value instanceof THREE28.Texture)
         copy[key] = texture(value);
     }
     materials.set(source, copy);
@@ -21537,15 +22572,15 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
     if (!copy.matrixAutoUpdate)
       copy.matrix.decompose(copy.position, copy.quaternion, copy.scale);
     if (source.isScene) {
-      copy = new THREE27.Group;
+      copy = new THREE28.Group;
       copy.copy(shadow, false);
     }
     if (source.isSprite) {
       const sprite = source;
-      const geometry = new THREE27.PlaneGeometry(1, 1);
+      const geometry = new THREE28.PlaneGeometry(1, 1);
       geometry.translate(0.5 - sprite.center.x, 0.5 - sprite.center.y, 0);
       geometry.rotateZ(sprite.material.rotation);
-      const spriteMaterial = new THREE27.MeshBasicMaterial({
+      const spriteMaterial = new THREE28.MeshBasicMaterial({
         name: sprite.material.name,
         color: sprite.material.color,
         opacity: sprite.material.opacity,
@@ -21556,8 +22591,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
       });
       Object.assign(spriteMaterial.userData, authorExtras?.material(sprite.material));
       originalMaterials.set(spriteMaterial, sprite.material);
-      copy = new THREE27.Mesh(geometry, spriteMaterial);
-      THREE27.Object3D.prototype.copy.call(copy, shadow, false);
+      copy = new THREE28.Mesh(geometry, spriteMaterial);
+      THREE28.Object3D.prototype.copy.call(copy, shadow, false);
     }
     Object.assign(copy.userData, authorExtras?.node(source), rigExtrasForExport(source), openShellExtras(source), kitExtras(source), repeatInstancesExtras(source));
     const semantic = source.userData[KILN_SEMANTIC_EXTRAS_KEY];
@@ -21621,8 +22656,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
     if (!context)
       throw new Error("A 2D canvas is required to prepare export texture channels.");
     context.putImageData(new ImageData(new Uint8ClampedArray(data), width, height), 0, 0);
-    const adapted = new THREE27.Texture().copy(map);
-    adapted.source = new THREE27.TextureSource(canvas);
+    const adapted = new THREE28.Texture().copy(map);
+    adapted.source = new THREE28.TextureSource(canvas);
     canvasInputs.set(map, adapted);
     const direct = directImages.get(map);
     if (direct)
@@ -21631,7 +22666,7 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
   };
   for (const material of materials.values()) {
     for (const [key, value] of Object.entries(material)) {
-      if (value instanceof THREE27.Texture && value.flipY && value.image?.data)
+      if (value instanceof THREE28.Texture && value.flipY && value.image?.data)
         material[key] = canvasInput(value);
     }
     const standard = material;
@@ -21653,8 +22688,8 @@ async function communitySceneDocument(root, clips, platform = browserPlatform, a
     }
     cloned.tracks = cloned.tracks.filter((track) => {
       try {
-        const binding = THREE27.PropertyBinding.parseTrackName(track.name);
-        return ["position", "quaternion", "scale", "morphTargetInfluences"].includes(binding.propertyName) && THREE27.PropertyBinding.findNode(copy, binding.nodeName) !== null;
+        const binding = THREE28.PropertyBinding.parseTrackName(track.name);
+        return ["position", "quaternion", "scale", "morphTargetInfluences"].includes(binding.propertyName) && THREE28.PropertyBinding.findNode(copy, binding.nodeName) !== null;
       } catch {
         return false;
       }
@@ -21847,443 +22882,6 @@ function applyIndexPolicy(doc, policy) {
   };
 }
 var init_index_policy = () => {};
-
-// src/delivery-inspect.ts
-import * as THREE28 from "three";
-import { PropertyType as PropertyType3 } from "@gltf-transform/core";
-function decompose(matrix) {
-  const translation = new THREE28.Vector3;
-  const rotation = new THREE28.Quaternion;
-  const scale = new THREE28.Vector3;
-  matrix.decompose(translation, rotation, scale);
-  const clean = (value) => Object.is(value, -0) ? 0 : value;
-  return {
-    translation: translation.toArray().map(clean),
-    rotation: rotation.toArray().map(clean),
-    scale: scale.toArray().map(clean)
-  };
-}
-function drawnTriangles(visited) {
-  const values = [];
-  const local = [0, 0, 0];
-  const point = new THREE28.Vector3;
-  for (const { node, roles, hidden } of visited) {
-    const mesh = node.getMesh();
-    if (!mesh || hidden || roles.some((role) => role.startsWith("collider.")))
-      continue;
-    const base = worldMatrix(node);
-    const instances = node.getExtension("EXT_mesh_gpu_instancing");
-    const translation = instances?.getAttribute("TRANSLATION");
-    const rotation = instances?.getAttribute("ROTATION");
-    const scale = instances?.getAttribute("SCALE");
-    const copies = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
-    const matrices = [];
-    for (let i = 0;i < copies; i++) {
-      const instance = new THREE28.Matrix4().compose(new THREE28.Vector3().fromArray(translation?.getElement(i, []) ?? [0, 0, 0]), new THREE28.Quaternion().fromArray(rotation?.getElement(i, []) ?? [0, 0, 0, 1]), new THREE28.Vector3().fromArray(scale?.getElement(i, []) ?? [1, 1, 1]));
-      matrices.push(base.clone().multiply(instance));
-    }
-    for (const primitive of mesh.listPrimitives()) {
-      if (primitive.getMode() !== 4)
-        continue;
-      const position = primitive.getAttribute("POSITION");
-      if (!position)
-        continue;
-      const indices = primitive.getIndices();
-      const count = indices ? indices.getCount() : position.getCount();
-      for (const matrix of matrices)
-        for (let i = 0;i + 2 < count; i += 3)
-          for (let k = 0;k < 3; k++) {
-            position.getElement(indices ? indices.getScalar(i + k) : i + k, local);
-            point.fromArray(local).applyMatrix4(matrix);
-            values.push(point.x, point.y, point.z);
-          }
-    }
-  }
-  return Float64Array.from(values);
-}
-function triangleOverlapsBox(a, b, c, h, tolerance) {
-  const verts = [a, b, c];
-  const he = [h.x + tolerance, h.y + tolerance, h.z + tolerance];
-  for (let axis = 0;axis < 3; axis++) {
-    const values = verts.map((v) => v.getComponent(axis));
-    if (Math.min(...values) > he[axis] || Math.max(...values) < -he[axis])
-      return false;
-  }
-  const e = [
-    new THREE28.Vector3().subVectors(b, a),
-    new THREE28.Vector3().subVectors(c, b),
-    new THREE28.Vector3().subVectors(a, c)
-  ];
-  const normal = new THREE28.Vector3().crossVectors(e[0], e[1]);
-  const axes = [normal];
-  const units = [
-    new THREE28.Vector3(1, 0, 0),
-    new THREE28.Vector3(0, 1, 0),
-    new THREE28.Vector3(0, 0, 1)
-  ];
-  for (const unit of units)
-    for (const edge of e)
-      axes.push(new THREE28.Vector3().crossVectors(unit, edge));
-  for (const axis of axes) {
-    if (axis.lengthSq() < 0.000000000000000000000001)
-      continue;
-    const projections = verts.map((v) => v.dot(axis));
-    const radius = he[0] * Math.abs(axis.x) + he[1] * Math.abs(axis.y) + he[2] * Math.abs(axis.z);
-    if (Math.min(...projections) > radius || Math.max(...projections) < -radius)
-      return false;
-  }
-  return true;
-}
-function closestPointOnTriangle(p, a, b, c) {
-  const ab = new THREE28.Vector3().subVectors(b, a);
-  const ac = new THREE28.Vector3().subVectors(c, a);
-  const ap = new THREE28.Vector3().subVectors(p, a);
-  const d1 = ab.dot(ap);
-  const d2 = ac.dot(ap);
-  if (d1 <= 0 && d2 <= 0)
-    return a.clone();
-  const bp = new THREE28.Vector3().subVectors(p, b);
-  const d3 = ab.dot(bp);
-  const d4 = ac.dot(bp);
-  if (d3 >= 0 && d4 <= d3)
-    return b.clone();
-  const vc = d1 * d4 - d3 * d2;
-  if (vc <= 0 && d1 >= 0 && d3 <= 0)
-    return a.clone().addScaledVector(ab, d1 / (d1 - d3));
-  const cp = new THREE28.Vector3().subVectors(p, c);
-  const d5 = ab.dot(cp);
-  const d6 = ac.dot(cp);
-  if (d6 >= 0 && d5 <= d6)
-    return c.clone();
-  const vb = d5 * d2 - d1 * d6;
-  if (vb <= 0 && d2 >= 0 && d6 <= 0)
-    return a.clone().addScaledVector(ac, d2 / (d2 - d6));
-  const va = d3 * d6 - d5 * d4;
-  if (va <= 0 && d4 - d3 >= 0 && d5 - d6 >= 0)
-    return b.clone().addScaledVector(new THREE28.Vector3().subVectors(c, b), (d4 - d3) / (d4 - d3 + (d5 - d6)));
-  const denominator = 1 / (va + vb + vc);
-  return a.clone().addScaledVector(ab, vb * denominator).addScaledVector(ac, vc * denominator);
-}
-function segmentSegmentDistanceSq(p1, q1, p2, q2) {
-  const d1 = new THREE28.Vector3().subVectors(q1, p1);
-  const d2 = new THREE28.Vector3().subVectors(q2, p2);
-  const r = new THREE28.Vector3().subVectors(p1, p2);
-  const a = d1.dot(d1);
-  const e = d2.dot(d2);
-  const f = d2.dot(r);
-  let s = 0;
-  let t = 0;
-  if (a <= 0.000000000000000000000001 && e <= 0.000000000000000000000001)
-    return r.lengthSq();
-  if (a <= 0.000000000000000000000001)
-    t = THREE28.MathUtils.clamp(f / e, 0, 1);
-  else {
-    const c = d1.dot(r);
-    if (e <= 0.000000000000000000000001)
-      s = THREE28.MathUtils.clamp(-c / a, 0, 1);
-    else {
-      const b = d1.dot(d2);
-      const denominator = a * e - b * b;
-      s = denominator !== 0 ? THREE28.MathUtils.clamp((b * f - c * e) / denominator, 0, 1) : 0;
-      t = (b * s + f) / e;
-      if (t < 0) {
-        t = 0;
-        s = THREE28.MathUtils.clamp(-c / a, 0, 1);
-      } else if (t > 1) {
-        t = 1;
-        s = THREE28.MathUtils.clamp((b - c) / a, 0, 1);
-      }
-    }
-  }
-  const c1 = p1.clone().addScaledVector(d1, s);
-  const c2 = p2.clone().addScaledVector(d2, t);
-  return c1.distanceToSquared(c2);
-}
-function segmentCrossesTriangle(p, q, a, b, c) {
-  const hit = new THREE28.Vector3;
-  const ray = new THREE28.Ray(p, new THREE28.Vector3().subVectors(q, p));
-  const length = ray.direction.length();
-  if (length === 0)
-    return false;
-  ray.direction.divideScalar(length);
-  return ray.intersectTriangle(a, b, c, false, hit) !== null && hit.distanceTo(p) <= length;
-}
-function triangleTouchesCapsule(a, b, c, p, q, radius) {
-  const r2 = radius * radius;
-  if (closestPointOnTriangle(p, a, b, c).distanceToSquared(p) <= r2)
-    return true;
-  if (closestPointOnTriangle(q, a, b, c).distanceToSquared(q) <= r2)
-    return true;
-  for (const [s, e] of [
-    [a, b],
-    [b, c],
-    [c, a]
-  ])
-    if (segmentSegmentDistanceSq(p, q, s, e) <= r2)
-      return true;
-  return segmentCrossesTriangle(p, q, a, b, c);
-}
-function deliveryNodePaths(doc) {
-  const paths = new Map;
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  if (!scene)
-    return paths;
-  const visit = (siblings, parentPath) => {
-    const seen = new Map;
-    for (const node of siblings) {
-      const name = node.getName();
-      const occurrence = seen.get(name) ?? 0;
-      seen.set(name, occurrence + 1);
-      const path = `${parentPath}${segment4(name, occurrence)}`;
-      paths.set(node, path);
-      visit(node.listChildren(), path);
-    }
-  };
-  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0));
-  return paths;
-}
-function summarizeVertexAttributes(doc) {
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  if (!scene)
-    return [];
-  const groups = new Map;
-  const order = [];
-  const record = (node, path) => {
-    const mesh = node.getMesh();
-    if (!mesh)
-      return;
-    const bake = mesh.getExtras().kilnSurfaceBakeV1;
-    const names = new Set;
-    for (const primitive of mesh.listPrimitives())
-      for (const semantic of primitive.listSemantics())
-        if (semantic.startsWith("_"))
-          names.add(semantic);
-    for (const name of names) {
-      const params = bake && typeof bake === "object" ? bake[name] : undefined;
-      const key = `${name}\x00${JSON.stringify(params ?? null)}`;
-      let group = groups.get(key);
-      if (!group) {
-        group = { name, meshes: [], ...params ? { params: { ...params } } : {} };
-        groups.set(key, group);
-        order.push(key);
-      }
-      if (!group.meshes.includes(path))
-        group.meshes.push(path);
-    }
-  };
-  const visit = (siblings, parentPath) => {
-    siblings.forEach((node, index) => {
-      const at = (name) => {
-        let occurrence = 0;
-        for (let i = 0;i < index; i++)
-          if (siblings[i].getName() === name)
-            occurrence++;
-        return `${parentPath}${segment4(name, occurrence)}`;
-      };
-      const path = at(node.getName());
-      record(node, path);
-      visit(node.listChildren(), path);
-      const lower = (node.getExtension(MSFT_LOD)?.listLevels() ?? []).filter((level) => level.propertyType === PropertyType3.NODE);
-      for (const level of lower) {
-        const levelPath = at(level.getName());
-        record(level, levelPath);
-        visit(level.listChildren(), levelPath);
-      }
-    });
-  };
-  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0));
-  const rank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2;
-  return order.map((key, position) => ({ group: groups.get(key), position })).sort((a, b) => rank(a.group.name) - rank(b.group.name) || (rank(a.group.name) === 2 ? a.group.name.localeCompare(b.group.name) : 0) || a.position - b.position).map(({ group }) => group);
-}
-function inspectDelivery(doc) {
-  const summary = { colliders: [], anchors: [], ports: [], diagnostics: [] };
-  const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
-  if (!scene)
-    return summary;
-  const visited = [];
-  const visit = (siblings, parentPath, hidden, module) => {
-    const seen = new Map;
-    for (const node of siblings) {
-      const name = node.getName();
-      const occurrence = seen.get(name) ?? 0;
-      seen.set(name, occurrence + 1);
-      const path = `${parentPath}${segment4(name, occurrence)}`;
-      const roles = readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [];
-      const nodeHidden = hidden || isHiddenGltfNode(node);
-      const nodeModule = roles.includes(KILN_SEMANTIC_ROLES.kitModule) ? { node, path } : module;
-      visited.push({ node, path, roles, hidden: nodeHidden, module: nodeModule });
-      visit(node.listChildren(), path, nodeHidden, nodeModule);
-    }
-  };
-  visit(scene.listChildren(), segment4(scene.getName() || "Scene", 0), false, undefined);
-  const finding = (code, path, message) => summary.diagnostics.push({ code, path, message });
-  const { min, max } = drawnSceneBounds(scene);
-  const bounds = new THREE28.Box3(new THREE28.Vector3(...min), new THREE28.Vector3(...max));
-  const finiteBounds = [...min, ...max].every(Number.isFinite);
-  const diagonal = finiteBounds ? bounds.getSize(new THREE28.Vector3).length() : 0;
-  const tolerance = Math.max(0.0001, diagonal * 0.0001);
-  const colliderNodes = [];
-  for (const entry of visited) {
-    const { node, path, roles } = entry;
-    for (const role of roles) {
-      const matrix = worldMatrix(node);
-      const transform = decompose(matrix);
-      for (const shape of ["box", "capsule", "hull"]) {
-        const id = roleTail(role, `${KILN_SEMANTIC_ROLES.collider}.${shape}`);
-        if (id === undefined)
-          continue;
-        const scale = transform.scale;
-        const record = {
-          role,
-          id,
-          path,
-          name: node.getName(),
-          transform,
-          shape: shape === "box" ? { kind: "box", size: [...scale] } : shape === "capsule" ? { kind: "capsule", radius: scale[0] / 2, height: scale[1] } : {
-            kind: "hull",
-            vertices: node.getMesh()?.listPrimitives().reduce((sum, primitive) => sum + (primitive.getAttribute("POSITION")?.getCount() ?? 0), 0) ?? 0
-          }
-        };
-        summary.colliders.push(record);
-        colliderNodes.push({ visit: entry, record });
-      }
-      const anchorTail = roleTail(role, KILN_SEMANTIC_ROLES.anchor);
-      if (anchorTail !== undefined) {
-        const [kind, ...rest] = anchorTail.split(".");
-        summary.anchors.push({
-          role,
-          kind,
-          id: rest.join("."),
-          path,
-          name: node.getName(),
-          transform
-        });
-      }
-      const portId = roleTail(role, KILN_SEMANTIC_ROLES.kitPort);
-      if (portId !== undefined)
-        summary.ports.push({
-          role,
-          id: portId,
-          path,
-          name: node.getName(),
-          ...entry.module && entry.module.node !== node ? { module: entry.module.path } : {},
-          transform
-        });
-      if (role === KILN_SEMANTIC_ROLES.kitModule) {
-        const extras = node.getExtras()[KILN_KIT_KEY];
-        let spec;
-        try {
-          const { schemaVersion, ...rest } = extras ?? {};
-          spec = schemaVersion === 1 ? kitModuleExtras(rest) : undefined;
-        } catch {
-          spec = undefined;
-        }
-        if (!spec)
-          finding("DELIVERY_KIT_INVALID", path, `kit module has no valid ${KILN_KIT_KEY} extras; mark it with defineModule.`);
-        else if (summary.kit)
-          finding("DELIVERY_KIT_MULTIPLE", path, `a GLB delivers one kit module; ${summary.kit.path} is listed and this one is not.`);
-        else
-          summary.kit = {
-            role,
-            path,
-            name: node.getName(),
-            footprint: spec.footprint,
-            height: spec.height,
-            snapAxis: spec.snapAxis,
-            origin: spec.origin,
-            transform
-          };
-      }
-    }
-  }
-  const triangles = colliderNodes.some(({ record }) => record.shape.kind !== "hull") ? drawnTriangles(visited) : new Float64Array;
-  const triangleCount = triangles.length / 9;
-  let overlapTests = 0;
-  const a = new THREE28.Vector3;
-  const b = new THREE28.Vector3;
-  const c = new THREE28.Vector3;
-  for (const { visit: entry, record } of colliderNodes) {
-    if (!entry.hidden)
-      finding("DELIVERY_COLLIDER_NOT_HIDDEN", record.path, "collider proxy draws; hide it (the delivery helpers do) so importers that ignore roles draw only the asset.");
-    const matrix = worldMatrix(entry.node);
-    const proxyBounds = new THREE28.Box3;
-    const mesh = entry.node.getMesh();
-    const local = [0, 0, 0];
-    for (const primitive of mesh?.listPrimitives() ?? []) {
-      const position = primitive.getAttribute("POSITION");
-      for (let i = 0;i < (position?.getCount() ?? 0); i++)
-        proxyBounds.expandByPoint(new THREE28.Vector3().fromArray(position.getElement(i, local)).applyMatrix4(matrix));
-    }
-    if (proxyBounds.isEmpty())
-      proxyBounds.expandByPoint(new THREE28.Vector3().setFromMatrixPosition(matrix));
-    const expanded = bounds.clone().expandByScalar(tolerance);
-    if (!finiteBounds || !expanded.containsBox(proxyBounds))
-      finding("DELIVERY_COLLIDER_OUTSIDE_BOUNDS", record.path, "collider proxy reaches outside the bounds of the drawn asset.");
-    if (record.shape.kind === "hull")
-      continue;
-    if (overlapTests + triangleCount > DELIVERY_OVERLAP_TEST_LIMIT) {
-      finding("DELIVERY_COLLIDER_OVERLAP_UNMEASURED", record.path, `overlap with drawn triangles was not measured: the check stops at ${DELIVERY_OVERLAP_TEST_LIMIT} collider-triangle tests.`);
-      continue;
-    }
-    overlapTests += triangleCount;
-    const toLocal = new THREE28.Matrix4;
-    let touches = false;
-    if (record.shape.kind === "box") {
-      toLocal.copy(matrix).invert();
-      const half = new THREE28.Vector3(0.5, 0.5, 0.5);
-      const scale = Math.max(...record.transform.scale.map(Math.abs), 0.000000001);
-      for (let t = 0;t < triangleCount && !touches; t++) {
-        a.fromArray(triangles, t * 9).applyMatrix4(toLocal);
-        b.fromArray(triangles, t * 9 + 3).applyMatrix4(toLocal);
-        c.fromArray(triangles, t * 9 + 6).applyMatrix4(toLocal);
-        touches = triangleOverlapsBox(a, b, c, half, tolerance / scale);
-      }
-    } else {
-      const { translation, rotation } = record.transform;
-      toLocal.compose(new THREE28.Vector3(...translation), new THREE28.Quaternion(...rotation), new THREE28.Vector3(1, 1, 1)).invert();
-      const { radius, height } = record.shape;
-      const p = new THREE28.Vector3(0, -height / 2 + radius, 0);
-      const q = new THREE28.Vector3(0, height / 2 - radius, 0);
-      for (let t = 0;t < triangleCount && !touches; t++) {
-        a.fromArray(triangles, t * 9).applyMatrix4(toLocal);
-        b.fromArray(triangles, t * 9 + 3).applyMatrix4(toLocal);
-        c.fromArray(triangles, t * 9 + 6).applyMatrix4(toLocal);
-        touches = triangleTouchesCapsule(a, b, c, p, q, radius + tolerance);
-      }
-    }
-    if (!touches)
-      finding("DELIVERY_COLLIDER_NO_OVERLAP", record.path, "collider proxy overlaps no drawn triangle; a box or capsule normally wraps or crosses the surface it stands for.");
-  }
-  for (const record of summary.ports) {
-    const entry = visited.find((item) => item.path === record.path);
-    const moduleEntry = entry.module && entry.module.node !== entry.node ? entry.module : undefined;
-    const spec = moduleEntry && summary.kit?.path === moduleEntry.path ? summary.kit : undefined;
-    if (!spec) {
-      finding("DELIVERY_PORT_WITHOUT_MODULE", record.path, "port is not under a valid kit module; place ports under the root defineModule marked.");
-      continue;
-    }
-    const point = new THREE28.Vector3(...record.transform.translation).applyMatrix4(worldMatrix(moduleEntry.node).invert());
-    const [width, depth] = spec.footprint;
-    const [x0, x1, z0, z1] = spec.origin === "corner" ? [0, width, 0, depth] : [-width / 2, width / 2, -depth / 2, depth / 2];
-    const slack = Math.max(0.0001, Math.max(width, depth, spec.height) * 0.00001);
-    if (point.x < x0 - slack || point.x > x1 + slack || point.z < z0 - slack || point.z > z1 + slack || point.y < -slack || point.y > spec.height + slack)
-      finding("DELIVERY_PORT_OUTSIDE_FOOTPRINT", record.path, `port lies outside its module footprint (${width} x ${depth} m from the ${spec.origin}, 0..${spec.height} m high).`);
-  }
-  for (const record of summary.anchors) {
-    const entry = visited.find((item) => item.path === record.path);
-    if (entry.node.listChildren().length > 0)
-      finding("DELIVERY_ANCHOR_NOT_LEAF", record.path, "anchor has children; an anchor is an empty leaf node, so attach parts beside it instead.");
-  }
-  return summary;
-}
-var DELIVERY_OVERLAP_TEST_LIMIT = 50000000, segment4 = (name, occurrence) => `/${encodeURIComponent(name)}[${occurrence}]`, roleTail = (role, base) => role.startsWith(`${base}.`) ? role.slice(base.length + 1) : undefined, worldMatrix = (node) => new THREE28.Matrix4().fromArray(node.getWorldMatrix());
-var init_delivery_inspect = __esm(() => {
-  init_gltf_io();
-  init_semantic();
-  init_delivery();
-  init_metrics();
-  init_node_visibility();
-});
 
 // src/surface-bake.ts
 import * as THREE29 from "three";
@@ -23257,6 +23855,28 @@ function geometryAttributeValues(attribute) {
   }
   return values;
 }
+function unitNormalValues(attribute) {
+  const values = geometryAttributeValues(attribute);
+  for (let i = 0;i < values.length; i += 3) {
+    const length = Math.hypot(values[i], values[i + 1], values[i + 2]);
+    if (Math.abs(length - 1) <= UNIT_NORMAL_TOLERANCE || length === 0)
+      continue;
+    for (let component = 0;component < 3; component++)
+      values[i + component] /= length;
+  }
+  return values;
+}
+function offUnitNormals(normal, name) {
+  let count = 0;
+  for (let vertex = 0;vertex < normal.count; vertex++) {
+    const length = Math.hypot(normal.getX(vertex), normal.getY(vertex), normal.getZ(vertex));
+    if (length < 0.000001)
+      throw new TypeError(`${name}: normal at vertex ${vertex} has zero length, so it has no direction to export. Build revolved profiles with lathe or revolveGeo, or recompute the normals with creaseNormals.`);
+    if (Math.abs(length - 1) > UNIT_NORMAL_TOLERANCE)
+      count++;
+  }
+  return count;
+}
 function noteMeshList(names) {
   const counts = new Map;
   for (const name of names)
@@ -23327,6 +23947,10 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
         }
       }
     }
+    const normal = geometry.getAttribute("normal");
+    const offUnit = normal?.itemSize === 3 ? offUnitNormals(normal, name) : 0;
+    if (offUnit > 0)
+      addNote(mesh, name, "NORMALS_NORMALISED", `${offUnit} non-unit normals were scaled to unit length on export.`);
     const index = geometry.getIndex();
     if ((index?.count ?? position.count) % 3 !== 0)
       throw new TypeError(`${name}: triangle indices/vertices must be a multiple of three.`);
@@ -23372,7 +23996,7 @@ function inspectGeometryExport(root, policy = "warn", exporter = "legacy") {
   });
   return warnings.map((warning) => typeof warning === "string" ? warning : formatNoteGroup(warning));
 }
-var EXPORTED_GEOMETRY_ATTRIBUTES, CUSTOM_EXPORT_ATTRIBUTES, AUTHOR_ATTRIBUTE_PATTERN, AUTHOR_ATTRIBUTE_COMPONENTS, AUTHOR_ATTRIBUTE_MAX_NAME = 64, TEXTURE_SLOTS, THREE_GEOMETRY_ATTRIBUTES, NOTE_NAMES_SHOWN = 3;
+var EXPORTED_GEOMETRY_ATTRIBUTES, CUSTOM_EXPORT_ATTRIBUTES, AUTHOR_ATTRIBUTE_PATTERN, AUTHOR_ATTRIBUTE_COMPONENTS, AUTHOR_ATTRIBUTE_MAX_NAME = 64, TEXTURE_SLOTS, THREE_GEOMETRY_ATTRIBUTES, UNIT_NORMAL_TOLERANCE = 0.0005, NOTE_NAMES_SHOWN = 3;
 var init_geometry_export = __esm(() => {
   EXPORTED_GEOMETRY_ATTRIBUTES = {
     position: 3,
@@ -27540,7 +28164,7 @@ var init_uv = __esm(() => {
 // src/uv-project.ts
 import * as THREE46 from "three";
 function projectUV(geometry, options) {
-  if (!options || typeof options !== "object" || Array.isArray(options) || !["planar", "box", "cylindrical"].includes(options.projection) || Object.keys(options).some((key) => !["projection", "frame", "seamDegrees", "angularRange", "caps"].includes(key)))
+  if (!options || typeof options !== "object" || Array.isArray(options) || !["planar", "box", "cylindrical"].includes(options.projection) || Object.keys(options).some((key) => !["projection", "frame", "seamDegrees", "angularRange", "caps", "metersPerUnit"].includes(key)))
     throw new Error("projectUV: select an explicit planar, box or cylindrical projection with documented options.");
   const cylinder = options.projection === "cylindrical";
   if (!cylinder && [options.seamDegrees, options.angularRange, options.caps].some((value) => value !== undefined))
@@ -27551,6 +28175,9 @@ function projectUV(geometry, options) {
     throw new Error("projectUV: angularRange must be [finite start degrees, positive sweep <=360].");
   if (options.caps !== undefined && options.caps !== "planar" && options.caps !== "side")
     throw new Error("projectUV: caps must be planar or side.");
+  const metric = options.metersPerUnit;
+  if (metric !== undefined && !(typeof metric === "number" && Number.isFinite(metric) && metric > 0))
+    throw new Error("projectUV: metersPerUnit must be a positive finite length.");
   const inverse = geometryFrameMatrix(options.frame).invert();
   const positions = geometry.getAttribute("position");
   if (positions?.itemSize !== 3 || positions.count < 1 || positions.count > MAX_CORNERS)
@@ -27585,13 +28212,19 @@ function projectUV(geometry, options) {
     bounds.expandByPoint(point);
   }
   const extent = bounds.getSize(new THREE46.Vector3);
-  const fit = (point, axis) => extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
+  const fit = (point, axis) => metric !== undefined ? point[axis] / metric : extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
+  const flip = (point, axis) => metric !== undefined ? -point[axis] / metric : 1 - fit(point, axis);
   const outputUVs = new Float32Array(corners * 2);
   const startDegrees = options.angularRange?.[0] ?? options.seamDegrees ?? 180;
   const start = startDegrees % 360 * Math.PI / 180;
   const sweep = (options.angularRange?.[1] ?? 360) * Math.PI / 180;
   const fullWrap = options.angularRange === undefined || options.angularRange[1] === 360;
   const wrap = (angle) => (angle % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+  let uScale = 1;
+  if (metric !== undefined) {
+    const radius = points.reduce((max, point) => Math.max(max, Math.hypot(point.x, point.z)), 0);
+    uScale = fullWrap ? Math.max(1, Math.round(2 * Math.PI * radius / metric)) : sweep * radius / metric;
+  }
   const normal = new THREE46.Vector3;
   const edge = new THREE46.Vector3;
   for (let i = 0;i < corners; i += 3) {
@@ -27615,17 +28248,17 @@ function projectUV(geometry, options) {
       }
       if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5 + 0.000001)
         throw new Error("projectUV: side triangle spans more than half a revolution; add profile segments to resolve the mapping.");
-      pairs = triangle.map((point, j) => [angles[j], fit(point, "y")]);
+      pairs = triangle.map((point, j) => [angles[j] * uScale, fit(point, "y")]);
     } else if (cap) {
       pairs = triangle.map((point) => [fit(point, "x"), fit(point, "z")]);
     } else if (options.projection === "box") {
       const axis = Math.abs(normal.x) >= Math.abs(normal.y) && Math.abs(normal.x) >= Math.abs(normal.z) ? "x" : Math.abs(normal.y) >= Math.abs(normal.z) ? "y" : "z";
       pairs = triangle.map((point) => {
         if (axis === "x")
-          return [normal.x > 0 ? 1 - fit(point, "z") : fit(point, "z"), fit(point, "y")];
+          return [normal.x > 0 ? flip(point, "z") : fit(point, "z"), fit(point, "y")];
         if (axis === "y")
-          return [fit(point, "x"), normal.y > 0 ? 1 - fit(point, "z") : fit(point, "z")];
-        return [normal.z < 0 ? 1 - fit(point, "x") : fit(point, "x"), fit(point, "y")];
+          return [fit(point, "x"), normal.y > 0 ? flip(point, "z") : fit(point, "z")];
+        return [normal.z < 0 ? flip(point, "x") : fit(point, "x"), fit(point, "y")];
       });
     } else
       pairs = triangle.map((point) => [fit(point, "x"), fit(point, "y")]);
@@ -29738,7 +30371,7 @@ var REMOVED_AUTHORING_HELPERS, geometryPrimitives;
 var init_geometry_catalog = __esm(() => {
   REMOVED_AUTHORING_HELPERS = Object.freeze({
     boxUnwrap: 'Preserve existing UVs with direct geometry sharing or copyGeometry. Generate new face mappings explicitly with projectUV(geo, { projection: "box", frame? }); planar projection is a separate mode.',
-    cylinderUnwrap: 'Preserve valid built-in UVs with direct sharing or copyGeometry. For cylindrical mapping use projectUV(geo, { projection: "cylindrical", frame?, seamDegrees?, angularRange?, caps? }); partial arcs need an explicit angularRange.',
+    cylinderUnwrap: 'Preserve valid built-in UVs with direct sharing or copyGeometry. For cylindrical mapping use projectUV(geo, { projection: "cylindrical", frame?, seamDegrees?, angularRange?, caps?, metersPerUnit? }); partial arcs need an explicit angularRange; metersPerUnit fixes texel density.',
     planeUnwrap: 'Use projectUV(geo, { projection: "planar", frame? }) to generate frame-XY UVs. Preserve existing UVs with direct sharing or copyGeometry instead.',
     cloneGeometry: "Pass the original geometry directly for intentional sharing. Use copyGeometry only for independent editable buffers; the removed helper returned its input.",
     cloneMaterial: "Pass the original material directly for intentional sharing. Use copyMaterial for independent properties; referenced textures remain shared.",
@@ -29748,10 +30381,10 @@ var init_geometry_catalog = __esm(() => {
   geometryPrimitives = [
     {
       name: "projectUV",
-      signature: "projectUV(geometry: BufferGeometry, opts: { projection: 'planar'|'box'|'cylindrical', frame?: { origin?: [x,y,z], rotation?: [xDeg,yDeg,zDeg] }, seamDegrees?: number, angularRange?: [startDeg,sweepDeg], caps?: 'planar'|'side' })",
+      signature: "projectUV(geometry: BufferGeometry, opts: { projection: 'planar'|'box'|'cylindrical', frame?: { origin?: [x,y,z], rotation?: [xDeg,yDeg,zDeg] }, seamDegrees?: number, angularRange?: [startDeg,sweepDeg], caps?: 'planar'|'side', metersPerUnit?: number })",
       returns: "THREE.BufferGeometry (owned, non-indexed triangle corners)",
       category: "uv",
-      description: "Generates UV0 explicitly in a rigid geometry-local frame. Planar maps XY; box maps each face; cylindrical wraps frame Y with separate caps and split angular seams. Replaces existing UVs and removes stale tangents. To preserve good UVs use direct sharing or copyGeometry instead.",
+      description: "Generates UV0 explicitly in a rigid geometry-local frame. Planar maps XY; box maps each face; cylindrical wraps frame Y with separate caps and split angular seams. Replaces existing UVs and removes stale tangents. metersPerUnit maps one UV unit to a fixed length so parts of different size tile at the same density. To preserve good UVs use direct sharing or copyGeometry instead.",
       example: "const mapped = projectUV(rawGeometry, { projection: 'cylindrical', frame: { rotation: [0,0,-90] }, seamDegrees: 180 });"
     },
     {
@@ -32230,7 +32863,7 @@ var init_kit = __esm(() => {
 });
 
 // src/texture-bake.ts
-import { createHash as createHash6 } from "node:crypto";
+import { createHash as createHash7 } from "node:crypto";
 import * as THREE49 from "three";
 function readPixels(texture) {
   const image = texture.image;
@@ -32330,7 +32963,7 @@ async function bakeSceneTextures(root, warnings) {
       if (encoded) {
         const delivery = readValidatedAtlasDelivery(entry.texture);
         if (delivery) {
-          if (delivery.id !== atlasRef.id || delivery.finalMime !== encoded.mime || delivery.finalImageSha256 !== `sha256:${createHash6("sha256").update(encoded.bytes).digest("hex")}`)
+          if (delivery.id !== atlasRef.id || delivery.finalMime !== encoded.mime || delivery.finalImageSha256 !== `sha256:${createHash7("sha256").update(encoded.bytes).digest("hex")}`)
             throw stale();
         } else {
           const sharp = (await import("sharp")).default;
@@ -32341,10 +32974,10 @@ async function bakeSceneTextures(root, warnings) {
           if (metadata.width !== atlasRecord.spec.width || metadata.height !== atlasRecord.spec.height)
             throw stale();
           const decoded = await image.ensureAlpha().raw().toBuffer();
-          if (`sha256:${createHash6("sha256").update(decoded).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
+          if (`sha256:${createHash7("sha256").update(decoded).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
             throw stale();
         }
-      } else if (raw.width !== atlasRecord.spec.width || raw.height !== atlasRecord.spec.height || raw.channels !== 4 || `sha256:${createHash6("sha256").update(raw.data).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
+      } else if (raw.width !== atlasRecord.spec.width || raw.height !== atlasRecord.spec.height || raw.channels !== 4 || `sha256:${createHash7("sha256").update(raw.data).digest("hex")}` !== atlasRecord.manifest.decodedPixelHash)
         throw stale();
     }
     let bytes;
@@ -32369,8 +33002,8 @@ async function bakeSceneTextures(root, warnings) {
         height: raw.height,
         hasAlpha: hasTranslucentPixel(raw)
       };
-    const sha1 = createHash6("sha1").update(bytes).digest("hex");
-    const imageSha256 = `sha256:${createHash6("sha256").update(bytes).digest("hex")}`;
+    const sha1 = createHash7("sha1").update(bytes).digest("hex");
+    const imageSha256 = `sha256:${createHash7("sha256").update(bytes).digest("hex")}`;
     baked.push({
       schemaVersion: 1,
       texture: name,
@@ -34491,7 +35124,7 @@ function strict(value, keys, label) {
       throw new Error(`${label}.${key} is unknown${hint ? `; use ${KEY_HINTS[key]}` : ""}; accepted keys: ${keys.join(", ")}`);
     }
 }
-function finite2(n, label) {
+function finite3(n, label) {
   if (!Number.isFinite(n))
     throw new Error(`${label} must be finite`);
   return n;
@@ -34630,7 +35263,7 @@ function validateResolvedAssetCamera(value) {
     throw new Error("camera target must differ from position");
   if (up.length() < 0.000000001 || view.clone().cross(up).length() <= view.length() * up.length() * 0.000000001)
     throw new Error("camera up must be non-zero and not collinear with view");
-  if (finite2(camera.aspect, "aspect") <= 0 || finite2(camera.near, "near") <= 0 || finite2(camera.far, "far") <= camera.near)
+  if (finite3(camera.aspect, "aspect") <= 0 || finite3(camera.near, "near") <= 0 || finite3(camera.far, "far") <= camera.near)
     throw new Error("camera requires positive aspect and 0 < near < far");
   if (camera.projection === "orthographic") {
     if (!Number.isFinite(camera.halfHeight) || camera.halfHeight <= 0 || camera.fovDeg !== undefined)
@@ -34660,7 +35293,7 @@ function resolveAssetCamera(root, shot = {}) {
     const relative = request.relativeTo ?? "world";
     if (!["world", "asset", "part"].includes(relative))
       throw new Error("invalid relativeTo");
-    const dir = vec(orbitDir(finite2(request.azimuthDeg ?? 45, "azimuthDeg"), finite2(request.elevationDeg ?? 25, "elevationDeg")));
+    const dir = vec(orbitDir(finite3(request.azimuthDeg ?? 45, "azimuthDeg"), finite3(request.elevationDeg ?? 25, "elevationDeg")));
     let up;
     if (relative !== "world") {
       const node = relative === "part" ? selected.node : rootNode;
@@ -34738,7 +35371,7 @@ function resolveAssetCamera(root, shot = {}) {
           far: request.far ?? fit.far
         };
       else {
-        const fov = finite2(request.fovDeg ?? 50, "fovDeg");
+        const fov = finite3(request.fovDeg ?? 50, "fovDeg");
         if (fov <= 0 || fov >= 180)
           throw new Error("invalid fovDeg");
         const distance = Math.max(radius / 2, 0.000001) * padding / Math.sin(fov * Math.PI / 360);
@@ -35072,7 +35705,7 @@ __export(exports_capture_cache, {
   captureCpuCell: () => captureCpuCell,
   createCachedRenderPort: () => createCachedRenderPort
 });
-import { createHash as createHash7 } from "node:crypto";
+import { createHash as createHash8 } from "node:crypto";
 function clone(entry) {
   const result = structuredClone(entry);
   if (result.kind === "cpu")
@@ -35277,7 +35910,7 @@ async function captureCpuCell(cache, identity, produce) {
   await cache.put(key, { kind: "cpu", result }).catch(() => {});
   return { ...result, png: Buffer.from(result.png), captureCache: { hit: false } };
 }
-var text4 = (value) => JSON.stringify(canonical4(value)), digest2 = (value) => `sha256:${createHash7("sha256").update(value).digest("hex")}`;
+var text4 = (value) => JSON.stringify(canonical4(value)), digest2 = (value) => `sha256:${createHash8("sha256").update(value).digest("hex")}`;
 var init_capture_cache = __esm(() => {
   init_render_port();
   init_png();
@@ -37839,7 +38472,7 @@ function bridgeGeometry(doc, buf, geometry, material, meshName, atlas) {
   }
   const normAttr = geometry.getAttribute("normal");
   if (normAttr) {
-    prim.setAttribute("NORMAL", doc.createAccessor(`${meshName}_norm`).setArray(geometryAttributeValues(normAttr)).setType(TYPE_VEC3).setBuffer(buf));
+    prim.setAttribute("NORMAL", doc.createAccessor(`${meshName}_norm`).setArray(unitNormalValues(normAttr)).setType(TYPE_VEC3).setBuffer(buf));
   }
   const uvAttr = geometry.getAttribute("uv");
   if (uvAttr) {
@@ -38233,7 +38866,10 @@ async function renderSceneToGLB(root, opts = {}) {
   const materialResourceProvenance = collectMaterialResourceProvenance(root);
   for (const w of inspectGeneratedAnimation(root, clips))
     warnings.push(w);
-  for (const w of inspectSceneStructure(root))
+  const externalSupport = requirements.requirements.requirements.externalSupport;
+  for (const w of inspectSceneStructure(root, {
+    ...externalSupport?.state === "requested" ? { externalSupport: externalSupport.value.supports } : {}
+  }))
     warnings.push(w);
   const atlas = collectAtlasProvenance(root);
   const bakedTextures = await bakeSceneTextures(root, warnings);
@@ -38569,6 +39205,7 @@ function collectMeshStats(root) {
     box.getCenter(center);
     box.getSize(size);
     out.push({
+      object: obj,
       name: obj.name || "(unnamed)",
       triCount: Math.floor(tri),
       isPlaneGeo: geo.type === "PlaneGeometry",
@@ -38627,6 +39264,7 @@ function inspectSceneStructure(root, opts = {}) {
   }
   if (meshes.length > 1) {
     const floaters = [];
+    const supported = [];
     for (let i = 0;i < meshes.length; i++) {
       const a = meshes[i];
       const ax = a.box.clone().expandByScalar(FLOATING_EXPAND);
@@ -38642,6 +39280,12 @@ function inspectSceneStructure(root, opts = {}) {
       }
       if (overlapsAny)
         continue;
+      const support = restingSupport(a.object, a.box.min.y, opts.externalSupport);
+      if (support) {
+        supported.push(`${a.name} at Y=${support.planeY.toFixed(3)}`);
+        continue;
+      }
+      const declared = declaredSupports(a.object, opts.externalSupport)[0];
       let nearest;
       let nearestGap;
       for (let j = 0;j < meshes.length; j++) {
@@ -38654,7 +39298,8 @@ function inspectSceneStructure(root, opts = {}) {
         }
       }
       const fix = nearest && nearestGap ? ` Fix: shift "${a.name}" by [${nearestGap.x.toFixed(3)}, ${nearestGap.y.toFixed(3)}, ${nearestGap.z.toFixed(3)}] toward "${nearest.name}", or call snapTo(part, hostPart) to do it automatically.` : "";
-      floaters.push({ name: a.name, fix });
+      const mismatch = declared ? ` It is named in a declared external support at Y=${declared.planeY.toFixed(3)}, but its bottom is at Y=${a.box.min.y.toFixed(3)}.` : "";
+      floaters.push({ name: a.name, fix: fix + mismatch });
     }
     if (floaters.length > 0) {
       const entries = floaters.slice(0, FLOATER_FIXES_SHOWN).map(({ name, fix }) => `${name}${fix ? ` —${fix}` : ""}`);
@@ -38666,6 +39311,12 @@ function inspectSceneStructure(root, opts = {}) {
         entries.push(`+${rest.length} more floating: ${names.join(", ")} — the same fix applies: shift each onto its nearest sibling, or call snapTo(part, hostPart).`);
       }
       warnings.push(`Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(" | ")}`);
+    }
+    if (supported.length > 0) {
+      const shown = supported.slice(0, FLOATER_NAMES_SHOWN);
+      if (supported.length > shown.length)
+        shown.push(`+${supported.length - shown.length} more`);
+      warnings.push(`Declared external support (requirements.externalSupport): ${shown.join(", ")} rest on a support composed outside this asset; information only, no action needed.`);
     }
   }
   return warnings;
@@ -38734,7 +39385,7 @@ var init_render = __esm(() => {
 });
 
 // src/evaluator/protocol.ts
-import { createHash as createHash8 } from "node:crypto";
+import { createHash as createHash9 } from "node:crypto";
 function evaluatorOutcomeMessage(code) {
   return EVALUATOR_OUTCOME_MESSAGES[code];
 }
@@ -38829,7 +39480,7 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
     if (!codes.includes(value.error.code) || typeof value.error.message !== "string" || value.error.message !== evaluatorOutcomeMessage(value.error.code)) {
       return fail9("result");
     }
-    if (value.error.diagnostic !== undefined && (value.error.code !== "EXECUTION_REJECTED" || value.error.diagnostic !== "UNBOUND_VARIABLE" && value.error.diagnostic !== "GEAR_RADII_ORDER" && value.error.diagnostic !== "ROUNDED_BOX_RADIUS" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_UNKNOWN_KEY" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_BLEND" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_V3_CONTRACT" && value.error.diagnostic !== "PORTABLE_MATERIAL_V3_CONTRACT" && value.error.diagnostic !== "TEXTURE_ATLAS_CONTRACT" && value.error.diagnostic !== "MATERIAL_FRACTION_RANGE" && value.error.diagnostic !== "MATERIAL_RECIPE_TEXTURE_BINDING" && value.error.diagnostic !== "PORTABLE_TEXTURE_REFERENCE" && value.error.diagnostic !== "PORTABLE_COLOR_ARGUMENT" && value.error.diagnostic !== "PARAMETRIC_PERIODIC_ENDPOINT" && value.error.diagnostic !== "PROFILE_HOLES_UNSUPPORTED" && value.error.diagnostic !== "PROFILE_BEVEL_COLLAPSE" && value.error.diagnostic !== "PROFILE_CORRESPONDENCE_COLLAPSE" && value.error.diagnostic !== "REMOVED_HELPER" && value.error.diagnostic !== "TUBE_RADIUS" && value.error.diagnostic !== "TAPER_CONE_AXIS" && value.error.diagnostic !== "SOLID_FLOAT32_COLLAPSE" && value.error.diagnostic !== "MESH_DATA_NONFINITE" && value.error.diagnostic !== "MATERIAL_ALPHA_MODE" && value.error.diagnostic !== "MATERIAL_COLOR_ARGUMENT" && value.error.diagnostic !== "PART_NAME_ARGUMENT" && value.error.diagnostic !== "PART_GEOMETRY_ARGUMENT" && value.error.diagnostic !== "PART_MATERIAL_ARGUMENT" && value.error.diagnostic !== "MATERIAL_PACKED_CHANNELS" && value.error.diagnostic !== "UNINITIALIZED_BINDING" && value.error.diagnostic !== "BUILD_RESULT" && value.error.diagnostic !== "MATERIAL_RECIPE_OVERRIDE" && value.error.diagnostic !== "PROGRAM_TYPE_ERROR" && value.error.diagnostic !== "PROGRAM_RANGE_ERROR" && value.error.diagnostic !== "LOD_SET" && value.error.diagnostic !== "OPEN_SHELL" && value.error.diagnostic !== "DELIVERY_CONTRACT" && value.error.diagnostic !== "REQUIRE_SOLID" && value.error.diagnostic !== "EXPORT_MATERIAL_SIDE_UNSUPPORTED" && value.error.diagnostic !== "BONE_CHAIN_ARGUMENT" && value.error.diagnostic !== "SKIN_BINDING_ARGUMENT"))
+    if (value.error.diagnostic !== undefined && (value.error.code !== "EXECUTION_REJECTED" || value.error.diagnostic !== "UNBOUND_VARIABLE" && value.error.diagnostic !== "GEAR_RADII_ORDER" && value.error.diagnostic !== "ROUNDED_BOX_RADIUS" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_UNKNOWN_KEY" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_BLEND" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_USAGE" && value.error.diagnostic !== "PROCEDURAL_TEXTURE_V3_CONTRACT" && value.error.diagnostic !== "PORTABLE_MATERIAL_V3_CONTRACT" && value.error.diagnostic !== "TEXTURE_ATLAS_CONTRACT" && value.error.diagnostic !== "MATERIAL_FRACTION_RANGE" && value.error.diagnostic !== "MATERIAL_RECIPE_TEXTURE_BINDING" && value.error.diagnostic !== "PORTABLE_TEXTURE_REFERENCE" && value.error.diagnostic !== "PORTABLE_COLOR_ARGUMENT" && value.error.diagnostic !== "PARAMETRIC_PERIODIC_ENDPOINT" && value.error.diagnostic !== "PROFILE_HOLES_UNSUPPORTED" && value.error.diagnostic !== "PROFILE_BEVEL_COLLAPSE" && value.error.diagnostic !== "PROFILE_CORRESPONDENCE_COLLAPSE" && value.error.diagnostic !== "REMOVED_HELPER" && value.error.diagnostic !== "TUBE_RADIUS" && value.error.diagnostic !== "TAPER_CONE_AXIS" && value.error.diagnostic !== "SOLID_FLOAT32_COLLAPSE" && value.error.diagnostic !== "MESH_DATA_NONFINITE" && value.error.diagnostic !== "MATERIAL_ALPHA_MODE" && value.error.diagnostic !== "MATERIAL_COLOR_ARGUMENT" && value.error.diagnostic !== "PART_NAME_ARGUMENT" && value.error.diagnostic !== "PART_GEOMETRY_ARGUMENT" && value.error.diagnostic !== "PART_MATERIAL_ARGUMENT" && value.error.diagnostic !== "MATERIAL_PACKED_CHANNELS" && value.error.diagnostic !== "UNINITIALIZED_BINDING" && value.error.diagnostic !== "BUILD_RESULT" && value.error.diagnostic !== "MATERIAL_RECIPE_OVERRIDE" && value.error.diagnostic !== "PROGRAM_TYPE_ERROR" && value.error.diagnostic !== "PROGRAM_RANGE_ERROR" && value.error.diagnostic !== "LOD_SET" && value.error.diagnostic !== "OPEN_SHELL" && value.error.diagnostic !== "DELIVERY_CONTRACT" && value.error.diagnostic !== "REQUIRE_SOLID" && value.error.diagnostic !== "EXPORT_MATERIAL_SIDE_UNSUPPORTED" && value.error.diagnostic !== "BONE_CHAIN_ARGUMENT" && value.error.diagnostic !== "SKIN_BINDING_ARGUMENT"))
       return fail9("result");
     if (value.error.solid !== undefined && (value.error.diagnostic !== "REQUIRE_SOLID" || !validSolidFailureDetails(value.error.solid)))
       return fail9("result");
@@ -38887,7 +39538,7 @@ function decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId) {
     fail9("result");
   if (!isSha256(value.render.artifactGlbSha256))
     fail9("result");
-  const actualHash = `sha256:${createHash8("sha256").update(glb).digest("hex")}`;
+  const actualHash = `sha256:${createHash9("sha256").update(glb).digest("hex")}`;
   if (actualHash !== value.render.artifactGlbSha256)
     fail9("result");
   const diagnosticViews = value.render.diagnosticViews;
@@ -39285,7 +39936,7 @@ __export(exports_program_store_node, {
   FileProgramStore: () => FileProgramStore,
   localProgramStore: () => localProgramStore
 });
-import { link as link2, lstat as lstat4, mkdir as mkdir3, readFile as readFile2, readdir as readdir2, stat as stat2, unlink as unlink2, writeFile as writeFile3 } from "node:fs/promises";
+import { link as link2, lstat as lstat4, mkdir as mkdir3, readFile as readFile3, readdir as readdir2, stat as stat2, unlink as unlink2, writeFile as writeFile3 } from "node:fs/promises";
 import { randomUUID as randomUUID3 } from "node:crypto";
 import { join as join4 } from "node:path";
 
@@ -39326,7 +39977,7 @@ class FileProgramStore {
     try {
       if ((await stat2(path)).size > MAX_PROGRAM_BYTES)
         throw new Error("Stored program exceeds the 1 MiB source limit.");
-      code = await readFile2(path, "utf8");
+      code = await readFile3(path, "utf8");
     } catch (error) {
       if (error.code === "ENOENT")
         throw this.notFound(ref);
@@ -39345,7 +39996,7 @@ class FileProgramStore {
       const info = await lstat4(path);
       if (!info.isFile() || info.size !== 71)
         throw new Error(`Program handle integrity check failed: ${handle}`);
-      const canonical = await readFile2(path, "utf8");
+      const canonical = await readFile3(path, "utf8");
       if (!canonicalProgramRefPattern.test(canonical) || !canonical.slice(7).startsWith(handle.slice(2)))
         throw new Error(`Program handle integrity check failed: ${handle}`);
       return canonical;
@@ -39414,7 +40065,7 @@ var init_program_store_node = __esm(() => {
 });
 
 // src/build-cache.ts
-import { createHash as createHash9 } from "node:crypto";
+import { createHash as createHash10 } from "node:crypto";
 import * as acorn2 from "acorn";
 import * as walk5 from "acorn-walk";
 function sourceHasAmbientInputs(code) {
@@ -39560,7 +40211,7 @@ function createCachedEvaluatorPort(evaluator, options) {
       } catch {
         return evaluator.render(code, renderOptions, controls);
       }
-      const key = `sha256:${createHash9("sha256").update(serialized).digest("hex")}`;
+      const key = `sha256:${createHash10("sha256").update(serialized).digest("hex")}`;
       const cached = await options.cache.get(key).catch(() => {
         return;
       });
@@ -39611,10 +40262,10 @@ var init_build_cache = __esm(() => {
 });
 
 // src/build-cache-node.ts
-import { createHash as createHash10, randomUUID as randomUUID4 } from "node:crypto";
+import { createHash as createHash11, randomUUID as randomUUID4 } from "node:crypto";
 import {
   mkdir as mkdir4,
-  readFile as readFile3,
+  readFile as readFile4,
   readdir as readdir3,
   rename as rename3,
   stat as stat3,
@@ -39644,7 +40295,7 @@ class FileBuildCache {
       const entry = await stat3(path);
       if (entry.size > this.maxBytes || entry.size > 96 * 1024 * 1024)
         return;
-      const envelope = JSON.parse(await readFile3(path, "utf8"));
+      const envelope = JSON.parse(await readFile4(path, "utf8"));
       if (envelope.version !== 1 || envelope.key !== key || typeof envelope.payload !== "string" || envelope.checksum !== digest3(envelope.payload))
         return;
       const decoded = decodeEvaluatorResultV2(envelope.payload, 64 * 1024 * 1024);
@@ -39694,7 +40345,7 @@ class FileBuildCache {
     }
   }
 }
-var keyPattern, filePattern, digest3 = (text) => createHash10("sha256").update(text).digest("hex");
+var keyPattern, filePattern, digest3 = (text) => createHash11("sha256").update(text).digest("hex");
 var init_build_cache_node = __esm(() => {
   init_protocol();
   keyPattern = /^sha256:[a-f0-9]{64}$/;
@@ -39702,8 +40353,8 @@ var init_build_cache_node = __esm(() => {
 });
 
 // src/runtime-identity.ts
-import { createHash as createHash11 } from "node:crypto";
-import { lstat as lstat5, readFile as readFile4, readdir as readdir4, realpath as realpath3, stat as stat4 } from "node:fs/promises";
+import { createHash as createHash12 } from "node:crypto";
+import { lstat as lstat5, readFile as readFile5, readdir as readdir4, realpath as realpath3, stat as stat4 } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { dirname as dirname4, join as join6, relative as relative2 } from "node:path";
 async function installedRuntimeIdentity(root, limits = {}) {
@@ -39712,7 +40363,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
   const absentPackages = [];
   const maxBytes = limits.maxBytes ?? 512 * 1024 * 1024;
   const maxFiles = limits.maxFiles ?? 40000;
-  const manifest = async (directory) => JSON.parse(await readFile4(join6(directory, "package.json"), "utf8"));
+  const manifest = async (directory) => JSON.parse(await readFile5(join6(directory, "package.json"), "utf8"));
   let readers = 0;
   const waiting = [];
   const read = async (path) => {
@@ -39725,7 +40376,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
       if (++files > maxFiles || bytes + info.size > maxBytes)
         throw new Error("Installed runtime fingerprint exceeds its scan budget.");
       bytes += info.size;
-      return await readFile4(path);
+      return await readFile5(path);
     } finally {
       const next = waiting.shift();
       if (next)
@@ -39738,7 +40389,7 @@ async function installedRuntimeIdentity(root, limits = {}) {
     const pkg = await manifest(root);
     if (pkg.name !== "@instruktlabs/kiln")
       throw new Error("Not a Kiln installation.");
-    const build = JSON.parse(await readFile4(join6(root, "dist", "build.json"), "utf8"));
+    const build = JSON.parse(await readFile5(join6(root, "dist", "build.json"), "utf8"));
     const worker = build.entries?.worker;
     if (build.schemaVersion !== 1 || worker?.file !== "evaluator-worker.mjs" || !/^sha256:[a-f0-9]{64}$/.test(worker.identity))
       throw new Error("No valid packaged worker identity.");
@@ -39864,15 +40515,15 @@ async function installedRuntimeIdentity(root, limits = {}) {
     };
   }
 }
-var digest4 = (bytes) => createHash11("sha256").update(bytes).digest("hex"), compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
+var digest4 = (bytes) => createHash12("sha256").update(bytes).digest("hex"), compare = (a, b) => a < b ? -1 : a > b ? 1 : 0;
 var init_runtime_identity = () => {};
 
 // src/projects.ts
-import { z as z6 } from "zod";
+import { z as z7 } from "zod";
 function checkContent(data, ctx) {
   const unique = (items, path) => {
     if (new Set(items).size !== items.length)
-      ctx.addIssue({ code: z6.ZodIssueCode.custom, path: [path], message: "Duplicate identity" });
+      ctx.addIssue({ code: z7.ZodIssueCode.custom, path: [path], message: "Duplicate identity" });
   };
   unique(data.inventory.map((v) => v.id), "inventory");
   unique(data.references.map((v) => v.id), "references");
@@ -39888,20 +40539,20 @@ function checkContent(data, ctx) {
     unique(item.references, `inventory.${item.id}.references`);
     if (item.references.some((id) => !references.has(id)))
       ctx.addIssue({
-        code: z6.ZodIssueCode.custom,
+        code: z7.ZodIssueCode.custom,
         path: ["inventory"],
         message: "Unknown reference"
       });
   }
   if (data.reviews.some((review) => !inventory.has(review.inventoryId)))
     ctx.addIssue({
-      code: z6.ZodIssueCode.custom,
+      code: z7.ZodIssueCode.custom,
       path: ["reviews"],
       message: "Unknown inventory item"
     });
   if (data.design.materialRoles.some((role) => role.resourceId && !resources.has(role.resourceId)))
     ctx.addIssue({
-      code: z6.ZodIssueCode.custom,
+      code: z7.ZodIssueCode.custom,
       path: ["design"],
       message: "Material role requires a locked resource"
     });
@@ -39909,80 +40560,80 @@ function checkContent(data, ctx) {
 var MAX_PROJECT_BYTES, MAX_PROJECT_REVISIONS = 1e4, projectIdSchema, projectRevisionIdSchema, hash3, text5, resourceId2, assetReference, projectDesignSchema, projectMaterialDependencySchema, materialDependenciesSchema, content, projectDraftSchema, projectPatchSchema, projectRevisionSchema, ProjectConflictError, ProjectNotFoundError, ProjectExistsError;
 var init_projects = __esm(() => {
   MAX_PROJECT_BYTES = 1024 * 1024;
-  projectIdSchema = z6.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).refine((value) => !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value), "Reserved filesystem name");
-  projectRevisionIdSchema = z6.string().regex(/^r_[0-9]{10}_[a-f0-9]{64}$/);
-  hash3 = z6.string().regex(/^sha256:[a-f0-9]{64}$/);
-  text5 = z6.string().max(4000);
-  resourceId2 = z6.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$/);
-  assetReference = z6.object({
+  projectIdSchema = z7.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).refine((value) => !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value), "Reserved filesystem name");
+  projectRevisionIdSchema = z7.string().regex(/^r_[0-9]{10}_[a-f0-9]{64}$/);
+  hash3 = z7.string().regex(/^sha256:[a-f0-9]{64}$/);
+  text5 = z7.string().max(4000);
+  resourceId2 = z7.string().regex(/^[a-zA-Z0-9][a-zA-Z0-9_.:/-]{0,199}$/);
+  assetReference = z7.object({
     collectionId: projectIdSchema,
     assetId: projectIdSchema,
     revisionId: projectIdSchema
   }).strict();
-  projectDesignSchema = z6.object({
+  projectDesignSchema = z7.object({
     style: text5.default(""),
-    scale: z6.string().max(1000).default(""),
-    palette: z6.array(z6.object({
-      role: z6.string().min(1).max(100),
-      color: z6.string().regex(/^#[a-fA-F0-9]{6}$/)
+    scale: z7.string().max(1000).default(""),
+    palette: z7.array(z7.object({
+      role: z7.string().min(1).max(100),
+      color: z7.string().regex(/^#[a-fA-F0-9]{6}$/)
     }).strict()).max(64).default([]),
-    materialRoles: z6.array(z6.object({
-      role: z6.string().min(1).max(100),
+    materialRoles: z7.array(z7.object({
+      role: z7.string().min(1).max(100),
       description: text5.default(""),
       resourceId: resourceId2.optional()
     }).strict()).max(128).default([]),
-    conventions: z6.array(z6.string().max(1000)).max(100).default([]),
-    exceptions: z6.array(z6.string().max(1000)).max(100).default([])
+    conventions: z7.array(z7.string().max(1000)).max(100).default([]),
+    exceptions: z7.array(z7.string().max(1000)).max(100).default([])
   }).strict();
-  projectMaterialDependencySchema = z6.object({
+  projectMaterialDependencySchema = z7.object({
     resourceId: resourceId2,
-    revisionId: z6.string().min(1).max(200),
+    revisionId: z7.string().min(1).max(200),
     sha256: hash3,
-    role: z6.string().max(100).optional()
+    role: z7.string().max(100).optional()
   }).strict();
-  materialDependenciesSchema = z6.array(projectMaterialDependencySchema).max(512);
+  materialDependenciesSchema = z7.array(projectMaterialDependencySchema).max(512);
   content = {
-    name: z6.string().trim().min(1).max(200),
-    brief: z6.string().max(16000).default(""),
+    name: z7.string().trim().min(1).max(200),
+    brief: z7.string().max(16000).default(""),
     design: projectDesignSchema.default(() => projectDesignSchema.parse({})),
-    inventory: z6.array(z6.object({
+    inventory: z7.array(z7.object({
       id: projectIdSchema,
-      name: z6.string().trim().min(1).max(200),
-      kind: z6.enum(["asset", "environment"]).default("asset"),
+      name: z7.string().trim().min(1).max(200),
+      kind: z7.enum(["asset", "environment"]).default("asset"),
       brief: text5.default(""),
-      references: z6.array(projectIdSchema).max(64).default([]),
+      references: z7.array(projectIdSchema).max(64).default([]),
       asset: assetReference.optional()
     }).strict()).max(1000).default([]),
-    deliveryProfiles: z6.array(z6.object({
+    deliveryProfiles: z7.array(z7.object({
       id: projectIdSchema,
-      target: z6.enum(["three", "godot", "unity", "unreal", "roblox", "sbox", "usdz", "custom"]),
+      target: z7.enum(["three", "godot", "unity", "unreal", "roblox", "sbox", "usdz", "custom"]),
       description: text5.default(""),
-      performanceIntent: z6.string().max(1000).default(""),
-      constraints: z6.array(z6.string().max(1000)).max(100).default([])
+      performanceIntent: z7.string().max(1000).default(""),
+      constraints: z7.array(z7.string().max(1000)).max(100).default([])
     }).strict()).max(32).default([]),
     materialDependencies: materialDependenciesSchema.default([]),
-    references: z6.array(z6.object({
+    references: z7.array(z7.object({
       id: projectIdSchema,
-      title: z6.string().min(1).max(200),
-      uri: z6.string().min(1).max(2048),
+      title: z7.string().min(1).max(200),
+      uri: z7.string().min(1).max(2048),
       description: text5.default(""),
       sha256: hash3.optional()
     }).strict()).max(256).default([]),
-    reviews: z6.array(z6.object({
+    reviews: z7.array(z7.object({
       id: projectIdSchema,
       inventoryId: projectIdSchema,
       projectRevisionId: projectRevisionIdSchema,
       asset: assetReference,
-      reviewer: z6.string().trim().min(1).max(200),
-      verdict: z6.enum(["comment", "changes-requested", "accepted"]),
+      reviewer: z7.string().trim().min(1).max(200),
+      verdict: z7.enum(["comment", "changes-requested", "accepted"]),
       notes: text5
     }).strict()).max(2000).default([])
   };
-  projectDraftSchema = z6.object({
+  projectDraftSchema = z7.object({
     projectId: projectIdSchema.optional(),
     ...content
   }).strict().superRefine(checkContent);
-  projectPatchSchema = z6.object({
+  projectPatchSchema = z7.object({
     name: content.name.optional(),
     brief: content.brief.removeDefault().optional(),
     design: content.design.removeDefault().optional(),
@@ -39992,12 +40643,12 @@ var init_projects = __esm(() => {
     references: content.references.removeDefault().optional(),
     reviews: content.reviews.removeDefault().optional()
   }).strict();
-  projectRevisionSchema = z6.object({
-    version: z6.literal("kiln.project.v1"),
+  projectRevisionSchema = z7.object({
+    version: z7.literal("kiln.project.v1"),
     projectId: projectIdSchema,
     revisionId: projectRevisionIdSchema,
     parentRevision: projectRevisionIdSchema.optional(),
-    createdAt: z6.string().datetime(),
+    createdAt: z7.string().datetime(),
     ...content
   }).strict().superRefine(checkContent);
   ProjectConflictError = class ProjectConflictError extends Error {
@@ -40036,7 +40687,7 @@ var init_projects = __esm(() => {
 });
 
 // src/projects-node.ts
-import { createHash as createHash12, randomUUID as randomUUID5 } from "node:crypto";
+import { createHash as createHash13, randomUUID as randomUUID5 } from "node:crypto";
 import { link as link3, lstat as lstat6, mkdir as mkdir5, open as open3, readdir as readdir5, realpath as realpath4, unlink as unlink4 } from "node:fs/promises";
 import { join as join7, relative as relative3, resolve as resolve7, sep as sep2 } from "node:path";
 function sequenceOf(revisionId) {
@@ -40048,7 +40699,7 @@ function sequenceOf(revisionId) {
 }
 function digest5(record) {
   const { revisionId: _, ...payload } = record;
-  return createHash12("sha256").update(JSON.stringify(payload)).digest("hex");
+  return createHash13("sha256").update(JSON.stringify(payload)).digest("hex");
 }
 
 class FileProjectStore {
@@ -40251,11 +40902,11 @@ var init_projects_node = __esm(() => {
 });
 
 // src/workspace.ts
-import { z as z7 } from "zod";
+import { z as z8 } from "zod";
 var workspaceSelectionSchema;
 var init_workspace = __esm(() => {
   init_projects();
-  workspaceSelectionSchema = z7.object({
+  workspaceSelectionSchema = z8.object({
     projectId: projectIdSchema.nullable().optional().describe("Project; omit for the configured default, null for standalone."),
     projectRevision: projectRevisionIdSchema.optional().describe("Exact project revision."),
     materialDependencies: materialDependenciesSchema.optional().describe("Pins for this call; each replaces the project pin of its resourceId.")
@@ -40336,7 +40987,7 @@ var init_workspace_node = __esm(() => {
 });
 
 // src/assets.ts
-import { z as z8 } from "zod";
+import { z as z9 } from "zod";
 import { zipSync, unzipSync } from "three/addons/libs/fflate.module.js";
 function assetMaterialRootManifests(record) {
   const roots = new Map;
@@ -40529,38 +41180,38 @@ var init_assets = __esm(() => {
   init_background();
   init_material_library();
   ASSET_LIMIT = 64 * 1024 * 1024;
-  assetIdSchema = z8.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
-  hash4 = z8.string().regex(/^sha256:[a-f0-9]{64}$/);
-  assetManifestSchema = z8.object({
-    version: z8.literal("kiln.asset.v1"),
+  assetIdSchema = z9.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  hash4 = z9.string().regex(/^sha256:[a-f0-9]{64}$/);
+  assetManifestSchema = z9.object({
+    version: z9.literal("kiln.asset.v1"),
     assetId: assetIdSchema,
     revisionId: assetIdSchema,
     parentRevision: assetIdSchema.optional(),
-    name: z8.string().min(1).max(200),
-    tags: z8.array(z8.string().max(80)).max(30),
-    createdAt: z8.string().datetime(),
-    description: z8.string().max(4000).optional(),
-    brief: z8.string().max(8000).optional(),
-    attribution: z8.object({
-      model: z8.string().max(200).optional(),
-      harness: z8.string().max(200).optional(),
-      author: z8.string().max(200).optional()
+    name: z9.string().min(1).max(200),
+    tags: z9.array(z9.string().max(80)).max(30),
+    createdAt: z9.string().datetime(),
+    description: z9.string().max(4000).optional(),
+    brief: z9.string().max(8000).optional(),
+    attribution: z9.object({
+      model: z9.string().max(200).optional(),
+      harness: z9.string().max(200).optional(),
+      author: z9.string().max(200).optional()
     }).optional(),
-    editable: z8.boolean(),
-    files: z8.record(z8.string(), z8.object({ sha256: hash4, bytes: z8.number().int().nonnegative().max(ASSET_LIMIT) })),
-    build: z8.object({
-      engine: z8.string(),
-      options: z8.record(z8.string(), z8.unknown()),
-      warnings: z8.array(z8.string()),
-      integration: z8.unknown().optional(),
-      qa: z8.unknown().optional(),
-      dependencies: z8.array(z8.unknown()).optional(),
-      rebuild: z8.enum(["engine-required", "external-dependencies-required"])
+    editable: z9.boolean(),
+    files: z9.record(z9.string(), z9.object({ sha256: hash4, bytes: z9.number().int().nonnegative().max(ASSET_LIMIT) })),
+    build: z9.object({
+      engine: z9.string(),
+      options: z9.record(z9.string(), z9.unknown()),
+      warnings: z9.array(z9.string()),
+      integration: z9.unknown().optional(),
+      qa: z9.unknown().optional(),
+      dependencies: z9.array(z9.unknown()).optional(),
+      rebuild: z9.enum(["engine-required", "external-dependencies-required"])
     }).optional(),
-    preview: z8.object({
-      fidelity: z8.unknown().optional(),
-      error: z8.string().optional(),
-      backdrop: z8.enum(BACKDROP_IDS).optional()
+    preview: z9.object({
+      fidelity: z9.unknown().optional(),
+      error: z9.string().optional(),
+      backdrop: z9.enum(BACKDROP_IDS).optional()
     }).optional()
   });
   ASSET_MATERIAL_BYTES = 24 * 1024 * 1024;
@@ -40569,13 +41220,13 @@ var init_assets = __esm(() => {
 
 // src/live-review-node.ts
 import { AsyncLocalStorage as AsyncLocalStorage2 } from "node:async_hooks";
-import { createHash as createHash13, randomUUID as randomUUID6 } from "node:crypto";
+import { createHash as createHash14, randomUUID as randomUUID6 } from "node:crypto";
 import {
   link as link4,
   mkdir as mkdir6,
   lstat as lstat7,
   readdir as readdir6,
-  readFile as readFile5,
+  readFile as readFile6,
   rename as rename4,
   rm as rm2,
   unlink as unlink5,
@@ -40583,7 +41234,7 @@ import {
   realpath as realpath5
 } from "node:fs/promises";
 import { join as join9, resolve as resolve8, relative as relative4, sep as sep3 } from "node:path";
-import { z as z9 } from "zod";
+import { z as z10 } from "zod";
 function notify(run) {
   try {
     Promise.resolve(run()).catch(() => {});
@@ -40804,7 +41455,7 @@ class FileLiveReview {
     const info = await lstat7(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid live file");
-    const data = new Uint8Array(await readFile5(path));
+    const data = new Uint8Array(await readFile6(path));
     if (data.length !== info.size || data.length > limit)
       throw new Error("Live file changed while reading");
     return data;
@@ -40849,7 +41500,7 @@ class FileLiveReview {
           throw new Error("Live lock generation exhausted");
         if (latest) {
           try {
-            const prior = z9.object({ pid: z9.number().int().positive(), token: z9.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join9(directory, latest), 1024))));
+            const prior = z10.object({ pid: z10.number().int().positive(), token: z10.string().uuid() }).strict().parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join9(directory, latest), 1024))));
             const released = await lstat7(join9(directory, `${latest}.released`)).then((entry) => {
               if (!entry.isFile() || entry.isSymbolicLink() || entry.size !== 0)
                 throw new Error("Invalid lock release");
@@ -40906,9 +41557,9 @@ class FileLiveReview {
     const path = join9(this.directory, "limits.json");
     try {
       const value = JSON.parse(new TextDecoder().decode(await this.boundedFile(path, 1024)));
-      const parsed = z9.object({
-        maxOperations: z9.number().int().min(2).max(2000),
-        maxBytes: z9.number().int().min(1024).max(1024 ** 3)
+      const parsed = z10.object({
+        maxOperations: z10.number().int().min(2).max(2000),
+        maxBytes: z10.number().int().min(1024).max(1024 ** 3)
       }).strict().parse(value);
       this.maxOperations = parsed.maxOperations;
       this.maxBytes = parsed.maxBytes;
@@ -41232,7 +41883,7 @@ class FileLiveReview {
   }
   async health() {
     try {
-      return z9.array(z9.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join9(this.directory, "health.json"), 16384))));
+      return z10.array(z10.string().max(500)).max(20).parse(JSON.parse(new TextDecoder().decode(await this.boundedFile(join9(this.directory, "health.json"), 16384))));
     } catch (error) {
       if (missing2(error))
         return [];
@@ -41363,48 +42014,48 @@ class FileLiveReview {
     });
   }
 }
-var operationPattern, filePattern2, hash5 = (value) => `sha256:${createHash13("sha256").update(value).digest("hex")}`, metadataLimit, evaluationLimit, staleMs = 120000, terminal = (op) => !["running", "evaluated"].includes(op.status), missing2 = (error) => error.code === "ENOENT", collision = (error) => error.code === "EEXIST", fileLimit = (name) => name === "asset.glb" ? ASSET_LIMIT : name === "source.kiln.js" ? 1024 * 1024 : name === "evaluation.json" ? evaluationLimit : 16 * 1024 * 1024, descriptorSchema, operationSchema, stateSchema;
+var operationPattern, filePattern2, hash5 = (value) => `sha256:${createHash14("sha256").update(value).digest("hex")}`, metadataLimit, evaluationLimit, staleMs = 120000, terminal = (op) => !["running", "evaluated"].includes(op.status), missing2 = (error) => error.code === "ENOENT", collision = (error) => error.code === "EEXIST", fileLimit = (name) => name === "asset.glb" ? ASSET_LIMIT : name === "source.kiln.js" ? 1024 * 1024 : name === "evaluation.json" ? evaluationLimit : 16 * 1024 * 1024, descriptorSchema, operationSchema, stateSchema;
 var init_live_review_node = __esm(() => {
   init_assets();
   operationPattern = /^op_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
   filePattern2 = /^(asset\.glb|source\.kiln\.js|evaluation\.json|capture-\d{1,2}\.png)$/;
   metadataLimit = 256 * 1024;
   evaluationLimit = 2 * 1024 * 1024;
-  descriptorSchema = z9.object({
-    name: z9.string().regex(filePattern2),
-    bytes: z9.number().int().nonnegative().max(ASSET_LIMIT),
-    sha256: z9.string().regex(/^sha256:[a-f0-9]{64}$/),
-    url: z9.string().max(200)
+  descriptorSchema = z10.object({
+    name: z10.string().regex(filePattern2),
+    bytes: z10.number().int().nonnegative().max(ASSET_LIMIT),
+    sha256: z10.string().regex(/^sha256:[a-f0-9]{64}$/),
+    url: z10.string().max(200)
   }).strict();
-  operationSchema = z9.object({
-    version: z9.literal("kiln.live.v1"),
-    operationId: z9.string().regex(operationPattern),
-    revision: z9.number().int().nonnegative(),
-    tool: z9.string().min(1).max(120),
-    transport: z9.enum(["cli", "mcp", "native", "api"]),
-    sessionId: z9.string().uuid(),
-    workId: z9.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).optional(),
-    startedAt: z9.string().datetime(),
-    updatedAt: z9.string().datetime(),
-    status: z9.enum(["running", "evaluated", "complete", "failed", "interrupted", "unknown"]),
-    projectId: z9.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).optional(),
-    projectRevision: z9.string().min(1).max(200).optional(),
-    programRef: z9.string().min(1).max(200).optional(),
-    runtimeIdentity: z9.string().min(1).max(200).optional(),
+  operationSchema = z10.object({
+    version: z10.literal("kiln.live.v1"),
+    operationId: z10.string().regex(operationPattern),
+    revision: z10.number().int().nonnegative(),
+    tool: z10.string().min(1).max(120),
+    transport: z10.enum(["cli", "mcp", "native", "api"]),
+    sessionId: z10.string().uuid(),
+    workId: z10.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).optional(),
+    startedAt: z10.string().datetime(),
+    updatedAt: z10.string().datetime(),
+    status: z10.enum(["running", "evaluated", "complete", "failed", "interrupted", "unknown"]),
+    projectId: z10.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).optional(),
+    projectRevision: z10.string().min(1).max(200).optional(),
+    programRef: z10.string().min(1).max(200).optional(),
+    runtimeIdentity: z10.string().min(1).max(200).optional(),
     artifact: descriptorSchema.optional(),
-    captures: z9.array(descriptorSchema).max(100),
-    viewFidelity: z9.unknown().optional(),
-    result: z9.record(z9.string(), z9.unknown()).optional(),
-    error: z9.string().max(4000).optional(),
-    pinned: z9.boolean(),
-    phases: z9.array(z9.object({ phase: z9.string().max(100), at: z9.string().datetime() }).strict()).max(32),
-    observationIssues: z9.array(z9.string().max(500)).max(20).optional()
+    captures: z10.array(descriptorSchema).max(100),
+    viewFidelity: z10.unknown().optional(),
+    result: z10.record(z10.string(), z10.unknown()).optional(),
+    error: z10.string().max(4000).optional(),
+    pinned: z10.boolean(),
+    phases: z10.array(z10.object({ phase: z10.string().max(100), at: z10.string().datetime() }).strict()).max(32),
+    observationIssues: z10.array(z10.string().max(500)).max(20).optional()
   }).strict();
-  stateSchema = z9.object({
+  stateSchema = z10.object({
     operation: operationSchema,
-    files: z9.record(z9.string(), descriptorSchema),
-    ownerPid: z9.number().int().nonnegative().optional(),
-    heartbeatAt: z9.string().datetime().optional()
+    files: z10.record(z10.string(), descriptorSchema),
+    ownerPid: z10.number().int().nonnegative().optional(),
+    heartbeatAt: z10.string().datetime().optional()
   }).strict();
 });
 
@@ -41469,9 +42120,9 @@ __export(exports_assets_node, {
   localAssetLibrary: () => localAssetLibrary,
   verifyAssetRecord: () => verifyAssetRecord
 });
-import { createHash as createHash14, randomUUID as randomUUID7 } from "node:crypto";
+import { createHash as createHash15, randomUUID as randomUUID7 } from "node:crypto";
 import { readFileSync as readFileSync2 } from "node:fs";
-import { link as link5, lstat as lstat8, mkdir as mkdir7, readFile as readFile6, readdir as readdir7, realpath as realpath6, rm as rm3, writeFile as writeFile6 } from "node:fs/promises";
+import { link as link5, lstat as lstat8, mkdir as mkdir7, readFile as readFile7, readdir as readdir7, realpath as realpath6, rm as rm3, writeFile as writeFile6 } from "node:fs/promises";
 import { homedir, platform } from "node:os";
 import { dirname as dirname5, join as join10, relative as relative5, resolve as resolve9, sep as sep4, win32 } from "node:path";
 function assertMaterialAllocation(records) {
@@ -41573,7 +42224,7 @@ class FileAssetLibrary {
     const info = await lstat8(path);
     if (!info.isFile() || info.isSymbolicLink() || info.size > limit)
       throw new Error("Invalid collection file");
-    return new Uint8Array(await readFile6(path));
+    return new Uint8Array(await readFile7(path));
   }
   async read(collection, assetId, revisionId) {
     const dir = await this.path(collection, assetId, "revisions", revisionId);
@@ -41779,7 +42430,7 @@ function localAssetLibrary(env = process.env, operatingSystem = platform()) {
     library: defaultUserLibraryRoot(env, homedir(), operatingSystem)
   }, materials);
 }
-var digest6 = (bytes) => `sha256:${createHash14("sha256").update(bytes).digest("hex")}`, windowsDrivePath, windowsSharePath;
+var digest6 = (bytes) => `sha256:${createHash15("sha256").update(bytes).digest("hex")}`, windowsDrivePath, windowsSharePath;
 var init_assets_node = __esm(() => {
   init_workspace_location();
   init_assets();
@@ -41792,12 +42443,292 @@ var init_assets_node = __esm(() => {
   windowsSharePath = /^[\\/]{2}[^\\/]+[\\/][^\\/]+/;
 });
 
+// src/runtime-textures.ts
+async function sha256Hex3(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes));
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+function imageDimensions(bytes) {
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  const fail = () => {
+    throw new Error("Texture manifest cannot read image dimensions");
+  };
+  const at = (offset, length) => {
+    if (offset + length > bytes.byteLength)
+      fail();
+  };
+  if (bytes[0] === 137 && bytes[1] === 80 && bytes[2] === 78 && bytes[3] === 71) {
+    at(16, 8);
+    return { width: view.getUint32(16), height: view.getUint32(20) };
+  }
+  if (isKtx2(bytes)) {
+    at(20, 8);
+    return { width: view.getUint32(20, true), height: view.getUint32(24, true) };
+  }
+  if (bytes[0] === 255 && bytes[1] === 216) {
+    let offset = 2;
+    while (offset + 4 <= bytes.byteLength) {
+      if (bytes[offset] !== 255)
+        fail();
+      const marker = bytes[offset + 1];
+      if (marker === 255) {
+        offset++;
+        continue;
+      }
+      if (marker === 216 || marker === 1 || marker >= 208 && marker <= 215) {
+        offset += 2;
+        continue;
+      }
+      const length = view.getUint16(offset + 2);
+      if (marker >= 192 && marker <= 207 && ![196, 200, 204].includes(marker)) {
+        at(offset + 5, 4);
+        return { width: view.getUint16(offset + 7), height: view.getUint16(offset + 5) };
+      }
+      offset += 2 + length;
+    }
+    fail();
+  }
+  const text = (offset) => String.fromCharCode(...bytes.subarray(offset, Math.min(offset + 4, bytes.byteLength)));
+  if (text(0) === "RIFF" && text(8) === "WEBP") {
+    at(12, 19);
+    const chunk = text(12);
+    if (chunk === "VP8X")
+      return {
+        width: 1 + (view.getUint32(24, true) & 16777215),
+        height: 1 + (view.getUint32(27, true) & 16777215)
+      };
+    if (chunk === "VP8L") {
+      const bits = view.getUint32(21, true);
+      return { width: 1 + (bits & 16383), height: 1 + (bits >> 14 & 16383) };
+    }
+    if (chunk === "VP8 ") {
+      at(26, 4);
+      return {
+        width: view.getUint16(26, true) & 16383,
+        height: view.getUint16(28, true) & 16383
+      };
+    }
+  }
+  return fail();
+}
+function textureSource(texture) {
+  if (!object2(texture))
+    return;
+  const extensions = object2(texture.extensions) ? texture.extensions : {};
+  for (const name of ["KHR_texture_basisu", "EXT_texture_webp", "EXT_texture_avif"]) {
+    const extension = extensions[name];
+    if (object2(extension) && index(extension.source) !== undefined)
+      return index(extension.source);
+  }
+  return index(texture.source);
+}
+function srgbImages(json) {
+  const textures = Array.isArray(json.textures) ? json.textures : [];
+  const result = new Set;
+  for (const material of Array.isArray(json.materials) ? json.materials : []) {
+    if (!object2(material))
+      continue;
+    const pbr = object2(material.pbrMetallicRoughness) ? material.pbrMetallicRoughness : {};
+    for (const info of [pbr.baseColorTexture, material.emissiveTexture]) {
+      const texture = object2(info) ? index(info.index) : undefined;
+      const image = texture === undefined ? undefined : textureSource(textures[texture]);
+      if (image !== undefined)
+        result.add(image);
+    }
+  }
+  return result;
+}
+function base64(text) {
+  const binary = atob(text);
+  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+}
+function embeddedImages(json, binary) {
+  const views = Array.isArray(json.bufferViews) ? json.bufferViews : [];
+  return (Array.isArray(json.images) ? json.images : []).map((image) => {
+    if (!object2(image))
+      throw new Error("Invalid glTF image");
+    const view = index(image.bufferView);
+    if (view !== undefined) {
+      const def = views[view];
+      if (!object2(def) || index(def.buffer) !== 0 || !binary)
+        throw new Error("Texture manifest requires images embedded in the GLB binary chunk");
+      const offset = index(def.byteOffset) ?? 0;
+      const length = index(def.byteLength);
+      if (length === undefined || offset + length > binary.byteLength)
+        throw new Error("Invalid glTF image buffer view");
+      if (typeof image.mimeType !== "string")
+        throw new Error("Embedded image needs a mimeType");
+      return { bytes: binary.subarray(offset, offset + length), mimeType: image.mimeType };
+    }
+    const match = typeof image.uri === "string" ? /^data:([^;,]+);base64,(.*)$/s.exec(image.uri) : null;
+    if (!match)
+      throw new Error("Texture manifest requires embedded image bytes");
+    return { bytes: base64(match[2]), mimeType: match[1] };
+  });
+}
+async function runtimeTextureManifest(json, binary, options = {}) {
+  const srgb = srgbImages(json);
+  const entries = [];
+  for (const [image, { bytes, mimeType }] of embeddedImages(json, binary).entries()) {
+    const sha256 = `sha256:${await sha256Hex3(bytes)}`;
+    const sourceSha256 = options.sources?.get(image);
+    const original = sourceSha256 ?? sha256;
+    const map = options.maps?.find((candidate) => candidate.sha256 === original);
+    entries.push({
+      image,
+      sha256,
+      bytes: bytes.byteLength,
+      mimeType,
+      ...imageDimensions(bytes),
+      colorSpace: srgb.has(image) ? "srgb" : "linear",
+      ...sourceSha256 && sourceSha256 !== sha256 ? { sourceSha256 } : {},
+      ...map ? { material: { pin: { ...map.pin }, slot: map.slot } } : {}
+    });
+  }
+  return entries;
+}
+function textureFileExtension(mimeType) {
+  const extension = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/webp": "webp",
+    "image/ktx2": "ktx2"
+  }[mimeType];
+  if (!extension)
+    throw new Error(`External textures do not support ${mimeType}`);
+  return extension;
+}
+var object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), index = (value) => Number.isInteger(value) && value >= 0 ? value : undefined, KTX2_IDENTIFIER, isKtx2 = (bytes) => bytes.byteLength >= 12 && KTX2_IDENTIFIER.every((value, at) => bytes[at] === value);
+var init_runtime_textures = __esm(() => {
+  KTX2_IDENTIFIER = Object.freeze([
+    171,
+    75,
+    84,
+    88,
+    32,
+    50,
+    48,
+    187,
+    13,
+    10,
+    26,
+    10
+  ]);
+});
+
+// src/ktx2-basis.ts
+import { createHash as createHash16 } from "node:crypto";
+import { readFile as readFile8 } from "node:fs/promises";
+import { dirname as dirname6, join as join11 } from "node:path";
+import { fileURLToPath as fileURLToPath4, pathToFileURL } from "node:url";
+async function packageDirectory() {
+  let directory = dirname6(fileURLToPath4(import.meta.resolve(KTX2_ENCODER_PACKAGE.name)));
+  for (let depth = 0;depth < 6; depth++) {
+    try {
+      const manifest = JSON.parse(await readFile8(join11(directory, "package.json"), "utf8"));
+      if (manifest.name === KTX2_ENCODER_PACKAGE.name)
+        return directory;
+    } catch {}
+    directory = dirname6(directory);
+  }
+  throw new Error(`Cannot locate the installed ${KTX2_ENCODER_PACKAGE.name} package`);
+}
+async function loadKtx2Encoder(importer = () => import("ktx2-encoder")) {
+  let module;
+  try {
+    module = await importer();
+  } catch (error) {
+    throw new Error(`KTX2 encoding needs the optional peer ${KTX2_ENCODER_PACKAGE.name}@${KTX2_ENCODER_PACKAGE.version}. Install it with: ${INSTALL}`, { cause: error });
+  }
+  if (typeof module?.encodeToKTX2 !== "function")
+    throw new Error(`${KTX2_ENCODER_PACKAGE.name} has no encodeToKTX2 export. ${INSTALL}`);
+  const directory = await packageDirectory();
+  const { version } = JSON.parse(await readFile8(join11(directory, "package.json"), "utf8"));
+  if (version !== KTX2_ENCODER_PACKAGE.version)
+    throw new Error(`${KTX2_ENCODER_PACKAGE.name} ${version} is installed; Kiln's KTX2 settings are qualified on ${KTX2_ENCODER_PACKAGE.version}. ${INSTALL}`);
+  let basisWasmSha256;
+  try {
+    basisWasmSha256 = `sha256:${hex2(await readFile8(join11(directory, "dist", "basis", "basis_encoder.wasm")))}`;
+  } catch {}
+  const internal = (path) => import(pathToFileURL(join11(directory, "dist", path)).href);
+  const [factory, core] = await Promise.all([
+    internal("basis/basis_encoder.js"),
+    internal("encodeCore.js")
+  ]);
+  if (typeof factory.default !== "function" || typeof core.encodeWithModule !== "function")
+    throw new Error(`${KTX2_ENCODER_PACKAGE.name} ${version} has an unexpected layout. ${INSTALL}`);
+  basis ??= factory.default({ print: () => {}, printErr: () => {} }).then((instance) => {
+    instance.initializeBasis();
+    return instance;
+  });
+  const instance = basis;
+  return {
+    encode: async (image, options) => core.encodeWithModule(await instance, image, options),
+    version,
+    ...basisWasmSha256 ? { basisWasmSha256 } : {}
+  };
+}
+async function createKtx2Encoder(options = {}) {
+  const { encode: run, version, basisWasmSha256 } = await loadKtx2Encoder(options.importer);
+  const identity = {
+    name: KTX2_ENCODER_PACKAGE.name,
+    version,
+    ...basisWasmSha256 ? { basisWasmSha256 } : {},
+    settings: structuredClone({ ...SETTINGS })
+  };
+  const encode = async (input) => {
+    const { mode: _mode, ...settings } = profile(input);
+    return run(input.image, { ...settings, imageDecoder: decode });
+  };
+  return Object.assign(encode, { identity });
+}
+var KTX2_ENCODER_PACKAGE, INSTALL, SETTINGS, profile = (input) => input.colorSpace === "srgb" ? SETTINGS.srgb : input.slot === "normal" ? SETTINGS.normal : SETTINGS.linear, hex2 = (bytes) => createHash16("sha256").update(bytes).digest("hex"), basis, decode = async (buffer) => {
+  const { default: sharp } = await import("sharp");
+  const { data, info } = await sharp(buffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+  return { data: new Uint8Array(data), width: info.width, height: info.height };
+};
+var init_ktx2_basis = __esm(() => {
+  KTX2_ENCODER_PACKAGE = Object.freeze({ name: "ktx2-encoder", version: "0.6.0" });
+  INSTALL = `npm install ${KTX2_ENCODER_PACKAGE.name}@${KTX2_ENCODER_PACKAGE.version}`;
+  SETTINGS = Object.freeze({
+    srgb: Object.freeze({
+      mode: "etc1s",
+      isUASTC: false,
+      qualityLevel: 128,
+      compressionLevel: 2,
+      generateMipmap: true,
+      isSetKTX2SRGBTransferFunc: true,
+      isPerceptual: true
+    }),
+    linear: Object.freeze({
+      mode: "uastc",
+      isUASTC: true,
+      uastcLDRQualityLevel: 2,
+      needSupercompression: true,
+      generateMipmap: true,
+      isSetKTX2SRGBTransferFunc: false,
+      isPerceptual: false
+    }),
+    normal: Object.freeze({
+      mode: "uastc",
+      isUASTC: true,
+      uastcLDRQualityLevel: 2,
+      needSupercompression: true,
+      generateMipmap: true,
+      isSetKTX2SRGBTransferFunc: false,
+      isPerceptual: false,
+      isNormalMap: true
+    })
+  });
+});
+
 // src/runtime-three.ts
 var exports_runtime_three = {};
 __export(exports_runtime_three, {
   deliverRuntimeThreeGlb: () => deliverRuntimeThreeGlb
 });
 import {
+  Format,
   Logger as Logger2,
   PropertyType as PropertyType5
 } from "@gltf-transform/core";
@@ -41882,7 +42813,7 @@ function splitColliderProxies(doc) {
   }
   return report;
 }
-async function encodeKtx2(doc, encoder) {
+async function encodeKtx2(doc, encoder, sources) {
   const textures = doc.getRoot().listTextures().filter((texture) => texture.getMimeType() !== "image/ktx2" && texture.getImage());
   if (!encoder)
     return {
@@ -41890,29 +42821,62 @@ async function encodeKtx2(doc, encoder) {
       textures: textures.length,
       reason: "No KTX2 encoder was supplied; textures stay PNG or JPEG."
     };
-  const srgb = new Set;
+  const slots = new Map;
+  const use = (texture, slot) => {
+    if (texture)
+      slots.set(texture, (slots.get(texture) ?? new Set).add(slot));
+  };
   for (const material of doc.getRoot().listMaterials()) {
-    for (const texture of [material.getBaseColorTexture(), material.getEmissiveTexture()])
-      if (texture)
-        srgb.add(texture);
+    use(material.getBaseColorTexture(), "baseColor");
+    use(material.getEmissiveTexture(), "emissive");
+    use(material.getNormalTexture(), "normal");
+    use(material.getMetallicRoughnessTexture(), "metallicRoughness");
+    use(material.getOcclusionTexture(), "occlusion");
   }
+  const order = [
+    "baseColor",
+    "emissive",
+    "normal",
+    "metallicRoughness",
+    "occlusion"
+  ];
   for (const texture of textures) {
+    const used = slots.get(texture) ?? new Set;
+    const srgb = used.has("baseColor") || used.has("emissive");
+    const other = texture.listParents().some((parent) => parent.propertyType !== PropertyType5.ROOT && !isCoreMaterialUse(parent));
+    const linear = [...used].some((slot) => slot !== "baseColor" && slot !== "emissive") || other;
+    if (srgb && linear)
+      throw new Error(`Texture ${JSON.stringify(texture.getName())} is used by both sRGB and linear material slots; one KTX2 encoding cannot serve both. Use separate images.`);
+    const original = texture.getImage();
     const image = await encoder({
-      image: texture.getImage(),
+      image: original,
       mimeType: texture.getMimeType(),
       name: texture.getName(),
-      colorSpace: srgb.has(texture) ? "srgb" : "linear"
+      colorSpace: srgb ? "srgb" : "linear",
+      slot: order.find((slot) => used.has(slot)) ?? "other"
     });
-    if (!(image instanceof Uint8Array) || image.byteLength < 12)
-      throw new Error("ktx2Encoder must return KTX2 bytes");
+    if (!(image instanceof Uint8Array) || !isKtx2(image))
+      throw new Error("ktx2Encoder must return KTX2 bytes starting with the KTX2 identifier");
+    sources.set(texture, `sha256:${await sha256Hex3(original)}`);
     texture.setImage(image).setMimeType("image/ktx2");
     const uri = texture.getURI();
     if (uri)
       texture.setURI(uri.replace(/\.(png|jpe?g)$/i, ".ktx2"));
   }
-  if (textures.length)
+  if (textures.length) {
     doc.createExtension(KHRTextureBasisu2).setRequired(true);
-  return { status: "encoded", textures: textures.length };
+    await Promise.resolve().then(() => init_atlas_provenance());
+    await refreshAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc);
+  }
+  return {
+    status: "encoded",
+    textures: textures.length,
+    ...encoder.identity ? { encoder: structuredClone(encoder.identity) } : {}
+  };
+}
+function isCoreMaterialUse(parent) {
+  return parent.propertyType === PropertyType5.MATERIAL;
 }
 function decomposeDelta(before, after) {
   const delta = new THREE55.Matrix4().fromArray(before).invert().multiply(new THREE55.Matrix4().fromArray(after));
@@ -41923,7 +42887,10 @@ function decomposeDelta(before, after) {
     offset: [position.x, position.y, position.z]
   };
 }
-async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
+async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layout = {}) {
+  const compression = options.compression ?? "meshopt";
+  if (compression !== "meshopt" && compression !== "none")
+    throw new Error("Runtime three compression must be meshopt or none");
   const io = createGltfIO().registerDependencies({
     "meshopt.encoder": meshoptEncoder
   });
@@ -41946,8 +42913,10 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
     quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
     quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight
   }));
-  doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
-  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder);
+  if (compression === "meshopt")
+    doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  const encodedSources = new Map;
+  const ktx2 = await encodeKtx2(doc, options.ktx2Encoder, encodedSources);
   for (const node of doc.getRoot().listNodes()) {
     const mesh = node.getMesh();
     if (!mesh || matrices.has(node) || node.getName())
@@ -42006,11 +42975,18 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
   const all = doc.getRoot().listNodes();
   const glb = await io.writeBinary(doc);
   const json = (await io.binaryToJSON(glb)).json;
+  const imageSources = new Map;
+  doc.getRoot().listTextures().forEach((texture, image) => {
+    const source = encodedSources.get(texture);
+    if (source)
+      imageSources.set(image, source);
+  });
+  const gltf = layout.gltfBasename ? await io.writeJSON(doc, { format: Format.GLTF, basename: layout.gltfBasename }) : undefined;
   const delivery = {
     target: "three",
     extensionsUsed: [...json.extensionsUsed ?? []].sort(),
     extensionsRequired: [...json.extensionsRequired ?? []].sort(),
-    compression: { extension: "EXT_meshopt_compression", method: "quantize" },
+    compression: compression === "meshopt" ? { extension: "EXT_meshopt_compression", method: "quantize" } : { extension: "none" },
     quantization: {
       extension: "KHR_mesh_quantization",
       volume: "mesh",
@@ -42045,7 +43021,17 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}) {
       kitModules: all.filter((node) => rolesOf4(node).includes(KILN_SEMANTIC_ROLES.kitModule)).length
     }
   };
-  return { glb, delivery };
+  return {
+    glb,
+    delivery,
+    imageSources,
+    ...gltf ? {
+      gltf: {
+        json: gltf.json,
+        resources: gltf.resources
+      }
+    } : {}
+  };
 }
 var RUNTIME_THREE_QUANTIZATION, QUANTIZED_SEMANTICS, customRank = (name) => name === "_EDGE" ? 0 : name === "_CAVITY" ? 1 : 2, rolesOf4 = (node) => readSemanticMetadataV1FromExtras(node.getExtras())?.roles ?? [], isCollider = (node) => rolesOf4(node).some((role) => role.startsWith(`${KILN_SEMANTIC_ROLES.collider}.`));
 var init_runtime_three = __esm(() => {
@@ -42054,6 +43040,7 @@ var init_runtime_three = __esm(() => {
   init_delivery_inspect();
   init_delivery();
   init_metrics();
+  init_runtime_textures();
   RUNTIME_THREE_QUANTIZATION = Object.freeze({
     volume: "mesh",
     position: 14,
@@ -42068,6 +43055,7 @@ var init_runtime_three = __esm(() => {
 // src/asset-export.ts
 var exports_asset_export = {};
 __export(exports_asset_export, {
+  createKtx2Encoder: () => createKtx2Encoder2,
   exportAssetGlb: () => exportAssetGlb
 });
 async function sha2562(bytes) {
@@ -42077,6 +43065,36 @@ async function sha2562(bytes) {
 function validateMetadataFileName(name) {
   if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.kiln-metadata\.json$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
     throw new Error("Runtime metadata filename must be a portable sibling *.kiln-metadata.json filename");
+}
+function validateGltfFileName(name) {
+  if (name.length > 200 || !/^[a-z0-9][a-z0-9._-]*\.gltf$/i.test(name) || /^(con|prn|aux|nul|com[0-9]|lpt[0-9])\./i.test(name))
+    throw new Error("External texture output must be a portable sibling *.gltf filename");
+}
+function readGlbBinary(bytes, jsonEnd) {
+  if (jsonEnd + 8 > bytes.length)
+    return;
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  if (view.getUint32(jsonEnd + 4, true) !== 5130562)
+    return;
+  return bytes.subarray(jsonEnd + 8, jsonEnd + 8 + view.getUint32(jsonEnd, true));
+}
+function closureMaps(record) {
+  const manifests = new Map;
+  for (const manifest of [
+    ...assetMaterialRootManifests(record),
+    ...(record.materialResources?.records ?? []).map(({ manifest }) => manifest)
+  ])
+    manifests.set(`${manifest.materialId}/${manifest.revisionId}`, manifest);
+  const order = (value, other) => value < other ? -1 : value > other ? 1 : 0;
+  return [...manifests.values()].flatMap((manifest) => manifest.maps.map((map) => ({
+    sha256: map.sha256,
+    pin: {
+      resourceId: manifest.materialId,
+      revisionId: manifest.revisionId,
+      sha256: manifest.revisionId
+    },
+    slot: map.slot
+  }))).sort((a, b) => order(a.pin.resourceId, b.pin.resourceId) || order(a.pin.revisionId, b.pin.revisionId) || order(a.slot, b.slot));
 }
 function readGlbJson(bytes) {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
@@ -42091,7 +43109,7 @@ function readGlbJson(bytes) {
   }
   const jsonEnd = 20 + view.getUint32(12, true);
   const json = JSON.parse(decoder.decode(bytes.subarray(20, jsonEnd)));
-  if (!object2(json) || !object2(json.asset) || json.asset.version !== "2.0")
+  if (!object3(json) || !object3(json.asset) || json.asset.version !== "2.0")
     throw new Error("Invalid glTF asset");
   return { json, jsonEnd };
 }
@@ -42110,13 +43128,17 @@ function writeGlbJson(bytes, jsonEnd, json) {
   result.set(bytes.subarray(jsonEnd), 20 + length);
   return result;
 }
-async function deliverThreeRuntimeGlb(glb, options = {}) {
+async function createKtx2Encoder2() {
+  await Promise.resolve().then(() => init_ktx2_basis());
+  return createKtx2Encoder();
+}
+async function deriveThree(glb, options, layout = {}) {
   const [{ deliverRuntimeThreeGlb }, { MeshoptEncoder }] = await Promise.all([
     Promise.resolve().then(() => (init_runtime_three(), exports_runtime_three)),
     import("meshoptimizer")
   ]);
   await MeshoptEncoder.ready;
-  const result = await deliverRuntimeThreeGlb(glb, MeshoptEncoder, options);
+  const result = await deliverRuntimeThreeGlb(glb, MeshoptEncoder, options, layout);
   if (result.glb.byteLength > ASSET_LIMIT)
     throw new Error("Runtime export exceeds 64 MiB");
   return result;
@@ -42129,6 +43151,18 @@ async function exportAssetGlb(record, options = {}) {
     throw new Error("Unknown runtime export target");
   if (options.target !== undefined && profile !== "runtime")
     throw new Error("A runtime export target requires the runtime profile");
+  if (options.compression !== undefined && options.target !== "three")
+    throw new Error("Runtime compression requires the three runtime target");
+  const textures = options.textures;
+  if (textures !== undefined && textures !== "manifest" && textures !== "external")
+    throw new Error("Unknown runtime texture option");
+  if (textures !== undefined && profile !== "runtime")
+    throw new Error("A texture manifest requires the runtime profile");
+  if (textures === "external" && options.target !== "three")
+    throw new Error("External textures require target three");
+  const gltfName = options.gltfFileName ?? "runtime.gltf";
+  if (textures === "external")
+    validateGltfFileName(gltfName);
   validateRecordShape(record);
   const bytes = record.files["asset.glb"];
   if (profile === "editable")
@@ -42141,7 +43175,7 @@ async function exportAssetGlb(record, options = {}) {
   }
   const { json, jsonEnd } = readGlbJson(bytes);
   const asset = json.asset;
-  if (owns(asset, "extras") && !object2(asset.extras))
+  if (owns(asset, "extras") && !object3(asset.extras))
     throw new Error("Cannot add provenance to non-object asset extras");
   const extras = asset.extras ?? {};
   if (owns(extras, "kilnProvenanceV1"))
@@ -42150,10 +43184,10 @@ async function exportAssetGlb(record, options = {}) {
   if (json.scenes !== undefined && !Array.isArray(json.scenes))
     throw new Error("Invalid glTF scenes");
   for (const [index, scene] of (json.scenes ?? []).entries()) {
-    if (!object2(scene) || !object2(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
+    if (!object3(scene) || !object3(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
       continue;
     const review = scene.extras.kilnReviewClipsV1;
-    if (!object2(review) || review.version !== 1 && review.version !== 2 || !Array.isArray(review.clips))
+    if (!object3(review) || review.version !== 1 && review.version !== 2 || !Array.isArray(review.clips))
       throw new Error("Unsupported scenes[].extras.kilnReviewClipsV1");
     scenes.push({ index, kilnReviewClipsV1: review });
     delete scene.extras.kilnReviewClipsV1;
@@ -42168,41 +43202,95 @@ async function exportAssetGlb(record, options = {}) {
     },
     scenes
   };
-  let base = bytes, baseJson = json, baseJsonEnd = jsonEnd;
+  let base = bytes, baseJson = json, baseJsonEnd = jsonEnd, imageSources, gltf;
   if (options.target === "three") {
-    const derived = await deliverThreeRuntimeGlb(writeGlbJson(bytes, jsonEnd, json), {
-      ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {}
-    });
+    const derived = await deriveThree(writeGlbJson(bytes, jsonEnd, json), {
+      ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {},
+      ...options.compression ? { compression: options.compression } : {}
+    }, textures === "external" ? { gltfBasename: gltfName.slice(0, -".gltf".length) } : {});
     metadata.target = "three";
     metadata.delivery = derived.delivery;
     base = derived.glb;
+    imageSources = derived.imageSources;
+    gltf = derived.gltf;
     ({ json: baseJson, jsonEnd: baseJsonEnd } = readGlbJson(base));
   }
+  if (textures !== undefined)
+    metadata.textures = await runtimeTextureManifest(baseJson, readGlbBinary(base, baseJsonEnd), {
+      ...imageSources ? { sources: imageSources } : {},
+      maps: closureMaps(record)
+    });
+  const external = gltf ? await externalLayout(gltf, metadata.textures ?? []) : undefined;
   const metadataBytes = encoder2.encode(JSON.stringify(metadata));
   if (metadataBytes.length > ASSET_LIMIT)
     throw new Error("Runtime export exceeds 64 MiB");
+  const provenance = {
+    version: "kiln.provenance.v1",
+    profile: "runtime",
+    ...options.target ? { target: options.target } : {},
+    metadata: { uri: name, sha256: await sha2562(metadataBytes) }
+  };
   const baseAsset = baseJson.asset;
   baseAsset.extras = {
     ...baseAsset.extras ?? extras,
-    kilnProvenanceV1: {
-      version: "kiln.provenance.v1",
-      profile: "runtime",
-      ...options.target ? { target: options.target } : {},
-      metadata: { uri: name, sha256: await sha2562(metadataBytes) }
-    }
+    kilnProvenanceV1: provenance
   };
   const result = writeGlbJson(base, baseJsonEnd, baseJson);
-  return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
+  if (!external)
+    return { profile, glb: result, metadata: { name, bytes: metadataBytes } };
+  const gltfAsset = external.json.asset;
+  gltfAsset.extras = {
+    ...gltfAsset.extras ?? extras,
+    kilnProvenanceV1: provenance
+  };
+  const gltfBytes = encoder2.encode(JSON.stringify(external.json));
+  if (gltfBytes.length > ASSET_LIMIT)
+    throw new Error("Runtime export exceeds 64 MiB");
+  return {
+    profile,
+    layout: "gltf",
+    glb: result,
+    gltf: { name: gltfName, bytes: gltfBytes },
+    buffers: external.buffers,
+    textures: external.textures,
+    metadata: { name, bytes: metadataBytes }
+  };
 }
-var encoder2, decoder, object2 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
+async function externalLayout(gltf, manifest) {
+  const json = structuredClone(gltf.json);
+  const resources = new Map(Object.entries(gltf.resources));
+  const images = Array.isArray(json.images) ? json.images : [];
+  if (images.length !== manifest.length)
+    throw new Error("External texture layout mismatch");
+  const textures = new Map;
+  for (const [index, image] of images.entries()) {
+    const entry = manifest[index];
+    const written = typeof image.uri === "string" ? image.uri : "";
+    const bytes = resources.get(written);
+    if (!bytes || `sha256:${await sha256Hex3(bytes)}` !== entry.sha256)
+      throw new Error("External texture bytes differ from the delivered GLB");
+    resources.delete(written);
+    const uri = `textures/${entry.sha256.slice("sha256:".length)}.${textureFileExtension(entry.mimeType)}`;
+    image.uri = uri;
+    entry.uri = uri;
+    textures.set(uri, { uri, sha256: entry.sha256, bytes });
+  }
+  const buffers = [...resources].map(([uri, bytes]) => ({ uri, bytes }));
+  for (const { uri } of buffers)
+    if (!/^[a-z0-9][a-z0-9._-]*\.bin$/i.test(uri))
+      throw new Error(`Unexpected external glTF resource ${uri}`);
+  return { json, buffers, textures: [...textures.values()] };
+}
+var encoder2, decoder, object3 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
 var init_asset_export = __esm(() => {
   init_assets();
+  init_runtime_textures();
   encoder2 = new TextEncoder;
   decoder = new TextDecoder;
 });
 
 // src/project-bundle.ts
-import { z as z10 } from "zod";
+import { z as z11 } from "zod";
 import { zipSync as zipSync2, unzipSync as unzipSync2 } from "three/addons/libs/fflate.module.js";
 async function projectBundleHash(bytes) {
   const result = new Uint8Array(await crypto.subtle.digest("SHA-256", Uint8Array.from(bytes)));
@@ -42474,7 +43562,7 @@ async function decodeProjectBundle(bytes) {
     throw new Error("Unreferenced files in project bundle");
   return { manifest, project, materials, assets, runtimeAssets };
 }
-var PROJECT_BUNDLE_LIMITS, hashSchema, id = "[a-z][a-z0-9_-]{0,79}", pathSchema, identitySchema, projectBundleManifestSchema, projectBundleManifestV2Schema, projectBundleManifestAnySchema, encoder3, decoder2, bytesOf2 = (value) => encoder3.encode(JSON.stringify(value)), assetPrefix = (entry) => `assets/${entry.collectionId}/${entry.assetId}/${entry.revisionId}/`, materialPrefix = (entry) => `materials/${entry.materialId}/${entry.revisionId.slice(7)}/`;
+var PROJECT_BUNDLE_LIMITS, hashSchema, id2 = "[a-z][a-z0-9_-]{0,79}", pathSchema, identitySchema, projectBundleManifestSchema, projectBundleManifestV2Schema, projectBundleManifestAnySchema, encoder3, decoder2, bytesOf2 = (value) => encoder3.encode(JSON.stringify(value)), assetPrefix = (entry) => `assets/${entry.collectionId}/${entry.assetId}/${entry.revisionId}/`, materialPrefix = (entry) => `materials/${entry.materialId}/${entry.revisionId.slice(7)}/`;
 var init_project_bundle = __esm(() => {
   init_assets();
   init_asset_export();
@@ -42486,33 +43574,33 @@ var init_project_bundle = __esm(() => {
     maxEntries: 8192,
     maxManifestBytes: 2 * 1024 * 1024
   });
-  hashSchema = z10.string().regex(/^sha256:[a-f0-9]{64}$/);
-  pathSchema = z10.string().regex(new RegExp(`^(project\\.json|materials/${id}/[a-f0-9]{64}/(manifest\\.json|baseColor\\.png|normal\\.png|metallicRoughness\\.png|emissive\\.png|occlusion\\.png)|assets/${id}/${id}/${id}/(manifest\\.json|asset\\.glb|source\\.kiln\\.js|preview\\.png|runtime\\.glb|runtime\\.kiln-metadata\\.json))$`));
-  identitySchema = z10.object({
+  hashSchema = z11.string().regex(/^sha256:[a-f0-9]{64}$/);
+  pathSchema = z11.string().regex(new RegExp(`^(project\\.json|materials/${id2}/[a-f0-9]{64}/(manifest\\.json|baseColor\\.png|normal\\.png|metallicRoughness\\.png|emissive\\.png|occlusion\\.png)|assets/${id2}/${id2}/${id2}/(manifest\\.json|asset\\.glb|source\\.kiln\\.js|preview\\.png|runtime\\.glb|runtime\\.kiln-metadata\\.json))$`));
+  identitySchema = z11.object({
     inventoryId: assetIdSchema,
     collectionId: assetIdSchema,
     assetId: assetIdSchema,
     revisionId: assetIdSchema,
     canonicalGlbSha256: hashSchema
   }).strict();
-  projectBundleManifestSchema = z10.object({
-    version: z10.literal("kiln.project-bundle.v1"),
-    profile: z10.enum(["editable", "runtime"]),
-    editable: z10.boolean(),
-    resourceClosure: z10.enum(["normalized-maps-and-procedural-recipes", "embedded-runtime-only"]),
-    referenceMediaIncluded: z10.literal(false),
-    originalAcquisitionFilesIncluded: z10.literal(false),
-    assets: z10.array(identitySchema).max(1000),
-    materials: z10.array(z10.object({ materialId: assetIdSchema, revisionId: hashSchema }).strict()).max(1024),
-    files: z10.record(pathSchema, z10.object({
+  projectBundleManifestSchema = z11.object({
+    version: z11.literal("kiln.project-bundle.v1"),
+    profile: z11.enum(["editable", "runtime"]),
+    editable: z11.boolean(),
+    resourceClosure: z11.enum(["normalized-maps-and-procedural-recipes", "embedded-runtime-only"]),
+    referenceMediaIncluded: z11.literal(false),
+    originalAcquisitionFilesIncluded: z11.literal(false),
+    assets: z11.array(identitySchema).max(1000),
+    materials: z11.array(z11.object({ materialId: assetIdSchema, revisionId: hashSchema }).strict()).max(1024),
+    files: z11.record(pathSchema, z11.object({
       sha256: hashSchema,
-      bytes: z10.number().int().nonnegative().max(64 * 1024 * 1024)
+      bytes: z11.number().int().nonnegative().max(64 * 1024 * 1024)
     }).strict())
   }).strict();
   projectBundleManifestV2Schema = projectBundleManifestSchema.extend({
-    version: z10.literal("kiln.project-bundle.v2")
+    version: z11.literal("kiln.project-bundle.v2")
   });
-  projectBundleManifestAnySchema = z10.union([
+  projectBundleManifestAnySchema = z11.union([
     projectBundleManifestSchema,
     projectBundleManifestV2Schema
   ]);
@@ -42522,8 +43610,8 @@ var init_project_bundle = __esm(() => {
 
 // src/project-bundle-node.ts
 import { randomUUID as randomUUID8 } from "node:crypto";
-import { link as link6, lstat as lstat9, mkdir as mkdir8, readFile as readFile7, realpath as realpath7, unlink as unlink6, writeFile as writeFile7 } from "node:fs/promises";
-import { join as join11, relative as relative6, resolve as resolve10, sep as sep5 } from "node:path";
+import { link as link6, lstat as lstat9, mkdir as mkdir8, readFile as readFile9, realpath as realpath7, unlink as unlink6, writeFile as writeFile7 } from "node:fs/promises";
+import { join as join12, relative as relative6, resolve as resolve10, sep as sep5 } from "node:path";
 async function assetMaterials(workspace, asset) {
   return resolveSavedAssetMaterials(asset, workspace.materials);
 }
@@ -42620,7 +43708,7 @@ async function retainArchive(workspace, bytes, digest) {
   const canonical = await realpath7(root);
   let directory = root;
   for (const part of [".kiln", "imports"]) {
-    directory = join11(directory, part);
+    directory = join12(directory, part);
     await mkdir8(directory).catch((error) => {
       if (error.code !== "EEXIST")
         throw error;
@@ -42630,8 +43718,8 @@ async function retainArchive(workspace, bytes, digest) {
     if (!info.isDirectory() || info.isSymbolicLink() || rel === ".." || rel.startsWith(`..${sep5}`))
       throw new Error("Unsafe project import directory");
   }
-  const file = join11(directory, `${digest.slice(7)}.zip`);
-  const temporary = join11(directory, `.import-${randomUUID8()}.tmp`);
+  const file = join12(directory, `${digest.slice(7)}.zip`);
+  const temporary = join12(directory, `.import-${randomUUID8()}.tmp`);
   await writeFile7(temporary, bytes, { flag: "wx", mode: 384 });
   try {
     try {
@@ -42640,7 +43728,7 @@ async function retainArchive(workspace, bytes, digest) {
       if (error.code !== "EEXIST")
         throw error;
       const info = await lstat9(file);
-      if (!info.isFile() || info.isSymbolicLink() || info.size !== bytes.length || await projectBundleHash(new Uint8Array(await readFile7(file))) !== digest)
+      if (!info.isFile() || info.isSymbolicLink() || info.size !== bytes.length || await projectBundleHash(new Uint8Array(await readFile9(file))) !== digest)
         throw new Error("Imported archive integrity mismatch");
     }
   } finally {
@@ -42788,9 +43876,9 @@ var init_source_check = __esm(() => {
 });
 
 // src/local-runtime.ts
-import { readFile as readFile8, stat as stat5 } from "node:fs/promises";
-import { dirname as dirname6, isAbsolute, join as join12, resolve as resolve11 } from "node:path";
-import { fileURLToPath as fileURLToPath4 } from "node:url";
+import { readFile as readFile10, stat as stat5 } from "node:fs/promises";
+import { dirname as dirname7, isAbsolute, join as join13, resolve as resolve11 } from "node:path";
+import { fileURLToPath as fileURLToPath5 } from "node:url";
 import { Console } from "node:console";
 function workspaceSourceReader(root) {
   return async (file) => {
@@ -42805,7 +43893,7 @@ function workspaceSourceReader(root) {
       throw new Error(`file ${file} was not found inside the workspace. Check the relative path, or pass code or programRef.`);
     if (info.size > MAX_PROGRAM_BYTES)
       throw new Error(`file ${file} exceeds the ${MAX_PROGRAM_BYTES / (1024 * 1024)} MiB source limit.`);
-    return readFile8(path, "utf8");
+    return readFile10(path, "utf8");
   };
 }
 function integer4(env, name, fallback, min, max) {
@@ -42815,7 +43903,7 @@ function integer4(env, name, fallback, min, max) {
   return value;
 }
 function createLocalToolContext(base = {}, env = process.env) {
-  const workspaceRoot = env.KILN_WORKSPACE ? resolve11(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname6(dirname6(base.programStore.directory)) : localWorkspaceRoot(env);
+  const workspaceRoot = env.KILN_WORKSPACE ? resolve11(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname7(dirname7(base.programStore.directory)) : localWorkspaceRoot(env);
   const workspace = base.workspace ?? new FileWorkspace(workspaceRoot, env.KILN_PROJECT);
   const projectStore = base.projectStore ?? (workspace instanceof FileWorkspace ? workspace.projects : undefined);
   const liveReview = base.liveReview ?? (env.KILN_LIVE_REVIEW === "off" ? undefined : new FileLiveReview(workspaceRoot, {
@@ -42925,7 +44013,7 @@ function createLocalToolContext(base = {}, env = process.env) {
     localExecution
   };
 }
-async function createPackagedLocalToolContext(base = {}, env = process.env, installationRoot = fileURLToPath4(new URL("../", import.meta.url))) {
+async function createPackagedLocalToolContext(base = {}, env = process.env, installationRoot = fileURLToPath5(new URL("../", import.meta.url))) {
   const context = createLocalToolContext(base, env);
   const managed = () => {
     const identity = context.evaluatorCacheIdentity;
@@ -42980,7 +44068,7 @@ async function createPackagedLocalToolContext(base = {}, env = process.env, inst
   }
   const cacheBytes = integer4(env, "KILN_BUILD_CACHE_MB", 128, 0, 1024) * 1024 * 1024;
   const store = context.programStore;
-  const directory = resolve11(env.KILN_BUILD_CACHE_DIR ?? join12(store instanceof FileProgramStore ? dirname6(store.directory) : ".kiln", "cache", "builds"));
+  const directory = resolve11(env.KILN_BUILD_CACHE_DIR ?? join13(store instanceof FileProgramStore ? dirname7(store.directory) : ".kiln", "cache", "builds"));
   context.buildCache = new FileBuildCache(directory, cacheBytes);
   context.evaluatorCacheIdentity = `${identity.identity}:${JSON.stringify({
     execution: context.localExecution,
@@ -43050,7 +44138,7 @@ var init_requirements_assets = __esm(() => {
 });
 
 // src/tools/review-detail.ts
-import { z as z11 } from "zod";
+import { z as z12 } from "zod";
 function requestedDetail(input, fallback = "compact") {
   const detail = input?.detail;
   return detail === "full" || detail === "lean" || detail === "compact" ? detail : fallback;
@@ -43572,7 +44660,7 @@ function compactEditResult(result, detail = "compact", options = {}) {
 }
 var COMPACT_PART_PREVIEW = 24, COMPACT_FINDINGS_PER_DIMENSION = 12, LEAD_BLOCKERS = 8, LEAN_WARNINGS = 3, COMPACT_WARNINGS = 12, WARNING_CHARS = 1000, DEFAULT_RESULT_LIMIT = 20000, MAX_RESULT_LIMIT = 40000, COMPACT_DECIMALS = 6, reviewDetailInput, partsHint = (offset) => `For remaining paths use kiln_inspect with image:false and listParts:{offset:${offset}}. listParts.query filters names/paths; follow partListing.nextOffset on the same programRef and query.`, isRecord7 = (value) => typeof value === "object" && value !== null && !Array.isArray(value), SEVERITY, severity = (finding) => isRecord7(finding) && typeof finding.disposition === "string" && SEVERITY[finding.disposition] || (isRecord7(finding) && finding.disposition === "block" ? 0 : 3), RECEIPT_IDENTITY, poseFramesHint = (retained) => retained ? `Every frame: read ${retained.path} (pretty-printed), or ask fewer frameTimes or measureParts per call.` : "Every frame: detail: 'full' (inside the 40,000-character limit), or fewer frameTimes or measureParts per call.", LEAN_KEYS, LEAN_DIFF = 2000, COMPACT_COMPARISON_CHANGES = 12, COMPARE_HINT = "Bounds per change and the comparison scope: detail: 'full'. compare.offset pages the changes.";
 var init_review_detail = __esm(() => {
-  reviewDetailInput = z11.enum(["lean", "compact", "full"]).optional().describe("compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path");
+  reviewDetailInput = z12.enum(["lean", "compact", "full"]).optional().describe("compact (default) groups findings by code; lean: verdict, blockers, metrics only; full: every finding, rule and part plus the retained report path");
   SEVERITY = { block: 0, warn: 1, observe: 2 };
   RECEIPT_IDENTITY = new Set([
     "version",
@@ -43613,19 +44701,19 @@ var init_review_detail = __esm(() => {
 });
 
 // src/tools/programs.ts
-import { z as z12 } from "zod";
+import { z as z13 } from "zod";
 function withProgramReferences(def, store, readSourceFile) {
-  if (!(def.inputSchema instanceof z12.ZodObject))
+  if (!(def.inputSchema instanceof z13.ZodObject))
     throw new Error(`${def.name} must have an object input schema.`);
   const sources = readSourceFile ? "code, programRef OR file" : "code OR programRef";
   const inputSchema = def.inputSchema.extend({
-    code: z12.string().optional().describe("New source."),
+    code: z13.string().optional().describe("New source."),
     programRef: refInput.optional(),
     ...readSourceFile ? {
-      file: z12.string().min(1).max(1024).optional().describe("A program file inside the workspace, relative to its root.")
+      file: z13.string().min(1).max(1024).optional().describe("A program file inside the workspace, relative to its root.")
     } : {},
     ...def.name === "kiln_edit" ? {
-      includeCode: z12.boolean().optional().describe("Also return the patched source, bounded with the result; kiln_source pages it. Default false.")
+      includeCode: z13.boolean().optional().describe("Also return the patched source, bounded with the result; kiln_source pages it. Default false.")
     } : {}
   }).refine((input) => [input.code, input.programRef, input.file].filter((value) => value !== undefined).length === 1, { message: `Supply exactly one of ${sources.replace(" OR ", " or ")}.` });
   const summaries = {
@@ -43678,11 +44766,11 @@ function boundIncludedCode(result, limit) {
   };
 }
 function createKilnSourceDef(store) {
-  const inputSchema = z12.object({
+  const inputSchema = z13.object({
     programRef: refInput,
-    offset: z12.number().int().min(0).default(0).describe("UTF-16 character offset; use nextOffset to continue."),
-    limit: z12.number().int().min(1).max(16000).default(8000).describe("Maximum characters returned."),
-    query: z12.string().min(1).max(1000).optional().describe("Find literal text at or after offset; return bounded surrounding source.")
+    offset: z13.number().int().min(0).default(0).describe("UTF-16 character offset; use nextOffset to continue."),
+    limit: z13.number().int().min(1).max(16000).default(8000).describe("Maximum characters returned."),
+    query: z13.string().min(1).max(1000).optional().describe("Find literal text at or after offset; return bounded surrounding source.")
   });
   return {
     name: "kiln_source",
@@ -43711,7 +44799,7 @@ var refInput;
 var init_programs = __esm(() => {
   init_program_store();
   init_review_detail();
-  refInput = z12.string().regex(programRefPattern).describe("Returned p_ handle or full sha256 ref.");
+  refInput = z13.string().regex(programRefPattern).describe("Returned p_ handle or full sha256 ref.");
 });
 
 // src/tools/program-artifacts.ts
@@ -43730,9 +44818,9 @@ var init_engine_identity = __esm(() => {
 });
 
 // src/discovery/catalog-schema.ts
-import { z as z13 } from "zod";
+import { z as z14 } from "zod";
 function parseCatalog(value) {
-  const entries = z13.array(discoveryEntrySchema).parse(value);
+  const entries = z14.array(discoveryEntrySchema).parse(value);
   const ids = new Set;
   const names = new Set;
   for (const entry of entries) {
@@ -43757,35 +44845,35 @@ function parseCatalog(value) {
   }
   return entries;
 }
-var text6, texts, id2, common, operationContractSchema, discoveryEntrySchema;
+var text6, texts, id3, common, operationContractSchema, discoveryEntrySchema;
 var init_catalog_schema = __esm(() => {
-  text6 = z13.string().trim().min(1);
-  texts = z13.array(text6);
-  id2 = z13.string().regex(/^(operation|assembly|recipe|shape):[A-Za-z][A-Za-z0-9-]*$/);
+  text6 = z14.string().trim().min(1);
+  texts = z14.array(text6);
+  id3 = z14.string().regex(/^(operation|assembly|recipe|shape):[A-Za-z][A-Za-z0-9-]*$/);
   common = {
-    version: z13.literal("kiln.catalog-entry.v1"),
-    id: id2,
+    version: z14.literal("kiln.catalog-entry.v1"),
+    id: id3,
     name: text6,
     summary: text6.max(500),
     family: text6.max(80),
     tags: texts,
     aliases: texts,
     intents: texts,
-    stability: z13.enum(["stable", "experimental", "deprecated"]),
-    related: z13.array(z13.object({
-      id: id2,
-      relation: z13.enum(["alternative", "prerequisite", "companion"])
+    stability: z14.enum(["stable", "experimental", "deprecated"]),
+    related: z14.array(z14.object({
+      id: id3,
+      relation: z14.enum(["alternative", "prerequisite", "companion"])
     }).strict()),
     references: texts,
     limitations: texts
   };
-  operationContractSchema = z13.object({
+  operationContractSchema = z14.object({
     signature: text6,
     returns: text6,
     units: text6,
     axes: text6,
     origin: text6,
-    execution: z13.enum(["sync", "async"]),
+    execution: z14.enum(["sync", "async"]),
     ownership: text6,
     coordinates: text6,
     parameters: texts,
@@ -43795,24 +44883,24 @@ var init_catalog_schema = __esm(() => {
     cost: text6,
     example: text6
   }).strict();
-  discoveryEntrySchema = z13.discriminatedUnion("kind", [
-    z13.object({ ...common, kind: z13.literal("operation"), contract: operationContractSchema }).strict(),
-    z13.object({ ...common, kind: z13.literal("assembly"), contract: operationContractSchema }).strict(),
-    z13.object({
+  discoveryEntrySchema = z14.discriminatedUnion("kind", [
+    z14.object({ ...common, kind: z14.literal("operation"), contract: operationContractSchema }).strict(),
+    z14.object({ ...common, kind: z14.literal("assembly"), contract: operationContractSchema }).strict(),
+    z14.object({
       ...common,
-      kind: z13.literal("recipe"),
-      recipe: z13.object({
-        prerequisites: z13.array(id2),
+      kind: z14.literal("recipe"),
+      recipe: z14.object({
+        prerequisites: z14.array(id3),
         steps: texts.min(1),
         example: text6,
         adaptations: texts,
         checks: texts
       }).strict()
     }).strict(),
-    z13.object({
+    z14.object({
       ...common,
-      kind: z13.literal("shape"),
-      shape: z13.object({ tool: text6, field: text6, schema: z13.record(z13.string(), z13.unknown()) }).strict()
+      kind: z14.literal("shape"),
+      shape: z14.object({ tool: text6, field: text6, schema: z14.record(z14.string(), z14.unknown()) }).strict()
     }).strict()
   ]).superRefine((entry, ctx) => {
     if (!entry.id.startsWith(`${entry.kind}:`)) {
@@ -45280,7 +46368,12 @@ var init_helper_contracts = __esm(() => {
     ...materialMetadata,
     references: ["src/textures.ts"],
     aliases: ["textured PBR", "metallic roughness material"],
-    intents: ["bind portable material textures and scalar factors"],
+    intents: [
+      "bind portable material textures and scalar factors",
+      "roughness map",
+      "packed roughness and metalness texture",
+      "apply albedo normal and roughness maps"
+    ],
     limitations: ["CPU views do not prove texture/metalness appearance."]
   });
   define2("foliageMaterial", {
@@ -45939,7 +47032,8 @@ var init_helper_contracts = __esm(() => {
     axes: "Rigid frame in geometry-local coordinates: planar XY, box face planes, cylindrical around Y. Euler XYZ rotations are degrees.",
     origin: "Frame origin is explicit, default [0,0,0]; geometry positions are preserved.",
     parameters: [
-      "Planar/box axes and cylindrical height normalize each geometry extent to 0..1. This is not metre-scaled UV mapping; a shared frame does not preserve texel density or texture continuity across separate pieces. Preserve authored physical UVs or map each face with explicit dimensions when that is required.",
+      "By default planar/box axes and cylindrical height normalize each geometry extent to 0..1, so texel density changes with part size. metersPerUnit (positive length) instead maps one UV unit to that length measured from the frame origin: parts of any size tile at the same density, and parts sharing a frame keep the same phase. A full cylindrical wrap rounds its circumference at the largest radius to whole tiles so the seam stays continuous; a partial angularRange uses the exact arc length.",
+      "Output is non-indexed. Weld with mergeVertices afterwards where the projection is continuous (one planar face, cylindrical sides); it keeps corners split where UVs or normals differ, such as box faces and the cylindrical seam.",
       "projection is required. frame uses origin/rotation. Cylinder seamDegrees defaults to 180, measured from +X toward +Z; angularRange is [start degrees, positive sweep <=360] instead of seamDegrees.",
       "Cylindrical caps default to planar for triangle normals within 1e-6 of frame Y; caps:side uses side mapping. Partial ranges must cover side vertices, allowing 1e-6 radians of Float32 boundary roundoff.",
       "Nonempty finite positions, valid triangle indices and matching per-vertex attributes; morph targets are unsupported. At most 2000000 source samples/corners and 128 MiB expanded attribute storage."
@@ -45952,8 +47046,17 @@ var init_helper_contracts = __esm(() => {
   }, {
     ...uvMetadata,
     references: ["src/uv-project.ts"],
-    aliases: ["planar projection", "box mapping", "cylindrical UVs", "rotated UV frame"],
-    intents: ["generate directional texture coordinates in an explicit frame"],
+    aliases: [
+      "planar projection",
+      "box mapping",
+      "cylindrical UVs",
+      "rotated UV frame",
+      "metric UVs"
+    ],
+    intents: [
+      "generate directional texture coordinates in an explicit frame",
+      "keep the same texel density on parts of different size"
+    ],
     limitations: [
       "Full-wrap seam corners may use U above 1 and require repeat sampling. Side triangles spanning more than half a revolution fail; subdivide the profile. Zero extent maps to 0.5. This is projection, not an atlas or a stretch-free guarantee."
     ],
@@ -46023,6 +47126,7 @@ var init_helper_contracts = __esm(() => {
     ...textureFacts,
     ownership: "Creates a new DataTexture with generated bytes and portable metadata.",
     parameters: [
+      "usage is albedo (default), emissive, normal, roughness, metalness, metallicRoughness or occlusion; there is no data or height usage. Match the slot: portable baseColor takes albedo and occlusion takes occlusion; normal, metallicRoughness and emissive take their own name; pbrMaterial albedo, roughness, metalness and aoMap take albedo, roughness, metalness and occlusion.",
       "V1/V2 preserve opaque patterns: size power-of-two 4..1024 and at most 8 layers. Explicit schemaVersion 3 uses width/height integers 4..1024, byte RGBA, at most 64 ordered operations and 64 polygon vertices.",
       "V3 paint/mask use integer pixel-edge shapes with binary center coverage and fixed integer source-over rounding. A mask clears outside its shape; invert keeps outside. Zero-alpha pixels are transparent black.",
       "V3 color-only palette colors are 1..32 RGB integers, optional fixed Bayer4 dither. Stamps (any usage) use bounded Xorshift32 seed/area placement; periodic wrapping is explicit and at most 256 expanded copies. Legacy-v2 layers delegate unchanged square V2 patterns with matching usage.",
@@ -47398,7 +48502,7 @@ async function build() {
 });
 
 // src/tools/capture-input.ts
-import { z as z14 } from "zod";
+import { z as z15 } from "zod";
 function taggedCaptureError(issue) {
   const input = issue.input;
   if (typeof input !== "object" || input === null || !("version" in input) || input.version !== "kiln.capture.v1" && input.version !== "kiln.capture.v2")
@@ -47429,60 +48533,60 @@ var backdropInput, legacyCaptureInput, cameraVec3Input, orbitCameraError = (issu
 var init_capture_input = __esm(() => {
   init_background();
   init_capture_limits();
-  backdropInput = z14.enum(BACKDROP_IDS).optional().describe("neutral (default); light for dark parts, dark for light parts.");
-  legacyCaptureInput = z14.object({
-    preset: z14.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("COLSxROWS; default 3x2. Fewer views for simple shapes, up to 3x3."),
-    cells: z14.array(z14.object({
-      azimuthDeg: z14.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
-      elevationDeg: z14.number().describe("0 eye level; positive above, negative below. Clamped -89..89."),
-      zoom: z14.number().optional().describe("Bounds padding: below 1 crops, above 1 pulls back; omit for auto-framing."),
-      name: z14.string().optional().describe("Label; defaults to angles.")
+  backdropInput = z15.enum(BACKDROP_IDS).optional().describe("neutral (default); light for dark parts, dark for light parts.");
+  legacyCaptureInput = z15.object({
+    preset: z15.enum(["1x1", "1x2", "2x1", "3x1", "2x2", "3x2", "3x3"]).optional().describe("COLSxROWS; default 3x2. Fewer views for simple shapes, up to 3x3."),
+    cells: z15.array(z15.object({
+      azimuthDeg: z15.number().describe("0 = front, 90 = right, 180 = back, 270 = left. Wraps."),
+      elevationDeg: z15.number().describe("0 eye level; positive above, negative below. Clamped -89..89."),
+      zoom: z15.number().optional().describe("Bounds padding: below 1 crops, above 1 pulls back; omit for auto-framing."),
+      name: z15.string().optional().describe("Label; defaults to angles.")
     })).optional().describe("Row-major cameras; omit for preset defaults. Count cannot exceed preset capacity (max 9)."),
     backdrop: backdropInput
   }).optional().describe("Sheet layout and cameras; omit for six views in a 3x2 grid.");
-  cameraVec3Input = z14.array(z14.number()).length(3);
-  cameraShotInput = z14.object({
-    name: z14.string().optional(),
-    subject: z14.object({ path: z14.string().optional(), name: z14.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
+  cameraVec3Input = z15.array(z15.number()).length(3);
+  cameraShotInput = z15.object({
+    name: z15.string().optional(),
+    subject: z15.object({ path: z15.string().optional(), name: z15.string().optional() }).strict().refine((v) => v.path === undefined !== (v.name === undefined), {
       message: "Choose subject path OR exact name."
     }).optional(),
-    visibility: z14.enum(["context", "isolate"]).optional(),
-    hide: z14.array(z14.string().min(1).max(1024)).max(64).optional(),
-    camera: z14.discriminatedUnion("type", [
-      z14.strictObject({
-        type: z14.literal("orbit"),
-        azimuthDeg: z14.number().optional(),
-        elevationDeg: z14.number().optional(),
-        relativeTo: z14.enum(["world", "asset", "part"]).optional(),
-        padding: z14.number().positive().max(100).optional()
+    visibility: z15.enum(["context", "isolate"]).optional(),
+    hide: z15.array(z15.string().min(1).max(1024)).max(64).optional(),
+    camera: z15.discriminatedUnion("type", [
+      z15.strictObject({
+        type: z15.literal("orbit"),
+        azimuthDeg: z15.number().optional(),
+        elevationDeg: z15.number().optional(),
+        relativeTo: z15.enum(["world", "asset", "part"]).optional(),
+        padding: z15.number().positive().max(100).optional()
       }, { error: orbitCameraError }),
-      z14.strictObject({
-        type: z14.literal("explicit"),
-        projection: z14.enum(["orthographic", "perspective"]),
+      z15.strictObject({
+        type: z15.literal("explicit"),
+        projection: z15.enum(["orthographic", "perspective"]),
         position: cameraVec3Input,
         target: cameraVec3Input.optional(),
-        relativeTo: z14.enum(["world", "asset", "part", "local"]).optional(),
-        frame: z14.object({
+        relativeTo: z15.enum(["world", "asset", "part", "local"]).optional(),
+        frame: z15.object({
           origin: cameraVec3Input.optional(),
           rotation: cameraVec3Input.optional()
         }).strict().optional(),
-        framing: z14.enum(["explicit", "bounds"]).optional(),
-        padding: z14.number().positive().max(100).optional(),
+        framing: z15.enum(["explicit", "bounds"]).optional(),
+        padding: z15.number().positive().max(100).optional(),
         targetOffset: cameraVec3Input.optional(),
         up: cameraVec3Input.optional(),
-        halfHeight: z14.number().positive().optional(),
-        fovDeg: z14.number().positive().lt(180).optional(),
-        near: z14.number().positive().optional(),
-        far: z14.number().positive().optional()
+        halfHeight: z15.number().positive().optional(),
+        fovDeg: z15.number().positive().lt(180).optional(),
+        near: z15.number().positive().optional(),
+        far: z15.number().positive().optional()
       }, { error: explicitCameraError })
     ]).optional()
   }).strict();
-  advancedCaptureInput = z14.strictObject({
-    version: z14.enum(["kiln.capture.v1", "kiln.capture.v2"]),
-    shots: z14.array(cameraShotInput).min(1).max(9),
-    cols: z14.number().int().min(1).max(3).optional(),
-    size: z14.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
-    output: z14.enum(["grid", "separate"]).optional(),
+  advancedCaptureInput = z15.strictObject({
+    version: z15.enum(["kiln.capture.v1", "kiln.capture.v2"]),
+    shots: z15.array(cameraShotInput).min(1).max(9),
+    cols: z15.number().int().min(1).max(3).optional(),
+    size: z15.number().int().min(128).max(MAX_CAPTURE_SHOT_SIZE).optional(),
+    output: z15.enum(["grid", "separate"]).optional(),
     backdrop: backdropInput
   }, { error: advancedCaptureError }).superRefine((input, context) => {
     if (input.version === "kiln.capture.v1" && input.shots.some((shot) => shot.hide !== undefined))
@@ -47492,21 +48596,21 @@ var init_capture_input = __esm(() => {
         message: "shot.hide requires version kiln.capture.v2"
       });
   });
-  captureShapeInput = z14.union([
+  captureShapeInput = z15.union([
     advancedCaptureInput,
-    z14.strictObject(legacyCaptureInput.unwrap().shape, {
+    z15.strictObject(legacyCaptureInput.unwrap().shape, {
       error: taggedCaptureError
     })
   ], { error: taggedCaptureError });
   captureInput = captureShapeInput.optional().describe("Omit for six views; preset/cells for orbit sheets. Use kiln.capture.v1 or v2 with 1..9 shots for exact cameras. v2 adds hide: exact paths or unique names. Framing retains subject bounds.");
-  captureRecordInput = z14.record(z14.string(), z14.unknown()).optional().describe('Cameras, as kiln_render capture takes them. Shape: kiln_discover ids ["shape:capture"].');
-  cameraShotRecordInput = z14.record(z14.string(), z14.unknown()).optional().describe('One exact camera shot. Shape: kiln_discover ids ["shape:camera-shot"].');
+  captureRecordInput = z15.record(z15.string(), z15.unknown()).optional().describe('Cameras, as kiln_render capture takes them. Shape: kiln_discover ids ["shape:capture"].');
+  cameraShotRecordInput = z15.record(z15.string(), z15.unknown()).optional().describe('One exact camera shot. Shape: kiln_discover ids ["shape:camera-shot"].');
 });
 
 // src/discovery/shapes.ts
-import { z as z15 } from "zod";
+import { z as z16 } from "zod";
 var jsonSchema = (schema) => {
-  const { $schema: _dialect, ...rest } = z15.toJSONSchema(schema, { io: "input", reused: "ref" });
+  const { $schema: _dialect, ...rest } = z16.toJSONSchema(schema, { io: "input", reused: "ref" });
   return rest;
 }, shape2 = (name, tool, field, summary, schema, extra = {}) => ({
   version: "kiln.catalog-entry.v1",
@@ -47720,7 +48824,7 @@ var init_lexical_index = __esm(() => {
 });
 
 // src/discovery/query-schema.ts
-import { z as z16 } from "zod";
+import { z as z17 } from "zod";
 function discoverySelectorMigration(keys) {
   if (!keys.some((key) => ["category", "name", "names"].includes(key)))
     return;
@@ -47742,19 +48846,19 @@ function parseDiscoveryRequest(value) {
 }
 var selector, discoveryInputSchema;
 var init_query_schema = __esm(() => {
-  selector = z16.string().trim().min(1).max(120);
-  discoveryInputSchema = z16.object({
-    query: z16.string().trim().min(1).max(500).optional(),
-    ids: z16.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
+  selector = z17.string().trim().min(1).max(120);
+  discoveryInputSchema = z17.object({
+    query: z17.string().trim().min(1).max(500).optional(),
+    ids: z17.array(selector).min(1).max(6).refine((ids) => new Set(ids).size === ids.length, {
       message: "Exact IDs must be unique."
     }).optional(),
-    overview: z16.literal(true).optional(),
-    capabilities: z16.literal(true).optional(),
+    overview: z17.literal(true).optional(),
+    capabilities: z17.literal(true).optional(),
     family: selector.optional(),
-    kind: z16.enum(["operation", "assembly", "recipe", "shape"]).optional(),
-    tags: z16.array(selector).min(1).max(8).optional(),
-    offset: z16.number().int().min(0).max(1e4).optional(),
-    limit: z16.number().int().min(1).max(12).optional()
+    kind: z17.enum(["operation", "assembly", "recipe", "shape"]).optional(),
+    tags: z17.array(selector).min(1).max(8).optional(),
+    offset: z17.number().int().min(0).max(1e4).optional(),
+    limit: z17.number().int().min(1).max(12).optional()
   }, {
     error: (issue) => issue.code === "unrecognized_keys" ? discoverySelectorMigration(issue.keys) : undefined
   }).strict().superRefine((input, context) => {
@@ -47870,6 +48974,7 @@ ${JSON.stringify(current)}`
     }
     if (input.mode === "detail") {
       const selected = input.ids.map(select);
+      let unresolved = {};
       const unknown = input.ids.filter((_, offset) => !selected[offset]);
       if (unknown.length) {
         const removed = unknown.flatMap((id) => {
@@ -47881,12 +48986,12 @@ ${JSON.stringify(current)}`
 ${removed.join(`
 `)}`));
         const suggestions = (await ranked(unknown[0])).slice(0, 3).map(({ entry }) => entry.id);
-        return finish({
-          ...error(input.mode, "UNKNOWN_ID", `Unknown exact Discovery IDs: ${unknown.join(", ")}. Use query for suggestions; no substitutions were made.`),
-          suggestions
-        });
+        const message = `Unknown exact Discovery IDs: ${unknown.join(", ")}. Use query for suggestions; no substitutions were made.`;
+        if (selected.every((entry) => !entry))
+          return finish({ ...error(input.mode, "UNKNOWN_ID", message), suggestions });
+        unresolved = { error: { code: "UNKNOWN_ID", message }, suggestions };
       }
-      const requested = selected;
+      const requested = selected.filter((entry) => !!entry);
       if (new Set(requested.map((entry) => entry.id)).size !== requested.length) {
         return error(input.mode, "DUPLICATE_ID", "Each exact selector must identify a different catalog entry. A name or unprefixed slug and its canonical ID refer to the same entry.");
       }
@@ -47907,7 +49012,9 @@ ${removed.join(`
         total: requested.length,
         nextOffset: null,
         ...omitted.length ? { omittedIds: omitted } : {},
-        text: JSON.stringify(details) + (omitted.length ? `
+        ...unresolved,
+        text: (unresolved.error ? `${unresolved.error.message}
+` : "") + JSON.stringify(details) + (omitted.length ? `
 Not returned, over the result size: ${omitted.join(", ")}. Fetch them with another kiln_discover ids call.` : "")
       });
     }
@@ -48031,6 +49138,15 @@ Suggestions: ${structured.suggestions.join(", ")}` : text;
 function configuredProject(context) {
   return context.workspace?.configured?.() ?? null;
 }
+function hostRequirements(context) {
+  const active = resolveRequirementsContext(context.requirements);
+  const validation = active.requirements.requirements.validation;
+  return {
+    bound: active.binding !== undefined,
+    policyHash: active.policyHash,
+    declared: validation?.state === "requested" ? { source: "host-binding", validationProfile: validation.value } : null
+  };
+}
 function projectNotes(context) {
   const projectId = configuredProject(context);
   return projectId ? [
@@ -48072,6 +49188,7 @@ async function currentCapabilities(context, presentation) {
       read: 'kiln_project { action: "get", projectId } returns the brief, design, inventory and material pins'
     },
     renderer,
+    requirements: hostRequirements(context),
     execution: context.localExecution ?? (context.evaluatorPort ? { mode: "host-injected", limits: "unspecified by host" } : context.evaluatorProfile === "evaluator-required" ? { mode: "host-required", available: false } : { mode: "trusted-local", terminable: false }),
     source: {
       ...context.programStore?.stats ? { storage: await context.programStore.stats() } : {},
@@ -48144,6 +49261,7 @@ var init_discovery2 = __esm(() => {
   init_geometry_export();
   init_community_exporter();
   init_material_resources();
+  init_requirements_context();
 });
 
 // src/tools/actions.ts
@@ -48190,16 +49308,16 @@ function flattenIssuePaths(issues, prefix = []) {
 var list = (fields) => fields.length <= 1 ? fields.join("") : `${fields.slice(0, -1).join(", ")} and ${fields.at(-1)}`, nestedRecordDescription = (purpose, shape) => `${purpose} Shape: kiln_discover({ ids: ['${shape}'] }).`, BARE_REFINE_MESSAGE = "Invalid input";
 
 // src/tools/projects.ts
-import { z as z17 } from "zod";
+import { z as z18 } from "zod";
 function projectToolInput(actions = PROJECT_ACTIONS) {
-  return z17.strictObject({
-    action: z17.enum(actions),
+  return z18.strictObject({
+    action: z18.enum(actions),
     projectId: projectIdSchema.optional().describe("get, update, export."),
     revisionId: projectRevisionIdSchema.optional().describe("get, export: an exact revision; omit for the current one."),
     expectedRevision: projectRevisionIdSchema.optional().describe("update: the revision being replaced; a stale value is a conflict."),
     draft: record10(nestedRecordDescription("create: name, brief, design, inventory, deliveryProfiles, materialDependencies, references, reviews; optional projectId.", "shape:project-draft")),
     patch: record10(nestedRecordDescription("update: the same top-level fields as draft; each supplied field replaces its previous value whole.", "shape:project-patch")),
-    profile: z17.enum(["editable", "runtime"]).optional().describe("export: editable (default) keeps source and resources; runtime is GLB plus metadata.")
+    profile: z18.enum(["editable", "runtime"]).optional().describe("export: editable (default) keeps source and resources; runtime is GLB plus metadata.")
   });
 }
 function createKilnProjectDef(store, bundleReader) {
@@ -48260,7 +49378,7 @@ function createKilnProjectDef(store, bundleReader) {
     }
   }
 }
-var PROJECT_ACTIONS, REQUIREMENTS, record10 = (description) => z17.record(z17.string(), z17.unknown()).optional().describe(description);
+var PROJECT_ACTIONS, REQUIREMENTS, record10 = (description) => z18.record(z18.string(), z18.unknown()).optional().describe(description);
 var init_projects2 = __esm(() => {
   init_projects();
   PROJECT_ACTIONS = ["list", "get", "create", "update", "export"];
@@ -48343,7 +49461,7 @@ var init_material_authoring_node = __esm(() => {
 });
 
 // src/material-presets.ts
-import { z as z18 } from "zod";
+import { z as z19 } from "zod";
 function listMaterialPresets() {
   return catalog2.map((item) => ({
     ...item,
@@ -48807,17 +49925,17 @@ var init_material_presets = __esm(() => {
     }
   ];
   RECORD_V2_PRESETS = new Set(["palm-frond"]);
-  materialPresetOptionsSchema = z18.object({
-    seed: z18.number().int().min(-2147483648).max(2147483647),
-    size: z18.union([z18.literal(64), z18.literal(128), z18.literal(256), z18.literal(512)]).default(256),
-    creator: z18.string().min(1).max(1000),
+  materialPresetOptionsSchema = z19.object({
+    seed: z19.number().int().min(-2147483648).max(2147483647),
+    size: z19.union([z19.literal(64), z19.literal(128), z19.literal(256), z19.literal(512)]).default(256),
+    creator: z19.string().min(1).max(1000),
     license: materialSourceSchema.shape.license,
     materialId: materialLibraryIdSchema.optional()
   }).strict();
 });
 
 // src/tools/materials.ts
-import { z as z19 } from "zod";
+import { z as z20 } from "zod";
 async function onlyRevision(library, materialId, listCall) {
   const revisions = (await library.list()).filter((material) => material.materialId === materialId).map((material) => material.revisionId).sort();
   if (revisions.length === 1)
@@ -48918,7 +50036,7 @@ function createKilnMaterialDef(library, presentation = "grouped") {
     }
   };
 }
-var MATERIAL_ACTIONS, MATERIAL_CONTRACT, record11 = (description) => z19.record(z19.string(), z19.unknown()).optional().describe(description), tag, materialToolInput, materialResult = (material) => ({
+var MATERIAL_ACTIONS, MATERIAL_CONTRACT, record11 = (description) => z20.record(z20.string(), z20.unknown()).optional().describe(description), tag, materialToolInput, materialResult = (material) => ({
   ok: true,
   material,
   portableSpec: materialLibraryPortableSpec(material)
@@ -48970,14 +50088,14 @@ var init_materials = __esm(() => {
       description: "Import complete normalized material records and embedded PNGs. Does not fetch URLs or execute source."
     }
   };
-  tag = z19.string().min(1).max(80).optional().describe("presets, list: keep one tag.");
-  materialToolInput = z19.strictObject({
-    action: z19.enum(MATERIAL_ACTIONS),
+  tag = z20.string().min(1).max(80).optional().describe("presets, list: keep one tag.");
+  materialToolInput = z20.strictObject({
+    action: z20.enum(MATERIAL_ACTIONS),
     tag,
-    presetId: z19.string().min(1).max(80).optional().describe("create-preset: an id from presets."),
-    seed: z19.number().int().min(-2147483648).max(2147483647).optional().describe("create-preset."),
-    size: z19.union([z19.literal(64), z19.literal(128), z19.literal(256), z19.literal(512)]).optional().describe("create-preset: map edge in pixels; default 256."),
-    creator: z19.string().min(1).max(1000).optional().describe("create-preset."),
+    presetId: z20.string().min(1).max(80).optional().describe("create-preset: an id from presets."),
+    seed: z20.number().int().min(-2147483648).max(2147483647).optional().describe("create-preset."),
+    size: z20.union([z20.literal(64), z20.literal(128), z20.literal(256), z20.literal(512)]).optional().describe("create-preset: map edge in pixels; default 256."),
+    creator: z20.string().min(1).max(1000).optional().describe("create-preset."),
     license: materialSourceSchema.shape.license.optional().describe("create-preset: spdx, url and attribution."),
     materialId: materialLibraryIdSchema.optional().describe("get: the id a project palette lists as resourceId; create-preset: optional id."),
     revisionId: materialLibraryHashSchema.optional().describe("get: the immutable revision; omitted, the material's only revision."),
@@ -49003,7 +50121,7 @@ async function persistedPreviewFidelity(fidelity, glb) {
 }
 
 // src/tools/review.ts
-import { z as z20 } from "zod";
+import { z as z21 } from "zod";
 function summarizeOperation(operation) {
   const fidelity = operation.viewFidelity && typeof operation.viewFidelity === "object" ? operation.viewFidelity : undefined;
   return {
@@ -49136,7 +50254,7 @@ function createKilnReviewDef(context) {
         }))
       ];
       const preview = operation.captures[0] ? await store.readFile(operation.operationId, operation.captures[0].name) : undefined;
-      const capture = z20.object({ backdrop: z20.enum(BACKDROP_IDS).optional() }).safeParse(operation.result?.capture);
+      const capture = z21.object({ backdrop: z21.enum(BACKDROP_IDS).optional() }).safeParse(operation.result?.capture);
       const asset = await context.assetLibrary.save(collection, {
         name: input.name,
         assetId: input.assetId,
@@ -49179,8 +50297,8 @@ var init_review = __esm(() => {
   init_program_store();
   init_background();
   init_review_detail();
-  operationId = z20.string().regex(/^op_[a-f0-9-]{36}$/);
-  assetId = z20.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
+  operationId = z21.string().regex(/^op_[a-f0-9-]{36}$/);
+  assetId = z21.string().regex(/^[a-z][a-z0-9_-]{0,79}$/);
   REVIEW_ACTIONS = ["list", "get", "pin", "save"];
   REQUIREMENTS2 = {
     list: { required: [] },
@@ -49188,25 +50306,25 @@ var init_review = __esm(() => {
     pin: { required: ["operationId", "pinned"] },
     save: { required: ["operationId", "expectedRevision", "name"] }
   };
-  reviewToolInput = z20.strictObject({
-    action: z20.enum(REVIEW_ACTIONS),
+  reviewToolInput = z21.strictObject({
+    action: z21.enum(REVIEW_ACTIONS),
     projectId: assetId.optional().describe("list: only operations bound to this project."),
-    offset: z20.number().int().min(0).optional().describe("list: page start; default 0."),
-    limit: z20.number().int().min(1).max(100).optional().describe("list: page size; default 20."),
+    offset: z21.number().int().min(0).optional().describe("list: page start; default 0."),
+    limit: z21.number().int().min(1).max(100).optional().describe("list: page size; default 20."),
     operationId: operationId.optional().describe("get, pin, save."),
-    pinned: z20.boolean().optional().describe("pin: true keeps the operation past normal retention."),
-    expectedRevision: z20.number().int().nonnegative().optional().describe("save: the revision the listing displayed."),
+    pinned: z21.boolean().optional().describe("pin: true keeps the operation past normal retention."),
+    expectedRevision: z21.number().int().nonnegative().optional().describe("save: the revision the listing displayed."),
     collection: assetId.optional().describe("save: destination collection; default project."),
-    name: z20.string().min(1).max(200).optional().describe("save."),
+    name: z21.string().min(1).max(200).optional().describe("save."),
     assetId: assetId.optional().describe("save: revise this asset."),
     parentRevision: assetId.optional().describe("save: the revision being revised."),
-    description: z20.string().max(4000).optional().describe("save."),
-    tags: z20.array(z20.string().max(80)).max(30).optional().describe("save.")
+    description: z21.string().max(4000).optional().describe("save."),
+    tags: z21.array(z21.string().max(80)).max(30).optional().describe("save.")
   });
 });
 
 // src/tools/workspace.ts
-import { z as z21 } from "zod";
+import { z as z22 } from "zod";
 async function observeLiveReview(observer, tool, input, run) {
   let authoring;
   const invokeOnce = () => authoring ??= Promise.resolve().then(run);
@@ -49246,7 +50364,7 @@ async function observeWorkspaceOperation(context, tool, input, run) {
 function withWorkspaceContext(def, context) {
   if (!observed.has(def.name))
     return def;
-  const schema = context.workspace && def.inputSchema instanceof z21.ZodObject ? def.inputSchema.safeExtend(workspaceSelectionSchema.shape) : def.inputSchema;
+  const schema = context.workspace && def.inputSchema instanceof z22.ZodObject ? def.inputSchema.safeExtend(workspaceSelectionSchema.shape) : def.inputSchema;
   return {
     ...def,
     inputSchema: schema,
@@ -49274,11 +50392,11 @@ var init_workspace2 = __esm(() => {
 });
 
 // src/tools/operation-contract.ts
-import { z as z22 } from "zod";
+import { z as z23 } from "zod";
 var init_operation_contract = () => {};
 
 // src/tools/operations.ts
-import { z as z23 } from "zod";
+import { z as z24 } from "zod";
 var init_operations = __esm(() => {
   init_operation_contract();
 });
@@ -49773,10 +50891,10 @@ function createPartPlacementReader(root) {
     };
   };
 }
-var round2 = (value) => {
+var round3 = (value) => {
   const rounded = Math.round(value * 1e6) / 1e6;
   return rounded === 0 ? 0 : rounded;
-}, rounded2 = (values) => values.map(round2);
+}, rounded2 = (values) => values.map(round3);
 var init_part_placement = __esm(() => {
   init_raster();
 });
@@ -50880,7 +51998,7 @@ var init_assets_resources = __esm(() => {
 
 // src/widget-transfer.ts
 import { deflateSync as deflateSync2, inflateSync as inflateSync2 } from "three/addons/libs/fflate.module.js";
-function base64(bytes) {
+function base642(bytes) {
   let binary = "";
   for (let index = 0;index < bytes.length; index += 8192)
     binary += String.fromCharCode(...bytes.subarray(index, index + 8192));
@@ -50890,8 +52008,8 @@ function encodeWidgetFiles(files) {
   if (Object.values(files).reduce((total, bytes) => total + bytes.length, 0) > WIDGET_TRANSFER_LIMIT)
     invalid("exceeds the decoded size limit");
   return Object.fromEntries(Object.entries(files).map(([name, bytes]) => {
-    const plain = base64(bytes);
-    const compressed = base64(deflateSync2(bytes, { level: 6 }));
+    const plain = base642(bytes);
+    const compressed = base642(deflateSync2(bytes, { level: 6 }));
     return [
       name,
       compressed.length + 64 < plain.length ? { encoding: "kiln.deflate-base64.v1", data: compressed } : plain
@@ -50933,7 +52051,7 @@ var init_asset_widget = __esm(() => {
 });
 
 // src/tools/registry.ts
-import { z as z24 } from "zod";
+import { z as z25 } from "zod";
 import * as THREE58 from "three";
 function proceduralTextureMaterialContract(rendered, context) {
   const required = [...new Set(context.requiredProceduralTextureUsages ?? [])];
@@ -52186,36 +53304,36 @@ function createKilnAssetDefs(context, presentation = "grouped") {
     resources: (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).assetLinks(collection, asset),
     downloadUrls: await context.assetDownloadUrls?.(collection, asset.assetId, asset.revisionId)
   });
-  const saveInput = z24.object({
+  const saveInput = z25.object({
     collection: selector.collection,
-    programRef: z24.string(),
-    name: z24.string().min(1).max(200),
+    programRef: z25.string(),
+    name: z25.string().min(1).max(200),
     assetId: selector.assetId.optional(),
     parentRevision: selector.revisionId.optional(),
-    tags: z24.array(z24.string().max(80)).max(30).optional(),
-    brief: z24.string().max(8000).optional(),
-    description: z24.string().max(4000).optional(),
-    attribution: z24.object({
-      model: z24.string().max(200).optional(),
-      harness: z24.string().max(200).optional(),
-      author: z24.string().max(200).optional()
+    tags: z25.array(z25.string().max(80)).max(30).optional(),
+    brief: z25.string().max(8000).optional(),
+    description: z25.string().max(4000).optional(),
+    attribution: z25.object({
+      model: z25.string().max(200).optional(),
+      harness: z25.string().max(200).optional(),
+      author: z25.string().max(200).optional()
     }).optional(),
-    backdrop: z24.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
+    backdrop: z25.enum(BACKDROP_IDS).optional().describe("Preview backdrop: the one the reviewed sheet used.")
   });
-  const assetsInput = z24.object({
-    action: z24.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
+  const assetsInput = z25.object({
+    action: z25.enum(["collections", "catalog", "list", "get", "restore"]).default("list"),
     collection: selector.collection,
     assetId: selector.assetId.optional(),
     revisionId: selector.revisionId.optional().describe("get, restore: the saved revision; omitted, the newest."),
-    query: z24.string().max(200).optional(),
-    offset: z24.number().int().min(0).default(0),
-    limit: z24.number().int().min(1).max(50).default(20)
+    query: z25.string().max(200).optional(),
+    offset: z25.number().int().min(0).default(0),
+    limit: z25.number().int().min(1).max(50).default(20)
   });
-  const exportInput = z24.object(selector);
+  const exportInput = z25.object(selector);
   const profileExportInput = exportInput.extend({
-    profile: z24.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
+    profile: z25.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
-  const importInput = z24.object({
+  const importInput = z25.object({
     ...selector,
     sourceCollection: selector.collection
   });
@@ -52316,9 +53434,9 @@ function createKilnAssetDefs(context, presentation = "grouped") {
       name: "kiln_present",
       description: "Present one exact saved revision. Supporting MCP App clients show an interactive 3D card with GLB, editable ZIP, and source downloads. Every host receives exact artifact descriptors with resource URIs in the JSON result; verified hosts may also receive core MCP resource-link blocks. This tool does not launch a local browser in coding harnesses. Call after saving or when the user wants to see or download an asset.",
       inputSchema: exportInput,
-      outputSchema: z24.object({
-        ok: z24.literal(true),
-        collection: z24.string(),
+      outputSchema: z25.object({
+        ok: z25.literal(true),
+        collection: z25.string(),
         asset: assetManifestSchema.pick({
           assetId: true,
           revisionId: true,
@@ -52329,25 +53447,25 @@ function createKilnAssetDefs(context, presentation = "grouped") {
           editable: true,
           files: true
         }).extend({
-          build: z24.object({
-            engine: z24.string(),
-            rebuild: z24.enum(["engine-required", "external-dependencies-required"]),
-            warningCount: z24.number().int(),
-            warnings: z24.array(z24.string())
+          build: z25.object({
+            engine: z25.string(),
+            rebuild: z25.enum(["engine-required", "external-dependencies-required"]),
+            warningCount: z25.number().int(),
+            warnings: z25.array(z25.string())
           }).optional()
         }),
-        resources: z24.array(z24.object({
-          type: z24.literal("resource_link"),
-          name: z24.string(),
-          uri: z24.string(),
-          mimeType: z24.string(),
-          size: z24.number().int().nonnegative(),
-          annotations: z24.object({
-            audience: z24.array(z24.enum(["user", "assistant"])),
-            priority: z24.number()
+        resources: z25.array(z25.object({
+          type: z25.literal("resource_link"),
+          name: z25.string(),
+          uri: z25.string(),
+          mimeType: z25.string(),
+          size: z25.number().int().nonnegative(),
+          annotations: z25.object({
+            audience: z25.array(z25.enum(["user", "assistant"])),
+            priority: z25.number()
           })
         })),
-        downloadUrls: z24.record(z24.string(), z24.string()).optional()
+        downloadUrls: z25.record(z25.string(), z25.string()).optional()
       }),
       ui: {
         resourceUri: KILN_ASSET_WIDGET_URI,
@@ -52442,41 +53560,41 @@ var init_registry2 = __esm(() => {
   init_evidence_history();
   init_background();
   viewEvidenceHistoryByContext = new WeakMap;
-  validateInput = z24.object({
-    code: z24.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
+  validateInput = z25.object({
+    code: z25.string().describe("Kiln source code (defines `meta` + `build()`, optional `animate()`).")
   });
-  renderInput = z24.object({
-    code: z24.string().describe("Kiln source code to execute and render to an in-memory GLB.")
+  renderInput = z25.object({
+    code: z25.string().describe("Kiln source code to execute and render to an in-memory GLB.")
   });
   renderViewsInput = renderInput.extend({ capture: captureInput, detail: reviewDetailInput });
   renderViewsBufferInput = renderViewsInput.omit({ code: true });
-  screenshotAnimationInput = z24.object({
+  screenshotAnimationInput = z25.object({
     shot: cameraShotInput.optional(),
-    measureParts: z24.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
-    frames: z24.number().int().min(2).max(6).optional(),
-    frameTimes: z24.array(z24.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
-    framing: z24.enum(["locked", "follow"]).optional(),
-    size: z24.number().int().min(128).max(1024).optional().describe("Frame size in px; default 256."),
+    measureParts: z25.array(cameraShotInput.shape.subject.unwrap()).min(1).max(16).optional().describe("Exact names or paths of subtrees measured together at each phase, independent of camera selection."),
+    frames: z25.number().int().min(2).max(6).optional(),
+    frameTimes: z25.array(z25.number().min(0).max(1)).min(1).max(9).optional().describe("Ordered phase fractions 0..1; mutually exclusive with frames."),
+    framing: z25.enum(["locked", "follow"]).optional(),
+    size: z25.number().int().min(128).max(1024).optional().describe("Frame size in px; default 256."),
     detail: reviewDetailInput,
-    code: z24.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
-    clip: z24.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
-    camera: z24.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
-    perFrame: z24.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
+    code: z25.string().describe("Kiln source code to execute; must define animate() returning the named clip."),
+    clip: z25.string().describe('The animation clip to view, by name (e.g. "walk", "attack"). Must be one your animate() returns.'),
+    camera: z25.string().optional().describe("Camera angle: right (default — side profile, best for leg swing + knee bend direction), front " + "(reveals sideways/lateral motion), back, left, top, or three-quarter."),
+    perFrame: z25.boolean().optional().describe("Return the frames as separate high-res images instead of one composite grid. Default false.")
   });
   screenshotAnimationAdvertisedInput = screenshotAnimationInput.extend({
     shot: cameraShotRecordInput
   });
-  viewInteriorInput = z24.object({
+  viewInteriorInput = z25.object({
     capture: advancedCaptureInput.optional(),
-    code: z24.string().describe("Kiln source code to execute and render with the roof hidden."),
-    nodeName: z24.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
+    code: z25.string().describe("Kiln source code to execute and render with the roof hidden."),
+    nodeName: z25.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
   });
   viewInteriorAdvertisedInput = viewInteriorInput.extend({ capture: captureRecordInput });
-  partListInput = z24.object({
-    query: z24.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
-    offset: z24.number().int().min(0).optional(),
-    limit: z24.number().int().min(1).max(100).optional(),
-    placement: z24.boolean().optional().describe("Add world position, rotation, scale, mirroring and bounds per part; pages of 50.")
+  partListInput = z25.object({
+    query: z25.string().max(4096).optional().describe("Case-insensitive substring of name or exact encoded path; not a regex."),
+    offset: z25.number().int().min(0).optional(),
+    limit: z25.number().int().min(1).max(100).optional(),
+    placement: z25.boolean().optional().describe("Add world position, rotation, scale, mirroring and bounds per part; pages of 50.")
   }).strict();
   KILN_RENDER_VIEWS_DESCRIPTION = "Build the current asset and return geometry metrics, exact part paths and images. Omit capture for six orthographic views. Choose preset/cells for a smaller orbit sheet, or version kiln.capture.v1 with shots for per-part framing, local axes, perspective and separate images. +X is forward, +Y up, +Z right. Review silhouette, attachments, proportion and ground contact. GPU PBR shading supports textured or metallic materials; a flat-shaded CPU render supports geometry review. Read viewFidelity; do not judge material fidelity from CPU views. Failed builds return errors without images." + VIEW_EVIDENCE_GUIDANCE;
   kilnRenderViewsDef = createKilnRenderViewsDef();
@@ -52484,49 +53602,49 @@ var init_registry2 = __esm(() => {
   kilnScreenshotAnimationDef = createKilnScreenshotAnimationDef();
   KILN_VIEW_INTERIOR_DESCRIPTION = "SEE INSIDE an enterable building: renders it with the roof lifted off, as a " + "three-view grid. (1) Floor plan: top-down — check the interior is open and walkable and the footprint " + "is right. (2) Dollhouse: a 3/4 cutaway — check built-in fixtures (hearth, counter, shelves) rest ON the " + "floor, not floating or sunk, and the walls enclose a real volume with headroom. (3) Eye-level: a low " + "angle looking in through the doorway with the near walls also removed — confirm the doorway is a REAL " + "gap you could walk through (not a panel) and no wall or glass is buried inside a solid mass. Call this before finalizing any building. Take no argument: the roof is found from its semantic role, so any roof built with createRoofPlanes/createGableRoof lifts whatever it is named. If " + "roofsHidden comes back 0 no roof was resolvable and the interior stays hidden — build the roof " + 'with a roof primitive (or name the group "Roof"). Each cell is rendered from deterministic cutaway GLB bytes: GPU PBR when available, otherwise a GLB-native geometry-flat fallback. Read viewFidelity before judging materials; writes no files.' + VIEW_EVIDENCE_GUIDANCE;
   kilnViewInteriorDef = createKilnViewInteriorDef();
-  attachmentEndpointInput = z24.object({
-    subject: z24.object({ path: z24.string().optional(), name: z24.string().optional() }).strict(),
+  attachmentEndpointInput = z25.object({
+    subject: z25.object({ path: z25.string().optional(), name: z25.string().optional() }).strict(),
     point: cameraVec3Input.optional()
   }).strict();
-  surfacePairInput = z24.array(z24.string().max(4096)).length(2);
-  inspectInput = z24.object({
-    image: z24.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
+  surfacePairInput = z25.array(z25.string().max(4096)).length(2);
+  inspectInput = z25.object({
+    image: z25.boolean().optional().describe("False: requires listParts/measure/surfacePairs/compare; no image or camera controls. Default true."),
     detail: reviewDetailInput,
     listParts: partListInput.optional().describe("List exported-scene paths, including nested parts. Default 80, max 100 per page. Follow partListing.nextOffset with the same programRef/query. image:false avoids rendering."),
-    surfacePairs: z24.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
-    compare: z24.object({
-      programRef: z24.string().regex(programRefPattern),
-      offset: z24.number().int().min(0).optional(),
-      limit: z24.number().int().min(1).max(100).optional(),
-      paths: z24.array(z24.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
+    surfacePairs: z25.array(surfacePairInput).min(1).max(12).optional().describe("[from,to] pairs of exact listParts paths or unambiguous node names; check surfaceMeasurements.status and each result."),
+    compare: z25.object({
+      programRef: z25.string().regex(programRefPattern),
+      offset: z25.number().int().min(0).optional(),
+      limit: z25.number().int().min(1).max(100).optional(),
+      paths: z25.array(z25.string().max(4096)).min(1).max(12).optional().describe("Exact baseline node paths, scene-prefixed without primitive children. Complete subtree summaries.")
     }).strict().optional().describe("Static geometry/material/transform/bounds under current host settings. Follow nextOffset; paths adds complete subtrees."),
-    measure: z24.object({
-      mode: z24.enum(["anchors", "surface"]).optional(),
+    measure: z25.object({
+      mode: z25.enum(["anchors", "surface"]).optional(),
       from: attachmentEndpointInput,
       to: attachmentEndpointInput
     }).strict().optional().describe("Default anchors: origin/local-point distance. Surface: disjoint mesh triangles, omit points. Rest pose, asset units. Check status/bounds; no solid clearance/attachment proof."),
     shot: cameraShotInput.optional().describe("Exact shot; omit part/view/orbit controls."),
-    code: z24.string().describe("Kiln source code to execute and inspect."),
-    part: z24.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
-    view: z24.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
-    azimuthDeg: z24.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
-    elevationDeg: z24.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
-    zoom: z24.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
-    isolate: z24.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
+    code: z25.string().describe("Kiln source code to execute and inspect."),
+    part: z25.string().optional().describe("Frame named part and descendants (case-insensitive, substring fallback). Omit for whole asset."),
+    view: z25.string().optional().describe("front/right/back/left/top/three-quarter (default). Orbit angles override."),
+    azimuthDeg: z25.number().optional().describe("Orbit degrees: 0 front, 90 right, 180 back, 270 left. Wraps."),
+    elevationDeg: z25.number().optional().describe("Elevation degrees: 0 eye level, positive above. Clamped -89..89."),
+    zoom: z25.number().optional().describe("Bounds padding 1..4; default 1.2. Larger = more context."),
+    isolate: z25.boolean().optional().describe("Hide surrounding geometry. Requires part; default false.")
   });
   inspectBufferInput = inspectInput.omit({ code: true });
   inspectAdvertisedInput = inspectInput.extend({ shot: cameraShotRecordInput });
   KILN_INSPECT_DESCRIPTION = "List complete part paths with listParts and image:false; query filters names/paths, offset/limit paginate. Follow partListing.nextOffset. ZOOM IN on one part: renders a single 512x512 close-up framed to the named part (the node name you gave createPart, matched case-insensitively with a substring fallback) and its descendants, " + "from one camera. Use it after kiln_render reveals a suspect region — a floating part, a bad " + "joint, a wrong proportion — to see fine detail one grid cell cannot show. args: part (omit to " + "frame the whole asset in one large view), view (front/right/back/left/top/three-quarter, default three-quarter), azimuthDeg + elevationDeg (orbit to ANY angle instead of a named view: azimuth 0 = front, 90 = right, 180 = back, 270 = left; elevation 0 = eye level, positive looks down, clamped to -89..89), zoom (padding multiplier around the part bounds, 1 = tight crop up to 4 = wide context, default 1.2), isolate (hide everything except that part, default false). Reach for the orbit angles when a named view puts the thing you need to judge edge-on or " + "behind something — the reply always tells you the azimuth/elevation it used, so you can step " + "from there. " + "If the part name does not resolve you get the list of available part names back — pick one and " + "retry. By default surrounding geometry stays visible for context and can occlude the part: either pick a different view, or set isolate:true to hide everything else and see the part unobstructed (use it for anything buried inside or behind other geometry). The view is rendered from deterministic derivative GLB bytes; GPU PBR is used only when it can preserve the requested framing, otherwise the GLB-native geometry-flat fallback reports why in viewFidelity. Writes no files." + VIEW_EVIDENCE_GUIDANCE;
   kilnInspectDef = createKilnInspectDef();
-  editOperationInput = z24.object({
-    oldString: z24.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
-    newString: z24.string().describe("The replacement text. Use an empty string to delete."),
-    replaceAll: z24.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
+  editOperationInput = z25.object({
+    oldString: z25.string().describe("The exact text to replace, copied verbatim from the program (including whitespace and indentation, and with no line-number prefixes). Must be unique unless replaceAll is true."),
+    newString: z25.string().describe("The replacement text. Use an empty string to delete."),
+    replaceAll: z25.boolean().optional().describe("Replace every occurrence instead of failing when oldString matches more than once.")
   });
-  editInput = z24.object({
-    code: z24.string().describe("The Kiln program to patch. The full current source."),
-    edits: z24.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
-    render: z24.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
+  editInput = z25.object({
+    code: z25.string().describe("The Kiln program to patch. The full current source."),
+    edits: z25.array(editOperationInput).min(1).max(20).describe("Edits applied in order against the program. If any one fails to match, none are applied and the reply says which. Batch related changes into a single call."),
+    render: z25.boolean().optional().describe("Render the patched program and return the views (default true). false = patch only."),
     capture: captureInput,
     detail: reviewDetailInput
   });
@@ -52536,14 +53654,14 @@ var init_registry2 = __esm(() => {
     shot: "shape:camera-shot",
     capture: "shape:capture"
   };
-  rendererInput = z24.strictObject({
-    action: z24.enum(["status", "reprobe"]).default("status")
+  rendererInput = z25.strictObject({
+    action: z25.enum(["status", "reprobe"]).default("status")
   });
-  rendererStatusInput = z24.strictObject({});
+  rendererStatusInput = z25.strictObject({});
   assetSelector = {
-    collection: z24.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Collection ID (list with kiln_assets action=collections): the user destination, else project.").default("project"),
-    assetId: z24.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
-    revisionId: z24.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
+    collection: z25.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).describe("Collection ID (list with kiln_assets action=collections): the user destination, else project.").default("project"),
+    assetId: z25.string().regex(/^[a-z][a-z0-9_-]{0,79}$/),
+    revisionId: z25.string().regex(/^[a-z][a-z0-9_-]{0,79}$/)
   };
   ASSET_CONTRACT = {
     collections: {
@@ -52575,18 +53693,18 @@ var init_registry2 = __esm(() => {
 });
 
 // render-service/src/instance.mjs
-import { createHash as createHash15 } from "node:crypto";
+import { createHash as createHash17 } from "node:crypto";
 import { readFileSync as readFileSync3, readdirSync, statSync } from "node:fs";
-import { join as join13, relative as relative7 } from "node:path";
+import { join as join14, relative as relative7 } from "node:path";
 function fingerprintSourceDir(dir) {
-  const hash = createHash15("sha256");
+  const hash = createHash17("sha256");
   hash.update("kiln.render-service-source.v1");
   const visit = (path) => {
     if (statSync(path).isDirectory()) {
       for (const name of readdirSync(path).sort()) {
         if (name === "node_modules")
           continue;
-        visit(join13(path, name));
+        visit(join14(path, name));
       }
       return;
     }
@@ -52600,9 +53718,9 @@ function fingerprintSourceDir(dir) {
 var init_instance = () => {};
 
 // render-service/src/build-identity.mjs
-import { createHash as createHash16 } from "node:crypto";
+import { createHash as createHash18 } from "node:crypto";
 import { readFileSync as readFileSync4 } from "node:fs";
-import { dirname as dirname7, join as join14 } from "node:path";
+import { dirname as dirname8, join as join15 } from "node:path";
 import { createRequire as createRequire2 } from "node:module";
 function compatibilityFingerprint({ sourceFingerprint, dependencies }) {
   if (typeof sourceFingerprint !== "string" || !/^sha256:[a-f0-9]{64}$/.test(sourceFingerprint))
@@ -52612,7 +53730,7 @@ function compatibilityFingerprint({ sourceFingerprint, dependencies }) {
       throw new Error(`Missing renderer dependency identity: ${name}`);
     return [name, dependencies[name]];
   }));
-  return `sha256:${createHash16("sha256").update(JSON.stringify({
+  return `sha256:${createHash18("sha256").update(JSON.stringify({
     version: "kiln.render-service-build.v1",
     sourceFingerprint,
     dependencies: pins
@@ -52623,20 +53741,20 @@ function resolvedRendererDependencies(anchorUrl = import.meta.url) {
   return Object.fromEntries(Object.entries(RENDER_SERVICE_DEPENDENCIES).map(([name, expected]) => {
     let dir;
     try {
-      dir = dirname7(require2.resolve(name));
+      dir = dirname8(require2.resolve(name));
     } catch {
       throw new Error(`Renderer dependency ${name}@${expected} is not installed`);
     }
     let found;
     for (;; ) {
       try {
-        const pkg = JSON.parse(readFileSync4(join14(dir, "package.json"), "utf8"));
+        const pkg = JSON.parse(readFileSync4(join15(dir, "package.json"), "utf8"));
         if (pkg.name === name) {
           found = pkg.version;
           break;
         }
       } catch {}
-      const parent = dirname7(dir);
+      const parent = dirname8(dir);
       if (parent === dir)
         break;
       dir = parent;
@@ -52662,11 +53780,11 @@ var init_build_identity = __esm(() => {
 });
 
 // src/render-service-client.ts
-import { createHash as createHash17 } from "node:crypto";
+import { createHash as createHash19 } from "node:crypto";
 import { existsSync as existsSync2 } from "node:fs";
-import { fileURLToPath as fileURLToPath5 } from "node:url";
+import { fileURLToPath as fileURLToPath6 } from "node:url";
 function packagedRendererSourceFingerprint() {
-  const source = fileURLToPath5(new URL("../render-service/src/", import.meta.url));
+  const source = fileURLToPath6(new URL("../render-service/src/", import.meta.url));
   return existsSync2(source) ? fingerprintSourceDir(source) : undefined;
 }
 function validateRenderServiceHealth(value) {
@@ -52751,7 +53869,7 @@ function makeRemoteRenderPort(url, token, sourceFingerprint) {
   return async (req, execution) => {
     const health = await verifiedHealth(url, token, sourceFingerprint, execution?.signal);
     execution?.signal?.throwIfAborted();
-    const inputGlbSha256 = `sha256:${createHash17("sha256").update(req.glb).digest("hex")}`;
+    const inputGlbSha256 = `sha256:${createHash19("sha256").update(req.glb).digest("hex")}`;
     const body = {
       glb_base64: Buffer.from(req.glb).toString("base64"),
       input_glb_sha256: inputGlbSha256,
@@ -52807,7 +53925,7 @@ var init_render_service_client = __esm(() => {
 
 // src/render-service-windows.ts
 import { spawn as spawn2 } from "node:child_process";
-import { join as join15 } from "node:path";
+import { join as join16 } from "node:path";
 function powerShellLiteral(value) {
   return `'${value.replaceAll("'", "''")}'`;
 }
@@ -52822,7 +53940,7 @@ function launchWindowsRenderService(executable, args, directory, env) {
   ].join(`
 `);
   const systemRoot = env.SystemRoot ?? env.SYSTEMROOT;
-  const powerShell = systemRoot ? join15(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe") : "powershell.exe";
+  const powerShell = systemRoot ? join16(systemRoot, "System32", "WindowsPowerShell", "v1.0", "powershell.exe") : "powershell.exe";
   const child = spawn2(powerShell, [
     "-NoProfile",
     "-NonInteractive",
@@ -52872,8 +53990,8 @@ var init_render_service_windows = () => {};
 // src/render-service-host.ts
 import { spawn as spawn3, spawnSync } from "node:child_process";
 import { existsSync as existsSync3 } from "node:fs";
-import { fileURLToPath as fileURLToPath6, pathToFileURL } from "node:url";
-import { join as join16 } from "node:path";
+import { fileURLToPath as fileURLToPath7, pathToFileURL as pathToFileURL2 } from "node:url";
+import { join as join17 } from "node:path";
 function localRenderServicePort(env = process.env) {
   const raw = Number(env["KILN_RENDER_SERVICE_PORT"]);
   return Number.isInteger(raw) && raw > 0 && raw < 65536 ? raw : DEFAULT_LOCAL_RENDER_SERVICE_PORT;
@@ -52891,18 +54009,18 @@ function namesLocalRenderService(url, env = process.env) {
 function renderServiceNodeArguments(dir) {
   return [
     "--import",
-    pathToFileURL(join16(dir, "src/register-hooks.mjs")).href,
-    join16(dir, "src/server.mjs")
+    pathToFileURL2(join17(dir, "src/register-hooks.mjs")).href,
+    join17(dir, "src/server.mjs")
   ];
 }
 function renderServiceDir() {
-  return process.env["KILN_RENDER_SERVICE_DIR"] || fileURLToPath6(new URL("../render-service", import.meta.url));
+  return process.env["KILN_RENDER_SERVICE_DIR"] || fileURLToPath7(new URL("../render-service", import.meta.url));
 }
 function localRenderServiceState(dir = renderServiceDir()) {
-  if (!existsSync3(join16(dir, "src/server.mjs")) || !existsSync3(join16(dir, "package.json")))
+  if (!existsSync3(join17(dir, "src/server.mjs")) || !existsSync3(join17(dir, "package.json")))
     return "not-packaged";
   try {
-    const anchor = pathToFileURL(join16(dir, "src/server.mjs")).href;
+    const anchor = pathToFileURL2(join17(dir, "src/server.mjs")).href;
     if (process.versions.bun) {
       const moduleUrl = new URL("../render-service/src/build-identity.mjs", import.meta.url).href;
       const result = spawnSync(nodeBinary(), [
@@ -52933,7 +54051,7 @@ function explainRenderServiceState(state, dir) {
   return "renderer dependencies are missing; reinstall the official Kiln package with optional dependencies enabled";
 }
 function renderServiceSourceFingerprint(dir) {
-  const source = join16(dir, "src");
+  const source = join17(dir, "src");
   return existsSync3(source) ? fingerprintSourceDir(source) : undefined;
 }
 async function inspectLocalRenderService(url, dir = renderServiceDir(), timeoutMs = 1500) {
@@ -53367,7 +54485,7 @@ var init_loopback = __esm(() => {
 });
 
 // src/workspace-http.ts
-import { z as z25 } from "zod";
+import { z as z26 } from "zod";
 async function readJson(req, origin) {
   if (req.headers.origin !== origin)
     throw new WorkspaceHttpError(403, "Same-origin writes only");
@@ -53536,19 +54654,19 @@ var init_workspace_http = __esm(() => {
       this.status = status;
     }
   };
-  updateSchema = z25.strictObject({
+  updateSchema = z26.strictObject({
     expectedRevision: projectRevisionIdSchema,
     patch: projectPatchSchema
   });
-  pinSchema = z25.strictObject({ pinned: z25.boolean() });
+  pinSchema = z26.strictObject({ pinned: z26.boolean() });
   filePattern3 = /^(asset\.glb|source\.kiln\.js|evaluation\.json|capture-\d{1,2}\.png)$/;
 });
 
 // src/asset-viewer.ts
 import { createServer } from "node:http";
-import { readFile as readFile9 } from "node:fs/promises";
-import { dirname as dirname8, join as join17 } from "node:path";
-import { fileURLToPath as fileURLToPath7 } from "node:url";
+import { readFile as readFile11 } from "node:fs/promises";
+import { dirname as dirname9, join as join18 } from "node:path";
+import { fileURLToPath as fileURLToPath8 } from "node:url";
 function quoted(value) {
   if (value === undefined)
     return "(none)";
@@ -53560,7 +54678,7 @@ function refuse(res, message) {
 `);
 }
 async function startAssetViewer(library, options = {}) {
-  const staticDirectory = options.staticDirectory ?? (!import.meta.url.endsWith(".mjs") ? join17(dirname8(fileURLToPath7(import.meta.url)), "..", "dist", "viewer") : join17(dirname8(fileURLToPath7(import.meta.url)), "viewer"));
+  const staticDirectory = options.staticDirectory ?? (!import.meta.url.endsWith(".mjs") ? join18(dirname9(fileURLToPath8(import.meta.url)), "..", "dist", "viewer") : join18(dirname9(fileURLToPath8(import.meta.url)), "viewer"));
   const server = createServer(async (req, res) => {
     res.setHeader("X-Content-Type-Options", "nosniff");
     res.setHeader("Referrer-Policy", "no-referrer");
@@ -53630,7 +54748,7 @@ async function startAssetViewer(library, options = {}) {
         return;
       }
       res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self' blob: data:; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; frame-ancestors 'none'");
-      return send(await readFile9(join17(staticDirectory, file[0])), file[1]);
+      return send(await readFile11(join18(staticDirectory, file[0])), file[1]);
     } catch (error) {
       res.statusCode = error instanceof WorkspaceHttpError ? error.status : error && typeof error === "object" && ("code" in error) && error.code === "PROJECT_CONFLICT" ? 409 : 400;
       send(JSON.stringify({ error: error instanceof Error ? error.message : "Asset unavailable" }));
@@ -53699,10 +54817,10 @@ __export(exports_asset_cli, {
   ASSET_USAGE: () => ASSET_USAGE,
   assetMain: () => assetMain
 });
-import { readFile as readFile10, writeFile as writeFile8, stat as stat6, mkdir as mkdir9, rename as rename5 } from "node:fs/promises";
-import { basename, resolve as resolve13, dirname as dirname9, isAbsolute as isAbsolute2 } from "node:path";
+import { readFile as readFile12, writeFile as writeFile8, stat as stat6, mkdir as mkdir9, rename as rename5 } from "node:fs/promises";
+import { basename as basename2, resolve as resolve13, dirname as dirname10, isAbsolute as isAbsolute2 } from "node:path";
 import { randomUUID as randomUUID9 } from "node:crypto";
-import { createHash as createHash18 } from "node:crypto";
+import { createHash as createHash20 } from "node:crypto";
 async function assetMain(argv) {
   const command = argv[0];
   const positional = [];
@@ -53725,6 +54843,8 @@ async function assetMain(argv) {
     "format",
     "profile",
     "target",
+    "compression",
+    "textures",
     "port",
     "render",
     "backdrop",
@@ -53758,6 +54878,10 @@ async function assetMain(argv) {
       flags.json = "true";
       continue;
     }
+    if (arg === "--ktx2" && command === "export") {
+      flags.ktx2 = "true";
+      continue;
+    }
     if (arg === "--restore" || arg === "--rebuild" || arg === "--no-project") {
       flags[arg.slice(2)] = "true";
       continue;
@@ -53788,7 +54912,7 @@ async function assetMain(argv) {
   const fileBytes = async (path) => {
     if ((await stat6(path)).size > ASSET_LIMIT)
       throw new Error("File exceeds 64 MiB");
-    return new Uint8Array(await readFile10(path));
+    return new Uint8Array(await readFile12(path));
   };
   if (command === "collections") {
     if (positional[0] === "add") {
@@ -53804,7 +54928,7 @@ async function assetMain(argv) {
         throw new Error("Collection name already points to another directory");
       roots[name] = resolve13(directory);
       const path = collectionConfigPath();
-      await mkdir9(dirname9(path), { recursive: true });
+      await mkdir9(dirname10(path), { recursive: true });
       const temporary = `${path}.${randomUUID9()}.tmp`;
       await writeFile8(temporary, JSON.stringify(roots, null, 2), { flag: "wx" });
       await rename5(temporary, path);
@@ -53927,30 +55051,81 @@ async function assetMain(argv) {
         throw new Error("Unknown export target");
       if (target !== undefined && profile !== "runtime")
         throw new Error("--target requires --profile runtime");
-      const format = flags.format ?? (profile === "runtime" ? "glb" : "bundle");
-      if (!["bundle", "glb", "source"].includes(format))
+      const compression = flags.compression;
+      if (compression !== undefined && compression !== "meshopt" && compression !== "none")
+        throw new Error("--compression must be meshopt or none");
+      if (compression !== undefined && target !== "three")
+        throw new Error("--compression requires --target three");
+      const textures = flags.textures;
+      if (textures !== undefined && textures !== "manifest" && textures !== "external")
+        throw new Error("Unknown --textures value; use manifest or external");
+      if (textures !== undefined && profile !== "runtime")
+        throw new Error("--textures requires --profile runtime");
+      if (textures === "external" && target !== "three")
+        throw new Error("--textures external requires --target three");
+      if (flags.ktx2 && (target !== "three" || profile !== "runtime"))
+        throw new Error("--ktx2 requires --target three with --profile runtime");
+      const gltfLayout = textures === "external";
+      const format = flags.format ?? (profile === "runtime" ? gltfLayout ? "gltf" : "glb" : "bundle");
+      if (!["bundle", "glb", "source", "gltf"].includes(format))
         throw new Error("Unknown export format");
+      if (format === "gltf" && !gltfLayout)
+        throw new Error("gltf format requires --textures external");
       const written = [];
+      let drawGlb;
+      let ktx2Receipt;
       if (profile === "runtime") {
-        if (format !== "glb")
-          throw new Error("Runtime profile requires GLB format; use editable for source or bundle");
+        if (format !== (gltfLayout ? "gltf" : "glb"))
+          throw new Error(gltfLayout ? "--textures external writes gltf format" : "Runtime profile requires GLB format; use editable for source or bundle");
         const destination = resolve13(flags.out);
-        if (!destination.toLowerCase().endsWith(".glb"))
-          throw new Error("Runtime output must end in .glb");
-        const metadataFileName = `${basename(destination).slice(0, -4)}.kiln-metadata.json`;
+        const extension = gltfLayout ? ".gltf" : ".glb";
+        if (!destination.toLowerCase().endsWith(extension))
+          throw new Error(`Runtime output must end in ${extension}`);
+        const stem = basename2(destination).slice(0, -extension.length);
+        const metadataFileName = `${stem}.kiln-metadata.json`;
         const output = await exportAssetGlb(record, {
           profile,
           metadataFileName,
-          ...target ? { target } : {}
+          ...target ? { target } : {},
+          ...compression ? { compression } : {},
+          ...textures ? { textures } : {},
+          ...gltfLayout ? { gltfFileName: basename2(destination) } : {},
+          ...flags.ktx2 ? { ktx2Encoder: await createKtx2Encoder2() } : {}
         });
         if (output.profile !== "runtime")
           throw new Error("Expected runtime export");
-        const metadataPath = resolve13(dirname9(destination), output.metadata.name);
-        await writeNewDestinationsAtomic([
-          { path: metadataPath, data: output.metadata.bytes },
-          { path: destination, data: output.glb }
-        ]);
-        written.push({ kind: "glb", path: destination, data: output.glb }, { kind: "metadata", path: metadataPath, data: output.metadata.bytes });
+        const metadataPath = resolve13(dirname10(destination), output.metadata.name);
+        drawGlb = output.glb;
+        if (flags.ktx2)
+          ktx2Receipt = JSON.parse(new TextDecoder().decode(output.metadata.bytes)).delivery?.ktx2;
+        if (output.layout === "gltf") {
+          const directory = dirname10(destination);
+          const files = output.textures.map(({ uri, bytes }) => ({
+            path: resolve13(directory, ...uri.split("/")),
+            data: bytes
+          }));
+          const buffers = output.buffers.map(({ uri, bytes }) => ({
+            path: resolve13(directory, uri),
+            data: bytes
+          }));
+          const published = await writeExternalTextureExport(files, [
+            { path: metadataPath, data: output.metadata.bytes },
+            ...buffers,
+            { path: destination, data: output.gltf.bytes }
+          ]);
+          written.push({ kind: "gltf", path: destination, data: output.gltf.bytes }, ...buffers.map(({ path, data }) => ({ kind: "bin", path, data })), { kind: "metadata", path: metadataPath, data: output.metadata.bytes }, ...files.map(({ path, data }, index) => ({
+            kind: "texture",
+            path,
+            data,
+            reused: published[index].reused
+          })));
+        } else {
+          await writeNewDestinationsAtomic([
+            { path: metadataPath, data: output.metadata.bytes },
+            { path: destination, data: output.glb }
+          ]);
+          written.push({ kind: "glb", path: destination, data: output.glb }, { kind: "metadata", path: metadataPath, data: output.metadata.bytes });
+        }
       } else {
         const bytes = format === "bundle" ? await library.exportBundle([record]) : record.files[format === "glb" ? "asset.glb" : "source.kiln.js"];
         if (!bytes)
@@ -53960,7 +55135,7 @@ async function assetMain(argv) {
         written.push({ kind: format, path: destination, data: bytes });
       }
       if (!flags.json)
-        console.log(written.map(({ path }) => `Saved ${path}`).join(`
+        console.log(written.map(({ path, reused }) => `${reused ? "Reused" : "Saved"} ${path}`).join(`
 `));
       else
         console.log(JSON.stringify({
@@ -53970,15 +55145,18 @@ async function assetMain(argv) {
           revisionId,
           profile,
           ...target ? { target } : {},
+          ...compression ? { compression } : {},
           format,
+          ...ktx2Receipt ? { ktx2: ktx2Receipt } : {},
           ...format !== "source" ? {
-            drawDiagnostics: await inspectDrawDiagnostics(written.find(({ kind }) => kind === "glb")?.data ?? record.files["asset.glb"])
+            drawDiagnostics: await inspectDrawDiagnostics(drawGlb ?? written.find(({ kind }) => kind === "glb")?.data ?? record.files["asset.glb"])
           } : {},
-          files: written.map(({ kind, path, data }) => ({
+          files: written.map(({ kind, path, data, reused }) => ({
             kind,
             path,
             bytes: data.byteLength,
-            sha256: `sha256:${createHash18("sha256").update(data).digest("hex")}`
+            sha256: `sha256:${createHash20("sha256").update(data).digest("hex")}`,
+            ...reused === undefined ? {} : { reused }
           }))
         }, null, 2));
     }
@@ -53987,7 +55165,7 @@ async function assetMain(argv) {
     if (!file)
       throw new Error("import requires a ZIP or GLB file");
     const bytes = await fileBytes(file);
-    const assets = file.toLowerCase().endsWith(".glb") ? [await library.save(collection, { name: flags.name ?? basename(file, ".glb"), glb: bytes })] : await library.import(collection, decodeAssetBundle(bytes));
+    const assets = file.toLowerCase().endsWith(".glb") ? [await library.save(collection, { name: flags.name ?? basename2(file, ".glb"), glb: bytes })] : await library.import(collection, decodeAssetBundle(bytes));
     const directory = library.directory(collection);
     console.log(JSON.stringify({
       collection,
@@ -54006,7 +55184,7 @@ async function assetMain(argv) {
         await Promise.resolve().then(() => init_assets_node());
         target = new FileAssetLibrary({ project: resolve13(file) });
       } else
-        standalone = { name: basename(file), bytes: await fileBytes(file) };
+        standalone = { name: basename2(file), bytes: await fileBytes(file) };
     }
     const port = flags.port === undefined ? 4318 : Number(flags.port);
     if (!Number.isInteger(port) || port < 0 || port > 65535)
@@ -54023,8 +55201,8 @@ async function assetMain(argv) {
       const canonical = await realpath(path);
       if (canonical === currentRoot)
         continue;
-      const id = `w_${createHash18("sha256").update(canonical).digest("hex").slice(0, 16)}`;
-      reviewSources[id] = { label: basename(canonical), review: new FileLiveReview(canonical) };
+      const id = `w_${createHash20("sha256").update(canonical).digest("hex").slice(0, 16)}`;
+      reviewSources[id] = { label: basename2(canonical), review: new FileLiveReview(canonical) };
     }
     const viewer = await startAssetViewer(target, {
       port,
@@ -54091,7 +55269,14 @@ ${SAVE_LINES}
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
        [--target three]   runtime only: meshopt + quantization, repeatInstances GPU
-                          instancing, KTX2 skipped (no encoder); sidecar states node scales
+                          instancing; sidecar states node scales; KTX2 skipped unless --ktx2
+       [--compression meshopt|none]   with --target three: none writes plain buffers
+                          for loaders without a Meshopt decoder (default meshopt)
+       [--ktx2]   with --target three: KTX2 through the optional ktx2-encoder@0.6.0 peer
+                          (npm install ktx2-encoder@0.6.0), ETC1S colour, UASTC data maps
+       [--textures manifest]   runtime only: the sidecar names each image's exact bytes
+       [--textures external]   with --target three and --out x.gltf: x.gltf, x.bin and
+                          shared textures/<sha256>.<ext> files that are never replaced
        [--json]   receipt naming each file with its bytes and sha256
        export never replaces an existing file: an export hands off one exact
        saved revision, while render --out replaces its own working output
@@ -54712,7 +55897,7 @@ __export(exports_animation_cli, {
   ANIMATION_USAGE: () => ANIMATION_USAGE,
   animationMain: () => animationMain
 });
-import { open as open6, readFile as readFile11 } from "node:fs/promises";
+import { open as open6, readFile as readFile13 } from "node:fs/promises";
 import { extname, resolve as resolve15 } from "node:path";
 async function readReviewJson(path, option) {
   const file = await open6(resolve15(path), "r");
@@ -54836,7 +56021,7 @@ async function animationMain(argv) {
       ...await buildRenderPort(args.render, args.renderPort),
       requirements
     });
-    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile11(resolve15(args.source), "utf8") };
+    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile13(resolve15(args.source), "utf8") };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === "kiln_screenshot_animation");
     let output;
     try {
@@ -55058,7 +56243,7 @@ __export(exports_inspect_cli, {
   INSPECT_USAGE: () => INSPECT_USAGE,
   inspectMain: () => inspectMain
 });
-import { open as open8, readFile as readFile12 } from "node:fs/promises";
+import { open as open8, readFile as readFile14 } from "node:fs/promises";
 import { resolve as resolve17 } from "node:path";
 async function readControls(path) {
   const file = await open8(resolve17(path), "r");
@@ -55155,7 +56340,7 @@ async function inspectMain(argv) {
       ...controls.image === false ? {} : await buildRenderPort(args.render, args.renderPort),
       requirements
     });
-    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile12(resolve17(args.source), "utf8") };
+    const source = programRefPattern.test(args.source) ? { programRef: args.source } : { code: await readFile14(resolve17(args.source), "utf8") };
     const tool = createKilnProgramToolRegistry(context).find((t) => t.name === "kiln_inspect");
     let output;
     try {
@@ -55639,7 +56824,7 @@ __export(exports_migration_rebuild, {
   migrationRebuildMain: () => migrationRebuildMain
 });
 import { open as open9 } from "node:fs/promises";
-import { createHash as createHash19 } from "node:crypto";
+import { createHash as createHash21 } from "node:crypto";
 import { resolve as resolve18 } from "node:path";
 function parse6(argv) {
   if (argv.length === 1 && ["--help", "-h"].includes(argv[0]))
@@ -55729,7 +56914,7 @@ async function rebuildLegacyAsset(context, input) {
     authority,
     original: structuredClone(record.manifest),
     ...conversion.recoveredIntent ? { recoveredIntent: conversion.recoveredIntent } : {},
-    originalManifestCanonicalSha256: `sha256:${createHash19("sha256").update(canonical6(record.manifest)).digest("hex")}`,
+    originalManifestCanonicalSha256: `sha256:${createHash21("sha256").update(canonical6(record.manifest)).digest("hex")}`,
     proposedRequirements: conversion.proposal.requirements,
     policyChanges: changes,
     ruleDispositions: resolved.filter((issue) => issue.code === "RULE_MIGRATION_UNQUALIFIED").map((issue) => ({
@@ -55739,7 +56924,7 @@ async function rebuildLegacyAsset(context, input) {
     })),
     retainedBuildOptions: conversion.proposal.retainedBuildOptions,
     sourceChanged: code !== originalCode,
-    rebuiltSourceSha256: `sha256:${createHash19("sha256").update(code, "utf8").digest("hex")}`
+    rebuiltSourceSha256: `sha256:${createHash21("sha256").update(code, "utf8").digest("hex")}`
   };
   const draft = await buildProgramAssetDraft(code, currentContext, record.manifest.preview?.backdrop);
   const asset = await library.save(input.collection, {
@@ -55852,7 +57037,7 @@ __export(exports_migration_cli, {
 });
 import { open as open10 } from "node:fs/promises";
 import { resolve as resolve19 } from "node:path";
-import { createHash as createHash20 } from "node:crypto";
+import { createHash as createHash22 } from "node:crypto";
 function parse7(argv) {
   if (argv.length === 1 && ["--help", "-h"].includes(argv[0]))
     return { help: true };
@@ -55921,7 +57106,7 @@ async function migrationMain(argv) {
       input: {
         path,
         bytes: bytes.length,
-        sha256: `sha256:${createHash20("sha256").update(bytes).digest("hex")}`
+        sha256: `sha256:${createHash22("sha256").update(bytes).digest("hex")}`
       },
       conversion
     };
@@ -55956,7 +57141,7 @@ var init_migration_cli = __esm(() => {
 
 // src/cli.ts
 init_cli_output();
-import { open as open11, readFile as readFile13 } from "node:fs/promises";
+import { open as open11, readFile as readFile15 } from "node:fs/promises";
 import { resolve as resolvePath, extname as extname2 } from "node:path";
 
 // src/direct-entry.ts
@@ -56053,6 +57238,7 @@ var USAGE3 = `kiln — vision-in-the-loop 3D asset generation
 
 USAGE
   kiln render <program.js|ref> [options]     execute a Kiln program (offline, no key)
+  kiln validate <program.js|ref> [--json]    kiln_validate: syntax and sandbox check, no build
   kiln generate "<prompt>"  [options]    author a program with a model, then render
   kiln source <file.js>                 save a source snapshot and print its programRef
   kiln source <programRef> --out file.js export a revision without model transcription
@@ -56258,7 +57444,7 @@ function applyBackdrop(args) {
   return { ...recipe, backdrop: args.backdrop };
 }
 function jsonCommand(command) {
-  return command === "render" || command === "source";
+  return command === "render" || command === "source" || command === "validate";
 }
 function jsonRenderFailure(error, receipt = { files: [] }) {
   console.log(JSON.stringify({
@@ -56410,7 +57596,7 @@ async function cmdRender(args) {
   const receipt = { files: [] };
   let context;
   try {
-    const code = file.startsWith("sha256:") || programRefPattern.test(file) ? await localProgramStore().get(file) : await readFile13(resolvePath(file), "utf8");
+    const code = file.startsWith("sha256:") || programRefPattern.test(file) ? await localProgramStore().get(file) : await readFile15(resolvePath(file), "utf8");
     context = await createPackagedLocalToolContext({
       ...await buildRenderPort(args.render, args.renderPort),
       requirements: args.requirements
@@ -56440,6 +57626,43 @@ async function cmdRender(args) {
       await context?.liveReview?.flush?.();
     } catch {}
   }
+}
+async function cmdValidate(args) {
+  const input = args.positional[0];
+  if (!input || args.positional.length !== 1) {
+    const message = "validate requires a program path or reference";
+    if (args.json)
+      jsonRenderFailure(message);
+    else
+      console.error(`${message}
+
+${USAGE3}`);
+    return 2;
+  }
+  const store = localProgramStore();
+  const isRef = input.startsWith("sha256:") || programRefPattern.test(input);
+  const def = createKilnProgramToolRegistry({ programStore: store }).find((d) => d.name === "kiln_validate");
+  if (!def)
+    throw new Error("kiln_validate is missing from the MCP tool surface");
+  const result = await def.run(isRef ? { programRef: input } : { code: await readFile15(resolvePath(input), "utf8") });
+  if (args.json)
+    console.log(JSON.stringify(result));
+  else {
+    console.log(`${result.valid ? "valid" : "invalid"} ${result.programRef ?? input}`);
+    const described = new Set;
+    for (const issue of result.issues) {
+      described.add(issue.message);
+      const where = issue.line === undefined ? "" : ` (line ${issue.line})`;
+      const hint = issue.fixHint ? ` ${issue.fixHint}` : "";
+      console.log(`  error: ${issue.code}${where}: ${issue.message}${hint}`);
+    }
+    for (const error of result.errors)
+      if (!described.has(error))
+        console.log(`  error: ${error}`);
+    for (const warning of result.warnings)
+      console.log(`  warning: ${warning}`);
+  }
+  return result.valid ? 0 : 1;
 }
 async function cmdGenerate(args) {
   assertNodeRuntime("agent");
@@ -56544,10 +57767,10 @@ async function cmdSource(args) {
     if (isRef)
       process.stdout.write(await store.get(input));
     else
-      console.log(await retainProgram(store, await readFile13(resolvePath(input), "utf8")));
+      console.log(await retainProgram(store, await readFile15(resolvePath(input), "utf8")));
     return 0;
   }
-  const programRef = isRef ? input : await retainProgram(store, await readFile13(resolvePath(input), "utf8"));
+  const programRef = isRef ? input : await retainProgram(store, await readFile15(resolvePath(input), "utf8"));
   const offset = integerOption("--offset", args.offset);
   const limit = integerOption("--limit", args.limit);
   const result = await createKilnSourceDef(store).run({
@@ -56660,6 +57883,8 @@ async function runMain(argv) {
         return await cmdSource(args);
       case "render":
         return await cmdRender(args);
+      case "validate":
+        return await cmdValidate(args);
       case "generate":
         return await cmdGenerate(args);
       default:

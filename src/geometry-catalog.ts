@@ -5,7 +5,7 @@ export const REMOVED_AUTHORING_HELPERS: Readonly<Record<string, string>> = Objec
   boxUnwrap:
     'Preserve existing UVs with direct geometry sharing or copyGeometry. Generate new face mappings explicitly with projectUV(geo, { projection: "box", frame? }); planar projection is a separate mode.',
   cylinderUnwrap:
-    'Preserve valid built-in UVs with direct sharing or copyGeometry. For cylindrical mapping use projectUV(geo, { projection: "cylindrical", frame?, seamDegrees?, angularRange?, caps? }); partial arcs need an explicit angularRange.',
+    'Preserve valid built-in UVs with direct sharing or copyGeometry. For cylindrical mapping use projectUV(geo, { projection: "cylindrical", frame?, seamDegrees?, angularRange?, caps?, metersPerUnit? }); partial arcs need an explicit angularRange; metersPerUnit fixes texel density.',
   planeUnwrap:
     'Use projectUV(geo, { projection: "planar", frame? }) to generate frame-XY UVs. Preserve existing UVs with direct sharing or copyGeometry instead.',
   cloneGeometry:
@@ -23,11 +23,11 @@ export const geometryPrimitives: readonly HelperSpec[] = [
   {
     name: 'projectUV',
     signature:
-      "projectUV(geometry: BufferGeometry, opts: { projection: 'planar'|'box'|'cylindrical', frame?: { origin?: [x,y,z], rotation?: [xDeg,yDeg,zDeg] }, seamDegrees?: number, angularRange?: [startDeg,sweepDeg], caps?: 'planar'|'side' })",
+      "projectUV(geometry: BufferGeometry, opts: { projection: 'planar'|'box'|'cylindrical', frame?: { origin?: [x,y,z], rotation?: [xDeg,yDeg,zDeg] }, seamDegrees?: number, angularRange?: [startDeg,sweepDeg], caps?: 'planar'|'side', metersPerUnit?: number })",
     returns: 'THREE.BufferGeometry (owned, non-indexed triangle corners)',
     category: 'uv',
     description:
-      'Generates UV0 explicitly in a rigid geometry-local frame. Planar maps XY; box maps each face; cylindrical wraps frame Y with separate caps and split angular seams. Replaces existing UVs and removes stale tangents. To preserve good UVs use direct sharing or copyGeometry instead.',
+      'Generates UV0 explicitly in a rigid geometry-local frame. Planar maps XY; box maps each face; cylindrical wraps frame Y with separate caps and split angular seams. Replaces existing UVs and removes stale tangents. metersPerUnit maps one UV unit to a fixed length so parts of different size tile at the same density. To preserve good UVs use direct sharing or copyGeometry instead.',
     example:
       "const mapped = projectUV(rawGeometry, { projection: 'cylindrical', frame: { rotation: [0,0,-90] }, seamDegrees: 180 });",
   },

@@ -105,6 +105,43 @@ export function geometryAttributeValues(
   return values;
 }
 
+/** The glTF validator's tolerance for unit-length NORMAL vectors. */
+const UNIT_NORMAL_TOLERANCE = 0.0005;
+
+/**
+ * Written NORMAL values, each off-unit vector scaled to unit length. A shader normalises before
+ * it lights, so the image is unchanged; the validator rejects the file without this. Vectors
+ * within tolerance keep their exact bytes. Inspection has already refused zero-length vectors.
+ */
+export function unitNormalValues(
+  attribute: THREE.BufferAttribute | THREE.InterleavedBufferAttribute,
+): Float32Array<ArrayBuffer> {
+  const values = geometryAttributeValues(attribute);
+  for (let i = 0; i < values.length; i += 3) {
+    const length = Math.hypot(values[i]!, values[i + 1]!, values[i + 2]!);
+    if (Math.abs(length - 1) <= UNIT_NORMAL_TOLERANCE || length === 0) continue;
+    for (let component = 0; component < 3; component++) values[i + component]! /= length;
+  }
+  return values;
+}
+
+/** Count off-unit normals; a zero-length normal has no direction to keep, so it fails. */
+function offUnitNormals(
+  normal: THREE.BufferAttribute | THREE.InterleavedBufferAttribute,
+  name: string,
+): number {
+  let count = 0;
+  for (let vertex = 0; vertex < normal.count; vertex++) {
+    const length = Math.hypot(normal.getX(vertex), normal.getY(vertex), normal.getZ(vertex));
+    if (length < 1e-6)
+      throw new TypeError(
+        `${name}: normal at vertex ${vertex} has zero length, so it has no direction to export. Build revolved profiles with lathe or revolveGeo, or recompute the normals with creaseNormals.`,
+      );
+    if (Math.abs(length - 1) > UNIT_NORMAL_TOLERANCE) count++;
+  }
+  return count;
+}
+
 /** One helper note (a code and message, or a legacy string) and the meshes that carry it. */
 type GeometryNoteGroup = {
   code?: string;
@@ -196,6 +233,15 @@ export function inspectGeometryExport(
         }
       }
     }
+    const normal = geometry.getAttribute('normal');
+    const offUnit = normal?.itemSize === 3 ? offUnitNormals(normal, name) : 0;
+    if (offUnit > 0)
+      addNote(
+        mesh,
+        name,
+        'NORMALS_NORMALISED',
+        `${offUnit} non-unit normals were scaled to unit length on export.`,
+      );
     const index = geometry.getIndex();
     if ((index?.count ?? position.count) % 3 !== 0)
       throw new TypeError(`${name}: triangle indices/vertices must be a multiple of three.`);

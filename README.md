@@ -153,6 +153,12 @@ kiln discover --capabilities --json
 kiln render my-asset.kiln.js --out my-asset.glb --views sheet.png
 ```
 
+KTX2 texture compression for the three.js runtime export (`export --target three --ktx2`)
+uses an optional peer that Kiln does not install or bundle. Add it to the same installation
+when you need it: `npm install ktx2-encoder@0.6.0`. It is MIT-licensed and ships its own
+notice for the bundled Basis Universal encoder (Apache-2.0); see
+[KTX2 textures](docs/export-profiles.md#ktx2-textures).
+
 With a project-local installation, use `npx --no -- kiln discover --capabilities --json`
 from that project. The [CLI installation guide](docs/install.md#run-the-cli) covers PATH
 and the equivalent `npm exec` command.

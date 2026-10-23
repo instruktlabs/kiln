@@ -11,6 +11,12 @@ export interface ProjectUVOptions {
   angularRange?: readonly [number, number];
   /** Cylindrical cap triangles parallel to frame XZ use planar UVs by default. */
   caps?: 'planar' | 'side';
+  /**
+   * Physical length of one UV unit, in geometry units, measured from the frame origin so
+   * pieces sharing a frame share density and phase. A full cylindrical wrap rounds to whole
+   * tiles at the largest radius so its seam stays continuous. Default: fit extents to 0..1.
+   */
+  metersPerUnit?: number;
 }
 
 const MAX_CORNERS = 2_000_000;
@@ -26,7 +32,10 @@ export function projectUV(
     Array.isArray(options) ||
     !['planar', 'box', 'cylindrical'].includes(options.projection) ||
     Object.keys(options).some(
-      (key) => !['projection', 'frame', 'seamDegrees', 'angularRange', 'caps'].includes(key),
+      (key) =>
+        !['projection', 'frame', 'seamDegrees', 'angularRange', 'caps', 'metersPerUnit'].includes(
+          key,
+        ),
     )
   )
     throw new Error(
@@ -58,6 +67,12 @@ export function projectUV(
     );
   if (options.caps !== undefined && options.caps !== 'planar' && options.caps !== 'side')
     throw new Error('projectUV: caps must be planar or side.');
+  const metric = options.metersPerUnit;
+  if (
+    metric !== undefined &&
+    !(typeof metric === 'number' && Number.isFinite(metric) && metric > 0)
+  )
+    throw new Error('projectUV: metersPerUnit must be a positive finite length.');
   const inverse = geometryFrameMatrix(options.frame).invert();
   const positions = geometry.getAttribute('position');
   if (positions?.itemSize !== 3 || positions.count < 1 || positions.count > MAX_CORNERS)
@@ -103,13 +118,29 @@ export function projectUV(
   }
   const extent = bounds.getSize(new THREE.Vector3());
   const fit = (point: THREE.Vector3, axis: 'x' | 'y' | 'z') =>
-    extent[axis] > 0 ? (point[axis] - bounds.min[axis]) / extent[axis] : 0.5;
+    metric !== undefined
+      ? point[axis] / metric
+      : extent[axis] > 0
+        ? (point[axis] - bounds.min[axis]) / extent[axis]
+        : 0.5;
+  // Mirrored faces keep their reading direction: 1 - u when fitted, -u when metric.
+  const flip = (point: THREE.Vector3, axis: 'x' | 'y' | 'z') =>
+    metric !== undefined ? -point[axis] / metric : 1 - fit(point, axis);
   const outputUVs = new Float32Array(corners * 2);
   const startDegrees = options.angularRange?.[0] ?? options.seamDegrees ?? 180;
   const start = ((startDegrees % 360) * Math.PI) / 180;
   const sweep = ((options.angularRange?.[1] ?? 360) * Math.PI) / 180;
   const fullWrap = options.angularRange === undefined || options.angularRange[1] === 360;
   const wrap = (angle: number) => ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
+  // U per unit of angular fraction: 1 when fitted; metric arc length at the largest radius,
+  // rounded to whole tiles on a full wrap so the seam meets itself.
+  let uScale = 1;
+  if (metric !== undefined) {
+    const radius = points.reduce((max, point) => Math.max(max, Math.hypot(point.x, point.z)), 0);
+    uScale = fullWrap
+      ? Math.max(1, Math.round((2 * Math.PI * radius) / metric))
+      : (sweep * radius) / metric;
+  }
   const normal = new THREE.Vector3();
   const edge = new THREE.Vector3();
   for (let i = 0; i < corners; i += 3) {
@@ -139,7 +170,7 @@ export function projectUV(
         throw new Error(
           'projectUV: side triangle spans more than half a revolution; add profile segments to resolve the mapping.',
         );
-      pairs = triangle.map((point, j) => [angles[j]!, fit(point, 'y')]);
+      pairs = triangle.map((point, j) => [angles[j]! * uScale, fit(point, 'y')]);
     } else if (cap) {
       pairs = triangle.map((point) => [fit(point, 'x'), fit(point, 'z')]);
     } else if (options.projection === 'box') {
@@ -151,10 +182,10 @@ export function projectUV(
             : 'z';
       pairs = triangle.map((point) => {
         if (axis === 'x')
-          return [normal.x > 0 ? 1 - fit(point, 'z') : fit(point, 'z'), fit(point, 'y')];
+          return [normal.x > 0 ? flip(point, 'z') : fit(point, 'z'), fit(point, 'y')];
         if (axis === 'y')
-          return [fit(point, 'x'), normal.y > 0 ? 1 - fit(point, 'z') : fit(point, 'z')];
-        return [normal.z < 0 ? 1 - fit(point, 'x') : fit(point, 'x'), fit(point, 'y')];
+          return [fit(point, 'x'), normal.y > 0 ? flip(point, 'z') : fit(point, 'z')];
+        return [normal.z < 0 ? flip(point, 'x') : fit(point, 'x'), fit(point, 'y')];
       });
     } else pairs = triangle.map((point) => [fit(point, 'x'), fit(point, 'y')]);
     for (let j = 0; j < 3; j++) {

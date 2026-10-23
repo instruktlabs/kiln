@@ -481,7 +481,9 @@ For an explicitly bound asset brief, append `"--requirements"` and the absolute
 path to a host-binding JSON file to `args`. This optional policy is fixed for the
 server session; changing the file requires a new session. The default remains
 neutral authoring. See [host requirements](migration.md#migrate-evaluator-integrations-together)
-for the binding format and task/asset lineage boundary.
+for the binding format and task/asset lineage boundary. A binding can also carry a
+[host validation profile](migration.md#host-validation-profile) that the final GLB
+must satisfy; `kiln_discover` with `capabilities: true` shows it to the author.
 
 The legacy root plugin manifests launch the Node bundle from an engine installation.
 The v1 local plugin below uses a smaller bundle and creates an explicit workspace.

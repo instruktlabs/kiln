@@ -33,3 +33,4 @@ export { AssetQaBlockedError, gltfReportFindings, qaPolicyFromEnv, qaBlockingEna
 export * from './requirements-run';
 export * from './requirements-report';
 export * from './requirements-applicability';
+export * from './validation-profile';

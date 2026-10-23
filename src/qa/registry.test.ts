@@ -791,9 +791,10 @@ describe('QaRegistry', () => {
 
   test('publishes a stable auditable state and owner for every checked-in rule', () => {
     const decisions = DETERMINISTIC_QA_REGISTRY.describePolicy();
-    // 27 -> 28 with the approved bounded sweep/loft observation. The count means a rule can
-    // never join the deterministic registry without someone noticing.
-    expect(decisions).toHaveLength(28);
+    // 27 -> 28 with the approved bounded sweep/loft observation, 28 -> 29 with the host
+    // validation profile (#208). The count means a rule can never join the deterministic
+    // registry without someone noticing.
+    expect(decisions).toHaveLength(29);
     expect(
       decisions
         .filter((item) => item.ruleClass === 'exact')

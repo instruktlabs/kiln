@@ -7,6 +7,24 @@ does not publish a package.
 
 ## Unreleased
 
+- Encode KTX2 through an optional `ktx2-encoder` peer
+  ([#201](https://github.com/instruktlabs/kiln/issues/201)). `export --target three --ktx2`
+  (or `ktx2Encoder: await createKtx2Encoder()`) uses ETC1S for base colour and emissive and
+  UASTC for normal and other linear maps, refuses an image shared by both kinds of slot, and
+  records the encoder name, version, Basis WebAssembly hash and settings in
+  `delivery.ktx2.encoder` and the `--json` receipt. Kiln does not install or bundle the
+  peer: run `npm install ktx2-encoder@0.6.0` (MIT; its bundled Basis Universal encoder is
+  Apache-2.0 with its notice in the package). The KTX2 hook now receives the slot, requires
+  the KTX2 identifier in its output, and rebinds atlas provenance to the encoded bytes, so
+  an encoded atlas passes import validation.
+- Add an opt-in runtime texture manifest and content-addressed external textures
+  ([#213](https://github.com/instruktlabs/kiln/issues/213)). `export --profile runtime
+  --textures manifest` adds sidecar `textures[]` naming each image's exact `sha256`, size,
+  colour space and, when its bytes equal a saved library map, that material pin.
+  `--target three --textures external --out x.gltf` writes JSON glTF whose images are shared
+  `textures/<sha256>.<ext>` files: an identical existing file is reused, a different one
+  stops the export, and rollback never removes a texture. Without `--textures`, runtime GLB,
+  sidecar and receipt bytes are unchanged; MCP does not offer the options.
 - Name the rule in material validation errors ([#198](https://github.com/instruktlabs/kiln/issues/198)).
   Sampler, procedural V3 and atlas checks now report the canonicalizer's reason (for
   example "stamps are supported only for color usages albedo and emissive") instead of a
@@ -66,6 +84,60 @@ does not publish a package.
   follow the #210 contract: base colour, normal derived from height and packed metallic/roughness,
   an explicit seed and licence, a stated repeat scale and a family tag. They are synthetic
   starting points, not scans; the docs table and its test list them.
+- Name procedural texture usage errors and add `kiln validate` ([#215](https://github.com/instruktlabs/kiln/issues/215)).
+  An unknown `proceduralTexture` usage (such as `data`) or a usage that does not match its
+  portable material slot, in V2 or V3, now crosses the evaluator boundary as the closed
+  `PROCEDURAL_TEXTURE_USAGE` diagnostic; its advice lists the seven usages and the slots
+  that take them, instead of the bare rejection sentence. Discovery's `proceduralTexture`
+  contract lists them too. The new `kiln validate <program.js|ref> [--json]` serves the same
+  `kiln_validate` check from the CLI, prints the `programRef` and exits 1 when the source is
+  invalid; the generic rejection advice names both forms.
+- Add metric UV projection ([#216](https://github.com/instruktlabs/kiln/issues/216)).
+  `projectUV` accepts `metersPerUnit`: one UV unit maps to that length, measured from the
+  frame origin, so parts of different size tile at the same texel density and pieces that
+  share a frame keep the same phase. A full cylindrical wrap rounds to whole tiles at the
+  largest radius so the seam stays continuous. Calls without it are unchanged. The contract
+  and geometry docs say to weld the non-indexed output with `mergeVertices` where the
+  projection is continuous.
+- Normalise non-unit normals on export ([#217](https://github.com/instruktlabs/kiln/issues/217)).
+  A raw `THREE.LatheGeometry` whose profile nears the axis left pole normals of length
+  0.02 to 0.13, and export stopped with repeated `GLTF_ACCESSOR_VECTOR3_NON_UNIT` lines naming
+  an accessor. Export now writes those normals at unit length with one `NORMALS_NORMALISED`
+  note naming the part and count, leaving the authored geometry and unit normals untouched.
+  A zero-length normal fails naming the part and vertex, with `lathe`, `revolveGeo` or
+  `creaseNormals` as the remedy.
+- Discovery: when some exact IDs are unknown, the known contracts are returned in request order
+  beside the `UNKNOWN_ID` error, which names only the unknown IDs; no substitution is made and
+  a request with no known ID still returns no entries. `pbrMaterial` now ranks first for
+  roughness-map queries (#218).
+- Allow the three runtime target without Meshopt ([#219](https://github.com/instruktlabs/kiln/issues/219)).
+  `exportAssetGlb`/`deliverThreeRuntimeGlb` accept `compression: 'none'` and the CLI accepts
+  `--compression none` with `--target three`: buffers stay plain, so a loader without a
+  Meshopt decoder reads the GLB, while `KHR_mesh_quantization`, instancing and every
+  preserved feature stay. The sidecar `delivery.compression` records `{ extension: 'none' }`.
+  The default output is unchanged.
+- Declare parts that rest on an external support ([#220](https://github.com/instruktlabs/kiln/issues/220)).
+  A requirements binding can list `externalSupport.supports`: named parts and the plane they
+  rest on outside the asset. A named part whose bottom meets that plane moves from the
+  floating-parts warning to an informational line, and its connectivity observation becomes
+  `GEO_PART_EXTERNAL_SUPPORT` naming the declaration. Undeclared parts, parts at another
+  height and every other disposition are unchanged. The declaration is covered by the policy
+  hash.
+- Add natural material presets `beach-sand`, `coral-limestone`, `coral-limestone-wet`,
+  `palm-frond`, `driftwood` and `thatch`, tagged by family (`ground`, `rock`, `foliage`,
+  `wood`, `fiber`). `palm-frond` is an alpha-tested, double-sided cutout saved as a
+  `schemaVersion:2` record; `createMaterialPresetDraftAny` returns any preset's draft, and
+  preset summaries report `recordSchemaVersion`. The docs list the presets as a table that a
+  test keeps in step with the catalog (#210).
+- Add an opt-in host validation profile to requirements ([#208](https://github.com/instruktlabs/kiln/issues/208)).
+  A host binding can carry `requirements.validation`, a closed `kiln.validation-profile.v1`
+  statement that selects final GLB nodes by name and checks primitive counts, required
+  attributes, an attribute range or gradient along a local axis, and material alpha mode
+  and sidedness. The exact rule `HOST_VALIDATION_PROFILE` evaluates it on the final bytes;
+  in `enforce` mode its findings block `kiln_render` and `kiln_save`. The profile is part
+  of the policy hash, so changing it refuses earlier reviewed artifacts. Tool input and
+  source cannot weaken it, and Discovery capabilities show it as host-declared. Bindings
+  without the key are unchanged.
 
 ## 1.3.1 (2026-10-17)
 

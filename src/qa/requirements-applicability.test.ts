@@ -5,11 +5,11 @@ import {
   REQUIREMENTS_RULE_MAP,
   resolveRequirementsApplicability,
 } from './requirements-applicability';
-test('the migration map covers each of the 28 actual registered rules and preserves modes', () => {
+test('the migration map covers each of the 29 actual registered rules and preserves modes', () => {
   const rules = DETERMINISTIC_QA_REGISTRY.list();
-  expect(rules).toHaveLength(28);
-  expect(REQUIREMENTS_RULE_MAP).toHaveLength(28);
-  expect(new Set(REQUIREMENTS_RULE_MAP.map((rule) => rule.id)).size).toBe(28);
+  expect(rules).toHaveLength(29);
+  expect(REQUIREMENTS_RULE_MAP).toHaveLength(29);
+  expect(new Set(REQUIREMENTS_RULE_MAP.map((rule) => rule.id)).size).toBe(29);
   expect(REQUIREMENTS_RULE_MAP.map((rule) => [rule.id, rule.mode]).sort()).toEqual(
     rules.map((rule) => [rule.id, rule.defaultMode]).sort(),
   );

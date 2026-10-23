@@ -40,6 +40,7 @@ const USAGE = `kiln — vision-in-the-loop 3D asset generation
 
 USAGE
   kiln render <program.js|ref> [options]     execute a Kiln program (offline, no key)
+  kiln validate <program.js|ref> [--json]    kiln_validate: syntax and sandbox check, no build
   kiln generate "<prompt>"  [options]    author a program with a model, then render
   kiln source <file.js>                 save a source snapshot and print its programRef
   kiln source <programRef> --out file.js export a revision without model transcription
@@ -290,7 +291,7 @@ interface RenderCliReceipt extends Record<string, unknown> {
 
 /** Commands of this parser whose --json output includes failures, as `{ ok: false, error, files }`. */
 function jsonCommand(command: string | undefined): boolean {
-  return command === 'render' || command === 'source';
+  return command === 'render' || command === 'source' || command === 'validate';
 }
 
 function jsonRenderFailure(error: unknown, receipt: RenderCliReceipt = { files: [] }): void {
@@ -527,6 +528,46 @@ async function cmdRender(args: Args): Promise<number> {
       /* Observation cannot fail a build. */
     }
   }
+}
+
+/** The same kiln_validate definition MCP serves; the source is retained so its ref prints. */
+async function cmdValidate(args: Args): Promise<number> {
+  const input = args.positional[0];
+  if (!input || args.positional.length !== 1) {
+    const message = 'validate requires a program path or reference';
+    if (args.json) jsonRenderFailure(message);
+    else console.error(`${message}\n\n${USAGE}`);
+    return 2;
+  }
+  const store = localProgramStore();
+  const isRef = input.startsWith('sha256:') || programRefPattern.test(input);
+  const def = createKilnProgramToolRegistry({ programStore: store }).find(
+    (d) => d.name === 'kiln_validate',
+  );
+  if (!def) throw new Error('kiln_validate is missing from the MCP tool surface');
+  const result = (await def.run(
+    isRef ? { programRef: input } : { code: await readFile(resolvePath(input), 'utf8') },
+  )) as {
+    valid: boolean;
+    programRef?: string;
+    errors: string[];
+    warnings: string[];
+    issues: { code: string; message: string; fixHint?: string; line?: number }[];
+  };
+  if (args.json) console.log(JSON.stringify(result));
+  else {
+    console.log(`${result.valid ? 'valid' : 'invalid'} ${result.programRef ?? input}`);
+    const described = new Set<string>();
+    for (const issue of result.issues) {
+      described.add(issue.message);
+      const where = issue.line === undefined ? '' : ` (line ${issue.line})`;
+      const hint = issue.fixHint ? ` ${issue.fixHint}` : '';
+      console.log(`  error: ${issue.code}${where}: ${issue.message}${hint}`);
+    }
+    for (const error of result.errors) if (!described.has(error)) console.log(`  error: ${error}`);
+    for (const warning of result.warnings) console.log(`  warning: ${warning}`);
+  }
+  return result.valid ? 0 : 1;
 }
 
 async function cmdGenerate(args: Args): Promise<number> {
@@ -810,6 +851,8 @@ async function runMain(argv: readonly string[]): Promise<number> {
         return await cmdSource(args);
       case 'render':
         return await cmdRender(args);
+      case 'validate':
+        return await cmdValidate(args);
       case 'generate':
         return await cmdGenerate(args);
       default:

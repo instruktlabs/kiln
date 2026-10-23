@@ -2,3 +2,4 @@
 export * from './contracts/requirements';
 export * from './requirements-store';
 export * from './requirements-context';
+export * from './contracts/validation-profile';
