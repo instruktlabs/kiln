@@ -80,6 +80,18 @@ does not publish a package.
   `PROFILE_BEVEL_COLLAPSE` still names an over-large bevel. The generic rejection now says
   that `kiln_validate` checks syntax and static rules but cannot see execution-time
   failures, and points to reproducing them with `kiln_render`.
+- Map cylindrical `projectUV` poles and name profile solid failures
+  ([#178](https://github.com/instruktlabs/kiln/issues/178)). A bevelled `revolveProfile`
+  whose outline touches the axis ends in sloped triangles meeting on it; cylindrical
+  `projectUV` gave that pole no defined angle, so the mesh smeared U or, at some segment
+  counts, threw and rejected the whole program. A corner on the axis now takes the mean U of
+  the other corners of its triangle; cone apexes are treated the same way. Separately, an `extrudeProfile` or
+  `revolveProfile` outline that cannot become a solid (for example out-of-scale coordinates,
+  or holes that consume it) now rejects with the closed cause `PROFILE_SOLID_FAILED` and
+  engine-written repair advice instead of the bare generic rejection; no library message
+  crosses the boundary, and `PROFILE_BEVEL_COLLAPSE` still names an over-large bevel. The
+  generic rejection now says that `kiln_validate` checks syntax and static rules but cannot
+  see execution-time failures, and points to reproducing them with `kiln_render`.
 
 ## 1.4.0 (2026-10-23)
 
