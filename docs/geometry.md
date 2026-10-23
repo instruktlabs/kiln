@@ -477,6 +477,22 @@ glTF multiplies base colour by `COLOR_0`, and loaders enable vertex colours when
 is present, whether or not the authoring material set `vertexColors`. Remove a
 `color` attribute that is not meant to tint the surface.
 
+## Know what export welds
+
+Export welds only exactly equal vertices. With the default `indexPolicy: 'indexed'`,
+each primitive built without an index buffer gets one, and two corners merge only when
+every attribute (position, normal, UVs, colour, tangent, author attributes and morph
+data) is bitwise identical. Material optimization welds by the same rule. There is no
+distance tolerance, so corners a rounding error apart stay separate vertices: seams
+survive, and the file keeps every distinct corner you built.
+
+To weld on purpose, call `mergeVertices` before returning the geometry, or round
+coordinates you know should coincide so their corners become equal; both can shrink a
+baked or generated mesh noticeably. `indexPolicy: 'asBuilt'` on render calls (local
+hosts: `KILN_INDEX_POLICY=asBuilt`) keeps helper buffers as built and requires
+optimization off. The receipt's `indexBuffers` reports vertex, morph and index payload
+bytes before and after this pass, not GLB file size.
+
 ## Declare a triangle budget
 
 `defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 })` records the asset's

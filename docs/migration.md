@@ -310,7 +310,8 @@ Changes to results and messages:
   `KILN_INDEX_POLICY=asBuilt` in a local host, to preserve helper buffers; combine it
   with optimization off. Saved rebuild settings and cache identities retain the
   policy. `indexBuffers` reports unique vertex/morph/index accessor payload bytes at
-  this pass, before later optimizations; it is not a GLB compression measurement.
+  this pass, before later optimizations; it is not a GLB compression measurement. See
+  [what export welds](geometry.md#know-what-export-welds).
 - **Sweep evidence.** `SWEEP_SELF_INTERSECTION` is an observation of a tight station
   radius or intersecting consecutive filled rings. Limits are 4096 stations, 512
   points per ring and 65536 segment/triangle tests. Budget exhaustion retains an

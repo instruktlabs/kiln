@@ -32,6 +32,10 @@ does not publish a package.
   and `autoUnwrap` instead of a generic "unwrap". The block is unchanged: a texture-backed
   material on geometry without UV0 still fails QA, and no projection is added
   automatically ([#177](https://github.com/instruktlabs/kiln/issues/177)).
+- `kiln --version` prints the installed version and exits 0
+  ([#202](https://github.com/instruktlabs/kiln/issues/202)). `docs/programs.md` lists the
+  sandbox globals and refused host capabilities, and `docs/geometry.md` states the
+  exact-equality export weld that was documented only in the migration notes.
 
 ## 1.4.0 (2026-10-23)
 

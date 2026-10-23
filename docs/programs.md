@@ -44,6 +44,30 @@ exactly one of `code` or `programRef`.
 Search returns surrounding source. A missing match returns `found: false` and empty
 code. Read enough context to understand dependencies before editing.
 
+## Sandbox globals
+
+A program is a script, not a module. It defines `const meta = { name }`, a
+`function build()` (or `async function build()`) that returns the root from
+`createRoot`, and optionally `animate(root)`, which returns an array of clips. It runs
+in strict mode with these globals and nothing to import:
+
+- Every Kiln helper in the [Discovery](tools.md) catalog, such as `createRoot`,
+  `createPart`, `boxGeo`, `gameMaterial` and `defineBudget`. Use `kiln discover` or
+  `kiln_discover` for the complete list and each helper's contract.
+- `THREE`, the three.js namespace, for direct geometry and maths. `DataTexture`,
+  `ShaderMaterial` and `RawShaderMaterial` are refused; use the material and texture
+  helpers. The namespace cannot be aliased or read with computed keys.
+- `Math`, and `console` for diagnostics, which the host captures.
+- Standard JavaScript built-ins such as `Array`, `Object`, `JSON`, `Map`, `Set` and
+  `Promise`.
+
+Host capabilities are refused before the program runs: `import`, `export` and dynamic
+`import()`, `eval`, `Function` and constructor chains, `globalThis`, `global`,
+`process`, `require`, `module`, `Reflect`, `fetch`, `XMLHttpRequest`, `WebSocket`, the
+browser globals (`window`, `self`, `document`, `navigator`, `location`), `Bun` and
+`Deno`, and `this` outside a method. This is a safety net, not process isolation.
+`kiln validate` reports the first refused use with its line.
+
 ## Files and persistence
 
 From a generated workspace, import and export without model transcription:
