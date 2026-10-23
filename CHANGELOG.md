@@ -15,6 +15,11 @@ does not publish a package.
   and units, and that all are advisory. `DELIVERY_COLLIDER_NO_OVERLAP` is
   collider-to-geometry overlap, not contact between colliders
   ([#199](https://github.com/instruktlabs/kiln/issues/199)).
+- Document optional SDK setup for generated workspaces. The compose and QA integration
+  references gain an "Optional SDK use" paragraph: a workspace has no `package.json`, so
+  `@instruktlabs/kiln/render` and `/composer` fail with `ERR_MODULE_NOT_FOUND` until the
+  author installs `@instruktlabs/kiln` pinned to the runtime version in use; CLI/MCP-only
+  authoring is unchanged ([#179](https://github.com/instruktlabs/kiln/issues/179)).
 
 ## 1.4.0 (2026-10-23)
 
