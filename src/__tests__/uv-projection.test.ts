@@ -3,6 +3,9 @@ import * as THREE from 'three';
 import { NodeIO } from '@gltf-transform/core';
 import { renderSceneToGLB } from '../render';
 import { projectUV } from '../uv-project';
+import { revolveProfile } from '../profile';
+import { evaluateEvaluatorRequestV2 } from '../evaluator/handler';
+import { createEvaluatorRequestV2 } from '../evaluator/protocol';
 
 test('planar projection is frame-covariant, owned, and replaces unrelated existing UVs', () => {
   const source = new THREE.PlaneGeometry(2, 3);
@@ -272,3 +275,73 @@ test('metric cylindrical projection keeps the full-wrap seam on a whole tile', (
   );
   expect(Math.max(...halfU)).toBeCloseTo((Math.PI * 0.4) / 0.3, 5);
 });
+
+/** Per-triangle U spans of cylindrical side triangles, after checking every UV is finite. */
+function sideUSpans(projected: THREE.BufferGeometry): number[] {
+  const uv = projected.getAttribute('uv');
+  const p = projected.getAttribute('position');
+  const spans: number[] = [];
+  for (let i = 0; i < uv.count; i++) {
+    expect(Number.isFinite(uv.getX(i))).toBe(true);
+    expect(Number.isFinite(uv.getY(i))).toBe(true);
+  }
+  for (let i = 0; i < p.count; i += 3) {
+    const y = [p.getY(i), p.getY(i + 1), p.getY(i + 2)];
+    if (Math.max(...y) - Math.min(...y) < 1e-6) continue;
+    const u = [uv.getX(i), uv.getX(i + 1), uv.getX(i + 2)];
+    spans.push(Math.max(...u) - Math.min(...u));
+  }
+  return spans;
+}
+
+test('cylindrical poles on the axis take their triangle angle (#178)', async () => {
+  // Reduced from the grotto dogfood: a bevelled revolve whose outline touches x = 0 ends in
+  // a fan of sloped triangles meeting on the axis. At 14 and 18 segments the pole's
+  // undefined angle threw "more than half a revolution"; at other counts it smeared U.
+  for (const segments of [12, 14, 16, 18, 24]) {
+    const geometry = await revolveProfile(
+      [
+        [0, 0],
+        [0.2, 0],
+        [0.2, 1],
+        [0, 1],
+      ],
+      { segments, bevel: 0.01 },
+    );
+    const projected = projectUV(geometry, { projection: 'cylindrical' });
+    const spans = sideUSpans(projected);
+    expect(spans.length).toBeGreaterThan(0);
+    for (const span of spans) expect(span).toBeLessThanOrEqual(1.5 / segments);
+    const uv = projected.getAttribute('uv');
+    for (let i = 0; i < uv.count; i++) {
+      expect(uv.getX(i)).toBeGreaterThanOrEqual(0);
+      expect(uv.getX(i)).toBeLessThanOrEqual(1 + 1 / segments);
+    }
+  }
+  // Without a bevel, a cone apex is the same pole: one vertex per side triangle on the axis.
+  const cone = projectUV(new THREE.ConeGeometry(1, 2, 12), { projection: 'cylindrical' });
+  for (const span of sideUSpans(cone)) expect(span).toBeLessThanOrEqual(1.5 / 12);
+});
+
+test('a cylindrical triangle lying entirely on the axis gets one consistent finite U', () => {
+  const source = new THREE.BufferGeometry();
+  source.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute([0, 0, 0, 0, 1, 0, 0, 2, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0], 3),
+  );
+  const uv = projectUV(source, { projection: 'cylindrical', caps: 'side' }).getAttribute('uv');
+  for (let i = 0; i < uv.count; i++) expect(Number.isFinite(uv.getX(i))).toBe(true);
+  expect(uv.getX(1)).toBe(uv.getX(0));
+  expect(uv.getX(2)).toBe(uv.getX(0));
+});
+
+test('a grotto-shaped bevelled column with cylindrical UVs renders through the worker', async () => {
+  const column =
+    '[[0,0.06],[0.24,0.06],[0.26,0.24],[0.18,0.48],[0.16,0.66],[0.12,0.96],[0.11,1.38],[0.15,1.52],[0,1.52]]';
+  const code = `async function build(){const root=createRoot('Beacon');createPart('Column',projectUV(await revolveProfile(${column},{segments:18,bevel:0.01}),{projection:'cylindrical'}),gameMaterial(0x888888),{parent:root});return root;}`;
+  const wire = JSON.parse(
+    await evaluateEvaluatorRequestV2(createEvaluatorRequestV2({ requestId: 'column', code }).json),
+  );
+  expect(wire.error).toBeUndefined();
+  expect(wire.ok).toBe(true);
+}, 20000);

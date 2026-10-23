@@ -3,6 +3,9 @@ import { spawnSync } from 'node:child_process';
 import { mkdtemp, writeFile, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
+import { existsSync } from 'node:fs';
+import { FileWorkspace } from './workspace-node';
+import { exportMaterialMaps } from './material-library-node';
 
 async function fixture() {
   const root = await mkdtemp(join(tmpdir(), 'kiln-project-cli-'));
@@ -202,3 +205,134 @@ test('material CLI creates deterministic recipes and exports/imports exact porta
     await rm(root, { recursive: true, force: true });
   }
 }, 60_000); // Eleven compiled-CLI runs: 4.6 to 7.1 s in the gates of 2 October 2026; past 20 s on the same loaded host (6.1 s in that run's coverage step).
+
+test('material export --maps writes sized PNGs, a hashed sidecar and a preview, matching the SDK', async () => {
+  const { root, run } = await fixture();
+  try {
+    const file = join(root, 'material.json');
+    await writeFile(
+      file,
+      JSON.stringify({
+        materialId: 'coarse-soil',
+        name: 'Coarse soil',
+        tileable: true,
+        sources: [
+          {
+            id: 'authored',
+            kind: 'procedural',
+            provider: 'Kiln',
+            creator: 'Fixture',
+            license: {
+              spdx: 'CC0-1.0',
+              url: 'https://creativecommons.org/publicdomain/zero/1.0/',
+              attribution: '',
+            },
+            originalFiles: [],
+          },
+        ],
+        maps: [
+          {
+            slot: 'baseColor',
+            sourceId: 'authored',
+            transforms: [],
+            procedural: {
+              schemaVersion: 2,
+              usage: 'albedo',
+              size: 8,
+              layers: [{ op: 'noise', colorA: 0x554433, colorB: 0x887766, seed: 3, scale: 4 }],
+            },
+          },
+          {
+            slot: 'normal',
+            sourceId: 'authored',
+            transforms: [],
+            procedural: {
+              schemaVersion: 2,
+              usage: 'normal',
+              size: 8,
+              layers: [{ op: 'noise', colorA: 0, colorB: 0xffffff, seed: 3, scale: 4 }],
+            },
+            derive: { kind: 'normal-from-height', strength: 4 },
+          },
+        ],
+      }),
+    );
+    const created = run(['material', 'procedural', '--file', file]);
+    expect(created.status, created.stderr).toBe(0);
+    const { revisionId } = JSON.parse(created.stdout).materials[0];
+    const maps = join(root, 'maps');
+    const args = ['material', 'export', 'coarse-soil', revisionId, '--maps', maps];
+    // No physical size is recorded, so the repeat must be stated.
+    const unsized = run([...args, '--size', '16']);
+    expect(unsized.status).toBe(1);
+    expect(unsized.stderr).toContain('--repeat');
+    for (const bad of [
+      ['--size', '0', '--repeat', '4'],
+      ['--size', 'large', '--repeat', '4'],
+      ['--size', '16.5', '--repeat', '4'],
+      ['--size', '16', '--repeat', '-1'],
+      ['--size', '16', '--repeat', '4m'],
+      ['--size', '16', '--repeat', '4', '--tiles', '0'],
+      ['--size', '16', '--repeat', '4', '--out', join(root, 'both.json')],
+    ])
+      expect(run([...args, ...bad]).status).toBe(1);
+    expect(
+      run([
+        'material',
+        'export',
+        'coarse-soil',
+        revisionId,
+        '--out',
+        join(root, 'x'),
+        '--size',
+        '16',
+      ]).status,
+    ).toBe(1);
+    expect(existsSync(maps)).toBe(false);
+
+    const exported = run([...args, '--size', '16', '--repeat', '4']);
+    expect(exported.status, exported.stderr).toBe(0);
+    const output = JSON.parse(exported.stdout);
+    expect(output.materialId).toBe('coarse-soil');
+    expect(output.revisionId).toBe(revisionId);
+    expect(output.sidecar).toBe(join(maps, 'coarse-soil.maps.json'));
+    const sidecar = JSON.parse(await readFile(output.sidecar, 'utf8'));
+    expect(sidecar.size).toEqual({ width: 16, height: 16 });
+    expect(sidecar.repeatMeters).toEqual({ width: 4, height: 4 });
+    expect(sidecar.maps.map((map: { file: string }) => map.file)).toEqual([
+      'coarse-soil.baseColor.png',
+      'coarse-soil.normal.png',
+    ]);
+    expect(sidecar.preview.file).toBe('coarse-soil.preview.png');
+    expect(sidecar.preview.viewFidelity.materialFaithful).toBe(false);
+    expect(output.preview.materialFaithful).toBe(false);
+    expect(output.preview.rendererId).toBe(sidecar.preview.rendererId);
+
+    // The CLI never replaces an earlier export.
+    const before = await readFile(output.sidecar);
+    const again = run([...args, '--size', '16', '--repeat', '4']);
+    expect(again.status).toBe(1);
+    expect(again.stderr).toContain('already exists');
+    expect(await readFile(output.sidecar)).toEqual(before);
+
+    // SDK parity: the same record and options produce the same sidecar and bytes.
+    const record = await new FileWorkspace(join(root, 'first')).materials.read(
+      'coarse-soil',
+      revisionId,
+    );
+    const sdk = await exportMaterialMaps(record, {
+      outDir: join(root, 'sdk'),
+      size: 16,
+      repeatMeters: 4,
+    });
+    expect(sdk.sidecar).toEqual(sidecar);
+
+    // The JSON payload export is unchanged.
+    const payload = join(root, 'payload.json');
+    const json = run(['material', 'export', 'coarse-soil', revisionId, '--out', payload]);
+    expect(json.status, json.stderr).toBe(0);
+    expect(JSON.parse(await readFile(payload, 'utf8')).records).toHaveLength(1);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}, 120_000); // Thirteen compiled-CLI runs and one in-process export; budget follows the material test above under load.

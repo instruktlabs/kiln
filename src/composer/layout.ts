@@ -25,6 +25,7 @@
  * the tool surface; the overlap validator gates every result (`overlaps` is
  * empty by construction — global min-distance covers inter-anchor clearance).
  */
+import { mulberry32 } from '../seeded-random';
 import { flatGround, type GroundSampler } from './ground';
 import {
   findPlacementOverlaps,
@@ -104,17 +105,6 @@ const TO_DEG = 180 / Math.PI;
 const TO_RAD = Math.PI / 180;
 const ROLE_RANK: Record<ItemRole, number> = { hero: 0, support: 1, fill: 2 };
 const round1 = (n: number): number => Math.round(n * 10) / 10;
-
-/** Deterministic PRNG (mulberry32) — no Math.random, so scenes are reproducible. */
-function makeRng(seed: number): () => number {
-  let s = seed >>> 0;
-  return () => {
-    s = (s + 0x6d2b79f5) >>> 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 interface Prepared {
   item: LayoutItem;
@@ -273,7 +263,8 @@ export function layoutScene(items: LayoutItem[], opts: LayoutOptions = {}): Layo
   const ground = opts.ground ?? flatGround(0);
   const sceneCenter: Vec2 = opts.sceneCenter ?? [0, 0];
   const facing = opts.facing ?? 'scene-in';
-  const rng = makeRng(opts.seed ?? 1);
+  // Deterministic PRNG (mulberry32): no Math.random, so scenes are reproducible.
+  const rng = mulberry32(opts.seed ?? 1);
   const anchors: Anchor[] = opts.anchors?.length
     ? opts.anchors
     : [{ id: '__root', center: [0, 0] }];

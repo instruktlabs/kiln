@@ -184,7 +184,7 @@ const PRIMITIVES: HelperSpec[] = [
     example:
       "const tiers = ['Body_LOD0', 'Body_LOD1', 'Body_LOD2'].map((name) => { const g = new THREE.Group(); g.name = name; root.add(g); return g; });\ndefineLod(tiers, { screenCoverage: [0.25, 0.06, 0.01] });",
     promptNotes:
-      'Only when the brief asks for LOD tiers; otherwise build one tier. Tiers are sibling nodes named with one stem and consecutive LOD<n> tokens. screenCoverage has one value per level, strictly decreasing; below the last the asset is culled, and a last value of 0 never culls. impostor: true marks the last level a card or billboard tier.',
+      'Only when the brief asks for LOD tiers; otherwise build one tier. Tiers are sibling nodes named with one stem and consecutive LOD<n> tokens. screenCoverage has one value per level, strictly decreasing; below the last the asset is culled, and a last value of 0 never culls. impostor: true marks the last level a card or billboard tier. Build lower tiers with less detail, or derive one per part with simplifyGeometry.',
   },
   {
     name: 'markOpenShell',
@@ -1049,6 +1049,21 @@ const PRIMITIVES: HelperSpec[] = [
       'const welded = mergeVertices(boxGeo(1, 1, 1), { positionOnly: true });\nconst rock = displace(subdivide(welded, 2), ([x,y,z]) => [0.08*Math.sin(y*7+z*3), 0.04*Math.sin(x*9), 0]);',
   },
 
+  {
+    name: 'simplifyGeometry',
+    signature:
+      'await simplifyGeometry(geometry: BufferGeometry, opts: { ratio?: number, targetTriangles?: number, maxError?: 1, lockBorder?: true })',
+    returns:
+      'Promise<THREE.BufferGeometry> (new geometry; userData.kilnSimplify reports the result)',
+    category: 'mesh-ops',
+    description:
+      'Derives a lower-detail copy of one geometry for an LOD tier with the meshoptimizer simplifier. Pass exactly one of ratio (0 < ratio <= 1) or targetTriangles. Material groups, UV and normal seams and open borders are kept; the input is never changed. userData.kilnSimplify records trianglesBefore, trianglesAfter, the achieved ratio and the error.',
+    example:
+      "const rock = sphereGeo(1, 32, 16);\nconst far = await simplifyGeometry(rock, { ratio: 0.25 });\nconst [near, farTier] = ['Rock_LOD0', 'Rock_LOD1'].map((name) => { const g = new THREE.Group(); g.name = name; root.add(g); return g; });\ncreatePart('RockNear', rock, stone, { parent: near });\ncreatePart('RockFar', far, stone, { parent: farTier });\ndefineLod([near, farTier], { screenCoverage: [0.05, 0.002] });",
+    promptNotes:
+      'Async: await it inside async build(). Call it per part for a lower tier and pass the tiers to defineLod; it never runs on its own or to meet a budget. maxError, locked borders and seams can stop it short of the target: read userData.kilnSimplify.ratio, and SIMPLIFY_TARGET_NOT_REACHED is a build note.',
+  },
+
   // ---------------------------------------------------------------------------
   // Curves (Wave 2B)
   // ---------------------------------------------------------------------------
@@ -1235,6 +1250,19 @@ const PRIMITIVES: HelperSpec[] = [
     category: 'utility',
     description: 'All node names beginning with `Joint_`. Use to sanity-check animation targets.',
     example: 'const joints = getJointNames(root);',
+  },
+  {
+    name: 'seededRandom',
+    signature: 'seededRandom(seed: number | string)',
+    returns:
+      '{ next(): [0,1), range(min, max): [min,max), int(min, max): min..max inclusive, pick(array), fork(label) }',
+    category: 'utility',
+    description:
+      'Deterministic random numbers from a seed: the same seed gives the same draws, so builds stay cacheable (Math.random marks a build ambient and uncached). fork(label) is an independent stream from the seed and label, not from how many draws were made.',
+    example:
+      "const rng = seededRandom('palm-3');\nconst crown = rng.fork('crown');\nconst lean = rng.range(-8, 8);\nconst fronds = crown.int(7, 9);\nconst look = rng.pick(['fan', 'droop']);",
+    promptNotes:
+      'Use instead of Math.random. Give each varied feature its own fork(label) so adding a draw elsewhere does not shift it; a variant that reuses the seed and label replays the stream.',
   },
 ];
 

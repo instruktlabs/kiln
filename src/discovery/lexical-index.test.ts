@@ -100,6 +100,25 @@ test('foliage wording reaches the repetition and card helpers', async () => {
   expect(await top('many identical leaves instanced')).toContain('operation:repeatInstances');
 });
 
+test('seeded random wording reaches the seededRandom helper', async () => {
+  // #244: "seeded random" returned only proceduralTexture; programs had no seeded generator.
+  const run = createDiscoveryService(
+    entries,
+    createLexicalDiscoveryIndex(entries),
+    async () => ({}),
+  );
+  const top = async (query: string) =>
+    (await run({ query })).entries.slice(0, 3).map((entry) => entry.id);
+  for (const query of [
+    'seeded random',
+    'random numbers',
+    'reproducible random variants',
+    'deterministic random generator',
+  ])
+    expect(await top(query)).toContain('operation:seededRandom');
+  expect((await run({ ids: ['seededRandom'] })).text).toContain('fork(label)');
+});
+
 test('everyday object words reach the reviewed structure and material entries', async () => {
   // Dogfood run C (C-A2): "bench" found nothing and "cast iron" expanded to cost/caster.
   const run = createDiscoveryService(

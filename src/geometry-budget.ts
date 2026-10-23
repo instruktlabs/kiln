@@ -7,6 +7,8 @@ export const GEOMETRY_ALLOCATION_LIMITS = Object.freeze({
   repeatedMeshes: 10_000,
   // repeatAlongCurve merge: vertices in the one merged geometry it returns.
   curveRepeatVertices: 262_144,
+  // simplifyGeometry: input triangles per call.
+  simplifyTriangles: 1_000_000,
   primitiveSegments: 4096,
   primitiveGridVertices: 262_144,
   // xatlasjs 0.2 returns Uint16 indices and source-vertex correspondence.

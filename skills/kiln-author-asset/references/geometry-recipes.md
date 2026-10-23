@@ -430,6 +430,11 @@ const tiers = [0, 1, 2].map((lod) => {
 defineLod(tiers, { screenCoverage: [coverage(2.5, 60), coverage(2.5, 250), coverage(2.5, 1500)] });
 ```
 
+To derive a lower tier from a finished part instead, call
+`await simplifyGeometry(geometry, { ratio: 0.25 })` per part and place the result in
+the tier. It returns new geometry, keeps groups, seams and open borders, and records
+the achieved ratio and error on `userData.kilnSimplify`; it never runs on its own.
+
 `screenCoverage[i]` is the smallest fraction of the screen, 0 to 1, at which level
 `i` still draws; the values strictly decrease, the set is culled below the last
 one, and a last value of 0 never culls. Compute each set's values from the bounding

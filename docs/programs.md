@@ -140,9 +140,11 @@ These support the design; they do not prove one interface is best for every mode
 
 Source references avoid sending the program again. Build caching separately avoids
 running unchanged source again. The public tool registry reuses successful builds
-when the source, evaluator identity and evaluation options match. Packaged Node
-CLI/MCP runs can reuse builds on disk when the runtime bundle and installed dependency
-files have a verifiable identity. Source-development runs use a process-local cache.
+when the source, evaluator identity and evaluation options match. Source that reads
+`Math.random`, `Date` or other ambient inputs is never reused; draw from the
+`seededRandom(seed)` sandbox global instead, whose `fork(label)` streams let a variant
+replay a parent's draws. Packaged Node CLI/MCP runs can reuse builds on disk when
+the runtime bundle and installed dependency files have a verifiable identity. Source-development runs use a process-local cache.
 
 Camera changes can reuse geometry, but each image also depends on its renderer,
 camera and capture settings. A source reference alone never identifies a rendered

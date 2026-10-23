@@ -1322,3 +1322,15 @@ export async function createMaterialRecordV2(
   await verifyMaterialRecord(record, { materials: [...records, record] });
   return record;
 }
+
+export {
+  createMaterialMapExport,
+  exportMaterialMaps,
+  MATERIAL_MAP_EXPORT_LIMITS,
+  MATERIAL_MAP_RESAMPLE_FILTER,
+  type MaterialMapExportMapV1,
+  type MaterialMapExportOptionsV1,
+  type MaterialMapExportResultV1,
+  type MaterialMapExportSidecarV1,
+  type MaterialMapExportV1,
+} from './material-map-export-node';

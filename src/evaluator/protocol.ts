@@ -455,6 +455,7 @@ export function decodeEvaluatorResultV2(
           value.error.diagnostic !== 'PARAMETRIC_PERIODIC_ENDPOINT' &&
           value.error.diagnostic !== 'PROFILE_HOLES_UNSUPPORTED' &&
           value.error.diagnostic !== 'PROFILE_BEVEL_COLLAPSE' &&
+          value.error.diagnostic !== 'PROFILE_SOLID_FAILED' &&
           value.error.diagnostic !== 'PROFILE_CORRESPONDENCE_COLLAPSE' &&
           value.error.diagnostic !== 'REMOVED_HELPER' &&
           value.error.diagnostic !== 'TUBE_RADIUS' &&

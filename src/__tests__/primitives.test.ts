@@ -918,6 +918,7 @@ describe('buildSandboxGlobals', () => {
       'countMaterials',
       'getJointNames',
       'materialBudgetAdvisory',
+      'seededRandom',
       'Math',
       'console',
     ];

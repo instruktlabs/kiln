@@ -118,6 +118,65 @@ Physical repeat scale is recorded metadata. The author still chooses UV scale ap
 mesh. Repeating a one-meter material across a ten-meter wall requires corresponding UV repeats;
 recording meters does not silently change geometry or UVs.
 
+## Export maps as tiling textures
+
+A destination that takes plain images, such as a game engine's terrain layer, can export one
+saved revision's maps as standalone PNGs:
+
+```sh
+node kiln.mjs material export coarse-soil RETURNED_REVISION --maps soil-maps --size 1024 --repeat 4
+```
+
+The command writes into the named directory, creating it when missing:
+
+- `<id>.<slot>.png` for each map, `--size` pixels square;
+- `<id>.preview.png`, the material on a lit plane repeated `--tiles` × `--tiles` (default 3,
+  at most 8);
+- `<id>.maps.json`, the `kiln.material-maps.v1` sidecar.
+
+`--repeat` is the real-world edge of one tile in metres. It defaults to the recorded
+`physicalSizeMeters` when that is square, and is required otherwise. Sizes run from 4 to 4096.
+A map already at the requested size is copied byte for byte (`method: "copy"`). A V2 layer
+recipe without a height derivation samples UV space, so it is recompiled at a power-of-two size
+up to 1024 (`"recipe"`, with the new recipe hash). Every other map is resampled (`"resampled"`)
+with a separable Catmull-Rom cubic that follows the map's wrap mode, so a repeating tile stays
+seamless; sRGB maps filter in linear light and normal maps are renormalized. Resampling is
+deterministic for a given engine and encoder.
+
+The sidecar names the source material and revision, its name, parameters and source/license
+records; the size and repeat; and, for each map, its slot, file, usage, colour space (`srgb` for
+base colour and emissive, `linear` data for the rest), normal convention or channel packing,
+pixel size, byte count, `sha256`, method, wrap and the stored map it came from. Packed maps keep
+R=occlusion, G=roughness, B=metallic; split channels in the destination if it wants them apart.
+
+The preview follows the same route as `kiln_render`: the configured GPU renderer (`--render
+auto|cpu|gpu`, default `KILN_RENDER` or auto) through the render port, else the CPU raster. Its
+`preview.rendererId` and `preview.viewFidelity` record which one drew it. A CPU preview has
+`materialFaithful: false` and shows the plane's geometry, not the material; judge the material
+only from a `materialFaithful: true` preview. Maps larger than 1024 pixels are resampled to 1024
+for the preview plane only (`preview.mapSize`).
+
+Every file must be new. If one already exists the export stops and removes the files it had
+already written. `--out` keeps writing the portable JSON payload, and `--maps` and `--out` cannot
+be combined. Terrain-layer schemas, blend masks and destination tints belong to the destination,
+not to this export. Hosts call the same export from TypeScript:
+
+```ts
+import { FileMaterialLibrary, exportMaterialMaps } from '@instruktlabs/kiln/material-library/node';
+
+const library = new FileMaterialLibrary('/workspace/.kiln/materials');
+const record = await library.read('coarse-soil', revisionId);
+const { sidecar, files } = await exportMaterialMaps(record, {
+  outDir: 'soil-maps',
+  size: 1024,
+  repeatMeters: 4,
+  // Optional: a PbrRenderPort for a material-faithful preview; without one the preview is CPU.
+  // viewRenderPort, viewRenderTimeoutMs, viewRenderRequired
+});
+```
+
+`createMaterialMapExport` returns the same files in memory without writing them.
+
 ## Host API and portable export
 
 ```ts

@@ -53,6 +53,55 @@ does not publish a package.
   positions. With float positions, `KHR_mesh_quantization` is still declared for the
   quantized normals and texture coordinates
   ([#197](https://github.com/instruktlabs/kiln/issues/197)).
+- Add the `seededRandom(seed)` sandbox global for reproducible random variation
+  ([#244](https://github.com/instruktlabs/kiln/issues/244)). It takes a finite number or a
+  non-empty string and returns `next()`, `range(min, max)`, `int(min, max)` (both ends
+  included, like `THREE.MathUtils.randInt`), `pick(array)` and `fork(label)`, an
+  independent stream derived from the seed and label rather than from how many draws were
+  made, so a variant can replay a parent's draws. Seeds are hashed with FNV-1a and drawn
+  with mulberry32, the generator scene layout and material presets already used. Builds
+  that use it stay cacheable; `Math.random` still bypasses build reuse. Discovery finds it
+  for "seeded random".
+- Add `simplifyGeometry` to derive a lower-detail copy of a part for an LOD tier
+  ([#243](https://github.com/instruktlabs/kiln/issues/243)).
+  `await simplifyGeometry(geometry, { ratio })` (or `{ targetTriangles }`, with optional
+  `maxError` and `lockBorder`) uses the pinned meshoptimizer simplifier and returns new
+  geometry without changing the input. Material groups are simplified separately with
+  their boundaries locked, UV and normal seams and open borders hold, and surviving
+  vertices keep their exact attributes. `userData.kilnSimplify` records the triangle
+  counts, achieved ratio and the simplifier's error; a missed target is a
+  `SIMPLIFY_TARGET_NOT_REACHED` build note. It never runs implicitly or to meet a budget.
+  The `defineLod` contract no longer says Kiln simplifies no geometry and points to it.
+- Name profile solid failures across the sandbox ([#178](https://github.com/instruktlabs/kiln/issues/178)).
+  An `extrudeProfile` or `revolveProfile` call whose outline, holes or bevel cannot become
+  a solid now rejects with the closed cause `PROFILE_SOLID_FAILED` and engine-written repair
+  advice, instead of the bare generic rejection; out-of-scale coordinates and holes that
+  consume the outline are two reduced cases. No library message crosses the boundary, and
+  `PROFILE_BEVEL_COLLAPSE` still names an over-large bevel. The generic rejection now says
+  that `kiln_validate` checks syntax and static rules but cannot see execution-time
+  failures, and points to reproducing them with `kiln_render`.
+- Map cylindrical `projectUV` poles and name profile solid failures
+  ([#178](https://github.com/instruktlabs/kiln/issues/178)). A bevelled `revolveProfile`
+  whose outline touches the axis ends in sloped triangles meeting on it; cylindrical
+  `projectUV` gave that pole no defined angle, so the mesh smeared U or, at some segment
+  counts, threw and rejected the whole program. A corner on the axis now takes the mean U of
+  the other corners of its triangle; cone apexes are treated the same way. Separately, an `extrudeProfile` or
+  `revolveProfile` outline that cannot become a solid (for example out-of-scale coordinates,
+  or holes that consume it) now rejects with the closed cause `PROFILE_SOLID_FAILED` and
+  engine-written repair advice instead of the bare generic rejection; no library message
+  crosses the boundary, and `PROFILE_BEVEL_COLLAPSE` still names an over-large bevel. The
+  generic rejection now says that `kiln_validate` checks syntax and static rules but cannot
+  see execution-time failures, and points to reproducing them with `kiln_render`.
+- Export a saved material revision's maps as tiling textures with a planar preview
+  ([#246](https://github.com/instruktlabs/kiln/issues/246)). `material export <id> <revision>
+  --maps <dir> --size <px> [--repeat <metres>] [--tiles <n>]` writes one PNG per map at the
+  stated size, a lit `tiles` × `tiles` preview and a `kiln.material-maps.v1` sidecar naming
+  each map's slot, colour space, size, repeat, source revision and `sha256`. A V2 layer
+  recipe is recompiled at the new size; other maps resample with a wrapped Catmull-Rom filter.
+  The preview uses the GPU render port when one is configured and records its renderer and
+  `viewFidelity`, so a CPU preview is never read as material evidence. Existing files are
+  never replaced. `exportMaterialMaps` and `createMaterialMapExport` from
+  `material-library/node` do the same for hosts; `--out` and MCP are unchanged.
 
 ## 1.4.0 (2026-10-23)
 

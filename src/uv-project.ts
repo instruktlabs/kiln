@@ -21,6 +21,11 @@ export interface ProjectUVOptions {
 
 const MAX_CORNERS = 2_000_000;
 const MAX_ATTRIBUTE_BYTES = 128 * 1024 * 1024;
+/**
+ * Cylindrical corners within this fraction of the largest radius lie on the axis (poles).
+ * Relative, so Float32 and frame-rebasing noise on the axis of any size still counts.
+ */
+const POLE_RADIUS_FRACTION = 1e-6;
 
 export function projectUV(
   geometry: THREE.BufferGeometry,
@@ -134,9 +139,12 @@ export function projectUV(
   const wrap = (angle: number) => ((angle % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
   // U per unit of angular fraction: 1 when fitted; metric arc length at the largest radius,
   // rounded to whole tiles on a full wrap so the seam meets itself.
+  const radius = cylinder
+    ? points.reduce((max, point) => Math.max(max, Math.hypot(point.x, point.z)), 0)
+    : 0;
+  const poleRadius = radius * POLE_RADIUS_FRACTION;
   let uScale = 1;
   if (metric !== undefined) {
-    const radius = points.reduce((max, point) => Math.max(max, Math.hypot(point.x, point.z)), 0);
     uScale = fullWrap
       ? Math.max(1, Math.round((2 * Math.PI * radius) / metric))
       : (sweep * radius) / metric;
@@ -154,7 +162,13 @@ export function projectUV(
     const cap = cylinder && options.caps !== 'side' && Math.abs(normal.y) >= 1 - 1e-6;
     let pairs: [number, number][];
     if (cylinder && !cap) {
-      const angles = triangle.map((point) => {
+      // A corner on the axis (a pole: a cone apex, or the centre of a revolved profile
+      // that touches x = 0) has no angle of its own. It takes the mean of the other corners'
+      // unwrapped angles below, as sphere and cylinder UV generators treat poles. Corners are
+      // already split per triangle, so each fan triangle gets its own pole U (#178).
+      const poles = triangle.map((point) => Math.hypot(point.x, point.z) <= poleRadius);
+      const angles = triangle.map((point, j) => {
+        if (poles[j]) return 0;
         let angle = wrap(Math.atan2(point.z, point.x) - start);
         // Float32 positions and frame rebasing introduce angular boundary roundoff.
         if (angle > 2 * Math.PI - 1e-6) angle = 0;
@@ -164,12 +178,19 @@ export function projectUV(
           );
         return (fullWrap ? angle : Math.min(angle, sweep)) / sweep;
       });
-      if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5)
-        for (let j = 0; j < 3; j++) if (angles[j]! < 0.5) angles[j]! += 1;
-      if (fullWrap && Math.max(...angles) - Math.min(...angles) > 0.5 + 1e-6)
+      const sided = [0, 1, 2].filter((j) => !poles[j]);
+      const span = () =>
+        sided.length
+          ? Math.max(...sided.map((j) => angles[j]!)) - Math.min(...sided.map((j) => angles[j]!))
+          : 0;
+      if (fullWrap && span() > 0.5) for (const j of sided) if (angles[j]! < 0.5) angles[j]! += 1;
+      if (fullWrap && span() > 0.5 + 1e-6)
         throw new Error(
           'projectUV: side triangle spans more than half a revolution; add profile segments to resolve the mapping.',
         );
+      // A triangle lying entirely on the axis is degenerate: every corner takes U 0.
+      const pole = sided.length ? sided.reduce((sum, j) => sum + angles[j]!, 0) / sided.length : 0;
+      for (let j = 0; j < 3; j++) if (poles[j]) angles[j] = pole;
       pairs = triangle.map((point, j) => [angles[j]! * uScale, fit(point, 'y')]);
     } else if (cap) {
       pairs = triangle.map((point) => [fit(point, 'x'), fit(point, 'z')]);

@@ -61,6 +61,7 @@ import * as ops from './ops';
 import * as geometry from './geometry';
 import * as deform from './deform';
 import * as sweep from './sweep';
+import { simplifyGeometry } from './simplify';
 import { implicitSurface } from './implicit';
 import { catmullRomPath, metaballSurface, smoothOrganic, spiralPath, taperedTube } from './organic';
 import { smoothUnion, sphereInside } from './sdf';
@@ -73,6 +74,7 @@ export * from './geometry';
 import * as profile from './profile';
 import * as solids from './solids';
 import * as proceduralTextures from './procedural-texture';
+import { seededRandom } from './seeded-random';
 import * as textures from './textures';
 import { textureAtlas, remapUVToAtlas } from './texture-atlas';
 import type { TextureResolver } from './texture-resolver';
@@ -322,7 +324,7 @@ function assertPartArgs(name: unknown, geometry: unknown, material: unknown): vo
         'a function -- geometry helpers have to be CALLED, so boxGeo(1, 1, 1) rather than boxGeo';
     } else if (geometry instanceof Promise) {
       got =
-        'a Promise -- roundedBoxGeo, extrudeProfile and revolveProfile are async, ' +
+        'a Promise -- roundedBoxGeo, extrudeProfile, revolveProfile and simplifyGeometry are async, ' +
         'so await the helper and mark build() async';
     } else {
       got =
@@ -2422,6 +2424,8 @@ export function buildSandboxGlobals(
     mirror: wrap('mirror', ops.mirror),
     subdivide: wrap('subdivide', ops.subdivide),
     mergeVertices: wrap('mergeVertices', ops.mergeVertices),
+    // Explicit lower-detail copy (async: meshoptimizer WASM). Never implicit.
+    simplifyGeometry: wrap('simplifyGeometry', simplifyGeometry),
     curveToMesh: wrap('curveToMesh', ops.curveToMesh),
     pipeAlongPath: wrap('pipeAlongPath', ops.pipeAlongPath),
     lathe: wrap('lathe', ops.lathe),
@@ -2453,6 +2457,7 @@ export function buildSandboxGlobals(
     countMaterials: wrap('countMaterials', countMaterials),
     getJointNames: wrap('getJointNames', getJointNames),
     materialBudgetAdvisory: wrap('materialBudgetAdvisory', materialBudgetAdvisory),
+    seededRandom: wrap('seededRandom', seededRandom),
     // THREE namespace is exposed so agents can `new THREE.Mesh(geo, mat)`
     // as operands to CSG and other ops that expect Object3D inputs.
     THREE,
