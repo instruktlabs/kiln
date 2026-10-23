@@ -339,3 +339,28 @@ test('external textures write JSON glTF with content-addressed images that valid
   }
   expect([...new Set(requested)].sort()).toEqual(['wall.bin', ...uris].sort());
 });
+
+test('external textures combine with compression none: plain buffers, same content-addressed images', async () => {
+  const record = withMaterial(texturedRecord('a_plain', await texturedGlb()), brickMaterial());
+  const output = await exportAssetGlb(record, {
+    profile: 'runtime',
+    target: 'three',
+    compression: 'none',
+    textures: 'external',
+    gltfFileName: 'wall.gltf',
+    metadataFileName: 'wall.kiln-metadata.json',
+  });
+  if (output.profile !== 'runtime' || output.layout !== 'gltf') throw new Error('gltf layout');
+  const json = JSON.parse(new TextDecoder().decode(output.gltf.bytes));
+  expect(json.extensionsUsed ?? []).not.toContain('EXT_meshopt_compression');
+  expect(sidecar(output.metadata.bytes).delivery.compression).toEqual({ extension: 'none' });
+  expect(output.textures.map(({ bytes }) => sha(bytes))).toEqual([sha(BASE_PNG), sha(NORMAL_PNG)]);
+  const files = new Map(
+    [...output.buffers, ...output.textures].map(({ uri, bytes }) => [uri, bytes] as const),
+  );
+  const report = (await validateBytes(output.gltf.bytes, {
+    uri: 'wall.gltf',
+    externalResourceFunction: async (uri: string) => files.get(decodeURIComponent(uri))!,
+  })) as { issues: { numErrors: number } };
+  expect(report.issues.numErrors).toBe(0);
+});

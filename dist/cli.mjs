@@ -42411,6 +42411,9 @@ function decomposeDelta(before, after) {
   };
 }
 async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layout = {}) {
+  const compression = options.compression ?? "meshopt";
+  if (compression !== "meshopt" && compression !== "none")
+    throw new Error("Runtime three compression must be meshopt or none");
   const io = createGltfIO().registerDependencies({
     "meshopt.encoder": meshoptEncoder
   });
@@ -42433,7 +42436,8 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layou
     quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
     quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight
   }));
-  doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
+  if (compression === "meshopt")
+    doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({ method: EXTMeshoptCompression.EncoderMethod.QUANTIZE });
   const encodedSources = new Map;
   const ktx2 = await encodeKtx2(doc, options.ktx2Encoder, encodedSources);
   for (const node of doc.getRoot().listNodes()) {
@@ -42505,7 +42509,7 @@ async function deliverRuntimeThreeGlb(bytes, meshoptEncoder, options = {}, layou
     target: "three",
     extensionsUsed: [...json.extensionsUsed ?? []].sort(),
     extensionsRequired: [...json.extensionsRequired ?? []].sort(),
-    compression: { extension: "EXT_meshopt_compression", method: "quantize" },
+    compression: compression === "meshopt" ? { extension: "EXT_meshopt_compression", method: "quantize" } : { extension: "none" },
     quantization: {
       extension: "KHR_mesh_quantization",
       volume: "mesh",
@@ -42670,6 +42674,8 @@ async function exportAssetGlb(record, options = {}) {
     throw new Error("Unknown runtime export target");
   if (options.target !== undefined && profile !== "runtime")
     throw new Error("A runtime export target requires the runtime profile");
+  if (options.compression !== undefined && options.target !== "three")
+    throw new Error("Runtime compression requires the three runtime target");
   const textures = options.textures;
   if (textures !== undefined && textures !== "manifest" && textures !== "external")
     throw new Error("Unknown runtime texture option");
@@ -42721,7 +42727,10 @@ async function exportAssetGlb(record, options = {}) {
   };
   let base = bytes, baseJson = json, baseJsonEnd = jsonEnd, imageSources, gltf;
   if (options.target === "three") {
-    const derived = await deriveThree(writeGlbJson(bytes, jsonEnd, json), { ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {} }, textures === "external" ? { gltfBasename: gltfName.slice(0, -".gltf".length) } : {});
+    const derived = await deriveThree(writeGlbJson(bytes, jsonEnd, json), {
+      ...options.ktx2Encoder ? { ktx2Encoder: options.ktx2Encoder } : {},
+      ...options.compression ? { compression: options.compression } : {}
+    }, textures === "external" ? { gltfBasename: gltfName.slice(0, -".gltf".length) } : {});
     metadata.target = "three";
     metadata.delivery = derived.delivery;
     base = derived.glb;
@@ -54221,6 +54230,7 @@ async function assetMain(argv) {
     "format",
     "profile",
     "target",
+    "compression",
     "textures",
     "port",
     "render",
@@ -54428,6 +54438,11 @@ async function assetMain(argv) {
         throw new Error("Unknown export target");
       if (target !== undefined && profile !== "runtime")
         throw new Error("--target requires --profile runtime");
+      const compression = flags.compression;
+      if (compression !== undefined && compression !== "meshopt" && compression !== "none")
+        throw new Error("--compression must be meshopt or none");
+      if (compression !== undefined && target !== "three")
+        throw new Error("--compression requires --target three");
       const textures = flags.textures;
       if (textures !== undefined && textures !== "manifest" && textures !== "external")
         throw new Error("Unknown --textures value; use manifest or external");
@@ -54459,6 +54474,7 @@ async function assetMain(argv) {
           profile,
           metadataFileName,
           ...target ? { target } : {},
+          ...compression ? { compression } : {},
           ...textures ? { textures } : {},
           ...gltfLayout ? { gltfFileName: basename2(destination) } : {},
           ...flags.ktx2 ? { ktx2Encoder: await createKtx2Encoder2() } : {}
@@ -54516,6 +54532,7 @@ async function assetMain(argv) {
           revisionId,
           profile,
           ...target ? { target } : {},
+          ...compression ? { compression } : {},
           format,
           ...ktx2Receipt ? { ktx2: ktx2Receipt } : {},
           ...format !== "source" ? {
@@ -54640,6 +54657,8 @@ ${SAVE_LINES}
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
        [--target three]   runtime only: meshopt + quantization, repeatInstances GPU
                           instancing; sidecar states node scales; KTX2 skipped unless --ktx2
+       [--compression meshopt|none]   with --target three: none writes plain buffers
+                          for loaders without a Meshopt decoder (default meshopt)
        [--ktx2]   with --target three: KTX2 through the optional ktx2-encoder@0.6.0 peer
                           (npm install ktx2-encoder@0.6.0), ETC1S colour, UASTC data maps
        [--textures manifest]   runtime only: the sidecar names each image's exact bytes
@@ -57012,7 +57031,7 @@ ${USAGE3}`);
   const def = createKilnProgramToolRegistry({ programStore: store }).find((d) => d.name === "kiln_validate");
   if (!def)
     throw new Error("kiln_validate is missing from the MCP tool surface");
-  const result = await def.run(isRef ? { programRef: input } : { code: await readFile13(resolvePath(input), "utf8") });
+  const result = await def.run(isRef ? { programRef: input } : { code: await readFile15(resolvePath(input), "utf8") });
   if (args.json)
     console.log(JSON.stringify(result));
   else {
