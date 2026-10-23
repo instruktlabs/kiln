@@ -14,8 +14,8 @@
       "scene": "tidemark",
       "name": "Tidemark Island",
       "description": "A quiet tropical island with open beaches, layered jungle, a thatched shelter and moving wildlife, built in Holodeck around the Cove.",
-      "available": false,
-      "status": "Owner review pending",
+      "available": true,
+      "status": "Available",
       "assetCount": 23,
       "source": {
         "kind": "holodeck-example",
@@ -74,8 +74,8 @@
       "scene": "courtyard",
       "name": "Courtyard",
       "description": "A walled limestone plaza beside the Cove, with a tiered fountain, three statues, planted beds, benches and lanterns.",
-      "available": false,
-      "status": "Owner review pending",
+      "available": true,
+      "status": "Available",
       "assetCount": 32,
       "source": {
         "kind": "holodeck-world",
@@ -140,8 +140,8 @@
       "scene": "cove",
       "name": "Cove",
       "description": "Holodeck’s starter Cove after its quality pass: a sheltered platform with a linen canopy, cushions, a hearth table, fern planters, a rug, a lamp and a mood board.",
-      "available": false,
-      "status": "Owner review pending",
+      "available": true,
+      "status": "Available",
       "assetCount": 8,
       "source": {
         "kind": "holodeck-modules",
@@ -406,8 +406,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -500,8 +500,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -594,8 +594,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -690,8 +690,8 @@
         ]
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -784,8 +784,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -878,8 +878,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -972,8 +972,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1066,8 +1066,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1145,8 +1145,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1223,8 +1223,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1301,8 +1301,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1379,8 +1379,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1457,8 +1457,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1536,8 +1536,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1614,8 +1614,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1693,8 +1693,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1772,8 +1772,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1851,8 +1851,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -1929,8 +1929,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2007,8 +2007,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2085,8 +2085,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2163,8 +2163,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2242,8 +2242,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2320,8 +2320,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2398,8 +2398,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2476,8 +2476,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2554,8 +2554,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2632,8 +2632,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2710,8 +2710,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2789,8 +2789,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2868,8 +2868,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -2947,8 +2947,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3026,8 +3026,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3105,8 +3105,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3184,8 +3184,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3263,8 +3263,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3341,8 +3341,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3420,8 +3420,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3499,8 +3499,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3578,8 +3578,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3657,8 +3657,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3736,8 +3736,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3815,8 +3815,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3894,8 +3894,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -3972,8 +3972,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4050,8 +4050,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },
@@ -4128,8 +4128,8 @@
         "extensions": []
       },
       "review": {
-        "ownerAccepted": false,
-        "status": "awaiting-owner-review"
+        "ownerAccepted": true,
+        "status": "accepted"
       },
       "historyScope": "selected-only"
     },

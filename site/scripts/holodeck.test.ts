@@ -11,7 +11,7 @@ import rigPosters from '../src/data/rig-posters.json';
 import { HOLODECK_SITE } from '../src/lib/config';
 import { buildGallery } from '../src/lib/gallery';
 import { holodeckScenes, holodeckWorldUrl } from '../src/lib/holodeck';
-import { HOLODECK_ASSETS, HOLODECK_PACKS, holodeckSlug } from './holodeck-spec.mjs';
+import { HOLODECK_APPROVAL, HOLODECK_ASSETS, HOLODECK_PACKS, holodeckApproved, holodeckSlug } from './holodeck-spec.mjs';
 import { holodeckPrefix } from './stage-holodeck.mjs';
 import { ASSET_BASE } from './mirror-core.mjs';
 import { applyRigPosters } from './rig-posters-core.mjs';
@@ -60,7 +60,19 @@ test('assets that use saved materials carry their frozen closure into the editab
   for (const slug of closures) expect(slug.startsWith('crescent-')).toBe(true);
 });
 
-test('catalog assets name the selected revisions and stay awaiting owner review under CC0', async () => {
+test('owner approval covers exact revisions, and a pack is available only when every asset it lists is approved', () => {
+  const approved = catalog.assets.filter((asset) => asset.review.ownerAccepted).map((asset) => asset.slug).sort();
+  expect(approved).toEqual(Object.keys(HOLODECK_APPROVAL.revisions).sort());
+  expect(approved).toHaveLength(47);
+  for (const asset of catalog.assets) {
+    expect(asset.review).toEqual(holodeckApproved(asset.slug, asset.revisionId) ? { ownerAccepted: true, status: 'accepted' } : { ownerAccepted: false, status: 'awaiting-owner-review' });
+    if (asset.slug.startsWith('crescent-')) expect(asset.review.ownerAccepted).toBe(false);
+  }
+  expect(holodeckApproved('cove-hearth', 'r_' + '0'.repeat(32))).toBe(false);
+  expect(catalog.packs.map((pack) => [pack.id, pack.available])).toEqual([['holodeck-tidemark', true], ['holodeck-courtyard', true], ['holodeck-cove', true], ['holodeck-crescent-cove', false]]);
+});
+
+test('catalog assets name the selected revisions under CC0', async () => {
   expect(selection.licence).toBe('CC0-1.0');
   expect(catalog.licence.spdx).toBe('CC0-1.0');
   for (const asset of catalog.assets) {
@@ -68,10 +80,8 @@ test('catalog assets name the selected revisions and stay awaiting owner review 
     expect(asset.assetId).toBe(chosen.assetId);
     expect(asset.revisionId).toBe(chosen.revisionId);
     expect(asset.sourceSha256).toBe(chosen.source.sha256);
-    expect(asset.review).toEqual({ ownerAccepted: false, status: 'awaiting-owner-review' });
     expect(sha256(await readFile(join(ROOT, asset.sourcePath)))).toBe(asset.sourceSha256);
   }
-  for (const pack of catalog.packs) expect(pack.available).toBe(false);
 });
 
 test('every staged download and viewer model is pinned for the asset host at its own URL', () => {

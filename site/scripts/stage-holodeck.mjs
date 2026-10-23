@@ -7,7 +7,7 @@ import { buildDeliveryArchive, isSavedMaterialDependency, revisionBundle } from 
 import { readJson, writeJson } from './media-pins.mjs';
 import { ASSET_BASE, assetPath, hashBytes, verifyArchive, verifyBytes } from './mirror-core.mjs';
 import { applyRigPosters } from './rig-posters-core.mjs';
-import { HOLODECK_ASSETS, HOLODECK_ID, HOLODECK_PACKS, HOLODECK_PLANNED } from './holodeck-spec.mjs';
+import { HOLODECK_ASSETS, HOLODECK_ID, HOLODECK_PACKS, HOLODECK_PLANNED, holodeckApproved } from './holodeck-spec.mjs';
 import { materialClosure, metricsOf, verifyRuntimeProfile } from './stage-cabin-woods.mjs';
 
 /**
@@ -149,7 +149,7 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
         editableDownload: add(`editable/${slug}.zip`, editable),
         poster: null,
         metrics: metricsOf(canonical, manifest),
-        review: { ownerAccepted: false, status: 'awaiting-owner-review' },
+        review: holodeckApproved(slug, manifest.revisionId) ? { ownerAccepted: true, status: 'accepted' } : { ownerAccepted: false, status: 'awaiting-owner-review' },
         historyScope: 'selected-only',
       },
     };
@@ -169,9 +169,10 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
       runtimeMembers[`models/${member.asset.slug}.kiln-metadata.json`] = member.metadata;
       editableMembers[`revisions/${member.identity}.zip`] = member.editable;
     }
+    const approved = members.every((member) => member.asset.review.ownerAccepted);
     packs.push({
       id: spec.id, scene: spec.scene, name: spec.name, description: spec.description,
-      available: false, status: 'Owner review pending', assetCount: members.length,
+      available: approved, status: approved ? 'Available' : 'Owner review pending', assetCount: members.length,
       source: chosen.source, assets: chosen.assets,
       ...(chosen.sceneStillPlacesEarlier ? { sceneStillPlacesEarlier: chosen.sceneStillPlacesEarlier } : {}),
       downloads: [

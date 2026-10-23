@@ -41,6 +41,67 @@ export const HOLODECK_PACKS = [
 /** Scenes whose packs are not built yet. Their pages say so; nothing is staged for them. */
 export const HOLODECK_PLANNED = [];
 
+/**
+ * Owner approval, by gallery slug and the exact revision approved. On 2026-10-23 the owner approved the 47 staged
+ * Courtyard, Cove and Tidemark cards as staged, and their packs for delivery. The approval covers these revisions
+ * only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
+ * when every asset it lists is approved.
+ */
+export const HOLODECK_APPROVAL = {
+  recordedAt: '2026-10-23',
+  revisions: {
+    'cove-structure': 'r_2387ce274123402dbdafd818e6fb0043',
+    'cove-canopy': 'r_df0485467228414780cfa44c0f2e32ad',
+    'cove-seating': 'r_6602fd828a5341eeaa0877fc58289960',
+    'cove-hearth': 'r_5ef43760979043d48f358fe2932147dc',
+    'cove-planting': 'r_cdb8552ccdde43f28d3995b2a5a30d25',
+    'cove-rug': 'r_651bc2867976426996191865ea931163',
+    'cove-lamp': 'r_3b14d66959f942c887c5550f60d6d8ce',
+    'cove-moodboard': 'r_aedc5a07c6d34c1fb19f5cf959ce679c',
+    'island-palm': 'r_9301a174823a4f109e19e37547295f61',
+    'island-shrub': 'r_4803f98bf0ce470c8932418294232ef7',
+    'island-grass': 'r_0fbd508d69a94af591440fffccd7a091',
+    'island-shore': 'r_1ed20bc9bbd440e0a7d61fdd3bfa6520',
+    'island-hut-frame': 'r_17b3c37ecbd540d9adeffb29ebc1bc81',
+    'island-hut-roof': 'r_a534f55c922e48b19818dfc995437c5c',
+    'island-hut-furnishings': 'r_8ca5cf4a3b4b4a5583462eeb16338936',
+    'island-resident': 'r_7fd4e42104b14771a9108574848de5fd',
+    'island-bird': 'r_f5696d892ce7485dafa2bbfd07376b13',
+    'island-crab': 'r_1ead8326320c4a988a065b74c5daebd2',
+    'jungle-sapling': 'r_28393641e10c49cd9787130e56d0cfd8',
+    'jungle-fern': 'r_ca0d0037051040c8b5e5ca1143d92ebd',
+    'jungle-understory': 'r_8435d0bc3b5a4cf590ecc61e37062613',
+    'jungle-groundcover': 'r_66e544c6b8bf4c7f873421dd8b639195',
+    'coastal-flybird': 'r_d9dddb69593c4e8fb4cc69d542bc614a',
+    'pave-field-a': 'r_eb58fbb4efa34635bd6b7ca27e1652ab',
+    'pave-field-b': 'r_39105d3e5294411da8ba0d9f4a831475',
+    'pave-curb': 'r_9edce7ef69204e60851b4d3c6bd453d6',
+    'pave-curb-corner': 'r_f1c84b5613d0469bb7b2cf81be9d00ee',
+    'pave-step': 'r_19ccefab21fb4b6abd25f3750901466d',
+    'plaza-fountain': 'r_5a5c5ed84a9d4668a05016e109861d1e',
+    'fountain-cascade': 'r_df8d28bab94a46b9bec2128a7f38b22b',
+    'statue-figure': 'r_6e91cd455ff24fbfb24c7dcb09029138',
+    'statue-monolith': 'r_b4651a7593bd44e5a8b9c45be31dbec9',
+    'statue-bronze': 'r_0e3ff4e9f6f74ac8b548f2aa6bb291ec',
+    'tree-plane': 'r_9803c463ca244a27bc28b46fd194d4dc',
+    'tree-cypress': 'r_11a87669343142ee9a9cf052239f0206',
+    'tree-olive': 'r_f88d7d2fb5c2496ebf33ea2859e1d570',
+    'shrub-box': 'r_c787a2acfc664ee2829a88bec41fa82f',
+    'plant-lavender': 'r_804d9b0931644ad9a6166e9932467110',
+    'bench-stone': 'r_cf24003d8a2046358c7b16ad178084bf',
+    'bench-park': 'r_7930f6bf31f04c37b4ca531cd441c57f',
+    'planter-square': 'r_67d49bebdd2f4b0f91dce4e6fdaaf66b',
+    'planter-urn': 'r_ef304c3551e54050a26024a58eb8d4fd',
+    'lamp-post': 'r_7aa5f13af3ff439281cf3772b8350680',
+    'lamp-bollard': 'r_3649775fe6ce475a90e6056d0efe5eb4',
+    'wall-segment': 'r_32e8228756ac4367bb8783e522e10e27',
+    'wall-pier': 'r_100777af4e4247c18c3eb70df5e97a82',
+    'gate-pier': 'r_2f7983fabd9249ba819388b106eda57f',
+  },
+};
+/** Whether the owner approved this exact revision of a card. */
+export const holodeckApproved = (slug, revisionId) => HOLODECK_APPROVAL.revisions[slug] === revisionId;
+
 const COVE = 'Cove modules';
 const ISLAND_PLANTS = 'Island plants';
 const ISLAND_SHELTER = 'Island shelter and shore';
