@@ -7,6 +7,8 @@ does not publish a package.
 
 ## Unreleased
 
+## 1.4.0 (unpublished)
+
 - Encode KTX2 through an optional `ktx2-encoder` peer
   ([#201](https://github.com/instruktlabs/kiln/issues/201)). `export --target three --ktx2`
   (or `ktx2Encoder: await createKtx2Encoder()`) uses ETC1S for base colour and emissive and
@@ -123,12 +125,6 @@ does not publish a package.
   `GEO_PART_EXTERNAL_SUPPORT` naming the declaration. Undeclared parts, parts at another
   height and every other disposition are unchanged. The declaration is covered by the policy
   hash.
-- Add natural material presets `beach-sand`, `coral-limestone`, `coral-limestone-wet`,
-  `palm-frond`, `driftwood` and `thatch`, tagged by family (`ground`, `rock`, `foliage`,
-  `wood`, `fiber`). `palm-frond` is an alpha-tested, double-sided cutout saved as a
-  `schemaVersion:2` record; `createMaterialPresetDraftAny` returns any preset's draft, and
-  preset summaries report `recordSchemaVersion`. The docs list the presets as a table that a
-  test keeps in step with the catalog (#210).
 - Add an opt-in host validation profile to requirements ([#208](https://github.com/instruktlabs/kiln/issues/208)).
   A host binding can carry `requirements.validation`, a closed `kiln.validation-profile.v1`
   statement that selects final GLB nodes by name and checks primitive counts, required
