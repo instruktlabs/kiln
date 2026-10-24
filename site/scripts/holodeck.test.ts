@@ -39,14 +39,14 @@ test('each scene pack holds every placed Kiln asset once, at its final version',
 test('scenes list the Cove modules at their final revision, and say when the walkable scene places an earlier one', () => {
   const tidemark = selection.packs['holodeck-tidemark'].source, cove = selection.packs['holodeck-cove'].source;
   expect(tidemark).toMatchObject({ kind: 'holodeck-example', path: 'examples/tidemark', commit: cove.commit });
-  expect(selection.packs['holodeck-crescent-cove'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/crescent-cove', sourceRevision: 15 });
+  expect(selection.packs['holodeck-crescent-cove'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/crescent-cove', sourceRevision: 16 });
   for (const slug of selection.packs['holodeck-cove'].assets) {
     const record = selection.assets[slug as keyof typeof selection.assets];
     expect(record.placements.map((placement) => placement.pack)).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove']);
   }
   for (const pack of catalog.packs) {
     const earlier = (pack as { sceneStillPlacesEarlier?: { slug: string; placedRevisionId: string; finalRevisionId: string }[] }).sceneStillPlacesEarlier ?? [];
-    expect(earlier.map((entry) => entry.slug).sort()).toEqual(pack.id === 'holodeck-crescent-cove' ? selection.packs['holodeck-cove'].assets.slice().sort() : []);
+    expect(earlier.map((entry) => entry.slug).sort()).toEqual([]);
     for (const entry of earlier) {
       expect(catalog.assets.find((candidate) => candidate.slug === entry.slug)?.revisionId).toBe(entry.finalRevisionId);
       expect(entry.placedRevisionId).not.toBe(entry.finalRevisionId);

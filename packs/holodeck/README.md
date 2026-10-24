@@ -9,14 +9,13 @@ addresses are configured in one place, [`site/src/data/holodeck-worlds.json`](..
 | `holodeck-tidemark` | Holodeck's bundled `examples/tidemark` (commit recorded in `selection.json`), the walkable Tidemark Island | 23 |
 | `holodeck-courtyard` | Courtyard world, revision 8 | 32 |
 | `holodeck-cove` | Holodeck's Cove modules at the same commit, the Cove quality pass | 8 |
-| `holodeck-crescent-cove` | Holodeck's bundled `examples/crescent-cove` (commit recorded in `selection.json`), the tropical-island world at revision 15 | 49 |
+| `holodeck-crescent-cove` | Holodeck's bundled `examples/crescent-cove` (commit recorded in `selection.json`), the tropical-island world at revision 16 | 49 |
 
-Packs deliver final versions only: one gallery page and one download per asset. Every scene
-lists the eight Cove modules at their quality-pass revisions, so each Cove module has one page
-shared by the four packs. Tidemark, the Courtyard and the Cove place those revisions. Crescent
-Cove still places the earlier ones: `selection.json` records each under
-`sceneStillPlacesEarlier`, its pack and module pages say so, and the selection checks that every
-final revision descends from the revision the scene places. Holodeck's static site exports leave
+Packs deliver final versions only: one gallery page and one download per asset. All four scenes
+place the eight Cove modules at their quality-pass revisions, so each Cove module has one page
+shared by the four packs. If a scene ever places an earlier revision, the pack lists the final
+one instead: `selection.json` records it under `sceneStillPlacesEarlier`, the pack and module
+pages say so, and the selection checks that the final revision descends from the placed one. Holodeck's static site exports leave
 the Cove mood board out of the walkable scenes, but the worlds place it, so the packs keep it.
 Each download's `delivery.json` lists the parent of every revision under `omittedParents`:
 earlier revisions are left out by choice, not missing.

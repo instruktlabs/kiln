@@ -9,7 +9,7 @@
       "source": {
         "kind": "holodeck-example",
         "ref": "main",
-        "commit": "e8e54551a09d8324f78b26593a7b3a5ac4711465",
+        "commit": "06a37b45c122c72f045c1b55ff031adcffcb678b",
         "path": "examples/tidemark",
         "sourceRevision": 8,
         "worldSha256": "bda05abacf0c445e822a4070506284fef90bf77f81c45c096932c497b2c46c80"
@@ -87,7 +87,7 @@
       "source": {
         "kind": "holodeck-modules",
         "ref": "main",
-        "commit": "e8e54551a09d8324f78b26593a7b3a5ac4711465",
+        "commit": "06a37b45c122c72f045c1b55ff031adcffcb678b",
         "files": "assets/cove/modules/*/provenance.json, public/assets/cove-modules/*.glb"
       },
       "assets": [
@@ -105,11 +105,11 @@
       "scene": "crescent-cove",
       "source": {
         "kind": "holodeck-example",
-        "ref": "fbb5827",
-        "commit": "fbb58272779f0d417fbb899d58d19414e691b71d",
+        "ref": "0675bf89683cc5a9458a39dfdd47eccfc63b3e28",
+        "commit": "0675bf89683cc5a9458a39dfdd47eccfc63b3e28",
         "path": "examples/crescent-cove",
-        "sourceRevision": 15,
-        "worldSha256": "9b04ef1cc2a85def679b056a8515860f81c42c9ad5552673b4a2e684bdd73639"
+        "sourceRevision": 16,
+        "worldSha256": "7cd28fe514d22b4c35db48d57be697ee746c3dc728ec1b9bea6981d3f360cee8"
       },
       "assets": [
         "cove-structure",
@@ -161,56 +161,6 @@
         "crescent-jetty-platform",
         "crescent-jetty-stair",
         "crescent-seagrass"
-      ],
-      "sceneStillPlacesEarlier": [
-        {
-          "id": "structure",
-          "slug": "cove-structure",
-          "placedRevisionId": "r_e96d8b9675f845d0b6cb20087815c302",
-          "finalRevisionId": "r_2387ce274123402dbdafd818e6fb0043"
-        },
-        {
-          "id": "canopy",
-          "slug": "cove-canopy",
-          "placedRevisionId": "r_cf893c2415774c149c65fdd180a69082",
-          "finalRevisionId": "r_df0485467228414780cfa44c0f2e32ad"
-        },
-        {
-          "id": "seating",
-          "slug": "cove-seating",
-          "placedRevisionId": "r_2ab5c612ea064b98b7ac60c75514b4f2",
-          "finalRevisionId": "r_6602fd828a5341eeaa0877fc58289960"
-        },
-        {
-          "id": "hearth",
-          "slug": "cove-hearth",
-          "placedRevisionId": "r_1094b1f7bfeb427a96460628a00e57a8",
-          "finalRevisionId": "r_5ef43760979043d48f358fe2932147dc"
-        },
-        {
-          "id": "planting",
-          "slug": "cove-planting",
-          "placedRevisionId": "r_0c51c3f449eb4f9397ba7bd9641b5a4b",
-          "finalRevisionId": "r_cdb8552ccdde43f28d3995b2a5a30d25"
-        },
-        {
-          "id": "rug",
-          "slug": "cove-rug",
-          "placedRevisionId": "r_fd535a72cbfa4b2cb4b03ff1385b5dba",
-          "finalRevisionId": "r_651bc2867976426996191865ea931163"
-        },
-        {
-          "id": "lamp",
-          "slug": "cove-lamp",
-          "placedRevisionId": "r_cb8878bebeab484c8901829e94b175d1",
-          "finalRevisionId": "r_3b14d66959f942c887c5550f60d6d8ce"
-        },
-        {
-          "id": "moodboard",
-          "slug": "cove-moodboard",
-          "placedRevisionId": "r_ae0d19de532347758f5c555ec8965da4",
-          "finalRevisionId": "r_aedc5a07c6d34c1fb19f5cf959ce679c"
-        }
       ]
     }
   },
