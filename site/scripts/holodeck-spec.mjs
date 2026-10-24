@@ -5,7 +5,7 @@
  */
 
 export const HOLODECK_ID = 'holodeck';
-export const HOLODECK_RELEASE = 'holodeck-20261023-01';
+export const HOLODECK_RELEASE = 'holodeck-20261024-01';
 
 export const HOLODECK_PACKS = [
   {
@@ -36,6 +36,13 @@ export const HOLODECK_PACKS = [
     description: 'A crescent of palm-lined beach around a turquoise lagoon, with seagrass meadows, coral heads, a jetty and a rocky headland, built in Holodeck around the Cove.',
     expectedAssets: 49,
   },
+  {
+    id: 'holodeck-winter-mountainside-cabin',
+    scene: 'winter-mountainside-cabin',
+    name: 'Winter Mountainside Cabin',
+    description: 'A furnished timber cabin above a snowy mountain forest, with a sleeping loft, deck, stone hearth and woodland trails, built in Holodeck.',
+    expectedAssets: 56,
+  },
 ];
 
 /** Scenes whose packs are not built yet. Their pages say so; nothing is staged for them. */
@@ -44,11 +51,11 @@ export const HOLODECK_PLANNED = [];
 /**
  * Owner approval, by gallery slug and the exact revision approved. On 2026-10-23 the owner approved the 47 staged
  * Courtyard, Cove and Tidemark cards as staged, and their packs for delivery, then the 41 new Crescent Cove cards as
- * staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
+ * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
  * when every asset it lists is approved.
  */
 export const HOLODECK_APPROVAL = {
-  recordedAt: '2026-10-23',
+  recordedAt: '2026-10-24',
   revisions: {
     'cove-structure': 'r_2387ce274123402dbdafd818e6fb0043',
     'cove-canopy': 'r_df0485467228414780cfa44c0f2e32ad',
@@ -138,6 +145,61 @@ export const HOLODECK_APPROVAL = {
     'crescent-jetty-platform': 'r_90dc37891b9f41dd843e20762d57b523',
     'crescent-jetty-stair': 'r_2f615af8a589400e9cb9b2ca602c4619',
     'crescent-seagrass': 'r_cd79d419d444441a8299b6739e6435d7',
+    'winter-wmc-armchair-oak': 'r_63ad6298f8c24d7fa220eeb8b4bfd300',
+    'winter-wmc-boulder': 'r_eb0ca9b92aaa45cab84eb453c9eeeb17',
+    'winter-wmc-chimney-masonry': 'r_a9b40046ca5c4d8e8c2a0f0cddd8c730',
+    'winter-wmc-coffee-table': 'r_865e239598de44a5918a2c8d2b73acff',
+    'winter-wmc-deck-tile': 'r_24ad3a121ea949b3819e19192a07aecb',
+    'winter-wmc-desk': 'r_d52ea05e031942dfa0fb1a34972226ae',
+    'winter-wmc-dining-chair': 'r_c513bc554a7f407eb0c7058055dcfc68',
+    'winter-wmc-dining-table': 'r_49df9f4d840241aab1426e6a6ab2c3e3',
+    'winter-wmc-door-deck': 'r_2c207a3161084bfbbd9608cf261ba6c7',
+    'winter-wmc-door-entry': 'r_81e404f1e10f4ee6a408880168ee7344',
+    'winter-wmc-eave-storage': 'r_a8a15917bcc14649a392b736a40d0d0b',
+    'winter-wmc-entry-bench': 'r_78da00aa2eb04b7fbef7a33fab2826b6',
+    'winter-wmc-fallen-log': 'r_c98dd2aeee1942169543c629a7474b1d',
+    'winter-wmc-fir-background-a': 'r_23d2596b5b1142019ccc8960b414e373',
+    'winter-wmc-fir-hero-a': 'r_105e6c9467ed4443a85cf1979b45aab2',
+    'winter-wmc-fir-middle-a': 'r_cc07345479d94a33bdf04bc3969540bc',
+    'winter-wmc-fir-sapling-a': 'r_f2f1d09fd0a942c58964b2821e219406',
+    'winter-wmc-floor-loft': 'r_dfca02649051461fa07592d21f60e932',
+    'winter-wmc-floor-main': 'r_6f875c61c5fc4d4d8112ef059c6c8443',
+    'winter-wmc-floorlamp-tripod': 'r_42e2e4d7cb6e40b787db5f48ad0200e8',
+    'winter-wmc-frame-post': 'r_16867fa4eb2f4855955e0f2179d41b60',
+    'winter-wmc-gable-glass': 'r_8510fb32447d4d4d84493a39e8be6a98',
+    'winter-wmc-ground-clump': 'r_80d42c6571574faa8819e1128ed3d693',
+    'winter-wmc-hearth-masonry': 'r_69a2424559ec43b4a6194d3bdaf984f2',
+    'winter-wmc-kitchen-run': 'r_8c52171c556a4d9180583dd6a6bdc01d',
+    'winter-wmc-lantern': 'r_51eacd2e38f9470e80a967cb04a12da8',
+    'winter-wmc-living-rug-wool': 'r_c9160d6fc18a4ee2baa2b7a367195e6a',
+    'winter-wmc-loft-bed': 'r_cd846321ce64474da24aec6c2381178e',
+    'winter-wmc-mountain-massif': 'r_5256a6d10045495081fb7340a4de6990',
+    'winter-wmc-pendant': 'r_34041812d1bb4d509fc4ba6aab5dcdec',
+    'winter-wmc-rafter-frame': 'r_4d62127be4ea41e7a8387e812bf4a811',
+    'winter-wmc-rail-span': 'r_9a172a5524904a298f8d475d722de2a1',
+    'winter-wmc-ridge-band': 'r_9e28a32d10e24fbba9eb2f739babd911',
+    'winter-wmc-rock-shelf': 'r_d25ced88b13642bda2414dde5dedd610',
+    'winter-wmc-roof-east': 'r_04edc17050114086831c5e5098b64436',
+    'winter-wmc-roof-west': 'r_20ee4d4806274ec6afd7b52ff91f9bc3',
+    'winter-wmc-side-table': 'r_314b667491c24a52bbd681da663f69cd',
+    'winter-wmc-small-props': 'r_15e05145d9c649de9fe845dd4d4aba9d',
+    'winter-wmc-snow-bank': 'r_deb540babffe4e8d8e6706c90a66c486',
+    'winter-wmc-sofa-wool': 'r_900d94fea90f4b8486bc7aa81e84fec7',
+    'winter-wmc-spruce-background-a': 'r_840cfdc71ca547d9aa4c11ad542d52c9',
+    'winter-wmc-spruce-hero-a': 'r_a6300c01aff74afcad5a4ea74cbb67d5',
+    'winter-wmc-spruce-middle-a': 'r_9bf5d291a99f444c810b08b8cd7c1f6b',
+    'winter-wmc-stair-rail-exterior': 'r_659dbb66e23b4b64ab989ed92e795da5',
+    'winter-wmc-stair-rail-interior': 'r_abff23385acf408694274758d8e525bb',
+    'winter-wmc-stone-pier': 'r_5cfe4f56a2e64bdeaf11ecfd989d63a8',
+    'winter-wmc-stone-plinth-panel': 'r_b6a3c5ab05d04971bbb4a794d98b6fff',
+    'winter-wmc-trail-marker': 'r_b88bfaef911545fe9b4d9625978f5775',
+    'winter-wmc-tread-timber': 'r_8b684e59f24b4408862ed20026389cce',
+    'winter-wmc-wall-east': 'r_c9a234d398ed4d78b1c7a94023ae2ab0',
+    'winter-wmc-wall-facade': 'r_6b70ff0e8baf45dd96f6a3dec221853c',
+    'winter-wmc-wall-rear': 'r_6225dd8469d646c8a555c201713a5761',
+    'winter-wmc-wall-west': 'r_a06b37dfb34843d394c049e0b9913019',
+    'winter-wmc-window-tall': 'r_8c85b15ec6434f91b67353da68c41630',
+    'winter-wmc-window-test': 'r_a68e049d8cbf4449bbad83b4b2d33499',
   },
 };
 /** Whether the owner approved this exact revision of a card. */
@@ -156,6 +218,10 @@ const CRESCENT_PLANTS = 'Crescent Cove undergrowth';
 const CRESCENT_ROCKS = 'Crescent Cove rocks and cliffs';
 const CRESCENT_REEF = 'Crescent Cove reef';
 const CRESCENT_BUILT = 'Crescent Cove shelter and jetty';
+const WINTER_CABIN = 'Winter cabin architecture';
+const WINTER_INTERIOR = 'Winter cabin interior';
+const WINTER_FOREST = 'Winter mountainside forest';
+const WINTER_LANDSCAPE = 'Winter mountainside landscape';
 
 const coveModules = {
   structure: ['Cove platform and seating shell', 'The circular platform and curved seating shell that hold the rest of the Cove.'],
@@ -254,6 +320,61 @@ export const HOLODECK_ASSETS = {
   'crescent-jetty-deck': { name: 'Jetty deck module', category: CRESCENT_BUILT, description: 'A 3 m timber deck module with mooring posts, made to repeat into a jetty.' },
   'crescent-jetty-platform': { name: 'Jetty platform', category: CRESCENT_BUILT, description: 'A 3 m square timber platform for the end of the jetty.' },
   'crescent-jetty-stair': { name: 'Jetty stair', category: CRESCENT_BUILT, description: 'A timber stair that descends from the jetty deck to the seabed.' },
+  'winter-wmc-stone-pier': { name: 'Stone foundation pier', category: WINTER_CABIN, description: 'A coursed stone pier with a timber cap, iron straps and small snow pockets for the raised cabin foundation.' },
+  'winter-wmc-floor-main': { name: 'Cabin plank floor', category: WINTER_CABIN, description: 'A full main-floor module with staggered timber boards and a solid base, sized for the cabin footprint.' },
+  'winter-wmc-floor-loft': { name: 'Loft plank floor', category: WINTER_CABIN, description: 'A shorter timber floor module with staggered boards and a front edge beam for the sleeping loft.' },
+  'winter-wmc-deck-tile': { name: 'Timber deck module', category: WINTER_CABIN, description: 'A repeatable deck section with narrow boards, visible fasteners and two supporting rails for terraces and landings.' },
+  'winter-wmc-wall-facade': { name: 'Cabin front wall and gable frame', category: WINTER_CABIN, description: 'A timber front wall with openings for tall glazing and a deck door, topped by a triangular gable frame.' },
+  'winter-wmc-wall-west': { name: 'Cabin entry-side wall', category: WINTER_CABIN, description: 'A timber side wall with a doorway opening for the uphill entrance and separate surfaces facing indoors and out.' },
+  'winter-wmc-wall-east': { name: 'Cabin window-side wall', category: WINTER_CABIN, description: 'A timber side wall with a broad window opening, sill and lintel for the living-room side of the cabin.' },
+  'winter-wmc-wall-rear': { name: 'Cabin rear gable wall', category: WINTER_CABIN, description: 'A solid timber rear wall with a boarded triangular gable, closing the cabin beneath the pitched roof.' },
+  'winter-wmc-stone-plinth-panel': { name: 'Stone foundation facing', category: WINTER_CABIN, description: 'A rectangular panel of staggered stone courses with recessed joints for facing the cabin base.' },
+  'winter-wmc-frame-post': { name: 'Timber frame post', category: WINTER_CABIN, description: 'A tall timber post with iron bands and visible fasteners for the cabin frame.' },
+  'winter-wmc-rafter-frame': { name: 'Paired timber rafters', category: WINTER_CABIN, description: 'A pair of sloping timber rafters joined by a bolted iron ridge plate for the cabin roof frame.' },
+  'winter-wmc-roof-west': { name: 'Snow-covered roof with ridge cap', category: WINTER_CABIN, description: 'A pitched metal roof half with a timber underside, raised seams, ridge cap and an uneven layer of snow.' },
+  'winter-wmc-roof-east': { name: 'Snow-covered roof with chimney opening', category: WINTER_CABIN, description: 'The matching pitched roof half, with a chimney opening, timber underside, raised metal seams and snow along the eaves.' },
+  'winter-wmc-chimney-masonry': { name: 'Stone chimney and roof flashing', category: WINTER_CABIN, description: 'A tall coursed stone chimney with a recessed iron throat hood, sloping roof flashing and a capped outlet.' },
+  'winter-wmc-window-test': { name: 'Timber side window', category: WINTER_CABIN, description: 'A rectangular glass pane in a rebated timber frame, with glazing stops, pegged joints and a recessed dark seal.' },
+  'winter-wmc-window-tall': { name: 'Tall timber window', category: WINTER_CABIN, description: 'A slender tall glass pane with a timber frame, pegged joints and recessed glazing details for the cabin facade.' },
+  'winter-wmc-gable-glass': { name: 'Fitted gable glass panels', category: WINTER_CABIN, description: 'Six glass panels shaped to fit the triangular timber frame above the cabin’s front windows.' },
+  'winter-wmc-door-entry': { name: 'Timber entrance door', category: WINTER_CABIN, description: 'A boarded timber door leaf with iron strap hinges and handles, oriented for the cabin’s side entrance.' },
+  'winter-wmc-door-deck': { name: 'Timber deck door', category: WINTER_CABIN, description: 'A boarded timber door leaf with iron strap hinges and handles, oriented for the front deck opening.' },
+  'winter-wmc-tread-timber': { name: 'Timber stair tread', category: WINTER_CABIN, description: 'A single timber tread with softened edges, inset fasteners and narrow underside strips for repeating stair runs.' },
+  'winter-wmc-stair-rail-interior': { name: 'Interior stair railing', category: WINTER_CABIN, description: 'A sloping timber handrail and lower beam with posts, iron rods and bolted upper joinery, shaped for the loft stair.' },
+  'winter-wmc-stair-rail-exterior': { name: 'Exterior stair railing', category: WINTER_CABIN, description: 'A shorter sloping timber railing with posts, iron rods and bolted upper joinery, shaped for the cabin’s exterior stair.' },
+  'winter-wmc-rail-span': { name: 'Timber and iron guardrail', category: WINTER_CABIN, description: 'A straight timber handrail between two posts, with three iron rods and base plates for deck and loft edges.' },
+  'winter-wmc-sofa-wool': { name: 'Cabin sofa with cushions and throw', category: WINTER_INTERIOR, description: 'A compact upholstered sofa on timber legs, with separate seat and back cushions, loose pillows and a fringed throw.' },
+  'winter-wmc-armchair-oak': { name: 'Oak armchair', category: WINTER_INTERIOR, description: 'An open timber armchair with shaped legs, broad armrests and separate upholstered seat and back cushions.' },
+  'winter-wmc-coffee-table': { name: 'Oak coffee table with book and bowl', category: WINTER_INTERIOR, description: 'A low plank-top timber table with four legs and side rails, dressed with a book and a shallow bowl.' },
+  'winter-wmc-living-rug-wool': { name: 'Bordered wool rug', category: WINTER_INTERIOR, description: 'A rectangular woven rug with a contrasting border and fringe at both ends for the living-room seating area.' },
+  'winter-wmc-hearth-masonry': { name: 'Stone hearth with recessed firebox', category: WINTER_INTERIOR, description: 'A coursed stone hearth with a projecting mantel, recessed iron firebox, grate, logs and glowing coals.' },
+  'winter-wmc-floorlamp-tripod': { name: 'Timber tripod floor lamp', category: WINTER_INTERIOR, description: 'A floor lamp with three splayed timber legs, an open fabric shade, metal rim rings and a small warm bulb.' },
+  'winter-wmc-lantern': { name: 'Amber cabin lantern', category: WINTER_INTERIOR, description: 'An iron lantern with a glazed enclosure, candle-shaped amber core, pitched cap and carrying ring.' },
+  'winter-wmc-eave-storage': { name: 'Low timber storage cabinet', category: WINTER_INTERIOR, description: 'A long, low cupboard with six paneled fronts, iron handles and a timber top for furnishing the loft eaves.' },
+  'winter-wmc-side-table': { name: 'Oak side table with book shelf', category: WINTER_INTERIOR, description: 'A small timber side table with a drawer front, iron pull and a lower shelf holding a book.' },
+  'winter-wmc-dining-table': { name: 'Cabin dining table for two', category: WINTER_INTERIOR, description: 'A compact plank-top timber table with pegged legs and two place settings of plates, cups and folded napkins.' },
+  'winter-wmc-dining-chair': { name: 'Timber dining chair with woven seat', category: WINTER_INTERIOR, description: 'A timber chair with a woven seat cushion, two curved back slats, visible pegs and low side stretchers.' },
+  'winter-wmc-kitchen-run': { name: 'Cabin kitchen and wall shelf', category: WINTER_INTERIOR, description: 'A timber kitchen unit with a recessed sink, curved tap, two-ring hob, wall shelf, kettle, dishes and a hanging towel.' },
+  'winter-wmc-loft-bed': { name: 'Oak loft bed with layered bedding', category: WINTER_INTERIOR, description: 'A timber double bed with slatted support, a shelf headboard, pillows, a duvet and a fringed throw.' },
+  'winter-wmc-desk': { name: 'Oak writing desk', category: WINTER_INTERIOR, description: 'A compact timber desk with tapered legs, supporting side rails and a small drawer front with an iron pull.' },
+  'winter-wmc-entry-bench': { name: 'Entry bench with coat and boots', category: WINTER_INTERIOR, description: 'A slatted timber bench with a lower shoe shelf, integrated coat hooks, a hanging coat and a pair of boots.' },
+  'winter-wmc-pendant': { name: 'Metal pendant lamp', category: WINTER_INTERIOR, description: 'A shallow metal pendant with a pale inner shade, a warm bulb, slender hanging stem and circular ceiling canopy.' },
+  'winter-wmc-small-props': { name: 'Reading and tea tray', category: WINTER_INTERIOR, description: 'A small timber tray holding a book, cup and folded cloth for dressing a bedside or reading table.' },
+  'winter-wmc-fir-hero-a': { name: 'Mature mountain fir', category: WINTER_FOREST, description: 'A broad mountain fir with irregular branches, needle sprays and snow loads for prominent trees near the cabin.' },
+  'winter-wmc-spruce-hero-a': { name: 'Mature mountain spruce', category: WINTER_FOREST, description: 'A tall mountain spruce with layered branches, needle sprays and scattered snow loads.' },
+  'winter-wmc-fir-middle-a': { name: 'Grove fir', category: WINTER_FOREST, description: 'A fir with layered branches and patches of snow for the grove around the cabin.' },
+  'winter-wmc-spruce-middle-a': { name: 'Grove spruce', category: WINTER_FOREST, description: 'A slender spruce with layered branches and patches of snow for mixing through the forest.' },
+  'winter-wmc-fir-background-a': { name: 'Distant forest fir', category: WINTER_FOREST, description: 'A broad fir with snow-laden branches for the farther forest.' },
+  'winter-wmc-spruce-background-a': { name: 'Distant forest spruce', category: WINTER_FOREST, description: 'A narrow spruce with snow-laden branch tiers for the forest backdrop.' },
+  'winter-wmc-fir-sapling-a': { name: 'Snowy fir sapling', category: WINTER_FOREST, description: 'A small fir with low spreading branches, needle sprays and snow for forest edges and gaps between mature trees.' },
+  'winter-wmc-rock-shelf': { name: 'Schist shelf and stone seat', category: WINTER_LANDSCAPE, description: 'A low, layered stone outcrop with fractured sides, a level seating surface and thin snow along its edges.' },
+  'winter-wmc-boulder': { name: 'Snow-capped boulder group', category: WINTER_LANDSCAPE, description: 'A weathered boulder with a smaller stone at its base and an irregular snow cap for slopes and trail edges.' },
+  'winter-wmc-mountain-massif': { name: 'Snowy mountain massif', category: WINTER_LANDSCAPE, description: 'An asymmetric mountain massif with uneven crests, exposed rocky ribs and snowy gullies for the distant vista.' },
+  'winter-wmc-ridge-band': { name: 'Distant mountain ridge', category: WINTER_LANDSCAPE, description: 'A long band of uneven peaks with blue-gray rock and snow-colored slopes for layering behind the forest.' },
+  'winter-wmc-snow-bank': { name: 'Snow drift with exposed stones', category: WINTER_LANDSCAPE, description: 'A low snow drift with exposed stones for dressing the ground around paths and rocks.' },
+  'winter-wmc-ground-clump': { name: 'Winter grass and stone clump', category: WINTER_LANDSCAPE, description: 'A small cluster of dry stalks, a low stone and a patch of settled snow for sparse winter ground cover.' },
+  'winter-wmc-fallen-log': { name: 'Fallen log with snow', category: WINTER_LANDSCAPE, description: 'A tapered fallen trunk with exposed end grain, broken branch stubs, splintered wood and snow following its upper surface.' },
+  'winter-wmc-trail-marker': { name: 'Timber trail marker', category: WINTER_LANDSCAPE, description: 'A short timber post with a recessed iron arrow and a small snow cap for marking the forest path.' },
 };
 
 /** A world placement id to its gallery slug. Every scene's Cove module shares the Cove pack's slug; Crescent Cove's own assets are prefixed. */

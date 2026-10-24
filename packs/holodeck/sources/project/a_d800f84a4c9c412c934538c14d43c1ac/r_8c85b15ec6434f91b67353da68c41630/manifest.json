@@ -1,0 +1,417 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_d800f84a4c9c412c934538c14d43c1ac",
+  "revisionId": "r_8c85b15ec6434f91b67353da68c41630",
+  "name": "Cabin glazing / tall living bay",
+  "tags": [
+    "winter",
+    "glazing",
+    "tall",
+    "m2a"
+  ],
+  "createdAt": "2026-10-24T03:15:38.220Z",
+  "description": "3.95m × 1.12m tall front bay with actual-length timber members and metre-scaled UVs; removes M1 vertical material/peg stretch. Same reviewed single double-sided alpha .075 glass as regular bay; actual scene view pending.",
+  "attribution": {
+    "model": "gpt-6-astra",
+    "harness": "Codex"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:bbf65f63cb729b6e6d51e0e4709ae2bd9305e5facd249058dc4f82cf7dd159e9",
+      "bytes": 175068
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:4d258398cb2019cfff603035bb41281b09f0302c81c25cadfe652e1abec565a6",
+      "bytes": 5097
+    },
+    "preview.png": {
+      "sha256": "sha256:7b76d75fbc30cbfd263548b85099c35db0690f827d5837a9ecdc41f0687fcb75",
+      "bytes": 124429
+    }
+  },
+  "build": {
+    "engine": "sha256:006bc21ed78828c59f6b4a6db970c011787fbe738957c932383b85a649117357",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "bbf65f63cb729b6e6d51e0e4709ae2bd9305e5facd249058dc4f82cf7dd159e9",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.09099999815225601,
+          -2.3841858265427618e-8,
+          -0.5600000023841858
+        ],
+        "max": [
+          0.09099999815225601,
+          3.950000047683716,
+          0.5600000023841858
+        ],
+        "size": [
+          0.18199999630451202,
+          3.950000071525574,
+          1.1200000047683716
+        ],
+        "center": [
+          0,
+          1.9750000119209288,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -2.3841858265427618e-8,
+        "offsetToGround": 2.3841858265427618e-8,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Cabin glazing / tall living bay"
+      },
+      "requestedRole": "prop",
+      "renderMetrics": {
+        "triangles": 1026,
+        "drawCalls": 3,
+        "uniqueGeometries": 3,
+        "uniqueMaterials": 3,
+        "textureCount": 2,
+        "transparentMaterials": 1,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "warn",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "1 part-volume measurement was unavailable. 1 because a valid closed solid could not be measured (Not manifold): \"Mesh_SingleDoubleSidedGlass\". 1 overlapping part pair includes this part and was not measured. This part is not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 3,
+            "partVolumeCandidatePairs": 2,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 1,
+            "partVolumeUnmeasurablePairs": 1,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 1
+          }
+        },
+        "runtimeCost": {
+          "status": "warn",
+          "findings": [
+            {
+              "code": "MATERIAL_BLEND_AREA_BUDGET",
+              "disposition": "warn",
+              "dimension": "runtimeCost",
+              "profile": "web.portable.v1.standard",
+              "message": "Blended primitive surface area is 28.3% (3.104 of 10.967 square asset units); the budget is 15.0%. Largest BLEND materials by share of surface area: \"material-3\" 28.3%. Use MASK for binary cutouts such as foliage, reduce layered transparent surfaces, and reserve BLEND for genuinely translucent glass/effects.",
+              "measurement": {
+                "name": "blendedSurfaceAreaRatio",
+                "actual": 0.28305907752551884,
+                "threshold": 0.15,
+                "unit": "ratio"
+              }
+            }
+          ],
+          "metrics": {
+            "instanceabilityGrade": "C",
+            "instanceabilitySummary": "C (informational, not a QA verdict), set by 1 transparent material (lowers A/B to C). Also: 3 distinct materials (B at 2-3); 3 geometries; 3 draw calls.",
+            "uniqueGeometries": 3,
+            "uniqueMaterials": 3,
+            "meshNodes": 3,
+            "meshInstances": 3,
+            "drawCalls": 3,
+            "textureCount": 2,
+            "skinned": false,
+            "transparentMaterials": 1,
+            "triangles": 1026,
+            "materialCount": 3,
+            "opaqueMaterials": 2,
+            "maskedMaterials": 0,
+            "blendedMaterials": 1,
+            "singleSidedMaterials": 2,
+            "doubleSidedMaterials": 1,
+            "texturedMaterials": 1,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 2,
+            "maxImageDimension": 128,
+            "decodedImageBytesRgba8": 131072,
+            "estimatedGpuBytesWithMipmaps": 174764,
+            "blendedSurfaceAreaRatio": 0.28305907752551884
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [
+      {
+        "schemaVersion": 1,
+        "resourceId": "kiln.texture.weathered-planks-albedo.v1",
+        "contentHash": "bf135b0d4a2a66418fed30b71a08ea5ece851ae7595f2f22bb2ca741707dbfd8",
+        "hashAlgorithm": "sha256",
+        "usage": "albedo",
+        "colorSpace": "srgb",
+        "resourceVersion": 1,
+        "recipeVersion": 1,
+        "delivery": "embedded"
+      },
+      {
+        "schemaVersion": 1,
+        "resourceId": "kiln.texture.weathered-planks-normal.v1",
+        "contentHash": "b55dfca68683eaa84a88b94c3f422928e82dac28844a4952ec0e25c3c3778ab6",
+        "hashAlgorithm": "sha256",
+        "usage": "normal",
+        "colorSpace": "linear",
+        "resourceVersion": 1,
+        "recipeVersion": 1,
+        "delivery": "embedded"
+      }
+    ],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
+      "inputGlbSha256": "sha256:bbf65f63cb729b6e6d51e0e4709ae2bd9305e5facd249058dc4f82cf7dd159e9",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

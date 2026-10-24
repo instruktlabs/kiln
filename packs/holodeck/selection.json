@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "holodeck-20261023-01",
+  "release": "holodeck-20261024-01",
   "licence": "CC0-1.0",
   "versions": "final-only",
   "packs": {
@@ -161,6 +161,75 @@
         "crescent-jetty-platform",
         "crescent-jetty-stair",
         "crescent-seagrass"
+      ]
+    },
+    "holodeck-winter-mountainside-cabin": {
+      "scene": "winter-mountainside-cabin",
+      "source": {
+        "kind": "holodeck-example",
+        "ref": "ee66c3712fa414fd9bc6c7f5dadc882a2e2ba9de",
+        "commit": "ee66c3712fa414fd9bc6c7f5dadc882a2e2ba9de",
+        "path": "examples/winter-mountainside-cabin",
+        "sourceRevision": 2,
+        "worldSha256": "403bc137f158f00508b5aabc5d311311c998f93203076b29fabfffe1dcf322a5"
+      },
+      "assets": [
+        "cove-moodboard",
+        "winter-wmc-fir-hero-a",
+        "winter-wmc-stone-pier",
+        "winter-wmc-window-test",
+        "winter-wmc-lantern",
+        "winter-wmc-spruce-hero-a",
+        "winter-wmc-fir-middle-a",
+        "winter-wmc-spruce-middle-a",
+        "winter-wmc-fir-background-a",
+        "winter-wmc-spruce-background-a",
+        "winter-wmc-fir-sapling-a",
+        "winter-wmc-window-tall",
+        "winter-wmc-sofa-wool",
+        "winter-wmc-hearth-masonry",
+        "winter-wmc-floor-main",
+        "winter-wmc-wall-facade",
+        "winter-wmc-deck-tile",
+        "winter-wmc-door-entry",
+        "winter-wmc-stair-rail-interior",
+        "winter-wmc-armchair-oak",
+        "winter-wmc-wall-west",
+        "winter-wmc-wall-east",
+        "winter-wmc-wall-rear",
+        "winter-wmc-stone-plinth-panel",
+        "winter-wmc-floorlamp-tripod",
+        "winter-wmc-floor-loft",
+        "winter-wmc-frame-post",
+        "winter-wmc-rafter-frame",
+        "winter-wmc-door-deck",
+        "winter-wmc-tread-timber",
+        "winter-wmc-stair-rail-exterior",
+        "winter-wmc-rail-span",
+        "winter-wmc-eave-storage",
+        "winter-wmc-coffee-table",
+        "winter-wmc-living-rug-wool",
+        "winter-wmc-gable-glass",
+        "winter-wmc-roof-east",
+        "winter-wmc-roof-west",
+        "winter-wmc-chimney-masonry",
+        "winter-wmc-side-table",
+        "winter-wmc-dining-table",
+        "winter-wmc-dining-chair",
+        "winter-wmc-kitchen-run",
+        "winter-wmc-loft-bed",
+        "winter-wmc-desk",
+        "winter-wmc-entry-bench",
+        "winter-wmc-pendant",
+        "winter-wmc-small-props",
+        "winter-wmc-rock-shelf",
+        "winter-wmc-boulder",
+        "winter-wmc-mountain-massif",
+        "winter-wmc-ridge-band",
+        "winter-wmc-snow-bank",
+        "winter-wmc-ground-clump",
+        "winter-wmc-fallen-log",
+        "winter-wmc-trail-marker"
       ]
     }
   },
@@ -486,6 +555,10 @@
         },
         {
           "pack": "holodeck-crescent-cove",
+          "id": "moodboard"
+        },
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
           "id": "moodboard"
         }
       ]
@@ -2822,6 +2895,1591 @@
         {
           "pack": "holodeck-crescent-cove",
           "id": "seagrass"
+        }
+      ]
+    },
+    "winter-wmc-fir-hero-a": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_d7c11d251c944d37bb395dd2317258bc",
+      "revisionId": "r_105e6c9467ed4443a85cf1979b45aab2",
+      "parentRevision": "r_59e861f371a4433ca1bc12078d8bde9d",
+      "manifest": {
+        "bytes": 12288,
+        "sha256": "35241acf75a7e4480d65e5792fb085a1babe228cc8b16ae869795a9faa568e87"
+      },
+      "source": {
+        "bytes": 11563,
+        "sha256": "75772e5bfc585d612d9ac785a4364fde984949eb099a41070f9c9567b8ababae"
+      },
+      "canonical": {
+        "bytes": 3435860,
+        "sha256": "bec22f468853e89955c4ba4a48e314adb228af2dd2c9ca5a88b7a93669a5e0c7"
+      },
+      "preview": {
+        "bytes": 453825,
+        "sha256": "d411451b4f8e414e046e6995c753678efb7ddd1a16f022a04e97c9207e6294c8"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-fir-hero-a"
+        }
+      ]
+    },
+    "winter-wmc-stone-pier": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_f65ef66e092c4aeeaf02e7836dbf8e7c",
+      "revisionId": "r_5cfe4f56a2e64bdeaf11ecfd989d63a8",
+      "parentRevision": "r_5b0c4c702fbc49808f371db7ffd19257",
+      "manifest": {
+        "bytes": 15698,
+        "sha256": "53ddfa465a87e74680894c8039da662e446a72e0cdcb444a41b305359a4c7bc7"
+      },
+      "source": {
+        "bytes": 5051,
+        "sha256": "e80ab7e9ae40c67237b0e61a6b7433900067078cf43706ec943bca6b2f474dde"
+      },
+      "canonical": {
+        "bytes": 527744,
+        "sha256": "66b1f288e84daf055b179d832b690bc863a03118b698aaed0adec0421d07fcec"
+      },
+      "preview": {
+        "bytes": 652186,
+        "sha256": "0623fcc98d231553177fc73998226fedd66a85ad2ee41d321a63ecd7a431e9bf"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-stone-pier"
+        }
+      ]
+    },
+    "winter-wmc-window-test": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_6f50a6077a584e11bd010702a67bdbf9",
+      "revisionId": "r_a68e049d8cbf4449bbad83b4b2d33499",
+      "parentRevision": "r_8c5e6424831a4fdcaf116edaf08e728f",
+      "manifest": {
+        "bytes": 13065,
+        "sha256": "02a08d5ad98cfe076512e31150baca9bbba9b2e99576f4db627db66fd7d880cf"
+      },
+      "source": {
+        "bytes": 5093,
+        "sha256": "87853383110a711743c032e0768bb36d358a68f0f6eb54dfb14645b7ae0a0150"
+      },
+      "canonical": {
+        "bytes": 175196,
+        "sha256": "869d74335457eaf5437d55e7bc6cb83789fa4377b548b2f4ea39f5acc7923334"
+      },
+      "preview": {
+        "bytes": 179383,
+        "sha256": "f4310e9e74069c994d0019a5bfd3e45e2ccf072278f0d6919424dc85d4322d6b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-window-test"
+        }
+      ]
+    },
+    "winter-wmc-lantern": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_a618a31b39cb4b818f5c2f36d743c65e",
+      "revisionId": "r_51eacd2e38f9470e80a967cb04a12da8",
+      "parentRevision": "r_945df4974d94420386138f8009bf41a6",
+      "manifest": {
+        "bytes": 13732,
+        "sha256": "37926beba34524d7f230ada2d125a5fa254da6e52e6f89a043a20a4fa06dfdd8"
+      },
+      "source": {
+        "bytes": 2740,
+        "sha256": "7e10f5825618c2f1fa1a1be7ebccde24b266aca2e04cc31efbc17f93c47e94fe"
+      },
+      "canonical": {
+        "bytes": 17912,
+        "sha256": "702a4e65447b5c750b63ca6e6a000fa3cddcb5bf2720ac3dd13903bef56fe0a1"
+      },
+      "preview": {
+        "bytes": 55784,
+        "sha256": "727870c754d979e263756f4f121758b36a60f3cc995f1a754e206ed836e0e22f"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-lantern"
+        }
+      ]
+    },
+    "winter-wmc-spruce-hero-a": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_23355f2ce8664f04b335c6be26def8d1",
+      "revisionId": "r_a6300c01aff74afcad5a4ea74cbb67d5",
+      "parentRevision": "r_e2ff35601ac64cf1970b845ecf91afc3",
+      "manifest": {
+        "bytes": 12308,
+        "sha256": "db9dae77882e4de6e792bbe8d6dc7f38d8759e271f8a6462aa2e7ef58b600dad"
+      },
+      "source": {
+        "bytes": 11567,
+        "sha256": "17974c02e7c00daaf44d06a4da99167a35c70da5050830e702f37a5adc2f14e7"
+      },
+      "canonical": {
+        "bytes": 3629236,
+        "sha256": "eeb1d8ca42993801fa2de373caf539f861cb167f650797265ce02c1fe351e89e"
+      },
+      "preview": {
+        "bytes": 404768,
+        "sha256": "942ccc085f291e7507f1ef871ce965329880048a6103fcacbde868a3b1ab56b6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-spruce-hero-a"
+        }
+      ]
+    },
+    "winter-wmc-fir-middle-a": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_70a4c2e9fee3489aa5d4f93d71942508",
+      "revisionId": "r_cc07345479d94a33bdf04bc3969540bc",
+      "parentRevision": "r_29095a9db73e49eaab6a049509ffe109",
+      "manifest": {
+        "bytes": 12270,
+        "sha256": "7aba49a62eaa464ebeafab95a146cef0a5ad9a139d5797381ebe8412d161c47f"
+      },
+      "source": {
+        "bytes": 11713,
+        "sha256": "5cff62f2da4cb972dbaaeefb9b0b1df59b3c1f7cae73e7fd71f3f46d5e46c657"
+      },
+      "canonical": {
+        "bytes": 425676,
+        "sha256": "744fcb27a715a380cf1aa7d33dcc38055349c9b655f6ce18dd48730118fa7e47"
+      },
+      "preview": {
+        "bytes": 364956,
+        "sha256": "4b2cb3cb6b022c03c63184344a850bf0484c4e9e896c7bf63fdc1e69339f18fb"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-fir-middle-a"
+        }
+      ]
+    },
+    "winter-wmc-spruce-middle-a": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_d013717c727c48dfad0bd798c94f261f",
+      "revisionId": "r_9bf5d291a99f444c810b08b8cd7c1f6b",
+      "parentRevision": "r_14389f56d0e34b5b8de08bc7d46166e4",
+      "manifest": {
+        "bytes": 12296,
+        "sha256": "7a7b6f0f7f081b8d83d00932634e1dd501000d82ef09f1aa5142f4c24c23d066"
+      },
+      "source": {
+        "bytes": 11719,
+        "sha256": "dd4cac6cce900a42decc8ee5e60ddbb701d83b6302988f543572b7d7d4ee9524"
+      },
+      "canonical": {
+        "bytes": 432708,
+        "sha256": "aebf1f5ef565e398f073f667d46ce726abd376b90a14c26d707ab075fa9f059b"
+      },
+      "preview": {
+        "bytes": 297343,
+        "sha256": "194091a6fb844689c264dabca8908f7482822ff7c01ed217636a2dc95f5f74fd"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-spruce-middle-a"
+        }
+      ]
+    },
+    "winter-wmc-fir-background-a": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_07729f5aec8847bc80d071b4599d6bff",
+      "revisionId": "r_23d2596b5b1142019ccc8960b414e373",
+      "parentRevision": "r_00625992b11b4e67bbfb4950bf796b16",
+      "manifest": {
+        "bytes": 12296,
+        "sha256": "05b8795594314241cba7f0fb2034b691bc752bf171f459b6d4e0214a51292c59"
+      },
+      "source": {
+        "bytes": 11106,
+        "sha256": "dcdfcb67b5c78374d3c237bfeb2be7e1f6eab42cdf16a3b809156b808a03f6da"
+      },
+      "canonical": {
+        "bytes": 174668,
+        "sha256": "37f661f3e22281a291abf880e91340d9522aeb1bfec6e256b16336fc389e4e94"
+      },
+      "preview": {
+        "bytes": 408798,
+        "sha256": "5271a57a198bcb32e19754de74ba44bd53cc8937e59c23e38b6455382e042fa1"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-fir-background-a"
+        }
+      ]
+    },
+    "winter-wmc-spruce-background-a": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_b9737920dd4e43abaad0a6536de676f0",
+      "revisionId": "r_840cfdc71ca547d9aa4c11ad542d52c9",
+      "parentRevision": "r_be03fe22c5844f6b962db1263b8e5fc8",
+      "manifest": {
+        "bytes": 12307,
+        "sha256": "e702b566224f4b133ae50738d1a421f919ad03a375cb6be5fa7fde9e14c64c61"
+      },
+      "source": {
+        "bytes": 11112,
+        "sha256": "302fde477a81e88998a6b0bc7788d06dea7ddb986b4db3eff14722e7deb566e2"
+      },
+      "canonical": {
+        "bytes": 184060,
+        "sha256": "90e553f918c89b6e088a3de8f52bccec8cab1aed698d309f0b7b1d0123a96e2e"
+      },
+      "preview": {
+        "bytes": 276553,
+        "sha256": "020b6acc7525acbbeee0ca261e216d89e089303e97bcb53677a4f709048c9b34"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-spruce-background-a"
+        }
+      ]
+    },
+    "winter-wmc-fir-sapling-a": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_f72b795d8be449cfaee39950d715be64",
+      "revisionId": "r_f2f1d09fd0a942c58964b2821e219406",
+      "parentRevision": "r_d16e3822c9974df3a6bcf8af23306333",
+      "manifest": {
+        "bytes": 12301,
+        "sha256": "e9c5f8148b6eb53134a0eafa42f79873e32c019e7e49a726b18df944ee21339e"
+      },
+      "source": {
+        "bytes": 11561,
+        "sha256": "9983cde077c6865791b7fafe9adf4b1c487aae5badbb52c702ee8442cb6d2732"
+      },
+      "canonical": {
+        "bytes": 700308,
+        "sha256": "553fec6081abf7e9efde030e1d8977f496e517b6c73704601d6bf26f6770c8da"
+      },
+      "preview": {
+        "bytes": 415157,
+        "sha256": "9475e0bea6635f07432dc330ab372e277ed8372520d26ff69146729a54cd126e"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-fir-sapling-a"
+        }
+      ]
+    },
+    "winter-wmc-window-tall": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_d800f84a4c9c412c934538c14d43c1ac",
+      "revisionId": "r_8c85b15ec6434f91b67353da68c41630",
+      "manifest": {
+        "bytes": 12948,
+        "sha256": "166f70792b130cdd3b3f170bab01f6c55c5418cd1df03c84b1839e6737e85d41"
+      },
+      "source": {
+        "bytes": 5097,
+        "sha256": "4d258398cb2019cfff603035bb41281b09f0302c81c25cadfe652e1abec565a6"
+      },
+      "canonical": {
+        "bytes": 175068,
+        "sha256": "bbf65f63cb729b6e6d51e0e4709ae2bd9305e5facd249058dc4f82cf7dd159e9"
+      },
+      "preview": {
+        "bytes": 124429,
+        "sha256": "7b76d75fbc30cbfd263548b85099c35db0690f827d5837a9ecdc41f0687fcb75"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-window-tall"
+        }
+      ]
+    },
+    "winter-wmc-sofa-wool": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_5af9bd51de70444cb02f1cc5e926043f",
+      "revisionId": "r_900d94fea90f4b8486bc7aa81e84fec7",
+      "parentRevision": "r_34bc6f3532ef4896ab60d9477103f667",
+      "manifest": {
+        "bytes": 12729,
+        "sha256": "13277b149d1317bf33aa616dd3d52241045fc3e757d5bc7111eda72cff4cf6c5"
+      },
+      "source": {
+        "bytes": 29888,
+        "sha256": "718711e2fd4a0c35d6bc9d3979bc20d45416b38e768287c7073357cb1ed8fd7c"
+      },
+      "canonical": {
+        "bytes": 3925956,
+        "sha256": "31208887ca28acce4b78d71814b2365922f79e0b9d5529e44955d4bc04659a44"
+      },
+      "preview": {
+        "bytes": 355488,
+        "sha256": "c1edfe60bea7c73ab5cd556f7b04d359a48bd311331df9147c7fa909b8400bf5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-sofa-wool"
+        }
+      ]
+    },
+    "winter-wmc-hearth-masonry": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_873885321d9441419a5e22f993bf833e",
+      "revisionId": "r_69a2424559ec43b4a6194d3bdaf984f2",
+      "parentRevision": "r_18802321b2224fa5b3c40ceb3eb710c1",
+      "manifest": {
+        "bytes": 14624,
+        "sha256": "3e3f05fcb56f3331dcec2c7bc5b81123a3372aacb86314b56c7ad9b04b397c78"
+      },
+      "source": {
+        "bytes": 26449,
+        "sha256": "c51942ec1bd585b8f57e653bafbab3f90d4ae8f739f87cb84efd6e73ba0a1313"
+      },
+      "canonical": {
+        "bytes": 470728,
+        "sha256": "6810ba00d23509597e452397d343d709b92c1ece80f854bb55e29ab1d42631c7"
+      },
+      "preview": {
+        "bytes": 452756,
+        "sha256": "3ff91eac86e16c3a163b21be9ebeb8d0085d5904a1cc6379b47bdf24c1063393"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-hearth-masonry"
+        }
+      ]
+    },
+    "winter-wmc-floor-main": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_8f428497d003408cbb0f565e4bd25e77",
+      "revisionId": "r_6f875c61c5fc4d4d8112ef059c6c8443",
+      "parentRevision": "r_a3f66e1f1aee41c5b8fd4f99cbdf20dc",
+      "manifest": {
+        "bytes": 12771,
+        "sha256": "8cf1a5f953eac819faf2be3245dbc567c7b02e085d06a593b85ceef810a9af4f"
+      },
+      "source": {
+        "bytes": 24662,
+        "sha256": "9d465f7851aec94ea984b00d18b237098d83ef78676a93d51183d91ca4e5e8df"
+      },
+      "canonical": {
+        "bytes": 1820492,
+        "sha256": "f65e5db84489c67705f3e63df9d14656ca34b7053af1266d2e39882385025a09"
+      },
+      "preview": {
+        "bytes": 114195,
+        "sha256": "9a7ed9595e48f35e328bf5b6b5acd0ee9255402e3af2a1e42b99f8e406f90ceb"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-floor-main"
+        }
+      ]
+    },
+    "winter-wmc-wall-facade": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_5b4f6100aa984ab993ed3f672bdb810e",
+      "revisionId": "r_6b70ff0e8baf45dd96f6a3dec221853c",
+      "parentRevision": "r_f81abc2f35854738a7c545292b139ca4",
+      "manifest": {
+        "bytes": 12049,
+        "sha256": "1dfc6b8e11aff9d591dd22fd66b2c97d2185c26cebc1ad9d7371ca42f9031567"
+      },
+      "source": {
+        "bytes": 26393,
+        "sha256": "aa9f11709039fdf3cfd44d838e1505eea92494aa0f0fc2b3b5a726917187d6f0"
+      },
+      "canonical": {
+        "bytes": 1281148,
+        "sha256": "b53e834f0d8ea900736cf277e30c926b8c171844a934c9ec0ce89332fc04c782"
+      },
+      "preview": {
+        "bytes": 129530,
+        "sha256": "5ed3bb8b5cc3b6df3e391673a0b16b3c9df4c7e010d78ed1502d627b04a20eca"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-wall-facade"
+        }
+      ]
+    },
+    "winter-wmc-deck-tile": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_bb7581d6dd994620b828cb48e0540571",
+      "revisionId": "r_24ad3a121ea949b3819e19192a07aecb",
+      "manifest": {
+        "bytes": 12089,
+        "sha256": "a45fbd159d2d7409dabd1e3a246f5864b019a37b976d3b3192891727bd77619f"
+      },
+      "source": {
+        "bytes": 24628,
+        "sha256": "0d9712bd129238d8dc731d2efba8260f61eeb24238b6aa691502c31037b34393"
+      },
+      "canonical": {
+        "bytes": 187144,
+        "sha256": "4a13c23e6b7ced2213a3a7c48fff5d5ceaee8147ba771857a28239f3737a5026"
+      },
+      "preview": {
+        "bytes": 186117,
+        "sha256": "4ef0b004e72087dc6ee46d71dc451e8c7943db3e367931a5256d700e68893b33"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-deck-tile"
+        }
+      ]
+    },
+    "winter-wmc-door-entry": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_d30677f997eb4f8f998e8c5c8687b801",
+      "revisionId": "r_81e404f1e10f4ee6a408880168ee7344",
+      "manifest": {
+        "bytes": 14228,
+        "sha256": "9b1d12bfc40ff52ae06633743ef0c8656b3dbd373aec8718a8a6c54e65a4d2b7"
+      },
+      "source": {
+        "bytes": 24601,
+        "sha256": "2ddfcaa7b8617dd028cefa036aa408c6f2bee2198dcef653accbe0ce3b899a5c"
+      },
+      "canonical": {
+        "bytes": 167796,
+        "sha256": "988bfcd1d0bfc15b4d743e123e9af12fea96b625e67d69fe67e364b44a403f43"
+      },
+      "preview": {
+        "bytes": 229466,
+        "sha256": "946943991a2b3173c9aa8bf8734dc1c11204607b2288997390116f46cbffddff"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-door-entry"
+        }
+      ]
+    },
+    "winter-wmc-stair-rail-interior": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_160b654df5ff4658b92412c87af1a4ec",
+      "revisionId": "r_abff23385acf408694274758d8e525bb",
+      "parentRevision": "r_a68f1dc52096489c9190b6a07106b957",
+      "manifest": {
+        "bytes": 12706,
+        "sha256": "e690b566a0d2a46c682394ff58b5074782e302bf51220d7cc95bc68685766a53"
+      },
+      "source": {
+        "bytes": 25121,
+        "sha256": "d21b3f2fbe3f093bf7df1d9c6c208e5b228cc8c44f1b2c59c42c8354ae6f14e2"
+      },
+      "canonical": {
+        "bytes": 136804,
+        "sha256": "cf7ddfb5dc84041f8b2ffa86140cd81e8c61d51f659ee67ff4ba62f81e4bdf12"
+      },
+      "preview": {
+        "bytes": 108477,
+        "sha256": "79266e86009f0277d0c6b8e4adf628c8191e4e283a9c6275bbd3e85a2552ba38"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-stair-rail-interior"
+        }
+      ]
+    },
+    "winter-wmc-armchair-oak": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_0cc64d69fec0441884617672724738c2",
+      "revisionId": "r_63ad6298f8c24d7fa220eeb8b4bfd300",
+      "parentRevision": "r_09f8f88ff7c9445b8221f6dd0de521dc",
+      "manifest": {
+        "bytes": 12013,
+        "sha256": "d6c0fdb74afa274eb0181557adaf8600b0f491626a54748766e2a8f9116aedea"
+      },
+      "source": {
+        "bytes": 28943,
+        "sha256": "e08f77cd417155915e12d3950175086a621461b7c046b0250e767a90a1acd134"
+      },
+      "canonical": {
+        "bytes": 1167696,
+        "sha256": "07b8b0cfce29ff68def0291f1b1f6230bf5124f7b2f4dabc6e2cc477ca8d502a"
+      },
+      "preview": {
+        "bytes": 397019,
+        "sha256": "a148a9d904c14ba98e451864394f00152b86de84cdf958a8edaf77252f702def"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-armchair-oak"
+        }
+      ]
+    },
+    "winter-wmc-wall-west": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_449715d72b4f4404922170fe5dd8680d",
+      "revisionId": "r_a06b37dfb34843d394c049e0b9913019",
+      "parentRevision": "r_58b172e36a7144ae8ca91a1fb24940f6",
+      "manifest": {
+        "bytes": 11943,
+        "sha256": "8bdcdd88226e0e1e6db642b0318f6f2381709b51c1eb27218a36b98203182484"
+      },
+      "source": {
+        "bytes": 26000,
+        "sha256": "cad6b75cf7f62359e996e829f3906078c9190b616a0bd440fbd5895f64520ca1"
+      },
+      "canonical": {
+        "bytes": 1002436,
+        "sha256": "7a5d2bc1993fb74d6778227fa039ca7ed9cd63eb4881bca2763175dc29aeba33"
+      },
+      "preview": {
+        "bytes": 127149,
+        "sha256": "c854a3ce5448f6060366628d986f15143b3c9c1dd7e0ca5ae33156841b94b421"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-wall-west"
+        }
+      ]
+    },
+    "winter-wmc-wall-east": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_4c1cb01001994fb3be31dea1e484fcdb",
+      "revisionId": "r_c9a234d398ed4d78b1c7a94023ae2ab0",
+      "parentRevision": "r_9d0828a7595a4c6eb2a2bf1f85b5111f",
+      "manifest": {
+        "bytes": 12033,
+        "sha256": "c0d76adc8d363ae2994cf8a66102cbf7fe0c8499caae4c4bbe781b9202dfa591"
+      },
+      "source": {
+        "bytes": 26151,
+        "sha256": "201201566b4d765093be2e92d8e2e7a3ac39872e89cc2020041417e97f5120e8"
+      },
+      "canonical": {
+        "bytes": 1205672,
+        "sha256": "bec7b6538e0f61594607449088e44d847822a54b4afe06e740d35eb2a751a381"
+      },
+      "preview": {
+        "bytes": 162900,
+        "sha256": "612456aabd2d1637acc4ddf05c63c13250aa4d670db84ab43aeb349c3a3a7489"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-wall-east"
+        }
+      ]
+    },
+    "winter-wmc-wall-rear": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_65cb0abafd7b4697b40285c7871a1040",
+      "revisionId": "r_6225dd8469d646c8a555c201713a5761",
+      "parentRevision": "r_bce157fc1c3f49859055c25812fe427d",
+      "manifest": {
+        "bytes": 11987,
+        "sha256": "f331b753581cdab45f51adc05c6d0aec2ec971e186c630601f17a0326cdb4cc6"
+      },
+      "source": {
+        "bytes": 25826,
+        "sha256": "c261ddc87f8c76b9ac1cb3c48a501d4cc4358b51d1f82dd3e9a0625152fdbff5"
+      },
+      "canonical": {
+        "bytes": 827940,
+        "sha256": "cf8b764038bea4437e6e7a46f6d9d7839e4e0b3e87303bd76bd5ba822d35d654"
+      },
+      "preview": {
+        "bytes": 183701,
+        "sha256": "8448b00f7b5d9c89f32e5bcfe53da21ba22671ae72fe549b146d3092620914c3"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-wall-rear"
+        }
+      ]
+    },
+    "winter-wmc-stone-plinth-panel": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_4fe232796efd42a3947fb4a8a7fa291f",
+      "revisionId": "r_b6a3c5ab05d04971bbb4a794d98b6fff",
+      "manifest": {
+        "bytes": 11615,
+        "sha256": "d8bbb7c570bda93862820dcc5822847c260ba3caa0329c5dbdd3c1c44b5154b0"
+      },
+      "source": {
+        "bytes": 24604,
+        "sha256": "f6cdd39f97308ee0a3eb3b8a22c32ab7cfc3473d5a4fad26386207e5b1a297a0"
+      },
+      "canonical": {
+        "bytes": 290904,
+        "sha256": "3774732adde6e8cc3c22c387d4b432188e71561f4d8f8fbee7c56416b0645cfa"
+      },
+      "preview": {
+        "bytes": 625534,
+        "sha256": "27bf8b4893cf4ea46fd3ed2b5a6b65410446eea36145bd2e41f58c86d9a21000"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-stone-plinth-panel"
+        }
+      ]
+    },
+    "winter-wmc-floorlamp-tripod": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_6805e3cf3e144d22b369382e17051bad",
+      "revisionId": "r_42e2e4d7cb6e40b787db5f48ad0200e8",
+      "parentRevision": "r_a816669077064b239efc396178e6e3c3",
+      "manifest": {
+        "bytes": 13126,
+        "sha256": "b0f6ae041e2ebc709ff82d4616d19d198d22beccf2b2e38a9f0b110ca029a7a4"
+      },
+      "source": {
+        "bytes": 24603,
+        "sha256": "157105c7788f5c67eb9b119505d4f4e4d3724cc3893a8643cad42dec7c149023"
+      },
+      "canonical": {
+        "bytes": 256456,
+        "sha256": "a937ad32b256bdae9e07100d449d172e97380a4d08467f943ac6e7b0d80a764a"
+      },
+      "preview": {
+        "bytes": 198497,
+        "sha256": "0422a4f8110358f5f9210fa3d5c15f6d0b1212d21099d153f58e5adb574ab798"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-floorlamp-tripod"
+        }
+      ]
+    },
+    "winter-wmc-floor-loft": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_4787d24047d940169a15b2a76954e941",
+      "revisionId": "r_dfca02649051461fa07592d21f60e932",
+      "parentRevision": "r_e1d4331e6f854d3598efe8ed62a100ea",
+      "manifest": {
+        "bytes": 12786,
+        "sha256": "cc0cc8a90ea94847a9e935123dbc0af1a2fe7809707b3fdc27367212b9ea06ff"
+      },
+      "source": {
+        "bytes": 24682,
+        "sha256": "3e3a10d73162f5fe6c95e3d0fec963ce745afd3902a07f4658e8bfed52f7902a"
+      },
+      "canonical": {
+        "bytes": 853028,
+        "sha256": "e217d936c4634eaa1bc5d823613dcc77101230bf9a69bfb717880b8ca5c256c6"
+      },
+      "preview": {
+        "bytes": 104265,
+        "sha256": "596f0df11a744c4b9efd99a4beddcd7e6485e7a98d7b1c909143048278b8d4f5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-floor-loft"
+        }
+      ]
+    },
+    "winter-wmc-frame-post": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_eaaf287ec60d46ff9612b8ca7c6b9eff",
+      "revisionId": "r_16867fa4eb2f4855955e0f2179d41b60",
+      "parentRevision": "r_1fbf192ce7f94c0f9fad11b50e97e986",
+      "manifest": {
+        "bytes": 11958,
+        "sha256": "d510fe8d2edd5a831289bb10df4fb3c8e80c9e116cea8c940a577813e857527d"
+      },
+      "source": {
+        "bytes": 25844,
+        "sha256": "483942eb25d88f752d9c8fe5e82ab75bc16511e3c5aaf56895b54186e6cad082"
+      },
+      "canonical": {
+        "bytes": 83920,
+        "sha256": "16c09a2ebd4fdc9cf03169652390226cf6171a50614c37ff43a268c7c99eadf1"
+      },
+      "preview": {
+        "bytes": 149163,
+        "sha256": "db15a3ae21da86acb98f65641da3906d6d354ecc7e93a4d143006dffa6bebe06"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-frame-post"
+        }
+      ]
+    },
+    "winter-wmc-rafter-frame": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_875448873b5e4f1b9693982de3cc2ee1",
+      "revisionId": "r_4d62127be4ea41e7a8387e812bf4a811",
+      "parentRevision": "r_765f898ee13c41598b4617befc897fbe",
+      "manifest": {
+        "bytes": 12481,
+        "sha256": "3ebf9b2e8ba17257ec21f10b1c2c57026ab0b9973063c9b7dfe1ba6c4e012b66"
+      },
+      "source": {
+        "bytes": 24621,
+        "sha256": "2c24c3a9e4c7f2b9831fb1e2b8e31e2b68cc89bfbebbac80ef3977bb44cb7e6e"
+      },
+      "canonical": {
+        "bytes": 53964,
+        "sha256": "db443e084f6674c221d4940acbc44151d414f29b753f717d3786c255a00e0a0d"
+      },
+      "preview": {
+        "bytes": 68088,
+        "sha256": "5cc2ab1e4c2156cf7d3b3c12644449440aa84ada18e5bc6c91cc383cdae93069"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-rafter-frame"
+        }
+      ]
+    },
+    "winter-wmc-door-deck": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_e90781181b414dc1b596ee7de369184f",
+      "revisionId": "r_2c207a3161084bfbbd9608cf261ba6c7",
+      "manifest": {
+        "bytes": 14226,
+        "sha256": "db6f242bb3295762c036916a7353dce1ff0adaf7def07ccaaac64cc9a8eb7c9d"
+      },
+      "source": {
+        "bytes": 24600,
+        "sha256": "af48b1e795be0e9c32db47b40df653599df48ed90807246848c545d1eb152402"
+      },
+      "canonical": {
+        "bytes": 169884,
+        "sha256": "4e5cb5a7287b2e825ae5658f44fc16ab08e0f0bb047beb10dc43c35c6666e837"
+      },
+      "preview": {
+        "bytes": 228275,
+        "sha256": "874d98844aad7f2ae828af6403704bd99f7b93c14b32617c505932e534ad9d5a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-door-deck"
+        }
+      ]
+    },
+    "winter-wmc-tread-timber": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_0fa76a4fc9ca4d6aa7a7b2befbaf10c4",
+      "revisionId": "r_8b684e59f24b4408862ed20026389cce",
+      "manifest": {
+        "bytes": 14180,
+        "sha256": "017f8619d9d544c73053117991cd1f0c7517b4143534c558394c47141ff99346"
+      },
+      "source": {
+        "bytes": 24591,
+        "sha256": "b8881fa9fea7ab658a0a4881f353037af92259ddc95a8659bea32b3e2815e360"
+      },
+      "canonical": {
+        "bytes": 74468,
+        "sha256": "ed466a3865232ab707154674ab524220cfd0802ed010b4c575f01d73c2bf4c97"
+      },
+      "preview": {
+        "bytes": 99491,
+        "sha256": "221af859f8a22ff714b671f75d8f11139d00cc854f01e853028560b3ec1675a2"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-tread-timber"
+        }
+      ]
+    },
+    "winter-wmc-stair-rail-exterior": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_bdf0c3426f2648dd8874fc543ee42def",
+      "revisionId": "r_659dbb66e23b4b64ab989ed92e795da5",
+      "parentRevision": "r_f6918d074fad46d38c958fca40e4bf2a",
+      "manifest": {
+        "bytes": 12703,
+        "sha256": "7df33eabd4f542aa89db6347b44cb0ca040b82b56760c865f0dcccffd2aea880"
+      },
+      "source": {
+        "bytes": 25119,
+        "sha256": "034ce01caf534c3f090cd7bb2d9e8088d9d112d1aa61d8c9b5c6e82887debfc9"
+      },
+      "canonical": {
+        "bytes": 115604,
+        "sha256": "78b9bd4d0c2613d8b4d708b9a3a884a24b345c2f0075555479c6d7d6aa25e2f0"
+      },
+      "preview": {
+        "bytes": 142659,
+        "sha256": "ec20887e8837554669181d53c9295093691c4c1fd40ad8573112ff895d6a9da1"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-stair-rail-exterior"
+        }
+      ]
+    },
+    "winter-wmc-rail-span": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_2e2adb67c53c4839a0760672abfb69ae",
+      "revisionId": "r_9a172a5524904a298f8d475d722de2a1",
+      "manifest": {
+        "bytes": 12526,
+        "sha256": "b8b5cdbaf52aa8d16acf128cb6cf20fc727725a190ecdf0f677127a31916ad7f"
+      },
+      "source": {
+        "bytes": 24584,
+        "sha256": "723a9c746e46da345672b77a18dfcf70fb072882f0d16ac3fe10ecab4bce0b5b"
+      },
+      "canonical": {
+        "bytes": 73496,
+        "sha256": "610b49be8200c3259dc8e6ca66bee2ef53dccf52df46ac05c8bcfadd36386e3f"
+      },
+      "preview": {
+        "bytes": 145962,
+        "sha256": "8ad11c5a09cb66f2c5aa756e773057765464533775a6b46158b65b89d6f54d8d"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-rail-span"
+        }
+      ]
+    },
+    "winter-wmc-eave-storage": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_503f2f86f36a459b8a5f386ab7538654",
+      "revisionId": "r_a8a15917bcc14649a392b736a40d0d0b",
+      "parentRevision": "r_533e8e446c234accae58a57a5d7af32b",
+      "manifest": {
+        "bytes": 12207,
+        "sha256": "de7006b2a27c1c08e0338837d0cba0fa8434e4df3cbef48049261d16cb9a151d"
+      },
+      "source": {
+        "bytes": 25826,
+        "sha256": "40815a3860e856dcdb957629f2719fb6fe37a1f7a803b923027278d47ef74fb0"
+      },
+      "canonical": {
+        "bytes": 139188,
+        "sha256": "a6a82947a98876547e5cb1dd4b04b08dafb3c9ab87ecaef5d0764e77b1618e94"
+      },
+      "preview": {
+        "bytes": 225434,
+        "sha256": "ff0602e06ec4249dc0729e9c69410638a29a00357b6356e44d9ded54d6b0917e"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-eave-storage"
+        }
+      ]
+    },
+    "winter-wmc-coffee-table": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_82db766050924a728e150f5fe781d031",
+      "revisionId": "r_865e239598de44a5918a2c8d2b73acff",
+      "parentRevision": "r_9c3aa6b8a9df4bb1a487e8e4b7b160af",
+      "manifest": {
+        "bytes": 13044,
+        "sha256": "d4ceeb840ca8dfcbe3ea763dd13bf6bd99f5c2971753c1ec86b684ed2bc8b0be"
+      },
+      "source": {
+        "bytes": 25866,
+        "sha256": "6614674214e3d4f1fa2cc455d30d22a3d1facc490b73bdd5912afcb3cac210e1"
+      },
+      "canonical": {
+        "bytes": 306400,
+        "sha256": "1930b8cfbfd19325dd477b855505009eb7d60280b3328682a7ddbc4f4ebadab9"
+      },
+      "preview": {
+        "bytes": 240832,
+        "sha256": "7d74e096e9e7392488d54637062293ae168cb4fb48b30618717134bbcf5914e9"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-coffee-table"
+        }
+      ]
+    },
+    "winter-wmc-living-rug-wool": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_81cee922309d48cf9799373f0d431b35",
+      "revisionId": "r_c9160d6fc18a4ee2baa2b7a367195e6a",
+      "parentRevision": "r_08dcb2a2b7f844bf89d3a0500b99fef9",
+      "manifest": {
+        "bytes": 11219,
+        "sha256": "a35ea8b112f3e2b4782a91217365d1d7fa6b5541ca9f38b11a8bb98048a6ba25"
+      },
+      "source": {
+        "bytes": 24598,
+        "sha256": "f6f1f27322b77a3c827d76a9d87375e639511dfed50a9f0ab99d559517932270"
+      },
+      "canonical": {
+        "bytes": 649692,
+        "sha256": "26b742b9b2ccc0fe25efc6c7f4ebefa79c49f1c9b39a9199a1dda0043ae3b8d9"
+      },
+      "preview": {
+        "bytes": 30534,
+        "sha256": "d95dd0e6b29d3f48a9c4b896fc1c201b85682959b226692f0cc09ec6b30d6409"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-living-rug-wool"
+        }
+      ]
+    },
+    "winter-wmc-gable-glass": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_9680ea9f2fc843098ced11beb55824cf",
+      "revisionId": "r_8510fb32447d4d4d84493a39e8be6a98",
+      "manifest": {
+        "bytes": 11595,
+        "sha256": "cc99df403452781b3a0ecd4d4cae5f78e46d16f04daa133894037b4775ab5301"
+      },
+      "source": {
+        "bytes": 24564,
+        "sha256": "2fe7f41a00f4c7200d5a910e0105fe360a723e1b8745664a997dd80b8685a568"
+      },
+      "canonical": {
+        "bytes": 2424,
+        "sha256": "fb267c4097fc1a9eb111d22a332df3f4f8a415d6fb4ee950a40a5e38deaf42c4"
+      },
+      "preview": {
+        "bytes": 15495,
+        "sha256": "72c5cf76e63996da96856dc3af085f2396c98a977479ada717c3322b63b260d6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-gable-glass"
+        }
+      ]
+    },
+    "winter-wmc-roof-east": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_0811b67773b5487ba90d0b7cbeb8c80b",
+      "revisionId": "r_04edc17050114086831c5e5098b64436",
+      "parentRevision": "r_0731e0d0a4f84c2786ec572f8402a3ff",
+      "manifest": {
+        "bytes": 13724,
+        "sha256": "e2f44890f33c2c86198ee0f1764ac6ba861c4bc8fe4682242f8075f5a4d4964f"
+      },
+      "source": {
+        "bytes": 26039,
+        "sha256": "a4d73cce247f6a3fba397e4fe2f17473acd163e67fb1c7509c4af0e2bd691d10"
+      },
+      "canonical": {
+        "bytes": 951996,
+        "sha256": "426760d4f8c963729d6ca10f9aac697345cafe804d47edd2da3ddb5e0241d066"
+      },
+      "preview": {
+        "bytes": 190601,
+        "sha256": "ec23b7e160581e079723c77b62dcf66ba9d97610165e1742abe5148c030ff165"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-roof-east"
+        }
+      ]
+    },
+    "winter-wmc-roof-west": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_0e2bbbacddff4e9b8b18451c1d5cf6c4",
+      "revisionId": "r_20ee4d4806274ec6afd7b52ff91f9bc3",
+      "parentRevision": "r_b975770f0ffb44c59efde92b640bc490",
+      "manifest": {
+        "bytes": 13744,
+        "sha256": "ce4344e5ecc12b87839bdcacffb7f0dffd1e806a716a089ad0ebbf0de6652f68"
+      },
+      "source": {
+        "bytes": 25964,
+        "sha256": "9fb1fa0d8c5b97bcf04f7931be7cbe493d8cbeb277024e6fa90f4ea92b1683ff"
+      },
+      "canonical": {
+        "bytes": 953224,
+        "sha256": "d18380d2d2a5fa3a0d524076702f5497eff426367b255cd48947938f0fcf5c74"
+      },
+      "preview": {
+        "bytes": 173727,
+        "sha256": "81330782ec819211c194b0a592dbafe8fbe4ed8787538d1226ca2b397d2a4d5b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-roof-west"
+        }
+      ]
+    },
+    "winter-wmc-chimney-masonry": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_da54d460d06c47138ef89a4b9bd92ab9",
+      "revisionId": "r_a9b40046ca5c4d8e8c2a0f0cddd8c730",
+      "parentRevision": "r_26df4c22265e4718929b8970e892ab0c",
+      "manifest": {
+        "bytes": 12563,
+        "sha256": "e425ccb2e3dbd51c039f151437f9da27275b832352bb7c149c81f5a719b81f2f"
+      },
+      "source": {
+        "bytes": 25231,
+        "sha256": "f6a081295e5379042d0b1b925a8b0455024262a1e7a10905d2f81f318da69361"
+      },
+      "canonical": {
+        "bytes": 1147316,
+        "sha256": "13d9eff2c75a0b090b06db398c2110c7fb0511889598efb605b1cd204e3b4daa"
+      },
+      "preview": {
+        "bytes": 156648,
+        "sha256": "f52a3185c1fb303fda327176b313e194e96b9fbd5e3cb7265032f2c9c0d2b87c"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-chimney-masonry"
+        }
+      ]
+    },
+    "winter-wmc-side-table": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_19edeafb0e3848718315f8c54bf89885",
+      "revisionId": "r_314b667491c24a52bbd681da663f69cd",
+      "parentRevision": "r_332d3c3d01c84d94b0c1e8e95fb5207e",
+      "manifest": {
+        "bytes": 13816,
+        "sha256": "39c732b55c6a93f0ce7cdcf6c1acb56f36401a6d8c66dca31834b4ef5320a3db"
+      },
+      "source": {
+        "bytes": 23331,
+        "sha256": "5d3d3ae33e17481187f411b2ac6a716f2beda82c0185613ccec52ab37585143a"
+      },
+      "canonical": {
+        "bytes": 184028,
+        "sha256": "b38e325dcfb767c16d840e3987d669b05cf606a46efe72731681f790c8ec0318"
+      },
+      "preview": {
+        "bytes": 308154,
+        "sha256": "802a283b1d145c9a260288d2a2e605a002bb41f621bd8d49e8a061ad111f44f0"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-side-table"
+        }
+      ]
+    },
+    "winter-wmc-dining-table": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_26dd80ee80db4d85bc2a7b56475c3cbb",
+      "revisionId": "r_49df9f4d840241aab1426e6a6ab2c3e3",
+      "parentRevision": "r_dfed21faf6754fcfab7381a8f94e3254",
+      "manifest": {
+        "bytes": 12727,
+        "sha256": "87c56c1f6373a17e4f10f2bd844494e7755a56663496b9708d2aa56f86c9f167"
+      },
+      "source": {
+        "bytes": 23336,
+        "sha256": "33a68c3c9f485420de9b5fe63f4536ab6a3edccf33afcf39633999d823246d0f"
+      },
+      "canonical": {
+        "bytes": 390856,
+        "sha256": "594d6c40df27995d7bc949c0ad2ae80b915d2cd27e574ff29c7d1f48464880f2"
+      },
+      "preview": {
+        "bytes": 223700,
+        "sha256": "a8b020651cab1a7d5ab078df5a99344d57daf9fa45b85b7ce7037f6d3439b4e9"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-dining-table"
+        }
+      ]
+    },
+    "winter-wmc-dining-chair": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_1686d36f753d4f9abe0f9991d8bfb36a",
+      "revisionId": "r_c513bc554a7f407eb0c7058055dcfc68",
+      "parentRevision": "r_aa1aee75f8dc454ba17369c33bb914b5",
+      "manifest": {
+        "bytes": 12721,
+        "sha256": "2034060d34feb366d9a7f71bf14cc2fe39f76e6bdb3e11b28941716a9b73b51c"
+      },
+      "source": {
+        "bytes": 23336,
+        "sha256": "9d2c5c044305c07cd9b3fbea3f9cc21403132285601738388e782c429d378ec5"
+      },
+      "canonical": {
+        "bytes": 329496,
+        "sha256": "548033dfe41212ed713367d4f2cf071076b19ea65453b4e87e4264034e7d79d6"
+      },
+      "preview": {
+        "bytes": 282873,
+        "sha256": "499acbe9c013f512e1714a2e9d29eb2e1503ce4628cd75f59fe60c99dacc5179"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-dining-chair"
+        }
+      ]
+    },
+    "winter-wmc-kitchen-run": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_43a2c9a0565e4743b82e9d9b51d257c9",
+      "revisionId": "r_8c52171c556a4d9180583dd6a6bdc01d",
+      "parentRevision": "r_c88eaf3e668e4f0aac0ddf1946d98731",
+      "manifest": {
+        "bytes": 13066,
+        "sha256": "c578da5436c7fb96a9cd24d7b27176abb1a65bf573c4cd51b9824d7590ec70ca"
+      },
+      "source": {
+        "bytes": 23988,
+        "sha256": "51a6acf3993d81ef1494bee13bca6d9fb9a16ca4a969f4418cd1406aceaa7338"
+      },
+      "canonical": {
+        "bytes": 837244,
+        "sha256": "9cc826394db01b32c1bc7d62a5053b657a53c1ed9305f46194e0baa081d9b288"
+      },
+      "preview": {
+        "bytes": 228518,
+        "sha256": "480278947521a6d7c1c2b842d7c49eb6b91f0b1dc94b6aad062efa1fc6309d72"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-kitchen-run"
+        }
+      ]
+    },
+    "winter-wmc-loft-bed": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_64db2e9702e3427fa9188875a5980146",
+      "revisionId": "r_cd846321ce64474da24aec6c2381178e",
+      "parentRevision": "r_5864b2a030564b018e8f3e0e6404a7bf",
+      "manifest": {
+        "bytes": 13927,
+        "sha256": "43b7ed23f325ff7aa7309e1a11f43001a954715793949390c52fbe4f2f771069"
+      },
+      "source": {
+        "bytes": 28229,
+        "sha256": "85cf145a55bef624530cee43135cfdf49240181c54a5c9d259919d38d6898127"
+      },
+      "canonical": {
+        "bytes": 3731352,
+        "sha256": "235c03dabaff62b16db447fc7d08ccaea5fb04e70b4b027a44a047582abd40c7"
+      },
+      "preview": {
+        "bytes": 259513,
+        "sha256": "845adb2eee5cd556247c23dc6075c1798154eb7f40f12312f9abf5170f78d7db"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-loft-bed"
+        }
+      ]
+    },
+    "winter-wmc-desk": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_43fa2e2abfd94f308c0a32b127d21c32",
+      "revisionId": "r_d52ea05e031942dfa0fb1a34972226ae",
+      "parentRevision": "r_a880c47d3e444f3591f7b4be4352e648",
+      "manifest": {
+        "bytes": 11992,
+        "sha256": "69fbfe7d754488b6b29298e544bca088973be89224ca6751f58555d092d8df1e"
+      },
+      "source": {
+        "bytes": 23318,
+        "sha256": "ab6eefff506ba56ddbd657742a3c84a6bf60d4ea394c54b9d70610634bdbc216"
+      },
+      "canonical": {
+        "bytes": 107496,
+        "sha256": "161c21bbc664b675b6f6f7a7c10335b6d15b3f5b55b15bdce718bc0ce92c94eb"
+      },
+      "preview": {
+        "bytes": 190092,
+        "sha256": "d46ab60826e2e5a3d45655a44148c6886a40c13ba562d6ac365d4d64a6c96a1b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-desk"
+        }
+      ]
+    },
+    "winter-wmc-entry-bench": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_d6fe54a2237c4a538f97cc9792e05ba4",
+      "revisionId": "r_78da00aa2eb04b7fbef7a33fab2826b6",
+      "parentRevision": "r_991716986d564f0abcaa740f36dccec4",
+      "manifest": {
+        "bytes": 13672,
+        "sha256": "d748a3dead9391efc38d98baf3df5c498b4d2081a5a9d20355cab925ea7a3081"
+      },
+      "source": {
+        "bytes": 24222,
+        "sha256": "e2549a05fa349e2018ac789207c6169824b60f316c6c85b8549fbc90de3a4bfe"
+      },
+      "canonical": {
+        "bytes": 1474736,
+        "sha256": "9edb1292dcd614d3bec97f122e76240022312ad61933539cbd98400aa26073d2"
+      },
+      "preview": {
+        "bytes": 205738,
+        "sha256": "872dc960edcec03afee0e78321302ef531d04958fde762ee38c4cad170b3a73f"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-entry-bench"
+        }
+      ]
+    },
+    "winter-wmc-pendant": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_7fe53ad9a90e4003928e7848a4142a20",
+      "revisionId": "r_34041812d1bb4d509fc4ba6aab5dcdec",
+      "parentRevision": "r_c0fc0eacff24411692e1b557d2270d7c",
+      "manifest": {
+        "bytes": 11279,
+        "sha256": "72d8038fc6db03d01a19b56be3cd9ebb21e2e2915960a95353515923b5689a5c"
+      },
+      "source": {
+        "bytes": 23448,
+        "sha256": "7e34107c4f84cf49766478d068003c1cb2a2b8a728b6bfa67c380b8afdc1ec4c"
+      },
+      "canonical": {
+        "bytes": 83588,
+        "sha256": "4d146d856f18f306187fb052e718b1115870bedb3f4a479d377ce60b013c19c3"
+      },
+      "preview": {
+        "bytes": 104627,
+        "sha256": "b8cfbd04c57cc03752fbda23c9546bab2d4d3e379a002ae8130c7c39b5de622a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-pendant"
+        }
+      ]
+    },
+    "winter-wmc-small-props": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_a71359b812cd4b3fa22d129458e471db",
+      "revisionId": "r_15e05145d9c649de9fe845dd4d4aba9d",
+      "parentRevision": "r_c6bb100219a3447fa4a72de09bcf3f9f",
+      "manifest": {
+        "bytes": 13853,
+        "sha256": "297ea3eb42696c612035da773b7bb7578793651fb77477873d92348ce6e73903"
+      },
+      "source": {
+        "bytes": 23328,
+        "sha256": "4c792f4c7d9a86e14a9d622a9a63d89284d2969b1826b8685beb2f9e4e8e3e57"
+      },
+      "canonical": {
+        "bytes": 359460,
+        "sha256": "36eb43ffd240300c10a2a7548681708576db54af903f05b94f564a5dacbc85f3"
+      },
+      "preview": {
+        "bytes": 247358,
+        "sha256": "ee8817a0c2a9edfbf9dcff9e21f0ae796a2d17a9c961b9f7ecc362b4807b5ccc"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-small-props"
+        }
+      ]
+    },
+    "winter-wmc-rock-shelf": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_5c0f2b50b91244c49feab57e93b27f78",
+      "revisionId": "r_d25ced88b13642bda2414dde5dedd610",
+      "parentRevision": "r_a997314a53ce4721b3421ee748749ed8",
+      "manifest": {
+        "bytes": 11266,
+        "sha256": "fd7bd2bc6df828b4cece7cb544da1bdfd656401199ef8a84bb5a0e70dcd978da"
+      },
+      "source": {
+        "bytes": 11638,
+        "sha256": "aa8853992c7b9c57c09393d472e88f66a179f14bcb40b01404aec15efdeaca8b"
+      },
+      "canonical": {
+        "bytes": 750792,
+        "sha256": "e39ca7e6cf3a3e7c109a37469f6b2d3462b2abc57c6c0f5dcdae98b4fa2b1ead"
+      },
+      "preview": {
+        "bytes": 408953,
+        "sha256": "356e251c47714c9a755da81e404faa0ec978e5b7a25427764377d8b2a9d1ccb6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-rock-shelf"
+        }
+      ]
+    },
+    "winter-wmc-boulder": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_26cc548c370e43069bc777d04b6f5bf5",
+      "revisionId": "r_eb0ca9b92aaa45cab84eb453c9eeeb17",
+      "parentRevision": "r_4bef4078987a430690006857b5b72b12",
+      "manifest": {
+        "bytes": 11349,
+        "sha256": "1c457f5a9b025fff0c542418dc9471b123cf01b006e9a47881d8fb6e48e5f124"
+      },
+      "source": {
+        "bytes": 11503,
+        "sha256": "0ac7b545660413a46ca2e5f10d92df618327fb921ba0043506c607f6289c2060"
+      },
+      "canonical": {
+        "bytes": 704368,
+        "sha256": "64c3333e2bb6fc5ba734c417cd4e4f465e407ed162c4b1ca786da620bf3f47c8"
+      },
+      "preview": {
+        "bytes": 603820,
+        "sha256": "75c65fd09a77937778a7acaf9a9139e84e1e97b8d3550dd3739842b87f4cdbd7"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-boulder"
+        }
+      ]
+    },
+    "winter-wmc-mountain-massif": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_e12c29f2bd7a461e8e323e4fe4dcae05",
+      "revisionId": "r_5256a6d10045495081fb7340a4de6990",
+      "parentRevision": "r_b60cfc2564f146d9b439d60cfeb1580e",
+      "manifest": {
+        "bytes": 12042,
+        "sha256": "cafd81360b8b4baf78e815d6cc23a76260211f660eb7b863903620c20847e4db"
+      },
+      "source": {
+        "bytes": 13882,
+        "sha256": "98da866f1f8c66ab8cb481127f49cf2ca2d651825faa3d044496120185b5ff19"
+      },
+      "canonical": {
+        "bytes": 2313508,
+        "sha256": "5f378bc259bbae11a42d4ab06667213eab84322bf26274e8c6812489adccd39d"
+      },
+      "preview": {
+        "bytes": 405450,
+        "sha256": "74dc46ad2977866f36bfefe9b1469ddc78de23acf08c29a1c6672cb4bb8806f7"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-mountain-massif"
+        }
+      ]
+    },
+    "winter-wmc-ridge-band": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_3d4ff575a07b4fc392f782d615b07f6c",
+      "revisionId": "r_9e28a32d10e24fbba9eb2f739babd911",
+      "parentRevision": "r_90b233585e5b4e1f92844ecc2e0359d6",
+      "manifest": {
+        "bytes": 12032,
+        "sha256": "6878cff7368be8da5d4db24c96618f5cbed43a073cc545c7a0545119a26de79f"
+      },
+      "source": {
+        "bytes": 13875,
+        "sha256": "fe587dda2b720ca86454491e21656a475b4c6dc858e86dab27d0a23593652dee"
+      },
+      "canonical": {
+        "bytes": 1044932,
+        "sha256": "0940bd73fe92813d7ae168ebf194de4e935841b815a73f0442abff1ceb5cf500"
+      },
+      "preview": {
+        "bytes": 330817,
+        "sha256": "c7289e3787c8544478aec8a8e3c86144f4dd1be63048394f6e85b00943ea414b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-ridge-band"
+        }
+      ]
+    },
+    "winter-wmc-snow-bank": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_af248987cebb476e8562cbb3514aac5d",
+      "revisionId": "r_deb540babffe4e8d8e6706c90a66c486",
+      "parentRevision": "r_35d76117448a450da8f8a1bbf001b879",
+      "manifest": {
+        "bytes": 11984,
+        "sha256": "8c24bdd75e15c82c0f5e048ff3bc904e4dcd81bd1af59c8b7be72009f2277990"
+      },
+      "source": {
+        "bytes": 10749,
+        "sha256": "73fb0055510bfee9a8e87d60e5c3eccce02e62fc1ea006cdb9c63a19bb55bb65"
+      },
+      "canonical": {
+        "bytes": 733892,
+        "sha256": "b92930b6d59cabcd8b1b12ff35519727d0d463046f53cbe63c8f586e8b926778"
+      },
+      "preview": {
+        "bytes": 130841,
+        "sha256": "c0cfb912fd17dea85b67a845303da211b42407cd90d9bf268ff877b4602762bb"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-snow-bank"
+        }
+      ]
+    },
+    "winter-wmc-ground-clump": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_baa1bd252f9945b9982c40574cefea86",
+      "revisionId": "r_80d42c6571574faa8819e1128ed3d693",
+      "parentRevision": "r_f6fd9270d58d46668c1fa7bc20312ea4",
+      "manifest": {
+        "bytes": 10949,
+        "sha256": "cf271a5e92b6e0ebc68bad4fd414e14c9b19fa27ed2a503d55cf9cce7da7fd70"
+      },
+      "source": {
+        "bytes": 10551,
+        "sha256": "7e5b7837054c86f93b14050275f3cbc963b1601189716bc2a6ec95e9fe737c56"
+      },
+      "canonical": {
+        "bytes": 99116,
+        "sha256": "059f40b659070d9eb11d684505e08c79a88c2d48bfb8d6d30a5f1b78d3613307"
+      },
+      "preview": {
+        "bytes": 165165,
+        "sha256": "7f7faaa692f62c86da202a097884f1377671f5bc84f2baa151eb3b549d2eae35"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-ground-clump"
+        }
+      ]
+    },
+    "winter-wmc-fallen-log": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_363b720923f747bd9c8795197933bbcf",
+      "revisionId": "r_c98dd2aeee1942169543c629a7474b1d",
+      "manifest": {
+        "bytes": 12859,
+        "sha256": "a730a51c92cd066c35380e206c0db946f56462366e437e5ebd85b7f7fb844cea"
+      },
+      "source": {
+        "bytes": 11276,
+        "sha256": "ff43a6db7587ea2be4ed9e2304e1be383421328453e14c9e4b41e428d7a5d006"
+      },
+      "canonical": {
+        "bytes": 423668,
+        "sha256": "1c1050f2294eb6720ea6875e4a0d40e412b0d71bb6473f81bf913ff5084a3902"
+      },
+      "preview": {
+        "bytes": 238128,
+        "sha256": "30694b96d33140af25f07e770b1de4d93a47eeb0f6fea348457230e8c84449e4"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-fallen-log"
+        }
+      ]
+    },
+    "winter-wmc-trail-marker": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_315c30d4f7674cb6a346c9b455efb999",
+      "revisionId": "r_b88bfaef911545fe9b4d9625978f5775",
+      "manifest": {
+        "bytes": 11250,
+        "sha256": "f04488b8a80b4294c0199efb5a5a0d7d5a3c3bd70f0210d78c4458b9f7aa81d4"
+      },
+      "source": {
+        "bytes": 11254,
+        "sha256": "3b026cc3eb5884ff78049b94d3d257bdca67bc0c9f49928df6ec264bde567c9d"
+      },
+      "canonical": {
+        "bytes": 235424,
+        "sha256": "be9a3042b84c29260944d6fadb5608fe69876b05a8a05497ea4c216c73a994cd"
+      },
+      "preview": {
+        "bytes": 210493,
+        "sha256": "91b8a687a861a713a9f5b36a885cbf339417b04da6184efeb9a34e51421982ce"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-trail-marker"
         }
       ]
     }

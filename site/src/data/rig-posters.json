@@ -209,14 +209,14 @@
         }
       },
       "holodeck": {
-        "renderedOn": "2026-10-23",
+        "renderedOn": "2026-10-24",
         "engine": {
-          "commit": "3c34ea5cfdc82eff33394f2301c94c326683943b",
-          "subject": "fix(site): the Holodeck scenes place the final Cove modules",
+          "commit": "3c6fc390eae3739eb2e2b15c5d8975e54f0fe8ce",
+          "subject": "feat(site): append committed Holodeck examples to frozen selections (#265)",
           "dirty": true
         },
         "service": {
-          "url": "http://127.0.0.1:8417",
+          "url": "http://127.0.0.1:8123",
           "protocol": "kiln.render-service.v2",
           "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
           "backend": "vulkan",
@@ -236,7 +236,7 @@
           "captureIdentity": [
             "kiln.capture-producer.v1",
             "sha256:f664529ba31d5c026cc6e629a3d355468dd4cb8e1f7fee0f3e4dd1cced67fc70",
-            "7d8ca1f1-729f-40e9-a371-5a01550dbee3",
+            "19619565-2e1d-48ef-884b-6ff92dd28985",
             "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
             "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
           ]
@@ -6524,6 +6524,1436 @@
         "padding": 1.05,
         "projection": "orthographic",
         "halfHeight": 0.6271813837419588
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-fir-hero-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1496085,
+      "sha256": "2413faffc98a73bee0c0940f3d737b7b09456003a05b234a96c257aa8d566d84",
+      "assetId": "a_d7c11d251c944d37bb395dd2317258bc",
+      "revisionId": "r_105e6c9467ed4443a85cf1979b45aab2",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-fir-hero-a.glb",
+        "bytes": 3436088,
+        "sha256": "d01f3008ae13048b002c6bb2cc5edaf23b0311988cc57000d1542f08f1c7e373",
+        "triangles": 38054
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 7.872341950033716
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-stone-pier": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stone-pier.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 2014925,
+      "sha256": "7929eebe8ac68d91f65ce02ad183f5d96293245c6039738897d3a29194598864",
+      "assetId": "a_f65ef66e092c4aeeaf02e7836dbf8e7c",
+      "revisionId": "r_5cfe4f56a2e64bdeaf11ecfd989d63a8",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-stone-pier.glb",
+        "bytes": 527972,
+        "sha256": "431b5e429d391f1a3e450216684062b3d2782235a3d2db79c960db23ed3edeec",
+        "triangles": 3424
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.3472090969652506
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-window-test": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-window-test.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1727998,
+      "sha256": "70c2a46fd05c98ad8fbf7212e3445701163dad72d7f2df1a0980fdcd48d86b89",
+      "assetId": "a_6f50a6077a584e11bd010702a67bdbf9",
+      "revisionId": "r_a68e049d8cbf4449bbad83b4b2d33499",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-window-test.glb",
+        "bytes": 175424,
+        "sha256": "c12cd14901e4d7e486281df83d0b64dd028770dd97cc244216597915266b6689",
+        "triangles": 1026
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.4099478078755394
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-lantern": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-lantern.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1530947,
+      "sha256": "b446f193143e57b2f517c848f6b79c324b957b4fd6cff51e808955753379a5d2",
+      "assetId": "a_a618a31b39cb4b818f5c2f36d743c65e",
+      "revisionId": "r_51eacd2e38f9470e80a967cb04a12da8",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-lantern.glb",
+        "bytes": 18136,
+        "sha256": "bb56d896497c49830499a90ad8eaf7ec453e0c4527c441ed73ad1697a5c8208f",
+        "triangles": 360
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.47887990328751406
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-spruce-hero-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1449813,
+      "sha256": "11fc724ae4e8f61d99f7bd4e851c5e6785e1608af7f088e562acca3f99ecda58",
+      "assetId": "a_23355f2ce8664f04b335c6be26def8d1",
+      "revisionId": "r_a6300c01aff74afcad5a4ea74cbb67d5",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-spruce-hero-a.glb",
+        "bytes": 3629464,
+        "sha256": "343c9c23c62e82b66308b1d90e940facb2c0401f0519b4abdbbb5f48deeda7b9",
+        "triangles": 38482
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 8.40616901292605
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-fir-middle-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1446550,
+      "sha256": "202bd6232d83e0b8bf22017bee257783d83d33525c1de05d9b4d929bb5560c8a",
+      "assetId": "a_70a4c2e9fee3489aa5d4f93d71942508",
+      "revisionId": "r_cc07345479d94a33bdf04bc3969540bc",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-fir-middle-a.glb",
+        "bytes": 425904,
+        "sha256": "7c04710ee4aec131f61a64756d0f593e04eeae2a51aaecc9e5424363ba4faad0",
+        "triangles": 4874
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 7.1200382457030305
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-spruce-middle-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1372924,
+      "sha256": "e692f5e8da470d739dc796da273eba12896b739c416db568951273ffe34bdb51",
+      "assetId": "a_d013717c727c48dfad0bd798c94f261f",
+      "revisionId": "r_9bf5d291a99f444c810b08b8cd7c1f6b",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-spruce-middle-a.glb",
+        "bytes": 432940,
+        "sha256": "a231a104d84b15467f7e23be3b00fd0ad08aa58a21173fa8a0ef11997d0c871a",
+        "triangles": 4850
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 7.99000567051455
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-fir-background-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1442222,
+      "sha256": "f48f7a16f8d923c00b812873cbb47ce6e2fad0b269dcf3072640a9362566899a",
+      "assetId": "a_07729f5aec8847bc80d071b4599d6bff",
+      "revisionId": "r_23d2596b5b1142019ccc8960b414e373",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-fir-background-a.glb",
+        "bytes": 174904,
+        "sha256": "cd00513df617a55bbfd5e3735eba0a62da37451fd9a83bcc441438a9665df59a",
+        "triangles": 1354
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 8.203990129562456
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-spruce-background-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1354971,
+      "sha256": "4dcb9d2423e53dceaadf992729030c0494c8074b7115a182b633d3ff3663abfc",
+      "assetId": "a_b9737920dd4e43abaad0a6536de676f0",
+      "revisionId": "r_840cfdc71ca547d9aa4c11ad542d52c9",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-spruce-background-a.glb",
+        "bytes": 184296,
+        "sha256": "3a357246456a7ff3b479c702d15ed0b0f4d2a46f21036067893d59d0fc610b49",
+        "triangles": 1598
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 8.37922110475151
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-fir-sapling-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1482145,
+      "sha256": "48b8bc26b107567ff9759ee4111c040c12417031dc9f39691940c2f051d73cae",
+      "assetId": "a_f72b795d8be449cfaee39950d715be64",
+      "revisionId": "r_f2f1d09fd0a942c58964b2821e219406",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-fir-sapling-a.glb",
+        "bytes": 700540,
+        "sha256": "a9c94467aad237852a1b20ee5e22a84c824c38f7374d2e50eb6f7b1343fcd02e",
+        "triangles": 6812
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.2616296677458543
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-window-tall": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-window-tall.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1535211,
+      "sha256": "a7b942c27c2ddedd7032c681839b2e95326cf715bc98181344d1019eb9c14e16",
+      "assetId": "a_d800f84a4c9c412c934538c14d43c1ac",
+      "revisionId": "r_8c85b15ec6434f91b67353da68c41630",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-window-tall.glb",
+        "bytes": 175296,
+        "sha256": "3462118760c409a617e43039fe74caa5ade5d0f95cc7df2420e538ce491a4e1f",
+        "triangles": 1026
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.298836007784618
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-sofa-wool": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-sofa-wool.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1774794,
+      "sha256": "511f663826f95b35b01d464f0b5661aff2dbf337f4965508668e905c81b68614",
+      "assetId": "a_5af9bd51de70444cb02f1cc5e926043f",
+      "revisionId": "r_900d94fea90f4b8486bc7aa81e84fec7",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-sofa-wool.glb",
+        "bytes": 3926180,
+        "sha256": "87fa6297d74ad87d00bba1ddd309a202ba6af8f89313a72a128bf1675f410fd4",
+        "triangles": 27520
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.0212508910324927
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-hearth-masonry": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1859470,
+      "sha256": "ca7731b81edf48594b68fc8e2ca560fe734d7c87eeb2f27abf1cc2a4811b8d66",
+      "assetId": "a_873885321d9441419a5e22f993bf833e",
+      "revisionId": "r_69a2424559ec43b4a6194d3bdaf984f2",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-hearth-masonry.glb",
+        "bytes": 470960,
+        "sha256": "10d3c8a9bde0a0a0fe61fc56bf7493039313b9fd7ed286623a5d9516e2231d60",
+        "triangles": 2256
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.7277775454980033
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-floor-main": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-floor-main.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1536047,
+      "sha256": "6e733c67b36a404ae6e03dd24211f758ff15f4083c239c67184bd06fa52111e7",
+      "assetId": "a_8f428497d003408cbb0f565e4bd25e77",
+      "revisionId": "r_6f875c61c5fc4d4d8112ef059c6c8443",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-floor-main.glb",
+        "bytes": 1820720,
+        "sha256": "11a33681fc6b50ad229aa7d230c93dcb9c60b764c6560125a19c75b958d22c77",
+        "triangles": 11792
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 7.424621202458749
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-wall-facade": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1498429,
+      "sha256": "6da7e871093a8f8a756f9305bfeb62688a16bd1ecea2e25f435a4a038a8e2a03",
+      "assetId": "a_5b4f6100aa984ab993ed3f672bdb810e",
+      "revisionId": "r_6b70ff0e8baf45dd96f6a3dec221853c",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-wall-facade.glb",
+        "bytes": 1281376,
+        "sha256": "93fe9054e1f8cf0759d8c1ebdf3f1bce425e2be8c455a16ac9eafcd680284cbe",
+        "triangles": 7448
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.358702803162692
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-deck-tile": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1567640,
+      "sha256": "3b345ad2ada6f159815951fb10610226e594b4ec86674a3a7ba4b3aa590d4488",
+      "assetId": "a_bb7581d6dd994620b828cb48e0540571",
+      "revisionId": "r_24ad3a121ea949b3819e19192a07aecb",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-deck-tile.glb",
+        "bytes": 187372,
+        "sha256": "c117970a67fc76e225435c7c123c0541c7d88f4962112044eea1e12896296b9b",
+        "triangles": 1768
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.2361994707265518
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-door-entry": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1803569,
+      "sha256": "de6d5889ef143bbfe1a1573f087475edac70f53b1e998df923a4a05c2b9e9002",
+      "assetId": "a_d30677f997eb4f8f998e8c5c8687b801",
+      "revisionId": "r_81e404f1e10f4ee6a408880168ee7344",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-door-entry.glb",
+        "bytes": 168024,
+        "sha256": "911087f02a324d1c57d4b1b4c3dd14829e49cc0765d54ce576bc57258d93f87c",
+        "triangles": 1100
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.420941544048933
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-stair-rail-interior": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1385644,
+      "sha256": "779077d3faf97754c5a0942912360d48a012ea8a736e448ff9f23202c4301e84",
+      "assetId": "a_160b654df5ff4658b92412c87af1a4ec",
+      "revisionId": "r_abff23385acf408694274758d8e525bb",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-stair-rail-interior.glb",
+        "bytes": 137044,
+        "sha256": "a009d8cec3d407fc2db527bfb42cf7a1a3a88dd23abed5be6d54b1dd7258013e",
+        "triangles": 1132
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.083681874307062
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-armchair-oak": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1787106,
+      "sha256": "06ad923e77b77cb81db6c84db382302d0294f3d1dc68d9e4f06e51ee8a1693ae",
+      "assetId": "a_0cc64d69fec0441884617672724738c2",
+      "revisionId": "r_63ad6298f8c24d7fa220eeb8b4bfd300",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-armchair-oak.glb",
+        "bytes": 1167928,
+        "sha256": "6933e22f940b1e8dbfc4c84c5e1acc7a1ec75884849f87674b3b748226863b79",
+        "triangles": 7336
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.7227262364825856
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-wall-west": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1871684,
+      "sha256": "ff832eee82cc47524f97e38852829dbde6fcf746ca639d0192043e99d3313b53",
+      "assetId": "a_449715d72b4f4404922170fe5dd8680d",
+      "revisionId": "r_a06b37dfb34843d394c049e0b9913019",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-wall-west.glb",
+        "bytes": 1002664,
+        "sha256": "26740329505d2097105418fb5184bf8c9336f2e6660fb2df50e6c341992dde01",
+        "triangles": 5852
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.559542458238823
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-wall-east": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1874404,
+      "sha256": "87f0ef97b206b46f8d01eaab2eadf51ba46ea793c0a88c44da5e812356811812",
+      "assetId": "a_4c1cb01001994fb3be31dea1e484fcdb",
+      "revisionId": "r_c9a234d398ed4d78b1c7a94023ae2ab0",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-wall-east.glb",
+        "bytes": 1205896,
+        "sha256": "b1bb58c6427a4cddb7fe2c2edbbbb56ad47a270f3e8a80b9f9ff6583b82e311e",
+        "triangles": 7216
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.559542458238823
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-wall-rear": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1643945,
+      "sha256": "aaee29a68b3ddd0944d1d7425fff9a6984fd298e8ce22f117c4e03037a59890e",
+      "assetId": "a_65cb0abafd7b4697b40285c7871a1040",
+      "revisionId": "r_6225dd8469d646c8a555c201713a5761",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-wall-rear.glb",
+        "bytes": 828168,
+        "sha256": "6ef4279dbe30e467e3c319a0ea5b30ff35e139985c5f8c9621ed124db0a7c02e",
+        "triangles": 4444
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.302111745643374
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-stone-plinth-panel": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stone-plinth-panel.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 2175021,
+      "sha256": "dc9d5a9a1e0f435a900504e23c7337efa83862883ca8232a9da885ccc8287526",
+      "assetId": "a_4fe232796efd42a3947fb4a8a7fa291f",
+      "revisionId": "r_b6a3c5ab05d04971bbb4a794d98b6fff",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-stone-plinth-panel.glb",
+        "bytes": 291140,
+        "sha256": "f37fe6b2310c46b3f4a452f2785134d10f230822181be0cb9f1dc4579129f3a2",
+        "triangles": 1320
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.3466948051629046
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-floorlamp-tripod": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-floorlamp-tripod.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1435153,
+      "sha256": "fd2b8d7cc759dd4052a4d0b258a45c16705687d83691222da0a62bd1e7378b84",
+      "assetId": "a_6805e3cf3e144d22b369382e17051bad",
+      "revisionId": "r_42e2e4d7cb6e40b787db5f48ad0200e8",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-floorlamp-tripod.glb",
+        "bytes": 256692,
+        "sha256": "6b50116f52e2e0b2608bb6eda338c29664b1cd51f692e67408a8377568a3f32e",
+        "triangles": 1044
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.0577231431996406
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-floor-loft": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-floor-loft.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1556535,
+      "sha256": "b12c42572008c8f79d89fa91f2ac8fc2e80886a47ab5d2dc3b211f8d5c978a4a",
+      "assetId": "a_4787d24047d940169a15b2a76954e941",
+      "revisionId": "r_dfca02649051461fa07592d21f60e932",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-floor-loft.glb",
+        "bytes": 853256,
+        "sha256": "0a8300d620f2c1863106b0ab63c7252ffebca59b17890490065bbe51046ddbb9",
+        "triangles": 5368
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.783930850230211
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-frame-post": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-frame-post.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1319012,
+      "sha256": "0eb0d1f23a54320d0176d9a318dee2b0d7164c60757daaff8c17b1ddd06e996b",
+      "assetId": "a_eaaf287ec60d46ff9612b8ca7c6b9eff",
+      "revisionId": "r_16867fa4eb2f4855955e0f2179d41b60",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-frame-post.glb",
+        "bytes": 84148,
+        "sha256": "ad13a7127ac03de5baf9de576471e8df8c4d8224d1f06bcb808937a92b18f57d",
+        "triangles": 260
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.4282640411215137
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-rafter-frame": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1296150,
+      "sha256": "ddc40ee0db075b3b3b6e651d99844ada52c3ab05857a4d29fbc78e5ea4759e03",
+      "assetId": "a_875448873b5e4f1b9693982de3cc2ee1",
+      "revisionId": "r_4d62127be4ea41e7a8387e812bf4a811",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-rafter-frame.glb",
+        "bytes": 54192,
+        "sha256": "dc847edbd7a79ced54a5be9d1e41197a14004d6cdeba20f3f9f4c0f750fd3351",
+        "triangles": 260
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.6083017464391003
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-door-deck": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1745911,
+      "sha256": "80fd879f3128af0c93377df9d8fbd1d932763d8736d9ef519ebe4ce83bd3ec4c",
+      "assetId": "a_e90781181b414dc1b596ee7de369184f",
+      "revisionId": "r_2c207a3161084bfbbd9608cf261ba6c7",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-door-deck.glb",
+        "bytes": 170112,
+        "sha256": "cf54d4e99998b135839c79a03d7c0557c8e8be6c05428d0461f207cd12285fc7",
+        "triangles": 1100
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.420941544048933
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-tread-timber": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1595893,
+      "sha256": "ac2929f15a976d09f8e341d6094199ea37b6853c324917a2f49540a8a5277885",
+      "assetId": "a_0fa76a4fc9ca4d6aa7a7b2befbaf10c4",
+      "revisionId": "r_8b684e59f24b4408862ed20026389cce",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-tread-timber.glb",
+        "bytes": 74696,
+        "sha256": "5be3f6bd1fe632c6ae39b61d4fb738e96b2a55251248f48918cd6a93495b1f65",
+        "triangles": 260
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.6104688745846286
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-stair-rail-exterior": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1453293,
+      "sha256": "7e6cbe5cb6a44a469c62e7a3c2955d11490bb9e3ec8ce6b63a3c4cb5d062ca79",
+      "assetId": "a_bdf0c3426f2648dd8874fc543ee42def",
+      "revisionId": "r_659dbb66e23b4b64ab989ed92e795da5",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-stair-rail-exterior.glb",
+        "bytes": 115844,
+        "sha256": "98bd8625284359153d26c4f5c8beb9e3461a6d59266f2e7e8c2715c29e997990",
+        "triangles": 916
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.074220976212099
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-rail-span": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1556328,
+      "sha256": "4256e9ad1588c50219f3f050d4773572b785e43fd4dd285783f74477e60de26f",
+      "assetId": "a_2e2adb67c53c4839a0760672abfb69ae",
+      "revisionId": "r_9a172a5524904a298f8d475d722de2a1",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-rail-span.glb",
+        "bytes": 73724,
+        "sha256": "140553ef2553b4df9627e79bb50ddfe3e1e198740cd001ac18408553384f9f60",
+        "triangles": 484
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.8312406616471268
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-eave-storage": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-eave-storage.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1982886,
+      "sha256": "d1c2ab728ffc54d7d86b2766876dda71e6fb727d6a28a737f2e9ea2b10e38df0",
+      "assetId": "a_503f2f86f36a459b8a5f386ab7538654",
+      "revisionId": "r_a8a15917bcc14649a392b736a40d0d0b",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-eave-storage.glb",
+        "bytes": 139420,
+        "sha256": "1f349af6ce4dfe79b8c00371bc0f8ae10c07e6a5a20a96c0948426394aedb9c9",
+        "triangles": 808
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.7592227401264724
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-coffee-table": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-coffee-table.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1795697,
+      "sha256": "2facf4cfbf98a34f20591dcb90fbb6cbf2ba6f43536976931b15d993387c8660",
+      "assetId": "a_82db766050924a728e150f5fe781d031",
+      "revisionId": "r_865e239598de44a5918a2c8d2b73acff",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-coffee-table.glb",
+        "bytes": 306632,
+        "sha256": "96019a28c8b8030157958d151083741a16cf0f1b3e21cb56649931fc79b9e9a9",
+        "triangles": 724
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.7280253508960908
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-living-rug-wool": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1378713,
+      "sha256": "3a39d8a7f9bc7b30b27b31dac8c21b863d900064df52b8f5c494b3fccd086e19",
+      "assetId": "a_81cee922309d48cf9799373f0d431b35",
+      "revisionId": "r_c9160d6fc18a4ee2baa2b7a367195e6a",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-living-rug-wool.glb",
+        "bytes": 649924,
+        "sha256": "6c466c22cbe1cd3fd4aa40a6a8fcd79b4224ea0c3db35b9e06a2b83bfa8b1e2a",
+        "triangles": 1804
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.248100410054979
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-gable-glass": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-gable-glass.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1339856,
+      "sha256": "e793a970d50782dd9e755bd3e26bfece43ab86324f3ea45755fd926c9c301f77",
+      "assetId": "a_9680ea9f2fc843098ced11beb55824cf",
+      "revisionId": "r_8510fb32447d4d4d84493a39e8be6a98",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-gable-glass.glb",
+        "bytes": 2652,
+        "sha256": "fa48b6d47afe680c99770a092baa8b08820ff7df4e86ca9cf16d63076dd07f4a",
+        "triangles": 10
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.7801080669561684
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-roof-east": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1548882,
+      "sha256": "5343b96bf60e86a1c6d5a173cd76b0c4fd52a0bb29653f5cbfbd3c2023a198ad",
+      "assetId": "a_0811b67773b5487ba90d0b7cbeb8c80b",
+      "revisionId": "r_04edc17050114086831c5e5098b64436",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-roof-east.glb",
+        "bytes": 952224,
+        "sha256": "5774ef4bcd089cfc6832437e6ffae33aa6a0e9e936c0ec81e1608a8041844a50",
+        "triangles": 7988
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 6.903472420731795
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-roof-west": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-west.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1333582,
+      "sha256": "df8dc62add2a0570c293ba85e586f535ebef9725aa65c764269d328b39fa5b0f",
+      "assetId": "a_0e2bbbacddff4e9b8b18451c1d5cf6c4",
+      "revisionId": "r_20ee4d4806274ec6afd7b52ff91f9bc3",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-roof-west.glb",
+        "bytes": 953448,
+        "sha256": "211f1bac6c2aedaa285f109f55ad62904f3c5dd0b8afa05af199236917699a29",
+        "triangles": 8092
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 6.959951546106108
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-chimney-masonry": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-chimney-masonry.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1401380,
+      "sha256": "8b61849c034a785ac44ddf4c3db1324d39eb96cd5f335a0a6d1940854d24270b",
+      "assetId": "a_da54d460d06c47138ef89a4b9bd92ab9",
+      "revisionId": "r_a9b40046ca5c4d8e8c2a0f0cddd8c730",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-chimney-masonry.glb",
+        "bytes": 1147548,
+        "sha256": "049cb436872abd0418a329db43fe2910e0a3df1ae5f0d41e3477d81aa3fda909",
+        "triangles": 5908
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.200112950094921
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-side-table": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1833295,
+      "sha256": "e719a97742ca8cf56b1d61285b3f8fdc96ff26c372af70ecb7f64b78237809c7",
+      "assetId": "a_19edeafb0e3848718315f8c54bf89885",
+      "revisionId": "r_314b667491c24a52bbd681da663f69cd",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-side-table.glb",
+        "bytes": 184256,
+        "sha256": "f79dd88e03c59c23242fe34758929532f5221925cd5d27bc13ffc0c323cc09ef",
+        "triangles": 852
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.4124971905270259
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-dining-table": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1777330,
+      "sha256": "440508276de0bfdbcaebcd47b32d185d4660921209ccbb8e740c61946e27a712",
+      "assetId": "a_26dd80ee80db4d85bc2a7b56475c3cbb",
+      "revisionId": "r_49df9f4d840241aab1426e6a6ab2c3e3",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-dining-table.glb",
+        "bytes": 391084,
+        "sha256": "41d8ab0ffcecf2f0c8747e264f4c1db09ddb27456cf896e8a3af1e6e6924b669",
+        "triangles": 3096
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.8037152605076123
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-dining-chair": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1599226,
+      "sha256": "f0844b0f9a0cc4ef44d5edb2b824114efef1c67d1e7187aa431151a150cb34af",
+      "assetId": "a_1686d36f753d4f9abe0f9991d8bfb36a",
+      "revisionId": "r_c513bc554a7f407eb0c7058055dcfc68",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-dining-chair.glb",
+        "bytes": 329728,
+        "sha256": "9290083a055cecd8ba09c9f19ae1b3c512af9b002371da10a3d92345a7dfea2f",
+        "triangles": 1020
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.6112321027630346
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-kitchen-run": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1867944,
+      "sha256": "29930de1086ca34d7b89a96d7793c83f64b4678c2ba18e409a7b79028a31811c",
+      "assetId": "a_43a2c9a0565e4743b82e9d9b51d257c9",
+      "revisionId": "r_8c52171c556a4d9180583dd6a6bdc01d",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-kitchen-run.glb",
+        "bytes": 837476,
+        "sha256": "d503b4478342889efb59f2528e9a3e3964b48283e135a5974a93db1f271faefa",
+        "triangles": 10476
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.5085808899018889
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-loft-bed": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1852509,
+      "sha256": "02a1b58e068d2891e46ed981eca0173f467d64fb373757701a25d4198696367e",
+      "assetId": "a_64db2e9702e3427fa9188875a5980146",
+      "revisionId": "r_cd846321ce64474da24aec6c2381178e",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-loft-bed.glb",
+        "bytes": 3731580,
+        "sha256": "a48671e20fd295ae0edbac0615b6979e4084cf62eb478d3a62c67363959032de",
+        "triangles": 24744
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.6004183952900228
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-desk": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1708917,
+      "sha256": "f6ddcb2a7aa87282286cb1070122319f8fa6476871e36e5909c94a679fae1b4c",
+      "assetId": "a_43fa2e2abfd94f308c0a32b127d21c32",
+      "revisionId": "r_d52ea05e031942dfa0fb1a34972226ae",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-desk.glb",
+        "bytes": 107720,
+        "sha256": "426558bc6c8117a407d779c40b843443237f1db33bcb29a50d164989a3d19497",
+        "triangles": 552
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.6976668898885943
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-entry-bench": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1638528,
+      "sha256": "1ba8d3da9590d3f1cf0d562ba2531c62f52270f3f7a957230d8cbf808083120f",
+      "assetId": "a_d6fe54a2237c4a538f97cc9792e05ba4",
+      "revisionId": "r_78da00aa2eb04b7fbef7a33fab2826b6",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-entry-bench.glb",
+        "bytes": 1474964,
+        "sha256": "0efeba44a2a16a8f6610b03be402798c18f28ab60af84a0e96b6fb0ac28e5922",
+        "triangles": 8880
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.1650386043996797
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-pendant": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-pendant.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1327776,
+      "sha256": "613c7a7ced877901b03c692ea7fecd51ba2d826837828d5081a22c93980d8468",
+      "assetId": "a_7fe53ad9a90e4003928e7848a4142a20",
+      "revisionId": "r_34041812d1bb4d509fc4ba6aab5dcdec",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-pendant.glb",
+        "bytes": 83812,
+        "sha256": "801b56907978ba1caf9acbcb731edac65eabe148af8707223520f7a99c06c0f0",
+        "triangles": 1936
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.46489967580393055
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-small-props": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1675740,
+      "sha256": "3886abf4a66e244303c3ac39cc07b361c90516940b708088acd97c2a28cf64ef",
+      "assetId": "a_a71359b812cd4b3fa22d129458e471db",
+      "revisionId": "r_15e05145d9c649de9fe845dd4d4aba9d",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-small-props.glb",
+        "bytes": 359688,
+        "sha256": "c77ee94b5ebf5e1617972e1a19bf6510b99f254c5227f49604d76124ae7f4f07",
+        "triangles": 1280
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.2516121565799411
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-rock-shelf": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rock-shelf.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1662682,
+      "sha256": "ba6627e3d78e05ff60a549d6453f97bf3ade2895c3e3fcdb08b12e50d8fd6b1a",
+      "assetId": "a_5c0f2b50b91244c49feab57e93b27f78",
+      "revisionId": "r_d25ced88b13642bda2414dde5dedd610",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-rock-shelf.glb",
+        "bytes": 751020,
+        "sha256": "9504441743c3ce102acacfc63c6abdcb4f3ad3b80a74131fb8f54345bf3039f0",
+        "triangles": 996
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.3898167203791876
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-boulder": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-boulder.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1861052,
+      "sha256": "8c31bf33fc77e82a63e7a21336db7199526ecb8fcc9a5e58294d3f2a1ebb32b1",
+      "assetId": "a_26cc548c370e43069bc777d04b6f5bf5",
+      "revisionId": "r_eb0ca9b92aaa45cab84eb453c9eeeb17",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-boulder.glb",
+        "bytes": 704592,
+        "sha256": "e1a41bdc3f3798577360f89650aeb6b433d4f865d5224ccaf659045ffe3ea255",
+        "triangles": 740
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.124769949367307
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-mountain-massif": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-mountain-massif.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1600214,
+      "sha256": "21ea4d6416c7f3f769f1c821ff994e595e1b0f3677e74876b35762a94fcc812e",
+      "assetId": "a_e12c29f2bd7a461e8e323e4fe4dcae05",
+      "revisionId": "r_5256a6d10045495081fb7340a4de6990",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-mountain-massif.glb",
+        "bytes": 2313740,
+        "sha256": "5d9ebbbfb66ac193d53b404b70b6b381a23584fef01fde139fc9f225fbbddf81",
+        "triangles": 14816
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 72.59629620181887
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-ridge-band": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-ridge-band.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1538624,
+      "sha256": "0af997de75a3179d5d3c4fac27d687d9f008ae07242f29166ddea924a8e4f45b",
+      "assetId": "a_3d4ff575a07b4fc392f782d615b07f6c",
+      "revisionId": "r_9e28a32d10e24fbba9eb2f739babd911",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-ridge-band.glb",
+        "bytes": 1045160,
+        "sha256": "03a228969bdc5d29758bf31c269eeb7c4bbc183c12bba12e4cca330d5783fe82",
+        "triangles": 6180
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 61.0468854424386
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-snow-bank": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-snow-bank.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1399531,
+      "sha256": "1961c938bdf13694edb9ca33d3441bcdb97b54909b9fb1dea54756c013d7b4fa",
+      "assetId": "a_af248987cebb476e8562cbb3514aac5d",
+      "revisionId": "r_deb540babffe4e8d8e6706c90a66c486",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-snow-bank.glb",
+        "bytes": 734120,
+        "sha256": "154a7167ca6cb45bb5bed25ad9e1e53de013adb3a7c18d84bdeddc805a6c0cad",
+        "triangles": 726
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.1036426346929202
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-ground-clump": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-ground-clump.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1345961,
+      "sha256": "681ef397bc00e7a3d36369184bcfb80a51709f5e0b3a04bcac8864ec7aa2e064",
+      "assetId": "a_baa1bd252f9945b9982c40574cefea86",
+      "revisionId": "r_80d42c6571574faa8819e1128ed3d693",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-ground-clump.glb",
+        "bytes": 99348,
+        "sha256": "296c822fb5e14d8d31f4246549cd3db76506d39dedc7807e59bb5ba29b4be91b",
+        "triangles": 99
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.322826861797323
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-fallen-log": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fallen-log.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1444002,
+      "sha256": "4f823f10053e5e89b198bade1b3a453a91475ab8fdcb25c4ee41f2c409ea56f2",
+      "assetId": "a_363b720923f747bd9c8795197933bbcf",
+      "revisionId": "r_c98dd2aeee1942169543c629a7474b1d",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-fallen-log.glb",
+        "bytes": 423896,
+        "sha256": "b77fc18b02a253645f411c7233de3b0137b32f181d4bf156769e05f68f37957e",
+        "triangles": 1076
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.6408818828663232
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:winter-wmc-trail-marker": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1553385,
+      "sha256": "b4ebc8c6651b615e53b7a26e73de89f160537fe1bef4452339b1b8c594c3c602",
+      "assetId": "a_315c30d4f7674cb6a346c9b455efb999",
+      "revisionId": "r_b88bfaef911545fe9b4d9625978f5775",
+      "glb": {
+        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-trail-marker.glb",
+        "bytes": 235652,
+        "sha256": "5f7c64a38028be0e1415f255e01ec7fde2ef8133b7b5ec1752a950fe47fad6e1",
+        "triangles": 173
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.5558340989605862
       },
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
     }

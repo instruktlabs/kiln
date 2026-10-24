@@ -21,14 +21,15 @@ const sha256 = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex
 const pins = new Map(mirror.files.map((record) => [record.path, record]));
 
 test('each scene pack holds every placed Kiln asset once, at its final version', () => {
-  expect(Object.fromEntries(Object.entries(selection.packs).map(([id, pack]) => [id, pack.assets.length]))).toEqual({ 'holodeck-tidemark': 23, 'holodeck-courtyard': 32, 'holodeck-cove': 8, 'holodeck-crescent-cove': 49 });
+  expect(Object.fromEntries(Object.entries(selection.packs).map(([id, pack]) => [id, pack.assets.length]))).toEqual({ 'holodeck-tidemark': 23, 'holodeck-courtyard': 32, 'holodeck-cove': 8, 'holodeck-crescent-cove': 49, 'holodeck-winter-mountainside-cabin': 56 });
   expect(catalog.packs.map((pack) => [pack.id, pack.assetCount])).toEqual(HOLODECK_PACKS.map((pack) => [pack.id, pack.expectedAssets]));
   expect(selection.versions).toBe('final-only');
-  expect(catalog.assets).toHaveLength(88);
+  expect(catalog.assets).toHaveLength(143);
   expect(catalog.assets).toHaveLength(Object.keys(selection.assets).length);
   const shared = catalog.assets.filter((asset) => asset.packs.length > 1);
   expect(shared.map((asset) => asset.slug).sort()).toEqual(Object.keys(HOLODECK_ASSETS).filter((slug) => slug.startsWith('cove-')).sort());
-  for (const asset of shared) expect(asset.packs).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove']);
+  // The winter cabin keeps only the Cove's mood board; its trailhead replaces the rest of the Cove.
+  for (const asset of shared) expect(asset.packs).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove', ...(asset.slug === 'cove-moodboard' ? ['holodeck-winter-mountainside-cabin'] : [])]);
   expect(holodeckSlug('holodeck-courtyard', 'canopy')).toBe('cove-canopy');
   expect(holodeckSlug('holodeck-cove', 'canopy')).toBe('cove-canopy');
   expect(holodeckSlug('holodeck-crescent-cove', 'canopy')).toBe('cove-canopy');
@@ -42,7 +43,7 @@ test('scenes list the Cove modules at their final revision, and say when the wal
   expect(selection.packs['holodeck-crescent-cove'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/crescent-cove', sourceRevision: 16 });
   for (const slug of selection.packs['holodeck-cove'].assets) {
     const record = selection.assets[slug as keyof typeof selection.assets];
-    expect(record.placements.map((placement) => placement.pack)).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove']);
+    expect(record.placements.map((placement) => placement.pack)).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove', ...(slug === 'cove-moodboard' ? ['holodeck-winter-mountainside-cabin'] : [])]);
   }
   for (const pack of catalog.packs) {
     const earlier = (pack as { sceneStillPlacesEarlier?: { slug: string; placedRevisionId: string; finalRevisionId: string }[] }).sceneStillPlacesEarlier ?? [];
@@ -63,7 +64,7 @@ test('assets that use saved materials carry their frozen closure into the editab
 test('owner approval covers exact revisions, and a pack is available only when every asset it lists is approved', () => {
   const approved = catalog.assets.filter((asset) => asset.review.ownerAccepted).map((asset) => asset.slug).sort();
   expect(approved).toEqual(Object.keys(HOLODECK_APPROVAL.revisions).sort());
-  expect(approved).toHaveLength(88);
+  expect(approved).toHaveLength(143);
   for (const asset of catalog.assets) {
     expect(asset.review).toEqual(holodeckApproved(asset.slug, asset.revisionId) ? { ownerAccepted: true, status: 'accepted' } : { ownerAccepted: false, status: 'awaiting-owner-review' });
   }
