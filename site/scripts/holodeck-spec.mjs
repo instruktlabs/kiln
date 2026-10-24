@@ -261,5 +261,6 @@ export function holodeckSlug(pack, worldAssetId) {
   const cove = Object.hasOwn(coveModules, worldAssetId);
   if (pack === 'holodeck-cove' && !cove) throw new Error(`Unknown Cove module ${worldAssetId}`);
   if (cove) return `cove-${worldAssetId}`;
+  if (pack === 'holodeck-winter-mountainside-cabin') return `winter-${worldAssetId}`;
   return pack === 'holodeck-crescent-cove' ? `crescent-${worldAssetId}` : worldAssetId;
 }

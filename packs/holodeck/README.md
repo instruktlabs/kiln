@@ -66,6 +66,39 @@ A store is a workspace's `assets/kiln` directory. `KILN_PACKAGE_DIR` is an insta
 and staging verifies they keep the canonical binary. Staging writes are immutable: changed
 bytes need a new release ID in `holodeck-spec.mjs`. Nothing here uploads anything.
 
+### Add a new committed example
+
+For a new scene, keep the published selection as the baseline instead of reselecting
+older worlds. First add its real pack metadata, exact asset count and per-asset
+presentation to `holodeck-spec.mjs`, choose a new `HOLODECK_RELEASE`, and add its
+scene URL to `src/data/holodeck-worlds.json`. Do this only after the example and its
+final assets exist. A selection does not approve an asset or publish its gallery page.
+
+From `site/`, append the committed example with its saved Kiln store:
+
+```sh
+node scripts/select-holodeck.mjs --append-example winter-mountainside-cabin \
+  --holodeck HOLODECK_REPO --ref EXAMPLE_COMMIT \
+  --selection PREVIOUS_SELECTION_JSON --store winter-mountainside-cabin=STORE \
+  --out ../packs/holodeck/selection.json
+```
+
+The input selection can be the current `selection.json` when the output replaces it;
+the command reads and validates everything before writing. Keep a copy of that
+baseline if preparing more than one candidate. The append mode reads the example
+and GLBs from the requested Git commit, verifies each new saved source/manifests/GLB
+and material-closure seal, and preserves earlier packs and source identities.
+Shared assets must have the exact revision and canonical bytes already selected.
+Their existing source need not be present locally just to append a scene. A changed
+shared revision is refused: use a separately reviewed full selection update for it.
+Winter assets receive `winter-` gallery slugs; existing Cove modules keep their
+shared `cove-` slugs. The new pack cannot replace a previously selected pack.
+
+Continue with staging, real rig posters and the publication checks above. The staging
+command still requires every store named by the full selection, including the older
+packs; append only avoids reselecting their scene inputs. Preserve the existing
+revision approval records, and record any new asset review separately and honestly.
+
 ## Publish
 
 After release approval, upload the listed objects to the asset host, then build and deploy

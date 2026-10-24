@@ -133,16 +133,75 @@ export async function selectHolodeck({ courtyard, holodeck, ref, crescentRef, st
   return { schemaVersion: 1, release: HOLODECK_RELEASE, licence: 'CC0-1.0', versions: 'final-only', packs: ordered, assets };
 }
 
+/**
+ * Append one committed example to a frozen selection without reopening or reselecting older scenes.
+ * Existing shared assets must be the exact selected revision; changing them requires the full selection workflow.
+ * Only new assets need a local saved-revision store. This freezes inputs, never records visual approval or stages files.
+ */
+export async function appendHolodeckExample({ selection, holodeck, ref, example, stores, release = HOLODECK_RELEASE, packs = HOLODECK_PACKS, presentations = HOLODECK_ASSETS }) {
+  if (!selection || selection.schemaVersion !== 1 || selection.licence !== 'CC0-1.0' || selection.versions !== 'final-only' || !selection.packs || !selection.assets) throw new Error('A frozen Holodeck selection is required');
+  if (!/^holodeck-[a-z0-9-]+$/.test(release ?? '') || release === selection.release) throw new Error('Appending a pack requires a new release ID');
+  if (!holodeck || !ref || !/^[a-z][a-z0-9-]{0,63}$/.test(example ?? '') || !stores || !Object.keys(stores).length) throw new Error('An explicit Holodeck repository, ref, example and stores are required');
+  const spec = packs.find(pack => pack.scene === example && pack.id === `holodeck-${example}`);
+  if (!spec || !Number.isSafeInteger(spec.expectedAssets) || spec.expectedAssets < 1) throw new Error(`No configured pack with an exact asset count for ${example}`);
+  if (Object.hasOwn(selection.packs, spec.id)) throw new Error(`${spec.id} is already selected; append never replaces a pack`);
+  const git = (...args) => execFileSync('git', ['-C', holodeck, ...args], { maxBuffer: 256 * 1024 * 1024 });
+  const commit = git('rev-parse', '--verify', '--end-of-options', `${ref}^{commit}`).toString('utf8').trim();
+  const path = `examples/${example}`, show = file => git('show', `${commit}:${path}/${file}`);
+  const worldBytes = show('world/world.json'), world = json(worldBytes), manifest = json(show('example.json'));
+  if (manifest.id !== example || !Number.isSafeInteger(manifest.sourceRevision) || manifest.sourceRevision < 0) throw new Error(`${example}: invalid example identity or source revision`);
+  const list = world.scene?.assets;
+  if (!Array.isArray(list) || list.length !== spec.expectedAssets) throw new Error(`${spec.id}: expected ${spec.expectedAssets} placed assets, found ${list?.length ?? 'none'}`);
+  const result = structuredClone(selection), slugs = [], identities = new Map(), revisions = new Map();
+  for (const [slug, record] of Object.entries(result.assets)) {
+    const assetIdentity = `${record.collection}/${record.assetId}`;
+    if (revisions.has(assetIdentity) && revisions.get(assetIdentity) !== record.revisionId) throw new Error(`${assetIdentity} has multiple selected revisions`);
+    revisions.set(assetIdentity, record.revisionId);
+    const identity = `${record.collection}/${record.assetId}/${record.revisionId}`;
+    if (identities.has(identity)) throw new Error(`${identity} has two slugs in the frozen selection`);
+    identities.set(identity, slug);
+  }
+  for (const asset of list) {
+    const { collection, assetId, revisionId } = asset.provenance ?? {};
+    if (collection !== 'project' || !/^a_[a-f0-9]{32}$/.test(assetId ?? '') || !/^r_[a-f0-9]{32}$/.test(revisionId ?? '')) throw new Error(`${spec.id}/${asset.id}: invalid provenance`);
+    if (!/^assets\/imports\/[a-zA-Z0-9_-]+\.glb$/.test(asset.file ?? '')) throw new Error(`${spec.id}/${asset.id}: unsafe example GLB path`);
+    const slug = holodeckSlug(spec.id, asset.id);
+    if (!Object.hasOwn(presentations, slug)) throw new Error(`No gallery presentation for ${slug}`);
+    if (slugs.includes(slug)) throw new Error(`${spec.id}: duplicate slug ${slug}`);
+    const assetIdentity = `${collection}/${assetId}`, identity = `${assetIdentity}/${revisionId}`, existing = result.assets[slug];
+    if (revisions.has(assetIdentity) && revisions.get(assetIdentity) !== revisionId) throw new Error(`${assetIdentity}: shared revision differs; append cannot replace an existing selection`);
+    if (existing && (existing.collection !== collection || existing.assetId !== assetId || existing.revisionId !== revisionId)) throw new Error(`${slug}: shared revision differs; append cannot replace an existing selection`);
+    if (identities.has(identity) && identities.get(identity) !== slug) throw new Error(`${identity} has two slugs`);
+    const record = existing ?? await revisionRecord(stores, assetId, revisionId);
+    verifyBytes(show(asset.file), record.canonical, `${spec.id}/${asset.id} canonical GLB`);
+    record.placements = [...(record.placements ?? []), { pack: spec.id, id: asset.id }];
+    result.assets[slug] = record;
+    identities.set(identity, slug);
+    revisions.set(assetIdentity, revisionId);
+    slugs.push(slug);
+  }
+  result.release = release;
+  result.packs[spec.id] = {
+    scene: spec.scene,
+    source: { kind: 'holodeck-example', ref, commit, path, sourceRevision: manifest.sourceRevision, worldSha256: hashBytes(worldBytes) },
+    assets: slugs,
+  };
+  return result;
+}
+
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
   const args = process.argv.slice(2), options = { stores: {} };
   for (let i = 0; i < args.length; i += 2) {
     const [flag, value] = [args[i], args[i + 1]];
     if (!value || value.startsWith('--')) throw new Error(`Missing value for ${flag}`);
     if (flag === '--store') { const [name, dir] = value.split(/=(.*)/s); options.stores[name] = await realpath(dir); }
-    else if (['--courtyard', '--holodeck', '--ref', '--crescent-ref', '--out'].includes(flag)) options[flag.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = value;
+    else if (['--courtyard', '--holodeck', '--ref', '--crescent-ref', '--out', '--append-example', '--selection'].includes(flag)) options[flag.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = value;
     else throw new Error(`Unknown option ${flag}`);
   }
-  const selection = await selectHolodeck(options);
+  if (options.selection && !options.appendExample) throw new Error('--selection requires --append-example');
+  const selection = options.appendExample
+    ? await appendHolodeckExample({ ...options, example: options.appendExample, selection: json(await readFile(resolve(options.selection ?? resolve(import.meta.dirname, '../../packs/holodeck/selection.json')))) })
+    : await selectHolodeck(options);
   const out = resolve(options.out ?? resolve(import.meta.dirname, '../../packs/holodeck/selection.json'));
   await writeFile(out, JSON.stringify(selection, null, 2) + '\n');
   console.log(JSON.stringify({ out, packs: Object.fromEntries(Object.entries(selection.packs).map(([id, pack]) => [id, pack.assets.length])), uniqueRevisions: Object.keys(selection.assets).length }, null, 2));
