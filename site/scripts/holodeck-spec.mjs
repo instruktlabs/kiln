@@ -50,6 +50,38 @@ export const HOLODECK_PACKS = [
   },
 ];
 
+/**
+ * Two shots of each walkable scene: a wide view of the scene, then a place in it. Pack pages show them side by side;
+ * the pack's card on /packs/ shows the wide one. Each camera is a Holodeck benchmark pose (metres, +Y up) shot by
+ * `scripts/capture-holodeck-shots.mjs` from the published world. Seven reuse the framings of Holodeck's own site
+ * shots; the Tidemark overview, the cabin views and the Cove seat are framed for these pages.
+ */
+const shot = (view, position, target, fov, cove, alt) => ({ view, camera: { position, target, fov, cove }, alt });
+export const HOLODECK_SHOTS = {
+  'holodeck-tidemark': [
+    shot('tidemark-overview', [0, 62, 160], [0, 0, -15], 55, true, 'Tidemark Island from above: palm groves and open sand around the Cove, ringed by turquoise shallows.'),
+    shot('tidemark-shore-a', [60, 2.2, -112], [20, 2, -92], 60, false, 'Along Tidemark’s shore, palms above a curve of sand and clear water.'),
+  ],
+  'holodeck-courtyard': [
+    shot('courtyard-overview', [16, 19, 8], [0, 0, -19], 55, true, 'The Courtyard from above: a walled garden of cypress and olive trees around a fountain, with the Cove at its gate.'),
+    shot('courtyard-fountain', [-6, 1.7, -20], [6, 2.5, -12], 60, true, 'The tiered stone fountain among cypresses and lamp posts.'),
+  ],
+  'holodeck-cove': [
+    shot('cove-side', [-6, 3, 4], [0.5, 0.8, 0], 55, true, 'The Cove: a curved stone seat with green cushions under a linen canopy on timber masts, ringed with potted ferns.'),
+    shot('cove-seat', [-2.8, 1.5, -2], [3, 0.9, 5], 63, true, 'Under the Cove’s canopy: the hearth table on its inlaid rug, in front of the cushioned seat.'),
+  ],
+  'holodeck-crescent-cove': [
+    shot('crescent-cove-aerial-southwest', [-95, 55, 175], [20, 4, 45], 50, false, 'Crescent Cove from the air: a palm-lined crescent beach and a rocky headland around a turquoise lagoon with seagrass and coral.'),
+    shot('crescent-cove-cove', [6, 3.5, -9], [-1, 0.8, 4], 55, true, 'The Cove on Crescent Cove: the canopied seat on a grassy rise among palms, with the lagoon beyond.'),
+  ],
+  'holodeck-winter-mountainside-cabin': [
+    shot('winter-mountainside-cabin-exterior', [28, 10, -2], [20, 8, -29], 52, true, 'The timber cabin with its glazed gable, deck and stair among snow-covered firs and spruces.'),
+    shot('winter-mountainside-cabin-living', [21.8, 7.6, -25.4], [20.3, 6.9, -30.5], 63, true, 'The cabin’s living room: a sofa and armchair around the stone hearth, the loft stair and warm lantern light.'),
+  ],
+};
+/** Every scene shot is a full-HD capture, so a half-width pair stays sharp on large and high-density screens. */
+export const HOLODECK_SHOT_SIZE = { width: 1920, height: 1080 };
+
 /** Scenes whose packs are not built yet. Their pages say so; nothing is staged for them. */
 export const HOLODECK_PLANNED = [];
 

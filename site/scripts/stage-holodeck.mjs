@@ -4,10 +4,12 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { buildDeliveryArchive, isSavedMaterialDependency, revisionBundle } from './asset-delivery.mjs';
-import { readJson, writeJson } from './media-pins.mjs';
+import sharp from 'sharp';
+import { readJson, syncGroup, writeJson } from './media-pins.mjs';
+import { imageSrcsets } from './media-variants.mjs';
 import { ASSET_BASE, assetPath, hashBytes, verifyArchive, verifyBytes } from './mirror-core.mjs';
 import { applyRigPosters } from './rig-posters-core.mjs';
-import { HOLODECK_ASSETS, HOLODECK_ID, HOLODECK_IMPORT_KILN, HOLODECK_PACKS, HOLODECK_PLANNED, holodeckApproved } from './holodeck-spec.mjs';
+import { HOLODECK_ASSETS, HOLODECK_ID, HOLODECK_IMPORT_KILN, HOLODECK_PACKS, HOLODECK_PLANNED, HOLODECK_SHOT_SIZE, HOLODECK_SHOTS, holodeckApproved } from './holodeck-spec.mjs';
 import { materialClosure, metricsOf, verifyRuntimeProfile } from './stage-cabin-woods.mjs';
 
 /**
@@ -17,6 +19,7 @@ import { materialClosure, metricsOf, verifyRuntimeProfile } from './stage-cabin-
  *
  *   node scripts/stage-holodeck.mjs --kiln KILN_PACKAGE_DIR --mirror .localdata/holodeck-delivery \
  *     --store island-trial=DIR --store holodeck-assets=DIR --store courtyard-plaza=DIR --store tropical-island=DIR
+ *   node scripts/stage-holodeck.mjs --shots --captures CAPTURE_DIR --mirror .localdata/holodeck-delivery
  *   node scripts/stage-holodeck.mjs --upload-list --mirror .localdata/holodeck-delivery
  *   node scripts/stage-holodeck.mjs --record-published .localdata/holodeck-delivery/holodeck-upload-list.json.published.json
  *
@@ -227,6 +230,62 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
   return { catalog, files: output.size, bytes: [...output.values()].reduce((sum, bytes) => sum + bytes.length, 0) };
 }
 
+export const HOLODECK_SHOTS_DIR = `media/${HOLODECK_ID}/scenes/`;
+export const HOLODECK_WORLDS = join(SITE, 'src/data/holodeck-worlds.json');
+/** A pack's walkable world on the Holodeck site, as the pack pages link it. */
+export const holodeckWorld = (worlds, packId) => new URL(worlds.worldPath.replace('{id}', encodeURIComponent(worlds.worlds[packId])), worlds.site).href;
+const sameCamera = (a, b) => JSON.stringify([a?.position, a?.target, a?.fov, a?.cove]) === JSON.stringify([b.position, b.target, b.fov, b.cove]);
+
+/**
+ * Stage each pack's two scene shots from a folder written by `scripts/capture-holodeck-shots.mjs`. Every shot must
+ * have been captured from its pack's world with the camera the spec declares, on WebGPU, as a PNG at the shot size;
+ * its receipt entry becomes the image's capture record and the spec gives its alternative text. Shots are kept at
+ * content-addressed keys in the mirror, pinned for the asset host and planned as responsive images;
+ * `src/data/holodeck-shots.json` records them.
+ */
+export async function stageHolodeckShots({ captures, mirror, site = SITE, size = HOLODECK_SHOT_SIZE, shots = HOLODECK_SHOTS, packs = HOLODECK_PACKS, worlds }) {
+  if (!captures || !mirror) throw new Error('An explicit captures folder and mirror are required');
+  worlds ??= await readJson(HOLODECK_WORLDS);
+  const receipt = await readJson(join(captures, 'receipt.json'));
+  const record = { schemaVersion: 1, size, packs: {} };
+  const output = new Map();
+  for (const pack of packs) {
+    const list = shots[pack.id];
+    if (!Array.isArray(list) || list.length !== 2) throw new Error(`${pack.id}: declare two shots, a wide view first`);
+    const world = holodeckWorld(worlds, pack.id);
+    record.packs[pack.id] = [];
+    for (const { view, camera, alt } of list) {
+      const captured = receipt.shots?.[view];
+      if (!captured || captured.world !== world || !sameCamera(captured.camera, camera)) throw new Error(`${pack.id}/${view}: no capture from ${world} with the declared camera`);
+      if (captured.backend !== 'WebGPU') throw new Error(`${pack.id}/${view}: captured on ${captured.backend}, not WebGPU`);
+      const bytes = await readFile(join(captures, `${view}.png`));
+      const { format, width, height } = await sharp(bytes).metadata();
+      if (format !== 'png' || width !== size.width || height !== size.height) throw new Error(`${pack.id}/${view}: expected a ${size.width}×${size.height} PNG, found ${format} ${width}×${height}`);
+      const sha256 = hashBytes(bytes), path = `${HOLODECK_SHOTS_DIR}${sha256}/${view}.png`;
+      output.set(path, bytes);
+      const { manifestSha256, backend, browser, capturedAt } = captured;
+      record.packs[pack.id].push({
+        view, src: `/${path.replace(/\.png$/, '.webp')}`, width, height, alt, ...imageSrcsets(path, width), inputPath: path, bytes: bytes.length, sha256,
+        capture: { tool: receipt.tool, world, manifestSha256, camera, backend, browser, capturedAt },
+      });
+    }
+  }
+  for (const [path, bytes] of output) await writeImmutable(mirror, path, bytes);
+  const images = Object.values(record.packs).flat();
+  const manifestFile = join(site, 'src/data/mirror-manifest.json'), planFile = join(site, 'src/data/commons-build.json');
+  const pins = await readJson(manifestFile);
+  for (const image of images) {
+    const prior = pins.files.find((pin) => pin.path === image.inputPath);
+    if (prior && (prior.sha256 !== image.sha256 || prior.bytes !== image.bytes)) throw new Error(`A different file is already pinned at ${image.inputPath}`);
+  }
+  const pinned = images.map((image) => ({ path: image.inputPath, bytes: image.bytes, sha256: image.sha256 }));
+  await writeJson(manifestFile, { ...pins, files: syncGroup(pins.files, 'path', HOLODECK_SHOTS_DIR, pinned) });
+  const plan = await readJson(planFile);
+  await writeJson(planFile, { ...plan, images: syncGroup(plan.images ?? [], 'inputPath', HOLODECK_SHOTS_DIR, images.map(({ view, bytes, sha256, capture, ...image }) => image)) });
+  await writeJson(join(site, 'src/data/holodeck-shots.json'), record);
+  return record;
+}
+
 const readLedger = async (ledger) => {
   try { return new Map((await readJson(ledger)).objects.map((record) => [record.path, record])); }
   catch (error) { if (error.code === 'ENOENT') return new Map(); throw error; }
@@ -241,9 +300,12 @@ export async function holodeckUploadList({ mirror, site = SITE, ledger = PUBLISH
   const catalog = await readJson(join(site, 'src/data/holodeck.json'));
   const missingPosters = catalog.assets.filter((asset) => !asset.poster).map((asset) => asset.slug);
   if (missingPosters.length) throw new Error(`Render the Holodeck posters before listing uploads: ${missingPosters.join(', ')}`);
+  let shots = { packs: {} };
+  try { shots = await readJson(join(site, 'src/data/holodeck-shots.json')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
   const used = new Set([
     ...catalog.assets.flatMap((asset) => [asset.runtimeModelDownload.path, asset.runtimeDownload.path, asset.editableDownload.path, asset.poster.inputPath]),
     ...catalog.packs.flatMap((pack) => pack.downloads.map((download) => download.path)),
+    ...Object.values(shots.packs).flat().map((image) => image.inputPath),
   ]);
   const pins = new Map((await readJson(join(site, 'src/data/mirror-manifest.json'))).files.map((record) => [record.path, record]));
   const published = await readLedger(ledger);
@@ -276,17 +338,20 @@ export async function recordHolodeckPublished({ receipt, ledger = PUBLISHED }) {
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
   const args = process.argv.slice(2), options = { stores: {} };
-  const uploadList = args.includes('--upload-list');
-  const rest = args.filter((arg) => arg !== '--upload-list');
+  const uploadList = args.includes('--upload-list'), shots = args.includes('--shots');
+  const rest = args.filter((arg) => arg !== '--upload-list' && arg !== '--shots');
   for (let i = 0; i < rest.length; i += 2) {
     const [flag, value] = [rest[i], rest[i + 1]];
     if (!value || value.startsWith('--')) throw new Error(`Missing value for ${flag}`);
     if (flag === '--store') { const [name, dir] = value.split(/=(.*)/s); options.stores[name] = await realpath(dir); }
-    else if (['--kiln', '--mirror'].includes(flag)) options[flag.slice(2)] = resolve(value);
+    else if (['--kiln', '--mirror', '--captures'].includes(flag)) options[flag.slice(2)] = resolve(value);
     else if (flag === '--record-published') options.receipt = resolve(value);
     else throw new Error(`Unknown option ${flag}`);
   }
-  if (options.receipt) {
+  if (shots) {
+    const record = await stageHolodeckShots(options);
+    console.log(JSON.stringify({ shots: Object.fromEntries(Object.entries(record.packs).map(([id, images]) => [id, images.map((image) => image.inputPath)])) }, null, 2));
+  } else if (options.receipt) {
     console.log(JSON.stringify(await recordHolodeckPublished({ receipt: options.receipt }), null, 2));
   } else if (uploadList) {
     const records = await holodeckUploadList(options);

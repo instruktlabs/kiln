@@ -5510,6 +5510,56 @@
       "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-debris-fronds.png",
       "bytes": 1286735,
       "sha256": "0f341dd0e99f58525c040fd8fd525c9e9316a1fc9d51e34ccf4c8878876adab1"
+    },
+    {
+      "path": "media/holodeck/scenes/652763f51ff7b8eef1bec832b3e289682b9f7c6f5bf5a559c58a7c3af4e77295/tidemark-overview.png",
+      "bytes": 1217355,
+      "sha256": "652763f51ff7b8eef1bec832b3e289682b9f7c6f5bf5a559c58a7c3af4e77295"
+    },
+    {
+      "path": "media/holodeck/scenes/41ec9fbde4257533c74da1f3e719ef2189327d2b8fec31fa0dce3d42900976b6/tidemark-shore-a.png",
+      "bytes": 1476706,
+      "sha256": "41ec9fbde4257533c74da1f3e719ef2189327d2b8fec31fa0dce3d42900976b6"
+    },
+    {
+      "path": "media/holodeck/scenes/adf83521065b1cac510f01c344957c284e009b23bd8cd865460e63afe1a39eb1/courtyard-overview.png",
+      "bytes": 1025553,
+      "sha256": "adf83521065b1cac510f01c344957c284e009b23bd8cd865460e63afe1a39eb1"
+    },
+    {
+      "path": "media/holodeck/scenes/c252b90b6e9dc49465b5d61c25ae90b2a7eda697a2d6d9e393f3ff9751297f54/courtyard-fountain.png",
+      "bytes": 1226727,
+      "sha256": "c252b90b6e9dc49465b5d61c25ae90b2a7eda697a2d6d9e393f3ff9751297f54"
+    },
+    {
+      "path": "media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side.png",
+      "bytes": 1166667,
+      "sha256": "e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d"
+    },
+    {
+      "path": "media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat.png",
+      "bytes": 1406461,
+      "sha256": "3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc"
+    },
+    {
+      "path": "media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest.png",
+      "bytes": 1302111,
+      "sha256": "1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473"
+    },
+    {
+      "path": "media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove.png",
+      "bytes": 2826366,
+      "sha256": "361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc"
+    },
+    {
+      "path": "media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior.png",
+      "bytes": 2209160,
+      "sha256": "ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd"
+    },
+    {
+      "path": "media/holodeck/scenes/dae991ffbe47771af0848295ef0a811d3d004809dcff0f4236b41879795e9ddb/winter-mountainside-cabin-living.png",
+      "bytes": 1825068,
+      "sha256": "dae991ffbe47771af0848295ef0a811d3d004809dcff0f4236b41879795e9ddb"
     }
   ]
 }

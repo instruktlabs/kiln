@@ -11,9 +11,7 @@ import { PACKS_ENABLED } from "../../lib/config";
 import foundryFloor from "../../data/foundry-floor.json";
 import foundryFloorPack from "../../data/packs/foundry-floor.json";
 import sceneMedia from "../../data/scene-media.json";
-import { holodeckAssets, holodeckPackHref, holodeckPacks, holodeckPlanned, holodeckWorldUrl } from "../../lib/holodeck";
-// One model stands for each Holodeck scene pack on its card.
-const holodeckFeatured: Record<string, string> = { "holodeck-tidemark": "island-palm", "holodeck-courtyard": "plaza-fountain", "holodeck-cove": "cove-hearth", "holodeck-crescent-cove": "crescent-shelter" };
+import { holodeckPackHref, holodeckPacks, holodeckPlanned, holodeckShots, holodeckWorldUrl } from "../../lib/holodeck";
 const foundryCampusPoster = sceneMedia["foundry-floor"].captures.campus.poster;
 // Six of the Foundry Floor models stand for the pack on its card; each must be in the staged catalog.
 const featured = ["s1-head-w", "s2-hall-w", "euv-scanner", "etch-cluster-tool", "stocker", "oht-vehicle"].map((slug) => {
@@ -129,11 +127,12 @@ const featured = ["s1-head-w", "s2-hall-w", "euv-scanner", "etch-cluster-tool", 
         <p class="mt-4 max-w-reading">Kiln assets placed in walkable Holodeck worlds. Each pack holds every Kiln asset its scene uses.</p>
         <div class="mt-6 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {holodeckPacks.map((pack) => {
-            const poster = holodeckAssets.find((asset) => asset.slug === holodeckFeatured[pack.id])?.poster;
+            // Each card shows its scene's wide shot.
+            const shot = holodeckShots(pack.id)[0];
             return (
               <div class="border-t border-rule pt-4">
                 <a href={holodeckPackHref(pack)} class="block text-ink no-underline" aria-label={`${pack.name} asset pack`}>
-                  {poster && <ResponsiveImage image={{ ...poster, alt: "" }} sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw" class="aspect-square w-full bg-stage object-contain" />}
+                  {shot && <ResponsiveImage image={{ ...shot, alt: "" }} sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw" class="aspect-video w-full bg-stage object-cover" />}
                   <h3 class="mt-4 text-title">{pack.name}</h3>
                   <p class="mt-2 text-dim">{pack.assetCount} editable assets and runtime models.</p>
                 </a>

@@ -2,9 +2,10 @@
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PageHeader from '../../../components/PageHeader.astro';
 import AssetCard from '../../../components/AssetCard.astro';
+import ResponsiveImage from '../../../components/ResponsiveImage.astro';
 import { bytes } from '../../../lib/catalog';
 import { PACKS_ENABLED, SITE } from '../../../lib/config';
-import { holodeck, holodeckAssetHref, holodeckAssets, holodeckPackHref, holodeckPacks, holodeckWorldUrl, type HolodeckPack } from '../../../lib/holodeck';
+import { holodeck, holodeckAssetHref, holodeckAssets, holodeckPackHref, holodeckPacks, holodeckShots, holodeckWorldUrl, type HolodeckPack } from '../../../lib/holodeck';
 
 export function getStaticPaths() {
   return PACKS_ENABLED ? holodeckPacks.map(pack => ({ params: { scene: pack.scene }, props: { pack } })) : [];
@@ -13,6 +14,7 @@ interface Props { pack: HolodeckPack; }
 const { pack } = Astro.props;
 const assets = pack.assets.map(slug => holodeckAssets.find(asset => asset.slug === slug)).filter(asset => asset !== undefined);
 const worldUrl = holodeckWorldUrl(pack.id);
+const shots = holodeckShots(pack.id);
 const href = holodeckPackHref(pack);
 const schema = {
   '@context': 'https://schema.org',
@@ -30,6 +32,7 @@ const schema = {
     <PageHeader>{pack.name}</PageHeader>
     <p class="lead mt-6">{pack.description}</p>
     <a class="btn mt-6" href={worldUrl}>Walk {pack.name} on Holodeck <span aria-hidden="true">↗</span></a>
+    {shots.length > 0 && <div class="mt-8 grid gap-4 md:grid-cols-2">{shots.map((shot, index) => <ResponsiveImage image={shot} eager={index === 0} sizes="(max-width: 767px) 100vw, 50vw" class="aspect-video w-full bg-stage object-cover" />)}</div>}
     {pack.sceneStillPlacesEarlier?.length ? <p class="mt-4 max-w-reading text-dim">This pack holds the final Cove modules. The walkable {pack.name} scene still places their earlier versions until that world is updated.</p> : null}
     <div class="mt-12 grid gap-8 md:grid-cols-2">
       <div><h2 class="text-subheading">Every Kiln asset in the scene.</h2><p class="mt-3">The pack holds the final version of each of the scene’s {pack.assetCount} Kiln assets, each with its runtime GLB and its editable Kiln source.</p></div>

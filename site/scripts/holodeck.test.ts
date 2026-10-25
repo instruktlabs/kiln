@@ -8,11 +8,12 @@ import worlds from '../src/data/holodeck-worlds.json';
 import mirror from '../src/data/mirror-manifest.json';
 import plan from '../src/data/commons-build.json';
 import rigPosters from '../src/data/rig-posters.json';
+import shots from '../src/data/holodeck-shots.json';
 import { HOLODECK_SITE } from '../src/lib/config';
 import { buildGallery } from '../src/lib/gallery';
 import { holodeckScenes, holodeckWorldUrl } from '../src/lib/holodeck';
-import { HOLODECK_APPROVAL, HOLODECK_ASSETS, HOLODECK_PACKS, holodeckApproved, holodeckSlug } from './holodeck-spec.mjs';
-import { HOLODECK_OBJECTS } from './stage-holodeck.mjs';
+import { HOLODECK_APPROVAL, HOLODECK_ASSETS, HOLODECK_PACKS, HOLODECK_SHOT_SIZE, HOLODECK_SHOTS, holodeckApproved, holodeckSlug } from './holodeck-spec.mjs';
+import { HOLODECK_OBJECTS, HOLODECK_SHOTS_DIR } from './stage-holodeck.mjs';
 import { ASSET_BASE } from './mirror-core.mjs';
 import { applyRigPosters } from './rig-posters-core.mjs';
 
@@ -134,4 +135,22 @@ test('the primary navigation has one Holodeck link, to the site the scene links 
   expect(layout.match(/href=\{HOLODECK_SITE\}/g)).toHaveLength(1);
   expect(layout).not.toContain('["Holodeck"');
   expect(worlds.site).toBe(HOLODECK_SITE);
+});
+
+test('every pack shows its two scene shots, wide view first, captured from its world at full HD, pinned and planned', () => {
+  expect(shots.size).toEqual(HOLODECK_SHOT_SIZE);
+  expect(Object.keys(shots.packs)).toEqual(HOLODECK_PACKS.map((pack) => pack.id));
+  for (const [id, images] of Object.entries(shots.packs)) {
+    const declared = HOLODECK_SHOTS[id as keyof typeof HOLODECK_SHOTS];
+    expect(images.map((image) => image.view)).toEqual(declared.map((shot) => shot.view));
+    for (const [index, image] of images.entries()) {
+      expect(image).toMatchObject({ ...HOLODECK_SHOT_SIZE, alt: declared[index]!.alt });
+      expect(image.alt.length).toBeGreaterThan(20);
+      expect(image.capture).toMatchObject({ tool: 'scripts/capture-holodeck-shots.mjs', world: holodeckWorldUrl(id), camera: declared[index]!.camera, backend: 'WebGPU' });
+      expect(image.capture.manifestSha256).toMatch(/^[0-9a-f]{64}$/);
+      expect(image.inputPath).toBe(`${HOLODECK_SHOTS_DIR}${image.sha256}/${image.view}.png`);
+      expect(pins.get(image.inputPath)).toEqual({ path: image.inputPath, bytes: image.bytes, sha256: image.sha256 });
+      expect(plan.images.some((planned) => planned.inputPath === image.inputPath && planned.alt === image.alt)).toBe(true);
+    }
+  }
 });
