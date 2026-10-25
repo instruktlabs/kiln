@@ -1,0 +1,2915 @@
+{
+  "schemaVersion": 1,
+  "objects": [
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park.png",
+      "bytes": 1628997,
+      "sha256": "ed3452144d1dde6150f95b844c571c088d4093d3b0887e8a4ecb7e072f009ed8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-stone.png",
+      "bytes": 1591925,
+      "sha256": "9b194e7e06a8e2fd0c39e129863c0e31f65e3bf90feca79522797aed21d908cb"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/coastal-flybird.png",
+      "bytes": 1271871,
+      "sha256": "9d85decb1141bbad4b45ba07331bec88e196f2f519154fbf491a09183a411599"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-canopy.png",
+      "bytes": 1509996,
+      "sha256": "b5aa332e8eaa72dd22ec1ad1358a06a4e1c60a52ee15ee0634795402b3dd3f70"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-hearth.png",
+      "bytes": 1651323,
+      "sha256": "b45a910ea3831d33ab0915ae30e5ac325384a33f237e0e0982a1eed167bc66e2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-lamp.png",
+      "bytes": 1714784,
+      "sha256": "5f63249a80d0d06602e550467161918765a49dd5e34a26c784232bb2b21b9336"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-moodboard.png",
+      "bytes": 1641686,
+      "sha256": "49a3cafbedb5ec1b22ccf40735b44690f068b42d5e88643514670b85521199a9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-planting.png",
+      "bytes": 1220048,
+      "sha256": "49fc1a5f1afe26fffb2f94e290557e62df219f0adece9fc9c2158fcb002847fc"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-rug.png",
+      "bytes": 1466126,
+      "sha256": "30a72aa1bd0aff65e64897246ace8b447b8cc7efbb54bbf502d04507123c6222"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating.png",
+      "bytes": 1308848,
+      "sha256": "dbdc5c8ff58dc045a18394bca8bf6fcd1e73eeda3f17ab0b8c451167aee364d7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure.png",
+      "bytes": 1556606,
+      "sha256": "ba65e814d4a210c8f52b37338162c81219c4f06e36d97d52ed21d6b3330c3d42"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/fountain-cascade.png",
+      "bytes": 1507917,
+      "sha256": "78aaa5ba5a90ca659751407dbb58565144cb05f58956fa512f2bcf26c1f308aa"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/gate-pier.png",
+      "bytes": 1491606,
+      "sha256": "b52fdcc0ec4c3b305afb5de5c3434d935b1a2df03eb0312115272689ce8a262e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-bird.png",
+      "bytes": 1480136,
+      "sha256": "824d612bf33b5a5f6f81e710f97422c139b19ca54da2423712fa388547accb79"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-crab.png",
+      "bytes": 1468027,
+      "sha256": "7a5ebc220dd1baf31e01da206fe737f50ac504d3d4b19ea70aefce243f5d5f75"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-grass.png",
+      "bytes": 1355556,
+      "sha256": "8a00cdf31b69c71fe12eec1755df9b2eb9d185aeabe32ce21694448641c5aa7a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-frame.png",
+      "bytes": 1447121,
+      "sha256": "3bf0b9643703ddb4a375d666d8e200f01be341d64901b4865b77a8d84052d94c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-furnishings.png",
+      "bytes": 1297721,
+      "sha256": "db373a18161e43b4cf58d3504d4732c2f7d4057763e0c61f1b23fd6e3070d784"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof.png",
+      "bytes": 1429991,
+      "sha256": "bd871758db0ad54ca6d0824cf8e3b5ca758b12d7c5730dfb3e49a62b63d5fa85"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-palm.png",
+      "bytes": 1416053,
+      "sha256": "39d19a6f03eaadf0ac660128d1625a12af2a907e63a4dbeb3993b243c00077d0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-resident.png",
+      "bytes": 1479166,
+      "sha256": "a054fd7be8a0febc9d1aae90efc56126baa1c7866629a22fe48b1771e6385e4e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-shore.png",
+      "bytes": 1415478,
+      "sha256": "00bf151cd3553e93a14a9a20571473effb59a6c7890db76cc890c267933dc65a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-shrub.png",
+      "bytes": 1515768,
+      "sha256": "8bc48f71e4aa8539076ffe3f2bb93f7411f801df0eaa52702bfd9910e37d16e8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/jungle-fern.png",
+      "bytes": 1325952,
+      "sha256": "94640aa07799df02462613b87083984fba5b63c4bc81cd68d8de3d2cc63964fd"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/jungle-groundcover.png",
+      "bytes": 1332774,
+      "sha256": "1d9da55131e446547fe140d99475c69ada91bc9f11fb6613db96b8a26117601b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/jungle-sapling.png",
+      "bytes": 1434450,
+      "sha256": "8a8985f25d25c4819b8e2928c765c89dbd4538bea2ac9856b99545c6720279dc"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/jungle-understory.png",
+      "bytes": 1499283,
+      "sha256": "7a654107f51762740a85dc24c88404af8338ae85da73570fc475337f90006751"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/lamp-bollard.png",
+      "bytes": 1561654,
+      "sha256": "3d9dc17ee34a63a564b26c28697586201b86dec72ab71080971e400c6b216fd0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/lamp-post.png",
+      "bytes": 1273765,
+      "sha256": "9009156b5ad4ea97468943f8886929f8f3f293894fc676a751bb65fd2522e217"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/pave-curb-corner.png",
+      "bytes": 1530941,
+      "sha256": "6d363d8a8a3f39433d3bbbb9f051e634b8cfe1c4c543ed2c2597329e9e863930"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/pave-curb.png",
+      "bytes": 1315826,
+      "sha256": "592f600f8ebba50a02c4a10f6de4db078ee5071508b33e2899a0675a7734e2d7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/pave-field-a.png",
+      "bytes": 1342170,
+      "sha256": "d306c41349f7009f5f86a9fe8d47244a0c26e82749d0ac9bfca88c7c0c34d59a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/pave-field-b.png",
+      "bytes": 1353387,
+      "sha256": "980e580df20e025443b967b87490fd0e265053ee93a4c5d4f892da4ebdcd3e4c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/pave-step.png",
+      "bytes": 1344322,
+      "sha256": "fb219f8c714442c68d0a4ea7ae64f2a5d68db9f5c1cf38a385119517910d85a5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/plant-lavender.png",
+      "bytes": 1574781,
+      "sha256": "42139a597ca7463bb0aede03f807d88c007a9220d1ec06095bb85d236f5320cf"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/planter-square.png",
+      "bytes": 1944333,
+      "sha256": "3eb62f4ac8b2798557139903c11596c811b94477f29504b847592e1d12a381a9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/planter-urn.png",
+      "bytes": 1684961,
+      "sha256": "c04f7dc8daf247aa175f5bbc787732fffe51d604bd214f9aeaa687e6925b8631"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/plaza-fountain.png",
+      "bytes": 1495052,
+      "sha256": "effe74250b195178af712bbbb2cc30f5ff72859508df1ff892ae507a79a110d7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/shrub-box.png",
+      "bytes": 1742314,
+      "sha256": "bd031373081b6ab1546b57450d01c91ad4899a5702b07f303e6e949035da8b05"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/statue-bronze.png",
+      "bytes": 1510861,
+      "sha256": "94905b4df349f3de3bbf8de26953ee0a7eb2057b38d6afe26c7f3a28900ccdc5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/statue-figure.png",
+      "bytes": 1488762,
+      "sha256": "364f2a25ee6593e92dea2a190a15725e9f5abcbe27bb041430f885aa69241a3a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/statue-monolith.png",
+      "bytes": 1542917,
+      "sha256": "04106eceac7cee307820406f5c720949c74f8fae2fcd177c5774d2c3ef0ddb6c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/tree-cypress.png",
+      "bytes": 1394390,
+      "sha256": "5462c35814210752be38c8abee20293e61ce988831414ac6ca676f1dc3f2571d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/tree-olive.png",
+      "bytes": 1555890,
+      "sha256": "7b11d9dcc576e9297b77b601943279e8dafdccca74a3d4b6354d66883c59f6d5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/tree-plane.png",
+      "bytes": 1579315,
+      "sha256": "b2d877b9f083a5e27fcd62624c6cb89f2273cabb181488ec65f64a3fcfd3a47e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/wall-pier.png",
+      "bytes": 1570841,
+      "sha256": "e62faa7cd1b813c3c3f19678c3ddb9bc30c39829734acf9930b5e7e8ac630ed2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/wall-segment.png",
+      "bytes": 1665691,
+      "sha256": "d84c3e84e31a3d8d8b84d04f8b38b6b627dd7611dec0a84b7b687a4427d4a50e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-coral-brain-heads.png",
+      "bytes": 1472167,
+      "sha256": "2beea914e6a6d84323d5e5c8b9595091455a01bbb740a9b52467b667da388322"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-coral-rubble-patch.png",
+      "bytes": 1448356,
+      "sha256": "6b5d262be7590bef57639a80a0413698ffc2f5086a60def3ec2adaf104392cc3"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-coral-staghorn.png",
+      "bytes": 1518142,
+      "sha256": "08aa042dfb19d37179ce9cd5fdd105d410ea39f0dfadea738be4bf2b29abf8a2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-coral-table.png",
+      "bytes": 1508853,
+      "sha256": "8f5f7dbe7e1f9a289a941d4e8d8a083f72580d9d464fdd5ec74a8336eb9d4d50"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-coconuts.png",
+      "bytes": 1338293,
+      "sha256": "067fad1fa12a1384ceddfa372e0b8b2c9673e473099c8dfc7f4dfd72d2bdc829"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-driftwood-log.png",
+      "bytes": 1307037,
+      "sha256": "fca6ef071df3bd2e5c7cb99ea197b3f17614dab02f35fefc7fff22ebb6605340"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-driftwood-pile.png",
+      "bytes": 1285714,
+      "sha256": "6cfdf42bddbdc046cf87a745569b5cdb681b68a2b59e083216a3079cd5314c21"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells.png",
+      "bytes": 1227944,
+      "sha256": "6c0d1bf807ce3b9d8bd1c201546175e93f8bf0d6d7738623d9693476573ee58c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-jetty-deck.png",
+      "bytes": 1590629,
+      "sha256": "f5c6658402b1c610365edbe7f6925dba55fbea17b03fa94826603921a15a0eee"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-jetty-platform.png",
+      "bytes": 1729883,
+      "sha256": "c18e075b2f2b2370a60919050482b87437329b9f703c49cc084903fba78aa632"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-jetty-stair.png",
+      "bytes": 1526924,
+      "sha256": "23acfd0c7873aa900f6bea6bf95b2d9531ea4ca874dc9c5487e695cd09aa35b6"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-alocasia.png",
+      "bytes": 1482062,
+      "sha256": "fcd043bdddca4d656206fe58d278ab14196cace158a954467e1f571602040088"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-grass-patch.png",
+      "bytes": 1258767,
+      "sha256": "14b0d6deb027cc4cb0368700b537e92e72003bff713834616343650a38fe18b4"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-grass-tuft.png",
+      "bytes": 1350629,
+      "sha256": "54ad571767ac42413d2d4d6485f765413e805442129399839ec08dd12223beb1"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-hibiscus.png",
+      "bytes": 1513444,
+      "sha256": "56ed1d4e4046e4738323bc53375243a6e9edc20a112d46f888b82af42cc62f11"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-naupaka.png",
+      "bytes": 1668113,
+      "sha256": "19dc8baaf8834a4937995b1062802131151c4447b8ff38534829284d314a55e0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-nest-fern.png",
+      "bytes": 1371089,
+      "sha256": "c007db27121a5d33c5cc1d612eb08a822b9bf212b69e9fdcb1f0901dd9839f24"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-purslane.png",
+      "bytes": 1320373,
+      "sha256": "e719345bdef96fd4f5165f919212630df0243c0b10ea5eaafc5f58afb1a5bbb8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-scrub.png",
+      "bytes": 1540253,
+      "sha256": "f889c0ddead754aa4e60f4d09c5e40339408d6f85a594f21f92c207abaa1328f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-sword-fern.png",
+      "bytes": 1288432,
+      "sha256": "fc05bb9cd8cde48238f7044a9a8969f3f70715bef25f76eef8f497d1a5191c77"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-vine-fringe.png",
+      "bytes": 1254447,
+      "sha256": "570dca81aa5df0d327b55a5b79004c1296ba3dfda1160a036b99b276d948a3b2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-plant-vine-mat.png",
+      "bytes": 1296772,
+      "sha256": "b66c6dbc9698c8d4b4d931b3f54e493a862f64b64ed2983298a797e8dfbb25dc"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-beach-a.png",
+      "bytes": 1613903,
+      "sha256": "f2b32a71572418d486967ce7860c15366b0f469e503c42fb32775705e7f0e032"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-beach-b.png",
+      "bytes": 1629557,
+      "sha256": "52a1f3da1203ddad0a111e138a84fb4a88d2a5e3b77f9c1720d19215dbb45742"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-boulder-a.png",
+      "bytes": 1759782,
+      "sha256": "f62920916a0ab9c7c1a8461734750680dacdd5809f9551cfffba288731205a4e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-boulder-b.png",
+      "bytes": 1625933,
+      "sha256": "3287f4e84afb83e5f057f05a0e7902772ffd88f1ff53f1260972f4b9f97845aa"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-boulder-c.png",
+      "bytes": 1370174,
+      "sha256": "54e0765094af4dac5e50c1ed39f5e8af30dfa195995d6f21b1f7642f241cbf75"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-cliff-a.png",
+      "bytes": 1862736,
+      "sha256": "f9c2a88658e11e441e7808609651e67a1973ef6d4f6510a483cda8268394a74f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-cliff-b.png",
+      "bytes": 1767246,
+      "sha256": "e29d624adfa54657a3336e40837ba575cbd6ba87d816d861d59f3cc0275277b1"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-cliff-c.png",
+      "bytes": 1750605,
+      "sha256": "685bc3ae2be01b462958973d8a1593e3c696f367b8965311c806ffb6c49c8947"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-outcrop-a.png",
+      "bytes": 1708619,
+      "sha256": "b9729579f5538bbc288fbce7dc66a93716afb8de5a52123eecb73b619e20ff62"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-outcrop-b.png",
+      "bytes": 1586149,
+      "sha256": "fa62a253d8b4f8ac6a2d55d74609142bd370e8725f9bd1827c703395e067d199"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-reef-a.png",
+      "bytes": 1755108,
+      "sha256": "5496d787134e6883bc3bb8d84bf5bbcd74ec7dfd7e5bd5ad4851904501714f2d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-rock-reef-b.png",
+      "bytes": 1438943,
+      "sha256": "f7471889fa85c7c6694aa6d9d671d9a6ab27a8a66262ed0c57962685ebbf7fd7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass.png",
+      "bytes": 1370289,
+      "sha256": "f2d972c800b475bc42a5848de688a489b025f03f9c3f19043857fb88bdf1c564"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-shelter.png",
+      "bytes": 1774058,
+      "sha256": "ba2b68ef35729ea98eeb60808dbfcdce677224a8dd12be069d35eb236adca42d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak.png",
+      "bytes": 1787106,
+      "sha256": "06ad923e77b77cb81db6c84db382302d0294f3d1dc68d9e4f06e51ee8a1693ae"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-boulder.png",
+      "bytes": 1861052,
+      "sha256": "8c31bf33fc77e82a63e7a21336db7199526ecb8fcc9a5e58294d3f2a1ebb32b1"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-chimney-masonry.png",
+      "bytes": 1401380,
+      "sha256": "8b61849c034a785ac44ddf4c3db1324d39eb96cd5f335a0a6d1940854d24270b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-coffee-table.png",
+      "bytes": 1795697,
+      "sha256": "2facf4cfbf98a34f20591dcb90fbb6cbf2ba6f43536976931b15d993387c8660"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile.png",
+      "bytes": 1567640,
+      "sha256": "3b345ad2ada6f159815951fb10610226e594b4ec86674a3a7ba4b3aa590d4488"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk.png",
+      "bytes": 1708917,
+      "sha256": "f6ddcb2a7aa87282286cb1070122319f8fa6476871e36e5909c94a679fae1b4c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair.png",
+      "bytes": 1599226,
+      "sha256": "f0844b0f9a0cc4ef44d5edb2b824114efef1c67d1e7187aa431151a150cb34af"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table.png",
+      "bytes": 1777330,
+      "sha256": "440508276de0bfdbcaebcd47b32d185d4660921209ccbb8e740c61946e27a712"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck.png",
+      "bytes": 1745911,
+      "sha256": "80fd879f3128af0c93377df9d8fbd1d932763d8736d9ef519ebe4ce83bd3ec4c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry.png",
+      "bytes": 1803569,
+      "sha256": "de6d5889ef143bbfe1a1573f087475edac70f53b1e998df923a4a05c2b9e9002"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-eave-storage.png",
+      "bytes": 1982886,
+      "sha256": "d1c2ab728ffc54d7d86b2766876dda71e6fb727d6a28a737f2e9ea2b10e38df0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench.png",
+      "bytes": 1638528,
+      "sha256": "1ba8d3da9590d3f1cf0d562ba2531c62f52270f3f7a957230d8cbf808083120f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fallen-log.png",
+      "bytes": 1444002,
+      "sha256": "4f823f10053e5e89b198bade1b3a453a91475ab8fdcb25c4ee41f2c409ea56f2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a.png",
+      "bytes": 1442222,
+      "sha256": "f48f7a16f8d923c00b812873cbb47ce6e2fad0b269dcf3072640a9362566899a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a.png",
+      "bytes": 1496085,
+      "sha256": "2413faffc98a73bee0c0940f3d737b7b09456003a05b234a96c257aa8d566d84"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a.png",
+      "bytes": 1446550,
+      "sha256": "202bd6232d83e0b8bf22017bee257783d83d33525c1de05d9b4d929bb5560c8a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a.png",
+      "bytes": 1482145,
+      "sha256": "48b8bc26b107567ff9759ee4111c040c12417031dc9f39691940c2f051d73cae"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-floor-loft.png",
+      "bytes": 1556535,
+      "sha256": "b12c42572008c8f79d89fa91f2ac8fc2e80886a47ab5d2dc3b211f8d5c978a4a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-floor-main.png",
+      "bytes": 1536047,
+      "sha256": "6e733c67b36a404ae6e03dd24211f758ff15f4083c239c67184bd06fa52111e7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-floorlamp-tripod.png",
+      "bytes": 1435153,
+      "sha256": "fd2b8d7cc759dd4052a4d0b258a45c16705687d83691222da0a62bd1e7378b84"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-frame-post.png",
+      "bytes": 1319012,
+      "sha256": "0eb0d1f23a54320d0176d9a318dee2b0d7164c60757daaff8c17b1ddd06e996b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-gable-glass.png",
+      "bytes": 1339856,
+      "sha256": "e793a970d50782dd9e755bd3e26bfece43ab86324f3ea45755fd926c9c301f77"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-ground-clump.png",
+      "bytes": 1345961,
+      "sha256": "681ef397bc00e7a3d36369184bcfb80a51709f5e0b3a04bcac8864ec7aa2e064"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry.png",
+      "bytes": 1859470,
+      "sha256": "ca7731b81edf48594b68fc8e2ca560fe734d7c87eeb2f27abf1cc2a4811b8d66"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run.png",
+      "bytes": 1867944,
+      "sha256": "29930de1086ca34d7b89a96d7793c83f64b4678c2ba18e409a7b79028a31811c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-lantern.png",
+      "bytes": 1530947,
+      "sha256": "b446f193143e57b2f517c848f6b79c324b957b4fd6cff51e808955753379a5d2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool.png",
+      "bytes": 1378713,
+      "sha256": "3a39d8a7f9bc7b30b27b31dac8c21b863d900064df52b8f5c494b3fccd086e19"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed.png",
+      "bytes": 1852509,
+      "sha256": "02a1b58e068d2891e46ed981eca0173f467d64fb373757701a25d4198696367e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-mountain-massif.png",
+      "bytes": 1600214,
+      "sha256": "21ea4d6416c7f3f769f1c821ff994e595e1b0f3677e74876b35762a94fcc812e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-pendant.png",
+      "bytes": 1327776,
+      "sha256": "613c7a7ced877901b03c692ea7fecd51ba2d826837828d5081a22c93980d8468"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame.png",
+      "bytes": 1296150,
+      "sha256": "ddc40ee0db075b3b3b6e651d99844ada52c3ab05857a4d29fbc78e5ea4759e03"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span.png",
+      "bytes": 1556328,
+      "sha256": "4256e9ad1588c50219f3f050d4773572b785e43fd4dd285783f74477e60de26f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-ridge-band.png",
+      "bytes": 1538624,
+      "sha256": "0af997de75a3179d5d3c4fac27d687d9f008ae07242f29166ddea924a8e4f45b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rock-shelf.png",
+      "bytes": 1662682,
+      "sha256": "ba6627e3d78e05ff60a549d6453f97bf3ade2895c3e3fcdb08b12e50d8fd6b1a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east.png",
+      "bytes": 1548882,
+      "sha256": "5343b96bf60e86a1c6d5a173cd76b0c4fd52a0bb29653f5cbfbd3c2023a198ad"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-west.png",
+      "bytes": 1333582,
+      "sha256": "df8dc62add2a0570c293ba85e586f535ebef9725aa65c764269d328b39fa5b0f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table.png",
+      "bytes": 1833295,
+      "sha256": "e719a97742ca8cf56b1d61285b3f8fdc96ff26c372af70ecb7f64b78237809c7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props.png",
+      "bytes": 1675740,
+      "sha256": "3886abf4a66e244303c3ac39cc07b361c90516940b708088acd97c2a28cf64ef"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-snow-bank.png",
+      "bytes": 1399531,
+      "sha256": "1961c938bdf13694edb9ca33d3441bcdb97b54909b9fb1dea54756c013d7b4fa"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-sofa-wool.png",
+      "bytes": 1774794,
+      "sha256": "511f663826f95b35b01d464f0b5661aff2dbf337f4965508668e905c81b68614"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a.png",
+      "bytes": 1354971,
+      "sha256": "4dcb9d2423e53dceaadf992729030c0494c8074b7115a182b633d3ff3663abfc"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a.png",
+      "bytes": 1449813,
+      "sha256": "11fc724ae4e8f61d99f7bd4e851c5e6785e1608af7f088e562acca3f99ecda58"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a.png",
+      "bytes": 1372924,
+      "sha256": "e692f5e8da470d739dc796da273eba12896b739c416db568951273ffe34bdb51"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior.png",
+      "bytes": 1453293,
+      "sha256": "7e6cbe5cb6a44a469c62e7a3c2955d11490bb9e3ec8ce6b63a3c4cb5d062ca79"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior.png",
+      "bytes": 1385644,
+      "sha256": "779077d3faf97754c5a0942912360d48a012ea8a736e448ff9f23202c4301e84"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stone-pier.png",
+      "bytes": 2014925,
+      "sha256": "7929eebe8ac68d91f65ce02ad183f5d96293245c6039738897d3a29194598864"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stone-plinth-panel.png",
+      "bytes": 2175021,
+      "sha256": "dc9d5a9a1e0f435a900504e23c7337efa83862883ca8232a9da885ccc8287526"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker.png",
+      "bytes": 1553385,
+      "sha256": "b4ebc8c6651b615e53b7a26e73de89f160537fe1bef4452339b1b8c594c3c602"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber.png",
+      "bytes": 1595893,
+      "sha256": "ac2929f15a976d09f8e341d6094199ea37b6853c324917a2f49540a8a5277885"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east.png",
+      "bytes": 1874404,
+      "sha256": "87f0ef97b206b46f8d01eaab2eadf51ba46ea793c0a88c44da5e812356811812"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade.png",
+      "bytes": 1498429,
+      "sha256": "6da7e871093a8f8a756f9305bfeb62688a16bd1ecea2e25f435a4a038a8e2a03"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear.png",
+      "bytes": 1643945,
+      "sha256": "aaee29a68b3ddd0944d1d7425fff9a6984fd298e8ce22f117c4e03037a59890e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west.png",
+      "bytes": 1871684,
+      "sha256": "ff832eee82cc47524f97e38852829dbde6fcf746ca639d0192043e99d3313b53"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-window-tall.png",
+      "bytes": 1535211,
+      "sha256": "a7b942c27c2ddedd7032c681839b2e95326cf715bc98181344d1019eb9c14e16"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-window-test.png",
+      "bytes": 1727998,
+      "sha256": "70c2a46fd05c98ad8fbf7212e3445701163dad72d7f2df1a0980fdcd48d86b89"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-debris-fronds.png",
+      "bytes": 1286735,
+      "sha256": "0f341dd0e99f58525c040fd8fd525c9e9316a1fc9d51e34ccf4c8878876adab1"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-palm-arch.png",
+      "bytes": 1396290,
+      "sha256": "651ece555eb6eb8d67bcc3a91b317f7f8a409f8ba699e25cd71c6386f5cc601f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-palm-lean.png",
+      "bytes": 1378589,
+      "sha256": "291adc9ea3b1b8145d574651394f6d36f33ec7bae280e05639a70adec2a06027"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-palm-tall.png",
+      "bytes": 1363050,
+      "sha256": "a0c52c0a6130a091eb4477d6378012f2b7c8a55d21ae0ad6960e13e04606f15a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-palm-young.png",
+      "bytes": 1482419,
+      "sha256": "8d9f3bac1af25dc16afcad9d13b0a5c48a12cf3853dd7a8432f923bedab6f648"
+    },
+    {
+      "path": "packs/holodeck/objects/0067d55bd04efe6252de61784ee2be8907ccfbab3e799bbc7915fde4c7556b5f/winter-wmc-deck-tile-runtime.zip",
+      "bytes": 57577,
+      "sha256": "0067d55bd04efe6252de61784ee2be8907ccfbab3e799bbc7915fde4c7556b5f"
+    },
+    {
+      "path": "packs/holodeck/objects/006dcb6ddd95dbdfbf6e043e78bc4ce69039eab727b4cf81b5d32fd9042520d8/crescent-rock-boulder-a.glb",
+      "bytes": 1408732,
+      "sha256": "006dcb6ddd95dbdfbf6e043e78bc4ce69039eab727b4cf81b5d32fd9042520d8"
+    },
+    {
+      "path": "packs/holodeck/objects/02abf2bb238fc395a252dfe0d3319e21241cf53dd8548d487484f897dde2b374/crescent-plant-vine-fringe-editable.zip",
+      "bytes": 140441,
+      "sha256": "02abf2bb238fc395a252dfe0d3319e21241cf53dd8548d487484f897dde2b374"
+    },
+    {
+      "path": "packs/holodeck/objects/03a228969bdc5d29758bf31c269eeb7c4bbc183c12bba12e4cca330d5783fe82/winter-wmc-ridge-band.glb",
+      "bytes": 1045160,
+      "sha256": "03a228969bdc5d29758bf31c269eeb7c4bbc183c12bba12e4cca330d5783fe82"
+    },
+    {
+      "path": "packs/holodeck/objects/03af507792420d8275161178353c7211258c405ef9bcfb029e08915bb27ec485/island-hut-frame-editable.zip",
+      "bytes": 36876,
+      "sha256": "03af507792420d8275161178353c7211258c405ef9bcfb029e08915bb27ec485"
+    },
+    {
+      "path": "packs/holodeck/objects/04520d6d1e04e60d2c7a2dd4e9091bf97712fe2158a2b8e811962d3e6d938518/shrub-box-editable.zip",
+      "bytes": 212750,
+      "sha256": "04520d6d1e04e60d2c7a2dd4e9091bf97712fe2158a2b8e811962d3e6d938518"
+    },
+    {
+      "path": "packs/holodeck/objects/045548ebbf13e99f3e665e36b3cc8a42845d3df216f15e4be4600a73a36221ff/crescent-rock-cliff-b-editable.zip",
+      "bytes": 3495804,
+      "sha256": "045548ebbf13e99f3e665e36b3cc8a42845d3df216f15e4be4600a73a36221ff"
+    },
+    {
+      "path": "packs/holodeck/objects/049cb436872abd0418a329db43fe2910e0a3df1ae5f0d41e3477d81aa3fda909/winter-wmc-chimney-masonry.glb",
+      "bytes": 1147548,
+      "sha256": "049cb436872abd0418a329db43fe2910e0a3df1ae5f0d41e3477d81aa3fda909"
+    },
+    {
+      "path": "packs/holodeck/objects/04f29204a066fd8a7f05b1f6a069e6efc482883ad4c813b0bc8e7d90bc9921bf/winter-wmc-stair-rail-interior-runtime.zip",
+      "bytes": 51103,
+      "sha256": "04f29204a066fd8a7f05b1f6a069e6efc482883ad4c813b0bc8e7d90bc9921bf"
+    },
+    {
+      "path": "packs/holodeck/objects/0622cf4aa9965d561155933b5cd0018c4d7a0a3aa0ea4949229207281b98e086/crescent-rock-outcrop-b-editable.zip",
+      "bytes": 3304806,
+      "sha256": "0622cf4aa9965d561155933b5cd0018c4d7a0a3aa0ea4949229207281b98e086"
+    },
+    {
+      "path": "packs/holodeck/objects/0651e8aaa5b34a5ffddfe53c26f613f14e0ab5a9c218ee4fae26a79f4a0abd96/crescent-jetty-stair-editable.zip",
+      "bytes": 400431,
+      "sha256": "0651e8aaa5b34a5ffddfe53c26f613f14e0ab5a9c218ee4fae26a79f4a0abd96"
+    },
+    {
+      "path": "packs/holodeck/objects/07202524e5d4f342d47804d1e2c4e09b49372622cf59096cdd2d11c7a5154428/winter-wmc-fallen-log-editable.zip",
+      "bytes": 556098,
+      "sha256": "07202524e5d4f342d47804d1e2c4e09b49372622cf59096cdd2d11c7a5154428"
+    },
+    {
+      "path": "packs/holodeck/objects/077bc1b8bc9859251118635dc1fdea40ef40cf83793e0e3642823937ef04f21d/winter-wmc-dining-chair-runtime.zip",
+      "bytes": 241256,
+      "sha256": "077bc1b8bc9859251118635dc1fdea40ef40cf83793e0e3642823937ef04f21d"
+    },
+    {
+      "path": "packs/holodeck/objects/07d639ffd815282f5665b8c4ad57d9af2bcefc6471862c2d8c191a281c201797/cove-rug-runtime.zip",
+      "bytes": 89437,
+      "sha256": "07d639ffd815282f5665b8c4ad57d9af2bcefc6471862c2d8c191a281c201797"
+    },
+    {
+      "path": "packs/holodeck/objects/07ef018a8646df836343cdc536423254754ab877169686cd118083b9e25ab60c/gate-pier-runtime.zip",
+      "bytes": 25731,
+      "sha256": "07ef018a8646df836343cdc536423254754ab877169686cd118083b9e25ab60c"
+    },
+    {
+      "path": "packs/holodeck/objects/08cddec41cc8755fe49335d3fbb52f125816b8390e3b8349dc8e0f686f11e175/crescent-coral-table-editable.zip",
+      "bytes": 309501,
+      "sha256": "08cddec41cc8755fe49335d3fbb52f125816b8390e3b8349dc8e0f686f11e175"
+    },
+    {
+      "path": "packs/holodeck/objects/092cb1d69477f4623cff8ebce063d0209dfdb0ad7012ed60bb6caf9794ec2b8e/island-hut-furnishings.glb",
+      "bytes": 69372,
+      "sha256": "092cb1d69477f4623cff8ebce063d0209dfdb0ad7012ed60bb6caf9794ec2b8e"
+    },
+    {
+      "path": "packs/holodeck/objects/093c34fade5ee04a5b525981f4745bacabfd1af169ee43dc5957363ede042493/winter-wmc-pendant-runtime.zip",
+      "bytes": 46773,
+      "sha256": "093c34fade5ee04a5b525981f4745bacabfd1af169ee43dc5957363ede042493"
+    },
+    {
+      "path": "packs/holodeck/objects/0a707a70d99abd9762fef36c9196f6c5134e640973ae5b6e8c89f16568fba2c0/crescent-debris-driftwood-log.glb",
+      "bytes": 179360,
+      "sha256": "0a707a70d99abd9762fef36c9196f6c5134e640973ae5b6e8c89f16568fba2c0"
+    },
+    {
+      "path": "packs/holodeck/objects/0a8300d620f2c1863106b0ab63c7252ffebca59b17890490065bbe51046ddbb9/winter-wmc-floor-loft.glb",
+      "bytes": 853256,
+      "sha256": "0a8300d620f2c1863106b0ab63c7252ffebca59b17890490065bbe51046ddbb9"
+    },
+    {
+      "path": "packs/holodeck/objects/0b15a8f867dfbbd59af2c2b3e37c254d0303da0f131e9e308d56a6d9edee62f4/winter-wmc-fir-hero-a-editable.zip",
+      "bytes": 1925504,
+      "sha256": "0b15a8f867dfbbd59af2c2b3e37c254d0303da0f131e9e308d56a6d9edee62f4"
+    },
+    {
+      "path": "packs/holodeck/objects/0b549f92bf9248abb8fcfa68e7f196237ad75d7189e359292e401c35c557b4b1/plant-lavender.glb",
+      "bytes": 129272,
+      "sha256": "0b549f92bf9248abb8fcfa68e7f196237ad75d7189e359292e401c35c557b4b1"
+    },
+    {
+      "path": "packs/holodeck/objects/0c2334e944becd2819b4f0850542949091b518decdac3429d0b7dd97e0d0d6e8/winter-wmc-wall-west-editable.zip",
+      "bytes": 435031,
+      "sha256": "0c2334e944becd2819b4f0850542949091b518decdac3429d0b7dd97e0d0d6e8"
+    },
+    {
+      "path": "packs/holodeck/objects/0c6f07b7ce973518f04e79cad48c36418b946aefbbf9ca8df5ed10f7ae6129f5/winter-wmc-door-entry-runtime.zip",
+      "bytes": 68687,
+      "sha256": "0c6f07b7ce973518f04e79cad48c36418b946aefbbf9ca8df5ed10f7ae6129f5"
+    },
+    {
+      "path": "packs/holodeck/objects/0ce9505d1fa19aac3245ec98eeb53b04b2e91827a756e44f45a6e750419c60f4/cove-canopy.glb",
+      "bytes": 929320,
+      "sha256": "0ce9505d1fa19aac3245ec98eeb53b04b2e91827a756e44f45a6e750419c60f4"
+    },
+    {
+      "path": "packs/holodeck/objects/0cffd31d33f08ba024a56a82e881e3c187a73e0415ef2d9c0c86bf0f612e862f/jungle-understory-runtime.zip",
+      "bytes": 22021,
+      "sha256": "0cffd31d33f08ba024a56a82e881e3c187a73e0415ef2d9c0c86bf0f612e862f"
+    },
+    {
+      "path": "packs/holodeck/objects/0efeba44a2a16a8f6610b03be402798c18f28ab60af84a0e96b6fb0ac28e5922/winter-wmc-entry-bench.glb",
+      "bytes": 1474964,
+      "sha256": "0efeba44a2a16a8f6610b03be402798c18f28ab60af84a0e96b6fb0ac28e5922"
+    },
+    {
+      "path": "packs/holodeck/objects/0f0ea067d6bf5746e4d3a746199c17c6d6470fec120eb8fe834ced16637c2bff/crescent-rock-cliff-b.glb",
+      "bytes": 1565692,
+      "sha256": "0f0ea067d6bf5746e4d3a746199c17c6d6470fec120eb8fe834ced16637c2bff"
+    },
+    {
+      "path": "packs/holodeck/objects/0fc15e361dbeef9d9def792ef9bfee3b7889cbdc5d10a4271a816cbc7fc2833c/crescent-coral-brain-heads.glb",
+      "bytes": 89152,
+      "sha256": "0fc15e361dbeef9d9def792ef9bfee3b7889cbdc5d10a4271a816cbc7fc2833c"
+    },
+    {
+      "path": "packs/holodeck/objects/10a629833ca655cbd279d9e3cc0ec9c234d35657f009fe524500cfa6af60f5b7/winter-wmc-rail-span-runtime.zip",
+      "bytes": 39551,
+      "sha256": "10a629833ca655cbd279d9e3cc0ec9c234d35657f009fe524500cfa6af60f5b7"
+    },
+    {
+      "path": "packs/holodeck/objects/10d3c8a9bde0a0a0fe61fc56bf7493039313b9fd7ed286623a5d9516e2231d60/winter-wmc-hearth-masonry.glb",
+      "bytes": 470960,
+      "sha256": "10d3c8a9bde0a0a0fe61fc56bf7493039313b9fd7ed286623a5d9516e2231d60"
+    },
+    {
+      "path": "packs/holodeck/objects/10e08265347b8c6b1bf8f6f0c7bd1638277a471f111b01fe82d7d2e6d5c171cc/winter-wmc-wall-west-runtime.zip",
+      "bytes": 308311,
+      "sha256": "10e08265347b8c6b1bf8f6f0c7bd1638277a471f111b01fe82d7d2e6d5c171cc"
+    },
+    {
+      "path": "packs/holodeck/objects/116dd28d42c3473267190586556929a1cd5aa5d89d28b2b743d9de26fe8af621/holodeck-winter-mountainside-cabin-editable.zip",
+      "bytes": 31903689,
+      "sha256": "116dd28d42c3473267190586556929a1cd5aa5d89d28b2b743d9de26fe8af621"
+    },
+    {
+      "path": "packs/holodeck/objects/118fbb75e5360e75a7c01428129c0c613b5102cbcb2ee5b93eda40a9a2c2bd1b/cove-planting-editable.zip",
+      "bytes": 805118,
+      "sha256": "118fbb75e5360e75a7c01428129c0c613b5102cbcb2ee5b93eda40a9a2c2bd1b"
+    },
+    {
+      "path": "packs/holodeck/objects/11a33681fc6b50ad229aa7d230c93dcb9c60b764c6560125a19c75b958d22c77/winter-wmc-floor-main.glb",
+      "bytes": 1820720,
+      "sha256": "11a33681fc6b50ad229aa7d230c93dcb9c60b764c6560125a19c75b958d22c77"
+    },
+    {
+      "path": "packs/holodeck/objects/11fb285045ca2892c7c1032d8f0ab89ec417ee976d25a183f6a90245cb6d3be7/crescent-rock-outcrop-b.glb",
+      "bytes": 1540244,
+      "sha256": "11fb285045ca2892c7c1032d8f0ab89ec417ee976d25a183f6a90245cb6d3be7"
+    },
+    {
+      "path": "packs/holodeck/objects/12138f680898654a2a748ba23dd5012328558ce531ecbfbb2fefdfd33cce9840/winter-wmc-rock-shelf-runtime.zip",
+      "bytes": 624194,
+      "sha256": "12138f680898654a2a748ba23dd5012328558ce531ecbfbb2fefdfd33cce9840"
+    },
+    {
+      "path": "packs/holodeck/objects/1376642f0c009484d5d147aca672f42e850a74cd2a17c7541a63c74cd631e47f/crescent-plant-vine-mat-runtime.zip",
+      "bytes": 66464,
+      "sha256": "1376642f0c009484d5d147aca672f42e850a74cd2a17c7541a63c74cd631e47f"
+    },
+    {
+      "path": "packs/holodeck/objects/13cb92f5ef23977493613069881514ac6ef3bcfeea0fbf0a938ed212713bb2c3/statue-bronze-runtime.zip",
+      "bytes": 208426,
+      "sha256": "13cb92f5ef23977493613069881514ac6ef3bcfeea0fbf0a938ed212713bb2c3"
+    },
+    {
+      "path": "packs/holodeck/objects/140553ef2553b4df9627e79bb50ddfe3e1e198740cd001ac18408553384f9f60/winter-wmc-rail-span.glb",
+      "bytes": 73724,
+      "sha256": "140553ef2553b4df9627e79bb50ddfe3e1e198740cd001ac18408553384f9f60"
+    },
+    {
+      "path": "packs/holodeck/objects/1434a677239ae2c10744c4d759e697dc9d3077dd4c8081e15cc271b6bedade59/statue-bronze-editable.zip",
+      "bytes": 275380,
+      "sha256": "1434a677239ae2c10744c4d759e697dc9d3077dd4c8081e15cc271b6bedade59"
+    },
+    {
+      "path": "packs/holodeck/objects/14825fd5015948aac76da096aa19d9ce37c2a52dd1b6af9a4b9c02fe7be94a12/crescent-debris-fronds-editable.zip",
+      "bytes": 145299,
+      "sha256": "14825fd5015948aac76da096aa19d9ce37c2a52dd1b6af9a4b9c02fe7be94a12"
+    },
+    {
+      "path": "packs/holodeck/objects/148b6b01f6361dd136e9511391049d7dc4c7258e872257a20c630e7f2327658a/island-hut-furnishings-editable.zip",
+      "bytes": 32913,
+      "sha256": "148b6b01f6361dd136e9511391049d7dc4c7258e872257a20c630e7f2327658a"
+    },
+    {
+      "path": "packs/holodeck/objects/14da866dd31707cdde8c99fcf6872c5676cd5418c2d79bebb8a9d5ee9c3b9cee/winter-wmc-side-table-runtime.zip",
+      "bytes": 104131,
+      "sha256": "14da866dd31707cdde8c99fcf6872c5676cd5418c2d79bebb8a9d5ee9c3b9cee"
+    },
+    {
+      "path": "packs/holodeck/objects/153889923a7f740027d534d8928c16fb5b4471fbe91d1d8f11b4fffa25d8f4d6/wall-segment-runtime.zip",
+      "bytes": 30175,
+      "sha256": "153889923a7f740027d534d8928c16fb5b4471fbe91d1d8f11b4fffa25d8f4d6"
+    },
+    {
+      "path": "packs/holodeck/objects/154a7167ca6cb45bb5bed25ad9e1e53de013adb3a7c18d84bdeddc805a6c0cad/winter-wmc-snow-bank.glb",
+      "bytes": 734120,
+      "sha256": "154a7167ca6cb45bb5bed25ad9e1e53de013adb3a7c18d84bdeddc805a6c0cad"
+    },
+    {
+      "path": "packs/holodeck/objects/15e35bc486d3b2c22533fc3c8efc7975bf7ae0dbe1bf11ed0d0216235d53ddeb/crescent-plant-scrub-runtime.zip",
+      "bytes": 73657,
+      "sha256": "15e35bc486d3b2c22533fc3c8efc7975bf7ae0dbe1bf11ed0d0216235d53ddeb"
+    },
+    {
+      "path": "packs/holodeck/objects/17010ca45a0888885c42dd84ab0366ed35dafe8f937b88b3547bd7945bb15c56/planter-urn-editable.zip",
+      "bytes": 371911,
+      "sha256": "17010ca45a0888885c42dd84ab0366ed35dafe8f937b88b3547bd7945bb15c56"
+    },
+    {
+      "path": "packs/holodeck/objects/1a4b272c74b528045c939fc8725257953ffc177f38435016c147264307a42063/winter-wmc-roof-east-runtime.zip",
+      "bytes": 352823,
+      "sha256": "1a4b272c74b528045c939fc8725257953ffc177f38435016c147264307a42063"
+    },
+    {
+      "path": "packs/holodeck/objects/1b36e57768d48638e1116054e5b5982236bab5393cfda326d418e56a5eb5bbdd/holodeck-cove-editable.zip",
+      "bytes": 6932664,
+      "sha256": "1b36e57768d48638e1116054e5b5982236bab5393cfda326d418e56a5eb5bbdd"
+    },
+    {
+      "path": "packs/holodeck/objects/1b6f5abaf35440a77d4e8a88a1d9384a8113cd348369156ff122432e28de27a3/island-palm-editable.zip",
+      "bytes": 983700,
+      "sha256": "1b6f5abaf35440a77d4e8a88a1d9384a8113cd348369156ff122432e28de27a3"
+    },
+    {
+      "path": "packs/holodeck/objects/1c05c8ee1e0b7ea8e3c954613c96c9574416deea2caab40a369932db107d0836/island-bird.glb",
+      "bytes": 28664,
+      "sha256": "1c05c8ee1e0b7ea8e3c954613c96c9574416deea2caab40a369932db107d0836"
+    },
+    {
+      "path": "packs/holodeck/objects/1eb76b8b78ea7ee4cb897f7bcf9fa5b99ad64fc933b54d4aa27013bf4e9c1785/crescent-jetty-stair-runtime.zip",
+      "bytes": 116236,
+      "sha256": "1eb76b8b78ea7ee4cb897f7bcf9fa5b99ad64fc933b54d4aa27013bf4e9c1785"
+    },
+    {
+      "path": "packs/holodeck/objects/1eca4b29294816bc171b8ab481ebf06550ee6552cd88a9dfb7477d069643ed63/winter-wmc-lantern-editable.zip",
+      "bytes": 60730,
+      "sha256": "1eca4b29294816bc171b8ab481ebf06550ee6552cd88a9dfb7477d069643ed63"
+    },
+    {
+      "path": "packs/holodeck/objects/1f349af6ce4dfe79b8c00371bc0f8ae10c07e6a5a20a96c0948426394aedb9c9/winter-wmc-eave-storage.glb",
+      "bytes": 139420,
+      "sha256": "1f349af6ce4dfe79b8c00371bc0f8ae10c07e6a5a20a96c0948426394aedb9c9"
+    },
+    {
+      "path": "packs/holodeck/objects/1f5ab99ea8fcc89e803e2b909b165ec8fe9f21058a7f4557946ece47f03230e7/island-shrub-editable.zip",
+      "bytes": 126339,
+      "sha256": "1f5ab99ea8fcc89e803e2b909b165ec8fe9f21058a7f4557946ece47f03230e7"
+    },
+    {
+      "path": "packs/holodeck/objects/1f66d779d0d9a58dc6c41788b2cfd6852a5765cd2f317349c52f8b1d28979a2e/crescent-rock-boulder-b.glb",
+      "bytes": 1400028,
+      "sha256": "1f66d779d0d9a58dc6c41788b2cfd6852a5765cd2f317349c52f8b1d28979a2e"
+    },
+    {
+      "path": "packs/holodeck/objects/1f91eeab7bb32cf188e3c6e41414885e8d8ffeeffbfa8990a366d8f0b0fc99e6/winter-wmc-wall-rear-editable.zip",
+      "bytes": 463515,
+      "sha256": "1f91eeab7bb32cf188e3c6e41414885e8d8ffeeffbfa8990a366d8f0b0fc99e6"
+    },
+    {
+      "path": "packs/holodeck/objects/1fd5d12dbb07e88452fd3c287543db3d3a79c6b132a31ab5e8b8584bfeb23402/winter-wmc-living-rug-wool-editable.zip",
+      "bytes": 450744,
+      "sha256": "1fd5d12dbb07e88452fd3c287543db3d3a79c6b132a31ab5e8b8584bfeb23402"
+    },
+    {
+      "path": "packs/holodeck/objects/21059e0f6bf908f042ab43c77a2f55d982364937e52127e137cb4dfc45c97eb1/winter-wmc-stone-plinth-panel-editable.zip",
+      "bytes": 758047,
+      "sha256": "21059e0f6bf908f042ab43c77a2f55d982364937e52127e137cb4dfc45c97eb1"
+    },
+    {
+      "path": "packs/holodeck/objects/211ab3d60ae7b65a6853037df82e3dd127242e59f401e4b44d521c5cda6f000b/tree-plane-runtime.zip",
+      "bytes": 637462,
+      "sha256": "211ab3d60ae7b65a6853037df82e3dd127242e59f401e4b44d521c5cda6f000b"
+    },
+    {
+      "path": "packs/holodeck/objects/211f1bac6c2aedaa285f109f55ad62904f3c5dd0b8afa05af199236917699a29/winter-wmc-roof-west.glb",
+      "bytes": 953448,
+      "sha256": "211f1bac6c2aedaa285f109f55ad62904f3c5dd0b8afa05af199236917699a29"
+    },
+    {
+      "path": "packs/holodeck/objects/21300b20e5cee75a54a2d7423d8c1cfc0b2397d5e3985debac7fa208a93d9617/winter-wmc-ground-clump-editable.zip",
+      "bytes": 257799,
+      "sha256": "21300b20e5cee75a54a2d7423d8c1cfc0b2397d5e3985debac7fa208a93d9617"
+    },
+    {
+      "path": "packs/holodeck/objects/21a3d9757ad2d7d9e0ebd29f3f8ccb225c43e4e1f6114cb3eb233cd6fb30183c/crescent-rock-outcrop-b-runtime.zip",
+      "bytes": 1479957,
+      "sha256": "21a3d9757ad2d7d9e0ebd29f3f8ccb225c43e4e1f6114cb3eb233cd6fb30183c"
+    },
+    {
+      "path": "packs/holodeck/objects/22487b5fd5c78c812740aacd3d3136134c500d9db04944ec505830618cd3760b/crescent-debris-shells.glb",
+      "bytes": 27892,
+      "sha256": "22487b5fd5c78c812740aacd3d3136134c500d9db04944ec505830618cd3760b"
+    },
+    {
+      "path": "packs/holodeck/objects/228f9d95ad5c5f6972c16c2c6de7760b479e68daeac9298e2147a8cad15944df/pave-field-a-runtime.zip",
+      "bytes": 24897,
+      "sha256": "228f9d95ad5c5f6972c16c2c6de7760b479e68daeac9298e2147a8cad15944df"
+    },
+    {
+      "path": "packs/holodeck/objects/23c93cc653a5b370cae73dbca360323e9b47056bfd02e06e103c7425d163f830/winter-wmc-wall-east-editable.zip",
+      "bytes": 499440,
+      "sha256": "23c93cc653a5b370cae73dbca360323e9b47056bfd02e06e103c7425d163f830"
+    },
+    {
+      "path": "packs/holodeck/objects/2416c2fc74ce547cdd4ea027d89750299bf091641e658c4280af84e6ac9ef53c/pave-step.glb",
+      "bytes": 33688,
+      "sha256": "2416c2fc74ce547cdd4ea027d89750299bf091641e658c4280af84e6ac9ef53c"
+    },
+    {
+      "path": "packs/holodeck/objects/2420a1bb9b4bd1cbe98129d1b04b05ef91d67bebf2660d2e56427fcb802cd6c9/crescent-plant-sword-fern-editable.zip",
+      "bytes": 247492,
+      "sha256": "2420a1bb9b4bd1cbe98129d1b04b05ef91d67bebf2660d2e56427fcb802cd6c9"
+    },
+    {
+      "path": "packs/holodeck/objects/2438ebb74372c82d67830c26c3b504ae42d890026f780d446e392f4e187a47f5/winter-wmc-pendant-editable.zip",
+      "bytes": 149622,
+      "sha256": "2438ebb74372c82d67830c26c3b504ae42d890026f780d446e392f4e187a47f5"
+    },
+    {
+      "path": "packs/holodeck/objects/2565c5136e055122b6ae432099b45672a2a0944a81243461618ececb70b6b1a7/island-hut-roof-editable.zip",
+      "bytes": 134694,
+      "sha256": "2565c5136e055122b6ae432099b45672a2a0944a81243461618ececb70b6b1a7"
+    },
+    {
+      "path": "packs/holodeck/objects/25fa200b8451b646a09e8c5a8385a6900a0b6bb452bf7795fb5cb29c1f4dfbcf/crescent-plant-purslane.glb",
+      "bytes": 91964,
+      "sha256": "25fa200b8451b646a09e8c5a8385a6900a0b6bb452bf7795fb5cb29c1f4dfbcf"
+    },
+    {
+      "path": "packs/holodeck/objects/26740329505d2097105418fb5184bf8c9336f2e6660fb2df50e6c341992dde01/winter-wmc-wall-west.glb",
+      "bytes": 1002664,
+      "sha256": "26740329505d2097105418fb5184bf8c9336f2e6660fb2df50e6c341992dde01"
+    },
+    {
+      "path": "packs/holodeck/objects/279cc4719126b276f0b85d1c47c7c2f728dc50636428624450750f479f4665ac/island-crab-runtime.zip",
+      "bytes": 14042,
+      "sha256": "279cc4719126b276f0b85d1c47c7c2f728dc50636428624450750f479f4665ac"
+    },
+    {
+      "path": "packs/holodeck/objects/281277eebce5d71486bde8769db1ec40e65b05a266f3e1934a2e33d0a0317d63/pave-curb-corner-editable.zip",
+      "bytes": 17026,
+      "sha256": "281277eebce5d71486bde8769db1ec40e65b05a266f3e1934a2e33d0a0317d63"
+    },
+    {
+      "path": "packs/holodeck/objects/296c822fb5e14d8d31f4246549cd3db76506d39dedc7807e59bb5ba29b4be91b/winter-wmc-ground-clump.glb",
+      "bytes": 99348,
+      "sha256": "296c822fb5e14d8d31f4246549cd3db76506d39dedc7807e59bb5ba29b4be91b"
+    },
+    {
+      "path": "packs/holodeck/objects/29a4221dc5ce4dbb85fdd43e6319ba5625ead8180b0fff7113f9146cc8d73a54/gate-pier.glb",
+      "bytes": 85152,
+      "sha256": "29a4221dc5ce4dbb85fdd43e6319ba5625ead8180b0fff7113f9146cc8d73a54"
+    },
+    {
+      "path": "packs/holodeck/objects/29b53023ae35c7d4e9044dde9e3ab672b48ad896cd9c17977803a9360266b2c4/winter-wmc-spruce-background-a-editable.zip",
+      "bytes": 419625,
+      "sha256": "29b53023ae35c7d4e9044dde9e3ab672b48ad896cd9c17977803a9360266b2c4"
+    },
+    {
+      "path": "packs/holodeck/objects/2b6214a521e7ab4c394eabb9d8ee9df82b8914054637c92cf72a8d387a8f333e/crescent-debris-shells-editable.zip",
+      "bytes": 76053,
+      "sha256": "2b6214a521e7ab4c394eabb9d8ee9df82b8914054637c92cf72a8d387a8f333e"
+    },
+    {
+      "path": "packs/holodeck/objects/2b9f4049c531cadad13667a029b933abdf25554c38717e9cc6d68cfcb2c50998/winter-wmc-roof-west-runtime.zip",
+      "bytes": 354625,
+      "sha256": "2b9f4049c531cadad13667a029b933abdf25554c38717e9cc6d68cfcb2c50998"
+    },
+    {
+      "path": "packs/holodeck/objects/2e5ef48493ada065ba5587f05e0fe66bb808166a6cbffefd784df6b21a1bb633/island-resident-editable.zip",
+      "bytes": 45460,
+      "sha256": "2e5ef48493ada065ba5587f05e0fe66bb808166a6cbffefd784df6b21a1bb633"
+    },
+    {
+      "path": "packs/holodeck/objects/2efafc5ea4b1178a29d7aad5fbc37bdef627a9bf6eaa90b4c272f8e121bc0314/crescent-debris-driftwood-pile-runtime.zip",
+      "bytes": 166881,
+      "sha256": "2efafc5ea4b1178a29d7aad5fbc37bdef627a9bf6eaa90b4c272f8e121bc0314"
+    },
+    {
+      "path": "packs/holodeck/objects/2f939510cdfdb626e18237b0dfa90dea074c1a98bd64127e4470993f9f48ec38/crescent-plant-grass-patch.glb",
+      "bytes": 59436,
+      "sha256": "2f939510cdfdb626e18237b0dfa90dea074c1a98bd64127e4470993f9f48ec38"
+    },
+    {
+      "path": "packs/holodeck/objects/3034da99fdca72063919c393e537196eab5f841cb7457663bb43a791ac00dc9e/crescent-plant-scrub-editable.zip",
+      "bytes": 443206,
+      "sha256": "3034da99fdca72063919c393e537196eab5f841cb7457663bb43a791ac00dc9e"
+    },
+    {
+      "path": "packs/holodeck/objects/30a35dcc91fdcd24497a20f3b67e8af7aa5d87fc448905c78cd0499717bccc8d/holodeck-courtyard-editable.zip",
+      "bytes": 12625825,
+      "sha256": "30a35dcc91fdcd24497a20f3b67e8af7aa5d87fc448905c78cd0499717bccc8d"
+    },
+    {
+      "path": "packs/holodeck/objects/3119ed5fb31ba9963cfc2cd0af013ac867e5017305c707428ce00a95817d00a8/crescent-rock-outcrop-a-runtime.zip",
+      "bytes": 1536706,
+      "sha256": "3119ed5fb31ba9963cfc2cd0af013ac867e5017305c707428ce00a95817d00a8"
+    },
+    {
+      "path": "packs/holodeck/objects/312ef36ef4d359ff87cf21a0a0fcbff348ac850fbe791aeaeb571962aac8cc23/island-resident-runtime.zip",
+      "bytes": 20193,
+      "sha256": "312ef36ef4d359ff87cf21a0a0fcbff348ac850fbe791aeaeb571962aac8cc23"
+    },
+    {
+      "path": "packs/holodeck/objects/31897e69e87740c8cc1ea4043ac3fc8af3127ea4ba82939b2b4378a731f2a351/crescent-rock-cliff-b-runtime.zip",
+      "bytes": 1500445,
+      "sha256": "31897e69e87740c8cc1ea4043ac3fc8af3127ea4ba82939b2b4378a731f2a351"
+    },
+    {
+      "path": "packs/holodeck/objects/3246cfb09881a5043115fbb2f1f086b6e35aa4482737f2b28577d7df31a5eda5/cove-moodboard.glb",
+      "bytes": 185156,
+      "sha256": "3246cfb09881a5043115fbb2f1f086b6e35aa4482737f2b28577d7df31a5eda5"
+    },
+    {
+      "path": "packs/holodeck/objects/330d6ca24eba99a8fed9b07630f349d401e2f2016da0ff5b6f6a42fec3353759/island-grass.glb",
+      "bytes": 40276,
+      "sha256": "330d6ca24eba99a8fed9b07630f349d401e2f2016da0ff5b6f6a42fec3353759"
+    },
+    {
+      "path": "packs/holodeck/objects/343c9c23c62e82b66308b1d90e940facb2c0401f0519b4abdbbb5f48deeda7b9/winter-wmc-spruce-hero-a.glb",
+      "bytes": 3629464,
+      "sha256": "343c9c23c62e82b66308b1d90e940facb2c0401f0519b4abdbbb5f48deeda7b9"
+    },
+    {
+      "path": "packs/holodeck/objects/3462118760c409a617e43039fe74caa5ade5d0f95cc7df2420e538ce491a4e1f/winter-wmc-window-tall.glb",
+      "bytes": 175296,
+      "sha256": "3462118760c409a617e43039fe74caa5ade5d0f95cc7df2420e538ce491a4e1f"
+    },
+    {
+      "path": "packs/holodeck/objects/3588b7fa68fb705c36e61d56b5aab54be614537bed3f81dc4c63a5f4ab086846/crescent-coral-table.glb",
+      "bytes": 79752,
+      "sha256": "3588b7fa68fb705c36e61d56b5aab54be614537bed3f81dc4c63a5f4ab086846"
+    },
+    {
+      "path": "packs/holodeck/objects/3643f0da29c24b761c6c181e52318e6bc0f304c21a2981d8d114d6d809a4bd8f/crescent-plant-grass-tuft.glb",
+      "bytes": 23428,
+      "sha256": "3643f0da29c24b761c6c181e52318e6bc0f304c21a2981d8d114d6d809a4bd8f"
+    },
+    {
+      "path": "packs/holodeck/objects/369170d70d539d04d3e4e6f4361f25cd049c3f3a33d1a81eba5a9be07c3fe449/winter-wmc-door-deck-runtime.zip",
+      "bytes": 68143,
+      "sha256": "369170d70d539d04d3e4e6f4361f25cd049c3f3a33d1a81eba5a9be07c3fe449"
+    },
+    {
+      "path": "packs/holodeck/objects/373baac96b59a127a681e876934b2771688c7e11bc155590298a656013d67652/island-grass-runtime.zip",
+      "bytes": 29330,
+      "sha256": "373baac96b59a127a681e876934b2771688c7e11bc155590298a656013d67652"
+    },
+    {
+      "path": "packs/holodeck/objects/37f5422cb620006792dc8f90d6034107fd6aa0bf1a430a214d8629687e8ba1e5/crescent-rock-beach-a.glb",
+      "bytes": 1501048,
+      "sha256": "37f5422cb620006792dc8f90d6034107fd6aa0bf1a430a214d8629687e8ba1e5"
+    },
+    {
+      "path": "packs/holodeck/objects/38f71f7ac24f7804856a1136121c513c622d9a557b47cd760cf006b3beb85121/statue-monolith-runtime.zip",
+      "bytes": 71829,
+      "sha256": "38f71f7ac24f7804856a1136121c513c622d9a557b47cd760cf006b3beb85121"
+    },
+    {
+      "path": "packs/holodeck/objects/39e9a3d640228c0b82ae4732277811a3afdf7868d0edb553f31c24aba6878ee5/crescent-palm-lean.glb",
+      "bytes": 360740,
+      "sha256": "39e9a3d640228c0b82ae4732277811a3afdf7868d0edb553f31c24aba6878ee5"
+    },
+    {
+      "path": "packs/holodeck/objects/3a357246456a7ff3b479c702d15ed0b0f4d2a46f21036067893d59d0fc610b49/winter-wmc-spruce-background-a.glb",
+      "bytes": 184296,
+      "sha256": "3a357246456a7ff3b479c702d15ed0b0f4d2a46f21036067893d59d0fc610b49"
+    },
+    {
+      "path": "packs/holodeck/objects/3b410d5b98e32aff8b10ba2177252adec22c021ef54ba8fec60109918e9a8df3/crescent-coral-staghorn-editable.zip",
+      "bytes": 381303,
+      "sha256": "3b410d5b98e32aff8b10ba2177252adec22c021ef54ba8fec60109918e9a8df3"
+    },
+    {
+      "path": "packs/holodeck/objects/3c096b6f21c70f3d406f5748ff966378026ba32403100463e2ef36b596bff6de/winter-wmc-gable-glass-editable.zip",
+      "bytes": 23507,
+      "sha256": "3c096b6f21c70f3d406f5748ff966378026ba32403100463e2ef36b596bff6de"
+    },
+    {
+      "path": "packs/holodeck/objects/3c5f7bd916b29766582d5ed7f81accd0fca57e7a2185b2909403c188f75048cc/crescent-jetty-deck-runtime.zip",
+      "bytes": 129304,
+      "sha256": "3c5f7bd916b29766582d5ed7f81accd0fca57e7a2185b2909403c188f75048cc"
+    },
+    {
+      "path": "packs/holodeck/objects/3cc1487182139359a5cd1a361f8019a6160087a4d79685cac7d4c7012586d876/crescent-coral-brain-heads-runtime.zip",
+      "bytes": 72360,
+      "sha256": "3cc1487182139359a5cd1a361f8019a6160087a4d79685cac7d4c7012586d876"
+    },
+    {
+      "path": "packs/holodeck/objects/3d21ad3a0e3f050869f40319691662a114c630899a2c2952c06653ba298a6d3c/crescent-coral-brain-heads-editable.zip",
+      "bytes": 299949,
+      "sha256": "3d21ad3a0e3f050869f40319691662a114c630899a2c2952c06653ba298a6d3c"
+    },
+    {
+      "path": "packs/holodeck/objects/3d93c0d897c44d693a7b79c5f1c625bad061d39ae3a37b95f1847c98de724873/holodeck-cove-runtime.zip",
+      "bytes": 5208833,
+      "sha256": "3d93c0d897c44d693a7b79c5f1c625bad061d39ae3a37b95f1847c98de724873"
+    },
+    {
+      "path": "packs/holodeck/objects/3dbe1efaf5cd906c5e3e8557bcb470b44e1812ed506a521861d3d369e2bfe282/crescent-plant-vine-fringe-runtime.zip",
+      "bytes": 61626,
+      "sha256": "3dbe1efaf5cd906c5e3e8557bcb470b44e1812ed506a521861d3d369e2bfe282"
+    },
+    {
+      "path": "packs/holodeck/objects/3e6bd8392c787df616b35b991806655ff54a855b01dc62fa7ef6ee86996780d1/crescent-plant-grass-patch-runtime.zip",
+      "bytes": 44264,
+      "sha256": "3e6bd8392c787df616b35b991806655ff54a855b01dc62fa7ef6ee86996780d1"
+    },
+    {
+      "path": "packs/holodeck/objects/3e972e0dc91faf35899eb72fca55680b5f08a263a6788d4342afaf60b534a9b1/crescent-shelter-runtime.zip",
+      "bytes": 370278,
+      "sha256": "3e972e0dc91faf35899eb72fca55680b5f08a263a6788d4342afaf60b534a9b1"
+    },
+    {
+      "path": "packs/holodeck/objects/3f642ddfb13ce0060862cf8ec29c1139246125f7b8a7443d1975c5eaadb244da/winter-wmc-entry-bench-runtime.zip",
+      "bytes": 729364,
+      "sha256": "3f642ddfb13ce0060862cf8ec29c1139246125f7b8a7443d1975c5eaadb244da"
+    },
+    {
+      "path": "packs/holodeck/objects/3fa1747ae131b1c6f2c3706b258e0595e2f253a4b4ca9d8fdff4f06adf9878fa/crescent-rock-beach-b.glb",
+      "bytes": 1505552,
+      "sha256": "3fa1747ae131b1c6f2c3706b258e0595e2f253a4b4ca9d8fdff4f06adf9878fa"
+    },
+    {
+      "path": "packs/holodeck/objects/3ff7a9a5b6ff881bb5f84229df5ae803940aa86c1629e7b7b0b6c9ac7c369291/jungle-sapling-editable.zip",
+      "bytes": 259884,
+      "sha256": "3ff7a9a5b6ff881bb5f84229df5ae803940aa86c1629e7b7b0b6c9ac7c369291"
+    },
+    {
+      "path": "packs/holodeck/objects/402e912de3ef998914ed5653b8ba49ddfc1d7b3ae132a595d892ab446838aed9/pave-field-b-editable.zip",
+      "bytes": 57572,
+      "sha256": "402e912de3ef998914ed5653b8ba49ddfc1d7b3ae132a595d892ab446838aed9"
+    },
+    {
+      "path": "packs/holodeck/objects/41ced9aacd5eb26bd24fbc77169d1cd19b0133d8f12fca51d6f5f55bd65d2ba5/crescent-rock-reef-a-editable.zip",
+      "bytes": 3407576,
+      "sha256": "41ced9aacd5eb26bd24fbc77169d1cd19b0133d8f12fca51d6f5f55bd65d2ba5"
+    },
+    {
+      "path": "packs/holodeck/objects/41d8ab0ffcecf2f0c8747e264f4c1db09ddb27456cf896e8a3af1e6e6924b669/winter-wmc-dining-table.glb",
+      "bytes": 391084,
+      "sha256": "41d8ab0ffcecf2f0c8747e264f4c1db09ddb27456cf896e8a3af1e6e6924b669"
+    },
+    {
+      "path": "packs/holodeck/objects/426558bc6c8117a407d779c40b843443237f1db33bcb29a50d164989a3d19497/winter-wmc-desk.glb",
+      "bytes": 107720,
+      "sha256": "426558bc6c8117a407d779c40b843443237f1db33bcb29a50d164989a3d19497"
+    },
+    {
+      "path": "packs/holodeck/objects/42c0c35e48e9cedf93ef7c3e3998ffd8485be827515a84bf05217048c4cd67f6/island-crab.glb",
+      "bytes": 32492,
+      "sha256": "42c0c35e48e9cedf93ef7c3e3998ffd8485be827515a84bf05217048c4cd67f6"
+    },
+    {
+      "path": "packs/holodeck/objects/42d286feabc668db6047849c2521338d1c668fea3f02d3662ce93f25db25f0ec/crescent-rock-cliff-a-editable.zip",
+      "bytes": 3580055,
+      "sha256": "42d286feabc668db6047849c2521338d1c668fea3f02d3662ce93f25db25f0ec"
+    },
+    {
+      "path": "packs/holodeck/objects/431b5e429d391f1a3e450216684062b3d2782235a3d2db79c960db23ed3edeec/winter-wmc-stone-pier.glb",
+      "bytes": 527972,
+      "sha256": "431b5e429d391f1a3e450216684062b3d2782235a3d2db79c960db23ed3edeec"
+    },
+    {
+      "path": "packs/holodeck/objects/433c96be9a76a430a7dbf03dee5846a4367c44dcd81dcbe4cbe3be039b8803c3/crescent-plant-purslane-editable.zip",
+      "bytes": 206283,
+      "sha256": "433c96be9a76a430a7dbf03dee5846a4367c44dcd81dcbe4cbe3be039b8803c3"
+    },
+    {
+      "path": "packs/holodeck/objects/43676314c563b9caf4918b310611a4cf3045c669787d9458a9f273baca359608/shrub-box.glb",
+      "bytes": 174220,
+      "sha256": "43676314c563b9caf4918b310611a4cf3045c669787d9458a9f273baca359608"
+    },
+    {
+      "path": "packs/holodeck/objects/43a246c4b403afcc9cd666bb95f3164e874f3cf29ada7a957569a4f209fcb97f/jungle-understory.glb",
+      "bytes": 31788,
+      "sha256": "43a246c4b403afcc9cd666bb95f3164e874f3cf29ada7a957569a4f209fcb97f"
+    },
+    {
+      "path": "packs/holodeck/objects/43a32092b072ffc5356cffc4b29793d84dcb6f1c97258c0febc0d7643d776155/pave-field-a-editable.zip",
+      "bytes": 35873,
+      "sha256": "43a32092b072ffc5356cffc4b29793d84dcb6f1c97258c0febc0d7643d776155"
+    },
+    {
+      "path": "packs/holodeck/objects/449af272c28b8f78426a2a480a583fb18d0b0c58a2b2da5c1123e3a70ae97a87/crescent-rock-boulder-c-editable.zip",
+      "bytes": 2973904,
+      "sha256": "449af272c28b8f78426a2a480a583fb18d0b0c58a2b2da5c1123e3a70ae97a87"
+    },
+    {
+      "path": "packs/holodeck/objects/44dcba7c65f689c03cb8a6695c6f515a9e1d03ff1feff955073e570d98ee1088/lamp-bollard.glb",
+      "bytes": 158592,
+      "sha256": "44dcba7c65f689c03cb8a6695c6f515a9e1d03ff1feff955073e570d98ee1088"
+    },
+    {
+      "path": "packs/holodeck/objects/4583ea0f226ccff07ab93be948b57b5b822b687a8fb1e18b5424cde300954b19/cove-seating-runtime.zip",
+      "bytes": 712546,
+      "sha256": "4583ea0f226ccff07ab93be948b57b5b822b687a8fb1e18b5424cde300954b19"
+    },
+    {
+      "path": "packs/holodeck/objects/45c070ea88dc40978c07821c0369ec877a5a5ab0e41d91709c219adc92eaaae5/winter-wmc-spruce-middle-a-editable.zip",
+      "bytes": 537797,
+      "sha256": "45c070ea88dc40978c07821c0369ec877a5a5ab0e41d91709c219adc92eaaae5"
+    },
+    {
+      "path": "packs/holodeck/objects/467828d723fe00a2dc5c099665d2542c902dd0779943fb8ac63a305aacd1d030/crescent-plant-hibiscus-editable.zip",
+      "bytes": 437110,
+      "sha256": "467828d723fe00a2dc5c099665d2542c902dd0779943fb8ac63a305aacd1d030"
+    },
+    {
+      "path": "packs/holodeck/objects/46fd091a378bcaded0bb98e0442eca9326714771d58ed00fa40613a7877a30c1/island-shore.glb",
+      "bytes": 66496,
+      "sha256": "46fd091a378bcaded0bb98e0442eca9326714771d58ed00fa40613a7877a30c1"
+    },
+    {
+      "path": "packs/holodeck/objects/4743e169be9d2588241cb66c45455cc8a6d3301c3588b8caabb942c14689b62e/winter-wmc-frame-post-editable.zip",
+      "bytes": 217360,
+      "sha256": "4743e169be9d2588241cb66c45455cc8a6d3301c3588b8caabb942c14689b62e"
+    },
+    {
+      "path": "packs/holodeck/objects/489bb6792b96a8156077b16112979e48b2cab60658a0381111d8f81607355fc6/crescent-plant-vine-fringe.glb",
+      "bytes": 78860,
+      "sha256": "489bb6792b96a8156077b16112979e48b2cab60658a0381111d8f81607355fc6"
+    },
+    {
+      "path": "packs/holodeck/objects/48b29ec2fd2f5ca79b93c8d47f741eecf1a86ba47225b5d994e036e3efa41fc3/crescent-plant-grass-tuft-editable.zip",
+      "bytes": 237725,
+      "sha256": "48b29ec2fd2f5ca79b93c8d47f741eecf1a86ba47225b5d994e036e3efa41fc3"
+    },
+    {
+      "path": "packs/holodeck/objects/49727e819107125ac233a4c159cb4c74d5437eb4005be9519c9eba2bcd7cb547/winter-wmc-side-table-editable.zip",
+      "bytes": 414290,
+      "sha256": "49727e819107125ac233a4c159cb4c74d5437eb4005be9519c9eba2bcd7cb547"
+    },
+    {
+      "path": "packs/holodeck/objects/49d7c665382468cc05823d97fb052b7875277259e229441225196f64612a017f/crescent-debris-fronds-runtime.zip",
+      "bytes": 33943,
+      "sha256": "49d7c665382468cc05823d97fb052b7875277259e229441225196f64612a017f"
+    },
+    {
+      "path": "packs/holodeck/objects/49e0697ddce9efe6c3f99afcfe5d6f481712d6d3c7b1011681bb1972315e3664/winter-wmc-fir-sapling-a-runtime.zip",
+      "bytes": 345575,
+      "sha256": "49e0697ddce9efe6c3f99afcfe5d6f481712d6d3c7b1011681bb1972315e3664"
+    },
+    {
+      "path": "packs/holodeck/objects/4a03b3db2dbd310b918283a56892c084142abc20b6773ca98eb6778d2c2fb72f/winter-wmc-door-deck-editable.zip",
+      "bytes": 296205,
+      "sha256": "4a03b3db2dbd310b918283a56892c084142abc20b6773ca98eb6778d2c2fb72f"
+    },
+    {
+      "path": "packs/holodeck/objects/4ad6af22814df1cc9fde7408cb74288011a1d41d3471d8c0bb04602f6bbd96a7/statue-figure-runtime.zip",
+      "bytes": 495832,
+      "sha256": "4ad6af22814df1cc9fde7408cb74288011a1d41d3471d8c0bb04602f6bbd96a7"
+    },
+    {
+      "path": "packs/holodeck/objects/4bedd6ec56098cbd8c27fe1e6bf11d673b7f53b66850be13fb91b533d9cbba99/plant-lavender-editable.zip",
+      "bytes": 133199,
+      "sha256": "4bedd6ec56098cbd8c27fe1e6bf11d673b7f53b66850be13fb91b533d9cbba99"
+    },
+    {
+      "path": "packs/holodeck/objects/4ce9eff2ac967533259295fe7a547beb333b163a1ae1dfedfab7cd9d43de2cff/crescent-debris-driftwood-pile.glb",
+      "bytes": 185496,
+      "sha256": "4ce9eff2ac967533259295fe7a547beb333b163a1ae1dfedfab7cd9d43de2cff"
+    },
+    {
+      "path": "packs/holodeck/objects/4d645236f34afebc40688361acd86d87ff184f16a9de1e6ae6d24b807522e3e6/winter-wmc-fir-background-a-editable.zip",
+      "bytes": 547551,
+      "sha256": "4d645236f34afebc40688361acd86d87ff184f16a9de1e6ae6d24b807522e3e6"
+    },
+    {
+      "path": "packs/holodeck/objects/4dac3180e6dd557a6a82d40f7c2f6b922c2d9b10c05f76c7bb16c590e31b9076/winter-wmc-window-test-editable.zip",
+      "bytes": 224497,
+      "sha256": "4dac3180e6dd557a6a82d40f7c2f6b922c2d9b10c05f76c7bb16c590e31b9076"
+    },
+    {
+      "path": "packs/holodeck/objects/4e1b66a6081aed4e0025aa1972bbe2dd9cf2a5d0e50f0611854e332b58ffe812/planter-square-editable.zip",
+      "bytes": 413768,
+      "sha256": "4e1b66a6081aed4e0025aa1972bbe2dd9cf2a5d0e50f0611854e332b58ffe812"
+    },
+    {
+      "path": "packs/holodeck/objects/4e47daf1cfa9095431ee8515c56e8b9d98ff137288ea9baba616902833fce6c7/crescent-rock-cliff-a.glb",
+      "bytes": 1700028,
+      "sha256": "4e47daf1cfa9095431ee8515c56e8b9d98ff137288ea9baba616902833fce6c7"
+    },
+    {
+      "path": "packs/holodeck/objects/4eb1744b744a2f0cc7417b57f716cec291a0661fe69abfc50531a8ef32b7a6a7/winter-wmc-fir-hero-a-runtime.zip",
+      "bytes": 1471371,
+      "sha256": "4eb1744b744a2f0cc7417b57f716cec291a0661fe69abfc50531a8ef32b7a6a7"
+    },
+    {
+      "path": "packs/holodeck/objects/4ed5b57f7701beee7b400d8cc17331c11e813c38f7b033cd26ad6fa9c57f7517/statue-figure.glb",
+      "bytes": 665780,
+      "sha256": "4ed5b57f7701beee7b400d8cc17331c11e813c38f7b033cd26ad6fa9c57f7517"
+    },
+    {
+      "path": "packs/holodeck/objects/4f3eba0610a0d066ba50d0440eb73a5794fb5993bf04faa7843a4cd358f27f61/crescent-coral-rubble-patch-runtime.zip",
+      "bytes": 45775,
+      "sha256": "4f3eba0610a0d066ba50d0440eb73a5794fb5993bf04faa7843a4cd358f27f61"
+    },
+    {
+      "path": "packs/holodeck/objects/508385c621cf1f73f2ac501f154498e97db88e1a2cdd3a942baa869aff3cc99a/island-shore-runtime.zip",
+      "bytes": 27337,
+      "sha256": "508385c621cf1f73f2ac501f154498e97db88e1a2cdd3a942baa869aff3cc99a"
+    },
+    {
+      "path": "packs/holodeck/objects/508ec9f2f183a171e58127312d687bb198775af4d7036de22ef64544f6d2cfe3/winter-wmc-kitchen-run-editable.zip",
+      "bytes": 664577,
+      "sha256": "508ec9f2f183a171e58127312d687bb198775af4d7036de22ef64544f6d2cfe3"
+    },
+    {
+      "path": "packs/holodeck/objects/50d8ea591f7b4456a6c995edcf4fd4cd775244479fcdadac94710bdc9ae13efb/winter-wmc-loft-bed-runtime.zip",
+      "bytes": 1457639,
+      "sha256": "50d8ea591f7b4456a6c995edcf4fd4cd775244479fcdadac94710bdc9ae13efb"
+    },
+    {
+      "path": "packs/holodeck/objects/50ed6c5b49b7b2c7642c57224774e7ae82bb90e952fd9ac8a8493bcc0e16217d/winter-wmc-fir-middle-a-runtime.zip",
+      "bytes": 237402,
+      "sha256": "50ed6c5b49b7b2c7642c57224774e7ae82bb90e952fd9ac8a8493bcc0e16217d"
+    },
+    {
+      "path": "packs/holodeck/objects/510392da0bcfe3e5c5e23c4b53454944bfa470750c18ea757b956db4ba555057/holodeck-crescent-cove-editable.zip",
+      "bytes": 57033340,
+      "sha256": "510392da0bcfe3e5c5e23c4b53454944bfa470750c18ea757b956db4ba555057"
+    },
+    {
+      "path": "packs/holodeck/objects/516687beda9fac3a5038132fce9eb7c7f33e18a2edb76a2fcf42735683586c6e/winter-wmc-dining-table-editable.zip",
+      "bytes": 502825,
+      "sha256": "516687beda9fac3a5038132fce9eb7c7f33e18a2edb76a2fcf42735683586c6e"
+    },
+    {
+      "path": "packs/holodeck/objects/5173ce2cfec4fc3b52ffa95ad4dcb06aa24474be6a4938204502f2e7f0cff1bb/winter-wmc-snow-bank-runtime.zip",
+      "bytes": 646726,
+      "sha256": "5173ce2cfec4fc3b52ffa95ad4dcb06aa24474be6a4938204502f2e7f0cff1bb"
+    },
+    {
+      "path": "packs/holodeck/objects/51cffc1d3de8227e967b651605083caeb6ac3f885821b51367cde077b7e29ec7/winter-wmc-spruce-background-a-runtime.zip",
+      "bytes": 143680,
+      "sha256": "51cffc1d3de8227e967b651605083caeb6ac3f885821b51367cde077b7e29ec7"
+    },
+    {
+      "path": "packs/holodeck/objects/53be4f64194799dabdc851f9a0508b86370feea3c68eef6414915d974a60686e/crescent-palm-lean-editable.zip",
+      "bytes": 625845,
+      "sha256": "53be4f64194799dabdc851f9a0508b86370feea3c68eef6414915d974a60686e"
+    },
+    {
+      "path": "packs/holodeck/objects/545c456dd9a2414238f8b954d517d9a1182cb93be5df94606f767880e966e777/winter-wmc-fir-background-a-runtime.zip",
+      "bytes": 138444,
+      "sha256": "545c456dd9a2414238f8b954d517d9a1182cb93be5df94606f767880e966e777"
+    },
+    {
+      "path": "packs/holodeck/objects/547178050232612d4351d0cea767846d209d99c9b0f1935a06acf8e1025a13aa/tree-cypress-editable.zip",
+      "bytes": 407488,
+      "sha256": "547178050232612d4351d0cea767846d209d99c9b0f1935a06acf8e1025a13aa"
+    },
+    {
+      "path": "packs/holodeck/objects/555168ede347504cafbcc6f7beb654688e825c55df46d4cc255cb71c2e0e6a73/crescent-plant-hibiscus-runtime.zip",
+      "bytes": 66167,
+      "sha256": "555168ede347504cafbcc6f7beb654688e825c55df46d4cc255cb71c2e0e6a73"
+    },
+    {
+      "path": "packs/holodeck/objects/5601ca3f8554d60e8c4b4992c7786cab3697087f099c38be1d1f6b2c714f11b5/fountain-cascade.glb",
+      "bytes": 76244,
+      "sha256": "5601ca3f8554d60e8c4b4992c7786cab3697087f099c38be1d1f6b2c714f11b5"
+    },
+    {
+      "path": "packs/holodeck/objects/569f430c6b87f8e373390b12c0b2531df2cbb2893bba673088491e8f2eb59d7f/crescent-rock-boulder-c-runtime.zip",
+      "bytes": 1412464,
+      "sha256": "569f430c6b87f8e373390b12c0b2531df2cbb2893bba673088491e8f2eb59d7f"
+    },
+    {
+      "path": "packs/holodeck/objects/56d18d6de19b041004562a5f2a55fbb473be80b5e2342a17e670d275a165a622/winter-wmc-stair-rail-exterior-runtime.zip",
+      "bytes": 47615,
+      "sha256": "56d18d6de19b041004562a5f2a55fbb473be80b5e2342a17e670d275a165a622"
+    },
+    {
+      "path": "packs/holodeck/objects/57048604a15fa1b8fea331d6af5c0cf21ecec621639ccc30165b585d71bed7e9/crescent-rock-boulder-b-editable.zip",
+      "bytes": 3239227,
+      "sha256": "57048604a15fa1b8fea331d6af5c0cf21ecec621639ccc30165b585d71bed7e9"
+    },
+    {
+      "path": "packs/holodeck/objects/5774ef4bcd089cfc6832437e6ffae33aa6a0e9e936c0ec81e1608a8041844a50/winter-wmc-roof-east.glb",
+      "bytes": 952224,
+      "sha256": "5774ef4bcd089cfc6832437e6ffae33aa6a0e9e936c0ec81e1608a8041844a50"
+    },
+    {
+      "path": "packs/holodeck/objects/58d407731cbf0b77f20e96270cd7dd3d5e959ac090c6d4eadee97aa5b263fae2/crescent-plant-grass-tuft-runtime.zip",
+      "bytes": 20912,
+      "sha256": "58d407731cbf0b77f20e96270cd7dd3d5e959ac090c6d4eadee97aa5b263fae2"
+    },
+    {
+      "path": "packs/holodeck/objects/59abd15417a009b6c991decc313fdaf52f3a618906d86ed11326b9de503373d0/crescent-shelter.glb",
+      "bytes": 640716,
+      "sha256": "59abd15417a009b6c991decc313fdaf52f3a618906d86ed11326b9de503373d0"
+    },
+    {
+      "path": "packs/holodeck/objects/5a36941372ca8183548115cdcdfecc47bf95b935a4135e60600fc87d41624908/island-palm.glb",
+      "bytes": 996340,
+      "sha256": "5a36941372ca8183548115cdcdfecc47bf95b935a4135e60600fc87d41624908"
+    },
+    {
+      "path": "packs/holodeck/objects/5b47730727355ee1651d92be7d3805da4ca64d731a69e1a8e30b125dcfbdc235/winter-wmc-floorlamp-tripod-editable.zip",
+      "bytes": 412716,
+      "sha256": "5b47730727355ee1651d92be7d3805da4ca64d731a69e1a8e30b125dcfbdc235"
+    },
+    {
+      "path": "packs/holodeck/objects/5bdd0aa80877d41acf873b29024cfc2dbca6a6a1195c0141cb277bbecdc227e6/cove-moodboard-editable.zip",
+      "bytes": 406878,
+      "sha256": "5bdd0aa80877d41acf873b29024cfc2dbca6a6a1195c0141cb277bbecdc227e6"
+    },
+    {
+      "path": "packs/holodeck/objects/5be3f6bd1fe632c6ae39b61d4fb738e96b2a55251248f48918cd6a93495b1f65/winter-wmc-tread-timber.glb",
+      "bytes": 74696,
+      "sha256": "5be3f6bd1fe632c6ae39b61d4fb738e96b2a55251248f48918cd6a93495b1f65"
+    },
+    {
+      "path": "packs/holodeck/objects/5d212aababa54353726f231825cd0deb2a1757f4679a4478cde8b547cacd6e62/winter-wmc-hearth-masonry-editable.zip",
+      "bytes": 683778,
+      "sha256": "5d212aababa54353726f231825cd0deb2a1757f4679a4478cde8b547cacd6e62"
+    },
+    {
+      "path": "packs/holodeck/objects/5d9ebbbfb66ac193d53b404b70b6b381a23584fef01fde139fc9f225fbbddf81/winter-wmc-mountain-massif.glb",
+      "bytes": 2313740,
+      "sha256": "5d9ebbbfb66ac193d53b404b70b6b381a23584fef01fde139fc9f225fbbddf81"
+    },
+    {
+      "path": "packs/holodeck/objects/5ea722ccfe9afdd361c9f10a31ad9a0640d4f8100d3e3f3ea515c88d97723900/winter-wmc-spruce-hero-a-editable.zip",
+      "bytes": 1957654,
+      "sha256": "5ea722ccfe9afdd361c9f10a31ad9a0640d4f8100d3e3f3ea515c88d97723900"
+    },
+    {
+      "path": "packs/holodeck/objects/5f0312923e2230afcc614b70242dcaac7e99628e648f4306f0335b7dbc1a81de/crescent-plant-sword-fern.glb",
+      "bytes": 76664,
+      "sha256": "5f0312923e2230afcc614b70242dcaac7e99628e648f4306f0335b7dbc1a81de"
+    },
+    {
+      "path": "packs/holodeck/objects/5f1490cf6f2c7ea67ae5ef749c9fbf3bc592c4cd30ac49b2f7a7d29247117ce9/crescent-jetty-deck-editable.zip",
+      "bytes": 446422,
+      "sha256": "5f1490cf6f2c7ea67ae5ef749c9fbf3bc592c4cd30ac49b2f7a7d29247117ce9"
+    },
+    {
+      "path": "packs/holodeck/objects/5f7c64a38028be0e1415f255e01ec7fde2ef8133b7b5ec1752a950fe47fad6e1/winter-wmc-trail-marker.glb",
+      "bytes": 235652,
+      "sha256": "5f7c64a38028be0e1415f255e01ec7fde2ef8133b7b5ec1752a950fe47fad6e1"
+    },
+    {
+      "path": "packs/holodeck/objects/5fb6860450b12849adae747611b6347028a2cf73dedfbfccfffd6a6ca3b6cd20/crescent-rock-beach-a-runtime.zip",
+      "bytes": 1451425,
+      "sha256": "5fb6860450b12849adae747611b6347028a2cf73dedfbfccfffd6a6ca3b6cd20"
+    },
+    {
+      "path": "packs/holodeck/objects/609a220dbef99c09157b7c70fbb8c734a8a96f8ffa5a2c581b3266782b9f5e5d/winter-wmc-stone-pier-runtime.zip",
+      "bytes": 203525,
+      "sha256": "609a220dbef99c09157b7c70fbb8c734a8a96f8ffa5a2c581b3266782b9f5e5d"
+    },
+    {
+      "path": "packs/holodeck/objects/61e9b73170cd9a928298b4c31dfa0b231363f0d49dc371f5b317da18cf635e78/crescent-jetty-platform-editable.zip",
+      "bytes": 521159,
+      "sha256": "61e9b73170cd9a928298b4c31dfa0b231363f0d49dc371f5b317da18cf635e78"
+    },
+    {
+      "path": "packs/holodeck/objects/6234bbe3c0a6f16d4818c673bbad2cb8285daeb3a880e2dba2657b7d16023151/crescent-coral-rubble-patch-editable.zip",
+      "bytes": 182151,
+      "sha256": "6234bbe3c0a6f16d4818c673bbad2cb8285daeb3a880e2dba2657b7d16023151"
+    },
+    {
+      "path": "packs/holodeck/objects/63791aa67a1c7de61b67b52400846a11238e78052e9aee767645ff1dc7577b62/winter-wmc-desk-runtime.zip",
+      "bytes": 59668,
+      "sha256": "63791aa67a1c7de61b67b52400846a11238e78052e9aee767645ff1dc7577b62"
+    },
+    {
+      "path": "packs/holodeck/objects/637e8a88b83eef46f223a7cb3588c8a1c958d31948965fa0997c50132c422f5c/cove-seating.glb",
+      "bytes": 890368,
+      "sha256": "637e8a88b83eef46f223a7cb3588c8a1c958d31948965fa0997c50132c422f5c"
+    },
+    {
+      "path": "packs/holodeck/objects/6420818578340c02d471d30f58d0a4ad4a24a93c77da4067a95d3089980c6d6a/crescent-coral-staghorn.glb",
+      "bytes": 95344,
+      "sha256": "6420818578340c02d471d30f58d0a4ad4a24a93c77da4067a95d3089980c6d6a"
+    },
+    {
+      "path": "packs/holodeck/objects/66cfee9bb7b31b041695982242715ccd210583dbd5c2fc4ddae062633e7a0775/winter-wmc-mountain-massif-editable.zip",
+      "bytes": 1305987,
+      "sha256": "66cfee9bb7b31b041695982242715ccd210583dbd5c2fc4ddae062633e7a0775"
+    },
+    {
+      "path": "packs/holodeck/objects/66f76e4d9eb41d90a1a334425eabd8d617423f4b5c1ba419bc9dcb3a96aad9c7/winter-wmc-chimney-masonry-editable.zip",
+      "bytes": 579060,
+      "sha256": "66f76e4d9eb41d90a1a334425eabd8d617423f4b5c1ba419bc9dcb3a96aad9c7"
+    },
+    {
+      "path": "packs/holodeck/objects/67b0c931b3651e75036d8e0ff677205328b79ba70a0572a0c3606bf2b5478782/crescent-rock-beach-b-editable.zip",
+      "bytes": 3312057,
+      "sha256": "67b0c931b3651e75036d8e0ff677205328b79ba70a0572a0c3606bf2b5478782"
+    },
+    {
+      "path": "packs/holodeck/objects/6866b586fbb823a73b76216c6b1a8d777b56be5a35aff20bea8ceef5bb41a7e2/wall-pier.glb",
+      "bytes": 94340,
+      "sha256": "6866b586fbb823a73b76216c6b1a8d777b56be5a35aff20bea8ceef5bb41a7e2"
+    },
+    {
+      "path": "packs/holodeck/objects/68fc0c2f0aa09cb5358d9d538d6f56d57d0df945d9f092c87b8b757e3d188d92/crescent-palm-arch.glb",
+      "bytes": 345320,
+      "sha256": "68fc0c2f0aa09cb5358d9d538d6f56d57d0df945d9f092c87b8b757e3d188d92"
+    },
+    {
+      "path": "packs/holodeck/objects/6933e22f940b1e8dbfc4c84c5e1acc7a1ec75884849f87674b3b748226863b79/winter-wmc-armchair-oak.glb",
+      "bytes": 1167928,
+      "sha256": "6933e22f940b1e8dbfc4c84c5e1acc7a1ec75884849f87674b3b748226863b79"
+    },
+    {
+      "path": "packs/holodeck/objects/69781074853d3ecdec14ca8139ffbfb6eaa08766d67cbd420086ee04fcafb7f4/crescent-palm-tall.glb",
+      "bytes": 401544,
+      "sha256": "69781074853d3ecdec14ca8139ffbfb6eaa08766d67cbd420086ee04fcafb7f4"
+    },
+    {
+      "path": "packs/holodeck/objects/6a3286bcef1fb8ed6df633ab39e94a907892bd604378635d3e6a7bbb8803814c/winter-wmc-stone-pier-editable.zip",
+      "bytes": 855176,
+      "sha256": "6a3286bcef1fb8ed6df633ab39e94a907892bd604378635d3e6a7bbb8803814c"
+    },
+    {
+      "path": "packs/holodeck/objects/6a6189ce5b0b454ce4001676e8e839b2c95ac2ec479e6e73e5934a62e341939b/cove-lamp-runtime.zip",
+      "bytes": 200406,
+      "sha256": "6a6189ce5b0b454ce4001676e8e839b2c95ac2ec479e6e73e5934a62e341939b"
+    },
+    {
+      "path": "packs/holodeck/objects/6ab0599f6c8980753c9ceb433ab07c4b8a5c9ba250210587b16b6fc7e3386c84/crescent-jetty-platform-runtime.zip",
+      "bytes": 153510,
+      "sha256": "6ab0599f6c8980753c9ceb433ab07c4b8a5c9ba250210587b16b6fc7e3386c84"
+    },
+    {
+      "path": "packs/holodeck/objects/6b50116f52e2e0b2608bb6eda338c29664b1cd51f692e67408a8377568a3f32e/winter-wmc-floorlamp-tripod.glb",
+      "bytes": 256692,
+      "sha256": "6b50116f52e2e0b2608bb6eda338c29664b1cd51f692e67408a8377568a3f32e"
+    },
+    {
+      "path": "packs/holodeck/objects/6b9660fe79aa23bd12780fd1f3086f696fdc49a09b93452246d7c39174084853/holodeck-tidemark-runtime.zip",
+      "bytes": 6148771,
+      "sha256": "6b9660fe79aa23bd12780fd1f3086f696fdc49a09b93452246d7c39174084853"
+    },
+    {
+      "path": "packs/holodeck/objects/6c466c22cbe1cd3fd4aa40a6a8fcd79b4224ea0c3db35b9e06a2b83bfa8b1e2a/winter-wmc-living-rug-wool.glb",
+      "bytes": 649924,
+      "sha256": "6c466c22cbe1cd3fd4aa40a6a8fcd79b4224ea0c3db35b9e06a2b83bfa8b1e2a"
+    },
+    {
+      "path": "packs/holodeck/objects/6c7b66dc0be6861ba4e6667d918f8f40db0d0642cc6aba7188398443dc3f2b00/winter-wmc-ground-clump-runtime.zip",
+      "bytes": 92051,
+      "sha256": "6c7b66dc0be6861ba4e6667d918f8f40db0d0642cc6aba7188398443dc3f2b00"
+    },
+    {
+      "path": "packs/holodeck/objects/6dfeb2f46de1959a7b2f7971b2cb1546803dfae7a210f17e27cc520ca2aa8bc3/winter-wmc-sofa-wool-editable.zip",
+      "bytes": 1859453,
+      "sha256": "6dfeb2f46de1959a7b2f7971b2cb1546803dfae7a210f17e27cc520ca2aa8bc3"
+    },
+    {
+      "path": "packs/holodeck/objects/6e52ffbabb3da46fe5a2742607083e832c16292ce5e38afe2d5fccc9916fd972/island-hut-furnishings-runtime.zip",
+      "bytes": 23256,
+      "sha256": "6e52ffbabb3da46fe5a2742607083e832c16292ce5e38afe2d5fccc9916fd972"
+    },
+    {
+      "path": "packs/holodeck/objects/6ec9a316f05b2f1cc84d114c20fd777c558ad934b16165170efb8e44d527018d/holodeck-winter-mountainside-cabin-runtime.zip",
+      "bytes": 18573784,
+      "sha256": "6ec9a316f05b2f1cc84d114c20fd777c558ad934b16165170efb8e44d527018d"
+    },
+    {
+      "path": "packs/holodeck/objects/6ef4279dbe30e467e3c319a0ea5b30ff35e139985c5f8c9621ed124db0a7c02e/winter-wmc-wall-rear.glb",
+      "bytes": 828168,
+      "sha256": "6ef4279dbe30e467e3c319a0ea5b30ff35e139985c5f8c9621ed124db0a7c02e"
+    },
+    {
+      "path": "packs/holodeck/objects/70a24303e69f723f25b3af021aa97b6650594989641d39fd705aa86045ce16cd/winter-wmc-boulder-runtime.zip",
+      "bytes": 611582,
+      "sha256": "70a24303e69f723f25b3af021aa97b6650594989641d39fd705aa86045ce16cd"
+    },
+    {
+      "path": "packs/holodeck/objects/70e8f5fcd324366b19737e4cc9a94d14320a3bfd50d2bc32c03ebd211a1579f1/pave-field-b-runtime.zip",
+      "bytes": 40592,
+      "sha256": "70e8f5fcd324366b19737e4cc9a94d14320a3bfd50d2bc32c03ebd211a1579f1"
+    },
+    {
+      "path": "packs/holodeck/objects/7119be8dc5f9d136076f240c6ef61ecaacd19e01bc34427bb9a067af7bcde6a6/crescent-debris-driftwood-log-runtime.zip",
+      "bytes": 161387,
+      "sha256": "7119be8dc5f9d136076f240c6ef61ecaacd19e01bc34427bb9a067af7bcde6a6"
+    },
+    {
+      "path": "packs/holodeck/objects/723b445d4c64c1208929963e6ab4ada850544a41fc2943db84f0608b388d9122/jungle-fern-runtime.zip",
+      "bytes": 33330,
+      "sha256": "723b445d4c64c1208929963e6ab4ada850544a41fc2943db84f0608b388d9122"
+    },
+    {
+      "path": "packs/holodeck/objects/724ff15e408284d932069a50ddfd7e949988bc8233855550637d140140e7b977/crescent-rock-beach-b-runtime.zip",
+      "bytes": 1452985,
+      "sha256": "724ff15e408284d932069a50ddfd7e949988bc8233855550637d140140e7b977"
+    },
+    {
+      "path": "packs/holodeck/objects/72cd28b6a1f0ee9f63bc40af07770ed105676da26a3f3f958ee21cb91d0e3fd8/crescent-seagrass.glb",
+      "bytes": 16816,
+      "sha256": "72cd28b6a1f0ee9f63bc40af07770ed105676da26a3f3f958ee21cb91d0e3fd8"
+    },
+    {
+      "path": "packs/holodeck/objects/73039300a6a9851e86570de02bf7326cd125a6656337fe39ddaad7b4c678d045/crescent-debris-driftwood-pile-editable.zip",
+      "bytes": 409172,
+      "sha256": "73039300a6a9851e86570de02bf7326cd125a6656337fe39ddaad7b4c678d045"
+    },
+    {
+      "path": "packs/holodeck/objects/731e8736a6de81225cf2831b0257db1b3be2d9d24ee7854126379852e81c62d8/crescent-debris-driftwood-log-editable.zip",
+      "bytes": 443380,
+      "sha256": "731e8736a6de81225cf2831b0257db1b3be2d9d24ee7854126379852e81c62d8"
+    },
+    {
+      "path": "packs/holodeck/objects/7380695a993709d631b8ef4e3c74de1f64699c7b61716d4c466b4a6f71fdcd77/winter-wmc-entry-bench-editable.zip",
+      "bytes": 938025,
+      "sha256": "7380695a993709d631b8ef4e3c74de1f64699c7b61716d4c466b4a6f71fdcd77"
+    },
+    {
+      "path": "packs/holodeck/objects/740bb18a2841cff74418a10447811afe5eb46105163d54fa1c21a4c9e9ebbf07/crescent-debris-fronds.glb",
+      "bytes": 42236,
+      "sha256": "740bb18a2841cff74418a10447811afe5eb46105163d54fa1c21a4c9e9ebbf07"
+    },
+    {
+      "path": "packs/holodeck/objects/757fd4acd12f52f568e5d70639a087668c28d154efe40c4a7fe4d6b6da1d551d/crescent-coral-table-runtime.zip",
+      "bytes": 60868,
+      "sha256": "757fd4acd12f52f568e5d70639a087668c28d154efe40c4a7fe4d6b6da1d551d"
+    },
+    {
+      "path": "packs/holodeck/objects/7600e81d9b7f574495282c21bcb7c978a0cda81a7239312921144f0f3c4e5e2e/winter-wmc-snow-bank-editable.zip",
+      "bytes": 774265,
+      "sha256": "7600e81d9b7f574495282c21bcb7c978a0cda81a7239312921144f0f3c4e5e2e"
+    },
+    {
+      "path": "packs/holodeck/objects/760beff9d0aae10d8df89454576050ad270c48a74ae2818ab63f22f4b5deeacc/island-hut-roof-runtime.zip",
+      "bytes": 111389,
+      "sha256": "760beff9d0aae10d8df89454576050ad270c48a74ae2818ab63f22f4b5deeacc"
+    },
+    {
+      "path": "packs/holodeck/objects/7614a7c177dd1592d631d94acaaf339c0f91ae4d673081e52d9686b20edc5801/island-shore-editable.zip",
+      "bytes": 53647,
+      "sha256": "7614a7c177dd1592d631d94acaaf339c0f91ae4d673081e52d9686b20edc5801"
+    },
+    {
+      "path": "packs/holodeck/objects/76d631f408012c564e5029863ad1eb9d708d04c42de038bac4a8b60dd44ae8e7/winter-wmc-wall-facade-runtime.zip",
+      "bytes": 337802,
+      "sha256": "76d631f408012c564e5029863ad1eb9d708d04c42de038bac4a8b60dd44ae8e7"
+    },
+    {
+      "path": "packs/holodeck/objects/779284c3e928491f727f1bdaa606ba47fee9a060672377b76532c31cc200d81f/winter-wmc-rock-shelf-editable.zip",
+      "bytes": 1032130,
+      "sha256": "779284c3e928491f727f1bdaa606ba47fee9a060672377b76532c31cc200d81f"
+    },
+    {
+      "path": "packs/holodeck/objects/78017ccb3cddca60b30314d7d0f091f5740d3afbb0eccb868126fe044d6f3b6c/crescent-rock-boulder-b-runtime.zip",
+      "bytes": 1376017,
+      "sha256": "78017ccb3cddca60b30314d7d0f091f5740d3afbb0eccb868126fe044d6f3b6c"
+    },
+    {
+      "path": "packs/holodeck/objects/78d553c9f8be4afa12b45100e010696807afcc08db0b6226ad755cbf1c5f81cc/crescent-plant-vine-mat.glb",
+      "bytes": 86512,
+      "sha256": "78d553c9f8be4afa12b45100e010696807afcc08db0b6226ad755cbf1c5f81cc"
+    },
+    {
+      "path": "packs/holodeck/objects/7922e2d7515d050fca74e77a28f266db5129cd578eab365c37826dca1dbf4ae3/crescent-debris-coconuts.glb",
+      "bytes": 14916,
+      "sha256": "7922e2d7515d050fca74e77a28f266db5129cd578eab365c37826dca1dbf4ae3"
+    },
+    {
+      "path": "packs/holodeck/objects/792b85fe867bf31be91ff65de7947d16aa66f158a600ed41ac7dd31f2b0ca7f1/winter-wmc-window-tall-runtime.zip",
+      "bytes": 52057,
+      "sha256": "792b85fe867bf31be91ff65de7947d16aa66f158a600ed41ac7dd31f2b0ca7f1"
+    },
+    {
+      "path": "packs/holodeck/objects/7a23adbe91dae8ffce7ebe249ba2767c60bf091e1daf15612661b3fb299246ef/winter-wmc-stair-rail-interior-editable.zip",
+      "bytes": 161675,
+      "sha256": "7a23adbe91dae8ffce7ebe249ba2767c60bf091e1daf15612661b3fb299246ef"
+    },
+    {
+      "path": "packs/holodeck/objects/7a61ae3b32cc507a86af1e67248ca81e00aaf0a183214f7bddc28579d26f4cb0/tree-plane-editable.zip",
+      "bytes": 774503,
+      "sha256": "7a61ae3b32cc507a86af1e67248ca81e00aaf0a183214f7bddc28579d26f4cb0"
+    },
+    {
+      "path": "packs/holodeck/objects/7a686725e3aefcabeaf289fd7185f43bc85906d59f06617ff11828497de62e0f/statue-bronze.glb",
+      "bytes": 275932,
+      "sha256": "7a686725e3aefcabeaf289fd7185f43bc85906d59f06617ff11828497de62e0f"
+    },
+    {
+      "path": "packs/holodeck/objects/7ae561eda40d24337c1ba999d47a37ed92172a6cb2a24b0d522d024114a9bb1f/crescent-palm-young-runtime.zip",
+      "bytes": 139760,
+      "sha256": "7ae561eda40d24337c1ba999d47a37ed92172a6cb2a24b0d522d024114a9bb1f"
+    },
+    {
+      "path": "packs/holodeck/objects/7b26f3138d1e4bf36c7bb56a33f5beb53f7ce97d2d6ebfbd6ffc7126abae7d79/winter-wmc-armchair-oak-editable.zip",
+      "bytes": 898227,
+      "sha256": "7b26f3138d1e4bf36c7bb56a33f5beb53f7ce97d2d6ebfbd6ffc7126abae7d79"
+    },
+    {
+      "path": "packs/holodeck/objects/7c04710ee4aec131f61a64756d0f593e04eeae2a51aaecc9e5424363ba4faad0/winter-wmc-fir-middle-a.glb",
+      "bytes": 425904,
+      "sha256": "7c04710ee4aec131f61a64756d0f593e04eeae2a51aaecc9e5424363ba4faad0"
+    },
+    {
+      "path": "packs/holodeck/objects/7c36f4ab531829df4ae888a1fb03aa1bd8ba6654e805cf786a0e22b0d0869b02/bench-stone-runtime.zip",
+      "bytes": 113958,
+      "sha256": "7c36f4ab531829df4ae888a1fb03aa1bd8ba6654e805cf786a0e22b0d0869b02"
+    },
+    {
+      "path": "packs/holodeck/objects/7c5c3daebf0e6f8d552a59164b7c06bd43e419df03345dbe13bfce09a9f8596f/winter-wmc-spruce-hero-a-runtime.zip",
+      "bytes": 1552549,
+      "sha256": "7c5c3daebf0e6f8d552a59164b7c06bd43e419df03345dbe13bfce09a9f8596f"
+    },
+    {
+      "path": "packs/holodeck/objects/7d9ad2dbf60b4d11dcde095d4c696653bc399ef1e5a0a4824927f75846168419/tree-cypress.glb",
+      "bytes": 639676,
+      "sha256": "7d9ad2dbf60b4d11dcde095d4c696653bc399ef1e5a0a4824927f75846168419"
+    },
+    {
+      "path": "packs/holodeck/objects/7db1f4a1be0c96d0406dca3a7034d7f5d52cdf831658632211f479b5a90ff613/winter-wmc-ridge-band-editable.zip",
+      "bytes": 787836,
+      "sha256": "7db1f4a1be0c96d0406dca3a7034d7f5d52cdf831658632211f479b5a90ff613"
+    },
+    {
+      "path": "packs/holodeck/objects/7f999ce5287016237e21eff4ddf3f3ae98c81b1b8e77fe687266b138599b0d9f/crescent-coral-staghorn-runtime.zip",
+      "bytes": 73497,
+      "sha256": "7f999ce5287016237e21eff4ddf3f3ae98c81b1b8e77fe687266b138599b0d9f"
+    },
+    {
+      "path": "packs/holodeck/objects/7f9d70d4ad0665cfc68a4735723b5f596f3e25528fbce50822348a948216f459/pave-curb.glb",
+      "bytes": 27076,
+      "sha256": "7f9d70d4ad0665cfc68a4735723b5f596f3e25528fbce50822348a948216f459"
+    },
+    {
+      "path": "packs/holodeck/objects/8016b972fc492d56920d288d862471ef574d2d9349863337dc0eac7da8263bc7/crescent-plant-grass-patch-editable.zip",
+      "bytes": 193490,
+      "sha256": "8016b972fc492d56920d288d862471ef574d2d9349863337dc0eac7da8263bc7"
+    },
+    {
+      "path": "packs/holodeck/objects/801b56907978ba1caf9acbcb731edac65eabe148af8707223520f7a99c06c0f0/winter-wmc-pendant.glb",
+      "bytes": 83812,
+      "sha256": "801b56907978ba1caf9acbcb731edac65eabe148af8707223520f7a99c06c0f0"
+    },
+    {
+      "path": "packs/holodeck/objects/8152b7b3005018d0866c5e596b02b136c97e2a239b76f21c8f7bbb4f71c71ac7/lamp-post-runtime.zip",
+      "bytes": 89315,
+      "sha256": "8152b7b3005018d0866c5e596b02b136c97e2a239b76f21c8f7bbb4f71c71ac7"
+    },
+    {
+      "path": "packs/holodeck/objects/82bdc7be7a1ad453e758d68cfd3ddbeab77592806fd90bec7f9f59fcd2144d24/crescent-rock-reef-a-runtime.zip",
+      "bytes": 1409388,
+      "sha256": "82bdc7be7a1ad453e758d68cfd3ddbeab77592806fd90bec7f9f59fcd2144d24"
+    },
+    {
+      "path": "packs/holodeck/objects/83d212ecb044df42f92e1458dd4a3e38ba5198d1240401436341c5a527ce649d/winter-wmc-small-props-editable.zip",
+      "bytes": 545334,
+      "sha256": "83d212ecb044df42f92e1458dd4a3e38ba5198d1240401436341c5a527ce649d"
+    },
+    {
+      "path": "packs/holodeck/objects/84fc8be80ab9e9501dc2a4970b97c2ef3ddec3c48c5368b837648c3c5743beab/crescent-plant-nest-fern-editable.zip",
+      "bytes": 205574,
+      "sha256": "84fc8be80ab9e9501dc2a4970b97c2ef3ddec3c48c5368b837648c3c5743beab"
+    },
+    {
+      "path": "packs/holodeck/objects/85d2ab5edfc9d6a59ee0f9aaa51f3b46702e2348cc911939cae140cfa3734abc/jungle-groundcover.glb",
+      "bytes": 12516,
+      "sha256": "85d2ab5edfc9d6a59ee0f9aaa51f3b46702e2348cc911939cae140cfa3734abc"
+    },
+    {
+      "path": "packs/holodeck/objects/86770c4b20333f426c8be67f9a7a16d9a8ac46950f6e797cea808deb57d0b667/cove-rug-editable.zip",
+      "bytes": 198419,
+      "sha256": "86770c4b20333f426c8be67f9a7a16d9a8ac46950f6e797cea808deb57d0b667"
+    },
+    {
+      "path": "packs/holodeck/objects/87fa6297d74ad87d00bba1ddd309a202ba6af8f89313a72a128bf1675f410fd4/winter-wmc-sofa-wool.glb",
+      "bytes": 3926180,
+      "sha256": "87fa6297d74ad87d00bba1ddd309a202ba6af8f89313a72a128bf1675f410fd4"
+    },
+    {
+      "path": "packs/holodeck/objects/886144c5099e05af8ed4bbc4d3aef39dfb88de8b4a2019ae8d08d42f00d1a672/statue-monolith.glb",
+      "bytes": 116436,
+      "sha256": "886144c5099e05af8ed4bbc4d3aef39dfb88de8b4a2019ae8d08d42f00d1a672"
+    },
+    {
+      "path": "packs/holodeck/objects/88efe01bccfd3f3ce58a62f6d30639f2516646d0de6813a76e672d6e954df930/crescent-jetty-deck.glb",
+      "bytes": 187160,
+      "sha256": "88efe01bccfd3f3ce58a62f6d30639f2516646d0de6813a76e672d6e954df930"
+    },
+    {
+      "path": "packs/holodeck/objects/890ce230032523429eb57f2a1a9062a1824fa8ea30f8f94b1ed4fcc563c34555/cove-rug.glb",
+      "bytes": 122092,
+      "sha256": "890ce230032523429eb57f2a1a9062a1824fa8ea30f8f94b1ed4fcc563c34555"
+    },
+    {
+      "path": "packs/holodeck/objects/895281c2b88692f4923cfcac4240576e02dd82365eae3e5bc5005b314feddba7/cove-hearth-runtime.zip",
+      "bytes": 1385937,
+      "sha256": "895281c2b88692f4923cfcac4240576e02dd82365eae3e5bc5005b314feddba7"
+    },
+    {
+      "path": "packs/holodeck/objects/8a8990a0facd2bf02b72d1b7f4c75e789c3d01c11a75d8605d6cd2521ba5bd09/lamp-post-editable.zip",
+      "bytes": 109554,
+      "sha256": "8a8990a0facd2bf02b72d1b7f4c75e789c3d01c11a75d8605d6cd2521ba5bd09"
+    },
+    {
+      "path": "packs/holodeck/objects/8ac28660b75457154795cf0d72d45e6fcbee5a9225e67ff71ce616d4c65ba5d2/crescent-debris-shells-runtime.zip",
+      "bytes": 20549,
+      "sha256": "8ac28660b75457154795cf0d72d45e6fcbee5a9225e67ff71ce616d4c65ba5d2"
+    },
+    {
+      "path": "packs/holodeck/objects/8b150eb9474bfe5803dd2aa6d1ea351f440c82998de29e9c93e702bb82d8b72d/winter-wmc-armchair-oak-runtime.zip",
+      "bytes": 495060,
+      "sha256": "8b150eb9474bfe5803dd2aa6d1ea351f440c82998de29e9c93e702bb82d8b72d"
+    },
+    {
+      "path": "packs/holodeck/objects/8bc004b3dc8fc816aeb61623c41b5c53dc0c82e33cd280563e16d1b95d69cc53/plant-lavender-runtime.zip",
+      "bytes": 73658,
+      "sha256": "8bc004b3dc8fc816aeb61623c41b5c53dc0c82e33cd280563e16d1b95d69cc53"
+    },
+    {
+      "path": "packs/holodeck/objects/8cbfbc21d0f1d322b02638e8325bef41061e90742197a19853b75f685f2178ad/cove-canopy-editable.zip",
+      "bytes": 968606,
+      "sha256": "8cbfbc21d0f1d322b02638e8325bef41061e90742197a19853b75f685f2178ad"
+    },
+    {
+      "path": "packs/holodeck/objects/8d2083eedb73dc090396f8776f2a8571a56c5708ab8d15de480e49308cb90c1e/crescent-seagrass-editable.zip",
+      "bytes": 320213,
+      "sha256": "8d2083eedb73dc090396f8776f2a8571a56c5708ab8d15de480e49308cb90c1e"
+    },
+    {
+      "path": "packs/holodeck/objects/8d2a332dd3ae3540c1d983fdefd4a01716579cdcc27e148146d6ab4370b10b8e/island-hut-frame.glb",
+      "bytes": 83924,
+      "sha256": "8d2a332dd3ae3540c1d983fdefd4a01716579cdcc27e148146d6ab4370b10b8e"
+    },
+    {
+      "path": "packs/holodeck/objects/8dbcec244bb147e025bcd9c06e305e5f365510b97994910138c5002f27e741f8/wall-pier-runtime.zip",
+      "bytes": 26385,
+      "sha256": "8dbcec244bb147e025bcd9c06e305e5f365510b97994910138c5002f27e741f8"
+    },
+    {
+      "path": "packs/holodeck/objects/8e1d7970c096b912c2ceeddc9dcd5ea86806c3475e3e1de000991c587209cdcd/pave-field-b.glb",
+      "bytes": 135152,
+      "sha256": "8e1d7970c096b912c2ceeddc9dcd5ea86806c3475e3e1de000991c587209cdcd"
+    },
+    {
+      "path": "packs/holodeck/objects/8e5df881d171c6db272d2ebfa537a2913eb16582c6398f72d071a180a2fba7c3/statue-monolith-editable.zip",
+      "bytes": 118882,
+      "sha256": "8e5df881d171c6db272d2ebfa537a2913eb16582c6398f72d071a180a2fba7c3"
+    },
+    {
+      "path": "packs/holodeck/objects/8ee78afdd66a5b51e3381ebc9b3b769dc6684173c2dc79bbdfeb9d75630f777a/winter-wmc-roof-east-editable.zip",
+      "bytes": 547971,
+      "sha256": "8ee78afdd66a5b51e3381ebc9b3b769dc6684173c2dc79bbdfeb9d75630f777a"
+    },
+    {
+      "path": "packs/holodeck/objects/8f13ccb9ef9f3d13840141d2fb021456e9b67a2d6fa1ca6442dc43661fe9a6a4/crescent-rock-cliff-c.glb",
+      "bytes": 1570416,
+      "sha256": "8f13ccb9ef9f3d13840141d2fb021456e9b67a2d6fa1ca6442dc43661fe9a6a4"
+    },
+    {
+      "path": "packs/holodeck/objects/8f5ab0014e54966d7207cbd2d5e2309fc6f86c7742cbfc1077c907cbcc925c4e/crescent-plant-naupaka-editable.zip",
+      "bytes": 572557,
+      "sha256": "8f5ab0014e54966d7207cbd2d5e2309fc6f86c7742cbfc1077c907cbcc925c4e"
+    },
+    {
+      "path": "packs/holodeck/objects/8f71a6185a7712542419464ebae17ae0c545b69c753b69d275dd46e1fa48f9a7/island-hut-roof.glb",
+      "bytes": 376748,
+      "sha256": "8f71a6185a7712542419464ebae17ae0c545b69c753b69d275dd46e1fa48f9a7"
+    },
+    {
+      "path": "packs/holodeck/objects/90f958573158670edfa4324a14f0fb3be6a667d81aa0892b85b35fa390f3dc5d/crescent-palm-tall-editable.zip",
+      "bytes": 632730,
+      "sha256": "90f958573158670edfa4324a14f0fb3be6a667d81aa0892b85b35fa390f3dc5d"
+    },
+    {
+      "path": "packs/holodeck/objects/911087f02a324d1c57d4b1b4c3dd14829e49cc0765d54ce576bc57258d93f87c/winter-wmc-door-entry.glb",
+      "bytes": 168024,
+      "sha256": "911087f02a324d1c57d4b1b4c3dd14829e49cc0765d54ce576bc57258d93f87c"
+    },
+    {
+      "path": "packs/holodeck/objects/919ecb9f2a0ec4531cce1a715c04fc297dbacadbe8f8f2c6aa7d976499794b54/jungle-understory-editable.zip",
+      "bytes": 286711,
+      "sha256": "919ecb9f2a0ec4531cce1a715c04fc297dbacadbe8f8f2c6aa7d976499794b54"
+    },
+    {
+      "path": "packs/holodeck/objects/9228f312e618688454c53af4c4f0c424b937cb9739b11e3d1466ece79d267427/jungle-sapling-runtime.zip",
+      "bytes": 25592,
+      "sha256": "9228f312e618688454c53af4c4f0c424b937cb9739b11e3d1466ece79d267427"
+    },
+    {
+      "path": "packs/holodeck/objects/9290083a055cecd8ba09c9f19ae1b3c512af9b002371da10a3d92345a7dfea2f/winter-wmc-dining-chair.glb",
+      "bytes": 329728,
+      "sha256": "9290083a055cecd8ba09c9f19ae1b3c512af9b002371da10a3d92345a7dfea2f"
+    },
+    {
+      "path": "packs/holodeck/objects/92eef1949afa3bf5d8a3a276516f14ead47a05854ae9eb4541a10fb84d1e7be7/crescent-rock-outcrop-a.glb",
+      "bytes": 1621128,
+      "sha256": "92eef1949afa3bf5d8a3a276516f14ead47a05854ae9eb4541a10fb84d1e7be7"
+    },
+    {
+      "path": "packs/holodeck/objects/93e50dc2470132e868616bea363109fe6c0050da339027f4742e2098bd8268f2/crescent-rock-beach-a-editable.zip",
+      "bytes": 3217882,
+      "sha256": "93e50dc2470132e868616bea363109fe6c0050da339027f4742e2098bd8268f2"
+    },
+    {
+      "path": "packs/holodeck/objects/93fe9054e1f8cf0759d8c1ebdf3f1bce425e2be8c455a16ac9eafcd680284cbe/winter-wmc-wall-facade.glb",
+      "bytes": 1281376,
+      "sha256": "93fe9054e1f8cf0759d8c1ebdf3f1bce425e2be8c455a16ac9eafcd680284cbe"
+    },
+    {
+      "path": "packs/holodeck/objects/947fc588a9f7c49bd16ba19371e7a2e34a742b08f3a2ad739b4556e6cc189b60/cove-moodboard-runtime.zip",
+      "bytes": 159336,
+      "sha256": "947fc588a9f7c49bd16ba19371e7a2e34a742b08f3a2ad739b4556e6cc189b60"
+    },
+    {
+      "path": "packs/holodeck/objects/9504441743c3ce102acacfc63c6abdcb4f3ad3b80a74131fb8f54345bf3039f0/winter-wmc-rock-shelf.glb",
+      "bytes": 751020,
+      "sha256": "9504441743c3ce102acacfc63c6abdcb4f3ad3b80a74131fb8f54345bf3039f0"
+    },
+    {
+      "path": "packs/holodeck/objects/951f27e8eb87416f49bd89eca473d97f2a807bb4444aa65c17db11e02a202d50/winter-wmc-rafter-frame-runtime.zip",
+      "bytes": 36470,
+      "sha256": "951f27e8eb87416f49bd89eca473d97f2a807bb4444aa65c17db11e02a202d50"
+    },
+    {
+      "path": "packs/holodeck/objects/95d5de08fd007dc40f669e85528cd795b0f506ec0b0b5ef5de9d9fbe6570a02f/statue-figure-editable.zip",
+      "bytes": 583258,
+      "sha256": "95d5de08fd007dc40f669e85528cd795b0f506ec0b0b5ef5de9d9fbe6570a02f"
+    },
+    {
+      "path": "packs/holodeck/objects/96019a28c8b8030157958d151083741a16cf0f1b3e21cb56649931fc79b9e9a9/winter-wmc-coffee-table.glb",
+      "bytes": 306632,
+      "sha256": "96019a28c8b8030157958d151083741a16cf0f1b3e21cb56649931fc79b9e9a9"
+    },
+    {
+      "path": "packs/holodeck/objects/966eba5901cee5a920939db5995d29ffec119d3562d511ac1a8731a9238ade4f/cove-lamp.glb",
+      "bytes": 254580,
+      "sha256": "966eba5901cee5a920939db5995d29ffec119d3562d511ac1a8731a9238ade4f"
+    },
+    {
+      "path": "packs/holodeck/objects/9685c3400ad83e32d6325b6007f59d9c703fdde1264166617d3bc5f5c0a45cc8/crescent-seagrass-runtime.zip",
+      "bytes": 15283,
+      "sha256": "9685c3400ad83e32d6325b6007f59d9c703fdde1264166617d3bc5f5c0a45cc8"
+    },
+    {
+      "path": "packs/holodeck/objects/975b5688503e3c5adb3780e0de382fd0875a83d3acd95552fd5aec5bf45f4688/winter-wmc-chimney-masonry-runtime.zip",
+      "bytes": 422693,
+      "sha256": "975b5688503e3c5adb3780e0de382fd0875a83d3acd95552fd5aec5bf45f4688"
+    },
+    {
+      "path": "packs/holodeck/objects/98b3310816571fa41c2faca8e45bd43b5519f48c136f1aa8eaf1c27050f851e4/crescent-plant-alocasia-runtime.zip",
+      "bytes": 31899,
+      "sha256": "98b3310816571fa41c2faca8e45bd43b5519f48c136f1aa8eaf1c27050f851e4"
+    },
+    {
+      "path": "packs/holodeck/objects/98bd8625284359153d26c4f5c8beb9e3461a6d59266f2e7e8c2715c29e997990/winter-wmc-stair-rail-exterior.glb",
+      "bytes": 115844,
+      "sha256": "98bd8625284359153d26c4f5c8beb9e3461a6d59266f2e7e8c2715c29e997990"
+    },
+    {
+      "path": "packs/holodeck/objects/9a00bae77b5363923ebf9ff536da1f95d53db66b0553a80b8b291397ec532ca2/holodeck-crescent-cove-runtime.zip",
+      "bytes": 24777717,
+      "sha256": "9a00bae77b5363923ebf9ff536da1f95d53db66b0553a80b8b291397ec532ca2"
+    },
+    {
+      "path": "packs/holodeck/objects/9a080375152bf2ac55e71c0235f3b52e67b3dd845eaba704e0e77eb2e9119819/bench-park.glb",
+      "bytes": 235568,
+      "sha256": "9a080375152bf2ac55e71c0235f3b52e67b3dd845eaba704e0e77eb2e9119819"
+    },
+    {
+      "path": "packs/holodeck/objects/9b4d6045b3f6b42e28499d4334d8773c09dec2d708d3522bd38bd0b707d48543/planter-urn-runtime.zip",
+      "bytes": 293427,
+      "sha256": "9b4d6045b3f6b42e28499d4334d8773c09dec2d708d3522bd38bd0b707d48543"
+    },
+    {
+      "path": "packs/holodeck/objects/9bd7247067b1d24a759b4129e195ec8c551d1ee7b413fcb867f75614b46d1aa7/winter-wmc-rail-span-editable.zip",
+      "bytes": 186911,
+      "sha256": "9bd7247067b1d24a759b4129e195ec8c551d1ee7b413fcb867f75614b46d1aa7"
+    },
+    {
+      "path": "packs/holodeck/objects/9d5097e7dc557b684816f05ef6b68d8a25fcefeefcb42555ac3bcb2d976e35b2/fountain-cascade-runtime.zip",
+      "bytes": 56270,
+      "sha256": "9d5097e7dc557b684816f05ef6b68d8a25fcefeefcb42555ac3bcb2d976e35b2"
+    },
+    {
+      "path": "packs/holodeck/objects/9d5207b7bdd31d8bb5b9eaea182235dbc644daf1fb39f7519ed56ed20d9d225b/jungle-groundcover-runtime.zip",
+      "bytes": 13704,
+      "sha256": "9d5207b7bdd31d8bb5b9eaea182235dbc644daf1fb39f7519ed56ed20d9d225b"
+    },
+    {
+      "path": "packs/holodeck/objects/9deae099937bcb8b1d9ce2561a668e0e3052c4a82712a56a710fbdc824a7d314/pave-curb-editable.zip",
+      "bytes": 18719,
+      "sha256": "9deae099937bcb8b1d9ce2561a668e0e3052c4a82712a56a710fbdc824a7d314"
+    },
+    {
+      "path": "packs/holodeck/objects/9f2b3a0fe34666ec524c2c360977cf2a0d08fbfe98c7be1fed4ec515020cba96/winter-wmc-wall-rear-runtime.zip",
+      "bytes": 280404,
+      "sha256": "9f2b3a0fe34666ec524c2c360977cf2a0d08fbfe98c7be1fed4ec515020cba96"
+    },
+    {
+      "path": "packs/holodeck/objects/a009d8cec3d407fc2db527bfb42cf7a1a3a88dd23abed5be6d54b1dd7258013e/winter-wmc-stair-rail-interior.glb",
+      "bytes": 137044,
+      "sha256": "a009d8cec3d407fc2db527bfb42cf7a1a3a88dd23abed5be6d54b1dd7258013e"
+    },
+    {
+      "path": "packs/holodeck/objects/a048d149e5b398750e73ac570b1f5aeb07cd12dc3e3ded573ee97a1734429be1/winter-wmc-coffee-table-editable.zip",
+      "bytes": 491374,
+      "sha256": "a048d149e5b398750e73ac570b1f5aeb07cd12dc3e3ded573ee97a1734429be1"
+    },
+    {
+      "path": "packs/holodeck/objects/a0f129446abc05723d5d7425b955d7e98acfe75afedba14c270f5e721eadccfa/winter-wmc-tread-timber-runtime.zip",
+      "bytes": 53655,
+      "sha256": "a0f129446abc05723d5d7425b955d7e98acfe75afedba14c270f5e721eadccfa"
+    },
+    {
+      "path": "packs/holodeck/objects/a15afa796a843789b3a2e97f070bb738128a5145ea0b5b8e1f6bceb5c660689d/cove-canopy-runtime.zip",
+      "bytes": 765366,
+      "sha256": "a15afa796a843789b3a2e97f070bb738128a5145ea0b5b8e1f6bceb5c660689d"
+    },
+    {
+      "path": "packs/holodeck/objects/a22b721f03bf0fd937259540f7664b4a8e4895cb7386d8eb27eb1b893c7375c8/winter-wmc-floor-loft-runtime.zip",
+      "bytes": 174140,
+      "sha256": "a22b721f03bf0fd937259540f7664b4a8e4895cb7386d8eb27eb1b893c7375c8"
+    },
+    {
+      "path": "packs/holodeck/objects/a231a104d84b15467f7e23be3b00fd0ad08aa58a21173fa8a0ef11997d0c871a/winter-wmc-spruce-middle-a.glb",
+      "bytes": 432940,
+      "sha256": "a231a104d84b15467f7e23be3b00fd0ad08aa58a21173fa8a0ef11997d0c871a"
+    },
+    {
+      "path": "packs/holodeck/objects/a3333d0baf1a5272268ec1bc1782b3b0f84302c35c38437af24d3fd5f3328496/winter-wmc-window-tall-editable.zip",
+      "bytes": 167103,
+      "sha256": "a3333d0baf1a5272268ec1bc1782b3b0f84302c35c38437af24d3fd5f3328496"
+    },
+    {
+      "path": "packs/holodeck/objects/a454a05cdf279273f8a67b4205e7fb2bd942f919e5a41024be41d5000014d2de/winter-wmc-fallen-log-runtime.zip",
+      "bytes": 319142,
+      "sha256": "a454a05cdf279273f8a67b4205e7fb2bd942f919e5a41024be41d5000014d2de"
+    },
+    {
+      "path": "packs/holodeck/objects/a45ac40d6ded1d1fcd90be9a6442373f7b08c0c0d46abe2e6d182c78fd9b1af9/wall-segment.glb",
+      "bytes": 106056,
+      "sha256": "a45ac40d6ded1d1fcd90be9a6442373f7b08c0c0d46abe2e6d182c78fd9b1af9"
+    },
+    {
+      "path": "packs/holodeck/objects/a48671e20fd295ae0edbac0615b6979e4084cf62eb478d3a62c67363959032de/winter-wmc-loft-bed.glb",
+      "bytes": 3731580,
+      "sha256": "a48671e20fd295ae0edbac0615b6979e4084cf62eb478d3a62c67363959032de"
+    },
+    {
+      "path": "packs/holodeck/objects/a4e7386a9bdef224a19d3dbe02dd78a0dbc7e2c7d0a4e50d4066b547865da93c/crescent-rock-boulder-a-runtime.zip",
+      "bytes": 1384915,
+      "sha256": "a4e7386a9bdef224a19d3dbe02dd78a0dbc7e2c7d0a4e50d4066b547865da93c"
+    },
+    {
+      "path": "packs/holodeck/objects/a4fa1601bd4e2e138e460e0f686f14ba02c5a9a0b18aac779eb1d3f09b84cd86/winter-wmc-floor-main-editable.zip",
+      "bytes": 435222,
+      "sha256": "a4fa1601bd4e2e138e460e0f686f14ba02c5a9a0b18aac779eb1d3f09b84cd86"
+    },
+    {
+      "path": "packs/holodeck/objects/a67329b68106b4152e41aa265b6f8f2887d8a0c4c3004aa2f49fb89b40f233d9/island-shrub-runtime.zip",
+      "bytes": 58918,
+      "sha256": "a67329b68106b4152e41aa265b6f8f2887d8a0c4c3004aa2f49fb89b40f233d9"
+    },
+    {
+      "path": "packs/holodeck/objects/a8ba5f9da06985675139e84da73099e12194fdbc9278343fb992f8e01eaedc73/winter-wmc-stone-plinth-panel-runtime.zip",
+      "bytes": 128044,
+      "sha256": "a8ba5f9da06985675139e84da73099e12194fdbc9278343fb992f8e01eaedc73"
+    },
+    {
+      "path": "packs/holodeck/objects/a93309d0b17df7a404e5870e39b8558c7e25f6608fde36d7e8824be414bbb019/crescent-rock-reef-b.glb",
+      "bytes": 724440,
+      "sha256": "a93309d0b17df7a404e5870e39b8558c7e25f6608fde36d7e8824be414bbb019"
+    },
+    {
+      "path": "packs/holodeck/objects/a9778b949950c25d0c518c98d6ed6abac5a22abf26a081b5b4e3b82a67f6d5f0/crescent-palm-arch-runtime.zip",
+      "bytes": 241723,
+      "sha256": "a9778b949950c25d0c518c98d6ed6abac5a22abf26a081b5b4e3b82a67f6d5f0"
+    },
+    {
+      "path": "packs/holodeck/objects/a9c94467aad237852a1b20ee5e22a84c824c38f7374d2e50eb6f7b1343fcd02e/winter-wmc-fir-sapling-a.glb",
+      "bytes": 700540,
+      "sha256": "a9c94467aad237852a1b20ee5e22a84c824c38f7374d2e50eb6f7b1343fcd02e"
+    },
+    {
+      "path": "packs/holodeck/objects/ab22080def72d18d375257cb34b806613de5625320c0e031da25a985f10d8bf1/crescent-palm-young.glb",
+      "bytes": 190616,
+      "sha256": "ab22080def72d18d375257cb34b806613de5625320c0e031da25a985f10d8bf1"
+    },
+    {
+      "path": "packs/holodeck/objects/aba05533432e6893e62a743e23965416d0aaf45285da8e8d6311b3454923f315/jungle-groundcover-editable.zip",
+      "bytes": 140835,
+      "sha256": "aba05533432e6893e62a743e23965416d0aaf45285da8e8d6311b3454923f315"
+    },
+    {
+      "path": "packs/holodeck/objects/abe8566ed8bb9b0e2e137a73192ccc0c8f0073476e46d13c7069e4f9ca1615ec/lamp-bollard-runtime.zip",
+      "bytes": 101736,
+      "sha256": "abe8566ed8bb9b0e2e137a73192ccc0c8f0073476e46d13c7069e4f9ca1615ec"
+    },
+    {
+      "path": "packs/holodeck/objects/ac16e815cb401d55efc582f8824f4f1a032a75f2170100a99fe710d18951f231/crescent-plant-nest-fern.glb",
+      "bytes": 20152,
+      "sha256": "ac16e815cb401d55efc582f8824f4f1a032a75f2170100a99fe710d18951f231"
+    },
+    {
+      "path": "packs/holodeck/objects/ac23f56a97f2c92d117e5a886c22b9dbb03ed8b6b034e5e6a8590c94d5cf104b/crescent-coral-rubble-patch.glb",
+      "bytes": 54140,
+      "sha256": "ac23f56a97f2c92d117e5a886c22b9dbb03ed8b6b034e5e6a8590c94d5cf104b"
+    },
+    {
+      "path": "packs/holodeck/objects/ad13a7127ac03de5baf9de576471e8df8c4d8224d1f06bcb808937a92b18f57d/winter-wmc-frame-post.glb",
+      "bytes": 84148,
+      "sha256": "ad13a7127ac03de5baf9de576471e8df8c4d8224d1f06bcb808937a92b18f57d"
+    },
+    {
+      "path": "packs/holodeck/objects/b00ade29df3b69324789984faf0dccf369dd26bd80b4500023a85ba753b4383a/wall-pier-editable.zip",
+      "bytes": 45775,
+      "sha256": "b00ade29df3b69324789984faf0dccf369dd26bd80b4500023a85ba753b4383a"
+    },
+    {
+      "path": "packs/holodeck/objects/b0308f09f99af538b50a31e9bed0439b78bda32915ec0b010b916bb227c145f2/winter-wmc-trail-marker-editable.zip",
+      "bytes": 423349,
+      "sha256": "b0308f09f99af538b50a31e9bed0439b78bda32915ec0b010b916bb227c145f2"
+    },
+    {
+      "path": "packs/holodeck/objects/b1060142cb89edddf18b272ace03f1dad4f5c97937054f144f3019d52d242804/wall-segment-editable.zip",
+      "bytes": 46665,
+      "sha256": "b1060142cb89edddf18b272ace03f1dad4f5c97937054f144f3019d52d242804"
+    },
+    {
+      "path": "packs/holodeck/objects/b1bb58c6427a4cddb7fe2c2edbbbb56ad47a270f3e8a80b9f9ff6583b82e311e/winter-wmc-wall-east.glb",
+      "bytes": 1205896,
+      "sha256": "b1bb58c6427a4cddb7fe2c2edbbbb56ad47a270f3e8a80b9f9ff6583b82e311e"
+    },
+    {
+      "path": "packs/holodeck/objects/b2a485cfc9d7d56a77036a1f96ab3090dd99aca700b865d3d475090f94982a47/crescent-plant-vine-mat-editable.zip",
+      "bytes": 191789,
+      "sha256": "b2a485cfc9d7d56a77036a1f96ab3090dd99aca700b865d3d475090f94982a47"
+    },
+    {
+      "path": "packs/holodeck/objects/b77fc18b02a253645f411c7233de3b0137b32f181d4bf156769e05f68f37957e/winter-wmc-fallen-log.glb",
+      "bytes": 423896,
+      "sha256": "b77fc18b02a253645f411c7233de3b0137b32f181d4bf156769e05f68f37957e"
+    },
+    {
+      "path": "packs/holodeck/objects/b78ad2a3062f62a9095e13d580928183fbe7f3d0b5deb55272dacd31e5fe2a7c/crescent-palm-tall-runtime.zip",
+      "bytes": 278661,
+      "sha256": "b78ad2a3062f62a9095e13d580928183fbe7f3d0b5deb55272dacd31e5fe2a7c"
+    },
+    {
+      "path": "packs/holodeck/objects/baaa3956f0fde2f4b46dfb57eb6b8ec0816fe376bcce5d46cebf8d2eca8ca157/winter-wmc-spruce-middle-a-runtime.zip",
+      "bytes": 239632,
+      "sha256": "baaa3956f0fde2f4b46dfb57eb6b8ec0816fe376bcce5d46cebf8d2eca8ca157"
+    },
+    {
+      "path": "packs/holodeck/objects/bac6abae1b4e3170d437410a2c912fa24ce713320b5e884ff2660dc00339941d/winter-wmc-frame-post-runtime.zip",
+      "bytes": 69006,
+      "sha256": "bac6abae1b4e3170d437410a2c912fa24ce713320b5e884ff2660dc00339941d"
+    },
+    {
+      "path": "packs/holodeck/objects/bb1a010bf3bf76f982150f04650cbda8f57b9a84f985f55da75ba5555d5f66c2/crescent-debris-coconuts-runtime.zip",
+      "bytes": 15095,
+      "sha256": "bb1a010bf3bf76f982150f04650cbda8f57b9a84f985f55da75ba5555d5f66c2"
+    },
+    {
+      "path": "packs/holodeck/objects/bb1b7573d29f2fd9830cc6811fd958a593cc78c42f377f408faca0fbf5398efe/winter-wmc-lantern-runtime.zip",
+      "bytes": 10403,
+      "sha256": "bb1b7573d29f2fd9830cc6811fd958a593cc78c42f377f408faca0fbf5398efe"
+    },
+    {
+      "path": "packs/holodeck/objects/bb56d896497c49830499a90ad8eaf7ec453e0c4527c441ed73ad1697a5c8208f/winter-wmc-lantern.glb",
+      "bytes": 18136,
+      "sha256": "bb56d896497c49830499a90ad8eaf7ec453e0c4527c441ed73ad1697a5c8208f"
+    },
+    {
+      "path": "packs/holodeck/objects/bcd77241810612e5848879293d241ec0c4b66d23a9ba362e65dfbd46a693d3ff/tree-olive-runtime.zip",
+      "bytes": 816997,
+      "sha256": "bcd77241810612e5848879293d241ec0c4b66d23a9ba362e65dfbd46a693d3ff"
+    },
+    {
+      "path": "packs/holodeck/objects/be14d5c938495f59af7783242dd1249eaee3917fb30e81665fa564a6f52d34e0/crescent-palm-arch-editable.zip",
+      "bytes": 662825,
+      "sha256": "be14d5c938495f59af7783242dd1249eaee3917fb30e81665fa564a6f52d34e0"
+    },
+    {
+      "path": "packs/holodeck/objects/be9cd541202b8830f6ae4fd2405c9968f3a04d464530c39d9192eb3ab3011722/island-palm-runtime.zip",
+      "bytes": 569404,
+      "sha256": "be9cd541202b8830f6ae4fd2405c9968f3a04d464530c39d9192eb3ab3011722"
+    },
+    {
+      "path": "packs/holodeck/objects/bed2a9542d7f99466ff91ae2bb8da824b65bff23a3538299a19f353446584adc/winter-wmc-floorlamp-tripod-runtime.zip",
+      "bytes": 210386,
+      "sha256": "bed2a9542d7f99466ff91ae2bb8da824b65bff23a3538299a19f353446584adc"
+    },
+    {
+      "path": "packs/holodeck/objects/bf1cef2abb3c73715d21d0fd29e9c3b2c72594c316e0fa439470ff19431ab280/tree-cypress-runtime.zip",
+      "bytes": 351158,
+      "sha256": "bf1cef2abb3c73715d21d0fd29e9c3b2c72594c316e0fa439470ff19431ab280"
+    },
+    {
+      "path": "packs/holodeck/objects/c117970a67fc76e225435c7c123c0541c7d88f4962112044eea1e12896296b9b/winter-wmc-deck-tile.glb",
+      "bytes": 187372,
+      "sha256": "c117970a67fc76e225435c7c123c0541c7d88f4962112044eea1e12896296b9b"
+    },
+    {
+      "path": "packs/holodeck/objects/c122f52fd80f69ba327bcb9f9bebd2c4d4f0849b2a243c1d1233e23a9bcc83e1/winter-wmc-tread-timber-editable.zip",
+      "bytes": 154727,
+      "sha256": "c122f52fd80f69ba327bcb9f9bebd2c4d4f0849b2a243c1d1233e23a9bcc83e1"
+    },
+    {
+      "path": "packs/holodeck/objects/c1275664f8aad61190a8ea4d3fb1f92b82eb44a6233cfea76d994e681fdf55df/pave-curb-runtime.zip",
+      "bytes": 10675,
+      "sha256": "c1275664f8aad61190a8ea4d3fb1f92b82eb44a6233cfea76d994e681fdf55df"
+    },
+    {
+      "path": "packs/holodeck/objects/c12cd14901e4d7e486281df83d0b64dd028770dd97cc244216597915266b6689/winter-wmc-window-test.glb",
+      "bytes": 175424,
+      "sha256": "c12cd14901e4d7e486281df83d0b64dd028770dd97cc244216597915266b6689"
+    },
+    {
+      "path": "packs/holodeck/objects/c29e7a56762b2ed96eabd505d6868d231f49ae6fc5bec4a33046cf6da87a630b/winter-wmc-wall-east-runtime.zip",
+      "bytes": 336434,
+      "sha256": "c29e7a56762b2ed96eabd505d6868d231f49ae6fc5bec4a33046cf6da87a630b"
+    },
+    {
+      "path": "packs/holodeck/objects/c320dbd4004e92031790b232c30ddd06db75ddc179fe93232b57bfbb52784af4/crescent-rock-reef-b-runtime.zip",
+      "bytes": 705448,
+      "sha256": "c320dbd4004e92031790b232c30ddd06db75ddc179fe93232b57bfbb52784af4"
+    },
+    {
+      "path": "packs/holodeck/objects/c362eb4b028d26d99656e79feb361b536d283ed87bf510f80d01eb6f9758b007/crescent-rock-outcrop-a-editable.zip",
+      "bytes": 3630500,
+      "sha256": "c362eb4b028d26d99656e79feb361b536d283ed87bf510f80d01eb6f9758b007"
+    },
+    {
+      "path": "packs/holodeck/objects/c377b3a29c41192345c65043798431a6fe96b5bbe87f51d38f519eb61d9a72a3/tree-olive.glb",
+      "bytes": 1360408,
+      "sha256": "c377b3a29c41192345c65043798431a6fe96b5bbe87f51d38f519eb61d9a72a3"
+    },
+    {
+      "path": "packs/holodeck/objects/c41eda877f2741c49d05bda138a85edba3d1712580fb8bdcfce7e2f1c6718c4e/pave-curb-corner.glb",
+      "bytes": 9380,
+      "sha256": "c41eda877f2741c49d05bda138a85edba3d1712580fb8bdcfce7e2f1c6718c4e"
+    },
+    {
+      "path": "packs/holodeck/objects/c4666fe5ea243a44375b2105054583ee6faa4d9612868046eaf524e395c797af/bench-park-editable.zip",
+      "bytes": 162325,
+      "sha256": "c4666fe5ea243a44375b2105054583ee6faa4d9612868046eaf524e395c797af"
+    },
+    {
+      "path": "packs/holodeck/objects/c4a9fddfb313f4e7183e9f3d5a1dc8bc04d620a36ffd1bf1a58e3bb0d6c46004/crescent-debris-coconuts-editable.zip",
+      "bytes": 165739,
+      "sha256": "c4a9fddfb313f4e7183e9f3d5a1dc8bc04d620a36ffd1bf1a58e3bb0d6c46004"
+    },
+    {
+      "path": "packs/holodeck/objects/c4aaa27906e6e3cc56208e7a284e8e9beb535094063f556b2444d594f567ca3d/crescent-plant-naupaka.glb",
+      "bytes": 92768,
+      "sha256": "c4aaa27906e6e3cc56208e7a284e8e9beb535094063f556b2444d594f567ca3d"
+    },
+    {
+      "path": "packs/holodeck/objects/c5385830ac255a4811758c060e94669b071e2e5863d2596d4e3ee63520a19b12/winter-wmc-eave-storage-runtime.zip",
+      "bytes": 62592,
+      "sha256": "c5385830ac255a4811758c060e94669b071e2e5863d2596d4e3ee63520a19b12"
+    },
+    {
+      "path": "packs/holodeck/objects/c5a729356aa3c34d0a7d0e60b1e386ad1b37c86c2077d585bfc20f8a2f5ac359/crescent-rock-boulder-c.glb",
+      "bytes": 1443724,
+      "sha256": "c5a729356aa3c34d0a7d0e60b1e386ad1b37c86c2077d585bfc20f8a2f5ac359"
+    },
+    {
+      "path": "packs/holodeck/objects/c61d99c8101f08fe29b7dee711ad04060a70342f0609342fa29d123ecce52c2e/winter-wmc-living-rug-wool-runtime.zip",
+      "bytes": 419495,
+      "sha256": "c61d99c8101f08fe29b7dee711ad04060a70342f0609342fa29d123ecce52c2e"
+    },
+    {
+      "path": "packs/holodeck/objects/c77ee94b5ebf5e1617972e1a19bf6510b99f254c5227f49604d76124ae7f4f07/winter-wmc-small-props.glb",
+      "bytes": 359688,
+      "sha256": "c77ee94b5ebf5e1617972e1a19bf6510b99f254c5227f49604d76124ae7f4f07"
+    },
+    {
+      "path": "packs/holodeck/objects/c823a090a05e5d3867383c19b4675cecf55e13f933d107bbb4c86690940ee492/holodeck-courtyard-runtime.zip",
+      "bytes": 9837735,
+      "sha256": "c823a090a05e5d3867383c19b4675cecf55e13f933d107bbb4c86690940ee492"
+    },
+    {
+      "path": "packs/holodeck/objects/c83ca8b8f9d6d9082f9b74a0ead42e2a6b649890dc7c94f1937ccbd3e2929565/cove-planting.glb",
+      "bytes": 1053544,
+      "sha256": "c83ca8b8f9d6d9082f9b74a0ead42e2a6b649890dc7c94f1937ccbd3e2929565"
+    },
+    {
+      "path": "packs/holodeck/objects/c85d9825d10aefa901e9278a4313d813bb6fefcc20e6f54581c8bb2837a1f8c1/holodeck-tidemark-editable.zip",
+      "bytes": 9417153,
+      "sha256": "c85d9825d10aefa901e9278a4313d813bb6fefcc20e6f54581c8bb2837a1f8c1"
+    },
+    {
+      "path": "packs/holodeck/objects/c8aee3c6ba66385c4e34070c8497af2f1643eb46fb5687ec9223e2fbfe9b10fc/winter-wmc-door-entry-editable.zip",
+      "bytes": 297649,
+      "sha256": "c8aee3c6ba66385c4e34070c8497af2f1643eb46fb5687ec9223e2fbfe9b10fc"
+    },
+    {
+      "path": "packs/holodeck/objects/cab0103092c16acc542cb9e89b4ed32a1a636deb55acb7bd5e5c8e77e5ebcd13/crescent-palm-young-editable.zip",
+      "bytes": 632968,
+      "sha256": "cab0103092c16acc542cb9e89b4ed32a1a636deb55acb7bd5e5c8e77e5ebcd13"
+    },
+    {
+      "path": "packs/holodeck/objects/cab907d0a88fe53506883e527acd110f32d6b80326611353cb9f9d620497f35a/crescent-rock-reef-b-editable.zip",
+      "bytes": 2314087,
+      "sha256": "cab907d0a88fe53506883e527acd110f32d6b80326611353cb9f9d620497f35a"
+    },
+    {
+      "path": "packs/holodeck/objects/cb40cc94660ccd32a3a4f93ae0ad76548537f3d0ac988be9e4d87d6ea5a64f6c/winter-wmc-dining-chair-editable.zip",
+      "bytes": 527684,
+      "sha256": "cb40cc94660ccd32a3a4f93ae0ad76548537f3d0ac988be9e4d87d6ea5a64f6c"
+    },
+    {
+      "path": "packs/holodeck/objects/cb55e64595e7543dda9c55eb3021945ea79c49aed5ca5862bc88d914459c620b/lamp-post.glb",
+      "bytes": 180476,
+      "sha256": "cb55e64595e7543dda9c55eb3021945ea79c49aed5ca5862bc88d914459c620b"
+    },
+    {
+      "path": "packs/holodeck/objects/cbb8672d6d95ab4787848a36ee3c7421e29efa3c656f898b0423b2afa7af3971/lamp-bollard-editable.zip",
+      "bytes": 128761,
+      "sha256": "cbb8672d6d95ab4787848a36ee3c7421e29efa3c656f898b0423b2afa7af3971"
+    },
+    {
+      "path": "packs/holodeck/objects/cc0cd82359f59e840437b55542a95ba88cafd5672d711e6f464b961c778a9b9b/jungle-fern-editable.zip",
+      "bytes": 221843,
+      "sha256": "cc0cd82359f59e840437b55542a95ba88cafd5672d711e6f464b961c778a9b9b"
+    },
+    {
+      "path": "packs/holodeck/objects/cd00513df617a55bbfd5e3735eba0a62da37451fd9a83bcc441438a9665df59a/winter-wmc-fir-background-a.glb",
+      "bytes": 174904,
+      "sha256": "cd00513df617a55bbfd5e3735eba0a62da37451fd9a83bcc441438a9665df59a"
+    },
+    {
+      "path": "packs/holodeck/objects/cd379b74a6ac5cab6571ff8582474bd101f69be9d80df500eb753c714815bcd8/winter-wmc-floor-main-runtime.zip",
+      "bytes": 322229,
+      "sha256": "cd379b74a6ac5cab6571ff8582474bd101f69be9d80df500eb753c714815bcd8"
+    },
+    {
+      "path": "packs/holodeck/objects/cdcbe20897cad45d4da47276d6c910f8c2a07fbc3c4c0c52cc0c7b3905012853/tree-plane.glb",
+      "bytes": 1133088,
+      "sha256": "cdcbe20897cad45d4da47276d6c910f8c2a07fbc3c4c0c52cc0c7b3905012853"
+    },
+    {
+      "path": "packs/holodeck/objects/cded9d0e11caea23b5c93f5e5fef89754c9b4a6ab2c3890a22f3c1611862e16a/island-bird-editable.zip",
+      "bytes": 37543,
+      "sha256": "cded9d0e11caea23b5c93f5e5fef89754c9b4a6ab2c3890a22f3c1611862e16a"
+    },
+    {
+      "path": "packs/holodeck/objects/ceaf3dbe1121f1a4c96445d7c66235b5c63c155ff3658157b8205a4f12566eca/winter-wmc-hearth-masonry-runtime.zip",
+      "bytes": 225983,
+      "sha256": "ceaf3dbe1121f1a4c96445d7c66235b5c63c155ff3658157b8205a4f12566eca"
+    },
+    {
+      "path": "packs/holodeck/objects/cf4a36b57409974240d744261ce999e2a25e2ab5a2f22dd94382bf7cab58476f/winter-wmc-mountain-massif-runtime.zip",
+      "bytes": 900935,
+      "sha256": "cf4a36b57409974240d744261ce999e2a25e2ab5a2f22dd94382bf7cab58476f"
+    },
+    {
+      "path": "packs/holodeck/objects/cf54d4e99998b135839c79a03d7c0557c8e8be6c05428d0461f207cd12285fc7/winter-wmc-door-deck.glb",
+      "bytes": 170112,
+      "sha256": "cf54d4e99998b135839c79a03d7c0557c8e8be6c05428d0461f207cd12285fc7"
+    },
+    {
+      "path": "packs/holodeck/objects/cfcb3c7d4cffd4221944c4f9836a42b8986e33c8970d853e92b749d6c52e30a4/winter-wmc-dining-table-runtime.zip",
+      "bytes": 275659,
+      "sha256": "cfcb3c7d4cffd4221944c4f9836a42b8986e33c8970d853e92b749d6c52e30a4"
+    },
+    {
+      "path": "packs/holodeck/objects/d01f3008ae13048b002c6bb2cc5edaf23b0311988cc57000d1542f08f1c7e373/winter-wmc-fir-hero-a.glb",
+      "bytes": 3436088,
+      "sha256": "d01f3008ae13048b002c6bb2cc5edaf23b0311988cc57000d1542f08f1c7e373"
+    },
+    {
+      "path": "packs/holodeck/objects/d03afe160e77514fe9461afd2b324fb63a21035ce400d06367f0e918092f1da2/winter-wmc-small-props-runtime.zip",
+      "bytes": 296377,
+      "sha256": "d03afe160e77514fe9461afd2b324fb63a21035ce400d06367f0e918092f1da2"
+    },
+    {
+      "path": "packs/holodeck/objects/d06d46a26bab1da979953c38d7d03edf857bd91f39a1940209cb5d84a62d917f/crescent-rock-cliff-a-runtime.zip",
+      "bytes": 1598720,
+      "sha256": "d06d46a26bab1da979953c38d7d03edf857bd91f39a1940209cb5d84a62d917f"
+    },
+    {
+      "path": "packs/holodeck/objects/d0eef1e714ada7830fc0db757ad5248bb90476c08e60a65462f01964092debd8/island-resident.glb",
+      "bytes": 55636,
+      "sha256": "d0eef1e714ada7830fc0db757ad5248bb90476c08e60a65462f01964092debd8"
+    },
+    {
+      "path": "packs/holodeck/objects/d104f8dda514d0ed69b6d18c0aff5b52a40d6439e77ea6a8ad391b6c56e6969f/winter-wmc-sofa-wool-runtime.zip",
+      "bytes": 1497057,
+      "sha256": "d104f8dda514d0ed69b6d18c0aff5b52a40d6439e77ea6a8ad391b6c56e6969f"
+    },
+    {
+      "path": "packs/holodeck/objects/d146eff64703d44e3cd4a9855679656b9f12dcd14ac9217f0ffd8d59a7767bdf/fountain-cascade-editable.zip",
+      "bytes": 155300,
+      "sha256": "d146eff64703d44e3cd4a9855679656b9f12dcd14ac9217f0ffd8d59a7767bdf"
+    },
+    {
+      "path": "packs/holodeck/objects/d28ea8e94e81119ddac81802e40e25dfadf463fc806dc72e078e03bf30e80c7a/island-crab-editable.zip",
+      "bytes": 40286,
+      "sha256": "d28ea8e94e81119ddac81802e40e25dfadf463fc806dc72e078e03bf30e80c7a"
+    },
+    {
+      "path": "packs/holodeck/objects/d46ebab1d321e9bf1d278046ce32618075296118ba6a1e24e7e9736e8c0bf6b0/crescent-plant-alocasia-editable.zip",
+      "bytes": 290544,
+      "sha256": "d46ebab1d321e9bf1d278046ce32618075296118ba6a1e24e7e9736e8c0bf6b0"
+    },
+    {
+      "path": "packs/holodeck/objects/d503b4478342889efb59f2528e9a3e3964b48283e135a5974a93db1f271faefa/winter-wmc-kitchen-run.glb",
+      "bytes": 837476,
+      "sha256": "d503b4478342889efb59f2528e9a3e3964b48283e135a5974a93db1f271faefa"
+    },
+    {
+      "path": "packs/holodeck/objects/d516a7c2314d3a7072088a73795a5f5125e25b280ad29c698e053d0b5c88435e/crescent-jetty-stair.glb",
+      "bytes": 146300,
+      "sha256": "d516a7c2314d3a7072088a73795a5f5125e25b280ad29c698e053d0b5c88435e"
+    },
+    {
+      "path": "packs/holodeck/objects/d6cee436aa805ce8cf4b1290d4ee3bfdd58d5ad4a34b76b0f14b07fa3553bca3/crescent-plant-nest-fern-runtime.zip",
+      "bytes": 19759,
+      "sha256": "d6cee436aa805ce8cf4b1290d4ee3bfdd58d5ad4a34b76b0f14b07fa3553bca3"
+    },
+    {
+      "path": "packs/holodeck/objects/d73538060cc465e0ee0dd78f26d55fc71ea0124aebb7ccac4ccfffd41d8fb0b6/cove-structure-editable.zip",
+      "bytes": 1449452,
+      "sha256": "d73538060cc465e0ee0dd78f26d55fc71ea0124aebb7ccac4ccfffd41d8fb0b6"
+    },
+    {
+      "path": "packs/holodeck/objects/d7cb355cdb03cc639cdcdfa1dc14147568b62f2962e550ec472149678b4e2222/coastal-flybird.glb",
+      "bytes": 22784,
+      "sha256": "d7cb355cdb03cc639cdcdfa1dc14147568b62f2962e550ec472149678b4e2222"
+    },
+    {
+      "path": "packs/holodeck/objects/d940c64a05da8c1ae0c19ba3c824efe7fef84dd126e301bd6b9d09bff17f21c9/crescent-jetty-platform.glb",
+      "bytes": 259020,
+      "sha256": "d940c64a05da8c1ae0c19ba3c824efe7fef84dd126e301bd6b9d09bff17f21c9"
+    },
+    {
+      "path": "packs/holodeck/objects/d97f6b38d3ee73ef016b3843460c55848987ff0c717179a533d1dfbdaccc1809/crescent-plant-alocasia.glb",
+      "bytes": 36400,
+      "sha256": "d97f6b38d3ee73ef016b3843460c55848987ff0c717179a533d1dfbdaccc1809"
+    },
+    {
+      "path": "packs/holodeck/objects/da7a4497549bc901a84e004dd5edc81c7420829724136c570f42753dce5b101e/winter-wmc-roof-west-editable.zip",
+      "bytes": 532398,
+      "sha256": "da7a4497549bc901a84e004dd5edc81c7420829724136c570f42753dce5b101e"
+    },
+    {
+      "path": "packs/holodeck/objects/daed2ccb2274e2ae1515493d74d4ed4e1ce6cd57af6203f9f9c960816ca88561/winter-wmc-wall-facade-editable.zip",
+      "bytes": 469090,
+      "sha256": "daed2ccb2274e2ae1515493d74d4ed4e1ce6cd57af6203f9f9c960816ca88561"
+    },
+    {
+      "path": "packs/holodeck/objects/db96e83dce88d4f508197ca701a9a97d5ffa533cdc282b2dcb2701edc664d6e4/winter-wmc-gable-glass-runtime.zip",
+      "bytes": 5719,
+      "sha256": "db96e83dce88d4f508197ca701a9a97d5ffa533cdc282b2dcb2701edc664d6e4"
+    },
+    {
+      "path": "packs/holodeck/objects/dc7c309ede0ff4a652ebcbf53be5bec897d4cbb30890b4909dc479b24b9f729e/jungle-fern.glb",
+      "bytes": 61000,
+      "sha256": "dc7c309ede0ff4a652ebcbf53be5bec897d4cbb30890b4909dc479b24b9f729e"
+    },
+    {
+      "path": "packs/holodeck/objects/dc847edbd7a79ced54a5be9d1e41197a14004d6cdeba20f3f9f4c0f750fd3351/winter-wmc-rafter-frame.glb",
+      "bytes": 54192,
+      "sha256": "dc847edbd7a79ced54a5be9d1e41197a14004d6cdeba20f3f9f4c0f750fd3351"
+    },
+    {
+      "path": "packs/holodeck/objects/dc889e7420bea09d25719cd2dbb382ac54b21bef0aadf9cf23c5790b453050ae/tree-olive-editable.zip",
+      "bytes": 943864,
+      "sha256": "dc889e7420bea09d25719cd2dbb382ac54b21bef0aadf9cf23c5790b453050ae"
+    },
+    {
+      "path": "packs/holodeck/objects/dcbc9d2fd91ee39ff010857cd099e84ecd73b60550ecaa0f4f84675981b75772/cove-structure-runtime.zip",
+      "bytes": 1176734,
+      "sha256": "dcbc9d2fd91ee39ff010857cd099e84ecd73b60550ecaa0f4f84675981b75772"
+    },
+    {
+      "path": "packs/holodeck/objects/dcf91ba8819090abed80ff5c9fa9cdfa710643f743e27571eda3b3b9eea7b82c/winter-wmc-ridge-band-runtime.zip",
+      "bytes": 457712,
+      "sha256": "dcf91ba8819090abed80ff5c9fa9cdfa710643f743e27571eda3b3b9eea7b82c"
+    },
+    {
+      "path": "packs/holodeck/objects/dd082c4bf0df40980f2c53ff19b3397cf54ab83c7f60d7e800097fa6e60598dd/plaza-fountain-runtime.zip",
+      "bytes": 661891,
+      "sha256": "dd082c4bf0df40980f2c53ff19b3397cf54ab83c7f60d7e800097fa6e60598dd"
+    },
+    {
+      "path": "packs/holodeck/objects/de4967ab8c9f7a04d2a787508d27635a465f45407b8037efe57338fc2c5996f6/pave-curb-corner-runtime.zip",
+      "bytes": 7253,
+      "sha256": "de4967ab8c9f7a04d2a787508d27635a465f45407b8037efe57338fc2c5996f6"
+    },
+    {
+      "path": "packs/holodeck/objects/df95e647fa87ca554b809f7e58b827f8c1c697b6cb3c68ceafc3a11a71d1315c/planter-square-runtime.zip",
+      "bytes": 328864,
+      "sha256": "df95e647fa87ca554b809f7e58b827f8c1c697b6cb3c68ceafc3a11a71d1315c"
+    },
+    {
+      "path": "packs/holodeck/objects/e0c15a577514d7e8e9ffe0b71ef68ee7e13aa03f59c7cc5c741b81c1b54958c4/crescent-plant-scrub.glb",
+      "bytes": 93312,
+      "sha256": "e0c15a577514d7e8e9ffe0b71ef68ee7e13aa03f59c7cc5c741b81c1b54958c4"
+    },
+    {
+      "path": "packs/holodeck/objects/e1a41bdc3f3798577360f89650aeb6b433d4f865d5224ccaf659045ffe3ea255/winter-wmc-boulder.glb",
+      "bytes": 704592,
+      "sha256": "e1a41bdc3f3798577360f89650aeb6b433d4f865d5224ccaf659045ffe3ea255"
+    },
+    {
+      "path": "packs/holodeck/objects/e1ce62a5116fe6b15cb5d4fa26426a222a0008ed6256b0be4b2753188e2804aa/winter-wmc-deck-tile-editable.zip",
+      "bytes": 243577,
+      "sha256": "e1ce62a5116fe6b15cb5d4fa26426a222a0008ed6256b0be4b2753188e2804aa"
+    },
+    {
+      "path": "packs/holodeck/objects/e1de69b12ad6380bc373a81a28ece485c92465478b280564ccae3ae6c5c40034/plaza-fountain-editable.zip",
+      "bytes": 710349,
+      "sha256": "e1de69b12ad6380bc373a81a28ece485c92465478b280564ccae3ae6c5c40034"
+    },
+    {
+      "path": "packs/holodeck/objects/e21f0265b00f095b82e92e7fdf1793bf9ff2d95ea8caea7714e93a8c26c12cad/crescent-plant-purslane-runtime.zip",
+      "bytes": 62275,
+      "sha256": "e21f0265b00f095b82e92e7fdf1793bf9ff2d95ea8caea7714e93a8c26c12cad"
+    },
+    {
+      "path": "packs/holodeck/objects/e24c494c4909393ec4d1f07a1285e3480376f379bd1ec66959d2c42984b4e22b/cove-structure.glb",
+      "bytes": 1398488,
+      "sha256": "e24c494c4909393ec4d1f07a1285e3480376f379bd1ec66959d2c42984b4e22b"
+    },
+    {
+      "path": "packs/holodeck/objects/e2d33956af69257713489f469f82afaa6c0852b0793c1cc8d0f1ed2fffc4123f/pave-step-runtime.zip",
+      "bytes": 12097,
+      "sha256": "e2d33956af69257713489f469f82afaa6c0852b0793c1cc8d0f1ed2fffc4123f"
+    },
+    {
+      "path": "packs/holodeck/objects/e3671316ec4e2a9d62a7ced8f47f513c6a8fa126b57e108e20d11bc1da256f91/coastal-flybird-runtime.zip",
+      "bytes": 13139,
+      "sha256": "e3671316ec4e2a9d62a7ced8f47f513c6a8fa126b57e108e20d11bc1da256f91"
+    },
+    {
+      "path": "packs/holodeck/objects/e5583cb8e3ffcd192295b012d1024c7362fa66b033d61e8fada250e5181783bc/winter-wmc-floor-loft-editable.zip",
+      "bytes": 277560,
+      "sha256": "e5583cb8e3ffcd192295b012d1024c7362fa66b033d61e8fada250e5181783bc"
+    },
+    {
+      "path": "packs/holodeck/objects/e5890b1d71a92e42272741645ae93370ae2ef23fcd570a1ffff5c131d24db788/crescent-plant-sword-fern-runtime.zip",
+      "bytes": 51965,
+      "sha256": "e5890b1d71a92e42272741645ae93370ae2ef23fcd570a1ffff5c131d24db788"
+    },
+    {
+      "path": "packs/holodeck/objects/e5eaa268ca681992453f1a3c263a5970ca1af3dbc1305867b00097b1e5768aa9/cove-hearth-editable.zip",
+      "bytes": 1856180,
+      "sha256": "e5eaa268ca681992453f1a3c263a5970ca1af3dbc1305867b00097b1e5768aa9"
+    },
+    {
+      "path": "packs/holodeck/objects/e65b05123dbcf4b0bb44aba92fb845e197c6c013f30f8bd258013bbf5eb3ac1e/island-grass-editable.zip",
+      "bytes": 112125,
+      "sha256": "e65b05123dbcf4b0bb44aba92fb845e197c6c013f30f8bd258013bbf5eb3ac1e"
+    },
+    {
+      "path": "packs/holodeck/objects/e79f65c0887b145328e099f3ec4413db722adc68232b7f633c899777d1592e99/pave-step-editable.zip",
+      "bytes": 20829,
+      "sha256": "e79f65c0887b145328e099f3ec4413db722adc68232b7f633c899777d1592e99"
+    },
+    {
+      "path": "packs/holodeck/objects/e8b5fdc8b3a92165aaf5ab8e6cd561aa505d8c3e2ba81cc8656db33dce0e6e04/bench-stone-editable.zip",
+      "bytes": 142193,
+      "sha256": "e8b5fdc8b3a92165aaf5ab8e6cd561aa505d8c3e2ba81cc8656db33dce0e6e04"
+    },
+    {
+      "path": "packs/holodeck/objects/e9e1b109b57346d0a35b96a171cd628db43fbb7d8901b3fb9e145123617a9d6b/crescent-rock-cliff-c-runtime.zip",
+      "bytes": 1503038,
+      "sha256": "e9e1b109b57346d0a35b96a171cd628db43fbb7d8901b3fb9e145123617a9d6b"
+    },
+    {
+      "path": "packs/holodeck/objects/eb48cdcb95f352751c562889475a0927d1e240300f1d44e8be39f847d01e7687/winter-wmc-eave-storage-editable.zip",
+      "bytes": 289749,
+      "sha256": "eb48cdcb95f352751c562889475a0927d1e240300f1d44e8be39f847d01e7687"
+    },
+    {
+      "path": "packs/holodeck/objects/eb4d14645d6157aa3d2e2aaaeee885d0576b6b1df2f226ce334d6de81076ac79/island-shrub.glb",
+      "bytes": 94584,
+      "sha256": "eb4d14645d6157aa3d2e2aaaeee885d0576b6b1df2f226ce334d6de81076ac79"
+    },
+    {
+      "path": "packs/holodeck/objects/ebe0f01c0b194912dd2899dda6d96f4eadd73125532dd2f759d620f3961e8628/island-bird-runtime.zip",
+      "bytes": 13327,
+      "sha256": "ebe0f01c0b194912dd2899dda6d96f4eadd73125532dd2f759d620f3961e8628"
+    },
+    {
+      "path": "packs/holodeck/objects/ec6111b3d85f5b565a8ee66189f2c4f3f04e3ef1c608eb2df78813164536a5b5/cove-hearth.glb",
+      "bytes": 1656524,
+      "sha256": "ec6111b3d85f5b565a8ee66189f2c4f3f04e3ef1c608eb2df78813164536a5b5"
+    },
+    {
+      "path": "packs/holodeck/objects/ed7e3754a067d6972d8973fb8b2b8d74a6259164f5d68edd8e9508168af44834/winter-wmc-fir-middle-a-editable.zip",
+      "bytes": 603114,
+      "sha256": "ed7e3754a067d6972d8973fb8b2b8d74a6259164f5d68edd8e9508168af44834"
+    },
+    {
+      "path": "packs/holodeck/objects/edae79a0bca7aee2f58bec012676c3d068aecafa8ab88c0270bf267a4188f2d0/winter-wmc-loft-bed-editable.zip",
+      "bytes": 1723133,
+      "sha256": "edae79a0bca7aee2f58bec012676c3d068aecafa8ab88c0270bf267a4188f2d0"
+    },
+    {
+      "path": "packs/holodeck/objects/edafe3be9126fcae8091e4ac33a32feed3c21ee2c612cdefe56d6a7f935e205d/cove-seating-editable.zip",
+      "bytes": 719005,
+      "sha256": "edafe3be9126fcae8091e4ac33a32feed3c21ee2c612cdefe56d6a7f935e205d"
+    },
+    {
+      "path": "packs/holodeck/objects/ef6fddf11a7084e1460a5fb5d595c79de6a9a6053906c823d4e0a9b79f03a2db/winter-wmc-stair-rail-exterior-editable.zip",
+      "bytes": 192990,
+      "sha256": "ef6fddf11a7084e1460a5fb5d595c79de6a9a6053906c823d4e0a9b79f03a2db"
+    },
+    {
+      "path": "packs/holodeck/objects/f0dfa308dfb75b3d586c7c8489a5283c7fe0f44c1c9f56a5add89d48b401c467/crescent-rock-cliff-c-editable.zip",
+      "bytes": 3477370,
+      "sha256": "f0dfa308dfb75b3d586c7c8489a5283c7fe0f44c1c9f56a5add89d48b401c467"
+    },
+    {
+      "path": "packs/holodeck/objects/f0ef65b3e1a01f9c1ee09c12095985c716cecc6310ad4dfc76dc0ecf67d38c08/plaza-fountain.glb",
+      "bytes": 1425092,
+      "sha256": "f0ef65b3e1a01f9c1ee09c12095985c716cecc6310ad4dfc76dc0ecf67d38c08"
+    },
+    {
+      "path": "packs/holodeck/objects/f12460572125f49e675f6db0871e6b99c040cd499baaaaed43f9f7cde22ef9f7/gate-pier-editable.zip",
+      "bytes": 44414,
+      "sha256": "f12460572125f49e675f6db0871e6b99c040cd499baaaaed43f9f7cde22ef9f7"
+    },
+    {
+      "path": "packs/holodeck/objects/f20b485917dd6940f1392cccf4b7982541d832bdc0148603b2eeba1975e2cb36/crescent-palm-lean-runtime.zip",
+      "bytes": 252530,
+      "sha256": "f20b485917dd6940f1392cccf4b7982541d832bdc0148603b2eeba1975e2cb36"
+    },
+    {
+      "path": "packs/holodeck/objects/f22357a1e3e8a6f2fc688a6982b9ca17ece24204b453a29cc4678e2053b8fc4f/planter-square.glb",
+      "bytes": 457920,
+      "sha256": "f22357a1e3e8a6f2fc688a6982b9ca17ece24204b453a29cc4678e2053b8fc4f"
+    },
+    {
+      "path": "packs/holodeck/objects/f2285023704de995b3c39d7907d855f14da9d84fa9712710df8f0e89d601bc7e/winter-wmc-boulder-editable.zip",
+      "bytes": 1216757,
+      "sha256": "f2285023704de995b3c39d7907d855f14da9d84fa9712710df8f0e89d601bc7e"
+    },
+    {
+      "path": "packs/holodeck/objects/f24cde5319ab5074e6e66361cac95f4dc7a18a8c1c54d6b340ebb3dedfb5df47/pave-field-a.glb",
+      "bytes": 76052,
+      "sha256": "f24cde5319ab5074e6e66361cac95f4dc7a18a8c1c54d6b340ebb3dedfb5df47"
+    },
+    {
+      "path": "packs/holodeck/objects/f2a2db5c75a2e659d05f6d14abfe69b0861332e3114be63627559ba63b474526/planter-urn.glb",
+      "bytes": 476744,
+      "sha256": "f2a2db5c75a2e659d05f6d14abfe69b0861332e3114be63627559ba63b474526"
+    },
+    {
+      "path": "packs/holodeck/objects/f2f304e625b71389eb04763c8b19c3bb624b0d048376262acef894fdd6f41e0a/crescent-rock-reef-a.glb",
+      "bytes": 1446228,
+      "sha256": "f2f304e625b71389eb04763c8b19c3bb624b0d048376262acef894fdd6f41e0a"
+    },
+    {
+      "path": "packs/holodeck/objects/f30404c574b5253d276b48b58d6ad7599e4253848e393c2f217e6e7f8780d70c/jungle-sapling.glb",
+      "bytes": 37704,
+      "sha256": "f30404c574b5253d276b48b58d6ad7599e4253848e393c2f217e6e7f8780d70c"
+    },
+    {
+      "path": "packs/holodeck/objects/f33b569296ae6832070111bc3d9dce85afbe14f8f04f35b0dca6a7fb1e0fb64f/island-hut-frame-runtime.zip",
+      "bytes": 24556,
+      "sha256": "f33b569296ae6832070111bc3d9dce85afbe14f8f04f35b0dca6a7fb1e0fb64f"
+    },
+    {
+      "path": "packs/holodeck/objects/f37fe6b2310c46b3f4a452f2785134d10f230822181be0cb9f1dc4579129f3a2/winter-wmc-stone-plinth-panel.glb",
+      "bytes": 291140,
+      "sha256": "f37fe6b2310c46b3f4a452f2785134d10f230822181be0cb9f1dc4579129f3a2"
+    },
+    {
+      "path": "packs/holodeck/objects/f54703ea0698bec467f77da056da2851e2fb12d483553c74eecf075f2b72a765/cove-planting-runtime.zip",
+      "bytes": 746718,
+      "sha256": "f54703ea0698bec467f77da056da2851e2fb12d483553c74eecf075f2b72a765"
+    },
+    {
+      "path": "packs/holodeck/objects/f57b8ca11bdffbdae6fc9be1a49e1dcb3d4fd381cba0e51deedf5b4f46bffd65/shrub-box-runtime.zip",
+      "bytes": 111571,
+      "sha256": "f57b8ca11bdffbdae6fc9be1a49e1dcb3d4fd381cba0e51deedf5b4f46bffd65"
+    },
+    {
+      "path": "packs/holodeck/objects/f688ff2eb34fc6af9811cdcc27eaed1cb946e3d60e7dfe34aa41573f60686310/winter-wmc-desk-editable.zip",
+      "bytes": 251459,
+      "sha256": "f688ff2eb34fc6af9811cdcc27eaed1cb946e3d60e7dfe34aa41573f60686310"
+    },
+    {
+      "path": "packs/holodeck/objects/f76efba95c611453b3b0d6f48914dd4852ffe670f9f7a8560cf883c84c5808c1/winter-wmc-fir-sapling-a-editable.zip",
+      "bytes": 761613,
+      "sha256": "f76efba95c611453b3b0d6f48914dd4852ffe670f9f7a8560cf883c84c5808c1"
+    },
+    {
+      "path": "packs/holodeck/objects/f79270eb2ea1fcfc7cd0a21c25dc09ab0f3a0cccd17b10fff31e08c5969bd174/crescent-rock-boulder-a-editable.zip",
+      "bytes": 3433075,
+      "sha256": "f79270eb2ea1fcfc7cd0a21c25dc09ab0f3a0cccd17b10fff31e08c5969bd174"
+    },
+    {
+      "path": "packs/holodeck/objects/f79dd88e03c59c23242fe34758929532f5221925cd5d27bc13ffc0c323cc09ef/winter-wmc-side-table.glb",
+      "bytes": 184256,
+      "sha256": "f79dd88e03c59c23242fe34758929532f5221925cd5d27bc13ffc0c323cc09ef"
+    },
+    {
+      "path": "packs/holodeck/objects/f864a64f52f49f5b7ea40638c5547484529e08c0a3feac8402552c28a83545ab/bench-stone.glb",
+      "bytes": 202192,
+      "sha256": "f864a64f52f49f5b7ea40638c5547484529e08c0a3feac8402552c28a83545ab"
+    },
+    {
+      "path": "packs/holodeck/objects/f88119496a54695b5937af510165465ef22d0f8d84e3eb42f81a89507ef12ba7/winter-wmc-trail-marker-runtime.zip",
+      "bytes": 217323,
+      "sha256": "f88119496a54695b5937af510165465ef22d0f8d84e3eb42f81a89507ef12ba7"
+    },
+    {
+      "path": "packs/holodeck/objects/f92d97eb3a90f85ce33aa4ad931559d54c4d91f3c979fb5cd606abcbae999d72/winter-wmc-rafter-frame-editable.zip",
+      "bytes": 105744,
+      "sha256": "f92d97eb3a90f85ce33aa4ad931559d54c4d91f3c979fb5cd606abcbae999d72"
+    },
+    {
+      "path": "packs/holodeck/objects/f9f51832ed066a96df00a16c45b3d584f535e6e8b9c689719d47ccf89c4362fd/winter-wmc-window-test-runtime.zip",
+      "bytes": 52829,
+      "sha256": "f9f51832ed066a96df00a16c45b3d584f535e6e8b9c689719d47ccf89c4362fd"
+    },
+    {
+      "path": "packs/holodeck/objects/fa48b6d47afe680c99770a092baa8b08820ff7df4e86ca9cf16d63076dd07f4a/winter-wmc-gable-glass.glb",
+      "bytes": 2652,
+      "sha256": "fa48b6d47afe680c99770a092baa8b08820ff7df4e86ca9cf16d63076dd07f4a"
+    },
+    {
+      "path": "packs/holodeck/objects/fb8c3cbb6a21ca195d4128b52fb0ce28b17b2e9ce0094becee848f7e3c4d0c6c/bench-park-runtime.zip",
+      "bytes": 134423,
+      "sha256": "fb8c3cbb6a21ca195d4128b52fb0ce28b17b2e9ce0094becee848f7e3c4d0c6c"
+    },
+    {
+      "path": "packs/holodeck/objects/fbf3cb33ede587e65cfa18f2e866498759775b174ca8fc6d8982ee1ed92d3976/cove-lamp-editable.zip",
+      "bytes": 582279,
+      "sha256": "fbf3cb33ede587e65cfa18f2e866498759775b174ca8fc6d8982ee1ed92d3976"
+    },
+    {
+      "path": "packs/holodeck/objects/fc957186fbfefe756737800b6c46f6f9d39d494be9e96b08f6597862d9c3dcd9/crescent-plant-naupaka-runtime.zip",
+      "bytes": 74268,
+      "sha256": "fc957186fbfefe756737800b6c46f6f9d39d494be9e96b08f6597862d9c3dcd9"
+    },
+    {
+      "path": "packs/holodeck/objects/fcad02fbed51701ba94457b9bde8d73883fc5f9dce23ea3da690c905e6a352f2/winter-wmc-kitchen-run-runtime.zip",
+      "bytes": 433966,
+      "sha256": "fcad02fbed51701ba94457b9bde8d73883fc5f9dce23ea3da690c905e6a352f2"
+    },
+    {
+      "path": "packs/holodeck/objects/fd2a2a577b7fcfea75b19d2055f5eda69f48701c5b3cbb9351922c7931a5fb03/crescent-shelter-editable.zip",
+      "bytes": 917300,
+      "sha256": "fd2a2a577b7fcfea75b19d2055f5eda69f48701c5b3cbb9351922c7931a5fb03"
+    },
+    {
+      "path": "packs/holodeck/objects/fd984120e92b30bd6efe0e56788ae29bb1ee7947672e3bbd942478160d5efd87/crescent-plant-hibiscus.glb",
+      "bytes": 78356,
+      "sha256": "fd984120e92b30bd6efe0e56788ae29bb1ee7947672e3bbd942478160d5efd87"
+    },
+    {
+      "path": "packs/holodeck/objects/fe1a65d8fdf7341b775f25708374e317adb4ea746b98a430acc23c251507c319/coastal-flybird-editable.zip",
+      "bytes": 27999,
+      "sha256": "fe1a65d8fdf7341b775f25708374e317adb4ea746b98a430acc23c251507c319"
+    },
+    {
+      "path": "packs/holodeck/objects/ff78a6e20f487ff9cb0843a2eda5f675a58b65b3ea6e68cb778d45056d2ba51c/winter-wmc-coffee-table-runtime.zip",
+      "bytes": 247442,
+      "sha256": "ff78a6e20f487ff9cb0843a2eda5f675a58b65b3ea6e68cb778d45056d2ba51c"
+    }
+  ]
+}
