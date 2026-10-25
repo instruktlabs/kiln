@@ -104,6 +104,8 @@ export const holodeckScenes = (asset: Pick<HolodeckAsset, 'packs'>) =>
   });
 
 /** A pack's two scene shots, staged by `scripts/stage-holodeck.mjs --shots`: a wide view of the scene, then a place in it. */
-export interface HolodeckShot extends CatalogImage { view: string }
+export interface HolodeckShot extends CatalogImage {
+  view: string;
+}
 export const holodeckShots = (packId: string): HolodeckShot[] =>
-  ((shots.packs as Record<string, HolodeckShot[]>)[packId] ?? []);
+  (shots.packs as Record<string, HolodeckShot[]>)[packId] ?? [];
