@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "holodeck-20261024-01",
+  "release": "holodeck-20261025-01",
   "licence": "CC0-1.0",
   "versions": "final-only",
   "packs": {
@@ -105,11 +105,11 @@
       "scene": "crescent-cove",
       "source": {
         "kind": "holodeck-example",
-        "ref": "0675bf89683cc5a9458a39dfdd47eccfc63b3e28",
-        "commit": "0675bf89683cc5a9458a39dfdd47eccfc63b3e28",
+        "ref": "32b4becce98aa26c2d04cd4b5339590d4ef84853",
+        "commit": "32b4becce98aa26c2d04cd4b5339590d4ef84853",
         "path": "examples/crescent-cove",
-        "sourceRevision": 16,
-        "worldSha256": "7cd28fe514d22b4c35db48d57be697ee746c3dc728ec1b9bea6981d3f360cee8"
+        "sourceRevision": 17,
+        "worldSha256": "0c1efbe7740e698ad79e00c83d5a6d3ed86414087ecdee3a5a4c6eca78a66573"
       },
       "assets": [
         "cove-structure",
@@ -1679,23 +1679,23 @@
       "store": "tropical-island",
       "collection": "project",
       "assetId": "a_a81882dd8c9c4b6aa936614f592987a7",
-      "revisionId": "r_833811c9eae048acac736131aa951660",
-      "parentRevision": "r_62da0d2b2f25445a8bad9409540639b5",
+      "revisionId": "r_01bc8fedd7cf4e6996a2a7b4866ffc75",
+      "parentRevision": "r_833811c9eae048acac736131aa951660",
       "manifest": {
-        "bytes": 12135,
-        "sha256": "33c9201cdb4d7d069955242c42d817cd8651c20e9f04f13f9224673b774de6c6"
+        "bytes": 13397,
+        "sha256": "59a7c4ab0ef72822f470eae1711401d5e02dfc14a3e690066c4535556cd94fec"
       },
       "source": {
-        "bytes": 24852,
-        "sha256": "c16a44ab03100462c0478829fc29787bab881de4af87e6d87892d320e2e33a03"
+        "bytes": 26385,
+        "sha256": "bcf2e7fa325397f11104f81ff328ca70ede5323b18b2b9e37ad9fc2785d8f0ff"
       },
       "canonical": {
-        "bytes": 407600,
-        "sha256": "2a92fe3faa55784724b04c679db2ff10de6b9bc1f9d4213f1a902436280ee8ba"
+        "bytes": 401320,
+        "sha256": "94ac0c8b9d40f3937ed5156072cb08171c0fb10b5f77b24ebe355634ebe4eaf3"
       },
       "preview": {
-        "bytes": 264654,
-        "sha256": "c32a8b230fc8c4c3474f7a93232ffc02babec58048f0289c9b0d26e9d8a915da"
+        "bytes": 348390,
+        "sha256": "9488e139e0fd9a147e80fe6f9a6dba23f26f640a6916efe6f7517118981f9a4d"
       },
       "placements": [
         {
@@ -1708,23 +1708,23 @@
       "store": "tropical-island",
       "collection": "project",
       "assetId": "a_26aa8b78264d45f2bf79d6dff7188cb4",
-      "revisionId": "r_0ba7b32ad3ee4bd494e55146b8312ed7",
-      "parentRevision": "r_72b195185beb4b1bacf80a5fbefbf6ca",
+      "revisionId": "r_7a73a65486b049138933dba49173cd11",
+      "parentRevision": "r_0ba7b32ad3ee4bd494e55146b8312ed7",
       "manifest": {
-        "bytes": 12132,
-        "sha256": "8963e439a81d53929ed927028e04ac97f1f2d85d6e5bf2b7bc1c319b9e507edf"
+        "bytes": 13396,
+        "sha256": "4c2c2897b4ae61496edecb5e27d94366cf071654c4a418516c2b5934ac62d5f7"
       },
       "source": {
-        "bytes": 24852,
-        "sha256": "a8f2e541932eb055e28f8cf9c313ba83e5bbf5f7148fc23aecd91073b6a2b336"
+        "bytes": 26385,
+        "sha256": "8eb780b2cc16bf5d9d2ccd4ef5736ba6ac8fa23d5e02a181e5ba0f195cc9f8e8"
       },
       "canonical": {
-        "bytes": 357500,
-        "sha256": "4ea8a1dee1a71d4f81fb9f3b06a1837d3d9e156e1d7e5db29942553cec9b5c87"
+        "bytes": 360512,
+        "sha256": "f8028226c593994888e7777d3b67c349b6a9de5215bbadd1f3e2264228f11f61"
       },
       "preview": {
-        "bytes": 277169,
-        "sha256": "578eaa95271dcc0935a1445651db6ddbce0d8ccb7559bf8b5a33117839adf2e4"
+        "bytes": 367213,
+        "sha256": "1928451afd4edededbbc09861a9435bee945fcf9e1c703b8171f1fee89b75174"
       },
       "placements": [
         {
@@ -1737,23 +1737,23 @@
       "store": "tropical-island",
       "collection": "project",
       "assetId": "a_bb596df66efe4eae8214d48bca2b787e",
-      "revisionId": "r_5593211abef14ebab49f45b57a8b8758",
-      "parentRevision": "r_9e83ec29d30149eb9736497bfd42588d",
+      "revisionId": "r_ac2f113187cc4102b579b69a848b8afd",
+      "parentRevision": "r_5593211abef14ebab49f45b57a8b8758",
       "manifest": {
-        "bytes": 12132,
-        "sha256": "f9d7001b95128c6993bbc04e7dc485ac6a198ba3331320000471c039a702d7e4"
+        "bytes": 13402,
+        "sha256": "0d4b2e2394a708bb1586df25930413b1f271bf4123c0c52a2fceec5401545167"
       },
       "source": {
-        "bytes": 24852,
-        "sha256": "dcd38705fc16d76912af80149edbfb46b5109e30b79debc4cfab343a4381c2f9"
+        "bytes": 26385,
+        "sha256": "793da1441e651706a6f162369e37f2dd1ad7b2c379ea00bd48f2b1d967be49a4"
       },
       "canonical": {
-        "bytes": 345316,
-        "sha256": "074f4c7de19610909c9a58b460966730c46971c9a9b21f21da5fe7e6e9cd67ef"
+        "bytes": 345096,
+        "sha256": "654ca7a558cc41520b45aa66edc8dc6f23774b0b922231fd167f2eb3f8cccc55"
       },
       "preview": {
-        "bytes": 321301,
-        "sha256": "ad389cb6aa45bd04308b28d97167adf3a75d74a9fe13da473acb1855b00309aa"
+        "bytes": 414754,
+        "sha256": "07c6bd0b7948f1452082c515f1678ee616e97263d799fb080b36993c6698e171"
       },
       "placements": [
         {
@@ -1766,23 +1766,23 @@
       "store": "tropical-island",
       "collection": "project",
       "assetId": "a_6eb503ebdea045718159089428df57f7",
-      "revisionId": "r_8bdbc20277274140a7ba5c2dfe005f61",
-      "parentRevision": "r_1a2ae7c8dff741a19acbff381fd6ec3b",
+      "revisionId": "r_52b7948902c44b00aa7a1bb7cd0e6634",
+      "parentRevision": "r_8bdbc20277274140a7ba5c2dfe005f61",
       "manifest": {
-        "bytes": 12134,
-        "sha256": "3ceeea61e326716c1e3cdfcca0e234f4f89c79bc42bf3701e68d59c8325de924"
+        "bytes": 13402,
+        "sha256": "8315244fd6738a20b3e41ffabec38a42eac7f600739a1e85cd46cf71a8dd0599"
       },
       "source": {
-        "bytes": 24853,
-        "sha256": "521543b96666a8446c73585f146ce1fb0bc003f6690d0e3aea34fd5b8732b2da"
+        "bytes": 26386,
+        "sha256": "06dd65b5126dbc8da57088a5c7a8906b1bc4b4d142a9137ef161c1285f54262e"
       },
       "canonical": {
-        "bytes": 188668,
-        "sha256": "8fa6ae7ecfc12c7bed6fc5199206993faee3dab9757dfb3e8a9d42f6978e242f"
+        "bytes": 190392,
+        "sha256": "9ad758e75a1a0430322a0dafcda7c626f920aaec60be8d0793b23d48e28ea41e"
       },
       "preview": {
-        "bytes": 385580,
-        "sha256": "b137255e4fddc35733f7126b8bc704bd25452abd3b4779ab135d6e778b23be13"
+        "bytes": 487409,
+        "sha256": "379cd724913057b7171f445b660adf0aabb05d9cb517a22f86f6e1440183d704"
       },
       "placements": [
         {
@@ -1887,22 +1887,23 @@
       "store": "tropical-island",
       "collection": "project",
       "assetId": "a_365867ac52424e3894f092142c528e44",
-      "revisionId": "r_dabf789f83a84d039243505e7afe4341",
+      "revisionId": "r_466841e6880d4c74a4ff49bad935b460",
+      "parentRevision": "r_dabf789f83a84d039243505e7afe4341",
       "manifest": {
-        "bytes": 10781,
-        "sha256": "9f2b7e70df27e39741a533eccadbab18577538dac27dabe072a6b9c43e644aec"
+        "bytes": 11002,
+        "sha256": "b28e2608dd9dd816640c33c1e7dfb0bd1b1e043571741b589ce8eb76b2564500"
       },
       "source": {
-        "bytes": 29460,
-        "sha256": "b91c7e9919be814e9a82672ce2e0b0d6d634d3455faaa2233a6c850c56e692d3"
+        "bytes": 29553,
+        "sha256": "c3d34220d02c656240af912ce3a4a522b6b80f7e8424b5b185ea713ac592e62a"
       },
       "canonical": {
         "bytes": 42008,
-        "sha256": "53a9a97341ac15b8f63897af0d77faca92300500d59aaeb4e02fc263e6d7d793"
+        "sha256": "97e707aeffcb515ab5b56e9de071c9e76ebf5d0516acc0555fff7b099776203e"
       },
       "preview": {
-        "bytes": 94092,
-        "sha256": "aa6956e08b5547b9e79c29c25c6a7244203d89939c965fa98ad82b38e9fad82d"
+        "bytes": 109832,
+        "sha256": "3d0d521d52539c5098e205b9513c517fd5cb8a2fe314777b3d1b10adaec2aa44"
       },
       "placements": [
         {

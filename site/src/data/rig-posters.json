@@ -209,22 +209,22 @@
         }
       },
       "holodeck": {
-        "renderedOn": "2026-10-24",
+        "renderedOn": "2026-10-25",
         "engine": {
-          "commit": "3c6fc390eae3739eb2e2b15c5d8975e54f0fe8ce",
-          "subject": "feat(site): append committed Holodeck examples to frozen selections (#265)",
+          "commit": "fc52fc0d22172306d0f738ed7cf94223b8e026b5",
+          "subject": "fix(site): store Holodeck downloads at content-addressed keys (#267) (#268)",
           "dirty": true
         },
         "service": {
-          "url": "http://127.0.0.1:8123",
+          "url": "http://127.0.0.1:8000",
           "protocol": "kiln.render-service.v2",
-          "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
-          "backend": "vulkan",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
           "adapter": {
             "vendor": "nvidia",
-            "architecture": "turing",
-            "device": "nvidia-geforce-gtx-1660-ti-with-max-q-design",
-            "description": "NVIDIA: 615.71.09 615.71.9.0"
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
           },
           "sourceFingerprint": "sha256:d974d635ff5d3503d2373406186535fa437de9e753cfdeddce3eb46c68f0ad18",
           "buildFingerprint": "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3",
@@ -235,9 +235,9 @@
           },
           "captureIdentity": [
             "kiln.capture-producer.v1",
-            "sha256:f664529ba31d5c026cc6e629a3d355468dd4cb8e1f7fee0f3e4dd1cced67fc70",
-            "19619565-2e1d-48ef-884b-6ff92dd28985",
-            "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
+            "sha256:cc70ffbee65331c553566e96396efa9ff2dd74ef0b74250c4e0345bd32fcdb4f",
+            "19707c58-88f0-4021-aa05-dc6fae62e4e4",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
             "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
           ]
         }
@@ -5461,110 +5461,6 @@
       },
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
     },
-    "holodeck:crescent-palm-tall": {
-      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-palm-tall.png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 1320477,
-      "sha256": "c08205c71c6943b502fd0e110995f46a3380a30ed7f5765b54a36667ba88a146",
-      "assetId": "a_a81882dd8c9c4b6aa936614f592987a7",
-      "revisionId": "r_833811c9eae048acac736131aa951660",
-      "glb": {
-        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-palm-tall.glb",
-        "bytes": 407824,
-        "sha256": "79efdaf034b9bd515a2f5f0df75da1b3837cbd2bbefe3ad2b76b283c9ebdbfd8",
-        "triangles": 9238
-      },
-      "view": {
-        "direction": [
-          0.7,
-          0.5,
-          0.7
-        ],
-        "padding": 1.05,
-        "projection": "orthographic",
-        "halfHeight": 13.453291277511862
-      },
-      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
-    },
-    "holodeck:crescent-palm-lean": {
-      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-palm-lean.png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 1326044,
-      "sha256": "860f3bbdcfdde8c3b1f0dd51c772419696ae6e35adb86d4583f0054bfe96a7f6",
-      "assetId": "a_26aa8b78264d45f2bf79d6dff7188cb4",
-      "revisionId": "r_0ba7b32ad3ee4bd494e55146b8312ed7",
-      "glb": {
-        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-palm-lean.glb",
-        "bytes": 357724,
-        "sha256": "d20704129d46f97f395f56f1ae5808dffccda0c9524ab67b1fe691ab0c9470c1",
-        "triangles": 7982
-      },
-      "view": {
-        "direction": [
-          0.7,
-          0.5,
-          0.7
-        ],
-        "padding": 1.05,
-        "projection": "orthographic",
-        "halfHeight": 11.717028920343237
-      },
-      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
-    },
-    "holodeck:crescent-palm-arch": {
-      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-palm-arch.png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 1337031,
-      "sha256": "6ecb21ccb156b1cea61459806b502c270259fbb119c04b389d752368c5e84941",
-      "assetId": "a_bb596df66efe4eae8214d48bca2b787e",
-      "revisionId": "r_5593211abef14ebab49f45b57a8b8758",
-      "glb": {
-        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-palm-arch.glb",
-        "bytes": 345544,
-        "sha256": "c60e98a398388f4cdaa2c1db4a1bb1a605702a0a1b855cd8a0e404f66a8b970e",
-        "triangles": 7702
-      },
-      "view": {
-        "direction": [
-          0.7,
-          0.5,
-          0.7
-        ],
-        "padding": 1.05,
-        "projection": "orthographic",
-        "halfHeight": 10.534832953673108
-      },
-      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
-    },
-    "holodeck:crescent-palm-young": {
-      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-palm-young.png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 1405870,
-      "sha256": "3a5fda4d51b4bc17772a0dff214f8ed81e8df998c07575706af746910618ba2a",
-      "assetId": "a_6eb503ebdea045718159089428df57f7",
-      "revisionId": "r_8bdbc20277274140a7ba5c2dfe005f61",
-      "glb": {
-        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-palm-young.glb",
-        "bytes": 188896,
-        "sha256": "b700f853b7c8cd80cf0b7ecae82b26788a6d93114cec8272aa25e3ea393e3648",
-        "triangles": 3854
-      },
-      "view": {
-        "direction": [
-          0.7,
-          0.5,
-          0.7
-        ],
-        "padding": 1.05,
-        "projection": "orthographic",
-        "halfHeight": 5.070481752018624
-      },
-      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
-    },
     "holodeck:crescent-debris-coconuts": {
       "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-coconuts.png",
       "width": 1024,
@@ -5640,32 +5536,6 @@
         "padding": 1.05,
         "projection": "orthographic",
         "halfHeight": 1.7381484764462927
-      },
-      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
-    },
-    "holodeck:crescent-debris-fronds": {
-      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-fronds.png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 1265680,
-      "sha256": "8528d89d4cf3cc6a03ebb65111863d2d4f24754c46deafb647f0da2264784c48",
-      "assetId": "a_365867ac52424e3894f092142c528e44",
-      "revisionId": "r_dabf789f83a84d039243505e7afe4341",
-      "glb": {
-        "member": "packs/holodeck/holodeck-20261023-01/models/crescent-debris-fronds.glb",
-        "bytes": 42236,
-        "sha256": "bbdd3ab116523545d49c5fe5d2f6daa2370340efc8fc5e66d868f903fbb17e1c",
-        "triangles": 1040
-      },
-      "view": {
-        "direction": [
-          0.7,
-          0.5,
-          0.7
-        ],
-        "padding": 1.05,
-        "projection": "orthographic",
-        "halfHeight": 3.503900111118603
       },
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
     },
@@ -7956,6 +7826,136 @@
         "halfHeight": 0.5558340989605862
       },
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:crescent-palm-tall": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-palm-tall.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1363050,
+      "sha256": "a0c52c0a6130a091eb4477d6378012f2b7c8a55d21ae0ad6960e13e04606f15a",
+      "assetId": "a_a81882dd8c9c4b6aa936614f592987a7",
+      "revisionId": "r_01bc8fedd7cf4e6996a2a7b4866ffc75",
+      "glb": {
+        "member": "packs/holodeck/objects/69781074853d3ecdec14ca8139ffbfb6eaa08766d67cbd420086ee04fcafb7f4/crescent-palm-tall.glb",
+        "bytes": 401544,
+        "sha256": "69781074853d3ecdec14ca8139ffbfb6eaa08766d67cbd420086ee04fcafb7f4",
+        "triangles": 9122
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 13.455468650403215
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+    },
+    "holodeck:crescent-palm-lean": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-palm-lean.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1378589,
+      "sha256": "291adc9ea3b1b8145d574651394f6d36f33ec7bae280e05639a70adec2a06027",
+      "assetId": "a_26aa8b78264d45f2bf79d6dff7188cb4",
+      "revisionId": "r_7a73a65486b049138933dba49173cd11",
+      "glb": {
+        "member": "packs/holodeck/objects/39e9a3d640228c0b82ae4732277811a3afdf7868d0edb553f31c24aba6878ee5/crescent-palm-lean.glb",
+        "bytes": 360740,
+        "sha256": "39e9a3d640228c0b82ae4732277811a3afdf7868d0edb553f31c24aba6878ee5",
+        "triangles": 8038
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 11.718482538784349
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+    },
+    "holodeck:crescent-palm-arch": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-palm-arch.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1396290,
+      "sha256": "651ece555eb6eb8d67bcc3a91b317f7f8a409f8ba699e25cd71c6386f5cc601f",
+      "assetId": "a_bb596df66efe4eae8214d48bca2b787e",
+      "revisionId": "r_ac2f113187cc4102b579b69a848b8afd",
+      "glb": {
+        "member": "packs/holodeck/objects/68fc0c2f0aa09cb5358d9d538d6f56d57d0df945d9f092c87b8b757e3d188d92/crescent-palm-arch.glb",
+        "bytes": 345320,
+        "sha256": "68fc0c2f0aa09cb5358d9d538d6f56d57d0df945d9f092c87b8b757e3d188d92",
+        "triangles": 7698
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 10.535837897735965
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+    },
+    "holodeck:crescent-palm-young": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-palm-young.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1482419,
+      "sha256": "8d9f3bac1af25dc16afcad9d13b0a5c48a12cf3853dd7a8432f923bedab6f648",
+      "assetId": "a_6eb503ebdea045718159089428df57f7",
+      "revisionId": "r_52b7948902c44b00aa7a1bb7cd0e6634",
+      "glb": {
+        "member": "packs/holodeck/objects/ab22080def72d18d375257cb34b806613de5625320c0e031da25a985f10d8bf1/crescent-palm-young.glb",
+        "bytes": 190616,
+        "sha256": "ab22080def72d18d375257cb34b806613de5625320c0e031da25a985f10d8bf1",
+        "triangles": 3886
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.077952252819282
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+    },
+    "holodeck:crescent-debris-fronds": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-01/crescent-debris-fronds.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1286735,
+      "sha256": "0f341dd0e99f58525c040fd8fd525c9e9316a1fc9d51e34ccf4c8878876adab1",
+      "assetId": "a_365867ac52424e3894f092142c528e44",
+      "revisionId": "r_466841e6880d4c74a4ff49bad935b460",
+      "glb": {
+        "member": "packs/holodeck/objects/740bb18a2841cff74418a10447811afe5eb46105163d54fa1c21a4c9e9ebbf07/crescent-debris-fronds.glb",
+        "bytes": 42236,
+        "sha256": "740bb18a2841cff74418a10447811afe5eb46105163d54fa1c21a4c9e9ebbf07",
+        "triangles": 1040
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.50573056279838
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
     }
   }
 }

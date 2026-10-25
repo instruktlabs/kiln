@@ -9,7 +9,7 @@ addresses are configured in one place, [`site/src/data/holodeck-worlds.json`](..
 | `holodeck-tidemark` | Holodeck's bundled `examples/tidemark` (commit recorded in `selection.json`), the walkable Tidemark Island | 23 |
 | `holodeck-courtyard` | Courtyard world, revision 8 | 32 |
 | `holodeck-cove` | Holodeck's Cove modules at the same commit, the Cove quality pass | 8 |
-| `holodeck-crescent-cove` | Holodeck's bundled `examples/crescent-cove` (commit recorded in `selection.json`), the tropical-island world at revision 16 | 49 |
+| `holodeck-crescent-cove` | Holodeck's bundled `examples/crescent-cove` (commit recorded in `selection.json`), the tropical-island world at revision 17 | 49 |
 
 Packs deliver final versions only: one gallery page and one download per asset. All four scenes
 place the eight Cove modules at their quality-pass revisions, so each Cove module has one page
@@ -108,6 +108,22 @@ Continue with staging, real rig posters and the publication checks above. The st
 command still requires every store named by the full selection, including the older
 packs; append only avoids reselecting their scene inputs. Preserve the existing
 revision approval records, and record any new asset review separately and honestly.
+
+### Repoint a committed example
+
+When a selected example moves to a newer source revision, choose a new `HOLODECK_RELEASE`
+and repoint only that pack, from `site/`:
+
+```sh
+node scripts/select-holodeck.mjs --repoint-example crescent-cove \
+  --holodeck HOLODECK_REPO --ref EXAMPLE_COMMIT --store tropical-island=STORE
+```
+
+Records the example still places at their selected revision are kept as frozen, so only the
+stores of changed assets are needed. A changed revision of the pack's own asset must descend
+from the selected one; a changed shared revision is refused, as in append mode. Stage, render
+real rig posters for the changed cards (`--only`), and record their review in
+`HOLODECK_APPROVAL` once the owner approves them.
 
 ## Publish
 

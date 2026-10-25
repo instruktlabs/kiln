@@ -40,7 +40,7 @@ test('each scene pack holds every placed Kiln asset once, at its final version',
 test('scenes list the Cove modules at their final revision, and say when the walkable scene places an earlier one', () => {
   const tidemark = selection.packs['holodeck-tidemark'].source, cove = selection.packs['holodeck-cove'].source;
   expect(tidemark).toMatchObject({ kind: 'holodeck-example', path: 'examples/tidemark', commit: cove.commit });
-  expect(selection.packs['holodeck-crescent-cove'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/crescent-cove', sourceRevision: 16 });
+  expect(selection.packs['holodeck-crescent-cove'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/crescent-cove', sourceRevision: 17 });
   for (const slug of selection.packs['holodeck-cove'].assets) {
     const record = selection.assets[slug as keyof typeof selection.assets];
     expect(record.placements.map((placement) => placement.pack)).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove', ...(slug === 'cove-moodboard' ? ['holodeck-winter-mountainside-cabin'] : [])]);

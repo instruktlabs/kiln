@@ -5,7 +5,7 @@
  */
 
 export const HOLODECK_ID = 'holodeck';
-export const HOLODECK_RELEASE = 'holodeck-20261024-01';
+export const HOLODECK_RELEASE = 'holodeck-20261025-01';
 /**
  * The oldest Kiln that imports the packs' revision bundles, named in each pack README. Raise it only when the bundle
  * format needs a newer Kiln: a value that followed every Kiln release would change every pack ZIP and its key.
@@ -56,11 +56,11 @@ export const HOLODECK_PLANNED = [];
 /**
  * Owner approval, by gallery slug and the exact revision approved. On 2026-10-23 the owner approved the 47 staged
  * Courtyard, Cove and Tidemark cards as staged, and their packs for delivery, then the 41 new Crescent Cove cards as
- * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
+ * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. On 2026-10-25 the owner approved Crescent Cove's revision 17 palms (tall, lean, arch, young) and fallen fronds as staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
  * when every asset it lists is approved.
  */
 export const HOLODECK_APPROVAL = {
-  recordedAt: '2026-10-24',
+  recordedAt: '2026-10-25',
   revisions: {
     'cove-structure': 'r_2387ce274123402dbdafd818e6fb0043',
     'cove-canopy': 'r_df0485467228414780cfa44c0f2e32ad',
@@ -109,14 +109,14 @@ export const HOLODECK_APPROVAL = {
     'wall-segment': 'r_32e8228756ac4367bb8783e522e10e27',
     'wall-pier': 'r_100777af4e4247c18c3eb70df5e97a82',
     'gate-pier': 'r_2f7983fabd9249ba819388b106eda57f',
-    'crescent-palm-tall': 'r_833811c9eae048acac736131aa951660',
-    'crescent-palm-lean': 'r_0ba7b32ad3ee4bd494e55146b8312ed7',
-    'crescent-palm-arch': 'r_5593211abef14ebab49f45b57a8b8758',
-    'crescent-palm-young': 'r_8bdbc20277274140a7ba5c2dfe005f61',
+    'crescent-palm-tall': 'r_01bc8fedd7cf4e6996a2a7b4866ffc75',
+    'crescent-palm-lean': 'r_7a73a65486b049138933dba49173cd11',
+    'crescent-palm-arch': 'r_ac2f113187cc4102b579b69a848b8afd',
+    'crescent-palm-young': 'r_52b7948902c44b00aa7a1bb7cd0e6634',
     'crescent-debris-coconuts': 'r_6de480afa2fc43d3bc431cb2a1d3de1a',
     'crescent-debris-driftwood-log': 'r_4f84e09ff60342108adcb640ff365c08',
     'crescent-debris-driftwood-pile': 'r_d95c8307fe3b4f648d35c627b601a112',
-    'crescent-debris-fronds': 'r_dabf789f83a84d039243505e7afe4341',
+    'crescent-debris-fronds': 'r_466841e6880d4c74a4ff49bad935b460',
     'crescent-debris-shells': 'r_362b7d0ce6904b4cbe8a63acc3296e6b',
     'crescent-plant-alocasia': 'r_7bffd8155ce74118b9787484e19e833b',
     'crescent-plant-grass-patch': 'r_ef23b16ec9514cf7bb859c5ef2b64f65',
