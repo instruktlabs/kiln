@@ -6,6 +6,11 @@
 
 export const HOLODECK_ID = 'holodeck';
 export const HOLODECK_RELEASE = 'holodeck-20261024-01';
+/**
+ * The oldest Kiln that imports the packs' revision bundles, named in each pack README. Raise it only when the bundle
+ * format needs a newer Kiln: a value that followed every Kiln release would change every pack ZIP and its key.
+ */
+export const HOLODECK_IMPORT_KILN = '1.4.0';
 
 export const HOLODECK_PACKS = [
   {

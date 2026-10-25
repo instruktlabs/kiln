@@ -63,8 +63,18 @@ node scripts/stage-holodeck.mjs --upload-list --mirror .localdata/holodeck-deliv
 
 A store is a workspace's `assets/kiln` directory. `KILN_PACKAGE_DIR` is an installed
 `@instruktlabs/kiln` package; its runtime export profile writes the runtime GLBs and metadata,
-and staging verifies they keep the canonical binary. Staging writes are immutable: changed
-bytes need a new release ID in `holodeck-spec.mjs`. Nothing here uploads anything.
+and staging verifies they keep the canonical binary. Nothing here uploads anything.
+
+Downloads are stored once, at content-addressed keys: `packs/holodeck/objects/<sha256>/<file>`,
+where the folder is the file's SHA-256 and the file keeps its readable name, such as
+`cove-hearth.glb` or `holodeck-cove-runtime.zip`. A release reuses the key of every file whose
+bytes it keeps: an asset whose revision is unchanged, and a pack whose members and README are
+unchanged. Pack READMEs name neither the release nor the exporter version; they give
+`HOLODECK_IMPORT_KILN` from `holodeck-spec.mjs` as the oldest Kiln that imports the bundles.
+Keys are immutable, so different bytes at an existing key are refused.
+
+`published.json` records every object the asset host has served back. The upload list leaves
+those out and names only new objects; one recorded with different bytes is refused.
 
 ### Add a new committed example
 
@@ -101,12 +111,18 @@ revision approval records, and record any new asset review separately and honest
 
 ## Publish
 
-After release approval, upload the listed objects to the asset host, then build and deploy
-the site as described in [site/DEPLOYMENT.md](../../site/DEPLOYMENT.md):
+After release approval, upload the listed objects to the asset host, record what it served
+back, then build and deploy the site as described in [site/DEPLOYMENT.md](../../site/DEPLOYMENT.md):
 
 ```sh
 node scripts/publish-assets.mjs .localdata/holodeck-delivery .localdata/holodeck-delivery/holodeck-upload-list.json
 node scripts/publish-assets.mjs .localdata/holodeck-delivery .localdata/holodeck-delivery/holodeck-upload-list.json --upload --oauth
 ```
 
-The first command verifies the list offline; the second uploads and reads back every object.
+```sh
+node scripts/stage-holodeck.mjs --record-published .localdata/holodeck-delivery/holodeck-upload-list.json.published.json
+```
+
+The first command verifies the list offline; the second uploads and reads back every object;
+the third adds the objects read back to `published.json`. Commit `published.json` with the
+release's site data.

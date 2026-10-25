@@ -7,7 +7,7 @@ import { buildDeliveryArchive, isSavedMaterialDependency, revisionBundle } from 
 import { readJson, writeJson } from './media-pins.mjs';
 import { ASSET_BASE, assetPath, hashBytes, verifyArchive, verifyBytes } from './mirror-core.mjs';
 import { applyRigPosters } from './rig-posters-core.mjs';
-import { HOLODECK_ASSETS, HOLODECK_ID, HOLODECK_PACKS, HOLODECK_PLANNED, holodeckApproved } from './holodeck-spec.mjs';
+import { HOLODECK_ASSETS, HOLODECK_ID, HOLODECK_IMPORT_KILN, HOLODECK_PACKS, HOLODECK_PLANNED, holodeckApproved } from './holodeck-spec.mjs';
 import { materialClosure, metricsOf, verifyRuntimeProfile } from './stage-cabin-woods.mjs';
 
 /**
@@ -18,17 +18,26 @@ import { materialClosure, metricsOf, verifyRuntimeProfile } from './stage-cabin-
  *   node scripts/stage-holodeck.mjs --kiln KILN_PACKAGE_DIR --mirror .localdata/holodeck-delivery \
  *     --store island-trial=DIR --store holodeck-assets=DIR --store courtyard-plaza=DIR --store tropical-island=DIR
  *   node scripts/stage-holodeck.mjs --upload-list --mirror .localdata/holodeck-delivery
+ *   node scripts/stage-holodeck.mjs --record-published .localdata/holodeck-delivery/holodeck-upload-list.json.published.json
  *
- * Generated downloads go to the ignored mirror under `packs/holodeck/<release>/` and are pinned in
- * `src/data/mirror-manifest.json` for the asset host; lightweight sources and manifests are kept in
- * `packs/holodeck/sources/`. Nothing is uploaded or published.
+ * Generated downloads go to the ignored mirror at content-addressed keys, `packs/holodeck/objects/<sha256>/<file>`,
+ * shared by every release that keeps their bytes, and are pinned in `src/data/mirror-manifest.json` for the asset
+ * host; lightweight sources and manifests are kept in `packs/holodeck/sources/`. `packs/holodeck/published.json`
+ * records the objects the asset host has served back, so the upload list names only new ones. Nothing is uploaded
+ * or published.
  */
 
 const SITE = resolve(import.meta.dirname, '..');
 const PACKS_ROOT = resolve(SITE, '../packs/holodeck');
 const json = (bytes) => JSON.parse(bytes.toString('utf8'));
 const strip = (sha) => sha.replace(/^sha256:/, '');
-export const holodeckPrefix = (release) => `packs/${HOLODECK_ID}/${release}/`;
+const PUBLISHED = join(PACKS_ROOT, 'published.json');
+export const HOLODECK_OBJECTS = `packs/${HOLODECK_ID}/objects/`;
+/** A download's key: its SHA-256 names the folder and the file keeps its readable name, so equal bytes share a key. */
+export function holodeckObjectPath(name, bytes) {
+  if (assetPath(name).includes('/')) throw new Error(`Object names are single files: ${name}`);
+  return `${HOLODECK_OBJECTS}${hashBytes(bytes)}/${name}`;
+}
 export const HOLODECK_OMISSION = 'Earlier revisions are omitted by choice: this pack delivers the final version only. The parent revision identifier is kept as provenance.';
 
 export function holodeckLicence() {
@@ -73,30 +82,31 @@ async function writeImmutable(root, path, bytes) {
   const target = join(root, assetPath(path));
   try {
     const prior = await readFile(target);
-    if (!prior.equals(bytes)) throw new Error(`Existing staged file differs; use a new release: ${path}`);
+    if (!prior.equals(bytes)) throw new Error(`Existing staged object differs from its content address: ${path}`);
     return;
   } catch (error) { if (error.code !== 'ENOENT') throw error; }
   await mkdir(dirname(target), { recursive: true });
   await writeFile(target, bytes);
 }
 
-export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join(PACKS_ROOT, 'selection.json'), site = SITE, packsRoot = PACKS_ROOT, exporter = runtimeExport }) {
+export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join(PACKS_ROOT, 'selection.json'), site = SITE, packsRoot = PACKS_ROOT, exporter = runtimeExport, packs: packSpecs = HOLODECK_PACKS, presentations = HOLODECK_ASSETS, approved = holodeckApproved }) {
   if (!kiln || !mirror || !stores || !Object.keys(stores).length) throw new Error('Explicit Kiln package, mirror and stores are required');
   const selection = json(await readFile(selectionFile));
   if (selection.schemaVersion !== 1 || selection.licence !== 'CC0-1.0' || !/^[a-z0-9-]+$/.test(selection.release)) throw new Error('Invalid Holodeck selection');
   const kilnVersion = json(await readFile(join(kiln, 'package.json'))).version;
-  const release = selection.release, prefix = holodeckPrefix(release);
+  const release = selection.release;
   const licence = holodeckLicence(), cc0 = await readFile(join(packsRoot, 'LICENSES/CC0-1.0.txt'));
-  const output = new Map(), lightweight = new Map(), staged = {};
-  const add = (path, bytes) => {
-    const full = prefix + assetPath(path);
-    if (output.has(full)) throw new Error(`Duplicate staged output: ${full}`);
-    output.set(full, Buffer.from(bytes));
-    return { path: full, url: ASSET_BASE + full, bytes: bytes.length, sha256: hashBytes(bytes) };
+  const output = new Map(), names = new Set(), lightweight = new Map(), staged = {};
+  const add = (name, bytes) => {
+    if (names.has(name)) throw new Error(`Duplicate staged output: ${name}`);
+    names.add(name);
+    const path = holodeckObjectPath(name, bytes);
+    output.set(path, Buffer.from(bytes));
+    return { path, url: ASSET_BASE + path, bytes: bytes.length, sha256: hashBytes(bytes) };
   };
 
   for (const [slug, chosen] of Object.entries(selection.assets)) {
-    const presentation = HOLODECK_ASSETS[slug];
+    const presentation = presentations[slug];
     if (!presentation) throw new Error(`No gallery presentation for ${slug}`);
     if (!stores[chosen.store]) throw new Error(`No --store given for ${chosen.store}`);
     const revisionDir = join(stores[chosen.store], chosen.assetId, 'revisions', chosen.revisionId);
@@ -144,24 +154,25 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
         collection: chosen.collection, assetId: manifest.assetId, revisionId: manifest.revisionId,
         ...(manifest.parentRevision ? { parentRevision: manifest.parentRevision } : {}),
         sourcePath: `packs/holodeck/sources/${identity}/source.kiln.js`, sourceSha256: entry.sourceSha256,
-        runtimeModelDownload: add(`models/${slug}.glb`, runtime),
-        runtimeDownload: add(`runtime/${slug}.zip`, buildDeliveryArchive({ profile: 'runtime', group: HOLODECK_ID, assets: [entry], files: runtimeFiles })),
-        editableDownload: add(`editable/${slug}.zip`, editable),
+        runtimeModelDownload: add(`${slug}.glb`, runtime),
+        runtimeDownload: add(`${slug}-runtime.zip`, buildDeliveryArchive({ profile: 'runtime', group: HOLODECK_ID, assets: [entry], files: runtimeFiles })),
+        editableDownload: add(`${slug}-editable.zip`, editable),
         poster: null,
         metrics: metricsOf(canonical, manifest),
-        review: holodeckApproved(slug, manifest.revisionId) ? { ownerAccepted: true, status: 'accepted' } : { ownerAccepted: false, status: 'awaiting-owner-review' },
+        review: approved(slug, manifest.revisionId) ? { ownerAccepted: true, status: 'accepted' } : { ownerAccepted: false, status: 'awaiting-owner-review' },
         historyScope: 'selected-only',
       },
     };
   }
 
   const packs = [];
-  for (const spec of HOLODECK_PACKS) {
+  for (const spec of packSpecs) {
     const chosen = selection.packs[spec.id];
     if (!chosen || chosen.assets.length !== spec.expectedAssets) throw new Error(`${spec.id}: the selection does not hold ${spec.expectedAssets} assets`);
     const members = chosen.assets.map((slug) => staged[slug]);
     const inventory = members.map((member) => member.entry);
-    const readme = Buffer.from(`${spec.name} (Holodeck scene pack, ${release})\n\n${spec.description}\n\nRuntime assets: GLBs under models/ with Kiln runtime metadata sidecars. They need no Kiln install.\nFull Kiln assets: each ZIP under revisions/ is a standard Kiln revision bundle (model, exact source, editing manifest and preview). Import one with node kiln.mjs import revision.zip, using Kiln ${kilnVersion} or later. These are final versions only: earlier revisions are omitted by choice, and each parent revision identifier is kept as provenance (delivery.json lists them under omittedParents).\n\nAsset licence: CC0-1.0 (LICENSE.txt, LICENSES/CC0-1.0.txt).\n`);
+    // Neither the release nor the staging exporter appears here, so an unchanged pack keeps its bytes and its key.
+    const readme = Buffer.from(`${spec.name} (Holodeck scene pack)\n\n${spec.description}\n\nRuntime assets: GLBs under models/ with Kiln runtime metadata sidecars. They need no Kiln install.\nFull Kiln assets: each ZIP under revisions/ is a standard Kiln revision bundle (model, exact source, editing manifest and preview). Import one with node kiln.mjs import revision.zip, using Kiln ${HOLODECK_IMPORT_KILN} or later. These are final versions only: earlier revisions are omitted by choice, and each parent revision identifier is kept as provenance (delivery.json lists them under omittedParents).\n\nAsset licence: CC0-1.0 (LICENSE.txt, LICENSES/CC0-1.0.txt).\n`);
     const runtimeMembers = { 'LICENSE.txt': licence, 'LICENSES/CC0-1.0.txt': cc0, 'README.txt': readme };
     const editableMembers = { 'LICENSE.txt': licence, 'LICENSES/CC0-1.0.txt': cc0, 'README.txt': readme };
     for (const member of members) {
@@ -195,7 +206,7 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
   }
   for (const [path, bytes] of output) await writeImmutable(mirror, path, bytes);
   for (const [path, bytes] of lightweight) { const target = join(packsRoot, path); await mkdir(dirname(target), { recursive: true }); await writeFile(target, bytes); }
-  // A new release replaces every earlier unpublished Holodeck download pin; posters are pinned separately.
+  // Pins follow the current catalog: objects it no longer uses are unpinned, never deleted. Posters are pinned separately.
   const kept = pins.files.filter((record) => !record.path.startsWith(`packs/${HOLODECK_ID}/`) || output.has(record.path));
   const pinned = new Set(kept.map((record) => record.path));
   await writeJson(manifestFile, { ...pins, files: [...kept, ...[...output].filter(([path]) => !pinned.has(path)).map(([path, bytes]) => ({ path, bytes: bytes.length, sha256: hashBytes(bytes) }))] });
@@ -216,16 +227,51 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
   return { catalog, files: output.size, bytes: [...output.values()].reduce((sum, bytes) => sum + bytes.length, 0) };
 }
 
-/** The pinned Holodeck objects (downloads and posters) as a publish-assets.mjs upload list, each verified in the mirror. */
-export async function holodeckUploadList({ mirror, site = SITE }) {
+const readLedger = async (ledger) => {
+  try { return new Map((await readJson(ledger)).objects.map((record) => [record.path, record])); }
+  catch (error) { if (error.code === 'ENOENT') return new Map(); throw error; }
+};
+const sameObject = (a, b) => a.sha256 === b.sha256 && a.bytes === b.bytes;
+
+/**
+ * The catalog's objects (downloads and posters) that the asset host has not yet served back, as a publish-assets.mjs
+ * upload list, each verified in the mirror. Objects recorded in the published ledger are left out.
+ */
+export async function holodeckUploadList({ mirror, site = SITE, ledger = PUBLISHED }) {
   const catalog = await readJson(join(site, 'src/data/holodeck.json'));
-  // Posters stay valid across releases that keep a model's bytes, so they are listed by what the catalog uses.
-  const posters = new Set(catalog.assets.map((asset) => asset.poster?.inputPath).filter(Boolean));
-  const records = (await readJson(join(site, 'src/data/mirror-manifest.json'))).files.filter((record) => record.path.startsWith(holodeckPrefix(catalog.release)) || posters.has(record.path));
-  for (const record of records) verifyBytes(await readFile(join(mirror, assetPath(record.path))), record, record.path);
   const missingPosters = catalog.assets.filter((asset) => !asset.poster).map((asset) => asset.slug);
   if (missingPosters.length) throw new Error(`Render the Holodeck posters before listing uploads: ${missingPosters.join(', ')}`);
+  const used = new Set([
+    ...catalog.assets.flatMap((asset) => [asset.runtimeModelDownload.path, asset.runtimeDownload.path, asset.editableDownload.path, asset.poster.inputPath]),
+    ...catalog.packs.flatMap((pack) => pack.downloads.map((download) => download.path)),
+  ]);
+  const pins = new Map((await readJson(join(site, 'src/data/mirror-manifest.json'))).files.map((record) => [record.path, record]));
+  const published = await readLedger(ledger);
+  const records = [];
+  for (const path of used) {
+    const record = pins.get(path);
+    if (!record) throw new Error(`The catalog uses an unpinned object: ${path}`);
+    const prior = published.get(path);
+    if (prior && !sameObject(prior, record)) throw new Error(`The asset host holds different bytes at ${path}`);
+    if (!prior) records.push(record);
+  }
+  for (const record of records) verifyBytes(await readFile(join(mirror, assetPath(record.path))), record, record.path);
   return records;
+}
+
+/** Record the objects a publish-assets.mjs receipt read back from the asset host in the published ledger. */
+export async function recordHolodeckPublished({ receipt, ledger = PUBLISHED }) {
+  const published = await readLedger(ledger);
+  let added = 0;
+  for (const file of (await readJson(receipt)).files) {
+    const record = { path: assetPath(file.path), bytes: file.bytes, sha256: file.sha256 };
+    if (typeof file.verifiedUrl !== 'string' || !file.verifiedUrl.startsWith(ASSET_BASE + record.path + '?')) throw new Error(`${record.path} was not read back from the asset host`);
+    const prior = published.get(record.path);
+    if (prior && !sameObject(prior, record)) throw new Error(`The ledger already holds different bytes at ${record.path}`);
+    if (!prior) { published.set(record.path, record); added++; }
+  }
+  await writeJson(ledger, { schemaVersion: 1, objects: [...published.values()].sort((a, b) => a.path.localeCompare(b.path, 'en')) });
+  return { added, objects: published.size };
 }
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
@@ -237,9 +283,12 @@ if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.m
     if (!value || value.startsWith('--')) throw new Error(`Missing value for ${flag}`);
     if (flag === '--store') { const [name, dir] = value.split(/=(.*)/s); options.stores[name] = await realpath(dir); }
     else if (['--kiln', '--mirror'].includes(flag)) options[flag.slice(2)] = resolve(value);
+    else if (flag === '--record-published') options.receipt = resolve(value);
     else throw new Error(`Unknown option ${flag}`);
   }
-  if (uploadList) {
+  if (options.receipt) {
+    console.log(JSON.stringify(await recordHolodeckPublished({ receipt: options.receipt }), null, 2));
+  } else if (uploadList) {
     const records = await holodeckUploadList(options);
     const file = join(options.mirror, 'holodeck-upload-list.json');
     await writeFile(file, JSON.stringify(records, null, 2) + '\n');

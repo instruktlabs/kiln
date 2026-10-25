@@ -12,7 +12,7 @@ import { HOLODECK_SITE } from '../src/lib/config';
 import { buildGallery } from '../src/lib/gallery';
 import { holodeckScenes, holodeckWorldUrl } from '../src/lib/holodeck';
 import { HOLODECK_APPROVAL, HOLODECK_ASSETS, HOLODECK_PACKS, holodeckApproved, holodeckSlug } from './holodeck-spec.mjs';
-import { holodeckPrefix } from './stage-holodeck.mjs';
+import { HOLODECK_OBJECTS } from './stage-holodeck.mjs';
 import { ASSET_BASE } from './mirror-core.mjs';
 import { applyRigPosters } from './rig-posters-core.mjs';
 
@@ -86,13 +86,15 @@ test('catalog assets name the selected revisions under CC0', async () => {
 });
 
 test('every staged download and viewer model is pinned for the asset host at its own URL', () => {
-  const prefix = holodeckPrefix(catalog.release);
+  // Releases staged before content addressing keep their release paths until the next staging replaces them.
+  const legacy = `packs/holodeck/${catalog.release}/`;
   const downloads = [
     ...catalog.assets.flatMap((asset) => [asset.runtimeModelDownload, asset.runtimeDownload, asset.editableDownload]),
     ...catalog.packs.flatMap((pack) => pack.downloads),
   ];
   for (const download of downloads) {
-    expect(download.path.startsWith(prefix)).toBe(true);
+    const name = download.path.split('/').at(-1);
+    expect(download.path === `${HOLODECK_OBJECTS}${download.sha256}/${name}` || download.path.startsWith(legacy)).toBe(true);
     expect(download.url).toBe(ASSET_BASE + download.path);
     expect(pins.get(download.path)).toEqual({ path: download.path, bytes: download.bytes, sha256: download.sha256 });
   }
