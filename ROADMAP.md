@@ -1,6 +1,6 @@
 # Kiln roadmap
 
-Updated 23 October 2026 after the public 1.4.0 release.
+Updated 25 October 2026 after the public 1.5.0 release.
 Scene performance evidence below retains its original candidate scope; Cabin in
 the Woods carries its own 1.2.3 review report.
 [CHANGELOG.md](CHANGELOG.md) defines engine release behavior.
@@ -9,9 +9,9 @@ Dated plans and reviews retain their original candidate scopes.
 
 ## Delivered
 
-Kiln 1.4.0 is published on npm as `@instruktlabs/kiln`, with a matching
-[GitHub release and tag](https://github.com/instruktlabs/kiln/releases/tag/v1.4.0).
-The public site is deployed with the 1.4.0 publication record. Standalone authoring,
+Kiln 1.5.0 is published on npm as `@instruktlabs/kiln`, with a matching
+[GitHub release and tag](https://github.com/instruktlabs/kiln/releases/tag/v1.5.0).
+The public site is deployed with the 1.5.0 publication record. Standalone authoring,
 optional projects, materials, Live Review, calibrated review lighting, bounded
 tool results, the compiled SDK and shared CLI/MCP contracts remain the core.
 
@@ -20,6 +20,11 @@ scenes with Kiln: the opt-in `kiln_export_to` tool, runtime texture manifests,
 content-addressed external textures and optional KTX2 encoding, a host validation
 profile, `externalSupport` declarations, curve and foliage helpers, metric
 `projectUV`, height-derived normal maps and two new material preset sets.
+
+Version 1.5.0 completes that pass: `--max-lod` and `--position-bits` on the three
+runtime target, an instanced-draw estimate beside the draws cap, `seededRandom`,
+`simplifyGeometry`, material advice kept apart from declared budgets, save deltas
+against the parent revision and tiling material map export.
 
 Version 1.3.0 adds optional delivery roles, colliders, anchors, kit ports, surface
 bakes, budgets, solid assertions, atlas packing and a compressed Three.js runtime

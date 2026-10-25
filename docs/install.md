@@ -500,7 +500,7 @@ The v1 local plugin below uses a smaller bundle and creates an explicit workspac
 
 ## Local Claude Code and Codex plugins
 
-The commands below select the released 1.4.0 plugin, which supports new workspaces
+The commands below select the released 1.5.0 plugin, which supports new workspaces
 and existing-project adoption. The matching GitHub tag and npm version are
 available. To qualify an unpublished candidate, select its exact source ref
 and supply the matching local engine archive as described in its bundled setup
@@ -515,14 +515,14 @@ does not start a second global Kiln MCP server.
 For Claude Code:
 
 ```sh
-claude plugin marketplace add instruktlabs/kiln#v1.4.0 --sparse .claude-plugin plugins/kiln-engine
+claude plugin marketplace add instruktlabs/kiln#v1.5.0 --sparse .claude-plugin plugins/kiln-engine
 claude plugin install kiln-engine@instruktlabs
 ```
 
 For Codex:
 
 ```sh
-codex plugin marketplace add instruktlabs/kiln --ref v1.4.0 --sparse .agents/plugins --sparse plugins/kiln-engine
+codex plugin marketplace add instruktlabs/kiln --ref v1.5.0 --sparse .agents/plugins --sparse plugins/kiln-engine
 codex plugin add kiln-engine@instruktlabs
 ```
 
