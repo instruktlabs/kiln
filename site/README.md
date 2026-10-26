@@ -79,7 +79,10 @@ newest first with alphabetical ties. Filters and sorting are shareable URL param
 
 The repository README keeps only a small scene selection and live-game examples.
 Run `node scripts/readme-showcase.mjs` from `site/` to regenerate its stills from
-the hash-verified captures of the featured worlds. The generated
+the hash-verified captures named in `../assets/readme/selection.json`.
+README views and widths are curated independently of the website's cover choices.
+Collage tiles use matching 16:9 frames; each selection can set its crop position.
+The generated
 `../assets/readme/holodeck-showcase.json` records their source and output hashes.
 
 The homepage uses one sequence: a Winter Cabin wall asset, its modular architecture

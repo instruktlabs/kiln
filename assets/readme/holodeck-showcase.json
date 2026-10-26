@@ -9,7 +9,11 @@
       "inputSha256": "3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0",
       "sha256": "df85d99367280e2fd96ddc1f77ab2fc88074fab0105989e7ddf6c3781b7214c1",
       "width": 960,
-      "height": 540
+      "height": 540,
+      "framing": {
+        "fit": "cover",
+        "position": "centre"
+      }
     },
     {
       "file": "crescent-cove.webp",
@@ -20,18 +24,41 @@
       "inputSha256": "d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7",
       "sha256": "18f101c8e69c45ce915eac28ac939ee97f1141b7bf7307ddc340c2e26fc88c9c",
       "width": 960,
-      "height": 540
+      "height": 540,
+      "framing": {
+        "fit": "cover",
+        "position": "centre"
+      }
     },
     {
       "file": "winter-mountainside-cabin.webp",
-      "alt": "The cabin’s living room: a sofa and armchair around the stone hearth, the loft stair and warm lantern light.",
+      "alt": "The timber cabin with its glazed gable, deck and stair among snow-covered firs and spruces.",
       "world": "https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/",
-      "view": "winter-mountainside-cabin-living",
-      "inputPath": "media/holodeck/scenes/dae991ffbe47771af0848295ef0a811d3d004809dcff0f4236b41879795e9ddb/winter-mountainside-cabin-living.png",
-      "inputSha256": "dae991ffbe47771af0848295ef0a811d3d004809dcff0f4236b41879795e9ddb",
-      "sha256": "82504dba41c2f493cdd4657ef28859a206a14bd544eb9767fcd76fd7705860ae",
+      "view": "winter-mountainside-cabin-exterior",
+      "inputPath": "media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior.png",
+      "inputSha256": "ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd",
+      "sha256": "1deb821d1a9590f9e97db19c580fe325c49071df40a11293795202b62c55fdac",
       "width": 960,
-      "height": 540
+      "height": 540,
+      "framing": {
+        "fit": "cover",
+        "position": "centre"
+      }
+    },
+    {
+      "file": "golden-gate.webp",
+      "alt": "A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic around it and both towers ahead.",
+      "world": "https://kilnstudio.tools/scenes/golden-gate/",
+      "view": "drive",
+      "inputPath": "media/scenes/golden-gate/g9-code5/golden-gate-scene-drive.png",
+      "inputSha256": "487793596f730d5424c1b25016fbc27408d6d2ab707c57343acbbc6a52b1bc56",
+      "sha256": "506c1d12e86d3333030db7affe525e408b7ac04ced80f08879234db0367e250e",
+      "width": 960,
+      "height": 540,
+      "framing": {
+        "fit": "cover",
+        "position": "south"
+      }
     }
   ]
 }

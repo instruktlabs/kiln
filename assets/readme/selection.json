@@ -1,0 +1,6 @@
+[
+  { "worldId": "holodeck-meridian-sanctuary", "view": "meridian-sanctuary-arrival", "width": 960 },
+  { "worldId": "holodeck-crescent-cove", "view": "crescent-cove-cove", "width": 960 },
+  { "worldId": "holodeck-winter-mountainside-cabin", "view": "winter-mountainside-cabin-exterior", "width": 960 },
+  { "worldId": "golden-gate", "view": "drive", "width": 960, "position": "south", "url": "https://kilnstudio.tools/scenes/golden-gate/" }
+]

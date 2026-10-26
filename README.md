@@ -20,35 +20,55 @@ do not require a separate model API key.
 [Interactive scenes](https://kilnstudio.tools/scenes/) ·
 [Changelog](CHANGELOG.md)
 
+## Made with Kiln
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <a href="https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/"><img src="assets/readme/meridian-sanctuary.webp" alt="A marble causeway between mirror pools leading to Meridian Sanctuary's gate tower"></a><br>
+      <a href="https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/"><strong>Meridian Sanctuary</strong></a>
+    </td>
+    <td width="50%" align="center">
+      <a href="https://holodeck.kilnstudio.tools/worlds/crescent-cove/"><img src="assets/readme/crescent-cove.webp" alt="The canopied Cove seat among palms overlooking Crescent Cove's lagoon"></a><br>
+      <a href="https://holodeck.kilnstudio.tools/worlds/crescent-cove/"><strong>Crescent Cove</strong></a>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <a href="https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/"><img src="assets/readme/winter-mountainside-cabin.webp" alt="The timber cabin with its glazed gable, deck and stair among snow-covered firs and spruces"></a><br>
+      <a href="https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/"><strong>Winter Mountainside Cabin</strong></a>
+    </td>
+    <td width="50%" align="center">
+      <a href="https://kilnstudio.tools/scenes/golden-gate/"><img src="assets/readme/golden-gate.webp" alt="A blue sedan driving across Golden Gate Bridge, with traffic, suspension cables and a red tower ahead"></a><br>
+      <a href="https://kilnstudio.tools/scenes/golden-gate/"><strong>Golden Gate</strong></a>
+    </td>
+  </tr>
+</table>
+
+Holodeck provides the runtime for Meridian Sanctuary, Crescent Cove and Winter
+Mountainside Cabin; Kiln provides their editable assets and GLBs. Golden Gate is
+one of the bundled interactive scenes.
+
+Editable assets: [Meridian (53)](https://kilnstudio.tools/packs/holodeck/meridian-sanctuary/) ·
+[Crescent Cove (49)](https://kilnstudio.tools/packs/holodeck/crescent-cove/) ·
+[Winter Cabin (56)](https://kilnstudio.tools/packs/holodeck/winter-mountainside-cabin/) ·
+[Golden Gate bridge](https://kilnstudio.tools/gallery/golden-gate-bridge/).
+
+[Explore all scenes](https://kilnstudio.tools/scenes/) or
+[browse the asset gallery](https://kilnstudio.tools/gallery/).
+Scene code and asset content retain their own licences; each pack records its scope.
+
 ## From asset to scene
 
 One timber wall becomes part of a modular cabin kit. Assemble its floors, walls
-and roof, furnish the kitchen and living room, then build the staircase, sleeping loft, bed and desk.
+and roof, furnish the kitchen and living room, then build the staircase,
+sleeping loft, bed and desk.
 The finished Winter Mountainside Cabin sits in a snowy Holodeck world.
 
 [![A timber wall and cabin kit assembling, the kitchen and loft bed being furnished, then the finished snowy Holodeck world](site/public/workflow/winter-cabin/7f7f5f16317afd7d/workflow.gif)](https://kilnstudio.tools/#workflow)
 
 The assembly visualizes the saved Kiln modules; the final view is captured in
 Holodeck. Both use WebGPU rendering.
-
-## Explore worlds made with Kiln
-
-Walk these scenes on [Holodeck](https://holodeck.kilnstudio.tools/), then inspect
-or remix the Kiln assets they use. Holodeck provides the world runtime; Kiln provides
-editable asset source and GLBs.
-
-| Meridian Sanctuary | Crescent Cove | Winter Mountainside Cabin |
-| --- | --- | --- |
-| [![A marble causeway between mirror pools leading to Meridian Sanctuary's gate tower](assets/readme/meridian-sanctuary.webp)](https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/) | [![The canopied Cove seat among palms overlooking Crescent Cove's lagoon](assets/readme/crescent-cove.webp)](https://holodeck.kilnstudio.tools/worlds/crescent-cove/) | [![The Winter Mountainside Cabin living room, with a sofa, armchair, stone hearth and loft stair](assets/readme/winter-mountainside-cabin.webp)](https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/) |
-
-- **[Meridian Sanctuary](https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/):** marble arcades, mirror pools and floating sculpture. [53 assets and editable source](https://kilnstudio.tools/packs/holodeck/meridian-sanctuary/).
-- **[Crescent Cove](https://holodeck.kilnstudio.tools/worlds/crescent-cove/):** tropical planting, coastal rock formations and a beach shelter. [49 assets and editable source](https://kilnstudio.tools/packs/holodeck/crescent-cove/).
-- **[Winter Mountainside Cabin](https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/):** timber architecture, a furnished interior and snowy forest. [56 assets and editable source](https://kilnstudio.tools/packs/holodeck/winter-mountainside-cabin/).
-
-[Explore all scenes](https://kilnstudio.tools/scenes/), including Troy, Farm,
-Golden Gate, Foundry Floor and Cabin in the Woods, or
-[browse the asset gallery](https://kilnstudio.tools/gallery/).
-Scene code and asset content retain their own licences; each pack records its scope.
 
 ## Used in live games
 
