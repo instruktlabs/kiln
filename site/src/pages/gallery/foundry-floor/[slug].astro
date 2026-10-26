@@ -1,4 +1,5 @@
 ---
+import GalleryTags from "../../../components/GalleryTags.astro";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import PageHeader from "../../../components/PageHeader.astro";
 import AssetViewer from "../../../components/AssetViewer.astro";
@@ -29,7 +30,8 @@ const description = `${asset.name}: a ${group.title.toLowerCase()} model from Fo
   noindex card="foundry-floor">
   <div class="container">
     <div class="grid gap-6 py-8 lg:grid-cols-2">
-      <div><PageHeader>{asset.name}</PageHeader><p class="mt-4 max-w-reading">{description}</p></div>
+      <div><PageHeader>{asset.name}</PageHeader>
+    <GalleryTags /><p class="mt-4 max-w-reading">{description}</p></div>
       <p class="font-mono text-code lg:text-right"><a class="text-link" href="/packs/foundry-floor/">Foundry Floor</a> · {group.title}</p>
     </div>
     <div class="drawing-sheet">

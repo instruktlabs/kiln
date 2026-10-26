@@ -5,6 +5,8 @@ import { PACKS_ENABLED } from './config';
 import { isTroyGalleryAsset } from './troy-gallery.mjs';
 import { cabinWoodsAssets, cabinWoodsHref } from './cabin-woods';
 import { holodeckAssetHref, holodeckAssets, holodeckScenes } from './holodeck';
+import taxonomy from '../data/gallery-taxonomy.json';
+import { browseGallery } from './gallery-browse';
 
 export { foundry };
 export type FoundryAsset = (typeof foundry.assets)[number];
@@ -14,6 +16,8 @@ export interface GalleryCard {
   pack: string | null;
   packs: string[];
   category: string;
+  tags: string[];
+  addedOn: string;
   href: string;
   revisionId: string;
   runtimeDownload: { sha256: string };
@@ -26,7 +30,7 @@ export interface GalleryCard {
 
 export function buildGallery(packsEnabled: boolean): GalleryCard[] {
   if (!packsEnabled) return [];
-  const cards: GalleryCard[] = catalogAssets(true).map((asset) => ({
+  const cards: Omit<GalleryCard, 'tags' | 'addedOn'>[] = catalogAssets(true).map((asset) => ({
     ...asset,
     packs: [asset.pack ?? 'standalone'],
     href: `/gallery/${asset.slug}/`,
@@ -71,7 +75,15 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
       scenes: holodeckScenes(asset).map(({ label, href }) => ({ label, href })),
     })),
   );
-  return cards;
+  return browseGallery(
+    cards.map((card) => {
+      const editorial = (
+        taxonomy.assets as Record<string, { category: string; tags: string[]; addedOn: string }>
+      )[card.href];
+      if (!editorial) throw new Error(`Missing gallery taxonomy for ${card.href}`);
+      return { ...card, ...editorial };
+    }),
+  );
 }
 
 export const galleryCards = buildGallery(PACKS_ENABLED);

@@ -1,4 +1,5 @@
 ---
+import GalleryTags from "../../../components/GalleryTags.astro";
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
@@ -41,6 +42,7 @@ const schema = {
 <BaseLayout title={`${asset.name} · Holodeck · Kiln`} description={description} breadcrumbs={[{label:'Gallery',href:'/gallery/'},{label:asset.name,href:holodeckAssetHref(asset)}]} card="packs" jsonLd={schema} noindex={!asset.review.ownerAccepted}>
   <div class="container py-8">
     <PageHeader>{asset.name}</PageHeader>
+    <GalleryTags />
     <p class="lead mt-4">{asset.description}</p>
     <div class="mt-4 flex flex-wrap gap-x-6">
       {scenes.map(scene => <a class="text-link" href={scene.packHref}>{scene.name} pack</a>)}

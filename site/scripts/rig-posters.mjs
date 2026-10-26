@@ -49,13 +49,17 @@ export async function cabinWoodsTargets({ publicDir = join(SITE, 'public'), data
 }
 /** The Holodeck packs' runtime models from the staging mirror, each verified against `holodeck.json`. */
 export const HOLODECK_POSTER_PACK = 'holodeck';
+/** The sofa opens toward -Z; the usual +Z view hides its cushions and throw. */
+export const holodeckPosterView = (slug) => slug === 'winter-wmc-sofa-wool'
+  ? { ...FARM_POSTER, direction: [0.7, 0.5, -0.7] }
+  : FARM_POSTER;
 export async function holodeckTargets({ mirror, data = DATA }) {
   const catalog = await readJson(join(data, 'holodeck.json'));
   return Promise.all(catalog.assets.map(async (asset) => {
     const download = asset.runtimeModelDownload;
     const glb = await readFile(join(mirror, assetPath(download.path)));
     verifyBytes(glb, download, asset.slug);
-    return { pack: HOLODECK_POSTER_PACK, release: catalog.release, slug: asset.slug, name: asset.name, revisionId: asset.revisionId, assetId: asset.assetId, alt: asset.description, glb, glbPath: download.path, view: FARM_POSTER };
+    return { pack: HOLODECK_POSTER_PACK, release: catalog.release, slug: asset.slug, name: asset.name, revisionId: asset.revisionId, assetId: asset.assetId, alt: asset.description, glb, glbPath: download.path, view: holodeckPosterView(asset.slug) };
   }));
 }
 

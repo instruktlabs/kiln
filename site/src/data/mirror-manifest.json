@@ -6520,6 +6520,11 @@
       "path": "media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove.png",
       "bytes": 2996616,
       "sha256": "d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool.png",
+      "bytes": 1933920,
+      "sha256": "668e1e55ae5a6118d0e602da2a145d2f177d1db00436c064176ee13385e76c99"
     }
   ]
 }
