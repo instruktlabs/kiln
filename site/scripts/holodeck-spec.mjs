@@ -5,7 +5,7 @@
  */
 
 export const HOLODECK_ID = 'holodeck';
-export const HOLODECK_RELEASE = 'holodeck-20261025-01';
+export const HOLODECK_RELEASE = 'holodeck-20261025-02';
 /**
  * The oldest Kiln that imports the packs' revision bundles, named in each pack README. Raise it only when the bundle
  * format needs a newer Kiln: a value that followed every Kiln release would change every pack ZIP and its key.
@@ -88,7 +88,7 @@ export const HOLODECK_PLANNED = [];
 /**
  * Owner approval, by gallery slug and the exact revision approved. On 2026-10-23 the owner approved the 47 staged
  * Courtyard, Cove and Tidemark cards as staged, and their packs for delivery, then the 41 new Crescent Cove cards as
- * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. On 2026-10-25 the owner approved Crescent Cove's revision 17 palms (tall, lean, arch, young) and fallen fronds as staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
+ * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. On 2026-10-25 the owner approved Crescent Cove's revision 17 palms (tall, lean, arch, young) and fallen fronds as staged. On 2026-10-25 the owner authorized repairing and deploying the seven winter tree bark-winding successors. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
  * when every asset it lists is approved.
  */
 export const HOLODECK_APPROVAL = {
@@ -195,10 +195,10 @@ export const HOLODECK_APPROVAL = {
     'winter-wmc-eave-storage': 'r_a8a15917bcc14649a392b736a40d0d0b',
     'winter-wmc-entry-bench': 'r_78da00aa2eb04b7fbef7a33fab2826b6',
     'winter-wmc-fallen-log': 'r_c98dd2aeee1942169543c629a7474b1d',
-    'winter-wmc-fir-background-a': 'r_23d2596b5b1142019ccc8960b414e373',
-    'winter-wmc-fir-hero-a': 'r_105e6c9467ed4443a85cf1979b45aab2',
-    'winter-wmc-fir-middle-a': 'r_cc07345479d94a33bdf04bc3969540bc',
-    'winter-wmc-fir-sapling-a': 'r_f2f1d09fd0a942c58964b2821e219406',
+    'winter-wmc-fir-background-a': 'r_d36e25c91a154b18adda59d5fc18ba9c',
+    'winter-wmc-fir-hero-a': 'r_24dc1336523045fe90ab54f009816389',
+    'winter-wmc-fir-middle-a': 'r_653b24f39a224932ad60242f0fdf3434',
+    'winter-wmc-fir-sapling-a': 'r_a5fcf206ebe2418a813cc2abdb19cad1',
     'winter-wmc-floor-loft': 'r_dfca02649051461fa07592d21f60e932',
     'winter-wmc-floor-main': 'r_6f875c61c5fc4d4d8112ef059c6c8443',
     'winter-wmc-floorlamp-tripod': 'r_42e2e4d7cb6e40b787db5f48ad0200e8',
@@ -222,9 +222,9 @@ export const HOLODECK_APPROVAL = {
     'winter-wmc-small-props': 'r_15e05145d9c649de9fe845dd4d4aba9d',
     'winter-wmc-snow-bank': 'r_deb540babffe4e8d8e6706c90a66c486',
     'winter-wmc-sofa-wool': 'r_900d94fea90f4b8486bc7aa81e84fec7',
-    'winter-wmc-spruce-background-a': 'r_840cfdc71ca547d9aa4c11ad542d52c9',
-    'winter-wmc-spruce-hero-a': 'r_a6300c01aff74afcad5a4ea74cbb67d5',
-    'winter-wmc-spruce-middle-a': 'r_9bf5d291a99f444c810b08b8cd7c1f6b',
+    'winter-wmc-spruce-background-a': 'r_3e6ab9ec488f47478525cb870e37f42e',
+    'winter-wmc-spruce-hero-a': 'r_9096fae118ea43d9b436cb2b7038bdfa',
+    'winter-wmc-spruce-middle-a': 'r_12a9a5e32f354fe992679bc5795f41a2',
     'winter-wmc-stair-rail-exterior': 'r_659dbb66e23b4b64ab989ed92e795da5',
     'winter-wmc-stair-rail-interior': 'r_abff23385acf408694274758d8e525bb',
     'winter-wmc-stone-pier': 'r_5cfe4f56a2e64bdeaf11ecfd989d63a8',

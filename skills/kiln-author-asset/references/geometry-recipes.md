@@ -63,6 +63,13 @@ Collapsing an entire parameter row or column to one tip leaves degenerate grid t
 
 For authored topology, `meshGeo({ positions, indices, normals?, uvs?, tangents? })` uses flat numeric arrays. Triangle winding is counterclockwise. An open sheet is valid geometry; do not label it a watertight solid.
 
+For a custom closed tube, check the ring basis against the side and cap index order.
+Test a simple straight segment with normal back-face culling: side face normals must
+point away from its centreline and cap normals away from its ends. A closed test
+segment should have positive signed volume and oppositely directed shared edges.
+Reverse side and cap winding together before computing normals; changing normals
+alone or making bark double-sided hides an inward-wound tube instead of repairing it.
+
 Mirrored vertices alone do not establish a symmetric curved surface. The same
 diagonal through warped quads on both sides can produce different surfaces between
 vertices. Mirror the topology with corrected winding, or use symmetric patch

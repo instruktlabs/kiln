@@ -1,0 +1,398 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_f72b795d8be449cfaee39950d715be64",
+  "revisionId": "r_a5fcf206ebe2418a813cc2abdb19cad1",
+  "parentRevision": "r_f2f1d09fd0a942c58964b2821e219406",
+  "name": "Winter fir sapling a / M4C",
+  "tags": [],
+  "createdAt": "2026-10-26T00:34:40.444Z",
+  "description": "Repair inward-wound trunk and branch tubes; preserve needle sprays, snow, dimensions and triangle budget.",
+  "attribution": {
+    "harness": "codex"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:c487671a89ecf9d79e53dbc8141bed6da8f39c02670c46c3dcdf34889f5b58e0",
+      "bytes": 700308
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:4fe7ea5679eaffb03cb8db27eec20cbd9478551dc02ae4586a886a6829afb78b",
+      "bytes": 11643
+    },
+    "preview.png": {
+      "sha256": "sha256:b12c58b9a83cd4e0005ebf8e360c6439ffe70a662fde5f71f929df74a58e4906",
+      "bytes": 413968
+    }
+  },
+  "build": {
+    "engine": "sha256:006bc21ed78828c59f6b4a6db970c011787fbe738957c932383b85a649117357",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "c487671a89ecf9d79e53dbc8141bed6da8f39c02670c46c3dcdf34889f5b58e0",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.8186138868331909,
+          -0.0025428226217627525,
+          -0.7912701368331909
+        ],
+        "max": [
+          0.845572292804718,
+          3.188666343688965,
+          0.7710809707641602
+        ],
+        "size": [
+          1.664186179637909,
+          3.1912091663107276,
+          1.562351107597351
+        ],
+        "center": [
+          0.01347920298576355,
+          1.593061760533601,
+          -0.01009458303451538
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -0.0025428226217627525,
+        "offsetToGround": 0.0025428226217627525,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Winter fir / snow bent sapling"
+      },
+      "requestedRole": "fill",
+      "renderMetrics": {
+        "triangles": 6812,
+        "drawCalls": 3,
+        "uniqueGeometries": 3,
+        "uniqueMaterials": 3,
+        "textureCount": 4,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "3 part-volume measurements were unavailable. 2 because compound solid exceeds the component budget or contains an unsupported inward shell: \"Mesh_BarkStructure\", \"Mesh_SupportedSnowLoads\". 1 because a valid closed solid could not be measured (Not manifold): \"Mesh_NeedleSprays\". 3 overlapping part pairs include one of these parts and were not measured. These parts are not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 3,
+            "partVolumeCandidatePairs": 3,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeUnmeasurablePairs": 3,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 3
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "B",
+            "instanceabilitySummary": "B (informational, not a QA verdict), set by 3 distinct materials (B at 2-3). Also: 3 geometries; 3 draw calls.",
+            "uniqueGeometries": 3,
+            "uniqueMaterials": 3,
+            "meshNodes": 3,
+            "meshInstances": 3,
+            "drawCalls": 3,
+            "textureCount": 4,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 6812,
+            "materialCount": 3,
+            "opaqueMaterials": 2,
+            "maskedMaterials": 1,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 2,
+            "doubleSidedMaterials": 1,
+            "texturedMaterials": 3,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 4,
+            "maxImageDimension": 512,
+            "decodedImageBytesRgba8": 1245184,
+            "estimatedGpuBytesWithMipmaps": 1660248,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [
+      {
+        "schemaVersion": 1,
+        "resourceId": "kiln.texture.bark-brown-01-albedo.v1",
+        "contentHash": "be4acdb7e4e88628e0b920ed3067dc6df9e70a211a1255bda8c2ea5faf692fbb",
+        "hashAlgorithm": "sha256",
+        "usage": "albedo",
+        "colorSpace": "srgb",
+        "resourceVersion": 1,
+        "recipeVersion": 1,
+        "delivery": "embedded"
+      },
+      {
+        "schemaVersion": 1,
+        "resourceId": "kiln.texture.bark-brown-01-normal.v1",
+        "contentHash": "3ab231114542c1e393cbd0a4f6e24d7d8fa7bf50749b16f33f331e22d392ebdd",
+        "hashAlgorithm": "sha256",
+        "usage": "normal",
+        "colorSpace": "linear",
+        "resourceVersion": 1,
+        "recipeVersion": 1,
+        "delivery": "embedded"
+      }
+    ],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
+      "inputGlbSha256": "sha256:c487671a89ecf9d79e53dbc8141bed6da8f39c02670c46c3dcdf34889f5b58e0",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

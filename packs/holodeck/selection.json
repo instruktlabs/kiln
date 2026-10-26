@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "holodeck-20261025-01",
+  "release": "holodeck-20261025-02",
   "licence": "CC0-1.0",
   "versions": "final-only",
   "packs": {
@@ -167,11 +167,11 @@
       "scene": "winter-mountainside-cabin",
       "source": {
         "kind": "holodeck-example",
-        "ref": "ee66c3712fa414fd9bc6c7f5dadc882a2e2ba9de",
-        "commit": "ee66c3712fa414fd9bc6c7f5dadc882a2e2ba9de",
+        "ref": "2cfae32d1e2e86add2c8b94b5610b827761f93bb",
+        "commit": "2cfae32d1e2e86add2c8b94b5610b827761f93bb",
         "path": "examples/winter-mountainside-cabin",
         "sourceRevision": 2,
-        "worldSha256": "403bc137f158f00508b5aabc5d311311c998f93203076b29fabfffe1dcf322a5"
+        "worldSha256": "0f9e7bd0e84240adb26170181fc965f54d808c418067f8a447fcf13c584831d3"
       },
       "assets": [
         "cove-moodboard",
@@ -2900,26 +2900,26 @@
       ]
     },
     "winter-wmc-fir-hero-a": {
-      "store": "winter-mountainside-cabin",
+      "store": "winter-tree-repair",
       "collection": "project",
       "assetId": "a_d7c11d251c944d37bb395dd2317258bc",
-      "revisionId": "r_105e6c9467ed4443a85cf1979b45aab2",
-      "parentRevision": "r_59e861f371a4433ca1bc12078d8bde9d",
+      "revisionId": "r_24dc1336523045fe90ab54f009816389",
+      "parentRevision": "r_105e6c9467ed4443a85cf1979b45aab2",
       "manifest": {
-        "bytes": 12288,
-        "sha256": "35241acf75a7e4480d65e5792fb085a1babe228cc8b16ae869795a9faa568e87"
+        "bytes": 12165,
+        "sha256": "95e2c29bda90f5948348ff27e33ec1e738fb2d9252a039eb1e91a4e923df3806"
       },
       "source": {
-        "bytes": 11563,
-        "sha256": "75772e5bfc585d612d9ac785a4364fde984949eb099a41070f9c9567b8ababae"
+        "bytes": 11645,
+        "sha256": "76b365e5b633cc9adc59c80083d1ea803ef2f0b94ca50fd00d03f0c7c806b46a"
       },
       "canonical": {
         "bytes": 3435860,
-        "sha256": "bec22f468853e89955c4ba4a48e314adb228af2dd2c9ca5a88b7a93669a5e0c7"
+        "sha256": "fe9541b09092e748366975e8b6730c735af7dd1322b89f82fb6bfdb6b1e6d51b"
       },
       "preview": {
-        "bytes": 453825,
-        "sha256": "d411451b4f8e414e046e6995c753678efb7ddd1a16f022a04e97c9207e6294c8"
+        "bytes": 453936,
+        "sha256": "cf80a40834e601a9bd25b85a077ed0c34073eb7f38a7a88c878be216ae80a67c"
       },
       "placements": [
         {
@@ -3016,26 +3016,26 @@
       ]
     },
     "winter-wmc-spruce-hero-a": {
-      "store": "winter-mountainside-cabin",
+      "store": "winter-tree-repair",
       "collection": "project",
       "assetId": "a_23355f2ce8664f04b335c6be26def8d1",
-      "revisionId": "r_a6300c01aff74afcad5a4ea74cbb67d5",
-      "parentRevision": "r_e2ff35601ac64cf1970b845ecf91afc3",
+      "revisionId": "r_9096fae118ea43d9b436cb2b7038bdfa",
+      "parentRevision": "r_a6300c01aff74afcad5a4ea74cbb67d5",
       "manifest": {
-        "bytes": 12308,
-        "sha256": "db9dae77882e4de6e792bbe8d6dc7f38d8759e271f8a6462aa2e7ef58b600dad"
+        "bytes": 12155,
+        "sha256": "4d0401be90a18b6ec6e0d9a04009a58029b94957c599535ae1ad5500726a8bb6"
       },
       "source": {
-        "bytes": 11567,
-        "sha256": "17974c02e7c00daaf44d06a4da99167a35c70da5050830e702f37a5adc2f14e7"
+        "bytes": 11649,
+        "sha256": "c8bd12c8e927dd4281a3b29fb7c1af5f9faec7797f6ac5b2eb96452ab68b1c51"
       },
       "canonical": {
         "bytes": 3629236,
-        "sha256": "eeb1d8ca42993801fa2de373caf539f861cb167f650797265ce02c1fe351e89e"
+        "sha256": "ac6e81bc30a2df8cce9a36517d70f3942f4f5552a27d116b43b20fdd44b5466b"
       },
       "preview": {
-        "bytes": 404768,
-        "sha256": "942ccc085f291e7507f1ef871ce965329880048a6103fcacbde868a3b1ab56b6"
+        "bytes": 404910,
+        "sha256": "0d490ec4ba16a348880be3ea3b80554f973d8a83a7f36da2939dda1c8b4cab3a"
       },
       "placements": [
         {
@@ -3045,26 +3045,26 @@
       ]
     },
     "winter-wmc-fir-middle-a": {
-      "store": "winter-mountainside-cabin",
+      "store": "winter-tree-repair",
       "collection": "project",
       "assetId": "a_70a4c2e9fee3489aa5d4f93d71942508",
-      "revisionId": "r_cc07345479d94a33bdf04bc3969540bc",
-      "parentRevision": "r_29095a9db73e49eaab6a049509ffe109",
+      "revisionId": "r_653b24f39a224932ad60242f0fdf3434",
+      "parentRevision": "r_cc07345479d94a33bdf04bc3969540bc",
       "manifest": {
-        "bytes": 12270,
-        "sha256": "7aba49a62eaa464ebeafab95a146cef0a5ad9a139d5797381ebe8412d161c47f"
+        "bytes": 12147,
+        "sha256": "d32e94a01e436c15ac35ac08f981cf69d3c29e96226adbc73f2ebaa3c71ba9fb"
       },
       "source": {
-        "bytes": 11713,
-        "sha256": "5cff62f2da4cb972dbaaeefb9b0b1df59b3c1f7cae73e7fd71f3f46d5e46c657"
+        "bytes": 11795,
+        "sha256": "245754b95ce7dfe86ee180d5ccf90d0d26a9a1d9e9b2a88d2b566991b11645f8"
       },
       "canonical": {
         "bytes": 425676,
-        "sha256": "744fcb27a715a380cf1aa7d33dcc38055349c9b655f6ce18dd48730118fa7e47"
+        "sha256": "1f75a2acb0ba007970ece3fc1fb3f7dd1a051d35500a80f7e3adda55b902994d"
       },
       "preview": {
-        "bytes": 364956,
-        "sha256": "4b2cb3cb6b022c03c63184344a850bf0484c4e9e896c7bf63fdc1e69339f18fb"
+        "bytes": 365364,
+        "sha256": "655f897000974a3800c06ab7fd3e806d4a5b080d659bd41c5b3c77f5d346a13a"
       },
       "placements": [
         {
@@ -3074,26 +3074,26 @@
       ]
     },
     "winter-wmc-spruce-middle-a": {
-      "store": "winter-mountainside-cabin",
+      "store": "winter-tree-repair",
       "collection": "project",
       "assetId": "a_d013717c727c48dfad0bd798c94f261f",
-      "revisionId": "r_9bf5d291a99f444c810b08b8cd7c1f6b",
-      "parentRevision": "r_14389f56d0e34b5b8de08bc7d46166e4",
+      "revisionId": "r_12a9a5e32f354fe992679bc5795f41a2",
+      "parentRevision": "r_9bf5d291a99f444c810b08b8cd7c1f6b",
       "manifest": {
-        "bytes": 12296,
-        "sha256": "7a7b6f0f7f081b8d83d00932634e1dd501000d82ef09f1aa5142f4c24c23d066"
+        "bytes": 12143,
+        "sha256": "271d31c11e802e2ecff2d63d1886452f621d4f0e613bf893a18544541f2b8920"
       },
       "source": {
-        "bytes": 11719,
-        "sha256": "dd4cac6cce900a42decc8ee5e60ddbb701d83b6302988f543572b7d7d4ee9524"
+        "bytes": 11801,
+        "sha256": "c0a2b3c095872c4acac192a20c3b5c041ad35f8c3901a5b63282a25f840db97e"
       },
       "canonical": {
         "bytes": 432708,
-        "sha256": "aebf1f5ef565e398f073f667d46ce726abd376b90a14c26d707ab075fa9f059b"
+        "sha256": "30bd23fb2b7531a97a6f5ae2ed8909794f3640a1190857fc9dd14b72b20e1be4"
       },
       "preview": {
-        "bytes": 297343,
-        "sha256": "194091a6fb844689c264dabca8908f7482822ff7c01ed217636a2dc95f5f74fd"
+        "bytes": 297500,
+        "sha256": "e80ec39d7fc7d7c6aceedd330c88a183e7c9e3608bb7d59a09d4048a36bba128"
       },
       "placements": [
         {
@@ -3103,26 +3103,26 @@
       ]
     },
     "winter-wmc-fir-background-a": {
-      "store": "winter-mountainside-cabin",
+      "store": "winter-tree-repair",
       "collection": "project",
       "assetId": "a_07729f5aec8847bc80d071b4599d6bff",
-      "revisionId": "r_23d2596b5b1142019ccc8960b414e373",
-      "parentRevision": "r_00625992b11b4e67bbfb4950bf796b16",
+      "revisionId": "r_d36e25c91a154b18adda59d5fc18ba9c",
+      "parentRevision": "r_23d2596b5b1142019ccc8960b414e373",
       "manifest": {
-        "bytes": 12296,
-        "sha256": "05b8795594314241cba7f0fb2034b691bc752bf171f459b6d4e0214a51292c59"
+        "bytes": 12119,
+        "sha256": "348d4467d5f9aa70599235df46805559e553e14d71c68bc22bc0cc26d622964b"
       },
       "source": {
-        "bytes": 11106,
-        "sha256": "dcdfcb67b5c78374d3c237bfeb2be7e1f6eab42cdf16a3b809156b808a03f6da"
+        "bytes": 11188,
+        "sha256": "f3300facc2703fa88eeabd8e111ef50f22fcac9460d785a87868a76255977721"
       },
       "canonical": {
         "bytes": 174668,
-        "sha256": "37f661f3e22281a291abf880e91340d9522aeb1bfec6e256b16336fc389e4e94"
+        "sha256": "c6f9cc83fa0053e39df9325fadde80c8911e95cb5090a78c32cf2ae8db084067"
       },
       "preview": {
-        "bytes": 408798,
-        "sha256": "5271a57a198bcb32e19754de74ba44bd53cc8937e59c23e38b6455382e042fa1"
+        "bytes": 409287,
+        "sha256": "d577d4ef72de1c387b6643a94f053f8226f8c852a577b36f5da599058ca44e99"
       },
       "placements": [
         {
@@ -3132,26 +3132,26 @@
       ]
     },
     "winter-wmc-spruce-background-a": {
-      "store": "winter-mountainside-cabin",
+      "store": "winter-tree-repair",
       "collection": "project",
       "assetId": "a_b9737920dd4e43abaad0a6536de676f0",
-      "revisionId": "r_840cfdc71ca547d9aa4c11ad542d52c9",
-      "parentRevision": "r_be03fe22c5844f6b962db1263b8e5fc8",
+      "revisionId": "r_3e6ab9ec488f47478525cb870e37f42e",
+      "parentRevision": "r_840cfdc71ca547d9aa4c11ad542d52c9",
       "manifest": {
-        "bytes": 12307,
-        "sha256": "e702b566224f4b133ae50738d1a421f919ad03a375cb6be5fa7fde9e14c64c61"
+        "bytes": 12130,
+        "sha256": "7bd9c2ce61c472cba5c59d5b92bbd06f15e95df36441c93f3ffc30feb5588540"
       },
       "source": {
-        "bytes": 11112,
-        "sha256": "302fde477a81e88998a6b0bc7788d06dea7ddb986b4db3eff14722e7deb566e2"
+        "bytes": 11194,
+        "sha256": "73e5bdce6dbb8c84bb69dc1280e96db5eda65eceec36e986095ba49dfeb35b41"
       },
       "canonical": {
         "bytes": 184060,
-        "sha256": "90e553f918c89b6e088a3de8f52bccec8cab1aed698d309f0b7b1d0123a96e2e"
+        "sha256": "0fc97db462c7e42a9fce4a93afc87da4662e585d486a6697912901bcace52f8c"
       },
       "preview": {
-        "bytes": 276553,
-        "sha256": "020b6acc7525acbbeee0ca261e216d89e089303e97bcb53677a4f709048c9b34"
+        "bytes": 276972,
+        "sha256": "562708d795ca6fcd02ab94a1f572ed91eb86190530ff913c75d879b402e96e72"
       },
       "placements": [
         {
@@ -3161,26 +3161,26 @@
       ]
     },
     "winter-wmc-fir-sapling-a": {
-      "store": "winter-mountainside-cabin",
+      "store": "winter-tree-repair",
       "collection": "project",
       "assetId": "a_f72b795d8be449cfaee39950d715be64",
-      "revisionId": "r_f2f1d09fd0a942c58964b2821e219406",
-      "parentRevision": "r_d16e3822c9974df3a6bcf8af23306333",
+      "revisionId": "r_a5fcf206ebe2418a813cc2abdb19cad1",
+      "parentRevision": "r_f2f1d09fd0a942c58964b2821e219406",
       "manifest": {
-        "bytes": 12301,
-        "sha256": "e9c5f8148b6eb53134a0eafa42f79873e32c019e7e49a726b18df944ee21339e"
+        "bytes": 12148,
+        "sha256": "d1697c53a5a5348b17fb75bd4415b99dadec98cc3609a09c720979753cd41fd3"
       },
       "source": {
-        "bytes": 11561,
-        "sha256": "9983cde077c6865791b7fafe9adf4b1c487aae5badbb52c702ee8442cb6d2732"
+        "bytes": 11643,
+        "sha256": "4fe7ea5679eaffb03cb8db27eec20cbd9478551dc02ae4586a886a6829afb78b"
       },
       "canonical": {
         "bytes": 700308,
-        "sha256": "553fec6081abf7e9efde030e1d8977f496e517b6c73704601d6bf26f6770c8da"
+        "sha256": "c487671a89ecf9d79e53dbc8141bed6da8f39c02670c46c3dcdf34889f5b58e0"
       },
       "preview": {
-        "bytes": 415157,
-        "sha256": "9475e0bea6635f07432dc330ab372e277ed8372520d26ff69146729a54cd126e"
+        "bytes": 413968,
+        "sha256": "b12c58b9a83cd4e0005ebf8e360c6439ffe70a662fde5f71f929df74a58e4906"
       },
       "placements": [
         {

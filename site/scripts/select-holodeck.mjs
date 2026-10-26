@@ -208,7 +208,9 @@ export async function repointHolodeckExample({ selection, holodeck, ref, example
   const show = file => git('show', `${commit}:${path}/${file}`);
   const worldBytes = show('world/world.json'), world = json(worldBytes), manifest = json(show('example.json'));
   if (manifest.id !== example || !Number.isSafeInteger(manifest.sourceRevision)) throw new Error(`${example}: invalid example identity or source revision`);
-  if (manifest.sourceRevision <= previous.source.sourceRevision) throw new Error(`${example}: repointing needs a newer source revision than ${previous.source.sourceRevision}`);
+  if (manifest.sourceRevision < previous.source.sourceRevision) throw new Error(`${example}: source revision cannot go backward from ${previous.source.sourceRevision}`);
+  // Maintainer repairs can replace descendant assets in a bundled example without creating an authoring-world revision.
+  if (commit === previous.source.commit || hashBytes(worldBytes) === previous.source.worldSha256) throw new Error(`${example}: repointing needs a newer committed example with changed world bytes`);
   const list = world.scene?.assets;
   if (!Array.isArray(list) || list.length !== spec.expectedAssets) throw new Error(`${spec.id}: expected ${spec.expectedAssets} placed assets, found ${list?.length ?? 'none'}`);
 

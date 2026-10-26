@@ -142,3 +142,13 @@ node scripts/stage-holodeck.mjs --record-published .localdata/holodeck-delivery/
 The first command verifies the list offline; the second uploads and reads back every object;
 the third adds the objects read back to `published.json`. Commit `published.json` with the
 release's site data.
+
+
+### Repair a committed example's assets
+
+`--repoint-example` accepts a new committed example whose source revision stays the
+same when maintainers repair its assets directly. It requires changed world bytes
+and a different commit, refuses source-revision rollback, and still verifies that
+changed assets descend from the selected revisions. Shared assets used by other
+packs cannot change through this path. This preserves the original authoring-world
+revision rather than inventing one for a repository maintenance change.

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "holodeck",
-  "release": "holodeck-20261025-01",
+  "release": "holodeck-20261025-02",
   "base": "https://assets.kilnstudio.tools/",
   "licence": {
     "spdx": "CC0-1.0",
@@ -274,11 +274,11 @@
       "assetCount": 56,
       "source": {
         "kind": "holodeck-example",
-        "ref": "ee66c3712fa414fd9bc6c7f5dadc882a2e2ba9de",
-        "commit": "ee66c3712fa414fd9bc6c7f5dadc882a2e2ba9de",
+        "ref": "2cfae32d1e2e86add2c8b94b5610b827761f93bb",
+        "commit": "2cfae32d1e2e86add2c8b94b5610b827761f93bb",
         "path": "examples/winter-mountainside-cabin",
         "sourceRevision": 2,
-        "worldSha256": "403bc137f158f00508b5aabc5d311311c998f93203076b29fabfffe1dcf322a5"
+        "worldSha256": "0f9e7bd0e84240adb26170181fc965f54d808c418067f8a447fcf13c584831d3"
       },
       "assets": [
         "cove-moodboard",
@@ -342,18 +342,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/6ec9a316f05b2f1cc84d114c20fd777c558ad934b16165170efb8e44d527018d/holodeck-winter-mountainside-cabin-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6ec9a316f05b2f1cc84d114c20fd777c558ad934b16165170efb8e44d527018d/holodeck-winter-mountainside-cabin-runtime.zip",
-          "bytes": 18573784,
-          "sha256": "6ec9a316f05b2f1cc84d114c20fd777c558ad934b16165170efb8e44d527018d"
+          "path": "packs/holodeck/objects/5f8e465afb1e87dbb5e4725c31cdb5c0e8193352ed3e2f11b2f4e0d4359a0495/holodeck-winter-mountainside-cabin-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5f8e465afb1e87dbb5e4725c31cdb5c0e8193352ed3e2f11b2f4e0d4359a0495/holodeck-winter-mountainside-cabin-runtime.zip",
+          "bytes": 18564941,
+          "sha256": "5f8e465afb1e87dbb5e4725c31cdb5c0e8193352ed3e2f11b2f4e0d4359a0495"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/116dd28d42c3473267190586556929a1cd5aa5d89d28b2b743d9de26fe8af621/holodeck-winter-mountainside-cabin-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/116dd28d42c3473267190586556929a1cd5aa5d89d28b2b743d9de26fe8af621/holodeck-winter-mountainside-cabin-editable.zip",
-          "bytes": 31903689,
-          "sha256": "116dd28d42c3473267190586556929a1cd5aa5d89d28b2b743d9de26fe8af621"
+          "path": "packs/holodeck/objects/985f97466ba987fe12d2a10e241a8a139064c5c9acc44de27cf49ee48685a249/holodeck-winter-mountainside-cabin-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/985f97466ba987fe12d2a10e241a8a139064c5c9acc44de27cf49ee48685a249/holodeck-winter-mountainside-cabin-editable.zip",
+          "bytes": 31905909,
+          "sha256": "985f97466ba987fe12d2a10e241a8a139064c5c9acc44de27cf49ee48685a249"
         }
       ]
     }
@@ -7416,37 +7416,37 @@
       ],
       "collection": "project",
       "assetId": "a_d7c11d251c944d37bb395dd2317258bc",
-      "revisionId": "r_105e6c9467ed4443a85cf1979b45aab2",
-      "parentRevision": "r_59e861f371a4433ca1bc12078d8bde9d",
-      "sourcePath": "packs/holodeck/sources/project/a_d7c11d251c944d37bb395dd2317258bc/r_105e6c9467ed4443a85cf1979b45aab2/source.kiln.js",
-      "sourceSha256": "75772e5bfc585d612d9ac785a4364fde984949eb099a41070f9c9567b8ababae",
+      "revisionId": "r_24dc1336523045fe90ab54f009816389",
+      "parentRevision": "r_105e6c9467ed4443a85cf1979b45aab2",
+      "sourcePath": "packs/holodeck/sources/project/a_d7c11d251c944d37bb395dd2317258bc/r_24dc1336523045fe90ab54f009816389/source.kiln.js",
+      "sourceSha256": "76b365e5b633cc9adc59c80083d1ea803ef2f0b94ca50fd00d03f0c7c806b46a",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/d01f3008ae13048b002c6bb2cc5edaf23b0311988cc57000d1542f08f1c7e373/winter-wmc-fir-hero-a.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d01f3008ae13048b002c6bb2cc5edaf23b0311988cc57000d1542f08f1c7e373/winter-wmc-fir-hero-a.glb",
+        "path": "packs/holodeck/objects/e0b86213bf8bbef27b04c1a36f2ff1740cfaf5654bc03dbef34a798b765fbaf4/winter-wmc-fir-hero-a.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e0b86213bf8bbef27b04c1a36f2ff1740cfaf5654bc03dbef34a798b765fbaf4/winter-wmc-fir-hero-a.glb",
         "bytes": 3436088,
-        "sha256": "d01f3008ae13048b002c6bb2cc5edaf23b0311988cc57000d1542f08f1c7e373"
+        "sha256": "e0b86213bf8bbef27b04c1a36f2ff1740cfaf5654bc03dbef34a798b765fbaf4"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/4eb1744b744a2f0cc7417b57f716cec291a0661fe69abfc50531a8ef32b7a6a7/winter-wmc-fir-hero-a-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4eb1744b744a2f0cc7417b57f716cec291a0661fe69abfc50531a8ef32b7a6a7/winter-wmc-fir-hero-a-runtime.zip",
-        "bytes": 1471371,
-        "sha256": "4eb1744b744a2f0cc7417b57f716cec291a0661fe69abfc50531a8ef32b7a6a7"
+        "path": "packs/holodeck/objects/b17d44a73706ede3be885d531befe623a34cdbff93eae4f52a4d082dc4d840e9/winter-wmc-fir-hero-a-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b17d44a73706ede3be885d531befe623a34cdbff93eae4f52a4d082dc4d840e9/winter-wmc-fir-hero-a-runtime.zip",
+        "bytes": 1467067,
+        "sha256": "b17d44a73706ede3be885d531befe623a34cdbff93eae4f52a4d082dc4d840e9"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/0b15a8f867dfbbd59af2c2b3e37c254d0303da0f131e9e308d56a6d9edee62f4/winter-wmc-fir-hero-a-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0b15a8f867dfbbd59af2c2b3e37c254d0303da0f131e9e308d56a6d9edee62f4/winter-wmc-fir-hero-a-editable.zip",
-        "bytes": 1925504,
-        "sha256": "0b15a8f867dfbbd59af2c2b3e37c254d0303da0f131e9e308d56a6d9edee62f4"
+        "path": "packs/holodeck/objects/4c2672a57cd6d06b2e86038430959374a7f8e6e25ba51a3781b15005f60aa0db/winter-wmc-fir-hero-a-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4c2672a57cd6d06b2e86038430959374a7f8e6e25ba51a3781b15005f60aa0db/winter-wmc-fir-hero-a-editable.zip",
+        "bytes": 1921242,
+        "sha256": "4c2672a57cd6d06b2e86038430959374a7f8e6e25ba51a3781b15005f60aa0db"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A broad mountain fir with irregular branches, needle sprays and snow loads for prominent trees near the cabin.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-hero-a.png",
-        "sourceRevisionId": "r_105e6c9467ed4443a85cf1979b45aab2",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-hero-a.png",
+        "sourceRevisionId": "r_24dc1336523045fe90ab54f009816389",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -7732,37 +7732,37 @@
       ],
       "collection": "project",
       "assetId": "a_23355f2ce8664f04b335c6be26def8d1",
-      "revisionId": "r_a6300c01aff74afcad5a4ea74cbb67d5",
-      "parentRevision": "r_e2ff35601ac64cf1970b845ecf91afc3",
-      "sourcePath": "packs/holodeck/sources/project/a_23355f2ce8664f04b335c6be26def8d1/r_a6300c01aff74afcad5a4ea74cbb67d5/source.kiln.js",
-      "sourceSha256": "17974c02e7c00daaf44d06a4da99167a35c70da5050830e702f37a5adc2f14e7",
+      "revisionId": "r_9096fae118ea43d9b436cb2b7038bdfa",
+      "parentRevision": "r_a6300c01aff74afcad5a4ea74cbb67d5",
+      "sourcePath": "packs/holodeck/sources/project/a_23355f2ce8664f04b335c6be26def8d1/r_9096fae118ea43d9b436cb2b7038bdfa/source.kiln.js",
+      "sourceSha256": "c8bd12c8e927dd4281a3b29fb7c1af5f9faec7797f6ac5b2eb96452ab68b1c51",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/343c9c23c62e82b66308b1d90e940facb2c0401f0519b4abdbbb5f48deeda7b9/winter-wmc-spruce-hero-a.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/343c9c23c62e82b66308b1d90e940facb2c0401f0519b4abdbbb5f48deeda7b9/winter-wmc-spruce-hero-a.glb",
+        "path": "packs/holodeck/objects/4419dcee2ed47b906a814f1bab8b777b373c242b2a2db07e5e3637defe6a9bbb/winter-wmc-spruce-hero-a.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4419dcee2ed47b906a814f1bab8b777b373c242b2a2db07e5e3637defe6a9bbb/winter-wmc-spruce-hero-a.glb",
         "bytes": 3629464,
-        "sha256": "343c9c23c62e82b66308b1d90e940facb2c0401f0519b4abdbbb5f48deeda7b9"
+        "sha256": "4419dcee2ed47b906a814f1bab8b777b373c242b2a2db07e5e3637defe6a9bbb"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/7c5c3daebf0e6f8d552a59164b7c06bd43e419df03345dbe13bfce09a9f8596f/winter-wmc-spruce-hero-a-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7c5c3daebf0e6f8d552a59164b7c06bd43e419df03345dbe13bfce09a9f8596f/winter-wmc-spruce-hero-a-runtime.zip",
-        "bytes": 1552549,
-        "sha256": "7c5c3daebf0e6f8d552a59164b7c06bd43e419df03345dbe13bfce09a9f8596f"
+        "path": "packs/holodeck/objects/f8184c35a41faf024b8d4e7916098bb334ccac6c342c5bbaa4bf81fae9f2411f/winter-wmc-spruce-hero-a-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f8184c35a41faf024b8d4e7916098bb334ccac6c342c5bbaa4bf81fae9f2411f/winter-wmc-spruce-hero-a-runtime.zip",
+        "bytes": 1547623,
+        "sha256": "f8184c35a41faf024b8d4e7916098bb334ccac6c342c5bbaa4bf81fae9f2411f"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/5ea722ccfe9afdd361c9f10a31ad9a0640d4f8100d3e3f3ea515c88d97723900/winter-wmc-spruce-hero-a-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5ea722ccfe9afdd361c9f10a31ad9a0640d4f8100d3e3f3ea515c88d97723900/winter-wmc-spruce-hero-a-editable.zip",
-        "bytes": 1957654,
-        "sha256": "5ea722ccfe9afdd361c9f10a31ad9a0640d4f8100d3e3f3ea515c88d97723900"
+        "path": "packs/holodeck/objects/5bc268f039075469419736e021e512315e15d09794c65b8cd7fb191fa89a8f34/winter-wmc-spruce-hero-a-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5bc268f039075469419736e021e512315e15d09794c65b8cd7fb191fa89a8f34/winter-wmc-spruce-hero-a-editable.zip",
+        "bytes": 1952600,
+        "sha256": "5bc268f039075469419736e021e512315e15d09794c65b8cd7fb191fa89a8f34"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A tall mountain spruce with layered branches, needle sprays and scattered snow loads.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-hero-a.png",
-        "sourceRevisionId": "r_a6300c01aff74afcad5a4ea74cbb67d5",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-hero-a.png",
+        "sourceRevisionId": "r_9096fae118ea43d9b436cb2b7038bdfa",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -7811,37 +7811,37 @@
       ],
       "collection": "project",
       "assetId": "a_70a4c2e9fee3489aa5d4f93d71942508",
-      "revisionId": "r_cc07345479d94a33bdf04bc3969540bc",
-      "parentRevision": "r_29095a9db73e49eaab6a049509ffe109",
-      "sourcePath": "packs/holodeck/sources/project/a_70a4c2e9fee3489aa5d4f93d71942508/r_cc07345479d94a33bdf04bc3969540bc/source.kiln.js",
-      "sourceSha256": "5cff62f2da4cb972dbaaeefb9b0b1df59b3c1f7cae73e7fd71f3f46d5e46c657",
+      "revisionId": "r_653b24f39a224932ad60242f0fdf3434",
+      "parentRevision": "r_cc07345479d94a33bdf04bc3969540bc",
+      "sourcePath": "packs/holodeck/sources/project/a_70a4c2e9fee3489aa5d4f93d71942508/r_653b24f39a224932ad60242f0fdf3434/source.kiln.js",
+      "sourceSha256": "245754b95ce7dfe86ee180d5ccf90d0d26a9a1d9e9b2a88d2b566991b11645f8",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/7c04710ee4aec131f61a64756d0f593e04eeae2a51aaecc9e5424363ba4faad0/winter-wmc-fir-middle-a.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7c04710ee4aec131f61a64756d0f593e04eeae2a51aaecc9e5424363ba4faad0/winter-wmc-fir-middle-a.glb",
+        "path": "packs/holodeck/objects/43cea9b9f9b07909708c9e6ef414ff0bfbe22d6de8b3e3e628fa3f16a5c2408d/winter-wmc-fir-middle-a.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/43cea9b9f9b07909708c9e6ef414ff0bfbe22d6de8b3e3e628fa3f16a5c2408d/winter-wmc-fir-middle-a.glb",
         "bytes": 425904,
-        "sha256": "7c04710ee4aec131f61a64756d0f593e04eeae2a51aaecc9e5424363ba4faad0"
+        "sha256": "43cea9b9f9b07909708c9e6ef414ff0bfbe22d6de8b3e3e628fa3f16a5c2408d"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/50ed6c5b49b7b2c7642c57224774e7ae82bb90e952fd9ac8a8493bcc0e16217d/winter-wmc-fir-middle-a-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/50ed6c5b49b7b2c7642c57224774e7ae82bb90e952fd9ac8a8493bcc0e16217d/winter-wmc-fir-middle-a-runtime.zip",
-        "bytes": 237402,
-        "sha256": "50ed6c5b49b7b2c7642c57224774e7ae82bb90e952fd9ac8a8493bcc0e16217d"
+        "path": "packs/holodeck/objects/8771cb70fe3a5c7c7a38f7aeef998782e0da4f136dc93578664ea85c921106dd/winter-wmc-fir-middle-a-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8771cb70fe3a5c7c7a38f7aeef998782e0da4f136dc93578664ea85c921106dd/winter-wmc-fir-middle-a-runtime.zip",
+        "bytes": 237739,
+        "sha256": "8771cb70fe3a5c7c7a38f7aeef998782e0da4f136dc93578664ea85c921106dd"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/ed7e3754a067d6972d8973fb8b2b8d74a6259164f5d68edd8e9508168af44834/winter-wmc-fir-middle-a-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ed7e3754a067d6972d8973fb8b2b8d74a6259164f5d68edd8e9508168af44834/winter-wmc-fir-middle-a-editable.zip",
-        "bytes": 603114,
-        "sha256": "ed7e3754a067d6972d8973fb8b2b8d74a6259164f5d68edd8e9508168af44834"
+        "path": "packs/holodeck/objects/ecca49e1eb23968a5a91259a8426ab4b3ef984e2c0524661fe75c3a5275ada09/winter-wmc-fir-middle-a-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ecca49e1eb23968a5a91259a8426ab4b3ef984e2c0524661fe75c3a5275ada09/winter-wmc-fir-middle-a-editable.zip",
+        "bytes": 603724,
+        "sha256": "ecca49e1eb23968a5a91259a8426ab4b3ef984e2c0524661fe75c3a5275ada09"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A fir with layered branches and patches of snow for the grove around the cabin.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-middle-a.png",
-        "sourceRevisionId": "r_cc07345479d94a33bdf04bc3969540bc",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-middle-a.png",
+        "sourceRevisionId": "r_653b24f39a224932ad60242f0fdf3434",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -7890,37 +7890,37 @@
       ],
       "collection": "project",
       "assetId": "a_d013717c727c48dfad0bd798c94f261f",
-      "revisionId": "r_9bf5d291a99f444c810b08b8cd7c1f6b",
-      "parentRevision": "r_14389f56d0e34b5b8de08bc7d46166e4",
-      "sourcePath": "packs/holodeck/sources/project/a_d013717c727c48dfad0bd798c94f261f/r_9bf5d291a99f444c810b08b8cd7c1f6b/source.kiln.js",
-      "sourceSha256": "dd4cac6cce900a42decc8ee5e60ddbb701d83b6302988f543572b7d7d4ee9524",
+      "revisionId": "r_12a9a5e32f354fe992679bc5795f41a2",
+      "parentRevision": "r_9bf5d291a99f444c810b08b8cd7c1f6b",
+      "sourcePath": "packs/holodeck/sources/project/a_d013717c727c48dfad0bd798c94f261f/r_12a9a5e32f354fe992679bc5795f41a2/source.kiln.js",
+      "sourceSha256": "c0a2b3c095872c4acac192a20c3b5c041ad35f8c3901a5b63282a25f840db97e",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/a231a104d84b15467f7e23be3b00fd0ad08aa58a21173fa8a0ef11997d0c871a/winter-wmc-spruce-middle-a.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a231a104d84b15467f7e23be3b00fd0ad08aa58a21173fa8a0ef11997d0c871a/winter-wmc-spruce-middle-a.glb",
+        "path": "packs/holodeck/objects/065fc84dda4b0fa1b64514e17cc6d5d4bb13b329bb7bb3218052bc328f921778/winter-wmc-spruce-middle-a.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/065fc84dda4b0fa1b64514e17cc6d5d4bb13b329bb7bb3218052bc328f921778/winter-wmc-spruce-middle-a.glb",
         "bytes": 432940,
-        "sha256": "a231a104d84b15467f7e23be3b00fd0ad08aa58a21173fa8a0ef11997d0c871a"
+        "sha256": "065fc84dda4b0fa1b64514e17cc6d5d4bb13b329bb7bb3218052bc328f921778"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/baaa3956f0fde2f4b46dfb57eb6b8ec0816fe376bcce5d46cebf8d2eca8ca157/winter-wmc-spruce-middle-a-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/baaa3956f0fde2f4b46dfb57eb6b8ec0816fe376bcce5d46cebf8d2eca8ca157/winter-wmc-spruce-middle-a-runtime.zip",
-        "bytes": 239632,
-        "sha256": "baaa3956f0fde2f4b46dfb57eb6b8ec0816fe376bcce5d46cebf8d2eca8ca157"
+        "path": "packs/holodeck/objects/d0fce33fdf1c06f040754676570f769556f622ca9391b94f5edb6a06a5eb2367/winter-wmc-spruce-middle-a-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d0fce33fdf1c06f040754676570f769556f622ca9391b94f5edb6a06a5eb2367/winter-wmc-spruce-middle-a-runtime.zip",
+        "bytes": 239981,
+        "sha256": "d0fce33fdf1c06f040754676570f769556f622ca9391b94f5edb6a06a5eb2367"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/45c070ea88dc40978c07821c0369ec877a5a5ab0e41d91709c219adc92eaaae5/winter-wmc-spruce-middle-a-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/45c070ea88dc40978c07821c0369ec877a5a5ab0e41d91709c219adc92eaaae5/winter-wmc-spruce-middle-a-editable.zip",
-        "bytes": 537797,
-        "sha256": "45c070ea88dc40978c07821c0369ec877a5a5ab0e41d91709c219adc92eaaae5"
+        "path": "packs/holodeck/objects/cba36913dafacd83f765de728ca4c24cffb1d432f542b16589b90694740e7448/winter-wmc-spruce-middle-a-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/cba36913dafacd83f765de728ca4c24cffb1d432f542b16589b90694740e7448/winter-wmc-spruce-middle-a-editable.zip",
+        "bytes": 538238,
+        "sha256": "cba36913dafacd83f765de728ca4c24cffb1d432f542b16589b90694740e7448"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A slender spruce with layered branches and patches of snow for mixing through the forest.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-middle-a.png",
-        "sourceRevisionId": "r_9bf5d291a99f444c810b08b8cd7c1f6b",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-middle-a.png",
+        "sourceRevisionId": "r_12a9a5e32f354fe992679bc5795f41a2",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -7969,37 +7969,37 @@
       ],
       "collection": "project",
       "assetId": "a_07729f5aec8847bc80d071b4599d6bff",
-      "revisionId": "r_23d2596b5b1142019ccc8960b414e373",
-      "parentRevision": "r_00625992b11b4e67bbfb4950bf796b16",
-      "sourcePath": "packs/holodeck/sources/project/a_07729f5aec8847bc80d071b4599d6bff/r_23d2596b5b1142019ccc8960b414e373/source.kiln.js",
-      "sourceSha256": "dcdfcb67b5c78374d3c237bfeb2be7e1f6eab42cdf16a3b809156b808a03f6da",
+      "revisionId": "r_d36e25c91a154b18adda59d5fc18ba9c",
+      "parentRevision": "r_23d2596b5b1142019ccc8960b414e373",
+      "sourcePath": "packs/holodeck/sources/project/a_07729f5aec8847bc80d071b4599d6bff/r_d36e25c91a154b18adda59d5fc18ba9c/source.kiln.js",
+      "sourceSha256": "f3300facc2703fa88eeabd8e111ef50f22fcac9460d785a87868a76255977721",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/cd00513df617a55bbfd5e3735eba0a62da37451fd9a83bcc441438a9665df59a/winter-wmc-fir-background-a.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/cd00513df617a55bbfd5e3735eba0a62da37451fd9a83bcc441438a9665df59a/winter-wmc-fir-background-a.glb",
+        "path": "packs/holodeck/objects/38fa15bd0ae91f835736155fcc5679e6803bbede7e927c4df7cdf754cb270db7/winter-wmc-fir-background-a.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/38fa15bd0ae91f835736155fcc5679e6803bbede7e927c4df7cdf754cb270db7/winter-wmc-fir-background-a.glb",
         "bytes": 174904,
-        "sha256": "cd00513df617a55bbfd5e3735eba0a62da37451fd9a83bcc441438a9665df59a"
+        "sha256": "38fa15bd0ae91f835736155fcc5679e6803bbede7e927c4df7cdf754cb270db7"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/545c456dd9a2414238f8b954d517d9a1182cb93be5df94606f767880e966e777/winter-wmc-fir-background-a-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/545c456dd9a2414238f8b954d517d9a1182cb93be5df94606f767880e966e777/winter-wmc-fir-background-a-runtime.zip",
-        "bytes": 138444,
-        "sha256": "545c456dd9a2414238f8b954d517d9a1182cb93be5df94606f767880e966e777"
+        "path": "packs/holodeck/objects/28cc7b8fef9273bfe651bb150c92b2ec24de4310a963a4422f43e65c86f09d8e/winter-wmc-fir-background-a-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/28cc7b8fef9273bfe651bb150c92b2ec24de4310a963a4422f43e65c86f09d8e/winter-wmc-fir-background-a-runtime.zip",
+        "bytes": 138465,
+        "sha256": "28cc7b8fef9273bfe651bb150c92b2ec24de4310a963a4422f43e65c86f09d8e"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/4d645236f34afebc40688361acd86d87ff184f16a9de1e6ae6d24b807522e3e6/winter-wmc-fir-background-a-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4d645236f34afebc40688361acd86d87ff184f16a9de1e6ae6d24b807522e3e6/winter-wmc-fir-background-a-editable.zip",
-        "bytes": 547551,
-        "sha256": "4d645236f34afebc40688361acd86d87ff184f16a9de1e6ae6d24b807522e3e6"
+        "path": "packs/holodeck/objects/4292744eb2dfd36ed888bdef3268e1a026c87c80065433af71713e9cdd05f257/winter-wmc-fir-background-a-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4292744eb2dfd36ed888bdef3268e1a026c87c80065433af71713e9cdd05f257/winter-wmc-fir-background-a-editable.zip",
+        "bytes": 547965,
+        "sha256": "4292744eb2dfd36ed888bdef3268e1a026c87c80065433af71713e9cdd05f257"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A broad fir with snow-laden branches for the farther forest.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-background-a.png",
-        "sourceRevisionId": "r_23d2596b5b1142019ccc8960b414e373",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-background-a.png",
+        "sourceRevisionId": "r_d36e25c91a154b18adda59d5fc18ba9c",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -8048,37 +8048,37 @@
       ],
       "collection": "project",
       "assetId": "a_b9737920dd4e43abaad0a6536de676f0",
-      "revisionId": "r_840cfdc71ca547d9aa4c11ad542d52c9",
-      "parentRevision": "r_be03fe22c5844f6b962db1263b8e5fc8",
-      "sourcePath": "packs/holodeck/sources/project/a_b9737920dd4e43abaad0a6536de676f0/r_840cfdc71ca547d9aa4c11ad542d52c9/source.kiln.js",
-      "sourceSha256": "302fde477a81e88998a6b0bc7788d06dea7ddb986b4db3eff14722e7deb566e2",
+      "revisionId": "r_3e6ab9ec488f47478525cb870e37f42e",
+      "parentRevision": "r_840cfdc71ca547d9aa4c11ad542d52c9",
+      "sourcePath": "packs/holodeck/sources/project/a_b9737920dd4e43abaad0a6536de676f0/r_3e6ab9ec488f47478525cb870e37f42e/source.kiln.js",
+      "sourceSha256": "73e5bdce6dbb8c84bb69dc1280e96db5eda65eceec36e986095ba49dfeb35b41",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/3a357246456a7ff3b479c702d15ed0b0f4d2a46f21036067893d59d0fc610b49/winter-wmc-spruce-background-a.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3a357246456a7ff3b479c702d15ed0b0f4d2a46f21036067893d59d0fc610b49/winter-wmc-spruce-background-a.glb",
+        "path": "packs/holodeck/objects/252933b51e662a36ecde0f76214cd41f3a7779ce538f6fdf87d7c312225cf269/winter-wmc-spruce-background-a.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/252933b51e662a36ecde0f76214cd41f3a7779ce538f6fdf87d7c312225cf269/winter-wmc-spruce-background-a.glb",
         "bytes": 184296,
-        "sha256": "3a357246456a7ff3b479c702d15ed0b0f4d2a46f21036067893d59d0fc610b49"
+        "sha256": "252933b51e662a36ecde0f76214cd41f3a7779ce538f6fdf87d7c312225cf269"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/51cffc1d3de8227e967b651605083caeb6ac3f885821b51367cde077b7e29ec7/winter-wmc-spruce-background-a-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/51cffc1d3de8227e967b651605083caeb6ac3f885821b51367cde077b7e29ec7/winter-wmc-spruce-background-a-runtime.zip",
-        "bytes": 143680,
-        "sha256": "51cffc1d3de8227e967b651605083caeb6ac3f885821b51367cde077b7e29ec7"
+        "path": "packs/holodeck/objects/86b31e166bde4d90521e1327af20162dacb80635c055424d2c5cfc3ea5d54a29/winter-wmc-spruce-background-a-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/86b31e166bde4d90521e1327af20162dacb80635c055424d2c5cfc3ea5d54a29/winter-wmc-spruce-background-a-runtime.zip",
+        "bytes": 143706,
+        "sha256": "86b31e166bde4d90521e1327af20162dacb80635c055424d2c5cfc3ea5d54a29"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/29b53023ae35c7d4e9044dde9e3ab672b48ad896cd9c17977803a9360266b2c4/winter-wmc-spruce-background-a-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/29b53023ae35c7d4e9044dde9e3ab672b48ad896cd9c17977803a9360266b2c4/winter-wmc-spruce-background-a-editable.zip",
-        "bytes": 419625,
-        "sha256": "29b53023ae35c7d4e9044dde9e3ab672b48ad896cd9c17977803a9360266b2c4"
+        "path": "packs/holodeck/objects/68e498b50fad7aedf5d1a26a3f7a97bbd9a8805affd54aa9306cd0bf30ee5291/winter-wmc-spruce-background-a-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/68e498b50fad7aedf5d1a26a3f7a97bbd9a8805affd54aa9306cd0bf30ee5291/winter-wmc-spruce-background-a-editable.zip",
+        "bytes": 420125,
+        "sha256": "68e498b50fad7aedf5d1a26a3f7a97bbd9a8805affd54aa9306cd0bf30ee5291"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A narrow spruce with snow-laden branch tiers for the forest backdrop.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-spruce-background-a.png",
-        "sourceRevisionId": "r_840cfdc71ca547d9aa4c11ad542d52c9",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-spruce-background-a.png",
+        "sourceRevisionId": "r_3e6ab9ec488f47478525cb870e37f42e",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -8127,37 +8127,37 @@
       ],
       "collection": "project",
       "assetId": "a_f72b795d8be449cfaee39950d715be64",
-      "revisionId": "r_f2f1d09fd0a942c58964b2821e219406",
-      "parentRevision": "r_d16e3822c9974df3a6bcf8af23306333",
-      "sourcePath": "packs/holodeck/sources/project/a_f72b795d8be449cfaee39950d715be64/r_f2f1d09fd0a942c58964b2821e219406/source.kiln.js",
-      "sourceSha256": "9983cde077c6865791b7fafe9adf4b1c487aae5badbb52c702ee8442cb6d2732",
+      "revisionId": "r_a5fcf206ebe2418a813cc2abdb19cad1",
+      "parentRevision": "r_f2f1d09fd0a942c58964b2821e219406",
+      "sourcePath": "packs/holodeck/sources/project/a_f72b795d8be449cfaee39950d715be64/r_a5fcf206ebe2418a813cc2abdb19cad1/source.kiln.js",
+      "sourceSha256": "4fe7ea5679eaffb03cb8db27eec20cbd9478551dc02ae4586a886a6829afb78b",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/a9c94467aad237852a1b20ee5e22a84c824c38f7374d2e50eb6f7b1343fcd02e/winter-wmc-fir-sapling-a.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a9c94467aad237852a1b20ee5e22a84c824c38f7374d2e50eb6f7b1343fcd02e/winter-wmc-fir-sapling-a.glb",
+        "path": "packs/holodeck/objects/cf225ec2e0ecc163a1eb82bf6e6dc543792bc38188dbbb9cc25eb4d64553a52c/winter-wmc-fir-sapling-a.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/cf225ec2e0ecc163a1eb82bf6e6dc543792bc38188dbbb9cc25eb4d64553a52c/winter-wmc-fir-sapling-a.glb",
         "bytes": 700540,
-        "sha256": "a9c94467aad237852a1b20ee5e22a84c824c38f7374d2e50eb6f7b1343fcd02e"
+        "sha256": "cf225ec2e0ecc163a1eb82bf6e6dc543792bc38188dbbb9cc25eb4d64553a52c"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/49e0697ddce9efe6c3f99afcfe5d6f481712d6d3c7b1011681bb1972315e3664/winter-wmc-fir-sapling-a-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/49e0697ddce9efe6c3f99afcfe5d6f481712d6d3c7b1011681bb1972315e3664/winter-wmc-fir-sapling-a-runtime.zip",
-        "bytes": 345575,
-        "sha256": "49e0697ddce9efe6c3f99afcfe5d6f481712d6d3c7b1011681bb1972315e3664"
+        "path": "packs/holodeck/objects/92c90d71a006c3462a73d8f8258d0a411d813e204b8898644e57d03ca891c7e7/winter-wmc-fir-sapling-a-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/92c90d71a006c3462a73d8f8258d0a411d813e204b8898644e57d03ca891c7e7/winter-wmc-fir-sapling-a-runtime.zip",
+        "bytes": 345213,
+        "sha256": "92c90d71a006c3462a73d8f8258d0a411d813e204b8898644e57d03ca891c7e7"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/f76efba95c611453b3b0d6f48914dd4852ffe670f9f7a8560cf883c84c5808c1/winter-wmc-fir-sapling-a-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f76efba95c611453b3b0d6f48914dd4852ffe670f9f7a8560cf883c84c5808c1/winter-wmc-fir-sapling-a-editable.zip",
-        "bytes": 761613,
-        "sha256": "f76efba95c611453b3b0d6f48914dd4852ffe670f9f7a8560cf883c84c5808c1"
+        "path": "packs/holodeck/objects/e409c56f8444ddbcc86400c0c9b77927166c176a1c61a29c07d54d91234bb0b5/winter-wmc-fir-sapling-a-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e409c56f8444ddbcc86400c0c9b77927166c176a1c61a29c07d54d91234bb0b5/winter-wmc-fir-sapling-a-editable.zip",
+        "bytes": 760139,
+        "sha256": "e409c56f8444ddbcc86400c0c9b77927166c176a1c61a29c07d54d91234bb0b5"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A small fir with low spreading branches, needle sprays and snow for forest edges and gaps between mature trees.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-fir-sapling-a.png",
-        "sourceRevisionId": "r_f2f1d09fd0a942c58964b2821e219406",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/winter-wmc-fir-sapling-a.png",
+        "sourceRevisionId": "r_a5fcf206ebe2418a813cc2abdb19cad1",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },

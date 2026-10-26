@@ -192,10 +192,22 @@ test('repoint refuses unselected packs, stale releases and source revisions, cha
   const otherPacks = { 'holodeck-cove': f.selection.packs['holodeck-cove'] };
   await expect(repointHolodeckExample({ ...f.options, selection: { ...f.selection, packs: otherPacks } })).rejects.toThrow('not selected');
   await expect(repointHolodeckExample({ ...f.options, release: f.selection.release })).rejects.toThrow('new release');
-  const newer = structuredClone(f.selection); newer.packs[f.packId].source.sourceRevision = 17;
-  await expect(repointHolodeckExample({ ...f.options, selection: newer })).rejects.toThrow('newer source revision');
+  const newer = structuredClone(f.selection); newer.packs[f.packId].source.sourceRevision = 18;
+  await expect(repointHolodeckExample({ ...f.options, selection: newer })).rejects.toThrow('source revision cannot go backward');
   const shared = structuredClone(f.selection); shared.assets['cove-structure'].revisionId = 'r_' + '9'.repeat(32);
   await expect(repointHolodeckExample({ ...f.options, selection: shared })).rejects.toThrow('shared revision');
   const unrelated = structuredClone(f.selection); unrelated.assets['crescent-palm'].revisionId = 'r_' + '8'.repeat(32);
   await expect(repointHolodeckExample({ ...f.options, selection: unrelated })).rejects.toThrow('does not descend');
+});
+
+
+test('repoint accepts a committed asset repair without inventing an authoring-world revision', async () => {
+  const f = await repointFixture();
+  const selection = structuredClone(f.selection);
+  selection.packs[f.packId].source.sourceRevision = 17;
+  const result = await repointHolodeckExample({ ...f.options, selection });
+  expect(result.packs[f.packId].source.sourceRevision).toBe(17);
+  expect(result.assets['crescent-palm'].parentRevision).toBe(f.staged);
+  const repeated = { ...f.options, selection: result, release: 'holodeck-next-maintenance' };
+  await expect(repointHolodeckExample(repeated)).rejects.toThrow('newer committed example');
 });
