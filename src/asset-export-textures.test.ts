@@ -78,6 +78,9 @@ test('without a texture option, runtime and three exports keep their pre-manifes
   const three = await exportAssetGlb(record, { profile: 'runtime', target: 'three' });
   if (plain.profile !== 'runtime' || three.profile !== 'runtime') throw new Error('runtime');
   // Recorded on main before the manifest existed (2026-10-22): the default stays byte-identical.
+  // The three pair was re-recorded for #197 (2026-10-23): its sidecar gained the position grid
+  // steps, and the GLB carries the sidecar's hash. The derived geometry bytes were compared
+  // before and after and are unchanged.
   expect({
     plainGlb: sha(plain.glb),
     plainMetadata: sha(plain.metadata.bytes),
@@ -86,8 +89,8 @@ test('without a texture option, runtime and three exports keep their pre-manifes
   }).toEqual({
     plainGlb: 'sha256:975e9ee4580d90ea61948ee28da42494c78b89e61ced4c79c6ebc4f4fea961e3',
     plainMetadata: 'sha256:cb34dde89a001478c04fa165c2eb64197b9cd490de2f50266425b9dc8cd1a44b',
-    threeGlb: 'sha256:159cf047413a6501ed0e4dd75e418bc78c961b6022ef38ccb8ac2e8381fde09f',
-    threeMetadata: 'sha256:9f8a384e00f85511c3a7f7ce70951943722cf35aa96e2b9c9854a32975233385',
+    threeGlb: 'sha256:90ecf54d5ae512d8f37624e7f9d4794995b551f5d402c3071bc183ae352339e9',
+    threeMetadata: 'sha256:1cfd246cb94b4257acb8a404cdf21de622fcf3258a9a75e37c00bda142187213',
   });
 });
 

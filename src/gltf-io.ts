@@ -53,6 +53,10 @@ export class Lod extends ExtensionProperty<ILod> {
   public listLevels(): (Node | Material)[] {
     return this.listRefs('levels');
   }
+
+  public removeLevel(level: Node | Material): this {
+    return this.removeRef('levels', level);
+  }
 }
 
 /**

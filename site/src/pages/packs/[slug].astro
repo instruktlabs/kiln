@@ -32,7 +32,6 @@ const pageTitle = isFarm || isVehicles ? title : title;
         ? "Six generic road vehicles with three detail tiers, separate wheels, editable source and revision history."
         : `${foundryFloor.name}: ${foundryFloor.summary}.`
   }
-  noindex={!isFarm && !isVehicles}
   breadcrumbs={[
     { label: "Packs", href: "/packs/" },
     { label: title, href: `/packs/${Astro.params.slug}/` },

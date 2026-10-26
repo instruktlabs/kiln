@@ -458,3 +458,41 @@ async function build() {
     expect(usage['roundedBoxGeo']).toBe(1);
   });
 });
+
+describe('profile solid failures (#178)', () => {
+  const diagnosticOf = (error: unknown) => (error as { diagnostic?: unknown }).diagnostic;
+
+  it('turns manifold and solid-path failures into the closed PROFILE_SOLID_FAILED cause', async () => {
+    // Out-of-scale coordinates make manifold throw a raw WASM exception (a number),
+    // and holes that consume the outline throw a plain Error: both used to cross the
+    // sandbox as the generic rejection with no repair advice.
+    const huge: Profile2D = [
+      [0, 0],
+      [1e15, 0],
+      [1e15, 1e15],
+      [0, 1e15],
+    ];
+    for (const attempt of [
+      () => extrudeProfile(huge, { depth: 1 }),
+      () => revolveProfile(huge, { bevel: 0.01 }),
+      () => extrudeProfile(UNIT_SQUARE, { holes: [UNIT_SQUARE] }),
+    ]) {
+      const error = await attempt().catch((e: unknown) => e);
+      expect(diagnosticOf(error)).toBe('PROFILE_SOLID_FAILED');
+      expect(String((error as Error).message)).toContain('twice the bevel');
+    }
+  });
+
+  it('keeps PROFILE_BEVEL_COLLAPSE for an over-large bevel and accepts the repaired bevel', async () => {
+    const thin: Profile2D = [
+      [0, 0],
+      [0.02, 0],
+      [0.02, 1],
+      [0, 1],
+    ];
+    const error = await revolveProfile(thin, { bevel: 0.02 }).catch((e: unknown) => e);
+    expect(diagnosticOf(error)).toBe('PROFILE_BEVEL_COLLAPSE');
+    const repaired = await revolveProfile(thin, { bevel: 0.005 });
+    expect(repaired.getAttribute('position').count).toBeGreaterThan(0);
+  });
+});

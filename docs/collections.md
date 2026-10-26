@@ -100,6 +100,10 @@ by default. There is no automatic deletion or disk quota for saved collections.
 4. In a later session, use `kiln_assets` with `action: "restore"`, collection,
    assetId and revisionId. Use the returned programRef with `kiln_source`/`kiln_edit`.
 5. Save a child with the same assetId and `parentRevision` equal to the base revision.
+   The result's `comparison` gives the drawn triangle, vertex, draw-call and material
+   counts as `parent`, `child` and `delta`, the drawn bounds sizes and their delta, and
+   `geometryIdentical` (plus `uvIdentical` when it is true). See
+   [the comparison fields](../skills/kiln-refine-asset/references/revision-and-views.md#compare-exported-revisions).
 
 Every save is immutable. A child does not update or delete its parent, and concurrent children are
 retained as separate branch tips. The viewer exposes the revision selector and branch count, while

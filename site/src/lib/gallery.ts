@@ -4,6 +4,9 @@ import { catalogAssets, type CatalogImage } from './catalog';
 import { PACKS_ENABLED } from './config';
 import { isTroyGalleryAsset } from './troy-gallery.mjs';
 import { cabinWoodsAssets, cabinWoodsHref } from './cabin-woods';
+import { holodeckAssetHref, holodeckAssets, holodeckScenes } from './holodeck';
+import taxonomy from '../data/gallery-taxonomy.json';
+import { browseGallery } from './gallery-browse';
 
 export { foundry };
 export type FoundryAsset = (typeof foundry.assets)[number];
@@ -13,17 +16,21 @@ export interface GalleryCard {
   pack: string | null;
   packs: string[];
   category: string;
+  tags: string[];
+  addedOn: string;
   href: string;
   revisionId: string;
   runtimeDownload: { sha256: string };
   poster: CatalogImage;
   metrics: { triangles: number };
   review: { ownerAccepted: boolean; status: string };
+  /** Walkable scenes that place this asset, linked beside the card. */
+  scenes?: { label: string; href: string }[];
 }
 
 export function buildGallery(packsEnabled: boolean): GalleryCard[] {
   if (!packsEnabled) return [];
-  const cards: GalleryCard[] = catalogAssets(true).map((asset) => ({
+  const cards: Omit<GalleryCard, 'tags' | 'addedOn'>[] = catalogAssets(true).map((asset) => ({
     ...asset,
     packs: [asset.pack ?? 'standalone'],
     href: `/gallery/${asset.slug}/`,
@@ -61,7 +68,22 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
       href: cabinWoodsHref(asset),
     })),
   );
-  return cards;
+  cards.push(
+    ...holodeckAssets.map((asset) => ({
+      ...asset,
+      href: holodeckAssetHref(asset),
+      scenes: holodeckScenes(asset).map(({ label, href }) => ({ label, href })),
+    })),
+  );
+  return browseGallery(
+    cards.map((card) => {
+      const editorial = (
+        taxonomy.assets as Record<string, { category: string; tags: string[]; addedOn: string }>
+      )[card.href];
+      if (!editorial) throw new Error(`Missing gallery taxonomy for ${card.href}`);
+      return { ...card, ...editorial };
+    }),
+  );
 }
 
 export const galleryCards = buildGallery(PACKS_ENABLED);

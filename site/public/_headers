@@ -17,6 +17,15 @@
   Cache-Control: public, max-age=0, must-revalidate
   Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-wAGukfde07th8FeXAlx31NqovrboToJ/niuiFbyoI70=' 'sha256-nQyK+pVXDH5RpnnZ8bk4KjsgiC91NvDr20Qc7mo8J4w=' 'sha256-qsHLNpEk33lPgo1MnVDl/NNWHbeSVPK4+ksw8A84/ls=' 'sha256-pi2avave5D7tqBWNSP54Cy8gsoNF+VSK2JuekU4lFcg=' 'sha256-ynl5VnLFfq74TN1iDcyssM5zkT3yce8NSUQIazX5/GY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' blob: https://assets.kilnstudio.tools; worker-src blob:
 
+# The project's own pages.dev hosts serve these same bytes (production at kilnstudio.pages.dev, each deployment and
+# branch alias beneath it), so they are kept out of search indexes; only https://kilnstudio.tools is indexed. Pages
+# matches an absolute rule on its host, where ":name" is one label (developers.cloudflare.com/pages/configuration/headers/).
+https://kilnstudio.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.kilnstudio.pages.dev/*
+  X-Robots-Tag: noindex
+
 # Build output named by content hash: a changed file gets a new name, so these never need revalidating.
 /_astro/*
   ! Cache-Control

@@ -1,0 +1,391 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_26aa8b78264d45f2bf79d6dff7188cb4",
+  "revisionId": "r_7a73a65486b049138933dba49173cd11",
+  "parentRevision": "r_0ba7b32ad3ee4bd494e55146b8312ed7",
+  "name": "Crescent Cove coconut palm - lean",
+  "tags": [
+    "palm",
+    "coconut",
+    "foliage-wind",
+    "crescent-cove",
+    "tropical"
+  ],
+  "createdAt": "2026-10-24T02:38:59.503Z",
+  "description": "Broad strap leaflets instead of needle-thin ones (user feedback: the leaves read like pine needles). Each leaflet (pinna) is still one four-triangle strip, but its full width is now 12.5 cm (was 5.6 cm at a single widest point), on the same length (1.0 m at its longest): a narrow folded base at the rachis, full width at 16 % of its length, 86 % width at 64 %, then an acuminate tip, with a shallow V channel (edges 0.16 x width above the midrib), about 8:1 long to wide instead of 18:1. Width also scales with the leaflet's length along the frond, so base and tip leaflets are narrower. Same 29 leaflets per side; with the new width, neighbours overlap along the rachis and the crown reads as lush leaves from below and far away. Leaflets are held flatter on upper fronds (droop 16-42 deg plus 22 deg toward the frond tip, was 32-52 plus 18), angled 34-50 deg from perpendicular (was 44-62), rachis base radius 4 cm (was 3.4 cm). The dead frond in crown_husk uses the same leaflet build at 0.7 x width. The frond strip's edge bands are a little less dark and the midrib stripe softer. The crown random stream is preserved: the old leaflet draws are replayed and new leaflets use their own per-frond stream, so trunk (measured unchanged), frond arcs, coconuts and the dead frond rachis keep their places. Contracts kept: three parts (trunk, crown_husk, fronds), one PalmFronds material with the 256x4 band texture, TEXCOORD_0.x selects the band, TEXCOORD_0.y is the wind weight (0 at the crown, 1 at the tip; correlation with distance 0.97). 8,038 triangles (was 7,982).",
+  "attribution": {
+    "model": "claude-opus-5-5",
+    "harness": "Claude Code"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:f8028226c593994888e7777d3b67c349b6a9de5215bbadd1f3e2264228f11f61",
+      "bytes": 360512
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:8eb780b2cc16bf5d9d2ccd4ef5736ba6ac8fa23d5e02a181e5ba0f195cc9f8e8",
+      "bytes": 26385
+    },
+    "preview.png": {
+      "sha256": "sha256:1928451afd4edededbbc09861a9435bee945fcf9e1c703b8171f1fee89b75174",
+      "bytes": 367213
+    }
+  },
+  "build": {
+    "engine": "sha256:006bc21ed78828c59f6b4a6db970c011787fbe738957c932383b85a649117357",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "f8028226c593994888e7777d3b67c349b6a9de5215bbadd1f3e2264228f11f61",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.7971819043159485,
+          -0.8593361377716064,
+          -4.731254577636719
+        ],
+        "max": [
+          8.499967575073242,
+          14.800396919250488,
+          5.14053201675415
+        ],
+        "size": [
+          9.29714947938919,
+          15.659733057022095,
+          9.87178659439087
+        ],
+        "center": [
+          3.851392835378647,
+          6.970530390739441,
+          0.20463871955871582
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -0.8593361377716064,
+        "offsetToGround": 0.8593361377716064,
+        "grounded": false
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Coconut palm lean"
+      },
+      "requestedRole": "fill",
+      "renderMetrics": {
+        "triangles": 8038,
+        "drawCalls": 3,
+        "uniqueGeometries": 3,
+        "uniqueMaterials": 3,
+        "textureCount": 3,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "2 parts marked intentionally open (markOpenShell) were not measured as closed solids. 1 marked \"Open-bottomed sheath bulb over the trunk top, closed coconuts and single-sheet dead fronds.\", because a valid closed solid could not be measured (Not manifold): \"crown_husk\". 1 marked \"Single-sheet leaflets on a thin rachis; double-sided foliage.\", because a valid closed solid could not be measured (Not manifold): \"fronds\". 3 overlapping part pairs were not measured because of these parts alone; overlap there is not ruled out.",
+              "measurement": {
+                "name": "acknowledgedOpenShells",
+                "actual": 2,
+                "breakdown": {
+                  "pairsUnmeasurable": 3
+                }
+              }
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 3,
+            "partVolumeCandidatePairs": 3,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeUnmeasurablePairs": 3,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 0,
+            "partVolumeAcknowledgedParts": 2,
+            "partVolumeAcknowledgedPairs": 3
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "B",
+            "instanceabilitySummary": "B (informational, not a QA verdict), set by 3 distinct materials (B at 2-3). Also: 3 geometries; 3 draw calls.",
+            "uniqueGeometries": 3,
+            "uniqueMaterials": 3,
+            "meshNodes": 3,
+            "meshInstances": 3,
+            "drawCalls": 3,
+            "textureCount": 3,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 8038,
+            "materialCount": 3,
+            "opaqueMaterials": 3,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 2,
+            "doubleSidedMaterials": 1,
+            "texturedMaterials": 3,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 3,
+            "maxImageDimension": 256,
+            "decodedImageBytesRgba8": 69952,
+            "estimatedGpuBytesWithMipmaps": 93271,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
+      "inputGlbSha256": "sha256:f8028226c593994888e7777d3b67c349b6a9de5215bbadd1f3e2264228f11f61",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "light"
+  }
+}

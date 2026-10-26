@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { RIG_ID, resolveRigEngine, fitCamera, orbitDirection } from './rig-render.mjs';
 import { applyRigPoster, applyRigPosters, rigPosterImage, rigPosterKey, rigPosterPath } from './rig-posters-core.mjs';
-import { VEHICLE_POSTER, pruneImagePlan, vehicleTargets } from './rig-posters.mjs';
+import { VEHICLE_POSTER, holodeckPosterView, pruneImagePlan, vehicleTargets } from './rig-posters.mjs';
 import { hashBytes } from './mirror-core.mjs';
 
 const DATA = resolve(import.meta.dir, '../src/data');
@@ -17,6 +17,11 @@ const record = {
   revisionId: 'r_barn',
 };
 const asset = { slug: 'barn', revisionId: 'r_barn', description: 'Red barn.', poster: { alt: 'Old alt', inputPath: 'media/farm/r33/cutout/barn.webp', revisionQualification: 'Exterior view from r33.', exactRevision: false } };
+
+test('the cabin sofa poster looks toward the seating, preserving the standard view for other assets', () => {
+  expect(holodeckPosterView('winter-wmc-sofa-wool').direction).toEqual([0.7, 0.5, -0.7]);
+  expect(holodeckPosterView('winter-wmc-loft-bed').direction).toEqual([0.7, 0.5, 0.7]);
+});
 
 describe('rig poster records', () => {
   test('a poster path carries the rig, pack, release and asset', () => {

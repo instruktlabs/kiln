@@ -17,6 +17,7 @@
  * rather than re-parenting bare geometry.
  */
 import {
+  Accessor,
   type Document,
   Format,
   Logger,
@@ -27,18 +28,22 @@ import {
 } from '@gltf-transform/core';
 import {
   EXTMeshGPUInstancing,
+  type InstancedMesh,
   EXTMeshoptCompression,
+  KHRMeshQuantization,
   KHRTextureBasisu,
 } from '@gltf-transform/extensions';
-import { dedup, quantize, reorder } from '@gltf-transform/functions';
+import { cloneDocument, dedup, prune, quantize, reorder } from '@gltf-transform/functions';
 import type { Property } from '@gltf-transform/core';
 import * as THREE from 'three';
 import { KILN_SEMANTIC_ROLES, readSemanticMetadataV1FromExtras } from './contracts/semantic';
-import { createGltfIO, MSFT_LOD } from './gltf-io';
+import { createGltfIO, type Lod, MSFT_LOD } from './gltf-io';
 import { deliveryNodePaths } from './delivery-inspect';
 import { KILN_REPEAT_INSTANCES_KEY } from './delivery';
-import { isHiddenGltfNode } from './metrics';
+import { collectGlbMetrics, isHiddenGltfNode } from './metrics';
 import { isKtx2, sha256Hex } from './runtime-textures';
+import { trimLodChains, type TrimmedLodChain } from './lod-export';
+import { KILN_BUDGET_KEY } from './budget';
 
 /** Bits per quantized attribute class; custom underscore attributes stay float32. */
 export const RUNTIME_THREE_QUANTIZATION = Object.freeze({
@@ -51,6 +56,9 @@ export const RUNTIME_THREE_QUANTIZATION = Object.freeze({
 });
 const QUANTIZED_SEMANTICS =
   /^(POSITION|NORMAL|TANGENT|TEXCOORD_\d+|COLOR_\d+|JOINTS_\d+|WEIGHTS_\d+)$/;
+/** The same set without POSITION, for `positionBits: 'float'`. */
+const QUANTIZED_SEMANTICS_EXCEPT_POSITION =
+  /^(NORMAL|TANGENT|TEXCOORD_\d+|COLOR_\d+|JOINTS_\d+|WEIGHTS_\d+)$/;
 
 /** The material slot an image serves; `other` covers extension textures. */
 export type RuntimeThreeKtx2SlotV1 =
@@ -102,6 +110,17 @@ export interface RuntimeThreeOptionsV1 {
    * quantization, instancing and every preserved feature stay.
    */
   compression?: RuntimeThreeCompression;
+  /**
+   * Keep LOD0..LOD`maxLod` of every `MSFT_lod` chain and drop the lower levels, for loaders
+   * that never select a level (`0` keeps LOD0 alone). Budget tiers above it are left out of
+   * the shipped declaration. Omitted keeps every level.
+   */
+  maxLod?: number;
+  /**
+   * Position quantization: 8 to 16 bits per mesh (default 14), or `float` to keep positions
+   * as 32-bit floats. Other attribute classes are unchanged.
+   */
+  positionBits?: number | 'float';
 }
 export type RuntimeThreeCompression = 'meshopt' | 'none';
 export interface RuntimeThreeNodeScaleV1 {
@@ -125,9 +144,25 @@ export interface RuntimeThreeDeliveryV1 {
   quantization: {
     extension: 'KHR_mesh_quantization';
     volume: 'mesh';
-    bits: { position: number; normal: number; texcoord: number; color: number; weight: number };
+    /** `position` is `float32` when `positionBits: 'float'` left positions unquantized. */
+    bits: {
+      position: number | 'float32';
+      normal: number;
+      texcoord: number;
+      color: number;
+      weight: number;
+    };
     /** Underscore attributes are never quantized and stay FLOAT, unnormalized. */
     customAttributes: 'float32';
+    /**
+     * The quantized position grid step in metres for each mesh node: the mesh's half-extent
+     * over `2^(bits-1) - 1` levels, times the node's world scale and largest instance scale.
+     * The rounding error of a vertex is at most half its step. Skinned meshes report mesh
+     * units. Empty when positions stay float.
+     */
+    positionSteps: { node: string; mesh: string; step: number }[];
+    /** The largest of `positionSteps`, or 0. */
+    maxPositionStep: number;
   };
   /**
    * Every node whose local matrix carries a quantization transform. Positions in its mesh are
@@ -145,6 +180,13 @@ export interface RuntimeThreeDeliveryV1 {
     reason?: string;
     /** The encoder's own identity, when it declared one. */
     encoder?: RuntimeThreeKtx2EncoderIdentityV1;
+  };
+  /** Present when `maxLod` was given: what each chain kept and dropped. */
+  lod?: {
+    maxLod: number;
+    chains: TrimmedLodChain[];
+    /** Budget tiers above `maxLod`, removed from the shipped declaration, not judged. */
+    budgetTiersOmitted: string[];
   };
   preserved: {
     lodChains: number;
@@ -187,6 +229,17 @@ function meshSignature(mesh: Mesh, ids: Map<Property, number>): string {
           .join(',')}:${primitive.listTargets().length}`,
     )
     .join('|');
+}
+/**
+ * The draw calls this target leaves after batching `repeatInstances` groups (#200): the same
+ * accessor merge and instancing pass, run on a copy, counted the way the budget counts draws.
+ */
+export async function instancedDrawEstimate(doc: Document): Promise<number> {
+  const copy = cloneDocument(doc);
+  copy.setLogger(new Logger(Logger.Verbosity.SILENT));
+  await copy.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR], keepUniqueNames: true }));
+  applyScopedInstancing(copy);
+  return collectGlbMetrics(copy).drawCalls;
 }
 function applyScopedInstancing(doc: Document): InstancingRecord[] {
   const report: InstancingRecord[] = [];
@@ -381,6 +434,149 @@ function decomposeDelta(before: number[], after: number[]) {
   };
 }
 
+/** Whether any primitive or morph target stores data only `KHR_mesh_quantization` permits. */
+function hasQuantizedVertexData(doc: Document): boolean {
+  const quantized = (semantic: string, accessor: Accessor): boolean => {
+    if (accessor.getComponentSize() >= 4) return false;
+    if (semantic === 'POSITION' || semantic === 'NORMAL' || semantic === 'TANGENT') return true;
+    if (!semantic.startsWith('TEXCOORD_')) return false;
+    // Normalized unsigned bytes and shorts are core glTF texture coordinates.
+    const type = accessor.getComponentType();
+    return !(
+      accessor.getNormalized() &&
+      (type === Accessor.ComponentType.UNSIGNED_BYTE ||
+        type === Accessor.ComponentType.UNSIGNED_SHORT)
+    );
+  };
+  return doc
+    .getRoot()
+    .listMeshes()
+    .flatMap((mesh) => mesh.listPrimitives())
+    .flatMap((primitive) => [primitive, ...primitive.listTargets()])
+    .some((target) =>
+      target
+        .listSemantics()
+        .some((semantic) => quantized(semantic, target.getAttribute(semantic)!)),
+    );
+}
+
+/**
+ * The position grid step of every mesh node at `bits` (#197), before quantization. The
+ * quantizer scales each mesh by the largest half-extent of its position volume (morph
+ * deltas included, as the pinned `quantize` computes it) and stores `bits - 1` magnitude
+ * bits, so one step is that half-extent over `2^(bits-1) - 1`. World scale comes from the
+ * node's ancestors; an off-scene LOD level takes its LOD0's parent, where a loader puts it.
+ */
+function positionGridSteps(
+  doc: Document,
+  bits: number,
+): { node: Node; mesh: string; step: number }[] {
+  const levels = 2 ** (bits - 1) - 1;
+  const lodBase = new Map<Node, Node>();
+  for (const node of doc.getRoot().listNodes())
+    for (const level of node.getExtension<Lod>(MSFT_LOD)?.listLevels() ?? [])
+      if (level.propertyType === PropertyType.NODE) lodBase.set(level as Node, node);
+  const world = (node: Node): THREE.Matrix4 => {
+    const matrix = new THREE.Matrix4().fromArray(node.getWorldMatrix());
+    let top = node;
+    while (top.getParentNode()) top = top.getParentNode()!;
+    const placed = lodBase.get(top)?.getParentNode();
+    return placed
+      ? new THREE.Matrix4().fromArray(placed.getWorldMatrix()).multiply(matrix)
+      : matrix;
+  };
+  const halfExtent = (mesh: Mesh): number => {
+    const min = [Infinity, Infinity, Infinity];
+    const max = [-Infinity, -Infinity, -Infinity];
+    const widen = (values: number[], doubleFromZero: boolean) => {
+      for (let axis = 0; axis < 3; axis++) {
+        const value = values[axis]!;
+        const candidates = doubleFromZero ? [value, value * 2, 0] : [value];
+        min[axis] = Math.min(min[axis]!, ...candidates);
+        max[axis] = Math.max(max[axis]!, ...candidates);
+      }
+    };
+    for (const primitive of mesh.listPrimitives()) {
+      const position = primitive.getAttribute('POSITION');
+      if (position) {
+        widen(position.getMin([]), false);
+        widen(position.getMax([]), false);
+      }
+      for (const target of primitive.listTargets()) {
+        const delta = target.getAttribute('POSITION');
+        if (delta) {
+          widen(delta.getMin([]), true);
+          widen(delta.getMax([]), true);
+        }
+      }
+    }
+    return Math.max(...[0, 1, 2].map((axis) => (max[axis]! - min[axis]!) / 2));
+  };
+  const instanceScale = (node: Node): number => {
+    const scale = node
+      .getExtension<InstancedMesh>('EXT_mesh_gpu_instancing')
+      ?.getAttribute('SCALE');
+    if (!scale) return 1;
+    let largest = 0;
+    for (let i = 0; i < scale.getCount(); i++)
+      largest = Math.max(largest, ...scale.getElement(i, []).map(Math.abs));
+    return largest;
+  };
+  const steps: { node: Node; mesh: string; step: number }[] = [];
+  for (const node of doc.getRoot().listNodes()) {
+    const mesh = node.getMesh();
+    if (!mesh?.listPrimitives().some((primitive) => primitive.getAttribute('POSITION'))) continue;
+    const scale = node.getSkin() ? 1 : world(node).getMaxScaleOnAxis() * instanceScale(node);
+    steps.push({ node, mesh: mesh.getName(), step: (halfExtent(mesh) * scale) / levels });
+  }
+  return steps;
+}
+
+/**
+ * Drop levels above `maxLod` (#196), then the meshes, materials and textures only they used.
+ * Budget tiers above `maxLod` no longer describe the file once a chain lost levels, so they
+ * leave the shipped declaration and are listed instead of being judged against fewer levels.
+ */
+async function trimLevels(doc: Document, maxLod: number) {
+  const chains = trimLodChains(doc, maxLod);
+  const budgetTiersOmitted: string[] = [];
+  if (chains.some((chain) => chain.dropped.length > 0)) {
+    await doc.transform(
+      prune({
+        // A pruned mesh leaves its primitives holding their accessors and material.
+        propertyTypes: [
+          PropertyType.MESH,
+          PropertyType.PRIMITIVE,
+          PropertyType.PRIMITIVE_TARGET,
+          PropertyType.ACCESSOR,
+          PropertyType.MATERIAL,
+          PropertyType.TEXTURE,
+        ],
+        keepAttributes: true,
+        keepIndices: true,
+        keepLeaves: true,
+        keepExtras: true,
+        keepSolidTextures: true,
+      }),
+    );
+    const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
+    const extras = { ...((scene?.getExtras() ?? {}) as Record<string, unknown>) };
+    const budget = extras[KILN_BUDGET_KEY] as { triangles?: Record<string, number> } | undefined;
+    if (scene && budget?.triangles) {
+      const triangles = { ...budget.triangles };
+      for (const tier of Object.keys(triangles))
+        if (Number(tier.slice(3)) > maxLod) {
+          budgetTiersOmitted.push(tier);
+          delete triangles[tier];
+        }
+      if (Object.keys(triangles).length > 0) extras[KILN_BUDGET_KEY] = { ...budget, triangles };
+      else delete extras[KILN_BUDGET_KEY];
+      scene.setExtras(extras);
+    }
+  }
+  return { maxLod, chains, budgetTiersOmitted };
+}
+
 /** What the derivation returns beside the GLB: facts and, on request, the `.gltf` layout. */
 export interface RuntimeThreeResult {
   glb: Uint8Array;
@@ -407,11 +603,21 @@ export async function deliverRuntimeThreeGlb(
   const compression = options.compression ?? 'meshopt';
   if (compression !== 'meshopt' && compression !== 'none')
     throw new Error('Runtime three compression must be meshopt or none');
+  const { maxLod } = options;
+  if (maxLod !== undefined && !(Number.isSafeInteger(maxLod) && maxLod >= 0))
+    throw new Error('Runtime three maxLod must be a non-negative integer');
+  const positionBits = options.positionBits ?? RUNTIME_THREE_QUANTIZATION.position;
+  if (
+    positionBits !== 'float' &&
+    !(Number.isSafeInteger(positionBits) && positionBits >= 8 && positionBits <= 16)
+  )
+    throw new Error('Runtime three positionBits must be an integer from 8 to 16, or float');
   const io = createGltfIO().registerDependencies({
     'meshopt.encoder': meshoptEncoder,
   });
   const doc = await io.readBinary(bytes);
   doc.setLogger(new Logger(Logger.Verbosity.SILENT));
+  const lod = maxLod === undefined ? undefined : await trimLevels(doc, maxLod);
   // Merge identical accessors so equal children are recognisable by content; names stay.
   await doc.transform(dedup({ propertyTypes: [PropertyType.ACCESSOR], keepUniqueNames: true }));
   const instanced = applyScopedInstancing(doc);
@@ -421,19 +627,29 @@ export async function deliverRuntimeThreeGlb(
   const matrices = new Map<Node, number[]>();
   for (const node of doc.getRoot().listNodes())
     if (node.getMesh()) matrices.set(node, [...node.getMatrix()]);
+  // Measured before the quantizer folds each mesh's scale into its node.
+  const steps = positionBits === 'float' ? [] : positionGridSteps(doc, positionBits);
+  const semantics =
+    positionBits === 'float' ? QUANTIZED_SEMANTICS_EXCEPT_POSITION : QUANTIZED_SEMANTICS;
   await doc.transform(
     reorder({ encoder: meshoptEncoder as never, target: 'size' }),
     quantize({
-      pattern: QUANTIZED_SEMANTICS,
-      patternTargets: QUANTIZED_SEMANTICS,
+      pattern: semantics,
+      patternTargets: semantics,
       quantizationVolume: 'mesh',
-      quantizePosition: RUNTIME_THREE_QUANTIZATION.position,
+      quantizePosition:
+        positionBits === 'float' ? RUNTIME_THREE_QUANTIZATION.position : positionBits,
       quantizeNormal: RUNTIME_THREE_QUANTIZATION.normal,
       quantizeTexcoord: RUNTIME_THREE_QUANTIZATION.texcoord,
       quantizeColor: RUNTIME_THREE_QUANTIZATION.color,
       quantizeWeight: RUNTIME_THREE_QUANTIZATION.weight,
     }),
   );
+  // The pinned quantizer decides whether to declare KHR_mesh_quantization by testing the
+  // POSITION accessor for every semantic, so float positions hide quantized normals and
+  // texture coordinates and the file would be invalid. Declare it from the accessors.
+  if (positionBits === 'float' && hasQuantizedVertexData(doc))
+    doc.createExtension(KHRMeshQuantization).setRequired(true);
   if (compression === 'meshopt')
     doc
       .createExtension(EXTMeshoptCompression)
@@ -524,13 +740,19 @@ export async function deliverRuntimeThreeGlb(
       extension: 'KHR_mesh_quantization',
       volume: 'mesh',
       bits: {
-        position: RUNTIME_THREE_QUANTIZATION.position,
+        position: positionBits === 'float' ? 'float32' : positionBits,
         normal: RUNTIME_THREE_QUANTIZATION.normal,
         texcoord: RUNTIME_THREE_QUANTIZATION.texcoord,
         color: RUNTIME_THREE_QUANTIZATION.color,
         weight: RUNTIME_THREE_QUANTIZATION.weight,
       },
       customAttributes: 'float32',
+      positionSteps: steps.map(({ node, mesh, step }) => ({
+        node: after.get(node) ?? `#lod/${encodeURIComponent(node.getName())}`,
+        mesh,
+        step,
+      })),
+      maxPositionStep: Math.max(0, ...steps.map(({ step }) => step)),
     },
     nodeScale,
     colliderProxies: proxies.map(({ collider, proxy }) => ({
@@ -548,6 +770,7 @@ export async function deliverRuntimeThreeGlb(
       })),
     instancing: instanced.map(({ node, ...rest }) => ({ node: pathOf(node), ...rest })),
     ktx2,
+    ...(lod ? { lod } : {}),
     preserved: {
       lodChains: all.filter((node) => node.getExtension(MSFT_LOD)).length,
       hiddenNodes: all.filter((node) => isHiddenGltfNode(node)).length,

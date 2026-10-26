@@ -2,8 +2,10 @@
 
 Kiln's local CLI and stdio MCP server share the same collection store and tool registry. ChatGPT web needs a reachable MCP connection: a private Secure MCP Tunnel can carry this existing stdio server without making a public endpoint. The tunnel process must remain running while ChatGPT discovers or calls tools.
 
-This is an owner-managed development connection. Kiln's public hosted service and
-directory listing are deferred. Local CLI/MCP use needs no Kiln account; the
+This is an owner-managed development connection. Hosted Kiln, a remote MCP
+server at `https://kiln.instruktlabs.com/mcp`, is open by invitation through the
+[Kiln Discord](https://discord.gg/fSWVbMdQXK); a public directory listing is
+deferred. Local CLI/MCP use needs no Kiln account; the
 optional OpenAI tunnel separately requires Platform access and a runtime API key.
 
 ## Connect a private development server

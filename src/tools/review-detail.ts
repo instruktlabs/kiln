@@ -637,7 +637,8 @@ export const LEAN_DIFF = 2000;
 export const COMPACT_COMPARISON_CHANGES = 12;
 
 /**
- * A static comparison as the counts, the artifact before and after, and each
+ * A static comparison as the node and draw counts, whether the drawn geometry is identical,
+ * the bounds delta, the artifact before and after, and each
  * change as its path, status and changed fields. The bounds of every change and
  * the scope prose belong to `full`: they were 7,191 of the 20,069 characters of
  * a live compact edit and 32,443 of a 38,952-character compact kiln_inspect
@@ -646,7 +647,19 @@ export const COMPACT_COMPARISON_CHANGES = 12;
  */
 function compactComparison(comparison: Json, hint: string, limit?: number): Json {
   const out: Json = {};
-  for (const key of ['programRef', 'version', 'units', 'summary', 'before', 'after', 'subtrees'])
+  for (const key of [
+    'programRef',
+    'version',
+    'units',
+    'summary',
+    'counts',
+    'geometryIdentical',
+    'uvIdentical',
+    'boundsDelta',
+    'before',
+    'after',
+    'subtrees',
+  ])
     if (comparison[key] !== undefined) out[key] = comparison[key];
   if (isRecord(comparison.animation)) {
     const { scope: _scope, ...animation } = comparison.animation;

@@ -1,0 +1,5887 @@
+{
+  "schemaVersion": 1,
+  "release": "holodeck-20261026-01",
+  "licence": "CC0-1.0",
+  "versions": "final-only",
+  "packs": {
+    "holodeck-tidemark": {
+      "scene": "tidemark",
+      "source": {
+        "kind": "holodeck-example",
+        "ref": "main",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "path": "examples/tidemark",
+        "sourceRevision": 8,
+        "worldSha256": "68564b749eb5e4defc07dc0d1a2d3fb8e0552f4368962b906130276e19ebfa2e"
+      },
+      "assets": [
+        "cove-structure",
+        "cove-canopy",
+        "cove-seating",
+        "cove-hearth",
+        "cove-planting",
+        "cove-rug",
+        "cove-lamp",
+        "cove-moodboard",
+        "island-palm",
+        "island-shrub",
+        "island-grass",
+        "island-shore",
+        "island-hut-frame",
+        "island-hut-roof",
+        "island-hut-furnishings",
+        "island-resident",
+        "island-bird",
+        "island-crab",
+        "jungle-sapling",
+        "jungle-fern",
+        "jungle-understory",
+        "jungle-groundcover",
+        "coastal-flybird"
+      ]
+    },
+    "holodeck-courtyard": {
+      "scene": "courtyard",
+      "source": {
+        "kind": "holodeck-world",
+        "revision": 9,
+        "worldSha256": "7f1069331680842f08c289661784adbfe718aafa56618aeb4a3900544b8cc9c4"
+      },
+      "assets": [
+        "cove-structure",
+        "cove-canopy",
+        "cove-seating",
+        "cove-hearth",
+        "cove-planting",
+        "cove-rug",
+        "cove-lamp",
+        "cove-moodboard",
+        "pave-field-a",
+        "pave-field-b",
+        "pave-curb",
+        "pave-curb-corner",
+        "pave-step",
+        "plaza-fountain",
+        "fountain-cascade",
+        "statue-figure",
+        "statue-monolith",
+        "statue-bronze",
+        "tree-plane",
+        "tree-cypress",
+        "tree-olive",
+        "shrub-box",
+        "plant-lavender",
+        "bench-stone",
+        "bench-park",
+        "planter-square",
+        "planter-urn",
+        "lamp-post",
+        "lamp-bollard",
+        "wall-segment",
+        "wall-pier",
+        "gate-pier"
+      ]
+    },
+    "holodeck-cove": {
+      "scene": "cove",
+      "source": {
+        "kind": "holodeck-modules",
+        "ref": "main",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "files": "assets/cove/modules/*/provenance.json, public/assets/cove-modules/*.glb"
+      },
+      "assets": [
+        "cove-structure",
+        "cove-canopy",
+        "cove-seating",
+        "cove-hearth",
+        "cove-planting",
+        "cove-rug",
+        "cove-lamp",
+        "cove-moodboard"
+      ]
+    },
+    "holodeck-crescent-cove": {
+      "scene": "crescent-cove",
+      "source": {
+        "kind": "holodeck-example",
+        "ref": "main",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "path": "examples/crescent-cove",
+        "sourceRevision": 17,
+        "worldSha256": "5dc28372550010c247e31681c5270341da08b16e889c62bce16143dc3bc6f5b2"
+      },
+      "assets": [
+        "cove-structure",
+        "cove-canopy",
+        "cove-seating",
+        "cove-hearth",
+        "cove-planting",
+        "cove-rug",
+        "cove-lamp",
+        "cove-moodboard",
+        "crescent-palm-tall",
+        "crescent-palm-lean",
+        "crescent-palm-arch",
+        "crescent-palm-young",
+        "crescent-debris-coconuts",
+        "crescent-debris-driftwood-log",
+        "crescent-debris-driftwood-pile",
+        "crescent-debris-fronds",
+        "crescent-debris-shells",
+        "crescent-plant-alocasia",
+        "crescent-plant-grass-patch",
+        "crescent-plant-grass-tuft",
+        "crescent-plant-hibiscus",
+        "crescent-plant-naupaka",
+        "crescent-plant-nest-fern",
+        "crescent-plant-purslane",
+        "crescent-plant-scrub",
+        "crescent-plant-sword-fern",
+        "crescent-plant-vine-fringe",
+        "crescent-plant-vine-mat",
+        "crescent-rock-beach-a",
+        "crescent-rock-beach-b",
+        "crescent-rock-boulder-a",
+        "crescent-rock-boulder-b",
+        "crescent-rock-boulder-c",
+        "crescent-rock-cliff-a",
+        "crescent-rock-cliff-b",
+        "crescent-rock-cliff-c",
+        "crescent-rock-outcrop-a",
+        "crescent-rock-outcrop-b",
+        "crescent-rock-reef-a",
+        "crescent-rock-reef-b",
+        "crescent-coral-rubble-patch",
+        "crescent-coral-brain-heads",
+        "crescent-coral-staghorn",
+        "crescent-coral-table",
+        "crescent-shelter",
+        "crescent-jetty-deck",
+        "crescent-jetty-platform",
+        "crescent-jetty-stair",
+        "crescent-seagrass"
+      ]
+    },
+    "holodeck-winter-mountainside-cabin": {
+      "scene": "winter-mountainside-cabin",
+      "source": {
+        "kind": "holodeck-example",
+        "ref": "2cfae32d1e2e86add2c8b94b5610b827761f93bb",
+        "commit": "2cfae32d1e2e86add2c8b94b5610b827761f93bb",
+        "path": "examples/winter-mountainside-cabin",
+        "sourceRevision": 2,
+        "worldSha256": "0f9e7bd0e84240adb26170181fc965f54d808c418067f8a447fcf13c584831d3"
+      },
+      "assets": [
+        "cove-moodboard",
+        "winter-wmc-fir-hero-a",
+        "winter-wmc-stone-pier",
+        "winter-wmc-window-test",
+        "winter-wmc-lantern",
+        "winter-wmc-spruce-hero-a",
+        "winter-wmc-fir-middle-a",
+        "winter-wmc-spruce-middle-a",
+        "winter-wmc-fir-background-a",
+        "winter-wmc-spruce-background-a",
+        "winter-wmc-fir-sapling-a",
+        "winter-wmc-window-tall",
+        "winter-wmc-sofa-wool",
+        "winter-wmc-hearth-masonry",
+        "winter-wmc-floor-main",
+        "winter-wmc-wall-facade",
+        "winter-wmc-deck-tile",
+        "winter-wmc-door-entry",
+        "winter-wmc-stair-rail-interior",
+        "winter-wmc-armchair-oak",
+        "winter-wmc-wall-west",
+        "winter-wmc-wall-east",
+        "winter-wmc-wall-rear",
+        "winter-wmc-stone-plinth-panel",
+        "winter-wmc-floorlamp-tripod",
+        "winter-wmc-floor-loft",
+        "winter-wmc-frame-post",
+        "winter-wmc-rafter-frame",
+        "winter-wmc-door-deck",
+        "winter-wmc-tread-timber",
+        "winter-wmc-stair-rail-exterior",
+        "winter-wmc-rail-span",
+        "winter-wmc-eave-storage",
+        "winter-wmc-coffee-table",
+        "winter-wmc-living-rug-wool",
+        "winter-wmc-gable-glass",
+        "winter-wmc-roof-east",
+        "winter-wmc-roof-west",
+        "winter-wmc-chimney-masonry",
+        "winter-wmc-side-table",
+        "winter-wmc-dining-table",
+        "winter-wmc-dining-chair",
+        "winter-wmc-kitchen-run",
+        "winter-wmc-loft-bed",
+        "winter-wmc-desk",
+        "winter-wmc-entry-bench",
+        "winter-wmc-pendant",
+        "winter-wmc-small-props",
+        "winter-wmc-rock-shelf",
+        "winter-wmc-boulder",
+        "winter-wmc-mountain-massif",
+        "winter-wmc-ridge-band",
+        "winter-wmc-snow-bank",
+        "winter-wmc-ground-clump",
+        "winter-wmc-fallen-log",
+        "winter-wmc-trail-marker"
+      ]
+    },
+    "holodeck-meridian-sanctuary": {
+      "scene": "meridian-sanctuary",
+      "source": {
+        "kind": "holodeck-example",
+        "ref": "main",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "path": "examples/meridian-sanctuary",
+        "sourceRevision": 27,
+        "worldSha256": "911fe13d1121caccc90ae8d9549307ac4f07cf2506daa726f63a7d8cc7ad5db2"
+      },
+      "assets": [
+        "cove-structure",
+        "cove-canopy",
+        "cove-seating",
+        "cove-hearth",
+        "cove-planting",
+        "cove-rug",
+        "cove-lamp",
+        "cove-moodboard",
+        "meridian-deck-4",
+        "meridian-block-8",
+        "meridian-step-slab",
+        "meridian-deck-6",
+        "meridian-coping-4",
+        "meridian-pool-steps",
+        "meridian-stair-8",
+        "meridian-stair-4",
+        "meridian-parapet-4",
+        "meridian-foundation-4",
+        "meridian-arcade-pylon",
+        "meridian-arcade-pier",
+        "meridian-arcade-pier-slot",
+        "meridian-arcade-arch",
+        "meridian-tower-slot",
+        "meridian-cascade-tower",
+        "meridian-gateway",
+        "meridian-orb",
+        "meridian-falls-narrow",
+        "meridian-overflow-wide",
+        "meridian-rim-spill",
+        "meridian-basin-water",
+        "meridian-planter-sq",
+        "meridian-cypress-tall",
+        "meridian-shrub-b",
+        "meridian-cypress-mid",
+        "meridian-planter-long",
+        "meridian-shrub-a",
+        "meridian-ivy-short",
+        "meridian-ivy-long",
+        "meridian-isle-base",
+        "meridian-cube-marble",
+        "meridian-cube-mirror",
+        "meridian-monolith",
+        "meridian-cube-mirror-court",
+        "meridian-shrub-c",
+        "meridian-cypress-broad",
+        "meridian-cypress-slim",
+        "meridian-tower-gate",
+        "meridian-arcade-bay",
+        "meridian-pavilion",
+        "meridian-balustrade-4",
+        "meridian-cube-mirror-far",
+        "meridian-statue-figure",
+        "meridian-statue-whale"
+      ]
+    }
+  },
+  "assets": {
+    "cove-structure": {
+      "store": "holodeck-assets",
+      "collection": "project",
+      "assetId": "a_a6387eb5c9ba4b9b804eca10577e4868",
+      "revisionId": "r_2387ce274123402dbdafd818e6fb0043",
+      "parentRevision": "r_e96d8b9675f845d0b6cb20087815c302",
+      "manifest": {
+        "bytes": 16670,
+        "sha256": "93093822cdea74b8755d96773139809144420ceac498eab2559d66bdb3ce127a"
+      },
+      "source": {
+        "bytes": 15819,
+        "sha256": "98b414a7f72a3c06ce3a5df84b43d23cc78c3e6dfc14ad4c2eab287feae270de"
+      },
+      "canonical": {
+        "bytes": 1398268,
+        "sha256": "cf10e38925edffb8a14178de42874d09b9ae881e93e37f27fe3d2587c27c2ffd"
+      },
+      "preview": {
+        "bytes": 273831,
+        "sha256": "3f5b3dd49640df669a247218a461ab1f2423b396861b0dc1cca35a2021589584"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-cove",
+          "id": "structure"
+        },
+        {
+          "pack": "holodeck-tidemark",
+          "id": "structure"
+        },
+        {
+          "pack": "holodeck-courtyard",
+          "id": "structure"
+        },
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "structure"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "structure"
+        }
+      ]
+    },
+    "cove-canopy": {
+      "store": "holodeck-assets",
+      "collection": "project",
+      "assetId": "a_4f6ce20d78fd4aefa27b934c7a9224c2",
+      "revisionId": "r_df0485467228414780cfa44c0f2e32ad",
+      "parentRevision": "r_cf893c2415774c149c65fdd180a69082",
+      "manifest": {
+        "bytes": 12000,
+        "sha256": "56114607acb4fdcb076dfeb39ea648666688848255d6bc961b957a75204de634"
+      },
+      "source": {
+        "bytes": 16269,
+        "sha256": "64578a136ffe0be84a28568c1ab38a68fe74a6045b47f6738a10ecd9e814b1a8"
+      },
+      "canonical": {
+        "bytes": 929100,
+        "sha256": "0c0945592c4324ab41d17ce8ff186a20a84e20641e59dbbdc3617df997ca28c0"
+      },
+      "preview": {
+        "bytes": 202744,
+        "sha256": "72a2758457df1970e69df6a6a9eaa5ad85d055fd8621bd71c8c7d992b275a880"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-cove",
+          "id": "canopy"
+        },
+        {
+          "pack": "holodeck-tidemark",
+          "id": "canopy"
+        },
+        {
+          "pack": "holodeck-courtyard",
+          "id": "canopy"
+        },
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "canopy"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "canopy"
+        }
+      ]
+    },
+    "cove-seating": {
+      "store": "holodeck-assets",
+      "collection": "project",
+      "assetId": "a_8054e921736c4dd2861a28cd63a9213f",
+      "revisionId": "r_e35c94ed7da74b32a49f2d9933babba8",
+      "parentRevision": "r_6602fd828a5341eeaa0877fc58289960",
+      "manifest": {
+        "bytes": 21020,
+        "sha256": "f7b27666caa13b600a7c3de5a29343f64355c0dd14aeb78537342c8ba83bb8a7"
+      },
+      "source": {
+        "bytes": 17880,
+        "sha256": "451abb23d98291784cefd05ba33d9c87388160dcf8fb71cc64a879a665f59689"
+      },
+      "canonical": {
+        "bytes": 890340,
+        "sha256": "e5f0e8495f9bdc06646fe2d9910f873c268f55d0d34746e53e016e19e856324f"
+      },
+      "preview": {
+        "bytes": 29954,
+        "sha256": "eaac0c48cbb6f4a98f3d28a586e46b7b7afd919c6c6a24c7fe931606e02a010e"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-cove",
+          "id": "seating"
+        },
+        {
+          "pack": "holodeck-tidemark",
+          "id": "seating"
+        },
+        {
+          "pack": "holodeck-courtyard",
+          "id": "seating"
+        },
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "seating"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "seating"
+        }
+      ]
+    },
+    "cove-hearth": {
+      "store": "holodeck-assets",
+      "collection": "project",
+      "assetId": "a_10ec25ce83e242e3a5f2c7d8ae0f8e2c",
+      "revisionId": "r_5ef43760979043d48f358fe2932147dc",
+      "parentRevision": "r_1094b1f7bfeb427a96460628a00e57a8",
+      "manifest": {
+        "bytes": 12959,
+        "sha256": "91e3f188993dd7a7f07efa24db2585827baa6e446a7a28ab269886743e004d4e"
+      },
+      "source": {
+        "bytes": 20708,
+        "sha256": "634bc516ccebb3ffa87325058e1ac7467ccbaf72bc42fd047de47b7bcc08c5be"
+      },
+      "canonical": {
+        "bytes": 1656308,
+        "sha256": "07b604e45577a7425b9ba6e8791827bfc29d4e09d3a9414e2be3fae2d25437ba"
+      },
+      "preview": {
+        "bytes": 467504,
+        "sha256": "30c551ae5ca7fb5062725ac6b885f93ea270e1db9a1e80afaa68aa796661d4b5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-cove",
+          "id": "hearth"
+        },
+        {
+          "pack": "holodeck-tidemark",
+          "id": "hearth"
+        },
+        {
+          "pack": "holodeck-courtyard",
+          "id": "hearth"
+        },
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "hearth"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "hearth"
+        }
+      ]
+    },
+    "cove-planting": {
+      "store": "holodeck-assets",
+      "collection": "project",
+      "assetId": "a_83fa946f4c18476991c1e130c07dd5f9",
+      "revisionId": "r_cdb8552ccdde43f28d3995b2a5a30d25",
+      "parentRevision": "r_0c51c3f449eb4f9397ba7bd9641b5a4b",
+      "manifest": {
+        "bytes": 11955,
+        "sha256": "609aec9f45354e933e181a7a47c3180ee605f0befbcd67bd72455d9635b8be10"
+      },
+      "source": {
+        "bytes": 17372,
+        "sha256": "d02dce052aee90cbd1c574200c8c5e7f43b9339a64c2eed071e7f53a7bd7a372"
+      },
+      "canonical": {
+        "bytes": 1053324,
+        "sha256": "cc1202e270ccce5689ebde9320f2a65ecaa61d4fc2f251ec66bc3ba256218cd8"
+      },
+      "preview": {
+        "bytes": 59521,
+        "sha256": "688bfecf984473c50109312aad4110c574ad53023a253fa22bad34c52742a270"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-cove",
+          "id": "planting"
+        },
+        {
+          "pack": "holodeck-tidemark",
+          "id": "planting"
+        },
+        {
+          "pack": "holodeck-courtyard",
+          "id": "planting"
+        },
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "planting"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "planting"
+        }
+      ]
+    },
+    "cove-rug": {
+      "store": "holodeck-assets",
+      "collection": "project",
+      "assetId": "a_695ec90542974d739fb93ae8c9876e26",
+      "revisionId": "r_651bc2867976426996191865ea931163",
+      "parentRevision": "r_fd535a72cbfa4b2cb4b03ff1385b5dba",
+      "manifest": {
+        "bytes": 10696,
+        "sha256": "bdcfb35f427c78848ee084c0dc2eb61b77a9800d74918ec52a11b87456471de4"
+      },
+      "source": {
+        "bytes": 15480,
+        "sha256": "af485f34b4aa339cffa69c14ca2ba2161f3dae2e3fe99ca03370281dbd534256"
+      },
+      "canonical": {
+        "bytes": 121880,
+        "sha256": "4157895ec9f3d1f1383ff65536d93106743064d6df95d42043b154a1a630f857"
+      },
+      "preview": {
+        "bytes": 111252,
+        "sha256": "c4cd9c798fa13f2452bb36af9698bd8ee782e9e9436ffd978ee58082453bffff"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-cove",
+          "id": "rug"
+        },
+        {
+          "pack": "holodeck-tidemark",
+          "id": "rug"
+        },
+        {
+          "pack": "holodeck-courtyard",
+          "id": "rug"
+        },
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rug"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "rug"
+        }
+      ]
+    },
+    "cove-lamp": {
+      "store": "holodeck-assets",
+      "collection": "project",
+      "assetId": "a_0e6e95f9c49d445fa83af41f12cabde1",
+      "revisionId": "r_3b14d66959f942c887c5550f60d6d8ce",
+      "parentRevision": "r_cb8878bebeab484c8901829e94b175d1",
+      "manifest": {
+        "bytes": 11848,
+        "sha256": "89f00a6bac2cb5522facdeafdd627e9deb5c98532a874460b7923c77c7288c87"
+      },
+      "source": {
+        "bytes": 13928,
+        "sha256": "0c031a0e910d625c1d68b2e1d3c50eedf21049305be30a6ddd2b2c940c97bfa2"
+      },
+      "canonical": {
+        "bytes": 254364,
+        "sha256": "c94873ae285ee3a869b7773536b430a0e8a7db5c4b81458fbd65995833326808"
+      },
+      "preview": {
+        "bytes": 380756,
+        "sha256": "3d069a469b55c77477fb948f9bf5a0d878c6c78ac67cb77eaed3d1287f08bfe5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-cove",
+          "id": "lamp"
+        },
+        {
+          "pack": "holodeck-tidemark",
+          "id": "lamp"
+        },
+        {
+          "pack": "holodeck-courtyard",
+          "id": "lamp"
+        },
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "lamp"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "lamp"
+        }
+      ]
+    },
+    "cove-moodboard": {
+      "store": "holodeck-assets",
+      "collection": "project",
+      "assetId": "a_98506f22579948249e81029d5b605ab2",
+      "revisionId": "r_aedc5a07c6d34c1fb19f5cf959ce679c",
+      "parentRevision": "r_ae0d19de532347758f5c555ec8965da4",
+      "manifest": {
+        "bytes": 13290,
+        "sha256": "473cacd2178420e9790e886a887fcbde8a4dcaccb628d3ed3a60ada85dae8bf5"
+      },
+      "source": {
+        "bytes": 13218,
+        "sha256": "316b0ab2c8f1361f8c7be09c0a74f89cb6654ca5a348ac9463b7f5e258d4406b"
+      },
+      "canonical": {
+        "bytes": 184932,
+        "sha256": "0086ef306f8184464503403fb624d0104217dc0e283660e639d1f5f695fa369d"
+      },
+      "preview": {
+        "bytes": 249180,
+        "sha256": "97741c6f58c4493a4a2e4a06a681ede10cdcff3efa196aa6775092c27a48e8ac"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-cove",
+          "id": "moodboard"
+        },
+        {
+          "pack": "holodeck-tidemark",
+          "id": "moodboard"
+        },
+        {
+          "pack": "holodeck-courtyard",
+          "id": "moodboard"
+        },
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "moodboard"
+        },
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "moodboard"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "moodboard"
+        }
+      ]
+    },
+    "island-palm": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_47bf3c6270a945d5838c563b7d45f2ab",
+      "revisionId": "r_9301a174823a4f109e19e37547295f61",
+      "parentRevision": "r_81a4bc4b353949ec98df841b949a7ed7",
+      "manifest": {
+        "bytes": 11436,
+        "sha256": "e9810ee8a7aeb36139ab848a9ad59e45ce404563287363cf49508d276a803ae0"
+      },
+      "source": {
+        "bytes": 6261,
+        "sha256": "b43491373ad7e785728d4f8bbd105ff78ef12ced454b5b00d4bf84c981789cb0"
+      },
+      "canonical": {
+        "bytes": 996120,
+        "sha256": "06eb939f28106c33c9a804fc396c74aa80090b7dbc5a290fd7e733d8646a5586"
+      },
+      "preview": {
+        "bytes": 414471,
+        "sha256": "07ab0469cbbf4202725e3aa1d66812a5ebab2b6b2482511807e5a309352b38e2"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "island-palm"
+        }
+      ]
+    },
+    "island-shrub": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_363f7ef738d84824b4390ea82a175296",
+      "revisionId": "r_4803f98bf0ce470c8932418294232ef7",
+      "manifest": {
+        "bytes": 11034,
+        "sha256": "3009db9d6530fd9170e5ef26b499d5c08c531def27c03ae446debd61dd7b4e82"
+      },
+      "source": {
+        "bytes": 3204,
+        "sha256": "87fea5278438d27532164e8a1150ec12f88596a1b6f45044ea3d67711bc0651a"
+      },
+      "canonical": {
+        "bytes": 94364,
+        "sha256": "a8de02df07e9eda172ceeb30b5a7764c8d7dffb49056619d52c58d6564d4965f"
+      },
+      "preview": {
+        "bytes": 71691,
+        "sha256": "878d1f61180d7fa708a8f88a9682c8b11ec8f8de9ebe4a78608466db6a9acefb"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "island-shrub"
+        }
+      ]
+    },
+    "island-grass": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_e9e113ec77e74c29b8f836234048f2ab",
+      "revisionId": "r_0fbd508d69a94af591440fffccd7a091",
+      "manifest": {
+        "bytes": 11033,
+        "sha256": "838978c8ae9d27b5cc0fa4637e954744fa4a1f81e731f64174968647b5495c54"
+      },
+      "source": {
+        "bytes": 3082,
+        "sha256": "7089c560d3c4fb4d51e697f29c1815ccbc286210241dbc97e17a59549923aeaa"
+      },
+      "canonical": {
+        "bytes": 40056,
+        "sha256": "3c4e14de82253733dde8cdb0be4e78e240523ea19154e905c80fadff32cfc57f"
+      },
+      "preview": {
+        "bytes": 89402,
+        "sha256": "933a13d8c72d220da196dbd1fddf429f1edabd4556ffbf76562a879b5a9d5058"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "island-grass"
+        }
+      ]
+    },
+    "island-shore": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_42669950b51341d48c422252580df01e",
+      "revisionId": "r_1ed20bc9bbd440e0a7d61fdd3bfa6520",
+      "manifest": {
+        "bytes": 11473,
+        "sha256": "977e47853460b0a40dd0ede1ffdad2e4623b738e4367c9d8f802763931c1c16f"
+      },
+      "source": {
+        "bytes": 3425,
+        "sha256": "60512f91d4cb48b2bba7e8bc0b5c83fda9fb5ee270861ab2d6d2034f3e6d4e9a"
+      },
+      "canonical": {
+        "bytes": 66276,
+        "sha256": "f30abc5985480aba8c193cfd5791be79bfe89b248c14f16d3cc27d939549c8cd"
+      },
+      "preview": {
+        "bytes": 31022,
+        "sha256": "b1528dc064fe05b3c427e84057c75810995a7c261849e664be81fa8aba449776"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "island-shore"
+        }
+      ]
+    },
+    "island-hut-frame": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_840fcef6a6bc431990858e299fdf53e7",
+      "revisionId": "r_17b3c37ecbd540d9adeffb29ebc1bc81",
+      "manifest": {
+        "bytes": 11419,
+        "sha256": "16770871e572fb41ef7d3b05874e911081f08fdc95a8857b48df6e5d57f85232"
+      },
+      "source": {
+        "bytes": 3221,
+        "sha256": "2673e7e0c455517e67a814892cab04fa9dc5f16a48ef6041cef3ba540f73ba46"
+      },
+      "canonical": {
+        "bytes": 83700,
+        "sha256": "4e8e56f77fbb7f34ed4301c1fac43828ba26dba3a0303627d68e3b06f6453291"
+      },
+      "preview": {
+        "bytes": 18973,
+        "sha256": "418c8f3c68faa0c9c4059c9311ef27fb178dc2ca4474fe0459755baacecb5acd"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "island-hut-frame"
+        }
+      ]
+    },
+    "island-hut-roof": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_b6de83703b59493bbbbc3d800132fd81",
+      "revisionId": "r_a534f55c922e48b19818dfc995437c5c",
+      "parentRevision": "r_35c463784a0548a8aa4bf8ee680dc8a3",
+      "manifest": {
+        "bytes": 10966,
+        "sha256": "23aaa0dbe907cc15dd6a349cc04202fa63ed6115dd065a1fab8a96e46b04e911"
+      },
+      "source": {
+        "bytes": 3504,
+        "sha256": "58a3f1edf8443391e7f873ffaafdc3e542cdb1ad83a9b89ba5359d4aebe29df9"
+      },
+      "canonical": {
+        "bytes": 376528,
+        "sha256": "ed18ca2f5dffd715014691ab6571872997f1118de78f838a68344780a53fcdcf"
+      },
+      "preview": {
+        "bytes": 27628,
+        "sha256": "5e53b5bdaa0437a29f3f28e84a4a81b1a95b59e0296ff3a17a961d06a75c82b6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "island-hut-roof"
+        }
+      ]
+    },
+    "island-hut-furnishings": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_97d6373813054d2b809c14ced99745ad",
+      "revisionId": "r_8ca5cf4a3b4b4a5583462eeb16338936",
+      "manifest": {
+        "bytes": 11926,
+        "sha256": "705d8f67e5be85c0a747d3e06eb8169dcb5cb3ecb6c91173eec946a99eacebad"
+      },
+      "source": {
+        "bytes": 3021,
+        "sha256": "a20899a96fb372ad58e1a4f311fbe360915344aaa9d0586b802221a6dda4ac54"
+      },
+      "canonical": {
+        "bytes": 69144,
+        "sha256": "09504a0e9d729dbfd629dcd36ff7e3656d1e7880898aa508b56fa8219847726b"
+      },
+      "preview": {
+        "bytes": 15347,
+        "sha256": "865dffb22f7701d7fb6112e6b2d97b40d6e1212ea9c2792ebc8f1b47381aff80"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "island-hut-furnishings"
+        }
+      ]
+    },
+    "island-resident": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_d8af3cee43454ee98083d9c670b1f4c5",
+      "revisionId": "r_7fd4e42104b14771a9108574848de5fd",
+      "parentRevision": "r_8905f6efa3b843ce8f3b31c8ac58a359",
+      "manifest": {
+        "bytes": 24921,
+        "sha256": "7965ee1587a5ee254f090ee10332fc775a5d6fcb67ac8d2ce68fc1042dacd2b1"
+      },
+      "source": {
+        "bytes": 4955,
+        "sha256": "8460c60e23a0d329f1f18b17908b0705bb58a55e9791ed6c9fee51c145aa9a23"
+      },
+      "canonical": {
+        "bytes": 55416,
+        "sha256": "07ef366785d37de58670a8bf8a8aeab3094dfc6f3dab09fe5eb76fc5ee627952"
+      },
+      "preview": {
+        "bytes": 27606,
+        "sha256": "53f1e055d013c76a78b32020615f866e0fe3cdf55c92d8df4a95c2bc1a00e637"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "island-resident"
+        }
+      ]
+    },
+    "island-bird": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_3f02072d969a437697d2d50ce7e5d5dd",
+      "revisionId": "r_f5696d892ce7485dafa2bbfd07376b13",
+      "parentRevision": "r_f9868f4044554d308840aa2e3d8b8de1",
+      "manifest": {
+        "bytes": 16836,
+        "sha256": "089b0e42323614dde974c5308480706e44d123cf664ff938f5a611b7349ac52d"
+      },
+      "source": {
+        "bytes": 4190,
+        "sha256": "c3b1d0eb3e6746125268ae3e74297821b86b5056b20c0d1b9ac6ccafd51eb241"
+      },
+      "canonical": {
+        "bytes": 28444,
+        "sha256": "e7ada7acce37b4dbdcf95ceea76a11dfb11091f446936b1a5bec2fa7d247b060"
+      },
+      "preview": {
+        "bytes": 26976,
+        "sha256": "c7df91372009477cf8b78f1b43e7b96c522bac4869427c5df1b7627b2cdc1040"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "island-bird"
+        }
+      ]
+    },
+    "island-crab": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_16416237252e4c47bbc864d54ad5ce26",
+      "revisionId": "r_1ead8326320c4a988a065b74c5daebd2",
+      "parentRevision": "r_47c3768c6ca441cd84ab11cb761b0b53",
+      "manifest": {
+        "bytes": 21346,
+        "sha256": "779f5808c7090f997229f448e76f75d33ca79fa2001131b265bf636dabf28c5a"
+      },
+      "source": {
+        "bytes": 5027,
+        "sha256": "bad16a6bb09129f1cc0965a963462d7f7502fd2dd433bb34fa7dc5a667af8c8e"
+      },
+      "canonical": {
+        "bytes": 32276,
+        "sha256": "3a2ffbdbd1509fadac5386e45fbb604bbdca1da0255db49221d8b240b08f5204"
+      },
+      "preview": {
+        "bytes": 29060,
+        "sha256": "916d2ae9af5019ce90b397bb50a436d2f1b5a1c250884edf5b0903bb460309d2"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "island-crab"
+        }
+      ]
+    },
+    "jungle-sapling": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_821da5e8b05940ecbf181c0db3eb28e0",
+      "revisionId": "r_28393641e10c49cd9787130e56d0cfd8",
+      "manifest": {
+        "bytes": 11062,
+        "sha256": "47a478fd55e172c79845a86753ae75a1b6e301380dd22bb6b4ad5357322d4d44"
+      },
+      "source": {
+        "bytes": 3412,
+        "sha256": "257a4189f417ab1d85991c212dc72e8527f4f1fd7629ed5e6e3342c1d1637f30"
+      },
+      "canonical": {
+        "bytes": 37484,
+        "sha256": "fadf9b9eff37c2791c7c73c98a132d98195da42bc39f33a9514e1e8ddbbe8381"
+      },
+      "preview": {
+        "bytes": 237849,
+        "sha256": "ba9032f61ec99334f40f5ca4a21fd3bc6ca0ff5c5066fbc7ac95d1790ccce02b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "jungle-sapling"
+        }
+      ]
+    },
+    "jungle-fern": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_00c3a49306e7441ea2826a6a4c526460",
+      "revisionId": "r_ca0d0037051040c8b5e5ca1143d92ebd",
+      "manifest": {
+        "bytes": 11065,
+        "sha256": "0f033af6b71ab87dc783815f28876ea45383a51931636956035951f58ad49cce"
+      },
+      "source": {
+        "bytes": 3448,
+        "sha256": "4380a352813bb5d52b8e292bf2509b42d20ba729cbb469416604a42e4b929991"
+      },
+      "canonical": {
+        "bytes": 60784,
+        "sha256": "80de23da824d0864cdc1325dfde18022db4f0d0b3be1f98f78e5304af8bc6f77"
+      },
+      "preview": {
+        "bytes": 193558,
+        "sha256": "aef4fb3a7d7a50952667aabebc9f4e91a772d57f0005d91e8da9747b7aecf720"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "jungle-fern"
+        }
+      ]
+    },
+    "jungle-understory": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_a358f3a030604c879cc7495a1d84aeb8",
+      "revisionId": "r_8435d0bc3b5a4cf590ecc61e37062613",
+      "manifest": {
+        "bytes": 11069,
+        "sha256": "3382b9561fc65e139f35c4fa1e193966adf9da37a4acc219549bf022f0959edb"
+      },
+      "source": {
+        "bytes": 3295,
+        "sha256": "df358de3f78dabddebcfbf6006dbc660d2591c712e64dcf4e094c1b83add562c"
+      },
+      "canonical": {
+        "bytes": 31564,
+        "sha256": "f106b90124a2245dc537d9b12d58b570ec0c8657880dff13c27d79b70357fcc4"
+      },
+      "preview": {
+        "bytes": 267956,
+        "sha256": "59450fdf11f4c738bb5d1755a51c46bf153f639301973886733651c7716bbc5d"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "jungle-understory"
+        }
+      ]
+    },
+    "jungle-groundcover": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_02d5323d2c2846bc9408ae4837d9d728",
+      "revisionId": "r_66e544c6b8bf4c7f873421dd8b639195",
+      "manifest": {
+        "bytes": 10589,
+        "sha256": "0b8c55c733cb938fc2467b4a030ae87e21c309869080002d636c06cc91c6f18a"
+      },
+      "source": {
+        "bytes": 3220,
+        "sha256": "dda89fd4a99ea52d911bedf48ddfb6bef23a7aab4ba89aef860491426285c6b6"
+      },
+      "canonical": {
+        "bytes": 12292,
+        "sha256": "f17a2c2ecf6ffe03b18cd7965780fe45aadb0d32dc42c24879a997d616417611"
+      },
+      "preview": {
+        "bytes": 133116,
+        "sha256": "e4b642e105dae1c886ff911cc5c18f607f36648d1742aa100f6402d51b711b71"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "jungle-groundcover"
+        }
+      ]
+    },
+    "coastal-flybird": {
+      "store": "island-trial",
+      "collection": "project",
+      "assetId": "a_d2a8786f58ec46d2ba9dd936030f9396",
+      "revisionId": "r_d9dddb69593c4e8fb4cc69d542bc614a",
+      "parentRevision": "r_5f9598c45a08416d80bb46b7978d19f8",
+      "manifest": {
+        "bytes": 11260,
+        "sha256": "693a54749a73b9518e3245d18d9dc35428af42067e776e1489c85144957354f0"
+      },
+      "source": {
+        "bytes": 4039,
+        "sha256": "b819596f2d68d0b17ea8fa6505466acd22853d5a56d4014ba99c1be6bebbcf3b"
+      },
+      "canonical": {
+        "bytes": 22560,
+        "sha256": "e8db14c772b6d5e01cbadd775f09b5c15d29f14d42b73507263cf87fc8b00c5d"
+      },
+      "preview": {
+        "bytes": 18881,
+        "sha256": "dbf9f0476856fa3be99b9f232b55796fe39aa49bd3dbc33ad7cda6a2e4acc851"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-tidemark",
+          "id": "coastal-flybird"
+        }
+      ]
+    },
+    "pave-field-a": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_da7f4e34a9ed42d19e323263ff4194d6",
+      "revisionId": "r_eb58fbb4efa34635bd6b7ca27e1652ab",
+      "manifest": {
+        "bytes": 10285,
+        "sha256": "48adffdf8411ac3c6eed06cceeecbbee7369fed44c694136ebd6fc3bc7f2c07a"
+      },
+      "source": {
+        "bytes": 9278,
+        "sha256": "d352dc39ab7cd7b7982324bcc8dc1acd0fd66e30c6c56a0cba4a24f00810dd3d"
+      },
+      "canonical": {
+        "bytes": 75832,
+        "sha256": "089c014c8904573a906e02982e1f0a7c3bb87f33426cd43039e8b69885f018d6"
+      },
+      "preview": {
+        "bytes": 17527,
+        "sha256": "ebddf3548528820ea7299fa3a29968081f9039de4431e8e5fddcf74e9f8ff865"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "pave-field-a"
+        }
+      ]
+    },
+    "pave-field-b": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_8055238e15bd478bb597d4ececd77665",
+      "revisionId": "r_39105d3e5294411da8ba0d9f4a831475",
+      "manifest": {
+        "bytes": 10294,
+        "sha256": "fc6b5ad93278af403df171dcee7b939693992672fb63ffe8518919704f1d8425"
+      },
+      "source": {
+        "bytes": 10878,
+        "sha256": "04cd86dbc82af7a2dd70431ea386ee9baa05789e737515eb2ef1eab377661e23"
+      },
+      "canonical": {
+        "bytes": 134932,
+        "sha256": "c2e9f54db7b5e13612eea2562588377ad33b157f77919d7c81e8bf22d9a6745b"
+      },
+      "preview": {
+        "bytes": 20316,
+        "sha256": "821023efc0e93ff9aa3ee67ee46f3b0c11403c3dbd71f92eabb3112902db4603"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "pave-field-b"
+        }
+      ]
+    },
+    "pave-curb": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_bb72440ad6dd4a3c9540ddd6f35e73ea",
+      "revisionId": "r_9edce7ef69204e60851b4d3c6bd453d6",
+      "manifest": {
+        "bytes": 10302,
+        "sha256": "b7af67eb4cac550790ea96f498b93b66e3b0863e578058c2b63206a330c333bd"
+      },
+      "source": {
+        "bytes": 9608,
+        "sha256": "5b44c4d6b5b9bd6682ebad6352afbe3be8b7f21b23dd12c6047fba93e79aaf71"
+      },
+      "canonical": {
+        "bytes": 26860,
+        "sha256": "8cd3a720b19dd97a60cab9286aaa3a1f01017072377d0061034992a573b439a3"
+      },
+      "preview": {
+        "bytes": 12071,
+        "sha256": "032bd7ab8b505cfa8d1ce4b70f2b1905078b5af1400862f9623458ac87aadfa2"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "pave-curb"
+        }
+      ]
+    },
+    "pave-curb-corner": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_b35f27ffd37d4d2389b4167943ac0f2f",
+      "revisionId": "r_f1c84b5613d0469bb7b2cf81be9d00ee",
+      "manifest": {
+        "bytes": 10369,
+        "sha256": "45761645f54940d067ec0adffe5a23430325ebbe95d2f6f69c8d7c697fc3ffc2"
+      },
+      "source": {
+        "bytes": 8410,
+        "sha256": "52b95e90fa66fcbb6211f0960e8cc47821ce90fb6d53365c6f1ff5c7bbff55c1"
+      },
+      "canonical": {
+        "bytes": 9156,
+        "sha256": "a525302d9b626e2b5879e906893aa482bf3a72e45b1e48f832ad0aec98ef4587"
+      },
+      "preview": {
+        "bytes": 12943,
+        "sha256": "c448da88968107b186cee82be56e0b53a20c81c0dce6fad3b1ed3b06f6712451"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "pave-curb-corner"
+        }
+      ]
+    },
+    "pave-step": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_7eded4295d83405cb198fd87c405ffba",
+      "revisionId": "r_19ccefab21fb4b6abd25f3750901466d",
+      "manifest": {
+        "bytes": 10316,
+        "sha256": "f7457643c3a3e87b7cae14641b5f9f37637d5437a9f11514dcbd10de85a4c7bb"
+      },
+      "source": {
+        "bytes": 9671,
+        "sha256": "a70b26495297e89b6fe0db3f38a3c7341b8cdb0684fd6b683ebde39a2ff4a48d"
+      },
+      "canonical": {
+        "bytes": 33472,
+        "sha256": "93c654b96136c1646b2c73f49ca0947f4dde6f3d6475edc25985e55df5cf799c"
+      },
+      "preview": {
+        "bytes": 12417,
+        "sha256": "edf5796859ba6a3d08c82e77999683bf3d9e3feebe79e1b190a1e67311f88656"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "pave-step"
+        }
+      ]
+    },
+    "plaza-fountain": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_f7a502493cbe49728c9bba8c27914b19",
+      "revisionId": "r_5a5c5ed84a9d4668a05016e109861d1e",
+      "manifest": {
+        "bytes": 11077,
+        "sha256": "b39819365c6f2f15b5104d2febb1fb73053fe90733461e9aa1625516386c857a"
+      },
+      "source": {
+        "bytes": 24302,
+        "sha256": "3e516146cc3bfa3fa4ffeb1913fd3263c1ba4e92ba9e13d46f83269a042d52ad"
+      },
+      "canonical": {
+        "bytes": 1424868,
+        "sha256": "20cc045bef270b029b867cadb8a265cfc44ff40f434d016625b4fd0c2801fb30"
+      },
+      "preview": {
+        "bytes": 46051,
+        "sha256": "258a28ee988cfcaf59b0545bd0d266966a0675d17543da4590278536831700d8"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "plaza-fountain"
+        }
+      ]
+    },
+    "fountain-cascade": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_9280316db84849a981925f0c92f2da16",
+      "revisionId": "r_df8d28bab94a46b9bec2128a7f38b22b",
+      "parentRevision": "r_f224e0dc0652446a842865806615ec54",
+      "manifest": {
+        "bytes": 11290,
+        "sha256": "0dd3aea036e8da686b5d99693204ae88f9287bf09049eed02e0bd44c26f672e9"
+      },
+      "source": {
+        "bytes": 3633,
+        "sha256": "1767581605bfabfc00125bcde74833c4e0fd22f42cff1bc7f9b5cc8c22573d97"
+      },
+      "canonical": {
+        "bytes": 76024,
+        "sha256": "4c572f84fcd43237419bbb691c3e96150d45e1353756ccd50ca5dd679b800701"
+      },
+      "preview": {
+        "bytes": 104496,
+        "sha256": "059e8c316bae75c8fcc6fd3bb1957caacfdd6952f16e0461baacc357cfa5b0f5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "fountain-cascade"
+        }
+      ]
+    },
+    "statue-figure": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_7ac53c8c0d744a7ba02995ea616ed63b",
+      "revisionId": "r_6e91cd455ff24fbfb24c7dcb09029138",
+      "parentRevision": "r_e692841f903144db9125bc374f332921",
+      "manifest": {
+        "bytes": 10798,
+        "sha256": "8177747c07bb7b1c70023431439b724609488f926da10bdc081dce73f73f1091"
+      },
+      "source": {
+        "bytes": 17615,
+        "sha256": "450dfe3a05ae4db505251ce22753f26c288f90ef95219244de65e2a232d17be5"
+      },
+      "canonical": {
+        "bytes": 665560,
+        "sha256": "6c34ff35f9515b8af47ef65104e462ba56dca94ebdeed4b2ee1c2af8b7f8ab58"
+      },
+      "preview": {
+        "bytes": 89386,
+        "sha256": "38c72ca1d21a5841bc645d9557b56dfed807ded2eede496f95b37477fdad7546"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "statue-figure"
+        }
+      ]
+    },
+    "statue-monolith": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_3a83ad3106f541e7a48861a8866dd4d8",
+      "revisionId": "r_b4651a7593bd44e5a8b9c45be31dbec9",
+      "parentRevision": "r_3a49e2609dc048d5ab7f7ee056b17b28",
+      "manifest": {
+        "bytes": 11411,
+        "sha256": "c30363974ff7bca59f63adc88690dece998d44c9cd91f074786c01be57de7120"
+      },
+      "source": {
+        "bytes": 6876,
+        "sha256": "54da283d127b992a609a882ddef953ace320b689c0f8385b8f21ee26cf2e325f"
+      },
+      "canonical": {
+        "bytes": 116216,
+        "sha256": "2f07691222f79a81eb4488d24eb3dbcbac9da7f273978ceb053f5cb66ba9b53e"
+      },
+      "preview": {
+        "bytes": 52910,
+        "sha256": "616b7b55c27b3131ab6f2ac7f0d81bbb57b51ac5d4aeb6415af100a8072517d5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "statue-monolith"
+        }
+      ]
+    },
+    "statue-bronze": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_fee938122fe54f34a498079254ffd4af",
+      "revisionId": "r_0e3ff4e9f6f74ac8b548f2aa6bb291ec",
+      "parentRevision": "r_cb69bca5adcc400eadb6f5296c3c8df2",
+      "manifest": {
+        "bytes": 10988,
+        "sha256": "73508b2773c9d8fb14f4aa602de06e9591d706154912e95e1f3ede8bcaf78c62"
+      },
+      "source": {
+        "bytes": 9097,
+        "sha256": "b6f878421b9f37da2c61a69839e0138b3b81f58f57ef37db2ca26750b508a931"
+      },
+      "canonical": {
+        "bytes": 275712,
+        "sha256": "8a5f8c59337283fb22f2bd29d4886c1c1115749d5bf6c6bd010aa458a44cf091"
+      },
+      "preview": {
+        "bytes": 71924,
+        "sha256": "f0e8ddb16e99cef7ce9ce8f7904397d472450a050313d3635b96c2d3464fa9b9"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "statue-bronze"
+        }
+      ]
+    },
+    "tree-plane": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_3fe112d19c95427195e61c127cc1b561",
+      "revisionId": "r_9803c463ca244a27bc28b46fd194d4dc",
+      "parentRevision": "r_edd9c21b8f8c4199b34ebf26d92c3ec7",
+      "manifest": {
+        "bytes": 11683,
+        "sha256": "6ce44e17a13dc67a5afc97b7d0fec3148eb25293c81777ab2988abfea0db8c69"
+      },
+      "source": {
+        "bytes": 23185,
+        "sha256": "c7ecfc7e27484ebb0c48b3b46f914aa977835c14a6e60ca7d4467378b7637107"
+      },
+      "canonical": {
+        "bytes": 1132872,
+        "sha256": "f939b12bf57bdc9d8801760e32042b31ac899a9f924e73556a4211ea0064412a"
+      },
+      "preview": {
+        "bytes": 134849,
+        "sha256": "ed8514f5125341f3eddd71241348cc14a4f888b54c236a75ba4d7fec4346f4dc"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "tree-plane"
+        }
+      ]
+    },
+    "tree-cypress": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_6cc9fab3190f4997a2df4a996b22ca8f",
+      "revisionId": "r_11a87669343142ee9a9cf052239f0206",
+      "parentRevision": "r_43782e03d62a4fad81397ce878448d3b",
+      "manifest": {
+        "bytes": 12134,
+        "sha256": "f301d936be7bf82cdff60d7ac802d1bceb1aae5de6178cc056e81180e49fa5a3"
+      },
+      "source": {
+        "bytes": 18244,
+        "sha256": "91541152e5cb19588d03f68d0f58fcc76b9a397e2b607f29a5184dbf0a5f38e0"
+      },
+      "canonical": {
+        "bytes": 639456,
+        "sha256": "13b989f92f16c7de529fbf01215227d6abf2598fe33729426933050e82ceb086"
+      },
+      "preview": {
+        "bytes": 54775,
+        "sha256": "69767fcf981761f403db3fc227243ef265f72ada024ba7c641ccad8d826dead1"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "tree-cypress"
+        }
+      ]
+    },
+    "tree-olive": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_74104f8de7514b7d8fdb101dc316ba89",
+      "revisionId": "r_f88d7d2fb5c2496ebf33ea2859e1d570",
+      "parentRevision": "r_cfa9c97c4b8d4bd186b154c16a3bc89f",
+      "manifest": {
+        "bytes": 12065,
+        "sha256": "721dbf07c167ce6f4e84b0e9b68be74d41e3c269ffa4ad0ced8bf1b09b1ff47b"
+      },
+      "source": {
+        "bytes": 19921,
+        "sha256": "9e4f597e17ca6f6131221950acafe471d2be1cc258b3f4a8aee3ff53acfc30e6"
+      },
+      "canonical": {
+        "bytes": 1360188,
+        "sha256": "1fa318796c022a8a7d779ae34fca316ff4106815f2b1f7fe03514844ef8ef9fe"
+      },
+      "preview": {
+        "bytes": 125013,
+        "sha256": "d28c9979e3f3de7696f679bdc0e9e8253f2aa95457ae8fd07d5ad833ca63dc71"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "tree-olive"
+        }
+      ]
+    },
+    "shrub-box": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_af7faef9ae37407a9f68441848576036",
+      "revisionId": "r_c787a2acfc664ee2829a88bec41fa82f",
+      "manifest": {
+        "bytes": 11575,
+        "sha256": "516216fda1fea5382b85d6f532c63303daef4d8b55ee89e66426aa63cb18c2fa"
+      },
+      "source": {
+        "bytes": 14074,
+        "sha256": "70e0e21fce24f6f26bd95e58b4c2625c314d08e18dc6dca588cde150448e8add"
+      },
+      "canonical": {
+        "bytes": 174004,
+        "sha256": "79811e4f56283556f658d24777e6c568d4a0fb7d6cb0a70671bad172e8bb5009"
+      },
+      "preview": {
+        "bytes": 101150,
+        "sha256": "aaea2541614bb2f7e8c2ad84aed7dc1cc546a3ba512e0e97d3b4e9bd54deb463"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "shrub-box"
+        }
+      ]
+    },
+    "plant-lavender": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_c5deb297aa834afb9d3c6a6e42c59eff",
+      "revisionId": "r_804d9b0931644ad9a6166e9932467110",
+      "parentRevision": "r_f8a5f9188011488790cac3dc8e961f4e",
+      "manifest": {
+        "bytes": 10549,
+        "sha256": "18e0b5be5f46fa566c8d5178985881068771aefaca3bc7ae1fe4fc29fa26fee2"
+      },
+      "source": {
+        "bytes": 14551,
+        "sha256": "214d6e5163c8d2f609ec5407e15c09985f37716d7e112fc2377c0fa0808a9054"
+      },
+      "canonical": {
+        "bytes": 129048,
+        "sha256": "36165f92ab6a5090c5bcbaf75a7382f1c0c6f0d4697cea5dc39d639d02fac81f"
+      },
+      "preview": {
+        "bytes": 60199,
+        "sha256": "25987cb4a10146a1a41bfa129ce7b803c05db86e90b7d4fc766626aedd0784a1"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "plant-lavender"
+        }
+      ]
+    },
+    "bench-stone": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_64f21906c1194760a21604d6adf88ac2",
+      "revisionId": "r_cf24003d8a2046358c7b16ad178084bf",
+      "parentRevision": "r_0b1447b7e355426a82f7e9b95f040b97",
+      "manifest": {
+        "bytes": 11867,
+        "sha256": "01e9b2312b02655126ea54a3b300d5538f16ab3487a51402da1ef131cc4e6785"
+      },
+      "source": {
+        "bytes": 16816,
+        "sha256": "7d9761f694b665990bd6c12cda37ef1242af580d2b71fcb9aeda55c982a66f14"
+      },
+      "canonical": {
+        "bytes": 201972,
+        "sha256": "aad1dbfbbc79e7799dd234192a895b72d1482ad3b5060e2f501e016dfd794f96"
+      },
+      "preview": {
+        "bytes": 27473,
+        "sha256": "5fb658cf1422c9afee14a9bb0c8214159d0dabc3f6ad7822866cf85fc2bf7bd6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "bench-stone"
+        }
+      ]
+    },
+    "bench-park": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_caace1bc7a0e44d289a8ad8f8055eda2",
+      "revisionId": "r_7930f6bf31f04c37b4ca531cd441c57f",
+      "parentRevision": "r_76475b42d21e4220b4db0ba7a793d8b9",
+      "manifest": {
+        "bytes": 11819,
+        "sha256": "f3ab7ace49efe97a348c68ffa45b75b7061638c3974c4d74e4369013a076d6d7"
+      },
+      "source": {
+        "bytes": 18908,
+        "sha256": "00c12dd7e27e17a8fb16e5cea0252b3542521cfd6ac7e4afcdb35d3ff6462e29"
+      },
+      "canonical": {
+        "bytes": 235352,
+        "sha256": "f207e62c5261f1fd17b3ba3968e1e58c9fb39d8123e158e6d99682d7429408aa"
+      },
+      "preview": {
+        "bytes": 26988,
+        "sha256": "b41f4a460fa3b9c7dd02e3587629e241c331438dd67f58a67869cd115c9b3745"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "bench-park"
+        }
+      ]
+    },
+    "planter-square": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_780ba56d883a48898bdb0f6ca2331d75",
+      "revisionId": "r_67d49bebdd2f4b0f91dce4e6fdaaf66b",
+      "parentRevision": "r_35d910925edb468b9bf7d32f3fb45eee",
+      "manifest": {
+        "bytes": 14392,
+        "sha256": "7bbb8d02aad18102329e728d9ae7eaf3a5f5de0ec19f8c28a0b1fcc107e6ca2e"
+      },
+      "source": {
+        "bytes": 16207,
+        "sha256": "0b5d27ac7c6d476c63a378868f62b49e44f3cb197ca2d62c8b358aee0bfa7628"
+      },
+      "canonical": {
+        "bytes": 457700,
+        "sha256": "be8dd630b548b58f77f7c3b2a2e737fe1007b296c7cf253ed04d6eee2238d7db"
+      },
+      "preview": {
+        "bytes": 88248,
+        "sha256": "b2b56dff9e005f1f339ca5ad7caf287e7ebac8073ab2a78b150e8aad8aeb2a4e"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "planter-square"
+        }
+      ]
+    },
+    "planter-urn": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_56862f4b84564852886d5be2623632c3",
+      "revisionId": "r_ef304c3551e54050a26024a58eb8d4fd",
+      "parentRevision": "r_68399edeef344a60accadcc177274310",
+      "manifest": {
+        "bytes": 11789,
+        "sha256": "247ba2a90133227839fceeb3afc1f3584abdb594616e354197ef52b066e7fe0b"
+      },
+      "source": {
+        "bytes": 18353,
+        "sha256": "7c7f4245190747b3209cfe40263068c9be055991b1002aa453195bdde92478ce"
+      },
+      "canonical": {
+        "bytes": 476524,
+        "sha256": "4e87d39c92956ead45926198c3a2a6a699e7cd7678a905ab7690675886a7c237"
+      },
+      "preview": {
+        "bytes": 77250,
+        "sha256": "12da9b0c965d0ce25d8f8906136a2fbff59ab04d2d9c4b9cfb15c04b15554287"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "planter-urn"
+        }
+      ]
+    },
+    "lamp-post": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_57a0f6b709fd4164831167909e6d02f1",
+      "revisionId": "r_7aa5f13af3ff439281cf3772b8350680",
+      "parentRevision": "r_e5b4e1ab45d7497da640f2a4fe6edd39",
+      "manifest": {
+        "bytes": 11768,
+        "sha256": "f38bdd65223633a05987a8c2634c06e99d85196bf1d7a758abbb9a8d5f3eb04c"
+      },
+      "source": {
+        "bytes": 16719,
+        "sha256": "e957d565cb03b34a6142f0d9a09623e3e315db19424779740e8f9ecaab48f94a"
+      },
+      "canonical": {
+        "bytes": 180260,
+        "sha256": "770131e904e7490fa509337b05786c4324f685ffa52448155add8bc04a587df9"
+      },
+      "preview": {
+        "bytes": 22517,
+        "sha256": "39ea3af6dce2b42369fa197af126a0135a7c390c0f2ab91fa37e290efa3bd26a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "lamp-post"
+        }
+      ]
+    },
+    "lamp-bollard": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_953b1fa662ac4694a19fb4f36c04e003",
+      "revisionId": "r_3649775fe6ce475a90e6056d0efe5eb4",
+      "parentRevision": "r_1ab68b04afbb4926a68ca4e2dbb11147",
+      "manifest": {
+        "bytes": 13093,
+        "sha256": "921d124a122a03e2923d5907091de42970e3366b556c42925f98eb7dad88a90c"
+      },
+      "source": {
+        "bytes": 14855,
+        "sha256": "ebc21bba0b3faee36658e9428dac449bdeec09d6328ff04aaaae0556d77eaf33"
+      },
+      "canonical": {
+        "bytes": 158372,
+        "sha256": "49f33a7d06a5578f5fc4ae1dec23885f68f25503e0ec800d0b8f1e9bc0b0024b"
+      },
+      "preview": {
+        "bytes": 29332,
+        "sha256": "eb6e1b3daae121cc706da6de12c3a03ca49dec4c1fd434ecfc8a892b3176315c"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "lamp-bollard"
+        }
+      ]
+    },
+    "wall-segment": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_b1b865e94abb43f3b03e3441af290fa1",
+      "revisionId": "r_32e8228756ac4367bb8783e522e10e27",
+      "manifest": {
+        "bytes": 10822,
+        "sha256": "fc0a519d6b89a0b592b46af45cbf8436a31a84bd89f0d3e563e94205dfa1385a"
+      },
+      "source": {
+        "bytes": 14805,
+        "sha256": "15813ff69e4f22ef116527b8a8297fa0ad22745f17d77017835308faf2cd4292"
+      },
+      "canonical": {
+        "bytes": 105836,
+        "sha256": "b6de26a66c51811294bdd48d2158ff791f07ab8686de2ec956bca55982129401"
+      },
+      "preview": {
+        "bytes": 21741,
+        "sha256": "cd483c3e1684c1a020681d688f17abd7e294d62da36d01a0cde8365d752ddad8"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "wall-segment"
+        }
+      ]
+    },
+    "wall-pier": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_ca99d59f5c484abdb365c80cc1fab417",
+      "revisionId": "r_100777af4e4247c18c3eb70df5e97a82",
+      "manifest": {
+        "bytes": 10310,
+        "sha256": "16fa6dd44b12cc3c81d2352197a3b4c86b873bf6fff48e970e7093f0fce687e5"
+      },
+      "source": {
+        "bytes": 14968,
+        "sha256": "c02612a846bd8c9b6dae3f7c97c6f35186afaea66a81af7872928bcba4ad386e"
+      },
+      "canonical": {
+        "bytes": 94124,
+        "sha256": "6e5cc025c8e2c5a4c2984ee24c1a9b9de0b69d782a621ecf23399395babb03e6"
+      },
+      "preview": {
+        "bytes": 24471,
+        "sha256": "df80df0ee7411a328240d96ec85955ff8f9bf52796a5a1e56ce0c7885871b2ac"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "wall-pier"
+        }
+      ]
+    },
+    "gate-pier": {
+      "store": "courtyard-plaza",
+      "collection": "project",
+      "assetId": "a_40189de13f1e480d91d5b570ac844f46",
+      "revisionId": "r_2f7983fabd9249ba819388b106eda57f",
+      "manifest": {
+        "bytes": 10323,
+        "sha256": "5fc5ce8616af8fea242bcd26656ac56e5913c17b04f4d1587c5e468ca51fb0a9"
+      },
+      "source": {
+        "bytes": 14483,
+        "sha256": "a227f7f27955ae4d9f7bcc700aa1b913442de73fc47092196001a6f8dbad09f2"
+      },
+      "canonical": {
+        "bytes": 84936,
+        "sha256": "5e03217f7392cce31a87e37582d77081f1507f09b187f93076a8abf177758e3a"
+      },
+      "preview": {
+        "bytes": 24327,
+        "sha256": "7aa9cfcc0eeb303b8d9ecb27cd23605d7a0b9706a51b25bfc6c38969d139c7f6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-courtyard",
+          "id": "gate-pier"
+        }
+      ]
+    },
+    "crescent-palm-tall": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_a81882dd8c9c4b6aa936614f592987a7",
+      "revisionId": "r_01bc8fedd7cf4e6996a2a7b4866ffc75",
+      "parentRevision": "r_833811c9eae048acac736131aa951660",
+      "manifest": {
+        "bytes": 13397,
+        "sha256": "59a7c4ab0ef72822f470eae1711401d5e02dfc14a3e690066c4535556cd94fec"
+      },
+      "source": {
+        "bytes": 26385,
+        "sha256": "bcf2e7fa325397f11104f81ff328ca70ede5323b18b2b9e37ad9fc2785d8f0ff"
+      },
+      "canonical": {
+        "bytes": 401320,
+        "sha256": "94ac0c8b9d40f3937ed5156072cb08171c0fb10b5f77b24ebe355634ebe4eaf3"
+      },
+      "preview": {
+        "bytes": 348390,
+        "sha256": "9488e139e0fd9a147e80fe6f9a6dba23f26f640a6916efe6f7517118981f9a4d"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "palm-tall"
+        }
+      ]
+    },
+    "crescent-palm-lean": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_26aa8b78264d45f2bf79d6dff7188cb4",
+      "revisionId": "r_7a73a65486b049138933dba49173cd11",
+      "parentRevision": "r_0ba7b32ad3ee4bd494e55146b8312ed7",
+      "manifest": {
+        "bytes": 13396,
+        "sha256": "4c2c2897b4ae61496edecb5e27d94366cf071654c4a418516c2b5934ac62d5f7"
+      },
+      "source": {
+        "bytes": 26385,
+        "sha256": "8eb780b2cc16bf5d9d2ccd4ef5736ba6ac8fa23d5e02a181e5ba0f195cc9f8e8"
+      },
+      "canonical": {
+        "bytes": 360512,
+        "sha256": "f8028226c593994888e7777d3b67c349b6a9de5215bbadd1f3e2264228f11f61"
+      },
+      "preview": {
+        "bytes": 367213,
+        "sha256": "1928451afd4edededbbc09861a9435bee945fcf9e1c703b8171f1fee89b75174"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "palm-lean"
+        }
+      ]
+    },
+    "crescent-palm-arch": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_bb596df66efe4eae8214d48bca2b787e",
+      "revisionId": "r_ac2f113187cc4102b579b69a848b8afd",
+      "parentRevision": "r_5593211abef14ebab49f45b57a8b8758",
+      "manifest": {
+        "bytes": 13402,
+        "sha256": "0d4b2e2394a708bb1586df25930413b1f271bf4123c0c52a2fceec5401545167"
+      },
+      "source": {
+        "bytes": 26385,
+        "sha256": "793da1441e651706a6f162369e37f2dd1ad7b2c379ea00bd48f2b1d967be49a4"
+      },
+      "canonical": {
+        "bytes": 345096,
+        "sha256": "654ca7a558cc41520b45aa66edc8dc6f23774b0b922231fd167f2eb3f8cccc55"
+      },
+      "preview": {
+        "bytes": 414754,
+        "sha256": "07c6bd0b7948f1452082c515f1678ee616e97263d799fb080b36993c6698e171"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "palm-arch"
+        }
+      ]
+    },
+    "crescent-palm-young": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_6eb503ebdea045718159089428df57f7",
+      "revisionId": "r_52b7948902c44b00aa7a1bb7cd0e6634",
+      "parentRevision": "r_8bdbc20277274140a7ba5c2dfe005f61",
+      "manifest": {
+        "bytes": 13402,
+        "sha256": "8315244fd6738a20b3e41ffabec38a42eac7f600739a1e85cd46cf71a8dd0599"
+      },
+      "source": {
+        "bytes": 26386,
+        "sha256": "06dd65b5126dbc8da57088a5c7a8906b1bc4b4d142a9137ef161c1285f54262e"
+      },
+      "canonical": {
+        "bytes": 190392,
+        "sha256": "9ad758e75a1a0430322a0dafcda7c626f920aaec60be8d0793b23d48e28ea41e"
+      },
+      "preview": {
+        "bytes": 487409,
+        "sha256": "379cd724913057b7171f445b660adf0aabb05d9cb517a22f86f6e1440183d704"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "palm-young"
+        }
+      ]
+    },
+    "crescent-debris-coconuts": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_0246f882b372470d8950d331b077798e",
+      "revisionId": "r_6de480afa2fc43d3bc431cb2a1d3de1a",
+      "manifest": {
+        "bytes": 10744,
+        "sha256": "51ff3664c193f3efda03d2b08e628bfa8cfd420d8b9121c1bd2f6cbe0bb93955"
+      },
+      "source": {
+        "bytes": 29461,
+        "sha256": "aa8edf46d0c682afd538be688cdb7f76abadb8fd9b5e0181e69796478db97281"
+      },
+      "canonical": {
+        "bytes": 14688,
+        "sha256": "5b0d7b5f77a506d844a54d8e5e10c21f9b2cd8978dc800417071e436b9f18d7e"
+      },
+      "preview": {
+        "bytes": 146485,
+        "sha256": "47b946fe12522016022824f49732494d0f82ba9f462573276ecb82b31bc7087a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "debris-coconuts"
+        }
+      ]
+    },
+    "crescent-debris-driftwood-log": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_dc17081088e042729846298d3d1e1ed0",
+      "revisionId": "r_4f84e09ff60342108adcb640ff365c08",
+      "manifest": {
+        "bytes": 31292,
+        "sha256": "69af5b7fc6a3b7bab55cda09812ccbe41e9140cc9ba44a8f49502a288b2e8d95"
+      },
+      "source": {
+        "bytes": 29460,
+        "sha256": "711dced4399b8831fbbfb6667f6462303ce5212538812ca30c8f97b70e6f2b92"
+      },
+      "canonical": {
+        "bytes": 179124,
+        "sha256": "44d0ce02c3549f93cb272f4bad010905eabef06de6b822dba2ed0ef6b8dd3316"
+      },
+      "preview": {
+        "bytes": 133374,
+        "sha256": "058f5bce38829c05f9145cb14c054e7c46ca7a5729d0bbcf2aa94edeb5f4a561"
+      },
+      "materials": {
+        "bytes": 194818,
+        "sha256": "f93dcb91cee79053d711102dfd68ba7547057e78cee9d37295871a3d93109864"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "debris-driftwood-log"
+        }
+      ]
+    },
+    "crescent-debris-driftwood-pile": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_9aac97cc66a648efbb27c1a41ff294ea",
+      "revisionId": "r_d95c8307fe3b4f648d35c627b601a112",
+      "manifest": {
+        "bytes": 31143,
+        "sha256": "418b1632cd31fe2b4e2fee38b8fe6b1beb87a82151164032a89f4961485a444d"
+      },
+      "source": {
+        "bytes": 29461,
+        "sha256": "616e0673a20240571d2be6f86ad728f14ff2c72c7d8b613da452070e439632c0"
+      },
+      "canonical": {
+        "bytes": 185260,
+        "sha256": "2d3599d232745b86570d4b9ec93f62adcc41e0cafb1cf2a94b393da1a256c318"
+      },
+      "preview": {
+        "bytes": 95060,
+        "sha256": "53e25f54daf9b963de0074bdc8058f4725dc7a1fe088d649113c997118abd68d"
+      },
+      "materials": {
+        "bytes": 194818,
+        "sha256": "f93dcb91cee79053d711102dfd68ba7547057e78cee9d37295871a3d93109864"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "debris-driftwood-pile"
+        }
+      ]
+    },
+    "crescent-debris-fronds": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_365867ac52424e3894f092142c528e44",
+      "revisionId": "r_466841e6880d4c74a4ff49bad935b460",
+      "parentRevision": "r_dabf789f83a84d039243505e7afe4341",
+      "manifest": {
+        "bytes": 11002,
+        "sha256": "b28e2608dd9dd816640c33c1e7dfb0bd1b1e043571741b589ce8eb76b2564500"
+      },
+      "source": {
+        "bytes": 29553,
+        "sha256": "c3d34220d02c656240af912ce3a4a522b6b80f7e8424b5b185ea713ac592e62a"
+      },
+      "canonical": {
+        "bytes": 42008,
+        "sha256": "97e707aeffcb515ab5b56e9de071c9e76ebf5d0516acc0555fff7b099776203e"
+      },
+      "preview": {
+        "bytes": 109832,
+        "sha256": "3d0d521d52539c5098e205b9513c517fd5cb8a2fe314777b3d1b10adaec2aa44"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "debris-fronds"
+        }
+      ]
+    },
+    "crescent-debris-shells": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_f618554ec7034438843ccfc6af2fbb4d",
+      "revisionId": "r_362b7d0ce6904b4cbe8a63acc3296e6b",
+      "manifest": {
+        "bytes": 10725,
+        "sha256": "f986b2fae2c9d44522db108a17b1d4d39897c5a938b48d09f937a363a51c9643"
+      },
+      "source": {
+        "bytes": 29459,
+        "sha256": "d47ab9f9e36a8cce9b7561607b22edbd94ed6f74ae4883d5fda1f0e85274b7b7"
+      },
+      "canonical": {
+        "bytes": 27664,
+        "sha256": "deafe78c73b46bda31d451d7fde1cae92a89a20ccf81f9dc2791c7515568da33"
+      },
+      "preview": {
+        "bytes": 53695,
+        "sha256": "6e8d433961e4283471f2580f6ddbba645c57664d28fa84f61c24dc1fbdd6a52c"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "debris-shells"
+        }
+      ]
+    },
+    "crescent-plant-alocasia": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_32d0a864f9024ab1897ec55063b80629",
+      "revisionId": "r_7bffd8155ce74118b9787484e19e833b",
+      "manifest": {
+        "bytes": 10886,
+        "sha256": "3634e19d8f7c673d5cffe36247ce6eea10ec66cd3acc0b5304cd2f11a99a6eb7"
+      },
+      "source": {
+        "bytes": 37704,
+        "sha256": "996d0370f9912f4d545d1b2ee9be423718f2d0d08a3d067c8d66033f60a7a14f"
+      },
+      "canonical": {
+        "bytes": 36168,
+        "sha256": "941c3154e87fa3cbb734c81f26dbc8842a1da7e6dfffc2e4ef46f59c38cbae20"
+      },
+      "preview": {
+        "bytes": 251831,
+        "sha256": "f08db623ca03bf53a57f330876b18584849086f7e009022cf4dcf5224b60f48c"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-alocasia"
+        }
+      ]
+    },
+    "crescent-plant-grass-patch": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_871e27e2f3094155a669185d147fbb6c",
+      "revisionId": "r_ef23b16ec9514cf7bb859c5ef2b64f65",
+      "manifest": {
+        "bytes": 10770,
+        "sha256": "9a2b2d381f01fd662edf8e4a9440c19f78f9c74f03980c667aa88555172383d4"
+      },
+      "source": {
+        "bytes": 37701,
+        "sha256": "403820030294f647f2d722d53227a74fb632753621856e3f18aa3f5455673bda"
+      },
+      "canonical": {
+        "bytes": 59204,
+        "sha256": "a1d16ee6d18b2f0daeabeed17327a9b09587ffa59dc2b49033057e37d68a51cc"
+      },
+      "preview": {
+        "bytes": 143593,
+        "sha256": "caef63ff28b65b0063e0208dc7738fbfe380a004005ffd3506991c82817ee95f"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-grass-patch"
+        }
+      ]
+    },
+    "crescent-plant-grass-tuft": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_7814909d10b14af883dd1d1784945fb2",
+      "revisionId": "r_a07d0bbd28614cceb799753079243899",
+      "manifest": {
+        "bytes": 10753,
+        "sha256": "04b22fc3fb2026d7aa17e83ffa45ad0bd7298f8ff2070dc95cb29b730eb5f108"
+      },
+      "source": {
+        "bytes": 37700,
+        "sha256": "d51fa480a7464d4c8f10038f1eafb620887fcabfaf683f36f4024abce58204fb"
+      },
+      "canonical": {
+        "bytes": 23196,
+        "sha256": "0853fa1e00dcdd90ddad50817a4fbde411826b3d04ae610c58bff3105a2d6e76"
+      },
+      "preview": {
+        "bytes": 209808,
+        "sha256": "2bc2c0c04bbcb4b93753bb504ca140493677ad0637201432cc62921abc9d3ca1"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-grass-tuft"
+        }
+      ]
+    },
+    "crescent-plant-hibiscus": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_8617cf6b219a4512b28d6d50487367be",
+      "revisionId": "r_a2ca902ed3da474db9ced0bacbdfc8ab",
+      "manifest": {
+        "bytes": 10834,
+        "sha256": "19c13af48c1b151f9c8823674d1816256262a766f1c6876a8c2526fea05bfee3"
+      },
+      "source": {
+        "bytes": 37704,
+        "sha256": "c83e1b0475346baa6d964c76cab06a970c84eaa7fee0dc9bc90e8353d06ec6fe"
+      },
+      "canonical": {
+        "bytes": 78124,
+        "sha256": "c93f023b18ff12636f9182ac5bee35e5769424f49797eeeef422590f1de7374b"
+      },
+      "preview": {
+        "bytes": 363060,
+        "sha256": "bfd1a0165463fdeb29029b977c3f76eac6d7878dc6f73170e49dca8e85377313"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-hibiscus"
+        }
+      ]
+    },
+    "crescent-plant-naupaka": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_59a636b7132c4b3aaf998d3a58a21485",
+      "revisionId": "r_1d96a48e3a614801849560a0b2cbe5bf",
+      "manifest": {
+        "bytes": 10902,
+        "sha256": "cbdfb43eaa6a0a6c3181a203a844510e172a7bc1905fff576f6e77ef331a2896"
+      },
+      "source": {
+        "bytes": 37703,
+        "sha256": "2ab90333760d2c737aa10bed3feeb59515cbca2106ed62cdd1b4cbd2700bbe47"
+      },
+      "canonical": {
+        "bytes": 92536,
+        "sha256": "9daf8176d50588fc9461f4ab15ccc2ef3d510738c9d995902aa7a31251328760"
+      },
+      "preview": {
+        "bytes": 491224,
+        "sha256": "ccc4522ab760a0cb4e2501b9543e1c5d420a4b3d103dd6be745d58f9f3199510"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-naupaka"
+        }
+      ]
+    },
+    "crescent-plant-nest-fern": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_3f9add2dac064c7a90fad22e93bad572",
+      "revisionId": "r_f01c7040381a418b9f65a71882e0867e",
+      "parentRevision": "r_a77bc73b7011415eba2b3d80fb530db1",
+      "manifest": {
+        "bytes": 11366,
+        "sha256": "bdb122b7b774206baa2709e0de8269edbcc0eb529042fec4d60a266ff52325e7"
+      },
+      "source": {
+        "bytes": 37882,
+        "sha256": "b177c5497f59a384ce1f8e189ba813155e1fdc5c93e331a1bfc299e0b6fd752b"
+      },
+      "canonical": {
+        "bytes": 19920,
+        "sha256": "dacf3d77ebd4d10d99c434a6f0da3f5a10ba7a1d39cb6d5643bcefec40a35ee0"
+      },
+      "preview": {
+        "bytes": 179045,
+        "sha256": "792829b1d871647dc56048eaa63eadbc9f4bb568c744ef811e24b88cb4524d66"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-nest-fern"
+        }
+      ]
+    },
+    "crescent-plant-purslane": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_bf8498c34499429e845af038456f9cce",
+      "revisionId": "r_8ba9fde90b3f476195106a2b5d98c016",
+      "manifest": {
+        "bytes": 10825,
+        "sha256": "1835b53b79bca950bcb07e46dc2e3b6b647e57dac57a612b04c41e7f94931abb"
+      },
+      "source": {
+        "bytes": 37704,
+        "sha256": "c490df4125da2bf1a969e138133a82f46387f23499b4d52cd879ed84d16d809c"
+      },
+      "canonical": {
+        "bytes": 91732,
+        "sha256": "825ae90e217deeef43790046941ef41bb092052bc955557e9bacee6c73e2cd15"
+      },
+      "preview": {
+        "bytes": 139246,
+        "sha256": "8969e56bfce36c49449e442ff2efed4600aa94f9999c09cc90a36448c0032d27"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-purslane"
+        }
+      ]
+    },
+    "crescent-plant-scrub": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_2c3211cbca87469dafd2e1cf0fe066a9",
+      "revisionId": "r_c7f5ab339ad54cecacab349c3e3ced17",
+      "manifest": {
+        "bytes": 10831,
+        "sha256": "9ca7f62cc5e5dc17787a275fe931151654cf530e59f5f7424d2d1e4c369e92f7"
+      },
+      "source": {
+        "bytes": 37701,
+        "sha256": "90f13861364231c0064ae5792e34b29473e2e62bb3945043b6a45ee2f74ab7eb"
+      },
+      "canonical": {
+        "bytes": 93084,
+        "sha256": "ef488fa582b82214dc6e3cc9536dd2065b4ed926525ebeda5d70a259241d2993"
+      },
+      "preview": {
+        "bytes": 362988,
+        "sha256": "2c3234dca0b679d75bbc0111feb8cb9670327d74ad348e1f12b1a70d00bd4d04"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-scrub"
+        }
+      ]
+    },
+    "crescent-plant-sword-fern": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_bf73dfe6255a44fdb76d38897f1cb118",
+      "revisionId": "r_0e03667d27c84677ad2a52b4ca612cbb",
+      "manifest": {
+        "bytes": 10743,
+        "sha256": "e39de10fea9257bd43124652a19f6c72113682623f327d11a1101aa5196e1cd0"
+      },
+      "source": {
+        "bytes": 37700,
+        "sha256": "1b86ee904e43555809b0b02872d96b05f3d08cf67873126201ba1ba5644c4947"
+      },
+      "canonical": {
+        "bytes": 76432,
+        "sha256": "837eeace7b5262a11ef073fd553c92545d56cde1dcd601ab30e3b90d10583294"
+      },
+      "preview": {
+        "bytes": 188217,
+        "sha256": "412705f85ee0b8313aabdfcbbffdbd37639de4535171a00a3cd6a11bad557407"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-sword-fern"
+        }
+      ]
+    },
+    "crescent-plant-vine-fringe": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_beb20786481b4c69bfed4dae3ab727b4",
+      "revisionId": "r_0580ebaeab84471096a92f75f5328acf",
+      "manifest": {
+        "bytes": 10795,
+        "sha256": "cd5a83da788f12523791186a62a474a8f0063e752f1b4d92c4d77e1185990c4f"
+      },
+      "source": {
+        "bytes": 37701,
+        "sha256": "e8a1a90bcee3c16c438cc3b53b10a2b2cd81818745fa6dbcbae98b15541f8b25"
+      },
+      "canonical": {
+        "bytes": 78624,
+        "sha256": "55e48795be54e2a7329b210f567db3e677c5769a23ba1d0e4a05e809ceef5c95"
+      },
+      "preview": {
+        "bytes": 74173,
+        "sha256": "9286bd3e7eeb5a79f963c081d6633e269cfcb6370f6839ff91a5c5a264ee7b8f"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-vine-fringe"
+        }
+      ]
+    },
+    "crescent-plant-vine-mat": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_d56dab2fc46c40fb8c57336a2fd5a451",
+      "revisionId": "r_aff5d9d5047942e6be26dffe4151b898",
+      "manifest": {
+        "bytes": 10801,
+        "sha256": "3f8be27cea7312c246d9bf9a487759da7c5cba6215be6b5ea2cc39e186912337"
+      },
+      "source": {
+        "bytes": 37698,
+        "sha256": "fa80bd22a49a9dd29ca6dd907e9f6d3d431e9a0c777542bb1525f6e1a155742b"
+      },
+      "canonical": {
+        "bytes": 86284,
+        "sha256": "5f2d992969391d3258fada8bfc1d2e9e66954e9e7ce31980fb4dc2c1a92ba157"
+      },
+      "preview": {
+        "bytes": 120732,
+        "sha256": "855a92be9a9139f1a7db9e760f25f884f55e014e0a04749af0aaa6d1083c9ba0"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "plant-vine-mat"
+        }
+      ]
+    },
+    "crescent-rock-beach-a": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_446e7eee61b5401e82a330b23d1c1fee",
+      "revisionId": "r_bdac00d03fee4445aca94ae2e8ca3eff",
+      "manifest": {
+        "bytes": 47009,
+        "sha256": "ee7f9f598b1bb9f15fc0cc68ab8567db6f1faf90feac24a3d1f5936f6d3a0665"
+      },
+      "source": {
+        "bytes": 30603,
+        "sha256": "6551ae55bb8f210777b1a2fa418335126c00ff83e397e51b57bd4fb0028018f4"
+      },
+      "canonical": {
+        "bytes": 1500820,
+        "sha256": "1f5c32d360635173740d65716f9f537b437292a8a87df5e84991afe722c6940e"
+      },
+      "preview": {
+        "bytes": 392311,
+        "sha256": "0df45a3c94de0913e5caadea2b8ca1b12a338f26110f83b18a01a84690098248"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-beach-a"
+        }
+      ]
+    },
+    "crescent-rock-beach-b": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_fe4b9406ebc54e4fb2343deec9807eb3",
+      "revisionId": "r_35db268edac1478cadd145d5a557c06c",
+      "manifest": {
+        "bytes": 47010,
+        "sha256": "f3ff88b216616c902f707e0f4e963c5f9b26715722d343ad2f059fed516491a6"
+      },
+      "source": {
+        "bytes": 30603,
+        "sha256": "7233bec36d505235811236a64c710550850180084fa9512a4b746aed7d576a91"
+      },
+      "canonical": {
+        "bytes": 1505324,
+        "sha256": "38823b3641210f5dcf760dd62314685c9e5ef47c212d92797f56424a6872b3f2"
+      },
+      "preview": {
+        "bytes": 483224,
+        "sha256": "8e377fba29b1beedfa9889484a70336f880e86b1f43184312dec0d2206273c59"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-beach-b"
+        }
+      ]
+    },
+    "crescent-rock-boulder-a": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_a0a880f9ca6944c09ab92d68c232fcfb",
+      "revisionId": "r_13a7eaad34e045aaae69b28fc12c715f",
+      "parentRevision": "r_dc997c03121946f8806fe6654845c4a9",
+      "manifest": {
+        "bytes": 47278,
+        "sha256": "2569262fb3254364c6d8c8c3928983e808f1723367f9cbb8d22bf11ce7079f59"
+      },
+      "source": {
+        "bytes": 34616,
+        "sha256": "8b353d4a383540db31ccf71cb04e7cd5c12731cb48be4748fe13a96ce8d8ef5f"
+      },
+      "canonical": {
+        "bytes": 1408504,
+        "sha256": "8ac753951c19c5c9a84cdab39c92ef5b82c6eb84628c89f744ca514cfe8592f2"
+      },
+      "preview": {
+        "bytes": 669204,
+        "sha256": "a0324f55e6f02e7098a7f7e5824fd6851e2ce9fc702ef5ad402107abd5e7a433"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-boulder-a"
+        }
+      ]
+    },
+    "crescent-rock-boulder-b": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_72223547a8a74607aac69ef01260fbab",
+      "revisionId": "r_d312230034114640b10018ac9b305178",
+      "parentRevision": "r_ccae9ac0a5964b2e923a535e224d3d95",
+      "manifest": {
+        "bytes": 47240,
+        "sha256": "50482f31264c9b8e6b48efde70739c9dd2d4579db55dcb89e273444713ba4f6a"
+      },
+      "source": {
+        "bytes": 34616,
+        "sha256": "a164417a4f80380622c6903395fdae3439b8f09660897ccf1d9242dfe14a68c3"
+      },
+      "canonical": {
+        "bytes": 1399796,
+        "sha256": "6014998980c4ceda2224c7d7be19999afb2fe1f097eafb8160884f98dc55b721"
+      },
+      "preview": {
+        "bytes": 485905,
+        "sha256": "720f465a54e7f8b9b533e6b0a6b8b165305af8cd6691f165b5f3da196be2b5e4"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-boulder-b"
+        }
+      ]
+    },
+    "crescent-rock-boulder-c": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_4e5d54fadc5e4254bc4f72521318eb38",
+      "revisionId": "r_1838d6178a334cb08c7cebf6e4ec56f3",
+      "parentRevision": "r_e4105c68db1f4b2f934968e394ce1c6b",
+      "manifest": {
+        "bytes": 47179,
+        "sha256": "518b3fe6be1518665eb8bafe756428069a2681b379ec1f14e268841b5b7a3c70"
+      },
+      "source": {
+        "bytes": 34616,
+        "sha256": "d3c401469175e90289acb4974136fb5113601bc5c7fa2387b6e55136df9a1593"
+      },
+      "canonical": {
+        "bytes": 1443492,
+        "sha256": "f700d5e35ad0449a9977feafc9448c5941bd5daa6caef74242c9b858d54b9b08"
+      },
+      "preview": {
+        "bytes": 187008,
+        "sha256": "34202954aee28079c782b767fa739403edb5eca5f4e7a85349c56c5ec4396580"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-boulder-c"
+        }
+      ]
+    },
+    "crescent-rock-cliff-a": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_0a7d3f64a8574abb92dce6b0463db1a3",
+      "revisionId": "r_8631328505ff44fc99d7024890f29618",
+      "parentRevision": "r_825323dab38145ecbb1a81c230afa6e5",
+      "manifest": {
+        "bytes": 47296,
+        "sha256": "80f8222ef9dc90490533c87fb1026bd6debd2eb7b3691c835d3782663c09d213"
+      },
+      "source": {
+        "bytes": 34614,
+        "sha256": "3ea6620305ea23900fe24e5f3f15e3ef159b28c37d261054e8bdd92fa13e26c1"
+      },
+      "canonical": {
+        "bytes": 1699800,
+        "sha256": "77cd96c0c65debb1ad38ed18fa45bb264ed77bf84b90f94bb744b3d659a892df"
+      },
+      "preview": {
+        "bytes": 602894,
+        "sha256": "edbf6715afb0a32037119c7ba3c92e452f357488e76987ae1f3485c6a0406bc6"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-cliff-a"
+        }
+      ]
+    },
+    "crescent-rock-cliff-b": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_bd5c4f25e70a4a38b4da1fa7efe967d4",
+      "revisionId": "r_a2cbc91aca4342bcb3409047704717e1",
+      "parentRevision": "r_817596badee0498cb9b4e4ed1afa7752",
+      "manifest": {
+        "bytes": 47300,
+        "sha256": "616b70e70747cc3f3765089922f7e5fbc043d904de001b3c9f176aa568260b06"
+      },
+      "source": {
+        "bytes": 34614,
+        "sha256": "213c3ab54176f28553823e10aa4b3c0138c914f1b07e20f6789ff2b06e48b99a"
+      },
+      "canonical": {
+        "bytes": 1565464,
+        "sha256": "9dfb3268c53c38b9d30359855b31033c809e9bb76196a8af28f586349af08332"
+      },
+      "preview": {
+        "bytes": 616189,
+        "sha256": "a054e37c29cda0ed9a08d6c6ffc56d1158be68ed1cd46b10acb12819f60ca9aa"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-cliff-b"
+        }
+      ]
+    },
+    "crescent-rock-cliff-c": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_c7921e001461409eae3d8fa233d839b0",
+      "revisionId": "r_7d4e3f6643fe4a2c9aa5ce024b20d670",
+      "parentRevision": "r_0d6e0b733a974b44a10ed95b55fd36b6",
+      "manifest": {
+        "bytes": 47304,
+        "sha256": "9d53a0189a9b8aca154fb0b29494bdc0a41d4a8f2b2634f9af1ebebc7b74cf6b"
+      },
+      "source": {
+        "bytes": 34614,
+        "sha256": "1fb33e7434872187b77733c61394b352798b1387993385f320602d736cd07541"
+      },
+      "canonical": {
+        "bytes": 1570188,
+        "sha256": "8d007a78b26dfb3e778183422014e3331fa51c3ee0dd13b37e0ed2ab10d28eff"
+      },
+      "preview": {
+        "bytes": 595800,
+        "sha256": "f73c4469693c96b7b0b240302f24d877d68c62669be21969a1c3d8b76fb21815"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-cliff-c"
+        }
+      ]
+    },
+    "crescent-rock-outcrop-a": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_a2d3b08d12804a49a2e8a78e619bbd3f",
+      "revisionId": "r_1e467cce279f49c19b65ebe800bb7f91",
+      "parentRevision": "r_60065bbb927d46eea77cd7d8895495f0",
+      "manifest": {
+        "bytes": 47268,
+        "sha256": "4369f411b2987e3f4ae8a6e9884baa58e39ef9a22c1213993cb274938c6b1648"
+      },
+      "source": {
+        "bytes": 34616,
+        "sha256": "498ee258582792af1ef55e81e2622d99b8d3a8a1564f0b36dac44b9d29b2b52a"
+      },
+      "canonical": {
+        "bytes": 1620900,
+        "sha256": "bd1ee376ebdc968cef0b50f5376458a6a94424aec1c767e1b16b2d3a0ef4477f"
+      },
+      "preview": {
+        "bytes": 714057,
+        "sha256": "a05c5a293b6fb59bf8fcb8e8dc666b6627d1e3c6b07fecd2199e4326b417378a"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-outcrop-a"
+        }
+      ]
+    },
+    "crescent-rock-outcrop-b": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_4beb66b219c64d98ae722b98024e7424",
+      "revisionId": "r_adac0cd34d614259aca962e05b6c551f",
+      "parentRevision": "r_42fab86fa1994c5fbbfc6482a3e93c4c",
+      "manifest": {
+        "bytes": 47288,
+        "sha256": "75ae8089ebfb0dd75c3ef2728977fbfa0f4af5f9496a093ec29bc4b3ac16c545"
+      },
+      "source": {
+        "bytes": 34616,
+        "sha256": "703e23775165e6e6b1622a7293b019afca3dcbb5c588645485b3befa8140a3ed"
+      },
+      "canonical": {
+        "bytes": 1540016,
+        "sha256": "bc1a7b9f57574afe7563a52860f6d1acb27f321d4577cb445384b7874fa1dc51"
+      },
+      "preview": {
+        "bytes": 447831,
+        "sha256": "3bb01712dde6e8bf8596e44814c4c46ed81c819f76eb5534199c6b79aa6c4089"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-outcrop-b"
+        }
+      ]
+    },
+    "crescent-rock-reef-a": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_e8cdfd102c4a4a9db4d7481f067e8f22",
+      "revisionId": "r_506b9771f15d49cd9c3a8ef2028e30dc",
+      "manifest": {
+        "bytes": 46989,
+        "sha256": "636c29a81926bdc09bdddab3155933f139579c6dda2f1c23824f3e4b862e4059"
+      },
+      "source": {
+        "bytes": 30602,
+        "sha256": "8c0c28b9ef52dec0d6ed5451600399c736923263e12bde66037c97b1edc5ff0e"
+      },
+      "canonical": {
+        "bytes": 1446000,
+        "sha256": "1547f3866a8cc7069ff83c5a240fc1e36ed6862d6b2028d0a2df3119600f850c"
+      },
+      "preview": {
+        "bytes": 620582,
+        "sha256": "5626521c5c7cd8b4b9a05a6f5d04de8fb8e05445b0a856db2690412496330f8b"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-reef-a"
+        }
+      ]
+    },
+    "crescent-rock-reef-b": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_0a78d5760cd1466099ea1e8bbf692b81",
+      "revisionId": "r_f90c4f3d2acc4c46a06c1929f1211ba1",
+      "manifest": {
+        "bytes": 45308,
+        "sha256": "986f789568def63d35f28d2170f17abb02f20a58edd8612c978c1ae568b8702a"
+      },
+      "source": {
+        "bytes": 30602,
+        "sha256": "350a9fbae517042ffcb010f27aa963e3e349cd8a5ece17101fc1fdbea42d2658"
+      },
+      "canonical": {
+        "bytes": 724212,
+        "sha256": "a91191752ce46bfd0f468e1224cc892408b4a2b1fecb664d7811de0cbcc418ed"
+      },
+      "preview": {
+        "bytes": 236679,
+        "sha256": "f40b02b5f3c772c8590cf36577174059aa1fe085cd1fa68ae0fd9cf00ca626d5"
+      },
+      "materials": {
+        "bytes": 1776240,
+        "sha256": "3ad3be58d315d749649a4a1f117c25bf81e8c5f56eff569f6a4a221fdd3d4f26"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "rock-reef-b"
+        }
+      ]
+    },
+    "crescent-coral-rubble-patch": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_7776b270e7aa4afeb4e972b4fab93823",
+      "revisionId": "r_0004b73b61ce4dbb8650b2170ca6739e",
+      "parentRevision": "r_969586b434074508bdaefdaea63b0eb9",
+      "manifest": {
+        "bytes": 10894,
+        "sha256": "bc7cc1cd6f62ce5854cbdc0b776daa84d90d2cb1de50b1a65dabeeea5ae78b9e"
+      },
+      "source": {
+        "bytes": 35297,
+        "sha256": "7e0690cc706d6de63e707f5625e1571086c016b827e8ab1bd63c4525f8e0bf26"
+      },
+      "canonical": {
+        "bytes": 53908,
+        "sha256": "136df8f3bdc6cb992fdacff94da7d9b90a6253098ccba68959d6bb8e77a7d8e4"
+      },
+      "preview": {
+        "bytes": 132165,
+        "sha256": "066cc08a722d495f70b30b03716091537d5a8ee05d9c2eb7b0800b6b16e79927"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "coral-rubble-patch"
+        }
+      ]
+    },
+    "crescent-coral-brain-heads": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_28fcfc20b1f04104a433f7a06a11f49b",
+      "revisionId": "r_5ba43855c2d44c2288950b79928cc8d4",
+      "parentRevision": "r_ab52e032129b4f7fb35dca29e1484281",
+      "manifest": {
+        "bytes": 10869,
+        "sha256": "8c212200a2e5c2d37e666c0bb01770914e40bdd2ebc74809e4669381b9c2b58a"
+      },
+      "source": {
+        "bytes": 38392,
+        "sha256": "70d1d54927202db8170e451d03a0c1f10ff66851738b998cb801ed0448b9247d"
+      },
+      "canonical": {
+        "bytes": 88920,
+        "sha256": "97bb07c674709584e67165a9089d875935d528124ef8340370127b3d7d7f9452"
+      },
+      "preview": {
+        "bytes": 221651,
+        "sha256": "db20b338b1a99ee2f775c5a035787e3cdb179d7d7520d52cde85f926a44dbd2b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "coral-brain-heads"
+        }
+      ]
+    },
+    "crescent-coral-staghorn": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_8f0379e263004bb68de8dcb9414f263e",
+      "revisionId": "r_5fc00554f8aa445e94baa7f2dd736042",
+      "parentRevision": "r_649bc738c1e945a4b623f4493c907a09",
+      "manifest": {
+        "bytes": 10912,
+        "sha256": "5a21d41d6982d042e71bd5bc888d91129bbddee0d6b3cbb75190ad90eba0c8af"
+      },
+      "source": {
+        "bytes": 35293,
+        "sha256": "c6d9fb57718687e3205814cd1b4331e101336d798195413f6add261b003809b0"
+      },
+      "canonical": {
+        "bytes": 95116,
+        "sha256": "bca1d908d09e869d891cf8ebfcb02fdd7e59371b26c80c1374fab37bcd88e139"
+      },
+      "preview": {
+        "bytes": 301534,
+        "sha256": "cb73f9702ea77f5f3ecc984c27b0358e4de3e36b2dc9c10ee9cad639be52ecc3"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "coral-staghorn"
+        }
+      ]
+    },
+    "crescent-coral-table": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_a06d11aa32e34fc6a8d49bd628e6716a",
+      "revisionId": "r_92d597470e844905abeeec904b174049",
+      "parentRevision": "r_d6c6e3019c6e4fbc8dd6cfb02eca6588",
+      "manifest": {
+        "bytes": 10917,
+        "sha256": "a5d080628054e2fbcf91157eb7b3f2d1c60bae9a1cfe596efcb5b054e46256d2"
+      },
+      "source": {
+        "bytes": 35290,
+        "sha256": "661d412391e9a75389c3c21b0379d688920268e834b6ed072bfc82f01c756223"
+      },
+      "canonical": {
+        "bytes": 79524,
+        "sha256": "54e8a245375e18070b5554984a10e8bf91c3c65f2bdc2d68195b0024c663ed9a"
+      },
+      "preview": {
+        "bytes": 243545,
+        "sha256": "e6b0ed20abe511235e1df78445fa96c3c9f9eca54837b12641896da5eb8dc161"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "coral-table"
+        }
+      ]
+    },
+    "crescent-shelter": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_75d41771e0764dcbbbae941025f714f8",
+      "revisionId": "r_23af584103ec4c8788c0dcfb9e263d99",
+      "parentRevision": "r_e4b59e837dd14b60bdb3a60967c39d9e",
+      "manifest": {
+        "bytes": 12661,
+        "sha256": "72c96d031eab6fd61a6edda0168fbea9edd566444d135abc044096db75f1c19e"
+      },
+      "source": {
+        "bytes": 27846,
+        "sha256": "3ee3d7d3771ea781573ee233350e66625de288d387a7e731e071a703a472d761"
+      },
+      "canonical": {
+        "bytes": 640492,
+        "sha256": "c09bc1b3a273e8e5dc12f6410c99ca8b8abb68fc59f89eda0e73c6777a8b5562"
+      },
+      "preview": {
+        "bytes": 541113,
+        "sha256": "7fc37be7d39f80b595cb72488ed2a12d57581a0f5cbd3a5384c104eaab264839"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "shelter"
+        }
+      ]
+    },
+    "crescent-jetty-deck": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_b9253672bd024b40bc8a943a056ba6a3",
+      "revisionId": "r_dd77ec41c8a148749d079173dc110e78",
+      "manifest": {
+        "bytes": 12382,
+        "sha256": "44f6d57900668ca91a3fc826d4e4f94eabd19fd87ac731ac01ae11f7fb27a3a3"
+      },
+      "source": {
+        "bytes": 20443,
+        "sha256": "4c10bcabb4b023b87fcbbeb484214c0955c9eb292863b7367b6b65c8e2ff43e1"
+      },
+      "canonical": {
+        "bytes": 186932,
+        "sha256": "d0dbc1c46058ae479491f5b87ba6e6a55871b47f714b799734286b4c438b1a16"
+      },
+      "preview": {
+        "bytes": 315657,
+        "sha256": "9527e0ee69ff7a142d2c5a4d20a332e7c4fae3060eec6f57eef1c5e68f6c2205"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "jetty-deck"
+        }
+      ]
+    },
+    "crescent-jetty-platform": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_133257abcba744caa887e07895f932ec",
+      "revisionId": "r_90dc37891b9f41dd843e20762d57b523",
+      "manifest": {
+        "bytes": 12247,
+        "sha256": "eac9b22773be1f4df6150ccacc47ea1e4abc83ecf98c9e2597a6b2c7c5c15fcf"
+      },
+      "source": {
+        "bytes": 20447,
+        "sha256": "f814db7df73fe63a2a5ee62d7d0c8d85ecb761a1cf1317f6d96b37346266e6a1"
+      },
+      "canonical": {
+        "bytes": 258788,
+        "sha256": "ed5c7094fe6ea21a8f8bc3dbffdecfbfd21d36e44cdd87d6b766a853e5e791fa"
+      },
+      "preview": {
+        "bytes": 366996,
+        "sha256": "5d7b595c83d2f35ce637cf024bbbe5a81959d7d0e0412384fb1e25631f889c29"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "jetty-platform"
+        }
+      ]
+    },
+    "crescent-jetty-stair": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_3fc9db18b10c41ca927300d4cf73b8c1",
+      "revisionId": "r_2f615af8a589400e9cb9b2ca602c4619",
+      "manifest": {
+        "bytes": 12261,
+        "sha256": "3bb761f07f52c6d3766459b05c59e4a57ac3e77d9a4e473c3da83ee3538e2a39"
+      },
+      "source": {
+        "bytes": 20444,
+        "sha256": "bd23bc4d0b99e58809f6c4fc10a52d504c13d5990e869125dca6564123a6746a"
+      },
+      "canonical": {
+        "bytes": 146072,
+        "sha256": "edda733df1c3c9db40d546b8f54b6fba98f8c6881b0d596c38b557a87aab078f"
+      },
+      "preview": {
+        "bytes": 284704,
+        "sha256": "917335db8602b9bbdbbb506fcb17acfccd8a855d2b66ebffe56a7abcffbf2bd8"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "jetty-stair"
+        }
+      ]
+    },
+    "crescent-seagrass": {
+      "store": "tropical-island",
+      "collection": "project",
+      "assetId": "a_675613e1a07241bfac5e903469b306a4",
+      "revisionId": "r_cd79d419d444441a8299b6739e6435d7",
+      "parentRevision": "r_d357c10ed29c4afe81985485bd2f9b86",
+      "manifest": {
+        "bytes": 11275,
+        "sha256": "b07e68d74e389ad70c603d5b89ad2afbd2cda7a039878994b08c9e278cec62eb"
+      },
+      "source": {
+        "bytes": 9039,
+        "sha256": "8af7c74a5d759237514795da22e9fd69faa0d784198c10cec9150b47b55c29c5"
+      },
+      "canonical": {
+        "bytes": 16592,
+        "sha256": "b35d2a2c6db3d358acb38e2b79fa370e16aef52f48406f008bb6bb6c026cacb4"
+      },
+      "preview": {
+        "bytes": 305977,
+        "sha256": "49e07eeca36ebbe7dd064fe9f8356efc455ef8f5be55cd990817093bd9002a79"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-crescent-cove",
+          "id": "seagrass"
+        }
+      ]
+    },
+    "winter-wmc-fir-hero-a": {
+      "store": "winter-tree-repair",
+      "collection": "project",
+      "assetId": "a_d7c11d251c944d37bb395dd2317258bc",
+      "revisionId": "r_24dc1336523045fe90ab54f009816389",
+      "parentRevision": "r_105e6c9467ed4443a85cf1979b45aab2",
+      "manifest": {
+        "bytes": 12165,
+        "sha256": "95e2c29bda90f5948348ff27e33ec1e738fb2d9252a039eb1e91a4e923df3806"
+      },
+      "source": {
+        "bytes": 11645,
+        "sha256": "76b365e5b633cc9adc59c80083d1ea803ef2f0b94ca50fd00d03f0c7c806b46a"
+      },
+      "canonical": {
+        "bytes": 3435860,
+        "sha256": "fe9541b09092e748366975e8b6730c735af7dd1322b89f82fb6bfdb6b1e6d51b"
+      },
+      "preview": {
+        "bytes": 453936,
+        "sha256": "cf80a40834e601a9bd25b85a077ed0c34073eb7f38a7a88c878be216ae80a67c"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-fir-hero-a"
+        }
+      ]
+    },
+    "winter-wmc-stone-pier": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_f65ef66e092c4aeeaf02e7836dbf8e7c",
+      "revisionId": "r_5cfe4f56a2e64bdeaf11ecfd989d63a8",
+      "parentRevision": "r_5b0c4c702fbc49808f371db7ffd19257",
+      "manifest": {
+        "bytes": 15698,
+        "sha256": "53ddfa465a87e74680894c8039da662e446a72e0cdcb444a41b305359a4c7bc7"
+      },
+      "source": {
+        "bytes": 5051,
+        "sha256": "e80ab7e9ae40c67237b0e61a6b7433900067078cf43706ec943bca6b2f474dde"
+      },
+      "canonical": {
+        "bytes": 527744,
+        "sha256": "66b1f288e84daf055b179d832b690bc863a03118b698aaed0adec0421d07fcec"
+      },
+      "preview": {
+        "bytes": 652186,
+        "sha256": "0623fcc98d231553177fc73998226fedd66a85ad2ee41d321a63ecd7a431e9bf"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-stone-pier"
+        }
+      ]
+    },
+    "winter-wmc-window-test": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_6f50a6077a584e11bd010702a67bdbf9",
+      "revisionId": "r_a68e049d8cbf4449bbad83b4b2d33499",
+      "parentRevision": "r_8c5e6424831a4fdcaf116edaf08e728f",
+      "manifest": {
+        "bytes": 13065,
+        "sha256": "02a08d5ad98cfe076512e31150baca9bbba9b2e99576f4db627db66fd7d880cf"
+      },
+      "source": {
+        "bytes": 5093,
+        "sha256": "87853383110a711743c032e0768bb36d358a68f0f6eb54dfb14645b7ae0a0150"
+      },
+      "canonical": {
+        "bytes": 175196,
+        "sha256": "869d74335457eaf5437d55e7bc6cb83789fa4377b548b2f4ea39f5acc7923334"
+      },
+      "preview": {
+        "bytes": 179383,
+        "sha256": "f4310e9e74069c994d0019a5bfd3e45e2ccf072278f0d6919424dc85d4322d6b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-window-test"
+        }
+      ]
+    },
+    "winter-wmc-lantern": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_a618a31b39cb4b818f5c2f36d743c65e",
+      "revisionId": "r_51eacd2e38f9470e80a967cb04a12da8",
+      "parentRevision": "r_945df4974d94420386138f8009bf41a6",
+      "manifest": {
+        "bytes": 13732,
+        "sha256": "37926beba34524d7f230ada2d125a5fa254da6e52e6f89a043a20a4fa06dfdd8"
+      },
+      "source": {
+        "bytes": 2740,
+        "sha256": "7e10f5825618c2f1fa1a1be7ebccde24b266aca2e04cc31efbc17f93c47e94fe"
+      },
+      "canonical": {
+        "bytes": 17912,
+        "sha256": "702a4e65447b5c750b63ca6e6a000fa3cddcb5bf2720ac3dd13903bef56fe0a1"
+      },
+      "preview": {
+        "bytes": 55784,
+        "sha256": "727870c754d979e263756f4f121758b36a60f3cc995f1a754e206ed836e0e22f"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-lantern"
+        }
+      ]
+    },
+    "winter-wmc-spruce-hero-a": {
+      "store": "winter-tree-repair",
+      "collection": "project",
+      "assetId": "a_23355f2ce8664f04b335c6be26def8d1",
+      "revisionId": "r_9096fae118ea43d9b436cb2b7038bdfa",
+      "parentRevision": "r_a6300c01aff74afcad5a4ea74cbb67d5",
+      "manifest": {
+        "bytes": 12155,
+        "sha256": "4d0401be90a18b6ec6e0d9a04009a58029b94957c599535ae1ad5500726a8bb6"
+      },
+      "source": {
+        "bytes": 11649,
+        "sha256": "c8bd12c8e927dd4281a3b29fb7c1af5f9faec7797f6ac5b2eb96452ab68b1c51"
+      },
+      "canonical": {
+        "bytes": 3629236,
+        "sha256": "ac6e81bc30a2df8cce9a36517d70f3942f4f5552a27d116b43b20fdd44b5466b"
+      },
+      "preview": {
+        "bytes": 404910,
+        "sha256": "0d490ec4ba16a348880be3ea3b80554f973d8a83a7f36da2939dda1c8b4cab3a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-spruce-hero-a"
+        }
+      ]
+    },
+    "winter-wmc-fir-middle-a": {
+      "store": "winter-tree-repair",
+      "collection": "project",
+      "assetId": "a_70a4c2e9fee3489aa5d4f93d71942508",
+      "revisionId": "r_653b24f39a224932ad60242f0fdf3434",
+      "parentRevision": "r_cc07345479d94a33bdf04bc3969540bc",
+      "manifest": {
+        "bytes": 12147,
+        "sha256": "d32e94a01e436c15ac35ac08f981cf69d3c29e96226adbc73f2ebaa3c71ba9fb"
+      },
+      "source": {
+        "bytes": 11795,
+        "sha256": "245754b95ce7dfe86ee180d5ccf90d0d26a9a1d9e9b2a88d2b566991b11645f8"
+      },
+      "canonical": {
+        "bytes": 425676,
+        "sha256": "1f75a2acb0ba007970ece3fc1fb3f7dd1a051d35500a80f7e3adda55b902994d"
+      },
+      "preview": {
+        "bytes": 365364,
+        "sha256": "655f897000974a3800c06ab7fd3e806d4a5b080d659bd41c5b3c77f5d346a13a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-fir-middle-a"
+        }
+      ]
+    },
+    "winter-wmc-spruce-middle-a": {
+      "store": "winter-tree-repair",
+      "collection": "project",
+      "assetId": "a_d013717c727c48dfad0bd798c94f261f",
+      "revisionId": "r_12a9a5e32f354fe992679bc5795f41a2",
+      "parentRevision": "r_9bf5d291a99f444c810b08b8cd7c1f6b",
+      "manifest": {
+        "bytes": 12143,
+        "sha256": "271d31c11e802e2ecff2d63d1886452f621d4f0e613bf893a18544541f2b8920"
+      },
+      "source": {
+        "bytes": 11801,
+        "sha256": "c0a2b3c095872c4acac192a20c3b5c041ad35f8c3901a5b63282a25f840db97e"
+      },
+      "canonical": {
+        "bytes": 432708,
+        "sha256": "30bd23fb2b7531a97a6f5ae2ed8909794f3640a1190857fc9dd14b72b20e1be4"
+      },
+      "preview": {
+        "bytes": 297500,
+        "sha256": "e80ec39d7fc7d7c6aceedd330c88a183e7c9e3608bb7d59a09d4048a36bba128"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-spruce-middle-a"
+        }
+      ]
+    },
+    "winter-wmc-fir-background-a": {
+      "store": "winter-tree-repair",
+      "collection": "project",
+      "assetId": "a_07729f5aec8847bc80d071b4599d6bff",
+      "revisionId": "r_d36e25c91a154b18adda59d5fc18ba9c",
+      "parentRevision": "r_23d2596b5b1142019ccc8960b414e373",
+      "manifest": {
+        "bytes": 12119,
+        "sha256": "348d4467d5f9aa70599235df46805559e553e14d71c68bc22bc0cc26d622964b"
+      },
+      "source": {
+        "bytes": 11188,
+        "sha256": "f3300facc2703fa88eeabd8e111ef50f22fcac9460d785a87868a76255977721"
+      },
+      "canonical": {
+        "bytes": 174668,
+        "sha256": "c6f9cc83fa0053e39df9325fadde80c8911e95cb5090a78c32cf2ae8db084067"
+      },
+      "preview": {
+        "bytes": 409287,
+        "sha256": "d577d4ef72de1c387b6643a94f053f8226f8c852a577b36f5da599058ca44e99"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-fir-background-a"
+        }
+      ]
+    },
+    "winter-wmc-spruce-background-a": {
+      "store": "winter-tree-repair",
+      "collection": "project",
+      "assetId": "a_b9737920dd4e43abaad0a6536de676f0",
+      "revisionId": "r_3e6ab9ec488f47478525cb870e37f42e",
+      "parentRevision": "r_840cfdc71ca547d9aa4c11ad542d52c9",
+      "manifest": {
+        "bytes": 12130,
+        "sha256": "7bd9c2ce61c472cba5c59d5b92bbd06f15e95df36441c93f3ffc30feb5588540"
+      },
+      "source": {
+        "bytes": 11194,
+        "sha256": "73e5bdce6dbb8c84bb69dc1280e96db5eda65eceec36e986095ba49dfeb35b41"
+      },
+      "canonical": {
+        "bytes": 184060,
+        "sha256": "0fc97db462c7e42a9fce4a93afc87da4662e585d486a6697912901bcace52f8c"
+      },
+      "preview": {
+        "bytes": 276972,
+        "sha256": "562708d795ca6fcd02ab94a1f572ed91eb86190530ff913c75d879b402e96e72"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-spruce-background-a"
+        }
+      ]
+    },
+    "winter-wmc-fir-sapling-a": {
+      "store": "winter-tree-repair",
+      "collection": "project",
+      "assetId": "a_f72b795d8be449cfaee39950d715be64",
+      "revisionId": "r_a5fcf206ebe2418a813cc2abdb19cad1",
+      "parentRevision": "r_f2f1d09fd0a942c58964b2821e219406",
+      "manifest": {
+        "bytes": 12148,
+        "sha256": "d1697c53a5a5348b17fb75bd4415b99dadec98cc3609a09c720979753cd41fd3"
+      },
+      "source": {
+        "bytes": 11643,
+        "sha256": "4fe7ea5679eaffb03cb8db27eec20cbd9478551dc02ae4586a886a6829afb78b"
+      },
+      "canonical": {
+        "bytes": 700308,
+        "sha256": "c487671a89ecf9d79e53dbc8141bed6da8f39c02670c46c3dcdf34889f5b58e0"
+      },
+      "preview": {
+        "bytes": 413968,
+        "sha256": "b12c58b9a83cd4e0005ebf8e360c6439ffe70a662fde5f71f929df74a58e4906"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-fir-sapling-a"
+        }
+      ]
+    },
+    "winter-wmc-window-tall": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_d800f84a4c9c412c934538c14d43c1ac",
+      "revisionId": "r_8c85b15ec6434f91b67353da68c41630",
+      "manifest": {
+        "bytes": 12948,
+        "sha256": "166f70792b130cdd3b3f170bab01f6c55c5418cd1df03c84b1839e6737e85d41"
+      },
+      "source": {
+        "bytes": 5097,
+        "sha256": "4d258398cb2019cfff603035bb41281b09f0302c81c25cadfe652e1abec565a6"
+      },
+      "canonical": {
+        "bytes": 175068,
+        "sha256": "bbf65f63cb729b6e6d51e0e4709ae2bd9305e5facd249058dc4f82cf7dd159e9"
+      },
+      "preview": {
+        "bytes": 124429,
+        "sha256": "7b76d75fbc30cbfd263548b85099c35db0690f827d5837a9ecdc41f0687fcb75"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-window-tall"
+        }
+      ]
+    },
+    "winter-wmc-sofa-wool": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_5af9bd51de70444cb02f1cc5e926043f",
+      "revisionId": "r_900d94fea90f4b8486bc7aa81e84fec7",
+      "parentRevision": "r_34bc6f3532ef4896ab60d9477103f667",
+      "manifest": {
+        "bytes": 12729,
+        "sha256": "13277b149d1317bf33aa616dd3d52241045fc3e757d5bc7111eda72cff4cf6c5"
+      },
+      "source": {
+        "bytes": 29888,
+        "sha256": "718711e2fd4a0c35d6bc9d3979bc20d45416b38e768287c7073357cb1ed8fd7c"
+      },
+      "canonical": {
+        "bytes": 3925956,
+        "sha256": "31208887ca28acce4b78d71814b2365922f79e0b9d5529e44955d4bc04659a44"
+      },
+      "preview": {
+        "bytes": 355488,
+        "sha256": "c1edfe60bea7c73ab5cd556f7b04d359a48bd311331df9147c7fa909b8400bf5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-sofa-wool"
+        }
+      ]
+    },
+    "winter-wmc-hearth-masonry": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_873885321d9441419a5e22f993bf833e",
+      "revisionId": "r_69a2424559ec43b4a6194d3bdaf984f2",
+      "parentRevision": "r_18802321b2224fa5b3c40ceb3eb710c1",
+      "manifest": {
+        "bytes": 14624,
+        "sha256": "3e3f05fcb56f3331dcec2c7bc5b81123a3372aacb86314b56c7ad9b04b397c78"
+      },
+      "source": {
+        "bytes": 26449,
+        "sha256": "c51942ec1bd585b8f57e653bafbab3f90d4ae8f739f87cb84efd6e73ba0a1313"
+      },
+      "canonical": {
+        "bytes": 470728,
+        "sha256": "6810ba00d23509597e452397d343d709b92c1ece80f854bb55e29ab1d42631c7"
+      },
+      "preview": {
+        "bytes": 452756,
+        "sha256": "3ff91eac86e16c3a163b21be9ebeb8d0085d5904a1cc6379b47bdf24c1063393"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-hearth-masonry"
+        }
+      ]
+    },
+    "winter-wmc-floor-main": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_8f428497d003408cbb0f565e4bd25e77",
+      "revisionId": "r_6f875c61c5fc4d4d8112ef059c6c8443",
+      "parentRevision": "r_a3f66e1f1aee41c5b8fd4f99cbdf20dc",
+      "manifest": {
+        "bytes": 12771,
+        "sha256": "8cf1a5f953eac819faf2be3245dbc567c7b02e085d06a593b85ceef810a9af4f"
+      },
+      "source": {
+        "bytes": 24662,
+        "sha256": "9d465f7851aec94ea984b00d18b237098d83ef78676a93d51183d91ca4e5e8df"
+      },
+      "canonical": {
+        "bytes": 1820492,
+        "sha256": "f65e5db84489c67705f3e63df9d14656ca34b7053af1266d2e39882385025a09"
+      },
+      "preview": {
+        "bytes": 114195,
+        "sha256": "9a7ed9595e48f35e328bf5b6b5acd0ee9255402e3af2a1e42b99f8e406f90ceb"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-floor-main"
+        }
+      ]
+    },
+    "winter-wmc-wall-facade": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_5b4f6100aa984ab993ed3f672bdb810e",
+      "revisionId": "r_6b70ff0e8baf45dd96f6a3dec221853c",
+      "parentRevision": "r_f81abc2f35854738a7c545292b139ca4",
+      "manifest": {
+        "bytes": 12049,
+        "sha256": "1dfc6b8e11aff9d591dd22fd66b2c97d2185c26cebc1ad9d7371ca42f9031567"
+      },
+      "source": {
+        "bytes": 26393,
+        "sha256": "aa9f11709039fdf3cfd44d838e1505eea92494aa0f0fc2b3b5a726917187d6f0"
+      },
+      "canonical": {
+        "bytes": 1281148,
+        "sha256": "b53e834f0d8ea900736cf277e30c926b8c171844a934c9ec0ce89332fc04c782"
+      },
+      "preview": {
+        "bytes": 129530,
+        "sha256": "5ed3bb8b5cc3b6df3e391673a0b16b3c9df4c7e010d78ed1502d627b04a20eca"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-wall-facade"
+        }
+      ]
+    },
+    "winter-wmc-deck-tile": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_bb7581d6dd994620b828cb48e0540571",
+      "revisionId": "r_24ad3a121ea949b3819e19192a07aecb",
+      "manifest": {
+        "bytes": 12089,
+        "sha256": "a45fbd159d2d7409dabd1e3a246f5864b019a37b976d3b3192891727bd77619f"
+      },
+      "source": {
+        "bytes": 24628,
+        "sha256": "0d9712bd129238d8dc731d2efba8260f61eeb24238b6aa691502c31037b34393"
+      },
+      "canonical": {
+        "bytes": 187144,
+        "sha256": "4a13c23e6b7ced2213a3a7c48fff5d5ceaee8147ba771857a28239f3737a5026"
+      },
+      "preview": {
+        "bytes": 186117,
+        "sha256": "4ef0b004e72087dc6ee46d71dc451e8c7943db3e367931a5256d700e68893b33"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-deck-tile"
+        }
+      ]
+    },
+    "winter-wmc-door-entry": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_d30677f997eb4f8f998e8c5c8687b801",
+      "revisionId": "r_81e404f1e10f4ee6a408880168ee7344",
+      "manifest": {
+        "bytes": 14228,
+        "sha256": "9b1d12bfc40ff52ae06633743ef0c8656b3dbd373aec8718a8a6c54e65a4d2b7"
+      },
+      "source": {
+        "bytes": 24601,
+        "sha256": "2ddfcaa7b8617dd028cefa036aa408c6f2bee2198dcef653accbe0ce3b899a5c"
+      },
+      "canonical": {
+        "bytes": 167796,
+        "sha256": "988bfcd1d0bfc15b4d743e123e9af12fea96b625e67d69fe67e364b44a403f43"
+      },
+      "preview": {
+        "bytes": 229466,
+        "sha256": "946943991a2b3173c9aa8bf8734dc1c11204607b2288997390116f46cbffddff"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-door-entry"
+        }
+      ]
+    },
+    "winter-wmc-stair-rail-interior": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_160b654df5ff4658b92412c87af1a4ec",
+      "revisionId": "r_abff23385acf408694274758d8e525bb",
+      "parentRevision": "r_a68f1dc52096489c9190b6a07106b957",
+      "manifest": {
+        "bytes": 12706,
+        "sha256": "e690b566a0d2a46c682394ff58b5074782e302bf51220d7cc95bc68685766a53"
+      },
+      "source": {
+        "bytes": 25121,
+        "sha256": "d21b3f2fbe3f093bf7df1d9c6c208e5b228cc8c44f1b2c59c42c8354ae6f14e2"
+      },
+      "canonical": {
+        "bytes": 136804,
+        "sha256": "cf7ddfb5dc84041f8b2ffa86140cd81e8c61d51f659ee67ff4ba62f81e4bdf12"
+      },
+      "preview": {
+        "bytes": 108477,
+        "sha256": "79266e86009f0277d0c6b8e4adf628c8191e4e283a9c6275bbd3e85a2552ba38"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-stair-rail-interior"
+        }
+      ]
+    },
+    "winter-wmc-armchair-oak": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_0cc64d69fec0441884617672724738c2",
+      "revisionId": "r_63ad6298f8c24d7fa220eeb8b4bfd300",
+      "parentRevision": "r_09f8f88ff7c9445b8221f6dd0de521dc",
+      "manifest": {
+        "bytes": 12013,
+        "sha256": "d6c0fdb74afa274eb0181557adaf8600b0f491626a54748766e2a8f9116aedea"
+      },
+      "source": {
+        "bytes": 28943,
+        "sha256": "e08f77cd417155915e12d3950175086a621461b7c046b0250e767a90a1acd134"
+      },
+      "canonical": {
+        "bytes": 1167696,
+        "sha256": "07b8b0cfce29ff68def0291f1b1f6230bf5124f7b2f4dabc6e2cc477ca8d502a"
+      },
+      "preview": {
+        "bytes": 397019,
+        "sha256": "a148a9d904c14ba98e451864394f00152b86de84cdf958a8edaf77252f702def"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-armchair-oak"
+        }
+      ]
+    },
+    "winter-wmc-wall-west": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_449715d72b4f4404922170fe5dd8680d",
+      "revisionId": "r_a06b37dfb34843d394c049e0b9913019",
+      "parentRevision": "r_58b172e36a7144ae8ca91a1fb24940f6",
+      "manifest": {
+        "bytes": 11943,
+        "sha256": "8bdcdd88226e0e1e6db642b0318f6f2381709b51c1eb27218a36b98203182484"
+      },
+      "source": {
+        "bytes": 26000,
+        "sha256": "cad6b75cf7f62359e996e829f3906078c9190b616a0bd440fbd5895f64520ca1"
+      },
+      "canonical": {
+        "bytes": 1002436,
+        "sha256": "7a5d2bc1993fb74d6778227fa039ca7ed9cd63eb4881bca2763175dc29aeba33"
+      },
+      "preview": {
+        "bytes": 127149,
+        "sha256": "c854a3ce5448f6060366628d986f15143b3c9c1dd7e0ca5ae33156841b94b421"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-wall-west"
+        }
+      ]
+    },
+    "winter-wmc-wall-east": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_4c1cb01001994fb3be31dea1e484fcdb",
+      "revisionId": "r_c9a234d398ed4d78b1c7a94023ae2ab0",
+      "parentRevision": "r_9d0828a7595a4c6eb2a2bf1f85b5111f",
+      "manifest": {
+        "bytes": 12033,
+        "sha256": "c0d76adc8d363ae2994cf8a66102cbf7fe0c8499caae4c4bbe781b9202dfa591"
+      },
+      "source": {
+        "bytes": 26151,
+        "sha256": "201201566b4d765093be2e92d8e2e7a3ac39872e89cc2020041417e97f5120e8"
+      },
+      "canonical": {
+        "bytes": 1205672,
+        "sha256": "bec7b6538e0f61594607449088e44d847822a54b4afe06e740d35eb2a751a381"
+      },
+      "preview": {
+        "bytes": 162900,
+        "sha256": "612456aabd2d1637acc4ddf05c63c13250aa4d670db84ab43aeb349c3a3a7489"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-wall-east"
+        }
+      ]
+    },
+    "winter-wmc-wall-rear": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_65cb0abafd7b4697b40285c7871a1040",
+      "revisionId": "r_6225dd8469d646c8a555c201713a5761",
+      "parentRevision": "r_bce157fc1c3f49859055c25812fe427d",
+      "manifest": {
+        "bytes": 11987,
+        "sha256": "f331b753581cdab45f51adc05c6d0aec2ec971e186c630601f17a0326cdb4cc6"
+      },
+      "source": {
+        "bytes": 25826,
+        "sha256": "c261ddc87f8c76b9ac1cb3c48a501d4cc4358b51d1f82dd3e9a0625152fdbff5"
+      },
+      "canonical": {
+        "bytes": 827940,
+        "sha256": "cf8b764038bea4437e6e7a46f6d9d7839e4e0b3e87303bd76bd5ba822d35d654"
+      },
+      "preview": {
+        "bytes": 183701,
+        "sha256": "8448b00f7b5d9c89f32e5bcfe53da21ba22671ae72fe549b146d3092620914c3"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-wall-rear"
+        }
+      ]
+    },
+    "winter-wmc-stone-plinth-panel": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_4fe232796efd42a3947fb4a8a7fa291f",
+      "revisionId": "r_b6a3c5ab05d04971bbb4a794d98b6fff",
+      "manifest": {
+        "bytes": 11615,
+        "sha256": "d8bbb7c570bda93862820dcc5822847c260ba3caa0329c5dbdd3c1c44b5154b0"
+      },
+      "source": {
+        "bytes": 24604,
+        "sha256": "f6cdd39f97308ee0a3eb3b8a22c32ab7cfc3473d5a4fad26386207e5b1a297a0"
+      },
+      "canonical": {
+        "bytes": 290904,
+        "sha256": "3774732adde6e8cc3c22c387d4b432188e71561f4d8f8fbee7c56416b0645cfa"
+      },
+      "preview": {
+        "bytes": 625534,
+        "sha256": "27bf8b4893cf4ea46fd3ed2b5a6b65410446eea36145bd2e41f58c86d9a21000"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-stone-plinth-panel"
+        }
+      ]
+    },
+    "winter-wmc-floorlamp-tripod": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_6805e3cf3e144d22b369382e17051bad",
+      "revisionId": "r_42e2e4d7cb6e40b787db5f48ad0200e8",
+      "parentRevision": "r_a816669077064b239efc396178e6e3c3",
+      "manifest": {
+        "bytes": 13126,
+        "sha256": "b0f6ae041e2ebc709ff82d4616d19d198d22beccf2b2e38a9f0b110ca029a7a4"
+      },
+      "source": {
+        "bytes": 24603,
+        "sha256": "157105c7788f5c67eb9b119505d4f4e4d3724cc3893a8643cad42dec7c149023"
+      },
+      "canonical": {
+        "bytes": 256456,
+        "sha256": "a937ad32b256bdae9e07100d449d172e97380a4d08467f943ac6e7b0d80a764a"
+      },
+      "preview": {
+        "bytes": 198497,
+        "sha256": "0422a4f8110358f5f9210fa3d5c15f6d0b1212d21099d153f58e5adb574ab798"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-floorlamp-tripod"
+        }
+      ]
+    },
+    "winter-wmc-floor-loft": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_4787d24047d940169a15b2a76954e941",
+      "revisionId": "r_dfca02649051461fa07592d21f60e932",
+      "parentRevision": "r_e1d4331e6f854d3598efe8ed62a100ea",
+      "manifest": {
+        "bytes": 12786,
+        "sha256": "cc0cc8a90ea94847a9e935123dbc0af1a2fe7809707b3fdc27367212b9ea06ff"
+      },
+      "source": {
+        "bytes": 24682,
+        "sha256": "3e3a10d73162f5fe6c95e3d0fec963ce745afd3902a07f4658e8bfed52f7902a"
+      },
+      "canonical": {
+        "bytes": 853028,
+        "sha256": "e217d936c4634eaa1bc5d823613dcc77101230bf9a69bfb717880b8ca5c256c6"
+      },
+      "preview": {
+        "bytes": 104265,
+        "sha256": "596f0df11a744c4b9efd99a4beddcd7e6485e7a98d7b1c909143048278b8d4f5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-floor-loft"
+        }
+      ]
+    },
+    "winter-wmc-frame-post": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_eaaf287ec60d46ff9612b8ca7c6b9eff",
+      "revisionId": "r_16867fa4eb2f4855955e0f2179d41b60",
+      "parentRevision": "r_1fbf192ce7f94c0f9fad11b50e97e986",
+      "manifest": {
+        "bytes": 11958,
+        "sha256": "d510fe8d2edd5a831289bb10df4fb3c8e80c9e116cea8c940a577813e857527d"
+      },
+      "source": {
+        "bytes": 25844,
+        "sha256": "483942eb25d88f752d9c8fe5e82ab75bc16511e3c5aaf56895b54186e6cad082"
+      },
+      "canonical": {
+        "bytes": 83920,
+        "sha256": "16c09a2ebd4fdc9cf03169652390226cf6171a50614c37ff43a268c7c99eadf1"
+      },
+      "preview": {
+        "bytes": 149163,
+        "sha256": "db15a3ae21da86acb98f65641da3906d6d354ecc7e93a4d143006dffa6bebe06"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-frame-post"
+        }
+      ]
+    },
+    "winter-wmc-rafter-frame": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_875448873b5e4f1b9693982de3cc2ee1",
+      "revisionId": "r_4d62127be4ea41e7a8387e812bf4a811",
+      "parentRevision": "r_765f898ee13c41598b4617befc897fbe",
+      "manifest": {
+        "bytes": 12481,
+        "sha256": "3ebf9b2e8ba17257ec21f10b1c2c57026ab0b9973063c9b7dfe1ba6c4e012b66"
+      },
+      "source": {
+        "bytes": 24621,
+        "sha256": "2c24c3a9e4c7f2b9831fb1e2b8e31e2b68cc89bfbebbac80ef3977bb44cb7e6e"
+      },
+      "canonical": {
+        "bytes": 53964,
+        "sha256": "db443e084f6674c221d4940acbc44151d414f29b753f717d3786c255a00e0a0d"
+      },
+      "preview": {
+        "bytes": 68088,
+        "sha256": "5cc2ab1e4c2156cf7d3b3c12644449440aa84ada18e5bc6c91cc383cdae93069"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-rafter-frame"
+        }
+      ]
+    },
+    "winter-wmc-door-deck": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_e90781181b414dc1b596ee7de369184f",
+      "revisionId": "r_2c207a3161084bfbbd9608cf261ba6c7",
+      "manifest": {
+        "bytes": 14226,
+        "sha256": "db6f242bb3295762c036916a7353dce1ff0adaf7def07ccaaac64cc9a8eb7c9d"
+      },
+      "source": {
+        "bytes": 24600,
+        "sha256": "af48b1e795be0e9c32db47b40df653599df48ed90807246848c545d1eb152402"
+      },
+      "canonical": {
+        "bytes": 169884,
+        "sha256": "4e5cb5a7287b2e825ae5658f44fc16ab08e0f0bb047beb10dc43c35c6666e837"
+      },
+      "preview": {
+        "bytes": 228275,
+        "sha256": "874d98844aad7f2ae828af6403704bd99f7b93c14b32617c505932e534ad9d5a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-door-deck"
+        }
+      ]
+    },
+    "winter-wmc-tread-timber": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_0fa76a4fc9ca4d6aa7a7b2befbaf10c4",
+      "revisionId": "r_8b684e59f24b4408862ed20026389cce",
+      "manifest": {
+        "bytes": 14180,
+        "sha256": "017f8619d9d544c73053117991cd1f0c7517b4143534c558394c47141ff99346"
+      },
+      "source": {
+        "bytes": 24591,
+        "sha256": "b8881fa9fea7ab658a0a4881f353037af92259ddc95a8659bea32b3e2815e360"
+      },
+      "canonical": {
+        "bytes": 74468,
+        "sha256": "ed466a3865232ab707154674ab524220cfd0802ed010b4c575f01d73c2bf4c97"
+      },
+      "preview": {
+        "bytes": 99491,
+        "sha256": "221af859f8a22ff714b671f75d8f11139d00cc854f01e853028560b3ec1675a2"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-tread-timber"
+        }
+      ]
+    },
+    "winter-wmc-stair-rail-exterior": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_bdf0c3426f2648dd8874fc543ee42def",
+      "revisionId": "r_659dbb66e23b4b64ab989ed92e795da5",
+      "parentRevision": "r_f6918d074fad46d38c958fca40e4bf2a",
+      "manifest": {
+        "bytes": 12703,
+        "sha256": "7df33eabd4f542aa89db6347b44cb0ca040b82b56760c865f0dcccffd2aea880"
+      },
+      "source": {
+        "bytes": 25119,
+        "sha256": "034ce01caf534c3f090cd7bb2d9e8088d9d112d1aa61d8c9b5c6e82887debfc9"
+      },
+      "canonical": {
+        "bytes": 115604,
+        "sha256": "78b9bd4d0c2613d8b4d708b9a3a884a24b345c2f0075555479c6d7d6aa25e2f0"
+      },
+      "preview": {
+        "bytes": 142659,
+        "sha256": "ec20887e8837554669181d53c9295093691c4c1fd40ad8573112ff895d6a9da1"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-stair-rail-exterior"
+        }
+      ]
+    },
+    "winter-wmc-rail-span": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_2e2adb67c53c4839a0760672abfb69ae",
+      "revisionId": "r_9a172a5524904a298f8d475d722de2a1",
+      "manifest": {
+        "bytes": 12526,
+        "sha256": "b8b5cdbaf52aa8d16acf128cb6cf20fc727725a190ecdf0f677127a31916ad7f"
+      },
+      "source": {
+        "bytes": 24584,
+        "sha256": "723a9c746e46da345672b77a18dfcf70fb072882f0d16ac3fe10ecab4bce0b5b"
+      },
+      "canonical": {
+        "bytes": 73496,
+        "sha256": "610b49be8200c3259dc8e6ca66bee2ef53dccf52df46ac05c8bcfadd36386e3f"
+      },
+      "preview": {
+        "bytes": 145962,
+        "sha256": "8ad11c5a09cb66f2c5aa756e773057765464533775a6b46158b65b89d6f54d8d"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-rail-span"
+        }
+      ]
+    },
+    "winter-wmc-eave-storage": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_503f2f86f36a459b8a5f386ab7538654",
+      "revisionId": "r_a8a15917bcc14649a392b736a40d0d0b",
+      "parentRevision": "r_533e8e446c234accae58a57a5d7af32b",
+      "manifest": {
+        "bytes": 12207,
+        "sha256": "de7006b2a27c1c08e0338837d0cba0fa8434e4df3cbef48049261d16cb9a151d"
+      },
+      "source": {
+        "bytes": 25826,
+        "sha256": "40815a3860e856dcdb957629f2719fb6fe37a1f7a803b923027278d47ef74fb0"
+      },
+      "canonical": {
+        "bytes": 139188,
+        "sha256": "a6a82947a98876547e5cb1dd4b04b08dafb3c9ab87ecaef5d0764e77b1618e94"
+      },
+      "preview": {
+        "bytes": 225434,
+        "sha256": "ff0602e06ec4249dc0729e9c69410638a29a00357b6356e44d9ded54d6b0917e"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-eave-storage"
+        }
+      ]
+    },
+    "winter-wmc-coffee-table": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_82db766050924a728e150f5fe781d031",
+      "revisionId": "r_865e239598de44a5918a2c8d2b73acff",
+      "parentRevision": "r_9c3aa6b8a9df4bb1a487e8e4b7b160af",
+      "manifest": {
+        "bytes": 13044,
+        "sha256": "d4ceeb840ca8dfcbe3ea763dd13bf6bd99f5c2971753c1ec86b684ed2bc8b0be"
+      },
+      "source": {
+        "bytes": 25866,
+        "sha256": "6614674214e3d4f1fa2cc455d30d22a3d1facc490b73bdd5912afcb3cac210e1"
+      },
+      "canonical": {
+        "bytes": 306400,
+        "sha256": "1930b8cfbfd19325dd477b855505009eb7d60280b3328682a7ddbc4f4ebadab9"
+      },
+      "preview": {
+        "bytes": 240832,
+        "sha256": "7d74e096e9e7392488d54637062293ae168cb4fb48b30618717134bbcf5914e9"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-coffee-table"
+        }
+      ]
+    },
+    "winter-wmc-living-rug-wool": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_81cee922309d48cf9799373f0d431b35",
+      "revisionId": "r_c9160d6fc18a4ee2baa2b7a367195e6a",
+      "parentRevision": "r_08dcb2a2b7f844bf89d3a0500b99fef9",
+      "manifest": {
+        "bytes": 11219,
+        "sha256": "a35ea8b112f3e2b4782a91217365d1d7fa6b5541ca9f38b11a8bb98048a6ba25"
+      },
+      "source": {
+        "bytes": 24598,
+        "sha256": "f6f1f27322b77a3c827d76a9d87375e639511dfed50a9f0ab99d559517932270"
+      },
+      "canonical": {
+        "bytes": 649692,
+        "sha256": "26b742b9b2ccc0fe25efc6c7f4ebefa79c49f1c9b39a9199a1dda0043ae3b8d9"
+      },
+      "preview": {
+        "bytes": 30534,
+        "sha256": "d95dd0e6b29d3f48a9c4b896fc1c201b85682959b226692f0cc09ec6b30d6409"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-living-rug-wool"
+        }
+      ]
+    },
+    "winter-wmc-gable-glass": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_9680ea9f2fc843098ced11beb55824cf",
+      "revisionId": "r_8510fb32447d4d4d84493a39e8be6a98",
+      "manifest": {
+        "bytes": 11595,
+        "sha256": "cc99df403452781b3a0ecd4d4cae5f78e46d16f04daa133894037b4775ab5301"
+      },
+      "source": {
+        "bytes": 24564,
+        "sha256": "2fe7f41a00f4c7200d5a910e0105fe360a723e1b8745664a997dd80b8685a568"
+      },
+      "canonical": {
+        "bytes": 2424,
+        "sha256": "fb267c4097fc1a9eb111d22a332df3f4f8a415d6fb4ee950a40a5e38deaf42c4"
+      },
+      "preview": {
+        "bytes": 15495,
+        "sha256": "72c5cf76e63996da96856dc3af085f2396c98a977479ada717c3322b63b260d6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-gable-glass"
+        }
+      ]
+    },
+    "winter-wmc-roof-east": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_0811b67773b5487ba90d0b7cbeb8c80b",
+      "revisionId": "r_04edc17050114086831c5e5098b64436",
+      "parentRevision": "r_0731e0d0a4f84c2786ec572f8402a3ff",
+      "manifest": {
+        "bytes": 13724,
+        "sha256": "e2f44890f33c2c86198ee0f1764ac6ba861c4bc8fe4682242f8075f5a4d4964f"
+      },
+      "source": {
+        "bytes": 26039,
+        "sha256": "a4d73cce247f6a3fba397e4fe2f17473acd163e67fb1c7509c4af0e2bd691d10"
+      },
+      "canonical": {
+        "bytes": 951996,
+        "sha256": "426760d4f8c963729d6ca10f9aac697345cafe804d47edd2da3ddb5e0241d066"
+      },
+      "preview": {
+        "bytes": 190601,
+        "sha256": "ec23b7e160581e079723c77b62dcf66ba9d97610165e1742abe5148c030ff165"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-roof-east"
+        }
+      ]
+    },
+    "winter-wmc-roof-west": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_0e2bbbacddff4e9b8b18451c1d5cf6c4",
+      "revisionId": "r_20ee4d4806274ec6afd7b52ff91f9bc3",
+      "parentRevision": "r_b975770f0ffb44c59efde92b640bc490",
+      "manifest": {
+        "bytes": 13744,
+        "sha256": "ce4344e5ecc12b87839bdcacffb7f0dffd1e806a716a089ad0ebbf0de6652f68"
+      },
+      "source": {
+        "bytes": 25964,
+        "sha256": "9fb1fa0d8c5b97bcf04f7931be7cbe493d8cbeb277024e6fa90f4ea92b1683ff"
+      },
+      "canonical": {
+        "bytes": 953224,
+        "sha256": "d18380d2d2a5fa3a0d524076702f5497eff426367b255cd48947938f0fcf5c74"
+      },
+      "preview": {
+        "bytes": 173727,
+        "sha256": "81330782ec819211c194b0a592dbafe8fbe4ed8787538d1226ca2b397d2a4d5b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-roof-west"
+        }
+      ]
+    },
+    "winter-wmc-chimney-masonry": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_da54d460d06c47138ef89a4b9bd92ab9",
+      "revisionId": "r_a9b40046ca5c4d8e8c2a0f0cddd8c730",
+      "parentRevision": "r_26df4c22265e4718929b8970e892ab0c",
+      "manifest": {
+        "bytes": 12563,
+        "sha256": "e425ccb2e3dbd51c039f151437f9da27275b832352bb7c149c81f5a719b81f2f"
+      },
+      "source": {
+        "bytes": 25231,
+        "sha256": "f6a081295e5379042d0b1b925a8b0455024262a1e7a10905d2f81f318da69361"
+      },
+      "canonical": {
+        "bytes": 1147316,
+        "sha256": "13d9eff2c75a0b090b06db398c2110c7fb0511889598efb605b1cd204e3b4daa"
+      },
+      "preview": {
+        "bytes": 156648,
+        "sha256": "f52a3185c1fb303fda327176b313e194e96b9fbd5e3cb7265032f2c9c0d2b87c"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-chimney-masonry"
+        }
+      ]
+    },
+    "winter-wmc-side-table": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_19edeafb0e3848718315f8c54bf89885",
+      "revisionId": "r_314b667491c24a52bbd681da663f69cd",
+      "parentRevision": "r_332d3c3d01c84d94b0c1e8e95fb5207e",
+      "manifest": {
+        "bytes": 13816,
+        "sha256": "39c732b55c6a93f0ce7cdcf6c1acb56f36401a6d8c66dca31834b4ef5320a3db"
+      },
+      "source": {
+        "bytes": 23331,
+        "sha256": "5d3d3ae33e17481187f411b2ac6a716f2beda82c0185613ccec52ab37585143a"
+      },
+      "canonical": {
+        "bytes": 184028,
+        "sha256": "b38e325dcfb767c16d840e3987d669b05cf606a46efe72731681f790c8ec0318"
+      },
+      "preview": {
+        "bytes": 308154,
+        "sha256": "802a283b1d145c9a260288d2a2e605a002bb41f621bd8d49e8a061ad111f44f0"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-side-table"
+        }
+      ]
+    },
+    "winter-wmc-dining-table": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_26dd80ee80db4d85bc2a7b56475c3cbb",
+      "revisionId": "r_49df9f4d840241aab1426e6a6ab2c3e3",
+      "parentRevision": "r_dfed21faf6754fcfab7381a8f94e3254",
+      "manifest": {
+        "bytes": 12727,
+        "sha256": "87c56c1f6373a17e4f10f2bd844494e7755a56663496b9708d2aa56f86c9f167"
+      },
+      "source": {
+        "bytes": 23336,
+        "sha256": "33a68c3c9f485420de9b5fe63f4536ab6a3edccf33afcf39633999d823246d0f"
+      },
+      "canonical": {
+        "bytes": 390856,
+        "sha256": "594d6c40df27995d7bc949c0ad2ae80b915d2cd27e574ff29c7d1f48464880f2"
+      },
+      "preview": {
+        "bytes": 223700,
+        "sha256": "a8b020651cab1a7d5ab078df5a99344d57daf9fa45b85b7ce7037f6d3439b4e9"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-dining-table"
+        }
+      ]
+    },
+    "winter-wmc-dining-chair": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_1686d36f753d4f9abe0f9991d8bfb36a",
+      "revisionId": "r_c513bc554a7f407eb0c7058055dcfc68",
+      "parentRevision": "r_aa1aee75f8dc454ba17369c33bb914b5",
+      "manifest": {
+        "bytes": 12721,
+        "sha256": "2034060d34feb366d9a7f71bf14cc2fe39f76e6bdb3e11b28941716a9b73b51c"
+      },
+      "source": {
+        "bytes": 23336,
+        "sha256": "9d2c5c044305c07cd9b3fbea3f9cc21403132285601738388e782c429d378ec5"
+      },
+      "canonical": {
+        "bytes": 329496,
+        "sha256": "548033dfe41212ed713367d4f2cf071076b19ea65453b4e87e4264034e7d79d6"
+      },
+      "preview": {
+        "bytes": 282873,
+        "sha256": "499acbe9c013f512e1714a2e9d29eb2e1503ce4628cd75f59fe60c99dacc5179"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-dining-chair"
+        }
+      ]
+    },
+    "winter-wmc-kitchen-run": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_43a2c9a0565e4743b82e9d9b51d257c9",
+      "revisionId": "r_8c52171c556a4d9180583dd6a6bdc01d",
+      "parentRevision": "r_c88eaf3e668e4f0aac0ddf1946d98731",
+      "manifest": {
+        "bytes": 13066,
+        "sha256": "c578da5436c7fb96a9cd24d7b27176abb1a65bf573c4cd51b9824d7590ec70ca"
+      },
+      "source": {
+        "bytes": 23988,
+        "sha256": "51a6acf3993d81ef1494bee13bca6d9fb9a16ca4a969f4418cd1406aceaa7338"
+      },
+      "canonical": {
+        "bytes": 837244,
+        "sha256": "9cc826394db01b32c1bc7d62a5053b657a53c1ed9305f46194e0baa081d9b288"
+      },
+      "preview": {
+        "bytes": 228518,
+        "sha256": "480278947521a6d7c1c2b842d7c49eb6b91f0b1dc94b6aad062efa1fc6309d72"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-kitchen-run"
+        }
+      ]
+    },
+    "winter-wmc-loft-bed": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_64db2e9702e3427fa9188875a5980146",
+      "revisionId": "r_cd846321ce64474da24aec6c2381178e",
+      "parentRevision": "r_5864b2a030564b018e8f3e0e6404a7bf",
+      "manifest": {
+        "bytes": 13927,
+        "sha256": "43b7ed23f325ff7aa7309e1a11f43001a954715793949390c52fbe4f2f771069"
+      },
+      "source": {
+        "bytes": 28229,
+        "sha256": "85cf145a55bef624530cee43135cfdf49240181c54a5c9d259919d38d6898127"
+      },
+      "canonical": {
+        "bytes": 3731352,
+        "sha256": "235c03dabaff62b16db447fc7d08ccaea5fb04e70b4b027a44a047582abd40c7"
+      },
+      "preview": {
+        "bytes": 259513,
+        "sha256": "845adb2eee5cd556247c23dc6075c1798154eb7f40f12312f9abf5170f78d7db"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-loft-bed"
+        }
+      ]
+    },
+    "winter-wmc-desk": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_43fa2e2abfd94f308c0a32b127d21c32",
+      "revisionId": "r_d52ea05e031942dfa0fb1a34972226ae",
+      "parentRevision": "r_a880c47d3e444f3591f7b4be4352e648",
+      "manifest": {
+        "bytes": 11992,
+        "sha256": "69fbfe7d754488b6b29298e544bca088973be89224ca6751f58555d092d8df1e"
+      },
+      "source": {
+        "bytes": 23318,
+        "sha256": "ab6eefff506ba56ddbd657742a3c84a6bf60d4ea394c54b9d70610634bdbc216"
+      },
+      "canonical": {
+        "bytes": 107496,
+        "sha256": "161c21bbc664b675b6f6f7a7c10335b6d15b3f5b55b15bdce718bc0ce92c94eb"
+      },
+      "preview": {
+        "bytes": 190092,
+        "sha256": "d46ab60826e2e5a3d45655a44148c6886a40c13ba562d6ac365d4d64a6c96a1b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-desk"
+        }
+      ]
+    },
+    "winter-wmc-entry-bench": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_d6fe54a2237c4a538f97cc9792e05ba4",
+      "revisionId": "r_78da00aa2eb04b7fbef7a33fab2826b6",
+      "parentRevision": "r_991716986d564f0abcaa740f36dccec4",
+      "manifest": {
+        "bytes": 13672,
+        "sha256": "d748a3dead9391efc38d98baf3df5c498b4d2081a5a9d20355cab925ea7a3081"
+      },
+      "source": {
+        "bytes": 24222,
+        "sha256": "e2549a05fa349e2018ac789207c6169824b60f316c6c85b8549fbc90de3a4bfe"
+      },
+      "canonical": {
+        "bytes": 1474736,
+        "sha256": "9edb1292dcd614d3bec97f122e76240022312ad61933539cbd98400aa26073d2"
+      },
+      "preview": {
+        "bytes": 205738,
+        "sha256": "872dc960edcec03afee0e78321302ef531d04958fde762ee38c4cad170b3a73f"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-entry-bench"
+        }
+      ]
+    },
+    "winter-wmc-pendant": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_7fe53ad9a90e4003928e7848a4142a20",
+      "revisionId": "r_34041812d1bb4d509fc4ba6aab5dcdec",
+      "parentRevision": "r_c0fc0eacff24411692e1b557d2270d7c",
+      "manifest": {
+        "bytes": 11279,
+        "sha256": "72d8038fc6db03d01a19b56be3cd9ebb21e2e2915960a95353515923b5689a5c"
+      },
+      "source": {
+        "bytes": 23448,
+        "sha256": "7e34107c4f84cf49766478d068003c1cb2a2b8a728b6bfa67c380b8afdc1ec4c"
+      },
+      "canonical": {
+        "bytes": 83588,
+        "sha256": "4d146d856f18f306187fb052e718b1115870bedb3f4a479d377ce60b013c19c3"
+      },
+      "preview": {
+        "bytes": 104627,
+        "sha256": "b8cfbd04c57cc03752fbda23c9546bab2d4d3e379a002ae8130c7c39b5de622a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-pendant"
+        }
+      ]
+    },
+    "winter-wmc-small-props": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_a71359b812cd4b3fa22d129458e471db",
+      "revisionId": "r_15e05145d9c649de9fe845dd4d4aba9d",
+      "parentRevision": "r_c6bb100219a3447fa4a72de09bcf3f9f",
+      "manifest": {
+        "bytes": 13853,
+        "sha256": "297ea3eb42696c612035da773b7bb7578793651fb77477873d92348ce6e73903"
+      },
+      "source": {
+        "bytes": 23328,
+        "sha256": "4c792f4c7d9a86e14a9d622a9a63d89284d2969b1826b8685beb2f9e4e8e3e57"
+      },
+      "canonical": {
+        "bytes": 359460,
+        "sha256": "36eb43ffd240300c10a2a7548681708576db54af903f05b94f564a5dacbc85f3"
+      },
+      "preview": {
+        "bytes": 247358,
+        "sha256": "ee8817a0c2a9edfbf9dcff9e21f0ae796a2d17a9c961b9f7ecc362b4807b5ccc"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-small-props"
+        }
+      ]
+    },
+    "winter-wmc-rock-shelf": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_5c0f2b50b91244c49feab57e93b27f78",
+      "revisionId": "r_d25ced88b13642bda2414dde5dedd610",
+      "parentRevision": "r_a997314a53ce4721b3421ee748749ed8",
+      "manifest": {
+        "bytes": 11266,
+        "sha256": "fd7bd2bc6df828b4cece7cb544da1bdfd656401199ef8a84bb5a0e70dcd978da"
+      },
+      "source": {
+        "bytes": 11638,
+        "sha256": "aa8853992c7b9c57c09393d472e88f66a179f14bcb40b01404aec15efdeaca8b"
+      },
+      "canonical": {
+        "bytes": 750792,
+        "sha256": "e39ca7e6cf3a3e7c109a37469f6b2d3462b2abc57c6c0f5dcdae98b4fa2b1ead"
+      },
+      "preview": {
+        "bytes": 408953,
+        "sha256": "356e251c47714c9a755da81e404faa0ec978e5b7a25427764377d8b2a9d1ccb6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-rock-shelf"
+        }
+      ]
+    },
+    "winter-wmc-boulder": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_26cc548c370e43069bc777d04b6f5bf5",
+      "revisionId": "r_eb0ca9b92aaa45cab84eb453c9eeeb17",
+      "parentRevision": "r_4bef4078987a430690006857b5b72b12",
+      "manifest": {
+        "bytes": 11349,
+        "sha256": "1c457f5a9b025fff0c542418dc9471b123cf01b006e9a47881d8fb6e48e5f124"
+      },
+      "source": {
+        "bytes": 11503,
+        "sha256": "0ac7b545660413a46ca2e5f10d92df618327fb921ba0043506c607f6289c2060"
+      },
+      "canonical": {
+        "bytes": 704368,
+        "sha256": "64c3333e2bb6fc5ba734c417cd4e4f465e407ed162c4b1ca786da620bf3f47c8"
+      },
+      "preview": {
+        "bytes": 603820,
+        "sha256": "75c65fd09a77937778a7acaf9a9139e84e1e97b8d3550dd3739842b87f4cdbd7"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-boulder"
+        }
+      ]
+    },
+    "winter-wmc-mountain-massif": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_e12c29f2bd7a461e8e323e4fe4dcae05",
+      "revisionId": "r_5256a6d10045495081fb7340a4de6990",
+      "parentRevision": "r_b60cfc2564f146d9b439d60cfeb1580e",
+      "manifest": {
+        "bytes": 12042,
+        "sha256": "cafd81360b8b4baf78e815d6cc23a76260211f660eb7b863903620c20847e4db"
+      },
+      "source": {
+        "bytes": 13882,
+        "sha256": "98da866f1f8c66ab8cb481127f49cf2ca2d651825faa3d044496120185b5ff19"
+      },
+      "canonical": {
+        "bytes": 2313508,
+        "sha256": "5f378bc259bbae11a42d4ab06667213eab84322bf26274e8c6812489adccd39d"
+      },
+      "preview": {
+        "bytes": 405450,
+        "sha256": "74dc46ad2977866f36bfefe9b1469ddc78de23acf08c29a1c6672cb4bb8806f7"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-mountain-massif"
+        }
+      ]
+    },
+    "winter-wmc-ridge-band": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_3d4ff575a07b4fc392f782d615b07f6c",
+      "revisionId": "r_9e28a32d10e24fbba9eb2f739babd911",
+      "parentRevision": "r_90b233585e5b4e1f92844ecc2e0359d6",
+      "manifest": {
+        "bytes": 12032,
+        "sha256": "6878cff7368be8da5d4db24c96618f5cbed43a073cc545c7a0545119a26de79f"
+      },
+      "source": {
+        "bytes": 13875,
+        "sha256": "fe587dda2b720ca86454491e21656a475b4c6dc858e86dab27d0a23593652dee"
+      },
+      "canonical": {
+        "bytes": 1044932,
+        "sha256": "0940bd73fe92813d7ae168ebf194de4e935841b815a73f0442abff1ceb5cf500"
+      },
+      "preview": {
+        "bytes": 330817,
+        "sha256": "c7289e3787c8544478aec8a8e3c86144f4dd1be63048394f6e85b00943ea414b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-ridge-band"
+        }
+      ]
+    },
+    "winter-wmc-snow-bank": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_af248987cebb476e8562cbb3514aac5d",
+      "revisionId": "r_deb540babffe4e8d8e6706c90a66c486",
+      "parentRevision": "r_35d76117448a450da8f8a1bbf001b879",
+      "manifest": {
+        "bytes": 11984,
+        "sha256": "8c24bdd75e15c82c0f5e048ff3bc904e4dcd81bd1af59c8b7be72009f2277990"
+      },
+      "source": {
+        "bytes": 10749,
+        "sha256": "73fb0055510bfee9a8e87d60e5c3eccce02e62fc1ea006cdb9c63a19bb55bb65"
+      },
+      "canonical": {
+        "bytes": 733892,
+        "sha256": "b92930b6d59cabcd8b1b12ff35519727d0d463046f53cbe63c8f586e8b926778"
+      },
+      "preview": {
+        "bytes": 130841,
+        "sha256": "c0cfb912fd17dea85b67a845303da211b42407cd90d9bf268ff877b4602762bb"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-snow-bank"
+        }
+      ]
+    },
+    "winter-wmc-ground-clump": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_baa1bd252f9945b9982c40574cefea86",
+      "revisionId": "r_80d42c6571574faa8819e1128ed3d693",
+      "parentRevision": "r_f6fd9270d58d46668c1fa7bc20312ea4",
+      "manifest": {
+        "bytes": 10949,
+        "sha256": "cf271a5e92b6e0ebc68bad4fd414e14c9b19fa27ed2a503d55cf9cce7da7fd70"
+      },
+      "source": {
+        "bytes": 10551,
+        "sha256": "7e5b7837054c86f93b14050275f3cbc963b1601189716bc2a6ec95e9fe737c56"
+      },
+      "canonical": {
+        "bytes": 99116,
+        "sha256": "059f40b659070d9eb11d684505e08c79a88c2d48bfb8d6d30a5f1b78d3613307"
+      },
+      "preview": {
+        "bytes": 165165,
+        "sha256": "7f7faaa692f62c86da202a097884f1377671f5bc84f2baa151eb3b549d2eae35"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-ground-clump"
+        }
+      ]
+    },
+    "winter-wmc-fallen-log": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_363b720923f747bd9c8795197933bbcf",
+      "revisionId": "r_c98dd2aeee1942169543c629a7474b1d",
+      "manifest": {
+        "bytes": 12859,
+        "sha256": "a730a51c92cd066c35380e206c0db946f56462366e437e5ebd85b7f7fb844cea"
+      },
+      "source": {
+        "bytes": 11276,
+        "sha256": "ff43a6db7587ea2be4ed9e2304e1be383421328453e14c9e4b41e428d7a5d006"
+      },
+      "canonical": {
+        "bytes": 423668,
+        "sha256": "1c1050f2294eb6720ea6875e4a0d40e412b0d71bb6473f81bf913ff5084a3902"
+      },
+      "preview": {
+        "bytes": 238128,
+        "sha256": "30694b96d33140af25f07e770b1de4d93a47eeb0f6fea348457230e8c84449e4"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-fallen-log"
+        }
+      ]
+    },
+    "winter-wmc-trail-marker": {
+      "store": "winter-mountainside-cabin",
+      "collection": "project",
+      "assetId": "a_315c30d4f7674cb6a346c9b455efb999",
+      "revisionId": "r_b88bfaef911545fe9b4d9625978f5775",
+      "manifest": {
+        "bytes": 11250,
+        "sha256": "f04488b8a80b4294c0199efb5a5a0d7d5a3c3bd70f0210d78c4458b9f7aa81d4"
+      },
+      "source": {
+        "bytes": 11254,
+        "sha256": "3b026cc3eb5884ff78049b94d3d257bdca67bc0c9f49928df6ec264bde567c9d"
+      },
+      "canonical": {
+        "bytes": 235424,
+        "sha256": "be9a3042b84c29260944d6fadb5608fe69876b05a8a05497ea4c216c73a994cd"
+      },
+      "preview": {
+        "bytes": 210493,
+        "sha256": "91b8a687a861a713a9f5b36a885cbf339417b04da6184efeb9a34e51421982ce"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-winter-mountainside-cabin",
+          "id": "wmc-trail-marker"
+        }
+      ]
+    },
+    "meridian-deck-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_9ecaccacab1641468887b8759dd9970f",
+      "revisionId": "r_5711672892fd428891bab109fb5f2c78",
+      "parentRevision": "r_d6625c132b9343e39fafcb15e382e49d",
+      "manifest": {
+        "bytes": 10397,
+        "sha256": "e8df516f3e4a11c6bb2edb61ae7341920ca91efee261233a84e2fecfd527a35a"
+      },
+      "source": {
+        "bytes": 31487,
+        "sha256": "e09577d89a4388cf056b5ba9efa52bee3ef24f2936e57b9070c081355eae9fdb"
+      },
+      "canonical": {
+        "bytes": 340520,
+        "sha256": "71ee59d021e2bf91924b47cc7538a8e7a0777d4c7d49b32935274d773364769b"
+      },
+      "preview": {
+        "bytes": 153568,
+        "sha256": "c7c7e0830cf9366e4a806232ff30d5cebde8bc8fc3e0272a86d7129b860bb300"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "deck-4"
+        }
+      ]
+    },
+    "meridian-block-8": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_bc0c70b042c5495c9b6d4e75138f5d79",
+      "revisionId": "r_90b595799305471aa23d5c522b098917",
+      "parentRevision": "r_c0f61c891fc74c23afe3e82dc8b12f78",
+      "manifest": {
+        "bytes": 10602,
+        "sha256": "f718ab64438c10e2272ba86f03100e15b83b439419fced9f98cb0b5914a0366f"
+      },
+      "source": {
+        "bytes": 31488,
+        "sha256": "338004d210428f630defa533258f36b3450f4ae2b9df65da4c5efd2343627051"
+      },
+      "canonical": {
+        "bytes": 574980,
+        "sha256": "b2fdece4ef00a30c62a46e0236df6ac04bf5a7a94257ee3f508f75b6ee6f0fe4"
+      },
+      "preview": {
+        "bytes": 298263,
+        "sha256": "9b44fa99a07e45f1b23c500c4218abc13300d0ff85644f45d570cbb14bcec3e7"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "block-8"
+        }
+      ]
+    },
+    "meridian-step-slab": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_6f89067c2b77485a93b7b5d039a6c22f",
+      "revisionId": "r_ed119ee06e04495787eb74e6fa1b3588",
+      "parentRevision": "r_b617dd42793447f9baf46295f17f7930",
+      "manifest": {
+        "bytes": 10405,
+        "sha256": "ed8cabd86b5cc3d0d071ab3a9541b9aeee1d05631b6c5f9099048524b0199658"
+      },
+      "source": {
+        "bytes": 31490,
+        "sha256": "6fe347df67d90b25a1d0ae32da8063cb8c8d9a2fd873a56f1e2a8bed2f03db05"
+      },
+      "canonical": {
+        "bytes": 289440,
+        "sha256": "f4d3c14fbdbc1ab0f07f7af289e93eec9b6e618e8f253ceb457c5d5f840ba2fe"
+      },
+      "preview": {
+        "bytes": 81778,
+        "sha256": "3a861d56cbee6a995536f4d82e2ec24d4138245308da833ab874cc235c0de672"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "step-slab"
+        }
+      ]
+    },
+    "meridian-deck-6": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_3b195f8b7a224b12972c0b41c1fed890",
+      "revisionId": "r_cfc1654b7c0147418c5980fc0155b73f",
+      "parentRevision": "r_39b453f88a264259a66845214bd06c7f",
+      "manifest": {
+        "bytes": 10431,
+        "sha256": "c7c443371184684dbb730955ca0387304fb4f53cfc8e80d1ebdc60f64ac94ddb"
+      },
+      "source": {
+        "bytes": 31487,
+        "sha256": "4d8eeb29212aadfe49bf9509d4019bb93eb82fb0558c94dc03501668c66e0468"
+      },
+      "canonical": {
+        "bytes": 336124,
+        "sha256": "5dd0045c8ae8652541737e066abeec56f451b889181e2da033a2e95359e5f4f8"
+      },
+      "preview": {
+        "bytes": 109000,
+        "sha256": "6a8433077fa09653138955111c2da3cd1fbc661a0a680b226970a2b74e79c512"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "deck-6"
+        }
+      ]
+    },
+    "meridian-coping-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_a28ecbc7dc134d758deefea5105e7845",
+      "revisionId": "r_32c14b58648b4b66b9f916ddd8d796ba",
+      "parentRevision": "r_b020b7d4ed704cb39ed5ca4ad55e35cc",
+      "manifest": {
+        "bytes": 10512,
+        "sha256": "658731a751c9e62275ebb359d489b284686cdf7f97c3001d5006f9b3b9cf1dd0"
+      },
+      "source": {
+        "bytes": 31489,
+        "sha256": "84f8a8c2a6ad51d8d1547080d8c06dd261893932fbab711a5948a627e6d9fb03"
+      },
+      "canonical": {
+        "bytes": 299044,
+        "sha256": "26647e19679146f84d7e9fcdeb9104f5273fcf7496b783b9b5de66252437c20c"
+      },
+      "preview": {
+        "bytes": 80330,
+        "sha256": "101e3571f1bfb1a93d086c67aa15cd74f95205570523aa981b3fcadd5fe688ee"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "coping-4"
+        }
+      ]
+    },
+    "meridian-pool-steps": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_03c9987e328b4854b3f1e40c37142c8b",
+      "revisionId": "r_70d3b4de07f64f518c0a77e49779e0ef",
+      "parentRevision": "r_5f6369876bab4316b4f34fc33965a47f",
+      "manifest": {
+        "bytes": 10459,
+        "sha256": "688f3e55ed44ddc38f800e3b3915017ac113f9cf65a2aa559474104cf5f7f01f"
+      },
+      "source": {
+        "bytes": 31491,
+        "sha256": "87685fd5c42d08c72ad3197a5394303b2074c16c72b5237a578b6560cf80e9d6"
+      },
+      "canonical": {
+        "bytes": 304680,
+        "sha256": "23a3ab978f8d67be3c5b7dc996593533ad2e0317c0da8b037146597a5bd56397"
+      },
+      "preview": {
+        "bytes": 82295,
+        "sha256": "848ac3194cc1cb75e13fc2528e2b4492ab0cf310c653456dab7a60ded2b3fc05"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "pool-steps"
+        }
+      ]
+    },
+    "meridian-stair-8": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_86ccbcae4fcb41e9ad7aeefeea8d2a31",
+      "revisionId": "r_e2c7668c4b704b608fa1faa7e4c9d42f",
+      "parentRevision": "r_e1503a0e84f6499690c597b712049ff0",
+      "manifest": {
+        "bytes": 10495,
+        "sha256": "c59133483d7e52b1dd5ff6c1637d3f69c9ba48471e9ee18fe6a8e7398c4837fe"
+      },
+      "source": {
+        "bytes": 31488,
+        "sha256": "ac1732f95ba5ba163df5d1a0ac8c5b926455426f4e3d967a72280038865f1203"
+      },
+      "canonical": {
+        "bytes": 587552,
+        "sha256": "705bfe877ceee36dc6026496617ce20c8291d91f5a847318c25153e9d7998a39"
+      },
+      "preview": {
+        "bytes": 205322,
+        "sha256": "d37c2b11968fc337c5d41c43538b206f12051c91fbec5770d80f7d0aa8df11eb"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "stair-8"
+        }
+      ]
+    },
+    "meridian-stair-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_3b7a0ed03c61411196d644a78696dd04",
+      "revisionId": "r_6a0f08a3449a4786b7e0c8d085fa247d",
+      "parentRevision": "r_7382f456a4a14bb7977d1856e7c72060",
+      "manifest": {
+        "bytes": 10505,
+        "sha256": "e9895eaeb52ae6935f4e4f1d7340de296b357412e46b49d8d78f47e2a8f807f3"
+      },
+      "source": {
+        "bytes": 31488,
+        "sha256": "543a07bfc6f1a1e6142e929131dd31f529aacf6c694dc98307de57396cb9c557"
+      },
+      "canonical": {
+        "bytes": 414172,
+        "sha256": "2c527e59cf8b7bade85935e30290b0c5986b83a5248f7cf30a20afa2149c5605"
+      },
+      "preview": {
+        "bytes": 205465,
+        "sha256": "4ce516a3c45ddca64236c9d882dc0c7843b9225f47fe1e4abcd5b915e9ca4f1e"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "stair-4"
+        }
+      ]
+    },
+    "meridian-parapet-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_68b548474473491e9a1e2dce7632b2ba",
+      "revisionId": "r_e28232a177ef4fb0be41c5bbf7236674",
+      "parentRevision": "r_e7d47b980f86490b8e4cc9ece4581fde",
+      "manifest": {
+        "bytes": 10500,
+        "sha256": "36c78ae426318e7e354177a2f5a616ae13cc0c88f8c47eb32e1f131564e5001a"
+      },
+      "source": {
+        "bytes": 31490,
+        "sha256": "2cdc059a32536db141ace142b7a702c0356b8d6e8d778c9d5364b00d2d824116"
+      },
+      "canonical": {
+        "bytes": 294716,
+        "sha256": "5621829bf18e8be8e0a947f9da65f8fbf938f9a8501f2eff9488d7a2233d3be4"
+      },
+      "preview": {
+        "bytes": 97388,
+        "sha256": "a3e54d63d24bfa02070937688d9be1b9e865ce464c2bc27816356db6523fae60"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "parapet-4"
+        }
+      ]
+    },
+    "meridian-foundation-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_496240d2b2f041c69b5d593df83b3bd5",
+      "revisionId": "r_ccec44961e6449a7ab752499408139b6",
+      "parentRevision": "r_09cf2903579842d68b32ba0ca08ac5fe",
+      "manifest": {
+        "bytes": 10465,
+        "sha256": "b1430138a792fe413662a73b7b72c01c608c4b5f520f3a63345b447564acfbcb"
+      },
+      "source": {
+        "bytes": 31493,
+        "sha256": "a046c8944c884ddd723a964b951750a35186dd14551a8a861a696c2cc588575b"
+      },
+      "canonical": {
+        "bytes": 468744,
+        "sha256": "0acf1114dbddae2c17b9ef4121ac25dbaa6b7cdaaacd060913e5bd177e74454b"
+      },
+      "preview": {
+        "bytes": 58551,
+        "sha256": "042907496b5e3b5bfe898849cdb7f8a147eed8d9c577cc7b014108fdf4f85c45"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "foundation-4"
+        }
+      ]
+    },
+    "meridian-arcade-pylon": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_5e2481268eb342aab284430556143e9a",
+      "revisionId": "r_269d44f66ec944079983349b9dc2cb5a",
+      "parentRevision": "r_5f793f2c52b0492b89cc362de2ce77ee",
+      "manifest": {
+        "bytes": 10649,
+        "sha256": "081560db922dfd56949386216ef083ac533f4562eaad5d7517c4272ebab914ca"
+      },
+      "source": {
+        "bytes": 65351,
+        "sha256": "5059600f72ac0fc6c3d4f9fb33ee5dd74c7aeb9c9f79d28451b4109d820bdadd"
+      },
+      "canonical": {
+        "bytes": 796008,
+        "sha256": "70a0024743ec6757a4a0110ea06a3d9b8d01e196130e30c91a99280f71b33dad"
+      },
+      "preview": {
+        "bytes": 77680,
+        "sha256": "0dffc94e7ef1122fa52f33ac74ac962cf3ce9584158e936d5b241d03a479621b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "arcade-pylon"
+        }
+      ]
+    },
+    "meridian-arcade-pier": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_1872b09689154cb2825cbe6cd3e77af4",
+      "revisionId": "r_e09059fd12874fbea948389061ee8736",
+      "parentRevision": "r_08a27b339c5c4c398b9bae58936b9f3a",
+      "manifest": {
+        "bytes": 10531,
+        "sha256": "d6c216084ccf2f58e0ee17eeb2a030f4d1e6a148c4b1b62579cde686b10f2eb9"
+      },
+      "source": {
+        "bytes": 65350,
+        "sha256": "ded78d069fab1971d4596ca00c6dbacc8639160ad53a18458521905e4b9e0e00"
+      },
+      "canonical": {
+        "bytes": 392988,
+        "sha256": "f5023ce52f99367f31ca76fb624ce89a9ab50028b02c562b92983e7473ac457d"
+      },
+      "preview": {
+        "bytes": 156507,
+        "sha256": "91e3450ff8619f9275c7415007bf3c9f4e8c30ae7274cc708d1d16dd3eec4834"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "arcade-pier"
+        }
+      ]
+    },
+    "meridian-arcade-pier-slot": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_5aa55f2016c84a98a47300864c642739",
+      "revisionId": "r_23415f3bcad34dbea52c9b930878be28",
+      "parentRevision": "r_eb2b5ad217234da3a702e7fba5635200",
+      "manifest": {
+        "bytes": 10670,
+        "sha256": "288bc8d5ce6d8cebc9024157283052c75b23a044a7815a6fcddb184e04749a35"
+      },
+      "source": {
+        "bytes": 65355,
+        "sha256": "a1a6bfcbf17e62cce5a39ad49ab63436d73513792235d78f104b3a4d82efd880"
+      },
+      "canonical": {
+        "bytes": 409172,
+        "sha256": "7e96ed8923b375105a427a3c61a0c829fe4594b9668ab80af00a4bbfd6927036"
+      },
+      "preview": {
+        "bytes": 168571,
+        "sha256": "e5236f708045600cec56c883aff39b56e58c454561ebe5f3a1ed9531681d76c2"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "arcade-pier-slot"
+        }
+      ]
+    },
+    "meridian-arcade-arch": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_71cef64b7f8143478db7afd63d553974",
+      "revisionId": "r_e9e14002aa444492805007f0bf30dfee",
+      "parentRevision": "r_d412b7188d4344c78498ab6fb0be1076",
+      "manifest": {
+        "bytes": 10623,
+        "sha256": "e64508784b106b4794d6fe94f97b1e403ce56de9a935727a6beefdb588153672"
+      },
+      "source": {
+        "bytes": 65350,
+        "sha256": "162bc29bb236379c28cf731a77fe52dcaa8905176f21a093cf25efc19f5303b1"
+      },
+      "canonical": {
+        "bytes": 446504,
+        "sha256": "31800d916aee1b6bca31ab51c3577b813cef9982ba0d7fbdc5e6760d83a3ab7b"
+      },
+      "preview": {
+        "bytes": 182378,
+        "sha256": "11af17d1e6a4bb250136470367736390155c4bc06ae71fdfba42bffa7b4657c3"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "arcade-arch"
+        }
+      ]
+    },
+    "meridian-tower-slot": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_3b903db052c3431a9540e5f54a9b5ee5",
+      "revisionId": "r_c4851c428d0e4931a2983eea9d6e1d8d",
+      "parentRevision": "r_1675e1ee267c4fbfaab03acc47c8d371",
+      "manifest": {
+        "bytes": 10568,
+        "sha256": "6ab095b9e557555957711fb99d067477369796d9c1a0ecef6d24e099878e2459"
+      },
+      "source": {
+        "bytes": 65349,
+        "sha256": "1c129f8c397115fba53d20596cb014d990e753a42bb7147e8728eb38aa129f0c"
+      },
+      "canonical": {
+        "bytes": 1107336,
+        "sha256": "7036e4b366e13826f00d1934ad3f09273c0d3a5ba634b37fc74c369e984e9ff2"
+      },
+      "preview": {
+        "bytes": 160359,
+        "sha256": "71f62d0738d0191018ec3534bb2a2525a0de7ca15518de95c4769734b8355ddc"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "tower-slot"
+        }
+      ]
+    },
+    "meridian-cascade-tower": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_e6f9b6d59c9e48e88b6c266fe8df0f01",
+      "revisionId": "r_90ab6b974ebb41c4a72e5062a24334fb",
+      "parentRevision": "r_c669751d68b54093b8174490a253eb1b",
+      "manifest": {
+        "bytes": 10682,
+        "sha256": "c387a499199c81b87bc8193fa72960ba46b19cb07a0d835201824453d1f76cde"
+      },
+      "source": {
+        "bytes": 65352,
+        "sha256": "a4f9821254f3140ce70f263a232bcf30a7570dbe36c85856f9cb985a020130d2"
+      },
+      "canonical": {
+        "bytes": 478736,
+        "sha256": "dc18db681668df8be1a07ef3e024b85faaa47ae818f5cca56240a031f1fdbfe1"
+      },
+      "preview": {
+        "bytes": 287068,
+        "sha256": "d18c8aa35c34e3ea6619ec052fea45286cfa679504fb54665a6430c879d14646"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cascade-tower"
+        }
+      ]
+    },
+    "meridian-gateway": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_3d189b692e934646bccc63f3088eafd1",
+      "revisionId": "r_c33d46440935478180576e38ffa20662",
+      "parentRevision": "r_4c9605d2325647c2b532ee257ce601cc",
+      "manifest": {
+        "bytes": 11088,
+        "sha256": "2f5cfc508c64e310490303deb5123b42f584b35eaf8058db0dd0505cdd48f9a7"
+      },
+      "source": {
+        "bytes": 65346,
+        "sha256": "427516719e17375dcc09ddae5471f7e8e361a5e93008c0311c164a1cd8f602b2"
+      },
+      "canonical": {
+        "bytes": 14792776,
+        "sha256": "a80b611eb293ab6b6b18e95d9a436c7d7e2185e328ea92787b4ef9f787c173d9"
+      },
+      "preview": {
+        "bytes": 249074,
+        "sha256": "08dc0654f9e73ebd284ef3e577f24bd1c63d51c5301331bedac482c53f95d5f5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "gateway"
+        }
+      ]
+    },
+    "meridian-orb": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_6eb69a9b81ea429880d3f1e5b308955a",
+      "revisionId": "r_14709d822a9a444ba5b3e6a6db89d0ca",
+      "manifest": {
+        "bytes": 10680,
+        "sha256": "ab001170b45e8c7f6bd529485b27225c6b4a8092b4576d4fdadbfeba767bc096"
+      },
+      "source": {
+        "bytes": 35756,
+        "sha256": "42667a192fd895d7a8b6ba47fcc82f3ab5bb65711281b853d4e9a32a5b38df68"
+      },
+      "canonical": {
+        "bytes": 275776,
+        "sha256": "563ea30274f7909b917ccd771e40a63fb2b1c6c18e696bc592eedbe7bdb3b1bb"
+      },
+      "preview": {
+        "bytes": 516049,
+        "sha256": "939b1310a2f3fcc2c672b5e3b58ad2dd9add9229eca3466ebe973cce69197d20"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "orb"
+        }
+      ]
+    },
+    "meridian-falls-narrow": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_8a9a9d21b715495e8da9ea86f9926b3f",
+      "revisionId": "r_792166fb225343fbb5ea84c29d051c19",
+      "parentRevision": "r_5eab76a0d3b0419a944caaa326874794",
+      "manifest": {
+        "bytes": 12880,
+        "sha256": "be023d6301832728891039c79bbb044e7da9e474835ee7e0d6ad0460029fe98b"
+      },
+      "source": {
+        "bytes": 26824,
+        "sha256": "d3ab9a2823ff6378fa94f4546592c7db4353531f8c15c988dd5b6fa882d3aecc"
+      },
+      "canonical": {
+        "bytes": 89784,
+        "sha256": "984acc04312a1712e550a98a4ac1572438eadcec75687524428f70c1b98b7e51"
+      },
+      "preview": {
+        "bytes": 297213,
+        "sha256": "35630fe6019bf1fc731e6af0a929cfd5c59d389a4b9049c0f46e300b48b59256"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "falls-narrow"
+        }
+      ]
+    },
+    "meridian-overflow-wide": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_9f4e630b3c014b5a85b80b271b6a533c",
+      "revisionId": "r_d9957682b89b4c0289370544667ba823",
+      "parentRevision": "r_4a97697cd3c24886b3937882f593efe1",
+      "manifest": {
+        "bytes": 12813,
+        "sha256": "aa62ac68f3815f63aa83d0502f3b7f653f288717b3daa8171a92093e6462f129"
+      },
+      "source": {
+        "bytes": 26825,
+        "sha256": "e912cfe6d9e23619a03f3e04a015a437b0f5a497b0f63cd26aa97a895178a003"
+      },
+      "canonical": {
+        "bytes": 74552,
+        "sha256": "5cc57f59320d62f219856f21b61ee1f34f4940e1c86420b553d8af972257744f"
+      },
+      "preview": {
+        "bytes": 254555,
+        "sha256": "36a5e77f434eb2e1ffb640a7e805a0d28bf8dadb5e815d2fbd156ad4457b9e07"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "overflow-wide"
+        }
+      ]
+    },
+    "meridian-rim-spill": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_aeeaca8105cf481c95589666b06d2828",
+      "revisionId": "r_f492f2ff386f42e98744b929aa38b228",
+      "parentRevision": "r_3a91e637f8ad457487faefa9fbe828a3",
+      "manifest": {
+        "bytes": 12849,
+        "sha256": "8a5e6fd5eb1543d65a2de51e49eff39de141b97208727075bb093ede5e7c4b1f"
+      },
+      "source": {
+        "bytes": 26967,
+        "sha256": "3a52621b6938554b20934a05e0684dce56ce0755786c8375571a2fb8ed86e7fd"
+      },
+      "canonical": {
+        "bytes": 67360,
+        "sha256": "25b86da922bc5cbd0a45dad8bfb693d7d1aef882d4e577a2fdbec525066eb64c"
+      },
+      "preview": {
+        "bytes": 59388,
+        "sha256": "9d214f18f24b0ded33809477226f9c83121ce03d40a90cb18f8f3b7ff6ab1879"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "rim-spill"
+        }
+      ]
+    },
+    "meridian-basin-water": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_5ac2d19a9ec245d6a1932992548c3c22",
+      "revisionId": "r_302353e26e6545dbb54266b1adcb6876",
+      "parentRevision": "r_df12c53e05274f25a318823cfb6080c1",
+      "manifest": {
+        "bytes": 11363,
+        "sha256": "f138237429fd97f1b8ac5ed8b82cfad1500eabf2e47514cc196905d8d4c95df4"
+      },
+      "source": {
+        "bytes": 19266,
+        "sha256": "18b78f8ced12aae8dda638c58243fd9a49e66ac39b58f058eb0cb6b9af9c1058"
+      },
+      "canonical": {
+        "bytes": 36584,
+        "sha256": "15be8981765636b518620ec8eac261e2bbc7b6ba421117b40f8508308399a0e1"
+      },
+      "preview": {
+        "bytes": 74674,
+        "sha256": "4c74aa8bab7730a52e0ba7682038dd7bd08b48376fee25447473178df38414aa"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "basin-water"
+        }
+      ]
+    },
+    "meridian-planter-sq": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_6278a9dc61e648129614e44414e57717",
+      "revisionId": "r_903a72978cfe465186200a1fb3c0efad",
+      "parentRevision": "r_2722a2d0f95d48be9296c0be62d19e5c",
+      "manifest": {
+        "bytes": 10548,
+        "sha256": "335e85de4f267117b0c82f692fe8e7fe94b4e501755700c01d957c4b3e995aa2"
+      },
+      "source": {
+        "bytes": 65349,
+        "sha256": "2a66363c7e190468e5398d5df17bb78ab21ead677f013262faf5c5b3149059c1"
+      },
+      "canonical": {
+        "bytes": 441368,
+        "sha256": "763d149e4a3f2ae481c09c4889465b677cac3790b9af56a018749ef70e7d41f5"
+      },
+      "preview": {
+        "bytes": 137340,
+        "sha256": "40105ae045adeaf95a1bbe81a481dabf546aa4abf2bcea72e4ad192abf9b845a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "planter-sq"
+        }
+      ]
+    },
+    "meridian-cypress-tall": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_dfd044d6b13642c5bf52251a76e7c865",
+      "revisionId": "r_be51d33b5f0a4afc93ade339d923e4a2",
+      "parentRevision": "r_d0b3cc0be0f84670ade5eb7165f35050",
+      "manifest": {
+        "bytes": 10483,
+        "sha256": "f06763a6a846d187ee3f8b28cb79b845908e011fcdd25c070fdc3bcd916879a4"
+      },
+      "source": {
+        "bytes": 27179,
+        "sha256": "83d1da82bbf8cb71158400be5be5cb8549e647b10387af7eb8fc163091ead19f"
+      },
+      "canonical": {
+        "bytes": 550724,
+        "sha256": "689ed8584fff0fe276e8a45adaee3bbeec6a4e72a6a1839f934bdb531fa4a98f"
+      },
+      "preview": {
+        "bytes": 287342,
+        "sha256": "35e827f604b2d57528e34eeb7d843c47aed7c54fe4313716b9d89e81522f1d1f"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cypress-tall"
+        }
+      ]
+    },
+    "meridian-shrub-b": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_8e3dc511b0a74bee83928f75486d67b0",
+      "revisionId": "r_18f9489150844e0d8d8fe5b526b5b0ad",
+      "parentRevision": "r_adc684b454bc45978d01698652c954a5",
+      "manifest": {
+        "bytes": 10647,
+        "sha256": "5685c1df36b476fa3081c1fafa85fbf5729a3b22a4d2bc75f263400bdee60875"
+      },
+      "source": {
+        "bytes": 28630,
+        "sha256": "c495fcd1fe3a468725c2a3eee3c8c288a92689b8a12907d085c59620515ec218"
+      },
+      "canonical": {
+        "bytes": 229668,
+        "sha256": "b0f7b81d888b267ea85a1d4977af957004a8b02afdd6ab9ba3d8fa58ef322253"
+      },
+      "preview": {
+        "bytes": 545520,
+        "sha256": "b790b568bdccf6b060f81c511a3ccdaed56a6985e18d6fb7ea836966f5fe5e28"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "shrub-b"
+        }
+      ]
+    },
+    "meridian-cypress-mid": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_39ffb9f601cf46259c43be9a68ce9083",
+      "revisionId": "r_44c60f904a8e4598a05f248c438fca73",
+      "parentRevision": "r_5a8e63eb212845c89a97c8e9413ac53e",
+      "manifest": {
+        "bytes": 10530,
+        "sha256": "9a65ac99d47b0e86bae29a411a3002e9b4aee7c1608163a7f64925f1314c710f"
+      },
+      "source": {
+        "bytes": 27178,
+        "sha256": "91e5a975fea6d36a080a451eb3f6d14d69c681c936539c8b39a85e64539cdfb5"
+      },
+      "canonical": {
+        "bytes": 403320,
+        "sha256": "a8263638268e4b8296eb1038dee3a16d7e5a5d1c293ca549320b74037ab688be"
+      },
+      "preview": {
+        "bytes": 278253,
+        "sha256": "681ba6695f994390148fcd95f91beef4000b78b9e9206ab1e8d741820abbac0c"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cypress-mid"
+        }
+      ]
+    },
+    "meridian-planter-long": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_0dc7ceda00b941029cf89bef1ea4b433",
+      "revisionId": "r_df7f82a951694294b7a6bf91aa6a8111",
+      "parentRevision": "r_7dfa935f293c4f1593ef4189f61eaf83",
+      "manifest": {
+        "bytes": 10544,
+        "sha256": "5634cf6a62ed416e93ca0964cf92447dbecdce4920725585ab4117650f8f1c83"
+      },
+      "source": {
+        "bytes": 65351,
+        "sha256": "8ca19b63c277aba7e8f01d3469703700f6bdd18bdd9c3a00ba75865aefde28c6"
+      },
+      "canonical": {
+        "bytes": 503880,
+        "sha256": "f409f0304f2fa8d4269c0826f873b504517c45e9618fb6dfce4e587ab179af74"
+      },
+      "preview": {
+        "bytes": 108117,
+        "sha256": "f57026adfed9c3cd9753d0db3c49e0494ddd7b95d999a68c07c983ac6142ed61"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "planter-long"
+        }
+      ]
+    },
+    "meridian-shrub-a": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_2b0bd24c5c4c475398236722326ade8b",
+      "revisionId": "r_d9dcc110da02497283464db09816c4e1",
+      "parentRevision": "r_e7b5755b515e461fbe97cd484e02e049",
+      "manifest": {
+        "bytes": 10646,
+        "sha256": "8bf1f3c0f61aefbb96e8edecb00ed3020bda0a5c5c6fa5c654e324e9d1f70719"
+      },
+      "source": {
+        "bytes": 28630,
+        "sha256": "8ee787dd1ad0979be1f4788af1f7a3207c3168f3d058efa509dbb693d2025f41"
+      },
+      "canonical": {
+        "bytes": 282308,
+        "sha256": "d41b632d49e91dfcd3f6db132b8ba89e42ac1d8d3d138a64867ecd7c22d610d7"
+      },
+      "preview": {
+        "bytes": 712971,
+        "sha256": "61109c1f688ec1335bee85e51ab80d681420bf1ef71d11b76a6420fcf80e62d7"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "shrub-a"
+        }
+      ]
+    },
+    "meridian-ivy-short": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_6f29f3fb60e94af3a4f9d1a5c95a9348",
+      "revisionId": "r_17b6d0b4330a4e309761103f4c6eaefb",
+      "parentRevision": "r_d4ecb2c623624ed3914be69a6415b8fd",
+      "manifest": {
+        "bytes": 10924,
+        "sha256": "9a4add335b72babe0eb9cc546e6e80f387a738554c370fb4b68d61742a96237e"
+      },
+      "source": {
+        "bytes": 22664,
+        "sha256": "374a7695cf009874bcd58def766eed35990fd7e6d87287702f686cb6525402f1"
+      },
+      "canonical": {
+        "bytes": 86884,
+        "sha256": "f869dd440a9f58abbe25fe65cc73d99bfc1d0ad0c417dc38d7f0e21a1a22de0c"
+      },
+      "preview": {
+        "bytes": 211108,
+        "sha256": "b9e4aed2ea0cd56aab694f8a5cd30eab64b2ab60de2e2ac0283c596afc236cf5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "ivy-short"
+        }
+      ]
+    },
+    "meridian-ivy-long": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_6a335a4ab0ed4fa68ca882df46f9bb44",
+      "revisionId": "r_b079cae2265a44d4aafe0aa05b93c008",
+      "parentRevision": "r_48e3148c11ef48a8a2f0e3568a143ea4",
+      "manifest": {
+        "bytes": 11161,
+        "sha256": "7611fc09d81c56497359f5c6e42bd843a8278a607c5e6bf47304bb770f317be3"
+      },
+      "source": {
+        "bytes": 22663,
+        "sha256": "e5aea30b8b65cc51263e81abcb6413d45523721e33e47ce899aa12c4f0ba3134"
+      },
+      "canonical": {
+        "bytes": 213728,
+        "sha256": "44008144537fd12cec0faa9b2104f22e20f82fe32985391a29cf58c67bf1255e"
+      },
+      "preview": {
+        "bytes": 157055,
+        "sha256": "769f296979fbe32f071c7fa1fcb3e48176f204c766cdabc5f2bace8b110de767"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "ivy-long"
+        }
+      ]
+    },
+    "meridian-isle-base": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_35a7b96496dc4c3b8dbb90837234933b",
+      "revisionId": "r_44718bb1d05a4aeeab4de5649ec1873b",
+      "parentRevision": "r_4d8883c5e9354a42bdf253456cc948dd",
+      "manifest": {
+        "bytes": 10549,
+        "sha256": "2755f39f8b05463883eda99786440fc554ce0faab87d6545f580968cc77f71af"
+      },
+      "source": {
+        "bytes": 65348,
+        "sha256": "2d1c36bd1732fbdf67d26c43bfe8347f125a5feea7d29d7d891cda0e32c15ea5"
+      },
+      "canonical": {
+        "bytes": 1159192,
+        "sha256": "faa07d441e2383b1b408d0e2ab80b801bc7f6f576ad429ebe235f262a56ab945"
+      },
+      "preview": {
+        "bytes": 340624,
+        "sha256": "fe59e7c1c14811b7a2cc8a67b8a8cc338558c095d8ebf7246cae9453d7e4beeb"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "isle-base"
+        }
+      ]
+    },
+    "meridian-cube-marble": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_faa275ba070e49f388ba9dcec5841ac4",
+      "revisionId": "r_fbc6774707564a54923a9d1f9b1c8ca9",
+      "parentRevision": "r_1ad0568e8cd24de68d28e8c4a9452eb4",
+      "manifest": {
+        "bytes": 10439,
+        "sha256": "c9636663867f645de89a486dc864f5c0d2cd8e1fc568b6dd774d7f0f0a2dbf58"
+      },
+      "source": {
+        "bytes": 65350,
+        "sha256": "7c5a1112490c0ac6a031239f9cfd61869c6f51d8d899941bc8961a28d0b0c81f"
+      },
+      "canonical": {
+        "bytes": 282288,
+        "sha256": "a53ffada88901ed9323f7a8c9639eeb11d1927ea5a20477571a35e1d9789d96e"
+      },
+      "preview": {
+        "bytes": 154623,
+        "sha256": "d1a3c83e617bf4352552abb02b4bafca67863986a15d4db657a491a3b9123890"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cube-marble"
+        }
+      ]
+    },
+    "meridian-cube-mirror": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_b2ed39a4ce1a4fd99dd876cc5c703165",
+      "revisionId": "r_8f1700e3aaf04919865f86ce1522f5b8",
+      "parentRevision": "r_9999e0d94987445181dcf656f540e669",
+      "manifest": {
+        "bytes": 10479,
+        "sha256": "fb9bc628edec51f532c26f230a538befba4fb91b5a50458c72169bafbd7754e3"
+      },
+      "source": {
+        "bytes": 63618,
+        "sha256": "6dc71b75323e034faa934c6f8a22c50bf3e1fd01c45a118ee43322cac322d6cf"
+      },
+      "canonical": {
+        "bytes": 5236,
+        "sha256": "f052282ea7389236f220c25277fb00504de1dfa440c6e7d2c8d398de9439de1a"
+      },
+      "preview": {
+        "bytes": 20359,
+        "sha256": "cfd0c95d2741ae9c0e88c14a274154136acefd274a864ea7e305d9ef07a985ae"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cube-mirror"
+        }
+      ]
+    },
+    "meridian-monolith": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_463eeb97e1be466dac2f2a444ba879fb",
+      "revisionId": "r_fbf4389a2e4d4239813cd2dbc54e094b",
+      "parentRevision": "r_58f039e2370b4066bfc9b2c820ed2e2d",
+      "manifest": {
+        "bytes": 10533,
+        "sha256": "a34b2efaafc827cda0bd4219a393fd0001776286deeb1c77bf5721aafa21e636"
+      },
+      "source": {
+        "bytes": 65347,
+        "sha256": "c8c8612ec12ad5b6d1176f9899bad774b2a61b48830e7ca48aa8da6ba8b7319e"
+      },
+      "canonical": {
+        "bytes": 1313276,
+        "sha256": "51524b45342939d61988ec89d1ef63daf08ab58b70d7fc13bc50bb70dc3b8d92"
+      },
+      "preview": {
+        "bytes": 302942,
+        "sha256": "0cf1d1f82c35848ac5b8739255e5236b6d3d77dab36e97ce84c7d41875ff8959"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "monolith"
+        }
+      ]
+    },
+    "meridian-cube-mirror-court": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_a107bf0519104ce9849cc823fca52a20",
+      "revisionId": "r_36354c34ee5946cd910255a4a8b3f606",
+      "parentRevision": "r_ce273f6eb5e6434ab91aba8a4f8c48a3",
+      "manifest": {
+        "bytes": 10465,
+        "sha256": "389c7c8c6ba3833130d77cc19c0563a0e22ebcc3f14d687c23fa6ec58f47fb52"
+      },
+      "source": {
+        "bytes": 63624,
+        "sha256": "a0e97376a24e2c50762181c1a042945706d003b99979f8e841132943b8231cbb"
+      },
+      "canonical": {
+        "bytes": 5244,
+        "sha256": "de76c91d812d79382063b892c77295ff5deef58b1b677eddfda98bc421e0f2e1"
+      },
+      "preview": {
+        "bytes": 20359,
+        "sha256": "cfd0c95d2741ae9c0e88c14a274154136acefd274a864ea7e305d9ef07a985ae"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cube-mirror-court"
+        }
+      ]
+    },
+    "meridian-shrub-c": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_bdac34882fa14b84be3d33ea14adb9c9",
+      "revisionId": "r_080cc7c6bf3a4e55b9348a9bf6136646",
+      "manifest": {
+        "bytes": 10571,
+        "sha256": "a299bad49a20e2aa6ad7619134ceec7d153e55d206e78f469224e956c0af5e98"
+      },
+      "source": {
+        "bytes": 28630,
+        "sha256": "d9a73fedacc110f5f929454ca0a12276ee7b206e906f37339065fe3e1bff1406"
+      },
+      "canonical": {
+        "bytes": 252068,
+        "sha256": "f7eeae666d6bac7bacd40f1514ebee4323ebef7afcc4c84adc44c50f57ce2d2c"
+      },
+      "preview": {
+        "bytes": 690526,
+        "sha256": "c2330064760dbf6bad1b33d0b1764e9df2884df5eb8946ad77d34291b1b24ad8"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "shrub-c"
+        }
+      ]
+    },
+    "meridian-cypress-broad": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_e7849305e90b44eeab88fb69bc7c5c1e",
+      "revisionId": "r_65d968a6e4a34968bfaed1504cf759ba",
+      "manifest": {
+        "bytes": 10501,
+        "sha256": "b76ec189f61641778d3c1f04798e5f7a2ead06a7f3079bfa8cd5e2f4e8f3d881"
+      },
+      "source": {
+        "bytes": 28636,
+        "sha256": "dab8bd8cc17939f56be234363d07c9e79fec544a89d0a1de70386d2f528183bb"
+      },
+      "canonical": {
+        "bytes": 378448,
+        "sha256": "26743581289a7b2799e09df6909e7ee72184f544c8f5a8bb677adae92c7c6a9e"
+      },
+      "preview": {
+        "bytes": 333808,
+        "sha256": "3e62eec4027f81ea1c38e0462ba0b610ff8346c1cbebbce41a9d6d387670b228"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cypress-broad"
+        }
+      ]
+    },
+    "meridian-cypress-slim": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_f2de801b1cbb472b99638a036c22221a",
+      "revisionId": "r_4cb4690620ab4a2aa57cf69cd06255e5",
+      "manifest": {
+        "bytes": 10468,
+        "sha256": "7aaea1cbd56421809fe80b3e08b7b6fb86254cb88f4e85f9dd4e47d4fcbc7d3c"
+      },
+      "source": {
+        "bytes": 28635,
+        "sha256": "df66b9dabaecd49dd2f9e096c63e875c74c187a208ba674d2e641def1483c18c"
+      },
+      "canonical": {
+        "bytes": 481224,
+        "sha256": "003f4e9395fb5c6a3ff97c5d02762800b61687cd8f8064f7d920af798b600624"
+      },
+      "preview": {
+        "bytes": 246106,
+        "sha256": "748340a4337f249ff6759193335f0d252973bb9d6310fc4beb5fc93d983cdbc6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cypress-slim"
+        }
+      ]
+    },
+    "meridian-tower-gate": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_4836065137894bf49499b78028fcfdb9",
+      "revisionId": "r_dac22ca376b745ceab2346845e4c16a6",
+      "parentRevision": "r_aac85f7dcf2943489b9ba1a3dd41dc02",
+      "manifest": {
+        "bytes": 10688,
+        "sha256": "90508f63f0fd28f981ccbe2eb1aed6eff1e962ab34eefd8b977adfe8150d43b1"
+      },
+      "source": {
+        "bytes": 65349,
+        "sha256": "e340edc609f33ad912139049fa6f4993de73384feda11ad98d8cd01a08aa2f66"
+      },
+      "canonical": {
+        "bytes": 1618560,
+        "sha256": "eb250a9dd0a414138db8619015c2daf6646cfe1ed4794b3d6137d98b094ccd75"
+      },
+      "preview": {
+        "bytes": 114373,
+        "sha256": "a8ce39708f3b99b0b99be35a39cbc4052b56444120cf651593a6064550cceb01"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "tower-gate"
+        }
+      ]
+    },
+    "meridian-arcade-bay": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_ebda3dd3bf5f41d6ad0dea5b6a9c3ef6",
+      "revisionId": "r_60cc31247cad446a95672bddc01ae520",
+      "parentRevision": "r_205d267f0d22467ba12953656d47e268",
+      "manifest": {
+        "bytes": 10583,
+        "sha256": "8bd867c426815de9d08a90019667640861590f36edd56c612f73226c0a9df536"
+      },
+      "source": {
+        "bytes": 65349,
+        "sha256": "19ea35e682ab0761fc4e479b9e0dc85a75a947fe6b97020d8d9e0a59c1ba000f"
+      },
+      "canonical": {
+        "bytes": 561964,
+        "sha256": "bf2e816bd344c60734361a581266831601546c8afddd49e80554110d64de815d"
+      },
+      "preview": {
+        "bytes": 149231,
+        "sha256": "9e95dcb4de1ab79fee6293fd5a5869870f7aa753b279c0e7cfae22bc1840c1e6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "arcade-bay"
+        }
+      ]
+    },
+    "meridian-pavilion": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_fcde0b57fef04d3698a139126d44f416",
+      "revisionId": "r_3745cc9353f44c1b8d3102d59c9f9d46",
+      "parentRevision": "r_ce8753d65b814006a5104477fc9a6885",
+      "manifest": {
+        "bytes": 10598,
+        "sha256": "11d749a9b3edc422c9550ca1f279acff6b2665ee378951ecdccfde7051fe8600"
+      },
+      "source": {
+        "bytes": 65347,
+        "sha256": "d32376c8fca4872936cbbaf631a9e618326aedda77aefbbb44ac9148274cbdbf"
+      },
+      "canonical": {
+        "bytes": 596512,
+        "sha256": "80c78c7effe5f1a71afb0f23b52b0126de5b724497114e49914958960f905282"
+      },
+      "preview": {
+        "bytes": 147316,
+        "sha256": "b296259a434d57408a2daeb2694e597d297d6d8b9f86507cdb3ec84df37a8ec7"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "pavilion"
+        }
+      ]
+    },
+    "meridian-balustrade-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_7d9d5e100703402aa907c7e9fe1ccef1",
+      "revisionId": "r_eb66bdfce33449e386b9792df125142d",
+      "parentRevision": "r_5ab927afed204bfaad958924943d4e4a",
+      "manifest": {
+        "bytes": 10532,
+        "sha256": "134b9ad4f16ffa314453d19b80ac2250b47b7ded764ddf3f241e11a063cac3bc"
+      },
+      "source": {
+        "bytes": 31493,
+        "sha256": "3fb79179c857f1a7ccf839edd450a0eab922fc094077cc4595f62bcbb3a83221"
+      },
+      "canonical": {
+        "bytes": 332568,
+        "sha256": "a0c40e478f7a7ee58aaa6f87642a7f9329c45e627af7da6c183d82b5f5c0ee45"
+      },
+      "preview": {
+        "bytes": 84593,
+        "sha256": "46d8159bd0fc87e052f2160ccd336377c2419c13346754f1e7e3cb77e27f0712"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "balustrade-4"
+        }
+      ]
+    },
+    "meridian-cube-mirror-far": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_b0480b746fa5406c82626f5037e30f5c",
+      "revisionId": "r_1b9bef4f0c2d46ae8bdd1261f64b4c71",
+      "manifest": {
+        "bytes": 10475,
+        "sha256": "c52554b033fcb53db433c728e451a43b77408c581a7bbedd7fcab34e130692e7"
+      },
+      "source": {
+        "bytes": 63622,
+        "sha256": "e17b2e8d8591d78aa62bad7f690e33878fff5bdb34668bce9747592275ac90b8"
+      },
+      "canonical": {
+        "bytes": 5240,
+        "sha256": "7565e0872c555de2563f19c2a4533a90743a290497888d7b24f29ab10755fd41"
+      },
+      "preview": {
+        "bytes": 20359,
+        "sha256": "cfd0c95d2741ae9c0e88c14a274154136acefd274a864ea7e305d9ef07a985ae"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cube-mirror-far"
+        }
+      ]
+    },
+    "meridian-statue-figure": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_2fdcbd42ab4740469b82e2c357f96413",
+      "revisionId": "r_c3c6c0cd796b43c88dabbb09061e3ef3",
+      "manifest": {
+        "bytes": 11326,
+        "sha256": "78d907480df3e18b9d0491d8bbb4fa746c77029c43e997e922a9f59805a957ba"
+      },
+      "source": {
+        "bytes": 15828,
+        "sha256": "ea8d4538720b66e5fc6ce07312bcb53d4dd4c8af8bc2dd9eb96156e89a593a00"
+      },
+      "canonical": {
+        "bytes": 896964,
+        "sha256": "fd9f981f9876ba561567ba071e10280db0feeeaf79ab902f813e2ea8c78a2988"
+      },
+      "preview": {
+        "bytes": 184127,
+        "sha256": "6d478b6d0f725cd0036b910141cb0962550d243a39419f7f6b1df0d573f2a479"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "statue-figure"
+        }
+      ]
+    },
+    "meridian-statue-whale": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_705819f9bd52422b947684965b45795c",
+      "revisionId": "r_94ec333e46d84cc7a9c4e79455b1c572",
+      "manifest": {
+        "bytes": 11393,
+        "sha256": "8b9bfcde9108042f0b2d77eddbb5a204ac0681a55b6bf4cbfe58c934b240951b"
+      },
+      "source": {
+        "bytes": 22053,
+        "sha256": "dfa7608671b5069940ab27ddbddc58ca8fdeb49908146e95f3bf818c4d654cf6"
+      },
+      "canonical": {
+        "bytes": 794760,
+        "sha256": "733063c17e42fbe08312a06ef3fb0b9b4ea1ee8bdb9d50103e8a8d04ef6382b3"
+      },
+      "preview": {
+        "bytes": 136607,
+        "sha256": "39333cf93234bbbc66c4f7259d82642e18dbe1f0c4bf46005d6fbbf1ee5e0356"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "statue-whale"
+        }
+      ]
+    }
+  }
+}

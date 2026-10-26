@@ -35,6 +35,7 @@ import type { RequirementsBinding } from './requirements-store';
 import type { RenderResult } from './render';
 import { createGenerationCallBudget } from './agent/call-budget';
 import { assertNodeRuntime } from './runtime-support.mjs';
+import { ENGINE_VERSION } from './engine-identity';
 
 const USAGE = `kiln — vision-in-the-loop 3D asset generation
 
@@ -51,6 +52,7 @@ USAGE
   kiln animation <program.js|ref> [options]  review sampled motion of an exported clip
   kiln inspect <program.js|ref> [options]    close-up views and surface/anchor measurements
   kiln service status|start|stop|reprobe  the shared GPU render service (see below)
+  kiln --version                        print the installed Kiln version
 
 OPTIONS
   --out <path>            GLB output path            (default: out.glb)
@@ -348,6 +350,9 @@ async function emit(
       ? { vertexAttributes: result.integrationManifest.vertexAttributes }
       : {}),
     budget: result.integrationManifest.budget ?? { status: 'none', tiers: [] },
+    ...(result.integrationManifest.materialAdvice
+      ? { materialAdvice: result.integrationManifest.materialAdvice }
+      : {}),
     ...(result.integrationManifest.palette ? { palette: result.integrationManifest.palette } : {}),
     artifactGlbSha256: result.artifactGlbSha256,
     glbBytes: result.glb.length,
@@ -399,8 +404,16 @@ async function emit(
           `${tier.tier} ${tier.measured.triangles}/${tier.declared.triangles ?? '-'} tris${tier.declared.draws === undefined ? '' : ` ${tier.measured.draws}/${tier.declared.draws} draws`} ${tier.status}`,
       )
       .join('; ');
-    log(`  budget ${budget.status}  ${tiers}`);
+    const materials = (budget.materials ?? [])
+      .map((check) => `${check.limit} ${check.measured}/${check.declared} ${check.status}`)
+      .join('; ');
+    log(`  budget ${budget.status}  ${[tiers, materials].filter(Boolean).join('; ')}`);
   }
+  // Reference-tier material notes: optional advice, never a declared budget.
+  for (const note of result.integrationManifest.materialAdvice ?? [])
+    log(
+      `  material note (advisory, ${note.reference})  ${note.measurement.name} ${note.measurement.actual}; reference ${note.measurement.reference}`,
+    );
   // A declared palette: advisory, off-palette materials farthest first.
   const palette = result.integrationManifest.palette;
   if (palette)
@@ -749,6 +762,11 @@ export function main(argv: readonly string[]): Promise<number> {
 }
 
 async function runMain(argv: readonly string[]): Promise<number> {
+  // Before the runtime check, so an unsupported Node can still say which Kiln it found (#202).
+  if (argv.length === 1 && argv[0] === '--version') {
+    console.log(ENGINE_VERSION);
+    return 0;
+  }
   try {
     assertNodeRuntime();
   } catch (error) {

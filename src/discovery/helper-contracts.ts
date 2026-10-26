@@ -887,10 +887,13 @@ define(
     summary:
       'Declares LOD tiers (sibling nodes named Body_LOD0, Body_LOD1, ...) and their screen-coverage thresholds. Use only when the brief asks for LOD tiers.',
     limitations: [
-      'Tiers are authored, not generated: Kiln simplifies no geometry.',
+      'Tiers are authored: defineLod generates and simplifies nothing. Build each lower tier with less detail, or derive it explicitly per part with simplifyGeometry and place the result in the tier.',
       'Sets cannot nest inside another tier; material LOD chains are not created.',
     ],
-    related: [{ name: 'createPart', relation: 'companion' }],
+    related: [
+      { name: 'createPart', relation: 'companion' },
+      { name: 'simplifyGeometry', relation: 'companion' },
+    ],
   },
 );
 const deliveryMetadata = {
@@ -2257,7 +2260,9 @@ const profileFacts: Facts = {
   topology: [
     'Manifold-backed solid generation from valid profiles; not a guarantee that any arbitrary input describes the intended solid.',
   ],
-  preservation: ['New geometry/normals/bounds; does not carry authored UVs from an input mesh.'],
+  preservation: [
+    'New geometry/normals/bounds. The output has no UV0 (no TEXCOORD_0), and input UVs are not carried. A texture-backed material on it is blocked by MAT_TEXTURE_UV_MISSING until you add UV0 with projectUV (for example box projection) or autoUnwrap.',
+  ],
   cost: 'WASM complexity depends on profile vertices, segments and divisions; no general allocation bound is claimed.',
 };
 const profileMetadata: Metadata = {
@@ -2291,7 +2296,7 @@ define(
     parameters: [
       'Finite closed outline, optional finite hole outlines, positive depth.',
       'Twist is degrees; taper is dimensionless; divisions is a whole number >= 0 of intermediate rings, default 0 (16 when twisting).',
-      'Bevel uses profile units. If its inward offset empties the section, execution rejects with repair advice: reduce bevel below half the narrowest width, disable it, or widen the section.',
+      'Bevel uses profile units. If its inward offset empties the section, execution rejects with PROFILE_BEVEL_COLLAPSE repair advice: reduce bevel below half the narrowest width, disable it, or widen the section. Any other failure to build the solid rejects with PROFILE_SOLID_FAILED repair advice. kiln_validate cannot see either; reproduce with kiln_render.',
     ],
   },
   {
@@ -2301,6 +2306,8 @@ define(
     related: [
       { name: 'circleProfile', relation: 'companion' },
       { name: 'sweepProfile', relation: 'alternative' },
+      { name: 'projectUV', relation: 'companion' },
+      { name: 'autoUnwrap', relation: 'companion' },
     ],
   },
 );
@@ -2313,14 +2320,18 @@ define(
     parameters: [
       'Closed finite profile; only nonnegative radial side is used.',
       'angle in (0,360] degrees; segments and bevel options control tessellation.',
-      'Bevel uses profile units. If its inward offset empties the section, execution rejects with repair advice: reduce bevel below half the narrowest width, disable it, or widen the section.',
+      'Bevel uses profile units. If its inward offset empties the section, execution rejects with PROFILE_BEVEL_COLLAPSE repair advice: reduce bevel below half the narrowest width, disable it, or widen the section. Any other failure to build the solid rejects with PROFILE_SOLID_FAILED repair advice. kiln_validate cannot see either; reproduce with kiln_render.',
     ],
   },
   {
     ...profileMetadata,
     aliases: ['solid revolution', 'turned solid'],
     intents: ['turn a closed section into a solid vessel or knob'],
-    related: [{ name: 'revolveGeo', relation: 'alternative' }],
+    related: [
+      { name: 'revolveGeo', relation: 'alternative' },
+      { name: 'projectUV', relation: 'companion' },
+      { name: 'autoUnwrap', relation: 'companion' },
+    ],
   },
 );
 define(
@@ -2398,6 +2409,57 @@ define(
     intents: ['add segments and smooth a coarse mesh'],
     limitations: [
       'Conservative per-operation budgets include presplit growth. They are not a peak-memory guarantee; host evaluation limits still apply.',
+    ],
+  },
+);
+define(
+  'simplifyGeometry',
+  {
+    ...ownedGeometry,
+    execution: 'async',
+    axes: 'Preserves source axes and the authored origin.',
+    parameters: [
+      'Exactly one of ratio (a number, 0 < ratio <= 1, the fraction of triangles to keep) or targetTriangles (a positive integer). A target at or above the input count returns a welded copy.',
+      'maxError: a fraction of the mesh extent, at least 0; default 1, no practical limit, so the ratio or target decides. lockBorder defaults true. Any other option key is rejected.',
+      'A triangle list with a finite three-component position attribute, per-vertex attributes and a draw range covering the whole geometry. Instanced attributes are rejected. At most 1,000,000 input triangles.',
+    ],
+    topology: [
+      'Collapses edges with the meshoptimizer simplifier (attribute-aware: normal weight 0.5, UV0 weight 0.5 per unit of UV extent) and removes unused vertices. Not a remesh: it keeps a subset of the input vertices and does not repair defects.',
+      'Each material group, and each run of triangles outside a group, is simplified on its own; vertices on a boundary between runs are locked.',
+      'Vertices are welded only where every attribute matches, after positions within 2^-20 of the extent are snapped together, so UV and normal seams stay split and hold; open borders are locked unless lockBorder: false.',
+    ],
+    preservation: [
+      'Surviving vertices keep their exact attribute values, storage types and normalized flags, including UVs, normals, tangents, colours, skin data and morph targets; nothing is interpolated. Normals are not recomputed; use creaseNormals for faceted shading.',
+      'Keeps material groups in order with their materialIndex, the geometry name and JSON userData. Source face/range provenance is dropped with SIMPLIFY_PROVENANCE_DROPPED.',
+    ],
+    semantics: [
+      'userData.kilnSimplify: { schemaVersion: 1, requested, trianglesBefore, trianglesAfter, ratio (achieved), error (fraction of scale), errorAbsolute (scene units), scale, maxError, lockBorder, runs, lockedVertices }.',
+      'A result more than 5% above the target adds SIMPLIFY_TARGET_NOT_REACHED to userData.kilnGeometryWarnings, which becomes a build note.',
+      'Explicit only: never runs implicitly or to meet a budget. Pass the result to a lower defineLod tier.',
+      noAssetSemantics,
+    ],
+    cost: 'Roughly linear in vertices and triangles plus WASM simplification; the simplifier loads once per process.',
+  },
+  {
+    references: ['src/simplify.ts'],
+    tags: ['mesh processing', 'lod', 'simplification', 'async'],
+    aliases: [
+      'decimate',
+      'decimation',
+      'mesh simplification',
+      'reduce triangles',
+      'lower detail copy',
+      'polygon reduction',
+    ],
+    intents: ['derive a lower-detail LOD tier from a part'],
+    limitations: [
+      "Error is meshoptimizer's estimate, including attribute deviation; inspect the lower tier as well.",
+      'Flat-shaded or heavily seamed meshes simplify less, because every seam stays split. Hard edges, seams and group boundaries can stop it short of the target.',
+    ],
+    related: [
+      { name: 'defineLod', relation: 'companion' },
+      { name: 'creaseNormals', relation: 'companion' },
+      { name: 'subdivide', relation: 'alternative' },
     ],
   },
 );
@@ -2605,7 +2667,7 @@ define(
       'By default planar/box axes and cylindrical height normalize each geometry extent to 0..1, so texel density changes with part size. metersPerUnit (positive length) instead maps one UV unit to that length measured from the frame origin: parts of any size tile at the same density, and parts sharing a frame keep the same phase. A full cylindrical wrap rounds its circumference at the largest radius to whole tiles so the seam stays continuous; a partial angularRange uses the exact arc length.',
       'Output is non-indexed. Weld with mergeVertices afterwards where the projection is continuous (one planar face, cylindrical sides); it keeps corners split where UVs or normals differ, such as box faces and the cylindrical seam.',
       'projection is required. frame uses origin/rotation. Cylinder seamDegrees defaults to 180, measured from +X toward +Z; angularRange is [start degrees, positive sweep <=360] instead of seamDegrees.',
-      'Cylindrical caps default to planar for triangle normals within 1e-6 of frame Y; caps:side uses side mapping. Partial ranges must cover side vertices, allowing 1e-6 radians of Float32 boundary roundoff.',
+      'Cylindrical caps default to planar for triangle normals within 1e-6 of frame Y; caps:side uses side mapping. Partial ranges must cover side vertices, allowing 1e-6 radians of Float32 boundary roundoff. A side corner on the axis (within 1e-6 of the largest radius: a cone apex, or a revolved profile touching x = 0) takes the mean U of the other corners of its triangle.',
       'Nonempty finite positions, valid triangle indices and matching per-vertex attributes; morph targets are unsupported. At most 2000000 source samples/corners and 128 MiB expanded attribute storage.',
     ],
     ownership: 'Owned non-indexed geometry and copied attributes/metadata; input unchanged.',
@@ -2959,6 +3021,52 @@ define(
       'Does not measure draw calls or validate an asset. Use kiln_validate and applicable QA for acceptance.',
     ],
     related: [{ name: 'countMaterials', relation: 'companion' }],
+  },
+);
+
+define(
+  'seededRandom',
+  {
+    units: 'Unitless numbers; range and int use the caller units of their bounds.',
+    axes: 'Not applicable.',
+    origin: 'Not applicable.',
+    ownership: 'Returns a new frozen generator object; it holds only its own 32-bit state.',
+    coordinates: 'Not applicable; no scene or transform is read.',
+    parameters: [
+      'seed is a finite number or a non-empty string of at most 256 characters; a number is hashed from its decimal text, so 7 and "7" are the same seed. Other values throw.',
+      'next() returns a float in [0, 1). range(min, max) returns min + (max - min) * next(), in [min, max); bounds are finite and min <= max.',
+      'int(min, max) returns an integer from min to max with both ends included (like THREE.MathUtils.randInt); bounds are safe integers, min <= max, at most 2^32 values.',
+      'pick(array) returns one element of a non-empty array.',
+      'fork(label) takes a non-empty string of at most 256 characters and returns an independent generator.',
+    ],
+    topology: [noMesh],
+    preservation: ['Reads and changes no scene state.'],
+    semantics: [
+      'Seeds are hashed with FNV-1a (32-bit) over UTF-8; draws use mulberry32. next, range, int and pick each consume exactly one draw.',
+      'fork(label) derives its seed from the parent seed and the label only. It does not consume or depend on parent draws, so the same seed and label always replay the same stream.',
+      'The output depends only on the program source, so a build using seededRandom remains eligible for build reuse; Math.random, Date and THREE.MathUtils random helpers bypass it.',
+    ],
+    cost: 'Constant time per draw; hashing is linear in seed or label length.',
+  },
+  {
+    references: ['src/seeded-random.ts', 'src/build-cache.ts'],
+    tags: ['random', 'seed', 'deterministic', 'variation'],
+    aliases: [
+      'seeded random',
+      'random number generator',
+      'random numbers',
+      'deterministic random',
+      'PRNG',
+    ],
+    intents: [
+      'reproducible random variants',
+      'replay a parent asset random draws in a variant',
+      'random variation that keeps builds cacheable',
+    ],
+    limitations: [
+      'Not cryptographic. 32-bit state: streams are reproducible, not statistically perfect.',
+      'Ranges with very large magnitude and tiny span can round up to max.',
+    ],
   },
 );
 

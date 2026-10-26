@@ -180,6 +180,11 @@ from scene source; Golden Gate and Foundry use their sealed reviewed standalone
 chunks. `scene-inputs.json` pins the three core scenes' complete inputs and
 `scene-packs.json` independently verifies their models, data files and runtime
 chunks. Troy is staged separately from the sealed `troy-delivery.json` archive.
+The Cabin Woods pack's site files under `/asset-demos/cabin-woods-psx-horror/` are
+staged the same way by `scripts/stage-cabin-site.mjs`, from the sealed archive pinned
+in `src/data/cabin-woods-site.json`; a new Cabin release seals its staged folder with
+`node scripts/stage-cabin-site.mjs --pack DIR --mirror DIR --release ID` and uploads
+that one archive.
 
 `KILN_SITE_PACKS=0` is the reduced CI build; never use it for the production rollout.
 The existing core R2 upload sets are `mirror-manifest.json`, `upload-manifest.json`

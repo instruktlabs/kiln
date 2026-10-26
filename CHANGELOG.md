@@ -7,10 +7,122 @@ does not publish a package.
 
 ## Unreleased
 
+## 1.5.0 (2026-10-25)
+
 - Generated Codex workspaces forward `KILN_EXPORT_ROOT` to the MCP server, so
   `kiln_export_to` is advertised under Codex as under the other harnesses, and Discovery
   capabilities report the tool as `assets.exportTo` (`null` when absent, never the
   absolute root) ([#207](https://github.com/instruktlabs/kiln/issues/207)).
+- The delivery contract explains every delivery finding: what it checks, its tolerance
+  and units, and that all are advisory. `DELIVERY_COLLIDER_NO_OVERLAP` is
+  collider-to-geometry overlap, not contact between colliders
+  ([#199](https://github.com/instruktlabs/kiln/issues/199)).
+- Document optional SDK setup for generated workspaces. The compose and QA integration
+  references gain an "Optional SDK use" paragraph: a workspace has no `package.json`, so
+  `@instruktlabs/kiln/render` and `/composer` fail with `ERR_MODULE_NOT_FOUND` until the
+  author installs `@instruktlabs/kiln` pinned to the runtime version in use; CLI/MCP-only
+  authoring is unchanged ([#179](https://github.com/instruktlabs/kiln/issues/179)).
+- The optional compose-scene workflow now says how a scene's aggregate export receipt follows
+  a changed asset revision: regenerate it from fresh `kiln export … --json` receipts, check
+  revision id, GLB bytes and hash and sidecar hash against the emitted files before claiming
+  delivery, and keep superseded entries as immutable `history[]` rather than rewriting them.
+  Guidance only; standalone assets and the engine surface are unchanged
+  ([#180](https://github.com/instruktlabs/kiln/issues/180)).
+- State plainly in Discovery that `extrudeProfile`, `revolveProfile` and `roundedBoxGeo`
+  output no UV0, and relate `projectUV` and `autoUnwrap` from the first two. The
+  `MAT_TEXTURE_UV_MISSING` repair now names both `projectUV` (for example box projection)
+  and `autoUnwrap` instead of a generic "unwrap". The block is unchanged: a texture-backed
+  material on geometry without UV0 still fails QA, and no projection is added
+  automatically ([#177](https://github.com/instruktlabs/kiln/issues/177)).
+- `kiln --version` prints the installed version and exits 0
+  ([#202](https://github.com/instruktlabs/kiln/issues/202)). `docs/programs.md` lists the
+  sandbox globals and refused host capabilities, and `docs/geometry.md` states the
+  exact-equality export weld that was documented only in the migration notes.
+- Budget receipts state that `draws` caps unbatched LOD0 draws (unchanged) and add
+  `measured.instancedDraws` on the LOD0 tier when a draws cap is declared: the draws the
+  three runtime target leaves after batching each `repeatInstances` group. It is
+  informational and never changes the tier's status
+  ([#200](https://github.com/instruktlabs/kiln/issues/200)).
+- The three runtime target takes `maxLod` (CLI `--max-lod N`): it keeps LOD0..LODN of each
+  `MSFT_lod` chain and removes the lower levels with what only they used, trims their
+  thresholds, leaves budget tiers above N out of the shipped declaration and records all
+  of it in the sidecar's `delivery.lod`. The default keeps every level
+  ([#196](https://github.com/instruktlabs/kiln/issues/196)).
+- The three runtime target takes `positionBits` (CLI `--position-bits 8..16|float`) for
+  position quantization; other attribute classes are unchanged and the default stays 14
+  bits. The sidecar's `delivery.quantization` adds `positionSteps` (the grid step in metres
+  per mesh node) and `maxPositionStep`, and `bits.position` is `'float32'` for float
+  positions. With float positions, `KHR_mesh_quantization` is still declared for the
+  quantized normals and texture coordinates
+  ([#197](https://github.com/instruktlabs/kiln/issues/197)).
+- Add the `seededRandom(seed)` sandbox global for reproducible random variation
+  ([#244](https://github.com/instruktlabs/kiln/issues/244)). It takes a finite number or a
+  non-empty string and returns `next()`, `range(min, max)`, `int(min, max)` (both ends
+  included, like `THREE.MathUtils.randInt`), `pick(array)` and `fork(label)`, an
+  independent stream derived from the seed and label rather than from how many draws were
+  made, so a variant can replay a parent's draws. Seeds are hashed with FNV-1a and drawn
+  with mulberry32, the generator scene layout and material presets already used. Builds
+  that use it stay cacheable; `Math.random` still bypasses build reuse. Discovery finds it
+  for "seeded random".
+- Add `simplifyGeometry` to derive a lower-detail copy of a part for an LOD tier
+  ([#243](https://github.com/instruktlabs/kiln/issues/243)).
+  `await simplifyGeometry(geometry, { ratio })` (or `{ targetTriangles }`, with optional
+  `maxError` and `lockBorder`) uses the pinned meshoptimizer simplifier and returns new
+  geometry without changing the input. Material groups are simplified separately with
+  their boundaries locked, UV and normal seams and open borders hold, and surviving
+  vertices keep their exact attributes. `userData.kilnSimplify` records the triangle
+  counts, achieved ratio and the simplifier's error; a missed target is a
+  `SIMPLIFY_TARGET_NOT_REACHED` build note. It never runs implicitly or to meet a budget.
+  The `defineLod` contract no longer says Kiln simplifies no geometry and points to it.
+- Name profile solid failures across the sandbox ([#178](https://github.com/instruktlabs/kiln/issues/178)).
+  An `extrudeProfile` or `revolveProfile` call whose outline, holes or bevel cannot become
+  a solid now rejects with the closed cause `PROFILE_SOLID_FAILED` and engine-written repair
+  advice, instead of the bare generic rejection; out-of-scale coordinates and holes that
+  consume the outline are two reduced cases. No library message crosses the boundary, and
+  `PROFILE_BEVEL_COLLAPSE` still names an over-large bevel. The generic rejection now says
+  that `kiln_validate` checks syntax and static rules but cannot see execution-time
+  failures, and points to reproducing them with `kiln_render`.
+- Map cylindrical `projectUV` poles and name profile solid failures
+  ([#178](https://github.com/instruktlabs/kiln/issues/178)). A bevelled `revolveProfile`
+  whose outline touches the axis ends in sloped triangles meeting on it; cylindrical
+  `projectUV` gave that pole no defined angle, so the mesh smeared U or, at some segment
+  counts, threw and rejected the whole program. A corner on the axis now takes the mean U of
+  the other corners of its triangle; cone apexes are treated the same way. Separately, an `extrudeProfile` or
+  `revolveProfile` outline that cannot become a solid (for example out-of-scale coordinates,
+  or holes that consume it) now rejects with the closed cause `PROFILE_SOLID_FAILED` and
+  engine-written repair advice instead of the bare generic rejection; no library message
+  crosses the boundary, and `PROFILE_BEVEL_COLLAPSE` still names an over-large bevel. The
+  generic rejection now says that `kiln_validate` checks syntax and static rules but cannot
+  see execution-time failures, and points to reproducing them with `kiln_render`.
+- Export a saved material revision's maps as tiling textures with a planar preview
+  ([#246](https://github.com/instruktlabs/kiln/issues/246)). `material export <id> <revision>
+  --maps <dir> --size <px> [--repeat <metres>] [--tiles <n>]` writes one PNG per map at the
+  stated size, a lit `tiles` × `tiles` preview and a `kiln.material-maps.v1` sidecar naming
+  each map's slot, colour space, size, repeat, source revision and `sha256`. A V2 layer
+  recipe is recompiled at the new size; other maps resample with a wrapped Catmull-Rom filter.
+  The preview uses the GPU render port when one is configured and records its renderer and
+  `viewFidelity`, so a CPU preview is never read as material evidence. Existing files are
+  never replaced. `exportMaterialMaps` and `createMaterialMapExport` from
+  `material-library/node` do the same for hosts; `--out` and MCP are unchanged.
+- Material measurements no longer read as a budget nobody declared. Without a material
+  limit, receipts list `materialAdvice[]` beside `budget` and QA reports `observe`
+  findings `MATERIAL_TEXTURE_RESOLUTION_ADVICE`, `MATERIAL_IMAGE_COUNT_ADVICE`,
+  `MATERIAL_DECODED_MEMORY_ADVICE` and `MATERIAL_BLEND_AREA_ADVICE` (formerly `*_BUDGET`
+  warnings) against the `web.portable.v1/standard` reference tier, worded as optional
+  advice. `defineBudget` gains `images`, `decodedBytes` and `materialTier`, measured in
+  `budget.materials` and covered by `--strict-budget`; `triangles` is now optional when
+  another limit is declared ([#176](https://github.com/instruktlabs/kiln/issues/176)).
+- Report geometry deltas against the parent revision on save
+  ([#245](https://github.com/instruktlabs/kiln/issues/245)). A `kiln_save` (and
+  `kiln save --parent`) with `parentRevision` now returns `comparison`: the drawn
+  triangle, vertex, draw-call and material counts as `parent`, `child` and `delta`, the
+  drawn bounds sizes and their delta, and `geometryIdentical`, a hash of the sorted drawn
+  world-space triangles at float32 precision that ignores node, primitive and vertex
+  order, with `uvIdentical` when the geometry matches. Merging four primitives into one
+  without moving a vertex now reads as identical geometry with three fewer draws instead
+  of only a changed part. A comparison that cannot be made reports `unavailable` and
+  never fails the save. `kiln_inspect` compare (and `kiln_edit` preservation) gain the
+  same `counts`, `geometryIdentical`, `uvIdentical` and `boundsDelta`. No input changed.
 
 ## 1.4.0 (2026-10-23)
 

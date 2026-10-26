@@ -57,7 +57,20 @@ attribute names, so shaders read `_edge` and `_cavity`.
 
 - `defineBudget({ triangles: n | { LOD0, LOD1, ... }, draws? })` stores scene extras
   `kilnBudgetV1`. Tier n is measured as level `min(n, last)` of every `MSFT_lod`
-  chain plus everything outside the chains; `draws` caps LOD0 draw calls.
+  chain plus everything outside the chains; `draws` caps LOD0 draw calls as the GLB
+  stores them, before any consumer batching, so each child of a `repeatInstances` group
+  counts. Beside the measured `draws`, the LOD0 tier reports `instancedDraws`: the draws
+  the three runtime target leaves after batching each group into one instanced draw.
+  It is informational and never changes the tier's status. Optional
+  material limits are `images`, `decodedBytes` (RGBA8, before mips) and `materialTier`,
+  which adopts a reference tier's image count, decoded bytes, image size and
+  blended-area figures; explicit limits override the tier. They report in
+  `budget.materials` and count toward `budget.status`.
+- With no material limit declared, receipts compare the GLB with the
+  `web.portable.v1/standard` reference tier and list any figure passed in
+  `materialAdvice[]` beside `budget`, with matching `observe` QA findings
+  (`MATERIAL_*_ADVICE`). These are optimization notes, never a requirement, and a
+  declared material limit replaces them.
 - `definePalette(colors, { threshold? })` stores scene extras `kilnPaletteV1`. Each
   material drawn by a visible node is compared by its base colour factor in CIELAB
   (CIE 1976 delta E, default threshold 10). Off-palette materials become
@@ -98,12 +111,34 @@ Transforms are relative to the asset root (the default scene), rotation as an
 `[x, y, z, w]` quaternion. Paths are `/<scene>[0]/<name>[occurrence]/...` with each
 name URI-encoded.
 
-Delivery diagnostic codes: `DELIVERY_COLLIDER_NOT_HIDDEN`,
-`DELIVERY_COLLIDER_OUTSIDE_BOUNDS`, `DELIVERY_COLLIDER_NO_OVERLAP`,
-`DELIVERY_COLLIDER_OVERLAP_UNMEASURED`, `DELIVERY_KIT_INVALID`,
-`DELIVERY_KIT_MULTIPLE`, `DELIVERY_PORT_OUTSIDE_FOOTPRINT`,
-`DELIVERY_PORT_WITHOUT_MODULE`, `DELIVERY_ANCHOR_NOT_LEAF`. A box or capsule wholly
-inside a closed solid touches no triangle, so it reports `NO_OVERLAP`.
+### Delivery findings
+
+Every delivery finding is advisory. It appears in `deliveryDiagnostics` and as a build
+warning, and never changes QA acceptance, saving or an exit code. Each one reports what
+a check measured on the written GLB, not a judgement about the asset.
+
+Distances are in metres. The collider checks share one tolerance:
+`max(0.0001, 0.0001 × d)`, where `d` is the diagonal of the drawn bounds (the same
+bounds the manifest reports). Collider checks read the default scene only, so lower
+`MSFT_lod` levels, which sit off the scene, are not measured.
+
+| Code | What was checked | Tolerance | Disposition |
+| --- | --- | --- | --- |
+| `DELIVERY_COLLIDER_NOT_HIDDEN` | The collider's proxy mesh draws, so an importer that ignores roles would show it | None | Advisory |
+| `DELIVERY_COLLIDER_OUTSIDE_BOUNDS` | The proxy's world-space vertex box reaches outside the drawn bounds of the asset. Applies to boxes, capsules and hulls | Drawn bounds grown by the shared tolerance | Advisory |
+| `DELIVERY_COLLIDER_NO_OVERLAP` | A box or capsule proxy touches none of the asset's drawn triangles. This is collider-to-geometry overlap, not contact between two colliders: colliders are never tested against each other. Hulls are not checked | Box: the shared tolerance along the box's largest side, proportionally less along shorter sides. Capsule: the radius plus the shared tolerance | Advisory |
+| `DELIVERY_COLLIDER_OVERLAP_UNMEASURED` | The overlap check stopped before this collider: the asset reached 50,000,000 collider-triangle tests, counted across colliders in scene order | Not measured | Advisory |
+| `DELIVERY_KIT_INVALID` | A node with the kit-module role has no valid `kilnKit` extras from `defineModule` | None | Advisory |
+| `DELIVERY_KIT_MULTIPLE` | A second kit module; a GLB delivers one, and the manifest lists the first | None | Advisory |
+| `DELIVERY_PORT_WITHOUT_MODULE` | A port is not under the delivered kit module | None | Advisory |
+| `DELIVERY_PORT_OUTSIDE_FOOTPRINT` | A port lies outside its module's footprint or height | `max(0.0001, 0.00001 × s)`, where `s` is the module's largest of width, depth and height | Advisory |
+| `DELIVERY_ANCHOR_NOT_LEAF` | An anchor has children; an anchor is an empty leaf node | None | Advisory |
+
+The overlap test counts drawn triangles of visible meshes, including every
+`EXT_mesh_gpu_instancing` copy, and skips other colliders. A box or capsule wholly
+inside a closed solid touches no triangle, so it reports `DELIVERY_COLLIDER_NO_OVERLAP`
+even though it stands for that solid. Treat the finding as a prompt to check the proxy
+against the views; a proxy deliberately inside its surface needs no change.
 
 ## Texture atlases
 
@@ -149,7 +184,8 @@ Consumer rules that follow from it:
   under the appropriate authored parent. Your application chooses one active tier
   using the retained `MSFT_screencoverage` policy or its own documented policy.
   Do not show all levels together. A final impostor marker does not implement
-  billboarding or distance-based switching.
+  billboarding or distance-based switching. A consumer that draws LOD0 only can export
+  with `--max-lod 0` so the lower levels are not shipped at all.
 
 `src/__tests__/runtime-three-export.test.ts` qualifies static geometry, role data,
 instancing, explicit lower-tier selection and a quantized skin through Three's

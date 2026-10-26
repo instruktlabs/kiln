@@ -36,7 +36,10 @@ childProcess.spawn = (...args) => {
 };
 syncBuiltinESMExports();
 
-const local = createLocalToolContext({}, { KILN_EVALUATOR_TIMEOUT_MS: '1200' });
+let evaluationDeadlineMs = 1200;
+const local = createLocalToolContext({
+  evaluationControls: () => ({ deadlineMs: evaluationDeadlineMs })
+}, { KILN_EVALUATOR_TIMEOUT_MS: '1200' });
 const evaluator = local.evaluatorPort;
 let completed;
 const outcome = new Promise(resolve => { completed = resolve; });
@@ -64,6 +67,9 @@ try {
   assert.deepEqual(await closed, { code: null, signal: 'SIGKILL' });
   assert.throws(() => process.kill(pid, 0), { code: 'ESRCH' });
 
+  // A cold valid request took 1.64 s on Linux. Keep the cancellation deadline
+  // unchanged, then allow startup/export headroom for recovery on the same port.
+  evaluationDeadlineMs = 8000;
   const valid = await client.callTool({
     name: 'kiln_render',
     arguments: {

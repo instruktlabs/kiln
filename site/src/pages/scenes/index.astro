@@ -1,4 +1,5 @@
 ---
+import HolodeckShowcase from "../../components/HolodeckShowcase.astro";
 import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { sceneRuntimes } from "virtual:kiln-scenes";
@@ -45,7 +46,7 @@ const cards = [
 
 <BaseLayout
   title="Scenes · Kiln"
-  description="Scenes built from Kiln assets: Troy, the Farm, a Golden Gate Bridge driving and traffic demonstration and the Foundry Floor. Each loads only when you choose Explore."
+  description="Explore Meridian Sanctuary, Crescent Cove and Winter Mountainside Cabin on Holodeck, plus earlier Kiln scenes including Troy, Farm and Golden Gate."
   breadcrumbs={[{ label: "Scenes", href: "/scenes/" }]}
   card="scenes"
 >
@@ -55,6 +56,12 @@ const cards = [
       Scenes put individual assets into a place you can explore. They load only
       when you choose to open them.
     </p>
+    {PACKS_ENABLED && <>
+      <HolodeckShowcase id="featured-worlds" heading="Featured worlds" />
+      <HolodeckShowcase id="more-worlds" heading="More Holodeck worlds" remaining />
+    </>}
+    <h2 class="mt-16 border-t border-ink pt-8 text-subheading">Earlier scenes</h2>
+    <p class="mt-4 max-w-reading text-dim">Earlier demonstrations remain available to explore, with their source and asset packs.</p>
     {PACKS_ENABLED && <a href="/scenes/troy/" aria-label="Troy" class="no-underline text-ink mt-12 grid gap-8 border-t border-ink pt-8 lg:grid-cols-2"><ScenePoster images={troy.posters} sizes="(max-width: 1023px) 100vw, 50vw" decorative class="border border-rule" /><div><h2 class="font-semibold">Troy</h2><p class="mt-4 max-w-prose">{troy.description}</p><p class="mt-4 max-w-prose">Explore the city, watch the fleet land, or fight as either hero.</p><span class="text-link mt-6">Open the scene preview<span class="sr-only">: Troy</span></span></div></a>}
     {cards.map(({ scene, staged, unstaged }) => {
       const runtime = sceneRuntimes[scene.id];

@@ -477,13 +477,65 @@ glTF multiplies base colour by `COLOR_0`, and loaders enable vertex colours when
 is present, whether or not the authoring material set `vertexColors`. Remove a
 `color` attribute that is not meant to tint the surface.
 
+## Know what export welds
+
+Export welds only exactly equal vertices. With the default `indexPolicy: 'indexed'`,
+each primitive built without an index buffer gets one, and two corners merge only when
+every attribute (position, normal, UVs, colour, tangent, author attributes and morph
+data) is bitwise identical. Material optimization welds by the same rule. There is no
+distance tolerance, so corners a rounding error apart stay separate vertices: seams
+survive, and the file keeps every distinct corner you built.
+
+To weld on purpose, call `mergeVertices` before returning the geometry, or round
+coordinates you know should coincide so their corners become equal; both can shrink a
+baked or generated mesh noticeably. `indexPolicy: 'asBuilt'` on render calls (local
+hosts: `KILN_INDEX_POLICY=asBuilt`) keeps helper buffers as built and requires
+optimization off. The receipt's `indexBuffers` reports vertex, morph and index payload
+bytes before and after this pass, not GLB file size.
+
+## Derive a lower-detail tier
+
+`defineLod` declares tiers you build; it never generates one. To derive a lower tier
+from a part, call `simplifyGeometry` on that part's geometry and place the result in
+the tier:
+
+```js
+const rock = sphereGeo(1, 32, 16);
+const far = await simplifyGeometry(rock, { ratio: 0.25 }); // or { targetTriangles: 240 }
+createPart('RockNear', rock, stone, { parent: nearTier });
+createPart('RockFar', far, stone, { parent: farTier });
+defineLod([nearTier, farTier], { screenCoverage: [0.05, 0.002] });
+```
+
+It is async, uses the pinned meshoptimizer simplifier and returns new geometry; the
+input is unchanged. Surviving vertices keep their exact attribute values. Each
+material group is simplified on its own with its boundary vertices locked, vertices
+are welded only where every attribute matches so UV and normal seams hold, and open
+borders stay locked unless `lockBorder: false`. `maxError` (a fraction of the mesh
+extent, default 1, no practical limit) can stop it short of the target.
+`userData.kilnSimplify` records `trianglesBefore`, `trianglesAfter`, the achieved
+`ratio` and the simplifier's `error` and `errorAbsolute`; a result more than 5% above
+the target adds a `SIMPLIFY_TARGET_NOT_REACHED` build note. It never runs implicitly
+or to meet a budget. Flat-shaded or heavily seamed meshes simplify less; inspect the
+lower tier through its `levelsOfDetail` path.
+
 ## Declare a triangle budget
 
 `defineBudget({ triangles: { LOD0: 4000, LOD1: 900 }, draws: 3 })` records the asset's
 budget. Receipts measure the written GLB: tier n is level `min(n, last)` of every
-`MSFT_lod` chain plus everything outside the chains, and draws count LOD0. The result
+`MSFT_lod` chain plus everything outside the chains, and draws count LOD0 as stored,
+before batching: each child of a `repeatInstances` group is a draw. The LOD0 tier also
+reports `instancedDraws`, the count after the three runtime target batches those groups,
+for information only. Do not merge repeated parts by hand to meet a draws cap that the
+batched export would meet; raise the cap or note the difference instead. The result
 is `budget: { status, tiers }` in render results, `kiln_render` and CLI receipts. It
 is advisory; `kiln render --strict-budget` exits 1 when a tier fails.
+
+Material limits are declared the same way: `defineBudget({ images: 6 })`,
+`decodedBytes`, or `materialTier: 'web.portable.v1/hero'` for a reference tier's
+figures. They report in `budget.materials`. Without one, `materialAdvice` notes
+compare the textures with the `web.portable.v1/standard` reference tier; they are
+optional optimization advice, not a budget, so keep textures that carry the look.
 
 ## Joint discovery and resource counts
 

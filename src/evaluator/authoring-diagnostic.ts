@@ -27,6 +27,7 @@ export type AuthoringDiagnostic =
   | 'PARAMETRIC_PERIODIC_ENDPOINT'
   | 'PROFILE_HOLES_UNSUPPORTED'
   | 'PROFILE_BEVEL_COLLAPSE'
+  | 'PROFILE_SOLID_FAILED'
   | 'PROFILE_CORRESPONDENCE_COLLAPSE'
   | 'UNINITIALIZED_BINDING'
   | 'BUILD_RESULT'
@@ -64,6 +65,10 @@ export const PROFILE_HOLES_UNSUPPORTED_ADVICE =
   'loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.';
 export const PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE =
   'loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.';
+// Engine-owned and bounded: no outline, coordinate or library message crosses the sandbox,
+// so the hint names the inputs that make the profile solid path fail (#178).
+export const PROFILE_SOLID_FAILED_ADVICE =
+  'PROFILE_SOLID_FAILED: extrudeProfile or revolveProfile could not build a solid from this outline. Reduce bevel or set it to 0. Keep the outline one simple closed loop: no self-intersections, repeated points or zero-length edges, and no neck narrower than twice the bevel. Holes must lie inside the outline and leave material. For revolveProfile, keep points off the axis (x = 0) unless the solid should close there. Keep coordinates at asset scale. Render that helper call alone with kiln_render and simplify the outline until it builds. Call kiln_discover with ids ["extrudeProfile", "revolveProfile"].';
 export const UNINITIALIZED_BINDING_ADVICE =
   'A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.';
 export const BUILD_RESULT_ADVICE =
@@ -89,7 +94,7 @@ export const REQUIRE_SOLID_ADVICE =
  * bounding boxes and got the bare sentence, H30; decision 24).
  */
 export const EXECUTION_REJECTED_ADVICE =
-  'No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. Run kiln_validate (CLI: kiln validate <program.js|ref>) on the same source for the failing line and code; to read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable or build() mistake is named when it is the cause.';
+  'No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. kiln_validate (CLI: kiln validate <program.js|ref>) checks syntax and static source rules such as policy denials; it cannot see execution-time failures, such as geometry a helper rejects while build() runs. Reproduce those with kiln_render, simplifying or removing the failing part until the program renders. To read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable, build() mistake or profile solid failure is named when it is the cause.';
 export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | undefined): string {
   if (diagnostic === 'PORTABLE_MATERIAL_V3_CONTRACT')
     return 'compilePortableMaterialSpecV3 requires schemaVersion 3, model pbrMetallicRoughness, typed V3 procedural or injected resource references, and complete minFilter/magFilter/wrapS/wrapT samplers. Match texture usage to its slot and split work exceeding the material budget. Resource bindings need a host with verified-byte admission. V2 remains available unchanged. Shader code, paths, raw textures and V3 height derivation are unsupported. Read kiln_discover ids ["compilePortableMaterialSpecV3"] for the exact contract.';
@@ -151,6 +156,7 @@ export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | unde
   if (diagnostic === 'PROCEDURAL_TEXTURE_USAGE') return PROCEDURAL_TEXTURE_USAGE_ADVICE;
   if (diagnostic === 'MATERIAL_FRACTION_RANGE') return MATERIAL_FRACTION_RANGE_ADVICE;
   if (diagnostic === 'PROFILE_HOLES_UNSUPPORTED') return PROFILE_HOLES_UNSUPPORTED_ADVICE;
+  if (diagnostic === 'PROFILE_SOLID_FAILED') return PROFILE_SOLID_FAILED_ADVICE;
   if (diagnostic === 'PROFILE_CORRESPONDENCE_COLLAPSE')
     return PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE;
   return diagnostic === 'PARAMETRIC_PERIODIC_ENDPOINT' ? PARAMETRIC_PERIODIC_ENDPOINT_ADVICE : '';

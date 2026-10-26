@@ -20,27 +20,69 @@ do not require a separate model API key.
 [Interactive scenes](https://kilnstudio.tools/scenes/) ·
 [Changelog](CHANGELOG.md)
 
+## Made with Kiln
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <a href="https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/"><img src="assets/readme/meridian-sanctuary.webp" alt="A marble causeway between mirror pools leading to Meridian Sanctuary's gate tower"></a><br>
+      <a href="https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/"><strong>Meridian Sanctuary</strong></a>
+    </td>
+    <td width="50%" align="center">
+      <a href="https://holodeck.kilnstudio.tools/worlds/crescent-cove/"><img src="assets/readme/crescent-cove.webp" alt="The canopied Cove seat among palms overlooking Crescent Cove's lagoon"></a><br>
+      <a href="https://holodeck.kilnstudio.tools/worlds/crescent-cove/"><strong>Crescent Cove</strong></a>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <a href="https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/"><img src="assets/readme/winter-mountainside-cabin.webp" alt="The timber cabin with its glazed gable, deck and stair among snow-covered firs and spruces"></a><br>
+      <a href="https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/"><strong>Winter Mountainside Cabin</strong></a>
+    </td>
+    <td width="50%" align="center">
+      <a href="https://kilnstudio.tools/scenes/golden-gate/"><img src="assets/readme/golden-gate.webp" alt="A blue sedan driving across Golden Gate Bridge, with traffic, suspension cables and a red tower ahead"></a><br>
+      <a href="https://kilnstudio.tools/scenes/golden-gate/"><strong>Golden Gate</strong></a>
+    </td>
+  </tr>
+</table>
+
+Holodeck provides the runtime for Meridian Sanctuary, Crescent Cove and Winter
+Mountainside Cabin; Kiln provides their editable assets and GLBs. Golden Gate is
+one of the bundled interactive scenes.
+
+Editable assets: [Meridian (53)](https://kilnstudio.tools/packs/holodeck/meridian-sanctuary/) ·
+[Crescent Cove (49)](https://kilnstudio.tools/packs/holodeck/crescent-cove/) ·
+[Winter Cabin (56)](https://kilnstudio.tools/packs/holodeck/winter-mountainside-cabin/) ·
+[Golden Gate bridge](https://kilnstudio.tools/gallery/golden-gate-bridge/).
+
+[Explore all scenes](https://kilnstudio.tools/scenes/) or
+[browse the asset gallery](https://kilnstudio.tools/gallery/).
+Scene code and asset content retain their own licences; each pack records its scope.
+
+## From asset to scene
+
+One timber wall becomes part of a modular cabin kit. Assemble its floors, walls
+and roof, furnish the kitchen and living room, then build the staircase,
+sleeping loft, bed and desk.
+The finished Winter Mountainside Cabin sits in a snowy Holodeck world.
+
+[![A timber wall and cabin kit assembling, the kitchen and loft bed being furnished, then the finished snowy Holodeck world](site/public/workflow/winter-cabin/7f7f5f16317afd7d/workflow.gif)](https://kilnstudio.tools/#workflow)
+
+The assembly visualizes the saved Kiln modules; the final view is captured in
+Holodeck. Both use WebGPU rendering.
+
 ## Used in live games
 
-I build Sheepdog Sim, OBJEKT-62 and ski sim alongside Kiln, and use these games
+I build Sheepdog Sim, OBJEKT 62 and ski sim alongside Kiln, and use these games
 to test Kiln-authored assets in real gameplay.
 
-| Sheepdog Sim | OBJEKT-62 | ski sim |
+| Sheepdog Sim | OBJEKT 62 | ski sim |
 | --- | --- | --- |
 | [![The sheepdog facing a fenced pen, with the farmhouse, red barn and trees behind it](site/src/assets/live-games/sheepdog-sim.webp)](https://sheepdogsim.com/) | [![The survey rifle overlooking an outpost, with a monument on the distant horizon](site/src/assets/live-games/objekt62.webp)](https://objekt62.com/) | [![A skier grinding sideways beside a lit chalet, with pines, trail lights and a chairlift in the background](site/src/assets/live-games/ski-sim-village.webp)](https://skisim.app/) |
 
-**[Sheepdog Sim](https://sheepdogsim.com/)** uses Kiln-authored house, barn,
-fence and tree assets. The game is open source; [browse its repository](https://github.com/matthew-kissinger/sds)
-to see how the assets fit into a working game.
-
-**[OBJEKT-62](https://objekt62.com/)** uses Kiln for most of its 3D assets,
-including guns, ship parts, vehicles, outpost modules and salvage. The shot shows
-the survey rifle and outpost in the live game, with a monument in the background.
-
-**[ski sim](https://skisim.app/)** is a freestyle skiing game for desktop and phone
-browsers. It uses Kiln for its skier and outfit variants, pines, rocks, modular
-village buildings, trail lights, sign frames and terrain-park equipment. The shot
-is staged in-game on Village Bend.
+Sheepdog Sim's [source](https://github.com/matthew-kissinger/sds) shows how its
+Kiln-authored buildings, fencing and trees fit into a working game. OBJEKT 62 uses
+Kiln for weapons, vehicles and outpost modules; ski sim uses it for skiers,
+vegetation, village buildings and park equipment.
 
 ## Community and hosted access
 
@@ -51,40 +93,6 @@ allowance of 200 native requests per month. Ask in `#request-access` or message
 `matt_941`; individual Kiln codes are sent privately as capacity allows.
 Joining Discord does not automatically grant hosted access. Local Kiln remains
 free, open source and account-free.
-
-| Cabin in the Woods: the cabin and woodland | Inside the cabin |
-| --- | --- |
-| [![The cabin and woodland with a warm porch light](scenes/packages/cabin-woods-psx-horror/review-media/aerial.png)](scenes/packages/cabin-woods-psx-horror/README.md) | [![Furnished cabin interior and burning fireplace](scenes/packages/cabin-woods-psx-horror/review-media/interior.png)](scenes/packages/cabin-woods-psx-horror/README.md) |
-
-[Cabin in the Woods: PSX Horror](scenes/packages/cabin-woods-psx-horror/README.md)
-includes 53 editable assets and a playable cabin and woodland scene.
-
-| Troy: the city and fleet | Achilles and Hector at the gates |
-| --- | --- |
-| [![Troy's walled city, army formations and fleet along the coast](assets/readme/troy-coast.webp)](https://kilnstudio.tools/scenes/troy/) | [![Achilles and Hector outside Troy's gate, with army formations behind them](assets/readme/troy-city.webp)](https://kilnstudio.tools/scenes/troy/) |
-
-| Farm | Golden Gate |
-| --- | --- |
-| [![Explore the Farm scene](assets/readme/farm-v09.png)](https://kilnstudio.tools/scenes/farm/) | [![Golden Gate over the water](assets/readme/golden-gate-v09.png)](https://kilnstudio.tools/scenes/golden-gate/) |
-
-| Foundry Floor: the campus | Inside the fab |
-| --- | --- |
-| [![Foundry campus exterior](assets/readme/foundry-campus-v09.png)](https://kilnstudio.tools/scenes/foundry-floor/) | [![Container transport inside the Foundry Floor](assets/readme/foundry-floor-v09.png)](https://kilnstudio.tools/scenes/foundry-floor/) |
-
-Play [Troy](https://kilnstudio.tools/scenes/troy/), explore the
-[Farm](https://kilnstudio.tools/scenes/farm/), drive across
-[Golden Gate](https://kilnstudio.tools/scenes/golden-gate/), or walk the
-[Foundry Floor](https://kilnstudio.tools/scenes/foundry-floor/).
-The scenes combine Kiln assets with application code; their [source](scenes/README.md)
-and [asset packs](packs/README.md) are available separately.
-
-Six reusable vehicles, shown with the gallery's live body-paint controls:
-
-| Hatchback | Sedan | SUV |
-| --- | --- | --- |
-| [![Yellow hatchback](assets/readme/hatchback-yellow.png)](https://kilnstudio.tools/gallery/hatchback/) | [![Blue sedan](assets/readme/sedan-blue.png)](https://kilnstudio.tools/gallery/sedan/) | [![Green SUV](assets/readme/suv-green.png)](https://kilnstudio.tools/gallery/suv/) |
-| Pickup | Box truck | Transit bus |
-| [![Red pickup](assets/readme/pickup-red.png)](https://kilnstudio.tools/gallery/pickup/) | [![Silver box truck](assets/readme/box-truck-silver.png)](https://kilnstudio.tools/gallery/box-truck/) | [![Blue transit bus](assets/readme/transit-bus-blue.png)](https://kilnstudio.tools/gallery/transit-bus/) |
 
 ## Install
 
@@ -178,8 +186,11 @@ Read the [SDK guide](docs/sdk.md) for imports and host interfaces, and the
 [plugins](docs/install.md#local-claude-code-and-codex-plugins) use the same workspace
 setup. Other MCP clients can connect directly.
 
-[ChatGPT](docs/chatgpt.md) uses a separate remote-connection setup. A public hosted
-Kiln service and vendor directory listings are not available yet.
+[ChatGPT](docs/chatgpt.md) uses a separate remote-connection setup.
+[Hosted Kiln](https://kiln.instruktlabs.com/) is a remote MCP server at
+`https://kiln.instruktlabs.com/mcp`, open by invitation (see
+[Community and hosted access](#community-and-hosted-access)); it signs in through
+OAuth with Google or GitHub. Vendor directory listings are not available yet.
 
 ## Work on Kiln
 

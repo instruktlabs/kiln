@@ -29,6 +29,11 @@ pack with the same runtime and full Kiln revision download
 contracts. Its local staging inventory is separate from the published release
 inventory above. It is not yet available through the group hydration command below.
 
+[Holodeck scene packs](holodeck/README.md) hold every Kiln asset placed in the walkable
+Tidemark Island, Courtyard and Cove scenes, one pack per scene, with links to the scenes.
+They are staged separately with `site/scripts/stage-holodeck.mjs` and are not part of the
+group hydration command below.
+
 ## Restore one source group
 
 Create a separate Kiln asset workspace using the maintained setup skill before authoring.

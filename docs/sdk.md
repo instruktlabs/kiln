@@ -3,6 +3,9 @@
 This describes the v1 package contract. Examples use `@instruktlabs/kiln`; install
 a published version or a qualified local archive as described in the
 [installation guide](install.md). Use documentation matching the installed version.
+A workspace made by `kiln-init` has no `package.json`, so `import '@instruktlabs/kiln/render'`
+fails there until you install the package pinned to the Kiln runtime version you use; CLI/MCP
+authoring does not need it.
 
 ## Imports
 

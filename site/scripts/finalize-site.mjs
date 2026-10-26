@@ -3,6 +3,7 @@ import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ARCHIVE_INDEX_ROUTE, inspectHtml, isArchiveItemRoute, ORIGIN, routeForFile, scriptHashSource } from './static-validation-core.mjs';
 import {sealedTroyCache} from './sealed-cache.mjs';
+import { sitemapLastmod } from './sitemap-lastmod.mjs';
 
 const escapeXml = (text) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 const link = (page) => `- [${page.title.replace(/ · Archive · Kiln$| · Kiln docs$| · Kiln$| — Kiln$| — source and 3D model \| Kiln$| — Kiln Commons$/g, '')}](${new URL(page.route, ORIGIN).href}): ${page.description ?? ''}`;
@@ -22,8 +23,8 @@ export function buildHeaders(template, pages) {
   return text;
 }
 
-/** Derive discovery files from the pages that were actually emitted by Astro. */
-export function buildIndexFiles(pages) {
+/** Derive discovery files from the pages that were actually emitted by Astro. `lastmod(route)` dates each sitemap URL. */
+export function buildIndexFiles(pages, { lastmod } = {}) {
   // Archive item pages are excluded by route as well as by their noindex marker: the marker is the source of truth,
   // and validate-static fails a build in which an item lost it, but the discovery files never depend on that alone.
   const published = pages.filter((page) => !page.noindex && page.route !== '/404.html' && !isArchiveItemRoute(page.route)).sort((a, b) => a.route.localeCompare(b.route));
@@ -31,7 +32,10 @@ export function buildIndexFiles(pages) {
   const docs = published.filter((page) => page.route.startsWith('/docs/'));
   const catalog = published.filter((page) => /^\/(?:packs|gallery|scenes)\/(?:[^/]+\/)?$/.test(page.route) && page.route !== ARCHIVE_INDEX_ROUTE);
   const archive = published.find((page) => page.route === ARCHIVE_INDEX_ROUTE);
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${published.map((page) => `  <url><loc>${escapeXml(new URL(page.route, ORIGIN).href)}</loc></url>`).join('\n')}\n</urlset>\n`;
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${published.map((page) => {
+    const date = lastmod?.(page.route);
+    return `  <url><loc>${escapeXml(new URL(page.route, ORIGIN).href)}</loc>${date ? `<lastmod>${escapeXml(date)}</lastmod>` : ''}</url>`;
+  }).join('\n')}\n</urlset>\n`;
   // The owner's Search Console holds a submission of /sitemap-index.xml from the previous site (docs/site-indexing.md), so the path
   // keeps answering with an index of the one sitemap. It is generated with the sitemap, never a checked-in copy that could drift.
   const sitemapIndex = `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap><loc>${ORIGIN}/sitemap.xml</loc></sitemap>\n</sitemapindex>\n`;
@@ -70,7 +74,7 @@ export async function finalizeSite({ dist = resolve(dirname(fileURLToPath(import
     pages.push({ route: routeForFile(relative(dist, file)), ...inspectHtml(await readFile(file, 'utf8')) });
   }
   if (!pages.some((page) => page.route === '/')) throw new Error(`Astro home output missing in ${dist}; build the site before finalizing.`);
-  const { sitemap, sitemapIndex, robots, llms } = buildIndexFiles(pages);
+  const { sitemap, sitemapIndex, robots, llms } = buildIndexFiles(pages, { lastmod: sitemapLastmod() });
   const headerPath=resolve(dist,'_headers');
   const sealedCache=await sealedTroyCache(dist);
   const headers=buildHeaders(await readFile(headerPath,'utf8'),pages)+sealedCache.headers;

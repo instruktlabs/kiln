@@ -35,6 +35,21 @@ nodes appear as removed and added. The summary includes unchanged nodes, while
 the paged list includes changes only. Copy `nextOffset` into `compare.offset` to
 continue; null means there are no more entries.
 
+`comparison.counts` gives the drawn `triangles`, `vertices`, `drawCalls` and
+`materials` as `before`, `after` and `delta`, counted as render metrics count
+them; `boundsDelta` subtracts the before bounds from the after bounds.
+`geometryIdentical` compares the drawn world-space triangles as float32
+coordinates, sorted, so node, primitive, vertex and triangle order do not count
+but winding does: merging parts into fewer primitives without moving a vertex
+reads as identical even though the merged nodes appear as removed and added.
+`uvIdentical`, present only when the geometry is identical, adds `TEXCOORD_0` at
+each corner. There is no tolerance; normals, vertex colours, skin weights and
+morph targets are not part of the hash. A child save with
+`parentRevision` returns the same counts as `comparison.counts` with `parent`,
+`child` and `delta`, the drawn bounds sizes with their delta, and
+`geometryIdentical`; it never fails the save, and reports `unavailable` when the
+revisions cannot be counted. Per-node changes still need `kiln_inspect` compare.
+
 To check components an edit must preserve without paging through unrelated
 changes, add `compare.paths: [PROTECTED_ROOT_PATH]` (up to 12 distinct paths).
 `comparison.subtrees` always summarizes every node in each selected subtree,

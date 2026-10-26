@@ -65,6 +65,10 @@ transitive closure. Export a saved material with
 `node kiln.mjs material export MATERIAL_ID REVISION --out material.json` and
 import that complete payload with `material import --file material.json`;
 copying only the atlas PNG loses editable sources and named regions.
+For a destination that takes plain images, such as a terrain layer,
+`material export MATERIAL_ID REVISION --maps DIR --size 1024 --repeat 4` writes each map as a
+tiling PNG, a `.maps.json` sidecar (slot, colour space, size, repeat, `sha256`) and a tiled
+preview; read the preview's `viewFidelity` before judging the material from it.
 
 ## Create and revise a project when useful
 

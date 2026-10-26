@@ -7,6 +7,7 @@ import {
   type ProceduralMaterialDraftV2,
 } from './material-library';
 import type { MaterialDraftV1 } from './material-library-node';
+import { mulberry32 } from './seeded-random';
 import type { ProceduralLayer, ProceduralTextureSpecV2 } from './procedural-material-v2';
 
 const catalog = [
@@ -469,24 +470,12 @@ export function createMaterialPresetDraftAny(
   };
 }
 
-/** Deterministic 32-bit generator for preset geometry; never Math.random. */
-function presetRandom(seed: number) {
-  let state = seed >>> 0;
-  return () => {
-    state = (state + 0x6d2b79f5) >>> 0;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
 /**
  * V3 RGBA frond silhouette: a rachis up the image centre from the bottom edge, with paired
  * leaflets that shorten and narrow toward the tip. Everything else is fully transparent.
  */
 function frondCutout(size: number, seed: number) {
-  const random = presetRandom(seed);
+  const random = mulberry32(seed); // deterministic; never Math.random
   const unit = size / 64;
   const centre = Math.round(size / 2);
   const inside = (value: number) => Math.min(size - 2, Math.max(1, Math.round(value)));

@@ -16,6 +16,15 @@ describe('asset delivery', () => {
     const manifest = { ...current.manifest, build: { dependencies: [{ kind: 'kiln.material.v2', manifest: { materialId: 'original-map', revisionId: 'sha256:' + 'a'.repeat(64) } }] } };
     expect(() => revisionBundle({ ...current, manifest })).toThrow('Editable material closure unavailable');
   });
+  test('a revision archive carries its material closure exactly when its manifest uses saved materials', () => {
+    const current = record('r_current');
+    const material = { materialId: 'original-map', revisionId: 'sha256:' + 'a'.repeat(64) };
+    const manifest = { ...current.manifest, build: { dependencies: [{ kind: 'kiln.material.v2', manifest: material }] } };
+    const closure = (manifests: object[]) => ({ schemaVersion: 2, records: manifests.map((item) => ({ manifest: item, files: {} })) });
+    expect(verifyArchive(revisionBundle({ ...current, manifest, materialResources: closure([material]) }), 'editable').manifest).toEqual(manifest);
+    expect(() => verifyArchive(revisionBundle({ ...current, manifest, materialResources: closure([{ ...material, materialId: 'other-map' }]) }), 'editable')).toThrow('Material closure lacks original-map');
+    expect(() => verifyArchive(revisionBundle({ ...current, materialResources: closure([material]) }), 'editable')).toThrow('Unsealed archive member');
+  });
   test('includes actual ancestor records, declaring an unavailable parent without fabricating it', async () => {
     const records = new Map([['r_current', record('r_current', 'r_previous')], ['r_previous', record('r_previous', 'r_missing')]]);
     const result = await collectHistory({ collection: 'project', assetId: 'soldier', revisionId: 'r_current' }, async (pin: any) => records.get(pin.revisionId));

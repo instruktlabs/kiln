@@ -60,6 +60,18 @@ describe('kiln.listHelperSpecs', () => {
     expect(missing).toEqual([]);
   });
 
+  // #202: docs/programs.md names every sandbox global the catalog does not.
+  test('docs/programs.md lists every sandbox global outside the catalog', async () => {
+    const catalog = new Set(listHelperSpecs().map((p) => p.name));
+    const extra = Object.keys(buildSandboxGlobals())
+      .filter((name) => !catalog.has(name))
+      .sort();
+    expect(extra).toEqual(['Math', 'THREE', 'console']);
+    const doc = await Bun.file(new URL('../../docs/programs.md', import.meta.url)).text();
+    const section = doc.split('## Sandbox globals')[1]?.split('\n## ')[0] ?? '';
+    for (const name of extra) expect(section).toContain(`\`${name}\``);
+  });
+
   test('returned array is a defensive copy', () => {
     const a = listHelperSpecs();
     const b = listHelperSpecs();

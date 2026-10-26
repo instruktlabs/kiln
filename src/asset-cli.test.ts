@@ -221,7 +221,56 @@ test('CLI saves, exports, imports, and restores a revision across independent st
     ).delivery;
     expect(plainDelivery.compression).toEqual({ extension: 'none' });
     expect(plainDelivery.extensionsRequired).not.toContain('EXT_meshopt_compression');
+    // #196: --max-lod passes through to the sidecar, which records the choice.
+    const lod0Run = run('first', [
+      'export',
+      asset.assetId,
+      asset.revisionId,
+      '--out',
+      join(root, 'lod0.glb'),
+      '--profile',
+      'runtime',
+      '--target',
+      'three',
+      '--max-lod',
+      '0',
+      '--json',
+    ]);
+    expect(lod0Run.status, lod0Run.stderr).toBe(0);
+    expect(JSON.parse(lod0Run.stdout)).toMatchObject({ target: 'three', maxLod: 0 });
+    expect(
+      JSON.parse(await readFile(join(root, 'lod0.kiln-metadata.json'), 'utf8')).delivery.lod,
+    ).toMatchObject({ maxLod: 0, budgetTiersOmitted: [] });
+    // #197: --position-bits reaches the sidecar, which reports the grid step it produced.
+    const floatRun = run('first', [
+      'export',
+      asset.assetId,
+      asset.revisionId,
+      '--out',
+      join(root, 'float.glb'),
+      '--profile',
+      'runtime',
+      '--target',
+      'three',
+      '--position-bits',
+      'float',
+      '--json',
+    ]);
+    expect(floatRun.status, floatRun.stderr).toBe(0);
+    expect(JSON.parse(floatRun.stdout)).toMatchObject({ target: 'three', positionBits: 'float' });
+    expect(
+      JSON.parse(await readFile(join(root, 'float.kiln-metadata.json'), 'utf8')).delivery
+        .quantization,
+    ).toMatchObject({ bits: { position: 'float32' }, maxPositionStep: 0 });
     for (const flags of [
+      ['--profile', 'runtime', '--position-bits', '16'],
+      ['--profile', 'runtime', '--target', 'three', '--position-bits', '7'],
+      ['--profile', 'runtime', '--target', 'three', '--position-bits', '17'],
+      ['--profile', 'runtime', '--target', 'three', '--position-bits', 'half'],
+      ['--profile', 'runtime', '--max-lod', '0'],
+      ['--profile', 'runtime', '--target', 'three', '--max-lod', '-1'],
+      ['--profile', 'runtime', '--target', 'three', '--max-lod', '1.5'],
+      ['--profile', 'runtime', '--target', 'three', '--max-lod', 'all'],
       ['--profile', 'editable', '--target', 'three'],
       ['--profile', 'runtime', '--target', 'unity'],
       ['--profile', 'runtime', '--compression', 'none'],

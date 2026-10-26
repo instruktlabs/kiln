@@ -20,6 +20,10 @@ describe('which pages carry a 3D view of a GLB', () => {
     expect(isAssetPageRoute('/gallery/cabin-woods-psx-horror/')).toBe(false);
     expect(isAssetPageRoute('/gallery/cabin-woods-psx-horror/stone-golem/extra/')).toBe(false);
   });
+  test('Holodeck scene items participate without treating the Holodeck namespace as an asset', () => {
+    expect(isAssetPageRoute('/gallery/holodeck/plaza-fountain/')).toBe(true);
+    expect(isAssetPageRoute('/gallery/holodeck/')).toBe(false);
+  });
   test('a reviewed asset page and an archive item, and nothing else', () => {
     expect(isAssetPageRoute('/gallery/farmhouse/')).toBe(true);
     expect(isAssetPageRoute('/gallery/archive/robot-arm/')).toBe(true);

@@ -126,3 +126,73 @@ export function summarizeLodChains(doc: Document): LevelOfDetailChainV1[] {
     };
   });
 }
+
+/** What {@link trimLodChains} kept and dropped in one chain. */
+export interface TrimmedLodChain {
+  /** The chain's LOD0 path. */
+  path: string;
+  /** Levels left, LOD0 included. */
+  levels: number;
+  /** Names of the dropped levels, highest detail first. */
+  dropped: string[];
+}
+
+/**
+ * Keep LOD0..LOD`maxLod` of every chain in {@link listLodChainNodes} and delete the rest (#196).
+ * Thresholds are cut to the kept levels; a chain left with LOD0 alone loses `MSFT_lod` and its
+ * thresholds. Dropped subtrees are disposed; the caller prunes what they alone used. A dropped
+ * level that an animation targets is refused rather than leaving the clip a dangling channel.
+ */
+export function trimLodChains(doc: Document, maxLod: number): TrimmedLodChain[] {
+  const chains = listLodChainNodes(doc);
+  const doomed = new Set<GltfNode>();
+  for (const { levels } of chains)
+    for (const level of levels.slice(maxLod + 1))
+      level.traverse((node) => {
+        doomed.add(node);
+      });
+  for (const animation of doc.getRoot().listAnimations())
+    for (const channel of animation.listChannels()) {
+      const target = channel.getTargetNode();
+      if (target && doomed.has(target))
+        throw new Error(
+          `maxLod ${maxLod} would drop ${target.getName() || 'a node'}, which animation ${JSON.stringify(animation.getName())} targets; keep that level.`,
+        );
+    }
+  const trimmed = chains.map(({ levels, paths }) => {
+    const [base, ...lower] = levels as [GltfNode, ...GltfNode[]];
+    const dropped = lower.slice(maxLod);
+    if (dropped.length > 0) {
+      const lod = base.getExtension<Lod>(MSFT_LOD)!;
+      for (const level of dropped) lod.removeLevel(level);
+      const extras = { ...(base.getExtras() as Record<string, unknown>) };
+      const coverage = screenCoverageOf(base);
+      if (maxLod === 0) {
+        base.setExtension(MSFT_LOD, null);
+        lod.dispose();
+        delete extras[MSFT_SCREENCOVERAGE];
+      } else if (coverage) extras[MSFT_SCREENCOVERAGE] = coverage.slice(0, maxLod + 1);
+      base.setExtras(extras);
+      for (const level of dropped) {
+        const subtree: GltfNode[] = [];
+        level.traverse((node) => {
+          subtree.push(node);
+        });
+        for (const node of subtree.reverse()) node.dispose();
+      }
+    }
+    return {
+      path: paths[0]!,
+      levels: levels.length - dropped.length,
+      dropped: dropped.map((level) => level.getName()),
+    };
+  });
+  // With no chain left, the extension would still be declared as used.
+  const root = doc.getRoot();
+  if (!root.listNodes().some((node) => node.getExtension(MSFT_LOD)))
+    root
+      .listExtensionsUsed()
+      .find((extension) => extension.extensionName === MSFT_LOD)
+      ?.dispose();
+  return trimmed;
+}

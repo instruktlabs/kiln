@@ -1,0 +1,64 @@
+{
+  "images": [
+    {
+      "file": "meridian-sanctuary.webp",
+      "alt": "Arriving at Meridian Sanctuary: the causeway runs between mirror pools and cypresses toward the gate tower and its mirror orb.",
+      "world": "https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/",
+      "view": "meridian-sanctuary-arrival",
+      "inputPath": "media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival.png",
+      "inputSha256": "3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0",
+      "sha256": "df85d99367280e2fd96ddc1f77ab2fc88074fab0105989e7ddf6c3781b7214c1",
+      "width": 960,
+      "height": 540,
+      "framing": {
+        "fit": "cover",
+        "position": "centre"
+      }
+    },
+    {
+      "file": "crescent-cove.webp",
+      "alt": "The Cove on Crescent Cove: the canopied seat on a grassy rise among palms, with the lagoon beyond.",
+      "world": "https://holodeck.kilnstudio.tools/worlds/crescent-cove/",
+      "view": "crescent-cove-cove",
+      "inputPath": "media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove.png",
+      "inputSha256": "d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7",
+      "sha256": "18f101c8e69c45ce915eac28ac939ee97f1141b7bf7307ddc340c2e26fc88c9c",
+      "width": 960,
+      "height": 540,
+      "framing": {
+        "fit": "cover",
+        "position": "centre"
+      }
+    },
+    {
+      "file": "winter-mountainside-cabin.webp",
+      "alt": "The timber cabin with its glazed gable, deck and stair among snow-covered firs and spruces.",
+      "world": "https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/",
+      "view": "winter-mountainside-cabin-exterior",
+      "inputPath": "media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior.png",
+      "inputSha256": "ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd",
+      "sha256": "1deb821d1a9590f9e97db19c580fe325c49071df40a11293795202b62c55fdac",
+      "width": 960,
+      "height": 540,
+      "framing": {
+        "fit": "cover",
+        "position": "centre"
+      }
+    },
+    {
+      "file": "golden-gate.webp",
+      "alt": "A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic around it and both towers ahead.",
+      "world": "https://kilnstudio.tools/scenes/golden-gate/",
+      "view": "drive",
+      "inputPath": "media/scenes/golden-gate/g9-code5/golden-gate-scene-drive.png",
+      "inputSha256": "487793596f730d5424c1b25016fbc27408d6d2ab707c57343acbbc6a52b1bc56",
+      "sha256": "506c1d12e86d3333030db7affe525e408b7ac04ced80f08879234db0367e250e",
+      "width": 960,
+      "height": 540,
+      "framing": {
+        "fit": "cover",
+        "position": "south"
+      }
+    }
+  ]
+}

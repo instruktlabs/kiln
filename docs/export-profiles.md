@@ -227,6 +227,13 @@ What it does, in order:
    keeps its authored transform (its scale is the collider size).
 3. Vertices are reordered for compression, then quantized with `KHR_mesh_quantization`
    per mesh: position 14 bits, normal 10, texcoord 12, colour 8, weights 8.
+   Position bits divide each mesh's largest half-extent into `2^(bits-1) - 1` steps, so
+   14 bits on a 10 m mesh is a grid of about 0.61 mm: enough to close a modelled seam or
+   move a measured clearance. `positionBits` (CLI `--position-bits`) takes 8 to 16, or
+   `float` to keep positions as 32-bit floats while the other classes stay quantized.
+   The sidecar reports the step in metres for each mesh node (`positionSteps`) and the
+   largest (`maxPositionStep`); a vertex moves by at most half its step. Check it against
+   the smallest gap or clearance that matters before shipping.
    Underscore attributes such as `_EDGE` and `_CAVITY` are **not** quantized and stay
    FLOAT. Buffers are written with `EXT_meshopt_compression` (required) unless the
    caller passes `compression: 'none'` (CLI `--compression none`): then buffers stay plain,
@@ -237,18 +244,30 @@ What it does, in order:
    [KTX2 textures](#ktx2-textures).
 
 Roles and kit extras, hidden collider nodes (`KHR_node_visibility`), anchors, ports and
-`MSFT_lod` chains are kept. The sidecar `delivery` block states what a consumer needs:
+`MSFT_lod` chains are kept.
+
+A loader that never selects a level still downloads every lower one. `maxLod: n` (CLI
+`--max-lod n`) keeps LOD0 to LODn of each chain in the default scene and removes the
+rest, with the meshes, materials and textures only they used; `0` keeps LOD0 alone and
+removes `MSFT_lod`. Thresholds in `MSFT_screencoverage` are cut to the kept levels. When a
+chain loses levels, budget tiers above `n` leave the shipped `kilnBudgetV1` declaration,
+since they would otherwise be measured against fewer levels; the sidecar lists them as
+`budgetTiersOmitted`. A dropped level that an animation targets is refused. Kiln still
+does not select a level at runtime.
+
+The sidecar `delivery` block states what a consumer needs:
 
 | Field | Meaning |
 | --- | --- |
 | `extensionsUsed`, `extensionsRequired` | The derived GLB's extension sets |
 | `compression` | `{ extension: 'EXT_meshopt_compression', method: 'quantize' }`, or `{ extension: 'none' }` |
-| `quantization` | Bits per attribute class; `customAttributes: 'float32'` |
+| `quantization` | Bits per attribute class (`position` is `'float32'` when unquantized); `customAttributes: 'float32'`; `positionSteps: [{ node, mesh, step }]` in metres (skinned meshes in mesh units) and `maxPositionStep` |
 | `nodeScale` | Every node whose matrix now carries a dequantization `{ scale, offset }`, its `localScale`, and whether the mesh moved to a child (`meshMovedToChild`, `authoredNode`) |
 | `colliderProxies` | Collider node and proxy child paths |
 | `customAttributes` | Each underscore attribute, its mesh count, `FLOAT`, not normalized |
 | `instancing` | Each batch node, its mesh, count and instance names in order |
 | `ktx2` | `encoded` or `skipped` with the texture count and reason; `encoder` (name, version, Basis WebAssembly hash and every setting) when the encoder declared it |
+| `lod` | With `maxLod` only: `{ maxLod, chains: [{ path, levels, dropped }], budgetTiersOmitted }`, where `levels` counts the kept levels and `dropped` names the removed ones |
 | `preserved` | Counts of LOD chains, hidden nodes, colliders, anchors, ports and kit modules |
 
 Quantization stores positions as normalized integers and moves the metre scale onto

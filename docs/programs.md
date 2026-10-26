@@ -44,6 +44,30 @@ exactly one of `code` or `programRef`.
 Search returns surrounding source. A missing match returns `found: false` and empty
 code. Read enough context to understand dependencies before editing.
 
+## Sandbox globals
+
+A program is a script, not a module. It defines `const meta = { name }`, a
+`function build()` (or `async function build()`) that returns the root from
+`createRoot`, and optionally `animate(root)`, which returns an array of clips. It runs
+in strict mode with these globals and nothing to import:
+
+- Every Kiln helper in the [Discovery](tools.md) catalog, such as `createRoot`,
+  `createPart`, `boxGeo`, `gameMaterial` and `defineBudget`. Use `kiln discover` or
+  `kiln_discover` for the complete list and each helper's contract.
+- `THREE`, the three.js namespace, for direct geometry and maths. `DataTexture`,
+  `ShaderMaterial` and `RawShaderMaterial` are refused; use the material and texture
+  helpers. The namespace cannot be aliased or read with computed keys.
+- `Math`, and `console` for diagnostics, which the host captures.
+- Standard JavaScript built-ins such as `Array`, `Object`, `JSON`, `Map`, `Set` and
+  `Promise`.
+
+Host capabilities are refused before the program runs: `import`, `export` and dynamic
+`import()`, `eval`, `Function` and constructor chains, `globalThis`, `global`,
+`process`, `require`, `module`, `Reflect`, `fetch`, `XMLHttpRequest`, `WebSocket`, the
+browser globals (`window`, `self`, `document`, `navigator`, `location`), `Bun` and
+`Deno`, and `this` outside a method. This is a safety net, not process isolation.
+`kiln validate` reports the first refused use with its line.
+
 ## Files and persistence
 
 From a generated workspace, import and export without model transcription:
@@ -116,9 +140,11 @@ These support the design; they do not prove one interface is best for every mode
 
 Source references avoid sending the program again. Build caching separately avoids
 running unchanged source again. The public tool registry reuses successful builds
-when the source, evaluator identity and evaluation options match. Packaged Node
-CLI/MCP runs can reuse builds on disk when the runtime bundle and installed dependency
-files have a verifiable identity. Source-development runs use a process-local cache.
+when the source, evaluator identity and evaluation options match. Source that reads
+`Math.random`, `Date` or other ambient inputs is never reused; draw from the
+`seededRandom(seed)` sandbox global instead, whose `fork(label)` streams let a variant
+replay a parent's draws. Packaged Node CLI/MCP runs can reuse builds on disk when
+the runtime bundle and installed dependency files have a verifiable identity. Source-development runs use a process-local cache.
 
 Camera changes can reuse geometry, but each image also depends on its renderer,
 camera and capture settings. A source reference alone never identifies a rendered

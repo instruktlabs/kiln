@@ -63,6 +63,13 @@ Collapsing an entire parameter row or column to one tip leaves degenerate grid t
 
 For authored topology, `meshGeo({ positions, indices, normals?, uvs?, tangents? })` uses flat numeric arrays. Triangle winding is counterclockwise. An open sheet is valid geometry; do not label it a watertight solid.
 
+For a custom closed tube, check the ring basis against the side and cap index order.
+Test a simple straight segment with normal back-face culling: side face normals must
+point away from its centreline and cap normals away from its ends. A closed test
+segment should have positive signed volume and oppositely directed shared edges.
+Reverse side and cap winding together before computing normals; changing normals
+alone or making bark double-sided hides an inward-wound tube instead of repairing it.
+
 Mirrored vertices alone do not establish a symmetric curved surface. The same
 diagonal through warped quads on both sides can produce different surfaces between
 vertices. Mirror the topology with corrected winding, or use symmetric patch
@@ -430,6 +437,11 @@ const tiers = [0, 1, 2].map((lod) => {
 defineLod(tiers, { screenCoverage: [coverage(2.5, 60), coverage(2.5, 250), coverage(2.5, 1500)] });
 ```
 
+To derive a lower tier from a finished part instead, call
+`await simplifyGeometry(geometry, { ratio: 0.25 })` per part and place the result in
+the tier. It returns new geometry, keeps groups, seams and open borders, and records
+the achieved ratio and error on `userData.kilnSimplify`; it never runs on its own.
+
 `screenCoverage[i]` is the smallest fraction of the screen, 0 to 1, at which level
 `i` still draws; the values strictly decrease, the set is culled below the last
 one, and a last value of 0 never culls. Compute each set's values from the bounding
@@ -477,6 +489,9 @@ requireSolid(frame);
 - Place ports inside the module footprint. One module per asset.
 - Bake after every occluding part is attached. `_edge` is 1 on rims and chamfers,
   `_cavity` is 1 when exposed; both are 0..1 floats.
+- A `draws` cap counts each child of a `repeatInstances` group; the LOD0 tier's
+  `instancedDraws` shows the count after the three.js export batches them. Do not merge
+  repeated parts by hand only to meet the cap.
 - Budgets and palettes are advisory. `requireSolid` fails the build unless the part
   is closed, manifold and outward; build it from solid helpers (`boxGeo`,
   `extrudeProfile`, `revolveProfile`, `roundedBoxGeo`) rather than open sheets.
@@ -547,6 +562,8 @@ For textures, preserve valid primitive UVs. Use `copyGeometry` before independen
 buffer edits, `remapUV` to scale/offset UVs, and `projectUV` for explicit planar,
 box or cylindrical mapping in a geometry-local frame. Fetch its exact Discovery
 contract for rotated frames, partial angular ranges, caps and seam sampling.
+`extrudeProfile`, `revolveProfile` and `roundedBoxGeo` output no UV0, so a
+texture-backed material on them is blocked until `projectUV` or `autoUnwrap` adds it.
 `autoUnwrap` is the separate atlas operation. Removed shape unwrap names do not
 select a preservation or projection fallback.
 

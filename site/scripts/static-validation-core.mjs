@@ -176,8 +176,8 @@ const EXTERIOR = /\b(campus|landscape|exterior|outdoors?|roads?|parking)\b/i;
 const PLACEMENT = /\b(?:places|arranged from) (\d+) of the (?:pack’s )?(\d+)\b/g;
 
 /**
- * Foundry Floor (D-33): its pack and scene pages are unindexed (the scene page also unfollowed),
- * out of the sitemap, and carry the owner's no-affiliation line word for word. The makers that line names
+ * Foundry Floor (D-33; S-2 as changed by owner decision D-77, 2026-10-26): its pack and scene pages are indexed (no
+ * noindex or nofollow), are in the sitemap, and carry the owner's no-affiliation line word for word. The makers that line names
  * appear nowhere else on them; the scene page makes no device claims; neither implies an exterior. Given the pack
  * record's `placement` ({ assetCount, placedInScene, packPage }), each page states how many models the scene places,
  * with the record's numbers, and the scene page says how many of the rest are in the pack but not placed. `packPage:
@@ -190,15 +190,10 @@ export function foundryFloorErrors({ pages, sitemapUrls, placement = null, hasCa
     const add = (message) => errors.push({ page: route, message });
     const page = pages.get(route);
     if (!page) { add('The Foundry Floor page was not emitted'); continue; }
-    // Exactly these values (S-2 as corrected; content review finding 4): the pack page "noindex, follow", the scene
-    // page "noindex, nofollow".
-    const wanted = directives(page.robots);
-    const expected = scene ? 'noindex, nofollow' : 'noindex, follow';
-    if (!wanted.has('noindex')) add('The Foundry Floor page must be noindex');
-    else if (scene && !wanted.has('nofollow')) add(`The Foundry Floor scene page must be "noindex, nofollow", got ${JSON.stringify(page.robots)}`);
-    else if (page.robots !== expected) add(`The Foundry Floor ${scene ? 'scene' : 'pack'} page must be "${expected}", got ${JSON.stringify(page.robots)}`);
+    // S-2 as changed by the owner (D-77, 2026-10-26, Matthew): both pages are indexed and listed in the sitemap.
+    if (page.noindex || directives(page.robots).has('nofollow')) add(`The Foundry Floor ${scene ? 'scene' : 'pack'} page must be indexed, got ${JSON.stringify(page.robots)}`);
     if (!page.html.includes(foundryFloor.notice)) add('The Foundry Floor page must carry the no-affiliation line word for word');
-    if (inSitemap.has(new URL(route, ORIGIN).href)) add('The Foundry Floor page is in the sitemap');
+    if (!inSitemap.has(new URL(route, ORIGIN).href)) add('The Foundry Floor page is absent from the sitemap');
     const text = visibleText(page.html).split(foundryFloor.notice).join(' ');
     const maker = NOTICE_MAKERS.exec(text);
     if (maker) add(`A maker named in the no-affiliation line appears outside it: ${maker[1]}`);
@@ -336,6 +331,12 @@ export function parseHeaderRules(text) {
     const line = raw.trim();
     if (!line || line.startsWith('#')) continue;
     if (line.startsWith('/')) rules.push({ path: line, set: {}, unset: [] });
+    // An absolute rule names its host too, as Pages allows ("https://" only, no port); `:name` matches one host label.
+    else if (line.startsWith('https://')) {
+      const url = /^https:\/\/([^/]+)(\/.*)$/.exec(line);
+      if (!url || /:\d*$/.test(url[1])) throw new Error(`_headers: an absolute rule needs an https host without a port and a path: ${line}`);
+      rules.push({ host: url[1], path: url[2], set: {}, unset: [] });
+    }
     else if (!rules.length) throw new Error(`_headers: a header before any path: ${line}`);
     else if (line.startsWith('! ')) rules.at(-1).unset.push(line.slice(2).trim().toLowerCase());
     else {
@@ -353,11 +354,24 @@ const headerRuleRegExp = (path) => {
   return new RegExp(`^${pattern.replace(/:([A-Za-z]\w*)/g, '(?<$1>[^/]+)')}$`);
 };
 
-/** The headers served for a path: matching rules in order; `!` removes, a name set twice is joined with a comma. */
-export function headersFor(rules, pathname) {
+/** A rule host as the host matches it: `:name` is one label, since a host placeholder ends at a period. */
+const headerHostRegExp = (host) => {
+  const labels = host.split('.').map((label) => (/^:[A-Za-z]\w*$/.test(label) ? '[^.]+' : label.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')));
+  return new RegExp(`^${labels.join('\\.')}$`, 'i');
+};
+
+/** The Pages project's own hosts, which must stay unindexed: its production alias and a deployment and a branch alias. */
+export const PAGES_DEV_HOSTS = ['kilnstudio.pages.dev', '0123abcd.kilnstudio.pages.dev', 'production.kilnstudio.pages.dev'];
+
+/**
+ * The headers served for a path on `host` (the production host unless named): matching rules in order; `!` removes, a
+ * name set twice is joined with a comma. Path rules apply on every host; an absolute rule only on the hosts it names.
+ */
+export function headersFor(rules, pathname, host = new URL(ORIGIN).host) {
   const headers = new Map();
   const seen = new Set();
   for (const rule of rules) {
+    if (rule.host && !headerHostRegExp(rule.host).test(host)) continue;
     if (!headerRuleRegExp(rule.path).test(pathname)) continue;
     for (const name of rule.unset) headers.delete(name);
     for (const [name, value] of Object.entries(rule.set)) {
@@ -398,6 +412,13 @@ export function headersErrors({ text, inlineScripts = [], files = [], sealedFile
   if (page['content-security-policy']) errors.push('The content security policy is enforced; it stays report-only until the owner decides');
   const policy = page['content-security-policy-report-only'];
   if (!policy) errors.push('Pages carry no Content-Security-Policy-Report-Only');
+  // The Pages project also answers on its pages.dev hosts with the same bytes; only the production host is indexed.
+  if (/noindex/i.test(page['x-robots-tag'] ?? '')) errors.push(`The production host ${new URL(ORIGIN).host} must not be served X-Robots-Tag: noindex`);
+  for (const host of PAGES_DEV_HOSTS) {
+    for (const path of ['/', '/docs/', '/robots.txt']) {
+      if (!/noindex/i.test(headersFor(rules, path, host)['x-robots-tag'] ?? '')) errors.push(`https://${host}${path} must be served X-Robots-Tag: noindex`);
+    }
+  }
   const cache = page['cache-control'] ?? '';
   const maxAge = Number(cache.match(/max-age=(\d+)/)?.[1] ?? Number.NaN);
   if (!(maxAge <= 300) || /immutable/.test(cache)) errors.push(`HTML must be cached briefly and revalidated, got Cache-Control ${JSON.stringify(cache || null)}`);
@@ -414,6 +435,47 @@ export function headersErrors({ text, inlineScripts = [], files = [], sealedFile
     const immutable = /immutable/.test(cacheControl);
     if (immutable && !HASHED_NAME.test(file) && !ASTRO_TRANSFORMED_IMAGE.test(file) && !sealed.has(file)) errors.push(`/${file} is cached as immutable but its name carries no content hash`);
     if (!immutable && file.startsWith('_astro/')) errors.push(`/${file} is a hashed build file but is not cached as immutable`);
+  }
+  return errors;
+}
+
+/**
+ * The rules of `_redirects` (Cloudflare Pages): `FROM TO STATUS` per line, `#` comments. This site uses them only to
+ * move a retired release directory to its successor, so each rule must be `/a/old/* /a/new/:splat 301`.
+ */
+export function parseRedirectRules(text) {
+  const rules = [];
+  for (const raw of text.split('\n')) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const [from, to, status, ...rest] = line.split(/\s+/);
+    if (!to || rest.length) throw new Error(`_redirects: expected "FROM TO STATUS": ${line}`);
+    rules.push({ from, to, status: Number(status ?? 302) });
+  }
+  return rules;
+}
+
+/**
+ * Every redirect is a permanent splat move between two directories, its target directory has files in the build, no
+ * built file sits under a source directory (a rule would hide it or be dead), and no target is itself redirected.
+ * `targets: false` skips the target check for the reduced build (KILN_SITE_PACKS=0), which carries no scene packs.
+ */
+export function redirectsErrors({ text, files = [], targets = true }) {
+  let rules;
+  try { rules = parseRedirectRules(text); } catch (error) { return [error.message]; }
+  const errors = [];
+  const directory = (path, suffix) => path.startsWith('/') && path.endsWith(suffix) && !path.slice(0, -suffix.length).includes('*') ? path.slice(1, -suffix.length + 1) : null;
+  const sources = rules.map((rule) => directory(rule.from, '/*'));
+  for (const [index, rule] of rules.entries()) {
+    const from = sources[index];
+    const to = directory(rule.to, '/:splat');
+    if (!from || !to) { errors.push(`${rule.from} -> ${rule.to}: expected "/dir/* /other-dir/:splat"`); continue; }
+    if (rule.status !== 301) errors.push(`${rule.from}: status must be 301, got ${rule.status}`);
+    if (sources.indexOf(from) !== index) errors.push(`${rule.from} is redirected twice`);
+    if (sources.includes(to)) errors.push(`${rule.to} is itself redirected; point ${rule.from} at the final directory`);
+    const shadowed = files.filter((file) => file.startsWith(from));
+    if (shadowed.length) errors.push(`${rule.from} covers ${shadowed.length} built files (first /${shadowed[0]})`);
+    if (targets && !files.some((file) => file.startsWith(to))) errors.push(`${rule.to}: no built file under /${to}`);
   }
   return errors;
 }

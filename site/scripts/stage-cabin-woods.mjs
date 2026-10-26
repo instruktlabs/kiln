@@ -19,14 +19,14 @@ function text(bytes, name) {
   if (OLD_TITLE.test(bytes.toString('utf8'))) throw new Error(`Private legacy title in ${name}`);
   return bytes;
 }
-function glb(bytes) {
+export function glb(bytes) {
   if (bytes.length < 20 || bytes.toString('ascii', 0, 4) !== 'glTF' || bytes.readUInt32LE(4) !== 2 || bytes.readUInt32LE(8) !== bytes.length || bytes.toString('ascii', 16, 20) !== 'JSON') throw new Error('Invalid canonical/runtime GLB');
   const length = bytes.readUInt32LE(12);
   if (length > 16 * 1024 * 1024 || length + 20 > bytes.length) throw new Error('Invalid GLB JSON budget');
   const document = json(text(bytes.subarray(20, 20 + length), 'GLB JSON'));
   return { document, binary: bytes.subarray(20 + length) };
 }
-function verifyRuntimeProfile(canonical, runtime, metadata, slug) {
+export function verifyRuntimeProfile(canonical, runtime, metadata, slug) {
   const authored = glb(canonical), delivered = glb(runtime);
   if (!authored.binary.equals(delivered.binary)) throw new Error('Runtime GLB binary differs from selected canonical');
   const provenance = delivered.document.asset?.extras?.kilnProvenanceV1;
@@ -37,7 +37,7 @@ function verifyRuntimeProfile(canonical, runtime, metadata, slug) {
   if (!Object.hasOwn(authored.document.asset, 'extras') && !Object.keys(delivered.document.asset.extras).length) delete delivered.document.asset.extras;
   if (!isDeepStrictEqual(authored.document, delivered.document)) throw new Error(`Runtime GLB semantics differ from selected canonical: ${slug}`);
 }
-function metricsOf(bytes, manifest) {
+export function metricsOf(bytes, manifest) {
   const { document: d } = glb(bytes), queue = [...(d.scenes?.[d.scene ?? 0]?.nodes ?? [])], seen = new Set(), materials = new Set();
   let triangles = 0, meshes = 0;
   const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
@@ -63,13 +63,13 @@ function metricsOf(bytes, manifest) {
   if (![...bounds.min, ...bounds.max, ...bounds.size].every(Number.isFinite)) throw new Error('Missing finite saved bounds');
   return { triangles, meshes, materials: materials.size, bounds: bounds.size, boundsMin: bounds.min, boundsMax: bounds.max, clips: (d.animations ?? []).map(a => a.name ?? '(unnamed)'), extensions: [...(d.extensionsUsed ?? [])].sort() };
 }
-function imageOf(bytes) {
+export function imageOf(bytes) {
   if (!bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) || bytes.length < 24) throw new Error('Saved preview is not PNG');
   const width = bytes.readUInt32BE(16), height = bytes.readUInt32BE(20);
   if (!width || !height || width * height > 16 * 1024 * 1024) throw new Error('Saved preview exceeds image budget');
   return { width, height };
 }
-function materialClosure(payload, roots) {
+export function materialClosure(payload, roots) {
   if (![1, 2].includes(payload.schemaVersion) || !Array.isArray(payload.records) || payload.records.length > 1024) throw new Error('Invalid material payload');
   const records = new Map();
   for (const record of payload.records) {

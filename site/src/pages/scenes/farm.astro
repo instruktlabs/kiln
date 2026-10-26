@@ -5,8 +5,7 @@ import SceneShell from "../../components/SceneShell.astro";
 import { farmScene } from "../../data/scenes";
 import { FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
 import { PACKS_ENABLED } from "../../lib/config";
-// The Farm preview stays out of search results and the sitemap whatever
-// farm.scene.available says; qualification, not this flag, decides when that changes.
+// Owner decision (2026-10-26, Matthew; scenes/DECISIONS.md D-77): the Farm scene page is indexed and in the sitemap.
 ---
 
 <BaseLayout
@@ -14,8 +13,6 @@ import { PACKS_ENABLED } from "../../lib/config";
   description={sceneRuntimes.farm
     ? "Explore the Farm: third-person walking, tractor driving and touch controls, or download the runnable scene."
     : "The Farm scene's controls, device notes and runnable scene download."}
-  noindex
-  nofollow
   breadcrumbs={[
     { label: "Scenes", href: "/scenes/" },
     { label: `${farmScene.name} scene`, href: "/scenes/farm/" },

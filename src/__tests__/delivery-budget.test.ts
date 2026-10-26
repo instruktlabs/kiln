@@ -16,6 +16,10 @@ import { AuthoringDiagnosticError } from '../evaluator/authoring-diagnostic';
 import { buildSandboxGlobals } from '../primitives';
 import { renderGLBInProcess } from '../render';
 import { createKilnProgramToolRegistry } from '../tools/registry';
+import { MeshoptDecoder } from 'meshoptimizer';
+import { deliverThreeRuntimeGlb } from '../asset-export';
+import { createGltfIO } from '../gltf-io';
+import { collectGlbMetrics } from '../metrics';
 
 const tiered = (budget: string) => `const meta={name:'Budgeted'};
 function build(){
@@ -68,7 +72,7 @@ describe('defineBudget', () => {
       {
         tier: 'LOD0',
         declared: { triangles: 400, draws: 2 },
-        measured: { triangles: 364, draws: 2 },
+        measured: { triangles: 364, draws: 2, instancedDraws: 2 },
         status: 'pass',
       },
       { tier: 'LOD1', declared: { triangles: 20 }, measured: { triangles: 24 }, status: 'fail' },
@@ -93,6 +97,40 @@ describe('defineBudget', () => {
   test('an undeclared budget is absent from the manifest', async () => {
     const result = await renderGLBInProcess(tiered(''));
     expect(result.integrationManifest.budget).toBeUndefined();
+  });
+
+  // #200: draws caps unbatched LOD0 draws; the receipt adds what the three runtime
+  // target would draw after batching each repeatInstances group, without judging it.
+  test('draws counts unbatched draws and reports the instanced estimate beside them', async () => {
+    const program = `const meta={name:'Stool'};
+function build(){
+  const root=createRoot('Root');
+  const wood=gameMaterial('#8a6a4a');
+  createPart('Seat',cylinderGeo(0.2,0.2,0.04,16),wood,{parent:root,position:[0,0.45,0]});
+  const legs=new THREE.Group(); legs.name='Legs'; root.add(legs);
+  const leg=boxGeo(0.03,0.43,0.03);
+  for(let i=0;i<4;i++) createPart('Leg_'+i,leg,wood,{parent:legs,position:[i<2?-0.12:0.12,0.215,i%2?-0.12:0.12]});
+  repeatInstances(legs);
+  defineBudget({ triangles: 1000, draws: 2 });
+  return root;
+}`;
+    const result = await renderGLBInProcess(program);
+    const lod0 = result.integrationManifest.budget!.tiers[0]!;
+    expect(lod0.declared.draws).toBe(2);
+    // Seat plus four legs: the cap is judged on these five unbatched draws.
+    expect(lod0.measured.draws).toBe(5);
+    expect(lod0.status).toBe('fail');
+    expect(lod0.measured.instancedDraws).toBe(2);
+    // The estimate is what the three runtime target actually draws.
+    const runtime = await deliverThreeRuntimeGlb(result.glb);
+    const doc = await createGltfIO()
+      .registerDependencies({ 'meshopt.decoder': MeshoptDecoder })
+      .readBinary(runtime.glb);
+    expect(collectGlbMetrics(doc).drawCalls).toBe(lod0.measured.instancedDraws!);
+    // Without batching the estimate equals the measured draws.
+    const plain = await renderGLBInProcess(program.replace('repeatInstances(legs);', ''));
+    const plainLod0 = plain.integrationManifest.budget!.tiers[0]!;
+    expect(plainLod0.measured).toMatchObject({ draws: 5, instancedDraws: 5 });
   });
 });
 

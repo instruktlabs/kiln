@@ -55,6 +55,10 @@ ${SAVE_LINES}
                           instancing; sidecar states node scales; KTX2 skipped unless --ktx2
        [--compression meshopt|none]   with --target three: none writes plain buffers
                           for loaders without a Meshopt decoder (default meshopt)
+       [--max-lod N]   with --target three: keep LOD0..LODN of each MSFT_lod chain and
+                          drop the rest (0 keeps LOD0 only); the sidecar lists what was dropped
+       [--position-bits 8..16|float]   with --target three: position quantization bits
+                          (default 14) or float positions; the sidecar reports the grid step
        [--ktx2]   with --target three: KTX2 through the optional ktx2-encoder@0.6.0 peer
                           (npm install ktx2-encoder@0.6.0), ETC1S colour, UASTC data maps
        [--textures manifest]   runtime only: the sidecar names each image's exact bytes
@@ -99,6 +103,8 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     'profile',
     'target',
     'compression',
+    'max-lod',
+    'position-bits',
     'textures',
     'port',
     'render',
@@ -397,6 +403,23 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
         throw new Error('--compression must be meshopt or none');
       if (compression !== undefined && target !== 'three')
         throw new Error('--compression requires --target three');
+      const maxLodFlag = flags['max-lod'];
+      if (maxLodFlag !== undefined && !/^\d+$/.test(maxLodFlag))
+        throw new Error('--max-lod must be a non-negative integer, such as 0 for LOD0 only');
+      if (maxLodFlag !== undefined && target !== 'three')
+        throw new Error('--max-lod requires --target three');
+      const maxLod = maxLodFlag === undefined ? undefined : Number(maxLodFlag);
+      const bitsFlag = flags['position-bits'];
+      if (
+        bitsFlag !== undefined &&
+        bitsFlag !== 'float' &&
+        !(/^\d+$/.test(bitsFlag) && Number(bitsFlag) >= 8 && Number(bitsFlag) <= 16)
+      )
+        throw new Error('--position-bits must be an integer from 8 to 16, or float');
+      if (bitsFlag !== undefined && target !== 'three')
+        throw new Error('--position-bits requires --target three');
+      const positionBits =
+        bitsFlag === undefined || bitsFlag === 'float' ? bitsFlag : Number(bitsFlag);
       const textures = flags.textures;
       if (textures !== undefined && textures !== 'manifest' && textures !== 'external')
         throw new Error('Unknown --textures value; use manifest or external');
@@ -434,6 +457,8 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
           metadataFileName,
           ...(target ? { target } : {}),
           ...(compression ? { compression } : {}),
+          ...(maxLod !== undefined ? { maxLod } : {}),
+          ...(positionBits !== undefined ? { positionBits } : {}),
           ...(textures ? { textures } : {}),
           ...(gltfLayout ? { gltfFileName: basename(destination) } : {}),
           ...(flags.ktx2 ? { ktx2Encoder: await createKtx2Encoder() } : {}),
@@ -504,6 +529,8 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
               profile,
               ...(target ? { target } : {}),
               ...(compression ? { compression } : {}),
+              ...(maxLod !== undefined ? { maxLod } : {}),
+              ...(positionBits !== undefined ? { positionBits } : {}),
               format,
               ...(ktx2Receipt ? { ktx2: ktx2Receipt } : {}),
               ...(format !== 'source'

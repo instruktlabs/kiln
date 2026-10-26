@@ -4,11 +4,12 @@ import { fileURLToPath } from 'node:url';
 import { HtmlValidate } from 'html-validate';
 import sharp from 'sharp';
 import { engineNoteErrors, isAssetPageRoute, readGlbFacts } from './engine-note.mjs';
-import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, DESCRIPTION_WARNING_LENGTH, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, isArchiveItemRoute, isEmbeddedDocument, isSceneSourceDocument, ORIGIN, parseHeaderRules, resolveInternalLink, retiredNameErrors, routeForFile, scriptHashSource, socialMetadataErrors } from './static-validation-core.mjs';
+import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, DESCRIPTION_WARNING_LENGTH, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, isArchiveItemRoute, isEmbeddedDocument, isSceneSourceDocument, ORIGIN, parseHeaderRules, parseRedirectRules, redirectsErrors, resolveInternalLink, retiredNameErrors, routeForFile, scriptHashSource, socialMetadataErrors } from './static-validation-core.mjs';
 import {sealedTroyCache} from './sealed-cache.mjs';
 import {viewerModelInput} from './viewer-model-input.mjs';
 import { glbJsonText } from './private-data.mjs';
 import {validatePublicText} from './validate-public-text.mjs';
+import { sitemapLastmodErrors } from './sitemap-routes.mjs';
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -130,6 +131,7 @@ let sitemapUrls = [];
 try {
   const sitemap = await readFile(resolve(root, 'sitemap.xml'), 'utf8');
   sitemapUrls = Array.from(sitemap.matchAll(/<loc>(.*?)<\/loc>/g), (match) => match[1]);
+  for (const error of sitemapLastmodErrors(sitemap)) add('/sitemap.xml', 'sitemap', error);
   for (const [route, page] of pages) {
     const url = new URL(route, ORIGIN).href;
     if (page.noindex && sitemapUrls.includes(url)) add(route, 'sitemap', 'noindex page is in the sitemap');
@@ -216,6 +218,16 @@ const headerProblems = headersText ? headersErrors({ text: headersText, inlineSc
 for (const message of headerProblems) add('/_headers', 'headers', message);
 const headerRules = headersText ? parseHeaderRules(headersText) : [];
 const immutableFiles = distFiles.filter((file) => /immutable/.test(headersFor(headerRules, `/${file}`)['cache-control'] ?? ''));
+// Retired release directories move to their successors (dist/_redirects); a missing file means no redirects.
+let redirectsText = '';
+try { redirectsText = await readFile(resolve(root, '_redirects'), 'utf8'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+// The reduced build (KILN_SITE_PACKS=0, as in CI) has no scene packs, so it cannot check the redirect targets.
+let packsBuild = true;
+try { packsBuild = JSON.parse(await readFile(resolve(root, 'build-info.json'), 'utf8')).kilnSitePacks !== '0'; } catch (error) { if (error.code !== 'ENOENT') throw error; }
+const redirectProblems = redirectsText ? redirectsErrors({ text: redirectsText, files: distFiles, targets: packsBuild }) : [];
+for (const message of redirectProblems) add('/_redirects', 'redirects', message);
+let redirectRules = [];
+try { redirectRules = parseRedirectRules(redirectsText); } catch { /* Reported by redirectsErrors above. */ }
 await mkdir(reportDirectory, { recursive: true });
 const result = { pages: pages.size, headers: { rules: headerRules.length, inlineScripts: inlineScripts.map(scriptHashSource), immutableFiles: immutableFiles.length, problems: headerProblems.length }, internalErrors: errors.length, htmlErrors: htmlErrorCount, errors, warnings, glbs: { files: glbs.length, withoutDraco: dracoFree }, htmlResults, socialCards: Object.fromEntries(imageChecks), archive, discovery, engineNotes: engineSummary, sitemapUrls, externalLinks: Array.from(external, ([url, from]) => ({ url, pages: Array.from(from) })).sort((a, b) => a.url.localeCompare(b.url)) };
 await writeFile(resolve(reportDirectory, 'static-validation.json'), `${JSON.stringify(result, null, 2)}\n`);
@@ -229,6 +241,7 @@ console.log(`Engine notes: ${engineSummary.withNote} of ${engineSummary.assetPag
 console.log(`Retired working title: ${retired.length} matches in ${pages.size} pages, ${files.length} file names and the discovery files. Foundry Floor pages: ${foundry.length} problems.`);
 console.log(`GLBs: ${glbs.length} read, ${dracoFree} without KHR_draco_mesh_compression. Copy rules (glued numbers, licence spelling, owner status): ${errors.filter((error) => error.kind === 'copy').length} problems.`);
 console.log(`Headers: ${headerRules.length} rules in _headers; ${inlineScripts.length} distinct inline scripts, each listed by hash in the report-only CSP; ${immutableFiles.length} files cached as immutable; ${headerProblems.length} problems.`);
+console.log(`Redirects: ${redirectRules.length} rules in _redirects${packsBuild ? '' : ' (targets not checked: reduced build without scene packs)'}; ${redirectProblems.length} problems.`);
 console.log(`Warnings: ${warnings.length} meta descriptions over ${DESCRIPTION_WARNING_LENGTH} characters${warnings.length ? ` (${warnings.map((warning) => warning.page).join(', ')})` : ''}.`);
 console.log(`Report: ${resolve(reportDirectory, 'static-validation.json')}`);
 if (errors.length || htmlErrorCount) process.exitCode = 1;

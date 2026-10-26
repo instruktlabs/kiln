@@ -159,7 +159,7 @@ const foundryFloorPresentation = foundryPresentation(
 );
 
 /**
- * Foundry Floor stays out of search results (D-33/S-2). Its copy follows the
+ * Foundry Floor is indexed (D-77, changing D-33/S-2) and still labelled In production. Its copy follows the
  * staged catalogue: older interior builds cannot promise a campus. No device claims are made. The scene is
  * pictured by two captures of its staged runtime, the campus outside and the fab floor inside, shown together.
  */

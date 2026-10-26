@@ -6,6 +6,8 @@ export const SITE = 'https://kilnstudio.tools';
 export const REPO = 'https://github.com/instruktlabs/kiln';
 export const DISCORD = 'https://discord.gg/fSWVbMdQXK';
 export const ASSET_BASE = 'https://assets.kilnstudio.tools';
+/** The Holodeck scene shelf, where Kiln assets are placed in walkable worlds. */
+export const HOLODECK_SITE = 'https://holodeck.kilnstudio.tools/';
 export const PACKS_ENABLED = !['0', 'false'].includes(import.meta.env.KILN_SITE_PACKS ?? '1');
 /** Published npm releases also attach the exact archive and checksum to GitHub. */
 export const PACKAGE_TARBALL = `instruktlabs-kiln-${VERSION}.tgz`;

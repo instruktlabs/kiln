@@ -1542,7 +1542,7 @@ var mcp_manifest_default = {
     },
     {
       name: "kiln_save",
-      description: "Save a completed source revision into the user-requested collection, or project when none was requested. Persists exact GLB, source, preview and build record. Use programRef returned by render/edit. To revise an asset, pass assetId and parentRevision; earlier revisions stay intact. Returns downloadable resources; draft renders never populate collections.",
+      description: "Save a completed source revision into the user-requested collection, or project when none was requested. Persists exact GLB, source, preview and build record. Use programRef returned by render/edit. To revise an asset, pass assetId and parentRevision; earlier revisions stay intact, and the result comparison gives triangle, vertex, draw and material deltas, the bounds delta and geometryIdentical against the parent. Returns downloadable resources; draft renders never populate collections.",
       inputSchema: {
         type: "object",
         properties: {
@@ -2155,7 +2155,7 @@ import { readFile } from "node:fs/promises";
 var KILN_ASSET_WIDGET_URI = "ui://kiln/asset-v6.html";
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "1.4.0";
+var ENGINE_VERSION = "1.5.0";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 
 // src/requirements-json.ts

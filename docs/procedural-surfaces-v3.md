@@ -136,6 +136,9 @@ The limits are 1,048,576 output texels, 64 operations, 64 polygon vertices,
 16,384 nodes and depth 10, at most 1024 fields per container, and at most
 262,144 characters of canonical JSON. The only arbitrary text is an 80-character
 name, so this also bounds UTF-8 recipe storage with a small fixed overhead.
+To scatter many copies of a shape, such as grass blades or pebbles, use one
+`stamps` operation, which places up to 256 copies, rather than one operation per
+copy; the 64-operation cap counts operations, not copies.
 
 The conservative work ceiling is 64,000,000 units. It includes output
 initialization, clipped shape tests (each polygon edge counts), full mask scans,

@@ -7,9 +7,18 @@ import farm from '../src/data/packs/farm.json';
 import vehicles from '../src/data/packs/vehicles.json';
 import bridge from '../src/data/standalone/golden-gate-bridge.json';
 import { SOCIAL_CARD, socialCardAlt, socialCardPath, socialCards } from '../src/lib/social-cards.mjs';
+import { featuredWorlds, worldCover } from '../src/lib/site-curation';
 
 const release = published;
 const data = { release, farm, vehicles, bridge, hero, foundryFloor, archive: [{ name: 'robot-arm', thumb: 'thumbs/robot-arm.webp' }] };
+
+test('main site share cards use the curated lead scene when it is supplied as the hero', () => {
+  const cover = worldCover(featuredWorlds[0]!.id)!;
+  const cards = socialCards({ ...data, hero: { poster: cover }, packsEnabled: true });
+  for (const slug of ['home', 'scenes', 'packs', 'gallery']) {
+    expect(cards.find((card) => card.slug === slug)?.poster?.src).toBe(cover.src);
+  }
+});
 
 test('site release labels and downloads follow the verified published package', () => {
   expect(VERSION).toBe(published.version);
