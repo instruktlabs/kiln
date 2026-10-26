@@ -3,7 +3,7 @@ import ResponsiveImage from "./ResponsiveImage.astro";
 import { number, imageQualification } from "../lib/catalog";
 import type { GalleryCard } from "../lib/gallery";
 interface Props {
-  asset: Pick<GalleryCard, "slug" | "name" | "pack" | "category" | "poster" | "metrics" | "review"> & Partial<Pick<GalleryCard, "href" | "packs" | "scenes">>;
+  asset: Pick<GalleryCard, "slug" | "name" | "pack" | "category" | "poster" | "metrics" | "review"> & Partial<Pick<GalleryCard, "href" | "packs" | "scenes" | "tags" | "addedOn">>;
   headingLevel?: "h2" | "h3";
 }
 const { asset, headingLevel = "h3" } = Astro.props;
@@ -15,6 +15,10 @@ const Heading = headingLevel;
   data-pack={asset.pack ?? "standalone"}
   data-packs={(asset.packs ?? [asset.pack ?? "standalone"]).join(" ")}
   data-category={asset.category}
+  data-href={asset.href ?? `/gallery/${asset.slug}/`}
+  data-name={asset.name}
+  data-tags={JSON.stringify(asset.tags ?? [])}
+  data-added-on={asset.addedOn}
   class="group min-w-0 border-t border-rule"
 >
   <a href={asset.href ?? `/gallery/${asset.slug}/`} class="block text-ink no-underline" aria-label={asset.name}>
@@ -40,6 +44,7 @@ const Heading = headingLevel;
     <p class="mt-2 text-caption text-dim">Exterior view from the parent revision.</p>
   )}
   </a>
+  {asset.tags?.length ? <p class="mt-2 text-caption text-dim">{asset.tags.slice(0, 3).join(" · ")}</p> : null}
   {asset.scenes?.length ? (
     <div class="flex flex-col items-start">
       {asset.scenes.map((scene) => (

@@ -1,4 +1,5 @@
 ---
+import GalleryTags from "../../../components/GalleryTags.astro";
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PageHeader from '../../../components/PageHeader.astro';
 import AssetViewer from '../../../components/AssetViewer.astro';
@@ -20,7 +21,8 @@ const facts=await readGlbFacts(resolve('public',asset.runtimeDownload.url.slice(
 ---
 <BaseLayout title={`${asset.name} | Troy | Kiln`} description={asset.description} breadcrumbs={[{label:'Gallery',href:'/gallery/'},{label:asset.name,href:`/gallery/troy/${asset.slug}/`}]}>
  <div class="container py-8">
-  <PageHeader>{asset.name}</PageHeader><p class="lead mt-4">{asset.description}</p><a class="text-link mt-4" href="/packs/troy/">Troy pack</a>
+  <PageHeader>{asset.name}</PageHeader>
+    <GalleryTags /><p class="lead mt-4">{asset.description}</p><a class="text-link mt-4" href="/packs/troy/">Troy pack</a>
   <div class="mt-8 drawing-sheet"><AssetViewer name={asset.name} modelUrl={asset.runtimeDownload.url} poster={asset.poster.src} posterAlt={asset.poster.alt} posterWidth={asset.poster.width} posterHeight={asset.poster.height} /></div>
   <EngineNote extensions={facts.extensionsUsed} />
   <StatRow values={[{label:'Triangles',value:number(asset.metrics.triangles)},{label:'Materials',value:asset.metrics.materials},{label:'Dimensions (m)',value:bounds(asset.metrics.bounds)}]} />

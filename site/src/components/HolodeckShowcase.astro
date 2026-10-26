@@ -1,0 +1,25 @@
+---
+import ResponsiveImage from "./ResponsiveImage.astro";
+import { featuredWorlds, otherWorlds, worldCover } from "../lib/site-curation";
+import { holodeckPackHref, holodeckWorldUrl } from "../lib/holodeck";
+interface Props { id: string; heading?: string; remaining?: boolean; skipLead?: boolean; }
+const { id, heading = "Explore worlds made with Kiln.", remaining = false, skipLead = false } = Astro.props;
+const packs = remaining ? otherWorlds : skipLead ? featuredWorlds.slice(1) : featuredWorlds;
+---
+<section class="mt-12 border-t border-ink pt-8" aria-labelledby={id}>
+  <h2 id={id} class="text-subheading">{heading}</h2>
+  <p class="mt-4 max-w-reading text-dim">Walk these worlds on Holodeck, or browse their Kiln assets and editable source.</p>
+  <div class:list={["mt-8 grid gap-8", skipLead ? "md:grid-cols-2" : "md:grid-cols-3"]}>
+    {packs.map((pack) => {
+      const cover = worldCover(pack.id);
+      return <article class="min-w-0">
+        <a href={holodeckWorldUrl(pack.id)} class="block text-ink no-underline">
+          {cover && <ResponsiveImage image={cover} sizes={skipLead ? "(max-width: 767px) 100vw, 50vw" : "(max-width: 767px) 100vw, 33vw"} class="aspect-video w-full object-cover" />}
+          <h3 class="mt-4 text-title">{pack.name} <span aria-hidden="true">↗</span></h3>
+        </a>
+        <p class="mt-3 text-dim">{pack.description}</p>
+        <a href={holodeckPackHref(pack)} class="text-link mt-4">Browse {pack.assetCount} assets</a>
+      </article>;
+    })}
+  </div>
+</section>

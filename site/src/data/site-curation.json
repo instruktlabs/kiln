@@ -1,0 +1,14 @@
+{
+  "featuredWorlds": ["holodeck-meridian-sanctuary", "holodeck-crescent-cove", "holodeck-winter-mountainside-cabin"],
+  "otherWorlds": ["holodeck-tidemark", "holodeck-courtyard", "holodeck-cove"],
+  "featuredAssets": [
+    "/gallery/holodeck/crescent-shelter/",
+    "/gallery/holodeck/crescent-palm-tall/",
+    "/gallery/holodeck/winter-wmc-sofa-wool/",
+    "/gallery/holodeck/winter-wmc-loft-bed/",
+    "/gallery/holodeck/winter-wmc-fir-hero-a/",
+    "/gallery/holodeck/meridian-statue-whale/",
+    "/gallery/holodeck/winter-wmc-hearth-masonry/",
+    "/gallery/holodeck/winter-wmc-kitchen-run/"
+  ]
+}

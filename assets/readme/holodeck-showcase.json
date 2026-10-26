@@ -1,0 +1,37 @@
+{
+  "images": [
+    {
+      "file": "meridian-sanctuary.webp",
+      "alt": "Arriving at Meridian Sanctuary: the causeway runs between mirror pools and cypresses toward the gate tower and its mirror orb.",
+      "world": "https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/",
+      "view": "meridian-sanctuary-arrival",
+      "inputPath": "media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival.png",
+      "inputSha256": "3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0",
+      "sha256": "df85d99367280e2fd96ddc1f77ab2fc88074fab0105989e7ddf6c3781b7214c1",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "file": "crescent-cove.webp",
+      "alt": "The Cove on Crescent Cove: the canopied seat on a grassy rise among palms, with the lagoon beyond.",
+      "world": "https://holodeck.kilnstudio.tools/worlds/crescent-cove/",
+      "view": "crescent-cove-cove",
+      "inputPath": "media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove.png",
+      "inputSha256": "d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7",
+      "sha256": "18f101c8e69c45ce915eac28ac939ee97f1141b7bf7307ddc340c2e26fc88c9c",
+      "width": 960,
+      "height": 540
+    },
+    {
+      "file": "winter-mountainside-cabin.webp",
+      "alt": "The cabin’s living room: a sofa and armchair around the stone hearth, the loft stair and warm lantern light.",
+      "world": "https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/",
+      "view": "winter-mountainside-cabin-living",
+      "inputPath": "media/holodeck/scenes/dae991ffbe47771af0848295ef0a811d3d004809dcff0f4236b41879795e9ddb/winter-mountainside-cabin-living.png",
+      "inputSha256": "dae991ffbe47771af0848295ef0a811d3d004809dcff0f4236b41879795e9ddb",
+      "sha256": "82504dba41c2f493cdd4657ef28859a206a14bd544eb9767fcd76fd7705860ae",
+      "width": 960,
+      "height": 540
+    }
+  ]
+}

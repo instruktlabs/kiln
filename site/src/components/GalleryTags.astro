@@ -1,0 +1,8 @@
+---
+import { galleryCards } from "../lib/gallery";
+const asset = galleryCards.find((card) => card.href === Astro.url.pathname);
+---
+{asset && <nav class="mt-5 flex flex-wrap gap-2 font-mono text-caption" aria-label="Browse related assets">
+  <a class="border border-rule px-3 py-2 text-ink" href={`/gallery/?category=${encodeURIComponent(asset.category)}`}>{asset.category}</a>
+  {asset.tags.map((tag) => <a class="border border-rule px-3 py-2 text-ink" href={`/gallery/?q=${encodeURIComponent(tag)}`}>{tag}</a>)}
+</nav>}

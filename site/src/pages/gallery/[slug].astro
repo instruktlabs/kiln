@@ -1,4 +1,5 @@
 ---
+import GalleryTags from "../../components/GalleryTags.astro";
 import AssetDownloads from '../../components/AssetDownloads.astro';
 import { assetDelivery } from '../../lib/delivery';
 import PageHeader from "../../components/PageHeader.astro";
@@ -154,6 +155,7 @@ const schema = {
     <div class="flex flex-wrap items-end justify-between gap-4 py-8">
       <div>
         <PageHeader>{asset.name}</PageHeader>
+    <GalleryTags />
         <p class="mt-4 max-w-reading">{asset.description}</p>
       </div>
       <p class="font-mono text-code">
