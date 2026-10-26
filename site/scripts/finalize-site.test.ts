@@ -5,20 +5,21 @@ const pages = [
   { route: '/docs/', title: 'Documentation', description: 'Read the docs.', noindex: false },
   { route: '/docs/install/', title: 'Install Kiln · Kiln docs', description: 'Set up a workspace.', noindex: false },
   { route: '/packs/farm/', title: 'Farm', description: 'Farm asset pack.', noindex: false },
-  { route: '/scenes/farm/', title: 'Farm scene', description: 'In production.', noindex: true },
-  { route: '/packs/foundry-floor/', title: 'Foundry Floor', description: 'In production.', noindex: true },
+  { route: '/scenes/farm/', title: 'Farm scene', description: 'Explore the Farm.', noindex: false },
+  { route: '/packs/foundry-floor/', title: 'Foundry Floor', description: 'In production.', noindex: false },
   { route: '/scenes/', title: 'Scenes made with Kiln', description: 'Three scenes.', noindex: false },
-  { route: '/scenes/golden-gate/', title: 'Golden Gate Bridge scene', description: 'A preview.', noindex: true },
-  { route: '/scenes/foundry-floor/', title: 'Foundry Floor scene — in production', description: 'In production.', noindex: true },
+  { route: '/scenes/golden-gate/', title: 'Golden Gate Bridge scene', description: 'A driving demonstration.', noindex: false },
+  { route: '/scenes/foundry-floor/', title: 'Foundry Floor scene', description: 'In production.', noindex: false },
+  { route: '/scenes/unqualified/', title: 'Unqualified scene', description: 'A preview.', noindex: true },
   { route: '/404.html', title: 'Not found', description: 'Missing page.', noindex: false },
 ];
 test('generated sitemap contains only published, indexable routes', () => {
   const { sitemap } = buildIndexFiles(pages);
   expect(sitemap).toContain('<loc>https://kilnstudio.tools/docs/install/</loc>');
   expect(sitemap).toContain('<loc>https://kilnstudio.tools/packs/farm/</loc>');
-  expect(sitemap).not.toContain('foundry-floor');
-  expect(sitemap).not.toContain('/scenes/farm/');
-  expect(sitemap).not.toContain('/scenes/golden-gate/');
+  // Owner decision 2026-10-26 (Matthew): the home-linked Golden Gate, Farm and Foundry Floor scenes and the Foundry pack are indexed.
+  for (const route of ['/scenes/golden-gate/', '/scenes/farm/', '/scenes/foundry-floor/', '/packs/foundry-floor/']) expect(sitemap).toContain(`<loc>https://kilnstudio.tools${route}</loc>`);
+  expect(sitemap).not.toContain('/scenes/unqualified/');
   expect(sitemap).toContain('<loc>https://kilnstudio.tools/scenes/</loc>');
   expect(sitemap).not.toContain('404');
 });
@@ -27,9 +28,9 @@ test('agent guide points to built site docs and omits absent or noindex pages', 
   expect(llms).toContain('[Install Kiln](https://kilnstudio.tools/docs/install/)');
   expect(llms).not.toContain('github.com/matthew-kissinger/kiln/blob/main/docs/');
   expect(llms).not.toContain('/docs/material-library/');
-  expect(llms).not.toContain('foundry-floor');
-  expect(llms).not.toContain('/scenes/golden-gate/');
-  expect(llms).not.toContain('/scenes/farm/');
+  expect(llms).toContain('(https://kilnstudio.tools/scenes/golden-gate/)');
+  expect(llms).toContain('(https://kilnstudio.tools/packs/foundry-floor/)');
+  expect(llms).not.toContain('/scenes/unqualified/');
   expect(robots).toContain('Sitemap: https://kilnstudio.tools/sitemap.xml');
 });
 test('index generation is deterministic across filesystem traversal order', () => {

@@ -3,6 +3,11 @@
 Archived from site/README.md on 7 October 2026. These records describe earlier
 candidates and authorizations; use site/README.md and site/DEPLOYMENT.md for current work.
 
+**S-2 changed (owner decision, 2026-10-26, Matthew; scenes/DECISIONS.md D-77).** The Foundry Floor scene and pack
+pages, the Golden Gate scene page and the Farm scene page are now indexed and listed in the sitemap. The "S-2
+remains In production/noindex" and "The Farm page is `noindex, nofollow`" lines below are historical. Foundry Floor
+keeps its In production label; its asset pages and the archive item pages stay `noindex`.
+
 # Kiln website
 
 ## Current delivery and alignment, 2026-10-03

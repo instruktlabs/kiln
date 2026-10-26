@@ -327,10 +327,10 @@ describe('scene pack catalog record', () => {
     expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2-code5'));
   });
 
-  test.each(['farm', 'golden-gate', 'foundry-floor'])('the %s scene page stays out of search results whatever its availability says', async (id) => {
+  // Owner decision 2026-10-26 (Matthew): these home-linked scene pages are indexed, whatever their availability says.
+  test.each(['farm', 'golden-gate', 'foundry-floor'])('the %s scene page is indexable', async (id) => {
     const page = await readFile(new URL(`../src/pages/scenes/${id}.astro`, import.meta.url), 'utf8');
-    expect(page).toMatch(/^\s*noindex\s*$/m);
-    expect(page).toMatch(/^\s*nofollow\s*$/m);
-    expect(page).not.toContain('noindex={');
+    expect(page).not.toMatch(/^\s*noindex(?:=\{[^}]*\})?\s*$/m);
+    expect(page).not.toMatch(/^\s*nofollow\s*$/m);
   });
 });

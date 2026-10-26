@@ -129,12 +129,14 @@ describe('the retired working title', () => {
 
 describe('the Foundry Floor pages', () => {
   const notice = 'Not affiliated with or endorsed by Tesla, SpaceX, xAI, Intel, ASML or any equipment maker.';
-  const page = (body: string, robots: string | null = 'noindex, follow') => ({ html: `<html lang="en"><body><h1>Foundry Floor</h1>${body}</body></html>`, robots: robots ?? undefined, noindex: robots?.includes('noindex') ?? false });
+  const page = (body: string, robots: string | null = null) => ({ html: `<html lang="en"><body><h1>Foundry Floor</h1>${body}</body></html>`, robots: robots ?? undefined, noindex: robots?.includes('noindex') ?? false });
   const good = () => new Map([
     ['/packs/foundry-floor/', page(`<p>In production.</p><p>${notice}</p>`)],
-    ['/scenes/foundry-floor/', page(`<p>The scene is in production.</p><p>${notice}</p>`, 'noindex, nofollow')],
+    ['/scenes/foundry-floor/', page(`<p>The scene is in production.</p><p>${notice}</p>`)],
   ]);
-  const check = (pages: Map<string, unknown>, sitemapUrls: string[] = ['https://kilnstudio.tools/']) =>
+  // S-2 as changed by the owner (2026-10-26, Matthew): both pages are indexed and listed in the sitemap.
+  const listed = ['https://kilnstudio.tools/', 'https://kilnstudio.tools/packs/foundry-floor/', 'https://kilnstudio.tools/scenes/foundry-floor/'];
+  const check = (pages: Map<string, unknown>, sitemapUrls: string[] = listed) =>
     foundryFloorErrors({ pages: pages as never, sitemapUrls }).map((error: { page: string; message: string }) => `${error.page}: ${error.message}`);
 
   test('the site data holds the requested line word for word', () => {
@@ -144,32 +146,28 @@ describe('the Foundry Floor pages', () => {
     expect(JSON.stringify(foundryFloor)).not.toMatch(/terafab/i);
   });
 
-  test('pass when both pages are unindexed, out of the sitemap and carry the line', () => {
+  test('pass when both pages are indexed, in the sitemap and carry the line', () => {
     expect(check(good())).toEqual([]);
   });
 
-  test('report a missing page, an indexable page, a followed scene, and a missing or altered line', () => {
+  test('report a missing page, an unindexed page, an unfollowed scene, and a missing or altered line', () => {
     const missing = good();
     missing.delete('/scenes/foundry-floor/');
     expect(check(missing)).toEqual(['/scenes/foundry-floor/: The Foundry Floor page was not emitted']);
-    const indexable = good();
-    indexable.set('/packs/foundry-floor/', page(`<p>In production.</p><p>${notice}</p>`, null));
-    expect(check(indexable)).toEqual(['/packs/foundry-floor/: The Foundry Floor page must be noindex']);
-    const followed = good();
-    followed.set('/scenes/foundry-floor/', page(`<p>In production.</p><p>${notice}</p>`, 'noindex, follow'));
-    expect(check(followed)).toEqual(['/scenes/foundry-floor/: The Foundry Floor scene page must be "noindex, nofollow", got "noindex, follow"']);
-    // Exactly the two values of S-2 as corrected (content review, finding 4): a pack page that is also unfollowed is wrong.
-    const unfollowedPack = good();
-    unfollowedPack.set('/packs/foundry-floor/', page(`<p>In production.</p><p>${notice}</p>`, 'noindex, nofollow'));
-    expect(check(unfollowedPack)).toEqual(['/packs/foundry-floor/: The Foundry Floor pack page must be "noindex, follow", got "noindex, nofollow"']);
+    const unindexed = good();
+    unindexed.set('/packs/foundry-floor/', page(`<p>In production.</p><p>${notice}</p>`, 'noindex, follow'));
+    expect(check(unindexed)).toEqual(['/packs/foundry-floor/: The Foundry Floor pack page must be indexed, got "noindex, follow"']);
+    const unfollowed = good();
+    unfollowed.set('/scenes/foundry-floor/', page(`<p>In production.</p><p>${notice}</p>`, 'index, nofollow'));
+    expect(check(unfollowed)).toEqual(['/scenes/foundry-floor/: The Foundry Floor scene page must be indexed, got "index, nofollow"']);
     const altered = good();
     altered.set('/packs/foundry-floor/', page('<p>In production.</p><p>Not affiliated with Tesla.</p>'));
     // An altered line also names a maker outside the exact line.
     expect(check(altered)).toEqual(['/packs/foundry-floor/: The Foundry Floor page must carry the no-affiliation line word for word', '/packs/foundry-floor/: A maker named in the no-affiliation line appears outside it: Tesla']);
   });
 
-  test('report a page that reached the sitemap', () => {
-    expect(check(good(), ['https://kilnstudio.tools/scenes/foundry-floor/'])).toEqual(['/scenes/foundry-floor/: The Foundry Floor page is in the sitemap']);
+  test('report a page absent from the sitemap', () => {
+    expect(check(good(), ['https://kilnstudio.tools/', 'https://kilnstudio.tools/packs/foundry-floor/'])).toEqual(['/scenes/foundry-floor/: The Foundry Floor page is absent from the sitemap']);
   });
 
   test('report a brand name outside the no-affiliation line, a device claim on the scene page and an implied exterior', () => {
@@ -177,39 +175,39 @@ describe('the Foundry Floor pages', () => {
     branded.set('/packs/foundry-floor/', page(`<p>In production, with an ASML-style scanner.</p><p>${notice}</p>`));
     expect(check(branded)).toEqual(['/packs/foundry-floor/: A maker named in the no-affiliation line appears outside it: ASML']);
     const device = good();
-    device.set('/scenes/foundry-floor/', page(`<p>In production. It plays on a phone.</p><p>${notice}</p>`, 'noindex, nofollow'));
+    device.set('/scenes/foundry-floor/', page(`<p>In production. It plays on a phone.</p><p>${notice}</p>`));
     expect(check(device)).toEqual(['/scenes/foundry-floor/: The Foundry Floor scene page makes a device claim: phone']);
     const outside = good();
-    outside.set('/scenes/foundry-floor/', page(`<p>In production. Walk the campus.</p><p>${notice}</p>`, 'noindex, nofollow'));
+    outside.set('/scenes/foundry-floor/', page(`<p>In production. Walk the campus.</p><p>${notice}</p>`));
     expect(check(outside)).toEqual(['/scenes/foundry-floor/: The Foundry Floor page implies an exterior: campus']);
   });
 
-  test('campus copy requires the explicitly staged campus inventory and keeps the in-production indexing rules', () => {
+  test('campus copy requires the explicitly staged campus inventory and keeps the indexing rules', () => {
     const pages = good();
-    pages.set('/scenes/foundry-floor/', page(`<p>In production. Walk the campus.</p><p>${notice}</p>`, 'noindex, nofollow'));
-    expect(foundryFloorErrors({ pages: pages as never, sitemapUrls: [], hasCampus: true })).toEqual([]);
-    expect(foundryFloorErrors({ pages: pages as never, sitemapUrls: [], hasCampus: false })).toHaveLength(1);
-    pages.set('/scenes/foundry-floor/', page(`<p>In production. Walk the campus.</p><p>${notice}</p>`, 'index, follow'));
-    expect(foundryFloorErrors({ pages: pages as never, sitemapUrls: [], hasCampus: true })).toHaveLength(1);
+    pages.set('/scenes/foundry-floor/', page(`<p>In production. Walk the campus.</p><p>${notice}</p>`));
+    expect(foundryFloorErrors({ pages: pages as never, sitemapUrls: listed, hasCampus: true })).toEqual([]);
+    expect(foundryFloorErrors({ pages: pages as never, sitemapUrls: listed, hasCampus: false })).toHaveLength(1);
+    pages.set('/scenes/foundry-floor/', page(`<p>In production. Walk the campus.</p><p>${notice}</p>`, 'noindex, follow'));
+    expect(foundryFloorErrors({ pages: pages as never, sitemapUrls: listed, hasCampus: true })).toHaveLength(1);
   });
 
   test('with the pack record, both pages state its placement: how many models the scene places, and the rest', () => {
     const placement = { assetCount: 31, placedInScene: 29 };
     const placed = (scene: string, pack: string) => new Map([
       ['/packs/foundry-floor/', page(`<p>In production.</p><p>${pack}</p><p>${notice}</p>`)],
-      ['/scenes/foundry-floor/', page(`<p>In production.</p><p>${scene}</p><p>${notice}</p>`, 'noindex, nofollow')],
+      ['/scenes/foundry-floor/', page(`<p>In production.</p><p>${scene}</p><p>${notice}</p>`)],
     ]);
     const scene = 'The fab is arranged from 29 of the pack’s 31 Kiln-authored models; the other 2 are in the pack but not placed.';
     const pack = 'The Foundry Floor scene places 29 of the 31 models. Far forms: 24 of the 31 models keep one.';
     const checkPlaced = (pages: Map<string, unknown>) =>
-      foundryFloorErrors({ pages: pages as never, sitemapUrls: [], placement }).map((error: { page: string; message: string }) => `${error.page}: ${error.message}`);
+      foundryFloorErrors({ pages: pages as never, sitemapUrls: listed, placement }).map((error: { page: string; message: string }) => `${error.page}: ${error.message}`);
     expect(checkPlaced(placed(scene, pack))).toEqual([]);
     // A count glued to the word before it is not the statement a visitor should read.
     expect(checkPlaced(placed(scene.replace('other 2', 'other2'), pack))).toEqual(['/scenes/foundry-floor/: The Foundry Floor scene page must say the other 2 are in the pack but not placed']);
     expect(checkPlaced(placed(scene, pack.replace('places 29', 'places 30')))).toEqual(['/packs/foundry-floor/: The Foundry Floor page says the scene places 30 of 31; the pack record says 29 of 31']);
     expect(checkPlaced(placed(scene, 'The scene uses most of the models.'))).toEqual(['/packs/foundry-floor/: The Foundry Floor page must say how many of the pack’s models the scene places']);
     // A build without Commons packs carries no models on the pack page; the scene page is still checked.
-    const withoutPacks = foundryFloorErrors({ pages: placed(scene.replace('other 2', 'other2'), 'This build does not carry the pack’s models.') as never, sitemapUrls: [], placement: { ...placement, packPage: false } });
+    const withoutPacks = foundryFloorErrors({ pages: placed(scene.replace('other 2', 'other2'), 'This build does not carry the pack’s models.') as never, sitemapUrls: listed, placement: { ...placement, packPage: false } });
     expect(withoutPacks.map((error: { page: string; message: string }) => `${error.page}: ${error.message}`)).toEqual(['/scenes/foundry-floor/: The Foundry Floor scene page must say the other 2 are in the pack but not placed']);
     // Without the record the placement is not checked (the fixtures above).
     expect(check(good())).toEqual([]);
@@ -217,7 +215,7 @@ describe('the Foundry Floor pages', () => {
 
   test('read only what a visitor reads: script text and markup do not count', () => {
     const scripted = good();
-    scripted.set('/scenes/foundry-floor/', page(`<p>In production.</p><script>const touch = "Intel";</script><p data-mobile="1">${notice}</p>`, 'noindex, nofollow'));
+    scripted.set('/scenes/foundry-floor/', page(`<p>In production.</p><script>const touch = "Intel";</script><p data-mobile="1">${notice}</p>`));
     expect(check(scripted)).toEqual([]);
   });
 });
@@ -341,12 +339,13 @@ describe('copy rules on every page', () => {
   test('verified review2 touch instructions do not authorize device or performance claims', () => {
     const instructions = 'Touch controls provide separate steering, throttle, brake / reverse and Boost.';
     const validate = (text: string, runtimeRelease = 'ff3-review2') => {
-      const page = (copy: string, robots: string) => ({html: `<html><body><p>In production. ${copy}</p><p>${foundryFloor.notice}</p></body></html>`, robots, noindex: true});
+      const page = (copy: string) => ({html: `<html><body><p>In production. ${copy}</p><p>${foundryFloor.notice}</p></body></html>`, robots: undefined, noindex: false});
       const pages = new Map([
-        ['/packs/foundry-floor/', page('', 'noindex, follow')],
-        ['/scenes/foundry-floor/', page(text, 'noindex, nofollow')],
+        ['/packs/foundry-floor/', page('')],
+        ['/scenes/foundry-floor/', page(text)],
       ]);
-      return foundryFloorErrors({ pages: pages as never, sitemapUrls: [], hasCampus: true, runtimeRelease });
+      const sitemapUrls = ['https://kilnstudio.tools/packs/foundry-floor/', 'https://kilnstudio.tools/scenes/foundry-floor/'];
+      return foundryFloorErrors({ pages: pages as never, sitemapUrls, hasCampus: true, runtimeRelease });
     };
     expect(validate(instructions)).toEqual([]);
     expect(validate(instructions, 'ff3')).toHaveLength(1);

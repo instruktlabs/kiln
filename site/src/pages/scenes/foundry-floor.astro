@@ -7,7 +7,7 @@ import { foundryFloorScene } from "../../data/scenes";
 import { FULL_WIDTH_IMAGE_SIZES } from "../../lib/catalog";
 import { PACKS_ENABLED } from "../../lib/config";
 import { foundryPresentation } from "../../lib/foundry-presentation";
-// D-33/S-2: this page stays out of search results and the sitemap whatever foundryFloorScene.available says.
+// D-77 (owner decision 2026-10-26, Matthew) changes D-33/S-2: this page is indexed and in the sitemap.
 const scene = foundryFloorScene;
 const presentation = foundryPresentation(foundryFloorPack, scene.pack.release);
 ---
@@ -15,8 +15,6 @@ const presentation = foundryPresentation(foundryFloorPack, scene.pack.release);
 <BaseLayout
   title={`${scene.name} scene · Kiln`}
   description={presentation.metadata}
-  noindex
-  nofollow
   breadcrumbs={[
     { label: "Scenes", href: "/scenes/" },
     { label: `${scene.name} scene`, href: foundryFloor.sceneRoute },

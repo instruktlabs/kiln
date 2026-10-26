@@ -7,8 +7,8 @@ import { sceneRuntimes } from "virtual:kiln-scenes";
 import { goldenGateScene } from "../../data/scenes";
 import { FULL_WIDTH_IMAGE_SIZES, bridge, bytes } from "../../lib/catalog";
 import { PACKS_ENABLED } from "../../lib/config";
-// The Golden Gate preview stays out of search results and the sitemap whatever
-// goldenGateScene.available says; qualification, not this flag, decides when that changes.
+// Owner decision (2026-10-26, Matthew; scenes/DECISIONS.md D-77): the Golden Gate scene page is indexed and in the
+// sitemap. It was noindex, nofollow pending qualification; the owner signed it off with the other home-linked scenes.
 const scene = goldenGateScene;
 // Which bridge tiers the staged scene loads, read from its served pack.json and compared byte for byte (SHA-256)
 // with the tiers the bridge asset page offers. A tier the page does not offer is stated with the pack's own revision,
@@ -42,8 +42,6 @@ const tierSentence = !staged || !sceneTiers.length
 <BaseLayout
   title={`${scene.name} scene · Kiln`}
   description="A Kiln-authored suspension bridge in a driving and traffic demonstration. Drive a sedan across the deck or view the span by day, at golden hour or in fog."
-  noindex
-  nofollow
   breadcrumbs={[
     { label: "Scenes", href: "/scenes/" },
     { label: `${scene.name} scene`, href: "/scenes/golden-gate/" },
