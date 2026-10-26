@@ -9,6 +9,7 @@ import {sealedTroyCache} from './sealed-cache.mjs';
 import {viewerModelInput} from './viewer-model-input.mjs';
 import { glbJsonText } from './private-data.mjs';
 import {validatePublicText} from './validate-public-text.mjs';
+import { sitemapLastmodErrors } from './sitemap-routes.mjs';
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -130,6 +131,7 @@ let sitemapUrls = [];
 try {
   const sitemap = await readFile(resolve(root, 'sitemap.xml'), 'utf8');
   sitemapUrls = Array.from(sitemap.matchAll(/<loc>(.*?)<\/loc>/g), (match) => match[1]);
+  for (const error of sitemapLastmodErrors(sitemap)) add('/sitemap.xml', 'sitemap', error);
   for (const [route, page] of pages) {
     const url = new URL(route, ORIGIN).href;
     if (page.noindex && sitemapUrls.includes(url)) add(route, 'sitemap', 'noindex page is in the sitemap');

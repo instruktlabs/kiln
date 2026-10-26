@@ -336,6 +336,12 @@ export function parseHeaderRules(text) {
     const line = raw.trim();
     if (!line || line.startsWith('#')) continue;
     if (line.startsWith('/')) rules.push({ path: line, set: {}, unset: [] });
+    // An absolute rule names its host too, as Pages allows ("https://" only, no port); `:name` matches one host label.
+    else if (line.startsWith('https://')) {
+      const url = /^https:\/\/([^/]+)(\/.*)$/.exec(line);
+      if (!url || /:\d*$/.test(url[1])) throw new Error(`_headers: an absolute rule needs an https host without a port and a path: ${line}`);
+      rules.push({ host: url[1], path: url[2], set: {}, unset: [] });
+    }
     else if (!rules.length) throw new Error(`_headers: a header before any path: ${line}`);
     else if (line.startsWith('! ')) rules.at(-1).unset.push(line.slice(2).trim().toLowerCase());
     else {
@@ -353,11 +359,24 @@ const headerRuleRegExp = (path) => {
   return new RegExp(`^${pattern.replace(/:([A-Za-z]\w*)/g, '(?<$1>[^/]+)')}$`);
 };
 
-/** The headers served for a path: matching rules in order; `!` removes, a name set twice is joined with a comma. */
-export function headersFor(rules, pathname) {
+/** A rule host as the host matches it: `:name` is one label, since a host placeholder ends at a period. */
+const headerHostRegExp = (host) => {
+  const labels = host.split('.').map((label) => (/^:[A-Za-z]\w*$/.test(label) ? '[^.]+' : label.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')));
+  return new RegExp(`^${labels.join('\\.')}$`, 'i');
+};
+
+/** The Pages project's own hosts, which must stay unindexed: its production alias and a deployment and a branch alias. */
+export const PAGES_DEV_HOSTS = ['kilnstudio.pages.dev', '0123abcd.kilnstudio.pages.dev', 'production.kilnstudio.pages.dev'];
+
+/**
+ * The headers served for a path on `host` (the production host unless named): matching rules in order; `!` removes, a
+ * name set twice is joined with a comma. Path rules apply on every host; an absolute rule only on the hosts it names.
+ */
+export function headersFor(rules, pathname, host = new URL(ORIGIN).host) {
   const headers = new Map();
   const seen = new Set();
   for (const rule of rules) {
+    if (rule.host && !headerHostRegExp(rule.host).test(host)) continue;
     if (!headerRuleRegExp(rule.path).test(pathname)) continue;
     for (const name of rule.unset) headers.delete(name);
     for (const [name, value] of Object.entries(rule.set)) {
@@ -398,6 +417,13 @@ export function headersErrors({ text, inlineScripts = [], files = [], sealedFile
   if (page['content-security-policy']) errors.push('The content security policy is enforced; it stays report-only until the owner decides');
   const policy = page['content-security-policy-report-only'];
   if (!policy) errors.push('Pages carry no Content-Security-Policy-Report-Only');
+  // The Pages project also answers on its pages.dev hosts with the same bytes; only the production host is indexed.
+  if (/noindex/i.test(page['x-robots-tag'] ?? '')) errors.push(`The production host ${new URL(ORIGIN).host} must not be served X-Robots-Tag: noindex`);
+  for (const host of PAGES_DEV_HOSTS) {
+    for (const path of ['/', '/docs/', '/robots.txt']) {
+      if (!/noindex/i.test(headersFor(rules, path, host)['x-robots-tag'] ?? '')) errors.push(`https://${host}${path} must be served X-Robots-Tag: noindex`);
+    }
+  }
   const cache = page['cache-control'] ?? '';
   const maxAge = Number(cache.match(/max-age=(\d+)/)?.[1] ?? Number.NaN);
   if (!(maxAge <= 300) || /immutable/.test(cache)) errors.push(`HTML must be cached briefly and revalidated, got Cache-Control ${JSON.stringify(cache || null)}`);

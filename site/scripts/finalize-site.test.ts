@@ -88,3 +88,11 @@ test('a sitemap index lists the sitemap and only the sitemap', () => {
   expect(sitemapIndex).toBe('<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n  <sitemap><loc>https://kilnstudio.tools/sitemap.xml</loc></sitemap>\n</sitemapindex>\n');
   expect(locs(sitemapIndex)).toEqual(['https://kilnstudio.tools/sitemap.xml']);
 });
+
+test('each sitemap URL carries the lastmod its route is dated with', () => {
+  const lastmod = (route: string) => (route === '/' ? '2026-10-25T22:07:37-04:00' : '2026-09-01T10:00:00Z');
+  const { sitemap } = buildIndexFiles(pages, { lastmod });
+  expect(sitemap).toContain('<url><loc>https://kilnstudio.tools/</loc><lastmod>2026-10-25T22:07:37-04:00</lastmod></url>');
+  expect(sitemap).toContain('<url><loc>https://kilnstudio.tools/docs/install/</loc><lastmod>2026-09-01T10:00:00Z</lastmod></url>');
+  expect(locs(sitemap).length).toBe((sitemap.match(/<lastmod>/g) ?? []).length);
+});

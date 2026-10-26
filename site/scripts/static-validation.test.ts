@@ -379,12 +379,18 @@ describe('the header layer in _headers (engineering review, finding 11)', () => 
 /scene-runtime/:scene/*.js
   ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
+
+https://kilnstudio.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.kilnstudio.pages.dev/*
+  X-Robots-Tag: noindex
 ${extra}`;
   const good = file(`default-src 'self'; script-src 'self' ${scriptHashSource(script)}`);
 
   test('rules apply in order, "!" removes what an earlier rule set, placeholders match one segment', () => {
     const rules = parseHeaderRules(good);
-    expect(rules.map((rule) => rule.path)).toEqual(['/*', '/_astro/*', '/scene-runtime/:scene/*.js']);
+    expect(rules.map((rule) => `${rule.host ?? ''}${rule.path}`)).toEqual(['/*', '/_astro/*', '/scene-runtime/:scene/*.js', 'kilnstudio.pages.dev/*', ':version.kilnstudio.pages.dev/*']);
     expect(headersFor(rules, '/')['cache-control']).toBe('public, max-age=0, must-revalidate');
     expect(headersFor(rules, '/_astro/viewer.GoKKfp1n.js')['cache-control']).toBe('public, max-age=31536000, immutable');
     expect(headersFor(rules, '/scene-runtime/golden-gate/index-CA13LcNQ.js')['cache-control']).toBe('public, max-age=31536000, immutable');
@@ -422,6 +428,26 @@ ${extra}`;
     const doubled = good.replace('/_astro/*\n  ! Cache-Control\n', '/_astro/*\n');
     expect(headersErrors({ text: doubled, inlineScripts: [script], files: ['_astro/a.GoKKfp1n.js'] })).toEqual(['/_astro/a.GoKKfp1n.js: Cache-Control is set twice (public, max-age=0, must-revalidate, public, max-age=31536000, immutable)']);
     expect(headersErrors({ text: good.replace('max-age=0, must-revalidate', 'max-age=86400'), inlineScripts: [script] })).toEqual(['HTML must be cached briefly and revalidated, got Cache-Control "public, max-age=86400"']);
+  });
+
+  test('absolute rules apply only on the hosts they name: the pages.dev hosts are noindex, the production host is not', () => {
+    const rules = parseHeaderRules(good);
+    expect(headersFor(rules, '/docs/')['x-robots-tag']).toBeUndefined();
+    expect(headersFor(rules, '/docs/', 'kilnstudio.tools')['x-robots-tag']).toBeUndefined();
+    expect(headersFor(rules, '/docs/', 'kilnstudio.pages.dev')['x-robots-tag']).toBe('noindex');
+    expect(headersFor(rules, '/', 'a1b2c3d4.kilnstudio.pages.dev')['x-robots-tag']).toBe('noindex');
+    expect(headersFor(rules, '/', 'pr-7.kilnstudio.pages.dev')['x-robots-tag']).toBe('noindex');
+    expect(headersFor(rules, '/', 'a.b.kilnstudio.pages.dev')['x-robots-tag']).toBeUndefined();
+    expect(headersFor(rules, '/', 'other.pages.dev')['x-robots-tag']).toBeUndefined();
+    expect(headersFor(rules, '/docs/', 'kilnstudio.pages.dev')['x-content-type-options']).toBe('nosniff');
+    expect(() => parseHeaderRules('https://kilnstudio.pages.dev:8443/*\n  X-Robots-Tag: noindex')).toThrow('without a port');
+  });
+
+  test('a pages.dev host left indexable, or a noindex production host, is reported', () => {
+    const open = good.replace('\nhttps://kilnstudio.pages.dev/*\n  X-Robots-Tag: noindex\n', '\n');
+    expect(headersErrors({ text: open, inlineScripts: [script] })).toEqual(['/', '/docs/', '/robots.txt'].map((path) => `https://kilnstudio.pages.dev${path} must be served X-Robots-Tag: noindex`));
+    const everywhere = `${good}\n/*\n  X-Robots-Tag: noindex\n`;
+    expect(headersErrors({ text: everywhere, inlineScripts: [script] })).toEqual(['The production host kilnstudio.tools must not be served X-Robots-Tag: noindex']);
   });
 
   test('inline scripts are found in pages; JSON-LD data blocks are not scripts to a CSP', () => {

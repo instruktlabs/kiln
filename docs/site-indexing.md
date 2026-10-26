@@ -60,3 +60,23 @@ returned 200. The existing sitemap index was resubmitted in Search Console, whic
 confirmed **Sitemap submitted successfully** and then **Success**, with its last
 read on September 6. Discovered pages initially remained zero; processing and
 indexing are separate from successful retrieval. No account permissions changed.
+
+## Sitemap dates and pages.dev hosts — October 26, 2026
+
+Live checks against build `238d1aa8` (the `main` head): all 329 sitemap URLs returned
+200 with a self-referencing canonical on `https://kilnstudio.tools` and no `noindex`;
+every share image returned 200 at 1200×630. The sitemap carried no `<lastmod>`, and
+`kilnstudio.pages.dev` served the full site with no `X-Robots-Tag`. Preview aliases
+already answered with `X-Robots-Tag: noindex`.
+
+- `finalize-site` now writes a `<lastmod>` for every sitemap URL
+  (`site/scripts/sitemap-lastmod.mjs`): the newest commit date among the files the
+  page is built from (its Astro page, the local modules and data records it imports,
+  and for a guide its Markdown). The shared base layout and site constants are not
+  followed, so a navigation or version-label change does not redate every page.
+  `validate-static` fails a sitemap URL without exactly one W3C Datetime `<lastmod>`.
+- `_headers` sends `X-Robots-Tag: noindex` on `kilnstudio.pages.dev` and every
+  `*.kilnstudio.pages.dev` alias, following Cloudflare's documented absolute-URL rule.
+  The production host is unaffected; `validate-static` checks both.
+
+Robots rules, canonicals and the noindex pages are unchanged.
