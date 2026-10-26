@@ -231,6 +231,72 @@
         "winter-wmc-fallen-log",
         "winter-wmc-trail-marker"
       ]
+    },
+    "holodeck-meridian-sanctuary": {
+      "scene": "meridian-sanctuary",
+      "source": {
+        "kind": "holodeck-example",
+        "ref": "8f5d5f7f627c6e4b636877fdb6b16f71ebaf018f",
+        "commit": "8f5d5f7f627c6e4b636877fdb6b16f71ebaf018f",
+        "path": "examples/meridian-sanctuary",
+        "sourceRevision": 27,
+        "worldSha256": "4bfd354235b83f253ded88250683143814f7d9d9672a3df7e8c14e50401e5092"
+      },
+      "assets": [
+        "cove-structure",
+        "cove-canopy",
+        "cove-seating",
+        "cove-hearth",
+        "cove-planting",
+        "cove-rug",
+        "cove-lamp",
+        "cove-moodboard",
+        "meridian-deck-4",
+        "meridian-block-8",
+        "meridian-step-slab",
+        "meridian-deck-6",
+        "meridian-coping-4",
+        "meridian-pool-steps",
+        "meridian-stair-8",
+        "meridian-stair-4",
+        "meridian-parapet-4",
+        "meridian-foundation-4",
+        "meridian-arcade-pylon",
+        "meridian-arcade-pier",
+        "meridian-arcade-pier-slot",
+        "meridian-arcade-arch",
+        "meridian-tower-slot",
+        "meridian-cascade-tower",
+        "meridian-gateway",
+        "meridian-orb",
+        "meridian-falls-narrow",
+        "meridian-overflow-wide",
+        "meridian-rim-spill",
+        "meridian-basin-water",
+        "meridian-planter-sq",
+        "meridian-cypress-tall",
+        "meridian-shrub-b",
+        "meridian-cypress-mid",
+        "meridian-planter-long",
+        "meridian-shrub-a",
+        "meridian-ivy-short",
+        "meridian-ivy-long",
+        "meridian-isle-base",
+        "meridian-cube-marble",
+        "meridian-cube-mirror",
+        "meridian-monolith",
+        "meridian-cube-mirror-court",
+        "meridian-shrub-c",
+        "meridian-cypress-broad",
+        "meridian-cypress-slim",
+        "meridian-tower-gate",
+        "meridian-arcade-bay",
+        "meridian-pavilion",
+        "meridian-balustrade-4",
+        "meridian-cube-mirror-far",
+        "meridian-statue-figure",
+        "meridian-statue-whale"
+      ]
     }
   },
   "assets": {
@@ -271,6 +337,10 @@
         },
         {
           "pack": "holodeck-crescent-cove",
+          "id": "structure"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
           "id": "structure"
         }
       ]
@@ -313,6 +383,10 @@
         {
           "pack": "holodeck-crescent-cove",
           "id": "canopy"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "canopy"
         }
       ]
     },
@@ -350,6 +424,10 @@
         },
         {
           "pack": "holodeck-crescent-cove",
+          "id": "seating"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
           "id": "seating"
         }
       ]
@@ -392,6 +470,10 @@
         {
           "pack": "holodeck-crescent-cove",
           "id": "hearth"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "hearth"
         }
       ]
     },
@@ -432,6 +514,10 @@
         },
         {
           "pack": "holodeck-crescent-cove",
+          "id": "planting"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
           "id": "planting"
         }
       ]
@@ -474,6 +560,10 @@
         {
           "pack": "holodeck-crescent-cove",
           "id": "rug"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "rug"
         }
       ]
     },
@@ -514,6 +604,10 @@
         },
         {
           "pack": "holodeck-crescent-cove",
+          "id": "lamp"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
           "id": "lamp"
         }
       ]
@@ -559,6 +653,10 @@
         },
         {
           "pack": "holodeck-winter-mountainside-cabin",
+          "id": "moodboard"
+        },
+        {
+          "pack": "holodeck-meridian-sanctuary",
           "id": "moodboard"
         }
       ]
@@ -4481,6 +4579,1304 @@
         {
           "pack": "holodeck-winter-mountainside-cabin",
           "id": "wmc-trail-marker"
+        }
+      ]
+    },
+    "meridian-deck-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_9ecaccacab1641468887b8759dd9970f",
+      "revisionId": "r_5711672892fd428891bab109fb5f2c78",
+      "parentRevision": "r_d6625c132b9343e39fafcb15e382e49d",
+      "manifest": {
+        "bytes": 10397,
+        "sha256": "e8df516f3e4a11c6bb2edb61ae7341920ca91efee261233a84e2fecfd527a35a"
+      },
+      "source": {
+        "bytes": 31487,
+        "sha256": "e09577d89a4388cf056b5ba9efa52bee3ef24f2936e57b9070c081355eae9fdb"
+      },
+      "canonical": {
+        "bytes": 340520,
+        "sha256": "71ee59d021e2bf91924b47cc7538a8e7a0777d4c7d49b32935274d773364769b"
+      },
+      "preview": {
+        "bytes": 153568,
+        "sha256": "c7c7e0830cf9366e4a806232ff30d5cebde8bc8fc3e0272a86d7129b860bb300"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "deck-4"
+        }
+      ]
+    },
+    "meridian-block-8": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_bc0c70b042c5495c9b6d4e75138f5d79",
+      "revisionId": "r_90b595799305471aa23d5c522b098917",
+      "parentRevision": "r_c0f61c891fc74c23afe3e82dc8b12f78",
+      "manifest": {
+        "bytes": 10602,
+        "sha256": "f718ab64438c10e2272ba86f03100e15b83b439419fced9f98cb0b5914a0366f"
+      },
+      "source": {
+        "bytes": 31488,
+        "sha256": "338004d210428f630defa533258f36b3450f4ae2b9df65da4c5efd2343627051"
+      },
+      "canonical": {
+        "bytes": 574980,
+        "sha256": "b2fdece4ef00a30c62a46e0236df6ac04bf5a7a94257ee3f508f75b6ee6f0fe4"
+      },
+      "preview": {
+        "bytes": 298263,
+        "sha256": "9b44fa99a07e45f1b23c500c4218abc13300d0ff85644f45d570cbb14bcec3e7"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "block-8"
+        }
+      ]
+    },
+    "meridian-step-slab": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_6f89067c2b77485a93b7b5d039a6c22f",
+      "revisionId": "r_ed119ee06e04495787eb74e6fa1b3588",
+      "parentRevision": "r_b617dd42793447f9baf46295f17f7930",
+      "manifest": {
+        "bytes": 10405,
+        "sha256": "ed8cabd86b5cc3d0d071ab3a9541b9aeee1d05631b6c5f9099048524b0199658"
+      },
+      "source": {
+        "bytes": 31490,
+        "sha256": "6fe347df67d90b25a1d0ae32da8063cb8c8d9a2fd873a56f1e2a8bed2f03db05"
+      },
+      "canonical": {
+        "bytes": 289440,
+        "sha256": "f4d3c14fbdbc1ab0f07f7af289e93eec9b6e618e8f253ceb457c5d5f840ba2fe"
+      },
+      "preview": {
+        "bytes": 81778,
+        "sha256": "3a861d56cbee6a995536f4d82e2ec24d4138245308da833ab874cc235c0de672"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "step-slab"
+        }
+      ]
+    },
+    "meridian-deck-6": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_3b195f8b7a224b12972c0b41c1fed890",
+      "revisionId": "r_cfc1654b7c0147418c5980fc0155b73f",
+      "parentRevision": "r_39b453f88a264259a66845214bd06c7f",
+      "manifest": {
+        "bytes": 10431,
+        "sha256": "c7c443371184684dbb730955ca0387304fb4f53cfc8e80d1ebdc60f64ac94ddb"
+      },
+      "source": {
+        "bytes": 31487,
+        "sha256": "4d8eeb29212aadfe49bf9509d4019bb93eb82fb0558c94dc03501668c66e0468"
+      },
+      "canonical": {
+        "bytes": 336124,
+        "sha256": "5dd0045c8ae8652541737e066abeec56f451b889181e2da033a2e95359e5f4f8"
+      },
+      "preview": {
+        "bytes": 109000,
+        "sha256": "6a8433077fa09653138955111c2da3cd1fbc661a0a680b226970a2b74e79c512"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "deck-6"
+        }
+      ]
+    },
+    "meridian-coping-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_a28ecbc7dc134d758deefea5105e7845",
+      "revisionId": "r_32c14b58648b4b66b9f916ddd8d796ba",
+      "parentRevision": "r_b020b7d4ed704cb39ed5ca4ad55e35cc",
+      "manifest": {
+        "bytes": 10512,
+        "sha256": "658731a751c9e62275ebb359d489b284686cdf7f97c3001d5006f9b3b9cf1dd0"
+      },
+      "source": {
+        "bytes": 31489,
+        "sha256": "84f8a8c2a6ad51d8d1547080d8c06dd261893932fbab711a5948a627e6d9fb03"
+      },
+      "canonical": {
+        "bytes": 299044,
+        "sha256": "26647e19679146f84d7e9fcdeb9104f5273fcf7496b783b9b5de66252437c20c"
+      },
+      "preview": {
+        "bytes": 80330,
+        "sha256": "101e3571f1bfb1a93d086c67aa15cd74f95205570523aa981b3fcadd5fe688ee"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "coping-4"
+        }
+      ]
+    },
+    "meridian-pool-steps": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_03c9987e328b4854b3f1e40c37142c8b",
+      "revisionId": "r_70d3b4de07f64f518c0a77e49779e0ef",
+      "parentRevision": "r_5f6369876bab4316b4f34fc33965a47f",
+      "manifest": {
+        "bytes": 10459,
+        "sha256": "688f3e55ed44ddc38f800e3b3915017ac113f9cf65a2aa559474104cf5f7f01f"
+      },
+      "source": {
+        "bytes": 31491,
+        "sha256": "87685fd5c42d08c72ad3197a5394303b2074c16c72b5237a578b6560cf80e9d6"
+      },
+      "canonical": {
+        "bytes": 304680,
+        "sha256": "23a3ab978f8d67be3c5b7dc996593533ad2e0317c0da8b037146597a5bd56397"
+      },
+      "preview": {
+        "bytes": 82295,
+        "sha256": "848ac3194cc1cb75e13fc2528e2b4492ab0cf310c653456dab7a60ded2b3fc05"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "pool-steps"
+        }
+      ]
+    },
+    "meridian-stair-8": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_86ccbcae4fcb41e9ad7aeefeea8d2a31",
+      "revisionId": "r_e2c7668c4b704b608fa1faa7e4c9d42f",
+      "parentRevision": "r_e1503a0e84f6499690c597b712049ff0",
+      "manifest": {
+        "bytes": 10495,
+        "sha256": "c59133483d7e52b1dd5ff6c1637d3f69c9ba48471e9ee18fe6a8e7398c4837fe"
+      },
+      "source": {
+        "bytes": 31488,
+        "sha256": "ac1732f95ba5ba163df5d1a0ac8c5b926455426f4e3d967a72280038865f1203"
+      },
+      "canonical": {
+        "bytes": 587552,
+        "sha256": "705bfe877ceee36dc6026496617ce20c8291d91f5a847318c25153e9d7998a39"
+      },
+      "preview": {
+        "bytes": 205322,
+        "sha256": "d37c2b11968fc337c5d41c43538b206f12051c91fbec5770d80f7d0aa8df11eb"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "stair-8"
+        }
+      ]
+    },
+    "meridian-stair-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_3b7a0ed03c61411196d644a78696dd04",
+      "revisionId": "r_6a0f08a3449a4786b7e0c8d085fa247d",
+      "parentRevision": "r_7382f456a4a14bb7977d1856e7c72060",
+      "manifest": {
+        "bytes": 10505,
+        "sha256": "e9895eaeb52ae6935f4e4f1d7340de296b357412e46b49d8d78f47e2a8f807f3"
+      },
+      "source": {
+        "bytes": 31488,
+        "sha256": "543a07bfc6f1a1e6142e929131dd31f529aacf6c694dc98307de57396cb9c557"
+      },
+      "canonical": {
+        "bytes": 414172,
+        "sha256": "2c527e59cf8b7bade85935e30290b0c5986b83a5248f7cf30a20afa2149c5605"
+      },
+      "preview": {
+        "bytes": 205465,
+        "sha256": "4ce516a3c45ddca64236c9d882dc0c7843b9225f47fe1e4abcd5b915e9ca4f1e"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "stair-4"
+        }
+      ]
+    },
+    "meridian-parapet-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_68b548474473491e9a1e2dce7632b2ba",
+      "revisionId": "r_e28232a177ef4fb0be41c5bbf7236674",
+      "parentRevision": "r_e7d47b980f86490b8e4cc9ece4581fde",
+      "manifest": {
+        "bytes": 10500,
+        "sha256": "36c78ae426318e7e354177a2f5a616ae13cc0c88f8c47eb32e1f131564e5001a"
+      },
+      "source": {
+        "bytes": 31490,
+        "sha256": "2cdc059a32536db141ace142b7a702c0356b8d6e8d778c9d5364b00d2d824116"
+      },
+      "canonical": {
+        "bytes": 294716,
+        "sha256": "5621829bf18e8be8e0a947f9da65f8fbf938f9a8501f2eff9488d7a2233d3be4"
+      },
+      "preview": {
+        "bytes": 97388,
+        "sha256": "a3e54d63d24bfa02070937688d9be1b9e865ce464c2bc27816356db6523fae60"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "parapet-4"
+        }
+      ]
+    },
+    "meridian-foundation-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_496240d2b2f041c69b5d593df83b3bd5",
+      "revisionId": "r_ccec44961e6449a7ab752499408139b6",
+      "parentRevision": "r_09cf2903579842d68b32ba0ca08ac5fe",
+      "manifest": {
+        "bytes": 10465,
+        "sha256": "b1430138a792fe413662a73b7b72c01c608c4b5f520f3a63345b447564acfbcb"
+      },
+      "source": {
+        "bytes": 31493,
+        "sha256": "a046c8944c884ddd723a964b951750a35186dd14551a8a861a696c2cc588575b"
+      },
+      "canonical": {
+        "bytes": 468744,
+        "sha256": "0acf1114dbddae2c17b9ef4121ac25dbaa6b7cdaaacd060913e5bd177e74454b"
+      },
+      "preview": {
+        "bytes": 58551,
+        "sha256": "042907496b5e3b5bfe898849cdb7f8a147eed8d9c577cc7b014108fdf4f85c45"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "foundation-4"
+        }
+      ]
+    },
+    "meridian-arcade-pylon": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_5e2481268eb342aab284430556143e9a",
+      "revisionId": "r_269d44f66ec944079983349b9dc2cb5a",
+      "parentRevision": "r_5f793f2c52b0492b89cc362de2ce77ee",
+      "manifest": {
+        "bytes": 10649,
+        "sha256": "081560db922dfd56949386216ef083ac533f4562eaad5d7517c4272ebab914ca"
+      },
+      "source": {
+        "bytes": 65351,
+        "sha256": "5059600f72ac0fc6c3d4f9fb33ee5dd74c7aeb9c9f79d28451b4109d820bdadd"
+      },
+      "canonical": {
+        "bytes": 796008,
+        "sha256": "70a0024743ec6757a4a0110ea06a3d9b8d01e196130e30c91a99280f71b33dad"
+      },
+      "preview": {
+        "bytes": 77680,
+        "sha256": "0dffc94e7ef1122fa52f33ac74ac962cf3ce9584158e936d5b241d03a479621b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "arcade-pylon"
+        }
+      ]
+    },
+    "meridian-arcade-pier": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_1872b09689154cb2825cbe6cd3e77af4",
+      "revisionId": "r_e09059fd12874fbea948389061ee8736",
+      "parentRevision": "r_08a27b339c5c4c398b9bae58936b9f3a",
+      "manifest": {
+        "bytes": 10531,
+        "sha256": "d6c216084ccf2f58e0ee17eeb2a030f4d1e6a148c4b1b62579cde686b10f2eb9"
+      },
+      "source": {
+        "bytes": 65350,
+        "sha256": "ded78d069fab1971d4596ca00c6dbacc8639160ad53a18458521905e4b9e0e00"
+      },
+      "canonical": {
+        "bytes": 392988,
+        "sha256": "f5023ce52f99367f31ca76fb624ce89a9ab50028b02c562b92983e7473ac457d"
+      },
+      "preview": {
+        "bytes": 156507,
+        "sha256": "91e3450ff8619f9275c7415007bf3c9f4e8c30ae7274cc708d1d16dd3eec4834"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "arcade-pier"
+        }
+      ]
+    },
+    "meridian-arcade-pier-slot": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_5aa55f2016c84a98a47300864c642739",
+      "revisionId": "r_23415f3bcad34dbea52c9b930878be28",
+      "parentRevision": "r_eb2b5ad217234da3a702e7fba5635200",
+      "manifest": {
+        "bytes": 10670,
+        "sha256": "288bc8d5ce6d8cebc9024157283052c75b23a044a7815a6fcddb184e04749a35"
+      },
+      "source": {
+        "bytes": 65355,
+        "sha256": "a1a6bfcbf17e62cce5a39ad49ab63436d73513792235d78f104b3a4d82efd880"
+      },
+      "canonical": {
+        "bytes": 409172,
+        "sha256": "7e96ed8923b375105a427a3c61a0c829fe4594b9668ab80af00a4bbfd6927036"
+      },
+      "preview": {
+        "bytes": 168571,
+        "sha256": "e5236f708045600cec56c883aff39b56e58c454561ebe5f3a1ed9531681d76c2"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "arcade-pier-slot"
+        }
+      ]
+    },
+    "meridian-arcade-arch": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_71cef64b7f8143478db7afd63d553974",
+      "revisionId": "r_e9e14002aa444492805007f0bf30dfee",
+      "parentRevision": "r_d412b7188d4344c78498ab6fb0be1076",
+      "manifest": {
+        "bytes": 10623,
+        "sha256": "e64508784b106b4794d6fe94f97b1e403ce56de9a935727a6beefdb588153672"
+      },
+      "source": {
+        "bytes": 65350,
+        "sha256": "162bc29bb236379c28cf731a77fe52dcaa8905176f21a093cf25efc19f5303b1"
+      },
+      "canonical": {
+        "bytes": 446504,
+        "sha256": "31800d916aee1b6bca31ab51c3577b813cef9982ba0d7fbdc5e6760d83a3ab7b"
+      },
+      "preview": {
+        "bytes": 182378,
+        "sha256": "11af17d1e6a4bb250136470367736390155c4bc06ae71fdfba42bffa7b4657c3"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "arcade-arch"
+        }
+      ]
+    },
+    "meridian-tower-slot": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_3b903db052c3431a9540e5f54a9b5ee5",
+      "revisionId": "r_c4851c428d0e4931a2983eea9d6e1d8d",
+      "parentRevision": "r_1675e1ee267c4fbfaab03acc47c8d371",
+      "manifest": {
+        "bytes": 10568,
+        "sha256": "6ab095b9e557555957711fb99d067477369796d9c1a0ecef6d24e099878e2459"
+      },
+      "source": {
+        "bytes": 65349,
+        "sha256": "1c129f8c397115fba53d20596cb014d990e753a42bb7147e8728eb38aa129f0c"
+      },
+      "canonical": {
+        "bytes": 1107336,
+        "sha256": "7036e4b366e13826f00d1934ad3f09273c0d3a5ba634b37fc74c369e984e9ff2"
+      },
+      "preview": {
+        "bytes": 160359,
+        "sha256": "71f62d0738d0191018ec3534bb2a2525a0de7ca15518de95c4769734b8355ddc"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "tower-slot"
+        }
+      ]
+    },
+    "meridian-cascade-tower": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_e6f9b6d59c9e48e88b6c266fe8df0f01",
+      "revisionId": "r_90ab6b974ebb41c4a72e5062a24334fb",
+      "parentRevision": "r_c669751d68b54093b8174490a253eb1b",
+      "manifest": {
+        "bytes": 10682,
+        "sha256": "c387a499199c81b87bc8193fa72960ba46b19cb07a0d835201824453d1f76cde"
+      },
+      "source": {
+        "bytes": 65352,
+        "sha256": "a4f9821254f3140ce70f263a232bcf30a7570dbe36c85856f9cb985a020130d2"
+      },
+      "canonical": {
+        "bytes": 478736,
+        "sha256": "dc18db681668df8be1a07ef3e024b85faaa47ae818f5cca56240a031f1fdbfe1"
+      },
+      "preview": {
+        "bytes": 287068,
+        "sha256": "d18c8aa35c34e3ea6619ec052fea45286cfa679504fb54665a6430c879d14646"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cascade-tower"
+        }
+      ]
+    },
+    "meridian-gateway": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_3d189b692e934646bccc63f3088eafd1",
+      "revisionId": "r_c33d46440935478180576e38ffa20662",
+      "parentRevision": "r_4c9605d2325647c2b532ee257ce601cc",
+      "manifest": {
+        "bytes": 11088,
+        "sha256": "2f5cfc508c64e310490303deb5123b42f584b35eaf8058db0dd0505cdd48f9a7"
+      },
+      "source": {
+        "bytes": 65346,
+        "sha256": "427516719e17375dcc09ddae5471f7e8e361a5e93008c0311c164a1cd8f602b2"
+      },
+      "canonical": {
+        "bytes": 14792776,
+        "sha256": "a80b611eb293ab6b6b18e95d9a436c7d7e2185e328ea92787b4ef9f787c173d9"
+      },
+      "preview": {
+        "bytes": 249074,
+        "sha256": "08dc0654f9e73ebd284ef3e577f24bd1c63d51c5301331bedac482c53f95d5f5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "gateway"
+        }
+      ]
+    },
+    "meridian-orb": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_6eb69a9b81ea429880d3f1e5b308955a",
+      "revisionId": "r_14709d822a9a444ba5b3e6a6db89d0ca",
+      "manifest": {
+        "bytes": 10680,
+        "sha256": "ab001170b45e8c7f6bd529485b27225c6b4a8092b4576d4fdadbfeba767bc096"
+      },
+      "source": {
+        "bytes": 35756,
+        "sha256": "42667a192fd895d7a8b6ba47fcc82f3ab5bb65711281b853d4e9a32a5b38df68"
+      },
+      "canonical": {
+        "bytes": 275776,
+        "sha256": "563ea30274f7909b917ccd771e40a63fb2b1c6c18e696bc592eedbe7bdb3b1bb"
+      },
+      "preview": {
+        "bytes": 516049,
+        "sha256": "939b1310a2f3fcc2c672b5e3b58ad2dd9add9229eca3466ebe973cce69197d20"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "orb"
+        }
+      ]
+    },
+    "meridian-falls-narrow": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_8a9a9d21b715495e8da9ea86f9926b3f",
+      "revisionId": "r_792166fb225343fbb5ea84c29d051c19",
+      "parentRevision": "r_5eab76a0d3b0419a944caaa326874794",
+      "manifest": {
+        "bytes": 12880,
+        "sha256": "be023d6301832728891039c79bbb044e7da9e474835ee7e0d6ad0460029fe98b"
+      },
+      "source": {
+        "bytes": 26824,
+        "sha256": "d3ab9a2823ff6378fa94f4546592c7db4353531f8c15c988dd5b6fa882d3aecc"
+      },
+      "canonical": {
+        "bytes": 89784,
+        "sha256": "984acc04312a1712e550a98a4ac1572438eadcec75687524428f70c1b98b7e51"
+      },
+      "preview": {
+        "bytes": 297213,
+        "sha256": "35630fe6019bf1fc731e6af0a929cfd5c59d389a4b9049c0f46e300b48b59256"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "falls-narrow"
+        }
+      ]
+    },
+    "meridian-overflow-wide": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_9f4e630b3c014b5a85b80b271b6a533c",
+      "revisionId": "r_d9957682b89b4c0289370544667ba823",
+      "parentRevision": "r_4a97697cd3c24886b3937882f593efe1",
+      "manifest": {
+        "bytes": 12813,
+        "sha256": "aa62ac68f3815f63aa83d0502f3b7f653f288717b3daa8171a92093e6462f129"
+      },
+      "source": {
+        "bytes": 26825,
+        "sha256": "e912cfe6d9e23619a03f3e04a015a437b0f5a497b0f63cd26aa97a895178a003"
+      },
+      "canonical": {
+        "bytes": 74552,
+        "sha256": "5cc57f59320d62f219856f21b61ee1f34f4940e1c86420b553d8af972257744f"
+      },
+      "preview": {
+        "bytes": 254555,
+        "sha256": "36a5e77f434eb2e1ffb640a7e805a0d28bf8dadb5e815d2fbd156ad4457b9e07"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "overflow-wide"
+        }
+      ]
+    },
+    "meridian-rim-spill": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_aeeaca8105cf481c95589666b06d2828",
+      "revisionId": "r_f492f2ff386f42e98744b929aa38b228",
+      "parentRevision": "r_3a91e637f8ad457487faefa9fbe828a3",
+      "manifest": {
+        "bytes": 12849,
+        "sha256": "8a5e6fd5eb1543d65a2de51e49eff39de141b97208727075bb093ede5e7c4b1f"
+      },
+      "source": {
+        "bytes": 26967,
+        "sha256": "3a52621b6938554b20934a05e0684dce56ce0755786c8375571a2fb8ed86e7fd"
+      },
+      "canonical": {
+        "bytes": 67360,
+        "sha256": "25b86da922bc5cbd0a45dad8bfb693d7d1aef882d4e577a2fdbec525066eb64c"
+      },
+      "preview": {
+        "bytes": 59388,
+        "sha256": "9d214f18f24b0ded33809477226f9c83121ce03d40a90cb18f8f3b7ff6ab1879"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "rim-spill"
+        }
+      ]
+    },
+    "meridian-basin-water": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_5ac2d19a9ec245d6a1932992548c3c22",
+      "revisionId": "r_302353e26e6545dbb54266b1adcb6876",
+      "parentRevision": "r_df12c53e05274f25a318823cfb6080c1",
+      "manifest": {
+        "bytes": 11363,
+        "sha256": "f138237429fd97f1b8ac5ed8b82cfad1500eabf2e47514cc196905d8d4c95df4"
+      },
+      "source": {
+        "bytes": 19266,
+        "sha256": "18b78f8ced12aae8dda638c58243fd9a49e66ac39b58f058eb0cb6b9af9c1058"
+      },
+      "canonical": {
+        "bytes": 36584,
+        "sha256": "15be8981765636b518620ec8eac261e2bbc7b6ba421117b40f8508308399a0e1"
+      },
+      "preview": {
+        "bytes": 74674,
+        "sha256": "4c74aa8bab7730a52e0ba7682038dd7bd08b48376fee25447473178df38414aa"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "basin-water"
+        }
+      ]
+    },
+    "meridian-planter-sq": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_6278a9dc61e648129614e44414e57717",
+      "revisionId": "r_903a72978cfe465186200a1fb3c0efad",
+      "parentRevision": "r_2722a2d0f95d48be9296c0be62d19e5c",
+      "manifest": {
+        "bytes": 10548,
+        "sha256": "335e85de4f267117b0c82f692fe8e7fe94b4e501755700c01d957c4b3e995aa2"
+      },
+      "source": {
+        "bytes": 65349,
+        "sha256": "2a66363c7e190468e5398d5df17bb78ab21ead677f013262faf5c5b3149059c1"
+      },
+      "canonical": {
+        "bytes": 441368,
+        "sha256": "763d149e4a3f2ae481c09c4889465b677cac3790b9af56a018749ef70e7d41f5"
+      },
+      "preview": {
+        "bytes": 137340,
+        "sha256": "40105ae045adeaf95a1bbe81a481dabf546aa4abf2bcea72e4ad192abf9b845a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "planter-sq"
+        }
+      ]
+    },
+    "meridian-cypress-tall": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_dfd044d6b13642c5bf52251a76e7c865",
+      "revisionId": "r_be51d33b5f0a4afc93ade339d923e4a2",
+      "parentRevision": "r_d0b3cc0be0f84670ade5eb7165f35050",
+      "manifest": {
+        "bytes": 10483,
+        "sha256": "f06763a6a846d187ee3f8b28cb79b845908e011fcdd25c070fdc3bcd916879a4"
+      },
+      "source": {
+        "bytes": 27179,
+        "sha256": "83d1da82bbf8cb71158400be5be5cb8549e647b10387af7eb8fc163091ead19f"
+      },
+      "canonical": {
+        "bytes": 550724,
+        "sha256": "689ed8584fff0fe276e8a45adaee3bbeec6a4e72a6a1839f934bdb531fa4a98f"
+      },
+      "preview": {
+        "bytes": 287342,
+        "sha256": "35e827f604b2d57528e34eeb7d843c47aed7c54fe4313716b9d89e81522f1d1f"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cypress-tall"
+        }
+      ]
+    },
+    "meridian-shrub-b": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_8e3dc511b0a74bee83928f75486d67b0",
+      "revisionId": "r_18f9489150844e0d8d8fe5b526b5b0ad",
+      "parentRevision": "r_adc684b454bc45978d01698652c954a5",
+      "manifest": {
+        "bytes": 10647,
+        "sha256": "5685c1df36b476fa3081c1fafa85fbf5729a3b22a4d2bc75f263400bdee60875"
+      },
+      "source": {
+        "bytes": 28630,
+        "sha256": "c495fcd1fe3a468725c2a3eee3c8c288a92689b8a12907d085c59620515ec218"
+      },
+      "canonical": {
+        "bytes": 229668,
+        "sha256": "b0f7b81d888b267ea85a1d4977af957004a8b02afdd6ab9ba3d8fa58ef322253"
+      },
+      "preview": {
+        "bytes": 545520,
+        "sha256": "b790b568bdccf6b060f81c511a3ccdaed56a6985e18d6fb7ea836966f5fe5e28"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "shrub-b"
+        }
+      ]
+    },
+    "meridian-cypress-mid": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_39ffb9f601cf46259c43be9a68ce9083",
+      "revisionId": "r_44c60f904a8e4598a05f248c438fca73",
+      "parentRevision": "r_5a8e63eb212845c89a97c8e9413ac53e",
+      "manifest": {
+        "bytes": 10530,
+        "sha256": "9a65ac99d47b0e86bae29a411a3002e9b4aee7c1608163a7f64925f1314c710f"
+      },
+      "source": {
+        "bytes": 27178,
+        "sha256": "91e5a975fea6d36a080a451eb3f6d14d69c681c936539c8b39a85e64539cdfb5"
+      },
+      "canonical": {
+        "bytes": 403320,
+        "sha256": "a8263638268e4b8296eb1038dee3a16d7e5a5d1c293ca549320b74037ab688be"
+      },
+      "preview": {
+        "bytes": 278253,
+        "sha256": "681ba6695f994390148fcd95f91beef4000b78b9e9206ab1e8d741820abbac0c"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cypress-mid"
+        }
+      ]
+    },
+    "meridian-planter-long": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_0dc7ceda00b941029cf89bef1ea4b433",
+      "revisionId": "r_df7f82a951694294b7a6bf91aa6a8111",
+      "parentRevision": "r_7dfa935f293c4f1593ef4189f61eaf83",
+      "manifest": {
+        "bytes": 10544,
+        "sha256": "5634cf6a62ed416e93ca0964cf92447dbecdce4920725585ab4117650f8f1c83"
+      },
+      "source": {
+        "bytes": 65351,
+        "sha256": "8ca19b63c277aba7e8f01d3469703700f6bdd18bdd9c3a00ba75865aefde28c6"
+      },
+      "canonical": {
+        "bytes": 503880,
+        "sha256": "f409f0304f2fa8d4269c0826f873b504517c45e9618fb6dfce4e587ab179af74"
+      },
+      "preview": {
+        "bytes": 108117,
+        "sha256": "f57026adfed9c3cd9753d0db3c49e0494ddd7b95d999a68c07c983ac6142ed61"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "planter-long"
+        }
+      ]
+    },
+    "meridian-shrub-a": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_2b0bd24c5c4c475398236722326ade8b",
+      "revisionId": "r_d9dcc110da02497283464db09816c4e1",
+      "parentRevision": "r_e7b5755b515e461fbe97cd484e02e049",
+      "manifest": {
+        "bytes": 10646,
+        "sha256": "8bf1f3c0f61aefbb96e8edecb00ed3020bda0a5c5c6fa5c654e324e9d1f70719"
+      },
+      "source": {
+        "bytes": 28630,
+        "sha256": "8ee787dd1ad0979be1f4788af1f7a3207c3168f3d058efa509dbb693d2025f41"
+      },
+      "canonical": {
+        "bytes": 282308,
+        "sha256": "d41b632d49e91dfcd3f6db132b8ba89e42ac1d8d3d138a64867ecd7c22d610d7"
+      },
+      "preview": {
+        "bytes": 712971,
+        "sha256": "61109c1f688ec1335bee85e51ab80d681420bf1ef71d11b76a6420fcf80e62d7"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "shrub-a"
+        }
+      ]
+    },
+    "meridian-ivy-short": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_6f29f3fb60e94af3a4f9d1a5c95a9348",
+      "revisionId": "r_17b6d0b4330a4e309761103f4c6eaefb",
+      "parentRevision": "r_d4ecb2c623624ed3914be69a6415b8fd",
+      "manifest": {
+        "bytes": 10924,
+        "sha256": "9a4add335b72babe0eb9cc546e6e80f387a738554c370fb4b68d61742a96237e"
+      },
+      "source": {
+        "bytes": 22664,
+        "sha256": "374a7695cf009874bcd58def766eed35990fd7e6d87287702f686cb6525402f1"
+      },
+      "canonical": {
+        "bytes": 86884,
+        "sha256": "f869dd440a9f58abbe25fe65cc73d99bfc1d0ad0c417dc38d7f0e21a1a22de0c"
+      },
+      "preview": {
+        "bytes": 211108,
+        "sha256": "b9e4aed2ea0cd56aab694f8a5cd30eab64b2ab60de2e2ac0283c596afc236cf5"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "ivy-short"
+        }
+      ]
+    },
+    "meridian-ivy-long": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_6a335a4ab0ed4fa68ca882df46f9bb44",
+      "revisionId": "r_b079cae2265a44d4aafe0aa05b93c008",
+      "parentRevision": "r_48e3148c11ef48a8a2f0e3568a143ea4",
+      "manifest": {
+        "bytes": 11161,
+        "sha256": "7611fc09d81c56497359f5c6e42bd843a8278a607c5e6bf47304bb770f317be3"
+      },
+      "source": {
+        "bytes": 22663,
+        "sha256": "e5aea30b8b65cc51263e81abcb6413d45523721e33e47ce899aa12c4f0ba3134"
+      },
+      "canonical": {
+        "bytes": 213728,
+        "sha256": "44008144537fd12cec0faa9b2104f22e20f82fe32985391a29cf58c67bf1255e"
+      },
+      "preview": {
+        "bytes": 157055,
+        "sha256": "769f296979fbe32f071c7fa1fcb3e48176f204c766cdabc5f2bace8b110de767"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "ivy-long"
+        }
+      ]
+    },
+    "meridian-isle-base": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_35a7b96496dc4c3b8dbb90837234933b",
+      "revisionId": "r_44718bb1d05a4aeeab4de5649ec1873b",
+      "parentRevision": "r_4d8883c5e9354a42bdf253456cc948dd",
+      "manifest": {
+        "bytes": 10549,
+        "sha256": "2755f39f8b05463883eda99786440fc554ce0faab87d6545f580968cc77f71af"
+      },
+      "source": {
+        "bytes": 65348,
+        "sha256": "2d1c36bd1732fbdf67d26c43bfe8347f125a5feea7d29d7d891cda0e32c15ea5"
+      },
+      "canonical": {
+        "bytes": 1159192,
+        "sha256": "faa07d441e2383b1b408d0e2ab80b801bc7f6f576ad429ebe235f262a56ab945"
+      },
+      "preview": {
+        "bytes": 340624,
+        "sha256": "fe59e7c1c14811b7a2cc8a67b8a8cc338558c095d8ebf7246cae9453d7e4beeb"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "isle-base"
+        }
+      ]
+    },
+    "meridian-cube-marble": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_faa275ba070e49f388ba9dcec5841ac4",
+      "revisionId": "r_fbc6774707564a54923a9d1f9b1c8ca9",
+      "parentRevision": "r_1ad0568e8cd24de68d28e8c4a9452eb4",
+      "manifest": {
+        "bytes": 10439,
+        "sha256": "c9636663867f645de89a486dc864f5c0d2cd8e1fc568b6dd774d7f0f0a2dbf58"
+      },
+      "source": {
+        "bytes": 65350,
+        "sha256": "7c5a1112490c0ac6a031239f9cfd61869c6f51d8d899941bc8961a28d0b0c81f"
+      },
+      "canonical": {
+        "bytes": 282288,
+        "sha256": "a53ffada88901ed9323f7a8c9639eeb11d1927ea5a20477571a35e1d9789d96e"
+      },
+      "preview": {
+        "bytes": 154623,
+        "sha256": "d1a3c83e617bf4352552abb02b4bafca67863986a15d4db657a491a3b9123890"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cube-marble"
+        }
+      ]
+    },
+    "meridian-cube-mirror": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_b2ed39a4ce1a4fd99dd876cc5c703165",
+      "revisionId": "r_8f1700e3aaf04919865f86ce1522f5b8",
+      "parentRevision": "r_9999e0d94987445181dcf656f540e669",
+      "manifest": {
+        "bytes": 10479,
+        "sha256": "fb9bc628edec51f532c26f230a538befba4fb91b5a50458c72169bafbd7754e3"
+      },
+      "source": {
+        "bytes": 63618,
+        "sha256": "6dc71b75323e034faa934c6f8a22c50bf3e1fd01c45a118ee43322cac322d6cf"
+      },
+      "canonical": {
+        "bytes": 5236,
+        "sha256": "f052282ea7389236f220c25277fb00504de1dfa440c6e7d2c8d398de9439de1a"
+      },
+      "preview": {
+        "bytes": 20359,
+        "sha256": "cfd0c95d2741ae9c0e88c14a274154136acefd274a864ea7e305d9ef07a985ae"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cube-mirror"
+        }
+      ]
+    },
+    "meridian-monolith": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_463eeb97e1be466dac2f2a444ba879fb",
+      "revisionId": "r_fbf4389a2e4d4239813cd2dbc54e094b",
+      "parentRevision": "r_58f039e2370b4066bfc9b2c820ed2e2d",
+      "manifest": {
+        "bytes": 10533,
+        "sha256": "a34b2efaafc827cda0bd4219a393fd0001776286deeb1c77bf5721aafa21e636"
+      },
+      "source": {
+        "bytes": 65347,
+        "sha256": "c8c8612ec12ad5b6d1176f9899bad774b2a61b48830e7ca48aa8da6ba8b7319e"
+      },
+      "canonical": {
+        "bytes": 1313276,
+        "sha256": "51524b45342939d61988ec89d1ef63daf08ab58b70d7fc13bc50bb70dc3b8d92"
+      },
+      "preview": {
+        "bytes": 302942,
+        "sha256": "0cf1d1f82c35848ac5b8739255e5236b6d3d77dab36e97ce84c7d41875ff8959"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "monolith"
+        }
+      ]
+    },
+    "meridian-cube-mirror-court": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_a107bf0519104ce9849cc823fca52a20",
+      "revisionId": "r_36354c34ee5946cd910255a4a8b3f606",
+      "parentRevision": "r_ce273f6eb5e6434ab91aba8a4f8c48a3",
+      "manifest": {
+        "bytes": 10465,
+        "sha256": "389c7c8c6ba3833130d77cc19c0563a0e22ebcc3f14d687c23fa6ec58f47fb52"
+      },
+      "source": {
+        "bytes": 63624,
+        "sha256": "a0e97376a24e2c50762181c1a042945706d003b99979f8e841132943b8231cbb"
+      },
+      "canonical": {
+        "bytes": 5244,
+        "sha256": "de76c91d812d79382063b892c77295ff5deef58b1b677eddfda98bc421e0f2e1"
+      },
+      "preview": {
+        "bytes": 20359,
+        "sha256": "cfd0c95d2741ae9c0e88c14a274154136acefd274a864ea7e305d9ef07a985ae"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cube-mirror-court"
+        }
+      ]
+    },
+    "meridian-shrub-c": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_bdac34882fa14b84be3d33ea14adb9c9",
+      "revisionId": "r_080cc7c6bf3a4e55b9348a9bf6136646",
+      "manifest": {
+        "bytes": 10571,
+        "sha256": "a299bad49a20e2aa6ad7619134ceec7d153e55d206e78f469224e956c0af5e98"
+      },
+      "source": {
+        "bytes": 28630,
+        "sha256": "d9a73fedacc110f5f929454ca0a12276ee7b206e906f37339065fe3e1bff1406"
+      },
+      "canonical": {
+        "bytes": 252068,
+        "sha256": "f7eeae666d6bac7bacd40f1514ebee4323ebef7afcc4c84adc44c50f57ce2d2c"
+      },
+      "preview": {
+        "bytes": 690526,
+        "sha256": "c2330064760dbf6bad1b33d0b1764e9df2884df5eb8946ad77d34291b1b24ad8"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "shrub-c"
+        }
+      ]
+    },
+    "meridian-cypress-broad": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_e7849305e90b44eeab88fb69bc7c5c1e",
+      "revisionId": "r_65d968a6e4a34968bfaed1504cf759ba",
+      "manifest": {
+        "bytes": 10501,
+        "sha256": "b76ec189f61641778d3c1f04798e5f7a2ead06a7f3079bfa8cd5e2f4e8f3d881"
+      },
+      "source": {
+        "bytes": 28636,
+        "sha256": "dab8bd8cc17939f56be234363d07c9e79fec544a89d0a1de70386d2f528183bb"
+      },
+      "canonical": {
+        "bytes": 378448,
+        "sha256": "26743581289a7b2799e09df6909e7ee72184f544c8f5a8bb677adae92c7c6a9e"
+      },
+      "preview": {
+        "bytes": 333808,
+        "sha256": "3e62eec4027f81ea1c38e0462ba0b610ff8346c1cbebbce41a9d6d387670b228"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cypress-broad"
+        }
+      ]
+    },
+    "meridian-cypress-slim": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_f2de801b1cbb472b99638a036c22221a",
+      "revisionId": "r_4cb4690620ab4a2aa57cf69cd06255e5",
+      "manifest": {
+        "bytes": 10468,
+        "sha256": "7aaea1cbd56421809fe80b3e08b7b6fb86254cb88f4e85f9dd4e47d4fcbc7d3c"
+      },
+      "source": {
+        "bytes": 28635,
+        "sha256": "df66b9dabaecd49dd2f9e096c63e875c74c187a208ba674d2e641def1483c18c"
+      },
+      "canonical": {
+        "bytes": 481224,
+        "sha256": "003f4e9395fb5c6a3ff97c5d02762800b61687cd8f8064f7d920af798b600624"
+      },
+      "preview": {
+        "bytes": 246106,
+        "sha256": "748340a4337f249ff6759193335f0d252973bb9d6310fc4beb5fc93d983cdbc6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cypress-slim"
+        }
+      ]
+    },
+    "meridian-tower-gate": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_4836065137894bf49499b78028fcfdb9",
+      "revisionId": "r_dac22ca376b745ceab2346845e4c16a6",
+      "parentRevision": "r_aac85f7dcf2943489b9ba1a3dd41dc02",
+      "manifest": {
+        "bytes": 10688,
+        "sha256": "90508f63f0fd28f981ccbe2eb1aed6eff1e962ab34eefd8b977adfe8150d43b1"
+      },
+      "source": {
+        "bytes": 65349,
+        "sha256": "e340edc609f33ad912139049fa6f4993de73384feda11ad98d8cd01a08aa2f66"
+      },
+      "canonical": {
+        "bytes": 1618560,
+        "sha256": "eb250a9dd0a414138db8619015c2daf6646cfe1ed4794b3d6137d98b094ccd75"
+      },
+      "preview": {
+        "bytes": 114373,
+        "sha256": "a8ce39708f3b99b0b99be35a39cbc4052b56444120cf651593a6064550cceb01"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "tower-gate"
+        }
+      ]
+    },
+    "meridian-arcade-bay": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_ebda3dd3bf5f41d6ad0dea5b6a9c3ef6",
+      "revisionId": "r_60cc31247cad446a95672bddc01ae520",
+      "parentRevision": "r_205d267f0d22467ba12953656d47e268",
+      "manifest": {
+        "bytes": 10583,
+        "sha256": "8bd867c426815de9d08a90019667640861590f36edd56c612f73226c0a9df536"
+      },
+      "source": {
+        "bytes": 65349,
+        "sha256": "19ea35e682ab0761fc4e479b9e0dc85a75a947fe6b97020d8d9e0a59c1ba000f"
+      },
+      "canonical": {
+        "bytes": 561964,
+        "sha256": "bf2e816bd344c60734361a581266831601546c8afddd49e80554110d64de815d"
+      },
+      "preview": {
+        "bytes": 149231,
+        "sha256": "9e95dcb4de1ab79fee6293fd5a5869870f7aa753b279c0e7cfae22bc1840c1e6"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "arcade-bay"
+        }
+      ]
+    },
+    "meridian-pavilion": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_fcde0b57fef04d3698a139126d44f416",
+      "revisionId": "r_3745cc9353f44c1b8d3102d59c9f9d46",
+      "parentRevision": "r_ce8753d65b814006a5104477fc9a6885",
+      "manifest": {
+        "bytes": 10598,
+        "sha256": "11d749a9b3edc422c9550ca1f279acff6b2665ee378951ecdccfde7051fe8600"
+      },
+      "source": {
+        "bytes": 65347,
+        "sha256": "d32376c8fca4872936cbbaf631a9e618326aedda77aefbbb44ac9148274cbdbf"
+      },
+      "canonical": {
+        "bytes": 596512,
+        "sha256": "80c78c7effe5f1a71afb0f23b52b0126de5b724497114e49914958960f905282"
+      },
+      "preview": {
+        "bytes": 147316,
+        "sha256": "b296259a434d57408a2daeb2694e597d297d6d8b9f86507cdb3ec84df37a8ec7"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "pavilion"
+        }
+      ]
+    },
+    "meridian-balustrade-4": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_7d9d5e100703402aa907c7e9fe1ccef1",
+      "revisionId": "r_eb66bdfce33449e386b9792df125142d",
+      "parentRevision": "r_5ab927afed204bfaad958924943d4e4a",
+      "manifest": {
+        "bytes": 10532,
+        "sha256": "134b9ad4f16ffa314453d19b80ac2250b47b7ded764ddf3f241e11a063cac3bc"
+      },
+      "source": {
+        "bytes": 31493,
+        "sha256": "3fb79179c857f1a7ccf839edd450a0eab922fc094077cc4595f62bcbb3a83221"
+      },
+      "canonical": {
+        "bytes": 332568,
+        "sha256": "a0c40e478f7a7ee58aaa6f87642a7f9329c45e627af7da6c183d82b5f5c0ee45"
+      },
+      "preview": {
+        "bytes": 84593,
+        "sha256": "46d8159bd0fc87e052f2160ccd336377c2419c13346754f1e7e3cb77e27f0712"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "balustrade-4"
+        }
+      ]
+    },
+    "meridian-cube-mirror-far": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_b0480b746fa5406c82626f5037e30f5c",
+      "revisionId": "r_1b9bef4f0c2d46ae8bdd1261f64b4c71",
+      "manifest": {
+        "bytes": 10475,
+        "sha256": "c52554b033fcb53db433c728e451a43b77408c581a7bbedd7fcab34e130692e7"
+      },
+      "source": {
+        "bytes": 63622,
+        "sha256": "e17b2e8d8591d78aa62bad7f690e33878fff5bdb34668bce9747592275ac90b8"
+      },
+      "canonical": {
+        "bytes": 5240,
+        "sha256": "7565e0872c555de2563f19c2a4533a90743a290497888d7b24f29ab10755fd41"
+      },
+      "preview": {
+        "bytes": 20359,
+        "sha256": "cfd0c95d2741ae9c0e88c14a274154136acefd274a864ea7e305d9ef07a985ae"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "cube-mirror-far"
+        }
+      ]
+    },
+    "meridian-statue-figure": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_2fdcbd42ab4740469b82e2c357f96413",
+      "revisionId": "r_c3c6c0cd796b43c88dabbb09061e3ef3",
+      "manifest": {
+        "bytes": 11326,
+        "sha256": "78d907480df3e18b9d0491d8bbb4fa746c77029c43e997e922a9f59805a957ba"
+      },
+      "source": {
+        "bytes": 15828,
+        "sha256": "ea8d4538720b66e5fc6ce07312bcb53d4dd4c8af8bc2dd9eb96156e89a593a00"
+      },
+      "canonical": {
+        "bytes": 896964,
+        "sha256": "fd9f981f9876ba561567ba071e10280db0feeeaf79ab902f813e2ea8c78a2988"
+      },
+      "preview": {
+        "bytes": 184127,
+        "sha256": "6d478b6d0f725cd0036b910141cb0962550d243a39419f7f6b1df0d573f2a479"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "statue-figure"
+        }
+      ]
+    },
+    "meridian-statue-whale": {
+      "store": "marble-sanctuary",
+      "collection": "project",
+      "assetId": "a_705819f9bd52422b947684965b45795c",
+      "revisionId": "r_94ec333e46d84cc7a9c4e79455b1c572",
+      "manifest": {
+        "bytes": 11393,
+        "sha256": "8b9bfcde9108042f0b2d77eddbb5a204ac0681a55b6bf4cbfe58c934b240951b"
+      },
+      "source": {
+        "bytes": 22053,
+        "sha256": "dfa7608671b5069940ab27ddbddc58ca8fdeb49908146e95f3bf818c4d654cf6"
+      },
+      "canonical": {
+        "bytes": 794760,
+        "sha256": "733063c17e42fbe08312a06ef3fb0b9b4ea1ee8bdb9d50103e8a8d04ef6382b3"
+      },
+      "preview": {
+        "bytes": 136607,
+        "sha256": "39333cf93234bbbc66c4f7259d82642e18dbe1f0c4bf46005d6fbbf1ee5e0356"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-meridian-sanctuary",
+          "id": "statue-whale"
         }
       ]
     }

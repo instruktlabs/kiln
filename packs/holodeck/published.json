@@ -3110,6 +3110,926 @@
       "path": "packs/holodeck/objects/ff78a6e20f487ff9cb0843a2eda5f675a58b65b3ea6e68cb778d45056d2ba51c/winter-wmc-coffee-table-runtime.zip",
       "bytes": 247442,
       "sha256": "ff78a6e20f487ff9cb0843a2eda5f675a58b65b3ea6e68cb778d45056d2ba51c"
+    },
+    {
+      "path": "media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival.png",
+      "bytes": 1974817,
+      "sha256": "3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0"
+    },
+    {
+      "path": "media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview.png",
+      "bytes": 1784873,
+      "sha256": "9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch.png",
+      "bytes": 1688867,
+      "sha256": "3273933075459ea063a67d863a5993b17ea6ba009c91208f9488201475d46b53"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay.png",
+      "bytes": 1485623,
+      "sha256": "bb9f88bd0ef7694487438d7b5251a40aa5ee1c1aaaafb824e3a90651b44e00ec"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-pier-slot.png",
+      "bytes": 1668723,
+      "sha256": "1567a4b99d9ace9b0bf207e1b4a90c42f07877598fbb856559b19f19333bbd3b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-pier.png",
+      "bytes": 1658377,
+      "sha256": "aaa77cb4682456de18fda16ef2c3f6f42b4b0686d88a993719447f1d2164b9f3"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-pylon.png",
+      "bytes": 1226961,
+      "sha256": "aa705b724e8186232768348952101b5087b39795e10591afe34609628373946c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-balustrade-4.png",
+      "bytes": 1598113,
+      "sha256": "4042c973618ffb037f78ea294cd37ff09daf75330b8984e2a1369023ebe455ad"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-basin-water.png",
+      "bytes": 1388641,
+      "sha256": "aca73d57de6186e2a1a5c696a96788d27846c604b9268d7b7b03129dd115e2e3"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-block-8.png",
+      "bytes": 1750303,
+      "sha256": "d06e66e58079359376bcba70929f9dd8b9c82779371e600c25858c4adae16b26"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cascade-tower.png",
+      "bytes": 1980557,
+      "sha256": "f93fd5fad9fd29b72b8ac73ee0c5d50f66f59688e519df4fed37193883f62fd8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-coping-4.png",
+      "bytes": 1645727,
+      "sha256": "8a1e2f9692cdad19451b6fb21d30513522d6eba2bf509ac8d9d9d35e96d28ba9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cube-marble.png",
+      "bytes": 1768547,
+      "sha256": "ccbef51aa5a9a4466020ecfa916ea08d9dcd231d7421a15a4196664253b56520"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cube-mirror-court.png",
+      "bytes": 1612991,
+      "sha256": "0adf59f4f22c717bc760aa6df39c61600f5074d663c72bac4934631f0f00140c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cube-mirror-far.png",
+      "bytes": 1612991,
+      "sha256": "0adf59f4f22c717bc760aa6df39c61600f5074d663c72bac4934631f0f00140c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cube-mirror.png",
+      "bytes": 1612991,
+      "sha256": "0adf59f4f22c717bc760aa6df39c61600f5074d663c72bac4934631f0f00140c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cypress-broad.png",
+      "bytes": 1422256,
+      "sha256": "17d890a27eb125894bb50c833604a8dca8ed484adb4bbe3b1d219b4584be5414"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cypress-mid.png",
+      "bytes": 1369592,
+      "sha256": "d22888b2f677cc9d598253be33e1c359821182c4df3849a32b6e2a52e4746fc1"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cypress-slim.png",
+      "bytes": 1318524,
+      "sha256": "14609b8cb27ce4a9a8cf4b621e785df71bad40ac8631ccd5e2ad756d44d596e9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cypress-tall.png",
+      "bytes": 1358640,
+      "sha256": "d90c243e809f3a89602256716839711296c401e0e77916b8ab792061b4cdc68d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-deck-4.png",
+      "bytes": 1598217,
+      "sha256": "e47945e41e86da73cf6be3c05366764cd5fb97e4c6560333e2e4de5676a97f4b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-deck-6.png",
+      "bytes": 1472606,
+      "sha256": "1be82f4ac86c2c94e3a7d32f404507c210219193cf68ab650c4e610b8d9c9932"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-falls-narrow.png",
+      "bytes": 1582271,
+      "sha256": "f2462636511ce9093c06e96083f9c507f7215689d8f1e4ded7b4e2261c0e42d9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-foundation-4.png",
+      "bytes": 1251748,
+      "sha256": "7825ea7fb7ce4e317df8c0a239893a8e1d215b6b85417c6b397f486c7361f5f7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-gateway.png",
+      "bytes": 1634730,
+      "sha256": "7ff94334ba98224e3ff44f1f9ea713301a1de8cbbf2a54ccfbc01a059816fa4c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-isle-base.png",
+      "bytes": 1648741,
+      "sha256": "25e56f5032cb331401c52cb376493476896b00d0e42c022a39cb413bffeb197f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-ivy-long.png",
+      "bytes": 1370660,
+      "sha256": "9dc7343a55676f6adff5cb024df0c9edbf932c3bd856cd562fadb9b30919b129"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-ivy-short.png",
+      "bytes": 1430249,
+      "sha256": "aaa6b884b5f213310c10b67bbce79ca07ffe2214a91bd1932bf56f456b53d277"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-monolith.png",
+      "bytes": 1704818,
+      "sha256": "240729454c01dcb44da0425a0db0affb4eaf5d26e747230e0c4d261a0a5e9d7a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-orb.png",
+      "bytes": 1774073,
+      "sha256": "f530e07668d2f2994cd2df69c9df8fe8c937a154630c0e5c03c7fafe215a31d8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-overflow-wide.png",
+      "bytes": 1773028,
+      "sha256": "44572bb9cd4e2722165e5947cae9cc847856a402f8fe78450a02ac49f184206f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-parapet-4.png",
+      "bytes": 1658670,
+      "sha256": "2878b5cca17d547da78d3faeed23a4c7729099eac98872b8d33d4f8b3670c89f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-pavilion.png",
+      "bytes": 1318394,
+      "sha256": "c7112f1568778ca02a49d9a81934ffe7419af5d4086507d02aacee6726096b35"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-planter-long.png",
+      "bytes": 1605575,
+      "sha256": "c2b9a47a948c267425ef94cb7b672e9f7c9dd86b7f343e6ff7d0bdeb5c3d1bfd"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-planter-sq.png",
+      "bytes": 1818174,
+      "sha256": "5392b4ba4e6bbd13e28e506b6bcdd1c357b145301a833b051a3769f054ac2f1b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-pool-steps.png",
+      "bytes": 1591158,
+      "sha256": "3706a43a08bd185ccb7f4c76d25d37a5bcbcde6403f0443e2f776630425bfc12"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-rim-spill.png",
+      "bytes": 1267064,
+      "sha256": "e2b86393572fa88c6fffd3ac3d448c2cb6d5f219b55948a0fe22c4ddacd0471a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-shrub-a.png",
+      "bytes": 1684162,
+      "sha256": "56d4b37295caced319780aa3d58ab7ea7846340cc526adaea18b60cb227decd4"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-shrub-b.png",
+      "bytes": 1604582,
+      "sha256": "57528d511344630924994746f84818da4e988b598b466e64ab780b23f051d616"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-shrub-c.png",
+      "bytes": 1688993,
+      "sha256": "88267c2cc131ff6a77cc0d43651a9545f2383b8ccb1bdbe8e46bd5310193e0b7"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-stair-4.png",
+      "bytes": 1838168,
+      "sha256": "3158507e8765c9143b4faa92b85591d5a66f4caa114c780561c8b76fbc1f690c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-stair-8.png",
+      "bytes": 1723595,
+      "sha256": "62d1b84d2a921c074c0ad83423bb8a32273d82dd554c31222ea1df8904651080"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-statue-figure.png",
+      "bytes": 1430682,
+      "sha256": "6785f36b7dd1149c1aa37e23242f4b2e28e60ba52068720b745c70adcd8e3fc0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-statue-whale.png",
+      "bytes": 1355291,
+      "sha256": "51dcc2b18fabdca9e4e1ae56b0ff57220dbef8fef8980683b60d5ed716c133b2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-step-slab.png",
+      "bytes": 1512271,
+      "sha256": "59072cdd7832eafbb596ea813bd0012197269b62979f954ff02aa93413989b0c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-tower-gate.png",
+      "bytes": 1261411,
+      "sha256": "834e745251ae70d23d6a511effe7f4ddd6cc9a007567c54d3c1db0002a08a917"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-tower-slot.png",
+      "bytes": 1368978,
+      "sha256": "acbec4468a474c70cf06a8df286fca3bdc5d272052f0e18ead769f24eb8e4ee0"
+    },
+    {
+      "path": "packs/holodeck/objects/02b8f0829db865c30e05017259702979f5ce9d91ff82904047593c994d821d66/meridian-overflow-wide-runtime.zip",
+      "bytes": 68373,
+      "sha256": "02b8f0829db865c30e05017259702979f5ce9d91ff82904047593c994d821d66"
+    },
+    {
+      "path": "packs/holodeck/objects/036f7a9c37630a2f1f1f7d11a60229b1a77638dc5926d7a7ee351bdd0582ef34/meridian-shrub-a-runtime.zip",
+      "bytes": 102188,
+      "sha256": "036f7a9c37630a2f1f1f7d11a60229b1a77638dc5926d7a7ee351bdd0582ef34"
+    },
+    {
+      "path": "packs/holodeck/objects/0405a0c94c7644276a3440c7f96d3653d51c9fe657dafe500cc593d57f17a62d/meridian-step-slab-editable.zip",
+      "bytes": 329213,
+      "sha256": "0405a0c94c7644276a3440c7f96d3653d51c9fe657dafe500cc593d57f17a62d"
+    },
+    {
+      "path": "packs/holodeck/objects/0b13ca0741cf855c497ad7f97f84deb31a0d1c2a5e57ef790f613a7e9e945562/meridian-gateway-editable.zip",
+      "bytes": 3153139,
+      "sha256": "0b13ca0741cf855c497ad7f97f84deb31a0d1c2a5e57ef790f613a7e9e945562"
+    },
+    {
+      "path": "packs/holodeck/objects/0cb1dfcfb87e18ca4a68bd54d739ddca9c397229910d1207d9cd34a9dbde81b5/meridian-isle-base-editable.zip",
+      "bytes": 777692,
+      "sha256": "0cb1dfcfb87e18ca4a68bd54d739ddca9c397229910d1207d9cd34a9dbde81b5"
+    },
+    {
+      "path": "packs/holodeck/objects/131412664460c10541dd0116675917f25ba29a39cb3511d52c44758a371fe471/meridian-planter-long-runtime.zip",
+      "bytes": 288688,
+      "sha256": "131412664460c10541dd0116675917f25ba29a39cb3511d52c44758a371fe471"
+    },
+    {
+      "path": "packs/holodeck/objects/15a61ad6dc5148374985817d78e9bfca0485fad35b53c997d46b18abd286f30e/meridian-ivy-short.glb",
+      "bytes": 87108,
+      "sha256": "15a61ad6dc5148374985817d78e9bfca0485fad35b53c997d46b18abd286f30e"
+    },
+    {
+      "path": "packs/holodeck/objects/161d25087ac428e0e8fb1918dd580ceae70944fc6b8e5ac6bb8f1c0527c71481/meridian-foundation-4.glb",
+      "bytes": 468972,
+      "sha256": "161d25087ac428e0e8fb1918dd580ceae70944fc6b8e5ac6bb8f1c0527c71481"
+    },
+    {
+      "path": "packs/holodeck/objects/185cde23ffe31629af524f23398176307404488c3eba2abe2cb206a9835da0a5/meridian-arcade-pier-editable.zip",
+      "bytes": 438568,
+      "sha256": "185cde23ffe31629af524f23398176307404488c3eba2abe2cb206a9835da0a5"
+    },
+    {
+      "path": "packs/holodeck/objects/18bf72d8f11b9400bb61e560ac119fd9e9f547583ebdfa52a862132d5b33cca9/meridian-pavilion-editable.zip",
+      "bytes": 473880,
+      "sha256": "18bf72d8f11b9400bb61e560ac119fd9e9f547583ebdfa52a862132d5b33cca9"
+    },
+    {
+      "path": "packs/holodeck/objects/19a83224366aad1bb97363120e4de7ed0f0e079938d4e157d8fef24c926265e7/meridian-basin-water.glb",
+      "bytes": 36812,
+      "sha256": "19a83224366aad1bb97363120e4de7ed0f0e079938d4e157d8fef24c926265e7"
+    },
+    {
+      "path": "packs/holodeck/objects/1a77863ae87f935397455a9074b1ca4df3936f5480a9bdfb7625914c29392278/meridian-shrub-a.glb",
+      "bytes": 282532,
+      "sha256": "1a77863ae87f935397455a9074b1ca4df3936f5480a9bdfb7625914c29392278"
+    },
+    {
+      "path": "packs/holodeck/objects/20c91925bf1643d40dbb9e0ab9b4f104e7dd1c9b9db19b601edd2f12188d305c/meridian-statue-figure-runtime.zip",
+      "bytes": 595090,
+      "sha256": "20c91925bf1643d40dbb9e0ab9b4f104e7dd1c9b9db19b601edd2f12188d305c"
+    },
+    {
+      "path": "packs/holodeck/objects/23c73a5720384bb72100e5d64962437410e6a6a457f5bd30d8cc8aca70e66ac5/meridian-cube-mirror-editable.zip",
+      "bytes": 39910,
+      "sha256": "23c73a5720384bb72100e5d64962437410e6a6a457f5bd30d8cc8aca70e66ac5"
+    },
+    {
+      "path": "packs/holodeck/objects/260f0918d7d947ff7ae80f354d7479ab7cc84839783465f9f89dc2f55e1b9713/meridian-coping-4-runtime.zip",
+      "bytes": 246867,
+      "sha256": "260f0918d7d947ff7ae80f354d7479ab7cc84839783465f9f89dc2f55e1b9713"
+    },
+    {
+      "path": "packs/holodeck/objects/28ad88347a9eb2d5c943d9c397d4a4f3af8125432a0eeda77f4da597a7067219/meridian-pavilion.glb",
+      "bytes": 596736,
+      "sha256": "28ad88347a9eb2d5c943d9c397d4a4f3af8125432a0eeda77f4da597a7067219"
+    },
+    {
+      "path": "packs/holodeck/objects/2ab66baeb1d21fb3741d2ea021c6d5ac21ad0c790ed7d3335674c7faabfd2754/meridian-monolith-runtime.zip",
+      "bytes": 446081,
+      "sha256": "2ab66baeb1d21fb3741d2ea021c6d5ac21ad0c790ed7d3335674c7faabfd2754"
+    },
+    {
+      "path": "packs/holodeck/objects/2b769a5d2619a7b636f34d7977f17ccb9c0fce43c1894775324d5310099d066b/meridian-arcade-bay-runtime.zip",
+      "bytes": 303187,
+      "sha256": "2b769a5d2619a7b636f34d7977f17ccb9c0fce43c1894775324d5310099d066b"
+    },
+    {
+      "path": "packs/holodeck/objects/2c5540b437f5ba01dde466c4b0d13f613bbfc7a878527ba97eea1c4bb0119a66/meridian-cypress-tall-editable.zip",
+      "bytes": 476085,
+      "sha256": "2c5540b437f5ba01dde466c4b0d13f613bbfc7a878527ba97eea1c4bb0119a66"
+    },
+    {
+      "path": "packs/holodeck/objects/2d309596a95f989bcf575058e227f6e2ca916df77a0f3996fd78a326f5e76af9/meridian-gateway.glb",
+      "bytes": 14793000,
+      "sha256": "2d309596a95f989bcf575058e227f6e2ca916df77a0f3996fd78a326f5e76af9"
+    },
+    {
+      "path": "packs/holodeck/objects/2dae3f5797b53c04d4b38abfacb90be5c6dc15396febd659683b7acabab9da0f/meridian-shrub-c-runtime.zip",
+      "bytes": 94019,
+      "sha256": "2dae3f5797b53c04d4b38abfacb90be5c6dc15396febd659683b7acabab9da0f"
+    },
+    {
+      "path": "packs/holodeck/objects/304b3731cdeab654c3f5827a36406ffdfacb966331336842b8365b8a73faafaf/meridian-cascade-tower.glb",
+      "bytes": 478968,
+      "sha256": "304b3731cdeab654c3f5827a36406ffdfacb966331336842b8365b8a73faafaf"
+    },
+    {
+      "path": "packs/holodeck/objects/32b343ff96ed753c27c58f3d4608f4ac4005cde498f376bb4cc708fec35d9561/meridian-monolith.glb",
+      "bytes": 1313500,
+      "sha256": "32b343ff96ed753c27c58f3d4608f4ac4005cde498f376bb4cc708fec35d9561"
+    },
+    {
+      "path": "packs/holodeck/objects/38780c7d390a915d1224c2666defa48e0c7018dad31c52ea581ff28c105d018b/meridian-cube-marble-editable.zip",
+      "bytes": 416162,
+      "sha256": "38780c7d390a915d1224c2666defa48e0c7018dad31c52ea581ff28c105d018b"
+    },
+    {
+      "path": "packs/holodeck/objects/38f53977d79ae2044f60b4de09bfccaf6df2810d5fc1beb16d5d811d13c294cd/meridian-tower-slot-runtime.zip",
+      "bytes": 411931,
+      "sha256": "38f53977d79ae2044f60b4de09bfccaf6df2810d5fc1beb16d5d811d13c294cd"
+    },
+    {
+      "path": "packs/holodeck/objects/393aa0f88e31c9c5af7ba2171143e920838028366ce1f3ee65ea53a9746471ae/meridian-cascade-tower-runtime.zip",
+      "bytes": 283494,
+      "sha256": "393aa0f88e31c9c5af7ba2171143e920838028366ce1f3ee65ea53a9746471ae"
+    },
+    {
+      "path": "packs/holodeck/objects/3943c9a8ced022e318cac1b9275fd1c623ba5d49fba62585b7f6de18ebd00871/meridian-rim-spill.glb",
+      "bytes": 67584,
+      "sha256": "3943c9a8ced022e318cac1b9275fd1c623ba5d49fba62585b7f6de18ebd00871"
+    },
+    {
+      "path": "packs/holodeck/objects/3c56e73521675360344d3a6b4bf6b33003dd1aa9ebe9bd27f854a77c5dbda5f9/meridian-tower-slot-editable.zip",
+      "bytes": 587231,
+      "sha256": "3c56e73521675360344d3a6b4bf6b33003dd1aa9ebe9bd27f854a77c5dbda5f9"
+    },
+    {
+      "path": "packs/holodeck/objects/3d37d9c5d13c947cfb68a8adc227ad963335e0b30dddb57d30d1a9b6bd6ea1d1/meridian-cypress-mid-editable.zip",
+      "bytes": 422750,
+      "sha256": "3d37d9c5d13c947cfb68a8adc227ad963335e0b30dddb57d30d1a9b6bd6ea1d1"
+    },
+    {
+      "path": "packs/holodeck/objects/3f2c302d07380e20fafe794a56f7f3b7ca0ecc886529accb6fee7eed0bece6f4/meridian-cube-mirror-far.glb",
+      "bytes": 5472,
+      "sha256": "3f2c302d07380e20fafe794a56f7f3b7ca0ecc886529accb6fee7eed0bece6f4"
+    },
+    {
+      "path": "packs/holodeck/objects/40e185c15c710c89291cc465ec15ba8b3bb92a5996d69fb22f4fce71295cfae0/meridian-pool-steps.glb",
+      "bytes": 304908,
+      "sha256": "40e185c15c710c89291cc465ec15ba8b3bb92a5996d69fb22f4fce71295cfae0"
+    },
+    {
+      "path": "packs/holodeck/objects/43f4712ba12c33f8877a961ef0cb323504c438ed07bb07c3818712000dec6109/meridian-balustrade-4-editable.zip",
+      "bytes": 340698,
+      "sha256": "43f4712ba12c33f8877a961ef0cb323504c438ed07bb07c3818712000dec6109"
+    },
+    {
+      "path": "packs/holodeck/objects/45895a8c9bd14763281d25a95b9a84353e191996b5cf7e43ce82638380fa1ed1/meridian-tower-gate.glb",
+      "bytes": 1618784,
+      "sha256": "45895a8c9bd14763281d25a95b9a84353e191996b5cf7e43ce82638380fa1ed1"
+    },
+    {
+      "path": "packs/holodeck/objects/462a4ea82ac934eb7bbcf33c1cc31e9a1717de833144c6d8cd06a4ee9b57ad23/meridian-cypress-tall.glb",
+      "bytes": 550952,
+      "sha256": "462a4ea82ac934eb7bbcf33c1cc31e9a1717de833144c6d8cd06a4ee9b57ad23"
+    },
+    {
+      "path": "packs/holodeck/objects/4737b6a71faa12837d1ae8d2d1d4423795e6e01262777f4eb0c433a0caf425e9/meridian-gateway-runtime.zip",
+      "bytes": 2887819,
+      "sha256": "4737b6a71faa12837d1ae8d2d1d4423795e6e01262777f4eb0c433a0caf425e9"
+    },
+    {
+      "path": "packs/holodeck/objects/47ab198c7494086dfa613b22ff935dd4a0625f9384b2b4c18805c6fa85a89b9c/meridian-parapet-4-runtime.zip",
+      "bytes": 245459,
+      "sha256": "47ab198c7494086dfa613b22ff935dd4a0625f9384b2b4c18805c6fa85a89b9c"
+    },
+    {
+      "path": "packs/holodeck/objects/481ec77e502ec919a592170442eb2d744f37b11d92883909510f4767c785764f/meridian-isle-base-runtime.zip",
+      "bytes": 419067,
+      "sha256": "481ec77e502ec919a592170442eb2d744f37b11d92883909510f4767c785764f"
+    },
+    {
+      "path": "packs/holodeck/objects/49f8a0d34ea8d7359f7762ef134b837fcc3b246f6e5e1d7168cab97a5e39f8ca/meridian-tower-gate-editable.zip",
+      "bytes": 644670,
+      "sha256": "49f8a0d34ea8d7359f7762ef134b837fcc3b246f6e5e1d7168cab97a5e39f8ca"
+    },
+    {
+      "path": "packs/holodeck/objects/4b91a04736d0f169094809185a61fc431e8e1a628e223c121e17c9a8384869cc/meridian-ivy-long-editable.zip",
+      "bytes": 239276,
+      "sha256": "4b91a04736d0f169094809185a61fc431e8e1a628e223c121e17c9a8384869cc"
+    },
+    {
+      "path": "packs/holodeck/objects/4e1701b85a88489db574391fabc25ac9d1860639ce9a73cb421946fd8dc2c0b4/meridian-cypress-broad.glb",
+      "bytes": 378680,
+      "sha256": "4e1701b85a88489db574391fabc25ac9d1860639ce9a73cb421946fd8dc2c0b4"
+    },
+    {
+      "path": "packs/holodeck/objects/54e96787c3d1133433e7ae5cc9a12cdcd4ad34d84bb53c0449c871ec1a380da5/meridian-shrub-b.glb",
+      "bytes": 229888,
+      "sha256": "54e96787c3d1133433e7ae5cc9a12cdcd4ad34d84bb53c0449c871ec1a380da5"
+    },
+    {
+      "path": "packs/holodeck/objects/60d7c3c99bc154876873f5777ae8a07b2185fdc064c39c01b6fe2f1495dc9d8a/meridian-statue-whale-runtime.zip",
+      "bytes": 527838,
+      "sha256": "60d7c3c99bc154876873f5777ae8a07b2185fdc064c39c01b6fe2f1495dc9d8a"
+    },
+    {
+      "path": "packs/holodeck/objects/6426bb807acdbd0da07f613ea3ae2c11e2aea30d030cc1d60f2a34138cadf834/meridian-arcade-pier-runtime.zip",
+      "bytes": 265991,
+      "sha256": "6426bb807acdbd0da07f613ea3ae2c11e2aea30d030cc1d60f2a34138cadf834"
+    },
+    {
+      "path": "packs/holodeck/objects/65b982b5b2497ef24a608434f9d2ce67bcc6ed625e10722c2b1e93ae636b93b4/meridian-parapet-4-editable.zip",
+      "bytes": 346465,
+      "sha256": "65b982b5b2497ef24a608434f9d2ce67bcc6ed625e10722c2b1e93ae636b93b4"
+    },
+    {
+      "path": "packs/holodeck/objects/666db175c82a5f53e53eac02bad4176a4dc017e2ed85300637eb22615acfe7d2/meridian-falls-narrow-runtime.zip",
+      "bytes": 73584,
+      "sha256": "666db175c82a5f53e53eac02bad4176a4dc017e2ed85300637eb22615acfe7d2"
+    },
+    {
+      "path": "packs/holodeck/objects/684c0a3617e06b288ec815c395e2a6227cb447a2aea3af232a050f4590e000d3/meridian-deck-4-runtime.zip",
+      "bytes": 254543,
+      "sha256": "684c0a3617e06b288ec815c395e2a6227cb447a2aea3af232a050f4590e000d3"
+    },
+    {
+      "path": "packs/holodeck/objects/68b4df50f5631f98f2ea18eddf240fe1766ba2fe4d81291f273944a26a7511fd/meridian-stair-4.glb",
+      "bytes": 414396,
+      "sha256": "68b4df50f5631f98f2ea18eddf240fe1766ba2fe4d81291f273944a26a7511fd"
+    },
+    {
+      "path": "packs/holodeck/objects/697e6a3736962181a2d9da82f92ca9a357222f8ff4bd580aeef102bcecfc3849/meridian-cypress-slim-runtime.zip",
+      "bytes": 164264,
+      "sha256": "697e6a3736962181a2d9da82f92ca9a357222f8ff4bd580aeef102bcecfc3849"
+    },
+    {
+      "path": "packs/holodeck/objects/6c34d77b7ded9f0f82abd43a3c7ffda7d71ab5232840865e4768396fd9a63faf/meridian-basin-water-editable.zip",
+      "bytes": 113157,
+      "sha256": "6c34d77b7ded9f0f82abd43a3c7ffda7d71ab5232840865e4768396fd9a63faf"
+    },
+    {
+      "path": "packs/holodeck/objects/6c5f0e24dac3d50ea64a4b2f0ed4519db542fcffddc4012025d231b65f72d98e/meridian-foundation-4-runtime.zip",
+      "bytes": 278331,
+      "sha256": "6c5f0e24dac3d50ea64a4b2f0ed4519db542fcffddc4012025d231b65f72d98e"
+    },
+    {
+      "path": "packs/holodeck/objects/6cf6a3023f53e5369cb1941e1a99cf9d83e22a1f3b86340dcb5fc7d5e2018c5f/meridian-shrub-b-editable.zip",
+      "bytes": 637770,
+      "sha256": "6cf6a3023f53e5369cb1941e1a99cf9d83e22a1f3b86340dcb5fc7d5e2018c5f"
+    },
+    {
+      "path": "packs/holodeck/objects/6de9585966f35013cee56b3de9c936322892a0d95f07f17fc2dce92b6680b88f/meridian-arcade-pier.glb",
+      "bytes": 393212,
+      "sha256": "6de9585966f35013cee56b3de9c936322892a0d95f07f17fc2dce92b6680b88f"
+    },
+    {
+      "path": "packs/holodeck/objects/6e342b020a14da8007e26d1ef713563b43917c98ea7ae3a880810e486119fe6a/meridian-block-8.glb",
+      "bytes": 575204,
+      "sha256": "6e342b020a14da8007e26d1ef713563b43917c98ea7ae3a880810e486119fe6a"
+    },
+    {
+      "path": "packs/holodeck/objects/6f349ec4578bf4a1ca5149b8c7c9f3168fe81d0f8dbe529f1240b690e8c042b2/meridian-deck-6.glb",
+      "bytes": 336344,
+      "sha256": "6f349ec4578bf4a1ca5149b8c7c9f3168fe81d0f8dbe529f1240b690e8c042b2"
+    },
+    {
+      "path": "packs/holodeck/objects/71b50ceaa86e60bf7f75445f8b95b89fbc8bfe4e75469050bb5e033b486b683f/meridian-step-slab-runtime.zip",
+      "bytes": 244559,
+      "sha256": "71b50ceaa86e60bf7f75445f8b95b89fbc8bfe4e75469050bb5e033b486b683f"
+    },
+    {
+      "path": "packs/holodeck/objects/77798094bfcbb15418f2f37d355832da46a66ae556a62307185b3da17bd4f2b1/meridian-block-8-editable.zip",
+      "bytes": 604662,
+      "sha256": "77798094bfcbb15418f2f37d355832da46a66ae556a62307185b3da17bd4f2b1"
+    },
+    {
+      "path": "packs/holodeck/objects/778205caa6b5e5386c358c66d5ceede7b113cc38881da385422254939726845b/meridian-deck-4-editable.zip",
+      "bytes": 411821,
+      "sha256": "778205caa6b5e5386c358c66d5ceede7b113cc38881da385422254939726845b"
+    },
+    {
+      "path": "packs/holodeck/objects/7bca4f9faa770b03d3eceb73320c3373f972ce630294cb130e219843cd321b91/meridian-cypress-tall-runtime.zip",
+      "bytes": 184068,
+      "sha256": "7bca4f9faa770b03d3eceb73320c3373f972ce630294cb130e219843cd321b91"
+    },
+    {
+      "path": "packs/holodeck/objects/809a80f6d81c41134924bfdb8669b8269c61ee9dedc0e8aa478a74401b70fbf5/meridian-cube-mirror-court.glb",
+      "bytes": 5476,
+      "sha256": "809a80f6d81c41134924bfdb8669b8269c61ee9dedc0e8aa478a74401b70fbf5"
+    },
+    {
+      "path": "packs/holodeck/objects/8153b67b9965734f25667c2df9cdead19c7390bf04e3088f2c91600ed78e8822/meridian-cypress-mid.glb",
+      "bytes": 403548,
+      "sha256": "8153b67b9965734f25667c2df9cdead19c7390bf04e3088f2c91600ed78e8822"
+    },
+    {
+      "path": "packs/holodeck/objects/84b5d03c3fff19ceb2dbf98761d86d34d47cba855c95b1f092ebf8102499c1c1/meridian-orb.glb",
+      "bytes": 275996,
+      "sha256": "84b5d03c3fff19ceb2dbf98761d86d34d47cba855c95b1f092ebf8102499c1c1"
+    },
+    {
+      "path": "packs/holodeck/objects/863a47f8b8158474ab2071672f165830220bcf22d8b9633a34a6d5199b0958ac/meridian-stair-8-editable.zip",
+      "bytes": 509506,
+      "sha256": "863a47f8b8158474ab2071672f165830220bcf22d8b9633a34a6d5199b0958ac"
+    },
+    {
+      "path": "packs/holodeck/objects/88460de5f457dfa7567c055c71a68e379520973f878d0da83c48237bd8bb8cde/meridian-foundation-4-editable.zip",
+      "bytes": 339080,
+      "sha256": "88460de5f457dfa7567c055c71a68e379520973f878d0da83c48237bd8bb8cde"
+    },
+    {
+      "path": "packs/holodeck/objects/88df49c5729bf25a02ee716082213808c62780205d6895cc92e3fb1bcd612c58/meridian-shrub-b-runtime.zip",
+      "bytes": 88277,
+      "sha256": "88df49c5729bf25a02ee716082213808c62780205d6895cc92e3fb1bcd612c58"
+    },
+    {
+      "path": "packs/holodeck/objects/8a1ba6a728774cad0d4487cacfdde2fd0370d01e28bd8aa4cdff3afff7762427/meridian-pavilion-runtime.zip",
+      "bytes": 311985,
+      "sha256": "8a1ba6a728774cad0d4487cacfdde2fd0370d01e28bd8aa4cdff3afff7762427"
+    },
+    {
+      "path": "packs/holodeck/objects/8c10a27ded13238ee913b4378d2a2f53e9e662c99f6fd82ce093238824f2e9f2/meridian-shrub-c-editable.zip",
+      "bytes": 789804,
+      "sha256": "8c10a27ded13238ee913b4378d2a2f53e9e662c99f6fd82ce093238824f2e9f2"
+    },
+    {
+      "path": "packs/holodeck/objects/8d7ad8f94b505eb0443b56bb0801bb31242e0d9ff99e2f5219870683ea3be64e/meridian-arcade-pier-slot-runtime.zip",
+      "bytes": 269965,
+      "sha256": "8d7ad8f94b505eb0443b56bb0801bb31242e0d9ff99e2f5219870683ea3be64e"
+    },
+    {
+      "path": "packs/holodeck/objects/8f3701dba30ae503f5a097c7debfceafcef5e11871b9feb7fd14a1ee34016384/meridian-cube-mirror.glb",
+      "bytes": 5464,
+      "sha256": "8f3701dba30ae503f5a097c7debfceafcef5e11871b9feb7fd14a1ee34016384"
+    },
+    {
+      "path": "packs/holodeck/objects/8f3ebe52edbae826b00878b2b925dc9359cb344a46a51c931672c6020626a1ea/meridian-cube-marble-runtime.zip",
+      "bytes": 242854,
+      "sha256": "8f3ebe52edbae826b00878b2b925dc9359cb344a46a51c931672c6020626a1ea"
+    },
+    {
+      "path": "packs/holodeck/objects/908a91ab96d8f47d34e4241173203452a94b9df0057843208978096b64582d66/holodeck-meridian-sanctuary-runtime.zip",
+      "bytes": 17983217,
+      "sha256": "908a91ab96d8f47d34e4241173203452a94b9df0057843208978096b64582d66"
+    },
+    {
+      "path": "packs/holodeck/objects/909153bf5a5ebb5b51f55fc439fdd9f022ab1aa8d4ca7fa482e7b89889bd7b25/meridian-deck-6-runtime.zip",
+      "bytes": 252487,
+      "sha256": "909153bf5a5ebb5b51f55fc439fdd9f022ab1aa8d4ca7fa482e7b89889bd7b25"
+    },
+    {
+      "path": "packs/holodeck/objects/91c44e88bc69e020b0e074f37ca61880ed918bebc9c618823dbb2d4d6f3567d8/meridian-deck-4.glb",
+      "bytes": 340740,
+      "sha256": "91c44e88bc69e020b0e074f37ca61880ed918bebc9c618823dbb2d4d6f3567d8"
+    },
+    {
+      "path": "packs/holodeck/objects/91fdfc27a134a25d602452cbbd78c58651c6dca774060927a36113600b370257/meridian-stair-4-editable.zip",
+      "bytes": 481350,
+      "sha256": "91fdfc27a134a25d602452cbbd78c58651c6dca774060927a36113600b370257"
+    },
+    {
+      "path": "packs/holodeck/objects/926877c7d4e8a45fc727c30af2f27eb1c17c7ac19a706368ed68e33c1d087620/meridian-pool-steps-editable.zip",
+      "bytes": 334115,
+      "sha256": "926877c7d4e8a45fc727c30af2f27eb1c17c7ac19a706368ed68e33c1d087620"
+    },
+    {
+      "path": "packs/holodeck/objects/963b91704cecf26f6041fa9fbbfd324d14f847a6a7b6dd18b8e9fe50742a4ca8/meridian-cypress-slim.glb",
+      "bytes": 481452,
+      "sha256": "963b91704cecf26f6041fa9fbbfd324d14f847a6a7b6dd18b8e9fe50742a4ca8"
+    },
+    {
+      "path": "packs/holodeck/objects/989db8693856772a4e86b729ef558ac59181dbf471cd9071221424af919e6688/meridian-step-slab.glb",
+      "bytes": 289668,
+      "sha256": "989db8693856772a4e86b729ef558ac59181dbf471cd9071221424af919e6688"
+    },
+    {
+      "path": "packs/holodeck/objects/9d678b21a7c175f7e85c5dbb5f186cec0fb66b71c9bedb6ff8eef0bb205c132d/meridian-overflow-wide-editable.zip",
+      "bytes": 321327,
+      "sha256": "9d678b21a7c175f7e85c5dbb5f186cec0fb66b71c9bedb6ff8eef0bb205c132d"
+    },
+    {
+      "path": "packs/holodeck/objects/a01d1fc8922afe03c71bb575dc6301e44b231dda8d8eac7a21b7c75c1e404e37/meridian-planter-sq.glb",
+      "bytes": 441592,
+      "sha256": "a01d1fc8922afe03c71bb575dc6301e44b231dda8d8eac7a21b7c75c1e404e37"
+    },
+    {
+      "path": "packs/holodeck/objects/a38f32e2e67c8cc0abf88939f236da370d5c7181634075713afa6165cfbaa36c/meridian-arcade-pier-slot.glb",
+      "bytes": 409404,
+      "sha256": "a38f32e2e67c8cc0abf88939f236da370d5c7181634075713afa6165cfbaa36c"
+    },
+    {
+      "path": "packs/holodeck/objects/a406e838bf92d63623e06802dbf1ac1c6ad4bf29026fc5e028f2e187d51175b7/meridian-overflow-wide.glb",
+      "bytes": 74784,
+      "sha256": "a406e838bf92d63623e06802dbf1ac1c6ad4bf29026fc5e028f2e187d51175b7"
+    },
+    {
+      "path": "packs/holodeck/objects/a66231c81a480f4838d5ca1d6bfde5d7486525a68e2e8d66854c6354d8a694bf/meridian-cypress-broad-runtime.zip",
+      "bytes": 131885,
+      "sha256": "a66231c81a480f4838d5ca1d6bfde5d7486525a68e2e8d66854c6354d8a694bf"
+    },
+    {
+      "path": "packs/holodeck/objects/a7e6ff57347240fdd9bb3c9bb3b6f6afb1538e14ab4be6d544fd23b0eaf9b664/meridian-ivy-short-editable.zip",
+      "bytes": 254131,
+      "sha256": "a7e6ff57347240fdd9bb3c9bb3b6f6afb1538e14ab4be6d544fd23b0eaf9b664"
+    },
+    {
+      "path": "packs/holodeck/objects/a857ecd13c7746c482bf8359413bae7f6be7501079ed9308c74f514289d0dd31/meridian-cypress-mid-runtime.zip",
+      "bytes": 139959,
+      "sha256": "a857ecd13c7746c482bf8359413bae7f6be7501079ed9308c74f514289d0dd31"
+    },
+    {
+      "path": "packs/holodeck/objects/a86101646241c0b008222f2395f38769e9b31f12bab7c6dcc18ddfa1b82b625a/meridian-planter-long.glb",
+      "bytes": 504108,
+      "sha256": "a86101646241c0b008222f2395f38769e9b31f12bab7c6dcc18ddfa1b82b625a"
+    },
+    {
+      "path": "packs/holodeck/objects/a883d81b02419a94a58647ab16957a3da0fd1c52a988c671dabc29f4e8c155d7/meridian-block-8-runtime.zip",
+      "bytes": 301059,
+      "sha256": "a883d81b02419a94a58647ab16957a3da0fd1c52a988c671dabc29f4e8c155d7"
+    },
+    {
+      "path": "packs/holodeck/objects/aa73cdb4684489fd8399e84731d4e2832024c77c127a786e0756c0b2903dbdc6/meridian-arcade-pylon-runtime.zip",
+      "bytes": 345381,
+      "sha256": "aa73cdb4684489fd8399e84731d4e2832024c77c127a786e0756c0b2903dbdc6"
+    },
+    {
+      "path": "packs/holodeck/objects/ab6703d83c9414bd408781c00271dc2bfb6b497c2d21d693f80389417005c96d/meridian-cube-marble.glb",
+      "bytes": 282516,
+      "sha256": "ab6703d83c9414bd408781c00271dc2bfb6b497c2d21d693f80389417005c96d"
+    },
+    {
+      "path": "packs/holodeck/objects/acbb39ae7601d4468566a664c44393e5f00522e735ec8bc3029109237cc0c4b0/meridian-falls-narrow-editable.zip",
+      "bytes": 365361,
+      "sha256": "acbb39ae7601d4468566a664c44393e5f00522e735ec8bc3029109237cc0c4b0"
+    },
+    {
+      "path": "packs/holodeck/objects/acee99855eb29316963c0214a50caf46a2d1ba08d23cabb42216a5b3a29a67bf/meridian-balustrade-4-runtime.zip",
+      "bytes": 252026,
+      "sha256": "acee99855eb29316963c0214a50caf46a2d1ba08d23cabb42216a5b3a29a67bf"
+    },
+    {
+      "path": "packs/holodeck/objects/af246aa25e4b9ea9d807d5bd1f6f80858ebf303b881d3d366edb881c1ca117a7/holodeck-meridian-sanctuary-editable.zip",
+      "bytes": 28501735,
+      "sha256": "af246aa25e4b9ea9d807d5bd1f6f80858ebf303b881d3d366edb881c1ca117a7"
+    },
+    {
+      "path": "packs/holodeck/objects/af5184957e3758577ff8b977146442de95093c13d41d1842563b0aa5498f822f/meridian-monolith-editable.zip",
+      "bytes": 765992,
+      "sha256": "af5184957e3758577ff8b977146442de95093c13d41d1842563b0aa5498f822f"
+    },
+    {
+      "path": "packs/holodeck/objects/afca29899c682afbcdc08e6a00ab9cff72e67a9d39ec0034c6d5e2f4e7b940b8/meridian-balustrade-4.glb",
+      "bytes": 332796,
+      "sha256": "afca29899c682afbcdc08e6a00ab9cff72e67a9d39ec0034c6d5e2f4e7b940b8"
+    },
+    {
+      "path": "packs/holodeck/objects/b0f7d57d488a1dd6c382c9f67a7be2ffaa4de90c3a76c13db92e356cb01dfddf/meridian-tower-gate-runtime.zip",
+      "bytes": 515757,
+      "sha256": "b0f7d57d488a1dd6c382c9f67a7be2ffaa4de90c3a76c13db92e356cb01dfddf"
+    },
+    {
+      "path": "packs/holodeck/objects/b3dd6ef416ad23d51a7c3d9ffa1545915eee7496c2420f695807d87db285df59/meridian-shrub-c.glb",
+      "bytes": 252288,
+      "sha256": "b3dd6ef416ad23d51a7c3d9ffa1545915eee7496c2420f695807d87db285df59"
+    },
+    {
+      "path": "packs/holodeck/objects/b4dbb30eaa108e6846cdd3d16afa94bed46ff8443c2362757161fab926fb78a1/meridian-arcade-bay.glb",
+      "bytes": 562192,
+      "sha256": "b4dbb30eaa108e6846cdd3d16afa94bed46ff8443c2362757161fab926fb78a1"
+    },
+    {
+      "path": "packs/holodeck/objects/b5348927738e2466d0a1876fd05f5639b458611691d8f4a1620fe9d3da45eba3/meridian-planter-sq-editable.zip",
+      "bytes": 428342,
+      "sha256": "b5348927738e2466d0a1876fd05f5639b458611691d8f4a1620fe9d3da45eba3"
+    },
+    {
+      "path": "packs/holodeck/objects/b59dab8dd2ca27951d36c80ab02ebced0a14a4ee5938650450647c18350ac898/meridian-ivy-long.glb",
+      "bytes": 213952,
+      "sha256": "b59dab8dd2ca27951d36c80ab02ebced0a14a4ee5938650450647c18350ac898"
+    },
+    {
+      "path": "packs/holodeck/objects/b707a8500c88ee40569404e3971917acedec5a7dee48928eb7d4ff64c077b8ea/meridian-stair-4-runtime.zip",
+      "bytes": 269990,
+      "sha256": "b707a8500c88ee40569404e3971917acedec5a7dee48928eb7d4ff64c077b8ea"
+    },
+    {
+      "path": "packs/holodeck/objects/b7a50ffb8ce5c6d912e9a09dd5605719f74a17d25b94a139e5ff045b71f8cb39/meridian-arcade-pylon-editable.zip",
+      "bytes": 437496,
+      "sha256": "b7a50ffb8ce5c6d912e9a09dd5605719f74a17d25b94a139e5ff045b71f8cb39"
+    },
+    {
+      "path": "packs/holodeck/objects/ba43779293fcc631283fb1bce03a5061fee4249dd682d222d826b0bcfd548679/meridian-tower-slot.glb",
+      "bytes": 1107564,
+      "sha256": "ba43779293fcc631283fb1bce03a5061fee4249dd682d222d826b0bcfd548679"
+    },
+    {
+      "path": "packs/holodeck/objects/bc5ba472b23aa8aa40b3bcf84d4f83284617f6480858b7955d9bcb47fad9684b/meridian-statue-figure.glb",
+      "bytes": 897192,
+      "sha256": "bc5ba472b23aa8aa40b3bcf84d4f83284617f6480858b7955d9bcb47fad9684b"
+    },
+    {
+      "path": "packs/holodeck/objects/c294854b34277073dfe7e6ec2bd20e6cfb88a7301d57d6873f82de60d1ae79cf/meridian-cube-mirror-far-runtime.zip",
+      "bytes": 6364,
+      "sha256": "c294854b34277073dfe7e6ec2bd20e6cfb88a7301d57d6873f82de60d1ae79cf"
+    },
+    {
+      "path": "packs/holodeck/objects/c481459806153efda700bc57d9cbf659dc638fd92547f334f300f0c0b6d97602/meridian-arcade-pylon.glb",
+      "bytes": 796236,
+      "sha256": "c481459806153efda700bc57d9cbf659dc638fd92547f334f300f0c0b6d97602"
+    },
+    {
+      "path": "packs/holodeck/objects/c5145c98f4b15255fcbd9cb959e42bd954b044d2f62770482d927b6b332b53c5/meridian-arcade-arch-runtime.zip",
+      "bytes": 279485,
+      "sha256": "c5145c98f4b15255fcbd9cb959e42bd954b044d2f62770482d927b6b332b53c5"
+    },
+    {
+      "path": "packs/holodeck/objects/c61e821ead767976f2306b15c60f73b5603eebe0a1d98e2d3ea63f6a5375771a/meridian-pool-steps-runtime.zip",
+      "bytes": 248031,
+      "sha256": "c61e821ead767976f2306b15c60f73b5603eebe0a1d98e2d3ea63f6a5375771a"
+    },
+    {
+      "path": "packs/holodeck/objects/c686eb345dc2dce823b2fb2dc3996b4bb69ae794518e817f5cd5fc5dd1a8d2f4/meridian-stair-8-runtime.zip",
+      "bytes": 299231,
+      "sha256": "c686eb345dc2dce823b2fb2dc3996b4bb69ae794518e817f5cd5fc5dd1a8d2f4"
+    },
+    {
+      "path": "packs/holodeck/objects/c9158008a5e3d92b60a8b33feb1912d6521bab5914d9c93258c64db21e2667b7/meridian-orb-editable.zip",
+      "bytes": 635877,
+      "sha256": "c9158008a5e3d92b60a8b33feb1912d6521bab5914d9c93258c64db21e2667b7"
+    },
+    {
+      "path": "packs/holodeck/objects/cbd2f2206b03c89f9d9025fc9afe7b652421c83d9de85b7c2df070c1da397f88/meridian-rim-spill-editable.zip",
+      "bytes": 115876,
+      "sha256": "cbd2f2206b03c89f9d9025fc9afe7b652421c83d9de85b7c2df070c1da397f88"
+    },
+    {
+      "path": "packs/holodeck/objects/ccd7083da345c0ed246ac04713b4278a8ae03e2fb4ec67cae16d28a38cec353f/meridian-arcade-pier-slot-editable.zip",
+      "bytes": 454621,
+      "sha256": "ccd7083da345c0ed246ac04713b4278a8ae03e2fb4ec67cae16d28a38cec353f"
+    },
+    {
+      "path": "packs/holodeck/objects/cdf75bb530a79195eb39b9b89b9b181d4351c0c45fcd1fa14a2b3d2f9bb397ab/meridian-arcade-arch-editable.zip",
+      "bytes": 479531,
+      "sha256": "cdf75bb530a79195eb39b9b89b9b181d4351c0c45fcd1fa14a2b3d2f9bb397ab"
+    },
+    {
+      "path": "packs/holodeck/objects/ce7fe2432d561c8f215b0d1f4ee60c42bdb3f2792da1676e68f98ebca45894b4/meridian-cube-mirror-far-editable.zip",
+      "bytes": 39921,
+      "sha256": "ce7fe2432d561c8f215b0d1f4ee60c42bdb3f2792da1676e68f98ebca45894b4"
+    },
+    {
+      "path": "packs/holodeck/objects/cea1a78410d2fa28966df227ba729905ad467329f263aa08ed6dc4faf368a29c/meridian-cypress-slim-editable.zip",
+      "bytes": 415215,
+      "sha256": "cea1a78410d2fa28966df227ba729905ad467329f263aa08ed6dc4faf368a29c"
+    },
+    {
+      "path": "packs/holodeck/objects/d0c950ac0fdf58f6f3a898a85a2e819c222494ae133fe8ee26bb1085a44e8a83/meridian-arcade-bay-editable.zip",
+      "bytes": 468011,
+      "sha256": "d0c950ac0fdf58f6f3a898a85a2e819c222494ae133fe8ee26bb1085a44e8a83"
+    },
+    {
+      "path": "packs/holodeck/objects/d193e679bd1e0faf884ef79848745b3a8ef8d48871a7daf4397f59e70641c5c4/meridian-stair-8.glb",
+      "bytes": 587772,
+      "sha256": "d193e679bd1e0faf884ef79848745b3a8ef8d48871a7daf4397f59e70641c5c4"
+    },
+    {
+      "path": "packs/holodeck/objects/d547e61ae92a3e8d57be1e1465ab3290750c5804594592345775740b9b49f57a/meridian-arcade-arch.glb",
+      "bytes": 446728,
+      "sha256": "d547e61ae92a3e8d57be1e1465ab3290750c5804594592345775740b9b49f57a"
+    },
+    {
+      "path": "packs/holodeck/objects/d6d6063c50d7aaac3d2469b60daa4a382eee03b0a25d29e7b447324a9984ebe4/meridian-deck-6-editable.zip",
+      "bytes": 365392,
+      "sha256": "d6d6063c50d7aaac3d2469b60daa4a382eee03b0a25d29e7b447324a9984ebe4"
+    },
+    {
+      "path": "packs/holodeck/objects/d8fae47079e34ecd76e0582422b13f55859e40f6cd3323ebc179db4f2f24037f/meridian-orb-runtime.zip",
+      "bytes": 114293,
+      "sha256": "d8fae47079e34ecd76e0582422b13f55859e40f6cd3323ebc179db4f2f24037f"
+    },
+    {
+      "path": "packs/holodeck/objects/dea710cdad8f8418f78a0a2cc47bb8bd1a2249b53597b1245065cbb0da63e4dd/meridian-planter-long-editable.zip",
+      "bytes": 412645,
+      "sha256": "dea710cdad8f8418f78a0a2cc47bb8bd1a2249b53597b1245065cbb0da63e4dd"
+    },
+    {
+      "path": "packs/holodeck/objects/deea2976438bb8f59b77400c206af5367c9b39d3b67ebab9dd0c40b4e36c22db/meridian-statue-figure-editable.zip",
+      "bytes": 780352,
+      "sha256": "deea2976438bb8f59b77400c206af5367c9b39d3b67ebab9dd0c40b4e36c22db"
+    },
+    {
+      "path": "packs/holodeck/objects/df51f8102d52234564054cb0b85d135f093ed1c3dff017ccd535003790d76587/meridian-falls-narrow.glb",
+      "bytes": 90012,
+      "sha256": "df51f8102d52234564054cb0b85d135f093ed1c3dff017ccd535003790d76587"
+    },
+    {
+      "path": "packs/holodeck/objects/e27795cb1d08fc7d7c86bc66f2ed17846268ea9c0ce4b8df842bb8671d932345/meridian-cypress-broad-editable.zip",
+      "bytes": 471034,
+      "sha256": "e27795cb1d08fc7d7c86bc66f2ed17846268ea9c0ce4b8df842bb8671d932345"
+    },
+    {
+      "path": "packs/holodeck/objects/e3a76a324d2cd9769040401f6f0dc34a97f61c7e4a04bd22214e5dd08e9b3ade/meridian-cube-mirror-court-editable.zip",
+      "bytes": 39922,
+      "sha256": "e3a76a324d2cd9769040401f6f0dc34a97f61c7e4a04bd22214e5dd08e9b3ade"
+    },
+    {
+      "path": "packs/holodeck/objects/e52f2f85b62232a642bdb4b4cbbf823251695e3d3084834a129c15da6497b814/meridian-statue-whale-editable.zip",
+      "bytes": 665496,
+      "sha256": "e52f2f85b62232a642bdb4b4cbbf823251695e3d3084834a129c15da6497b814"
+    },
+    {
+      "path": "packs/holodeck/objects/e5fbd111337502119e5a94795eea1e3cb9196432b6327122507489fdbb690147/meridian-isle-base.glb",
+      "bytes": 1159416,
+      "sha256": "e5fbd111337502119e5a94795eea1e3cb9196432b6327122507489fdbb690147"
+    },
+    {
+      "path": "packs/holodeck/objects/e9061eb2b0f56befd8e5d74fac1a9192b7ed1c3e525f583ab24d1ff25200a623/meridian-basin-water-runtime.zip",
+      "bytes": 39954,
+      "sha256": "e9061eb2b0f56befd8e5d74fac1a9192b7ed1c3e525f583ab24d1ff25200a623"
+    },
+    {
+      "path": "packs/holodeck/objects/e9a9e4a12c7f7afaf263d003d42fc5cf0c530be578c1340a761faa1c5609746c/meridian-planter-sq-runtime.zip",
+      "bytes": 274275,
+      "sha256": "e9a9e4a12c7f7afaf263d003d42fc5cf0c530be578c1340a761faa1c5609746c"
+    },
+    {
+      "path": "packs/holodeck/objects/ea67496d7ab90b34507b6a38290ccd80b8acb04a2558cf1fe5b6259909540dad/meridian-ivy-long-runtime.zip",
+      "bytes": 78758,
+      "sha256": "ea67496d7ab90b34507b6a38290ccd80b8acb04a2558cf1fe5b6259909540dad"
+    },
+    {
+      "path": "packs/holodeck/objects/ec420968f118cb6edb9c789498f543af4339c3227d39aec4f944ffb8699c55de/meridian-coping-4.glb",
+      "bytes": 299268,
+      "sha256": "ec420968f118cb6edb9c789498f543af4339c3227d39aec4f944ffb8699c55de"
+    },
+    {
+      "path": "packs/holodeck/objects/f0704f31d6bcdeb342794284c72a7d363948f13afad7ea4c8362a18133854fa2/meridian-coping-4-editable.zip",
+      "bytes": 329909,
+      "sha256": "f0704f31d6bcdeb342794284c72a7d363948f13afad7ea4c8362a18133854fa2"
+    },
+    {
+      "path": "packs/holodeck/objects/f55f1f6daa5e65d2addfdc62161bfe11af4343b94c2edfe9627508ddec6d83a2/meridian-cube-mirror-court-runtime.zip",
+      "bytes": 6493,
+      "sha256": "f55f1f6daa5e65d2addfdc62161bfe11af4343b94c2edfe9627508ddec6d83a2"
+    },
+    {
+      "path": "packs/holodeck/objects/f5d89740bc44fd16d91f0608efa7f412f1a9fd15cd0b855f88609adb9514b63b/meridian-rim-spill-runtime.zip",
+      "bytes": 55120,
+      "sha256": "f5d89740bc44fd16d91f0608efa7f412f1a9fd15cd0b855f88609adb9514b63b"
+    },
+    {
+      "path": "packs/holodeck/objects/f62d1c4c959eeaa274e487987cb2bef44a361ea597ae44c79d4195dc3a2fd86a/meridian-cube-mirror-runtime.zip",
+      "bytes": 6463,
+      "sha256": "f62d1c4c959eeaa274e487987cb2bef44a361ea597ae44c79d4195dc3a2fd86a"
+    },
+    {
+      "path": "packs/holodeck/objects/f69f3650e3cf26c1e855509778eddbf3d50add0c2d9869e9afb22f3d916ea91f/meridian-ivy-short-runtime.zip",
+      "bytes": 39607,
+      "sha256": "f69f3650e3cf26c1e855509778eddbf3d50add0c2d9869e9afb22f3d916ea91f"
+    },
+    {
+      "path": "packs/holodeck/objects/f7c414b45fe10f3ad4d7444c7a2638c34ae6a5cf60e9b025d572f082d219795f/meridian-cascade-tower-editable.zip",
+      "bytes": 588394,
+      "sha256": "f7c414b45fe10f3ad4d7444c7a2638c34ae6a5cf60e9b025d572f082d219795f"
+    },
+    {
+      "path": "packs/holodeck/objects/fc54ddf1a7d1f0d70b8c6b414758ed7ddd690c6650d7053e1506ab95c94ccd94/meridian-statue-whale.glb",
+      "bytes": 794988,
+      "sha256": "fc54ddf1a7d1f0d70b8c6b414758ed7ddd690c6650d7053e1506ab95c94ccd94"
+    },
+    {
+      "path": "packs/holodeck/objects/fe5bfb1cbe23b5addcc08ffd5c459be9853fcf274d90909f4d923dfacbed6089/meridian-shrub-a-editable.zip",
+      "bytes": 819684,
+      "sha256": "fe5bfb1cbe23b5addcc08ffd5c459be9853fcf274d90909f4d923dfacbed6089"
+    },
+    {
+      "path": "packs/holodeck/objects/feccda5aac067c1bd3aae7fb80d9413b3904ef3266cd8729adfe88db01b03488/meridian-parapet-4.glb",
+      "bytes": 294940,
+      "sha256": "feccda5aac067c1bd3aae7fb80d9413b3904ef3266cd8729adfe88db01b03488"
     }
   ]
 }

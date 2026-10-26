@@ -48,13 +48,20 @@ export const HOLODECK_PACKS = [
     description: 'A furnished timber cabin above a snowy mountain forest, with a sleeping loft, deck, stone hearth and woodland trails, built in Holodeck.',
     expectedAssets: 56,
   },
+  {
+    id: 'holodeck-meridian-sanctuary',
+    scene: 'meridian-sanctuary',
+    name: 'Meridian Sanctuary',
+    description: 'A marble sanctuary above a sea of cloud: a causeway between mirror pools, terraces up to a colossal gate tower with a mirror orb, floating statues of a figure and a whale, arcades, cypresses and a bridge path to a pavilion, built in Holodeck around the Cove.',
+    expectedAssets: 53,
+  },
 ];
 
 /**
  * Two shots of each walkable scene: a wide view of the scene, then a place in it. Pack pages show them side by side;
  * the pack's card on /packs/ shows the wide one. Each camera is a Holodeck benchmark pose (metres, +Y up) shot by
  * `scripts/capture-holodeck-shots.mjs` from the published world. Seven reuse the framings of Holodeck's own site
- * shots; the Tidemark overview, the cabin views and the Cove seat are framed for these pages.
+ * shots; the Tidemark overview, the cabin views, the Cove seat and the Meridian Sanctuary views are framed for these pages.
  */
 const shot = (view, position, target, fov, cove, alt) => ({ view, camera: { position, target, fov, cove }, alt });
 export const HOLODECK_SHOTS = {
@@ -78,6 +85,10 @@ export const HOLODECK_SHOTS = {
     shot('winter-mountainside-cabin-exterior', [28, 10, -2], [20, 8, -29], 52, true, 'The timber cabin with its glazed gable, deck and stair among snow-covered firs and spruces.'),
     shot('winter-mountainside-cabin-living', [21.8, 7.6, -25.4], [20.3, 6.9, -30.5], 63, true, 'The cabin’s living room: a sofa and armchair around the stone hearth, the loft stair and warm lantern light.'),
   ],
+  'holodeck-meridian-sanctuary': [
+    shot('meridian-sanctuary-overview', [14, 62, 34], [14, 2, -78], 55, true, 'Meridian Sanctuary from above: a marble causeway between mirror pools and terraces climbing to the gate tower, over a sea of cloud.'),
+    shot('meridian-sanctuary-arrival', [14, 1.72, -9], [14, 13, -124], 63, true, 'Arriving at Meridian Sanctuary: the causeway runs between mirror pools and cypresses toward the gate tower and its mirror orb.'),
+  ],
 };
 /** Every scene shot is a full-HD capture, so a half-width pair stays sharp on large and high-density screens. */
 export const HOLODECK_SHOT_SIZE = { width: 1920, height: 1080 };
@@ -88,7 +99,7 @@ export const HOLODECK_PLANNED = [];
 /**
  * Owner approval, by gallery slug and the exact revision approved. On 2026-10-23 the owner approved the 47 staged
  * Courtyard, Cove and Tidemark cards as staged, and their packs for delivery, then the 41 new Crescent Cove cards as
- * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. On 2026-10-25 the owner approved Crescent Cove's revision 17 palms (tall, lean, arch, young) and fallen fronds as staged. On 2026-10-25 the owner authorized repairing and deploying the seven winter tree bark-winding successors. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
+ * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. On 2026-10-25 the owner approved Crescent Cove's revision 17 palms (tall, lean, arch, young) and fallen fronds as staged. On 2026-10-25 the owner authorized repairing and deploying the seven winter tree bark-winding successors. On 2026-10-25 the owner also approved the 45 new Meridian Sanctuary cards as staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
  * when every asset it lists is approved.
  */
 export const HOLODECK_APPROVAL = {
@@ -237,6 +248,51 @@ export const HOLODECK_APPROVAL = {
     'winter-wmc-wall-west': 'r_a06b37dfb34843d394c049e0b9913019',
     'winter-wmc-window-tall': 'r_8c85b15ec6434f91b67353da68c41630',
     'winter-wmc-window-test': 'r_a68e049d8cbf4449bbad83b4b2d33499',
+    'meridian-deck-4': 'r_5711672892fd428891bab109fb5f2c78',
+    'meridian-block-8': 'r_90b595799305471aa23d5c522b098917',
+    'meridian-step-slab': 'r_ed119ee06e04495787eb74e6fa1b3588',
+    'meridian-deck-6': 'r_cfc1654b7c0147418c5980fc0155b73f',
+    'meridian-coping-4': 'r_32c14b58648b4b66b9f916ddd8d796ba',
+    'meridian-pool-steps': 'r_70d3b4de07f64f518c0a77e49779e0ef',
+    'meridian-stair-8': 'r_e2c7668c4b704b608fa1faa7e4c9d42f',
+    'meridian-stair-4': 'r_6a0f08a3449a4786b7e0c8d085fa247d',
+    'meridian-parapet-4': 'r_e28232a177ef4fb0be41c5bbf7236674',
+    'meridian-foundation-4': 'r_ccec44961e6449a7ab752499408139b6',
+    'meridian-arcade-pylon': 'r_269d44f66ec944079983349b9dc2cb5a',
+    'meridian-arcade-pier': 'r_e09059fd12874fbea948389061ee8736',
+    'meridian-arcade-pier-slot': 'r_23415f3bcad34dbea52c9b930878be28',
+    'meridian-arcade-arch': 'r_e9e14002aa444492805007f0bf30dfee',
+    'meridian-tower-slot': 'r_c4851c428d0e4931a2983eea9d6e1d8d',
+    'meridian-cascade-tower': 'r_90ab6b974ebb41c4a72e5062a24334fb',
+    'meridian-gateway': 'r_c33d46440935478180576e38ffa20662',
+    'meridian-orb': 'r_14709d822a9a444ba5b3e6a6db89d0ca',
+    'meridian-falls-narrow': 'r_792166fb225343fbb5ea84c29d051c19',
+    'meridian-overflow-wide': 'r_d9957682b89b4c0289370544667ba823',
+    'meridian-rim-spill': 'r_f492f2ff386f42e98744b929aa38b228',
+    'meridian-basin-water': 'r_302353e26e6545dbb54266b1adcb6876',
+    'meridian-planter-sq': 'r_903a72978cfe465186200a1fb3c0efad',
+    'meridian-cypress-tall': 'r_be51d33b5f0a4afc93ade339d923e4a2',
+    'meridian-shrub-b': 'r_18f9489150844e0d8d8fe5b526b5b0ad',
+    'meridian-cypress-mid': 'r_44c60f904a8e4598a05f248c438fca73',
+    'meridian-planter-long': 'r_df7f82a951694294b7a6bf91aa6a8111',
+    'meridian-shrub-a': 'r_d9dcc110da02497283464db09816c4e1',
+    'meridian-ivy-short': 'r_17b6d0b4330a4e309761103f4c6eaefb',
+    'meridian-ivy-long': 'r_b079cae2265a44d4aafe0aa05b93c008',
+    'meridian-isle-base': 'r_44718bb1d05a4aeeab4de5649ec1873b',
+    'meridian-cube-marble': 'r_fbc6774707564a54923a9d1f9b1c8ca9',
+    'meridian-cube-mirror': 'r_8f1700e3aaf04919865f86ce1522f5b8',
+    'meridian-monolith': 'r_fbf4389a2e4d4239813cd2dbc54e094b',
+    'meridian-cube-mirror-court': 'r_36354c34ee5946cd910255a4a8b3f606',
+    'meridian-shrub-c': 'r_080cc7c6bf3a4e55b9348a9bf6136646',
+    'meridian-cypress-broad': 'r_65d968a6e4a34968bfaed1504cf759ba',
+    'meridian-cypress-slim': 'r_4cb4690620ab4a2aa57cf69cd06255e5',
+    'meridian-tower-gate': 'r_dac22ca376b745ceab2346845e4c16a6',
+    'meridian-arcade-bay': 'r_60cc31247cad446a95672bddc01ae520',
+    'meridian-pavilion': 'r_3745cc9353f44c1b8d3102d59c9f9d46',
+    'meridian-balustrade-4': 'r_eb66bdfce33449e386b9792df125142d',
+    'meridian-cube-mirror-far': 'r_1b9bef4f0c2d46ae8bdd1261f64b4c71',
+    'meridian-statue-figure': 'r_c3c6c0cd796b43c88dabbb09061e3ef3',
+    'meridian-statue-whale': 'r_94ec333e46d84cc7a9c4e79455b1c572',
   },
 };
 /** Whether the owner approved this exact revision of a card. */
@@ -259,6 +315,11 @@ const WINTER_CABIN = 'Winter cabin architecture';
 const WINTER_INTERIOR = 'Winter cabin interior';
 const WINTER_FOREST = 'Winter mountainside forest';
 const WINTER_LANDSCAPE = 'Winter mountainside landscape';
+const MERIDIAN_STONE = 'Meridian Sanctuary stone kit';
+const MERIDIAN_ARCHITECTURE = 'Meridian Sanctuary arcades and towers';
+const MERIDIAN_WATER = 'Meridian Sanctuary water';
+const MERIDIAN_PLANTING = 'Meridian Sanctuary planting';
+const MERIDIAN_SCULPTURE = 'Meridian Sanctuary mirrors and statues';
 
 const coveModules = {
   structure: ['Cove platform and seating shell', 'The circular platform and curved seating shell that hold the rest of the Cove.'],
@@ -412,13 +473,59 @@ export const HOLODECK_ASSETS = {
   'winter-wmc-ground-clump': { name: 'Winter grass and stone clump', category: WINTER_LANDSCAPE, description: 'A small cluster of dry stalks, a low stone and a patch of settled snow for sparse winter ground cover.' },
   'winter-wmc-fallen-log': { name: 'Fallen log with snow', category: WINTER_LANDSCAPE, description: 'A tapered fallen trunk with exposed end grain, broken branch stubs, splintered wood and snow following its upper surface.' },
   'winter-wmc-trail-marker': { name: 'Timber trail marker', category: WINTER_LANDSCAPE, description: 'A short timber post with a recessed iron arrow and a small snow cap for marking the forest path.' },
+  'meridian-deck-4': { name: 'Marble deck module', category: MERIDIAN_STONE, description: 'A 4 m deck module of white veined marble over banded travertine, made to repeat into terraces and the causeway.' },
+  'meridian-deck-6': { name: 'Inlaid marble deck', category: MERIDIAN_STONE, description: 'A 6 m marble deck module with brass inlay strips set just proud of the stone.' },
+  'meridian-block-8': { name: 'Marble terrace block', category: MERIDIAN_STONE, description: 'An 8 m terrace block: white veined marble paving over coursed ivory travertine.' },
+  'meridian-foundation-4': { name: 'Deep foundation wall', category: MERIDIAN_STONE, description: 'A 4 m coursed foundation wall that runs about 110 m down into the cloud sea under the terraces.' },
+  'meridian-step-slab': { name: 'Marble stepping slab', category: MERIDIAN_STONE, description: 'A single marble stepping slab for paths across the pools.' },
+  'meridian-stair-8': { name: 'Wide marble stair', category: MERIDIAN_STONE, description: 'An 8 m wide flight of low marble risers with brass nosings, linking the terraces.' },
+  'meridian-stair-4': { name: 'Side stair between cheek walls', category: MERIDIAN_STONE, description: 'A 4 m wide marble side flight between cheek walls, with brass nosings.' },
+  'meridian-coping-4': { name: 'Pool coping with brass lip', category: MERIDIAN_STONE, description: 'A 4 m marble coping for the mirror pools, edged with a thin brass lip.' },
+  'meridian-pool-steps': { name: 'Pool steps', category: MERIDIAN_STONE, description: 'Marble steps that lead down into a pool.' },
+  'meridian-parapet-4': { name: 'Marble parapet', category: MERIDIAN_STONE, description: 'A 4 m solid marble parapet with flat butt ends and a brass top strip.' },
+  'meridian-balustrade-4': { name: 'Open balustrade', category: MERIDIAN_STONE, description: 'A 4 m open balustrade of thirteen travertine balusters between a marble plinth and a brass-strip rail.' },
+  'meridian-planter-sq': { name: 'Square marble planter', category: MERIDIAN_STONE, description: 'A square marble planter, 1.68 m across and 0.9 m tall.' },
+  'meridian-planter-long': { name: 'Long marble planter', category: MERIDIAN_STONE, description: 'A long marble planter, 4.08 m long and 0.7 m tall, for terrace edges.' },
+  'meridian-cube-marble': { name: 'Honed marble cube', category: MERIDIAN_STONE, description: 'A chamfered 1 m cube of honed white marble with long soft grey veins.' },
+  'meridian-arcade-pier': { name: 'Arcade pier', category: MERIDIAN_ARCHITECTURE, description: 'A 1.2 m square marble pier rising to its impost at 5.2 m, for the arcades.' },
+  'meridian-arcade-pier-slot': { name: 'Arcade pier with glowing niche', category: MERIDIAN_ARCHITECTURE, description: 'An arcade pier with a warm-white glowing niche, closed above and below.' },
+  'meridian-arcade-arch': { name: 'Arcade arch span', category: MERIDIAN_ARCHITECTURE, description: 'A 4.8 m round arch with a stepped order, archivolt, cornice and an ivy trough along its top.' },
+  'meridian-arcade-bay': { name: 'Arcade bay', category: MERIDIAN_ARCHITECTURE, description: 'One arcade bay in a single mesh: a plain pier carrying its arch.' },
+  'meridian-arcade-pylon': { name: 'Arcade pylon', category: MERIDIAN_ARCHITECTURE, description: 'A 1.8 m square pylon, 12.6 m tall above a shaft into the cloud, with warm-white glowing niches.' },
+  'meridian-cascade-tower': { name: 'Cascade tower', category: MERIDIAN_ARCHITECTURE, description: 'A 4 m square tower set against a terrace wall, with a spout that feeds a waterfall into the basin below.' },
+  'meridian-tower-slot': { name: 'Distant slotted tower', category: MERIDIAN_ARCHITECTURE, description: 'A slotted marble tower on a 32 m shaft, with glowing niches, for the far skyline.' },
+  'meridian-tower-gate': { name: 'Rim tower', category: MERIDIAN_ARCHITECTURE, description: 'A tall rim tower beside the gateway on a 110 m shaft, with warm-white glowing niches.' },
+  'meridian-gateway': { name: 'Colossal gateway', category: MERIDIAN_ARCHITECTURE, description: 'The gate tower: a 98.6 m marble gateway with three stacked arches, wings and front piers cut with full-height glowing slits.' },
+  'meridian-pavilion': { name: 'Belvedere pavilion', category: MERIDIAN_ARCHITECTURE, description: 'An open belvedere on a coursed shaft out of the cloud sea, with arches on four sides under a stepped roof.' },
+  'meridian-isle-base': { name: 'Floating isle', category: MERIDIAN_ARCHITECTURE, description: 'A floating isle: a 24 m square marble deck over an inverted ziggurat of coursed travertine with marble bands.' },
+  'meridian-monolith': { name: 'Travertine monolith', category: MERIDIAN_ARCHITECTURE, description: 'A distant coursed travertine shaft, 10 m square and 40 m tall, with marble bands.' },
+  'meridian-basin-water': { name: 'Basin water', category: MERIDIAN_WATER, description: 'A turquoise water surface for the basins, with a faint glow that keeps it turquoise in shade.' },
+  'meridian-falls-narrow': { name: 'Narrow waterfall', category: MERIDIAN_WATER, description: 'A narrow falling sheet from a tower spout, with a bright lip and a foam ring where it meets the basin.' },
+  'meridian-overflow-wide': { name: 'Wide weir overflow', category: MERIDIAN_WATER, description: 'A wide weir sheet that falls from a shadowed slot to the pool below, with faint mist at its foot.' },
+  'meridian-rim-spill': { name: 'Infinity rim spill', category: MERIDIAN_WATER, description: 'Water spilling over a 23.9 m infinity edge in separate ribbons that narrow as they fall about 100 m into the cloud.' },
+  'meridian-cypress-tall': { name: 'Tall cypress', category: MERIDIAN_PLANTING, description: 'A tall Italian cypress built from foliage clumps on a shared cypress atlas.' },
+  'meridian-cypress-mid': { name: 'Medium cypress', category: MERIDIAN_PLANTING, description: 'A medium Italian cypress built from foliage clumps on a shared cypress atlas.' },
+  'meridian-cypress-broad': { name: 'Broad young cypress', category: MERIDIAN_PLANTING, description: 'A young broad cypress cone, 6.2 m tall and widest low.' },
+  'meridian-cypress-slim': { name: 'Pencil cypress', category: MERIDIAN_PLANTING, description: 'A slender pencil cypress, 11.5 m tall, bowing slightly toward its top.' },
+  'meridian-shrub-a': { name: 'Flowering shrub mound', category: MERIDIAN_PLANTING, description: 'A rounded shrub mound with cream blossoms from a shared shrub atlas.' },
+  'meridian-shrub-b': { name: 'Cream-flowered shrub mound', category: MERIDIAN_PLANTING, description: 'A second shrub mound shape with cream blossoms from the shared shrub atlas.' },
+  'meridian-shrub-c': { name: 'Old-rose shrub mound', category: MERIDIAN_PLANTING, description: 'An old-rose flowering mound, 1.1 m tall and lighter in leaf.' },
+  'meridian-ivy-short': { name: 'Short trailing ivy', category: MERIDIAN_PLANTING, description: 'Nine trailing ivy strands, 1.2 to 3 m long, of individual leaf cards with a dense dark crown and light tips.' },
+  'meridian-ivy-long': { name: 'Long trailing ivy', category: MERIDIAN_PLANTING, description: 'Thirteen trailing ivy strands, 3 to 7 m long, each leaf its own five-lobed card hung from its stalk.' },
+  'meridian-orb': { name: 'Mirror orb', category: MERIDIAN_SCULPTURE, description: 'A smooth mirror sphere 4.5 m across, one mesh and one material, centred on its pivot.' },
+  'meridian-cube-mirror': { name: 'Floating mirror cube', category: MERIDIAN_SCULPTURE, description: 'A 1 m floating cube with true mirror faces and a pale-gold bevel that catches the sun.' },
+  'meridian-cube-mirror-court': { name: 'Court mirror cube', category: MERIDIAN_SCULPTURE, description: 'The 1 m mirror cube for the court, reflecting the court’s surroundings, with a pale-gold bevel.' },
+  'meridian-cube-mirror-far': { name: 'Sky mirror cube', category: MERIDIAN_SCULPTURE, description: 'The mirror cube for the far cubes and slabs over the cloud sea, which reflect the sky, with a pale-gold bevel.' },
+  'meridian-statue-figure': { name: 'Floating robed figure', category: MERIDIAN_SCULPTURE, description: 'A robed marble figure lifting a sphere on a 0.9 m plinth, floating as a sky sculpture.' },
+  'meridian-statue-whale': { name: 'Floating marble whale', category: MERIDIAN_SCULPTURE, description: 'A carved 12 m marble humpback whale, floating as a sky sculpture.' },
 };
 
-/** A world placement id to its gallery slug. Every scene's Cove module shares the Cove pack's slug; Crescent Cove's own assets are prefixed. */
+/** A world placement id to its gallery slug. Every scene's Cove module shares the Cove pack's slug; Crescent Cove's, the winter cabin's and Meridian Sanctuary's own assets are prefixed. */
 export function holodeckSlug(pack, worldAssetId) {
   const cove = Object.hasOwn(coveModules, worldAssetId);
   if (pack === 'holodeck-cove' && !cove) throw new Error(`Unknown Cove module ${worldAssetId}`);
   if (cove) return `cove-${worldAssetId}`;
   if (pack === 'holodeck-winter-mountainside-cabin') return `winter-${worldAssetId}`;
+  if (pack === 'holodeck-meridian-sanctuary') return `meridian-${worldAssetId}`;
   return pack === 'holodeck-crescent-cove' ? `crescent-${worldAssetId}` : worldAssetId;
 }

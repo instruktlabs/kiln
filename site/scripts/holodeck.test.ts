@@ -22,29 +22,32 @@ const sha256 = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex
 const pins = new Map(mirror.files.map((record) => [record.path, record]));
 
 test('each scene pack holds every placed Kiln asset once, at its final version', () => {
-  expect(Object.fromEntries(Object.entries(selection.packs).map(([id, pack]) => [id, pack.assets.length]))).toEqual({ 'holodeck-tidemark': 23, 'holodeck-courtyard': 32, 'holodeck-cove': 8, 'holodeck-crescent-cove': 49, 'holodeck-winter-mountainside-cabin': 56 });
+  expect(Object.fromEntries(Object.entries(selection.packs).map(([id, pack]) => [id, pack.assets.length]))).toEqual({ 'holodeck-tidemark': 23, 'holodeck-courtyard': 32, 'holodeck-cove': 8, 'holodeck-crescent-cove': 49, 'holodeck-winter-mountainside-cabin': 56, 'holodeck-meridian-sanctuary': 53 });
   expect(catalog.packs.map((pack) => [pack.id, pack.assetCount])).toEqual(HOLODECK_PACKS.map((pack) => [pack.id, pack.expectedAssets]));
   expect(selection.versions).toBe('final-only');
-  expect(catalog.assets).toHaveLength(143);
+  expect(catalog.assets).toHaveLength(188);
   expect(catalog.assets).toHaveLength(Object.keys(selection.assets).length);
   const shared = catalog.assets.filter((asset) => asset.packs.length > 1);
   expect(shared.map((asset) => asset.slug).sort()).toEqual(Object.keys(HOLODECK_ASSETS).filter((slug) => slug.startsWith('cove-')).sort());
-  // The winter cabin keeps only the Cove's mood board; its trailhead replaces the rest of the Cove.
-  for (const asset of shared) expect(asset.packs).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove', ...(asset.slug === 'cove-moodboard' ? ['holodeck-winter-mountainside-cabin'] : [])]);
+  // The winter cabin keeps only the Cove's mood board; its trailhead replaces the rest of the Cove. Meridian Sanctuary lists every module.
+  for (const asset of shared) expect(asset.packs).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove', ...(asset.slug === 'cove-moodboard' ? ['holodeck-winter-mountainside-cabin'] : []), 'holodeck-meridian-sanctuary']);
   expect(holodeckSlug('holodeck-courtyard', 'canopy')).toBe('cove-canopy');
   expect(holodeckSlug('holodeck-cove', 'canopy')).toBe('cove-canopy');
   expect(holodeckSlug('holodeck-crescent-cove', 'canopy')).toBe('cove-canopy');
   expect(holodeckSlug('holodeck-tidemark', 'island-palm')).toBe('island-palm');
   expect(holodeckSlug('holodeck-crescent-cove', 'shelter')).toBe('crescent-shelter');
+  expect(holodeckSlug('holodeck-meridian-sanctuary', 'canopy')).toBe('cove-canopy');
+  expect(holodeckSlug('holodeck-meridian-sanctuary', 'statue-figure')).toBe('meridian-statue-figure');
 });
 
 test('scenes list the Cove modules at their final revision, and say when the walkable scene places an earlier one', () => {
   const tidemark = selection.packs['holodeck-tidemark'].source, cove = selection.packs['holodeck-cove'].source;
   expect(tidemark).toMatchObject({ kind: 'holodeck-example', path: 'examples/tidemark', commit: cove.commit });
   expect(selection.packs['holodeck-crescent-cove'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/crescent-cove', sourceRevision: 17 });
+  expect(selection.packs['holodeck-meridian-sanctuary'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/meridian-sanctuary', sourceRevision: 27 });
   for (const slug of selection.packs['holodeck-cove'].assets) {
     const record = selection.assets[slug as keyof typeof selection.assets];
-    expect(record.placements.map((placement) => placement.pack)).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove', ...(slug === 'cove-moodboard' ? ['holodeck-winter-mountainside-cabin'] : [])]);
+    expect(record.placements.map((placement) => placement.pack)).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove', ...(slug === 'cove-moodboard' ? ['holodeck-winter-mountainside-cabin'] : []), 'holodeck-meridian-sanctuary']);
   }
   for (const pack of catalog.packs) {
     const earlier = (pack as { sceneStillPlacesEarlier?: { slug: string; placedRevisionId: string; finalRevisionId: string }[] }).sceneStillPlacesEarlier ?? [];
@@ -65,7 +68,7 @@ test('assets that use saved materials carry their frozen closure into the editab
 test('owner approval covers exact revisions, and a pack is available only when every asset it lists is approved', () => {
   const approved = catalog.assets.filter((asset) => asset.review.ownerAccepted).map((asset) => asset.slug).sort();
   expect(approved).toEqual(Object.keys(HOLODECK_APPROVAL.revisions).sort());
-  expect(approved).toHaveLength(143);
+  expect(approved).toHaveLength(188);
   for (const asset of catalog.assets) {
     expect(asset.review).toEqual(holodeckApproved(asset.slug, asset.revisionId) ? { ownerAccepted: true, status: 'accepted' } : { ownerAccepted: false, status: 'awaiting-owner-review' });
   }
@@ -114,6 +117,7 @@ test('every Holodeck card has a rig poster of its exact runtime model, planned f
 test('walkable scene addresses come from one map and fall back to the Holodeck site', () => {
   expect(holodeckWorldUrl('holodeck-tidemark')).toBe('https://holodeck.kilnstudio.tools/worlds/tidemark/');
   expect(holodeckWorldUrl('holodeck-crescent-cove')).toBe('https://holodeck.kilnstudio.tools/worlds/crescent-cove/');
+  expect(holodeckWorldUrl('holodeck-meridian-sanctuary')).toBe('https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/');
   expect(holodeckWorldUrl('not-a-pack')).toBe(worlds.site);
   for (const pack of catalog.packs) expect(Object.keys(worlds.worlds)).toContain(pack.id);
 });
@@ -126,7 +130,7 @@ test('gallery cards link to their pages and to every scene that places them', ()
     expect(card.scenes?.map((scene) => scene.href)).toEqual(card.packs.map((pack) => holodeckWorldUrl(pack)));
   }
   const shared = cards.find((card) => card.slug === 'cove-hearth')!;
-  expect(holodeckScenes(shared).map((scene) => scene.label)).toEqual(['Walk Cove', 'Walk Tidemark Island', 'Walk Courtyard', 'Walk Crescent Cove']);
+  expect(holodeckScenes(shared).map((scene) => scene.label)).toEqual(['Walk Cove', 'Walk Tidemark Island', 'Walk Courtyard', 'Walk Crescent Cove', 'Walk Meridian Sanctuary']);
   expect(buildGallery(false)).toEqual([]);
 });
 

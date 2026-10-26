@@ -209,14 +209,14 @@
         }
       },
       "holodeck": {
-        "renderedOn": "2026-10-25",
+        "renderedOn": "2026-10-26",
         "engine": {
           "commit": "d5e5a4a1217ba9450b01fafe3e5e81747775afe5",
           "subject": "feat(site): show two real scene shots on each Holodeck pack (#271)",
           "dirty": true
         },
         "service": {
-          "url": "http://127.0.0.1:8000",
+          "url": "http://127.0.0.1:8417",
           "protocol": "kiln.render-service.v2",
           "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
           "backend": "vulkan",
@@ -236,7 +236,7 @@
           "captureIdentity": [
             "kiln.capture-producer.v1",
             "sha256:f664529ba31d5c026cc6e629a3d355468dd4cb8e1f7fee0f3e4dd1cced67fc70",
-            "9abcad4a-0773-4849-b845-be63d5361528",
+            "ce63f79d-bf05-4d1f-9566-4e7e6d58c16f",
             "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
             "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
           ]
@@ -7956,6 +7956,1176 @@
         "halfHeight": 3.50573056279838
       },
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+    },
+    "holodeck:meridian-deck-4": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-deck-4.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1598217,
+      "sha256": "e47945e41e86da73cf6be3c05366764cd5fb97e4c6560333e2e4de5676a97f4b",
+      "assetId": "a_9ecaccacab1641468887b8759dd9970f",
+      "revisionId": "r_5711672892fd428891bab109fb5f2c78",
+      "glb": {
+        "member": "packs/holodeck/objects/91c44e88bc69e020b0e074f37ca61880ed918bebc9c618823dbb2d4d6f3567d8/meridian-deck-4.glb",
+        "bytes": 340740,
+        "sha256": "91c44e88bc69e020b0e074f37ca61880ed918bebc9c618823dbb2d4d6f3567d8",
+        "triangles": 592
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.2998316455372216
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-block-8": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-block-8.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1750303,
+      "sha256": "d06e66e58079359376bcba70929f9dd8b9c82779371e600c25858c4adae16b26",
+      "assetId": "a_bc0c70b042c5495c9b6d4e75138f5d79",
+      "revisionId": "r_90b595799305471aa23d5c522b098917",
+      "glb": {
+        "member": "packs/holodeck/objects/6e342b020a14da8007e26d1ef713563b43917c98ea7ae3a880810e486119fe6a/meridian-block-8.glb",
+        "bytes": 575204,
+        "sha256": "6e342b020a14da8007e26d1ef713563b43917c98ea7ae3a880810e486119fe6a",
+        "triangles": 2864
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 6.599663291074443
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-step-slab": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-step-slab.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1512271,
+      "sha256": "59072cdd7832eafbb596ea813bd0012197269b62979f954ff02aa93413989b0c",
+      "assetId": "a_6f89067c2b77485a93b7b5d039a6c22f",
+      "revisionId": "r_ed119ee06e04495787eb74e6fa1b3588",
+      "glb": {
+        "member": "packs/holodeck/objects/989db8693856772a4e86b729ef558ac59181dbf471cd9071221424af919e6688/meridian-step-slab.glb",
+        "bytes": 289668,
+        "sha256": "989db8693856772a4e86b729ef558ac59181dbf471cd9071221424af919e6688",
+        "triangles": 102
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.5885669341902573
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-deck-6": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-deck-6.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1472606,
+      "sha256": "1be82f4ac86c2c94e3a7d32f404507c210219193cf68ab650c4e610b8d9c9932",
+      "assetId": "a_3b195f8b7a224b12972c0b41c1fed890",
+      "revisionId": "r_cfc1654b7c0147418c5980fc0155b73f",
+      "glb": {
+        "member": "packs/holodeck/objects/6f349ec4578bf4a1ca5149b8c7c9f3168fe81d0f8dbe529f1240b690e8c042b2/meridian-deck-6.glb",
+        "bytes": 336344,
+        "sha256": "6f349ec4578bf4a1ca5149b8c7c9f3168fe81d0f8dbe529f1240b690e8c042b2",
+        "triangles": 560
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.1247895569215265
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-coping-4": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-coping-4.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1645727,
+      "sha256": "8a1e2f9692cdad19451b6fb21d30513522d6eba2bf509ac8d9d9d35e96d28ba9",
+      "assetId": "a_a28ecbc7dc134d758deefea5105e7845",
+      "revisionId": "r_32c14b58648b4b66b9f916ddd8d796ba",
+      "glb": {
+        "member": "packs/holodeck/objects/ec420968f118cb6edb9c789498f543af4339c3227d39aec4f944ffb8699c55de/meridian-coping-4.glb",
+        "bytes": 299268,
+        "sha256": "ec420968f118cb6edb9c789498f543af4339c3227d39aec4f944ffb8699c55de",
+        "triangles": 196
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.8314065622897313
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-pool-steps": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-pool-steps.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1591158,
+      "sha256": "3706a43a08bd185ccb7f4c76d25d37a5bcbcde6403f0443e2f776630425bfc12",
+      "assetId": "a_03c9987e328b4854b3f1e40c37142c8b",
+      "revisionId": "r_70d3b4de07f64f518c0a77e49779e0ef",
+      "glb": {
+        "member": "packs/holodeck/objects/40e185c15c710c89291cc465ec15ba8b3bb92a5996d69fb22f4fce71295cfae0/meridian-pool-steps.glb",
+        "bytes": 304908,
+        "sha256": "40e185c15c710c89291cc465ec15ba8b3bb92a5996d69fb22f4fce71295cfae0",
+        "triangles": 240
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.9798989676538037
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-stair-8": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-stair-8.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1723595,
+      "sha256": "62d1b84d2a921c074c0ad83423bb8a32273d82dd554c31222ea1df8904651080",
+      "assetId": "a_86ccbcae4fcb41e9ad7aeefeea8d2a31",
+      "revisionId": "r_e2c7668c4b704b608fa1faa7e4c9d42f",
+      "glb": {
+        "member": "packs/holodeck/objects/d193e679bd1e0faf884ef79848745b3a8ef8d48871a7daf4397f59e70641c5c4/meridian-stair-8.glb",
+        "bytes": 587772,
+        "sha256": "d193e679bd1e0faf884ef79848745b3a8ef8d48871a7daf4397f59e70641c5c4",
+        "triangles": 2876
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 6.602138164830109
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-stair-4": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-stair-4.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1838168,
+      "sha256": "3158507e8765c9143b4faa92b85591d5a66f4caa114c780561c8b76fbc1f690c",
+      "assetId": "a_3b7a0ed03c61411196d644a78696dd04",
+      "revisionId": "r_6a0f08a3449a4786b7e0c8d085fa247d",
+      "glb": {
+        "member": "packs/holodeck/objects/68b4df50f5631f98f2ea18eddf240fe1766ba2fe4d81291f273944a26a7511fd/meridian-stair-4.glb",
+        "bytes": 414396,
+        "sha256": "68b4df50f5631f98f2ea18eddf240fe1766ba2fe4d81291f273944a26a7511fd",
+        "triangles": 1244
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.952222342061498
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-parapet-4": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-parapet-4.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1658670,
+      "sha256": "2878b5cca17d547da78d3faeed23a4c7729099eac98872b8d33d4f8b3670c89f",
+      "assetId": "a_68b548474473491e9a1e2dce7632b2ba",
+      "revisionId": "r_e28232a177ef4fb0be41c5bbf7236674",
+      "glb": {
+        "member": "packs/holodeck/objects/feccda5aac067c1bd3aae7fb80d9413b3904ef3266cd8729adfe88db01b03488/meridian-parapet-4.glb",
+        "bytes": 294940,
+        "sha256": "feccda5aac067c1bd3aae7fb80d9413b3904ef3266cd8729adfe88db01b03488",
+        "triangles": 146
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.8314065622897313
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-foundation-4": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-foundation-4.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1251748,
+      "sha256": "7825ea7fb7ce4e317df8c0a239893a8e1d215b6b85417c6b397f486c7361f5f7",
+      "assetId": "a_496240d2b2f041c69b5d593df83b3bd5",
+      "revisionId": "r_ccec44961e6449a7ab752499408139b6",
+      "glb": {
+        "member": "packs/holodeck/objects/161d25087ac428e0e8fb1918dd580ceae70944fc6b8e5ac6bb8f1c0527c71481/meridian-foundation-4.glb",
+        "bytes": 468972,
+        "sha256": "161d25087ac428e0e8fb1918dd580ceae70944fc6b8e5ac6bb8f1c0527c71481",
+        "triangles": 1790
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 58.2426327472032
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-arcade-pylon": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-pylon.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1226961,
+      "sha256": "aa705b724e8186232768348952101b5087b39795e10591afe34609628373946c",
+      "assetId": "a_5e2481268eb342aab284430556143e9a",
+      "revisionId": "r_269d44f66ec944079983349b9dc2cb5a",
+      "glb": {
+        "member": "packs/holodeck/objects/c481459806153efda700bc57d9cbf659dc638fd92547f334f300f0c0b6d97602/meridian-arcade-pylon.glb",
+        "bytes": 796236,
+        "sha256": "c481459806153efda700bc57d9cbf659dc638fd92547f334f300f0c0b6d97602",
+        "triangles": 4722
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 64.654529432404
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-arcade-pier": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-pier.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1658377,
+      "sha256": "aaa77cb4682456de18fda16ef2c3f6f42b4b0686d88a993719447f1d2164b9f3",
+      "assetId": "a_1872b09689154cb2825cbe6cd3e77af4",
+      "revisionId": "r_e09059fd12874fbea948389061ee8736",
+      "glb": {
+        "member": "packs/holodeck/objects/6de9585966f35013cee56b3de9c936322892a0d95f07f17fc2dce92b6680b88f/meridian-arcade-pier.glb",
+        "bytes": 393212,
+        "sha256": "6de9585966f35013cee56b3de9c936322892a0d95f07f17fc2dce92b6680b88f",
+        "triangles": 1072
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.2282633156301577
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-arcade-pier-slot": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-pier-slot.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1668723,
+      "sha256": "1567a4b99d9ace9b0bf207e1b4a90c42f07877598fbb856559b19f19333bbd3b",
+      "assetId": "a_5aa55f2016c84a98a47300864c642739",
+      "revisionId": "r_23415f3bcad34dbea52c9b930878be28",
+      "glb": {
+        "member": "packs/holodeck/objects/a38f32e2e67c8cc0abf88939f236da370d5c7181634075713afa6165cfbaa36c/meridian-arcade-pier-slot.glb",
+        "bytes": 409404,
+        "sha256": "a38f32e2e67c8cc0abf88939f236da370d5c7181634075713afa6165cfbaa36c",
+        "triangles": 1174
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.2282633156301577
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-arcade-arch": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1688867,
+      "sha256": "3273933075459ea063a67d863a5993b17ea6ba009c91208f9488201475d46b53",
+      "assetId": "a_71cef64b7f8143478db7afd63d553974",
+      "revisionId": "r_e9e14002aa444492805007f0bf30dfee",
+      "glb": {
+        "member": "packs/holodeck/objects/d547e61ae92a3e8d57be1e1465ab3290750c5804594592345775740b9b49f57a/meridian-arcade-arch.glb",
+        "bytes": 446728,
+        "sha256": "d547e61ae92a3e8d57be1e1465ab3290750c5804594592345775740b9b49f57a",
+        "triangles": 1604
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.395627256012831
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-tower-slot": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-tower-slot.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1368978,
+      "sha256": "acbec4468a474c70cf06a8df286fca3bdc5d272052f0e18ead769f24eb8e4ee0",
+      "assetId": "a_3b903db052c3431a9540e5f54a9b5ee5",
+      "revisionId": "r_c4851c428d0e4931a2983eea9d6e1d8d",
+      "glb": {
+        "member": "packs/holodeck/objects/ba43779293fcc631283fb1bce03a5061fee4249dd682d222d826b0bcfd548679/meridian-tower-slot.glb",
+        "bytes": 1107564,
+        "sha256": "ba43779293fcc631283fb1bce03a5061fee4249dd682d222d826b0bcfd548679",
+        "triangles": 7752
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 30.869339155347596
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-cascade-tower": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cascade-tower.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1980557,
+      "sha256": "f93fd5fad9fd29b72b8ac73ee0c5d50f66f59688e519df4fed37193883f62fd8",
+      "assetId": "a_e6f9b6d59c9e48e88b6c266fe8df0f01",
+      "revisionId": "r_90ab6b974ebb41c4a72e5062a24334fb",
+      "glb": {
+        "member": "packs/holodeck/objects/304b3731cdeab654c3f5827a36406ffdfacb966331336842b8365b8a73faafaf/meridian-cascade-tower.glb",
+        "bytes": 478968,
+        "sha256": "304b3731cdeab654c3f5827a36406ffdfacb966331336842b8365b8a73faafaf",
+        "triangles": 1830
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.875867909604976
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-gateway": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-gateway.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1634730,
+      "sha256": "7ff94334ba98224e3ff44f1f9ea713301a1de8cbbf2a54ccfbc01a059816fa4c",
+      "assetId": "a_3d189b692e934646bccc63f3088eafd1",
+      "revisionId": "r_c33d46440935478180576e38ffa20662",
+      "glb": {
+        "member": "packs/holodeck/objects/2d309596a95f989bcf575058e227f6e2ca916df77a0f3996fd78a326f5e76af9/meridian-gateway.glb",
+        "bytes": 14793000,
+        "sha256": "2d309596a95f989bcf575058e227f6e2ca916df77a0f3996fd78a326f5e76af9",
+        "triangles": 132164
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 61.53040256299529
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-orb": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-orb.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1774073,
+      "sha256": "f530e07668d2f2994cd2df69c9df8fe8c937a154630c0e5c03c7fafe215a31d8",
+      "assetId": "a_6eb69a9b81ea429880d3f1e5b308955a",
+      "revisionId": "r_14709d822a9a444ba5b3e6a6db89d0ca",
+      "glb": {
+        "member": "packs/holodeck/objects/84b5d03c3fff19ceb2dbf98761d86d34d47cba855c95b1f092ebf8102499c1c1/meridian-orb.glb",
+        "bytes": 275996,
+        "sha256": "84b5d03c3fff19ceb2dbf98761d86d34d47cba855c95b1f092ebf8102499c1c1",
+        "triangles": 12096
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.016733292299031
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-falls-narrow": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-falls-narrow.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1582271,
+      "sha256": "f2462636511ce9093c06e96083f9c507f7215689d8f1e4ded7b4e2261c0e42d9",
+      "assetId": "a_8a9a9d21b715495e8da9ea86f9926b3f",
+      "revisionId": "r_792166fb225343fbb5ea84c29d051c19",
+      "glb": {
+        "member": "packs/holodeck/objects/df51f8102d52234564054cb0b85d135f093ed1c3dff017ccd535003790d76587/meridian-falls-narrow.glb",
+        "bytes": 90012,
+        "sha256": "df51f8102d52234564054cb0b85d135f093ed1c3dff017ccd535003790d76587",
+        "triangles": 230
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.750217981379346
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-overflow-wide": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-overflow-wide.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1773028,
+      "sha256": "44572bb9cd4e2722165e5947cae9cc847856a402f8fe78450a02ac49f184206f",
+      "assetId": "a_9f4e630b3c014b5a85b80b271b6a533c",
+      "revisionId": "r_d9957682b89b4c0289370544667ba823",
+      "glb": {
+        "member": "packs/holodeck/objects/a406e838bf92d63623e06802dbf1ac1c6ad4bf29026fc5e028f2e187d51175b7/meridian-overflow-wide.glb",
+        "bytes": 74784,
+        "sha256": "a406e838bf92d63623e06802dbf1ac1c6ad4bf29026fc5e028f2e187d51175b7",
+        "triangles": 80
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.7745399308955605
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-rim-spill": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-rim-spill.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1267064,
+      "sha256": "e2b86393572fa88c6fffd3ac3d448c2cb6d5f219b55948a0fe22c4ddacd0471a",
+      "assetId": "a_aeeaca8105cf481c95589666b06d2828",
+      "revisionId": "r_f492f2ff386f42e98744b929aa38b228",
+      "glb": {
+        "member": "packs/holodeck/objects/3943c9a8ced022e318cac1b9275fd1c623ba5d49fba62585b7f6de18ebd00871/meridian-rim-spill.glb",
+        "bytes": 67584,
+        "sha256": "3943c9a8ced022e318cac1b9275fd1c623ba5d49fba62585b7f6de18ebd00871",
+        "triangles": 280
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 59.454760017971694
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-basin-water": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-basin-water.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1388641,
+      "sha256": "aca73d57de6186e2a1a5c696a96788d27846c604b9268d7b7b03129dd115e2e3",
+      "assetId": "a_5ac2d19a9ec245d6a1932992548c3c22",
+      "revisionId": "r_302353e26e6545dbb54266b1adcb6876",
+      "glb": {
+        "member": "packs/holodeck/objects/19a83224366aad1bb97363120e4de7ed0f0e079938d4e157d8fef24c926265e7/meridian-basin-water.glb",
+        "bytes": 36812,
+        "sha256": "19a83224366aad1bb97363120e4de7ed0f0e079938d4e157d8fef24c926265e7",
+        "triangles": 2
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 9.896195147450152
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-planter-sq": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-planter-sq.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1818174,
+      "sha256": "5392b4ba4e6bbd13e28e506b6bcdd1c357b145301a833b051a3769f054ac2f1b",
+      "assetId": "a_6278a9dc61e648129614e44414e57717",
+      "revisionId": "r_903a72978cfe465186200a1fb3c0efad",
+      "glb": {
+        "member": "packs/holodeck/objects/a01d1fc8922afe03c71bb575dc6301e44b231dda8d8eac7a21b7c75c1e404e37/meridian-planter-sq.glb",
+        "bytes": 441592,
+        "sha256": "a01d1fc8922afe03c71bb575dc6301e44b231dda8d8eac7a21b7c75c1e404e37",
+        "triangles": 1520
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.3859292478548686
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-cypress-tall": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cypress-tall.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1358640,
+      "sha256": "d90c243e809f3a89602256716839711296c401e0e77916b8ab792061b4cdc68d",
+      "assetId": "a_dfd044d6b13642c5bf52251a76e7c865",
+      "revisionId": "r_be51d33b5f0a4afc93ade339d923e4a2",
+      "glb": {
+        "member": "packs/holodeck/objects/462a4ea82ac934eb7bbcf33c1cc31e9a1717de833144c6d8cd06a4ee9b57ad23/meridian-cypress-tall.glb",
+        "bytes": 550952,
+        "sha256": "462a4ea82ac934eb7bbcf33c1cc31e9a1717de833144c6d8cd06a4ee9b57ad23",
+        "triangles": 7968
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.843223575688872
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-shrub-b": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-shrub-b.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1604582,
+      "sha256": "57528d511344630924994746f84818da4e988b598b466e64ab780b23f051d616",
+      "assetId": "a_8e3dc511b0a74bee83928f75486d67b0",
+      "revisionId": "r_18f9489150844e0d8d8fe5b526b5b0ad",
+      "glb": {
+        "member": "packs/holodeck/objects/54e96787c3d1133433e7ae5cc9a12cdcd4ad34d84bb53c0449c871ec1a380da5/meridian-shrub-b.glb",
+        "bytes": 229888,
+        "sha256": "54e96787c3d1133433e7ae5cc9a12cdcd4ad34d84bb53c0449c871ec1a380da5",
+        "triangles": 2712
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.5169969097369809
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-cypress-mid": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cypress-mid.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1369592,
+      "sha256": "d22888b2f677cc9d598253be33e1c359821182c4df3849a32b6e2a52e4746fc1",
+      "assetId": "a_39ffb9f601cf46259c43be9a68ce9083",
+      "revisionId": "r_44c60f904a8e4598a05f248c438fca73",
+      "glb": {
+        "member": "packs/holodeck/objects/8153b67b9965734f25667c2df9cdead19c7390bf04e3088f2c91600ed78e8822/meridian-cypress-mid.glb",
+        "bytes": 403548,
+        "sha256": "8153b67b9965734f25667c2df9cdead19c7390bf04e3088f2c91600ed78e8822",
+        "triangles": 5644
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.249707933173169
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-planter-long": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-planter-long.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1605575,
+      "sha256": "c2b9a47a948c267425ef94cb7b672e9f7c9dd86b7f343e6ff7d0bdeb5c3d1bfd",
+      "assetId": "a_0dc7ceda00b941029cf89bef1ea4b433",
+      "revisionId": "r_df7f82a951694294b7a6bf91aa6a8111",
+      "glb": {
+        "member": "packs/holodeck/objects/a86101646241c0b008222f2395f38769e9b31f12bab7c6dcc18ddfa1b82b625a/meridian-planter-long.glb",
+        "bytes": 504108,
+        "sha256": "a86101646241c0b008222f2395f38769e9b31f12bab7c6dcc18ddfa1b82b625a",
+        "triangles": 2112
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.210887159239174
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-shrub-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-shrub-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1684162,
+      "sha256": "56d4b37295caced319780aa3d58ab7ea7846340cc526adaea18b60cb227decd4",
+      "assetId": "a_2b0bd24c5c4c475398236722326ade8b",
+      "revisionId": "r_d9dcc110da02497283464db09816c4e1",
+      "glb": {
+        "member": "packs/holodeck/objects/1a77863ae87f935397455a9074b1ca4df3936f5480a9bdfb7625914c29392278/meridian-shrub-a.glb",
+        "bytes": 282532,
+        "sha256": "1a77863ae87f935397455a9074b1ca4df3936f5480a9bdfb7625914c29392278",
+        "triangles": 3464
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.8491090008198177
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-ivy-short": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-ivy-short.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1430249,
+      "sha256": "aaa6b884b5f213310c10b67bbce79ca07ffe2214a91bd1932bf56f456b53d277",
+      "assetId": "a_6f29f3fb60e94af3a4f9d1a5c95a9348",
+      "revisionId": "r_17b6d0b4330a4e309761103f4c6eaefb",
+      "glb": {
+        "member": "packs/holodeck/objects/15a61ad6dc5148374985817d78e9bfca0485fad35b53c997d46b18abd286f30e/meridian-ivy-short.glb",
+        "bytes": 87108,
+        "sha256": "15a61ad6dc5148374985817d78e9bfca0485fad35b53c997d46b18abd286f30e",
+        "triangles": 1040
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.069906899553166
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-ivy-long": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-ivy-long.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1370660,
+      "sha256": "9dc7343a55676f6adff5cb024df0c9edbf932c3bd856cd562fadb9b30919b129",
+      "assetId": "a_6a335a4ab0ed4fa68ca882df46f9bb44",
+      "revisionId": "r_b079cae2265a44d4aafe0aa05b93c008",
+      "glb": {
+        "member": "packs/holodeck/objects/b59dab8dd2ca27951d36c80ab02ebced0a14a4ee5938650450647c18350ac898/meridian-ivy-long.glb",
+        "bytes": 213952,
+        "sha256": "b59dab8dd2ca27951d36c80ab02ebced0a14a4ee5938650450647c18350ac898",
+        "triangles": 2852
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.435557825001131
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-isle-base": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-isle-base.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1648741,
+      "sha256": "25e56f5032cb331401c52cb376493476896b00d0e42c022a39cb413bffeb197f",
+      "assetId": "a_35a7b96496dc4c3b8dbb90837234933b",
+      "revisionId": "r_44718bb1d05a4aeeab4de5649ec1873b",
+      "glb": {
+        "member": "packs/holodeck/objects/e5fbd111337502119e5a94795eea1e3cb9196432b6327122507489fdbb690147/meridian-isle-base.glb",
+        "bytes": 1159416,
+        "sha256": "e5fbd111337502119e5a94795eea1e3cb9196432b6327122507489fdbb690147",
+        "triangles": 8272
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 19.79898987322333
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-cube-marble": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cube-marble.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1768547,
+      "sha256": "ccbef51aa5a9a4466020ecfa916ea08d9dcd231d7421a15a4196664253b56520",
+      "assetId": "a_faa275ba070e49f388ba9dcec5841ac4",
+      "revisionId": "r_fbc6774707564a54923a9d1f9b1c8ca9",
+      "glb": {
+        "member": "packs/holodeck/objects/ab6703d83c9414bd408781c00271dc2bfb6b497c2d21d693f80389417005c96d/meridian-cube-marble.glb",
+        "bytes": 282516,
+        "sha256": "ab6703d83c9414bd408781c00271dc2bfb6b497c2d21d693f80389417005c96d",
+        "triangles": 44
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.8926073982886735
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-cube-mirror": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cube-mirror.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1612991,
+      "sha256": "0adf59f4f22c717bc760aa6df39c61600f5074d663c72bac4934631f0f00140c",
+      "assetId": "a_b2ed39a4ce1a4fd99dd876cc5c703165",
+      "revisionId": "r_8f1700e3aaf04919865f86ce1522f5b8",
+      "glb": {
+        "member": "packs/holodeck/objects/8f3701dba30ae503f5a097c7debfceafcef5e11871b9feb7fd14a1ee34016384/meridian-cube-mirror.glb",
+        "bytes": 5464,
+        "sha256": "8f3701dba30ae503f5a097c7debfceafcef5e11871b9feb7fd14a1ee34016384",
+        "triangles": 44
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.8926073982886735
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-monolith": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-monolith.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1704818,
+      "sha256": "240729454c01dcb44da0425a0db0affb4eaf5d26e747230e0c4d261a0a5e9d7a",
+      "assetId": "a_463eeb97e1be466dac2f2a444ba879fb",
+      "revisionId": "r_fbf4389a2e4d4239813cd2dbc54e094b",
+      "glb": {
+        "member": "packs/holodeck/objects/32b343ff96ed753c27c58f3d4608f4ac4005cde498f376bb4cc708fec35d9561/meridian-monolith.glb",
+        "bytes": 1313500,
+        "sha256": "32b343ff96ed753c27c58f3d4608f4ac4005cde498f376bb4cc708fec35d9561",
+        "triangles": 9914
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 24.9930070811448
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-cube-mirror-court": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cube-mirror-court.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1612991,
+      "sha256": "0adf59f4f22c717bc760aa6df39c61600f5074d663c72bac4934631f0f00140c",
+      "assetId": "a_a107bf0519104ce9849cc823fca52a20",
+      "revisionId": "r_36354c34ee5946cd910255a4a8b3f606",
+      "glb": {
+        "member": "packs/holodeck/objects/809a80f6d81c41134924bfdb8669b8269c61ee9dedc0e8aa478a74401b70fbf5/meridian-cube-mirror-court.glb",
+        "bytes": 5476,
+        "sha256": "809a80f6d81c41134924bfdb8669b8269c61ee9dedc0e8aa478a74401b70fbf5",
+        "triangles": 44
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.8926073982886735
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-shrub-c": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-shrub-c.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1688993,
+      "sha256": "88267c2cc131ff6a77cc0d43651a9545f2383b8ccb1bdbe8e46bd5310193e0b7",
+      "assetId": "a_bdac34882fa14b84be3d33ea14adb9c9",
+      "revisionId": "r_080cc7c6bf3a4e55b9348a9bf6136646",
+      "glb": {
+        "member": "packs/holodeck/objects/b3dd6ef416ad23d51a7c3d9ffa1545915eee7496c2420f695807d87db285df59/meridian-shrub-c.glb",
+        "bytes": 252288,
+        "sha256": "b3dd6ef416ad23d51a7c3d9ffa1545915eee7496c2420f695807d87db285df59",
+        "triangles": 3032
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.6231896842643068
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-cypress-broad": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cypress-broad.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1422256,
+      "sha256": "17d890a27eb125894bb50c833604a8dca8ed484adb4bbe3b1d219b4584be5414",
+      "assetId": "a_e7849305e90b44eeab88fb69bc7c5c1e",
+      "revisionId": "r_65d968a6e4a34968bfaed1504cf759ba",
+      "glb": {
+        "member": "packs/holodeck/objects/4e1701b85a88489db574391fabc25ac9d1860639ce9a73cb421946fd8dc2c0b4/meridian-cypress-broad.glb",
+        "bytes": 378680,
+        "sha256": "4e1701b85a88489db574391fabc25ac9d1860639ce9a73cb421946fd8dc2c0b4",
+        "triangles": 5216
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.9349189461658165
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-cypress-slim": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cypress-slim.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1318524,
+      "sha256": "14609b8cb27ce4a9a8cf4b621e785df71bad40ac8631ccd5e2ad756d44d596e9",
+      "assetId": "a_f2de801b1cbb472b99638a036c22221a",
+      "revisionId": "r_4cb4690620ab4a2aa57cf69cd06255e5",
+      "glb": {
+        "member": "packs/holodeck/objects/963b91704cecf26f6041fa9fbbfd324d14f847a6a7b6dd18b8e9fe50742a4ca8/meridian-cypress-slim.glb",
+        "bytes": 481452,
+        "sha256": "963b91704cecf26f6041fa9fbbfd324d14f847a6a7b6dd18b8e9fe50742a4ca8",
+        "triangles": 7072
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 6.512380215794827
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-tower-gate": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-tower-gate.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1261411,
+      "sha256": "834e745251ae70d23d6a511effe7f4ddd6cc9a007567c54d3c1db0002a08a917",
+      "assetId": "a_4836065137894bf49499b78028fcfdb9",
+      "revisionId": "r_dac22ca376b745ceab2346845e4c16a6",
+      "glb": {
+        "member": "packs/holodeck/objects/45895a8c9bd14763281d25a95b9a84353e191996b5cf7e43ce82638380fa1ed1/meridian-tower-gate.glb",
+        "bytes": 1618784,
+        "sha256": "45895a8c9bd14763281d25a95b9a84353e191996b5cf7e43ce82638380fa1ed1",
+        "triangles": 12568
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 79.24122254211427
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-arcade-bay": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1485623,
+      "sha256": "bb9f88bd0ef7694487438d7b5251a40aa5ee1c1aaaafb824e3a90651b44e00ec",
+      "assetId": "a_ebda3dd3bf5f41d6ad0dea5b6a9c3ef6",
+      "revisionId": "r_60cc31247cad446a95672bddc01ae520",
+      "glb": {
+        "member": "packs/holodeck/objects/b4dbb30eaa108e6846cdd3d16afa94bed46ff8443c2362757161fab926fb78a1/meridian-arcade-bay.glb",
+        "bytes": 562192,
+        "sha256": "b4dbb30eaa108e6846cdd3d16afa94bed46ff8443c2362757161fab926fb78a1",
+        "triangles": 2676
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 6.233374841542135
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-pavilion": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-pavilion.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1318394,
+      "sha256": "c7112f1568778ca02a49d9a81934ffe7419af5d4086507d02aacee6726096b35",
+      "assetId": "a_fcde0b57fef04d3698a139126d44f416",
+      "revisionId": "r_3745cc9353f44c1b8d3102d59c9f9d46",
+      "glb": {
+        "member": "packs/holodeck/objects/28ad88347a9eb2d5c943d9c397d4a4f3af8125432a0eeda77f4da597a7067219/meridian-pavilion.glb",
+        "bytes": 596736,
+        "sha256": "28ad88347a9eb2d5c943d9c397d4a4f3af8125432a0eeda77f4da597a7067219",
+        "triangles": 2996
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 37.13246764821412
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-balustrade-4": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-balustrade-4.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1598113,
+      "sha256": "4042c973618ffb037f78ea294cd37ff09daf75330b8984e2a1369023ebe455ad",
+      "assetId": "a_7d9d5e100703402aa907c7e9fe1ccef1",
+      "revisionId": "r_eb66bdfce33449e386b9792df125142d",
+      "glb": {
+        "member": "packs/holodeck/objects/afca29899c682afbcdc08e6a00ab9cff72e67a9d39ec0034c6d5e2f4e7b940b8/meridian-balustrade-4.glb",
+        "bytes": 332796,
+        "sha256": "afca29899c682afbcdc08e6a00ab9cff72e67a9d39ec0034c6d5e2f4e7b940b8",
+        "triangles": 466
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.8066578239647757
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-cube-mirror-far": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-cube-mirror-far.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1612991,
+      "sha256": "0adf59f4f22c717bc760aa6df39c61600f5074d663c72bac4934631f0f00140c",
+      "assetId": "a_b0480b746fa5406c82626f5037e30f5c",
+      "revisionId": "r_1b9bef4f0c2d46ae8bdd1261f64b4c71",
+      "glb": {
+        "member": "packs/holodeck/objects/3f2c302d07380e20fafe794a56f7f3b7ca0ecc886529accb6fee7eed0bece6f4/meridian-cube-mirror-far.glb",
+        "bytes": 5472,
+        "sha256": "3f2c302d07380e20fafe794a56f7f3b7ca0ecc886529accb6fee7eed0bece6f4",
+        "triangles": 44
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.8926073982886735
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-statue-figure": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-statue-figure.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1430682,
+      "sha256": "6785f36b7dd1149c1aa37e23242f4b2e28e60ba52068720b745c70adcd8e3fc0",
+      "assetId": "a_2fdcbd42ab4740469b82e2c357f96413",
+      "revisionId": "r_c3c6c0cd796b43c88dabbb09061e3ef3",
+      "glb": {
+        "member": "packs/holodeck/objects/bc5ba472b23aa8aa40b3bcf84d4f83284617f6480858b7955d9bcb47fad9684b/meridian-statue-figure.glb",
+        "bytes": 897192,
+        "sha256": "bc5ba472b23aa8aa40b3bcf84d4f83284617f6480858b7955d9bcb47fad9684b",
+        "triangles": 34224
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.8447219713159155
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:meridian-statue-whale": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-statue-whale.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1355291,
+      "sha256": "51dcc2b18fabdca9e4e1ae56b0ff57220dbef8fef8980683b60d5ed716c133b2",
+      "assetId": "a_705819f9bd52422b947684965b45795c",
+      "revisionId": "r_94ec333e46d84cc7a9c4e79455b1c572",
+      "glb": {
+        "member": "packs/holodeck/objects/fc54ddf1a7d1f0d70b8c6b414758ed7ddd690c6650d7053e1506ab95c94ccd94/meridian-statue-whale.glb",
+        "bytes": 794988,
+        "sha256": "fc54ddf1a7d1f0d70b8c6b414758ed7ddd690c6650d7053e1506ab95c94ccd94",
+        "triangles": 34416
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 8.470202187169939
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
     }
   }
 }

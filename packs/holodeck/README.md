@@ -10,6 +10,7 @@ addresses are configured in one place, [`site/src/data/holodeck-worlds.json`](..
 | `holodeck-courtyard` | Courtyard world, revision 8 | 32 |
 | `holodeck-cove` | Holodeck's Cove modules at the same commit, the Cove quality pass | 8 |
 | `holodeck-crescent-cove` | Holodeck's bundled `examples/crescent-cove` (commit recorded in `selection.json`), the tropical-island world at revision 17 | 49 |
+| `holodeck-meridian-sanctuary` | Holodeck's bundled `examples/meridian-sanctuary` (commit recorded in `selection.json`), the marble-sanctuary world at revision 27 | 53 |
 
 Packs deliver final versions only: one gallery page and one download per asset. All four scenes
 place the eight Cove modules at their quality-pass revisions, so each Cove module has one page
