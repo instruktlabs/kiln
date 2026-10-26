@@ -7,7 +7,7 @@ addresses are configured in one place, [`site/src/data/holodeck-worlds.json`](..
 | Pack | Scene source | Assets |
 | --- | --- | --- |
 | `holodeck-tidemark` | Holodeck's bundled `examples/tidemark` (commit recorded in `selection.json`), the walkable Tidemark Island | 23 |
-| `holodeck-courtyard` | Courtyard world, revision 8 | 32 |
+| `holodeck-courtyard` | Courtyard world, revision 9 | 32 |
 | `holodeck-cove` | Holodeck's Cove modules at the same commit, the Cove quality pass | 8 |
 | `holodeck-crescent-cove` | Holodeck's bundled `examples/crescent-cove` (commit recorded in `selection.json`), the tropical-island world at revision 17 | 49 |
 | `holodeck-meridian-sanctuary` | Holodeck's bundled `examples/meridian-sanctuary` (commit recorded in `selection.json`), the marble-sanctuary world at revision 27 | 53 |

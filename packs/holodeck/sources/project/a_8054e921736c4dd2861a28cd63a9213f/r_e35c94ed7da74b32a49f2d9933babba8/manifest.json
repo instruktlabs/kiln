@@ -1,0 +1,521 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_8054e921736c4dd2861a28cd63a9213f",
+  "revisionId": "r_e35c94ed7da74b32a49f2d9933babba8",
+  "parentRevision": "r_6602fd828a5341eeaa0877fc58289960",
+  "name": "Cove / fitted cushions and upright throws",
+  "tags": [],
+  "createdAt": "2026-10-26T04:18:48.147Z",
+  "description": "Independent cove module. Layout, clearance and runtime surface detail are owned by the Holodeck scene. The wool throw now sits between fern pots 7 and 8, clear of the canopy mast, and stays inside the wall face.",
+  "attribution": {
+    "model": "claude-opus-5-5",
+    "harness": "claude-code"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:e5f0e8495f9bdc06646fe2d9910f873c268f55d0d34746e53e016e19e856324f",
+      "bytes": 890340
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:451abb23d98291784cefd05ba33d9c87388160dcf8fb71cc64a879a665f59689",
+      "bytes": 17880
+    },
+    "preview.png": {
+      "sha256": "sha256:eaac0c48cbb6f4a98f3d28a586e46b7b7afd919c6c6a24c7fe931606e02a010e",
+      "bytes": 29954
+    }
+  },
+  "build": {
+    "engine": "sha256:d1c12efdb98720e77eefec461b44c6eeefcbe8506abf94f31ada0b040c0555b3",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [
+      "Floating parts (no mesh overlap with any sibling, 2cm tol): Mesh_MossCushion_3 — Fix: shift \"Mesh_MossCushion_3\" by [0.000, 0.000, 0.031] toward \"Mesh_MossCushion_2\", or call snapTo(part, hostPart) to do it automatically. | Mesh_MossCushion_4 — Fix: shift \"Mesh_MossCushion_4\" by [0.000, 0.006, -0.050] toward \"Mesh_LinenPillow_0\", or call snapTo(part, hostPart) to do it automatically. | Mesh_MossCushion_8 — Fix: shift \"Mesh_MossCushion_8\" by [-0.023, 0.000, 0.000] toward \"Mesh_MossCushion_7\", or call snapTo(part, hostPart) to do it automatically. | Mesh_MossCushion_9 — Fix: shift \"Mesh_MossCushion_9\" by [0.000, 0.028, 0.000] toward \"Mesh_LinenPillow_2\", or call snapTo(part, hostPart) to do it automatically. | Mesh_LinenPillow_2 — Fix: shift \"Mesh_LinenPillow_2\" by [0.000, -0.028, 0.000] toward \"Mesh_MossCushion_8\", or call snapTo(part, hostPart) to do it automatically."
+    ],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "e5f0e8495f9bdc06646fe2d9910f873c268f55d0d34746e53e016e19e856324f",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -3.850553710621366,
+          -0.012928594835102558,
+          -3.8443035378191635
+        ],
+        "max": [
+          0.3453278004836058,
+          1.5792772769927979,
+          3.7195490022569944
+        ],
+        "size": [
+          4.195881511104972,
+          1.5922058718279004,
+          7.563852540076158
+        ],
+        "center": [
+          -1.75261295506888,
+          0.7831743410788476,
+          -0.062377267781084544
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -0.012928594835102558,
+        "offsetToGround": 0.012928594835102558,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Cove / fitted cushions and upright throws"
+      },
+      "requestedRole": "prop",
+      "renderMetrics": {
+        "triangles": 3324,
+        "drawCalls": 18,
+        "uniqueGeometries": 8,
+        "uniqueMaterials": 6,
+        "textureCount": 18,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "warn",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "A group of 4 parts (\"Mesh_MossCushion_0\", \"Mesh_MossCushion_1\", \"Mesh_MossCushion_2\", \"Mesh_ThrowBlanket\") is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 2.011 m. This may be intentional. Box adjacency is not physical attachment evidence.",
+              "affected": {
+                "node": "Mesh_MossCushion_0"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 2.010759,
+                "expected": 0.02
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "A group of 2 parts (\"Mesh_NotebookCovers\", \"Mesh_NotebookPages\") is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 0.515 m. This may be intentional. Box adjacency is not physical attachment evidence.",
+              "affected": {
+                "node": "Mesh_NotebookCovers"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 0.514693,
+                "expected": 0.02
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "Part \"Mesh_MossCushion_8\" is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 0.023 m. This may be intentional. Box adjacency is not physical attachment evidence.",
+              "affected": {
+                "node": "Mesh_MossCushion_8"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 0.022766,
+                "expected": 0.02
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "Part \"Mesh_MossCushion_4\" is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 0.050 m. This may be intentional. Box adjacency is not physical attachment evidence.",
+              "affected": {
+                "node": "Mesh_MossCushion_4"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 0.049993,
+                "expected": 0.02
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "Part \"Mesh_LinenPillow_2\" is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 0.873 m. This may be intentional. Box adjacency is not physical attachment evidence.",
+              "affected": {
+                "node": "Mesh_LinenPillow_2"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 0.873381,
+                "expected": 0.02
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "Part \"Mesh_MossCushion_3\" is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 1.064 m. This may be intentional. Box adjacency is not physical attachment evidence.",
+              "affected": {
+                "node": "Mesh_MossCushion_3"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 1.063859,
+                "expected": 0.02
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "Part \"Mesh_MossCushion_9\" is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 1.163 m. This may be intentional. Box adjacency is not physical attachment evidence.",
+              "affected": {
+                "node": "Mesh_MossCushion_9"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 1.163131,
+                "expected": 0.02
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_NotebookCovers\" and \"Mesh_NotebookPages\" occupy the same space: they share 0.00190 m³, which is 100.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_NotebookCovers"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 1,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "2 part-volume measurements were unavailable. 2 because a valid closed solid could not be measured (Not manifold): \"Mesh_ThrowBlanket\", \"Mesh_LogBasket\". 3 overlapping part pairs include one of these parts and were not measured. These parts are not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 18,
+            "partVolumeCandidatePairs": 6,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 3,
+            "partVolumeUnmeasurablePairs": 3,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 2
+          }
+        },
+        "runtimeCost": {
+          "status": "warn",
+          "findings": [
+            {
+              "code": "MATERIAL_IMAGE_COUNT_BUDGET",
+              "disposition": "warn",
+              "dimension": "runtimeCost",
+              "profile": "web.portable.v1.standard",
+              "message": "18 images exceed the 4-image web.portable.v1/standard budget. Reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+              "measurement": {
+                "name": "imageCount",
+                "actual": 18,
+                "threshold": 4,
+                "unit": "images"
+              }
+            }
+          ],
+          "metrics": {
+            "instanceabilityGrade": "C",
+            "instanceabilitySummary": "C (informational, not a QA verdict), set by 6 distinct materials (C at 4-6). Also: 18 textures (over 4 lowers only A/B to C); 8 geometries; 18 draw calls.",
+            "uniqueGeometries": 8,
+            "uniqueMaterials": 6,
+            "meshNodes": 18,
+            "meshInstances": 18,
+            "drawCalls": 18,
+            "textureCount": 18,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 3324,
+            "materialCount": 6,
+            "opaqueMaterials": 6,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 5,
+            "doubleSidedMaterials": 1,
+            "texturedMaterials": 6,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 18,
+            "maxImageDimension": 256,
+            "decodedImageBytesRgba8": 3145728,
+            "estimatedGpuBytesWithMipmaps": 4194316,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "geometry-flat",
+      "materialFaithful": false,
+      "exactArtifact": true,
+      "rendererId": "cpu-raster:1.4.0",
+      "inputGlbSha256": "sha256:e5f0e8495f9bdc06646fe2d9910f873c268f55d0d34746e53e016e19e856324f",
+      "degraded": true,
+      "degradeReason": "material-faithful view render port unavailable",
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

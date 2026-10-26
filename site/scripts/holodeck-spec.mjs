@@ -5,7 +5,7 @@
  */
 
 export const HOLODECK_ID = 'holodeck';
-export const HOLODECK_RELEASE = 'holodeck-20261025-02';
+export const HOLODECK_RELEASE = 'holodeck-20261026-01';
 /**
  * The oldest Kiln that imports the packs' revision bundles, named in each pack README. Raise it only when the bundle
  * format needs a newer Kiln: a value that followed every Kiln release would change every pack ZIP and its key.
@@ -99,15 +99,15 @@ export const HOLODECK_PLANNED = [];
 /**
  * Owner approval, by gallery slug and the exact revision approved. On 2026-10-23 the owner approved the 47 staged
  * Courtyard, Cove and Tidemark cards as staged, and their packs for delivery, then the 41 new Crescent Cove cards as
- * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. On 2026-10-25 the owner approved Crescent Cove's revision 17 palms (tall, lean, arch, young) and fallen fronds as staged. On 2026-10-25 the owner authorized repairing and deploying the seven winter tree bark-winding successors. On 2026-10-25 the owner also approved the 45 new Meridian Sanctuary cards as staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
+ * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. On 2026-10-25 the owner approved Crescent Cove's revision 17 palms (tall, lean, arch, young) and fallen fronds as staged. On 2026-10-25 the owner authorized repairing and deploying the seven winter tree bark-winding successors. On 2026-10-25 the owner also approved the 45 new Meridian Sanctuary cards as staged. On 2026-10-26 the owner approved the Cove seating revision whose throw clears the canopy mast and seat ledge as staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
  * when every asset it lists is approved.
  */
 export const HOLODECK_APPROVAL = {
-  recordedAt: '2026-10-25',
+  recordedAt: '2026-10-26',
   revisions: {
     'cove-structure': 'r_2387ce274123402dbdafd818e6fb0043',
     'cove-canopy': 'r_df0485467228414780cfa44c0f2e32ad',
-    'cove-seating': 'r_6602fd828a5341eeaa0877fc58289960',
+    'cove-seating': 'r_e35c94ed7da74b32a49f2d9933babba8',
     'cove-hearth': 'r_5ef43760979043d48f358fe2932147dc',
     'cove-planting': 'r_cdb8552ccdde43f28d3995b2a5a30d25',
     'cove-rug': 'r_651bc2867976426996191865ea931163',
