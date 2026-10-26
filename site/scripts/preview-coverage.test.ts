@@ -8,18 +8,14 @@ import commons from '../src/data/commons-build.json';
 
 const source = (path: string) => readFile(new URL(path, import.meta.url), 'utf8');
 
-test('homepage includes both current Troy captures with scene and pack links in a two-column scene grid', async () => {
-  const page = await source('../src/pages/index.astro');
-  const cards = page.slice(page.indexOf('aria-labelledby="made-heading"'));
+test('earlier Troy remains reachable from scenes with both current captures and a pack link', async () => {
+  const page = await source('../src/pages/scenes/index.astro');
   expect(troy.posters).toHaveLength(2);
-  expect(cards).toMatch(/<ScenePoster\s+images=\{troy\.posters\}/);
-  expect(cards).toContain('href="/scenes/troy/"');
-  expect(cards).toContain('href="/packs/troy/"');
-  expect(cards).toContain('md:grid-cols-2');
-  expect(cards).not.toContain('mt-8 grid gap-10 md:grid-cols-3');
-  const sizes = page.match(/const CARD_SIZES = ([^;]+);/)![1]!;
-  expect(sizes).toContain('50vw');
-  expect(sizes).toContain('632px');
+  expect(page).toMatch(/<ScenePoster\s+images=\{troy\.posters\}/);
+  expect(page).toContain('href="/scenes/troy/"');
+  expect(page.indexOf('Earlier scenes')).toBeLessThan(page.indexOf('href="/scenes/troy/"'));
+  const scene = await source('../src/pages/scenes/troy/[...page].astro');
+  expect(scene).toContain('/packs/troy/');
 });
 
 test('Foundry featured samples include two campus buildings alongside process and transport equipment', async () => {

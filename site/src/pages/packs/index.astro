@@ -11,7 +11,8 @@ import { PACKS_ENABLED } from "../../lib/config";
 import foundryFloor from "../../data/foundry-floor.json";
 import foundryFloorPack from "../../data/packs/foundry-floor.json";
 import sceneMedia from "../../data/scene-media.json";
-import { holodeckPackHref, holodeckPacks, holodeckPlanned, holodeckShots, holodeckWorldUrl } from "../../lib/holodeck";
+import { holodeckPackHref, holodeckPlanned, holodeckWorldUrl } from "../../lib/holodeck";
+import { curatedWorlds, worldCover } from "../../lib/site-curation";
 const foundryCampusPoster = sceneMedia["foundry-floor"].captures.campus.poster;
 // Six of the Foundry Floor models stand for the pack on its card; each must be in the staged catalog.
 const featured = ["s1-head-w", "s2-hall-w", "euv-scanner", "etch-cluster-tool", "stocker", "oht-vehicle"].map((slug) => {
@@ -23,7 +24,7 @@ const featured = ["s1-head-w", "s2-hall-w", "euv-scanner", "etch-cluster-tool", 
 
 <BaseLayout
   title="Packs · Kiln"
-  description="Download Farm and Vehicles GLBs with editable source and provenance, or inspect the Foundry Floor pack."
+  description="Explore Holodeck asset packs, from Meridian Sanctuary to Crescent Cove and Winter Mountainside Cabin. Download GLBs and editable source, and browse earlier packs."
   breadcrumbs={[{ label: "Packs", href: "/packs/" }]}
   card="packs"
 >
@@ -33,6 +34,35 @@ const featured = ["s1-head-w", "s2-hall-w", "euv-scanner", "etch-cluster-tool", 
       Asset packs made with Kiln. Use the GLBs in your application, or keep the
       source and revise them with your coding agent.
     </p>
+    {PACKS_ENABLED && (
+      <section class="mt-12 border-b border-rule pb-8" aria-labelledby="holodeck-packs">
+        <h2 id="holodeck-packs" class="text-subheading">Holodeck scenes</h2>
+        <p class="mt-4 max-w-reading">Kiln assets placed in walkable Holodeck worlds. Each pack holds every Kiln asset its scene uses.</p>
+        <div class="mt-6 grid gap-8 md:grid-cols-3">
+          {curatedWorlds.map((pack) => {
+            // Use the same curated scene order and covers as the scene listing.
+            const shot = worldCover(pack.id);
+            return (
+              <div class="border-t border-rule pt-4">
+                <a href={holodeckPackHref(pack)} class="block text-ink no-underline" aria-label={`${pack.name} asset pack`}>
+                  {shot && <ResponsiveImage image={{ ...shot, alt: "" }} sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw" class="aspect-video w-full bg-stage object-cover" />}
+                  <h3 class="mt-4 text-title">{pack.name}</h3>
+                  <p class="mt-2 text-dim">{pack.assetCount} editable assets and runtime models.</p>
+                </a>
+                <a class="text-link" href={holodeckWorldUrl(pack.id)}>Walk the scene <span aria-hidden="true">↗</span></a>
+              </div>
+            );
+          })}
+          {holodeckPlanned.map((pack) => (
+            <div class="border-t border-rule pt-4">
+              <h3 class="text-title">{pack.name}</h3>
+              <p class="mt-2 text-dim">{pack.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+    {PACKS_ENABLED && <h2 class="mt-12 text-subheading">Earlier packs</h2>}
     {PACKS_ENABLED && <a class="pack-card mt-12 grid items-center gap-8 border-y border-rule py-8 lg:grid-cols-3" href="/packs/troy/" aria-label="Troy"><div class="lg:col-span-2"><ResponsiveImage image={troy.posters[0]!} eager sizes="(max-width: 1024px) 100vw, 65vw" /></div><div><h2 class="text-subheading">Troy</h2><p class="mt-5">{troy.assetCount} models: heroes, soldiers, ships, buildings, equipment and vegetation.</p><p class="mt-4">Play the scene or download the models.</p><span class="text-link mt-4">Inspect the pack and downloads</span></div></a>}
     {PACKS_ENABLED && (
       <a class="pack-card mt-12 grid items-center gap-8 border-y border-rule py-8 lg:grid-cols-3" href="/packs/farm/" aria-label="Shapes &amp; Seasons Farm">
@@ -121,34 +151,6 @@ const featured = ["s1-head-w", "s2-hall-w", "euv-scanner", "etch-cluster-tool", 
       {PACKS_ENABLED && <ScenePoster images={cabinWoodsScene.posterImages} sizes="(max-width: 1023px) 100vw, 50vw" decorative class="border border-rule" />}
       <div><h2 class="text-subheading">{cabinWoods.name}</h2><p class="mt-4">{cabinWoods.description}</p><p class="mt-4">53 editable assets, runtime models and a playable scene.</p><p class="mt-3 text-dim">{cabinWoods.devices}</p><span class="text-link mt-4">Browse the pack</span></div>
     </a>
-    {PACKS_ENABLED && (
-      <section class="mt-12 border-b border-rule pb-8" aria-labelledby="holodeck-packs">
-        <h2 id="holodeck-packs" class="text-subheading">Holodeck scenes</h2>
-        <p class="mt-4 max-w-reading">Kiln assets placed in walkable Holodeck worlds. Each pack holds every Kiln asset its scene uses.</p>
-        <div class="mt-6 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {holodeckPacks.map((pack) => {
-            // Each card shows its scene's wide shot.
-            const shot = holodeckShots(pack.id)[0];
-            return (
-              <div class="border-t border-rule pt-4">
-                <a href={holodeckPackHref(pack)} class="block text-ink no-underline" aria-label={`${pack.name} asset pack`}>
-                  {shot && <ResponsiveImage image={{ ...shot, alt: "" }} sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 25vw" class="aspect-video w-full bg-stage object-cover" />}
-                  <h3 class="mt-4 text-title">{pack.name}</h3>
-                  <p class="mt-2 text-dim">{pack.assetCount} editable assets and runtime models.</p>
-                </a>
-                <a class="text-link" href={holodeckWorldUrl(pack.id)}>Walk the scene <span aria-hidden="true">↗</span></a>
-              </div>
-            );
-          })}
-          {holodeckPlanned.map((pack) => (
-            <div class="border-t border-rule pt-4">
-              <h3 class="text-title">{pack.name}</h3>
-              <p class="mt-2 text-dim">{pack.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-    )}
     <div class="mt-12 grid gap-8 lg:grid-cols-2">
       {!PACKS_ENABLED && (
         <div>

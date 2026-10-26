@@ -89,7 +89,9 @@ async function buildMedia() {
   const vehicles = await json(join(site, 'src/data/packs/vehicles.json'));
   const bridge = await json(join(site, 'src/data/standalone/golden-gate-bridge.json'));
   const foundryFloor = await json(join(site, 'src/data/foundry-floor.json'));
-  const hero = await json(join(site, 'src/data/hero.json'));
+  const curation = await json(join(site, 'src/data/site-curation.json'));
+  const shots = await json(join(site, 'src/data/holodeck-shots.json'));
+  const hero = { poster: shots.packs[curation.featuredWorlds[0]][1] };
   const archiveIndex = join(publicDir, 'assets/index.json');
   const archive = existsSync(archiveIndex) ? await json(archiveIndex) : [];
   const cards = socialCards({ packsEnabled, release, farm, vehicles, bridge, hero, foundryFloor, archive });

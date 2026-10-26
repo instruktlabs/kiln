@@ -1,4 +1,5 @@
 ---
+import GalleryTags from "../../../components/GalleryTags.astro";
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
@@ -22,6 +23,7 @@ const source = await readFile(resolve('../packs/cabin-woods-psx-horror/sources',
 <BaseLayout title={`${asset.name} · Kiln`} description={`${asset.name}: GLB, editable Kiln source and material resources from the Cabin in the Woods: PSX Horror pack.`} breadcrumbs={[{label:'Gallery',href:'/gallery/'},{label:asset.name,href:cabinWoodsHref(asset)}]} card="packs">
   <div class="container py-8">
     <PageHeader>{asset.name}</PageHeader>
+    <GalleryTags />
     <p class="lead mt-4">{asset.description}</p>
     <a class="text-link mt-4" href="/packs/cabin-woods-psx-horror/">Cabin in the Woods: PSX Horror pack</a>
     <div class="drawing-sheet mt-8"><AssetViewer name={asset.name} modelUrl={asset.modelPath} poster={asset.poster.src} posterAlt={asset.poster.alt} posterWidth={asset.poster.width} posterHeight={asset.poster.height} /></div>

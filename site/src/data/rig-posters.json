@@ -211,20 +211,20 @@
       "holodeck": {
         "renderedOn": "2026-10-26",
         "engine": {
-          "commit": "a945893c6f680aed6db17629ddcc43ce616e3419",
-          "subject": "feat(site): restage the Holodeck packs with the repaired Cove seating (WIP)",
-          "dirty": false
+          "commit": "6ff8f8ab89cdb7e31ec46613fea601d9ab55f95a",
+          "subject": "feat(site): date sitemap URLs and keep pages.dev hosts out of search (#278)",
+          "dirty": true
         },
         "service": {
-          "url": "http://127.0.0.1:8417",
+          "url": "http://127.0.0.1:8000",
           "protocol": "kiln.render-service.v2",
-          "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
-          "backend": "vulkan",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
           "adapter": {
             "vendor": "nvidia",
-            "architecture": "turing",
-            "device": "nvidia-geforce-gtx-1660-ti-with-max-q-design",
-            "description": "NVIDIA: 615.71.09 615.71.9.0"
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
           },
           "sourceFingerprint": "sha256:d974d635ff5d3503d2373406186535fa437de9e753cfdeddce3eb46c68f0ad18",
           "buildFingerprint": "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3",
@@ -235,9 +235,9 @@
           },
           "captureIdentity": [
             "kiln.capture-producer.v1",
-            "sha256:f664529ba31d5c026cc6e629a3d355468dd4cb8e1f7fee0f3e4dd1cced67fc70",
-            "fcfd6037-7e4d-42c9-ab17-c2f44d6efbfc",
-            "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
+            "sha256:cc70ffbee65331c553566e96396efa9ff2dd74ef0b74250c4e0345bd32fcdb4f",
+            "51ab1ef2-cf94-4a96-b2d9-8d048cc147b5",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
             "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
           ]
         }
@@ -6658,15 +6658,15 @@
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
     },
     "holodeck:winter-wmc-sofa-wool": {
-      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-sofa-wool.png",
+      "path": "media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1774794,
-      "sha256": "511f663826f95b35b01d464f0b5661aff2dbf337f4965508668e905c81b68614",
+      "bytes": 1933920,
+      "sha256": "668e1e55ae5a6118d0e602da2a145d2f177d1db00436c064176ee13385e76c99",
       "assetId": "a_5af9bd51de70444cb02f1cc5e926043f",
       "revisionId": "r_900d94fea90f4b8486bc7aa81e84fec7",
       "glb": {
-        "member": "packs/holodeck/holodeck-20261024-01/models/winter-wmc-sofa-wool.glb",
+        "member": "packs/holodeck/objects/87fa6297d74ad87d00bba1ddd309a202ba6af8f89313a72a128bf1675f410fd4/winter-wmc-sofa-wool.glb",
         "bytes": 3926180,
         "sha256": "87fa6297d74ad87d00bba1ddd309a202ba6af8f89313a72a128bf1675f410fd4",
         "triangles": 27520
@@ -6675,13 +6675,13 @@
         "direction": [
           0.7,
           0.5,
-          0.7
+          -0.7
         ],
         "padding": 1.05,
         "projection": "orthographic",
         "halfHeight": 1.0212508910324927
       },
-      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
     },
     "holodeck:winter-wmc-hearth-masonry": {
       "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry.png",

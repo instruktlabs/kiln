@@ -3,13 +3,14 @@ import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AssetCard from "../../components/AssetCard.astro";
 import { galleryCards as assets } from "../../lib/gallery";
-import { holodeckPacks } from "../../lib/holodeck";
-const categories = [...new Set(assets.map((asset) => asset.category))].sort();
+import { curatedWorlds } from "../../lib/site-curation";
+import { galleryCategories } from "../../lib/gallery-browse";
+const categories = galleryCategories.filter((category) => assets.some((asset) => asset.category === category));
 ---
 
 <BaseLayout
   title="Gallery · Kiln"
-  description="Explore Troy, Farm, road vehicles, Foundry Floor and the Golden Gate Bridge. Inspect individual 3D models, exact downloads, and saved revisions."
+  description="Browse Kiln assets by category, tag and pack: vegetation, architecture, interiors, landscapes, vehicles and more. Inspect models and download editable source."
   breadcrumbs={[{ label: "Gallery", href: "/gallery/" }]}
   card="gallery"
 >
@@ -18,7 +19,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
       <PageHeader>Gallery</PageHeader>
       <div>
         <p class="lead">
-          Inspect each model, its saved revision and download.
+          Find assets for your next scene. Browse by category, search names and tags, or explore a complete pack.
         </p>
         <a href="/gallery/archive/" class="text-link mt-3">
           Browse the earlier archive <span aria-hidden="true">→</span>
@@ -27,13 +28,20 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
     </div>
     {assets.length > 0 ? (
       <>
+        <nav class="mt-6 flex flex-wrap gap-2" aria-label="Browse asset categories">
+          {categories.map((category) => <a href={`/gallery/?category=${encodeURIComponent(category)}`} class="border border-rule px-3 py-2 text-ink no-underline hover:bg-sheet">{category} <span class="font-mono text-caption text-dim">{assets.filter((asset) => asset.category === category).length}</span></a>)}
+        </nav>
         <div
           id="gallery-filters"
-          class="mt-6 grid grid-cols-2 items-end gap-4 border-y border-ink py-5 md:flex md:flex-wrap md:gap-5"
+          class="mt-6 grid grid-cols-2 items-end gap-4 border-y border-ink py-5 lg:grid-cols-4"
           hidden
           aria-label="Filter assets"
           role="group"
         >
+          <label class="col-span-2 grid min-w-0 gap-2 font-mono text-code">
+            Search names and tags
+            <input id="asset-search" type="search" placeholder="Try palm, marble or winter" class="min-h-11 w-full min-w-0 border border-ink bg-sheet px-3 py-2" />
+          </label>
           <label class="grid min-w-0 gap-2 font-mono text-code">
             Pack
             <select
@@ -41,12 +49,12 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
               class="min-h-11 w-full min-w-0 border border-ink bg-sheet px-3 py-2"
             >
               <option value="all">All assets</option>
+              {curatedWorlds.map((pack) => <option value={pack.id}>Holodeck: {pack.name}</option>)}
               <option value="troy">Troy</option>
               <option value="farm">Shapes &amp; Seasons Farm</option>
               <option value="vehicles">Generic Road Vehicles</option>
               <option value="foundry-floor">Foundry Floor</option>
               <option value="cabin-woods-psx-horror">Cabin in the Woods: PSX Horror</option>
-              {holodeckPacks.map((pack) => <option value={pack.id}>Holodeck: {pack.name}</option>)}
               <option value="standalone">Standalone</option>
             </select>
           </label>
@@ -58,11 +66,19 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
             >
               <option value="all">All categories</option>
               {categories.map((category) => (
-                <option value={category}>{category === "Vehicles" ? "Farm vehicles" : category}</option>
+                <option value={category}>{category}</option>
               ))}
             </select>
           </label>
-          <button type="button" data-reset-filters class="btn btn-secondary">
+          <label class="grid min-w-0 gap-2 font-mono text-code">
+            Sort
+            <select id="sort-filter" class="min-h-11 w-full min-w-0 border border-ink bg-sheet px-3 py-2">
+              <option value="featured">Featured</option>
+              <option value="newest">Newest</option>
+              <option value="az">A–Z</option>
+            </select>
+          </label>
+          <button type="button" data-reset-filters class="btn btn-secondary min-h-11">
             Reset filters
           </button>
           <p
@@ -85,8 +101,7 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
           ))}
         </div>
         <p id="gallery-empty" hidden class="border-b border-rule py-12">
-          No assets match these filters. Try another category or reset the
-          filters.
+          No assets match this search. Try another name, tag or category, or reset the filters.
         </p>
       </>
     ) : (
@@ -100,37 +115,51 @@ const categories = [...new Set(assets.map((asset) => asset.category))].sort();
   </div>
 </BaseLayout>
 <script>
-  import { matchesAsset } from "../../lib/navigation";
+  import { browseGallery, type GalleryFilters } from "../../lib/gallery-browse";
   const form = document.querySelector<HTMLElement>("#gallery-filters");
   if (form) {
     const pack = document.querySelector<HTMLSelectElement>("#pack-filter")!;
-    const category =
-      document.querySelector<HTMLSelectElement>("#category-filter")!;
-    const rows = [...document.querySelectorAll<HTMLElement>("[data-asset]")];
-    const update = () => {
-      let count = 0;
-      for (const row of rows) {
-        const match = matchesAsset(
-          {
-            pack: row.dataset.pack ?? null,
-            packs: row.dataset.packs?.split(" "),
-            category: row.dataset.category ?? "",
-          },
-          pack.value,
-          category.value,
-        );
-        row.hidden = !match;
-        if (match) count++;
+    const category = document.querySelector<HTMLSelectElement>("#category-filter")!;
+    const search = document.querySelector<HTMLInputElement>("#asset-search")!;
+    const sort = document.querySelector<HTMLSelectElement>("#sort-filter")!;
+    const grid = document.querySelector<HTMLElement>("#asset-grid")!;
+    const rows = [...grid.querySelectorAll<HTMLElement>("[data-asset]")].map((element) => ({
+      element, href: element.dataset.href!, name: element.dataset.name!,
+      category: element.dataset.category!, tags: JSON.parse(element.dataset.tags ?? "[]") as string[],
+      packs: element.dataset.packs!.split(" "), addedOn: element.dataset.addedOn!,
+    }));
+    const update = (writeUrl = true) => {
+      const matches = browseGallery(rows, { query: search.value, pack: pack.value, category: category.value, sort: sort.value as GalleryFilters["sort"] });
+      const visible = new Set(matches);
+      for (const row of rows) row.element.hidden = !visible.has(row);
+      for (const row of matches) grid.append(row.element);
+      document.querySelector("#gallery-count")!.textContent = `${matches.length} ${matches.length === 1 ? "asset" : "assets"}`;
+      document.querySelector<HTMLElement>("#gallery-empty")!.hidden = matches.length > 0;
+      if (writeUrl) {
+        const url = new URL(location.href);
+        for (const [key, value, fallback] of [["q", search.value.trim(), ""], ["pack", pack.value, "all"], ["category", category.value, "all"], ["sort", sort.value, "featured"]]) {
+          if (value && value !== fallback) url.searchParams.set(key!, value);
+          else url.searchParams.delete(key!);
+        }
+        history.replaceState(null, "", url);
       }
-      document.querySelector("#gallery-count")!.textContent =
-        `${count} ${count === 1 ? "asset" : "assets"}`;
-      document.querySelector<HTMLElement>("#gallery-empty")!.hidden = count > 0;
     };
+    const restore = () => {
+      const params = new URLSearchParams(location.search);
+      search.value = params.get("q") ?? "";
+      for (const [select, key, fallback] of [[pack, "pack", "all"], [category, "category", "all"], [sort, "sort", "featured"]] as const) {
+        const requested = params.get(key) ?? fallback;
+        select.value = [...select.options].some((option) => option.value === requested) ? requested : fallback;
+      }
+      update(false);
+    };
+    restore();
     form.hidden = false;
-    form.addEventListener("change", update);
+    form.addEventListener("change", () => update());
+    search.addEventListener("input", () => update());
+    window.addEventListener("popstate", restore);
     form.querySelector('[data-reset-filters]')?.addEventListener("click", () => {
-      pack.value = "all";
-      category.value = "all";
+      pack.value = "all"; category.value = "all"; sort.value = "featured"; search.value = "";
       update();
     });
   }
