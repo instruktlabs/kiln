@@ -4,7 +4,7 @@
     "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.glb",
     "packs/holodeck/objects/e24c494c4909393ec4d1f07a1285e3480376f379bd1ec66959d2c42984b4e22b/cove-structure.glb",
     "packs/holodeck/objects/0ce9505d1fa19aac3245ec98eeb53b04b2e91827a756e44f45a6e750419c60f4/cove-canopy.glb",
-    "packs/holodeck/objects/637e8a88b83eef46f223a7cb3588c8a1c958d31948965fa0997c50132c422f5c/cove-seating.glb",
+    "packs/holodeck/objects/f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8/cove-seating.glb",
     "packs/holodeck/objects/ec6111b3d85f5b565a8ee66189f2c4f3f04e3ef1c608eb2df78813164536a5b5/cove-hearth.glb",
     "packs/holodeck/objects/c83ca8b8f9d6d9082f9b74a0ead42e2a6b649890dc7c94f1937ccbd3e2929565/cove-planting.glb",
     "packs/holodeck/objects/890ce230032523429eb57f2a1a9062a1824fa8ea30f8f94b1ed4fcc563c34555/cove-rug.glb",
@@ -4205,24 +4205,6 @@
       "inputPath": "media/holodeck/scenes/c252b90b6e9dc49465b5d61c25ae90b2a7eda697a2d6d9e393f3ff9751297f54/courtyard-fountain.png"
     },
     {
-      "src": "/media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side.webp",
-      "width": 1920,
-      "height": 1080,
-      "alt": "The Cove: a curved stone seat with green cushions under a linen canopy on timber masts, ringed with potted ferns.",
-      "srcsetWebp": "/media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-320.webp 320w, /media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-480.webp 480w, /media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-672.webp 672w, /media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-768.webp 768w, /media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-1024.webp 1024w, /media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-1440.webp 1440w",
-      "srcsetAvif": "/media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-320.avif 320w, /media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-480.avif 480w, /media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-672.avif 672w, /media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-768.avif 768w, /media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-1024.avif 1024w, /media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side-1440.avif 1440w",
-      "inputPath": "media/holodeck/scenes/e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d/cove-side.png"
-    },
-    {
-      "src": "/media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat.webp",
-      "width": 1920,
-      "height": 1080,
-      "alt": "Under the Cove’s canopy: the hearth table on its inlaid rug, in front of the cushioned seat.",
-      "srcsetWebp": "/media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-320.webp 320w, /media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-480.webp 480w, /media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-672.webp 672w, /media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-768.webp 768w, /media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-1024.webp 1024w, /media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-1440.webp 1440w",
-      "srcsetAvif": "/media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-320.avif 320w, /media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-480.avif 480w, /media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-672.avif 672w, /media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-768.avif 768w, /media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-1024.avif 1024w, /media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat-1440.avif 1440w",
-      "inputPath": "media/holodeck/scenes/3063abba3d57b767bd8a757d7286686ddfc44609ff16f5074d56b1ca5671dabc/cove-seat.png"
-    },
-    {
       "src": "/media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest.webp",
       "width": 1920,
       "height": 1080,
@@ -4230,15 +4212,6 @@
       "srcsetWebp": "/media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-320.webp 320w, /media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-480.webp 480w, /media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-672.webp 672w, /media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-768.webp 768w, /media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-1024.webp 1024w, /media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-1440.webp 1440w",
       "srcsetAvif": "/media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-320.avif 320w, /media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-480.avif 480w, /media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-672.avif 672w, /media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-768.avif 768w, /media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-1024.avif 1024w, /media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest-1440.avif 1440w",
       "inputPath": "media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest.png"
-    },
-    {
-      "src": "/media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove.webp",
-      "width": 1920,
-      "height": 1080,
-      "alt": "The Cove on Crescent Cove: the canopied seat on a grassy rise among palms, with the lagoon beyond.",
-      "srcsetWebp": "/media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-320.webp 320w, /media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-480.webp 480w, /media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-672.webp 672w, /media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-768.webp 768w, /media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-1024.webp 1024w, /media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-1440.webp 1440w",
-      "srcsetAvif": "/media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-320.avif 320w, /media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-480.avif 480w, /media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-672.avif 672w, /media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-768.avif 768w, /media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-1024.avif 1024w, /media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove-1440.avif 1440w",
-      "inputPath": "media/holodeck/scenes/361894dbe75a0a42a0c1bad7cccd3ca449a0d69194e1c489cd5c634b4d2f22cc/crescent-cove-cove.png"
     },
     {
       "src": "/media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior.webp",
@@ -4899,6 +4872,45 @@
       "srcsetWebp": "/media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-320.webp 320w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-480.webp 480w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-672.webp 672w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-768.webp 768w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1024.webp 1024w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1440.webp 1440w",
       "srcsetAvif": "/media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-320.avif 320w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-480.avif 480w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-672.avif 672w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-768.avif 768w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1024.avif 1024w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1440.avif 1440w",
       "inputPath": "media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival.png"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Fitted cushions and upright throws for the curved seating shell. Quality-pass revision with procedural texture maps, derived normals and packed roughness.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating.png",
+      "sourceRevisionId": "r_e35c94ed7da74b32a49f2d9933babba8",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side.webp",
+      "width": 1920,
+      "height": 1080,
+      "alt": "The Cove: a curved stone seat with green cushions under a linen canopy on timber masts, ringed with potted ferns.",
+      "srcsetWebp": "/media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-320.webp 320w, /media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-480.webp 480w, /media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-672.webp 672w, /media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-768.webp 768w, /media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-1024.webp 1024w, /media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-1440.webp 1440w",
+      "srcsetAvif": "/media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-320.avif 320w, /media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-480.avif 480w, /media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-672.avif 672w, /media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-768.avif 768w, /media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-1024.avif 1024w, /media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side-1440.avif 1440w",
+      "inputPath": "media/holodeck/scenes/48a74512f3e20e1ed754730f975ecff524fb95b8c44a351b88190a780447ea3a/cove-side.png"
+    },
+    {
+      "src": "/media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat.webp",
+      "width": 1920,
+      "height": 1080,
+      "alt": "Under the Cove’s canopy: the hearth table on its inlaid rug, in front of the cushioned seat.",
+      "srcsetWebp": "/media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-320.webp 320w, /media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-480.webp 480w, /media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-672.webp 672w, /media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-768.webp 768w, /media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-1024.webp 1024w, /media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-1440.webp 1440w",
+      "srcsetAvif": "/media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-320.avif 320w, /media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-480.avif 480w, /media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-672.avif 672w, /media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-768.avif 768w, /media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-1024.avif 1024w, /media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat-1440.avif 1440w",
+      "inputPath": "media/holodeck/scenes/19f22deabc00ca86821cfd1a806f5b97eaa383ab55a3656b86871851af6b9ef8/cove-seat.png"
+    },
+    {
+      "src": "/media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove.webp",
+      "width": 1920,
+      "height": 1080,
+      "alt": "The Cove on Crescent Cove: the canopied seat on a grassy rise among palms, with the lagoon beyond.",
+      "srcsetWebp": "/media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-320.webp 320w, /media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-480.webp 480w, /media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-672.webp 672w, /media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-768.webp 768w, /media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-1024.webp 1024w, /media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-1440.webp 1440w",
+      "srcsetAvif": "/media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-320.avif 320w, /media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-480.avif 480w, /media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-672.avif 672w, /media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-768.avif 768w, /media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-1024.avif 1024w, /media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove-1440.avif 1440w",
+      "inputPath": "media/holodeck/scenes/d543c038bc8086daeea22418baadbe554103f019f4209401f71b3f0fc15636c7/crescent-cove-cove.png"
     }
   ],
   "archives": [

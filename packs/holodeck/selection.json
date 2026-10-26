@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "holodeck-20261025-02",
+  "release": "holodeck-20261026-01",
   "licence": "CC0-1.0",
   "versions": "final-only",
   "packs": {
@@ -9,10 +9,10 @@
       "source": {
         "kind": "holodeck-example",
         "ref": "main",
-        "commit": "06a37b45c122c72f045c1b55ff031adcffcb678b",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
         "path": "examples/tidemark",
         "sourceRevision": 8,
-        "worldSha256": "bda05abacf0c445e822a4070506284fef90bf77f81c45c096932c497b2c46c80"
+        "worldSha256": "68564b749eb5e4defc07dc0d1a2d3fb8e0552f4368962b906130276e19ebfa2e"
       },
       "assets": [
         "cove-structure",
@@ -44,8 +44,8 @@
       "scene": "courtyard",
       "source": {
         "kind": "holodeck-world",
-        "revision": 8,
-        "worldSha256": "c75697f778a1c7cf97b528c1de5cbfc386b959b9ec9df0a10e253ecd375853ad"
+        "revision": 9,
+        "worldSha256": "7f1069331680842f08c289661784adbfe718aafa56618aeb4a3900544b8cc9c4"
       },
       "assets": [
         "cove-structure",
@@ -87,7 +87,7 @@
       "source": {
         "kind": "holodeck-modules",
         "ref": "main",
-        "commit": "06a37b45c122c72f045c1b55ff031adcffcb678b",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
         "files": "assets/cove/modules/*/provenance.json, public/assets/cove-modules/*.glb"
       },
       "assets": [
@@ -105,11 +105,11 @@
       "scene": "crescent-cove",
       "source": {
         "kind": "holodeck-example",
-        "ref": "32b4becce98aa26c2d04cd4b5339590d4ef84853",
-        "commit": "32b4becce98aa26c2d04cd4b5339590d4ef84853",
+        "ref": "main",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
         "path": "examples/crescent-cove",
         "sourceRevision": 17,
-        "worldSha256": "0c1efbe7740e698ad79e00c83d5a6d3ed86414087ecdee3a5a4c6eca78a66573"
+        "worldSha256": "5dc28372550010c247e31681c5270341da08b16e889c62bce16143dc3bc6f5b2"
       },
       "assets": [
         "cove-structure",
@@ -236,11 +236,11 @@
       "scene": "meridian-sanctuary",
       "source": {
         "kind": "holodeck-example",
-        "ref": "8f5d5f7f627c6e4b636877fdb6b16f71ebaf018f",
-        "commit": "8f5d5f7f627c6e4b636877fdb6b16f71ebaf018f",
+        "ref": "main",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
         "path": "examples/meridian-sanctuary",
         "sourceRevision": 27,
-        "worldSha256": "4bfd354235b83f253ded88250683143814f7d9d9672a3df7e8c14e50401e5092"
+        "worldSha256": "911fe13d1121caccc90ae8d9549307ac4f07cf2506daa726f63a7d8cc7ad5db2"
       },
       "assets": [
         "cove-structure",
@@ -394,21 +394,24 @@
       "store": "holodeck-assets",
       "collection": "project",
       "assetId": "a_8054e921736c4dd2861a28cd63a9213f",
-      "revisionId": "r_6602fd828a5341eeaa0877fc58289960",
-      "parentRevision": "r_8fa9d8c031bb4c1bb6ecbdba1c9fa067",
+      "revisionId": "r_e35c94ed7da74b32a49f2d9933babba8",
+      "parentRevision": "r_6602fd828a5341eeaa0877fc58289960",
       "manifest": {
-        "bytes": 20388,
-        "sha256": "6b6484745768c7a2137630c16c3c91039141ad324c05e07d78664a439f13d2b1"
+        "bytes": 21020,
+        "sha256": "f7b27666caa13b600a7c3de5a29343f64355c0dd14aeb78537342c8ba83bb8a7"
       },
       "source": {
-        "bytes": 17701,
-        "sha256": "13c1af2a4c81bfcb38196f8420d9f3e312fdb6e99b84e5a6fb0c4ccbde9e49b4"
+        "bytes": 17880,
+        "sha256": "451abb23d98291784cefd05ba33d9c87388160dcf8fb71cc64a879a665f59689"
       },
       "canonical": {
-        "bytes": 890148,
-        "sha256": "39142b52279d5f68d93ed0e9b0f3ddb64bafe8008c530931cb5df1341faf1e48"
+        "bytes": 890340,
+        "sha256": "e5f0e8495f9bdc06646fe2d9910f873c268f55d0d34746e53e016e19e856324f"
       },
-      "preview": null,
+      "preview": {
+        "bytes": 29954,
+        "sha256": "eaac0c48cbb6f4a98f3d28a586e46b7b7afd919c6c6a24c7fe931606e02a010e"
+      },
       "placements": [
         {
           "pack": "holodeck-cove",

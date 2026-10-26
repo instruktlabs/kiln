@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "holodeck",
-  "release": "holodeck-20261025-02",
+  "release": "holodeck-20261026-01",
   "base": "https://assets.kilnstudio.tools/",
   "licence": {
     "spdx": "CC0-1.0",
@@ -20,10 +20,10 @@
       "source": {
         "kind": "holodeck-example",
         "ref": "main",
-        "commit": "06a37b45c122c72f045c1b55ff031adcffcb678b",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
         "path": "examples/tidemark",
         "sourceRevision": 8,
-        "worldSha256": "bda05abacf0c445e822a4070506284fef90bf77f81c45c096932c497b2c46c80"
+        "worldSha256": "68564b749eb5e4defc07dc0d1a2d3fb8e0552f4368962b906130276e19ebfa2e"
       },
       "assets": [
         "cove-structure",
@@ -54,18 +54,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/6b9660fe79aa23bd12780fd1f3086f696fdc49a09b93452246d7c39174084853/holodeck-tidemark-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6b9660fe79aa23bd12780fd1f3086f696fdc49a09b93452246d7c39174084853/holodeck-tidemark-runtime.zip",
-          "bytes": 6148771,
-          "sha256": "6b9660fe79aa23bd12780fd1f3086f696fdc49a09b93452246d7c39174084853"
+          "path": "packs/holodeck/objects/3f44d881686e01f7b88c0a46857f71bffd74525ca0174d5706a827214a8e6fac/holodeck-tidemark-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3f44d881686e01f7b88c0a46857f71bffd74525ca0174d5706a827214a8e6fac/holodeck-tidemark-runtime.zip",
+          "bytes": 6148952,
+          "sha256": "3f44d881686e01f7b88c0a46857f71bffd74525ca0174d5706a827214a8e6fac"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/c85d9825d10aefa901e9278a4313d813bb6fefcc20e6f54581c8bb2837a1f8c1/holodeck-tidemark-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c85d9825d10aefa901e9278a4313d813bb6fefcc20e6f54581c8bb2837a1f8c1/holodeck-tidemark-editable.zip",
-          "bytes": 9417153,
-          "sha256": "c85d9825d10aefa901e9278a4313d813bb6fefcc20e6f54581c8bb2837a1f8c1"
+          "path": "packs/holodeck/objects/ae3a1a294e51ff84d8b61912542bcc5b05d2bd64f8bb1245ed7fa82e465c91ff/holodeck-tidemark-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ae3a1a294e51ff84d8b61912542bcc5b05d2bd64f8bb1245ed7fa82e465c91ff/holodeck-tidemark-editable.zip",
+          "bytes": 9442153,
+          "sha256": "ae3a1a294e51ff84d8b61912542bcc5b05d2bd64f8bb1245ed7fa82e465c91ff"
         }
       ]
     },
@@ -79,8 +79,8 @@
       "assetCount": 32,
       "source": {
         "kind": "holodeck-world",
-        "revision": 8,
-        "worldSha256": "c75697f778a1c7cf97b528c1de5cbfc386b959b9ec9df0a10e253ecd375853ad"
+        "revision": 9,
+        "worldSha256": "7f1069331680842f08c289661784adbfe718aafa56618aeb4a3900544b8cc9c4"
       },
       "assets": [
         "cove-structure",
@@ -120,18 +120,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/c823a090a05e5d3867383c19b4675cecf55e13f933d107bbb4c86690940ee492/holodeck-courtyard-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c823a090a05e5d3867383c19b4675cecf55e13f933d107bbb4c86690940ee492/holodeck-courtyard-runtime.zip",
-          "bytes": 9837735,
-          "sha256": "c823a090a05e5d3867383c19b4675cecf55e13f933d107bbb4c86690940ee492"
+          "path": "packs/holodeck/objects/7346c4e8cdd87f177c4d7d5a3dd11fcafe88a978a1c6b4259099b7a13a831819/holodeck-courtyard-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7346c4e8cdd87f177c4d7d5a3dd11fcafe88a978a1c6b4259099b7a13a831819/holodeck-courtyard-runtime.zip",
+          "bytes": 9837908,
+          "sha256": "7346c4e8cdd87f177c4d7d5a3dd11fcafe88a978a1c6b4259099b7a13a831819"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/30a35dcc91fdcd24497a20f3b67e8af7aa5d87fc448905c78cd0499717bccc8d/holodeck-courtyard-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/30a35dcc91fdcd24497a20f3b67e8af7aa5d87fc448905c78cd0499717bccc8d/holodeck-courtyard-editable.zip",
-          "bytes": 12625825,
-          "sha256": "30a35dcc91fdcd24497a20f3b67e8af7aa5d87fc448905c78cd0499717bccc8d"
+          "path": "packs/holodeck/objects/84950919e7d04f357e5ab8036efdb19e9647dabc92190f933e7007a139f30519/holodeck-courtyard-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/84950919e7d04f357e5ab8036efdb19e9647dabc92190f933e7007a139f30519/holodeck-courtyard-editable.zip",
+          "bytes": 12650820,
+          "sha256": "84950919e7d04f357e5ab8036efdb19e9647dabc92190f933e7007a139f30519"
         }
       ]
     },
@@ -146,7 +146,7 @@
       "source": {
         "kind": "holodeck-modules",
         "ref": "main",
-        "commit": "06a37b45c122c72f045c1b55ff031adcffcb678b",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
         "files": "assets/cove/modules/*/provenance.json, public/assets/cove-modules/*.glb"
       },
       "assets": [
@@ -163,18 +163,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/3d93c0d897c44d693a7b79c5f1c625bad061d39ae3a37b95f1847c98de724873/holodeck-cove-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3d93c0d897c44d693a7b79c5f1c625bad061d39ae3a37b95f1847c98de724873/holodeck-cove-runtime.zip",
-          "bytes": 5208833,
-          "sha256": "3d93c0d897c44d693a7b79c5f1c625bad061d39ae3a37b95f1847c98de724873"
+          "path": "packs/holodeck/objects/1957dfce602e2890e27be659240f50cef460a0b5fc7349a06c55d0ab074c3e70/holodeck-cove-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1957dfce602e2890e27be659240f50cef460a0b5fc7349a06c55d0ab074c3e70/holodeck-cove-runtime.zip",
+          "bytes": 5209014,
+          "sha256": "1957dfce602e2890e27be659240f50cef460a0b5fc7349a06c55d0ab074c3e70"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/1b36e57768d48638e1116054e5b5982236bab5393cfda326d418e56a5eb5bbdd/holodeck-cove-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1b36e57768d48638e1116054e5b5982236bab5393cfda326d418e56a5eb5bbdd/holodeck-cove-editable.zip",
-          "bytes": 6932664,
-          "sha256": "1b36e57768d48638e1116054e5b5982236bab5393cfda326d418e56a5eb5bbdd"
+          "path": "packs/holodeck/objects/346f45d14ddaccadde48019c51228076fcaf8d579231aecff0f67806ef377a25/holodeck-cove-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/346f45d14ddaccadde48019c51228076fcaf8d579231aecff0f67806ef377a25/holodeck-cove-editable.zip",
+          "bytes": 6957665,
+          "sha256": "346f45d14ddaccadde48019c51228076fcaf8d579231aecff0f67806ef377a25"
         }
       ]
     },
@@ -188,11 +188,11 @@
       "assetCount": 49,
       "source": {
         "kind": "holodeck-example",
-        "ref": "32b4becce98aa26c2d04cd4b5339590d4ef84853",
-        "commit": "32b4becce98aa26c2d04cd4b5339590d4ef84853",
+        "ref": "main",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
         "path": "examples/crescent-cove",
         "sourceRevision": 17,
-        "worldSha256": "0c1efbe7740e698ad79e00c83d5a6d3ed86414087ecdee3a5a4c6eca78a66573"
+        "worldSha256": "5dc28372550010c247e31681c5270341da08b16e889c62bce16143dc3bc6f5b2"
       },
       "assets": [
         "cove-structure",
@@ -249,18 +249,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/9a00bae77b5363923ebf9ff536da1f95d53db66b0553a80b8b291397ec532ca2/holodeck-crescent-cove-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9a00bae77b5363923ebf9ff536da1f95d53db66b0553a80b8b291397ec532ca2/holodeck-crescent-cove-runtime.zip",
-          "bytes": 24777717,
-          "sha256": "9a00bae77b5363923ebf9ff536da1f95d53db66b0553a80b8b291397ec532ca2"
+          "path": "packs/holodeck/objects/1aa651a0a36114e555a3355f21e883f083d48d03245755afe01a0ae738cca6ae/holodeck-crescent-cove-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1aa651a0a36114e555a3355f21e883f083d48d03245755afe01a0ae738cca6ae/holodeck-crescent-cove-runtime.zip",
+          "bytes": 24777894,
+          "sha256": "1aa651a0a36114e555a3355f21e883f083d48d03245755afe01a0ae738cca6ae"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/510392da0bcfe3e5c5e23c4b53454944bfa470750c18ea757b956db4ba555057/holodeck-crescent-cove-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/510392da0bcfe3e5c5e23c4b53454944bfa470750c18ea757b956db4ba555057/holodeck-crescent-cove-editable.zip",
-          "bytes": 57033340,
-          "sha256": "510392da0bcfe3e5c5e23c4b53454944bfa470750c18ea757b956db4ba555057"
+          "path": "packs/holodeck/objects/d284200f0102d8a8146543c2db17bb931e40d8c70f922a05afda6adcbdc0404c/holodeck-crescent-cove-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d284200f0102d8a8146543c2db17bb931e40d8c70f922a05afda6adcbdc0404c/holodeck-crescent-cove-editable.zip",
+          "bytes": 57058340,
+          "sha256": "d284200f0102d8a8146543c2db17bb931e40d8c70f922a05afda6adcbdc0404c"
         }
       ]
     },
@@ -367,11 +367,11 @@
       "assetCount": 53,
       "source": {
         "kind": "holodeck-example",
-        "ref": "8f5d5f7f627c6e4b636877fdb6b16f71ebaf018f",
-        "commit": "8f5d5f7f627c6e4b636877fdb6b16f71ebaf018f",
+        "ref": "main",
+        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
         "path": "examples/meridian-sanctuary",
         "sourceRevision": 27,
-        "worldSha256": "4bfd354235b83f253ded88250683143814f7d9d9672a3df7e8c14e50401e5092"
+        "worldSha256": "911fe13d1121caccc90ae8d9549307ac4f07cf2506daa726f63a7d8cc7ad5db2"
       },
       "assets": [
         "cove-structure",
@@ -432,18 +432,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/908a91ab96d8f47d34e4241173203452a94b9df0057843208978096b64582d66/holodeck-meridian-sanctuary-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/908a91ab96d8f47d34e4241173203452a94b9df0057843208978096b64582d66/holodeck-meridian-sanctuary-runtime.zip",
-          "bytes": 17983217,
-          "sha256": "908a91ab96d8f47d34e4241173203452a94b9df0057843208978096b64582d66"
+          "path": "packs/holodeck/objects/1f4a7563c799708a886be6118318578c85f0c78a1f68c76a80657256db20fcaf/holodeck-meridian-sanctuary-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1f4a7563c799708a886be6118318578c85f0c78a1f68c76a80657256db20fcaf/holodeck-meridian-sanctuary-runtime.zip",
+          "bytes": 17983388,
+          "sha256": "1f4a7563c799708a886be6118318578c85f0c78a1f68c76a80657256db20fcaf"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/af246aa25e4b9ea9d807d5bd1f6f80858ebf303b881d3d366edb881c1ca117a7/holodeck-meridian-sanctuary-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/af246aa25e4b9ea9d807d5bd1f6f80858ebf303b881d3d366edb881c1ca117a7/holodeck-meridian-sanctuary-editable.zip",
-          "bytes": 28501735,
-          "sha256": "af246aa25e4b9ea9d807d5bd1f6f80858ebf303b881d3d366edb881c1ca117a7"
+          "path": "packs/holodeck/objects/4855a402497de9954d13548ca6d8f78f5d2a8c2fb76d2d3c33df97a2f6deb361/holodeck-meridian-sanctuary-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4855a402497de9954d13548ca6d8f78f5d2a8c2fb76d2d3c33df97a2f6deb361/holodeck-meridian-sanctuary-editable.zip",
+          "bytes": 28526734,
+          "sha256": "4855a402497de9954d13548ca6d8f78f5d2a8c2fb76d2d3c33df97a2f6deb361"
         }
       ]
     }
@@ -685,37 +685,37 @@
       ],
       "collection": "project",
       "assetId": "a_8054e921736c4dd2861a28cd63a9213f",
-      "revisionId": "r_6602fd828a5341eeaa0877fc58289960",
-      "parentRevision": "r_8fa9d8c031bb4c1bb6ecbdba1c9fa067",
-      "sourcePath": "packs/holodeck/sources/project/a_8054e921736c4dd2861a28cd63a9213f/r_6602fd828a5341eeaa0877fc58289960/source.kiln.js",
-      "sourceSha256": "13c1af2a4c81bfcb38196f8420d9f3e312fdb6e99b84e5a6fb0c4ccbde9e49b4",
+      "revisionId": "r_e35c94ed7da74b32a49f2d9933babba8",
+      "parentRevision": "r_6602fd828a5341eeaa0877fc58289960",
+      "sourcePath": "packs/holodeck/sources/project/a_8054e921736c4dd2861a28cd63a9213f/r_e35c94ed7da74b32a49f2d9933babba8/source.kiln.js",
+      "sourceSha256": "451abb23d98291784cefd05ba33d9c87388160dcf8fb71cc64a879a665f59689",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/637e8a88b83eef46f223a7cb3588c8a1c958d31948965fa0997c50132c422f5c/cove-seating.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/637e8a88b83eef46f223a7cb3588c8a1c958d31948965fa0997c50132c422f5c/cove-seating.glb",
-        "bytes": 890368,
-        "sha256": "637e8a88b83eef46f223a7cb3588c8a1c958d31948965fa0997c50132c422f5c"
+        "path": "packs/holodeck/objects/f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8/cove-seating.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8/cove-seating.glb",
+        "bytes": 890560,
+        "sha256": "f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/4583ea0f226ccff07ab93be948b57b5b822b687a8fb1e18b5424cde300954b19/cove-seating-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4583ea0f226ccff07ab93be948b57b5b822b687a8fb1e18b5424cde300954b19/cove-seating-runtime.zip",
-        "bytes": 712546,
-        "sha256": "4583ea0f226ccff07ab93be948b57b5b822b687a8fb1e18b5424cde300954b19"
+        "path": "packs/holodeck/objects/5f41b2ebce950e08c5bb9a43245f8393f5df9c1be324e1917feb76acefba1a4f/cove-seating-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5f41b2ebce950e08c5bb9a43245f8393f5df9c1be324e1917feb76acefba1a4f/cove-seating-runtime.zip",
+        "bytes": 712728,
+        "sha256": "5f41b2ebce950e08c5bb9a43245f8393f5df9c1be324e1917feb76acefba1a4f"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/edafe3be9126fcae8091e4ac33a32feed3c21ee2c612cdefe56d6a7f935e205d/cove-seating-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/edafe3be9126fcae8091e4ac33a32feed3c21ee2c612cdefe56d6a7f935e205d/cove-seating-editable.zip",
-        "bytes": 719005,
-        "sha256": "edafe3be9126fcae8091e4ac33a32feed3c21ee2c612cdefe56d6a7f935e205d"
+        "path": "packs/holodeck/objects/eac4ab6ad8a9c6257e4ceabb1629f9dd4d5aaf39714590dca87374cf37c8f986/cove-seating-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/eac4ab6ad8a9c6257e4ceabb1629f9dd4d5aaf39714590dca87374cf37c8f986/cove-seating-editable.zip",
+        "bytes": 744126,
+        "sha256": "eac4ab6ad8a9c6257e4ceabb1629f9dd4d5aaf39714590dca87374cf37c8f986"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Fitted cushions and upright throws for the curved seating shell. Quality-pass revision with procedural texture maps, derived normals and packed roughness.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating.png",
-        "sourceRevisionId": "r_6602fd828a5341eeaa0877fc58289960",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating.png",
+        "sourceRevisionId": "r_e35c94ed7da74b32a49f2d9933babba8",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -725,7 +725,7 @@
         "materials": 6,
         "bounds": [
           4.195881511104972,
-          1.5273415939882398,
+          1.5922058718279004,
           7.563852540076158
         ],
         "boundsMin": [
@@ -735,7 +735,7 @@
         ],
         "boundsMax": [
           0.3453278004836058,
-          1.5144129991531372,
+          1.5792772769927979,
           3.7195490022569944
         ],
         "clips": [],

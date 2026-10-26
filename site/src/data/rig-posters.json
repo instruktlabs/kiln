@@ -211,9 +211,9 @@
       "holodeck": {
         "renderedOn": "2026-10-26",
         "engine": {
-          "commit": "d5e5a4a1217ba9450b01fafe3e5e81747775afe5",
-          "subject": "feat(site): show two real scene shots on each Holodeck pack (#271)",
-          "dirty": true
+          "commit": "a945893c6f680aed6db17629ddcc43ce616e3419",
+          "subject": "feat(site): restage the Holodeck packs with the repaired Cove seating (WIP)",
+          "dirty": false
         },
         "service": {
           "url": "http://127.0.0.1:8417",
@@ -236,7 +236,7 @@
           "captureIdentity": [
             "kiln.capture-producer.v1",
             "sha256:f664529ba31d5c026cc6e629a3d355468dd4cb8e1f7fee0f3e4dd1cced67fc70",
-            "ce63f79d-bf05-4d1f-9566-4e7e6d58c16f",
+            "fcfd6037-7e4d-42c9-ab17-c2f44d6efbfc",
             "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0",
             "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
           ]
@@ -5305,32 +5305,6 @@
       },
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
     },
-    "holodeck:cove-seating": {
-      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-seating.png",
-      "width": 1024,
-      "height": 1024,
-      "bytes": 1308848,
-      "sha256": "dbdc5c8ff58dc045a18394bca8bf6fcd1e73eeda3f17ab0b8c451167aee364d7",
-      "assetId": "a_8054e921736c4dd2861a28cd63a9213f",
-      "revisionId": "r_6602fd828a5341eeaa0877fc58289960",
-      "glb": {
-        "member": "packs/holodeck/holodeck-20261022-01/models/cove-seating.glb",
-        "bytes": 890368,
-        "sha256": "637e8a88b83eef46f223a7cb3588c8a1c958d31948965fa0997c50132c422f5c",
-        "triangles": 3324
-      },
-      "view": {
-        "direction": [
-          0.7,
-          0.5,
-          0.7
-        ],
-        "padding": 1.05,
-        "projection": "orthographic",
-        "halfHeight": 4.864653758057277
-      },
-      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
-    },
     "holodeck:cove-hearth": {
       "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-hearth.png",
       "width": 1024,
@@ -9124,6 +9098,32 @@
         "padding": 1.05,
         "projection": "orthographic",
         "halfHeight": 8.470202187169939
+      },
+      "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
+    },
+    "holodeck:cove-seating": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1309104,
+      "sha256": "5b6d042956bb1e405c341559362076539b6dd98260475972c80ce1be3005a229",
+      "assetId": "a_8054e921736c4dd2861a28cd63a9213f",
+      "revisionId": "r_e35c94ed7da74b32a49f2d9933babba8",
+      "glb": {
+        "member": "packs/holodeck/objects/f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8/cove-seating.glb",
+        "bytes": 890560,
+        "sha256": "f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8",
+        "triangles": 3324
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.864653758057277
       },
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
     }
