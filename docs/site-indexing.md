@@ -1,5 +1,8 @@
 # Search indexing — September 6, 2026
 
+> **Historical record.** `play.kilnstudio.tools` has since been retired and no
+> longer resolves, so the redirect rows for it below describe September 2026 only.
+
 The owner reported Search Console's “Duplicate without user-selected canonical”
 warning for kilnstudio.tools. The domain property's report was inspected in the
 owner's browser. Its six affected URLs were last crawled August 28–September 1,
