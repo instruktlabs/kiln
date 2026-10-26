@@ -463,8 +463,9 @@ export function parseRedirectRules(text) {
 /**
  * Every redirect is a permanent splat move between two directories, its target directory has files in the build, no
  * built file sits under a source directory (a rule would hide it or be dead), and no target is itself redirected.
+ * `targets: false` skips the target check for the reduced build (KILN_SITE_PACKS=0), which carries no scene packs.
  */
-export function redirectsErrors({ text, files = [] }) {
+export function redirectsErrors({ text, files = [], targets = true }) {
   let rules;
   try { rules = parseRedirectRules(text); } catch (error) { return [error.message]; }
   const errors = [];
@@ -479,7 +480,7 @@ export function redirectsErrors({ text, files = [] }) {
     if (sources.includes(to)) errors.push(`${rule.to} is itself redirected; point ${rule.from} at the final directory`);
     const shadowed = files.filter((file) => file.startsWith(from));
     if (shadowed.length) errors.push(`${rule.from} covers ${shadowed.length} built files (first /${shadowed[0]})`);
-    if (!files.some((file) => file.startsWith(to))) errors.push(`${rule.to}: no built file under /${to}`);
+    if (targets && !files.some((file) => file.startsWith(to))) errors.push(`${rule.to}: no built file under /${to}`);
   }
   return errors;
 }

@@ -221,7 +221,10 @@ const immutableFiles = distFiles.filter((file) => /immutable/.test(headersFor(he
 // Retired release directories move to their successors (dist/_redirects); a missing file means no redirects.
 let redirectsText = '';
 try { redirectsText = await readFile(resolve(root, '_redirects'), 'utf8'); } catch (error) { if (error.code !== 'ENOENT') throw error; }
-const redirectProblems = redirectsText ? redirectsErrors({ text: redirectsText, files: distFiles }) : [];
+// The reduced build (KILN_SITE_PACKS=0, as in CI) has no scene packs, so it cannot check the redirect targets.
+let packsBuild = true;
+try { packsBuild = JSON.parse(await readFile(resolve(root, 'build-info.json'), 'utf8')).kilnSitePacks !== '0'; } catch (error) { if (error.code !== 'ENOENT') throw error; }
+const redirectProblems = redirectsText ? redirectsErrors({ text: redirectsText, files: distFiles, targets: packsBuild }) : [];
 for (const message of redirectProblems) add('/_redirects', 'redirects', message);
 let redirectRules = [];
 try { redirectRules = parseRedirectRules(redirectsText); } catch { /* Reported by redirectsErrors above. */ }
@@ -238,7 +241,7 @@ console.log(`Engine notes: ${engineSummary.withNote} of ${engineSummary.assetPag
 console.log(`Retired working title: ${retired.length} matches in ${pages.size} pages, ${files.length} file names and the discovery files. Foundry Floor pages: ${foundry.length} problems.`);
 console.log(`GLBs: ${glbs.length} read, ${dracoFree} without KHR_draco_mesh_compression. Copy rules (glued numbers, licence spelling, owner status): ${errors.filter((error) => error.kind === 'copy').length} problems.`);
 console.log(`Headers: ${headerRules.length} rules in _headers; ${inlineScripts.length} distinct inline scripts, each listed by hash in the report-only CSP; ${immutableFiles.length} files cached as immutable; ${headerProblems.length} problems.`);
-console.log(`Redirects: ${redirectRules.length} rules in _redirects; ${redirectProblems.length} problems.`);
+console.log(`Redirects: ${redirectRules.length} rules in _redirects${packsBuild ? '' : ' (targets not checked: reduced build without scene packs)'}; ${redirectProblems.length} problems.`);
 console.log(`Warnings: ${warnings.length} meta descriptions over ${DESCRIPTION_WARNING_LENGTH} characters${warnings.length ? ` (${warnings.map((warning) => warning.page).join(', ')})` : ''}.`);
 console.log(`Report: ${resolve(reportDirectory, 'static-validation.json')}`);
 if (errors.length || htmlErrorCount) process.exitCode = 1;

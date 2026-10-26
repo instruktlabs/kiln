@@ -96,6 +96,7 @@ keeps its name in the current release. Most Troy files do too; those that do not
 redirect and then return 404: from `troy-20261005-04`, 24 per-revision source files
 and 8 qualification pages (32 of 1,912), and from `troy-20261005-06`, 36 hashed bundle
 chunks (of 1,937). `validate-static` checks that each rule is a 301 splat move, that no built file
-sits under a retired directory, that each target directory has files, and that no
-target is itself redirected. Asset JSON and GLB 404s and the retired `play.` hosts
+sits under a retired directory, that each target directory has files (in a packs
+build; the reduced `KILN_SITE_PACKS=0` build has no scene packs), and that no target
+is itself redirected. Asset JSON and GLB 404s and the retired `play.` hosts
 are left alone.

@@ -476,6 +476,15 @@ describe('retired release directories in _redirects', () => {
     expect(redirectsErrors({ text, files: built })).toEqual([]);
   });
 
+  test('the reduced build has no scene packs, so only its targets go unchecked', () => {
+    const text = rule('golden-gate/g9', 'golden-gate/g9-code6');
+    expect(redirectsErrors({ text, files: ['index.html'], targets: false })).toEqual([]);
+    expect(redirectsErrors({ text, files: ['index.html'] })).toEqual(['/scene-packs/golden-gate/g9-code6/:splat: no built file under /scene-packs/golden-gate/g9-code6/']);
+    expect(redirectsErrors({ text: rule('golden-gate/g9-code6', 'golden-gate/g10'), files: built, targets: false })).toEqual([
+      '/scene-packs/golden-gate/g9-code6/* covers 2 built files (first /scene-packs/golden-gate/g9-code6/THIRD-PARTY-NOTICES.txt)',
+    ]);
+  });
+
   test('a shadowed, empty, chained, temporary or malformed rule is reported', () => {
     expect(redirectsErrors({ text: rule('golden-gate/g9-code6', 'golden-gate/g10'), files: built })).toEqual([
       '/scene-packs/golden-gate/g9-code6/* covers 2 built files (first /scene-packs/golden-gate/g9-code6/THIRD-PARTY-NOTICES.txt)',
