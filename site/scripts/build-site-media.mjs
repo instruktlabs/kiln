@@ -23,6 +23,25 @@ export const staleSocialCards = (files, cards) => {
   return files.filter((file) => /\.(?:webp|jpe?g|png)$/.test(file) && !wanted.has(file)).sort();
 };
 
+/** An ICO file whose entries are PNG images (supported by every current browser and crawler). */
+export function pngIco(entries) {
+  const header = Buffer.alloc(6 + entries.length * 16);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(entries.length, 4);
+  let offset = header.length;
+  entries.forEach(([size, png], index) => {
+    const at = 6 + index * 16;
+    header.writeUInt8(size >= 256 ? 0 : size, at);
+    header.writeUInt8(size >= 256 ? 0 : size, at + 1);
+    header.writeUInt16LE(1, at + 4);
+    header.writeUInt16LE(32, at + 6);
+    header.writeUInt32LE(png.length, at + 8);
+    header.writeUInt32LE(offset, at + 12);
+    offset += png.length;
+  });
+  return Buffer.concat([header, ...entries.map(([, png]) => png)]);
+}
+
 export function chromeExecutable() {
   const candidates = [
     process.env.CHROME_PATH,
@@ -55,10 +74,15 @@ async function buildMedia() {
   if (!logoPaths) throw new Error('Logo.astro has no inline SVG mark');
   const logo = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">${logoPaths}</svg>`;
   await writeFile(join(publicDir, 'favicon.svg'), logo);
-  for (const size of [16, 32, 180]) {
+  const icons = new Map();
+  for (const size of [16, 32, 48, 96, 180]) {
     const file = size === 180 ? 'apple-touch-icon.png' : `favicon-${size}.png`;
-    await sharp(Buffer.from(logo)).resize(size, size).flatten({ background: '#eee9df' }).png().toFile(join(publicDir, file));
+    const png = await sharp(Buffer.from(logo)).resize(size, size).flatten({ background: '#eee9df' }).png().toBuffer();
+    await writeFile(join(publicDir, file), png);
+    icons.set(size, png);
   }
+  // Search engines (Bing especially) still fetch /favicon.ico directly.
+  await writeFile(join(publicDir, 'favicon.ico'), pngIco([16, 32, 48].map((size) => [size, icons.get(size)])));
 
   const release = await json(join(site, '../.github/published-candidate.json'));
   const farm = await json(join(site, 'src/data/packs/farm.json'));
