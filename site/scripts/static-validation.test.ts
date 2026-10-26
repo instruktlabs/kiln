@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test';
-import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, parseHeaderRules, scriptHashSource, isArchiveItemRoute, isEmbeddedDocument, licenceSpellingErrors, ownerReviewErrors, resolveInternalLink, retiredNameErrors, routeForFile, socialMetadataErrors } from './static-validation-core.mjs';
+import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, parseHeaderRules, scriptHashSource, isArchiveItemRoute, isEmbeddedDocument, licenceSpellingErrors, ownerReviewErrors, parseRedirectRules, redirectsErrors, resolveInternalLink, retiredNameErrors, routeForFile, socialMetadataErrors } from './static-validation-core.mjs';
 import foundryFloor from '../src/data/foundry-floor.json';
+import { readFileSync } from 'node:fs';
 test('static routes use directory URLs while 404 keeps its HTML route', () => {
   expect(routeForFile('index.html')).toBe('/');
   expect(routeForFile('docs/install/index.html')).toBe('/docs/install/');
@@ -453,5 +454,40 @@ ${extra}`;
   test('inline scripts are found in pages; JSON-LD data blocks are not scripts to a CSP', () => {
     const page = inspectHtml(`<html><head><script>${script}</script><script type="application/ld+json">{"@type":"Thing"}</script><script type="module" src="/_astro/a.js"></script></head><body></body></html>`);
     expect(page.inlineScripts).toEqual([script]);
+  });
+});
+
+describe('retired release directories in _redirects', () => {
+  const built = ['scene-packs/golden-gate/g9-code6/THIRD-PARTY-NOTICES.txt', 'scene-packs/golden-gate/g9-code6/licenses/FEDERAL-DATA.txt', 'scene-packs/troy/troy-20261005-07/web/index.html'];
+  const rule = (from: string, to: string, status = '301') => `/scene-packs/${from}/* /scene-packs/${to}/:splat ${status}\n`;
+
+  test('the published file parses and every rule is a permanent move', () => {
+    const rules = parseRedirectRules(readFileSync(new URL('../public/_redirects', import.meta.url), 'utf8'));
+    expect(rules.length).toBeGreaterThan(0);
+    for (const { from, to, status } of rules) {
+      expect(status).toBe(301);
+      expect(from).toMatch(/^\/scene-packs\/[a-z0-9-]+\/[a-z0-9-]+\/\*$/);
+      expect(to).toMatch(/^\/scene-packs\/[a-z0-9-]+\/[a-z0-9-]+\/:splat$/);
+    }
+  });
+
+  test('a splat move to a built directory passes', () => {
+    const text = `# comment\n\n${rule('golden-gate/g9', 'golden-gate/g9-code6')}${rule('troy/troy-20261005-04', 'troy/troy-20261005-07')}`;
+    expect(redirectsErrors({ text, files: built })).toEqual([]);
+  });
+
+  test('a shadowed, empty, chained, temporary or malformed rule is reported', () => {
+    expect(redirectsErrors({ text: rule('golden-gate/g9-code6', 'golden-gate/g10'), files: built })).toEqual([
+      '/scene-packs/golden-gate/g9-code6/* covers 2 built files (first /scene-packs/golden-gate/g9-code6/THIRD-PARTY-NOTICES.txt)',
+      '/scene-packs/golden-gate/g10/:splat: no built file under /scene-packs/golden-gate/g10/',
+    ]);
+    expect(redirectsErrors({ text: rule('golden-gate/g9', 'golden-gate/g9-code5') + rule('golden-gate/g9-code5', 'golden-gate/g9-code6'), files: built })).toEqual([
+      '/scene-packs/golden-gate/g9-code5/:splat is itself redirected; point /scene-packs/golden-gate/g9/* at the final directory',
+      '/scene-packs/golden-gate/g9-code5/:splat: no built file under /scene-packs/golden-gate/g9-code5/',
+    ]);
+    expect(redirectsErrors({ text: rule('golden-gate/g9', 'golden-gate/g9-code6', '302'), files: built })).toEqual(['/scene-packs/golden-gate/g9/*: status must be 301, got 302']);
+    expect(redirectsErrors({ text: rule('golden-gate/g9', 'golden-gate/g9-code6').repeat(2), files: built })).toEqual(['/scene-packs/golden-gate/g9/* is redirected twice']);
+    expect(redirectsErrors({ text: '/old /new 301\n', files: built })).toEqual(['/old -> /new: expected "/dir/* /other-dir/:splat"']);
+    expect(redirectsErrors({ text: '/a/* /b/:splat 301 extra\n', files: built })).toEqual(['_redirects: expected "FROM TO STATUS": /a/* /b/:splat 301 extra']);
   });
 });

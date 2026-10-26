@@ -80,3 +80,22 @@ already answered with `X-Robots-Tag: noindex`.
   The production host is unaffected; `validate-static` checks both.
 
 Robots rules, canonicals and the noindex pages are unchanged.
+
+## Retired scene-pack releases — October 26, 2026
+
+Search Console reported 404s for files under scene-pack releases that production had
+since replaced, for example `/scene-packs/golden-gate/g9/THIRD-PARTY-NOTICES.txt` and
+`/scene-packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt`. Earlier Pages
+deployments show five retired releases were served: Golden Gate `g9` and `g9-code5`,
+Foundry Floor `ff3-review2`, and Troy `troy-20261005-04` and `troy-20261005-06`.
+
+`site/public/_redirects` moves each retired directory to its current release with a
+`301` splat rule, for example `/scene-packs/golden-gate/g9/*` to
+`/scene-packs/golden-gate/g9-code6/:splat`. Every Golden Gate and Foundry Floor file
+keeps its name in the current release. Most Troy files do too; those that do not
+redirect and then return 404: from `troy-20261005-04`, 24 per-revision source files
+and 8 qualification pages (32 of 1,912), and from `troy-20261005-06`, 36 hashed bundle
+chunks (of 1,937). `validate-static` checks that each rule is a 301 splat move, that no built file
+sits under a retired directory, that each target directory has files, and that no
+target is itself redirected. Asset JSON and GLB 404s and the retired `play.` hosts
+are left alone.

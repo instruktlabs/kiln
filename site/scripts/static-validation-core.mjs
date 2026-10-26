@@ -444,6 +444,46 @@ export function headersErrors({ text, inlineScripts = [], files = [], sealedFile
   return errors;
 }
 
+/**
+ * The rules of `_redirects` (Cloudflare Pages): `FROM TO STATUS` per line, `#` comments. This site uses them only to
+ * move a retired release directory to its successor, so each rule must be `/a/old/* /a/new/:splat 301`.
+ */
+export function parseRedirectRules(text) {
+  const rules = [];
+  for (const raw of text.split('\n')) {
+    const line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const [from, to, status, ...rest] = line.split(/\s+/);
+    if (!to || rest.length) throw new Error(`_redirects: expected "FROM TO STATUS": ${line}`);
+    rules.push({ from, to, status: Number(status ?? 302) });
+  }
+  return rules;
+}
+
+/**
+ * Every redirect is a permanent splat move between two directories, its target directory has files in the build, no
+ * built file sits under a source directory (a rule would hide it or be dead), and no target is itself redirected.
+ */
+export function redirectsErrors({ text, files = [] }) {
+  let rules;
+  try { rules = parseRedirectRules(text); } catch (error) { return [error.message]; }
+  const errors = [];
+  const directory = (path, suffix) => path.startsWith('/') && path.endsWith(suffix) && !path.slice(0, -suffix.length).includes('*') ? path.slice(1, -suffix.length + 1) : null;
+  const sources = rules.map((rule) => directory(rule.from, '/*'));
+  for (const [index, rule] of rules.entries()) {
+    const from = sources[index];
+    const to = directory(rule.to, '/:splat');
+    if (!from || !to) { errors.push(`${rule.from} -> ${rule.to}: expected "/dir/* /other-dir/:splat"`); continue; }
+    if (rule.status !== 301) errors.push(`${rule.from}: status must be 301, got ${rule.status}`);
+    if (sources.indexOf(from) !== index) errors.push(`${rule.from} is redirected twice`);
+    if (sources.includes(to)) errors.push(`${rule.to} is itself redirected; point ${rule.from} at the final directory`);
+    const shadowed = files.filter((file) => file.startsWith(from));
+    if (shadowed.length) errors.push(`${rule.from} covers ${shadowed.length} built files (first /${shadowed[0]})`);
+    if (!files.some((file) => file.startsWith(to))) errors.push(`${rule.to}: no built file under /${to}`);
+  }
+  return errors;
+}
+
 export function inspectHtml(html) {
   const document = parse(html);
   const elements = [];
