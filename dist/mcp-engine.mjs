@@ -7033,6 +7033,11 @@ var init_runtime_textures = __esm(() => {
   ]);
 });
 
+// src/texture-sharing.ts
+var init_texture_sharing = __esm(() => {
+  init_runtime_textures();
+});
+
 // src/contracts/semantic.ts
 function semanticRole(base, ...segments) {
   const tail = segments.map((segment) => String(segment).trim()).filter((segment) => segment !== "");
@@ -10822,6 +10827,7 @@ var encoder2, decoder, object2 = (value) => value !== null && typeof value === "
 var init_asset_export = __esm(() => {
   init_assets();
   init_runtime_textures();
+  init_texture_sharing();
   encoder2 = new TextEncoder;
   decoder = new TextDecoder;
 });

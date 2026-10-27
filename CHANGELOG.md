@@ -7,6 +7,18 @@ does not publish a package.
 
 ## Unreleased
 
+- `kiln textures <files-or-folders> [--json]` reports the texture duplication a delivered
+  set ships: embedded image occurrences against distinct images, the bytes sharing would
+  save, and each distinct image's hash, size and the assets carrying it. The duplication
+  is between assets, never inside one -- measured over 160 assets in four real worlds,
+  within-asset duplicate images were 0 every time -- so a per-asset receipt count cannot
+  see it and the report is scoped to a set. It reads bytes and writes nothing, so exported
+  and canonical GLBs stay byte-identical; acting on it is the existing `--textures
+  external` or `--textures manifest` from
+  [#213](https://github.com/instruktlabs/kiln/issues/213). Library export:
+  `textureSharingReport` from `@instruktlabs/kiln/asset-export`
+  ([#287](https://github.com/instruktlabs/kiln/issues/287)).
+
 ## 1.5.0 (2026-10-25)
 
 - Generated Codex workspaces forward `KILN_EXPORT_ROOT` to the MCP server, so

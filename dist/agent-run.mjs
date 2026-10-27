@@ -39611,6 +39611,11 @@ var init_protocol = __esm(() => {
   };
 });
 
+// src/texture-sharing.ts
+var init_texture_sharing = __esm(() => {
+  init_runtime_textures();
+});
+
 // src/asset-export.ts
 var exports_asset_export = {};
 __export(exports_asset_export, {
@@ -39846,6 +39851,7 @@ var encoder2, decoder, object3 = (value) => value !== null && typeof value === "
 var init_asset_export = __esm(() => {
   init_assets();
   init_runtime_textures();
+  init_texture_sharing();
   encoder2 = new TextEncoder;
   decoder = new TextDecoder;
 });

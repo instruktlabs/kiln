@@ -803,7 +803,9 @@ async function runMain(argv: readonly string[]): Promise<number> {
     }
   }
   if (
-    ['save', 'collections', 'assets', 'asset', 'export', 'import', 'view'].includes(argv[0] ?? '')
+    ['save', 'collections', 'assets', 'asset', 'export', 'textures', 'import', 'view'].includes(
+      argv[0] ?? '',
+    )
   ) {
     try {
       return await (await import('./asset-cli')).assetMain(argv);
