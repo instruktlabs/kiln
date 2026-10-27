@@ -25,6 +25,9 @@ import { CATEGORY_MIGRATION_MESSAGE, readHostRequirementsFile } from './requirem
 import { observeLiveReview } from './tools/workspace';
 import { cliWorkspaceSelection, readMaterialDependencies } from './workspace-cli';
 
+/** `kiln textures` reads every asset into memory, so the set is bounded. */
+const TEXTURE_REPORT_LIMIT = 1024;
+
 const SAVE_LINES = `  kiln save <source.js|programRef> --name <name> [--collection project]
        [--asset <id> --parent <revision>] [--description <text>] [--tag <tag>]
        [--model <model>] [--harness <harness>] [--author <author>]  declared attribution
@@ -67,6 +70,11 @@ ${SAVE_LINES}
        [--json]   receipt naming each file with its bytes and sha256
        export never replaces an existing file: an export hands off one exact
        saved revision, while render --out replaces its own working output
+  kiln textures <file-or-directory>... [--json]
+       how many distinct images a delivered set carries against how many it ships,
+       and the bytes sharing them would save. The duplication is between assets,
+       never inside one, so point this at a whole delivery folder. Reads only:
+       it writes and rewrites nothing
   kiln import <asset.zip|asset.glb> [--collection project] [--name <name>]
                                           prints the directory of each imported revision
   kiln view [collection-directory|asset.glb|asset.zip] [--port 4318]
@@ -135,8 +143,8 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     }
     if (arg === '--category' || arg.startsWith('--category='))
       throw new Error(CATEGORY_MIGRATION_MESSAGE);
-    // The CLI's --json rule (cli-json.ts) leaves the switch only on export's receipt.
-    if (arg === '--json' && command === 'export') {
+    // The CLI's --json rule (cli-json.ts) leaves the switch on the export and textures receipts.
+    if (arg === '--json' && (command === 'export' || command === 'textures')) {
       flags.json = 'true';
       continue;
     }
@@ -554,6 +562,54 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
             2,
           ),
         );
+    }
+  } else if (command === 'textures') {
+    if (!positional.length) throw new Error('textures requires a file or directory');
+    const { readdir } = await import('node:fs/promises');
+    const paths: string[] = [];
+    for (const path of positional) {
+      if ((await stat(path)).isDirectory())
+        for (const entry of (await readdir(path)).sort()) {
+          if (entry.toLowerCase().endsWith('.glb')) paths.push(resolve(path, entry));
+        }
+      else paths.push(resolve(path));
+    }
+    // Bounded so pointing this at a whole tree fails fast instead of reading it all in.
+    if (paths.length > TEXTURE_REPORT_LIMIT)
+      throw new Error(`textures reads at most ${TEXTURE_REPORT_LIMIT} assets at once`);
+    const assets: { name: string; bytes: Uint8Array }[] = [];
+    for (const path of paths) assets.push({ name: basename(path), bytes: await fileBytes(path) });
+    const { textureSharingReport } = await import('./texture-sharing');
+    const report = await textureSharingReport(assets);
+    if (flags.json) console.log(JSON.stringify({ ok: true, ...report }, null, 2));
+    else {
+      const count = (value: number) => value.toLocaleString('en-US');
+      const share = report.assetBytes
+        ? ` (${((100 * report.duplicateImageBytes) / report.assetBytes).toFixed(1)}% of ${count(report.assetBytes)} delivered bytes)`
+        : '';
+      console.log(
+        `${count(report.assets)} assets · ${count(report.embeddedImages)} embedded images · ${count(report.distinctImages)} distinct · ${count(report.duplicateImageBytes)} duplicated bytes${share}`,
+      );
+      for (const { name, reason } of report.skipped) console.log(`Skipped ${name}: ${reason}`);
+      if (!report.duplicateImageBytes)
+        console.log('Every image is carried once: nothing to share across this set.');
+      else {
+        console.log(
+          'Share each image once with --textures external, or name their identities for a host with --textures manifest (docs/export-profiles.md#runtime-textures-manifest-and-shared-files):',
+        );
+        const shared = report.images.filter((image) => image.copies > 1);
+        // Names are abbreviated here; --json carries every hash and every asset in full.
+        for (const image of shared.slice(0, 10)) {
+          const names = image.assets.slice(0, 3).join(', ');
+          const rest = image.assets.length - 3;
+          const size = image.width === undefined ? '' : `${image.width}x${image.height} `;
+          console.log(
+            `  ${image.sha256.slice('sha256:'.length, 'sha256:'.length + 12)} ${count(image.bytes)} B ${size}${image.mimeType} · ${image.copies} copies · saves ${count(image.bytes * (image.copies - 1))} B · ${names}${rest > 0 ? ` +${count(rest)} more` : ''}`,
+          );
+        }
+        if (shared.length > 10)
+          console.log(`  ... and ${count(shared.length - 10)} more shared images (--json for all)`);
+      }
     }
   } else if (command === 'import') {
     const file = positional[0];

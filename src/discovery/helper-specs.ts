@@ -15,6 +15,10 @@
 import { geometryPrimitives } from '../geometry-catalog';
 import { MATERIAL_RECIPE_IDS, MATERIAL_RECIPE_LIBRARY_V1 } from '../material-recipes';
 
+/** Why a material carries an author name at all, shared by the helpers that take one. */
+const MATERIAL_NAME_NOTE =
+  'Set name to the authored finish when a destination runtime groups draws by material: it is written to the glTF material name, 1..200 visible characters. materialRecipe and the portable material specs name their output already.';
+
 /** Allowed overrides per recipe, generated from the library so the note cannot drift. */
 const RECIPE_OVERRIDES_NOTE = (() => {
   const groups = new Map<string, string[]>();
@@ -714,12 +718,13 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'gameMaterial',
     signature:
-      'gameMaterial(color, opts?: { metalness, roughness, emissive, emissiveIntensity, flatShading })',
+      'gameMaterial(color, opts?: { metalness, roughness, emissive, emissiveIntensity, flatShading, name })',
     returns: 'THREE.MeshStandardMaterial',
     category: 'material',
     description:
       'PBR material with flat shading by default; choose shading and material settings for the intended surface.',
-    example: 'const mat = gameMaterial(0x8b7355, { roughness: 0.9 });',
+    example: "const mat = gameMaterial(0x8b7355, { roughness: 0.9, name: 'OiledWalnut' });",
+    promptNotes: MATERIAL_NAME_NOTE,
   },
   {
     name: 'materialRecipe',
@@ -763,7 +768,7 @@ const PRIMITIVES: HelperSpec[] = [
   },
   {
     name: 'basicMaterial',
-    signature: 'basicMaterial(color, opts?: { transparent, opacity })',
+    signature: 'basicMaterial(color, opts?: { transparent, opacity, name })',
     returns: 'THREE.MeshBasicMaterial',
     category: 'material',
     description: 'Unlit flat material. For UI / effects where lighting is baked in.',
@@ -771,7 +776,7 @@ const PRIMITIVES: HelperSpec[] = [
   },
   {
     name: 'glassMaterial',
-    signature: 'glassMaterial(color, opts?: { opacity, roughness, metalness })',
+    signature: 'glassMaterial(color, opts?: { opacity, roughness, metalness, name })',
     returns: 'THREE.MeshStandardMaterial',
     category: 'material',
     description:
@@ -780,7 +785,7 @@ const PRIMITIVES: HelperSpec[] = [
   },
   {
     name: 'lambertMaterial',
-    signature: 'lambertMaterial(color, opts?: { flatShading, emissive })',
+    signature: 'lambertMaterial(color, opts?: { flatShading, emissive, name })',
     returns: 'THREE.MeshLambertMaterial',
     category: 'material',
     description: 'Cheaper than gameMaterial. No metalness/roughness. Use when PBR is overkill.',
@@ -1178,15 +1183,15 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'remapUVToAtlas',
     signature:
-      "remapUVToAtlas(geometry, atlasTextureOrManifest, regionName, { inputOrigin: 'top-left' | 'bottom-left', mode: 'content-boundary' | 'texel-center' })",
+      "remapUVToAtlas(geometry, atlasTextureOrManifest, regionName, { inputOrigin: 'top-left' | 'bottom-left', mode: 'content-boundary' | 'texel-center', axes?: 'uv' | 'u-only' })",
     returns: 'THREE.BufferGeometry',
     category: 'uv',
     description:
       'Maps existing unit UV0 into a named atlas content rectangle on an owned geometry clone, preserving topology and rich attributes.',
     example:
-      "const card = remapUVToAtlas(planeGeo(1, 1), atlas, 'patch', { inputOrigin: 'bottom-left', mode: 'texel-center' });",
+      "const card = remapUVToAtlas(planeGeo(1, 1), atlas, 'patch', { inputOrigin: 'bottom-left', mode: 'texel-center' });\nconst blade = remapUVToAtlas(leafGeo, fernColumnAtlas, 'fern', { inputOrigin: 'top-left', mode: 'texel-center', axes: 'u-only' });",
     promptNotes:
-      'UV0 must be finite in [0,1], with two components per vertex. Content-boundary maps endpoints to content edges; texel-center maps endpoints to the first/last content texel centers. Explicitly identify the input UV origin; atlas image coordinates use top left and flipY=false. Geometry, normals, colors, skin weights, morph buffers, groups and source metadata are preserved independently. UV scale changes invalidate tangents; regenerate when needed. This helper does not project, unwrap, tile within a region or change material sampling.',
+      "UV0 must be finite in [0,1], with two components per vertex. Content-boundary maps endpoints to content edges; texel-center maps endpoints to the first/last content texel centers. Explicitly identify the input UV origin; atlas image coordinates use top left and flipY=false. Geometry, normals, colors, skin weights, morph buffers, groups and source metadata are preserved independently. UV scale changes invalidate tangents; regenerate when needed. The default axes 'uv' replaces both components, so it destroys a per-vertex gradient carried in V — a foliage wind sway weight read as uv-y is the known case, and the result still validates and renders. Pass axes 'u-only' for that: it rescales U into the named column and leaves V bit-for-bit, requiring inputOrigin 'top-left' and a region that spans the full atlas height (lay the sheet out as full-height species columns with gutter 0). This helper does not project, unwrap, tile within a region or change material sampling.",
   },
   {
     name: 'normalMapFromHeight',
@@ -1203,17 +1208,18 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'pbrMaterial',
     signature:
-      "pbrMaterial({ albedo?, normal?, roughness?, metalness?, metallicRoughness?, emissive?, emissiveIntensity?, aoMap?, aoMapIntensity?, alphaMode?: 'opaque'|'mask'|'blend', alphaCutoff?, doubleSided? })",
+      "pbrMaterial({ albedo?, normal?, roughness?, metalness?, metallicRoughness?, emissive?, emissiveIntensity?, aoMap?, aoMapIntensity?, alphaMode?: 'opaque'|'mask'|'blend', alphaCutoff?, doubleSided?, name? })",
     returns: 'THREE.MeshStandardMaterial',
     category: 'material',
     description:
       'Portable glTF PBR material. Use an explicit packed metallicRoughness texture (G=roughness, B=metalness); separate data maps are rejected instead of silently dropping a channel. alphaMode takes lowercase opaque/mask/blend and exports uppercase glTF modes. Supports double-sided output.',
     example:
-      "const wood = proceduralTexture({ schemaVersion: 2, usage: 'albedo', layers: [{ op: 'noise', colorA: 0x4f301c, colorB: 0x9a6b3e, scale: 8, octaves: 3, seed: 4 }] });\nconst crate = pbrMaterial({ albedo: wood, roughness: 0.85, metalness: 0 });",
+      "const wood = proceduralTexture({ schemaVersion: 2, usage: 'albedo', layers: [{ op: 'noise', colorA: 0x4f301c, colorB: 0x9a6b3e, scale: 8, octaves: 3, seed: 4 }] });\nconst crate = pbrMaterial({ albedo: wood, roughness: 0.85, metalness: 0, name: 'CrateWood' });",
+    promptNotes: MATERIAL_NAME_NOTE,
   },
   {
     name: 'foliageMaterial',
-    signature: 'foliageMaterial(albedo, { alphaCutoff?, roughness?, doubleSided? })',
+    signature: 'foliageMaterial(albedo, { alphaCutoff?, roughness?, doubleSided?, name? })',
     returns: 'THREE.MeshStandardMaterial',
     category: 'material',
     description:

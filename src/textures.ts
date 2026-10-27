@@ -9,7 +9,7 @@
  */
 
 import * as THREE from 'three';
-import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
+import { AuthoringDiagnosticError, assertMaterialName } from './evaluator/authoring-diagnostic';
 import type { TextureUsage } from './texture-contract';
 export { TEXTURE_USAGES, type TextureUsage } from './texture-contract';
 
@@ -177,6 +177,8 @@ export interface PbrMaterialOptions {
   alphaCutoff?: number;
   /** Render both sides of the surface. Defaults false. */
   doubleSided?: boolean;
+  /** Stable name written to the exported glTF material. */
+  name?: string;
 }
 
 function textureMetadata(texture: THREE.Texture): KilnTextureMetadata | undefined {
@@ -319,6 +321,7 @@ export function pbrMaterial(opts: PbrMaterialOptions = {}): THREE.MeshStandardMa
     ...(alphaMode === 'mask' ? { alphaCutoff: mat.alphaTest } : {}),
     doubleSided: opts.doubleSided === true,
   };
+  if (opts.name !== undefined) mat.name = assertMaterialName(opts.name, 'pbrMaterial');
 
   return mat;
 }
@@ -327,6 +330,8 @@ export interface FoliageMaterialOptions {
   alphaCutoff?: number;
   roughness?: number;
   doubleSided?: boolean;
+  /** Stable name written to the exported glTF material. */
+  name?: string;
 }
 
 /** Portable foliage material: glTF MASK + cutoff + double-sided by default. */
@@ -341,5 +346,6 @@ export function foliageMaterial(
     alphaMode: 'mask',
     alphaCutoff: opts.alphaCutoff ?? 0.5,
     doubleSided: opts.doubleSided ?? true,
+    ...(opts.name !== undefined ? { name: opts.name } : {}),
   });
 }

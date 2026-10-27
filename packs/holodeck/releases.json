@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "releases": [
+    {
+      "release": "gallery-20261026-01"
+    },
+    {
+      "release": "holodeck-20261022-01"
+    },
+    {
+      "release": "holodeck-20261023-01"
+    },
+    {
+      "release": "holodeck-20261024-01"
+    },
+    {
+      "release": "holodeck-20261025-01"
+    },
+    {
+      "release": "holodeck-20261025-02"
+    },
+    {
+      "release": "holodeck-20261026-01",
+      "selection": {
+        "bytes": 190798,
+        "sha256": "4565733e436796d7e319e22ebf3ca86997e880f44eaa07274fbd0d57a860c14f"
+      }
+    }
+  ]
+}

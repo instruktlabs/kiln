@@ -33,6 +33,8 @@ export type {
   RuntimeThreeOptionsV1,
 } from './runtime-three';
 export type { RuntimeTextureManifestEntryV1 } from './runtime-textures';
+export { textureSharingReport } from './texture-sharing';
+export type { TextureSharingImageV1, TextureSharingReportV1 } from './texture-sharing';
 export type AssetExportProfile = 'editable' | 'runtime';
 /**
  * Runtime only, opt-in. `manifest` adds sidecar `textures[]`; `external` (three target only)

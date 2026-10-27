@@ -100,6 +100,8 @@ function authoringDiagnosticAdvice(diagnostic) {
     return PROCEDURAL_TEXTURE_USAGE_ADVICE;
   if (diagnostic === "MATERIAL_FRACTION_RANGE")
     return MATERIAL_FRACTION_RANGE_ADVICE;
+  if (diagnostic === "MATERIAL_NAME")
+    return MATERIAL_NAME_ADVICE;
   if (diagnostic === "PROFILE_HOLES_UNSUPPORTED")
     return PROFILE_HOLES_UNSUPPORTED_ADVICE;
   if (diagnostic === "PROFILE_SOLID_FAILED")
@@ -107,6 +109,11 @@ function authoringDiagnosticAdvice(diagnostic) {
   if (diagnostic === "PROFILE_CORRESPONDENCE_COLLAPSE")
     return PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE;
   return diagnostic === "PARAMETRIC_PERIODIC_ENDPOINT" ? PARAMETRIC_PERIODIC_ENDPOINT_ADVICE : "";
+}
+function assertMaterialName(name, fn) {
+  if (typeof name !== "string" || !name.length || name.length > MATERIAL_NAME_MAX_LENGTH || [...name].some((c) => c.charCodeAt(0) < 32 || c.charCodeAt(0) === 127))
+    throw new AuthoringDiagnosticError("MATERIAL_NAME", `${fn}: name must be 1..${MATERIAL_NAME_MAX_LENGTH} visible characters, got ${typeof name === "string" ? JSON.stringify(name.slice(0, 32)) : typeof name}. ${MATERIAL_NAME_ADVICE}`);
+  return name;
 }
 function programErrorDiagnostic(error) {
   if (error instanceof AuthoringDiagnosticError)
@@ -125,7 +132,7 @@ function rethrowAuthoringError(error) {
   }
   throw error;
 }
-var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', PROCEDURAL_TEXTURE_USAGE_ADVICE = 'proceduralTexture usage is one of albedo (the default), emissive, normal, roughness, metalness, metallicRoughness or occlusion; there is no data or height usage. Match it to the slot it fills: portable material baseColor takes albedo, normal takes normal, metallicRoughness takes metallicRoughness (G roughness, B metalness), emissive takes emissive and occlusion takes occlusion; pbrMaterial albedo, normal, roughness, metalness, metallicRoughness, emissive and aoMap take the matching usage. Call kiln_discover with ids ["proceduralTexture"].', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", PROFILE_SOLID_FAILED_ADVICE = 'PROFILE_SOLID_FAILED: extrudeProfile or revolveProfile could not build a solid from this outline. Reduce bevel or set it to 0. Keep the outline one simple closed loop: no self-intersections, repeated points or zero-length edges, and no neck narrower than twice the bevel. Holes must lie inside the outline and leave material. For revolveProfile, keep points off the axis (x = 0) unless the solid should close there. Keep coordinates at asset scale. Render that helper call alone with kiln_render and simplify the outline until it builds. Call kiln_discover with ids ["extrudeProfile", "revolveProfile"].', UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', OPEN_SHELL_ADVICE = 'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].', DELIVERY_CONTRACT_ADVICE = 'Delivery helpers: colliderBox(size, { id }), colliderCapsule(radius, height, { id }) with height the total height of at least 2 * radius, colliderHull(mesh, { id }), anchor(kind, id), port(id) and defineModule(root, { footprint: [w, d], height, snapAxis: "x"|"y"|"z", origin: "corner"|"center" }). Ids and kinds are one segment of letters, digits, "_" or "-" with no dots; sizes are positive metres. The engine owns the kilnKit userData key; set it only through defineModule. defineBudget({ triangles: n | { LOD0, LOD1, ... }, draws?, images?, decodedBytes?, materialTier? }) takes positive integers for triangles and draws, non-negative integers for images and decodedBytes, and a reference tier such as "web.portable.v1/standard" for materialTier; definePalette(colors, { threshold? }) takes 1..64 hex colours. Call kiln_discover with ids ["colliderBox", "anchor", "defineModule", "defineBudget"].', REQUIRE_SOLID_ADVICE = 'REQUIRE_SOLID: a part marked with requireSolid(part) is not a closed, manifold, outward solid. Close every boundary (caps, end plates, a hull or a solid helper such as boxGeo or extrudeProfile), remove faces shared by three or more triangles, and keep one consistent outward winding; do not flip normals alone. Check the part with geometryDiagnostics(geometry).solid, or remove the requireSolid mark if the part is open on purpose. Call kiln_discover with ids ["requireSolid", "geometryDiagnostics"].', EXECUTION_REJECTED_ADVICE = "No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. kiln_validate (CLI: kiln validate <program.js|ref>) checks syntax and static source rules such as policy denials; it cannot see execution-time failures, such as geometry a helper rejects while build() runs. Reproduce those with kiln_render, simplifying or removing the failing part until the program renders. To read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable, build() mistake or profile solid failure is named when it is the cause.", AuthoringDiagnosticError;
+var UNBOUND_VARIABLE_ADVICE = "Check variable spelling and scope: generated code used an undeclared variable. Read the current source and check declarations before retrying. If it was meant to be a Kiln helper, call kiln_discover to confirm the exact name and signature; the sandbox exposes only those globals.", GEAR_RADII_ORDER_ADVICE = "gearGeo requires boreRadius < rootRadius < tipRadius; specify rootRadius when changing tipRadius. Omitted radii keep their absolute defaults.", ROUNDED_BOX_RADIUS_ADVICE = "roundedBoxGeo: radius must be less than half the smallest dimension. Reduce radius or increase the smallest dimension; equality is invalid.", PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE = 'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.', PROCEDURAL_TEXTURE_USAGE_ADVICE = 'proceduralTexture usage is one of albedo (the default), emissive, normal, roughness, metalness, metallicRoughness or occlusion; there is no data or height usage. Match it to the slot it fills: portable material baseColor takes albedo, normal takes normal, metallicRoughness takes metallicRoughness (G roughness, B metalness), emissive takes emissive and occlusion takes occlusion; pbrMaterial albedo, normal, roughness, metalness, metallicRoughness, emissive and aoMap take the matching usage. Call kiln_discover with ids ["proceduralTexture"].', MATERIAL_NAME_ADVICE = 'A material name is the key a destination runtime groups draws by, so it is 1 to 200 visible characters: a plain string, no control characters. gameMaterial, basicMaterial, glassMaterial and lambertMaterial take it in their options object, pbrMaterial and foliageMaterial in theirs, for example gameMaterial(0x25342a, { roughness: 0.58, name: "ParkerisedSteel" }). Omit it to leave the material unnamed; materialRecipe and the portable material specs name their output already.', MATERIAL_FRACTION_RANGE_ADVICE = "Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.", PARAMETRIC_PERIODIC_ENDPOINT_ADVICE = "Periodic parametricSurface endpoints must return matching positions. For periodicU, sample(uMin, v) and sample(uMax, v) must match; for periodicV, sample(u, vMin) and sample(u, vMax) must match.", PROFILE_HOLES_UNSUPPORTED_ADVICE = "loftProfiles and sweepProfile: holes are unsupported in options or sections. Use extrudeProfile for a holed cross-section with optional twist/taper; independently varying contours need explicit geometry or solid subtraction. cap:false does not create inner walls or thickness.", PROFILE_CORRESPONDENCE_COLLAPSE_ADVICE = "loftProfiles or sweepProfile: corresponding profile edges collapse between stations. Check matching start vertices and vertex order; for an intended twist, add intermediate sections or path stations. No automatic correspondence repair is applied. Other self-intersections remain unchecked.", PROFILE_SOLID_FAILED_ADVICE = 'PROFILE_SOLID_FAILED: extrudeProfile or revolveProfile could not build a solid from this outline. Reduce bevel or set it to 0. Keep the outline one simple closed loop: no self-intersections, repeated points or zero-length edges, and no neck narrower than twice the bevel. Holes must lie inside the outline and leave material. For revolveProfile, keep points off the axis (x = 0) unless the solid should close there. Keep coordinates at asset scale. Render that helper call alone with kiln_render and simplify the outline until it builds. Call kiln_discover with ids ["extrudeProfile", "revolveProfile"].', UNINITIALIZED_BINDING_ADVICE = "A const, let or class binding was read before its declaration ran (temporal dead zone). Move the declaration above the first code that reads it; top-level constants must be declared before other top-level code uses them. kiln_validate names the binding and line when the read runs immediately.", BUILD_RESULT_ADVICE = 'Define a top-level function build() (it may be async) that returns the root Object3D, for example const root = createRoot("Name"); ...; return root;. A build() that returns nothing, or returns a geometry or material, is rejected.', MATERIAL_RECIPE_OVERRIDE_ADVICE = 'materialRecipe takes a listed kiln.material.*.v1 ID and only the overrides that recipe allows; the allowed overrides differ by recipe (the emissive recipe has no metalness). Call kiln_discover with ids ["materialRecipe"] to see what each recipe allows; kiln_validate names the recipe and key when both are literals.', PROGRAM_TYPE_ERROR_ADVICE = "The program or a helper it called threw a TypeError: a value had the wrong type. Usually something is undefined (a function without a return, an un-awaited async helper such as roundedBoxGeo, extrudeProfile or materialRecipe, or a misspelt property) or a non-function was called. Run kiln_validate, then check the helper contract with kiln_discover.", PROGRAM_RANGE_ERROR_ADVICE = "The program or a helper it called threw a RangeError: a number was outside its allowed range, for example a non-positive size, an invalid array length or segment count, or unbounded recursion. Check the helper arguments against kiln_discover.", LOD_SET_ADVICE = 'Levels of detail: sibling nodes whose names share a stem and carry LOD0, LOD1, ... tokens (Body_LOD0, Body_LOD1) form one set. A set needs LOD0 and consecutive levels under one parent, outside any other tier, and one defineLod([lod0, lod1, ...], { screenCoverage: [...] }) call listing its tiers in level order with one value per level, each from 0 to 1 and strictly decreasing; the last may be 0, which never culls. Build one tier without LOD tokens unless the brief asks for levels. Call kiln_discover with ids ["defineLod"].', OPEN_SHELL_ADVICE = 'markOpenShell(part, reason) marks a part as intentionally open: part is the mesh createPart returned or a group whose meshes it covers, and reason is a non-empty string of at most 200 characters saying why, for example markOpenShell(rail, "C-channel closed by the end plates"). The engine owns the kilnOpenShell userData key; set it only through markOpenShell. Call kiln_discover with ids ["markOpenShell"].', DELIVERY_CONTRACT_ADVICE = 'Delivery helpers: colliderBox(size, { id }), colliderCapsule(radius, height, { id }) with height the total height of at least 2 * radius, colliderHull(mesh, { id }), anchor(kind, id), port(id) and defineModule(root, { footprint: [w, d], height, snapAxis: "x"|"y"|"z", origin: "corner"|"center" }). Ids and kinds are one segment of letters, digits, "_" or "-" with no dots; sizes are positive metres. The engine owns the kilnKit userData key; set it only through defineModule. defineBudget({ triangles: n | { LOD0, LOD1, ... }, draws?, images?, decodedBytes?, materialTier? }) takes positive integers for triangles and draws, non-negative integers for images and decodedBytes, and a reference tier such as "web.portable.v1/standard" for materialTier; definePalette(colors, { threshold? }) takes 1..64 hex colours. Call kiln_discover with ids ["colliderBox", "anchor", "defineModule", "defineBudget"].', REQUIRE_SOLID_ADVICE = 'REQUIRE_SOLID: a part marked with requireSolid(part) is not a closed, manifold, outward solid. Close every boundary (caps, end plates, a hull or a solid helper such as boxGeo or extrudeProfile), remove faces shared by three or more triangles, and keep one consistent outward winding; do not flip normals alone. Check the part with geometryDiagnostics(geometry).solid, or remove the requireSolid mark if the part is open on purpose. Call kiln_discover with ids ["requireSolid", "geometryDiagnostics"].', EXECUTION_REJECTED_ADVICE = "No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. kiln_validate (CLI: kiln validate <program.js|ref>) checks syntax and static source rules such as policy denials; it cannot see execution-time failures, such as geometry a helper rejects while build() runs. Reproduce those with kiln_render, simplifying or removing the failing part until the program renders. To read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable, build() mistake or profile solid failure is named when it is the cause.", AuthoringDiagnosticError, MATERIAL_NAME_MAX_LENGTH = 200;
 var init_authoring_diagnostic = __esm(() => {
   AuthoringDiagnosticError = class AuthoringDiagnosticError extends Error {
     diagnostic;
@@ -5063,13 +5070,18 @@ function lookup(table, id) {
     fail2("unknown atlas reference.");
   return found;
 }
-function derivedBinding(p, regionName, origin, mode) {
+function derivedBinding(p, regionName, origin, mode, axes) {
   if (!["top-left", "bottom-left"].includes(origin) || !["content-boundary", "texel-center"].includes(mode))
     fail2("explicit binding origin/mode required.");
+  if (axes !== undefined && axes !== "u-only")
+    fail2("unsupported binding axes.");
+  const uOnly = axes === "u-only";
   const r = p.manifest.regions.find((r) => r.name === regionName);
   if (!r)
     fail2("unknown named region.");
   const { x, y, width: w, height: h } = r.content, center = mode === "texel-center", bottom = origin === "bottom-left";
+  if (uOnly && (origin !== "top-left" || y !== 0 || h !== p.manifest.height))
+    fail2("u-only binding requires a top-left origin over a full-height region.");
   return {
     manifestHash: p.manifest.manifestHash,
     specHash: p.manifest.specHash,
@@ -5079,29 +5091,30 @@ function derivedBinding(p, regionName, origin, mode) {
     allocation: structuredClone(r.allocation),
     inputOrigin: origin,
     mode,
+    ...uOnly ? { axes: "u-only" } : {},
     scale: [
       (w - (center ? 1 : 0)) / p.manifest.width,
-      (bottom ? -1 : 1) * (h - (center ? 1 : 0)) / p.manifest.height
+      uOnly ? 1 : (bottom ? -1 : 1) * (h - (center ? 1 : 0)) / p.manifest.height
     ],
     offset: [
       (x + (center ? 0.5 : 0)) / p.manifest.width,
-      (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / p.manifest.height
+      uOnly ? 0 : (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / p.manifest.height
     ]
   };
 }
 function expandAtlasBinding(input, table) {
   canonicalAtlasMetadataJsonV1(input);
-  const r = closed(input, ["version", "atlasId", "region", "inputOrigin", "mode"]);
+  const r = closed(input, ["version", "atlasId", "region", "inputOrigin", "mode", "axes"]);
   if (r["version"] !== ATLAS_PROVENANCE_VERSION)
     fail2("unsupported binding version.");
-  return derivedBinding(lookup(table, r["atlasId"]), r["region"], r["inputOrigin"], r["mode"]);
+  return derivedBinding(lookup(table, r["atlasId"]), r["region"], r["inputOrigin"], r["mode"], r["axes"]);
 }
 function readAtlasGeometryBinding(geometry, provenance) {
   const stamp = field(geometry.userData, "kilnAtlasBinding");
   if (stamp === undefined)
     return;
   canonicalAtlasMetadataJsonV1(stamp);
-  const r = stamp, derived = derivedBinding(provenance, r["region"], r["inputOrigin"], r["mode"]);
+  const r = stamp, derived = derivedBinding(provenance, r["region"], r["inputOrigin"], r["mode"], r["axes"]);
   if (canonicalAtlasMetadataJsonV1(stamp) !== canonicalAtlasMetadataJsonV1(derived))
     fail2("named binding identity or remap formula mismatch.");
   return {
@@ -5109,7 +5122,8 @@ function readAtlasGeometryBinding(geometry, provenance) {
     atlasId: provenance.manifest.manifestHash,
     region: r["region"],
     inputOrigin: r["inputOrigin"],
-    mode: r["mode"]
+    mode: r["mode"],
+    ...r["axes"] === undefined ? {} : { axes: r["axes"] }
   };
 }
 function collectAtlasProvenance(root) {
@@ -5720,8 +5734,9 @@ function inspectAtlasScene(root) {
         continue;
       }
       const center = binding.mode === "texel-center" ? 0.5 : 0;
+      const centerY = binding.axes === "u-only" ? 0 : center;
       const minX = (region.content.x + center) / entry.p.manifest.width, maxX = (region.content.x + region.content.width - center) / entry.p.manifest.width;
-      const minY = (region.content.y + center) / entry.p.manifest.height, maxY = (region.content.y + region.content.height - center) / entry.p.manifest.height;
+      const minY = (region.content.y + centerY) / entry.p.manifest.height, maxY = (region.content.y + region.content.height - centerY) / entry.p.manifest.height;
       const tolerance = 4 * 2 ** -23;
       let invalid = false;
       const point = new THREE5.Vector2;
@@ -7216,7 +7231,7 @@ function inspectPartConnectivity(scene, supports) {
       disposition: "observe",
       dimension: "visualQuality",
       profile: "geometry.partConnectivity",
-      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence.${lodNote}`,
+      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence: a gap under ${CONNECTIVITY_TOLERANCE} m reads as contact, and primitives welded into one mesh form one box.${lodNote}`,
       affected: { node: group.parts[0] },
       measurement: {
         name: "gapToMainComponent",
@@ -22419,6 +22434,8 @@ function pbrMaterial(opts = {}) {
     ...alphaMode === "mask" ? { alphaCutoff: mat.alphaTest } : {},
     doubleSided: opts.doubleSided === true
   };
+  if (opts.name !== undefined)
+    mat.name = assertMaterialName(opts.name, "pbrMaterial");
   return mat;
 }
 function foliageMaterial(albedo, opts = {}) {
@@ -22428,7 +22445,8 @@ function foliageMaterial(albedo, opts = {}) {
     metalness: 0,
     alphaMode: "mask",
     alphaCutoff: opts.alphaCutoff ?? 0.5,
-    doubleSided: opts.doubleSided ?? true
+    doubleSided: opts.doubleSided ?? true,
+    ...opts.name !== undefined ? { name: opts.name } : {}
   });
 }
 var init_textures = __esm(() => {
@@ -22787,14 +22805,21 @@ ${canonicalAtlasMetadataJsonV1(payload)}`)}` !== manifestHash)
 function remapUVToAtlas(geometry, atlas, name, options) {
   const manifest = manifestOf(atlas);
   canonicalAtlasMetadataJsonV1(options);
-  if (!options || typeof options !== "object" || Array.isArray(options) || Object.keys(options).some((k) => !["inputOrigin", "mode"].includes(k)) || !["top-left", "bottom-left"].includes(options.inputOrigin) || !["content-boundary", "texel-center"].includes(options.mode))
+  if (!options || typeof options !== "object" || Array.isArray(options) || Object.keys(options).some((k) => !["inputOrigin", "mode", "axes"].includes(k)) || !["top-left", "bottom-left"].includes(options.inputOrigin) || !["content-boundary", "texel-center"].includes(options.mode))
     atlasFailure("explicit inputOrigin and content-boundary/texel-center mode are required.");
+  if (options.axes !== undefined && !["uv", "u-only"].includes(options.axes))
+    atlasFailure("axes must be uv (default, both components) or u-only.");
+  const uOnly = options.axes === "u-only";
+  if (uOnly && options.inputOrigin !== "top-left")
+    atlasFailure("u-only requires inputOrigin top-left: V passes through unmapped, so a bottom-left flip would invert the gradient it carries.");
   const region = manifest.regions.find((r) => r.name === name);
   if (!region)
     atlasFailure(`unknown named region ${String(name)}.`);
   const { x, y, width: w, height: h } = region.content;
   if (![x, y, w, h].every(Number.isSafeInteger) || x < 0 || y < 0 || w < 1 || h < 1 || x + w > manifest.width || y + h > manifest.height)
     atlasFailure("invalid region content rectangle.");
+  if (uOnly && (y !== 0 || h !== manifest.height))
+    atlasFailure(`u-only requires a region spanning the full atlas height; ${name} covers rows ${y}..${y + h} of ${manifest.height}. Lay the atlas out as full-height columns with gutter 0.`);
   const uv = geometry?.getAttribute?.("uv"), position = geometry?.getAttribute?.("position");
   if (!position || !uv || uv.itemSize !== 2 || uv.count !== position.count || uv.count < 1 || uv.count > TEXTURE_ATLAS_LIMITS.uvVertices || uv.isInstancedBufferAttribute || uv.data?.isInstancedInterleavedBuffer)
     atlasFailure("matching per-vertex UV0 and positions are required; per-instance UVs are unsupported.");
@@ -22827,9 +22852,9 @@ function remapUVToAtlas(geometry, atlas, name, options) {
   const bottom = options.inputOrigin === "bottom-left";
   const offset = [
     (x + (center ? 0.5 : 0)) / manifest.width,
-    (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / manifest.height
+    uOnly ? 0 : (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / manifest.height
   ];
-  const scale = [su, bottom ? -sv : sv];
+  const scale = [su, uOnly ? 1 : bottom ? -sv : sv];
   const output = remapUV(geometry, { scale, offset });
   output.userData.kilnAtlasBinding = {
     manifestHash: manifest.manifestHash,
@@ -22840,6 +22865,7 @@ function remapUVToAtlas(geometry, atlas, name, options) {
     allocation: structuredClone(region.allocation),
     inputOrigin: options.inputOrigin,
     mode: options.mode,
+    ...uOnly ? { axes: "u-only" } : {},
     scale,
     offset
   };
@@ -26482,7 +26508,7 @@ function requireColor(color, fn) {
 }
 function gameMaterial(color, options = {}) {
   requireColor(color, "gameMaterial");
-  return new THREE48.MeshStandardMaterial({
+  const material = new THREE48.MeshStandardMaterial({
     color,
     metalness: options.metalness ?? 0,
     roughness: options.roughness ?? 0.8,
@@ -26490,18 +26516,24 @@ function gameMaterial(color, options = {}) {
     emissiveIntensity: options.emissiveIntensity ?? 1,
     flatShading: options.flatShading ?? true
   });
+  if (options.name !== undefined)
+    material.name = assertMaterialName(options.name, "gameMaterial");
+  return material;
 }
 function basicMaterial(color, options = {}) {
   requireColor(color, "basicMaterial");
-  return new THREE48.MeshBasicMaterial({
+  const material = new THREE48.MeshBasicMaterial({
     color,
     transparent: options.transparent ?? false,
     opacity: options.opacity ?? 1
   });
+  if (options.name !== undefined)
+    material.name = assertMaterialName(options.name, "basicMaterial");
+  return material;
 }
 function glassMaterial(color, options = {}) {
   requireColor(color, "glassMaterial");
-  return new THREE48.MeshStandardMaterial({
+  const material = new THREE48.MeshStandardMaterial({
     color,
     transparent: true,
     opacity: options.opacity ?? 0.35,
@@ -26509,14 +26541,20 @@ function glassMaterial(color, options = {}) {
     metalness: options.metalness ?? 0,
     side: THREE48.DoubleSide
   });
+  if (options.name !== undefined)
+    material.name = assertMaterialName(options.name, "glassMaterial");
+  return material;
 }
 function lambertMaterial(color, options = {}) {
   requireColor(color, "lambertMaterial");
-  return new THREE48.MeshLambertMaterial({
+  const material = new THREE48.MeshLambertMaterial({
     color,
     flatShading: options.flatShading ?? true,
     emissive: options.emissive ?? 0
   });
+  if (options.name !== undefined)
+    material.name = assertMaterialName(options.name, "lambertMaterial");
+  return material;
 }
 function threeInterpolation(mode) {
   if (mode !== undefined && !TRACK_INTERPOLATIONS.includes(mode)) {
@@ -27901,7 +27939,7 @@ var init_geometry_catalog = __esm(() => {
 function listHelperSpecs() {
   return PRIMITIVES.map((p) => ({ ...p }));
 }
-var RECIPE_OVERRIDES_NOTE, PRIMITIVES;
+var MATERIAL_NAME_NOTE = "Set name to the authored finish when a destination runtime groups draws by material: it is written to the glTF material name, 1..200 visible characters. materialRecipe and the portable material specs name their output already.", RECIPE_OVERRIDES_NOTE, PRIMITIVES;
 var init_helper_specs = __esm(() => {
   init_geometry_catalog();
   init_material_recipes();
@@ -28430,11 +28468,12 @@ createPart('Blade', b, steel, { position: [0, 0, 0], parent: root });`
     },
     {
       name: "gameMaterial",
-      signature: "gameMaterial(color, opts?: { metalness, roughness, emissive, emissiveIntensity, flatShading })",
+      signature: "gameMaterial(color, opts?: { metalness, roughness, emissive, emissiveIntensity, flatShading, name })",
       returns: "THREE.MeshStandardMaterial",
       category: "material",
       description: "PBR material with flat shading by default; choose shading and material settings for the intended surface.",
-      example: "const mat = gameMaterial(0x8b7355, { roughness: 0.9 });"
+      example: "const mat = gameMaterial(0x8b7355, { roughness: 0.9, name: 'OiledWalnut' });",
+      promptNotes: MATERIAL_NAME_NOTE
     },
     {
       name: "materialRecipe",
@@ -28465,7 +28504,7 @@ createPart('Blade', b, steel, { position: [0, 0, 0], parent: root });`
     },
     {
       name: "basicMaterial",
-      signature: "basicMaterial(color, opts?: { transparent, opacity })",
+      signature: "basicMaterial(color, opts?: { transparent, opacity, name })",
       returns: "THREE.MeshBasicMaterial",
       category: "material",
       description: "Unlit flat material. For UI / effects where lighting is baked in.",
@@ -28473,7 +28512,7 @@ createPart('Blade', b, steel, { position: [0, 0, 0], parent: root });`
     },
     {
       name: "glassMaterial",
-      signature: "glassMaterial(color, opts?: { opacity, roughness, metalness })",
+      signature: "glassMaterial(color, opts?: { opacity, roughness, metalness, name })",
       returns: "THREE.MeshStandardMaterial",
       category: "material",
       description: "Semi-transparent double-sided material. Panels need ~0.05 offset to avoid z-fighting.",
@@ -28481,7 +28520,7 @@ createPart('Blade', b, steel, { position: [0, 0, 0], parent: root });`
     },
     {
       name: "lambertMaterial",
-      signature: "lambertMaterial(color, opts?: { flatShading, emissive })",
+      signature: "lambertMaterial(color, opts?: { flatShading, emissive, name })",
       returns: "THREE.MeshLambertMaterial",
       category: "material",
       description: "Cheaper than gameMaterial. No metalness/roughness. Use when PBR is overkill.",
@@ -28787,12 +28826,13 @@ const mesh = new THREE.Mesh(unwrapped, bakedPbr);`
     },
     {
       name: "remapUVToAtlas",
-      signature: "remapUVToAtlas(geometry, atlasTextureOrManifest, regionName, { inputOrigin: 'top-left' | 'bottom-left', mode: 'content-boundary' | 'texel-center' })",
+      signature: "remapUVToAtlas(geometry, atlasTextureOrManifest, regionName, { inputOrigin: 'top-left' | 'bottom-left', mode: 'content-boundary' | 'texel-center', axes?: 'uv' | 'u-only' })",
       returns: "THREE.BufferGeometry",
       category: "uv",
       description: "Maps existing unit UV0 into a named atlas content rectangle on an owned geometry clone, preserving topology and rich attributes.",
-      example: "const card = remapUVToAtlas(planeGeo(1, 1), atlas, 'patch', { inputOrigin: 'bottom-left', mode: 'texel-center' });",
-      promptNotes: "UV0 must be finite in [0,1], with two components per vertex. Content-boundary maps endpoints to content edges; texel-center maps endpoints to the first/last content texel centers. Explicitly identify the input UV origin; atlas image coordinates use top left and flipY=false. Geometry, normals, colors, skin weights, morph buffers, groups and source metadata are preserved independently. UV scale changes invalidate tangents; regenerate when needed. This helper does not project, unwrap, tile within a region or change material sampling."
+      example: `const card = remapUVToAtlas(planeGeo(1, 1), atlas, 'patch', { inputOrigin: 'bottom-left', mode: 'texel-center' });
+const blade = remapUVToAtlas(leafGeo, fernColumnAtlas, 'fern', { inputOrigin: 'top-left', mode: 'texel-center', axes: 'u-only' });`,
+      promptNotes: "UV0 must be finite in [0,1], with two components per vertex. Content-boundary maps endpoints to content edges; texel-center maps endpoints to the first/last content texel centers. Explicitly identify the input UV origin; atlas image coordinates use top left and flipY=false. Geometry, normals, colors, skin weights, morph buffers, groups and source metadata are preserved independently. UV scale changes invalidate tangents; regenerate when needed. The default axes 'uv' replaces both components, so it destroys a per-vertex gradient carried in V — a foliage wind sway weight read as uv-y is the known case, and the result still validates and renders. Pass axes 'u-only' for that: it rescales U into the named column and leaves V bit-for-bit, requiring inputOrigin 'top-left' and a region that spans the full atlas height (lay the sheet out as full-height species columns with gutter 0). This helper does not project, unwrap, tile within a region or change material sampling."
     },
     {
       name: "normalMapFromHeight",
@@ -28806,16 +28846,17 @@ const mat = pbrMaterial({ albedo: bark, normal: normalMapFromHeight(bark, { stre
     },
     {
       name: "pbrMaterial",
-      signature: "pbrMaterial({ albedo?, normal?, roughness?, metalness?, metallicRoughness?, emissive?, emissiveIntensity?, aoMap?, aoMapIntensity?, alphaMode?: 'opaque'|'mask'|'blend', alphaCutoff?, doubleSided? })",
+      signature: "pbrMaterial({ albedo?, normal?, roughness?, metalness?, metallicRoughness?, emissive?, emissiveIntensity?, aoMap?, aoMapIntensity?, alphaMode?: 'opaque'|'mask'|'blend', alphaCutoff?, doubleSided?, name? })",
       returns: "THREE.MeshStandardMaterial",
       category: "material",
       description: "Portable glTF PBR material. Use an explicit packed metallicRoughness texture (G=roughness, B=metalness); separate data maps are rejected instead of silently dropping a channel. alphaMode takes lowercase opaque/mask/blend and exports uppercase glTF modes. Supports double-sided output.",
       example: `const wood = proceduralTexture({ schemaVersion: 2, usage: 'albedo', layers: [{ op: 'noise', colorA: 0x4f301c, colorB: 0x9a6b3e, scale: 8, octaves: 3, seed: 4 }] });
-const crate = pbrMaterial({ albedo: wood, roughness: 0.85, metalness: 0 });`
+const crate = pbrMaterial({ albedo: wood, roughness: 0.85, metalness: 0, name: 'CrateWood' });`,
+      promptNotes: MATERIAL_NAME_NOTE
     },
     {
       name: "foliageMaterial",
-      signature: "foliageMaterial(albedo, { alphaCutoff?, roughness?, doubleSided? })",
+      signature: "foliageMaterial(albedo, { alphaCutoff?, roughness?, doubleSided?, name? })",
       returns: "THREE.MeshStandardMaterial",
       category: "material",
       description: "Portable foliage material that defaults to glTF MASK, cutoff 0.5, rough nonmetal, and double-sided. Use an alpha-bearing albedo texture.",
@@ -35378,7 +35419,7 @@ function inspectSceneStructure(root, opts = {}) {
           names.push(`+${rest.length - names.length} more`);
         entries.push(`+${rest.length} more floating: ${names.join(", ")} — the same fix applies: shift each onto its nearest sibling, or call snapTo(part, hostPart).`);
       }
-      warnings.push(`Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(" | ")}`);
+      warnings.push(`Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(" | ")} — Coverage: drawn meshes only, at 2cm. A smaller gap reads as contact and a primitive welded into another mesh is never seen, so a silent pass is not a fit audit; measure contacts in the destination.`);
     }
     if (supported.length > 0) {
       const shown = supported.slice(0, FLOATER_NAMES_SHOWN);
