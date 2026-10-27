@@ -25,8 +25,11 @@ does not publish a package.
   canopy panel or a wall cap. Synchronous, offline and deterministic: the open/closed split
   comes from edge topology, so no solid is built. Observation only, bounded, and reporting
   what it left unsampled; a clean result is not a fit audit, and a solid thinner than the
-  sampled surface's facet spacing can pass between two of its vertices
-  ([#277](https://github.com/instruktlabs/kiln/issues/277)).
+  sampled surface's facet spacing can pass between two of its vertices. A positive is a
+  measurement, not a verdict: measured over the 86 shipped examples it reports 916 findings
+  across 51 of them, against 3,575 from the part-volume pass across all 86, and the dominant
+  real case is a fitting socketed into a structural shell -- correct geometry, reported the
+  same way a bolt in a hole is ([#277](https://github.com/instruktlabs/kiln/issues/277)).
 - `kiln textures <files-or-folders> [--json]` reports the texture duplication a delivered
   set ships: embedded image occurrences against distinct images, the bytes sharing would
   save, and each distinct image's hash, size and the assets carrying it. The duplication

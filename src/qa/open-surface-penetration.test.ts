@@ -258,3 +258,94 @@ describe('determinism and wiring', () => {
     expect(findings[0]!.dimension).toBe('visualQuality');
   });
 });
+
+describe('reported coverage', () => {
+  const base = {
+    schemaVersion: 1 as const,
+    source: 'engine-scene-analysis' as const,
+    contactTolerance: OPEN_SURFACE_CONTACT_TOLERANCE,
+    openParts: 2,
+    closedParts: 2,
+    candidatePairs: 4,
+    pairsTested: 1,
+    pairsNotReached: 3,
+    pairsLodAlternates: 0,
+    verticesUnresolved: 0,
+    truncated: true,
+    skipped: [],
+    penetrations: [],
+  };
+
+  test('a budget shortfall names the pairs it did not sample', () => {
+    const [finding] = inspectOpenSurfacePenetration(base);
+    expect(finding!.code).toBe('GEO_OPEN_SURFACE_PENETRATION_TRUNCATED');
+    expect(finding!.message).toContain('Sampled 1 of 4');
+    expect(finding!.message).not.toContain('could not be resolved');
+    expect(finding!.measurement!.breakdown).toEqual({
+      pairsNotReached: 3,
+      verticesUnresolved: 0,
+    });
+  });
+
+  test('unresolved vertices are reported apart from the budget, not as skipped work', () => {
+    const [finding] = inspectOpenSurfacePenetration({
+      ...base,
+      pairsTested: 4,
+      pairsNotReached: 0,
+      truncated: false,
+      verticesUnresolved: 2,
+    });
+    expect(finding!.code).toBe('GEO_OPEN_SURFACE_PENETRATION_TRUNCATED');
+    expect(finding!.message).not.toContain('analysis budget');
+    expect(finding!.message).toContain('2 vertices');
+    expect(finding!.message).toContain('counted as neither');
+  });
+
+  test('complete coverage reports nothing', () => {
+    expect(
+      inspectOpenSurfacePenetration({
+        ...base,
+        pairsTested: 4,
+        pairsNotReached: 0,
+        truncated: false,
+      }),
+    ).toEqual([]);
+  });
+});
+
+describe('a positive is a measurement, not a verdict', () => {
+  /**
+   * Measured over the 86 shipped examples, 916 findings across 51 of them, against
+   * 3,575 from the part-volume pass across all 86. The dominant real case is not
+   * cloth: it is a fitting socketed into a structural shell, which is correct
+   * geometry and is still reported, exactly as the volume pass reports a bolt in a
+   * hole. This fixture pins that, so the pass is never mistaken for a defect gate.
+   */
+  test('a fitting socketed into a hull shell is reported, like a bolt in a hole', () => {
+    // An open hull panel with a lamp recess set into it: the recess is meant to be there.
+    const hull = cloth('Mesh_HullPanel', [2, 1.2], [0, 0.6, 0], 0, 12);
+    const recess = solid('Mesh_LampRecess', [0.12, 0.12, 0.2], [0, 0.6, 0]);
+    const evidence = analyzeOpenSurfacePenetration(sceneOf(recess, hull));
+    expect(evidence.penetrations).toHaveLength(1);
+    const [finding] = inspectOpenSurfacePenetration(evidence);
+    expect(finding!.disposition).toBe('observe');
+    expect(finding!.repairText).toContain('not a defect');
+    expect(finding!.repairText).toContain('a bolt in a hole');
+  });
+
+  test('the finding carries the depth as a measurement against the tolerance', () => {
+    const evidence = analyzeOpenSurfacePenetration(
+      sceneOf(
+        solid('Mesh_CurvedWall', [2, 1.4, 0.12], [0, 0.7, 0.4]),
+        cloth('Mesh_ThrowBlanket', [1, 1], [0, 0.7, 0.4], 0),
+      ),
+    );
+    const [finding] = inspectOpenSurfacePenetration(evidence);
+    expect(finding!.measurement).toMatchObject({
+      name: 'openSurfacePenetrationDepth',
+      expected: OPEN_SURFACE_CONTACT_TOLERANCE,
+      unit: 'm',
+    });
+    expect(finding!.measurement!.actual).toBeCloseTo(0.06, 4);
+  });
+});

@@ -273,13 +273,14 @@ export function runRequirementsSceneQa(
         openSurfaceCoverage:
           surfaces.truncated || surfaces.skipped.length > 0 ? 'partial' : 'complete-surface-pairs',
         openSurfaceScope:
-          "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact.",
+          "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
         openSurfaceContactTolerance: surfaces.contactTolerance,
         openSurfaceOpenParts: surfaces.openParts,
         openSurfaceClosedParts: surfaces.closedParts,
         openSurfaceCandidatePairs: surfaces.candidatePairs,
         openSurfacePairsSampled: surfaces.pairsTested,
         openSurfacePairsNotReached: surfaces.pairsNotReached,
+        openSurfaceVerticesUnresolved: surfaces.verticesUnresolved,
         openSurfaceLodAlternatePairs: surfaces.pairsLodAlternates,
         openSurfaceSkipped: surfaces.skipped.length,
       });

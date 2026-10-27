@@ -48,10 +48,17 @@ treated as intended contact, so a cloth resting on a seat or tucked flush agains
 stays silent; a cloth crossing a wall or pierced by a mast does not. This is deliberately
 far tighter than the 0.02 m adjacency tolerance the floating-part and connectivity checks
 share, because a surface two centimetres inside a cushion, a canopy panel or a wall cap is
-already visibly wrong. Vertices are the samples, so a solid thinner than the surface's own
-facet spacing can pass between two of them: `_TRUNCATED` reports pairs left for budget and
-`_UNMEASURED` names parts that were not sampled at all. A clean result here is not a fit
-audit, and it says nothing about open surfaces meeting each other.
+already visibly wrong.
+
+A positive is a measurement, not a verdict, and most are intentional. Open surfaces in real
+assets are usually structural shells -- hulls, roofs, canopies, ribs -- and a fitting
+socketed into a shell puts shell vertices inside the solid by design, exactly as a bolt in a
+hole shares volume with it. Read these the way you read the part-overlap observations: group
+them by code, then review the pairs you did not intend. Vertices are the samples, so a solid
+thinner than the surface's own facet spacing can pass between two of them: `_TRUNCATED`
+reports pairs left for budget and vertices whose side could not be settled, and `_UNMEASURED`
+names parts that were not sampled at all. A clean result here is not a fit audit, and it says
+nothing about open surfaces meeting each other.
 
 `SWEEP_SELF_INTERSECTION` observes tight station curvature or intersecting
 consecutive rings in a sweep/loft. Inspect the station and radius evidence. A
