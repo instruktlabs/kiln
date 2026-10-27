@@ -3076,6 +3076,12 @@ export function createKilnAssetDefs(
       .enum(['three'])
       .optional()
       .describe('Runtime only: a three.js delivery GLB (instancing, quantization, meshopt).'),
+    textures: z
+      .enum(['manifest'])
+      .optional()
+      .describe(
+        'Runtime only: name each embedded image by sha256 in the sidecar, so a host can share images across assets. CLI --textures external writes them as separate files instead.',
+      ),
   });
   const importInput = z.object({
     ...selector,
@@ -3352,6 +3358,7 @@ function createKilnExportToDef(
     path: string;
     profile: 'runtime' | 'editable';
     target?: 'three';
+    textures?: 'manifest';
   }>,
   library: () => import('../assets').AssetLibrary,
   listCall: (collection: string) => string,
@@ -3371,6 +3378,11 @@ function createKilnExportToDef(
       const input = inputSchema.parse(raw);
       if (input.target !== undefined && input.profile !== 'runtime')
         throw new Error('target requires profile runtime');
+      // The editable branch publishes the exact saved GLB without calling the exporter, so
+      // the shared runtime guard never sees this combination: refuse it here instead of
+      // accepting the option and silently dropping it.
+      if (input.textures !== undefined && input.profile !== 'runtime')
+        throw new Error('textures requires profile runtime');
       const { validateExportPath } = await import('../export-root');
       const destination = validateExportPath(input.path);
       const { exportAssetGlb, validateMetadataFileName } = await import('../asset-export');
@@ -3388,6 +3400,7 @@ function createKilnExportToDef(
           profile: 'runtime',
           metadataFileName: destination.metadataFileName,
           ...(input.target ? { target: input.target } : {}),
+          ...(input.textures ? { textures: input.textures } : {}),
         });
         if (output.profile !== 'runtime') throw new Error('Expected runtime export');
         files.push(

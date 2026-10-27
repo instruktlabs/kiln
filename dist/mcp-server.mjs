@@ -2047,6 +2047,13 @@ var mcp_manifest_default = {
             enum: [
               "three"
             ]
+          },
+          textures: {
+            description: "Runtime only: name each embedded image by sha256 in the sidecar, so a host can share images across assets. CLI --textures external writes them as separate files instead.",
+            type: "string",
+            enum: [
+              "manifest"
+            ]
           }
         },
         required: [

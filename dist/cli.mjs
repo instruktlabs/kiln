@@ -51376,7 +51376,7 @@ async function currentCapabilities(context, presentation) {
       save: "kiln_save persists exact GLB, source and provenance; draft renders do not populate collections",
       resume: `${presentation === "operations" ? "kiln_assets_restore" : "kiln_assets action=restore"} imports a saved revision into the current program store`,
       downloads: "kiln_export returns GLB/source/ZIP resource links; client presentation varies",
-      exportTo: context.exportRoot && context.assetLibrary ? "kiln_export_to writes a saved revision as files at a path relative to the host export root and never replaces a file" : null,
+      exportTo: context.exportRoot && context.assetLibrary ? "kiln_export_to writes a saved revision as files at a path relative to the host export root and never replaces a file; runtime textures=manifest adds sidecar identities so a host can share images across assets instead of loading each embedded copy" : null,
       viewer: "kiln_present opens a saved revision in supporting chat clients with 3D viewing and downloads; kiln view opens a local collection or standalone GLB/ZIP"
     },
     geometry: {
@@ -55604,7 +55604,8 @@ function createKilnAssetDefs(context, presentation = "grouped") {
   const exportToInput = exportInput.extend({
     path: z25.string().max(240).describe("Root-relative .glb path with forward slashes, e.g. game/door.glb; runtime adds door.kiln-metadata.json beside it."),
     profile: z25.enum(["runtime", "editable"]).default("runtime").describe("runtime: standalone GLB plus metadata sidecar. editable: exact saved GLB only."),
-    target: z25.enum(["three"]).optional().describe("Runtime only: a three.js delivery GLB (instancing, quantization, meshopt).")
+    target: z25.enum(["three"]).optional().describe("Runtime only: a three.js delivery GLB (instancing, quantization, meshopt)."),
+    textures: z25.enum(["manifest"]).optional().describe("Runtime only: name each embedded image by sha256 in the sidecar, so a host can share images across assets. CLI --textures external writes them as separate files instead.")
   });
   const importInput = z25.object({
     ...selector,
@@ -55814,6 +55815,8 @@ function createKilnExportToDef(writer, inputSchema, library, listCall) {
       const input = inputSchema.parse(raw);
       if (input.target !== undefined && input.profile !== "runtime")
         throw new Error("target requires profile runtime");
+      if (input.textures !== undefined && input.profile !== "runtime")
+        throw new Error("textures requires profile runtime");
       await Promise.resolve().then(() => init_export_root());
       const destination = validateExportPath(input.path);
       await Promise.resolve().then(() => init_asset_export());
@@ -55825,7 +55828,8 @@ function createKilnExportToDef(writer, inputSchema, library, listCall) {
         const output = await exportAssetGlb(record, {
           profile: "runtime",
           metadataFileName: destination.metadataFileName,
-          ...input.target ? { target: input.target } : {}
+          ...input.target ? { target: input.target } : {},
+          ...input.textures ? { textures: input.textures } : {}
         });
         if (output.profile !== "runtime")
           throw new Error("Expected runtime export");
