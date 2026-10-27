@@ -7,6 +7,17 @@ does not publish a package.
 
 ## Unreleased
 
+- `kiln textures <files-or-folders> [--json]` reports the texture duplication a delivered
+  set ships: embedded image occurrences against distinct images, the bytes sharing would
+  save, and each distinct image's hash, size and the assets carrying it. The duplication
+  is between assets, never inside one -- measured over 160 assets in four real worlds,
+  within-asset duplicate images were 0 every time -- so a per-asset receipt count cannot
+  see it and the report is scoped to a set. It reads bytes and writes nothing, so exported
+  and canonical GLBs stay byte-identical; acting on it is the existing `--textures
+  external` or `--textures manifest` from
+  [#213](https://github.com/instruktlabs/kiln/issues/213). Library export:
+  `textureSharingReport` from `@instruktlabs/kiln/asset-export`
+  ([#287](https://github.com/instruktlabs/kiln/issues/287)).
 - Every material helper takes an optional `name`, written to the exported glTF
   `materials[].name`: `gameMaterial`, `basicMaterial`, `glassMaterial` and
   `lambertMaterial` in their options object, `pbrMaterial` and `foliageMaterial` in
@@ -17,7 +28,8 @@ does not publish a package.
   portable material spec's own bound, and control characters are rejected. This gives
   a destination runtime a stable authored key to group draws by, instead of hashing
   material factors. `materialRecipe` and the portable material specs already named
-  their output and are unchanged.
+  their output and are unchanged
+  ([#288](https://github.com/instruktlabs/kiln/issues/288)).
 
 ## 1.5.0 (2026-10-25)
 

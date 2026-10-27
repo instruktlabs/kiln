@@ -44374,6 +44374,132 @@ var init_assets_node = __esm(() => {
   windowsSharePath = /^[\\/]{2}[^\\/]+[\\/][^\\/]+/;
 });
 
+// src/texture-sharing.ts
+function readGlb(bytes) {
+  if (bytes.byteLength < 20)
+    throw new Error("Not a GLB: shorter than a GLB header");
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  if (view.getUint32(0, true) !== 1179937895)
+    throw new Error("Not a GLB: bad magic");
+  if (view.getUint32(4, true) !== 2)
+    throw new Error("Not a GLB: unsupported version");
+  if (view.getUint32(16, true) !== 1313821514)
+    throw new Error("Not a GLB: first chunk is not JSON");
+  const jsonEnd = 20 + view.getUint32(12, true);
+  if (jsonEnd > bytes.byteLength)
+    throw new Error("Invalid GLB chunk length");
+  const json = JSON.parse(new TextDecoder().decode(bytes.subarray(20, jsonEnd)));
+  if (!object3(json))
+    throw new Error("Invalid glTF asset");
+  if (jsonEnd + 8 > bytes.byteLength || view.getUint32(jsonEnd + 4, true) !== 5130562)
+    return { json };
+  const length = view.getUint32(jsonEnd, true);
+  if (jsonEnd + 8 + length > bytes.byteLength)
+    throw new Error("Invalid GLB chunk length");
+  return { json, binary: bytes.subarray(jsonEnd + 8, jsonEnd + 8 + length) };
+}
+function pixelSize(bytes) {
+  try {
+    return imageDimensions(bytes);
+  } catch {
+    return {};
+  }
+}
+function carriedImages(json, binary) {
+  const views = Array.isArray(json.bufferViews) ? json.bufferViews : [];
+  const carried = [];
+  for (const image of Array.isArray(json.images) ? json.images : []) {
+    if (!object3(image))
+      throw new Error("Invalid glTF image");
+    const view = index2(image.bufferView);
+    if (view !== undefined) {
+      const def = views[view];
+      if (!object3(def))
+        throw new Error("Invalid glTF image buffer view");
+      if ((index2(def.buffer) ?? 0) !== 0)
+        throw new Error("Image buffer view is not in this GLB binary chunk");
+      const offset = index2(def.byteOffset) ?? 0;
+      const length = index2(def.byteLength);
+      if (length === undefined || !binary || offset + length > binary.byteLength)
+        throw new Error("Invalid glTF image buffer view");
+      if (typeof image.mimeType !== "string")
+        throw new Error("Embedded image needs a mimeType");
+      carried.push({ bytes: binary.subarray(offset, offset + length), mimeType: image.mimeType });
+      continue;
+    }
+    const match = typeof image.uri === "string" ? DATA_URI.exec(image.uri) : null;
+    if (match)
+      carried.push({
+        bytes: Uint8Array.from(atob(match[2]), (character) => character.charCodeAt(0)),
+        mimeType: match[1]
+      });
+  }
+  return carried;
+}
+async function textureSharingReport(assets) {
+  const distinct = new Map;
+  const skipped = [];
+  let read = 0;
+  let assetBytes = 0;
+  let embeddedImages = 0;
+  let embeddedImageBytes = 0;
+  for (const asset of assets) {
+    let carried;
+    try {
+      const { json, binary } = readGlb(asset.bytes);
+      carried = carriedImages(json, binary);
+    } catch (error) {
+      skipped.push({ name: asset.name, reason: error.message });
+      continue;
+    }
+    read += 1;
+    assetBytes += asset.bytes.byteLength;
+    for (const image of carried) {
+      embeddedImages += 1;
+      embeddedImageBytes += image.bytes.byteLength;
+      const sha256 = `sha256:${await sha256Hex2(image.bytes)}`;
+      const entry = distinct.get(sha256);
+      if (entry) {
+        entry.copies += 1;
+        entry.assets.add(asset.name);
+      } else
+        distinct.set(sha256, {
+          bytes: image.bytes.byteLength,
+          mimeType: image.mimeType,
+          ...pixelSize(image.bytes),
+          copies: 1,
+          assets: new Set([asset.name])
+        });
+    }
+  }
+  const distinctImageBytes = [...distinct.values()].reduce((total, image) => total + image.bytes, 0);
+  const saving = (image) => image.bytes * (image.copies - 1);
+  return {
+    version: "kiln.texture-sharing.v1",
+    assets: read,
+    assetBytes,
+    embeddedImages,
+    distinctImages: distinct.size,
+    embeddedImageBytes,
+    distinctImageBytes,
+    duplicateImageBytes: embeddedImageBytes - distinctImageBytes,
+    images: [...distinct.entries()].sort(([sha, image], [otherSha, other]) => saving(other) - saving(image) || (sha < otherSha ? -1 : sha > otherSha ? 1 : 0)).map(([sha256, { bytes, mimeType, width, height, copies, assets: using }]) => ({
+      sha256,
+      bytes,
+      mimeType,
+      ...width !== undefined ? { width, height } : {},
+      copies,
+      assets: [...using].sort()
+    })),
+    skipped
+  };
+}
+var object3 = (value) => typeof value === "object" && value !== null, index2 = (value) => typeof value === "number" && Number.isInteger(value) && value >= 0 ? value : undefined, DATA_URI;
+var init_texture_sharing = __esm(() => {
+  init_runtime_textures();
+  DATA_URI = /^data:([^;,]+);base64,(.*)$/s;
+});
+
 // src/ktx2-basis.ts
 import { createHash as createHash17 } from "node:crypto";
 import { readFile as readFile8 } from "node:fs/promises";
@@ -44538,7 +44664,7 @@ function readGlbJson(bytes) {
   }
   const jsonEnd = 20 + view.getUint32(12, true);
   const json = JSON.parse(decoder.decode(bytes.subarray(20, jsonEnd)));
-  if (!object3(json) || !object3(json.asset) || json.asset.version !== "2.0")
+  if (!object4(json) || !object4(json.asset) || json.asset.version !== "2.0")
     throw new Error("Invalid glTF asset");
   return { json, jsonEnd };
 }
@@ -44608,7 +44734,7 @@ async function exportAssetGlb(record, options = {}) {
   }
   const { json, jsonEnd } = readGlbJson(bytes);
   const asset = json.asset;
-  if (owns(asset, "extras") && !object3(asset.extras))
+  if (owns(asset, "extras") && !object4(asset.extras))
     throw new Error("Cannot add provenance to non-object asset extras");
   const extras = asset.extras ?? {};
   if (owns(extras, "kilnProvenanceV1"))
@@ -44617,10 +44743,10 @@ async function exportAssetGlb(record, options = {}) {
   if (json.scenes !== undefined && !Array.isArray(json.scenes))
     throw new Error("Invalid glTF scenes");
   for (const [index, scene] of (json.scenes ?? []).entries()) {
-    if (!object3(scene) || !object3(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
+    if (!object4(scene) || !object4(scene.extras) || !owns(scene.extras, "kilnReviewClipsV1"))
       continue;
     const review = scene.extras.kilnReviewClipsV1;
-    if (!object3(review) || review.version !== 1 && review.version !== 2 || !Array.isArray(review.clips))
+    if (!object4(review) || review.version !== 1 && review.version !== 2 || !Array.isArray(review.clips))
       throw new Error("Unsupported scenes[].extras.kilnReviewClipsV1");
     scenes.push({ index, kilnReviewClipsV1: review });
     delete scene.extras.kilnReviewClipsV1;
@@ -44716,10 +44842,11 @@ async function externalLayout(gltf, manifest) {
       throw new Error(`Unexpected external glTF resource ${uri}`);
   return { json, buffers, textures: [...textures.values()] };
 }
-var encoder2, decoder, object3 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
+var encoder2, decoder, object4 = (value) => value !== null && typeof value === "object" && !Array.isArray(value), owns = (value, key) => Object.hasOwn(value, key);
 var init_asset_export = __esm(() => {
   init_assets();
   init_runtime_textures();
+  init_texture_sharing();
   encoder2 = new TextEncoder;
   decoder = new TextDecoder;
 });
@@ -56564,7 +56691,7 @@ async function assetMain(argv) {
     }
     if (arg === "--category" || arg.startsWith("--category="))
       throw new Error(CATEGORY_MIGRATION_MESSAGE);
-    if (arg === "--json" && command === "export") {
+    if (arg === "--json" && (command === "export" || command === "textures")) {
       flags.json = "true";
       continue;
     }
@@ -56866,6 +56993,50 @@ async function assetMain(argv) {
           }))
         }, null, 2));
     }
+  } else if (command === "textures") {
+    if (!positional.length)
+      throw new Error("textures requires a file or directory");
+    const { readdir } = await import("node:fs/promises");
+    const paths = [];
+    for (const path of positional) {
+      if ((await stat6(path)).isDirectory())
+        for (const entry of (await readdir(path)).sort()) {
+          if (entry.toLowerCase().endsWith(".glb"))
+            paths.push(resolve14(path, entry));
+        }
+      else
+        paths.push(resolve14(path));
+    }
+    if (paths.length > TEXTURE_REPORT_LIMIT)
+      throw new Error(`textures reads at most ${TEXTURE_REPORT_LIMIT} assets at once`);
+    const assets = [];
+    for (const path of paths)
+      assets.push({ name: basename2(path), bytes: await fileBytes(path) });
+    await Promise.resolve().then(() => init_texture_sharing());
+    const report = await textureSharingReport(assets);
+    if (flags.json)
+      console.log(JSON.stringify({ ok: true, ...report }, null, 2));
+    else {
+      const count = (value) => value.toLocaleString("en-US");
+      const share = report.assetBytes ? ` (${(100 * report.duplicateImageBytes / report.assetBytes).toFixed(1)}% of ${count(report.assetBytes)} delivered bytes)` : "";
+      console.log(`${count(report.assets)} assets · ${count(report.embeddedImages)} embedded images · ${count(report.distinctImages)} distinct · ${count(report.duplicateImageBytes)} duplicated bytes${share}`);
+      for (const { name, reason } of report.skipped)
+        console.log(`Skipped ${name}: ${reason}`);
+      if (!report.duplicateImageBytes)
+        console.log("Every image is carried once: nothing to share across this set.");
+      else {
+        console.log("Share each image once with --textures external, or name their identities for a host with --textures manifest (docs/export-profiles.md#runtime-textures-manifest-and-shared-files):");
+        const shared = report.images.filter((image) => image.copies > 1);
+        for (const image of shared.slice(0, 10)) {
+          const names = image.assets.slice(0, 3).join(", ");
+          const rest = image.assets.length - 3;
+          const size = image.width === undefined ? "" : `${image.width}x${image.height} `;
+          console.log(`  ${image.sha256.slice("sha256:".length, "sha256:".length + 12)} ${count(image.bytes)} B ${size}${image.mimeType} · ${image.copies} copies · saves ${count(image.bytes * (image.copies - 1))} B · ${names}${rest > 0 ? ` +${count(rest)} more` : ""}`);
+        }
+        if (shared.length > 10)
+          console.log(`  ... and ${count(shared.length - 10)} more shared images (--json for all)`);
+      }
+    }
   } else if (command === "import") {
     const file = positional[0];
     if (!file)
@@ -56927,7 +57098,7 @@ async function assetMain(argv) {
   }
   return 0;
 }
-var SAVE_LINES = `  kiln save <source.js|programRef> --name <name> [--collection project]
+var TEXTURE_REPORT_LIMIT = 1024, SAVE_LINES = `  kiln save <source.js|programRef> --name <name> [--collection project]
        [--asset <id> --parent <revision>] [--description <text>] [--tag <tag>]
        [--model <model>] [--harness <harness>] [--author <author>]  declared attribution
        [--backdrop neutral|dark|light]   preview backdrop; the one the reviewed sheet used
@@ -56990,6 +57161,11 @@ ${SAVE_LINES}
        [--json]   receipt naming each file with its bytes and sha256
        export never replaces an existing file: an export hands off one exact
        saved revision, while render --out replaces its own working output
+  kiln textures <file-or-directory>... [--json]
+       how many distinct images a delivered set carries against how many it ships,
+       and the bytes sharing them would save. The duplication is between assets,
+       never inside one, so point this at a whole delivery folder. Reads only:
+       it writes and rewrites nothing
   kiln import <asset.zip|asset.glb> [--collection project] [--name <name>]
                                           prints the directory of each imported revision
   kiln view [collection-directory|asset.glb|asset.zip] [--port 4318]
@@ -57403,7 +57579,7 @@ function applyJsonOption(argv) {
     throw new Error(JSON_OPTION_MESSAGE);
   return PRINTS_JSON.has(command ?? "") ? rest : argv;
 }
-var JSON_OPTION_MESSAGE = "--json prints a JSON receipt from render, source, export, discover, inspect, animation and service status|reprobe; edit, save, collections, assets, asset, import, project, material, review and migrate print JSON already and accept it. generate, view, collections add and service start|stop print no JSON.", PRINTS_JSON;
+var JSON_OPTION_MESSAGE = "--json prints a JSON receipt from render, source, export, textures, discover, inspect, animation and service status|reprobe; edit, save, collections, assets, asset, import, project, material, review and migrate print JSON already and accept it. generate, view, collections add and service start|stop print no JSON.", PRINTS_JSON;
 var init_cli_json = __esm(() => {
   PRINTS_JSON = new Set([
     "save",
@@ -59631,7 +59807,7 @@ async function runMain(argv) {
       return 1;
     }
   }
-  if (["save", "collections", "assets", "asset", "export", "import", "view"].includes(argv[0] ?? "")) {
+  if (["save", "collections", "assets", "asset", "export", "textures", "import", "view"].includes(argv[0] ?? "")) {
     try {
       return await (await Promise.resolve().then(() => (init_asset_cli(), exports_asset_cli))).assetMain(argv);
     } catch (error) {

@@ -4,7 +4,7 @@
  * no JSON output refuse it with this message. Receipt parsers own their own --json.
  */
 export const JSON_OPTION_MESSAGE =
-  '--json prints a JSON receipt from render, source, export, discover, inspect, animation and service status|reprobe; edit, save, collections, assets, asset, import, project, material, review and migrate print JSON already and accept it. generate, view, collections add and service start|stop print no JSON.';
+  '--json prints a JSON receipt from render, source, export, textures, discover, inspect, animation and service status|reprobe; edit, save, collections, assets, asset, import, project, material, review and migrate print JSON already and accept it. generate, view, collections add and service start|stop print no JSON.';
 
 const PRINTS_JSON = new Set([
   'save',

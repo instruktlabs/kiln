@@ -107,6 +107,13 @@ node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --textures manifest 
 node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --target three   --textures external --out assets/mech.gltf --json
 ```
 
+Measure before choosing: `kiln textures <folder-or-files> [--json]` reports how many
+distinct images a delivered set carries against how many it ships, largest saving first.
+The duplication is between assets, never inside one -- the exporter already shares an
+image an asset uses twice -- so point it at the whole delivery folder, not one asset. It
+reads bytes and writes nothing. Across four real worlds the saving ranged from 6.2% to
+62.1% of delivered bytes, so use your own set's number.
+
 Both texture options are opt-in; without them the runtime files are unchanged. The
 manifest lists each image's exact `sha256`, size, colour space and, when its bytes equal
 a saved library map, that material pin. External textures are named by the hash of their
