@@ -72,6 +72,17 @@ A store is a workspace's `assets/kiln` directory. `KILN_PACKAGE_DIR` is an insta
 `@instruktlabs/kiln` package; its runtime export profile writes the runtime GLBs and metadata,
 and staging verifies they keep the canonical binary. Nothing here uploads anything.
 
+Downloads are stored once, at content-addressed keys: `packs/holodeck/objects/<sha256>/<file>`,
+where the folder is the file's SHA-256 and the file keeps its readable name, such as
+`cove-hearth.glb` or `holodeck-cove-runtime.zip`. A release reuses the key of every file whose
+bytes it keeps: an asset whose revision is unchanged, and a pack whose members and README are
+unchanged. Pack READMEs name neither the release nor the exporter version; they give
+`HOLODECK_IMPORT_KILN` from `holodeck-spec.mjs` as the oldest Kiln that imports the bundles.
+Keys are immutable, so different bytes at an existing key are refused.
+
+`published.json` records every object the asset host has served back. The upload list leaves
+those out and names only new objects; one recorded with different bytes is refused.
+
 ### Where stores live
 
 Keep every authoring workspace a release selects under one durable directory, one workspace per
@@ -96,6 +107,20 @@ way under `recovered`.
 The bytes come from `--mirror` when a previous staging run still has them, and from the asset
 host otherwise, but only for an object `published.json` records the host serving back. A
 revision never published, such as a brand-new one, still needs its store.
+
+### Recover a lost store
+
+Materialise the selected revisions as a Kiln store again, from the same published bundles:
+
+```sh
+node scripts/stage-holodeck.mjs --recover-store STORE_DIR --mirror .localdata/holodeck-delivery
+```
+
+`--only slug,slug` limits it to some assets. Each revision is written to
+`STORE_DIR/<assetId>/revisions/<revisionId>` exactly as its store held it, so one recovered
+directory can serve several store names; an existing file must already hold those bytes. The
+result is a store for restaging, not the authoring workspace: it holds the selected revisions
+only, with no history and no workspace state.
 
 ### Choose a release ID
 
@@ -124,31 +149,6 @@ reconciled entry by entry. Regenerate them instead:
 `rig-posters.json` is the exception: its images need the GPU rig, so keep both branches' records
 and both runs, and re-render only the posters whose revision or model changed (`--only`).
 `refreshCatalog` then rewrites the catalog's posters from the record.
-
-### Recover a lost store
-
-Materialise the selected revisions as a Kiln store again, from the same published bundles:
-
-```sh
-node scripts/stage-holodeck.mjs --recover-store STORE_DIR --mirror .localdata/holodeck-delivery
-```
-
-`--only slug,slug` limits it to some assets. Each revision is written to
-`STORE_DIR/<assetId>/revisions/<revisionId>` exactly as its store held it, so one recovered
-directory can serve several store names; an existing file must already hold those bytes. The
-result is a store for restaging, not the authoring workspace: it holds the selected revisions
-only, with no history and no workspace state.
-
-Downloads are stored once, at content-addressed keys: `packs/holodeck/objects/<sha256>/<file>`,
-where the folder is the file's SHA-256 and the file keeps its readable name, such as
-`cove-hearth.glb` or `holodeck-cove-runtime.zip`. A release reuses the key of every file whose
-bytes it keeps: an asset whose revision is unchanged, and a pack whose members and README are
-unchanged. Pack READMEs name neither the release nor the exporter version; they give
-`HOLODECK_IMPORT_KILN` from `holodeck-spec.mjs` as the oldest Kiln that imports the bundles.
-Keys are immutable, so different bytes at an existing key are refused.
-
-`published.json` records every object the asset host has served back. The upload list leaves
-those out and names only new objects; one recorded with different bytes is refused.
 
 ### Add a new committed example
 
