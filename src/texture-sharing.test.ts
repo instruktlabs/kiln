@@ -207,3 +207,31 @@ test('skips an asset whose image lives in a buffer this GLB does not carry', asy
     { name: 'wall.glb', reason: 'Image buffer view is not in this GLB binary chunk' },
   ]);
 });
+
+test('shares an image two assets carry as a base64 data URI', async () => {
+  // Kiln's exporter uses buffer views, but a GLB may carry an image inline as a data URI,
+  // and those bytes duplicate across assets exactly the same way.
+  const inline = (glb: Uint8Array) =>
+    rebuilt(glb, (json) => {
+      json.images = [{ uri: `data:image/png;base64,${Buffer.from(BASE_PNG).toString('base64')}` }];
+    });
+  const [wall, floor] = await Promise.all([texturedGlb([BASE_PNG]), texturedGlb([BASE_PNG])]);
+
+  const report = await textureSharingReport([
+    { name: 'wall.glb', bytes: inline(wall) },
+    { name: 'floor.glb', bytes: inline(floor) },
+  ]);
+  expect(report.skipped).toEqual([]);
+  expect(report.embeddedImages).toBe(2);
+  expect(report.distinctImages).toBe(1);
+  expect(report.duplicateImageBytes).toBe(BASE_PNG.length);
+  expect(report.images[0]).toEqual({
+    sha256: sha(BASE_PNG),
+    bytes: BASE_PNG.length,
+    mimeType: 'image/png',
+    width: 2,
+    height: 2,
+    copies: 2,
+    assets: ['floor.glb', 'wall.glb'],
+  });
+});
