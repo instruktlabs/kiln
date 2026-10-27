@@ -153,3 +153,47 @@ and a different commit, refuses source-revision rollback, and still verifies tha
 changed assets descend from the selected revisions. Shared assets used by other
 packs cannot change through this path. This preserves the original authoring-world
 revision rather than inventing one for a repository maintenance change.
+
+## Scene shots
+
+Each pack page shows two shots of its walkable world, declared in `HOLODECK_SHOTS`
+(`holodeck-spec.mjs`) with the Holodeck benchmark camera each one uses. From `site/`:
+
+```sh
+node scripts/capture-holodeck-shots.mjs --out .localdata/holodeck-shots [--only view,view]
+node scripts/stage-holodeck.mjs --shots --captures .localdata/holodeck-shots --mirror .localdata/holodeck-delivery
+```
+
+The capture loads each world in benchmark mode, hides the interface and screenshots it at the
+shot size. `receipt.json` records the world, the SHA-256 of its `manifest.json` before and after
+(so a deploy mid-capture is refused), the camera, the backend, the browser, whether Chrome ran
+headless or headed, how the shot settled and how far the frame still moved. Staging accepts only
+a WebGPU capture of the declared camera from that pack's world.
+
+### Settling
+
+A world that publishes readiness of its own (`holodeckPrototype.renderReady`, and any sky-light
+or probe-grid state beside it) is waited on, and the receipt names the signals. Holodeck
+publishes none yet, so `--settle MS` stands in, at 45 s by default: Meridian Sanctuary's sky
+light and probe grid were still resolving at 8 s, which put black mirror cubes and sky-only orbs
+in shots the receipt recorded as valid.
+
+The kept frame is the second of two taken `--drift MS` apart (2 s by default), and a frame that
+moved more than `--max-drift` between them is refused: a converged frame differs only by
+dithering, so anything more means the scene is still resolving. The default, 0.01 mean absolute
+luminance difference, has not been calibrated against the live worlds — the receipt records the
+measured drift for every shot, so the first headed run says what these scenes actually settle
+to. A world that animates can capture with `--max-drift off`.
+
+### Linux hybrid GPUs
+
+Headless Chrome gets no GPU through PRIME offload: the world reports no drawn frame and the wait
+times out, which the error says rather than blaming the world. Capture headed instead, with the
+offload variables exported — Chrome inherits this process's environment:
+
+```sh
+__NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia \
+  node scripts/capture-holodeck-shots.mjs --out .localdata/holodeck-shots --headed
+```
+
+On the hub (CachyOS, GTX 1660 Ti) that renders WebGPU in about 30 s per world.
