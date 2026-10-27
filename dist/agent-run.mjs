@@ -39578,14 +39578,6 @@ var init_render = __esm(() => {
 function evaluatorOutcomeMessage(code) {
   return EVALUATOR_OUTCOME_MESSAGES[code];
 }
-function evaluatorSourceBudgetFailure(code) {
-  if (typeof code !== "string")
-    return;
-  const bytes = Buffer.byteLength(code, "utf8");
-  if (bytes <= MAX_EVALUATOR_CODE_BYTES)
-    return;
-  return `Source is ${bytes} bytes; one evaluator request carries at most ${MAX_EVALUATOR_CODE_BYTES} bytes of source. ` + "The program store accepts more on purpose, so this revision saves, reads, imports and exports; only evaluation refuses it. " + "Build the geometry inside build() from the primitive, profile and procedural helpers instead of embedding a literal vertex buffer, " + "round the literals you must keep to the precision the asset needs, or bind texture bytes as approved material resources instead of inlining them. " + "kiln_discover reports both limits as source.maxBytes and source.transportEvaluatorMaxBytes.";
-}
 function resolveEvaluatorPortV2(port, profile) {
   if (port)
     return port;
@@ -48857,19 +48849,6 @@ var viewInteriorInput = z24.object({
   nodeName: z24.string().optional().describe("Override: lift the roof by exact node name instead of by role. Matches that node and its " + "children. Normally OMIT it — Kiln finds the roof from its semantic role (anything built " + 'with createRoofPlanes/createGableRoof), falling back to historical "Roof" naming.')
 });
 var viewInteriorAdvertisedInput = viewInteriorInput.extend({ capture: captureRecordInput });
-function transportsEvaluatorSource(context) {
-  if (context.evaluatorTransportsSource !== undefined)
-    return context.evaluatorTransportsSource;
-  if (context.localExecution)
-    return context.localExecution.mode !== "in-process";
-  return Boolean(context.evaluatorPort) || context.evaluatorProfile === "evaluator-required";
-}
-function sourceBudgetAdvisory(code, context) {
-  if (!transportsEvaluatorSource(context))
-    return [];
-  const failure = evaluatorSourceBudgetFailure(code);
-  return failure ? [failure] : [];
-}
 function runValidate(input, context) {
   const requirements = toolRequirements(context);
   const result = validate(input.code);
@@ -48879,10 +48858,7 @@ function runValidate(input, context) {
     valid: result.valid,
     errors: result.errors,
     issues: result.issues,
-    warnings: [
-      ...sourceBudgetAdvisory(input.code, context),
-      ...result.warnings.map((w) => w.fixHint ? `${w.message} (${w.fixHint})` : w.message)
-    ]
+    warnings: result.warnings.map((w) => w.fixHint ? `${w.message} (${w.fixHint})` : w.message)
   };
 }
 var partListInput = z24.object({
@@ -49589,20 +49565,17 @@ async function runEdit(input, context) {
     fromLabel: "before",
     toLabel: "after"
   });
-  if (input.render === false) {
-    const warnings = sourceBudgetAdvisory(code, context);
+  if (input.render === false)
     return {
       ok: true,
       code,
       applied,
       diff,
-      ...warnings.length ? { warnings } : {},
       preservation: {
         status: "not_assessed",
         reason: "Source-only edit. Unchanged source text does not prove unchanged geometry; compare the rendered revisions with kiln_inspect compare."
       }
     };
-  }
   let editedArtifact;
   const rendered = await runRenderViews({ code, ...input.capture ? { capture: input.capture } : {} }, context, (artifact) => {
     editedArtifact = artifact;
@@ -49832,11 +49805,7 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
 function createProgramDefs(suppliedContext, presentation) {
   toolRequirements(suppliedContext);
   const store = suppliedContext.programStore ?? new MemoryProgramStore;
-  const context = withCaptureCache(withBuildCache({
-    ...suppliedContext,
-    programStore: store,
-    evaluatorTransportsSource: transportsEvaluatorSource(suppliedContext)
-  }));
+  const context = withCaptureCache(withBuildCache({ ...suppliedContext, programStore: store }));
   return [
     createKilnDiscoveryDef({ ...suppliedContext, programStore: store }, presentation),
     {

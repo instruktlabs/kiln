@@ -37269,14 +37269,6 @@ import { createHash as createHash8 } from "node:crypto";
 function evaluatorOutcomeMessage(code) {
   return EVALUATOR_OUTCOME_MESSAGES[code];
 }
-function evaluatorSourceBudgetFailure(code) {
-  if (typeof code !== "string")
-    return;
-  const bytes = Buffer.byteLength(code, "utf8");
-  if (bytes <= MAX_EVALUATOR_CODE_BYTES)
-    return;
-  return `Source is ${bytes} bytes; one evaluator request carries at most ${MAX_EVALUATOR_CODE_BYTES} bytes of source. ` + "The program store accepts more on purpose, so this revision saves, reads, imports and exports; only evaluation refuses it. " + "Build the geometry inside build() from the primitive, profile and procedural helpers instead of embedding a literal vertex buffer, " + "round the literals you must keep to the precision the asset needs, or bind texture bytes as approved material resources instead of inlining them. " + "kiln_discover reports both limits as source.maxBytes and source.transportEvaluatorMaxBytes.";
-}
 function resolveEvaluatorPortV2(port, profile) {
   if (port)
     return port;
@@ -41614,9 +41606,6 @@ async function renderGLBViaProcessLaunch(code, options = {}, controls = {}, laun
   if (options.textureResolver) {
     throw new EvaluatorSubprocessError("INPUT_INVALID", "Subprocess evaluation does not accept host resolver capabilities.");
   }
-  const oversizeSource = evaluatorSourceBudgetFailure(code);
-  if (oversizeSource)
-    throw new EvaluatorSubprocessError("INPUT_INVALID", oversizeSource);
   const deadlineMs = boundedInteger2(controls.deadlineMs, DEFAULT_DEADLINE_MS, 120000);
   const maxGlbBytes = boundedInteger2(controls.maxGlbBytes, DEFAULT_MAX_GLB_BYTES, 64 * 1024 * 1024);
   const maxResponseBytes = boundedInteger2(controls.maxResponseBytes, DEFAULT_MAX_RESPONSE_BYTES, 96 * 1024 * 1024);
@@ -45475,9 +45464,6 @@ function integer4(env, name, fallback, min, max) {
     throw new Error(`${name} requires an integer from ${min} to ${max}.`);
   return value;
 }
-function localEvaluatorMode(env = process.env) {
-  return resolveEvaluatorMode({ KILN_EVALUATOR_MODE: env.KILN_EVALUATOR_MODE ?? "subprocess" });
-}
 function createLocalToolContext(base = {}, env = process.env) {
   const workspaceRoot = env.KILN_WORKSPACE ? resolve12(env.KILN_WORKSPACE) : base.programStore instanceof FileProgramStore ? dirname7(dirname7(base.programStore.directory)) : localWorkspaceRoot(env);
   const workspace = base.workspace ?? new FileWorkspace(workspaceRoot, env.KILN_PROJECT);
@@ -45492,7 +45478,9 @@ function createLocalToolContext(base = {}, env = process.env) {
     throw new Error("KILN_INDEX_POLICY must be indexed or asBuilt.");
   if (!["warn", "strict"].includes(geometryPolicy))
     throw new Error("KILN_GEOMETRY_POLICY must be warn or strict.");
-  const mode = localEvaluatorMode(env);
+  const mode = resolveEvaluatorMode({
+    KILN_EVALUATOR_MODE: env.KILN_EVALUATOR_MODE ?? "subprocess"
+  });
   const deadlineMs = integer4(env, "KILN_EVALUATOR_TIMEOUT_MS", 60000, 1, 120000);
   const heapMb = integer4(env, "KILN_EVALUATOR_HEAP_MB", 512, 64, 4096);
   if (mode === "subprocess" && process.versions.bun && env.KILN_EVALUATOR_HEAP_MB !== undefined) {
@@ -53999,19 +53987,6 @@ function derivativeReviewFidelity(receipts) {
     ...reasonCodes.length ? { reasonCodes } : {}
   };
 }
-function transportsEvaluatorSource(context) {
-  if (context.evaluatorTransportsSource !== undefined)
-    return context.evaluatorTransportsSource;
-  if (context.localExecution)
-    return context.localExecution.mode !== "in-process";
-  return Boolean(context.evaluatorPort) || context.evaluatorProfile === "evaluator-required";
-}
-function sourceBudgetAdvisory(code, context) {
-  if (!transportsEvaluatorSource(context))
-    return [];
-  const failure = evaluatorSourceBudgetFailure(code);
-  return failure ? [failure] : [];
-}
 function runValidate(input, context) {
   const requirements = toolRequirements(context);
   const result = validate(input.code);
@@ -54021,10 +53996,7 @@ function runValidate(input, context) {
     valid: result.valid,
     errors: result.errors,
     issues: result.issues,
-    warnings: [
-      ...sourceBudgetAdvisory(input.code, context),
-      ...result.warnings.map((w) => w.fixHint ? `${w.message} (${w.fixHint})` : w.message)
-    ]
+    warnings: result.warnings.map((w) => w.fixHint ? `${w.message} (${w.fixHint})` : w.message)
   };
 }
 async function listPartNames2(root, options = {}) {
@@ -54670,20 +54642,17 @@ async function runEdit(input, context) {
     fromLabel: "before",
     toLabel: "after"
   });
-  if (input.render === false) {
-    const warnings = sourceBudgetAdvisory(code, context);
+  if (input.render === false)
     return {
       ok: true,
       code,
       applied,
       diff,
-      ...warnings.length ? { warnings } : {},
       preservation: {
         status: "not_assessed",
         reason: "Source-only edit. Unchanged source text does not prove unchanged geometry; compare the rendered revisions with kiln_inspect compare."
       }
     };
-  }
   let editedArtifact;
   const rendered = await runRenderViews({ code, ...input.capture ? { capture: input.capture } : {} }, context, (artifact) => {
     editedArtifact = artifact;
@@ -54902,11 +54871,7 @@ function createKilnProgramToolRegistry(suppliedContext = {}) {
 function createProgramDefs(suppliedContext, presentation) {
   toolRequirements(suppliedContext);
   const store = suppliedContext.programStore ?? new MemoryProgramStore;
-  const context = withCaptureCache(withBuildCache({
-    ...suppliedContext,
-    programStore: store,
-    evaluatorTransportsSource: transportsEvaluatorSource(suppliedContext)
-  }));
+  const context = withCaptureCache(withBuildCache({ ...suppliedContext, programStore: store }));
   return [
     createKilnDiscoveryDef({ ...suppliedContext, programStore: store }, presentation),
     {
@@ -58184,8 +58149,7 @@ async function editMain(argv) {
     const tool = createKilnProgramToolRegistry({
       programStore: localProgramStore(),
       workspace,
-      liveReview,
-      evaluatorTransportsSource: localEvaluatorMode() !== "in-process"
+      liveReview
     }).find((definition) => definition.name === "kiln_edit");
     const input = tool.inputSchema.parse({
       programRef,
@@ -58229,7 +58193,6 @@ var init_edit_cli = __esm(() => {
   init_program_store();
   init_program_store_node();
   init_registry2();
-  init_local_runtime();
   init_workspace_node();
   init_live_review_node();
   init_workspace_cli();
@@ -59645,10 +59608,7 @@ ${USAGE3}`);
   }
   const store = localProgramStore();
   const isRef = input.startsWith("sha256:") || programRefPattern.test(input);
-  const def = createKilnProgramToolRegistry({
-    programStore: store,
-    evaluatorTransportsSource: localEvaluatorMode() !== "in-process"
-  }).find((d) => d.name === "kiln_validate");
+  const def = createKilnProgramToolRegistry({ programStore: store }).find((d) => d.name === "kiln_validate");
   if (!def)
     throw new Error("kiln_validate is missing from the MCP tool surface");
   const result = await def.run(isRef ? { programRef: input } : { code: await readFile15(resolvePath(input), "utf8") });
