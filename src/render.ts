@@ -2999,7 +2999,7 @@ export function inspectSceneStructure(
         );
       }
       warnings.push(
-        `Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(' | ')}`,
+        `Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(' | ')} — Coverage: drawn meshes only, at 2cm. A smaller gap reads as contact and a primitive welded into another mesh is never seen, so a silent pass is not a fit audit; measure contacts in the destination.`,
       );
     }
     if (supported.length > 0) {

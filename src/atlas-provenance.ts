@@ -49,6 +49,8 @@ export interface AtlasBindingV1 {
   region: string;
   inputOrigin: 'top-left' | 'bottom-left';
   mode: 'content-boundary' | 'texel-center';
+  /** Present only for a u-only column binding; absent means both components. */
+  axes?: 'u-only';
 }
 function fail(message: string): never {
   throw new TypeError(`atlas provenance: ${message}`);
@@ -139,17 +141,29 @@ function lookup(table: AtlasProvenanceTableV1, id: unknown): AtlasProvenanceV1 {
   if (!found) fail('unknown atlas reference.');
   return found;
 }
-function derivedBinding(p: AtlasProvenanceV1, regionName: unknown, origin: unknown, mode: unknown) {
+function derivedBinding(
+  p: AtlasProvenanceV1,
+  regionName: unknown,
+  origin: unknown,
+  mode: unknown,
+  axes: unknown,
+) {
   if (
     !['top-left', 'bottom-left'].includes(origin as string) ||
     !['content-boundary', 'texel-center'].includes(mode as string)
   )
     fail('explicit binding origin/mode required.');
+  if (axes !== undefined && axes !== 'u-only') fail('unsupported binding axes.');
+  const uOnly = axes === 'u-only';
   const r = p.manifest.regions.find((r) => r.name === regionName);
   if (!r) fail('unknown named region.');
   const { x, y, width: w, height: h } = r.content,
     center = mode === 'texel-center',
     bottom = origin === 'bottom-left';
+  // Mirrors remapUVToAtlas: u-only passes V through, so it admits only a
+  // top-left origin over a region that spans the whole atlas height.
+  if (uOnly && (origin !== 'top-left' || y !== 0 || h !== p.manifest.height))
+    fail('u-only binding requires a top-left origin over a full-height region.');
   return {
     manifestHash: p.manifest.manifestHash,
     specHash: p.manifest.specHash,
@@ -159,21 +173,28 @@ function derivedBinding(p: AtlasProvenanceV1, regionName: unknown, origin: unkno
     allocation: structuredClone(r.allocation),
     inputOrigin: origin,
     mode,
+    ...(uOnly ? { axes: 'u-only' as const } : {}),
     scale: [
       (w - (center ? 1 : 0)) / p.manifest.width,
-      ((bottom ? -1 : 1) * (h - (center ? 1 : 0))) / p.manifest.height,
+      uOnly ? 1 : ((bottom ? -1 : 1) * (h - (center ? 1 : 0))) / p.manifest.height,
     ],
     offset: [
       (x + (center ? 0.5 : 0)) / p.manifest.width,
-      (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / p.manifest.height,
+      uOnly ? 0 : (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / p.manifest.height,
     ],
   };
 }
 export function expandAtlasBinding(input: unknown, table: AtlasProvenanceTableV1) {
   canonicalAtlasMetadataJsonV1(input);
-  const r = closed(input, ['version', 'atlasId', 'region', 'inputOrigin', 'mode']);
+  const r = closed(input, ['version', 'atlasId', 'region', 'inputOrigin', 'mode', 'axes']);
   if (r['version'] !== ATLAS_PROVENANCE_VERSION) fail('unsupported binding version.');
-  return derivedBinding(lookup(table, r['atlasId']), r['region'], r['inputOrigin'], r['mode']);
+  return derivedBinding(
+    lookup(table, r['atlasId']),
+    r['region'],
+    r['inputOrigin'],
+    r['mode'],
+    r['axes'],
+  );
 }
 /** A geometry-wide stamp can be associated only with the exact primary atlas supplied here. */
 export function readAtlasGeometryBinding(
@@ -184,7 +205,7 @@ export function readAtlasGeometryBinding(
   if (stamp === undefined) return undefined;
   canonicalAtlasMetadataJsonV1(stamp);
   const r = stamp as Record<string, unknown>,
-    derived = derivedBinding(provenance, r['region'], r['inputOrigin'], r['mode']);
+    derived = derivedBinding(provenance, r['region'], r['inputOrigin'], r['mode'], r['axes']);
   if (canonicalAtlasMetadataJsonV1(stamp) !== canonicalAtlasMetadataJsonV1(derived))
     fail('named binding identity or remap formula mismatch.');
   return {
@@ -193,6 +214,7 @@ export function readAtlasGeometryBinding(
     region: r['region'] as string,
     inputOrigin: r['inputOrigin'] as AtlasBindingV1['inputOrigin'],
     mode: r['mode'] as AtlasBindingV1['mode'],
+    ...(r['axes'] === undefined ? {} : { axes: r['axes'] as AtlasBindingV1['axes'] }),
   };
 }
 export interface AtlasProvenanceCollection {

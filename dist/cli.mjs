@@ -2151,13 +2151,18 @@ function lookup(table, id) {
     fail2("unknown atlas reference.");
   return found;
 }
-function derivedBinding(p, regionName, origin, mode) {
+function derivedBinding(p, regionName, origin, mode, axes) {
   if (!["top-left", "bottom-left"].includes(origin) || !["content-boundary", "texel-center"].includes(mode))
     fail2("explicit binding origin/mode required.");
+  if (axes !== undefined && axes !== "u-only")
+    fail2("unsupported binding axes.");
+  const uOnly = axes === "u-only";
   const r = p.manifest.regions.find((r) => r.name === regionName);
   if (!r)
     fail2("unknown named region.");
   const { x, y, width: w, height: h } = r.content, center = mode === "texel-center", bottom = origin === "bottom-left";
+  if (uOnly && (origin !== "top-left" || y !== 0 || h !== p.manifest.height))
+    fail2("u-only binding requires a top-left origin over a full-height region.");
   return {
     manifestHash: p.manifest.manifestHash,
     specHash: p.manifest.specHash,
@@ -2167,29 +2172,30 @@ function derivedBinding(p, regionName, origin, mode) {
     allocation: structuredClone(r.allocation),
     inputOrigin: origin,
     mode,
+    ...uOnly ? { axes: "u-only" } : {},
     scale: [
       (w - (center ? 1 : 0)) / p.manifest.width,
-      (bottom ? -1 : 1) * (h - (center ? 1 : 0)) / p.manifest.height
+      uOnly ? 1 : (bottom ? -1 : 1) * (h - (center ? 1 : 0)) / p.manifest.height
     ],
     offset: [
       (x + (center ? 0.5 : 0)) / p.manifest.width,
-      (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / p.manifest.height
+      uOnly ? 0 : (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / p.manifest.height
     ]
   };
 }
 function expandAtlasBinding(input, table) {
   canonicalAtlasMetadataJsonV1(input);
-  const r = closed(input, ["version", "atlasId", "region", "inputOrigin", "mode"]);
+  const r = closed(input, ["version", "atlasId", "region", "inputOrigin", "mode", "axes"]);
   if (r["version"] !== ATLAS_PROVENANCE_VERSION)
     fail2("unsupported binding version.");
-  return derivedBinding(lookup(table, r["atlasId"]), r["region"], r["inputOrigin"], r["mode"]);
+  return derivedBinding(lookup(table, r["atlasId"]), r["region"], r["inputOrigin"], r["mode"], r["axes"]);
 }
 function readAtlasGeometryBinding(geometry, provenance) {
   const stamp = field(geometry.userData, "kilnAtlasBinding");
   if (stamp === undefined)
     return;
   canonicalAtlasMetadataJsonV1(stamp);
-  const r = stamp, derived = derivedBinding(provenance, r["region"], r["inputOrigin"], r["mode"]);
+  const r = stamp, derived = derivedBinding(provenance, r["region"], r["inputOrigin"], r["mode"], r["axes"]);
   if (canonicalAtlasMetadataJsonV1(stamp) !== canonicalAtlasMetadataJsonV1(derived))
     fail2("named binding identity or remap formula mismatch.");
   return {
@@ -2197,7 +2203,8 @@ function readAtlasGeometryBinding(geometry, provenance) {
     atlasId: provenance.manifest.manifestHash,
     region: r["region"],
     inputOrigin: r["inputOrigin"],
-    mode: r["mode"]
+    mode: r["mode"],
+    ...r["axes"] === undefined ? {} : { axes: r["axes"] }
   };
 }
 function collectAtlasProvenance(root) {
@@ -2814,8 +2821,9 @@ function inspectAtlasScene(root) {
         continue;
       }
       const center = binding.mode === "texel-center" ? 0.5 : 0;
+      const centerY = binding.axes === "u-only" ? 0 : center;
       const minX = (region.content.x + center) / entry.p.manifest.width, maxX = (region.content.x + region.content.width - center) / entry.p.manifest.width;
-      const minY = (region.content.y + center) / entry.p.manifest.height, maxY = (region.content.y + region.content.height - center) / entry.p.manifest.height;
+      const minY = (region.content.y + centerY) / entry.p.manifest.height, maxY = (region.content.y + region.content.height - centerY) / entry.p.manifest.height;
       const tolerance = 4 * 2 ** -23;
       let invalid = false;
       const point = new THREE3.Vector2;
@@ -11607,7 +11615,7 @@ function inspectPartConnectivity(scene, supports) {
       disposition: "observe",
       dimension: "visualQuality",
       profile: "geometry.partConnectivity",
-      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence.${lodNote}`,
+      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence: a gap under ${CONNECTIVITY_TOLERANCE} m reads as contact, and primitives welded into one mesh form one box.${lodNote}`,
       affected: { node: group.parts[0] },
       measurement: {
         name: "gapToMainComponent",
@@ -27547,14 +27555,21 @@ ${canonicalAtlasMetadataJsonV1(payload)}`)}` !== manifestHash)
 function remapUVToAtlas(geometry, atlas, name, options) {
   const manifest = manifestOf(atlas);
   canonicalAtlasMetadataJsonV1(options);
-  if (!options || typeof options !== "object" || Array.isArray(options) || Object.keys(options).some((k) => !["inputOrigin", "mode"].includes(k)) || !["top-left", "bottom-left"].includes(options.inputOrigin) || !["content-boundary", "texel-center"].includes(options.mode))
+  if (!options || typeof options !== "object" || Array.isArray(options) || Object.keys(options).some((k) => !["inputOrigin", "mode", "axes"].includes(k)) || !["top-left", "bottom-left"].includes(options.inputOrigin) || !["content-boundary", "texel-center"].includes(options.mode))
     atlasFailure("explicit inputOrigin and content-boundary/texel-center mode are required.");
+  if (options.axes !== undefined && !["uv", "u-only"].includes(options.axes))
+    atlasFailure("axes must be uv (default, both components) or u-only.");
+  const uOnly = options.axes === "u-only";
+  if (uOnly && options.inputOrigin !== "top-left")
+    atlasFailure("u-only requires inputOrigin top-left: V passes through unmapped, so a bottom-left flip would invert the gradient it carries.");
   const region = manifest.regions.find((r) => r.name === name);
   if (!region)
     atlasFailure(`unknown named region ${String(name)}.`);
   const { x, y, width: w, height: h } = region.content;
   if (![x, y, w, h].every(Number.isSafeInteger) || x < 0 || y < 0 || w < 1 || h < 1 || x + w > manifest.width || y + h > manifest.height)
     atlasFailure("invalid region content rectangle.");
+  if (uOnly && (y !== 0 || h !== manifest.height))
+    atlasFailure(`u-only requires a region spanning the full atlas height; ${name} covers rows ${y}..${y + h} of ${manifest.height}. Lay the atlas out as full-height columns with gutter 0.`);
   const uv = geometry?.getAttribute?.("uv"), position = geometry?.getAttribute?.("position");
   if (!position || !uv || uv.itemSize !== 2 || uv.count !== position.count || uv.count < 1 || uv.count > TEXTURE_ATLAS_LIMITS.uvVertices || uv.isInstancedBufferAttribute || uv.data?.isInstancedInterleavedBuffer)
     atlasFailure("matching per-vertex UV0 and positions are required; per-instance UVs are unsupported.");
@@ -27587,9 +27602,9 @@ function remapUVToAtlas(geometry, atlas, name, options) {
   const bottom = options.inputOrigin === "bottom-left";
   const offset = [
     (x + (center ? 0.5 : 0)) / manifest.width,
-    (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / manifest.height
+    uOnly ? 0 : (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / manifest.height
   ];
-  const scale = [su, bottom ? -sv : sv];
+  const scale = [su, uOnly ? 1 : bottom ? -sv : sv];
   const output = remapUV(geometry, { scale, offset });
   output.userData.kilnAtlasBinding = {
     manifestHash: manifest.manifestHash,
@@ -27600,6 +27615,7 @@ function remapUVToAtlas(geometry, atlas, name, options) {
     allocation: structuredClone(region.allocation),
     inputOrigin: options.inputOrigin,
     mode: options.mode,
+    ...uOnly ? { axes: "u-only" } : {},
     scale,
     offset
   };
@@ -31167,12 +31183,13 @@ const mesh = new THREE.Mesh(unwrapped, bakedPbr);`
     },
     {
       name: "remapUVToAtlas",
-      signature: "remapUVToAtlas(geometry, atlasTextureOrManifest, regionName, { inputOrigin: 'top-left' | 'bottom-left', mode: 'content-boundary' | 'texel-center' })",
+      signature: "remapUVToAtlas(geometry, atlasTextureOrManifest, regionName, { inputOrigin: 'top-left' | 'bottom-left', mode: 'content-boundary' | 'texel-center', axes?: 'uv' | 'u-only' })",
       returns: "THREE.BufferGeometry",
       category: "uv",
       description: "Maps existing unit UV0 into a named atlas content rectangle on an owned geometry clone, preserving topology and rich attributes.",
-      example: "const card = remapUVToAtlas(planeGeo(1, 1), atlas, 'patch', { inputOrigin: 'bottom-left', mode: 'texel-center' });",
-      promptNotes: "UV0 must be finite in [0,1], with two components per vertex. Content-boundary maps endpoints to content edges; texel-center maps endpoints to the first/last content texel centers. Explicitly identify the input UV origin; atlas image coordinates use top left and flipY=false. Geometry, normals, colors, skin weights, morph buffers, groups and source metadata are preserved independently. UV scale changes invalidate tangents; regenerate when needed. This helper does not project, unwrap, tile within a region or change material sampling."
+      example: `const card = remapUVToAtlas(planeGeo(1, 1), atlas, 'patch', { inputOrigin: 'bottom-left', mode: 'texel-center' });
+const blade = remapUVToAtlas(leafGeo, fernColumnAtlas, 'fern', { inputOrigin: 'top-left', mode: 'texel-center', axes: 'u-only' });`,
+      promptNotes: "UV0 must be finite in [0,1], with two components per vertex. Content-boundary maps endpoints to content edges; texel-center maps endpoints to the first/last content texel centers. Explicitly identify the input UV origin; atlas image coordinates use top left and flipY=false. Geometry, normals, colors, skin weights, morph buffers, groups and source metadata are preserved independently. UV scale changes invalidate tangents; regenerate when needed. The default axes 'uv' replaces both components, so it destroys a per-vertex gradient carried in V — a foliage wind sway weight read as uv-y is the known case, and the result still validates and renders. Pass axes 'u-only' for that: it rescales U into the named column and leaves V bit-for-bit, requiring inputOrigin 'top-left' and a region that spans the full atlas height (lay the sheet out as full-height species columns with gutter 0). This helper does not project, unwrap, tile within a region or change material sampling."
     },
     {
       name: "normalMapFromHeight",
@@ -39932,7 +39949,7 @@ function inspectSceneStructure(root, opts = {}) {
           names.push(`+${rest.length - names.length} more`);
         entries.push(`+${rest.length} more floating: ${names.join(", ")} — the same fix applies: shift each onto its nearest sibling, or call snapTo(part, hostPart).`);
       }
-      warnings.push(`Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(" | ")}`);
+      warnings.push(`Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(" | ")} — Coverage: drawn meshes only, at 2cm. A smaller gap reads as contact and a primitive welded into another mesh is never seen, so a silent pass is not a fit audit; measure contacts in the destination.`);
     }
     if (supported.length > 0) {
       const shown = supported.slice(0, FLOATER_NAMES_SHOWN);
@@ -48922,11 +48939,13 @@ var init_helper_contracts = __esm(() => {
     axes: "Explicit top-left or bottom-left input origin; target follows top-left image coordinates.",
     parameters: [
       "Requires a compiled atlas texture or manifest and exact region name.",
-      "inputOrigin and content-boundary/texel-center mode are both required; finite per-vertex UV0 only."
+      "inputOrigin and content-boundary/texel-center mode are both required; finite per-vertex UV0 only.",
+      "Optional axes selects which components the region owns: 'uv' (default) both, 'u-only' U alone. u-only requires inputOrigin top-left over a region spanning the full atlas height, and is rejected otherwise."
     ],
     topology: ["Preserves vertices, indices, groups, draw range and morph correspondence."],
     preservation: [
-      "Owns output attributes and metadata; UV0 is replaced. Nonidentity scale drops stale tangents with a warning."
+      "Owns output attributes and metadata; UV0 is replaced. Nonidentity scale drops stale tangents with a warning.",
+      "Replacing V destroys any per-vertex gradient UV0 carries, such as a foliage wind sway weight read as uv-y: the asset still validates and renders. axes u-only passes V through bit-for-bit and rescales U into a full-height column instead."
     ],
     semantics: [
       "Records the named region and affine mapping without changing asset category, project membership or materials."
@@ -48936,8 +48955,14 @@ var init_helper_contracts = __esm(() => {
     references: ["src/texture-atlas.ts", "src/uv-shapes.ts"],
     tags: ["uv", "atlas", "ownership"],
     aliases: ["named region UV mapping"],
-    intents: ["bind existing UVs to a named atlas region"],
-    limitations: ["Does not unwrap, project, resample or tile within a region."],
+    intents: [
+      "bind existing UVs to a named atlas region",
+      "put species in atlas columns while keeping a V gradient"
+    ],
+    limitations: [
+      "Does not unwrap, project, resample or tile within a region.",
+      "u-only needs a column layout authored for it: a packed sheet or a nonzero gutter insets the region vertically and is rejected rather than remapped."
+    ],
     related: [
       { name: "textureAtlas", relation: "prerequisite" },
       { name: "projectUV", relation: "companion" }
