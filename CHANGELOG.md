@@ -47,6 +47,23 @@ does not publish a package.
   saving. Reproduced from a reported clean pass on a 2 mm detached part; the checks behaved
   as specified and the tolerance, not welding, is what admitted it. No check changes
   behaviour ([#289](https://github.com/instruktlabs/kiln/issues/289)).
+- The delivery contract states how to read a Kiln GLB without a DOM. three's `GLTFLoader`
+  reads `self.URL` for every image, so `parseAsync` on a textured GLB throws
+  `ReferenceError: self is not defined` under Node, and under Bun, which defines `self`, it
+  binds a null map instead. An untextured GLB parses either way, so test scaffolding written
+  against one passes and the same pattern fails on the first textured asset. The supported
+  DOM-free path is `loadGlbReviewScene` from `@instruktlabs/kiln/views`, already public and
+  already what the CPU view path uses; a reader assembled from `gltf-transform` directly
+  drops the `MSFT_lod` chain unless the extension is registered. A new test loads a textured
+  GLB through the reader with `self` deleted, so the documented guarantee cannot regress.
+  Engine behaviour, exported bytes and browser loading are unchanged
+  ([#292](https://github.com/instruktlabs/kiln/issues/292)).
+- The `draws` cap in `defineBudget` states its pass scope. Discovery and the delivery
+  contract already said the figure is what the GLB stores before any consumer batching; both
+  now also say it counts the main pass only, because shadow, reflection and depth passes
+  belong to the destination, where a shadow-casting part can cost a further draw in each.
+  Wording only: no measured value, receipt field or tier status changes
+  ([#291](https://github.com/instruktlabs/kiln/issues/291)).
 
 ## 1.5.0 (2026-10-25)
 

@@ -47388,7 +47388,7 @@ var init_helper_contracts = __esm(() => {
     coordinates: "Not a placement operation.",
     parameters: [
       "triangles: a positive integer for LOD0, or a record of tiers named LOD0, LOD1, ... with positive integers.",
-      "draws: optional positive integer, the LOD0 draw-call cap.",
+      "draws: optional positive integer, the LOD0 draw-call cap. It counts the main pass only, as the GLB stores it and before any consumer batching: shadow, reflection and depth passes belong to the destination, so a shadow-casting part can cost a further draw in each of them.",
       "target: optional scene node, normally the root."
     ],
     topology: [noMesh],
