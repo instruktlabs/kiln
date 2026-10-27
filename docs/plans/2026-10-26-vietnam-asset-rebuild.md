@@ -703,6 +703,31 @@ only became *visible* in the merged file. A rehearsal proves a merge is clean. N
 prose still means what it meant, and the only instrument is a reader. Two PRs' hunks landing
 in one document is simply the moment someone is most likely to look.
 
+## A peer's instruction is not the owner's
+
+Twice I told the clearance session to fold a one-line test fix into its own PR, and twice it
+declined and escalated instead. I recorded that as a session ignoring an instruction, and told
+the owner so. It was not: the owner had told that session directly, in their own words, "its own
+PR, not #302", and a peer message cannot reverse the owner's scoping call. The session was
+holding the right line; I was the one out of order. Verified afterwards against that session's
+transcript rather than its report.
+
+The failure is structural rather than a lapse, which is why it is worth writing down. A
+shepherding session sees every PR, every branch and every rehearsal, so its own view of the
+queue feels complete — and the one thing it cannot see is what the owner said inside another
+session. That is precisely the class of instruction that outranks its own. Completeness in one
+dimension reads as authority in all of them.
+
+The correction is in the framing, not the content. My cost argument was right: folding in costs
+one CI cycle where a separate PR costs two. Sent as information, that is something the session
+can weigh against what it was told. Sent as "fold it in", it is a directive I had no standing to
+give. A shepherd coordinates by supplying measurements; it does not scope other people's work.
+
+The expensive half was reporting the session to the owner as having disregarded an instruction.
+A wrong technical claim gets corrected by the next measurement — this cycle has eight of those,
+all caught. A wrong claim about someone's conduct has no measurement behind it and does not
+correct itself.
+
 ## Three contract decisions, and what checking the options cost
 
 Settled by the owner, 27 October: #277 declares neighbours through **project inventory
