@@ -292,6 +292,20 @@ material groups. For repeating grass or directional wood, preserve or project
 UVs and tile a standalone texture instead of forcing every surface into an atlas.
 Neither atlas remapping nor `autoUnwrap` creates painted detail.
 
+When UV0 carries a per-vertex gradient as well as a texture coordinate, the
+default remap replaces it and the asset still validates and renders. The known
+case is foliage wind: a runtime may read V as the sway weight, 0 at the anchored
+base to 1 at the free tip, so a packed region collapses the whole sway range into
+the region's share of the sheet height, and a `bottom-left` origin swaps base for
+tip. Confirm what the destination reads from UV0 before remapping. To keep such a
+gradient, lay the atlas out as full-height species columns with `gutter: 0` and
+explicit `content` rectangles, then pass
+`{inputOrigin:'top-left', mode:'texel-center', axes:'u-only'}`: U is rescaled
+into the column and inset to texel centers so one species cannot bleed into its
+neighbour, while V passes through unchanged. Author the column artwork so V=0 is
+its top row, since atlas and glTF image coordinates both start top left. A region
+that does not span the full atlas height is rejected rather than remapped.
+
 For repeated boards or other directional surfaces, align UV length with the
 physical grain direction and retain the chosen texel density. Repeating the same
 narrow UV band can miss a texture's authored detail even when the map is bound.

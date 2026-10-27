@@ -2,6 +2,7 @@ import { expect, test } from 'bun:test';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import releases from '../../packs/holodeck/releases.json';
 import selection from '../../packs/holodeck/selection.json';
 import catalog from '../src/data/holodeck.json';
 import worlds from '../src/data/holodeck-worlds.json';
@@ -13,7 +14,7 @@ import { HOLODECK_SITE } from '../src/lib/config';
 import { buildGallery } from '../src/lib/gallery';
 import { holodeckScenes, holodeckWorldUrl } from '../src/lib/holodeck';
 import { HOLODECK_APPROVAL, HOLODECK_ASSETS, HOLODECK_PACKS, HOLODECK_SHOT_SIZE, HOLODECK_SHOTS, holodeckApproved, holodeckSlug } from './holodeck-spec.mjs';
-import { HOLODECK_OBJECTS, HOLODECK_SHOTS_DIR } from './stage-holodeck.mjs';
+import { HOLODECK_OBJECTS, HOLODECK_SHOTS_DIR, claimHolodeckRelease } from './stage-holodeck.mjs';
 import { ASSET_BASE } from './mirror-core.mjs';
 import { applyRigPosters } from './rig-posters-core.mjs';
 
@@ -157,4 +158,20 @@ test('every pack shows its two scene shots, wide view first, captured from its w
       expect(plan.images.some((planned) => planned.inputPath === image.inputPath && planned.alt === image.alt)).toBe(true);
     }
   }
+});
+
+test('every release ID the packs have spent is recorded once, and the current one describes this selection', async () => {
+  const ids = releases.releases.map((record) => record.release);
+  expect(ids).toEqual([...new Set(ids)]);
+  expect(ids).toEqual([...ids].sort((a, b) => a.localeCompare(b, 'en')));
+  // Every release a Holodeck poster was rendered under was spent, whether or not its selection was kept.
+  const rendered = new Set(Object.entries(rigPosters.posters).filter(([key]) => key.startsWith('holodeck:')).map(([, poster]) => poster.path.split('/')[4]));
+  for (const release of rendered) expect(ids, release).toContain(release);
+  expect(ids).toContain(catalog.release);
+  // Restaging this selection under its own ID is the release loop and claims nothing new; reusing the ID for other
+  // content is refused with the next free one.
+  const bytes = await readFile(join(ROOT, 'packs/holodeck/selection.json'));
+  expect(claimHolodeckRelease({ release: selection.release, selection: bytes, recorded: releases })).toEqual(releases);
+  expect(() => claimHolodeckRelease({ release: selection.release, selection: Buffer.from('other'), recorded: releases })).toThrow('choose a new HOLODECK_RELEASE');
+  expect(() => claimHolodeckRelease({ release: 'holodeck-20261025-02', selection: bytes, recorded: releases })).toThrow('holodeck-20261025-03');
 });

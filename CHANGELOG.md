@@ -53,6 +53,40 @@ does not publish a package.
   material factors. `materialRecipe` and the portable material specs already named
   their output and are unchanged
   ([#288](https://github.com/instruktlabs/kiln/issues/288)).
+- `remapUVToAtlas` takes an optional `axes`. The default `uv` is unchanged and replaces
+  both components, which silently destroys a per-vertex gradient carried in V — a foliage
+  wind sway weight read as `uv-y` is the known case, and the asset still validates and
+  renders. `axes: 'u-only'` rescales U into the named region and passes V through
+  bit-for-bit, requiring `inputOrigin: 'top-left'` over a region spanning the full atlas
+  height, so a column sheet keeps the gradient while U can still be inset to texel
+  centers. A packed or vertically inset region is rejected rather than remapped. The
+  binding records `axes` only for `u-only`, so existing stamps and exported extras are
+  byte-identical. The helper contract, Discovery notes and authoring guidance now state
+  what replacing V costs ([#293](https://github.com/instruktlabs/kiln/issues/293)).
+- The floating-parts warning and the part-connectivity observation state their coverage:
+  both read the bounding boxes of drawn meshes at a 2 cm tolerance, so a smaller gap reads
+  as contact and primitives welded into one mesh are never compared with each other. The
+  QA integration reference says to measure millimetre contacts in the destination before
+  saving. Reproduced from a reported clean pass on a 2 mm detached part; the checks behaved
+  as specified and the tolerance, not welding, is what admitted it. No check changes
+  behaviour ([#289](https://github.com/instruktlabs/kiln/issues/289)).
+- The delivery contract states how to read a Kiln GLB without a DOM. three's `GLTFLoader`
+  reads `self.URL` for every image, so `parseAsync` on a textured GLB throws
+  `ReferenceError: self is not defined` under Node, and under Bun, which defines `self`, it
+  binds a null map instead. An untextured GLB parses either way, so test scaffolding written
+  against one passes and the same pattern fails on the first textured asset. The supported
+  DOM-free path is `loadGlbReviewScene` from `@instruktlabs/kiln/views`, already public and
+  already what the CPU view path uses; a reader assembled from `gltf-transform` directly
+  drops the `MSFT_lod` chain unless the extension is registered. A new test loads a textured
+  GLB through the reader with `self` deleted, so the documented guarantee cannot regress.
+  Engine behaviour, exported bytes and browser loading are unchanged
+  ([#292](https://github.com/instruktlabs/kiln/issues/292)).
+- The `draws` cap in `defineBudget` states its pass scope. Discovery and the delivery
+  contract already said the figure is what the GLB stores before any consumer batching; both
+  now also say it counts the main pass only, because shadow, reflection and depth passes
+  belong to the destination, where a shadow-casting part can cost a further draw in each.
+  Wording only: no measured value, receipt field or tier status changes
+  ([#291](https://github.com/instruktlabs/kiln/issues/291)).
 
 ## 1.5.0 (2026-10-25)
 

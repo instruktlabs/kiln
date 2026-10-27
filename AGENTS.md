@@ -170,10 +170,10 @@ bun run test:coverage
 
 `bun run build` only typechecks. After runtime changes, run `node scripts/build-runtime.mjs all`
 to rebuild `dist/`, its identity and SDK `lib/` before CLI/MCP dogfood and full gates.
-Use `bun run build:runtime` when viewer assets also changed. Fresh checkouts need
-`bun run build:sdk` before typechecking or public-entrypoint tests.
+Use `bun run build:runtime` when viewer assets also changed.
 
-Fast loop: nearest test file first, then `bun run typecheck && bun run lint && bun run test`.
+Fast loop: `bun run build:sdk` (a fresh checkout has no `lib/`: a missing build step, not
+a broken tree), nearest test file, then `bun run typecheck && bun run lint && bun run test`.
 The full offline gate adds `bun run test:coverage`, which emits `coverage/lcov.info` and
 enforces the line/function ratchet in `bunfig.toml`. Raise thresholds when practical; never
 lower them without a measured rationale. Live model tests are opt-in via `bun run test:live`.
