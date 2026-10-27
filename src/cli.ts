@@ -9,7 +9,7 @@ import { resolve as resolvePath, extname } from 'node:path';
 
 import { writeDestinationAtomic, writeNewDestinationsAtomic } from './cli-output';
 import { isDirectEntry } from './direct-entry';
-import { createPackagedLocalToolContext } from './local-runtime';
+import { createPackagedLocalToolContext, localEvaluatorMode } from './local-runtime';
 import { createKilnProgramToolRegistry, type KilnToolContext } from './tools/registry';
 import { createKilnSourceDef } from './tools/programs';
 import { BACKDROP_IDS, isBackdropId, type BackdropId } from './views/background';
@@ -554,9 +554,12 @@ async function cmdValidate(args: Args): Promise<number> {
   }
   const store = localProgramStore();
   const isRef = input.startsWith('sha256:') || programRefPattern.test(input);
-  const def = createKilnProgramToolRegistry({ programStore: store }).find(
-    (d) => d.name === 'kiln_validate',
-  );
+  // A syntax check builds no host context, but a source finding needs one host fact:
+  // whether a render will carry this source to a worker (#299).
+  const def = createKilnProgramToolRegistry({
+    programStore: store,
+    evaluatorTransportsSource: localEvaluatorMode() !== 'in-process',
+  }).find((d) => d.name === 'kiln_validate');
   if (!def) throw new Error('kiln_validate is missing from the MCP tool surface');
   const result = (await def.run(
     isRef ? { programRef: input } : { code: await readFile(resolvePath(input), 'utf8') },
