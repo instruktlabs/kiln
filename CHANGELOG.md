@@ -7,6 +7,9 @@ does not publish a package.
 
 ## Unreleased
 
+
+## 1.6.0 (2026-10-27)
+
 - `kiln_export_to` takes `textures: 'manifest'`, so an MCP author can act on the texture
   duplication `kiln textures` reports instead of only seeing it. The runtime sidecar gains
   `textures[]` naming each embedded image by `sha256` and mime type, which lets a destination
@@ -129,6 +132,23 @@ does not publish a package.
   belong to the destination, where a shadow-casting part can cost a further draw in each.
   Wording only: no measured value, receipt field or tier status changes
   ([#291](https://github.com/instruktlabs/kiln/issues/291)).
+
+- `defineBudget` accepts zero material caps. `images: 0` and `decodedBytes: 0` are now valid:
+  zero is the honest declaration for an untextured asset, and the evaluator already measured it
+  correctly, passing at measured 0 and failing the moment a texture appears. A new `capacity()`
+  validator takes non-negative integers for the material caps, while `count()` still requires a
+  positive integer for `triangles` and `draws`, which describe what an asset must have rather
+  than what it may carry. **This relaxes a deliberate contract**: `{ images: 0 }` was previously
+  rejected, and a test asserted that rejection. Specs that were valid before remain valid
+  ([#286](https://github.com/instruktlabs/kiln/pull/286)).
+- The repair advice shown when a delivery helper fails states the `defineBudget` contract in
+  full. It described the helper as `defineBudget({ triangles, draws? })`, omitting `images`,
+  `decodedBytes` and `materialTier`, which Discovery's helper spec and the `SPEC_SHAPE` string
+  both list — so an author whose call failed for an unrelated reason was told those fields did
+  not exist. A test now asserts the advice names every field the validator accepts, so the text
+  and the validator cannot drift apart again.
+||||||| 24bc8fd
+
 
 ## 1.5.0 (2026-10-25)
 

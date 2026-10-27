@@ -372,14 +372,21 @@ contract, and `images: 0` was rejected although zero is the honest cap for an un
 The owner asked for an adversarial pass on my own findings. It substantially revised them: **one
 of seven is ready to implement.** Arguing against each:
 
-1. **Floating-part QA — gap real, my analogy wrong, fix 3-5x bigger than implied.** I claimed
-   `CHAR_CONTACT_FLOATING` was the precedent to copy. It is not: it checks a *declared* contact
-   role against asset-local ground ("Ground contact {role} is {offset} m above asset-local
-   ground"), not part-to-part contact. No domain has part-to-part contact checking. Worse, the
-   obvious rule is unstateable: "every part must touch another" would flag P0's corrected sling
-   swivels, which hang free on purpose, as defects — a false positive worse than the miss it
-   prevents. A real fix needs an author-declared contact mechanism, as characters already have.
-   **Design work, not a patch. Do not hand this to an agent as a fix.**
+1. **Floating-part QA — WITHDRAWN, 26 October. The feature already exists.** I claimed nothing in
+   Kiln covers one part of a prop floating off another. That is false. **#220 shipped as
+   COMPLETED on 23 October**, and the changelog records it: parts that rest on an external support
+   can be declared, which turns "the floating-parts warning to an informational line, and its
+   connectivity observation becomes" advisory. `src/qa/geometry-relations.ts` exposes `contact`,
+   `clearance`, `penetration`, `containment`, `coverage`, `alignment`, `concentricity` and
+   `tolerance`. Open **#277** extends the same mechanism to neighbouring modules and states the
+   relationship explicitly.
+
+   **What survives is narrower**, now tracked as **#289**: why the existing warning did not report
+   the M16A1's front sight post 2 mm off its A-frame, with per-material welding hiding the
+   primitive inside a single part as the suspected cause. That needs a reproduction first.
+
+   I ranked this first on two readings without once checking the issue tracker or the changelog.
+
 2. **Shadow exclusion in draw diagnostics — weakest Tier 1 item, downgrade.** The docs already
    state it and P0 knew it, so the people who read docs are not misled. A receipt qualifier is
    cheap but low value.
@@ -396,6 +403,424 @@ of seven is ready to implement.** Arguing against each:
    runtime is right. Only the ergonomics (an upgrade-all command) are improvable. Low priority.
 7. **`AGENTS.md` omits `build:sdk` — ready.** Verified by me, one line, no design content, no
    behaviour change. **The only item ready to implement as stated.**
+
+## The one rule: go to the artefact
+
+Seven distinct false signals occurred in this cycle, and they look like seven unrelated lessons
+until you line them up:
+
+| what lied | what it described |
+| --- | --- |
+| a wrapper's exit code | the test run |
+| a `^not ok` grep | the test run, under the other runtime's reporter |
+| a failure-line grep returning zero | a summary that said `1 fail` |
+| a background task's "exit code 0" | a log ending `4 fail` |
+| a silently auto-merged `.mjs` | the bundle its source would produce |
+| GitHub's `mergeable: CONFLICTING` | a head that is a strict descendant of `main` |
+| `wc -m` agreeing with `wc -c` | a byte budget, by ASCII coincidence |
+
+**Every one is a derived or cached summary disagreeing with the artefact it describes.** And the
+remedy was the same every time: **go to the artefact.**
+
+- Read the log, not the exit code.
+- Regenerate the bundle, do not inspect it.
+- Ask git about ancestry (`git merge-base --is-ancestor origin/main HEAD`), not the API about
+  mergeability — a cached value computed mid-push reports garbage for a window afterwards.
+- Run the snapshot test, do not regenerate the snapshot.
+- Read `Ran N tests` from the runner, do not count `test(` in source.
+
+**The seventh variant is the sharpest, because it is currently telling the truth.**
+`AGENTS.md` is gated at `Buffer.byteLength(agents) < 12 * 1024`. On `main` the file is 100% ASCII
+— verified, zero non-ASCII bytes — so `wc -m` and `wc -c` both report **12284**. They agree
+*exactly*, and only because of what the file happens to contain.
+
+A character count is a summary of a byte count. This one is a summary that is correct today,
+**which is worse than one that is wrong**: a wrong summary gets caught, while a correct one
+trains you to trust the method. One em dash and they diverge by 2 while the editor keeps
+reporting the comfortable number, against a budget whose entire headroom is **3 bytes**.
+
+So the rule is not "derived summaries are unreliable". It is that a derived summary is a
+different thing from the artefact *even when the two agree*, and agreement today is not a
+property you can carry.
+
+State it as one rule rather than seven lessons, because the seventh variant has not been seen yet
+and a list of six will not cover it. The question to ask of any green light is: **is this the
+thing, or a summary of the thing?**
+
+## Verifying a test run: eight bad signals in one cycle
+
+Across one day of dogfooding, **eight separate derived signals were wrong**, each by a
+different mechanism. None was caught by the thing that produced it. Recorded because the cost
+was real — one of them alone cost a 13-minute rerun, and one nearly shipped.
+
+| # | Signal | Reality | Mechanism |
+| --- | --- | --- | --- |
+| 1 | wrapper reported `exit 0` | suite had failures | `echo "EXIT=$?"` after a pipe captured `tail`'s status, not the runner's |
+| 2 | `^not ok` grep matched nothing | suite had failures | Node 22 emits TAP, Node 24 emits spec — the grep pattern was for the other format |
+| 3 | failure-line grep returned 0 | summary said `1 fail` | the runner did not print the expected marker for that failure class |
+| 4 | background task "completed (exit code 0)" | log ended `1 fail` / `4 fail` | harness exit code simply wrong; hit independently by two sessions |
+| 5 | command reported `exit 1` | tests were **fine**, 11 pass / 0 fail | a `grep -c` appended to the pipeline exited non-zero on zero matches |
+
+**The rules that survived all five:**
+
+- **Read the summary totals out of the log.** It is the only reading that was right every time.
+- **A test-run exit code carries no information in either direction once anything is piped after
+  it.** A pipeline's status is its *last* command. Four of the five were false greens, which is
+  the expensive direction, but #5 shows a false red costs a cycle chasing nothing.
+- **Never infer success from absent failure lines.** Formats differ by runtime and by failure
+  class.
+- **Do not match incidental lines against a remembered count.** One session reported 18
+  `✗ Tool failed` lines as benign; the next had 9, of two kinds rather than one. Both runs were
+  0 fail. The count is scope- and concurrency-dependent, so an expected number for it turns a
+  harmless artefact into a false signal — which is the very thing these rules exist to prevent.
+  Read the totals and the `(fail)` count; nothing else.
+- **Do not truncate the log you are going to read.** A `tail -22` preserved the totals and
+  destroyed every `(fail)` line, leaving a correct total naming nothing. Capture whole, read the
+  totals, grep the detail from the file.
+- **Pre-register the expected total, then check it.** State the number *before* the run, derived
+  from the merged tree, and treat a mismatch as a finding rather than a prompt to recount. A
+  post-hoc derivation can be unconsciously fitted to whatever the run produced, which is the
+  failure mode of every check above. Done properly on the third merge: 4,020 predicted, 4,020
+  observed.
+- **Cross-check the arithmetic.** The strongest verification found in this cycle is independent
+  of exit codes, formats and failure lines: *the pass count should equal the known baseline plus
+  the tests you added.* 3,987 + 6 = 3,993 passing proves no silent failure, because a masked
+  failure would read 3,992 pass / 1 fail.
+- **Read `Ran N tests` from the runner; never count source.** `test.each`, a `describe` loop and
+  a conditional `test` each break a source grep the same way. The runner's own count is the only
+  one that reflects what executed.
+- **But count instances, not declarations — a sixth way to be wrong.** Verifying another
+  branch's expected count by grepping added `test(` lines returned 4 where the truth was 6: two
+  of the tests sat inside `for (const exporter of ['legacy','three'])` and therefore ran twice.
+  The grep looked authoritative and was off by two. A parameterised loop makes a wrong
+  expectation look reasonable, which is the worst property an expectation can have. **Also
+  re-derive the baseline when `main` moves** — each merge in this cycle shifted it (3,987 to
+  3,996 to 4,002), and the check is only as good as the number it is checked against.
+
+- **An eighth, and the cheapest to fall for: a state read while it was still being derived.**
+  `gh issue view 290 --json state` returned `OPEN` moments after #295 merged, so I posted a
+  comment blaming the title-reference auto-close gap that genuinely had caught #293 earlier.
+  The timestamps say otherwise: #295 merged at 12:03:14Z and the issue closed at 12:03:18Z.
+  The read landed four seconds inside a window where GitHub had not finished acting on
+  `Closes #290` in the PR body. Nothing about the value looked provisional — `OPEN` is exactly
+  what a real auto-close failure returns, which is why the wrong conclusion was publishable.
+  The tell is not in the value but in the clock: a derived state read within seconds of the
+  event that derives it is not evidence yet. Read what settles it instead — the keyword in the
+  PR body, or `closed_at` — rather than the state it will eventually produce.
+
+## The worst merge hazard: generated output that does not conflict
+
+Found landing the second of four PRs, and it is more dangerous than the `CHANGELOG.md` one
+because **nothing announces it**.
+
+Merging `main` into a branch, of the five committed `dist/` bundles, only `dist/build.json`
+conflicted. **The four `.mjs` files auto-merged cleanly.** Git interleaved two different
+minified bundles into a file that is textually plausible and semantically meaningless, reported
+no conflict, and said nothing.
+
+> A conflict at least announces itself. A silent auto-merge of generated output does not.
+
+A conflict list is therefore not a hazard list: the files git flags are the ones it could not
+reconcile, which is the opposite of the ones most likely to be wrong. Minified, generated or
+machine-ordered text is exactly what git is most willing to merge and least able to merge
+correctly.
+
+**The handling is to refuse the merge for derived files — and to do it _before_ merging, not
+after.** Restore `dist/` to the merge-base state and **commit that first**. The branch then
+carries zero delta on those files, so git has nothing to interleave and simply takes `main`'s
+bundles; the `build.json` conflict disappears for the same reason. Then merge, and rebuild from
+merged source last.
+
+The post-merge form — merge, then discard the result and regenerate — reaches the same end state
+but passes through a tree that *contains* the interleaved garbage and relies on remembering to
+throw it away. **One makes the failure unreachable; the other makes it recoverable.** Never
+inspect or fix a merged bundle either way: "did git interleave these correctly" has no useful
+answer.
+
+**The idempotence check is what catches it**, which is why it earns its place beyond staleness:
+
+```
+git status --short    # clean after the regenerate
+node scripts/build-runtime.mjs all
+git status --short    # still clean  ->  committed bundle matches merged source
+```
+
+A silently interleaved bundle fails that immediately, because regenerating from source produces
+something different from what the merge produced.
+
+## Rehearse the merge first — it is free
+
+`git merge-tree --write-tree` computes a complete merge and writes **no refs, no commit, and
+nothing to the working tree**. `git status` is empty afterwards. So "what will actually conflict"
+is answerable before committing to anything, with no half-merged tree to extract yourself from.
+
+Measured on the third branch of this cycle, against a `main` that already carried the first:
+
+| | conflicts | silently auto-merged |
+| --- | --- | --- |
+| branch as it stood | `CHANGELOG.md`, `dist/build.json` | **`agent-run.mjs`, `cli.mjs`, `mcp-engine.mjs`** |
+| `dist/` restored to merge-base first | `CHANGELOG.md` only | **nothing — not one line** |
+
+That is the interleaving hazard reproduced independently on a second branch, and it turns the
+claim that the pre-merge revert "makes the failure unreachable" from an argument into a
+measurement: **three silent wrong interleavings and one conflict, removed.** With zero delta on
+the branch there is nothing for git to combine, so it takes `main`'s bundles outright.
+
+**Make it step 0 of any rebase in a multi-branch cycle**, with an explicit acceptance criterion
+so the rehearsal has a pass/fail rather than being a look around: *only `CHANGELOG.md` conflicts,
+and no `dist/` path appears at all.* Anything else means stop and understand it first.
+
+One limit worth stating: a dry run only exercises the overlaps that exist at the time. Files the
+other branch has not yet touched come back one-sided and trivial, and become two-sided only once
+it lands — so re-run the rehearsal after each merge rather than trusting an earlier result.
+
+## Generated is not the same as unverifiable
+
+The opposite mistake to the bundles, and it cost nothing only because it was caught before the
+third merge: **do not regenerate a snapshot to resolve a merge.**
+
+Running the snapshot test *without* `--update-snapshots` compares the committed snapshot against
+what the merged source actually generates. **Passing is proof the merge was correct.**
+Regenerating unconditionally overwrites the file so that it trivially matches — converting a
+verifiable state into an unverifiable one, and destroying the only evidence that the merge of the
+*source* was sound.
+
+So: merge, run the snapshot test **without** update, and regenerate only if it fails — treating
+that failure as something to understand rather than paper over.
+
+**The line between this and the bundles is not "generated output".** Both are generated. The
+difference is structure and an oracle:
+
+| | minified bundle | `.snap` |
+| --- | --- | --- |
+| shape | effectively one enormous line, no structure | line-oriented, stable ordering |
+| a bad merge is | textually plausible, semantically dead | a test failure |
+| detectable by reading | no | yes |
+| has a comparator | no — only regenerate-and-compare | yes, the test itself |
+
+Discard-and-rebuild is the only honest route for the first. For the second it is actively
+harmful.
+
+## The conflict nobody guards
+
+When several branches land in one cycle, their conflicts are not equally dangerous, and the
+ranking is the opposite of the intuitive one:
+
+| conflicted file | caught by |
+| --- | --- |
+| `dist/` bundles | `workspace-setup.test.ts`, plus the idempotent-rebuild check below |
+| generated snapshots | regeneration is authoritative; the test fails if stale |
+| **`CHANGELOG.md`** | **nothing** |
+
+Every branch in this cycle inserted at the same `## Unreleased` anchor, so the file conflicts
+every time. It is **neither regenerable nor covered by any test**, so a careless resolution
+silently drops one side's entry and no gate, total, snapshot or CI run will say so. The loss
+surfaces only when someone later asks why a shipped change is undocumented.
+
+So resolve it by keeping both entries, and **state in the report which entries survived**. That
+statement is the only check that exists. Raised by the session landing third, after two merges
+had already passed through the file unremarked — including by the session coordinating them.
+
+## Staleness in a derived artifact
+
+`dist/` is a build output committed in the same tree as its input, so it can silently disagree
+with the source beside it. Only `workspace-setup.test.ts` catches that.
+
+**The rule is stronger than "rebuild last after a rebase."** One session rebuilt the bundle, then
+made a cosmetic edit to a CLI help string, and that alone failed the test. So: **any source edit
+after a build leaves a lie in the tree**, including a typo fix, and rebase hygiene is only one
+instance of it.
+
+**The cheap check is idempotence**, and it needs no test suite:
+
+```
+git status --short    # empty
+node scripts/build-runtime.mjs all
+git status --short    # still empty  ->  the committed bundle matches its source
+```
+
+A two-second answer to "is this bundle stale", usable before every push.
+
+## Shepherding order is a cost decision, not a queue
+
+The repository requires a branch to be up to date with its base before it merges.
+`gh pr merge 301` refused outright — *"the head branch is not up to date with the base
+branch"* — on a PR whose fourteen checks were green and whose merge rehearsed clean. So a
+merge-up is **mandatory for every PR regardless of conflicts**, and each merge moves `main`
+forward and invalidates the next one. Shepherding several PRs is therefore strictly serial,
+and the only free variable is the order.
+
+Order by what a re-land costs, not by PR number or readiness:
+
+| PR | files | touches `dist/` | cost to bring current |
+| --- | --- | --- | --- |
+| #301 | 3 | no | a plain `git merge origin/main` |
+| #300 | 8 | no | a plain `git merge origin/main` |
+| #295 | 9 | 4 bundles | restore, merge, rebuild |
+| #302 | 16 | 5 bundles | restore, merge, rebuild |
+
+#301 and #300 live entirely under `packs/` and `site/` — they touch neither `dist/` nor
+`src/`, so `main`'s bundles stay accurate across them and updating costs nothing. #295 and
+#302 each rebuild bundles, and **a rebuild is only valid against the `main` it will actually
+merge onto**, so every bundle-touching merge destroys the other's. Put the two cheap ones
+first and the two rebuilds last, one apiece, and each rebuilds exactly once. The same four in
+the reverse order rebuild five times between them.
+
+This inverts the intuition that the most exposed PR should go first. #295 is furthest behind
+— its base was two commits back before #298 even landed — and that is an argument for
+sending it *last*, because being behind is cheap to fix and rebuilding is not.
+
+Two things not to take on trust while draining a queue like this:
+
+- **Green CI describes a tree that no longer exists.** #300 and #301 were 14/14 against base
+  `f5e9eb5`, which stopped being `main` the moment #298 landed. That run is still evidence —
+  but only about the merge-base, so it has to be paired with a check that the PR shares no
+  file with what landed since. Here neither shared one, so the green survived; it does not
+  always.
+- **Don't hand a session a conflict you haven't rehearsed.** Both pack PRs edit
+  `packs/holodeck/README.md`, so a collision looked certain. Rehearsing it said otherwise:
+  `git merge-tree --write-tree` for `main + #301`, then `git commit-tree` on that tree
+  parented on `main` to get a synthetic commit, then `merge-tree` again for #300 on top of it
+  — clean, tree `ebacb0c`. The hunks never overlapped. A warning about a conflict that does
+  not exist is the same defect as a number handed over to be matched: it manufactures a false
+  signal in someone else's session.
+
+The README is worth a human read anyway, and for a reason the rehearsal cannot cover: prose
+has no test or snapshot behind it, so two non-overlapping hunks can merge clean and still
+leave the file incoherent — a renamed flag still documented, two additions reading as
+duplicates. Same shape as `CHANGELOG.md` under *the conflict nobody guards*.
+
+**That read found a real defect, 27 October.** The prediction was not hypothetical. #300's
+session read the merged `packs/holodeck/README.md` instead of trusting the clean merge, and
+found that #274's own first commit had inserted new subsections after the Regenerate preamble,
+pushing two paragraphs — on content-addressed object keys and `published.json` — down to the
+end of *Recover a lost store*. There they read as describing the recovered store rather than
+every staged download. The fix (`6fba946`) moved 25 lines and added none: prose order only.
+
+Note what that instance actually establishes. The defect did not come from the merge, so no
+merge discipline would have surfaced it; it came from an earlier commit in the same PR and
+only became *visible* in the merged file. A rehearsal proves a merge is clean. Nothing proves
+prose still means what it meant, and the only instrument is a reader. Two PRs' hunks landing
+in one document is simply the moment someone is most likely to look.
+
+## A peer's instruction is not the owner's
+
+Twice I told the clearance session to fold a one-line test fix into its own PR, and twice it
+declined and escalated instead. I recorded that as a session ignoring an instruction, and told
+the owner so. It was not: the owner had told that session directly, in their own words, "its own
+PR, not #302", and a peer message cannot reverse the owner's scoping call. The session was
+holding the right line; I was the one out of order. Verified afterwards against that session's
+transcript rather than its report.
+
+The failure is structural rather than a lapse, which is why it is worth writing down. A
+shepherding session sees every PR, every branch and every rehearsal, so its own view of the
+queue feels complete — and the one thing it cannot see is what the owner said inside another
+session. That is precisely the class of instruction that outranks its own. Completeness in one
+dimension reads as authority in all of them.
+
+The correction is in the framing, not the content. My cost argument was right: folding in costs
+one CI cycle where a separate PR costs two. Sent as information, that is something the session
+can weigh against what it was told. Sent as "fold it in", it is a directive I had no standing to
+give. A shepherd coordinates by supplying measurements; it does not scope other people's work.
+
+The expensive half was reporting the session to the owner as having disregarded an instruction.
+A wrong technical claim gets corrected by the next measurement — this cycle has eight of those,
+all caught. A wrong claim about someone's conduct has no measurement behind it and does not
+correct itself.
+
+## Three contract decisions, and what checking the options cost
+
+Settled by the owner, 27 October: #277 declares neighbours through **project inventory
+placement**; #289 **closes** on its reproduction with the welded-mesh hole split out as #304;
+#287 **exposes `textures`** on the MCP export tools and names both options in Discovery.
+
+The outcomes matter less than the pattern. Each of the three was parked as a judgement call,
+and in each case running one cheap command before presenting the options changed what was
+being decided.
+
+**#277 — the cost was understated, not overstated.**
+`grep -cE 'transform|placement|position' src/projects.ts` returns **0**. The option had been
+described as projects gaining a layout concept; in fact projects have no spatial vocabulary at
+all, so it introduces the first one. That is a larger commitment than "add a field", and it is
+the kind of thing that only shows up as a number. The contract boundary that rules out the
+model-authored alternative was equally checkable: `src/contracts/requirements.ts:1` states
+"Host authority is deliberately external", and line 254 already carries the precedent —
+`requirements.validation`, commented "never model-authored".
+
+**#289 — the decision was that it was two decisions.**
+One issue held a by-design precision floor and a genuine coverage hole, and presenting them
+together would have forced a single wrong answer to both. The floor is three deliberately
+matched constants (`src/render.ts:2927`, `src/render.ts:267`,
+`src/qa/part-connectivity.ts:46`), all 2 cm, and it is correct: a trigger clearing its guard by
+a millimetre is normal geometry. The hole is that two primitives welded into one
+`BufferGeometry` are silent at 200 mm, where unwelded they report from 25 mm — and Kiln welds
+per material by default. Splitting it let the floor close as not-a-defect while the hole became
+#304 with its own acceptance criteria.
+
+The fix's cost was also worth checking rather than assuming. No component machinery exists
+anywhere in `src/` — zero hits for `connectedComponent`, `unionFind`, `disjointSet` or
+`floodFill` — which reads as expensive until you notice `geometryDiagnostics`
+(`src/geometry.ts:146`) already enumerates edges to count `nonManifoldEdges` at line 237. A
+union-find over a walk the code already performs is a different proposition from new topology.
+
+**#287 — the issue's own analysis was wrong in the direction that made the work cheaper.**
+The comment asserted that `kiln_export` hardcodes `profile: 'runtime'`. It does not:
+`src/tools/registry.ts:3029` is `.enum(['runtime', 'editable']).default('runtime')`. So an
+export-shaping enum on the MCP surface is established precedent, and adding `textures` beside
+it is the same move rather than a new one. Only `textures` was actually missing — the sole hit
+in the registry is a `TextureUsage` type import at line 93.
+
+### A check's tolerance is its contract
+
+The durable result is #289's division of labour. Kiln measures gross structure; the destination
+audits millimetre fit. When a check's tolerance is right and an author still gets surprised, the
+defect is in what the check *says about itself*, not in the threshold — so the fix is stated
+coverage plus a regression test that pins the statement, which is what #298 shipped. A
+limitation documented only in a warning that never fires would not have helped anyone, which is
+why the rule landed in the QA integration reference as *run the destination's audits before
+`kiln_save`*, not after.
+
+### Single-digit headroom is a tripwire
+
+Measuring #287's affordability turned up something unrelated and worse than the thing being
+measured:
+
+| gate | current | limit | headroom |
+| --- | --- | --- | --- |
+| `kiln_render` input schema | 4,988 B | 5,000 B | **12 B** |
+| `kiln_inspect` input schema | 4,917 B | 5,000 B | 83 B |
+| all 19 tool definitions | 42,783 chars | 45,000 | 2,217 |
+| `AGENTS.md` | 12,284 B | 12,287 B | **3 B** |
+| `kiln_export` input schema | 663 B | 5,000 B | 4,337 |
+
+Two gates in this repo now sit within a dozen bytes of failing. Neither will be tripped by work
+that intends to change them; both will be tripped by the next unrelated edit that happens to
+touch the file, where the failure arrives as a budget error with no obvious relation to what the
+author was doing. A gate with single-digit headroom has stopped measuring a budget and started
+measuring luck.
+
+### 1.6.0 carries #287, and the order is not free
+
+The owner folded #287's `textures` exposure into 1.6.0 rather than shipping it afterwards: an
+input schema change invalidates the prompt cache for every client, and one invalidation beats
+two.
+
+That makes the release sequence load-bearing, for a reason the build script states itself.
+`scripts/build-runtime.mjs:86` comments that the MCP entry bundles
+`src/generated/mcp-manifest.json` and must "regenerate it from the registry first, before the
+source identity below is taken." The contract test measures that *packaged* manifest rather
+than the live registry — `src/tools/__tests__/registry-contract.test.ts` imports
+`packagedMcpManifest`, and its header says the generated manifest "is what every harness
+receives." So the order is:
+
+1. `textures` on `kiln_export` and `kiln_export_to`, plus the Discovery entries.
+2. `node scripts/build-runtime.mjs all`, which regenerates the manifest from the registry.
+3. Only then the version bumps across the eleven files and
+   `plugins/kiln-engine/package-provenance.json`.
+
+Done in the other order, provenance pins a package whose advertised manifest does not carry
+the option the release notes claim. Nothing fails loudly — the artefact is simply wrong, which
+is the signature of every other hazard in this document.
 
 ## Open decisions
 
