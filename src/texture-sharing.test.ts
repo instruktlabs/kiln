@@ -58,6 +58,25 @@ async function texturedGlb(images: readonly Uint8Array[]): Promise<Uint8Array> {
   return new WebIO().writeBinary(doc);
 }
 
+/** The same GLB with its JSON chunk replaced, so a test can express a layout by hand. */
+function rebuilt(glb: Uint8Array, mutate: (json: Record<string, unknown>) => void): Uint8Array {
+  const view = new DataView(glb.buffer, glb.byteOffset, glb.byteLength);
+  const jsonEnd = 20 + view.getUint32(12, true);
+  const json = JSON.parse(new TextDecoder().decode(glb.subarray(20, jsonEnd)));
+  mutate(json);
+  const text = new TextEncoder().encode(JSON.stringify(json));
+  const padded = Math.ceil(text.length / 4) * 4;
+  const out = new Uint8Array(20 + padded + (glb.byteLength - jsonEnd));
+  out.set(glb.subarray(0, 20));
+  out.fill(0x20, 20 + text.length, 20 + padded);
+  out.set(text, 20);
+  out.set(glb.subarray(jsonEnd), 20 + padded);
+  const header = new DataView(out.buffer);
+  header.setUint32(8, out.byteLength, true);
+  header.setUint32(12, padded, true);
+  return out;
+}
+
 test('reports one shared image as a saving and names every asset carrying it', async () => {
   const [wall, floor] = await Promise.all([
     texturedGlb([BASE_PNG, NORMAL_PNG]),
@@ -105,23 +124,11 @@ test('counts a repeated image inside one asset as a copy, not as a second distin
   // Hand-built, because glTF-Transform dedupes identical images: a second image entry
   // pointing at the same buffer view. Real exports never do this -- 0 of 160 measured
   // assets did -- so the report has to stay right for the case it will not meet.
-  const wall = await texturedGlb([BASE_PNG]);
-  const view = new DataView(wall.buffer, wall.byteOffset, wall.byteLength);
-  const jsonEnd = 20 + view.getUint32(12, true);
-  const json = JSON.parse(new TextDecoder().decode(wall.subarray(20, jsonEnd)));
-  json.images.push({ ...json.images[0] });
-  const text = new TextEncoder().encode(JSON.stringify(json));
-  const padded = Math.ceil(text.length / 4) * 4;
-  const rebuilt = new Uint8Array(20 + padded + (wall.byteLength - jsonEnd));
-  rebuilt.set(wall.subarray(0, 20));
-  rebuilt.fill(0x20, 20 + text.length, 20 + padded);
-  rebuilt.set(text, 20);
-  rebuilt.set(wall.subarray(jsonEnd), 20 + padded);
-  const out = new DataView(rebuilt.buffer);
-  out.setUint32(8, rebuilt.byteLength, true);
-  out.setUint32(12, padded, true);
+  const wall = rebuilt(await texturedGlb([BASE_PNG]), (json) => {
+    (json.images as Record<string, unknown>[]).push({ ...(json.images as unknown[])[0]! });
+  });
 
-  const report = await textureSharingReport([{ name: 'wall.glb', bytes: rebuilt }]);
+  const report = await textureSharingReport([{ name: 'wall.glb', bytes: wall }]);
   expect(report.skipped).toEqual([]);
   expect(report.embeddedImages).toBe(2);
   expect(report.distinctImages).toBe(1);
@@ -147,25 +154,56 @@ test('skips an unreadable input with its reason instead of failing the whole set
 });
 
 test('ignores an image already hosted outside the asset', async () => {
-  const wall = await texturedGlb([BASE_PNG]);
-  const view = new DataView(wall.buffer, wall.byteOffset, wall.byteLength);
-  const jsonEnd = 20 + view.getUint32(12, true);
-  const json = JSON.parse(new TextDecoder().decode(wall.subarray(20, jsonEnd)));
-  json.images = [{ uri: 'textures/abc.png' }];
-  const text = new TextEncoder().encode(JSON.stringify(json));
-  const padded = Math.ceil(text.length / 4) * 4;
-  const rebuilt = new Uint8Array(20 + padded + (wall.byteLength - jsonEnd));
-  rebuilt.set(wall.subarray(0, 20));
-  rebuilt.fill(0x20, 20 + text.length, 20 + padded);
-  rebuilt.set(text, 20);
-  rebuilt.set(wall.subarray(jsonEnd), 20 + padded);
-  const out = new DataView(rebuilt.buffer);
-  out.setUint32(8, rebuilt.byteLength, true);
-  out.setUint32(12, padded, true);
+  const wall = rebuilt(await texturedGlb([BASE_PNG]), (json) => {
+    json.images = [{ uri: 'textures/abc.png' }];
+  });
 
-  const report = await textureSharingReport([{ name: 'wall.glb', bytes: rebuilt }]);
+  const report = await textureSharingReport([{ name: 'wall.glb', bytes: wall }]);
   expect(report.embeddedImages).toBe(0);
   expect(report.distinctImages).toBe(0);
   expect(report.duplicateImageBytes).toBe(0);
   expect(report.skipped).toEqual([]);
+});
+
+test('counts an image whose header it cannot read, without its pixel size', async () => {
+  // Byte identity is what sharing turns on, so an unreadable header must not cost the
+  // whole asset its report. Two assets carry the same opaque image.
+  const opaque = new Uint8Array([7, 7, 7, 7, 7, 7, 7, 7]);
+  const carry = (glb: Uint8Array) =>
+    rebuilt(glb, (json) => {
+      const views = json.bufferViews as Record<string, unknown>[];
+      views.push({ buffer: 0, byteOffset: 0, byteLength: opaque.length });
+      json.images = [{ bufferView: views.length - 1, mimeType: 'image/png' }];
+    });
+  const [wall, floor] = await Promise.all([texturedGlb([BASE_PNG]), texturedGlb([BASE_PNG])]);
+
+  const report = await textureSharingReport([
+    { name: 'wall.glb', bytes: carry(wall) },
+    { name: 'floor.glb', bytes: carry(floor) },
+  ]);
+  expect(report.skipped).toEqual([]);
+  expect(report.embeddedImages).toBe(2);
+  expect(report.distinctImages).toBe(1);
+  expect(report.images[0]!.copies).toBe(2);
+  expect(report.images[0]!.bytes).toBe(opaque.length);
+  expect(report.images[0]!.width).toBeUndefined();
+  expect(report.images[0]!.height).toBeUndefined();
+});
+
+test('skips an asset whose image lives in a buffer this GLB does not carry', async () => {
+  // Buffer 0 is the GLB's own binary chunk. An image on any other buffer is in a separate
+  // file, so hashing the binary chunk at that offset would report bytes that are not it.
+  const wall = rebuilt(await texturedGlb([BASE_PNG]), (json) => {
+    (json.buffers as Record<string, unknown>[]).push({ uri: 'wall.bin', byteLength: 8 });
+    (json.bufferViews as Record<string, unknown>[])[
+      (json.images as Record<string, number>[])[0]!.bufferView!
+    ]!.buffer = 1;
+  });
+
+  const report = await textureSharingReport([{ name: 'wall.glb', bytes: wall }]);
+  expect(report.assets).toBe(0);
+  expect(report.distinctImages).toBe(0);
+  expect(report.skipped).toEqual([
+    { name: 'wall.glb', reason: 'Image buffer view is not in this GLB binary chunk' },
+  ]);
 });

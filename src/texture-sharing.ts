@@ -21,8 +21,9 @@ export interface TextureSharingImageV1 {
   sha256: string;
   bytes: number;
   mimeType: string;
-  width: number;
-  height: number;
+  /** Pixel size from the image header, absent when the header is not one it reads. */
+  width?: number;
+  height?: number;
   /** Embedded copies across the set; `1` means no asset shares it. */
   copies: number;
   /** Names of the assets embedding it, sorted. */
@@ -75,6 +76,18 @@ function readGlb(bytes: Uint8Array): { json: Record<string, unknown>; binary?: U
 const DATA_URI = /^data:([^;,]+);base64,(.*)$/s;
 
 /**
+ * Pixel size when the header is one Kiln reads. Byte identity is what sharing turns on, so
+ * an image in some other format still counts; it just reports no size.
+ */
+function pixelSize(bytes: Uint8Array): { width?: number; height?: number } {
+  try {
+    return imageDimensions(bytes);
+  } catch {
+    return {};
+  }
+}
+
+/**
  * The exact bytes of each image this GLB carries itself. An image referenced by a plain
  * URI is already shared with whatever hosts it, so it carries no duplication and is not
  * counted.
@@ -91,6 +104,10 @@ function carriedImages(
     if (view !== undefined) {
       const def = views[view];
       if (!object(def)) throw new Error('Invalid glTF image buffer view');
+      // Buffer 0 is the GLB's own binary chunk; any other buffer is a separate file, so
+      // reading the chunk at that offset would report bytes that are not the image.
+      if ((index(def.buffer) ?? 0) !== 0)
+        throw new Error('Image buffer view is not in this GLB binary chunk');
       const offset = index(def.byteOffset) ?? 0;
       const length = index(def.byteLength);
       if (length === undefined || !binary || offset + length > binary.byteLength)
@@ -127,8 +144,8 @@ export async function textureSharingReport(
     {
       bytes: number;
       mimeType: string;
-      width: number;
-      height: number;
+      width?: number;
+      height?: number;
       copies: number;
       assets: Set<string>;
     }
@@ -161,7 +178,7 @@ export async function textureSharingReport(
         distinct.set(sha256, {
           bytes: image.bytes.byteLength,
           mimeType: image.mimeType,
-          ...imageDimensions(image.bytes),
+          ...pixelSize(image.bytes),
           copies: 1,
           assets: new Set([asset.name]),
         });
@@ -190,8 +207,7 @@ export async function textureSharingReport(
         sha256,
         bytes,
         mimeType,
-        width,
-        height,
+        ...(width !== undefined ? { width, height } : {}),
         copies,
         assets: [...using].sort(),
       })),

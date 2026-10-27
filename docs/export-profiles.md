@@ -455,8 +455,10 @@ listed under `skipped` with the reason rather than failing the set. At most 1024
 are read at once. `--json` adds `ok: true` to the `kiln.texture-sharing.v1` record:
 `assets`, `assetBytes`, `embeddedImages`, `distinctImages`, `embeddedImageBytes`,
 `distinctImageBytes`, `duplicateImageBytes`, and `images[]` — each distinct image's
-`sha256`, `bytes`, `mimeType`, `width`, `height`, `copies` and the `assets` carrying it,
-largest saving first. The library export is `textureSharingReport` from
+`sha256`, `bytes`, `mimeType`, `copies` and the `assets` carrying it, largest saving
+first, with `width` and `height` when the header is one Kiln reads. An image whose bytes
+live in a buffer outside the GLB is not this GLB's to share, so that asset is skipped
+with a reason rather than counted from the wrong bytes. The library export is `textureSharingReport` from
 `@instruktlabs/kiln/asset-export`.
 
 Worth measuring rather than assuming: across four real worlds the same mechanism saved

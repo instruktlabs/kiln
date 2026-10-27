@@ -44374,6 +44374,13 @@ function readGlb(bytes) {
     throw new Error("Invalid GLB chunk length");
   return { json, binary: bytes.subarray(jsonEnd + 8, jsonEnd + 8 + length) };
 }
+function pixelSize(bytes) {
+  try {
+    return imageDimensions(bytes);
+  } catch {
+    return {};
+  }
+}
 function carriedImages(json, binary) {
   const views = Array.isArray(json.bufferViews) ? json.bufferViews : [];
   const carried = [];
@@ -44385,6 +44392,8 @@ function carriedImages(json, binary) {
       const def = views[view];
       if (!object3(def))
         throw new Error("Invalid glTF image buffer view");
+      if ((index2(def.buffer) ?? 0) !== 0)
+        throw new Error("Image buffer view is not in this GLB binary chunk");
       const offset = index2(def.byteOffset) ?? 0;
       const length = index2(def.byteLength);
       if (length === undefined || !binary || offset + length > binary.byteLength)
@@ -44433,7 +44442,7 @@ async function textureSharingReport(assets) {
         distinct.set(sha256, {
           bytes: image.bytes.byteLength,
           mimeType: image.mimeType,
-          ...imageDimensions(image.bytes),
+          ...pixelSize(image.bytes),
           copies: 1,
           assets: new Set([asset.name])
         });
@@ -44454,8 +44463,7 @@ async function textureSharingReport(assets) {
       sha256,
       bytes,
       mimeType,
-      width,
-      height,
+      ...width !== undefined ? { width, height } : {},
       copies,
       assets: [...using].sort()
     })),
@@ -56998,7 +57006,8 @@ async function assetMain(argv) {
         for (const image of shared.slice(0, 10)) {
           const names = image.assets.slice(0, 3).join(", ");
           const rest = image.assets.length - 3;
-          console.log(`  ${image.sha256.slice("sha256:".length, "sha256:".length + 12)} ${count(image.bytes)} B ${image.width}x${image.height} ${image.mimeType} · ${image.copies} copies · saves ${count(image.bytes * (image.copies - 1))} B · ${names}${rest > 0 ? ` +${count(rest)} more` : ""}`);
+          const size = image.width === undefined ? "" : `${image.width}x${image.height} `;
+          console.log(`  ${image.sha256.slice("sha256:".length, "sha256:".length + 12)} ${count(image.bytes)} B ${size}${image.mimeType} · ${image.copies} copies · saves ${count(image.bytes * (image.copies - 1))} B · ${names}${rest > 0 ? ` +${count(rest)} more` : ""}`);
         }
         if (shared.length > 10)
           console.log(`  ... and ${count(shared.length - 10)} more shared images (--json for all)`);

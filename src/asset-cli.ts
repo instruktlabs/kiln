@@ -602,8 +602,9 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
         for (const image of shared.slice(0, 10)) {
           const names = image.assets.slice(0, 3).join(', ');
           const rest = image.assets.length - 3;
+          const size = image.width === undefined ? '' : `${image.width}x${image.height} `;
           console.log(
-            `  ${image.sha256.slice('sha256:'.length, 'sha256:'.length + 12)} ${count(image.bytes)} B ${image.width}x${image.height} ${image.mimeType} · ${image.copies} copies · saves ${count(image.bytes * (image.copies - 1))} B · ${names}${rest > 0 ? ` +${count(rest)} more` : ''}`,
+            `  ${image.sha256.slice('sha256:'.length, 'sha256:'.length + 12)} ${count(image.bytes)} B ${size}${image.mimeType} · ${image.copies} copies · saves ${count(image.bytes * (image.copies - 1))} B · ${names}${rest > 0 ? ` +${count(rest)} more` : ''}`,
           );
         }
         if (shared.length > 10)
