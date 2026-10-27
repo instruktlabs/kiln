@@ -50,6 +50,13 @@ export async function textureAtlas(
 export interface AtlasUVOptionsV1 {
   inputOrigin: 'top-left' | 'bottom-left';
   mode: 'content-boundary' | 'texel-center';
+  /**
+   * Which UV components the region mapping owns. Default `uv` replaces both.
+   * `u-only` rescales U into a full-height column and passes V through
+   * untouched, for a runtime that reads V as a per-vertex gradient rather than
+   * an atlas coordinate — the `uv-y` foliage wind weight is the known case.
+   */
+  axes?: 'uv' | 'u-only';
 }
 function manifestOf(atlas: THREE.Texture | TextureAtlasManifestV1): TextureAtlasManifestV1 {
   const value = (atlas as THREE.Texture)?.isTexture
@@ -98,11 +105,18 @@ export function remapUVToAtlas(
     !options ||
     typeof options !== 'object' ||
     Array.isArray(options) ||
-    Object.keys(options).some((k) => !['inputOrigin', 'mode'].includes(k)) ||
+    Object.keys(options).some((k) => !['inputOrigin', 'mode', 'axes'].includes(k)) ||
     !['top-left', 'bottom-left'].includes(options.inputOrigin) ||
     !['content-boundary', 'texel-center'].includes(options.mode)
   )
     atlasFailure('explicit inputOrigin and content-boundary/texel-center mode are required.');
+  if (options.axes !== undefined && !['uv', 'u-only'].includes(options.axes))
+    atlasFailure('axes must be uv (default, both components) or u-only.');
+  const uOnly = options.axes === 'u-only';
+  if (uOnly && options.inputOrigin !== 'top-left')
+    atlasFailure(
+      'u-only requires inputOrigin top-left: V passes through unmapped, so a bottom-left flip would invert the gradient it carries.',
+    );
   const region = manifest.regions.find((r) => r.name === name);
   if (!region) atlasFailure(`unknown named region ${String(name)}.`);
   const { x, y, width: w, height: h } = region.content;
@@ -116,6 +130,12 @@ export function remapUVToAtlas(
     y + h > manifest.height
   )
     atlasFailure('invalid region content rectangle.');
+  // Passing V through only addresses the region when the region is the whole
+  // column: a guttered or packed rectangle would sample outside it instead.
+  if (uOnly && (y !== 0 || h !== manifest.height))
+    atlasFailure(
+      `u-only requires a region spanning the full atlas height; ${name} covers rows ${y}..${y + h} of ${manifest.height}. Lay the atlas out as full-height columns with gutter 0.`,
+    );
   const uv = geometry?.getAttribute?.('uv'),
     position = geometry?.getAttribute?.('position');
   if (
@@ -171,9 +191,9 @@ export function remapUVToAtlas(
   const bottom = options.inputOrigin === 'bottom-left';
   const offset: [number, number] = [
     (x + (center ? 0.5 : 0)) / manifest.width,
-    (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / manifest.height,
+    uOnly ? 0 : (y + (bottom ? h - (center ? 0.5 : 0) : center ? 0.5 : 0)) / manifest.height,
   ];
-  const scale: [number, number] = [su, bottom ? -sv : sv];
+  const scale: [number, number] = [su, uOnly ? 1 : bottom ? -sv : sv];
   const output = remapUV(geometry, { scale, offset });
   output.userData.kilnAtlasBinding = {
     manifestHash: manifest.manifestHash,
@@ -184,6 +204,9 @@ export function remapUVToAtlas(
     allocation: structuredClone(region.allocation),
     inputOrigin: options.inputOrigin,
     mode: options.mode,
+    // Omitted for the default, so stamps and exported extras predating u-only
+    // stay byte-identical.
+    ...(uOnly ? { axes: 'u-only' as const } : {}),
     scale,
     offset,
   };

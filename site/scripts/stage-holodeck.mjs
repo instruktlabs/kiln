@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { cp, mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -22,6 +23,11 @@ import { materialClosure, metricsOf, verifyRuntimeProfile } from './stage-cabin-
  *   node scripts/stage-holodeck.mjs --shots --captures CAPTURE_DIR --mirror .localdata/holodeck-delivery
  *   node scripts/stage-holodeck.mjs --upload-list --mirror .localdata/holodeck-delivery
  *   node scripts/stage-holodeck.mjs --record-published .localdata/holodeck-delivery/holodeck-upload-list.json.published.json
+ *   node scripts/stage-holodeck.mjs --recover-store DIR --mirror .localdata/holodeck-delivery [--only slug,slug]
+ *
+ * A revision whose store is gone is read back from the editable bundle this release already published, verified
+ * against every hash the selection freezes; the result names every revision taken that way. `--recover-store`
+ * materialises those bundles as a Kiln store again, so a lost store is rebuilt rather than mourned.
  *
  * Generated downloads go to the ignored mirror at content-addressed keys, `packs/holodeck/objects/<sha256>/<file>`,
  * shared by every release that keeps their bytes, and are pinned in `src/data/mirror-manifest.json` for the asset
@@ -92,13 +98,143 @@ async function writeImmutable(root, path, bytes) {
   await writeFile(target, bytes);
 }
 
-export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join(PACKS_ROOT, 'selection.json'), site = SITE, packsRoot = PACKS_ROOT, exporter = runtimeExport, packs: packSpecs = HOLODECK_PACKS, presentations = HOLODECK_ASSETS, approved = holodeckApproved }) {
-  if (!kiln || !mirror || !stores || !Object.keys(stores).length) throw new Error('Explicit Kiln package, mirror and stores are required');
+/** Fetch a published object from the asset host. */
+const fetchAssetObject = async (url) => {
+  const response = await fetch(url, { signal: AbortSignal.timeout(120_000) });
+  if (!response.ok) throw new Error(`${url} answered ${response.status}`);
+  return Buffer.from(await response.arrayBuffer());
+};
+
+/**
+ * The one object pinned as an asset's editable revision bundle. Object keys are content-addressed, so the pin is the
+ * current revision's bundle whichever release first published it.
+ */
+export function holodeckBundlePin(pins, slug) {
+  const name = `/${slug}-editable.zip`;
+  const found = pins.filter((record) => record.path.startsWith(HOLODECK_OBJECTS) && record.path.endsWith(name));
+  if (found.length > 1) throw new Error(`More than one object is pinned as ${slug}-editable.zip`);
+  return found[0];
+}
+
+/** Read a pinned object: from the mirror, else from the asset host once the ledger records it serving the object back. */
+async function readPinnedObject(pin, { mirror, published, fetchObject }) {
+  if (mirror) {
+    try { return verifyBytes(await readFile(join(mirror, assetPath(pin.path))), pin, pin.path); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+  }
+  const served = published.get(pin.path);
+  if (!served) throw new Error(`${pin.path} is not in the mirror and published.json does not record the asset host serving it back`);
+  if (!sameObject(served, pin)) throw new Error(`The asset host holds different bytes at ${pin.path}`);
+  return verifyBytes(await fetchObject(ASSET_BASE + pin.path), pin, pin.path);
+}
+
+/**
+ * One selected revision read back out of its published editable bundle, as its Kiln store held it. The bundle is a
+ * standard Kiln revision bundle, so every sealed member is the stored file byte for byte; only its own
+ * `manifest.json` is re-serialised without the trailing newline a store writes, so the manifest comes from the
+ * `sources/` record this repository keeps. Both are verified against the selection, and the bundle must name the
+ * selected revision.
+ */
+export function holodeckRevisionFromBundle({ slug, chosen, bundle, manifestBytes }) {
+  const stored = json(verifyBytes(manifestBytes, chosen.manifest, `${slug} manifest`));
+  const { files, manifest, prefix } = verifyArchive(bundle, 'editable');
+  if (manifest.assetId !== chosen.assetId || manifest.revisionId !== chosen.revisionId) throw new Error(`${slug}: the published bundle holds ${manifest.assetId}/${manifest.revisionId}, not the selected revision`);
+  if (JSON.stringify(manifest) !== JSON.stringify(stored)) throw new Error(`${slug}: the kept manifest and the published bundle describe different revisions`);
+  const members = { 'manifest.json': Buffer.from(manifestBytes) };
+  for (const name of Object.keys(manifest.files)) members[name] = Buffer.from(files[prefix + name]);
+  const materials = files[`${prefix}materials.kiln.json`];
+  if (materials) members['materials.kiln.json'] = Buffer.from(materials);
+  return members;
+}
+
+/** A selected revision's store files, read back from the bundle pinned for it. */
+async function revisionFromPublished({ slug, chosen, pins, published, mirror, fetchObject, packsRoot }) {
+  const pin = holodeckBundlePin(pins, slug);
+  if (!pin) throw new Error(`No editable bundle is pinned for ${slug}: its Kiln store is its only copy`);
+  const bundle = await readPinnedObject(pin, { mirror, published, fetchObject });
+  const manifestBytes = await readFile(join(packsRoot, `sources/${chosen.collection}/${chosen.assetId}/${chosen.revisionId}/manifest.json`));
+  return { pin, members: holodeckRevisionFromBundle({ slug, chosen, bundle, manifestBytes }) };
+}
+
+/**
+ * Materialise a Kiln store from the published editable bundles, so a lost store can be rebuilt. Each revision is
+ * written to `<out>/<assetId>/revisions/<revisionId>` exactly as its store held it; an existing file must already
+ * hold those bytes.
+ */
+export async function recoverHolodeckStore({ out, only, mirror, selectionFile = join(PACKS_ROOT, 'selection.json'), site = SITE, packsRoot = PACKS_ROOT, fetchObject = fetchAssetObject }) {
+  if (!out) throw new Error('An explicit output store directory is required');
   const selection = json(await readFile(selectionFile));
+  const pins = (await readJson(join(site, 'src/data/mirror-manifest.json'))).files;
+  const published = await readLedger(join(packsRoot, 'published.json'));
+  const revisions = [];
+  for (const [slug, chosen] of Object.entries(selection.assets)) {
+    if (only && !only.includes(slug)) continue;
+    const { pin, members } = await revisionFromPublished({ slug, chosen, pins, published, mirror, fetchObject, packsRoot });
+    for (const [name, bytes] of Object.entries(members)) await writeImmutable(out, `${chosen.assetId}/revisions/${chosen.revisionId}/${name}`, bytes);
+    revisions.push({ slug, store: chosen.store, assetId: chosen.assetId, revisionId: chosen.revisionId, bundle: pin.path });
+  }
+  const unknown = (only ?? []).filter((slug) => !revisions.some((record) => record.slug === slug));
+  if (unknown.length) throw new Error(`Not selected: ${unknown.join(', ')}`);
+  return { store: out, revisions };
+}
+
+/**
+ * Suggest the next free `<stem>-<NN>` after a release ID that is already spent, keeping the counter's width.
+ */
+export function nextHolodeckRelease(release, taken) {
+  const match = /^(.*)-(\d+)$/.exec(release);
+  if (!match) return undefined;
+  const [, stem, counter] = match;
+  for (let next = Number(counter) + 1; next < Number(counter) + 100; next++) {
+    const candidate = `${stem}-${String(next).padStart(counter.length, '0')}`;
+    if (!taken.has(candidate)) return candidate;
+  }
+  return undefined;
+}
+
+/**
+ * A release ID names one staged state. `releases.json` records every ID a release has spent and the selection it
+ * staged, so a branch cannot quietly reuse an ID another branch already spent on different content: #272 and #273
+ * both did, and five generated files had to be merged entry by entry afterwards. Restaging the same selection under
+ * the same ID is the normal release loop and changes nothing. An ID recorded without its selection was used before
+ * this ledger existed and cannot be reclaimed, because nothing can show it described the same content.
+ */
+export function claimHolodeckRelease({ release, selection, recorded }) {
+  const releases = new Map((recorded?.releases ?? []).map((record) => [record.release, record]));
+  const seal = { bytes: selection.length, sha256: hashBytes(selection) };
+  const prior = releases.get(release);
+  if (prior && !(prior.selection && sameObject(prior.selection, seal))) {
+    const free = nextHolodeckRelease(release, new Set(releases.keys()));
+    const held = prior.selection ? `a different selection (${prior.selection.sha256.slice(0, 12)})` : 'content this ledger did not record';
+    throw new Error(`Release ${release} already staged ${held}: choose a new HOLODECK_RELEASE${free ? `, such as ${free}` : ''}`);
+  }
+  releases.set(release, { release, selection: seal });
+  return { schemaVersion: 1, releases: [...releases.values()].sort((a, b) => a.release.localeCompare(b.release, 'en')) };
+}
+
+/**
+ * Stage the selection, recovering any revision whose store is gone from its published bundle. The recovery workspace
+ * is a throwaway copy of those revisions; the stores themselves stay read-only.
+ */
+export async function stageHolodeck(options) {
+  const recovery = { revisions: [], bundles: new Map() };
+  try { return await stageSelection(options, recovery); }
+  finally { if (recovery.root) await rm(recovery.root, { recursive: true, force: true }); }
+}
+
+async function stageSelection({ kiln, mirror, stores, selectionFile = join(PACKS_ROOT, 'selection.json'), site = SITE, packsRoot = PACKS_ROOT, exporter = runtimeExport, packs: packSpecs = HOLODECK_PACKS, presentations = HOLODECK_ASSETS, approved = holodeckApproved, fetchObject = fetchAssetObject }, recovery) {
+  if (!kiln || !mirror || !stores) throw new Error('An explicit Kiln package, mirror and store set are required');
+  const selectionBytes = await readFile(selectionFile), selection = json(selectionBytes);
   if (selection.schemaVersion !== 1 || selection.licence !== 'CC0-1.0' || !/^[a-z0-9-]+$/.test(selection.release)) throw new Error('Invalid Holodeck selection');
+  const releaseFile = join(packsRoot, 'releases.json');
+  let recordedReleases;
+  try { recordedReleases = await readJson(releaseFile); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  const releases = claimHolodeckRelease({ release: selection.release, selection: selectionBytes, recorded: recordedReleases });
   const kilnVersion = json(await readFile(join(kiln, 'package.json'))).version;
   const release = selection.release;
   const licence = holodeckLicence(), cc0 = await readFile(join(packsRoot, 'LICENSES/CC0-1.0.txt'));
+  const manifestFile = join(site, 'src/data/mirror-manifest.json'), planFile = join(site, 'src/data/commons-build.json');
+  const pins = await readJson(manifestFile), published = await readLedger(join(packsRoot, 'published.json'));
   const output = new Map(), names = new Set(), lightweight = new Map(), staged = {};
   const add = (name, bytes) => {
     if (names.has(name)) throw new Error(`Duplicate staged output: ${name}`);
@@ -111,8 +247,16 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
   for (const [slug, chosen] of Object.entries(selection.assets)) {
     const presentation = presentations[slug];
     if (!presentation) throw new Error(`No gallery presentation for ${slug}`);
-    if (!stores[chosen.store]) throw new Error(`No --store given for ${chosen.store}`);
-    const revisionDir = join(stores[chosen.store], chosen.assetId, 'revisions', chosen.revisionId);
+    let revisionDir = stores[chosen.store] && join(stores[chosen.store], chosen.assetId, 'revisions', chosen.revisionId);
+    if (!revisionDir || !existsSync(revisionDir)) {
+      // The store is gone or no longer holds this revision: read it back from the bundle the release published.
+      const { pin, members } = await revisionFromPublished({ slug, chosen, pins: pins.files, published, mirror, fetchObject, packsRoot });
+      recovery.root ??= await mkdtemp(join(tmpdir(), 'kiln-holodeck-recovered-'));
+      revisionDir = join(recovery.root, chosen.assetId, 'revisions', chosen.revisionId);
+      for (const [name, bytes] of Object.entries(members)) await writeImmutable(recovery.root, `${chosen.assetId}/revisions/${chosen.revisionId}/${name}`, bytes);
+      recovery.revisions.push({ slug, store: chosen.store, assetId: chosen.assetId, revisionId: chosen.revisionId, bundle: pin.path });
+      recovery.bundles.set(slug, pin.path);
+    }
     const manifestBytes = verifyBytes(await readFile(join(revisionDir, 'manifest.json')), chosen.manifest, `${slug} manifest`);
     const manifest = json(manifestBytes);
     if (manifest.assetId !== chosen.assetId || manifest.revisionId !== chosen.revisionId || !manifest.editable) throw new Error(`${slug}: saved revision identity differs from the selection`);
@@ -144,6 +288,10 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
     };
     const editable = revisionBundle({ manifest, files, ...(materialResources ? { materialResources } : {}) });
     verifyArchive(editable, 'editable');
+    // Object keys are content addresses, so a wrong input would quietly land at a new key rather than fail. A
+    // recovered revision must rebuild the very bundle it was read from.
+    const recoveredFrom = recovery.bundles.get(slug);
+    if (recoveredFrom && holodeckObjectPath(`${slug}-editable.zip`, editable) !== recoveredFrom) throw new Error(`${slug}: rebuilding from ${recoveredFrom} did not reproduce it byte for byte`);
     const runtimeFiles = { [`models/${slug}.glb`]: runtime, [`models/${slug}.kiln-metadata.json`]: metadata, 'LICENSE.txt': licence, 'LICENSES/CC0-1.0.txt': cc0 };
     const identity = `${chosen.collection}/${manifest.assetId}/${manifest.revisionId}`;
     lightweight.set(`sources/${identity}/source.kiln.js`, source);
@@ -201,8 +349,6 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
     try { if (!(await readFile(join(packsRoot, path))).equals(bytes)) throw new Error(`Existing source record conflict: ${path}`); }
     catch (error) { if (error.code !== 'ENOENT') throw error; }
   }
-  const manifestFile = join(site, 'src/data/mirror-manifest.json'), planFile = join(site, 'src/data/commons-build.json');
-  const pins = await readJson(manifestFile);
   for (const [path, bytes] of output) {
     const prior = pins.files.find((record) => record.path === path);
     if (prior && (prior.sha256 !== hashBytes(bytes) || prior.bytes !== bytes.length)) throw new Error(`A different file is already pinned at ${path}; use a new release`);
@@ -227,7 +373,8 @@ export async function stageHolodeck({ kiln, mirror, stores, selectionFile = join
     packs, planned: HOLODECK_PLANNED, assets,
   };
   await writeJson(join(site, 'src/data/holodeck.json'), catalog);
-  return { catalog, files: output.size, bytes: [...output.values()].reduce((sum, bytes) => sum + bytes.length, 0) };
+  await writeJson(releaseFile, releases);
+  return { catalog, files: output.size, bytes: [...output.values()].reduce((sum, bytes) => sum + bytes.length, 0), recovered: recovery.revisions };
 }
 
 export const HOLODECK_SHOTS_DIR = `media/${HOLODECK_ID}/scenes/`;
@@ -346,9 +493,13 @@ if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.m
     if (flag === '--store') { const [name, dir] = value.split(/=(.*)/s); options.stores[name] = await realpath(dir); }
     else if (['--kiln', '--mirror', '--captures'].includes(flag)) options[flag.slice(2)] = resolve(value);
     else if (flag === '--record-published') options.receipt = resolve(value);
+    else if (flag === '--recover-store') options.out = resolve(value);
+    else if (flag === '--only') options.only = value.split(',');
     else throw new Error(`Unknown option ${flag}`);
   }
-  if (shots) {
+  if (options.out) {
+    console.log(JSON.stringify(await recoverHolodeckStore(options), null, 2));
+  } else if (shots) {
     const record = await stageHolodeckShots(options);
     console.log(JSON.stringify({ shots: Object.fromEntries(Object.entries(record.packs).map(([id, images]) => [id, images.map((image) => image.inputPath)])) }, null, 2));
   } else if (options.receipt) {
@@ -359,7 +510,7 @@ if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.m
     await writeFile(file, JSON.stringify(records, null, 2) + '\n');
     console.log(JSON.stringify({ file, files: records.length, bytes: records.reduce((sum, record) => sum + record.bytes, 0) }, null, 2));
   } else {
-    const { catalog, files, bytes } = await stageHolodeck(options);
-    console.log(JSON.stringify({ release: catalog.release, files, bytes, packs: catalog.packs.map((pack) => ({ id: pack.id, assets: pack.assetCount, downloads: pack.downloads.map((d) => ({ profile: d.profile, bytes: d.bytes, sha256: d.sha256 })) })) }, null, 2));
+    const { catalog, files, bytes, recovered } = await stageHolodeck(options);
+    console.log(JSON.stringify({ release: catalog.release, files, bytes, recovered, packs: catalog.packs.map((pack) => ({ id: pack.id, assets: pack.assetCount, downloads: pack.downloads.map((d) => ({ profile: d.profile, bytes: d.bytes, sha256: d.sha256 })) })) }, null, 2));
   }
 }

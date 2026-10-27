@@ -96,6 +96,7 @@ describe('kiln_export_to advertisement', () => {
       'profile',
       'revisionId',
       'target',
+      'textures',
     ]);
     // Native: a delivery tool, present only with both host services.
     expect(names(createKilnNativeToolRegistry({ exportRoot: unusedWriter }, {}))).not.toContain(
@@ -290,5 +291,106 @@ describe('kiln_export_to refusals', () => {
       'gate.kiln-metadata.json',
     ]);
     expect(await readFile(join(root, 'gate.kiln-metadata.json'), 'utf8')).toBe('orphan');
+  });
+});
+
+/**
+ * Runtime texture manifest over MCP (#287). `kiln textures` reports the duplication a
+ * delivered set ships; acting on it needs the option the CLI already has. Only
+ * `kiln_export_to` can carry it: it materializes files at a path the caller names, whereas
+ * `kiln_export` returns resource links that `readAssetResource` re-derives with no options,
+ * so a link's advertised size would not match what `resources/read` later returns.
+ */
+const TEXTURED =
+  "const meta = { name: 'Tex' }; function build() { const root = createRoot('Tex'); const albedo = proceduralTexture({ schemaVersion: 2, size: 8, usage: 'albedo', name: 'A', layers: [{ op: 'checker', colorA: 0xc8321e, colorB: 0x1e4bc8, squares: 2 }] }); const normal = normalMapFromHeight(albedo, { name: 'N' }); createPart('Body', boxGeo(1,1,1), pbrMaterial({ albedo, normal }), { parent: root, position: [0,0.5,0] }); return root; }";
+
+describe('kiln_export_to runtime texture manifest (#287)', () => {
+  /** A textured revision and a fresh export root bound to it. */
+  async function texturedExportTo() {
+    const rendered = await renderGLBInProcess(TEXTURED);
+    const textured = await library.save('project', {
+      name: 'Tex',
+      code: TEXTURED,
+      glb: rendered.glb,
+    });
+    const root = join(base, `tex-exports-${++roots}`);
+    await mkdir(root);
+    const def = createKilnProgramToolRegistry({
+      assetLibrary: library,
+      exportRoot: createExportRootWriter(root),
+    }).find((candidate) => candidate.name === 'kiln_export_to')!;
+    const selector = {
+      collection: 'project',
+      assetId: textured.assetId,
+      revisionId: textured.revisionId,
+    };
+    return { root, run: (input: Record<string, unknown>) => def.run({ ...selector, ...input }) };
+  }
+
+  /** The JSON chunk of a GLB: header is 12 bytes, then an 8-byte chunk header. */
+  const glbJson = (bytes: Uint8Array) => {
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    const jsonLength = view.getUint32(12, true);
+    return JSON.parse(new TextDecoder().decode(bytes.subarray(20, 20 + jsonLength))) as {
+      asset: {
+        extras?: { kilnProvenanceV1?: { metadata: { uri: string; sha256: string } } };
+      };
+    };
+  };
+
+  const sidecar = async (root: string, name: string) =>
+    JSON.parse(await readFile(join(root, name), 'utf8')) as {
+      textures?: { sha256: string; mimeType: string }[];
+    };
+
+  test('textures manifest names each image; omitting it leaves the sidecar unchanged', async () => {
+    const { root, run } = await texturedExportTo();
+
+    // Without the option the sidecar carries no texture identities at all.
+    await run({ path: 'plain.glb' });
+    expect((await sidecar(root, 'plain.kiln-metadata.json')).textures).toBeUndefined();
+
+    // With it, every embedded image is named by its exact bytes, once each.
+    await run({ path: 'named.glb', textures: 'manifest' });
+    const named = (await sidecar(root, 'named.kiln-metadata.json')).textures;
+    expect(named).toBeDefined();
+    expect(named!.length).toBe(2);
+    for (const entry of named!) {
+      expect(entry.sha256).toMatch(/^sha256:[0-9a-f]{64}$/);
+      expect(entry.mimeType).toBe('image/png');
+    }
+    // Distinct images, so a host can share them rather than re-upload each copy.
+    expect(new Set(named!.map((entry) => entry.sha256)).size).toBe(2);
+
+    // The GLB is not byte-identical, and should not be: provenance binds the sidecar's hash,
+    // so adding textures[] necessarily moves it. What must hold is that the pair stays bound
+    // and that nothing else in the GLB moved.
+    const namedGlb = new Uint8Array(await readFile(join(root, 'named.glb')));
+    const plainGlb = new Uint8Array(await readFile(join(root, 'plain.glb')));
+    const bound = (glb: Uint8Array) => glbJson(glb).asset.extras!.kilnProvenanceV1!.metadata;
+    expect(bound(namedGlb).sha256).toBe(
+      sha256(new Uint8Array(await readFile(join(root, 'named.kiln-metadata.json')))),
+    );
+    expect(bound(plainGlb).sha256).toBe(
+      sha256(new Uint8Array(await readFile(join(root, 'plain.kiln-metadata.json')))),
+    );
+    // Strip the provenance both carry and the two deliveries are the same asset.
+    const stripped = (glb: Uint8Array) => {
+      const json = glbJson(glb);
+      delete json.asset.extras;
+      return JSON.stringify(json);
+    };
+    expect(stripped(namedGlb)).toBe(stripped(plainGlb));
+  });
+
+  test('the option is runtime-only, and external stays a CLI delivery', async () => {
+    const { run } = await texturedExportTo();
+    // editable writes the exact saved GLB, so a texture manifest has nothing to describe.
+    await expect(run({ path: 'e.glb', profile: 'editable', textures: 'manifest' })).rejects.toThrow(
+      /runtime/i,
+    );
+    // `external` writes gltf + bin + textures/N files; this tool writes one GLB and one
+    // sidecar, so the schema refuses it rather than failing deeper with a confusing error.
+    await expect(run({ path: 'x.glb', textures: 'external' })).rejects.toThrow();
   });
 });

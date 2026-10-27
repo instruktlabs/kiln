@@ -291,6 +291,17 @@ morphs and skin data are retained according to the UV helper's contract. A
 region binding describes that geometry's region; it does not infer independent
 region assignments for material groups.
 
+The optional `axes` selects which components the region owns. The default `uv`
+replaces both, which destroys any per-vertex gradient UV0 carries in V — a
+foliage wind sway weight read as `uv-y` is the known case, and the asset still
+validates and renders. `u-only` rescales U into the named region and passes V
+through bit-for-bit; it requires `inputOrigin: 'top-left'` over a region
+spanning the full atlas height, so lay such a sheet out as full-height columns
+with explicit `content` rectangles and `gutter: 0`, and author each column so
+V=0 is its top row. A packed or vertically inset region is rejected rather than
+remapped. The binding records `axes` only for `u-only`, so existing bindings and
+exported extras are unchanged.
+
 Saved atlas maps retain the canonical recipe, named-region/source manifest,
 compiler identity, encoded-image hash, decoded pixel hash and exact source
 revision pins. `kiln material export` includes the complete verified material

@@ -7,7 +7,131 @@ does not publish a package.
 
 ## Unreleased
 
+
 ## 1.6.0 (2026-10-27)
+
+- `kiln_export_to` takes `textures: 'manifest'`, so an MCP author can act on the texture
+  duplication `kiln textures` reports instead of only seeing it. The runtime sidecar gains
+  `textures[]` naming each embedded image by `sha256` and mime type, which lets a destination
+  share one copy across assets rather than loading the embedded copy in every GLB. The option
+  is runtime-only; `editable` publishes the exact saved GLB without calling the exporter, so
+  that combination is refused at the tool rather than accepted and dropped. Exported GLB
+  geometry and images are unchanged, but the GLB is not byte-identical and must not be:
+  provenance binds the sidecar's hash (`kilnProvenanceV1.metadata.sha256`), so adding
+  `textures[]` necessarily moves it and the pair stays verifiable. Discovery capabilities
+  report the option under `assets.exportTo`.
+
+  Two deliberate exclusions. `textures: 'external'` stays a CLI delivery: it writes
+  `x.gltf`, `x.bin` and `textures/<sha256>.<ext>`, while `kiln_export_to` writes one GLB and
+  one sidecar through an atomic pair write, so carrying it would mean new file kinds and a
+  path contract that is not `.glb`. And `kiln_export` does not take the option at all,
+  because it returns resource links that `readAssetResource` re-derives with no options from
+  a fixed filename allowlist -- a link would advertise a `size` that a later `resources/read`
+  of the same URI would not deliver
+  ([#287](https://github.com/instruktlabs/kiln/issues/287)).
+
+- Source between the program store's 1 MiB limit and the evaluator transport's 512 KiB is
+  named as the size problem it is. Such a program saved, edited and validated, then failed
+  evaluation through the generic invalid-request path, which reported the size as something
+  else in each of three ways: a host-injected transport threw a bare `invalid evaluator
+  request` with no outcome code; the local subprocess and isolated evaluators degraded to
+  `PROTOCOL_ERROR`, "Evaluator returned invalid data", because a request the worker cannot
+  decode returns without the request id the host matches on; and a host handing raw request
+  JSON to the evaluator handler got `INPUT_INVALID`, whose message advises updating host and
+  worker together and reading `docs/migration.md`. Both request builders now refuse an
+  oversize source before it leaves the host, naming both byte counts and the repair. The
+  worker keeps reporting a request it cannot decode as the malformed request it is: each host
+  rebuilds the message from the outcome code and discards the wire message, so a cause named
+  inside the worker could not reach a reader, and the engine gains no new outcome code an
+  older host would decode as a protocol error. `kiln_validate` and a `render: false`
+  `kiln_edit` report the same finding as a warning at save time -- in MCP and in `kiln
+  validate` / `kiln edit`, which declare that one host fact rather than building a host --
+  and the source stays valid, because it is. Trusted `KILN_EVALUATOR_MODE=in-process`
+  evaluation builds no request, has no such limit and is not warned about. The two limits are
+  unchanged and still differ on purpose: a stored revision is read, imported and exported
+  without ever being evaluated, so the range is a documented gap rather than a mistake to
+  close, and `docs/programs.md` now states both
+  ([#299](https://github.com/instruktlabs/kiln/issues/299)).
+- QA measures open surfaces against the closed solids they meet.
+  `GEO_OPEN_SURFACE_PENETRATION` samples each open surface's vertices against every closed
+  solid whose bounds it overlaps and reports how far inside one it reaches, naming both
+  parts and the depth. A cloth, canopy or ivy card encloses no volume, so the part-volume
+  observer could only ever report it unmeasured -- which meant a throw resting on a seat
+  and a throw running through a wall produced the same sentence. Reproduced before fixing:
+  the two cases were byte-identical `GEO_PART_SELF_INTERSECTION_UNMEASURED` findings, and a
+  closed-solid overlap across two modules composed at one origin was already reported, so
+  what was missing was the open-surface measurement rather than neighbour awareness.
+  Distance is measured before sign: a vertex within the 0.005 m contact tolerance is
+  contact, and no sign is claimed there, which is why a cloth authored exactly flush is
+  silent -- that is the one position where a parity ray grazes the face it starts on. The
+  tolerance is deliberately not the 0.02 m adjacency tolerance `FLOATING_EXPAND` and
+  `EXTERNAL_SUPPORT_TOLERANCE` share: measured fixtures put authoring slop at 1-3 mm and
+  real defects at 30-60 mm, and 2 cm would let a surface sink unreported into a cushion, a
+  canopy panel or a wall cap. Synchronous, offline and deterministic: the open/closed split
+  comes from edge topology, so no solid is built. Observation only, bounded, and reporting
+  what it left unsampled; a clean result is not a fit audit, and a solid thinner than the
+  sampled surface's facet spacing can pass between two of its vertices. A positive is a
+  measurement, not a verdict: measured over the 86 shipped examples it reports 916 findings
+  across 51 of them, against 3,575 from the part-volume pass across all 86, and the dominant
+  real case is a fitting socketed into a structural shell -- correct geometry, reported the
+  same way a bolt in a hole is ([#277](https://github.com/instruktlabs/kiln/issues/277)).
+- `kiln textures <files-or-folders> [--json]` reports the texture duplication a delivered
+  set ships: embedded image occurrences against distinct images, the bytes sharing would
+  save, and each distinct image's hash, size and the assets carrying it. The duplication
+  is between assets, never inside one -- measured over 160 assets in four real worlds,
+  within-asset duplicate images were 0 every time -- so a per-asset receipt count cannot
+  see it and the report is scoped to a set. It reads bytes and writes nothing, so exported
+  and canonical GLBs stay byte-identical; acting on it is the existing `--textures
+  external` or `--textures manifest` from
+  [#213](https://github.com/instruktlabs/kiln/issues/213). Library export:
+  `textureSharingReport` from `@instruktlabs/kiln/asset-export`
+  ([#287](https://github.com/instruktlabs/kiln/issues/287)).
+- Every material helper takes an optional `name`, written to the exported glTF
+  `materials[].name`: `gameMaterial`, `basicMaterial`, `glassMaterial` and
+  `lambertMaterial` in their options object, `pbrMaterial` and `foliageMaterial` in
+  theirs. Both exporters already carried a name that was set, and it survives the
+  sandbox, `dedup` and every optimize level; what was missing was any way for an
+  author to set one, so delivered assets arrived with unnamed materials and the
+  authored distinctions were lost. A name is 1..200 visible characters, matching the
+  portable material spec's own bound, and control characters are rejected. This gives
+  a destination runtime a stable authored key to group draws by, instead of hashing
+  material factors. `materialRecipe` and the portable material specs already named
+  their output and are unchanged
+  ([#288](https://github.com/instruktlabs/kiln/issues/288)).
+- `remapUVToAtlas` takes an optional `axes`. The default `uv` is unchanged and replaces
+  both components, which silently destroys a per-vertex gradient carried in V — a foliage
+  wind sway weight read as `uv-y` is the known case, and the asset still validates and
+  renders. `axes: 'u-only'` rescales U into the named region and passes V through
+  bit-for-bit, requiring `inputOrigin: 'top-left'` over a region spanning the full atlas
+  height, so a column sheet keeps the gradient while U can still be inset to texel
+  centers. A packed or vertically inset region is rejected rather than remapped. The
+  binding records `axes` only for `u-only`, so existing stamps and exported extras are
+  byte-identical. The helper contract, Discovery notes and authoring guidance now state
+  what replacing V costs ([#293](https://github.com/instruktlabs/kiln/issues/293)).
+- The floating-parts warning and the part-connectivity observation state their coverage:
+  both read the bounding boxes of drawn meshes at a 2 cm tolerance, so a smaller gap reads
+  as contact and primitives welded into one mesh are never compared with each other. The
+  QA integration reference says to measure millimetre contacts in the destination before
+  saving. Reproduced from a reported clean pass on a 2 mm detached part; the checks behaved
+  as specified and the tolerance, not welding, is what admitted it. No check changes
+  behaviour ([#289](https://github.com/instruktlabs/kiln/issues/289)).
+- The delivery contract states how to read a Kiln GLB without a DOM. three's `GLTFLoader`
+  reads `self.URL` for every image, so `parseAsync` on a textured GLB throws
+  `ReferenceError: self is not defined` under Node, and under Bun, which defines `self`, it
+  binds a null map instead. An untextured GLB parses either way, so test scaffolding written
+  against one passes and the same pattern fails on the first textured asset. The supported
+  DOM-free path is `loadGlbReviewScene` from `@instruktlabs/kiln/views`, already public and
+  already what the CPU view path uses; a reader assembled from `gltf-transform` directly
+  drops the `MSFT_lod` chain unless the extension is registered. A new test loads a textured
+  GLB through the reader with `self` deleted, so the documented guarantee cannot regress.
+  Engine behaviour, exported bytes and browser loading are unchanged
+  ([#292](https://github.com/instruktlabs/kiln/issues/292)).
+- The `draws` cap in `defineBudget` states its pass scope. Discovery and the delivery
+  contract already said the figure is what the GLB stores before any consumer batching; both
+  now also say it counts the main pass only, because shadow, reflection and depth passes
+  belong to the destination, where a shadow-casting part can cost a further draw in each.
+  Wording only: no measured value, receipt field or tier status changes
+  ([#291](https://github.com/instruktlabs/kiln/issues/291)).
 
 - `defineBudget` accepts zero material caps. `images: 0` and `decodedBytes: 0` are now valid:
   zero is the honest declaration for an untextured asset, and the evaluator already measured it
@@ -23,6 +147,8 @@ does not publish a package.
   both list — so an author whose call failed for an unrelated reason was told those fields did
   not exist. A test now asserts the advice names every field the validator accepts, so the text
   and the validator cannot drift apart again.
+||||||| 24bc8fd
+
 
 ## 1.5.0 (2026-10-25)
 

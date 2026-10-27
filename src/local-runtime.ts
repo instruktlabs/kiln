@@ -84,6 +84,17 @@ function integer(
   return value;
 }
 
+/**
+ * The evaluator mode a local CLI/MCP host runs in, without building a host context. A cheap
+ * offline command such as `kiln validate` needs this one fact and none of the rest, so the
+ * default lives here rather than being spelled a second time at the call site.
+ */
+export function localEvaluatorMode(
+  env: Record<string, string | undefined> = process.env,
+): LocalExecution['mode'] {
+  return resolveEvaluatorMode({ KILN_EVALUATOR_MODE: env.KILN_EVALUATOR_MODE ?? 'subprocess' });
+}
+
 /** Local CLI/MCP host defaults; library callers retain explicit evaluator choice. */
 export function createLocalToolContext(
   base: KilnToolContext = {},
@@ -111,9 +122,7 @@ export function createLocalToolContext(
     throw new Error('KILN_INDEX_POLICY must be indexed or asBuilt.');
   if (!['warn', 'strict'].includes(geometryPolicy))
     throw new Error('KILN_GEOMETRY_POLICY must be warn or strict.');
-  const mode = resolveEvaluatorMode({
-    KILN_EVALUATOR_MODE: env.KILN_EVALUATOR_MODE ?? 'subprocess',
-  });
+  const mode = localEvaluatorMode(env);
   const deadlineMs = integer(env, 'KILN_EVALUATOR_TIMEOUT_MS', 60000, 1, 120000);
   const heapMb = integer(env, 'KILN_EVALUATOR_HEAP_MB', 512, 64, 4096);
   if (mode === 'subprocess' && process.versions.bun && env.KILN_EVALUATOR_HEAP_MB !== undefined) {

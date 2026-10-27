@@ -4,11 +4,12 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { RIG_ID, resolveRigEngine, fitCamera, orbitDirection } from './rig-render.mjs';
 import { applyRigPoster, applyRigPosters, rigPosterImage, rigPosterKey, rigPosterPath } from './rig-posters-core.mjs';
-import { VEHICLE_POSTER, holodeckPosterView, pruneImagePlan, vehicleTargets } from './rig-posters.mjs';
+import { VEHICLE_POSTER, holodeckPosterView, pruneImagePlan, recordPosters, vehicleTargets } from './rig-posters.mjs';
 import { hashBytes } from './mirror-core.mjs';
 
 const DATA = resolve(import.meta.dir, '../src/data');
 const json = async (file: string) => JSON.parse(await readFile(join(DATA, file), 'utf8'));
+const runFor = (recorded: { rig: { runs: { pack: string }[] } }, pack: string) => recorded.rig.runs.find((run) => run.pack === pack) as any;
 
 const record = {
   path: 'media/rig/review-neutral-v1/farm/r34/barn.png',
@@ -108,7 +109,9 @@ describe('the checked-in Farm posters', () => {
     const [farm, recorded, manifest, plan] = await Promise.all([json('packs/farm.json'), json('rig-posters.json'), json('mirror-manifest.json'), json('commons-build.json')]);
     expect(recorded.rig.id).toBe(RIG_ID);
     expect(recorded.rig.backdrop).toBe('neutral');
-    expect(recorded.rig.runs.farm.engine.commit).toMatch(/^[0-9a-f]{40}$/);
+    expect(runFor(recorded, 'farm').engine.commit).toMatch(/^[0-9a-f]{40}$/);
+    // One record per run, each with its own id: a later run of a pack no longer overwrites an earlier one.
+    expect(recorded.rig.runs.map((run: { id: string }) => run.id)).toEqual([...new Set(recorded.rig.runs.map((run: { id: string }) => run.id))]);
     const pins = new Map<string, { path: string; bytes: number; sha256: string }>(manifest.files.map((file: { path: string; bytes: number; sha256: string }) => [file.path, file]));
     const planned = new Set(plan.images.map((image: { inputPath: string }) => image.inputPath));
     expect(farm.assets).toHaveLength(23);
@@ -130,10 +133,10 @@ describe('the checked-in Farm posters', () => {
 
   test('every vehicle has a rig poster from the same place, rendered from its own delivered GLB, pinned and planned', async () => {
     const [vehicles, recorded, manifest, plan] = await Promise.all([json('packs/vehicles.json'), json('rig-posters.json'), json('mirror-manifest.json'), json('commons-build.json')]);
-    expect(recorded.rig.runs.vehicles.engine.commit).toBe(recorded.rig.runs.farm.engine.commit);
+    expect(runFor(recorded, 'vehicles').engine.commit).toBe(runFor(recorded, 'farm').engine.commit);
     // All six final posters must bind the newly delivered runtime, independently of saved-preview canonical bytes.
-    expect(recorded.rig.runs.vehicles.engine).toMatchObject({ commit: 'ac6d9eb492b4891a54dbf563cfef14af5633254a', dirty: true });
-    expect(recorded.rig.runs.vehicles.service).toMatchObject({
+    expect(runFor(recorded, 'vehicles').engine).toMatchObject({ commit: 'ac6d9eb492b4891a54dbf563cfef14af5633254a', dirty: true });
+    expect(runFor(recorded, 'vehicles').service).toMatchObject({
       protocol: 'kiln.render-service.v2',
       sourceFingerprint: 'sha256:ea13cf0d48a53734132568066d5a94121c8dd3b088ea8606b1c4dbe14b896ef6',
       buildFingerprint: 'sha256:56d89e736bb03575c9131be509f3411c9b764750d354f82d8a601188e723b576',
@@ -190,5 +193,61 @@ describe('the checked-in Farm posters', () => {
     expect(resolveRigEngine({ site, env: {}, exists: () => true })).toBe(resolve(site, '..'));
     expect(resolveRigEngine({ site, env: { KILN_RIG_ENGINE_DIR: 'override' }, exists: () => false })).toBe(resolve('override'));
     expect(() => resolveRigEngine({ site, env: {}, exists: () => false })).toThrow('KILN_RIG_ENGINE_DIR');
+  });
+});
+
+describe('poster run provenance', () => {
+  const rigFor = (commit: string, instance: string) => ({
+    engine: { provenance: { commit, subject: `engine at ${commit.slice(0, 7)}`, dirty: false } },
+    service: { url: 'http://127.0.0.1:8000', protocol: 'kiln.render-service.v2', captureIdentity: ['kiln.capture-producer.v1', instance] },
+  });
+  const png = Buffer.from('png');
+  const rendered = (pack: string, release: string, slug: string) => [{
+    png,
+    target: { pack, slug, alt: `A ${slug}.` },
+    record: { path: rigPosterPath(pack, release, slug), width: 8, height: 8, bytes: png.length, sha256: hashBytes(png), revisionId: `r_${slug}` },
+  }];
+
+  /** A data directory as the pipeline keeps it, plus a mirror to pin into. */
+  async function workspace(seed: object = { schemaVersion: 1, rig: {}, posters: {} }) {
+    const root = await mkdtemp(join(tmpdir(), 'kiln-rig-runs-'));
+    const data = join(root, 'data');
+    await mkdir(data, { recursive: true });
+    await writeFile(join(data, 'mirror-manifest.json'), JSON.stringify({ files: [] }));
+    await writeFile(join(data, 'commons-build.json'), JSON.stringify({ images: [] }));
+    await writeFile(join(data, 'rig-posters.json'), JSON.stringify(seed));
+    return { root, data, mirror: join(root, 'mirror'), read: async () => JSON.parse(await readFile(join(data, 'rig-posters.json'), 'utf8')) };
+  }
+
+  test('each run keeps its own record and every poster names the run that made it', async () => {
+    const w = await workspace();
+    try {
+      await recordPosters({ rig: rigFor('a'.repeat(40), 'one'), rendered: rendered('holodeck', 'rel-01', 'shell'), mirror: w.mirror, data: w.data, renderedOn: '2026-10-25' });
+      await recordPosters({ rig: rigFor('b'.repeat(40), 'two'), rendered: rendered('holodeck', 'rel-02', 'palm'), mirror: w.mirror, data: w.data, renderedOn: '2026-10-26' });
+      const recorded = await w.read();
+      expect(recorded.rig.runs).toHaveLength(2);
+      // The earlier run's provenance survives the later one: this is what a single per-pack record overwrote.
+      expect(recorded.rig.runs[0]).toMatchObject({ pack: 'holodeck', renderedOn: '2026-10-25', engine: { commit: 'a'.repeat(40) } });
+      expect(recorded.rig.runs[1]).toMatchObject({ pack: 'holodeck', renderedOn: '2026-10-26', engine: { commit: 'b'.repeat(40) } });
+      expect(recorded.posters['holodeck:shell'].run).toBe(recorded.rig.runs[0].id);
+      expect(recorded.posters['holodeck:palm'].run).toBe(recorded.rig.runs[1].id);
+      // Re-rendering under the same engine, service and day is the same run, not another record.
+      await recordPosters({ rig: rigFor('b'.repeat(40), 'two'), rendered: rendered('holodeck', 'rel-02', 'shell'), mirror: w.mirror, data: w.data, renderedOn: '2026-10-26' });
+      const again = await w.read();
+      expect(again.rig.runs.map((run: { id: string }) => run.id)).toEqual(recorded.rig.runs.map((run: { id: string }) => run.id));
+      expect(again.posters['holodeck:shell'].run).toBe(again.rig.runs[1].id);
+    } finally { await rm(w.root, { recursive: true, force: true }); }
+  });
+
+  test('a one-record-per-pack header migrates to one record per run', async () => {
+    const legacy = { schemaVersion: 1, rig: { id: RIG_ID, backdrop: 'neutral', runs: { farm: { renderedOn: '2026-10-01', engine: { commit: 'c'.repeat(40), subject: 'farm', dirty: true }, service: { url: 'http://127.0.0.1:8000' } } } }, posters: {} };
+    const w = await workspace(legacy);
+    try {
+      await recordPosters({ rig: rigFor('d'.repeat(40), 'three'), rendered: rendered('holodeck', 'rel-01', 'shell'), mirror: w.mirror, data: w.data, renderedOn: '2026-10-26' });
+      const recorded = await w.read();
+      expect(recorded.rig.runs.map((run: { pack: string }) => run.pack)).toEqual(['farm', 'holodeck']);
+      expect(recorded.rig.runs[0]).toMatchObject({ renderedOn: '2026-10-01', engine: { commit: 'c'.repeat(40) } });
+      for (const run of recorded.rig.runs) expect(run.id).toMatch(/^[a-z-]+-2026-10-\d\d-[0-9a-f]{8}$/);
+    } finally { await rm(w.root, { recursive: true, force: true }); }
   });
 });

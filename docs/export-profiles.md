@@ -356,6 +356,7 @@ keep that notice file. KTX2 output is data produced by the encoder, not a copy o
 Runtime GLBs embed every texture, so forty assets that use one library material carry
 forty copies of its maps. Two opt-in choices let a host share them. Neither is the
 default: without `--textures`, the GLB, sidecar and `--json` receipt bytes are unchanged.
+`kiln textures` measures what a given set would save before you choose.
 
 **Manifest.** `--textures manifest` (runtime profile, with or without `--target three`)
 adds `textures[]` to the sidecar. The GLB is unchanged apart from the provenance hash of
@@ -429,6 +430,40 @@ three.js loads the `.gltf` and resolves `wall.bin` and `textures/...` relative t
 Plain `--profile runtime` keeps `.glb` only, because that profile copies the binary chunk
 byte for byte. Kiln's tests validate the `.gltf` with `gltf-validator` and load it through
 `GLTFLoader`. MCP `kiln_export` does not offer these options.
+
+### Measuring a set: `kiln textures`
+
+The duplication is **between assets, never inside one**: the exporter already shares an
+image an asset uses twice, so a per-asset count of distinct against embedded images is
+equal on every asset Kiln has ever written. Measured over 160 assets in four real worlds,
+within-asset duplicate images were 0 every time. `kiln textures` therefore reads a whole
+delivered set:
+
+```sh
+kiln textures assets/imports              # a delivery folder
+kiln textures palm.glb fern.glb --json    # or named files, with a receipt
+```
+
+```text
+49 assets · 119 embedded images · 24 distinct · 14,315,977 duplicated bytes (62.1% of 23,048,068 delivered bytes)
+  e29644e20915 425,509 B 512x512 image/png · 12 copies · saves 4,680,599 B · palm-a.glb, palm-b.glb, shrub-a.glb +9 more
+```
+
+It reads bytes and writes nothing, so it is safe to point at a frozen delivery folder.
+Directories contribute their `*.glb` files; a named file that is not a readable GLB is
+listed under `skipped` with the reason rather than failing the set. At most 1024 assets
+are read at once. `--json` adds `ok: true` to the `kiln.texture-sharing.v1` record:
+`assets`, `assetBytes`, `embeddedImages`, `distinctImages`, `embeddedImageBytes`,
+`distinctImageBytes`, `duplicateImageBytes`, and `images[]` — each distinct image's
+`sha256`, `bytes`, `mimeType`, `copies` and the `assets` carrying it, largest saving
+first, with `width` and `height` when the header is one Kiln reads. An image whose bytes
+live in a buffer outside the GLB is not this GLB's to share, so that asset is skipped
+with a reason rather than counted from the wrong bytes. The library export is `textureSharingReport` from
+`@instruktlabs/kiln/asset-export`.
+
+Worth measuring rather than assuming: across four real worlds the same mechanism saved
+62.1%, 14.8%, 8.7% and 6.2% of delivered bytes. The saving is large only when the pack
+genuinely shares a material family, so the number that matters is the one for your set.
 
 ## Pointer and hash contract
 

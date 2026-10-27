@@ -15,6 +15,7 @@ import {
   assertEvaluatorResultRequirements,
   assertEvaluatorResultMaterialResources,
   evaluatorOutcomeMessage,
+  evaluatorSourceBudgetFailure,
   EVALUATOR_REQUEST_VERSION,
   type EvaluatorOutcomeCode,
   type EvaluatorRequestV2,
@@ -111,6 +112,10 @@ export async function renderGLBViaProcessLaunch(
       'Subprocess evaluation does not accept host resolver capabilities.',
     );
   }
+  // Named before any worker launch: the host still has the source, and the worker's own
+  // decode reports an oversize request as a malformed one (#299).
+  const oversizeSource = evaluatorSourceBudgetFailure(code);
+  if (oversizeSource) throw new EvaluatorSubprocessError('INPUT_INVALID', oversizeSource);
   const deadlineMs = boundedInteger(controls.deadlineMs, DEFAULT_DEADLINE_MS, 120_000);
   const maxGlbBytes = boundedInteger(controls.maxGlbBytes, DEFAULT_MAX_GLB_BYTES, 64 * 1024 * 1024);
   const maxResponseBytes = boundedInteger(

@@ -74,7 +74,7 @@ import type {
 } from '../composer/render-port';
 import type { ViewGridResult } from '../views';
 import type { EvaluatorExecutionProfileV2, EvaluatorPortV2 } from '../evaluator';
-import { resolveEvaluatorPortV2 } from '../evaluator';
+import { evaluatorSourceBudgetFailure, resolveEvaluatorPortV2 } from '../evaluator';
 import { sceneNeedsPbrShading } from '../material-resources';
 import { nextRenderRoute } from '../render-route';
 import { KilnDraftBuffer } from '../edit-buffer';
@@ -200,6 +200,13 @@ export interface KilnToolContext {
   geometryPolicy?: import('../geometry-export').GeometryExportPolicy;
   indexPolicy?: import('../index-policy').IndexPolicy;
   localExecution?: import('../local-runtime').LocalExecution;
+  /**
+   * Whether the host carries source through an evaluator request, where the transport's own
+   * source budget applies. Resolved from the supplied host before a build-cache wrapper
+   * forges an `evaluatorPort`, so a save-time finding reads the host and not the wrapper
+   * (#299). Left unset, the host is read directly.
+   */
+  evaluatorTransportsSource?: boolean;
   /** Host-only, lazy provenance scan for saved builds; independent of evaluator reuse. */
   prepareBuildProvenance?: () => Promise<void>;
   evaluationControls?: () => import('../evaluator/protocol').EvaluatorPortCallControlsV2;
@@ -788,6 +795,24 @@ const viewInteriorAdvertisedInput = viewInteriorInput.extend({ capture: captureR
 // kiln_validate
 // =============================================================================
 
+/**
+ * Whether this host sends source through an evaluator request, where the transport's own
+ * source budget applies. Trusted in-process evaluation builds no request, so a program
+ * between the store limit and the transport limit renders there and is not a finding (#299).
+ */
+function transportsEvaluatorSource(context: KilnToolContext): boolean {
+  if (context.evaluatorTransportsSource !== undefined) return context.evaluatorTransportsSource;
+  if (context.localExecution) return context.localExecution.mode !== 'in-process';
+  return Boolean(context.evaluatorPort) || context.evaluatorProfile === 'evaluator-required';
+}
+
+/** The transport source budget as a save-time advisory, before a render spends the cause. */
+function sourceBudgetAdvisory(code: string, context: KilnToolContext): string[] {
+  if (!transportsEvaluatorSource(context)) return [];
+  const failure = evaluatorSourceBudgetFailure(code);
+  return failure ? [failure] : [];
+}
+
 function runValidate(
   input: z.infer<typeof validateInput>,
   context: KilnToolContext,
@@ -807,7 +832,10 @@ function runValidate(
     valid: result.valid,
     errors: result.errors,
     issues: result.issues,
-    warnings: result.warnings.map((w) => (w.fixHint ? `${w.message} (${w.fixHint})` : w.message)),
+    warnings: [
+      ...sourceBudgetAdvisory(input.code, context),
+      ...result.warnings.map((w) => (w.fixHint ? `${w.message} (${w.fixHint})` : w.message)),
+    ],
   };
 }
 
@@ -2198,6 +2226,8 @@ export interface KilnEditResult {
   diff?: string;
   /** The render of the patched program, when render was not disabled. */
   render?: KilnRenderViewsResult;
+  /** Advisories about the patched source itself; a render reports its own. */
+  warnings?: string[];
   /** Six-view PNG, lifted from the render so transports can attach it as an image. */
   pngBase64?: string;
 }
@@ -2230,18 +2260,23 @@ async function runEdit(
     toLabel: 'after',
   });
 
-  if (input.render === false)
+  if (input.render === false) {
+    // Nothing evaluates this patch, so the source budget has to be reported here or not
+    // at all; a rendering edit hears the same cause from the evaluator.
+    const warnings = sourceBudgetAdvisory(code, context);
     return {
       ok: true,
       code,
       applied,
       diff,
+      ...(warnings.length ? { warnings } : {}),
       preservation: {
         status: 'not_assessed',
         reason:
           'Source-only edit. Unchanged source text does not prove unchanged geometry; compare the rendered revisions with kiln_inspect compare.',
       },
     };
+  }
 
   let editedArtifact: RenderResult | undefined;
   const rendered = await runRenderViews(
@@ -2581,7 +2616,15 @@ function createProgramDefs(
 ): KilnToolDef[] {
   toolRequirements(suppliedContext);
   const store = suppliedContext.programStore ?? new MemoryProgramStore();
-  const context = withCaptureCache(withBuildCache({ ...suppliedContext, programStore: store }));
+  // Read the host before wrapping: the build cache forges an `evaluatorPort` where the
+  // caller had none, and Discovery sidesteps the same wrapper just below.
+  const context = withCaptureCache(
+    withBuildCache({
+      ...suppliedContext,
+      programStore: store,
+      evaluatorTransportsSource: transportsEvaluatorSource(suppliedContext),
+    }),
+  );
   return [
     createKilnDiscoveryDef({ ...suppliedContext, programStore: store }, presentation),
     {
@@ -3033,6 +3076,12 @@ export function createKilnAssetDefs(
       .enum(['three'])
       .optional()
       .describe('Runtime only: a three.js delivery GLB (instancing, quantization, meshopt).'),
+    textures: z
+      .enum(['manifest'])
+      .optional()
+      .describe(
+        'Runtime only: name each embedded image by sha256 in the sidecar, so a host can share images across assets. CLI --textures external writes them as separate files instead.',
+      ),
   });
   const importInput = z.object({
     ...selector,
@@ -3309,6 +3358,7 @@ function createKilnExportToDef(
     path: string;
     profile: 'runtime' | 'editable';
     target?: 'three';
+    textures?: 'manifest';
   }>,
   library: () => import('../assets').AssetLibrary,
   listCall: (collection: string) => string,
@@ -3328,6 +3378,11 @@ function createKilnExportToDef(
       const input = inputSchema.parse(raw);
       if (input.target !== undefined && input.profile !== 'runtime')
         throw new Error('target requires profile runtime');
+      // The editable branch publishes the exact saved GLB without calling the exporter, so
+      // the shared runtime guard never sees this combination: refuse it here instead of
+      // accepting the option and silently dropping it.
+      if (input.textures !== undefined && input.profile !== 'runtime')
+        throw new Error('textures requires profile runtime');
       const { validateExportPath } = await import('../export-root');
       const destination = validateExportPath(input.path);
       const { exportAssetGlb, validateMetadataFileName } = await import('../asset-export');
@@ -3345,6 +3400,7 @@ function createKilnExportToDef(
           profile: 'runtime',
           metadataFileName: destination.metadataFileName,
           ...(input.target ? { target: input.target } : {}),
+          ...(input.textures ? { textures: input.textures } : {}),
         });
         if (output.profile !== 'runtime') throw new Error('Expected runtime export');
         files.push(
