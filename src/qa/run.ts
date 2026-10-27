@@ -14,6 +14,7 @@ import {
   type ReferenceComparisonEvidenceV1,
 } from './reference-comparison';
 import { SELF_INTERSECTION_QA_RULE } from './self-intersection';
+import { OPEN_SURFACE_PENETRATION_QA_RULE } from './open-surface-penetration';
 import { SWEEP_QA_RULE } from './sweep';
 import { ENVIRONMENT_QA_RULES } from './environment';
 import { W7_BREADTH_QA_RULES } from './breadth';
@@ -44,6 +45,7 @@ export const DETERMINISTIC_QA_REGISTRY = new QaRegistry([
   ...ENVIRONMENT_QA_RULES,
   ...W7_BREADTH_QA_RULES,
   SELF_INTERSECTION_QA_RULE,
+  OPEN_SURFACE_PENETRATION_QA_RULE,
   SWEEP_QA_RULE,
   PART_CONNECTIVITY_QA_RULE,
   REFERENCE_COMPARISON_QA_RULE,

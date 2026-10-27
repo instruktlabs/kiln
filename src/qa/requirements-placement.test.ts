@@ -162,6 +162,7 @@ test('unrequested placement has no promotion decision; requested placement retai
     byRule: {
       GEO_PART_CONNECTIVITY: 'observe' as const,
       GEO_PART_SELF_INTERSECTION: 'observe' as const,
+      GEO_OPEN_SURFACE_PENETRATION: 'observe' as const,
       SWEEP_SELF_INTERSECTION: 'observe' as const,
     },
   };

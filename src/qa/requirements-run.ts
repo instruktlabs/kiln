@@ -25,6 +25,11 @@ import {
   PROP_ADVISORY_QA_RULE,
 } from './prop';
 import { inspectPartConnectivity, PART_CONNECTIVITY_QA_RULE } from './part-connectivity';
+import {
+  analyzeOpenSurfacePenetration,
+  inspectOpenSurfacePenetration,
+  OPEN_SURFACE_PENETRATION_QA_RULE,
+} from './open-surface-penetration';
 import { inspectSweepGeometry, SWEEP_QA_RULE } from './sweep';
 import {
   analyzePartPenetration,
@@ -66,6 +71,7 @@ const registry = new QaRegistry([
   PROP_ADVISORY_QA_RULE,
   PART_CONNECTIVITY_QA_RULE,
   SELF_INTERSECTION_QA_RULE,
+  OPEN_SURFACE_PENETRATION_QA_RULE,
   SWEEP_QA_RULE,
   ...VEHICLE_QA_RULES,
   ...ARCHITECTURE_QA_RULES,
@@ -254,6 +260,29 @@ export function runRequirementsSceneQa(
         });
         geometryMetrics.partVolumeCoverage = 'unavailable';
       }
+      continue;
+    }
+    if (decision.ruleId === OPEN_SURFACE_PENETRATION_QA_RULE.id) {
+      if (!(scene instanceof Object3D)) continue;
+      // Open surfaces enclose no volume, so the boolean pass cannot measure them.
+      // This one samples their vertices against the solids they meet (#277).
+      const surfaces = analyzeOpenSurfacePenetration(scene);
+      executedRules.push(decision.ruleId);
+      findings.push(...inspectOpenSurfacePenetration(surfaces));
+      Object.assign(geometryMetrics, {
+        openSurfaceCoverage:
+          surfaces.truncated || surfaces.skipped.length > 0 ? 'partial' : 'complete-surface-pairs',
+        openSurfaceScope:
+          "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact.",
+        openSurfaceContactTolerance: surfaces.contactTolerance,
+        openSurfaceOpenParts: surfaces.openParts,
+        openSurfaceClosedParts: surfaces.closedParts,
+        openSurfaceCandidatePairs: surfaces.candidatePairs,
+        openSurfacePairsSampled: surfaces.pairsTested,
+        openSurfacePairsNotReached: surfaces.pairsNotReached,
+        openSurfaceLodAlternatePairs: surfaces.pairsLodAlternates,
+        openSurfaceSkipped: surfaces.skipped.length,
+      });
       continue;
     }
     if (decision.ruleId === ASSET_SCOPE_QA_RULE.id && !scopeObservation) continue;

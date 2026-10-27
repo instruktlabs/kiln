@@ -7,6 +7,26 @@ does not publish a package.
 
 ## Unreleased
 
+- QA measures open surfaces against the closed solids they meet.
+  `GEO_OPEN_SURFACE_PENETRATION` samples each open surface's vertices against every closed
+  solid whose bounds it overlaps and reports how far inside one it reaches, naming both
+  parts and the depth. A cloth, canopy or ivy card encloses no volume, so the part-volume
+  observer could only ever report it unmeasured -- which meant a throw resting on a seat
+  and a throw running through a wall produced the same sentence. Reproduced before fixing:
+  the two cases were byte-identical `GEO_PART_SELF_INTERSECTION_UNMEASURED` findings, and a
+  closed-solid overlap across two modules composed at one origin was already reported, so
+  what was missing was the open-surface measurement rather than neighbour awareness.
+  Distance is measured before sign: a vertex within the 0.005 m contact tolerance is
+  contact, and no sign is claimed there, which is why a cloth authored exactly flush is
+  silent -- that is the one position where a parity ray grazes the face it starts on. The
+  tolerance is deliberately not the 0.02 m adjacency tolerance `FLOATING_EXPAND` and
+  `EXTERNAL_SUPPORT_TOLERANCE` share: measured fixtures put authoring slop at 1-3 mm and
+  real defects at 30-60 mm, and 2 cm would let a surface sink unreported into a cushion, a
+  canopy panel or a wall cap. Synchronous, offline and deterministic: the open/closed split
+  comes from edge topology, so no solid is built. Observation only, bounded, and reporting
+  what it left unsampled; a clean result is not a fit audit, and a solid thinner than the
+  sampled surface's facet spacing can pass between two of its vertices
+  ([#277](https://github.com/instruktlabs/kiln/issues/277)).
 - `kiln textures <files-or-folders> [--json]` reports the texture duplication a delivered
   set ships: embedded image occurrences against distinct images, the bytes sharing would
   save, and each distinct image's hash, size and the assets carrying it. The duplication

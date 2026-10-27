@@ -1190,6 +1190,7 @@ define(
     semantics: [
       'QA reports a marked part that cannot be built as a closed solid as GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED with the reason, instead of GEO_PART_SELF_INTERSECTION_UNMEASURED.',
       'Overlapping pairs with the marked part stay unmeasured and are counted; overlap there is not ruled out. Overlap between other parts is still measured and reported.',
+      'Volume stays unmeasured, but GEO_OPEN_SURFACE_PENETRATION separately samples an open surface against the closed solids it meets and reports how far inside one it reaches.',
       'A marked part that builds as a closed solid is measured like any other part. A part skipped for its size, draw range, instancing or invalid indices is still reported as unmeasured.',
       'Both exporters write the mark as the node extras kilnOpenShell: { schemaVersion: 1, reason }; import restores it to userData.',
       'Invalid arguments, or a kilnOpenShell value this helper did not write, are an OPEN_SHELL build error.',

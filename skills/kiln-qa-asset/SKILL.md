@@ -40,6 +40,19 @@ not a clean result. Closed components are unioned before measuring overlap;
 unsupported inward shells or component budgets remain unmeasured. Hidden subtrees
 are excluded from category QA, while `hiddenNodes` accounts for their triangles.
 
+An open surface has no volume, so the overlap observer can never measure it. A separate
+observation does: `GEO_OPEN_SURFACE_PENETRATION` samples each open surface's vertices
+against the closed solids it meets and reports how far inside one it reaches, naming both
+parts and the depth in metres. Penetration at or below the 0.005 m contact tolerance is
+treated as intended contact, so a cloth resting on a seat or tucked flush against a panel
+stays silent; a cloth crossing a wall or pierced by a mast does not. This is deliberately
+far tighter than the 0.02 m adjacency tolerance the floating-part and connectivity checks
+share, because a surface two centimetres inside a cushion, a canopy panel or a wall cap is
+already visibly wrong. Vertices are the samples, so a solid thinner than the surface's own
+facet spacing can pass between two of them: `_TRUNCATED` reports pairs left for budget and
+`_UNMEASURED` names parts that were not sampled at all. A clean result here is not a fit
+audit, and it says nothing about open surfaces meeting each other.
+
 `SWEEP_SELF_INTERSECTION` observes tight station curvature or intersecting
 consecutive rings in a sweep/loft. Inspect the station and radius evidence. A
 `_PARTIAL` finding or `_UNCHECKED` warning means the bounded local analysis did not
