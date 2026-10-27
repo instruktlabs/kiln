@@ -149,7 +149,8 @@ describe('export root writer', () => {
         { path: 'game/props/crate.glb', data: bytes('glb') },
       ]);
       expect(await readFile(join(base, 'game', 'props', 'crate.glb'), 'utf8')).toBe('glb');
-      expect(await readdir(join(base, 'game', 'props'))).toEqual([
+      // readdir makes no ordering guarantee; sort before comparing the pair.
+      expect((await readdir(join(base, 'game', 'props'))).sort()).toEqual([
         'crate.glb',
         'crate.kiln-metadata.json',
       ]);
