@@ -692,6 +692,77 @@ only became *visible* in the merged file. A rehearsal proves a merge is clean. N
 prose still means what it meant, and the only instrument is a reader. Two PRs' hunks landing
 in one document is simply the moment someone is most likely to look.
 
+## Three contract decisions, and what checking the options cost
+
+Settled by the owner, 27 October: #277 declares neighbours through **project inventory
+placement**; #289 **closes** on its reproduction with the welded-mesh hole split out as #304;
+#287 **exposes `textures`** on the MCP export tools and names both options in Discovery.
+
+The outcomes matter less than the pattern. Each of the three was parked as a judgement call,
+and in each case running one cheap command before presenting the options changed what was
+being decided.
+
+**#277 — the cost was understated, not overstated.**
+`grep -cE 'transform|placement|position' src/projects.ts` returns **0**. The option had been
+described as projects gaining a layout concept; in fact projects have no spatial vocabulary at
+all, so it introduces the first one. That is a larger commitment than "add a field", and it is
+the kind of thing that only shows up as a number. The contract boundary that rules out the
+model-authored alternative was equally checkable: `src/contracts/requirements.ts:1` states
+"Host authority is deliberately external", and line 254 already carries the precedent —
+`requirements.validation`, commented "never model-authored".
+
+**#289 — the decision was that it was two decisions.**
+One issue held a by-design precision floor and a genuine coverage hole, and presenting them
+together would have forced a single wrong answer to both. The floor is three deliberately
+matched constants (`src/render.ts:2927`, `src/render.ts:267`,
+`src/qa/part-connectivity.ts:46`), all 2 cm, and it is correct: a trigger clearing its guard by
+a millimetre is normal geometry. The hole is that two primitives welded into one
+`BufferGeometry` are silent at 200 mm, where unwelded they report from 25 mm — and Kiln welds
+per material by default. Splitting it let the floor close as not-a-defect while the hole became
+#304 with its own acceptance criteria.
+
+The fix's cost was also worth checking rather than assuming. No component machinery exists
+anywhere in `src/` — zero hits for `connectedComponent`, `unionFind`, `disjointSet` or
+`floodFill` — which reads as expensive until you notice `geometryDiagnostics`
+(`src/geometry.ts:146`) already enumerates edges to count `nonManifoldEdges` at line 237. A
+union-find over a walk the code already performs is a different proposition from new topology.
+
+**#287 — the issue's own analysis was wrong in the direction that made the work cheaper.**
+The comment asserted that `kiln_export` hardcodes `profile: 'runtime'`. It does not:
+`src/tools/registry.ts:3029` is `.enum(['runtime', 'editable']).default('runtime')`. So an
+export-shaping enum on the MCP surface is established precedent, and adding `textures` beside
+it is the same move rather than a new one. Only `textures` was actually missing — the sole hit
+in the registry is a `TextureUsage` type import at line 93.
+
+### A check's tolerance is its contract
+
+The durable result is #289's division of labour. Kiln measures gross structure; the destination
+audits millimetre fit. When a check's tolerance is right and an author still gets surprised, the
+defect is in what the check *says about itself*, not in the threshold — so the fix is stated
+coverage plus a regression test that pins the statement, which is what #298 shipped. A
+limitation documented only in a warning that never fires would not have helped anyone, which is
+why the rule landed in the QA integration reference as *run the destination's audits before
+`kiln_save`*, not after.
+
+### Single-digit headroom is a tripwire
+
+Measuring #287's affordability turned up something unrelated and worse than the thing being
+measured:
+
+| gate | current | limit | headroom |
+| --- | --- | --- | --- |
+| `kiln_render` input schema | 4,988 B | 5,000 B | **12 B** |
+| `kiln_inspect` input schema | 4,917 B | 5,000 B | 83 B |
+| all 19 tool definitions | 42,783 chars | 45,000 | 2,217 |
+| `AGENTS.md` | 12,284 B | 12,287 B | **3 B** |
+| `kiln_export` input schema | 663 B | 5,000 B | 4,337 |
+
+Two gates in this repo now sit within a dozen bytes of failing. Neither will be tripped by work
+that intends to change them; both will be tripped by the next unrelated edit that happens to
+touch the file, where the failure arrives as a budget error with no obvious relation to what the
+author was doing. A gate with single-digit headroom has stopped measuring a budget and started
+measuring luck.
+
 ## Open decisions
 
 - **D0 — how far to redesign.** "Better" needs a ceiling or P0 never ends. Proposal: one
