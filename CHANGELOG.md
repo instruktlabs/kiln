@@ -7,6 +7,28 @@ does not publish a package.
 
 ## Unreleased
 
+- Source between the program store's 1 MiB limit and the evaluator transport's 512 KiB is
+  named as the size problem it is. Such a program saved, edited and validated, then failed
+  evaluation through the generic invalid-request path, which reported the size as something
+  else in each of three ways: a host-injected transport threw a bare `invalid evaluator
+  request` with no outcome code; the local subprocess and isolated evaluators degraded to
+  `PROTOCOL_ERROR`, "Evaluator returned invalid data", because a request the worker cannot
+  decode returns without the request id the host matches on; and a host handing raw request
+  JSON to the evaluator handler got `INPUT_INVALID`, whose message advises updating host and
+  worker together and reading `docs/migration.md`. Both request builders now refuse an
+  oversize source before it leaves the host, naming both byte counts and the repair. The
+  worker keeps reporting a request it cannot decode as the malformed request it is: each host
+  rebuilds the message from the outcome code and discards the wire message, so a cause named
+  inside the worker could not reach a reader, and the engine gains no new outcome code an
+  older host would decode as a protocol error. `kiln_validate` and a `render: false`
+  `kiln_edit` report the same finding as a warning at save time -- in MCP and in `kiln
+  validate` / `kiln edit`, which declare that one host fact rather than building a host --
+  and the source stays valid, because it is. Trusted `KILN_EVALUATOR_MODE=in-process`
+  evaluation builds no request, has no such limit and is not warned about. The two limits are
+  unchanged and still differ on purpose: a stored revision is read, imported and exported
+  without ever being evaluated, so the range is a documented gap rather than a mistake to
+  close, and `docs/programs.md` now states both
+  ([#299](https://github.com/instruktlabs/kiln/issues/299)).
 - `kiln textures <files-or-folders> [--json]` reports the texture duplication a delivered
   set ships: embedded image occurrences against distinct images, the bytes sharing would
   save, and each distinct image's hash, size and the assets carrying it. The duplication

@@ -104,6 +104,16 @@ eviction or total disk quota. Export accepted work before deleting an old worksp
 store; its references then stop resolving. Source is integrity-checked on read. A hash
 identifies content and does not authorize access in a hosted service.
 
+One evaluator request carries at most 512 KiB of source, which is lower than the store's
+1 MiB on purpose: a stored revision is read, imported and exported without ever being
+evaluated, and trusted in-process evaluation builds no request at all. So the two limits
+leave a range a program can be saved in but not built in. `kiln_discover` reports both as
+`source.maxBytes` and `source.transportEvaluatorMaxBytes`. A host that transports source
+reports a program over the transport limit as a warning from `kiln_validate` and from a
+`render: false` edit, and refuses the build naming both byte counts — build geometry inside
+`build()` from the helpers instead of embedding a literal vertex buffer, round the literals
+you must keep, or bind texture bytes as approved material resources.
+
 ## Failure handling
 
 A failed replacement leaves the base unchanged. An edit may apply successfully while

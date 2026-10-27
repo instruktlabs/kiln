@@ -65,6 +65,30 @@ export function evaluatorOutcomeMessage(code: EvaluatorOutcomeCode): string {
   return EVALUATOR_OUTCOME_MESSAGES[code];
 }
 
+/**
+ * The one request budget an author reaches by authoring, rather than by sending a malformed
+ * request: source larger than a single evaluator request carries. The program store's limit
+ * is deliberately higher, because a stored revision is read, imported and exported without
+ * ever being evaluated, so this is a gap and not a mistake to close. Named here as a closed
+ * cause (#299): the generic `fail('request')` path reports it as a version mismatch, and a
+ * request carrying source over this budget never has to leave the host to find out.
+ *
+ * Returns the message, or undefined when the source fits. A non-string `code` belongs to the
+ * strict decoder, which rejects it as the malformed request it is.
+ */
+export function evaluatorSourceBudgetFailure(code: unknown): string | undefined {
+  if (typeof code !== 'string') return undefined;
+  const bytes = Buffer.byteLength(code, 'utf8');
+  if (bytes <= MAX_EVALUATOR_CODE_BYTES) return undefined;
+  return (
+    `Source is ${bytes} bytes; one evaluator request carries at most ${MAX_EVALUATOR_CODE_BYTES} bytes of source. ` +
+    'The program store accepts more on purpose, so this revision saves, reads, imports and exports; only evaluation refuses it. ' +
+    'Build the geometry inside build() from the primitive, profile and procedural helpers instead of embedding a literal vertex buffer, ' +
+    'round the literals you must keep to the precision the asset needs, or bind texture bytes as approved material resources instead of inlining them. ' +
+    'kiln_discover reports both limits as source.maxBytes and source.transportEvaluatorMaxBytes.'
+  );
+}
+
 export interface EvaluatorRequestV2 {
   version: typeof EVALUATOR_REQUEST_VERSION;
   requestId: string;
@@ -252,6 +276,8 @@ export function createEvaluatorRequestV2(input: CreateEvaluatorRequestV2Input): 
       'Evaluator requests do not accept a host console capability.',
     );
   }
+  const oversizeSource = evaluatorSourceBudgetFailure(input.code);
+  if (oversizeSource) throw new EvaluatorPortError('INPUT_INVALID', oversizeSource);
   const maxGlbBytes = boundedControl(
     input.maxGlbBytes,
     DEFAULT_EVALUATOR_MAX_GLB_BYTES,

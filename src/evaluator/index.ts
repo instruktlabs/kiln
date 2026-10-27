@@ -7,6 +7,7 @@ export {
   decodeEvaluatorResultV2,
   encodeRenderResultV2,
   evaluatorOutcomeMessage,
+  evaluatorSourceBudgetFailure,
   EvaluatorPortError,
   resolveEvaluatorPortV2,
   trustedInProcessEvaluatorPortV2,

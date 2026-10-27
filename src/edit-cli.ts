@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import { programRefPattern } from './program-store';
 import { localProgramStore } from './program-store-node';
 import { createKilnProgramToolRegistry } from './tools/registry';
+import { localEvaluatorMode } from './local-runtime';
 import { FileWorkspace, localWorkspaceRoot } from './workspace-node';
 import { FileLiveReview } from './live-review-node';
 import { cliWorkspaceSelection, readMaterialDependencies } from './workspace-cli';
@@ -100,6 +101,9 @@ export async function editMain(argv: readonly string[]): Promise<number> {
       programStore: localProgramStore(),
       workspace,
       liveReview,
+      // Still no evaluator here; this only declares what a later render would do with the
+      // patched source, so an oversize program is reported now rather than then (#299).
+      evaluatorTransportsSource: localEvaluatorMode() !== 'in-process',
     }).find((definition) => definition.name === 'kiln_edit')!;
     const input = tool.inputSchema.parse({
       programRef,
