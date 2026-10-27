@@ -1,9 +1,11 @@
 /**
  * Triangle and draw budgets (delivery contract item 3).
  *
- * `defineBudget({ triangles, draws? })` declares what the asset may cost: `triangles` is one
- * number for LOD0 or a record of tiers (`{ LOD0: 4000, LOD1: 900, LOD2: 120 }`), and `draws`
- * caps LOD0 draw calls. The declaration travels in the GLB as scene extras `kilnBudgetV1`,
+ * `defineBudget({ triangles, draws?, images?, decodedBytes?, materialTier? })` declares what the
+ * asset may cost: `triangles` is one number for LOD0 or a record of tiers
+ * (`{ LOD0: 4000, LOD1: 900, LOD2: 120 }`), and `draws` caps LOD0 draw calls. `images`,
+ * `decodedBytes` and `materialTier` declare material limits, measured in `budget.materials`;
+ * `triangles` is optional when one of them is declared. The declaration travels in the GLB as scene extras `kilnBudgetV1`,
  * and every receipt measures the written bytes against it. Budgets are advisory: a failing
  * tier never changes QA acceptance; only CLI `--strict-budget` turns it into an exit code.
  */
@@ -71,6 +73,16 @@ const count = (label: string, value: unknown): number => {
   return value as number;
 };
 
+/**
+ * A cap on what the asset may carry, where zero is a real and stricter limit: an untextured
+ * asset declares `images: 0` honestly. `count` stays for what an asset must have.
+ */
+const capacity = (label: string, value: unknown): number => {
+  if (typeof value !== 'number' || !Number.isSafeInteger(value) || value < 0)
+    fail(`${label} must be a non-negative integer, got ${String(value)}.`);
+  return value as number;
+};
+
 const SPEC_SHAPE =
   '{ triangles?: number | { LOD0, LOD1, ... }, draws?, images?, decodedBytes?, materialTier? }';
 
@@ -105,9 +117,9 @@ function materialLimits(value: Record<string, unknown>): MaterialBudgetDeclarati
       blendedAreaRatio: figures!.maxBlendedSurfaceAreaRatio,
     });
   }
-  if (value.images !== undefined) materials.images = count('images', value.images);
+  if (value.images !== undefined) materials.images = capacity('images', value.images);
   if (value.decodedBytes !== undefined)
-    materials.decodedBytes = count('decodedBytes', value.decodedBytes);
+    materials.decodedBytes = capacity('decodedBytes', value.decodedBytes);
   return Object.keys(materials).length ? materials : undefined;
 }
 
@@ -120,9 +132,9 @@ function storedMaterials(value: unknown): MaterialBudgetDeclarationV1 {
     if (!['tier', 'images', 'decodedBytes', 'imageSize', 'blendedAreaRatio'].includes(key))
       fail(`unknown materials field ${JSON.stringify(key)}.`);
   if (stored.tier !== undefined) materials.tier = stored.tier as MaterialReferenceTier;
-  if (stored.images !== undefined) materials.images = count('images', stored.images);
+  if (stored.images !== undefined) materials.images = capacity('images', stored.images);
   if (stored.decodedBytes !== undefined)
-    materials.decodedBytes = count('decodedBytes', stored.decodedBytes);
+    materials.decodedBytes = capacity('decodedBytes', stored.decodedBytes);
   if (stored.imageSize !== undefined) materials.imageSize = count('imageSize', stored.imageSize);
   if (stored.blendedAreaRatio !== undefined)
     materials.blendedAreaRatio = ratio('blendedAreaRatio', stored.blendedAreaRatio);

@@ -11,7 +11,7 @@ import { afterAll, beforeAll, describe, expect, test } from 'bun:test';
 import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import * as THREE from 'three';
-import { defineBudget, KILN_BUDGET_KEY } from '../budget';
+import { defineBudget, KILN_BUDGET_KEY, normalizeBudget, readBudgetDeclaration } from '../budget';
 import { AuthoringDiagnosticError } from '../evaluator/authoring-diagnostic';
 import { buildSandboxGlobals } from '../primitives';
 import { renderGLBInProcess } from '../render';
@@ -187,5 +187,34 @@ describe('CLI budget receipt', () => {
     const passed = run(['render', 'pass.js', '--out', 'pass.glb', '--strict-budget']);
     expect(passed.exitCode).toBe(0);
     expect(passed.stdout.toString()).toContain('budget pass');
+  });
+});
+
+describe('zero material limits', () => {
+  // An untextured asset's honest declaration is "no images", and every hard-surface weapon or
+  // vehicle in a pack is untextured, so zero has to be expressible. `triangles` and `draws`
+  // describe what the asset must have and stay positive; `images` and `decodedBytes` cap what
+  // it may carry, where zero is a real, stricter limit.
+  test('images and decodedBytes accept zero and keep it', () => {
+    expect(normalizeBudget({ triangles: 4600, images: 0 }).materials).toEqual({ images: 0 });
+    expect(normalizeBudget({ triangles: 4600, decodedBytes: 0 }).materials).toEqual({
+      decodedBytes: 0,
+    });
+    expect(
+      normalizeBudget({ triangles: { LOD0: 4600 }, draws: 9, images: 0, decodedBytes: 420_000 })
+        .materials,
+    ).toEqual({ images: 0, decodedBytes: 420_000 });
+  });
+
+  test('a zero material limit survives the stored round trip', () => {
+    const declared = normalizeBudget({ triangles: 4600, images: 0 });
+    expect(readBudgetDeclaration(structuredClone(declared))?.materials).toEqual({ images: 0 });
+  });
+
+  test('triangles and draws still require a positive integer', () => {
+    expect(() => normalizeBudget({ triangles: 0 })).toThrow(/triangles must be a positive integer/);
+    expect(() => normalizeBudget({ triangles: 4600, draws: 0 })).toThrow(
+      /draws must be a positive integer/,
+    );
   });
 });

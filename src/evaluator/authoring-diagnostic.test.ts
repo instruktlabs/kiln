@@ -7,7 +7,12 @@ import {
   createEvaluatorPortV2,
 } from './protocol';
 import { renderGLBViaSubprocess } from './subprocess';
-import { authoringDiagnosticAdvice, EXECUTION_REJECTED_ADVICE } from './authoring-diagnostic';
+import {
+  authoringDiagnosticAdvice,
+  DELIVERY_CONTRACT_ADVICE,
+  EXECUTION_REJECTED_ADVICE,
+} from './authoring-diagnostic';
+import { normalizeBudget } from '../budget';
 import { helperContracts } from '../discovery/helper-contracts';
 import { TEXTURE_USAGES } from '../texture-contract';
 import {
@@ -628,3 +633,22 @@ test('procedural texture usage errors list the accepted usages without crossing 
     expect(advice).toContain(slot);
   await expect(renderGLBViaSubprocess(sources[0]!)).rejects.toThrow(advice);
 }, 20000);
+
+// Every field normalizeBudget accepts must be named in the advice an author sees when a
+// delivery helper fails. The three material fields arrived with #176 and the advice kept the
+// older `{ triangles, draws? }` shape, so Discovery documented a contract the repair text
+// denied.
+const BUDGET_SPEC_FIELDS: Record<string, unknown> = {
+  triangles: 4000,
+  draws: 12,
+  images: 4,
+  decodedBytes: 8_388_608,
+  materialTier: 'web.portable.v1/standard',
+};
+
+test('delivery-contract advice names every defineBudget field the validator accepts', () => {
+  for (const [field, value] of Object.entries(BUDGET_SPEC_FIELDS)) {
+    expect(() => normalizeBudget({ triangles: 4000, [field]: value })).not.toThrow();
+    expect(DELIVERY_CONTRACT_ADVICE).toContain(field);
+  }
+});

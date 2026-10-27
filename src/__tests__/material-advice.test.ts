@@ -77,9 +77,22 @@ describe('defineBudget material limits', () => {
         blendedAreaRatio: 0.35,
       },
     });
+    // Zero is a cap, not an absent declaration: an untextured asset states that it must stay
+    // untextured, and the evaluator fails it the moment a texture appears. `{}` still throws
+    // because nothing at all is declared.
+    expect(defineBudget({ images: 0 })).toEqual({
+      schemaVersion: 1,
+      triangles: {},
+      materials: { images: 0 },
+    });
+    expect(defineBudget({ triangles: 900, decodedBytes: 0 })).toEqual({
+      schemaVersion: 1,
+      triangles: { LOD0: 900 },
+      materials: { decodedBytes: 0 },
+    });
     for (const bad of [
       {},
-      { images: 0 },
+      { images: -1 },
       { images: 2.5 },
       { decodedBytes: -1 },
       { materialTier: 'web.portable.v1/huge' },
