@@ -239,9 +239,30 @@ export async function renderTarget(rig, target) {
 const recordKey = (target) => target.key ?? rigPosterKey(target.pack, target.slug);
 
 /**
+ * A poster run's identity: its pack, the day it rendered, and a digest of the engine and render service it used.
+ * Re-rendering under the same engine and service on the same day is the same run; anything else is another one, so
+ * a later run can never be mistaken for the one that made an earlier image.
+ */
+export const rigRunId = ({ pack, renderedOn, engine, service }) => `${pack}-${renderedOn}-${sha256Of(Buffer.from(JSON.stringify([engine, service]))).slice(0, 8)}`;
+const rigRun = ({ pack, renderedOn, engine, service }) => ({ id: rigRunId({ pack, renderedOn, engine, service }), pack, renderedOn, engine, service });
+
+/**
+ * Every run recorded so far, one record each. Earlier files kept a single run per pack, and the one before that a
+ * single run for the whole file, so a second run of a pack overwrote the first run's engine, service and date --
+ * seven winter posters ended up pointing at the run that rendered a different pack. Those headers are migrated
+ * here; the posters they covered keep no run, because which run made them was lost before this record existed.
+ */
+export function rigRuns(previous) {
+  const rig = previous?.rig ?? {};
+  if (Array.isArray(rig.runs)) return rig.runs.map((run) => (run.id ? run : rigRun(run)));
+  const legacy = rig.runs ?? (rig.engine ? { farm: { renderedOn: rig.renderedOn, engine: rig.engine, service: rig.service } } : {});
+  return Object.entries(legacy).map(([pack, run]) => rigRun({ pack, ...run }));
+}
+
+/**
  * Write the record, and (Farm) pin the PNGs and extend the image plan. `pin: false` writes the PNGs into the
  * mirror without pinning them: the bridge update pins a revision's whole directory itself and would replace
- * any earlier pin under it.
+ * any earlier pin under it. Each poster names the run that rendered it, and each run keeps its own record.
  */
 export async function recordPosters({ rig, rendered, mirror, data = DATA, renderedOn = new Date().toISOString().slice(0, 10), pin = true }) {
   const manifestFile = join(data, 'mirror-manifest.json');
@@ -249,8 +270,8 @@ export async function recordPosters({ rig, rendered, mirror, data = DATA, render
   const recordFile = join(data, 'rig-posters.json');
   const previous = await readJson(recordFile).catch(() => ({ schemaVersion: 1, rig: {}, posters: {} }));
   const posters = { ...previous.posters };
-  // The header keeps one run per pack: the engine and service each image set came from.
-  const runs = { ...(previous.rig?.runs ?? (previous.rig?.engine ? { farm: { renderedOn: previous.rig.renderedOn, engine: previous.rig.engine, service: previous.rig.service } } : {})) };
+  // One record per run: the engine and service that image set came from.
+  const runs = rigRuns(previous);
   let plan = pin ? await readJson(planFile) : undefined;
   for (const { png, record, target } of rendered) {
     if (pin) await pinMirrorFile({ mirror, manifestFile, path: record.path, bytes: png });
@@ -258,13 +279,15 @@ export async function recordPosters({ rig, rendered, mirror, data = DATA, render
       await mkdir(dirname(join(mirror, record.path)), { recursive: true });
       await writeFile(join(mirror, record.path), png);
     }
-    posters[recordKey(target)] = record;
     if (pin) plan = { ...plan, images: upsertBy(plan.images, 'inputPath', rigPosterImage(record, target.alt)) };
-    runs[target.pack] = {
+    const run = rigRun({
+      pack: target.pack,
       renderedOn,
       engine: { commit: rig.engine.provenance.commit, subject: rig.engine.provenance.subject, dirty: rig.engine.provenance.dirty },
       service: rig.service,
-    };
+    });
+    if (!runs.some((prior) => prior.id === run.id)) runs.push(run);
+    posters[recordKey(target)] = { ...record, run: run.id };
   }
   if (pin) await writeJson(planFile, plan);
   await writeJson(recordFile, { schemaVersion: 1, rig: { id: RIG_ID, backdrop: 'neutral', runs }, posters });
