@@ -1183,15 +1183,15 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'remapUVToAtlas',
     signature:
-      "remapUVToAtlas(geometry, atlasTextureOrManifest, regionName, { inputOrigin: 'top-left' | 'bottom-left', mode: 'content-boundary' | 'texel-center' })",
+      "remapUVToAtlas(geometry, atlasTextureOrManifest, regionName, { inputOrigin: 'top-left' | 'bottom-left', mode: 'content-boundary' | 'texel-center', axes?: 'uv' | 'u-only' })",
     returns: 'THREE.BufferGeometry',
     category: 'uv',
     description:
       'Maps existing unit UV0 into a named atlas content rectangle on an owned geometry clone, preserving topology and rich attributes.',
     example:
-      "const card = remapUVToAtlas(planeGeo(1, 1), atlas, 'patch', { inputOrigin: 'bottom-left', mode: 'texel-center' });",
+      "const card = remapUVToAtlas(planeGeo(1, 1), atlas, 'patch', { inputOrigin: 'bottom-left', mode: 'texel-center' });\nconst blade = remapUVToAtlas(leafGeo, fernColumnAtlas, 'fern', { inputOrigin: 'top-left', mode: 'texel-center', axes: 'u-only' });",
     promptNotes:
-      'UV0 must be finite in [0,1], with two components per vertex. Content-boundary maps endpoints to content edges; texel-center maps endpoints to the first/last content texel centers. Explicitly identify the input UV origin; atlas image coordinates use top left and flipY=false. Geometry, normals, colors, skin weights, morph buffers, groups and source metadata are preserved independently. UV scale changes invalidate tangents; regenerate when needed. This helper does not project, unwrap, tile within a region or change material sampling.',
+      "UV0 must be finite in [0,1], with two components per vertex. Content-boundary maps endpoints to content edges; texel-center maps endpoints to the first/last content texel centers. Explicitly identify the input UV origin; atlas image coordinates use top left and flipY=false. Geometry, normals, colors, skin weights, morph buffers, groups and source metadata are preserved independently. UV scale changes invalidate tangents; regenerate when needed. The default axes 'uv' replaces both components, so it destroys a per-vertex gradient carried in V — a foliage wind sway weight read as uv-y is the known case, and the result still validates and renders. Pass axes 'u-only' for that: it rescales U into the named column and leaves V bit-for-bit, requiring inputOrigin 'top-left' and a region that spans the full atlas height (lay the sheet out as full-height species columns with gutter 0). This helper does not project, unwrap, tile within a region or change material sampling.",
   },
   {
     name: 'normalMapFromHeight',

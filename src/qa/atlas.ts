@@ -490,10 +490,13 @@ export function inspectAtlasScene(root: unknown): AtlasStructuralInspectionV1 {
         continue;
       }
       const center = binding.mode === 'texel-center' ? 0.5 : 0;
+      // u-only maps U alone, so only U carries the texel-center inset; V passes
+      // through over the whole content extent of a full-height region.
+      const centerY = binding.axes === 'u-only' ? 0 : center;
       const minX = (region.content.x + center) / entry.p.manifest.width,
         maxX = (region.content.x + region.content.width - center) / entry.p.manifest.width;
-      const minY = (region.content.y + center) / entry.p.manifest.height,
-        maxY = (region.content.y + region.content.height - center) / entry.p.manifest.height;
+      const minY = (region.content.y + centerY) / entry.p.manifest.height,
+        maxY = (region.content.y + region.content.height - centerY) / entry.p.manifest.height;
       // Four Float32 ulps at the unit domain cover representable boundary roundoff.
       const tolerance = 4 * 2 ** -23;
       let invalid = false;
