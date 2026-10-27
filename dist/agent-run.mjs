@@ -42930,7 +42930,7 @@ function createKilnSourceDef(store) {
 }
 
 // src/engine-identity.ts
-var ENGINE_VERSION = "1.5.0";
+var ENGINE_VERSION = "1.6.0";
 var ENGINE_INSTALL_URL = new URL("../", import.meta.url).href;
 function engineIdentity() {
   return { version: ENGINE_VERSION, installUrl: ENGINE_INSTALL_URL };
