@@ -447,9 +447,9 @@ State it as one rule rather than seven lessons, because the seventh variant has 
 and a list of six will not cover it. The question to ask of any green light is: **is this the
 thing, or a summary of the thing?**
 
-## Verifying a test run: seven bad signals in one cycle
+## Verifying a test run: eight bad signals in one cycle
 
-Across one day of dogfooding, **five separate green-or-red signals were wrong**, each by a
+Across one day of dogfooding, **eight separate derived signals were wrong**, each by a
 different mechanism. None was caught by the thing that produced it. Recorded because the cost
 was real — one of them alone cost a 13-minute rerun, and one nearly shipped.
 
@@ -496,6 +496,17 @@ was real — one of them alone cost a 13-minute rerun, and one nearly shipped.
   expectation look reasonable, which is the worst property an expectation can have. **Also
   re-derive the baseline when `main` moves** — each merge in this cycle shifted it (3,987 to
   3,996 to 4,002), and the check is only as good as the number it is checked against.
+
+- **An eighth, and the cheapest to fall for: a state read while it was still being derived.**
+  `gh issue view 290 --json state` returned `OPEN` moments after #295 merged, so I posted a
+  comment blaming the title-reference auto-close gap that genuinely had caught #293 earlier.
+  The timestamps say otherwise: #295 merged at 12:03:14Z and the issue closed at 12:03:18Z.
+  The read landed four seconds inside a window where GitHub had not finished acting on
+  `Closes #290` in the PR body. Nothing about the value looked provisional — `OPEN` is exactly
+  what a real auto-close failure returns, which is why the wrong conclusion was publishable.
+  The tell is not in the value but in the clock: a derived state read within seconds of the
+  event that derives it is not evidence yet. Read what settles it instead — the keyword in the
+  PR body, or `closed_at` — rather than the state it will eventually produce.
 
 ## The worst merge hazard: generated output that does not conflict
 
@@ -762,6 +773,29 @@ that intends to change them; both will be tripped by the next unrelated edit tha
 touch the file, where the failure arrives as a budget error with no obvious relation to what the
 author was doing. A gate with single-digit headroom has stopped measuring a budget and started
 measuring luck.
+
+### 1.6.0 carries #287, and the order is not free
+
+The owner folded #287's `textures` exposure into 1.6.0 rather than shipping it afterwards: an
+input schema change invalidates the prompt cache for every client, and one invalidation beats
+two.
+
+That makes the release sequence load-bearing, for a reason the build script states itself.
+`scripts/build-runtime.mjs:86` comments that the MCP entry bundles
+`src/generated/mcp-manifest.json` and must "regenerate it from the registry first, before the
+source identity below is taken." The contract test measures that *packaged* manifest rather
+than the live registry — `src/tools/__tests__/registry-contract.test.ts` imports
+`packagedMcpManifest`, and its header says the generated manifest "is what every harness
+receives." So the order is:
+
+1. `textures` on `kiln_export` and `kiln_export_to`, plus the Discovery entries.
+2. `node scripts/build-runtime.mjs all`, which regenerates the manifest from the registry.
+3. Only then the version bumps across the eleven files and
+   `plugins/kiln-engine/package-provenance.json`.
+
+Done in the other order, provenance pins a package whose advertised manifest does not carry
+the option the release notes claim. Nothing fails loudly — the artefact is simply wrong, which
+is the signature of every other hazard in this document.
 
 ## Open decisions
 
