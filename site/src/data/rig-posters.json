@@ -3,8 +3,10 @@
   "rig": {
     "id": "review-neutral-v1",
     "backdrop": "neutral",
-    "runs": {
-      "farm": {
+    "runs": [
+      {
+        "id": "farm-2026-10-01-a2452dec",
+        "pack": "farm",
         "renderedOn": "2026-10-01",
         "engine": {
           "commit": "ac6d9eb492b4891a54dbf563cfef14af5633254a",
@@ -38,7 +40,9 @@
           ]
         }
       },
-      "bridge": {
+      {
+        "id": "bridge-2026-09-30-c5055c42",
+        "pack": "bridge",
         "renderedOn": "2026-09-30",
         "engine": {
           "commit": "5af4341e65a1c5131a9ad5bb5110046be925f29e",
@@ -72,7 +76,9 @@
           ]
         }
       },
-      "vehicles": {
+      {
+        "id": "vehicles-2026-10-01-784df044",
+        "pack": "vehicles",
         "renderedOn": "2026-10-01",
         "engine": {
           "commit": "ac6d9eb492b4891a54dbf563cfef14af5633254a",
@@ -106,7 +112,9 @@
           ]
         }
       },
-      "foundry-floor": {
+      {
+        "id": "foundry-floor-2026-09-30-d94dcc68",
+        "pack": "foundry-floor",
         "renderedOn": "2026-09-30",
         "engine": {
           "commit": "ac6d9eb492b4891a54dbf563cfef14af5633254a",
@@ -140,7 +148,9 @@
           ]
         }
       },
-      "hero": {
+      {
+        "id": "hero-2026-09-30-c5055c42",
+        "pack": "hero",
         "renderedOn": "2026-09-30",
         "engine": {
           "commit": "5af4341e65a1c5131a9ad5bb5110046be925f29e",
@@ -174,7 +184,9 @@
           ]
         }
       },
-      "cabin-woods-psx-horror": {
+      {
+        "id": "cabin-woods-psx-horror-2026-10-17-544b2fcc",
+        "pack": "cabin-woods-psx-horror",
         "renderedOn": "2026-10-17",
         "engine": {
           "commit": "2d359d8b006288beb77f7eea6581a1b8c376eedf",
@@ -208,7 +220,9 @@
           ]
         }
       },
-      "holodeck": {
+      {
+        "id": "holodeck-2026-10-26-a5c7f75c",
+        "pack": "holodeck",
         "renderedOn": "2026-10-26",
         "engine": {
           "commit": "6ff8f8ab89cdb7e31ec46613fea601d9ab55f95a",
@@ -242,7 +256,7 @@
           ]
         }
       }
-    }
+    ]
   },
   "posters": {
     "farm:farmhouse": {

@@ -40,14 +40,20 @@ Kiln and Holodeck software keep their own licences.
 - `selection.json` freezes each pack's exact collection, asset and revision IDs and the
   SHA-256 of every saved manifest, source program and canonical GLB. Every placed scene GLB is
   byte-identical to the canonical `asset.glb` of the revision its world names.
-- `sources/project/<asset>/<revision>/` keeps each source program and saved manifest.
+- `sources/project/<asset>/<revision>/` keeps each source program and saved manifest. With the
+  published editable bundles these are enough to restage a pack whose Kiln store is gone, and to
+  rebuild that store; see [Restage without a store](#restage-without-a-store).
 - `HOLODECK_APPROVAL` in `site/scripts/holodeck-spec.mjs` records owner approval by slug and
   exact revision: on 2026-10-23 the 47 Tidemark, Courtyard and Cove cards, then Crescent Cove's
   41 new cards. A pack is available only when every asset it lists is approved, so a new card
   or revision makes its pack wait for review again.
 - `site/src/data/holodeck.json` is the gallery catalog. Downloads and posters are pinned in
   `site/src/data/mirror-manifest.json`; posters are rendered under the `review-neutral-v1` rig
-  and recorded in `site/src/data/rig-posters.json`.
+  and recorded in `site/src/data/rig-posters.json`, which keeps one record per poster run and
+  names the run on every poster it made.
+- `releases.json` records every release ID the packs have spent and the selection it staged, so
+  a branch cannot reuse an ID another branch already spent; see
+  [Choose a release ID](#choose-a-release-id).
 
 ## Regenerate
 
@@ -77,12 +83,80 @@ Keys are immutable, so different bytes at an existing key are refused.
 `published.json` records every object the asset host has served back. The upload list leaves
 those out and names only new objects; one recorded with different bytes is refused.
 
+### Where stores live
+
+Keep every authoring workspace a release selects under one durable directory, one workspace per
+store name in `selection.json` — never in a session temp folder, and never only on the machine
+that authored it. A store named in the selection but kept nowhere else is a store that will be
+lost, and the names are the only thing a later release has to go on.
+
+Losing one is recoverable but not free: the published editable bundle is a fallback for
+restaging, not a substitute for the authoring workspace it came from.
+
+### Restage without a store
+
+A revision whose store is gone, or whose store no longer holds it, is read back from the
+editable bundle its release published. The bundle is a standard Kiln revision bundle, so its
+sealed members are the stored files byte for byte; the saved `manifest.json` comes from the
+`sources/` record here, because a bundle re-serialises it without the trailing newline a store
+writes. Both are verified against `selection.json`, the bundle must name the selected revision,
+and it must rebuild byte for byte into the very object it was read from — a content-addressed
+key would otherwise move silently rather than fail. Staging names every revision it read that
+way under `recovered`.
+
+The bytes come from `--mirror` when a previous staging run still has them, and from the asset
+host otherwise, but only for an object `published.json` records the host serving back. A
+revision never published, such as a brand-new one, still needs its store.
+
+### Recover a lost store
+
+Materialise the selected revisions as a Kiln store again, from the same published bundles:
+
+```sh
+node scripts/stage-holodeck.mjs --recover-store STORE_DIR --mirror .localdata/holodeck-delivery
+```
+
+`--only slug,slug` limits it to some assets. Each revision is written to
+`STORE_DIR/<assetId>/revisions/<revisionId>` exactly as its store held it, so one recovered
+directory can serve several store names; an existing file must already hold those bytes. The
+result is a store for restaging, not the authoring workspace: it holds the selected revisions
+only, with no history and no workspace state.
+
+### Choose a release ID
+
+A release ID names one staged state. `releases.json` records every ID spent and the SHA-256 of
+the `selection.json` it staged; staging refuses an ID already spent on different content and
+suggests the next free one. Restaging the same selection under the same ID is the normal release
+loop and records nothing new.
+
+Seven IDs were spent before this ledger existed, and only the current one is recorded with its
+selection: the rest were recovered from the release folders in the Holodeck poster paths, which
+show the ID was used but not what it staged. None of those can be claimed again.
+
+### Rebase a pack onto main
+
+`published.json`, `mirror-manifest.json`, `commons-build.json`, `holodeck.json` and
+`holodeck-shots.json` are generated. Merging two branches' copies line by line produces a state
+no staging run would produce — `holodeck-20261025-02` was spent twice and five files had to be
+reconciled entry by entry. Regenerate them instead:
+
+1. Take `main`'s copies of every generated file (`git checkout main -- <file>`), and `main`'s
+   `releases.json`.
+2. Give the pack a release ID that `releases.json` leaves free.
+3. Rerun the selection, staging and upload-list commands above. Staging rewrites the catalog,
+   the pins and the image plan from `selection.json`, so the result is one coherent state.
+
+`rig-posters.json` is the exception: its images need the GPU rig, so keep both branches' records
+and both runs, and re-render only the posters whose revision or model changed (`--only`).
+`refreshCatalog` then rewrites the catalog's posters from the record.
+
 ### Add a new committed example
 
 For a new scene, keep the published selection as the baseline instead of reselecting
 older worlds. First add its real pack metadata, exact asset count and per-asset
-presentation to `holodeck-spec.mjs`, choose a new `HOLODECK_RELEASE`, and add its
-scene URL to `src/data/holodeck-worlds.json`. Do this only after the example and its
+presentation to `holodeck-spec.mjs`, choose a new `HOLODECK_RELEASE` that
+[`releases.json` leaves free](#choose-a-release-id), and add its scene URL to
+`src/data/holodeck-worlds.json`. Do this only after the example and its
 final assets exist. A selection does not approve an asset or publish its gallery page.
 
 From `site/`, append the committed example with its saved Kiln store:
@@ -113,7 +187,8 @@ revision approval records, and record any new asset review separately and honest
 ### Repoint a committed example
 
 When a selected example moves to a newer source revision, choose a new `HOLODECK_RELEASE`
-and repoint only that pack, from `site/`:
+that [`releases.json` leaves free](#choose-a-release-id) and repoint only that pack, from
+`site/`:
 
 ```sh
 node scripts/select-holodeck.mjs --repoint-example crescent-cove \
@@ -153,3 +228,47 @@ and a different commit, refuses source-revision rollback, and still verifies tha
 changed assets descend from the selected revisions. Shared assets used by other
 packs cannot change through this path. This preserves the original authoring-world
 revision rather than inventing one for a repository maintenance change.
+
+## Scene shots
+
+Each pack page shows two shots of its walkable world, declared in `HOLODECK_SHOTS`
+(`holodeck-spec.mjs`) with the Holodeck benchmark camera each one uses. From `site/`:
+
+```sh
+node scripts/capture-holodeck-shots.mjs --out .localdata/holodeck-shots [--only view,view]
+node scripts/stage-holodeck.mjs --shots --captures .localdata/holodeck-shots --mirror .localdata/holodeck-delivery
+```
+
+The capture loads each world in benchmark mode, hides the interface and screenshots it at the
+shot size. `receipt.json` records the world, the SHA-256 of its `manifest.json` before and after
+(so a deploy mid-capture is refused), the camera, the backend, the browser, whether Chrome ran
+headless or headed, how the shot settled and how far the frame still moved. Staging accepts only
+a WebGPU capture of the declared camera from that pack's world.
+
+### Settling
+
+A world that publishes readiness of its own (`holodeckPrototype.renderReady`, and any sky-light
+or probe-grid state beside it) is waited on, and the receipt names the signals. Holodeck
+publishes none yet, so `--settle MS` stands in, at 45 s by default: Meridian Sanctuary's sky
+light and probe grid were still resolving at 8 s, which put black mirror cubes and sky-only orbs
+in shots the receipt recorded as valid.
+
+The kept frame is the second of two taken `--drift MS` apart (2 s by default), and a frame that
+moved more than `--max-drift` between them is refused: a converged frame differs only by
+dithering, so anything more means the scene is still resolving. The default, 0.01 mean absolute
+luminance difference, has not been calibrated against the live worlds — the receipt records the
+measured drift for every shot, so the first headed run says what these scenes actually settle
+to. A world that animates can capture with `--max-drift off`.
+
+### Linux hybrid GPUs
+
+Headless Chrome gets no GPU through PRIME offload: the world reports no drawn frame and the wait
+times out, which the error says rather than blaming the world. Capture headed instead, with the
+offload variables exported — Chrome inherits this process's environment:
+
+```sh
+__NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only __GLX_VENDOR_LIBRARY_NAME=nvidia \
+  node scripts/capture-holodeck-shots.mjs --out .localdata/holodeck-shots --headed
+```
+
+On the hub (CachyOS, GTX 1660 Ti) that renders WebGPU in about 30 s per world.

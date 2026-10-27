@@ -18,6 +18,7 @@ interface RuleMapping {
     | 'scope'
     | 'connectivity'
     | 'partVolume'
+    | 'openSurface'
     | 'sweep'
     | 'rig'
     | 'validation';
@@ -94,6 +95,13 @@ export const REQUIREMENTS_RULE_MAP: readonly RuleMapping[] = [
     keys: [],
     observation: true,
     kernel: 'connectivity',
+  },
+  {
+    id: 'GEO_OPEN_SURFACE_PENETRATION',
+    mode: 'observe',
+    keys: [],
+    observation: true,
+    kernel: 'openSurface',
   },
   { id: 'REF_COMPARISON', mode: 'observe', keys: [], observation: true },
   { id: 'SWEEP_SELF_INTERSECTION', mode: 'observe', keys: [], observation: true, kernel: 'sweep' },

@@ -293,6 +293,34 @@ describe('GLB-native geometry-flat view input', () => {
     expect(encoded).toEqual(expected);
   });
 
+  // The delivery contract tells consumers to read a GLB headlessly through this
+  // reader because three's GLTFLoader reads `self.URL` for every image: `parseAsync`
+  // on a textured GLB throws `ReferenceError: self is not defined` under Node and
+  // binds a null map under Bun, which defines `self` (#292). Deleting the global is
+  // what makes this a guard rather than a restatement -- GLTFLoader throws here.
+  test('review scene binds an embedded texture with no DOM global defined', async () => {
+    const source = triangleDocument({ texture: true });
+    const expected = source.getRoot().listTextures()[0]!.getImage()!;
+    const bytes = await io().writeBinary(source);
+    const scope = globalThis as { self?: unknown };
+    const had = 'self' in scope;
+    const previous = scope.self;
+    delete scope.self;
+    try {
+      const loaded = await loadGlbReviewScene(bytes);
+      const bound: Uint8Array[] = [];
+      loaded.root.traverse((node) => {
+        const map = (node as { material?: { map?: { userData?: Record<string, unknown> } } })
+          .material?.map;
+        const record = map?.userData?.encoded as { bytes?: Uint8Array } | undefined;
+        if (record?.bytes) bound.push(record.bytes);
+      });
+      expect(bound).toEqual([expected]);
+    } finally {
+      if (had) scope.self = previous;
+    }
+  });
+
   test('review scene retains normal and uv attributes from primitive', async () => {
     const doc = triangleDocument();
     const buffer = doc.getRoot().listBuffers()[0]!;

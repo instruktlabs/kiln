@@ -268,7 +268,7 @@ export function inspectPartConnectivity(
       disposition: 'observe' as const,
       dimension: 'visualQuality' as const,
       profile: 'geometry.partConnectivity',
-      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence.${lodNote}`,
+      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence: a gap under ${CONNECTIVITY_TOLERANCE} m reads as contact, and primitives welded into one mesh form one box.${lodNote}`,
       affected: { node: group.parts[0]! },
       measurement: {
         name: 'gapToMainComponent',

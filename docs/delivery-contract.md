@@ -59,7 +59,10 @@ attribute names, so shaders read `_edge` and `_cavity`.
   `kilnBudgetV1`. Tier n is measured as level `min(n, last)` of every `MSFT_lod`
   chain plus everything outside the chains; `draws` caps LOD0 draw calls as the GLB
   stores them, before any consumer batching, so each child of a `repeatInstances` group
-  counts. Beside the measured `draws`, the LOD0 tier reports `instancedDraws`: the draws
+  counts. It is a main-pass count: shadow, reflection and depth passes belong to the
+  destination, so a shadow-casting part can cost a further draw in each of them, and a
+  dense vegetation view can spend nearly as many draws again on shadow alone.
+  Beside the measured `draws`, the LOD0 tier reports `instancedDraws`: the draws
   the three runtime target leaves after batching each group into one instanced draw.
   It is informational and never changes the tier's status. Optional
   material limits are `images`, `decodedBytes` (RGBA8, before mips) and `materialTier`,
@@ -186,6 +189,17 @@ Consumer rules that follow from it:
   Do not show all levels together. A final impostor marker does not implement
   billboarding or distance-based switching. A consumer that draws LOD0 only can export
   with `--max-lod 0` so the lower levels are not shipped at all.
+- **Read a GLB without a DOM through `loadGlbReviewScene`, not `GLTFLoader`.** three's
+  `GLTFLoader` reads `self.URL` for every image, so `parseAsync` on a textured GLB throws
+  `ReferenceError: self is not defined` under Node; under a runtime that defines `self`,
+  such as Bun, it instead reports `Couldn't load texture` and binds a null map. An
+  untextured GLB parses either way, so test scaffolding written against one passes and the
+  same pattern fails on the first textured asset. `loadGlbReviewScene(bytes)` from
+  `@instruktlabs/kiln/views` reads the same chunks through `gltf-transform` with no DOM
+  global: it returns `root` and `clips`, binds each map with its encoded bytes on
+  `userData.encoded`, and attaches LOD0 as a browser consumer sees it. A reader assembled
+  from `gltf-transform` directly drops the `MSFT_lod` chain unless the extension is
+  registered. Loading in a browser is unaffected.
 
 `src/__tests__/runtime-three-export.test.ts` qualifies static geometry, role data,
 instancing, explicit lower-tier selection and a quantized skin through Three's

@@ -29,6 +29,29 @@ does not publish a package.
   without ever being evaluated, so the range is a documented gap rather than a mistake to
   close, and `docs/programs.md` now states both
   ([#299](https://github.com/instruktlabs/kiln/issues/299)).
+- QA measures open surfaces against the closed solids they meet.
+  `GEO_OPEN_SURFACE_PENETRATION` samples each open surface's vertices against every closed
+  solid whose bounds it overlaps and reports how far inside one it reaches, naming both
+  parts and the depth. A cloth, canopy or ivy card encloses no volume, so the part-volume
+  observer could only ever report it unmeasured -- which meant a throw resting on a seat
+  and a throw running through a wall produced the same sentence. Reproduced before fixing:
+  the two cases were byte-identical `GEO_PART_SELF_INTERSECTION_UNMEASURED` findings, and a
+  closed-solid overlap across two modules composed at one origin was already reported, so
+  what was missing was the open-surface measurement rather than neighbour awareness.
+  Distance is measured before sign: a vertex within the 0.005 m contact tolerance is
+  contact, and no sign is claimed there, which is why a cloth authored exactly flush is
+  silent -- that is the one position where a parity ray grazes the face it starts on. The
+  tolerance is deliberately not the 0.02 m adjacency tolerance `FLOATING_EXPAND` and
+  `EXTERNAL_SUPPORT_TOLERANCE` share: measured fixtures put authoring slop at 1-3 mm and
+  real defects at 30-60 mm, and 2 cm would let a surface sink unreported into a cushion, a
+  canopy panel or a wall cap. Synchronous, offline and deterministic: the open/closed split
+  comes from edge topology, so no solid is built. Observation only, bounded, and reporting
+  what it left unsampled; a clean result is not a fit audit, and a solid thinner than the
+  sampled surface's facet spacing can pass between two of its vertices. A positive is a
+  measurement, not a verdict: measured over the 86 shipped examples it reports 916 findings
+  across 51 of them, against 3,575 from the part-volume pass across all 86, and the dominant
+  real case is a fitting socketed into a structural shell -- correct geometry, reported the
+  same way a bolt in a hole is ([#277](https://github.com/instruktlabs/kiln/issues/277)).
 - `kiln textures <files-or-folders> [--json]` reports the texture duplication a delivered
   set ships: embedded image occurrences against distinct images, the bytes sharing would
   save, and each distinct image's hash, size and the assets carrying it. The duplication
@@ -52,6 +75,40 @@ does not publish a package.
   material factors. `materialRecipe` and the portable material specs already named
   their output and are unchanged
   ([#288](https://github.com/instruktlabs/kiln/issues/288)).
+- `remapUVToAtlas` takes an optional `axes`. The default `uv` is unchanged and replaces
+  both components, which silently destroys a per-vertex gradient carried in V — a foliage
+  wind sway weight read as `uv-y` is the known case, and the asset still validates and
+  renders. `axes: 'u-only'` rescales U into the named region and passes V through
+  bit-for-bit, requiring `inputOrigin: 'top-left'` over a region spanning the full atlas
+  height, so a column sheet keeps the gradient while U can still be inset to texel
+  centers. A packed or vertically inset region is rejected rather than remapped. The
+  binding records `axes` only for `u-only`, so existing stamps and exported extras are
+  byte-identical. The helper contract, Discovery notes and authoring guidance now state
+  what replacing V costs ([#293](https://github.com/instruktlabs/kiln/issues/293)).
+- The floating-parts warning and the part-connectivity observation state their coverage:
+  both read the bounding boxes of drawn meshes at a 2 cm tolerance, so a smaller gap reads
+  as contact and primitives welded into one mesh are never compared with each other. The
+  QA integration reference says to measure millimetre contacts in the destination before
+  saving. Reproduced from a reported clean pass on a 2 mm detached part; the checks behaved
+  as specified and the tolerance, not welding, is what admitted it. No check changes
+  behaviour ([#289](https://github.com/instruktlabs/kiln/issues/289)).
+- The delivery contract states how to read a Kiln GLB without a DOM. three's `GLTFLoader`
+  reads `self.URL` for every image, so `parseAsync` on a textured GLB throws
+  `ReferenceError: self is not defined` under Node, and under Bun, which defines `self`, it
+  binds a null map instead. An untextured GLB parses either way, so test scaffolding written
+  against one passes and the same pattern fails on the first textured asset. The supported
+  DOM-free path is `loadGlbReviewScene` from `@instruktlabs/kiln/views`, already public and
+  already what the CPU view path uses; a reader assembled from `gltf-transform` directly
+  drops the `MSFT_lod` chain unless the extension is registered. A new test loads a textured
+  GLB through the reader with `self` deleted, so the documented guarantee cannot regress.
+  Engine behaviour, exported bytes and browser loading are unchanged
+  ([#292](https://github.com/instruktlabs/kiln/issues/292)).
+- The `draws` cap in `defineBudget` states its pass scope. Discovery and the delivery
+  contract already said the figure is what the GLB stores before any consumer batching; both
+  now also say it counts the main pass only, because shadow, reflection and depth passes
+  belong to the destination, where a shadow-casting part can cost a further draw in each.
+  Wording only: no measured value, receipt field or tier status changes
+  ([#291](https://github.com/instruktlabs/kiln/issues/291)).
 
 ## 1.5.0 (2026-10-25)
 
