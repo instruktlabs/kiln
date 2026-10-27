@@ -19417,6 +19417,7 @@ function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CON
     candidatePairs: 0,
     pairsTested: 0,
     pairsNotReached: 0,
+    verticesUnresolved: 0,
     pairsLodAlternates: 0,
     truncated: false,
     skipped: [],
@@ -19444,14 +19445,19 @@ function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CON
           evidence.pairsLodAlternates++;
           continue;
         }
-        candidates.push({ open: surface, solid, overlap: boxOverlapRatio2(surface.box, solid.box) });
+        candidates.push({
+          open: surface,
+          solid,
+          overlap: boxOverlapRatio2(surface.box, solid.box),
+          order: candidates.length
+        });
       }
     }
   evidence.candidatePairs = candidates.length;
   evidence.truncated = evidence.broadPhaseTruncated === true;
   if (!candidates.length)
     return evidence;
-  candidates.sort((x, y) => y.overlap - x.overlap);
+  candidates.sort((x, y) => y.overlap - x.overlap || x.order - y.order);
   const budget = new Budget(MAX_WORK);
   const penetrations = [];
   for (const candidate of candidates) {
@@ -19486,6 +19492,7 @@ function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CON
     let depth = 0;
     let penetrating = 0;
     let tested = 0;
+    let unresolved = 0;
     let partial = limit < position.count;
     for (let i = 0;i < limit; i++) {
       vertex.fromBufferAttribute(position, i).applyMatrix4(matrix);
@@ -19505,9 +19512,11 @@ function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CON
         continue;
       const verdict = inside2(hierarchy, vertex, budget);
       if (verdict === null) {
-        partial = true;
-        if (budget.exhausted)
+        if (budget.exhausted) {
+          partial = true;
           break;
+        }
+        unresolved++;
         continue;
       }
       if (!verdict)
@@ -19516,6 +19525,7 @@ function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CON
       if (distance > depth)
         depth = distance;
     }
+    evidence.verticesUnresolved += unresolved;
     if (partial)
       evidence.pairsNotReached++;
     else
@@ -19551,20 +19561,29 @@ function inspectOpenSurfacePenetration(evidence) {
       unit: "m",
       breakdown: { penetratingVertices: pair.vertices, sampledVertices: pair.tested }
     },
-    repairText: "Check whether this is intended, such as a cloth tucked behind a panel. For an unintended crossing, move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface's facet spacing can pass between two of them."
+    repairText: "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
   }));
-  if (evidence.truncated) {
+  const unresolved = evidence.verticesUnresolved ?? 0;
+  if (evidence.truncated || unresolved > 0) {
+    const clauses = [];
+    if (evidence.truncated)
+      clauses.push(`Sampled ${evidence.pairsTested} of ${evidence.broadPhaseTruncated ? "at least " : ""}${evidence.candidatePairs} overlapping open-surface and solid pairs; ` + `${evidence.pairsNotReached} were beyond the ${MAX_WORK}-test analysis budget.` + (evidence.broadPhaseTruncated ? ` Pair discovery stopped after ${MAX_BROAD_PHASE_PAIRS2} box comparisons.` : "") + " Unsampled pairs were not examined; the most overlapping bounding boxes were sampled first.");
+    if (unresolved > 0)
+      clauses.push(`${unresolved} ${unresolved === 1 ? "vertex" : "vertices"} further than the contact tolerance from a solid could not be resolved as inside or outside it, and ${unresolved === 1 ? "is" : "are"} counted as neither.`);
     findings.push({
       code: "GEO_OPEN_SURFACE_PENETRATION_TRUNCATED",
       disposition: "observe",
       dimension: "visualQuality",
       profile: "geometry.openSurfacePenetration",
-      message: `Sampled ${evidence.pairsTested} of ${evidence.broadPhaseTruncated ? "at least " : ""}${evidence.candidatePairs} overlapping open-surface and solid pairs; ` + `${evidence.pairsNotReached} were beyond the ${MAX_WORK}-test analysis budget.` + (evidence.broadPhaseTruncated ? ` Pair discovery stopped after ${MAX_BROAD_PHASE_PAIRS2} box comparisons.` : "") + " Unsampled pairs were not examined; the most overlapping bounding boxes were sampled first.",
+      message: clauses.join(" "),
       measurement: {
         name: "openSurfacePairsSampled",
         actual: evidence.pairsTested,
         expected: evidence.candidatePairs,
-        breakdown: { pairsNotReached: evidence.pairsNotReached }
+        breakdown: {
+          pairsNotReached: evidence.pairsNotReached,
+          verticesUnresolved: unresolved
+        }
       }
     });
   }
@@ -23421,13 +23440,14 @@ function runRequirementsSceneQa(context, scene, clips, policy = {}, evidence = {
       findings.push(...inspectOpenSurfacePenetration(surfaces));
       Object.assign(geometryMetrics, {
         openSurfaceCoverage: surfaces.truncated || surfaces.skipped.length > 0 ? "partial" : "complete-surface-pairs",
-        openSurfaceScope: "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact.",
+        openSurfaceScope: "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
         openSurfaceContactTolerance: surfaces.contactTolerance,
         openSurfaceOpenParts: surfaces.openParts,
         openSurfaceClosedParts: surfaces.closedParts,
         openSurfaceCandidatePairs: surfaces.candidatePairs,
         openSurfacePairsSampled: surfaces.pairsTested,
         openSurfacePairsNotReached: surfaces.pairsNotReached,
+        openSurfaceVerticesUnresolved: surfaces.verticesUnresolved,
         openSurfaceLodAlternatePairs: surfaces.pairsLodAlternates,
         openSurfaceSkipped: surfaces.skipped.length
       });
