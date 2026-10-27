@@ -10,7 +10,7 @@
  */
 
 import * as THREE from 'three';
-import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
+import { AuthoringDiagnosticError, assertMaterialName } from './evaluator/authoring-diagnostic';
 import {
   assertDimension,
   assertPrimitiveSegments,
@@ -1519,10 +1519,12 @@ export function gameMaterial(
     emissive?: number | string;
     emissiveIntensity?: number;
     flatShading?: boolean;
+    /** Stable name written to the exported glTF material. */
+    name?: string;
   } = {},
 ): THREE.MeshStandardMaterial {
   requireColor(color, 'gameMaterial');
-  return new THREE.MeshStandardMaterial({
+  const material = new THREE.MeshStandardMaterial({
     color,
     metalness: options.metalness ?? 0,
     roughness: options.roughness ?? 0.8,
@@ -1530,26 +1532,30 @@ export function gameMaterial(
     emissiveIntensity: options.emissiveIntensity ?? 1,
     flatShading: options.flatShading ?? true,
   });
+  if (options.name !== undefined) material.name = assertMaterialName(options.name, 'gameMaterial');
+  return material;
 }
 
 export function basicMaterial(
   color: number | string,
-  options: { transparent?: boolean; opacity?: number } = {},
+  options: { transparent?: boolean; opacity?: number; name?: string } = {},
 ): THREE.MeshBasicMaterial {
   requireColor(color, 'basicMaterial');
-  return new THREE.MeshBasicMaterial({
+  const material = new THREE.MeshBasicMaterial({
     color,
     transparent: options.transparent ?? false,
     opacity: options.opacity ?? 1,
   });
+  if (options.name !== undefined) material.name = assertMaterialName(options.name, 'basicMaterial');
+  return material;
 }
 
 export function glassMaterial(
   color: number | string,
-  options: { opacity?: number; roughness?: number; metalness?: number } = {},
+  options: { opacity?: number; roughness?: number; metalness?: number; name?: string } = {},
 ): THREE.MeshStandardMaterial {
   requireColor(color, 'glassMaterial');
-  return new THREE.MeshStandardMaterial({
+  const material = new THREE.MeshStandardMaterial({
     color,
     transparent: true,
     opacity: options.opacity ?? 0.35,
@@ -1557,18 +1563,23 @@ export function glassMaterial(
     metalness: options.metalness ?? 0,
     side: THREE.DoubleSide,
   });
+  if (options.name !== undefined) material.name = assertMaterialName(options.name, 'glassMaterial');
+  return material;
 }
 
 export function lambertMaterial(
   color: number | string,
-  options: { flatShading?: boolean; emissive?: number | string } = {},
+  options: { flatShading?: boolean; emissive?: number | string; name?: string } = {},
 ): THREE.MeshLambertMaterial {
   requireColor(color, 'lambertMaterial');
-  return new THREE.MeshLambertMaterial({
+  const material = new THREE.MeshLambertMaterial({
     color,
     flatShading: options.flatShading ?? true,
     emissive: options.emissive ?? 0x000000,
   });
+  if (options.name !== undefined)
+    material.name = assertMaterialName(options.name, 'lambertMaterial');
+  return material;
 }
 
 // =============================================================================

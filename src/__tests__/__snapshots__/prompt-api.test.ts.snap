@@ -356,10 +356,13 @@ bladeGeo(opts?: { length?: 1.5, baseWidth?: 0.1, thickness?: 0.015, tipLength?: 
   // createPart('Blade', b, steel, { position: [0, 0, 0], parent: root });
 
 // Materials
-gameMaterial(color, opts?: { metalness, roughness, emissive, emissiveIntensity, flatShading })
+gameMaterial(color, opts?: { metalness, roughness, emissive, emissiveIntensity, flatShading, name })
   // PBR material with flat shading by default; choose shading and material settings for the
   // intended surface.
-  // e.g. const mat = gameMaterial(0x8b7355, { roughness: 0.9 });
+  // NOTE: Set name to the authored finish when a destination runtime groups draws by material:
+  // it is written to the glTF material name, 1..200 visible characters. materialRecipe and the
+  // portable material specs name their output already.
+  // e.g. const mat = gameMaterial(0x8b7355, { roughness: 0.9, name: 'OiledWalnut' });
 await materialRecipe(recipeId, overrides?: { baseColor?, roughness?, metalness?, opacity?, alphaCutoff?, doubleSided?, emissiveColor?, emissiveIntensity?, textureResources? })
   // Resolves a versioned portable
   // bark/leaf/wood/stone/rubber/painted-metal/cloth/skin/glass/emissive recipe to standard glTF
@@ -408,24 +411,27 @@ await compilePortableMaterialSpecV3({ schemaVersion: 3, model: 'pbrMetallicRough
   // background: [0, 0, 0, 0], operations: [{ op: 'paint', shape: { kind: 'ellipse', x: 2, y: 1,
   // width: 12, height: 30 }, rgba: [60, 90, 40, 255] }] }, sampler: { minFilter: 'nearest',
   // magFilter: 'nearest', wrapS: 'clamp-to-edge', wrapT: 'clamp-to-edge' } } } });
-basicMaterial(color, opts?: { transparent, opacity })
+basicMaterial(color, opts?: { transparent, opacity, name })
   // Unlit flat material. For UI / effects where lighting is baked in.
   // e.g. const mat = basicMaterial(0xffffff, { transparent: true, opacity: 0.5 });
-glassMaterial(color, opts?: { opacity, roughness, metalness })
+glassMaterial(color, opts?: { opacity, roughness, metalness, name })
   // Semi-transparent double-sided material. Panels need ~0.05 offset to avoid z-fighting.
   // e.g. const mat = glassMaterial(0x66ccff, { opacity: 0.3 });
-lambertMaterial(color, opts?: { flatShading, emissive })
+lambertMaterial(color, opts?: { flatShading, emissive, name })
   // Cheaper than gameMaterial. No metalness/roughness. Use when PBR is overkill.
   // e.g. const mat = lambertMaterial(0x2a4d14, { flatShading: true });
-pbrMaterial({ albedo?, normal?, roughness?, metalness?, metallicRoughness?, emissive?, emissiveIntensity?, aoMap?, aoMapIntensity?, alphaMode?: 'opaque'|'mask'|'blend', alphaCutoff?, doubleSided? })
+pbrMaterial({ albedo?, normal?, roughness?, metalness?, metallicRoughness?, emissive?, emissiveIntensity?, aoMap?, aoMapIntensity?, alphaMode?: 'opaque'|'mask'|'blend', alphaCutoff?, doubleSided?, name? })
   // Portable glTF PBR material. Use an explicit packed metallicRoughness texture (G=roughness,
   // B=metalness); separate data maps are rejected instead of silently dropping a channel.
   // alphaMode takes lowercase opaque/mask/blend and exports uppercase glTF modes. Supports
   // double-sided output.
+  // NOTE: Set name to the authored finish when a destination runtime groups draws by material:
+  // it is written to the glTF material name, 1..200 visible characters. materialRecipe and the
+  // portable material specs name their output already.
   // e.g. const wood = proceduralTexture({ schemaVersion: 2, usage: 'albedo', layers: [{ op:
   // 'noise', colorA: 0x4f301c, colorB: 0x9a6b3e, scale: 8, octaves: 3, seed: 4 }] }); const
-  // crate = pbrMaterial({ albedo: wood, roughness: 0.85, metalness: 0 });
-foliageMaterial(albedo, { alphaCutoff?, roughness?, doubleSided? })
+  // crate = pbrMaterial({ albedo: wood, roughness: 0.85, metalness: 0, name: 'CrateWood' });
+foliageMaterial(albedo, { alphaCutoff?, roughness?, doubleSided?, name? })
   // Portable foliage material that defaults to glTF MASK, cutoff 0.5, rough nonmetal, and
   // double-sided. Use an alpha-bearing albedo texture.
   // NOTE: The example uses an approved 4x4 teaching placeholder. Check GPU and destination

@@ -6,6 +6,7 @@ export type AuthoringDiagnostic =
   | 'MESH_DATA_NONFINITE'
   | 'MATERIAL_ALPHA_MODE'
   | 'MATERIAL_COLOR_ARGUMENT'
+  | 'MATERIAL_NAME'
   | 'MATERIAL_PACKED_CHANNELS'
   | 'MATERIAL_RECIPE_TEXTURE_BINDING'
   | 'PORTABLE_TEXTURE_REFERENCE'
@@ -57,6 +58,8 @@ export const PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE =
   'Remove unsupported proceduralTexture fields. Call kiln_discover with ids ["proceduralTexture"] and use only the documented fields for the selected layer op.';
 export const PROCEDURAL_TEXTURE_USAGE_ADVICE =
   'proceduralTexture usage is one of albedo (the default), emissive, normal, roughness, metalness, metallicRoughness or occlusion; there is no data or height usage. Match it to the slot it fills: portable material baseColor takes albedo, normal takes normal, metallicRoughness takes metallicRoughness (G roughness, B metalness), emissive takes emissive and occlusion takes occlusion; pbrMaterial albedo, normal, roughness, metalness, metallicRoughness, emissive and aoMap take the matching usage. Call kiln_discover with ids ["proceduralTexture"].';
+export const MATERIAL_NAME_ADVICE =
+  'A material name is the key a destination runtime groups draws by, so it is 1 to 200 visible characters: a plain string, no control characters. gameMaterial, basicMaterial, glassMaterial and lambertMaterial take it in their options object, pbrMaterial and foliageMaterial in theirs, for example gameMaterial(0x25342a, { roughness: 0.58, name: "ParkerisedSteel" }). Omit it to leave the material unnamed; materialRecipe and the portable material specs name their output already.';
 export const MATERIAL_FRACTION_RANGE_ADVICE =
   'Material fractions must be finite numbers between 0 and 1, inclusive. In proceduralTexture, mortarWidth and stagger are fractions, not pixels; opacity uses the same range. materialRecipe roughness, metalness, opacity, alphaCutoff and emissiveIntensity use 0..1. portableMaterial roughness, metalness and alphaCutoff also use 0..1; its emissiveIntensity has a separate 0..64 range. Call kiln_discover for the exact field contracts.';
 export const PARAMETRIC_PERIODIC_ENDPOINT_ADVICE =
@@ -155,6 +158,7 @@ export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | unde
   if (diagnostic === 'PROCEDURAL_TEXTURE_UNKNOWN_KEY') return PROCEDURAL_TEXTURE_UNKNOWN_KEY_ADVICE;
   if (diagnostic === 'PROCEDURAL_TEXTURE_USAGE') return PROCEDURAL_TEXTURE_USAGE_ADVICE;
   if (diagnostic === 'MATERIAL_FRACTION_RANGE') return MATERIAL_FRACTION_RANGE_ADVICE;
+  if (diagnostic === 'MATERIAL_NAME') return MATERIAL_NAME_ADVICE;
   if (diagnostic === 'PROFILE_HOLES_UNSUPPORTED') return PROFILE_HOLES_UNSUPPORTED_ADVICE;
   if (diagnostic === 'PROFILE_SOLID_FAILED') return PROFILE_SOLID_FAILED_ADVICE;
   if (diagnostic === 'PROFILE_CORRESPONDENCE_COLLAPSE')
@@ -170,6 +174,46 @@ export class AuthoringDiagnosticError extends Error {
     this.name = 'AuthoringDiagnosticError';
   }
 }
+/**
+ * Longest author material name written to a glTF `materials[].name`.
+ *
+ * Matches the portable material spec's own 1..200 name bound, so naming a material
+ * through a helper and naming one through `compilePortableMaterialSpecV3` accept the
+ * same strings; that contract checks length only, and this path also rejects control
+ * characters.
+ */
+export const MATERIAL_NAME_MAX_LENGTH = 200;
+
+/**
+ * Bound an author material name on the way into the file.
+ *
+ * A destination runtime groups draws by this string, so it is worth having, but it
+ * is also the only author-supplied text the exporters copy verbatim into a
+ * `materials[].name`. Rejecting C0 controls and DEL, as `proceduralTexture`'s name
+ * rule does, keeps a name out of the business of smuggling a newline into a log
+ * line or a NUL into a consumer's string handling; the length bound keeps it from
+ * arriving as an unbounded blob in everything that reads the manifest.
+ *
+ * Fails closed on a non-string for the reason `requireColor` does: a model that
+ * half-remembers a different engine passes the wrong shape, and silently
+ * stringifying it would put `[object Object]` on a part and call it named.
+ */
+export function assertMaterialName(name: unknown, fn: string): string {
+  if (
+    typeof name !== 'string' ||
+    !name.length ||
+    name.length > MATERIAL_NAME_MAX_LENGTH ||
+    [...name].some((c) => c.charCodeAt(0) < 32 || c.charCodeAt(0) === 127)
+  )
+    throw new AuthoringDiagnosticError(
+      'MATERIAL_NAME',
+      `${fn}: name must be 1..${MATERIAL_NAME_MAX_LENGTH} visible characters, got ${
+        typeof name === 'string' ? JSON.stringify(name.slice(0, 32)) : typeof name
+      }. ${MATERIAL_NAME_ADVICE}`,
+    );
+  return name;
+}
+
 /**
  * Closed cause for an error that crosses the worker boundary without a diagnostic.
  * Built-in error classes only, never message text: a temporal-dead-zone read is

@@ -7,6 +7,18 @@ does not publish a package.
 
 ## Unreleased
 
+- Every material helper takes an optional `name`, written to the exported glTF
+  `materials[].name`: `gameMaterial`, `basicMaterial`, `glassMaterial` and
+  `lambertMaterial` in their options object, `pbrMaterial` and `foliageMaterial` in
+  theirs. Both exporters already carried a name that was set, and it survives the
+  sandbox, `dedup` and every optimize level; what was missing was any way for an
+  author to set one, so delivered assets arrived with unnamed materials and the
+  authored distinctions were lost. A name is 1..200 visible characters, matching the
+  portable material spec's own bound, and control characters are rejected. This gives
+  a destination runtime a stable authored key to group draws by, instead of hashing
+  material factors. `materialRecipe` and the portable material specs already named
+  their output and are unchanged.
+
 ## 1.5.0 (2026-10-25)
 
 - Generated Codex workspaces forward `KILN_EXPORT_ROOT` to the MCP server, so
