@@ -75,6 +75,17 @@ Do not invent a universal performance cap. State the destination, tested conditi
 
 ## Functional fit
 
+Kiln's own structural checks — the floating-parts warning and the part-connectivity
+observation — read the bounding boxes of drawn meshes with a 2 cm adjacency
+tolerance. They report a part or subassembly detached from the body; they are not a
+fit audit. Two consequences bound what a clean pass means. A separation under the
+tolerance reads as contact, so a part standing a millimetre or two off its host is
+not reported. And one mesh is one box, so primitives merged into a single mesh —
+what per-material welding for draw-call reduction produces — are not compared with
+each other at any separation. Where millimetre contact is a requirement, measure it
+in the destination against the exported file, and run that audit before saving the
+revision rather than after.
+
 For an enterable building or gate, test the intended actor through the exported
 opening with collision enabled. Include thresholds, plinths, lintels, trim and
 hinge travel. The open leaf and nominal wall dimensions do not prove passage.

@@ -2970,10 +2970,12 @@ define(
     parameters: [
       'Requires a compiled atlas texture or manifest and exact region name.',
       'inputOrigin and content-boundary/texel-center mode are both required; finite per-vertex UV0 only.',
+      "Optional axes selects which components the region owns: 'uv' (default) both, 'u-only' U alone. u-only requires inputOrigin top-left over a region spanning the full atlas height, and is rejected otherwise.",
     ],
     topology: ['Preserves vertices, indices, groups, draw range and morph correspondence.'],
     preservation: [
       'Owns output attributes and metadata; UV0 is replaced. Nonidentity scale drops stale tangents with a warning.',
+      'Replacing V destroys any per-vertex gradient UV0 carries, such as a foliage wind sway weight read as uv-y: the asset still validates and renders. axes u-only passes V through bit-for-bit and rescales U into a full-height column instead.',
     ],
     semantics: [
       'Records the named region and affine mapping without changing asset category, project membership or materials.',
@@ -2984,8 +2986,14 @@ define(
     references: ['src/texture-atlas.ts', 'src/uv-shapes.ts'],
     tags: ['uv', 'atlas', 'ownership'],
     aliases: ['named region UV mapping'],
-    intents: ['bind existing UVs to a named atlas region'],
-    limitations: ['Does not unwrap, project, resample or tile within a region.'],
+    intents: [
+      'bind existing UVs to a named atlas region',
+      'put species in atlas columns while keeping a V gradient',
+    ],
+    limitations: [
+      'Does not unwrap, project, resample or tile within a region.',
+      'u-only needs a column layout authored for it: a packed sheet or a nonzero gutter insets the region vertically and is rejected rather than remapped.',
+    ],
     related: [
       { name: 'textureAtlas', relation: 'prerequisite' },
       { name: 'projectUV', relation: 'companion' },
