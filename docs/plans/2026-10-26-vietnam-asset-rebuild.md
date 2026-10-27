@@ -630,6 +630,55 @@ git status --short    # still empty  ->  the committed bundle matches its source
 
 A two-second answer to "is this bundle stale", usable before every push.
 
+## Shepherding order is a cost decision, not a queue
+
+The repository requires a branch to be up to date with its base before it merges.
+`gh pr merge 301` refused outright — *"the head branch is not up to date with the base
+branch"* — on a PR whose fourteen checks were green and whose merge rehearsed clean. So a
+merge-up is **mandatory for every PR regardless of conflicts**, and each merge moves `main`
+forward and invalidates the next one. Shepherding several PRs is therefore strictly serial,
+and the only free variable is the order.
+
+Order by what a re-land costs, not by PR number or readiness:
+
+| PR | files | touches `dist/` | cost to bring current |
+| --- | --- | --- | --- |
+| #301 | 3 | no | a plain `git merge origin/main` |
+| #300 | 8 | no | a plain `git merge origin/main` |
+| #295 | 9 | 4 bundles | restore, merge, rebuild |
+| #302 | 16 | 5 bundles | restore, merge, rebuild |
+
+#301 and #300 live entirely under `packs/` and `site/` — they touch neither `dist/` nor
+`src/`, so `main`'s bundles stay accurate across them and updating costs nothing. #295 and
+#302 each rebuild bundles, and **a rebuild is only valid against the `main` it will actually
+merge onto**, so every bundle-touching merge destroys the other's. Put the two cheap ones
+first and the two rebuilds last, one apiece, and each rebuilds exactly once. The same four in
+the reverse order rebuild five times between them.
+
+This inverts the intuition that the most exposed PR should go first. #295 is furthest behind
+— its base was two commits back before #298 even landed — and that is an argument for
+sending it *last*, because being behind is cheap to fix and rebuilding is not.
+
+Two things not to take on trust while draining a queue like this:
+
+- **Green CI describes a tree that no longer exists.** #300 and #301 were 14/14 against base
+  `f5e9eb5`, which stopped being `main` the moment #298 landed. That run is still evidence —
+  but only about the merge-base, so it has to be paired with a check that the PR shares no
+  file with what landed since. Here neither shared one, so the green survived; it does not
+  always.
+- **Don't hand a session a conflict you haven't rehearsed.** Both pack PRs edit
+  `packs/holodeck/README.md`, so a collision looked certain. Rehearsing it said otherwise:
+  `git merge-tree --write-tree` for `main + #301`, then `git commit-tree` on that tree
+  parented on `main` to get a synthetic commit, then `merge-tree` again for #300 on top of it
+  — clean, tree `ebacb0c`. The hunks never overlapped. A warning about a conflict that does
+  not exist is the same defect as a number handed over to be matched: it manufactures a false
+  signal in someone else's session.
+
+The README is worth a human read anyway, and for a reason the rehearsal cannot cover: prose
+has no test or snapshot behind it, so two non-overlapping hunks can merge clean and still
+leave the file incoherent — a renamed flag still documented, two additions reading as
+duplicates. Same shape as `CHANGELOG.md` under *the conflict nobody guards*.
+
 ## Open decisions
 
 - **D0 — how far to redesign.** "Better" needs a ceiling or P0 never ends. Proposal: one
