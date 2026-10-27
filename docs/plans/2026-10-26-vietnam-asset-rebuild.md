@@ -679,6 +679,19 @@ has no test or snapshot behind it, so two non-overlapping hunks can merge clean 
 leave the file incoherent — a renamed flag still documented, two additions reading as
 duplicates. Same shape as `CHANGELOG.md` under *the conflict nobody guards*.
 
+**That read found a real defect, 27 October.** The prediction was not hypothetical. #300's
+session read the merged `packs/holodeck/README.md` instead of trusting the clean merge, and
+found that #274's own first commit had inserted new subsections after the Regenerate preamble,
+pushing two paragraphs — on content-addressed object keys and `published.json` — down to the
+end of *Recover a lost store*. There they read as describing the recovered store rather than
+every staged download. The fix (`6fba946`) moved 25 lines and added none: prose order only.
+
+Note what that instance actually establishes. The defect did not come from the merge, so no
+merge discipline would have surfaced it; it came from an earlier commit in the same PR and
+only became *visible* in the merged file. A rehearsal proves a merge is clean. Nothing proves
+prose still means what it meant, and the only instrument is a reader. Two PRs' hunks landing
+in one document is simply the moment someone is most likely to look.
+
 ## Open decisions
 
 - **D0 — how far to redesign.** "Better" needs a ceiling or P0 never ends. Proposal: one
