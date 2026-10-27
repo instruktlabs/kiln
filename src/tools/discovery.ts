@@ -159,7 +159,7 @@ async function currentCapabilities(
       // Advertised under the registry's own condition (#207); the host's absolute root stays private.
       exportTo:
         context.exportRoot && context.assetLibrary
-          ? 'kiln_export_to writes a saved revision as files at a path relative to the host export root and never replaces a file'
+          ? 'kiln_export_to writes a saved revision as files at a path relative to the host export root and never replaces a file; runtime textures=manifest adds sidecar identities so a host can share images across assets instead of loading each embedded copy'
           : null,
       viewer:
         'kiln_present opens a saved revision in supporting chat clients with 3D viewing and downloads; kiln view opens a local collection or standalone GLB/ZIP',

@@ -7,6 +7,26 @@ does not publish a package.
 
 ## Unreleased
 
+- `kiln_export_to` takes `textures: 'manifest'`, so an MCP author can act on the texture
+  duplication `kiln textures` reports instead of only seeing it. The runtime sidecar gains
+  `textures[]` naming each embedded image by `sha256` and mime type, which lets a destination
+  share one copy across assets rather than loading the embedded copy in every GLB. The option
+  is runtime-only; `editable` publishes the exact saved GLB without calling the exporter, so
+  that combination is refused at the tool rather than accepted and dropped. Exported GLB
+  geometry and images are unchanged, but the GLB is not byte-identical and must not be:
+  provenance binds the sidecar's hash (`kilnProvenanceV1.metadata.sha256`), so adding
+  `textures[]` necessarily moves it and the pair stays verifiable. Discovery capabilities
+  report the option under `assets.exportTo`.
+
+  Two deliberate exclusions. `textures: 'external'` stays a CLI delivery: it writes
+  `x.gltf`, `x.bin` and `textures/<sha256>.<ext>`, while `kiln_export_to` writes one GLB and
+  one sidecar through an atomic pair write, so carrying it would mean new file kinds and a
+  path contract that is not `.glb`. And `kiln_export` does not take the option at all,
+  because it returns resource links that `readAssetResource` re-derives with no options from
+  a fixed filename allowlist -- a link would advertise a `size` that a later `resources/read`
+  of the same URI would not deliver
+  ([#287](https://github.com/instruktlabs/kiln/issues/287)).
+
 - Source between the program store's 1 MiB limit and the evaluator transport's 512 KiB is
   named as the size problem it is. Such a program saved, edited and validated, then failed
   evaluation through the generic invalid-request path, which reported the size as something
