@@ -5,7 +5,7 @@
  */
 
 export const HOLODECK_ID = 'holodeck';
-export const HOLODECK_RELEASE = 'holodeck-20261026-01';
+export const HOLODECK_RELEASE = 'holodeck-20261028-02';
 /**
  * The oldest Kiln that imports the packs' revision bundles, named in each pack README. Raise it only when the bundle
  * format needs a newer Kiln: a value that followed every Kiln release would change every pack ZIP and its key.
@@ -99,11 +99,11 @@ export const HOLODECK_PLANNED = [];
 /**
  * Owner approval, by gallery slug and the exact revision approved. On 2026-10-23 the owner approved the 47 staged
  * Courtyard, Cove and Tidemark cards as staged, and their packs for delivery, then the 41 new Crescent Cove cards as
- * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. On 2026-10-25 the owner approved Crescent Cove's revision 17 palms (tall, lean, arch, young) and fallen fronds as staged. On 2026-10-25 the owner authorized repairing and deploying the seven winter tree bark-winding successors. On 2026-10-25 the owner also approved the 45 new Meridian Sanctuary cards as staged. On 2026-10-26 the owner approved the Cove seating revision whose throw clears the canopy mast and seat ledge as staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
+ * staged. On 2026-10-24 the owner approved the 55 new Winter Mountainside Cabin cards as staged. On 2026-10-25 the owner approved Crescent Cove's revision 17 palms (tall, lean, arch, young) and fallen fronds as staged. On 2026-10-25 the owner authorized repairing and deploying the seven winter tree bark-winding successors. On 2026-10-25 the owner also approved the 45 new Meridian Sanctuary cards as staged. On 2026-10-26 the owner approved the Cove seating revision whose throw clears the canopy mast and seat ledge as staged. On 2026-10-28 the owner approved the Meridian arcade arch and arcade bay revisions whose end faces and springing seats are closed, as staged. The approval covers these revisions only: a new card, or a new revision of one of these, awaits review until it is recorded here. A pack is available
  * when every asset it lists is approved.
  */
 export const HOLODECK_APPROVAL = {
-  recordedAt: '2026-10-26',
+  recordedAt: '2026-10-28',
   revisions: {
     'cove-structure': 'r_2387ce274123402dbdafd818e6fb0043',
     'cove-canopy': 'r_df0485467228414780cfa44c0f2e32ad',
@@ -261,7 +261,7 @@ export const HOLODECK_APPROVAL = {
     'meridian-arcade-pylon': 'r_269d44f66ec944079983349b9dc2cb5a',
     'meridian-arcade-pier': 'r_e09059fd12874fbea948389061ee8736',
     'meridian-arcade-pier-slot': 'r_23415f3bcad34dbea52c9b930878be28',
-    'meridian-arcade-arch': 'r_e9e14002aa444492805007f0bf30dfee',
+    'meridian-arcade-arch': 'r_0ee353009dba467da1a001ce093dcdc0',
     'meridian-tower-slot': 'r_c4851c428d0e4931a2983eea9d6e1d8d',
     'meridian-cascade-tower': 'r_90ab6b974ebb41c4a72e5062a24334fb',
     'meridian-gateway': 'r_c33d46440935478180576e38ffa20662',
@@ -287,7 +287,7 @@ export const HOLODECK_APPROVAL = {
     'meridian-cypress-broad': 'r_65d968a6e4a34968bfaed1504cf759ba',
     'meridian-cypress-slim': 'r_4cb4690620ab4a2aa57cf69cd06255e5',
     'meridian-tower-gate': 'r_dac22ca376b745ceab2346845e4c16a6',
-    'meridian-arcade-bay': 'r_60cc31247cad446a95672bddc01ae520',
+    'meridian-arcade-bay': 'r_d12e35c947c840d5911f9e3df01fe9e2',
     'meridian-pavilion': 'r_3745cc9353f44c1b8d3102d59c9f9d46',
     'meridian-balustrade-4': 'r_eb66bdfce33449e386b9792df125142d',
     'meridian-cube-mirror-far': 'r_1b9bef4f0c2d46ae8bdd1261f64b4c71',

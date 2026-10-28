@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "holodeck",
-  "release": "holodeck-20261026-01",
+  "release": "holodeck-20261028-02",
   "base": "https://assets.kilnstudio.tools/",
   "licence": {
     "spdx": "CC0-1.0",
@@ -367,11 +367,11 @@
       "assetCount": 53,
       "source": {
         "kind": "holodeck-example",
-        "ref": "main",
-        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "ref": "046b70ded7009fd5291b8a9d8949a61469a960e0",
+        "commit": "046b70ded7009fd5291b8a9d8949a61469a960e0",
         "path": "examples/meridian-sanctuary",
         "sourceRevision": 27,
-        "worldSha256": "911fe13d1121caccc90ae8d9549307ac4f07cf2506daa726f63a7d8cc7ad5db2"
+        "worldSha256": "f1b53cdd6f9f4433eaf57abbb8d477333164d3f9db78c45afdf2c6d2f67dcb3f"
       },
       "assets": [
         "cove-structure",
@@ -432,18 +432,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/1f4a7563c799708a886be6118318578c85f0c78a1f68c76a80657256db20fcaf/holodeck-meridian-sanctuary-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1f4a7563c799708a886be6118318578c85f0c78a1f68c76a80657256db20fcaf/holodeck-meridian-sanctuary-runtime.zip",
-          "bytes": 17983388,
-          "sha256": "1f4a7563c799708a886be6118318578c85f0c78a1f68c76a80657256db20fcaf"
+          "path": "packs/holodeck/objects/20981bae997b52c9692c1dca8bcf5e295f35afb1b1b9aad73e94502f79d12697/holodeck-meridian-sanctuary-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/20981bae997b52c9692c1dca8bcf5e295f35afb1b1b9aad73e94502f79d12697/holodeck-meridian-sanctuary-runtime.zip",
+          "bytes": 18007135,
+          "sha256": "20981bae997b52c9692c1dca8bcf5e295f35afb1b1b9aad73e94502f79d12697"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/4855a402497de9954d13548ca6d8f78f5d2a8c2fb76d2d3c33df97a2f6deb361/holodeck-meridian-sanctuary-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4855a402497de9954d13548ca6d8f78f5d2a8c2fb76d2d3c33df97a2f6deb361/holodeck-meridian-sanctuary-editable.zip",
-          "bytes": 28526734,
-          "sha256": "4855a402497de9954d13548ca6d8f78f5d2a8c2fb76d2d3c33df97a2f6deb361"
+          "path": "packs/holodeck/objects/e3eecaa67cd1a72e5b3d41a7d18a9dbfdf0ead69f7e8096140c60c6141bd6cdc/holodeck-meridian-sanctuary-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e3eecaa67cd1a72e5b3d41a7d18a9dbfdf0ead69f7e8096140c60c6141bd6cdc/holodeck-meridian-sanctuary-editable.zip",
+          "bytes": 28588439,
+          "sha256": "e3eecaa67cd1a72e5b3d41a7d18a9dbfdf0ead69f7e8096140c60c6141bd6cdc"
         }
       ]
     }
@@ -12916,42 +12916,42 @@
       ],
       "collection": "project",
       "assetId": "a_71cef64b7f8143478db7afd63d553974",
-      "revisionId": "r_e9e14002aa444492805007f0bf30dfee",
-      "parentRevision": "r_d412b7188d4344c78498ab6fb0be1076",
-      "sourcePath": "packs/holodeck/sources/project/a_71cef64b7f8143478db7afd63d553974/r_e9e14002aa444492805007f0bf30dfee/source.kiln.js",
-      "sourceSha256": "162bc29bb236379c28cf731a77fe52dcaa8905176f21a093cf25efc19f5303b1",
+      "revisionId": "r_0ee353009dba467da1a001ce093dcdc0",
+      "parentRevision": "r_e9e14002aa444492805007f0bf30dfee",
+      "sourcePath": "packs/holodeck/sources/project/a_71cef64b7f8143478db7afd63d553974/r_0ee353009dba467da1a001ce093dcdc0/source.kiln.js",
+      "sourceSha256": "aaa8c16569b07cb433704d94dd361ca3b5eca867e46f8fdd153bbd05b30628be",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/d547e61ae92a3e8d57be1e1465ab3290750c5804594592345775740b9b49f57a/meridian-arcade-arch.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d547e61ae92a3e8d57be1e1465ab3290750c5804594592345775740b9b49f57a/meridian-arcade-arch.glb",
-        "bytes": 446728,
-        "sha256": "d547e61ae92a3e8d57be1e1465ab3290750c5804594592345775740b9b49f57a"
+        "path": "packs/holodeck/objects/7ab8460d62cf9a315f832d9e5bb89c086e0af1b446f5e591173927a07ab6ad41/meridian-arcade-arch.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7ab8460d62cf9a315f832d9e5bb89c086e0af1b446f5e591173927a07ab6ad41/meridian-arcade-arch.glb",
+        "bytes": 493604,
+        "sha256": "7ab8460d62cf9a315f832d9e5bb89c086e0af1b446f5e591173927a07ab6ad41"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/c5145c98f4b15255fcbd9cb959e42bd954b044d2f62770482d927b6b332b53c5/meridian-arcade-arch-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c5145c98f4b15255fcbd9cb959e42bd954b044d2f62770482d927b6b332b53c5/meridian-arcade-arch-runtime.zip",
-        "bytes": 279485,
-        "sha256": "c5145c98f4b15255fcbd9cb959e42bd954b044d2f62770482d927b6b332b53c5"
+        "path": "packs/holodeck/objects/0a11d51e794b673853125a31c15a56cf9f0cc1ff30b2f885a1938cc15699634c/meridian-arcade-arch-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0a11d51e794b673853125a31c15a56cf9f0cc1ff30b2f885a1938cc15699634c/meridian-arcade-arch-runtime.zip",
+        "bytes": 291256,
+        "sha256": "0a11d51e794b673853125a31c15a56cf9f0cc1ff30b2f885a1938cc15699634c"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/cdf75bb530a79195eb39b9b89b9b181d4351c0c45fcd1fa14a2b3d2f9bb397ab/meridian-arcade-arch-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/cdf75bb530a79195eb39b9b89b9b181d4351c0c45fcd1fa14a2b3d2f9bb397ab/meridian-arcade-arch-editable.zip",
-        "bytes": 479531,
-        "sha256": "cdf75bb530a79195eb39b9b89b9b181d4351c0c45fcd1fa14a2b3d2f9bb397ab"
+        "path": "packs/holodeck/objects/225058bd022588696cabb710b710e8a3b94bf07abafda04343b778b35dc96555/meridian-arcade-arch-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/225058bd022588696cabb710b710e8a3b94bf07abafda04343b778b35dc96555/meridian-arcade-arch-editable.zip",
+        "bytes": 519322,
+        "sha256": "225058bd022588696cabb710b710e8a3b94bf07abafda04343b778b35dc96555"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A 4.8 m round arch with a stepped order, archivolt, cornice and an ivy trough along its top.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-arch.png",
-        "sourceRevisionId": "r_e9e14002aa444492805007f0bf30dfee",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch.png",
+        "sourceRevisionId": "r_0ee353009dba467da1a001ce093dcdc0",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
-        "triangles": 1604,
+        "triangles": 2056,
         "meshes": 1,
         "materials": 1,
         "bounds": [
@@ -14974,42 +14974,42 @@
       ],
       "collection": "project",
       "assetId": "a_ebda3dd3bf5f41d6ad0dea5b6a9c3ef6",
-      "revisionId": "r_60cc31247cad446a95672bddc01ae520",
-      "parentRevision": "r_205d267f0d22467ba12953656d47e268",
-      "sourcePath": "packs/holodeck/sources/project/a_ebda3dd3bf5f41d6ad0dea5b6a9c3ef6/r_60cc31247cad446a95672bddc01ae520/source.kiln.js",
-      "sourceSha256": "19ea35e682ab0761fc4e479b9e0dc85a75a947fe6b97020d8d9e0a59c1ba000f",
+      "revisionId": "r_d12e35c947c840d5911f9e3df01fe9e2",
+      "parentRevision": "r_60cc31247cad446a95672bddc01ae520",
+      "sourcePath": "packs/holodeck/sources/project/a_ebda3dd3bf5f41d6ad0dea5b6a9c3ef6/r_d12e35c947c840d5911f9e3df01fe9e2/source.kiln.js",
+      "sourceSha256": "836d25f97336a6ebd482f4249e673ccac934ddaf8d83a319e05ce31178a44b8f",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/b4dbb30eaa108e6846cdd3d16afa94bed46ff8443c2362757161fab926fb78a1/meridian-arcade-bay.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b4dbb30eaa108e6846cdd3d16afa94bed46ff8443c2362757161fab926fb78a1/meridian-arcade-bay.glb",
-        "bytes": 562192,
-        "sha256": "b4dbb30eaa108e6846cdd3d16afa94bed46ff8443c2362757161fab926fb78a1"
+        "path": "packs/holodeck/objects/578da67a603f4f959d9a4a8754448e9d773314294d8090a2730e4b9853c5e945/meridian-arcade-bay.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/578da67a603f4f959d9a4a8754448e9d773314294d8090a2730e4b9853c5e945/meridian-arcade-bay.glb",
+        "bytes": 609064,
+        "sha256": "578da67a603f4f959d9a4a8754448e9d773314294d8090a2730e4b9853c5e945"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/2b769a5d2619a7b636f34d7977f17ccb9c0fce43c1894775324d5310099d066b/meridian-arcade-bay-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2b769a5d2619a7b636f34d7977f17ccb9c0fce43c1894775324d5310099d066b/meridian-arcade-bay-runtime.zip",
-        "bytes": 303187,
-        "sha256": "2b769a5d2619a7b636f34d7977f17ccb9c0fce43c1894775324d5310099d066b"
+        "path": "packs/holodeck/objects/73d01e782d65b6be4fd12bc3f518f875e9867468d1a017c6dcb0bc440022302e/meridian-arcade-bay-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/73d01e782d65b6be4fd12bc3f518f875e9867468d1a017c6dcb0bc440022302e/meridian-arcade-bay-runtime.zip",
+        "bytes": 315174,
+        "sha256": "73d01e782d65b6be4fd12bc3f518f875e9867468d1a017c6dcb0bc440022302e"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/d0c950ac0fdf58f6f3a898a85a2e819c222494ae133fe8ee26bb1085a44e8a83/meridian-arcade-bay-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d0c950ac0fdf58f6f3a898a85a2e819c222494ae133fe8ee26bb1085a44e8a83/meridian-arcade-bay-editable.zip",
-        "bytes": 468011,
-        "sha256": "d0c950ac0fdf58f6f3a898a85a2e819c222494ae133fe8ee26bb1085a44e8a83"
+        "path": "packs/holodeck/objects/4c79abb34825226723222a757723a45e635d271762f1a513ef8881e1d0be1b9c/meridian-arcade-bay-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4c79abb34825226723222a757723a45e635d271762f1a513ef8881e1d0be1b9c/meridian-arcade-bay-editable.zip",
+        "bytes": 491712,
+        "sha256": "4c79abb34825226723222a757723a45e635d271762f1a513ef8881e1d0be1b9c"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay.webp",
         "width": 1024,
         "height": 1024,
         "alt": "One arcade bay in a single mesh: a plain pier carrying its arch.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261025-02/meridian-arcade-bay.png",
-        "sourceRevisionId": "r_60cc31247cad446a95672bddc01ae520",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay.png",
+        "sourceRevisionId": "r_d12e35c947c840d5911f9e3df01fe9e2",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
-        "triangles": 2676,
+        "triangles": 3128,
         "meshes": 1,
         "materials": 1,
         "bounds": [

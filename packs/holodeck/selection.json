@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "holodeck-20261026-01",
+  "release": "holodeck-20261028-02",
   "licence": "CC0-1.0",
   "versions": "final-only",
   "packs": {
@@ -236,11 +236,11 @@
       "scene": "meridian-sanctuary",
       "source": {
         "kind": "holodeck-example",
-        "ref": "main",
-        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "ref": "046b70ded7009fd5291b8a9d8949a61469a960e0",
+        "commit": "046b70ded7009fd5291b8a9d8949a61469a960e0",
         "path": "examples/meridian-sanctuary",
         "sourceRevision": 27,
-        "worldSha256": "911fe13d1121caccc90ae8d9549307ac4f07cf2506daa726f63a7d8cc7ad5db2"
+        "worldSha256": "f1b53cdd6f9f4433eaf57abbb8d477333164d3f9db78c45afdf2c6d2f67dcb3f"
       },
       "assets": [
         "cove-structure",
@@ -4966,23 +4966,23 @@
       "store": "marble-sanctuary",
       "collection": "project",
       "assetId": "a_71cef64b7f8143478db7afd63d553974",
-      "revisionId": "r_e9e14002aa444492805007f0bf30dfee",
-      "parentRevision": "r_d412b7188d4344c78498ab6fb0be1076",
+      "revisionId": "r_0ee353009dba467da1a001ce093dcdc0",
+      "parentRevision": "r_e9e14002aa444492805007f0bf30dfee",
       "manifest": {
-        "bytes": 10623,
-        "sha256": "e64508784b106b4794d6fe94f97b1e403ce56de9a935727a6beefdb588153672"
+        "bytes": 10652,
+        "sha256": "28d532c8c44c4ade3760cc7ad7ff4dd6ab1f92184f9fc3769178ecbef3cce82f"
       },
       "source": {
-        "bytes": 65350,
-        "sha256": "162bc29bb236379c28cf731a77fe52dcaa8905176f21a093cf25efc19f5303b1"
+        "bytes": 66701,
+        "sha256": "aaa8c16569b07cb433704d94dd361ca3b5eca867e46f8fdd153bbd05b30628be"
       },
       "canonical": {
-        "bytes": 446504,
-        "sha256": "31800d916aee1b6bca31ab51c3577b813cef9982ba0d7fbdc5e6760d83a3ab7b"
+        "bytes": 493376,
+        "sha256": "ac28768682b314ed66ad7b04689ebd46d94708073be16269ec3d38a81d2390bd"
       },
       "preview": {
-        "bytes": 182378,
-        "sha256": "11af17d1e6a4bb250136470367736390155c4bc06ae71fdfba42bffa7b4657c3"
+        "bytes": 209502,
+        "sha256": "d93c46b69d643ed3ba6f12af31ef86e21ae9c92074ceca6f8f62cbb5b463bb59"
       },
       "placements": [
         {
@@ -5716,23 +5716,23 @@
       "store": "marble-sanctuary",
       "collection": "project",
       "assetId": "a_ebda3dd3bf5f41d6ad0dea5b6a9c3ef6",
-      "revisionId": "r_60cc31247cad446a95672bddc01ae520",
-      "parentRevision": "r_205d267f0d22467ba12953656d47e268",
+      "revisionId": "r_d12e35c947c840d5911f9e3df01fe9e2",
+      "parentRevision": "r_60cc31247cad446a95672bddc01ae520",
       "manifest": {
-        "bytes": 10583,
-        "sha256": "8bd867c426815de9d08a90019667640861590f36edd56c612f73226c0a9df536"
+        "bytes": 10598,
+        "sha256": "e8d72e4831caccf4bb32af3bed7bbbf561022e340edb654a30d12b68e6bff7ce"
       },
       "source": {
-        "bytes": 65349,
-        "sha256": "19ea35e682ab0761fc4e479b9e0dc85a75a947fe6b97020d8d9e0a59c1ba000f"
+        "bytes": 66700,
+        "sha256": "836d25f97336a6ebd482f4249e673ccac934ddaf8d83a319e05ce31178a44b8f"
       },
       "canonical": {
-        "bytes": 561964,
-        "sha256": "bf2e816bd344c60734361a581266831601546c8afddd49e80554110d64de815d"
+        "bytes": 608836,
+        "sha256": "75f2c2550908103bbd11872a441903c024bcafcfbada4a5890846696eac94521"
       },
       "preview": {
-        "bytes": 149231,
-        "sha256": "9e95dcb4de1ab79fee6293fd5a5869870f7aa753b279c0e7cfae22bc1840c1e6"
+        "bytes": 160700,
+        "sha256": "eedbcb73482c61c1482e1b45e3478e771752418d7532425618958773d872f3d3"
       },
       "placements": [
         {
