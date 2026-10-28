@@ -144,6 +144,20 @@ primitives may hide a gap in one view while exposing a ledge in another. Separat
 rigid pieces, welded surfaces and deforming joints are all valid when they match the
 requested style and motion.
 
+A dimension you computed is not a surface either. A faceted approximation of a curve
+lies inside that curve, so a nominal radius is an upper bound on where the material
+is: for an `n`-sided inscribed polygon of nominal radius `r`, the facet midpoints sit
+at `r * Math.cos(Math.PI / n)`. A part placed at `r` grazes the facets at a high
+segment count and stands clear of them at a low one — a tube of radius 13 mm drawn
+with 9 segments measures 12.2 mm to its facet midpoints. The same error appears
+wherever a flat dimension stands in for a curved one, such as a single crown height
+declared for a round band that falls away under a part seated off its centreline.
+Place mating parts against the surface the chosen profile and segment count actually
+produce, at the coarsest tier you ship, and keep that radius a parameter rather than a
+literal so a later tier cannot silently invalidate it. Kiln's structural checks do not
+establish millimetre contact, so prove seating in the destination against the exported
+file before saving a revision.
+
 For usable doors or passages, establish the actor envelope, finished floor,
 threshold, clear width and headroom. Split plinths, caps, trim and braces around the
 opening when they would obstruct it. Check the closed position, the hinge sweep and
@@ -455,6 +469,13 @@ To derive a lower tier from a finished part instead, call
 `await simplifyGeometry(geometry, { ratio: 0.25 })` per part and place the result in
 the tier. It returns new geometry, keeps groups, seams and open borders, and records
 the achieved ratio and error on `userData.kilnSimplify`; it never runs on its own.
+
+A tier that draws correctly can still come apart. Coarser levels move surfaces
+inward, so a part seated against a finer tier's surface can stand clear of a coarser
+one, and simplification can part a joint the full-detail tier held. Check seating and
+contact on every tier you ship, not only on LOD0. Where a smooth revolve would need
+creasing after simplification, author the lower tier with fewer segments instead:
+fewer segments chosen deliberately read better than a decimated curve.
 
 `screenCoverage[i]` is the smallest fraction of the screen, 0 to 1, at which level
 `i` still draws; the values strictly decrease, the set is culled below the last
