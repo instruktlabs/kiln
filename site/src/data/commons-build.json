@@ -158,7 +158,7 @@
     "packs/holodeck/objects/c481459806153efda700bc57d9cbf659dc638fd92547f334f300f0c0b6d97602/meridian-arcade-pylon.glb",
     "packs/holodeck/objects/6de9585966f35013cee56b3de9c936322892a0d95f07f17fc2dce92b6680b88f/meridian-arcade-pier.glb",
     "packs/holodeck/objects/a38f32e2e67c8cc0abf88939f236da370d5c7181634075713afa6165cfbaa36c/meridian-arcade-pier-slot.glb",
-    "packs/holodeck/objects/d547e61ae92a3e8d57be1e1465ab3290750c5804594592345775740b9b49f57a/meridian-arcade-arch.glb",
+    "packs/holodeck/objects/7ab8460d62cf9a315f832d9e5bb89c086e0af1b446f5e591173927a07ab6ad41/meridian-arcade-arch.glb",
     "packs/holodeck/objects/ba43779293fcc631283fb1bce03a5061fee4249dd682d222d826b0bcfd548679/meridian-tower-slot.glb",
     "packs/holodeck/objects/304b3731cdeab654c3f5827a36406ffdfacb966331336842b8365b8a73faafaf/meridian-cascade-tower.glb",
     "packs/holodeck/objects/2d309596a95f989bcf575058e227f6e2ca916df77a0f3996fd78a326f5e76af9/meridian-gateway.glb",
@@ -184,7 +184,7 @@
     "packs/holodeck/objects/4e1701b85a88489db574391fabc25ac9d1860639ce9a73cb421946fd8dc2c0b4/meridian-cypress-broad.glb",
     "packs/holodeck/objects/963b91704cecf26f6041fa9fbbfd324d14f847a6a7b6dd18b8e9fe50742a4ca8/meridian-cypress-slim.glb",
     "packs/holodeck/objects/45895a8c9bd14763281d25a95b9a84353e191996b5cf7e43ce82638380fa1ed1/meridian-tower-gate.glb",
-    "packs/holodeck/objects/b4dbb30eaa108e6846cdd3d16afa94bed46ff8443c2362757161fab926fb78a1/meridian-arcade-bay.glb",
+    "packs/holodeck/objects/578da67a603f4f959d9a4a8754448e9d773314294d8090a2730e4b9853c5e945/meridian-arcade-bay.glb",
     "packs/holodeck/objects/28ad88347a9eb2d5c943d9c397d4a4f3af8125432a0eeda77f4da597a7067219/meridian-pavilion.glb",
     "packs/holodeck/objects/afca29899c682afbcdc08e6a00ab9cff72e67a9d39ec0034c6d5e2f4e7b940b8/meridian-balustrade-4.glb",
     "packs/holodeck/objects/3f2c302d07380e20fafe794a56f7f3b7ca0ecc886529accb6fee7eed0bece6f4/meridian-cube-mirror-far.glb",
@@ -4856,24 +4856,6 @@
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview.webp",
-      "width": 1920,
-      "height": 1080,
-      "alt": "Meridian Sanctuary from above: a marble causeway between mirror pools and terraces climbing to the gate tower, over a sea of cloud.",
-      "srcsetWebp": "/media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-320.webp 320w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-480.webp 480w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-672.webp 672w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-768.webp 768w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-1024.webp 1024w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-1440.webp 1440w",
-      "srcsetAvif": "/media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-320.avif 320w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-480.avif 480w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-672.avif 672w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-768.avif 768w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-1024.avif 1024w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-1440.avif 1440w",
-      "inputPath": "media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview.png"
-    },
-    {
-      "src": "/media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival.webp",
-      "width": 1920,
-      "height": 1080,
-      "alt": "Arriving at Meridian Sanctuary: the causeway runs between mirror pools and cypresses toward the gate tower and its mirror orb.",
-      "srcsetWebp": "/media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-320.webp 320w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-480.webp 480w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-672.webp 672w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-768.webp 768w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1024.webp 1024w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1440.webp 1440w",
-      "srcsetAvif": "/media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-320.avif 320w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-480.avif 480w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-672.avif 672w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-768.avif 768w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1024.avif 1024w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1440.avif 1440w",
-      "inputPath": "media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival.png"
-    },
-    {
       "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating.webp",
       "width": 1024,
       "height": 1024,
@@ -4923,6 +4905,72 @@
       "sourceRevisionId": "r_900d94fea90f4b8486bc7aa81e84fec7",
       "exactRevision": true,
       "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A 4.8 m round arch with a stepped order, archivolt, cornice and an ivy trough along its top.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch.png",
+      "sourceRevisionId": "r_0ee353009dba467da1a001ce093dcdc0",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "One arcade bay in a single mesh: a plain pier carrying its arch.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay.png",
+      "sourceRevisionId": "r_d12e35c947c840d5911f9e3df01fe9e2",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A 4.8 m round arch with a stepped order, archivolt, cornice and an ivy trough along its top.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch.png",
+      "sourceRevisionId": "r_0ee353009dba467da1a001ce093dcdc0",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "One arcade bay in a single mesh: a plain pier carrying its arch.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay.png",
+      "sourceRevisionId": "r_d12e35c947c840d5911f9e3df01fe9e2",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview.webp",
+      "width": 1920,
+      "height": 1080,
+      "alt": "Meridian Sanctuary from above: a marble causeway between mirror pools and terraces climbing to the gate tower, over a sea of cloud.",
+      "srcsetWebp": "/media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-320.webp 320w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-480.webp 480w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-672.webp 672w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-768.webp 768w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-1024.webp 1024w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-1440.webp 1440w",
+      "srcsetAvif": "/media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-320.avif 320w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-480.avif 480w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-672.avif 672w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-768.avif 768w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-1024.avif 1024w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-1440.avif 1440w",
+      "inputPath": "media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview.png"
+    },
+    {
+      "src": "/media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival.webp",
+      "width": 1920,
+      "height": 1080,
+      "alt": "Arriving at Meridian Sanctuary: the causeway runs between mirror pools and cypresses toward the gate tower and its mirror orb.",
+      "srcsetWebp": "/media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-320.webp 320w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-480.webp 480w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-672.webp 672w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-768.webp 768w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-1024.webp 1024w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-1440.webp 1440w",
+      "srcsetAvif": "/media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-320.avif 320w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-480.avif 480w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-672.avif 672w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-768.avif 768w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-1024.avif 1024w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-1440.avif 1440w",
+      "inputPath": "media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival.png"
     }
   ],
   "archives": [
