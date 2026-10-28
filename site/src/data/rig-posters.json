@@ -291,6 +291,42 @@
             "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
           ]
         }
+      },
+      {
+        "id": "holodeck-2026-10-28-e999b228",
+        "pack": "holodeck",
+        "renderedOn": "2026-10-28",
+        "engine": {
+          "commit": "527d407f470318ba73ec7e170d8774f72a098add",
+          "subject": "fix(site): Holodeck Meridian pack follows the closed arcade arch and bay",
+          "dirty": false
+        },
+        "service": {
+          "url": "http://127.0.0.1:8417",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.78.08 615.78.8.0",
+          "backend": "vulkan",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "turing",
+            "device": "nvidia-geforce-gtx-1660-ti-with-max-q-design",
+            "description": "NVIDIA: 615.78.08 615.78.8.0"
+          },
+          "sourceFingerprint": "sha256:d974d635ff5d3503d2373406186535fa437de9e753cfdeddce3eb46c68f0ad18",
+          "buildFingerprint": "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3",
+          "dependencies": {
+            "three": "0.186.1",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:528fd11776f87f20f6a64fd00011b56d79f9670b54d75261bebeb3c0f467c99a",
+            "56c06397-12fe-4681-89f8-138d84dc339a",
+            "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.78.08 615.78.8.0",
+            "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
+          ]
+        }
       }
     ]
   },
@@ -9126,7 +9162,7 @@
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.71.09 615.71.9.0"
     },
     "holodeck:meridian-arcade-arch": {
-      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-arch.png",
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch.png",
       "width": 1024,
       "height": 1024,
       "bytes": 1827206,
@@ -9150,10 +9186,10 @@
         "halfHeight": 3.395627256012831
       },
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.78.08 615.78.8.0",
-      "run": "holodeck-2026-10-28-f4b37aa9"
+      "run": "holodeck-2026-10-28-e999b228"
     },
     "holodeck:meridian-arcade-bay": {
-      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-01/meridian-arcade-bay.png",
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay.png",
       "width": 1024,
       "height": 1024,
       "bytes": 1535604,
@@ -9177,7 +9213,7 @@
         "halfHeight": 6.233374841542135
       },
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.78.08 615.78.8.0",
-      "run": "holodeck-2026-10-28-f4b37aa9"
+      "run": "holodeck-2026-10-28-e999b228"
     }
   }
 }
