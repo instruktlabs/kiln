@@ -4856,24 +4856,6 @@
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview.webp",
-      "width": 1920,
-      "height": 1080,
-      "alt": "Meridian Sanctuary from above: a marble causeway between mirror pools and terraces climbing to the gate tower, over a sea of cloud.",
-      "srcsetWebp": "/media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-320.webp 320w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-480.webp 480w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-672.webp 672w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-768.webp 768w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-1024.webp 1024w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-1440.webp 1440w",
-      "srcsetAvif": "/media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-320.avif 320w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-480.avif 480w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-672.avif 672w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-768.avif 768w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-1024.avif 1024w, /media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview-1440.avif 1440w",
-      "inputPath": "media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview.png"
-    },
-    {
-      "src": "/media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival.webp",
-      "width": 1920,
-      "height": 1080,
-      "alt": "Arriving at Meridian Sanctuary: the causeway runs between mirror pools and cypresses toward the gate tower and its mirror orb.",
-      "srcsetWebp": "/media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-320.webp 320w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-480.webp 480w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-672.webp 672w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-768.webp 768w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1024.webp 1024w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1440.webp 1440w",
-      "srcsetAvif": "/media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-320.avif 320w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-480.avif 480w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-672.avif 672w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-768.avif 768w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1024.avif 1024w, /media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival-1440.avif 1440w",
-      "inputPath": "media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival.png"
-    },
-    {
       "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating.webp",
       "width": 1024,
       "height": 1024,
@@ -4971,6 +4953,24 @@
       "sourceRevisionId": "r_d12e35c947c840d5911f9e3df01fe9e2",
       "exactRevision": true,
       "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview.webp",
+      "width": 1920,
+      "height": 1080,
+      "alt": "Meridian Sanctuary from above: a marble causeway between mirror pools and terraces climbing to the gate tower, over a sea of cloud.",
+      "srcsetWebp": "/media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-320.webp 320w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-480.webp 480w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-672.webp 672w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-768.webp 768w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-1024.webp 1024w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-1440.webp 1440w",
+      "srcsetAvif": "/media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-320.avif 320w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-480.avif 480w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-672.avif 672w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-768.avif 768w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-1024.avif 1024w, /media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview-1440.avif 1440w",
+      "inputPath": "media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview.png"
+    },
+    {
+      "src": "/media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival.webp",
+      "width": 1920,
+      "height": 1080,
+      "alt": "Arriving at Meridian Sanctuary: the causeway runs between mirror pools and cypresses toward the gate tower and its mirror orb.",
+      "srcsetWebp": "/media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-320.webp 320w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-480.webp 480w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-672.webp 672w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-768.webp 768w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-1024.webp 1024w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-1440.webp 1440w",
+      "srcsetAvif": "/media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-320.avif 320w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-480.avif 480w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-672.avif 672w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-768.avif 768w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-1024.avif 1024w, /media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival-1440.avif 1440w",
+      "inputPath": "media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival.png"
     }
   ],
   "archives": [

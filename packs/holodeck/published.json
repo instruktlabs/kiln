@@ -77,6 +77,16 @@
       "sha256": "e0e54042beb629fa81a7ed369ab95fcfc93090ea5b334f51ac5a11232a602c3d"
     },
     {
+      "path": "media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview.png",
+      "bytes": 1792190,
+      "sha256": "e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be"
+    },
+    {
+      "path": "media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival.png",
+      "bytes": 1974966,
+      "sha256": "fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d"
+    },
+    {
       "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park.png",
       "bytes": 1628997,
       "sha256": "ed3452144d1dde6150f95b844c571c088d4093d3b0887e8a4ecb7e072f009ed8"
@@ -1057,6 +1067,16 @@
       "sha256": "5b6d042956bb1e405c341559362076539b6dd98260475972c80ce1be3005a229"
     },
     {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-arch.png",
+      "bytes": 1827206,
+      "sha256": "9d383ea3f5dc320c8ef224d01d01c718295560e9d08cd6a4839e1003b8e0c13d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay.png",
+      "bytes": 1535604,
+      "sha256": "46653bf3e462b16e6530041710e76468ad2bb35edd32da08104960980f3f79dd"
+    },
+    {
       "path": "packs/holodeck/objects/0067d55bd04efe6252de61784ee2be8907ccfbab3e799bbc7915fde4c7556b5f/winter-wmc-deck-tile-runtime.zip",
       "bytes": 57577,
       "sha256": "0067d55bd04efe6252de61784ee2be8907ccfbab3e799bbc7915fde4c7556b5f"
@@ -1165,6 +1185,11 @@
       "path": "packs/holodeck/objects/093c34fade5ee04a5b525981f4745bacabfd1af169ee43dc5957363ede042493/winter-wmc-pendant-runtime.zip",
       "bytes": 46773,
       "sha256": "093c34fade5ee04a5b525981f4745bacabfd1af169ee43dc5957363ede042493"
+    },
+    {
+      "path": "packs/holodeck/objects/0a11d51e794b673853125a31c15a56cf9f0cc1ff30b2f885a1938cc15699634c/meridian-arcade-arch-runtime.zip",
+      "bytes": 291256,
+      "sha256": "0a11d51e794b673853125a31c15a56cf9f0cc1ff30b2f885a1938cc15699634c"
     },
     {
       "path": "packs/holodeck/objects/0a707a70d99abd9762fef36c9196f6c5134e640973ae5b6e8c89f16568fba2c0/crescent-debris-driftwood-log.glb",
@@ -1432,6 +1457,11 @@
       "sha256": "1fd5d12dbb07e88452fd3c287543db3d3a79c6b132a31ab5e8b8584bfeb23402"
     },
     {
+      "path": "packs/holodeck/objects/20981bae997b52c9692c1dca8bcf5e295f35afb1b1b9aad73e94502f79d12697/holodeck-meridian-sanctuary-runtime.zip",
+      "bytes": 18007135,
+      "sha256": "20981bae997b52c9692c1dca8bcf5e295f35afb1b1b9aad73e94502f79d12697"
+    },
+    {
       "path": "packs/holodeck/objects/20c91925bf1643d40dbb9e0ab9b4f104e7dd1c9b9db19b601edd2f12188d305c/meridian-statue-figure-runtime.zip",
       "bytes": 595090,
       "sha256": "20c91925bf1643d40dbb9e0ab9b4f104e7dd1c9b9db19b601edd2f12188d305c"
@@ -1465,6 +1495,11 @@
       "path": "packs/holodeck/objects/22487b5fd5c78c812740aacd3d3136134c500d9db04944ec505830618cd3760b/crescent-debris-shells.glb",
       "bytes": 27892,
       "sha256": "22487b5fd5c78c812740aacd3d3136134c500d9db04944ec505830618cd3760b"
+    },
+    {
+      "path": "packs/holodeck/objects/225058bd022588696cabb710b710e8a3b94bf07abafda04343b778b35dc96555/meridian-arcade-arch-editable.zip",
+      "bytes": 519322,
+      "sha256": "225058bd022588696cabb710b710e8a3b94bf07abafda04343b778b35dc96555"
     },
     {
       "path": "packs/holodeck/objects/228f9d95ad5c5f6972c16c2c6de7760b479e68daeac9298e2147a8cad15944df/pave-field-a-runtime.zip",
@@ -2012,6 +2047,11 @@
       "sha256": "4c2672a57cd6d06b2e86038430959374a7f8e6e25ba51a3781b15005f60aa0db"
     },
     {
+      "path": "packs/holodeck/objects/4c79abb34825226723222a757723a45e635d271762f1a513ef8881e1d0be1b9c/meridian-arcade-bay-editable.zip",
+      "bytes": 491712,
+      "sha256": "4c79abb34825226723222a757723a45e635d271762f1a513ef8881e1d0be1b9c"
+    },
+    {
       "path": "packs/holodeck/objects/4ce9eff2ac967533259295fe7a547beb333b163a1ae1dfedfab7cd9d43de2cff/crescent-debris-driftwood-pile.glb",
       "bytes": 185496,
       "sha256": "4ce9eff2ac967533259295fe7a547beb333b163a1ae1dfedfab7cd9d43de2cff"
@@ -2145,6 +2185,11 @@
       "path": "packs/holodeck/objects/5774ef4bcd089cfc6832437e6ffae33aa6a0e9e936c0ec81e1608a8041844a50/winter-wmc-roof-east.glb",
       "bytes": 952224,
       "sha256": "5774ef4bcd089cfc6832437e6ffae33aa6a0e9e936c0ec81e1608a8041844a50"
+    },
+    {
+      "path": "packs/holodeck/objects/578da67a603f4f959d9a4a8754448e9d773314294d8090a2730e4b9853c5e945/meridian-arcade-bay.glb",
+      "bytes": 609064,
+      "sha256": "578da67a603f4f959d9a4a8754448e9d773314294d8090a2730e4b9853c5e945"
     },
     {
       "path": "packs/holodeck/objects/58d407731cbf0b77f20e96270cd7dd3d5e959ac090c6d4eadee97aa5b263fae2/crescent-plant-grass-tuft-runtime.zip",
@@ -2472,6 +2517,11 @@
       "sha256": "7380695a993709d631b8ef4e3c74de1f64699c7b61716d4c466b4a6f71fdcd77"
     },
     {
+      "path": "packs/holodeck/objects/73d01e782d65b6be4fd12bc3f518f875e9867468d1a017c6dcb0bc440022302e/meridian-arcade-bay-runtime.zip",
+      "bytes": 315174,
+      "sha256": "73d01e782d65b6be4fd12bc3f518f875e9867468d1a017c6dcb0bc440022302e"
+    },
+    {
       "path": "packs/holodeck/objects/740bb18a2841cff74418a10447811afe5eb46105163d54fa1c21a4c9e9ebbf07/crescent-debris-fronds.glb",
       "bytes": 42236,
       "sha256": "740bb18a2841cff74418a10447811afe5eb46105163d54fa1c21a4c9e9ebbf07"
@@ -2550,6 +2600,11 @@
       "path": "packs/holodeck/objects/7a686725e3aefcabeaf289fd7185f43bc85906d59f06617ff11828497de62e0f/statue-bronze.glb",
       "bytes": 275932,
       "sha256": "7a686725e3aefcabeaf289fd7185f43bc85906d59f06617ff11828497de62e0f"
+    },
+    {
+      "path": "packs/holodeck/objects/7ab8460d62cf9a315f832d9e5bb89c086e0af1b446f5e591173927a07ab6ad41/meridian-arcade-arch.glb",
+      "bytes": 493604,
+      "sha256": "7ab8460d62cf9a315f832d9e5bb89c086e0af1b446f5e591173927a07ab6ad41"
     },
     {
       "path": "packs/holodeck/objects/7ae561eda40d24337c1ba999d47a37ed92172a6cb2a24b0d522d024114a9bb1f/crescent-palm-young-runtime.zip",
@@ -3785,6 +3840,11 @@
       "path": "packs/holodeck/objects/e3a76a324d2cd9769040401f6f0dc34a97f61c7e4a04bd22214e5dd08e9b3ade/meridian-cube-mirror-court-editable.zip",
       "bytes": 39922,
       "sha256": "e3a76a324d2cd9769040401f6f0dc34a97f61c7e4a04bd22214e5dd08e9b3ade"
+    },
+    {
+      "path": "packs/holodeck/objects/e3eecaa67cd1a72e5b3d41a7d18a9dbfdf0ead69f7e8096140c60c6141bd6cdc/holodeck-meridian-sanctuary-editable.zip",
+      "bytes": 28588439,
+      "sha256": "e3eecaa67cd1a72e5b3d41a7d18a9dbfdf0ead69f7e8096140c60c6141bd6cdc"
     },
     {
       "path": "packs/holodeck/objects/e409c56f8444ddbcc86400c0c9b77927166c176a1c61a29c07d54d91234bb0b5/winter-wmc-fir-sapling-a-editable.zip",

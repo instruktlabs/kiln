@@ -6397,16 +6397,6 @@
       "sha256": "51dcc2b18fabdca9e4e1ae56b0ff57220dbef8fef8980683b60d5ed716c133b2"
     },
     {
-      "path": "media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview.png",
-      "bytes": 1784873,
-      "sha256": "9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428"
-    },
-    {
-      "path": "media/holodeck/scenes/3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0/meridian-sanctuary-arrival.png",
-      "bytes": 1974817,
-      "sha256": "3e8fe557bd28f440fab434f2fbd8f6800a8e6f35a608805069641a9fe3cc2de0"
-    },
-    {
       "path": "packs/holodeck/objects/f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8/cove-seating.glb",
       "bytes": 890560,
       "sha256": "f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8"
@@ -6545,6 +6535,16 @@
       "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261028-02/meridian-arcade-bay.png",
       "bytes": 1535604,
       "sha256": "46653bf3e462b16e6530041710e76468ad2bb35edd32da08104960980f3f79dd"
+    },
+    {
+      "path": "media/holodeck/scenes/e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be/meridian-sanctuary-overview.png",
+      "bytes": 1792190,
+      "sha256": "e7d6636b7ce48dadbe55275cc7ec52cd8959de2f4f04b8966ba709ddd29c76be"
+    },
+    {
+      "path": "media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival.png",
+      "bytes": 1974966,
+      "sha256": "fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d"
     }
   ]
 }
