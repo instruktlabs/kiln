@@ -612,7 +612,8 @@ Local CLI/MCP builds run in a separate process by default, with a 60-second dead
 16 MiB GLB cap and 32 MiB response cap. The Node worker has a 512 MiB V8 old-space
 heap cap; native/WASM buffers and total process memory are not bounded by that flag.
 `KILN_EVALUATOR_TIMEOUT_MS` accepts 1 to 120000 and `KILN_EVALUATOR_HEAP_MB` accepts
-64 to 4096 in the packaged Node runtime. Host callers can cancel through an AbortSignal.
+64 to 4096 in the packaged Node runtime. `KILN_EVALUATOR_MAX_GLB_BYTES` accepts 1 to 67108864;
+see [large assets](runtime.md#large-assets). Host callers can cancel through an AbortSignal.
 
 `KILN_EVALUATOR_MODE=in-process` retains the trusted legacy path, with no hard
 synchronous interruption. A separate process is not an operating-system security

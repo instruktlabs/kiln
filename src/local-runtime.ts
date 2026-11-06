@@ -1,5 +1,11 @@
 import type { KilnToolContext } from './tools/registry';
-import type { EvaluatorPortV2 } from './evaluator/protocol';
+import {
+  DEFAULT_EVALUATOR_MAX_GLB_BYTES,
+  DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES,
+  MAX_EVALUATOR_GLB_BYTES,
+  MAX_EVALUATOR_RESPONSE_BYTES,
+  type EvaluatorPortV2,
+} from './evaluator/protocol';
 import { renderGLBViaSubprocess } from './evaluator/subprocess';
 import { renderGLBViaIsolatedEvaluator } from './evaluator/isolation';
 import { renderGLBInProcess, resolveEvaluatorMode, type RenderGlbOptions } from './render';
@@ -139,9 +145,20 @@ export function createLocalToolContext(
   const instance = ['off', 'auto', 'on'].includes(env.KILN_BAKE_INSTANCE ?? '')
     ? (env.KILN_BAKE_INSTANCE as RenderGlbOptions['instance'])
     : 'auto';
-  const maxGlbBytes = 16 * 1024 * 1024;
+  // Host-only, like the deadline: no tool argument reaches it.
+  const maxGlbBytes = integer(
+    env,
+    'KILN_EVALUATOR_MAX_GLB_BYTES',
+    DEFAULT_EVALUATOR_MAX_GLB_BYTES,
+    1,
+    MAX_EVALUATOR_GLB_BYTES,
+  );
   const gltfExporter = resolveGltfExporter(env.KILN_GLTF_EXPORTER ?? 'legacy');
-  const maxResponseBytes = 32 * 1024 * 1024;
+  // Base64 is 4/3 of the GLB; the rest is room for its review data. 16 MiB gives the default 32.
+  const maxResponseBytes = Math.min(
+    MAX_EVALUATOR_RESPONSE_BYTES,
+    Math.max(DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES, Math.ceil(maxGlbBytes * 1.5) + 8 * 1024 * 1024),
+  );
   // Keep authored diagnostics off the CLI JSON and MCP stdio channels. The
   // subprocess already isolates stdout; this sink covers trusted local evaluation.
   const diagnosticConsole = new Console({ stdout: process.stderr, stderr: process.stderr });

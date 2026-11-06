@@ -7,6 +7,18 @@ does not publish a package.
 
 ## Unreleased
 
+- A build over the evaluator's output budget now says which budget it reached (#317). The error
+  names the stage (`glb` or `response`), the limit, the size and, for a GLB, the triangle count,
+  and says what to try next; it was `Evaluator output limit exceeded.` alone. The fixed wire
+  message is unchanged, and the numbers travel in a closed `limit` field that the protocol
+  validates, so a new worker needs a host that knows the field. `KILN_EVALUATOR_MAX_GLB_BYTES`
+  raises the GLB limit to 64 MiB, with the response budget following to at most 96 MiB. It is
+  host-only and the defaults stay 16 and 32 MiB. The subprocess worker now bounds its response by
+  the protocol's ceiling and leaves the budget to the host, which stops reading at it; without
+  that, a raised limit would have failed inside the worker at 32 MiB, and an over-budget response
+  was reported as invalid input. [Large assets](docs/runtime.md#large-assets) gives the measured
+  sizes and the supported routes.
+
 - `kiln_export` takes a `programRef`, so a destination audit can read the built GLB before a save
   instead of after one (#309). It returns a `kiln://programs/{program}/{sha256}/asset.glb` resource
   with the size, hash, triangle count and draw diagnostics, and writes nothing. The bytes are the
@@ -15,6 +27,7 @@ does not publish a package.
   bytes. The `runtime` profile still needs a saved revision. This changes `kiln_export`'s input
   schema: `assetId` and `revisionId` are now optional in the advertised shape and checked when the
   tool runs. `kiln_present` and `kiln_export_to` are unchanged.
+||||||| cde4dfe
 
 ## 1.6.0 (2026-10-27)
 
