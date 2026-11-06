@@ -96,7 +96,7 @@ it('workspace paths stay current across parent directory aliases and canonical N
   } finally {
     await rm(temp, { recursive: true, force: true });
   }
-}, 30000);
+}, 60_000); // Workspace and CLI runs: 2.5 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 it('checks the recorded interpreter without treating another supported caller as runtime drift', async () => {
   const temp = await mkdtemp(join(tmpdir(), 'kiln-check-node-'));
@@ -137,7 +137,7 @@ it('checks the recorded interpreter without treating another supported caller as
     // Retry only fixture removal, bounded to 5.5 seconds; persistent locks still fail.
     await rm(actual, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
-}, 30000);
+}, 60_000); // Workspace and CLI runs: 2.0 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 it('the CLI launcher runs under the pinned interpreter that the MCP server uses', async () => {
   const temp = await mkdtemp(join(tmpdir(), 'kiln-launcher-node-'));

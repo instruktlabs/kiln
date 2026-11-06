@@ -46,7 +46,7 @@ test('invalid custom mesh Float32 data retains bounded repair advice through the
     code: `function build(){return createPart('Panel',meshGeo({positions:[0,0,0,1,0,0,0,1,0]}),gameMaterial(0x888888));}`,
   })) as { ok: boolean };
   expect(control.ok).toBe(true);
-}, 20000);
+}, 60_000); // Worker round trips: 1.2 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 test.each(['12', "'PRIVATE_SOURCE_MARKER'"])(
   'taperConeGeo misplaced axis %s retains its positional repair contract through the worker',
