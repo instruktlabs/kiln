@@ -7,6 +7,41 @@ does not publish a package.
 
 ## Unreleased
 
+- A build over the evaluator's output budget now says which budget it reached (#317). The error
+  names the stage (`glb` or `response`), the limit, the size and, for a GLB, the triangle count,
+  and says what to try next; it was `Evaluator output limit exceeded.` alone. The fixed wire
+  message is unchanged, and the numbers travel in a closed `limit` field that the protocol
+  validates, so a new worker needs a host that knows the field. `KILN_EVALUATOR_MAX_GLB_BYTES`
+  raises the GLB limit to 64 MiB, with the response budget following to at most 96 MiB. It is
+  host-only and the defaults stay 16 and 32 MiB. The subprocess worker now bounds its response by
+  the protocol's ceiling and leaves the budget to the host, which stops reading at it; without
+  that, a raised limit would have failed inside the worker at 32 MiB, and an over-budget response
+  was reported as invalid input. [Large assets](docs/runtime.md#large-assets) gives the measured
+  sizes and the supported routes.
+
+- Material revisions can record their parent (#310). `parentRevision` on a V1 or V2 draft, or
+  `kiln material procedural --parent <sha256:revision>`, must name a saved revision of the same
+  `materialId`; `get`, `list` and the `kiln.material-maps.v1` sidecar report it, and it survives
+  export and import. It is optional, and the key is omitted when absent, so existing records keep
+  their revision ids. A record that carries it is refused by an engine older than this one, whose
+  manifest schema is strict.
+
+- Materials accept a `generated` source for maps from a local deterministic program (#311). It
+  needs no `assetUrl`, which is what forced an invented URL before, and requires a `generator`
+  record: the program's name, version and sha256, its toolkit hashes, the seed when it takes one,
+  and runtime versions. Kiln verifies the shape and the stored bytes, and does not run the
+  generator or prove the bytes came from it. `external` still requires an HTTP(S) URL and existing
+  records keep their revision ids. A record with this source is refused by an engine older than
+  this one.
+
+- `kiln_export` takes a `programRef`, so a destination audit can read the built GLB before a save
+  instead of after one (#309). It returns a `kiln://programs/{program}/{sha256}/asset.glb` resource
+  with the size, hash, triangle count and draw diagnostics, and writes nothing. The bytes are the
+  ones `kiln_save` then persists. The URI pins the hash it was issued for and the build runs again
+  on read, so a program this host now builds differently is refused rather than served as the same
+  bytes. The `runtime` profile still needs a saved revision. This changes `kiln_export`'s input
+  schema: `assetId` and `revisionId` are now optional in the advertised shape and checked when the
+  tool runs. `kiln_present` and `kiln_export_to` are unchanged.
 
 ## 1.6.0 (2026-10-27)
 
@@ -147,8 +182,6 @@ does not publish a package.
   both list — so an author whose call failed for an unrelated reason was told those fields did
   not exist. A test now asserts the advice names every field the validator accepts, so the text
   and the validator cannot drift apart again.
-||||||| 24bc8fd
-
 
 ## 1.5.0 (2026-10-25)
 

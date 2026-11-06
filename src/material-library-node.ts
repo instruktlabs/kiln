@@ -81,6 +81,7 @@ export type MaterialMapDraftV1 = MapDraftCommon &
   );
 export interface MaterialDraftV1 {
   materialId: string;
+  parentRevision?: MaterialManifestV1['parentRevision'];
   name: string;
   tags?: string[];
   tileable: boolean;
@@ -146,6 +147,7 @@ export async function createMaterialRecordV1(draft: MaterialDraftV1): Promise<Ma
   assertMaterialJson(draft, true);
   exactKeys(draft, [
     'materialId',
+    'parentRevision',
     'name',
     'tags',
     'tileable',
@@ -246,6 +248,7 @@ export async function createMaterialRecordV1(draft: MaterialDraftV1): Promise<Ma
     schemaVersion: 1,
     materialId: draft.materialId,
     revisionId: `sha256:${'0'.repeat(64)}`,
+    ...(draft.parentRevision ? { parentRevision: draft.parentRevision } : {}),
     name: draft.name,
     tags: draft.tags ?? [],
     tileable: draft.tileable,
@@ -1083,6 +1086,7 @@ export async function createMaterialRecordV2(
   exactKeys(draft, [
     'schemaVersion',
     'materialId',
+    'parentRevision',
     'name',
     'tags',
     'tileable',

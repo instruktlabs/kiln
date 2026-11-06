@@ -69,6 +69,14 @@ to MCP `create-procedural`. These paths need no imports from internal `dist/` fi
 or extra TypeScript loader. The public host APIs below are for a configured TypeScript
 toolchain; ordinary Node cannot directly execute TypeScript inside `node_modules`.
 
+A new revision of an existing material can name the revision it replaces: `parentRevision` in the
+draft, or `material procedural --file draft.json --parent sha256:...`. It must be a saved revision of
+the same `materialId`. The field is optional, and the revision hash covers it when it is present, so
+a record without it keeps its id and the same draft with and without a parent are two revisions.
+`get`, `list` and the `material export --maps` sidecar report it. It survives export and import, and
+import does not require the parent to be in the receiving library. Revisions have no other order, so
+this is the only statement that one supersedes another.
+
 `list` returns compact summaries and accepts a `tag`. `get` requires `materialId` and `revisionId`
 and returns provenance plus a code-ready `portableSpec`. `create-procedural` accepts an editable
 draft using the same bounded layer recipes as the existing procedural compiler. Opt-in
@@ -214,7 +222,15 @@ green and blue; occlusion must be separately bound if wanted. Metalness/roughnes
 their texture channels, so use factors of one when the maps should control the full range.
 
 Every external map names an original source file with its hash and size. The source includes
-provider, creator, URL and license. Derivations record the actual normalization steps and tool
+provider, creator, URL and license. A map produced by a local deterministic program with no public
+URL uses a `generated` source instead: the same fields, no URL required, and a required `generator`
+record with the program's name, version and sha256, its toolkit files' hashes, the seed when it takes
+one, and runtime name/version pairs. Kiln checks that record's shape, that each map names a file the
+source lists, and the stored bytes against their hashes, as it does for external maps. It does not
+run the generator or prove the bytes came from it; the record states a claim someone can reproduce.
+Recipe maps use a `procedural` source, so a recipe on a `generated` source is refused, and
+`material export --maps` copies the generator record into its sidecar with the other source fields.
+Derivations record the actual normalization steps and tool
 versions. Procedural maps retain canonical recipes, seeds, recipe hashes, decoded pixel hashes
 and encoder version. The revision hash covers this metadata and the normalized map hashes.
 Changing bytes, seed, derivation, scale, or provenance creates a different revision.

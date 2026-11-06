@@ -126,6 +126,7 @@ Use `kiln_discover({ capabilities: true })` or `node kiln.mjs discover --capabil
 | `KILN_EVALUATOR_MODE` | `subprocess` (local default), `in-process`, or the separately configured `isolated` transport |
 | `KILN_EVALUATOR_TIMEOUT_MS` | 1–120,000; default 60,000 |
 | `KILN_EVALUATOR_HEAP_MB` | Node subprocess only, 64–4,096; default 512 |
+| `KILN_EVALUATOR_MAX_GLB_BYTES` | Subprocess and isolated evaluators, 1–67,108,864; default 16,777,216. See [large assets](#large-assets) |
 | `KILN_BUILD_CACHE` | `disk` (packaged default), `memory`, or `off` |
 | `KILN_BUILD_CACHE_MB` | Disk artifact budget, 0–1,024; default 128 |
 | `KILN_BUILD_CACHE_DIR` | Optional disk-cache directory |
@@ -134,6 +135,24 @@ Use `kiln_discover({ capabilities: true })` or `node kiln.mjs discover --capabil
 | `KILN_RESULT_DETAIL` | `compact` (default) or `lean`: the result detail of the review tools when a call names none; `full` stays per call. A generated Antigravity workspace sets `lean` in its server entry (`.agents/mcp_config.json`), the one harness where lean won both measures of the readiness cycle; the other harnesses' entries set nothing |
 
 Advanced geometry callbacks also have operation-specific input limits. Those checks do not replace the process deadline: a callback that never returns cannot check its own evaluation counter. Capture pixels and PNG payloads have independent host limits described in [cameras](cameras.md).
+
+### Large assets
+
+A build that exceeds the limit returns `OUTPUT_LIMIT_EXCEEDED` and exports nothing. The message names the stage it reached (`glb`, or `response` for the evaluator result that carries the GLB as base64 with its review data), the limit in force and the size, which is a lower bound when a transport stopped reading at the budget.
+
+The limit counts bytes, not triangles: vertex attributes, indices, images and metadata all count. A displaced plane with positions, normals and UVs costs about 28 bytes per triangle:
+
+| Segments | Triangles | GLB bytes | Default limit | At 64 MiB |
+| --- | --- | --- | --- | --- |
+| 512 × 512 | 524,288 | 14,714,136 | exports | exports |
+| 640 × 640 | 819,200 | 22,979,864 | refused | exports |
+| 1024 × 1024 | 2,097,152 | 58,787,100 | refused | exports, about 50 seconds |
+
+Three supported ways through, in the order to try them:
+
+1. **Reuse geometry.** Parts that share one geometry share its bytes: eight 400 × 400 tiles from one `PlaneGeometry`, 2,560,000 triangles in the scene, export at 8,987,216 bytes.
+2. **Raise the limit on the host.** `KILN_EVALUATOR_MAX_GLB_BYTES` goes to 67,108,864, the most the evaluator protocol and the asset library carry; the response budget rises with it, to at most 96 MiB. It belongs to the host, like the deadline, and no tool argument reaches it. Set it in the environment of the CLI or MCP server entry, and raise `KILN_EVALUATOR_TIMEOUT_MS` if a build nears the 60-second deadline. Budgets elsewhere stay as they are: the render service takes GLBs up to 48 MiB, so a larger build gets no GPU views, and the MCP App chat preview stops at 16 MiB.
+3. **Split the asset.** Above 64 MiB, author separate programs and export each one. The evaluator stays bounded; there is no streaming path around it.
 
 ### Bake defaults
 

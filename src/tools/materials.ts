@@ -209,6 +209,7 @@ export function createKilnMaterialDef(
               .map((item) => ({
                 materialId: item.materialId,
                 revisionId: item.revisionId,
+                ...(item.parentRevision ? { parentRevision: item.parentRevision } : {}),
                 name: item.name,
                 tags: item.tags,
                 tileable: item.tileable,

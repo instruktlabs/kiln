@@ -60,16 +60,29 @@ const url = z
   .max(2000)
   .url()
   .refine((value) => /^https?:\/\//.test(value), 'Provenance URL must be HTTP(S)');
+/** What produced a `generated` source's files. Kiln records this; it never runs the program. */
+export const materialGeneratorSchema = z
+  .object({
+    program: z.object({ name: text, version: text, sha256: materialLibraryHashSchema }).strict(),
+    toolkit: z.array(z.object({ name: text, sha256: materialLibraryHashSchema }).strict()).max(32),
+    seed: z.number().int().optional(),
+    runtimes: z
+      .array(z.object({ name: text, version: text }).strict())
+      .min(1)
+      .max(32),
+  })
+  .strict();
 export const materialSourceSchema = z
   .object({
     id: materialLibraryIdSchema,
-    kind: z.enum(['external', 'procedural']),
+    kind: z.enum(['external', 'procedural', 'generated']),
     provider: text,
     creator: text,
     assetId: text.optional(),
     assetUrl: url.optional(),
     accessedAt: z.string().datetime().optional(),
     license: z.object({ spdx: text, url, attribution: z.string().max(4000) }).strict(),
+    generator: materialGeneratorSchema.optional(),
     originalFiles: z
       .array(
         z
@@ -92,6 +105,16 @@ export const materialSourceSchema = z
       context.addIssue({
         code: 'custom',
         message: 'External materials require a source URL and original file hashes',
+      });
+    if (source.kind === 'generated' && (!source.generator || !source.originalFiles.length))
+      context.addIssue({
+        code: 'custom',
+        message: 'Generated materials require a generator record and original file hashes',
+      });
+    if (source.kind !== 'generated' && source.generator)
+      context.addIssue({
+        code: 'custom',
+        message: 'Only a generated material source carries a generator record',
       });
     if (new Set(source.originalFiles.map((file) => file.name)).size !== source.originalFiles.length)
       context.addIssue({ code: 'custom', message: 'Duplicate original filename' });
@@ -228,6 +251,7 @@ export const materialManifestSchema = z
     schemaVersion: z.literal(1),
     materialId: materialLibraryIdSchema,
     revisionId: materialLibraryHashSchema,
+    parentRevision: materialLibraryHashSchema.optional(),
     name: z.string().min(1).max(200),
     tags: z.array(z.string().min(1).max(80)).max(30),
     tileable: z.boolean(),
@@ -277,6 +301,9 @@ export type MaterialMapV1 = MaterialManifestV1['maps'][number];
 export const proceduralMaterialDraftSchema = z
   .object({
     materialId: materialLibraryIdSchema,
+    parentRevision: materialLibraryHashSchema
+      .optional()
+      .describe('The saved revision of this materialId that this one replaces.'),
     name: z.string().min(1).max(200),
     tags: z.array(z.string().min(1).max(80)).max(30).optional(),
     tileable: z.boolean(),
@@ -423,6 +450,8 @@ export function validateMaterialManifest(value: unknown): MaterialManifestV1 {
         canonicalMaterialJson(canonicalizeProceduralTextureSpecV2(map.procedural.spec))
       )
         throw new Error('Stored procedural material recipe must be canonical');
+      if (source.kind === 'generated')
+        throw new Error('A recipe map cannot use a generated source; use a procedural source');
       if (
         source.kind !== 'procedural' ||
         map.originalFile ||
@@ -432,7 +461,7 @@ export function validateMaterialManifest(value: unknown): MaterialManifestV1 {
       )
         throw new Error('Procedural material source or map convention mismatch');
     } else if (
-      source.kind !== 'external' ||
+      source.kind === 'procedural' ||
       !source.originalFiles.some((file) => file.name === map.originalFile)
     ) {
       throw new Error('Material map must reference an original source file');
@@ -738,6 +767,8 @@ export function validateMaterialManifestAny(value: unknown): MaterialManifest {
       throw Error('Material map source/usage/convention mismatch');
     const recipe = map.recipe;
     if (recipe) {
+      if (source.kind === 'generated')
+        throw Error('A recipe map cannot use a generated source; use a procedural source');
       if (source.kind !== 'procedural' || map.originalFile)
         throw Error('Procedural/atlas map source convention mismatch');
       if (recipe.kind === 'procedural') {
@@ -780,10 +811,12 @@ export function validateMaterialManifestAny(value: unknown): MaterialManifest {
           }
       }
     } else if (
-      source.kind !== 'external' ||
+      source.kind === 'procedural' ||
       !source.originalFiles.some((f) => f.name === map.originalFile)
     )
-      throw Error('External material source original file missing');
+      throw Error(
+        `${source.kind === 'generated' ? 'Generated' : 'External'} material source original file missing`,
+      );
     bytes += map.bytes;
     pixels += map.width * map.height;
   }

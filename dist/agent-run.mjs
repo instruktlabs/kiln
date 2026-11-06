@@ -5085,9 +5085,11 @@ function validateMaterialManifest(value) {
         throw new Error("Height derivation requires a normal map slot");
       if (canonicalMaterialJson(map.procedural.spec) !== canonicalMaterialJson(canonicalizeProceduralTextureSpecV2(map.procedural.spec)))
         throw new Error("Stored procedural material recipe must be canonical");
+      if (source.kind === "generated")
+        throw new Error("A recipe map cannot use a generated source; use a procedural source");
       if (source.kind !== "procedural" || map.originalFile || map.procedural.spec.usage !== map.usage || map.procedural.spec.size !== map.width || map.width !== map.height)
         throw new Error("Procedural material source or map convention mismatch");
-    } else if (source.kind !== "external" || !source.originalFiles.some((file) => file.name === map.originalFile)) {
+    } else if (source.kind === "procedural" || !source.originalFiles.some((file) => file.name === map.originalFile)) {
       throw new Error("Material map must reference an original source file");
     }
     bytes += map.bytes;
@@ -5189,6 +5191,8 @@ function validateMaterialManifestAny(value) {
       throw Error("Material map source/usage/convention mismatch");
     const recipe = map.recipe;
     if (recipe) {
+      if (source.kind === "generated")
+        throw Error("A recipe map cannot use a generated source; use a procedural source");
       if (source.kind !== "procedural" || map.originalFile)
         throw Error("Procedural/atlas map source convention mismatch");
       if (recipe.kind === "procedural") {
@@ -5210,8 +5214,8 @@ function validateMaterialManifestAny(value) {
             pins.set(`${pin.resourceId}/${pin.revisionId}`, pin);
           }
       }
-    } else if (source.kind !== "external" || !source.originalFiles.some((f) => f.name === map.originalFile))
-      throw Error("External material source original file missing");
+    } else if (source.kind === "procedural" || !source.originalFiles.some((f) => f.name === map.originalFile))
+      throw Error(`${source.kind === "generated" ? "Generated" : "External"} material source original file missing`);
     bytes += map.bytes;
     pixels += map.width * map.height;
   }
@@ -5241,7 +5245,7 @@ function validateMaterialRecordShapeAny(record) {
   }
   return manifest;
 }
-var MATERIAL_LIBRARY_LIMITS, MATERIAL_LIBRARY_SLOTS, MATERIAL_LIBRARY_USAGE, slotNames, materialLibraryIdSchema, materialLibraryHashSchema, text4, url, materialSourceSchema, materialTransformSchema, color2, count2, layerCommon, materialProceduralSpecSchema, materialNormalDerivationSchema, proceduralSchema, parametersSchema, materialManifestSchema, proceduralMaterialDraftSchema, materialLibraryPayloadSchema, authoringSchemas, afterShape, reason = (error) => error instanceof Error ? error.message : String(error), samplerSchema, v3SpecSchema, atlasSpecSchema, atlasManifestSchema, materialMapPinSchema, materialRecipeV2Schema, materialManifestV2Schema, materialManifestAnySchema, materialLibraryPayloadV2Schema, materialLibraryPayloadAnySchema, proceduralMaterialDraftV2Schema, proceduralMaterialDraftAnySchema;
+var MATERIAL_LIBRARY_LIMITS, MATERIAL_LIBRARY_SLOTS, MATERIAL_LIBRARY_USAGE, slotNames, materialLibraryIdSchema, materialLibraryHashSchema, text4, url, materialGeneratorSchema, materialSourceSchema, materialTransformSchema, color2, count2, layerCommon, materialProceduralSpecSchema, materialNormalDerivationSchema, proceduralSchema, parametersSchema, materialManifestSchema, proceduralMaterialDraftSchema, materialLibraryPayloadSchema, authoringSchemas, afterShape, reason = (error) => error instanceof Error ? error.message : String(error), samplerSchema, v3SpecSchema, atlasSpecSchema, atlasManifestSchema, materialMapPinSchema, materialRecipeV2Schema, materialManifestV2Schema, materialManifestAnySchema, materialLibraryPayloadV2Schema, materialLibraryPayloadAnySchema, proceduralMaterialDraftV2Schema, proceduralMaterialDraftAnySchema;
 var init_material_library = __esm(() => {
   init_procedural_material_v2();
   init_procedural_texture_v3_contract();
@@ -5283,15 +5287,22 @@ var init_material_library = __esm(() => {
   materialLibraryHashSchema = z5.string().regex(/^sha256:[a-f0-9]{64}$/);
   text4 = z5.string().min(1).max(1000);
   url = z5.string().max(2000).url().refine((value) => /^https?:\/\//.test(value), "Provenance URL must be HTTP(S)");
+  materialGeneratorSchema = z5.object({
+    program: z5.object({ name: text4, version: text4, sha256: materialLibraryHashSchema }).strict(),
+    toolkit: z5.array(z5.object({ name: text4, sha256: materialLibraryHashSchema }).strict()).max(32),
+    seed: z5.number().int().optional(),
+    runtimes: z5.array(z5.object({ name: text4, version: text4 }).strict()).min(1).max(32)
+  }).strict();
   materialSourceSchema = z5.object({
     id: materialLibraryIdSchema,
-    kind: z5.enum(["external", "procedural"]),
+    kind: z5.enum(["external", "procedural", "generated"]),
     provider: text4,
     creator: text4,
     assetId: text4.optional(),
     assetUrl: url.optional(),
     accessedAt: z5.string().datetime().optional(),
     license: z5.object({ spdx: text4, url, attribution: z5.string().max(4000) }).strict(),
+    generator: materialGeneratorSchema.optional(),
     originalFiles: z5.array(z5.object({
       name: z5.string().min(1).max(200),
       sha256: materialLibraryHashSchema,
@@ -5302,6 +5313,16 @@ var init_material_library = __esm(() => {
       context.addIssue({
         code: "custom",
         message: "External materials require a source URL and original file hashes"
+      });
+    if (source.kind === "generated" && (!source.generator || !source.originalFiles.length))
+      context.addIssue({
+        code: "custom",
+        message: "Generated materials require a generator record and original file hashes"
+      });
+    if (source.kind !== "generated" && source.generator)
+      context.addIssue({
+        code: "custom",
+        message: "Only a generated material source carries a generator record"
       });
     if (new Set(source.originalFiles.map((file) => file.name)).size !== source.originalFiles.length)
       context.addIssue({ code: "custom", message: "Duplicate original filename" });
@@ -5402,6 +5423,7 @@ var init_material_library = __esm(() => {
     schemaVersion: z5.literal(1),
     materialId: materialLibraryIdSchema,
     revisionId: materialLibraryHashSchema,
+    parentRevision: materialLibraryHashSchema.optional(),
     name: z5.string().min(1).max(200),
     tags: z5.array(z5.string().min(1).max(80)).max(30),
     tileable: z5.boolean(),
@@ -5436,6 +5458,7 @@ var init_material_library = __esm(() => {
   }).strict();
   proceduralMaterialDraftSchema = z5.object({
     materialId: materialLibraryIdSchema,
+    parentRevision: materialLibraryHashSchema.optional().describe("The saved revision of this materialId that this one replaces."),
     name: z5.string().min(1).max(200),
     tags: z5.array(z5.string().min(1).max(80)).max(30).optional(),
     tileable: z5.boolean(),
@@ -11951,6 +11974,7 @@ async function createMaterialRecordV1(draft) {
   assertMaterialJson(draft, true);
   exactKeys(draft, [
     "materialId",
+    "parentRevision",
     "name",
     "tags",
     "tileable",
@@ -12036,6 +12060,7 @@ async function createMaterialRecordV1(draft) {
     schemaVersion: 1,
     materialId: draft.materialId,
     revisionId: `sha256:${"0".repeat(64)}`,
+    ...draft.parentRevision ? { parentRevision: draft.parentRevision } : {},
     name: draft.name,
     tags: draft.tags ?? [],
     tileable: draft.tileable,
@@ -12541,6 +12566,7 @@ async function createMaterialRecordV2(draft, options) {
   exactKeys(draft, [
     "schemaVersion",
     "materialId",
+    "parentRevision",
     "name",
     "tags",
     "tileable",
@@ -40050,6 +40076,13 @@ var init_render = __esm(() => {
 function evaluatorOutcomeMessage(code) {
   return EVALUATOR_OUTCOME_MESSAGES[code];
 }
+function evaluatorOutputLimitAdvice(limit) {
+  if (!limit)
+    return "";
+  const size = `${limit.atLeast ? "at least " : ""}${limit.observedBytes} bytes`;
+  const reached = limit.stage === "glb" ? `The built GLB is ${size}${limit.triangles === undefined ? "" : ` (${limit.triangles} triangles)`}` : `The evaluator response, which carries the GLB as base64 with its review data, is ${size}`;
+  return ` ${reached}; this host allows at most ${limit.limitBytes} bytes, and nothing was exported.` + " Lower the vertex count or attribute data, reuse one geometry across parts so its copies" + " share the bytes, or split the asset into parts exported separately. A local host can raise" + ` the GLB limit to ${MAX_EVALUATOR_GLB_BYTES} with KILN_EVALUATOR_MAX_GLB_BYTES.` + " kiln_discover with capabilities:true reports the limits in force.";
+}
 function evaluatorSourceBudgetFailure(code) {
   if (typeof code !== "string")
     return;
@@ -40066,7 +40099,7 @@ function resolveEvaluatorPortV2(port, profile) {
   }
   return trustedInProcessEvaluatorPortV2;
 }
-var MAX_EVALUATOR_CODE_BYTES, MAX_EVALUATOR_REQUEST_BYTES, DEFAULT_EVALUATOR_MAX_GLB_BYTES, DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES, EVALUATOR_OUTCOME_MESSAGES, EvaluatorPortError, trustedInProcessEvaluatorPortV2;
+var MAX_EVALUATOR_CODE_BYTES, MAX_EVALUATOR_REQUEST_BYTES, DEFAULT_EVALUATOR_MAX_GLB_BYTES, DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES, MAX_EVALUATOR_GLB_BYTES, MAX_EVALUATOR_RESPONSE_BYTES, EVALUATOR_OUTCOME_MESSAGES, EvaluatorPortError, trustedInProcessEvaluatorPortV2;
 var init_protocol = __esm(() => {
   init_authoring_diagnostic();
   init_requirements_context();
@@ -40079,6 +40112,8 @@ var init_protocol = __esm(() => {
   MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
+  MAX_EVALUATOR_GLB_BYTES = 64 * 1024 * 1024;
+  MAX_EVALUATOR_RESPONSE_BYTES = 96 * 1024 * 1024;
   EVALUATOR_OUTCOME_MESSAGES = {
     INPUT_INVALID: "Evaluator request was invalid. Use kiln.evaluator.request.v2 and update the host and worker together. Retired category/intent options require explicit requirements migration; see docs/migration.md.",
     EXECUTION_REJECTED: "Generated asset execution was rejected.",
@@ -40094,11 +40129,13 @@ var init_protocol = __esm(() => {
     code;
     diagnostic;
     solid;
-    constructor(code, message = evaluatorOutcomeMessage(code), diagnostic, solid) {
-      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}` : code === "EXECUTION_REJECTED" ? `${message} ${EXECUTION_REJECTED_ADVICE}` : message);
+    limit;
+    constructor(code, message = evaluatorOutcomeMessage(code), diagnostic, solid, limit) {
+      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}` : code === "EXECUTION_REJECTED" ? `${message} ${EXECUTION_REJECTED_ADVICE}` : `${message}${evaluatorOutputLimitAdvice(limit)}`);
       this.code = code;
       this.diagnostic = diagnostic;
       this.solid = solid;
+      this.limit = limit;
       this.name = "EvaluatorPortError";
     }
   };
@@ -41884,6 +41921,7 @@ var init_draw_diagnostics = __esm(() => {
 var exports_assets_resources = {};
 __export(exports_assets_resources, {
   assetLinks: () => assetLinks,
+  programBuildLink: () => programBuildLink,
   runtimeAssetLinks: () => runtimeAssetLinks
 });
 function assetLinks(collection, manifest) {
@@ -41918,6 +41956,16 @@ async function runtimeAssetLinks(collection, record, derived) {
     size: bytes.length,
     annotations: { audience: ["user"], priority: name.endsWith(".glb") ? 0.9 : 0.3 }
   }));
+}
+function programBuildLink(programRef, rendered) {
+  return {
+    type: "resource_link",
+    name: "asset.glb",
+    uri: `kiln://programs/${encodeURIComponent(programRef)}/${rendered.artifactGlbSha256.replace("sha256:", "")}/asset.glb`,
+    mimeType: "model/gltf-binary",
+    size: rendered.glb.byteLength,
+    annotations: { audience: ["user"], priority: priorities["asset.glb"] }
+  };
 }
 var audiences, priorities;
 var init_assets_resources = __esm(() => {
@@ -47611,18 +47659,33 @@ import { z as z18 } from "zod";
 init_material_library();
 init_material_library_node();
 init_texture_atlas_contract();
+async function assertMaterialParent(draft, library) {
+  if (!draft.parentRevision)
+    return;
+  try {
+    if (library.readManifest)
+      await library.readManifest(draft.materialId, draft.parentRevision);
+    else
+      await library.read(draft.materialId, draft.parentRevision);
+  } catch (error) {
+    if (error.code !== "ENOENT")
+      throw error;
+    throw new Error(`parentRevision ${draft.parentRevision} is not a saved revision of material ${draft.materialId}. A parent must be an existing revision of the same materialId; list materials to see their revision IDs.`);
+  }
+}
 async function createProceduralMaterialRecord(value, library) {
   assertMaterialJson(value);
   if (new TextEncoder().encode(JSON.stringify(value)).length > MATERIAL_LIBRARY_LIMITS.maxManifestBytes)
     throw new Error("Material draft exceeds size limit");
   if (!value || typeof value !== "object" || Array.isArray(value))
     throw new Error("Material draft must be a JSON object");
-  if (!Object.hasOwn(value, "schemaVersion"))
-    return {
-      record: await createMaterialRecordV1(proceduralMaterialDraftSchema.parse(value)),
-      dependencies: []
-    };
+  if (!Object.hasOwn(value, "schemaVersion")) {
+    const draft = proceduralMaterialDraftSchema.parse(value);
+    await assertMaterialParent(draft, library);
+    return { record: await createMaterialRecordV1(draft), dependencies: [] };
+  }
   const draft = proceduralMaterialDraftV2Schema.parse(value);
+  await assertMaterialParent(draft, library);
   const pins = new Map;
   for (const map of draft.maps) {
     if (!map.atlas)
@@ -48239,6 +48302,7 @@ function createKilnMaterialDef(library, presentation = "grouped") {
             materials: records.filter((item) => !input.tag || item.tags.includes(input.tag)).map((item) => ({
               materialId: item.materialId,
               revisionId: item.revisionId,
+              ...item.parentRevision ? { parentRevision: item.parentRevision } : {},
               name: item.name,
               tags: item.tags,
               tileable: item.tileable,
@@ -50509,6 +50573,16 @@ async function parentRevisionComparison(parent, child) {
     };
   }
 }
+async function buildProgramGlb(programRef, context) {
+  if (!context.programStore)
+    throw new Error("Building a programRef requires a program store.");
+  const code = await context.programStore.get(programRef);
+  await context.prepareBuildProvenance?.();
+  return evaluateGeneratedSource(code, {
+    ...context,
+    requirements: toolRequirements(context).binding
+  });
+}
 async function buildProgramAssetDraft(code, context, backdrop) {
   await context.prepareBuildProvenance?.();
   const callContext = {
@@ -50628,6 +50702,9 @@ function createKilnAssetDefs(context, presentation = "grouped") {
   });
   const exportInput = z24.object(selector);
   const profileExportInput = exportInput.extend({
+    assetId: selector.assetId.optional(),
+    revisionId: selector.revisionId.optional(),
+    programRef: z24.string().regex(programRefPattern).optional().describe("A program to build instead of a saved revision; assetId and revisionId stay unset."),
     profile: z24.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
   const exportToInput = exportInput.extend({
@@ -50783,10 +50860,31 @@ function createKilnAssetDefs(context, presentation = "grouped") {
     },
     {
       name: "kiln_export",
-      description: "Export one saved revision. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.",
+      description: "Export one saved revision, or the GLB a programRef builds. With programRef, nothing is saved: it returns a resource for the bytes kiln_save would persist, so a destination audit can read them before a save. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.",
       inputSchema: profileExportInput,
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
+        if (input.programRef) {
+          if (input.assetId || input.revisionId)
+            throw new Error("kiln_export takes programRef or assetId and revisionId, not both: programRef builds a program, the others select a saved revision.");
+          if (input.profile === "runtime")
+            throw new Error("The runtime profile exports a saved revision. Call kiln_save with this programRef first, or omit profile for the built GLB.");
+          const rendered = await buildProgramGlb(input.programRef, context);
+          await Promise.resolve().then(() => init_draw_diagnostics());
+          return {
+            ok: true,
+            programRef: input.programRef,
+            profile: input.profile,
+            sha256: rendered.artifactGlbSha256,
+            triangles: rendered.tris,
+            drawDiagnostics: await inspectDrawDiagnostics(rendered.glb),
+            resources: [
+              (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).programBuildLink(input.programRef, rendered)
+            ]
+          };
+        }
+        if (!input.assetId || !input.revisionId)
+          throw new Error("kiln_export requires assetId and revisionId for a saved revision, or programRef for a built program.");
         const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId, listCall(input.collection));
         await Promise.resolve().then(() => init_draw_diagnostics());
         if (input.profile === "runtime") {
