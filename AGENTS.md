@@ -172,8 +172,7 @@ bun run test:coverage
 them. Run `bun run build:runtime` on a fresh clone, after a pull and after runtime changes,
 before CLI/MCP dogfood and full gates. `bun run test` refuses a missing or stale build.
 
-Fast loop: `bun run build:runtime` (a fresh checkout has no `dist/` or `lib/`: a missing build
-step, not a broken tree), nearest test file, then `bun run typecheck && bun run lint && bun run test`.
+Fast loop: `bun run build:runtime`, nearest test file, then `bun run typecheck && bun run lint && bun run test`.
 The full offline gate adds `bun run test:coverage`, which emits `coverage/lcov.info` and
 enforces the line/function ratchet in `bunfig.toml`. Raise thresholds when practical; never
 lower them without a measured rationale. Live model tests are opt-in via `bun run test:live`.
