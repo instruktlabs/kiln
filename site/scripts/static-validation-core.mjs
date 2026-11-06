@@ -158,7 +158,12 @@ export function ownerReviewErrors(html) {
 }
 
 /** The copy rules every page answers to: numbers not glued to words, the site's spelling of licence, owner status. */
-export const copyErrors = (html) => [...gluedNumberErrors(html), ...licenceSpellingErrors(html), ...ownerReviewErrors(html)];
+/** Cloudflare's Email Address Obfuscation rewrites a mailto link to a /cdn-cgi/ URL that 404s without JavaScript. */
+export const emailLinkErrors = (html) => (/href="mailto:/i.test(html.replace(/<!--email_off-->[\s\S]*?<!--\/email_off-->/g, ''))
+  ? ['A mailto link outside <!--email_off--> would be rewritten by Cloudflare to a /cdn-cgi/ URL']
+  : []);
+
+export const copyErrors = (html) => [...emailLinkErrors(html), ...gluedNumberErrors(html), ...licenceSpellingErrors(html), ...ownerReviewErrors(html)];
 
 /** Meta descriptions over this length are cut in search and share previews (content review finding 13). */
 export const DESCRIPTION_WARNING_LENGTH = 160;
@@ -297,6 +302,10 @@ export function discoveryErrors({ sitemapUrls, robots, sitemapIndex }) {
     const value = (name) => directives.filter((line) => line.toLowerCase().startsWith(`${name}:`)).map((line) => line.slice(name.length + 1).trim());
     if (!value('sitemap').includes(`${ORIGIN}/sitemap.xml`)) add('/robots.txt', `robots.txt does not name ${ORIGIN}/sitemap.xml`);
     if (value('disallow').includes('/')) add('/robots.txt', 'robots.txt blocks the whole site with "Disallow: /"');
+    // A crawler cannot see the noindex header on a URL robots.txt keeps it from fetching.
+    for (const rule of new Set(value('disallow').filter((rule) => rule && rule !== '/'))) {
+      if (RAW_NOINDEX_SAMPLES.some((path) => path.startsWith(rule))) add('/robots.txt', `robots.txt blocks ${rule}, so a crawler can never see its noindex header`);
+    }
   }
   return errors;
 }
@@ -382,6 +391,47 @@ export function headersFor(rules, pathname, host = new URL(ORIGIN).host) {
   return Object.fromEntries(headers);
 }
 
+/** Raw files that must stay out of the index on the production host (site/public/_headers), one of each kind. */
+export const RAW_NOINDEX_SAMPLES = [
+  '/asset-demos/cabin-woods-psx-horror/metadata/rock/manifest.json',
+  '/asset-demos/cabin-woods-psx-horror/models/rock.kiln-metadata.json',
+  '/scene-packs/golden-gate/g9-code6/THIRD-PARTY-NOTICES.txt',
+  '/scene-packs/golden-gate/g9-code6/licenses/FEDERAL-DATA.txt',
+  '/scene-packs/golden-gate/g9-code6/pack.json',
+  '/scene-packs/golden-gate/g9-code6/SHA256SUMS',
+  '/scene-packs/golden-gate/g9-code6/README.md',
+  '/scene-packs/troy/troy-20261005-07/web/vendor/three/LICENSE',
+  '/asset-demos/cabin-woods-psx-horror/THIRD-PARTY-NOTICES.txt',
+  '/asset-demos/cabin-woods-psx-horror/scene-source/README.md',
+  '/asset-demos/cabin-woods-psx-horror/scene-source/LICENSE',
+  '/asset-demos/cabin-woods-psx-horror/scene-source/bun.lock',
+  '/asset-demos/cabin-woods-psx-horror/scene-source/.gitignore',
+  '/asset-demos/cabin-woods-psx-horror/SHA256SUMS',
+  '/assets/abyssal-surveyor.poster.json',
+  '/assets/abyssal-surveyor.kiln-metadata.json',
+  '/scene-runtime/farm/runtime.json',
+  '/sources/golden-gate-bridge/REFERENCE.md',
+  '/fonts/Archivo-OFL.txt',
+  '/build-info.json',
+  '/artifact-files.json',
+  '/source-files.json',
+];
+
+/** What search and agents read directly, and the media a page shows. A rule that reached one of these would cost traffic. */
+export const KEEP_INDEXABLE_SAMPLES = [
+  '/llms.txt',
+  '/robots.txt',
+  '/sitemap.xml',
+  '/sitemap-index.xml',
+  '/.well-known/agent-skills/index.json',
+  '/assets/abyssal-surveyor.glb',
+  '/assets/abyssal-surveyor.png',
+  '/assets/abyssal-surveyor.webp',
+  '/media/hero.png',
+  '/media/hero.webp',
+  '/asset-demos/cabin-woods-psx-horror/models/rock.glb',
+];
+
 /** A script element's content hash as a CSP source expression. */
 export const scriptHashSource = (text) => `'sha256-${createHash('sha256').update(text, 'utf8').digest('base64')}'`;
 
@@ -397,7 +447,7 @@ const ASTRO_TRANSFORMED_IMAGE = /^_astro\/[^/]+\.[A-Za-z0-9_-]{8}_[A-Za-z0-9]{1,
  * carry. HTML revalidates on every visit; only files with a content hash in their name are cached as immutable, and
  * every file under `/_astro/` is.
  */
-export function headersErrors({ text, inlineScripts = [], files = [], sealedFiles = [] }) {
+export function headersErrors({ text, inlineScripts = [], files = [], sealedFiles = [], sitemapPaths = [] }) {
   const errors = [];
   const sealed = new Set(sealedFiles);
   let rules;
@@ -414,6 +464,12 @@ export function headersErrors({ text, inlineScripts = [], files = [], sealedFile
   if (!policy) errors.push('Pages carry no Content-Security-Policy-Report-Only');
   // The Pages project also answers on its pages.dev hosts with the same bytes; only the production host is indexed.
   if (/noindex/i.test(page['x-robots-tag'] ?? '')) errors.push(`The production host ${new URL(ORIGIN).host} must not be served X-Robots-Tag: noindex`);
+  // Raw data is noindexed by header; a rule that reached a page or a sitemap URL would drop it from search.
+  const noindexed = (path) => /noindex/i.test(headersFor(rules, path)['x-robots-tag'] ?? '');
+  for (const path of RAW_NOINDEX_SAMPLES) if (!noindexed(path)) errors.push(`${path} must be served X-Robots-Tag: noindex`);
+  for (const path of KEEP_INDEXABLE_SAMPLES) if (noindexed(path)) errors.push(`${path} must not be served X-Robots-Tag: noindex`);
+  for (const file of files) if (/\.html$/.test(file) && noindexed(`/${file}`)) errors.push(`The page /${file} must not be served X-Robots-Tag: noindex`);
+  for (const path of sitemapPaths) if (noindexed(path)) errors.push(`The sitemap URL ${path} must not be served X-Robots-Tag: noindex`);
   for (const host of PAGES_DEV_HOSTS) {
     for (const path of ['/', '/docs/', '/robots.txt']) {
       if (!/noindex/i.test(headersFor(rules, path, host)['x-robots-tag'] ?? '')) errors.push(`https://${host}${path} must be served X-Robots-Tag: noindex`);

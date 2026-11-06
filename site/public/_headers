@@ -26,6 +26,70 @@ https://kilnstudio.pages.dev/*
 https://:version.kilnstudio.pages.dev/*
   X-Robots-Tag: noindex
 
+# Raw data the scenes and gallery fetch: Search Console showed Google crawling these as documents
+# (manifest.json, *.kiln-metadata.json, THIRD-PARTY-NOTICES.txt). X-Robots-Tag keeps a file out of the index and still
+# lets anything fetch it, so the demos keep working. Never list these in robots.txt: a crawler cannot see
+# the noindex on a blocked URL. One splat per rule and it crosses "/" (see headersFor), so "*.json" covers any depth.
+# HTML is deliberately absent, and validate-static fails a build where one of these reaches a page or a sitemap URL.
+/asset-demos/*.json
+  X-Robots-Tag: noindex
+
+/asset-demos/*.txt
+  X-Robots-Tag: noindex
+
+/asset-demos/*.md
+  X-Robots-Tag: noindex
+
+/asset-demos/*/SHA256SUMS
+  X-Robots-Tag: noindex
+
+/scene-packs/*.json
+  X-Robots-Tag: noindex
+
+/scene-packs/*.txt
+  X-Robots-Tag: noindex
+
+/scene-packs/*.md
+  X-Robots-Tag: noindex
+
+/scene-packs/*/SHA256SUMS
+  X-Robots-Tag: noindex
+
+# The same kind of file elsewhere: per-asset JSON the gallery fetches, runtime data, source notes, licence texts and
+# build receipts. llms.txt, robots.txt, the sitemaps and .well-known stay indexable.
+/asset-demos/*/LICENSE
+  X-Robots-Tag: noindex
+
+/asset-demos/*.lock
+  X-Robots-Tag: noindex
+
+/asset-demos/*/.gitignore
+  X-Robots-Tag: noindex
+
+/scene-packs/*/LICENSE
+  X-Robots-Tag: noindex
+
+/assets/*.json
+  X-Robots-Tag: noindex
+
+/scene-runtime/*.json
+  X-Robots-Tag: noindex
+
+/sources/*.md
+  X-Robots-Tag: noindex
+
+/fonts/*.txt
+  X-Robots-Tag: noindex
+
+/build-info.json
+  X-Robots-Tag: noindex
+
+/artifact-files.json
+  X-Robots-Tag: noindex
+
+/source-files.json
+  X-Robots-Tag: noindex
+
 # Build output named by content hash: a changed file gets a new name, so these never need revalidating.
 /_astro/*
   ! Cache-Control
