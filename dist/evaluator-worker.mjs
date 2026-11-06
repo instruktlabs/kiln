@@ -30964,7 +30964,7 @@ function semanticRoles2(node) {
   return typeof geometryRole === "string" ? [geometryRole] : [];
 }
 function clamp01(value) {
-  return value < 0 ? 0 : value > 1 ? 1 : value;
+  return value < 0 ? 0 : Math.min(value, 1);
 }
 function collectScene(root, requestValue) {
   const triangles = [];
@@ -32059,7 +32059,7 @@ function collectTriangles(root) {
   return { tris, bbox: { min, max } };
 }
 function clamp012(n) {
-  return n < 0 ? 0 : n > 1 ? 1 : n;
+  return n < 0 ? 0 : Math.min(n, 1);
 }
 function linearToSrgb2(c) {
   const v = clamp012(c);
