@@ -42,9 +42,6 @@ test('passes when a marker is not at the start of a line, or is only a separator
 });
 
 test('leaves untracked files alone', async () => {
-  const result = await check(
-    { 'a.md': 'clean\n' },
-    { 'scratch.md': '>>>>>>> local\n' },
-  );
+  const result = await check({ 'a.md': 'clean\n' }, { 'scratch.md': '>>>>>>> local\n' });
   expect(result.status).toBe(0);
 });

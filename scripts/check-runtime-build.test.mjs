@@ -18,7 +18,11 @@ async function put(root, path, text) {
 async function checkout() {
   const root = await mkdtemp(join(tmpdir(), 'kiln-runtime-build-'));
   roots.push(root);
-  await put(root, 'package.json', JSON.stringify({ version: '1.0.0', packageManager: 'bun@1.4.2' }));
+  await put(
+    root,
+    'package.json',
+    JSON.stringify({ version: '1.0.0', packageManager: 'bun@1.4.2' }),
+  );
   await put(root, 'bun.lock', '{}\n');
   await put(root, 'src/cli.ts', 'export {};\n');
   await put(root, 'render-service/src/server.mjs', 'export {};\n');
