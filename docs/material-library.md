@@ -214,7 +214,15 @@ green and blue; occlusion must be separately bound if wanted. Metalness/roughnes
 their texture channels, so use factors of one when the maps should control the full range.
 
 Every external map names an original source file with its hash and size. The source includes
-provider, creator, URL and license. Derivations record the actual normalization steps and tool
+provider, creator, URL and license. A map produced by a local deterministic program with no public
+URL uses a `generated` source instead: the same fields, no URL required, and a required `generator`
+record with the program's name, version and sha256, its toolkit files' hashes, the seed when it takes
+one, and runtime name/version pairs. Kiln checks that record's shape, that each map names a file the
+source lists, and the stored bytes against their hashes, as it does for external maps. It does not
+run the generator or prove the bytes came from it; the record states a claim someone can reproduce.
+Recipe maps use a `procedural` source, so a recipe on a `generated` source is refused, and
+`material export --maps` copies the generator record into its sidecar with the other source fields.
+Derivations record the actual normalization steps and tool
 versions. Procedural maps retain canonical recipes, seeds, recipe hashes, decoded pixel hashes
 and encoder version. The revision hash covers this metadata and the normalized map hashes.
 Changing bytes, seed, derivation, scale, or provenance creates a different revision.
