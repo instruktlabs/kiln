@@ -1252,7 +1252,7 @@ var mcp_manifest_default = {
     },
     {
       name: "kiln_project",
-      description: "Manage optional shared workspace projects: list discovers IDs; get reads the current or an exact historical configuration; create adds a project; update needs the exact expectedRevision and replaces each supplied top-level field. Assets and materials are authored, saved and exported without a project, and creating one never binds unrelated authoring. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned; review annotations do not change trusted QA or authorize a release. export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP; only inventory entries linked to saved revisions contribute assets, and referenced concept images and acquisition archives are not embedded. check measures items that state a placement against each other at pinned revisions: shared volume, and open surfaces inside a neighbour. An unreadable pin is unmeasured, not clear; a positive is not a verdict.",
+      description: "Manage optional shared workspace projects: list discovers IDs; get reads the current or an exact historical configuration; create adds a project; update needs the exact expectedRevision and replaces each supplied top-level field. Assets and materials are authored, saved and exported without a project, and creating one never binds unrelated authoring. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned; review annotations do not change trusted QA or authorize a release. CLI and the local dashboard use the same records. export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP; only inventory entries linked to saved revisions contribute assets, and referenced concept images and acquisition archives are not embedded.",
       inputSchema: {
         type: "object",
         properties: {
@@ -1263,17 +1263,16 @@ var mcp_manifest_default = {
               "get",
               "create",
               "update",
-              "export",
-              "check"
+              "export"
             ]
           },
           projectId: {
-            description: "get, update, export, check.",
+            description: "get, update, export.",
             type: "string",
             pattern: "^[a-z][a-z0-9_-]{0,79}$"
           },
           revisionId: {
-            description: "get, export, check: an exact revision; omit for the current one.",
+            description: "get, export: an exact revision; omit for the current one.",
             type: "string",
             pattern: "^r_[0-9]{10}_[a-f0-9]{64}$"
           },
