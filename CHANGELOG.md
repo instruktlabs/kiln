@@ -25,6 +25,15 @@ does not publish a package.
   export and import. It is optional, and the key is omitted when absent, so existing records keep
   their revision ids. A record that carries it is refused by an engine older than this one, whose
   manifest schema is strict.
+
+- Materials accept a `generated` source for maps from a local deterministic program (#311). It
+  needs no `assetUrl`, which is what forced an invented URL before, and requires a `generator`
+  record: the program's name, version and sha256, its toolkit hashes, the seed when it takes one,
+  and runtime versions. Kiln verifies the shape and the stored bytes, and does not run the
+  generator or prove the bytes came from it. `external` still requires an HTTP(S) URL and existing
+  records keep their revision ids. A record with this source is refused by an engine older than
+  this one.
+||||||| 8e08b9c
 ||||||| cde4dfe
 
 ## 1.6.0 (2026-10-27)
