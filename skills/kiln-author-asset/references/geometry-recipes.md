@@ -289,6 +289,13 @@ merge returns one geometry, so one primitive per frond with each copy's UVs kept
 three.js runtime export. Do not hand-build hundreds of leaflets with `meshGeo`.
 Grass clumps and shrubs can use `crossedQuadsGeo` cards.
 
+For stone made of separate pieces, discover `recipe:cellular-stone-v1` rather than
+overlaying `bricks`, which reads as plaid. The `cellular` layer gives one flat tone per
+stone, joints and faceted height from one shared layout. A closed isotropic net of
+cells reads as crazy paving: low `jitterY`, a `metricY` above 1 and a `borderOpen`
+below 1 keep rock in beds, with cracks that end in T-junctions. Judge it on a
+material-faithful view at the viewing distance and across two repeats.
+
 For original cutouts, `proceduralTexture` V3 authors rectangular RGBA pixels;
 `textureAtlas` combines named fixed regions from V3 recipes or exact saved map
 revisions. Discover their full contracts before authoring. Atlas regions do not

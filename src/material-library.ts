@@ -8,6 +8,12 @@ import {
   canonicalizeProceduralTextureSpecV3,
   PROCEDURAL_TEXTURE_V3_COMPILER_ID,
 } from './procedural-texture-v3-contract';
+import {
+  CELLULAR_FEATURES,
+  MAX_CELLULAR_METRIC,
+  MAX_CELLULAR_WEIGHT,
+  MIN_CELLULAR_METRIC,
+} from './procedural-cellular';
 import { canonicalizePortableSamplerV1 } from './portable-sampler';
 import type { CanonicalPortableMaterialSpecV3 } from './procedural-material-v3';
 import {
@@ -209,6 +215,28 @@ export const materialProceduralSpecSchema = z
               scale: count.default(8),
               octaves: z.number().int().min(1).max(6).default(3),
               seed: z.number().int().min(-2147483648).max(2147483647).default(0),
+              ...layerCommon,
+            })
+            .strict(),
+          z
+            .object({
+              op: z.literal('cellular'),
+              colorA: color,
+              colorB: color,
+              cellsX: count.default(8),
+              cellsY: count.default(8),
+              seed: z.number().int().min(-2147483648).max(2147483647).default(0),
+              jitterX: z.number().min(0).max(1).default(1),
+              jitterY: z.number().min(0).max(1).default(1),
+              metricX: z.number().min(MIN_CELLULAR_METRIC).max(MAX_CELLULAR_METRIC).default(1),
+              metricY: z.number().min(MIN_CELLULAR_METRIC).max(MAX_CELLULAR_METRIC).default(1),
+              weight: z.number().min(0).max(MAX_CELLULAR_WEIGHT).default(0),
+              feature: z.enum(CELLULAR_FEATURES).default('f1'),
+              range: z.number().min(0.01).max(8).default(1),
+              borderOpen: z.number().min(0).max(1).default(0.5),
+              borderWidth: z.number().min(0.001).max(1).default(0.05),
+              facetSlope: z.number().min(0).max(1).default(0.5),
+              facetBlend: z.number().min(0.001).max(1).default(0.1),
               ...layerCommon,
             })
             .strict(),

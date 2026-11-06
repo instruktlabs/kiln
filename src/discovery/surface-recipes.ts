@@ -127,4 +127,100 @@ function build() {
       ],
     },
   },
+  {
+    version: 'kiln.catalog-entry.v1',
+    id: 'recipe:cellular-stone-v1',
+    kind: 'recipe',
+    name: 'Cellular stone: rubble, crystals and fractured rock',
+    summary:
+      'Build tiling stone from the periodic cellular (Worley/Voronoi) layer: one flat tone per stone or crystal, joints from the border distance, cracks opened per border, and faceted height for a derived normal. The example is bedded fractured rock; adapt the layout and features to the stone.',
+    family: 'materials',
+    tags: [
+      'cellular',
+      'Worley',
+      'Voronoi',
+      'stone',
+      'rock',
+      'rubble',
+      'granite',
+      'tiling',
+      'cracks',
+    ],
+    aliases: [
+      'voronoi noise',
+      'worley noise',
+      'cellular noise',
+      'crazy paving',
+      'irregular stones',
+      'crystal grain',
+      'open joints',
+    ],
+    intents: [
+      'make irregular rubble stones that tile',
+      'make fractured rock with open and closed cracks',
+      'give each crystal or stone its own tone',
+    ],
+    stability: 'experimental',
+    related: [
+      { id: 'operation:proceduralTexture', relation: 'prerequisite' },
+      { id: 'operation:normalMapFromHeight', relation: 'prerequisite' },
+      { id: 'operation:pbrMaterial', relation: 'prerequisite' },
+    ],
+    references: ['src/procedural-cellular.ts', 'docs/procedural-surfaces-v3.md'],
+    limitations: [
+      'The example is a starting layout, not a finished rock. Appearance needs GPU review at the viewing distance: a closed isotropic net of cells reads as crazy paving, however exact it is.',
+      'The cell feature has hard edges with no antialiasing. A flat tone change with no joint over it reads as a pasted patch close up, so keep tonal contrast low between cells that share a closed border, or increase the texture size.',
+      'Border width is in metric units, so a larger metric on one axis thins the joints that cross that axis. A strong metric gives hairline bed joints beside soft vertical ones.',
+      'One saved texture repeats visibly at a distance. Tiling only removes the seam; it does not hide the period.',
+    ],
+    recipe: {
+      prerequisites: [
+        'operation:proceduralTexture',
+        'operation:normalMapFromHeight',
+        'operation:pbrMaterial',
+      ],
+      steps: [
+        'Choose the layout once: cellsX and cellsY per tile, seed, jitter, metric and weight. Share that object across every cellular layer of every map, so tone, joints and height agree.',
+        'For beds, use low jitterY and a metricY above 1. For crystals, use full jitter, equal metrics and some weight to vary the crystal size.',
+        'Colour: start from the cell feature for a flat tone per stone, overlay noise for the surface, and multiply a dark f2-f1 or border layer over it. On border, borderOpen below 1 leaves closed joints, so cracks end in T-junctions.',
+        'Height: use f2-f1 for pillowed stones or facet for tilted fracture planes, multiply border over it for open cracks, and derive the normal from that height.',
+        'Review on the GPU route at the intended distance and at a raking angle, across at least two repeats.',
+      ],
+      example: `const meta = { name: 'CellularFracturedRock' };
+function build() {
+  const root = createRoot(meta.name);
+  const beds = { cellsX: 6, cellsY: 12, seed: 83, jitterX: 0.9, jitterY: 0.45, metricY: 2, weight: 0.25 };
+  const facets = { ...beds, feature: 'facet', facetSlope: 0.9, facetBlend: 0.3 };
+  const joints = { ...beds, feature: 'border', borderOpen: 0.5, borderWidth: 0.06, blend: 'multiply' };
+  const albedo = proceduralTexture({ schemaVersion: 2, size: 256, usage: 'albedo', layers: [
+    { op: 'cellular', ...beds, feature: 'cell', colorA: 0x6e6b65, colorB: 0x827e76 },
+    { op: 'noise', colorA: 0x38362f, colorB: 0xc4c0b4, scale: 24, octaves: 5, seed: 84, blend: 'overlay', opacity: 0.6 },
+    { op: 'cellular', ...facets, colorA: 0x606060, colorB: 0xffffff, blend: 'multiply', opacity: 0.5 },
+    { op: 'cellular', ...joints, colorA: 0xffffff, colorB: 0x16130f },
+  ] });
+  const height = proceduralTexture({ schemaVersion: 2, size: 256, usage: 'albedo', layers: [
+    { op: 'cellular', ...facets, colorA: 0x000000, colorB: 0xffffff },
+    { op: 'cellular', ...joints, colorA: 0xffffff, colorB: 0x000000 },
+  ] });
+  const packed = (roughness) => (255 << 16) | (roughness << 8);
+  const metallicRoughness = proceduralTexture({ schemaVersion: 2, size: 256, usage: 'metallicRoughness', layers: [
+    { op: 'cellular', ...beds, feature: 'cell', colorA: packed(180), colorB: packed(235) },
+  ] });
+  const material = pbrMaterial({ albedo, normal: normalMapFromHeight(height, { strength: 5 }),
+    metallicRoughness, roughness: 1, metalness: 1 });
+  createPart('RockFace', planeGeo(2, 2), material, { parent: root });
+  return root;
+}`,
+      adaptations: [
+        'Rubble: cellsX 7, cellsY 11, jitterX 0.8, jitterY 0.3, metricY 1.5, weight 0.2. Cell for tone, a multiplied dark f2-f1 with range 0.14 for the joints, f2-f1 with range 0.42 for a pillowed height.',
+        'Granite: full jitter, equal metrics, 64 cells and weight 0.5 for quartz. Add feldspar and biotite on other grids and seeds, with range on cell to leave a sparse population: range 0.16 keeps about a sixth of the cells dark.',
+        'To save a reusable material, put these recipes in a material draft with derive normal-from-height on the normal slot, then export maps for a destination that takes plain images.',
+      ],
+      checks: [
+        'Read viewFidelity. A CPU geometry view cannot judge this: only a material-faithful GPU view shows whether the surface reads as stone.',
+        'Look for the plaid and crazy-paving failures directly: straight joints running the whole tile, or every polygon closed and the same size.',
+        'Numerically, each exported map should differ across its wrap edge by no more than interior neighbouring texels do. Repeat at two sizes, because a derived normal is resampled rather than regenerated.',
+      ],
+    },
+  },
 ];
