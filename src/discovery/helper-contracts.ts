@@ -2779,12 +2779,13 @@ define(
       'V3 paint/mask use integer pixel-edge shapes with binary center coverage and fixed integer source-over rounding. A mask clears outside its shape; invert keeps outside. Zero-alpha pixels are transparent black.',
       'V3 color-only palette colors are 1..32 RGB integers, optional fixed Bayer4 dither. Stamps (any usage) use bounded Xorshift32 seed/area placement; periodic wrapping is explicit and at most 256 expanded copies. Legacy-v2 layers delegate unchanged square V2 patterns with matching usage.',
       'Pattern counts 1..256 and noise octaves 1..6; seeded patterns are deterministic.',
+      'The cellular layer is a periodic Worley/Voronoi field: integer cellsX/cellsY per tile, per-axis jitter, an anisotropic metric, optional additive weights, and a feature (f1, f2, f2-f1, cell, border, facet) mapped onto colorA..colorB. It tiles exactly at any size.',
       'For stripes and gradient, angleDeg rotates the direction of color variation in UV space about the image center. At 0 degrees colors vary across U: stripe bands run along V. At 90 degrees colors vary across V: bands run along U. This does not rotate the mesh UVs.',
       'Stripes count is the number of alternating bands across one unit of the projected coordinate, not the number of colorA/colorB pairs. Gradient runs from its from color to its to color along that coordinate and clamps outside 0..1.',
       'Unknown keys, callbacks, paths, URLs and shader source are rejected.',
     ],
     preservation: ['Produces repeat-wrapped encoded texture content; color space follows usage.'],
-    cost: 'V2 retains pixel/layer budgets. V3 preflights at most 1,048,576 texels, 64million work units including polygon edges, palette comparisons and periodic copies, and 64MiB transient bytes.',
+    cost: 'V2 retains pixel/layer budgets. V3 preflights at most 1,048,576 texels, 64million work units including polygon edges, palette comparisons and periodic copies, and 64MiB transient bytes. A cellular layer through legacy-v2 is charged about 50 units per texel, so one default layer fits at 1024 and a stack needs a smaller size.',
   },
   {
     references: [
@@ -2792,8 +2793,15 @@ define(
       'src/procedural-texture-v3-contract.ts',
       'docs/procedural-surfaces-v3.md',
     ],
-    tags: ['texture', 'procedural', 'deterministic'],
-    aliases: ['generated texture', 'noise texture', 'layered pattern'],
+    tags: ['texture', 'procedural', 'deterministic', 'cellular', 'Worley', 'Voronoi'],
+    aliases: [
+      'generated texture',
+      'noise texture',
+      'layered pattern',
+      'cellular noise',
+      'worley noise',
+      'voronoi noise',
+    ],
     intents: ['generate a repeatable texture without external image files'],
     limitations: [
       'Repeat wrapping does not guarantee matching edge colors. Odd stripe counts, angled patterns and nonconstant gradients can show seams; inspect the chosen pattern at its repeat boundaries.',

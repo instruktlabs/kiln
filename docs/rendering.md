@@ -294,8 +294,45 @@ The layer operations are strict objects; fields from another operation are error
 | `gradient` | `from`, `to` | `angleDeg` |
 | `bricks` | `brick`, `mortar` | `rows`, `cols`, `mortarWidth`, `stagger` |
 | `noise` | `colorA`, `colorB` | `scale`, `octaves`, `seed` |
+| `cellular` | `colorA`, `colorB` | `cellsX`, `cellsY`, `seed`, `jitterX`, `jitterY`, `metricX`, `metricY`, `weight`, `feature`, `range`, `borderOpen`, `borderWidth`, `facetSlope`, `facetBlend` |
 
 Every layer also accepts `blend` (`normal`, `multiply`, `screen`, or `overlay`) and `opacity` from 0 to 1. Pattern counts are integers from 1 to 256; noise octaves are 1 to 6. Seeded noise is tileable and reproducible. Call `kiln_discover({ ids: ["proceduralTexture"] })` to retrieve this contract and an executable example.
+
+### Cellular layers
+
+`cellular` is a periodic Worley (Voronoi) field that tiles exactly, because it wraps the cell index rather than the sample point. Use it for anything made of separate pieces: stones, crystals, cracked rock. `kiln_discover({ ids: ["recipe:cellular-stone-v1"] })` has a worked fractured-rock program with rubble and granite adaptations.
+
+Distances are in cell units, where one cell is 1 × 1 whatever `cellsX` and `cellsY` make it in UV. A cell's point sits in the box `0.5 ± jitter/2` on each axis, and the distance to it is `sqrt((metricX·dx)² + (metricY·dy)²) + w`.
+
+| Field | Range and default | Meaning |
+| --- | --- | --- |
+| `cellsX`, `cellsY` | 1 to 256, default 8 | Cells per tile on each axis |
+| `seed` | signed 32-bit, default 0 | Draws every cell's values |
+| `jitterX`, `jitterY` | 0 to 1, default 1 | How far a point strays. Low `jitterY` keeps cells in rows |
+| `metricX`, `metricY` | 1 to 4, default 1 | A larger metric flattens borders against that axis and thins the joints that cross it |
+| `weight` | 0 to 1, default 0 | Upper limit of an additive per-cell weight drawn from the seed. It curves borders and varies cell size |
+| `feature` | default `f1` | What maps onto `colorA`→`colorB`, below |
+| `range` | 0.01 to 8, default 1 | `f1`, `f2`, `f2-f1`, `cell`: the value that reaches `colorB` |
+| `borderOpen` | 0 to 1, default 0.5 | `border`: fraction of borders that are open |
+| `borderWidth` | 0.001 to 1, default 0.05 | `border`: width in distance units |
+| `facetSlope` | 0 to 1, default 0.5 | `facet`: how far each cell's plane can tilt |
+| `facetBlend` | 0.001 to 1, default 0.1 | `facet`: how far a plane reaches across its border |
+
+| `feature` | Value in 0..1 |
+| --- | --- |
+| `f1`, `f2` | Distance to the nearest and second nearest cell point, divided by `range` |
+| `f2-f1` | Their difference divided by `range`: 0 on a border, rising into the cell. It is not a true Euclidean distance |
+| `cell` | One flat random tone per cell, divided by `range`. A `range` below 1 saturates most cells at `colorB`, which leaves a sparse population: `range: 0.16` keeps about a sixth of the cells toned |
+| `border` | 1 at the centre of an open border, falling to 0 at `borderWidth`. Open borders are chosen by a hash of the two cell ids in either order, so both sides agree, and a crack can end where it meets a closed border |
+| `facet` | A tilted plane per cell, for height. It blends over every cell within `facetBlend` of the nearest, so it has no step anywhere, including near corners |
+
+A field the chosen feature ignores is an error rather than something silently dropped, which keeps one meaning to each recipe hash. Reuse one layout object and seed across the layers and maps of a material so that its tone, joints and height line up.
+
+`cell` has hard edges with no antialiasing. A flat tone change with no joint over it reads as a pasted patch close up, so keep contrast low between cells that share a closed border, or raise the size. A closed isotropic net reads as crazy paving, however exact it is: review on the GPU route, and use low `jitterY`, a `metricY` above 1 and a `borderOpen` below 1 to get bedded rock.
+
+The search is exact for every seed. A sample's own point is at most `(1 + jitter)/2` away on an axis, and a neighbour on the nearer side at most `1 + jitter/2`, so those two cells bound F2 from above. An image `k` rings out is at least `k - (1 + jitter)/2` away, scaled by that axis' metric, and weights only add. The search radius is the first ring whose lower bound reaches F2's upper bound, extended by `facetBlend` for `facet`: two rings at the default, and at most seven rings by two at the extremes. Full jitter makes the usual 3 × 3 window miss true neighbours. Tests hold this against an unbounded search, including layouts with every point planted at an extreme of its box.
+
+Golden pixel hashes pin each feature. A V2 recipe hash has no compiler id, so changing this algorithm would move pixels under an unchanged hash: a change in behaviour needs a new field or op, not a new pin. V2 has size and layer limits but no work budget. Through V3 `legacy-v2`, a cellular layer is charged its own cost; see [admission](procedural-surfaces-v3.md#admission-and-identity).
 
 The bundled scanned library contains Poly Haven CC0 material families with recorded provenance. Use catalog IDs rather than file paths or URLs. Assets embed their textures and do not fetch them at runtime.
 

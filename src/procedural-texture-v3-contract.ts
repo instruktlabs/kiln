@@ -1,4 +1,5 @@
 /** Bounded JSON and identity contract; no pixel allocations or Three.js dependency. */
+import { cellularFieldBytes, cellularFieldWork, cellularWorkPerTexel } from './procedural-cellular';
 import {
   canonicalizeProceduralTextureSpecV2,
   type CanonicalProceduralTextureSpecV2,
@@ -318,11 +319,22 @@ export function admitProceduralTextureSpecV3(input: unknown): ProceduralTextureA
         texels *
         (1 +
           spec.layers.reduce(
-            (cost, layer) => cost + (layer.op === 'noise' ? layer.octaves * 16 : 4),
+            (cost, layer) =>
+              cost +
+              (layer.op === 'noise'
+                ? layer.octaves * 16
+                : layer.op === 'cellular'
+                  ? cellularWorkPerTexel(layer)
+                  : 4),
             0,
           ));
       // Count every legacy result conservatively, even if GC retains prior buffers.
       legacyTransientBytes += texels * 4;
+      for (const layer of spec.layers) {
+        if (layer.op !== 'cellular') continue;
+        work += cellularFieldWork(layer);
+        legacyTransientBytes += cellularFieldBytes(layer);
+      }
       return {
         op: 'legacy-v2',
         spec,
