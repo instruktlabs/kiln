@@ -26,10 +26,54 @@ import { resolveEvaluatorPortV2 } from '../evaluator/protocol';
 const EXAMPLES = exampleArchivePath();
 const RENDERS = join(EXAMPLES, 'renders');
 
-const names = (await readdir(EXAMPLES))
+const names = (
+  await readdir(EXAMPLES).catch((cause: unknown) => {
+    throw new Error(
+      `Historical examples are missing from ${EXAMPLES}; run: node scripts/example-archive.mjs --fetch`,
+      { cause },
+    );
+  })
+)
   .filter((f) => f.endsWith('.kiln.js'))
   .map((f) => basename(f, '.kiln.js'))
   .sort();
+
+/**
+ * Reaches every line the whole corpus reaches, in 29% of its time, measured on 5 November
+ * 2026 by running each example alone. Lines are not inputs, so the full corpus still runs
+ * once per CI run: in the Linux coverage pass, and in any plain local run. The Windows leg
+ * and the community exporter pass repeat the suite, so they execute only this subset. The
+ * inventory checks below always see every example.
+ */
+const CORPUS_SUBSET = new Set([
+  'air-defense-radar',
+  'alpine-cable-terminal',
+  'arcade-cabinet',
+  'blast-furnace',
+  'cafe-racer',
+  'cathedral',
+  'comms-satellite',
+  'crate',
+  'crawler-crane',
+  'demo-argent-aircraft-carrier',
+  'demo-clockwork-dragonfly',
+  'demo-dauntless-cv-08',
+  'demo-floating-observatory',
+  'demo-solar-sail-courier',
+  'demo-umbra-submarine',
+  'field-gun',
+  'fighter-jet',
+  'lighthouse',
+  'mechanical-peacock',
+  'radio-telescope',
+  'sushi-store',
+  'well',
+  'windmill',
+]);
+const executed =
+  process.platform === 'win32' || process.env['KILN_GLTF_EXPORTER']
+    ? names.filter((name) => CORPUS_SUBSET.has(name))
+    : names;
 
 type Outcome = { tris: number; bytes: number; warnings: string[] } | { error: string };
 
@@ -41,7 +85,7 @@ type Outcome = { tris: number; bytes: number; warnings: string[] } | { error: st
  */
 const outcomes = new Map<string, Outcome>(
   await Promise.all(
-    names.map(async (name): Promise<[string, Outcome]> => {
+    executed.map(async (name): Promise<[string, Outcome]> => {
       try {
         const code = await readFile(join(EXAMPLES, `${name}.kiln.js`), 'utf8');
         const evaluator = resolveEvaluatorPortV2(undefined, 'trusted-local');
@@ -65,9 +109,11 @@ const documentedAdvisories: Record<string, string[]> = {
 describe('examples', () => {
   it('finds a non-trivial set to check', () => {
     expect(names.length).toBeGreaterThanOrEqual(10);
+    // A renamed example must not quietly leave the subset that two CI legs rely on.
+    expect(names).toEqual(expect.arrayContaining([...CORPUS_SUBSET]));
   });
 
-  for (const name of names) {
+  for (const name of executed) {
     it(`${name} executes and produces geometry`, () => {
       const out = outcomes.get(name)!;
       if ('error' in out) throw new Error(`${name} failed to execute: ${out.error}`);
