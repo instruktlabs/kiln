@@ -36,6 +36,8 @@ export const MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
 export const DEFAULT_EVALUATOR_DEADLINE_MS = 60_000;
 export const DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
 export const DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
+export const MAX_EVALUATOR_GLB_BYTES = 64 * 1024 * 1024;
+export const MAX_EVALUATOR_RESPONSE_BYTES = 96 * 1024 * 1024;
 
 export type EvaluatorOutcomeCode =
   | 'INPUT_INVALID'
@@ -63,6 +65,45 @@ const EVALUATOR_OUTCOME_MESSAGES: Record<EvaluatorOutcomeCode, string> = {
 
 export function evaluatorOutcomeMessage(code: EvaluatorOutcomeCode): string {
   return EVALUATOR_OUTCOME_MESSAGES[code];
+}
+
+/** Which budget an OUTPUT_LIMIT_EXCEEDED outcome reached, in closed fields only (#317). */
+export interface EvaluatorOutputLimitDetails {
+  stage: 'glb' | 'response';
+  limitBytes: number;
+  observedBytes: number;
+  /** A transport that stops reading at the budget knows a lower bound, not the size. */
+  atLeast?: true;
+  triangles?: number;
+}
+
+export function validEvaluatorOutputLimit(value: unknown): value is EvaluatorOutputLimitDetails {
+  return (
+    isRecord(value) &&
+    hasExactKeys(value, ['stage', 'limitBytes', 'observedBytes', 'atLeast', 'triangles']) &&
+    (value.stage === 'glb' || value.stage === 'response') &&
+    validInteger(value.limitBytes, 1, Number.MAX_SAFE_INTEGER) &&
+    validInteger(value.observedBytes, value.limitBytes + 1, Number.MAX_SAFE_INTEGER) &&
+    (value.atLeast === undefined || value.atLeast === true) &&
+    (value.triangles === undefined || validInteger(value.triangles, 0, Number.MAX_SAFE_INTEGER))
+  );
+}
+
+/** The wire message stays fixed; this is the host's account of it, as a cause's advice is. */
+export function evaluatorOutputLimitAdvice(limit: EvaluatorOutputLimitDetails | undefined): string {
+  if (!limit) return '';
+  const size = `${limit.atLeast ? 'at least ' : ''}${limit.observedBytes} bytes`;
+  const reached =
+    limit.stage === 'glb'
+      ? `The built GLB is ${size}${limit.triangles === undefined ? '' : ` (${limit.triangles} triangles)`}`
+      : `The evaluator response, which carries the GLB as base64 with its review data, is ${size}`;
+  return (
+    ` ${reached}; this host allows at most ${limit.limitBytes} bytes, and nothing was exported.` +
+    ' Lower the vertex count or attribute data, reuse one geometry across parts so its copies' +
+    ' share the bytes, or split the asset into parts exported separately. A local host can raise' +
+    ` the GLB limit to ${MAX_EVALUATOR_GLB_BYTES} with KILN_EVALUATOR_MAX_GLB_BYTES.` +
+    ' kiln_discover with capabilities:true reports the limits in force.'
+  );
 }
 
 /**
@@ -150,6 +191,7 @@ export class EvaluatorPortError extends Error {
     message = evaluatorOutcomeMessage(code),
     readonly diagnostic?: AuthoringDiagnostic,
     readonly solid?: SolidFailureDetails,
+    readonly limit?: EvaluatorOutputLimitDetails,
   ) {
     // A rejection with a closed cause carries that cause's advice; one without carries
     // the engine's generic advice (decision 24). The wire message itself never changes.
@@ -158,7 +200,7 @@ export class EvaluatorPortError extends Error {
         ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}`
         : code === 'EXECUTION_REJECTED'
           ? `${message} ${EXECUTION_REJECTED_ADVICE}`
-          : message,
+          : `${message}${evaluatorOutputLimitAdvice(limit)}`,
     );
     this.name = 'EvaluatorPortError';
   }
@@ -190,6 +232,7 @@ export type EvaluatorResultV2 =
         message: string;
         diagnostic?: AuthoringDiagnostic;
         solid?: SolidFailureDetails;
+        limit?: EvaluatorOutputLimitDetails;
         qa?: {
           report: AssetQaReport;
           stage: 'scene' | 'final-glb';
@@ -373,7 +416,7 @@ export function decodeEvaluatorRequestV2(json: string): EvaluatorRequestV2 {
     Buffer.byteLength(value.code, 'utf8') > MAX_EVALUATOR_CODE_BYTES ||
     !isRecord(value.limits) ||
     !hasExactKeys(value.limits, ['maxGlbBytes']) ||
-    !validInteger(value.limits.maxGlbBytes, 1, 64 * 1024 * 1024)
+    !validInteger(value.limits.maxGlbBytes, 1, MAX_EVALUATOR_GLB_BYTES)
   ) {
     return fail('request');
   }
@@ -440,7 +483,7 @@ export function decodeEvaluatorResultV2(
     if (value.render !== undefined) return fail('result');
     if (
       !isRecord(value.error) ||
-      !hasExactKeys(value.error, ['code', 'message', 'qa', 'diagnostic', 'solid'])
+      !hasExactKeys(value.error, ['code', 'message', 'qa', 'diagnostic', 'solid', 'limit'])
     ) {
       return fail('result');
     }
@@ -511,6 +554,12 @@ export function decodeEvaluatorResultV2(
     if (
       value.error.solid !== undefined &&
       (value.error.diagnostic !== 'REQUIRE_SOLID' || !validSolidFailureDetails(value.error.solid))
+    )
+      return fail('result');
+    if (
+      value.error.limit !== undefined &&
+      (value.error.code !== 'OUTPUT_LIMIT_EXCEEDED' ||
+        !validEvaluatorOutputLimit(value.error.limit))
     )
       return fail('result');
     if (value.error.qa !== undefined) {
@@ -628,12 +677,12 @@ export function createEvaluatorPortV2(
       const maxGlbBytes = boundedControl(
         controls.maxGlbBytes ?? defaults.maxGlbBytes,
         DEFAULT_EVALUATOR_MAX_GLB_BYTES,
-        64 * 1024 * 1024,
+        MAX_EVALUATOR_GLB_BYTES,
       );
       const maxResponseBytes = boundedControl(
         controls.maxResponseBytes ?? defaults.maxResponseBytes,
         DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES,
-        96 * 1024 * 1024,
+        MAX_EVALUATOR_RESPONSE_BYTES,
       );
       const requestId = `eval-${++sequence}`;
       const built = createEvaluatorRequestV2({ requestId, code, options, maxGlbBytes });
@@ -672,8 +721,13 @@ export function createEvaluatorPortV2(
       }
       if (signal?.aborted) throw new EvaluatorPortError('CANCELLED');
       if (typeof response !== 'string') throw new EvaluatorPortError('PROTOCOL_ERROR');
-      if (Buffer.byteLength(response, 'utf8') > maxResponseBytes) {
-        throw new EvaluatorPortError('OUTPUT_LIMIT_EXCEEDED');
+      const responseBytes = Buffer.byteLength(response, 'utf8');
+      if (responseBytes > maxResponseBytes) {
+        throw new EvaluatorPortError('OUTPUT_LIMIT_EXCEEDED', undefined, undefined, undefined, {
+          stage: 'response',
+          limitBytes: maxResponseBytes,
+          observedBytes: responseBytes,
+        });
       }
       let result: EvaluatorResultV2;
       try {
@@ -700,6 +754,7 @@ export function createEvaluatorPortV2(
           undefined,
           result.error.diagnostic,
           result.error.solid,
+          result.error.limit,
         );
       }
       return result.render;

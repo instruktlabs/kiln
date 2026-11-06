@@ -15,11 +15,15 @@ import {
   assertEvaluatorResultRequirements,
   assertEvaluatorResultMaterialResources,
   evaluatorOutcomeMessage,
+  evaluatorOutputLimitAdvice,
   evaluatorSourceBudgetFailure,
   EVALUATOR_REQUEST_VERSION,
   type EvaluatorOutcomeCode,
+  type EvaluatorOutputLimitDetails,
   type EvaluatorRequestV2,
+  MAX_EVALUATOR_GLB_BYTES,
   MAX_EVALUATOR_REQUEST_BYTES,
+  MAX_EVALUATOR_RESPONSE_BYTES,
 } from './protocol';
 
 const DEFAULT_DEADLINE_MS = 60_000;
@@ -52,6 +56,7 @@ export class EvaluatorSubprocessError extends Error {
     message: string,
     readonly diagnostic?: AuthoringDiagnostic,
     readonly solid?: SolidFailureDetails,
+    readonly limit?: EvaluatorOutputLimitDetails,
   ) {
     // As EvaluatorPortError: a closed cause's advice, or the generic advice for a bare
     // EXECUTION_REJECTED (decision 24); the wire message itself never changes.
@@ -60,7 +65,7 @@ export class EvaluatorSubprocessError extends Error {
         ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}`
         : code === 'EXECUTION_REJECTED'
           ? `${message} ${EXECUTION_REJECTED_ADVICE}`
-          : message,
+          : `${message}${evaluatorOutputLimitAdvice(limit)}`,
     );
     this.name = 'EvaluatorSubprocessError';
     this.code = code;
@@ -117,11 +122,15 @@ export async function renderGLBViaProcessLaunch(
   const oversizeSource = evaluatorSourceBudgetFailure(code);
   if (oversizeSource) throw new EvaluatorSubprocessError('INPUT_INVALID', oversizeSource);
   const deadlineMs = boundedInteger(controls.deadlineMs, DEFAULT_DEADLINE_MS, 120_000);
-  const maxGlbBytes = boundedInteger(controls.maxGlbBytes, DEFAULT_MAX_GLB_BYTES, 64 * 1024 * 1024);
+  const maxGlbBytes = boundedInteger(
+    controls.maxGlbBytes,
+    DEFAULT_MAX_GLB_BYTES,
+    MAX_EVALUATOR_GLB_BYTES,
+  );
   const maxResponseBytes = boundedInteger(
     controls.maxResponseBytes,
     DEFAULT_MAX_RESPONSE_BYTES,
-    96 * 1024 * 1024,
+    MAX_EVALUATOR_RESPONSE_BYTES,
   );
   if (options.materialResources !== undefined)
     validateMaterialLibraryPayloadAny(options.materialResources);
@@ -236,7 +245,18 @@ export async function renderGLBViaProcessLaunch(
       responseBytes += chunk.byteLength;
       if (responseBytes > maxResponseBytes) {
         finish(
-          new EvaluatorSubprocessError('OUTPUT_LIMIT_EXCEEDED', 'Evaluator output limit exceeded.'),
+          new EvaluatorSubprocessError(
+            'OUTPUT_LIMIT_EXCEEDED',
+            'Evaluator output limit exceeded.',
+            undefined,
+            undefined,
+            {
+              stage: 'response',
+              limitBytes: maxResponseBytes,
+              observedBytes: responseBytes,
+              atLeast: true,
+            },
+          ),
         );
         terminateProcess(child, detached);
         return;
@@ -280,6 +300,7 @@ export async function renderGLBViaProcessLaunch(
               evaluatorOutcomeMessage(result.error.code),
               result.error.diagnostic,
               result.error.solid,
+              result.error.limit,
             ),
           );
           return;
