@@ -196,4 +196,4 @@ test('compiled CLI inspection measures surfaces, reuses references and preserves
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
-}, 20000);
+}, 60_000); // Compiled-CLI runs: 1.5 s in CI, past its old budget at load 20+ on 5 November 2026.

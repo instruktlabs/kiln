@@ -37,4 +37,4 @@ test('managed CLI keeps workspace state beside its launcher despite a foreign in
   } finally {
     await rm(root, { recursive: true, force: true });
   }
-}, 20000);
+}, 60_000); // Workspace and CLI runs: 1.1 s in CI, past its old budget at load 20+ on 5 November 2026.

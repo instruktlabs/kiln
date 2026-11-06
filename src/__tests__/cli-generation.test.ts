@@ -93,4 +93,4 @@ mock.module(${JSON.stringify(resolve(import.meta.dir, '../agent/run.ts'))},()=>(
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
-}, 20000);
+}, 60_000); // CLI runs: 1.5 s in CI, past its old budget at load 20+ on 5 November 2026.

@@ -51,7 +51,7 @@ test('standalone Node MCP honors an explicit host binding and snapshots it for t
     await client.close();
     await rm(directory, { recursive: true, force: true });
   }
-}, 20000);
+}, 60_000); // MCP server starts: 1.0 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 test('MCP rejects invalid host options or data before renderer startup without stdout pollution', async () => {
   const directory = await mkdtemp(join(tmpdir(), 'kiln-mcp-invalid-policy-'));
@@ -79,4 +79,4 @@ test('MCP rejects invalid host options or data before renderer startup without s
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
-}, 20000);
+}, 60_000); // MCP server starts: 0.8 s in CI, past its old budget at load 20+ on 5 November 2026.

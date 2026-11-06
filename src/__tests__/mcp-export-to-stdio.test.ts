@@ -87,7 +87,7 @@ test('a configured export root advertises kiln_export_to and receives the files'
   } finally {
     await client.close();
   }
-});
+}, 60_000); // MCP server start: 0.9 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 test('a wrong export root is a tool result naming the fix', async () => {
   const client = await connect('exports');

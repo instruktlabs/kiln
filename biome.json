@@ -31,7 +31,14 @@
     "rules": {
       "preset": "recommended",
       "style": { "noNonNullAssertion": "off", "useTemplate": "error" },
-      "complexity": { "useLiteralKeys": "off", "useOptionalChain": "error" },
+      "complexity": {
+        "useLiteralKeys": "off",
+        "useOptionalChain": "error",
+        "noExcessiveCognitiveComplexity": {
+          "level": "error",
+          "options": { "maxAllowedComplexity": 100 }
+        }
+      },
       "correctness": { "noUnusedImports": "error" },
       "suspicious": {
         "noApproximativeNumericConstant": "error",
@@ -41,5 +48,176 @@
       }
     }
   },
-  "assist": { "enabled": false }
+  "assist": { "enabled": false },
+  "overrides": [
+    {
+      "includes": ["src/asset-cli.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 255 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/qa/requirements-run.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 255 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/qa/atlas.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 232 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/views/glb.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 182 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["scripts/workspace-project.mjs"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 168 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/assembly.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 159 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/ops.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 122 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["scripts/create-workspace.mjs"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 116 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/project-cli.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 113 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/geometry-export.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 112 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/simplify.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 109 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/delivery-inspect.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 105 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "includes": ["src/render.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveCognitiveComplexity": {
+              "level": "error",
+              "options": { "maxAllowedComplexity": 104 }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

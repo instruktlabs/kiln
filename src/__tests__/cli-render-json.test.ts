@@ -281,7 +281,7 @@ test('render reports each LOD chain in the receipt and in plain output', async (
   expect(run(['render', 'source.js', '--out', 'plain.glb']).stdout.toString()).not.toContain(
     '  LOD ',
   );
-});
+}, 60_000); // Compiled-CLI runs: 1.9 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 test('render lists hidden nodes apart from the drawn headline, in the receipt and plain output', async () => {
   await writeFile(join(directory, 'hideable.js'), HIDEABLE);
@@ -308,4 +308,4 @@ test('render lists hidden nodes apart from the drawn headline, in the receipt an
   expect(run(['render', 'source.js', '--out', 'plain.glb']).stdout.toString()).not.toContain(
     '  hidden ',
   );
-});
+}, 60_000); // Compiled-CLI runs: 1.8 s in CI, past its old budget at load 20+ on 5 November 2026.

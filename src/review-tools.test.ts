@@ -161,7 +161,7 @@ test('review CLI lists, pins and saves the exact retained artifact using workspa
   } finally {
     await rm(root, { recursive: true, force: true });
   }
-}, 20000);
+}, 60_000); // CLI runs: 1.6 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 test('reviewed save preserves mixed V1/V2 material identities and editable closure through file-backed export/import', async () => {
   const root = await mkdtemp(join(tmpdir(), 'kiln-reviewed-v2-'));

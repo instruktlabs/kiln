@@ -318,6 +318,7 @@
     "kiln": "bun src/cli.ts",
     "check:toolchain": "bun scripts/check-toolchain.mjs",
     "check:skills": "node scripts/check-skills.mjs",
+    "check:merge-markers": "node scripts/check-merge-markers.mjs",
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit",
     "build:mcp": "node scripts/build-runtime.mjs mcp",
