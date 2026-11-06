@@ -15,7 +15,7 @@
   "dependencies": {
     "astro": "7.4.1",
     "@astrojs/react": "7.1.0",
-    "@astrojs/markdown-remark": "7.3.3",
+    "@astrojs/markdown-remark": "7.3.5",
     "@react-three/drei": "10.7.9",
     "@react-three/fiber": "9.8.2",
     "react": "19.3.1",
@@ -28,7 +28,7 @@
     "@tailwindcss/typography": "0.5.20"
   },
   "devDependencies": {
-    "@astrojs/check": "0.9.11",
+    "@astrojs/check": "0.9.12",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "0.186.0",
@@ -38,15 +38,15 @@
     "fontkitten": "1.0.3",
     "fontverter": "2.0.0",
     "html-validate": "11.17.0",
-    "lighthouse": "13.5.0",
+    "lighthouse": "13.6.0",
     "parse5": "8.0.1",
-    "puppeteer-core": "25.15.0",
+    "puppeteer-core": "25.16.0",
     "sharp": "0.35.5",
     "subset-font": "2.9.0",
     "typescript": "6.0.3",
-    "vite": "8.3.4"
+    "vite": "8.3.5"
   },
   "overrides": {
-    "vite": "8.3.4"
+    "vite": "8.3.5"
   }
 }
