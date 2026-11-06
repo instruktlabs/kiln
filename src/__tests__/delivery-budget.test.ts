@@ -187,7 +187,7 @@ describe('CLI budget receipt', () => {
     const passed = run(['render', 'pass.js', '--out', 'pass.glb', '--strict-budget']);
     expect(passed.exitCode).toBe(0);
     expect(passed.stdout.toString()).toContain('budget pass');
-  });
+  }, 60_000); // Compiled-CLI runs: 2.4 s in CI, past its old budget at load 20+ on 5 November 2026.
 });
 
 describe('zero material limits', () => {

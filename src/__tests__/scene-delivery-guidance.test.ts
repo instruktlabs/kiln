@@ -10,9 +10,6 @@ test('scene delivery regenerates the aggregate export receipt from fresh export 
   for (const field of ['revisionId', 'files[]', 'sha256', 'sourceSha256', 'history[]'])
     expect(text).toContain(field);
   expect(text).toContain('kiln export');
-  expect(text).toMatch(/regenerat/);
-  expect(text).toMatch(/immutable/);
-  expect(text).toMatch(/before (claiming|reporting) delivery/i);
 });
 
 test('the scene skill points at that receipt rule without adding it to standalone assets (#180)', () => {

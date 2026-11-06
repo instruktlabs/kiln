@@ -9,7 +9,7 @@ let report: W6MaterialVegetationExperimentReportV1;
 
 beforeAll(async () => {
   report = await runW6MaterialVegetationExperiments();
-}, 20_000);
+}, 60_000); // Runs every experiment arm: 5.5 s in CI, past 20 s at load 20+ on 5 November 2026.
 
 function allArms() {
   return [

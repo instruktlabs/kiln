@@ -31,7 +31,7 @@ it('creates an isolated workspace whose Node CLI imports and exports exactly onc
   } finally {
     await rm(root, { recursive: true, force: true });
   }
-}, 30000);
+}, 60_000); // Workspace setup and CLI runs: 2.6 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 it('ships a CLI bundle matching the current source', async () => {
   const repo = resolve(import.meta.dir, '../..');

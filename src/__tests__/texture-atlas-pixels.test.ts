@@ -413,4 +413,4 @@ test('small cutout masks match exhaustive nearest donor and row-major ties with 
         expect(actual[3]).toBe(inside && mask & (1 << ((y - 1) * 3 + x - 1)) ? 255 : 0);
       }
   }
-});
+}, 60_000); // Exhaustive donor search: 0.5 s in CI, past its old budget at load 20 on 5 November 2026.

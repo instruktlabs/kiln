@@ -139,4 +139,4 @@ test('CLI edit input is bounded, uses the registry edit limit and rejects unrela
     expect(cli(directory, ['edit', ref, '--edits', '.']).exitCode).toBe(1);
     expect(await store.get(ref)).toBe(original);
   });
-}, 20000);
+}, 60_000); // Compiled-CLI runs: 3.9 s in CI, past its old budget at load 20+ on 5 November 2026.
