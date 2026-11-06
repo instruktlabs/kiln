@@ -10858,6 +10858,7 @@ var init_asset_export = __esm(() => {
 var exports_assets_resources = {};
 __export(exports_assets_resources, {
   assetLinks: () => assetLinks,
+  programBuildLink: () => programBuildLink,
   readAssetResource: () => readAssetResource,
   runtimeAssetLinks: () => runtimeAssetLinks
 });
@@ -10893,6 +10894,16 @@ async function runtimeAssetLinks(collection, record, derived) {
     size: bytes.length,
     annotations: { audience: ["user"], priority: name.endsWith(".glb") ? 0.9 : 0.3 }
   }));
+}
+function programBuildLink(programRef, rendered) {
+  return {
+    type: "resource_link",
+    name: "asset.glb",
+    uri: `kiln://programs/${encodeURIComponent(programRef)}/${rendered.artifactGlbSha256.replace("sha256:", "")}/asset.glb`,
+    mimeType: "model/gltf-binary",
+    size: rendered.glb.byteLength,
+    annotations: { audience: ["user"], priority: priorities["asset.glb"] }
+  };
 }
 async function readAssetResource(library, uri) {
   const match = /^kiln:\/\/assets\/([a-z][a-z0-9_-]{0,79})\/([a-z][a-z0-9_-]{0,79})\/([a-z][a-z0-9_-]{0,79})\/(asset\.glb|runtime\.glb|runtime\.kiln-metadata\.json|source\.kiln\.js|preview\.png|manifest\.json|editable\.zip)$/.exec(uri);
@@ -46431,6 +46442,11 @@ var KILN_RESOURCE_TEMPLATES = {
     name: "project-package",
     uriTemplate: "kiln://projects/{project}/{revision}/{profile}",
     description: "Exact editable project bundle or runtime derivative ZIP."
+  },
+  programBuild: {
+    name: "program-build",
+    uriTemplate: "kiln://programs/{program}/{sha256}/asset.glb",
+    description: "The GLB a program builds, from kiln_export with a programRef; nothing is saved."
   }
 };
 var DEFINITION_TTL_MS = 86400000;
@@ -54715,6 +54731,16 @@ async function parentRevisionComparison(parent, child) {
     };
   }
 }
+async function buildProgramGlb(programRef, context) {
+  if (!context.programStore)
+    throw new Error("Building a programRef requires a program store.");
+  const code = await context.programStore.get(programRef);
+  await context.prepareBuildProvenance?.();
+  return evaluateGeneratedSource(code, {
+    ...context,
+    requirements: toolRequirements(context).binding
+  });
+}
 async function buildProgramAssetDraft(code, context, backdrop) {
   await context.prepareBuildProvenance?.();
   const callContext = {
@@ -54834,6 +54860,9 @@ function createKilnAssetDefs(context, presentation = "grouped") {
   });
   const exportInput = z25.object(selector);
   const profileExportInput = exportInput.extend({
+    assetId: selector.assetId.optional(),
+    revisionId: selector.revisionId.optional(),
+    programRef: z25.string().regex(programRefPattern).optional().describe("A program to build instead of a saved revision; assetId and revisionId stay unset."),
     profile: z25.enum(["editable", "runtime"]).default("editable").describe("editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.")
   });
   const exportToInput = exportInput.extend({
@@ -54989,10 +55018,31 @@ function createKilnAssetDefs(context, presentation = "grouped") {
     },
     {
       name: "kiln_export",
-      description: "Export one saved revision. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.",
+      description: "Export one saved revision, or the GLB a programRef builds. With programRef, nothing is saved: it returns a resource for the bytes kiln_save would persist, so a destination audit can read them before a save. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.",
       inputSchema: profileExportInput,
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
+        if (input.programRef) {
+          if (input.assetId || input.revisionId)
+            throw new Error("kiln_export takes programRef or assetId and revisionId, not both: programRef builds a program, the others select a saved revision.");
+          if (input.profile === "runtime")
+            throw new Error("The runtime profile exports a saved revision. Call kiln_save with this programRef first, or omit profile for the built GLB.");
+          const rendered = await buildProgramGlb(input.programRef, context);
+          await Promise.resolve().then(() => init_draw_diagnostics());
+          return {
+            ok: true,
+            programRef: input.programRef,
+            profile: input.profile,
+            sha256: rendered.artifactGlbSha256,
+            triangles: rendered.tris,
+            drawDiagnostics: await inspectDrawDiagnostics(rendered.glb),
+            resources: [
+              (await Promise.resolve().then(() => (init_assets_resources(), exports_assets_resources))).programBuildLink(input.programRef, rendered)
+            ]
+          };
+        }
+        if (!input.assetId || !input.revisionId)
+          throw new Error("kiln_export requires assetId and revisionId for a saved revision, or programRef for a built program.");
         const record = await readSavedRevision(library(), input.collection, input.assetId, input.revisionId, listCall(input.collection));
         await Promise.resolve().then(() => init_draw_diagnostics());
         if (input.profile === "runtime") {
@@ -55129,7 +55179,8 @@ function toolManifestEntry(def) {
 function resourceTemplatesFor(context) {
   return [
     ...context.assetLibrary ? [KILN_RESOURCE_TEMPLATES.assetFile] : [],
-    ...context.projectBundleReader ? [KILN_RESOURCE_TEMPLATES.projectPackage] : []
+    ...context.projectBundleReader ? [KILN_RESOURCE_TEMPLATES.projectPackage] : [],
+    ...context.assetLibrary ? [KILN_RESOURCE_TEMPLATES.programBuild] : []
   ];
 }
 function buildMcpManifest(defs, context) {
@@ -55259,6 +55310,19 @@ function createKilnToolHost(context = {}, options = {}) {
           throw new Error("Invalid project package URI");
         const bytes = await context.projectBundleReader(project, revision, file === "editable.zip" ? "editable" : "runtime");
         return { uri, mimeType: "application/zip", blob: Buffer.from(bytes).toString("base64") };
+      }
+      if (uri.startsWith("kiln://programs/")) {
+        const [program, sha256, file, ...extra] = new URL(uri).pathname.split("/").filter(Boolean).map(decodeURIComponent);
+        if (extra.length || !program || !sha256 || file !== "asset.glb")
+          throw new Error("Invalid program build URI");
+        const rendered = await buildProgramGlb(program, requestContext);
+        if (rendered.artifactGlbSha256 !== `sha256:${sha256}`)
+          throw new Error(`${program} no longer builds to ${sha256} on this host. Call kiln_export with this programRef again for the current bytes.`);
+        return {
+          uri,
+          mimeType: "model/gltf-binary",
+          blob: Buffer.from(rendered.glb).toString("base64")
+        };
       }
       throw new Error(`Resource not found: ${uri}`);
     }
