@@ -7,6 +7,18 @@ does not publish a package.
 
 ## Unreleased
 
+- A build over the evaluator's output budget now says which budget it reached (#317). The error
+  names the stage (`glb` or `response`), the limit, the size and, for a GLB, the triangle count,
+  and says what to try next; it was `Evaluator output limit exceeded.` alone. The fixed wire
+  message is unchanged, and the numbers travel in a closed `limit` field that the protocol
+  validates, so a new worker needs a host that knows the field. `KILN_EVALUATOR_MAX_GLB_BYTES`
+  raises the GLB limit to 64 MiB, with the response budget following to at most 96 MiB. It is
+  host-only and the defaults stay 16 and 32 MiB. The subprocess worker now bounds its response by
+  the protocol's ceiling and leaves the budget to the host, which stops reading at it; without
+  that, a raised limit would have failed inside the worker at 32 MiB, and an over-budget response
+  was reported as invalid input. [Large assets](docs/runtime.md#large-assets) gives the measured
+  sizes and the supported routes.
+
 - Materials accept a `generated` source for maps from a local deterministic program (#311). It
   needs no `assetUrl`, which is what forced an invented URL before, and requires a `generator`
   record: the program's name, version and sha256, its toolkit hashes, the seed when it takes one,
@@ -14,6 +26,7 @@ does not publish a package.
   generator or prove the bytes came from it. `external` still requires an HTTP(S) URL and existing
   records keep their revision ids. A record with this source is refused by an engine older than
   this one.
+||||||| cde4dfe
 
 ## 1.6.0 (2026-10-27)
 

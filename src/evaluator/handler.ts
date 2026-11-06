@@ -15,7 +15,9 @@ import {
   evaluatorOutcomeMessage,
   EVALUATOR_RESULT_VERSION,
   EvaluatorPortError,
+  MAX_EVALUATOR_RESPONSE_BYTES,
   type EvaluatorOutcomeCode,
+  type EvaluatorOutputLimitDetails,
   type EvaluatorRequestV2,
   type WireEvaluatorResultV2,
 } from './protocol';
@@ -35,6 +37,7 @@ function failure(
   diagnostic?: AuthoringDiagnostic,
   qa?: Extract<WireEvaluatorResultV2, { ok: false }>['error']['qa'],
   solid?: SolidFailureDetails,
+  limit?: EvaluatorOutputLimitDetails,
 ): Extract<WireEvaluatorResultV2, { ok: false }> {
   return {
     version: EVALUATOR_RESULT_VERSION,
@@ -46,13 +49,14 @@ function failure(
       ...(qa ? { qa } : {}),
       ...(diagnostic ? { diagnostic } : {}),
       ...(solid ? { solid } : {}),
+      ...(limit ? { limit } : {}),
     },
   };
 }
 
 function boundedMaxResponseBytes(value: number | undefined): number {
   const resolved = value ?? DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES;
-  if (!Number.isInteger(resolved) || resolved < 1 || resolved > 96 * 1024 * 1024) {
+  if (!Number.isInteger(resolved) || resolved < 1 || resolved > MAX_EVALUATOR_RESPONSE_BYTES) {
     throw new EvaluatorPortError('INPUT_INVALID');
   }
   return resolved;
@@ -94,7 +98,12 @@ export async function evaluateEvaluatorRequestV2(
       }),
     ]);
     if (render.glb.byteLength > request.limits.maxGlbBytes) {
-      wire = failure(request.requestId, 'OUTPUT_LIMIT_EXCEEDED');
+      wire = failure(request.requestId, 'OUTPUT_LIMIT_EXCEEDED', undefined, undefined, undefined, {
+        stage: 'glb',
+        limitBytes: request.limits.maxGlbBytes,
+        observedBytes: render.glb.byteLength,
+        triangles: render.tris,
+      });
     } else {
       wire = encodeRenderResultV2(request.requestId, render);
     }
@@ -122,8 +131,20 @@ export async function evaluateEvaluatorRequestV2(
     clearTimeout(timer);
   }
   const json = JSON.stringify(wire);
-  if (Buffer.byteLength(json, 'utf8') > maxResponseBytes) {
-    throw new EvaluatorPortError('OUTPUT_LIMIT_EXCEEDED');
+  const responseBytes = Buffer.byteLength(json, 'utf8');
+  if (responseBytes > maxResponseBytes) {
+    const limit: EvaluatorOutputLimitDetails = {
+      stage: 'response',
+      limitBytes: maxResponseBytes,
+      observedBytes: responseBytes,
+    };
+    // A throw leaves a worker with no result to write, and it reports the empty request it falls
+    // back on as bad input. The outcome goes on the wire unless even that cannot fit.
+    const limited = JSON.stringify(
+      failure(request.requestId, 'OUTPUT_LIMIT_EXCEEDED', undefined, undefined, undefined, limit),
+    );
+    if (Buffer.byteLength(limited, 'utf8') <= maxResponseBytes) return limited;
+    throw new EvaluatorPortError('OUTPUT_LIMIT_EXCEEDED', undefined, undefined, undefined, limit);
   }
   return json;
 }
