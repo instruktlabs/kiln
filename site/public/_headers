@@ -26,9 +26,9 @@ https://kilnstudio.pages.dev/*
 https://:version.kilnstudio.pages.dev/*
   X-Robots-Tag: noindex
 
-# Raw data the scenes and gallery fetch, and agent text: Search Console showed Google crawling these as documents
+# Raw data the scenes and gallery fetch: Search Console showed Google crawling these as documents
 # (manifest.json, *.kiln-metadata.json, THIRD-PARTY-NOTICES.txt). X-Robots-Tag keeps a file out of the index and still
-# lets anything fetch it, so the demos and agents keep working. Never list these in robots.txt: a crawler cannot see
+# lets anything fetch it, so the demos keep working. Never list these in robots.txt: a crawler cannot see
 # the noindex on a blocked URL. One splat per rule and it crosses "/" (see headersFor), so "*.json" covers any depth.
 # HTML is deliberately absent, and validate-static fails a build where one of these reaches a page or a sitemap URL.
 /asset-demos/*.json
@@ -53,9 +53,6 @@ https://:version.kilnstudio.pages.dev/*
   X-Robots-Tag: noindex
 
 /scene-packs/*/SHA256SUMS
-  X-Robots-Tag: noindex
-
-/llms.txt
   X-Robots-Tag: noindex
 
 # Build output named by content hash: a changed file gets a new name, so these never need revalidating.

@@ -109,9 +109,9 @@ are left alone.
 Search Console showed Google crawling raw files as documents, for example
 `/asset-demos/**/manifest.json`, `/asset-demos/**/*.kiln-metadata.json` and
 `/scene-packs/**/THIRD-PARTY-NOTICES.txt`. `_headers` now sends `X-Robots-Tag: noindex`
-on `.json`, `.txt`, `.md` and `SHA256SUMS` under `/asset-demos/` and `/scene-packs/`,
-and on `/llms.txt`. The header does not stop a fetch: scenes and agents load these files
-as before. `robots.txt` stays allow-all, because a crawler cannot see a noindex on a
+on `.json`, `.txt`, `.md` and `SHA256SUMS` under `/asset-demos/` and `/scene-packs/`.
+The header does not stop a fetch: scenes and agents load these files as before. `/llms.txt`
+is deliberately left indexable so agents and AI tools can find it. `robots.txt` stays allow-all, because a crawler cannot see a noindex on a
 blocked URL. `validate-static` fails a build where a raw sample loses the header or
 where a rule reaches a built `.html` file or a sitemap URL. GLBs, images and the
 `scene-source` code files are unchanged.
