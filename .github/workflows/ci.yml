@@ -133,8 +133,12 @@ jobs:
         run: test "$COVERAGE" = success && test "$EXPORTER" = success
 
   windows-checks:
-    name: typecheck · lint · test (Windows)
+    name: typecheck · lint · test (Windows shard ${{ matrix.shard }})
     runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     # Blocking as of 2026-09-12, on accumulated evidence rather than on one clean run.
     #
     # It landed reporting-only because a retained Windows coverage run had aborted on
@@ -195,10 +199,14 @@ jobs:
       - name: Restore pinned historical regression inputs
         run: node scripts/example-archive.mjs --fetch
 
+      # Two jobs rather than concurrent processes in one: spawning tests time out when
+      # they contend for a runner, and Windows was CI's longest job once the Linux passes
+      # moved apart.
       - name: Unit tests
-        run: bun run test
+        run: bun run test --shard=${{ matrix.shard }}/2
 
       - name: Verify experimental exporter worker and cache isolation
+        if: ${{ matrix.shard == 1 }}
         run: node scripts/exporter-cli-check.mjs
 
       # Diagnostic only, and deliberately failure-tolerant: it exists so that IF the
@@ -212,6 +220,18 @@ jobs:
         run: |
           node -p "'node ' + process.version"
           node -e "console.log('sharp versions:', JSON.stringify(require('sharp').versions))"
+
+  # Keeps main's required Windows context behind the shards, as `checks-gate` does for Linux.
+  windows-checks-gate:
+    name: typecheck · lint · test (Windows)
+    needs: windows-checks
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every Windows shard
+        env:
+          SHARDS: ${{ needs.windows-checks.result }}
+        run: test "$SHARDS" = success
 
   render-service-checks:
     name: render service tests
