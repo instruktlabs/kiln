@@ -19,6 +19,13 @@ does not publish a package.
   was reported as invalid input. [Large assets](docs/runtime.md#large-assets) gives the measured
   sizes and the supported routes.
 
+- Material revisions can record their parent (#310). `parentRevision` on a V1 or V2 draft, or
+  `kiln material procedural --parent <sha256:revision>`, must name a saved revision of the same
+  `materialId`; `get`, `list` and the `kiln.material-maps.v1` sidecar report it, and it survives
+  export and import. It is optional, and the key is omitted when absent, so existing records keep
+  their revision ids. A record that carries it is refused by an engine older than this one, whose
+  manifest schema is strict.
+
 - Materials accept a `generated` source for maps from a local deterministic program (#311). It
   needs no `assetUrl`, which is what forced an invented URL before, and requires a `generator`
   record: the program's name, version and sha256, its toolkit hashes, the seed when it takes one,
@@ -26,6 +33,7 @@ does not publish a package.
   generator or prove the bytes came from it. `external` still requires an HTTP(S) URL and existing
   records keep their revision ids. A record with this source is refused by an engine older than
   this one.
+||||||| 8e08b9c
 ||||||| cde4dfe
 
 ## 1.6.0 (2026-10-27)

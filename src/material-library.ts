@@ -251,6 +251,7 @@ export const materialManifestSchema = z
     schemaVersion: z.literal(1),
     materialId: materialLibraryIdSchema,
     revisionId: materialLibraryHashSchema,
+    parentRevision: materialLibraryHashSchema.optional(),
     name: z.string().min(1).max(200),
     tags: z.array(z.string().min(1).max(80)).max(30),
     tileable: z.boolean(),
@@ -300,6 +301,9 @@ export type MaterialMapV1 = MaterialManifestV1['maps'][number];
 export const proceduralMaterialDraftSchema = z
   .object({
     materialId: materialLibraryIdSchema,
+    parentRevision: materialLibraryHashSchema
+      .optional()
+      .describe('The saved revision of this materialId that this one replaces.'),
     name: z.string().min(1).max(200),
     tags: z.array(z.string().min(1).max(80)).max(30).optional(),
     tileable: z.boolean(),
