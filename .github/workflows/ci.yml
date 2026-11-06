@@ -44,6 +44,9 @@ jobs:
       - name: Check skills against the Agent Skills specification
         run: bun run check:skills
 
+      - name: Check tracked files for merge markers
+        run: bun run check:merge-markers
+
       - name: Install
         run: bun install --frozen-lockfile
 

@@ -57,4 +57,4 @@ test('full declaration qualification cannot silently skip optional entrypoints',
     );
     await expect(smokeSdkTypes(root, { includeAgentPeers: true })).rejects.toThrow();
   });
-});
+}, 60_000); // Declaration build: 1.2 s in CI, past its old budget at load 20+ on 5 November 2026.

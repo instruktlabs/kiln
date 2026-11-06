@@ -13,6 +13,7 @@ import {
 } from './qa/requirements-run';
 import type { AssetRequirementsQaReportV2 } from './qa/requirements-report';
 import { createRequirementsQaReport } from './qa/requirements-report';
+import { meshComponentBoxes, splitBudget } from './qa/mesh-components';
 import { inspectSkinIntegrity } from './qa/skin-integrity';
 import { AuthoringDiagnosticError, rethrowAuthoringError } from './evaluator/authoring-diagnostic';
 /**
@@ -2797,6 +2798,37 @@ interface MeshStats {
   box: THREE.Box3;
 }
 
+interface FloatingPiece extends MeshStats {
+  welded?: { mesh: string; index: number; of: number };
+}
+
+const spanText = (box: THREE.Box3): string =>
+  `[${box.min
+    .toArray()
+    .map((v) => v.toFixed(3))
+    .join(', ')}] to [${box.max
+    .toArray()
+    .map((v) => v.toFixed(3))
+    .join(', ')}]`;
+
+/** One mesh with forty loose components is one entry naming the count and its first one. */
+function collapseWeldedFloaters(
+  floaters: { name: string; fix: string; welded?: string }[],
+  pieces: readonly FloatingPiece[],
+): void {
+  for (let i = 0; i < floaters.length; i++) {
+    const mesh = floaters[i]!.welded;
+    if (!mesh) continue;
+    const detached = floaters.filter((floater) => floater.welded === mesh).length;
+    if (detached < 2) continue;
+    const of = pieces.find((piece) => piece.welded?.mesh === mesh)?.welded?.of ?? detached;
+    floaters[i]!.name = `${mesh} (${detached} of its ${of} welded components)`;
+    for (let j = floaters.length - 1; j > i; j--)
+      if (floaters[j]!.welded === mesh) floaters.splice(j, 1);
+    floaters[i]!.welded = undefined;
+  }
+}
+
 function collectMeshStats(root: THREE.Object3D): MeshStats[] {
   root.updateMatrixWorld(true);
   const out: MeshStats[] = [];
@@ -2938,16 +2970,27 @@ export function inspectSceneStructure(
     }
   }
 
-  if (meshes.length > 1) {
-    const floaters: { name: string; fix: string }[] = [];
+  // A mesh holding several welded components is compared once per component (#304).
+  const budget = splitBudget();
+  const pieces = meshes.flatMap((mesh): FloatingPiece[] => {
+    const boxes = meshComponentBoxes(mesh.object as THREE.Mesh, budget);
+    if (!boxes || boxes.length < 2) return [mesh];
+    return boxes.map((box, index) => ({
+      ...mesh,
+      box,
+      welded: { mesh: mesh.name, index: index + 1, of: boxes.length },
+    }));
+  });
+  if (pieces.length > 1) {
+    const floaters: { name: string; fix: string; welded?: string }[] = [];
     const supported: string[] = [];
-    for (let i = 0; i < meshes.length; i++) {
-      const a = meshes[i]!;
+    for (let i = 0; i < pieces.length; i++) {
+      const a = pieces[i]!;
       const ax = a.box.clone().expandByScalar(FLOATING_EXPAND);
       let overlapsAny = false;
-      for (let j = 0; j < meshes.length; j++) {
+      for (let j = 0; j < pieces.length; j++) {
         if (i === j) continue;
-        const b = meshes[j]!;
+        const b = pieces[j]!;
         if (ax.intersectsBox(b.box)) {
           overlapsAny = true;
           break;
@@ -2964,25 +3007,34 @@ export function inspectSceneStructure(
 
       // Actionable fix: the minimal shift to the NEAREST sibling, plus the
       // snapTo call that applies it.
-      let nearest: MeshStats | undefined;
+      let nearest: FloatingPiece | undefined;
       let nearestGap: THREE.Vector3 | undefined;
-      for (let j = 0; j < meshes.length; j++) {
+      for (let j = 0; j < pieces.length; j++) {
         if (i === j) continue;
-        const gap = minimalGapVector(a.box, meshes[j]!.box);
+        const gap = minimalGapVector(a.box, pieces[j]!.box);
         if (!nearestGap || gap.length() < nearestGap.length()) {
-          nearest = meshes[j]!;
+          nearest = pieces[j]!;
           nearestGap = gap;
         }
       }
-      const fix =
-        nearest && nearestGap
+      const fix = a.welded
+        ? ` Fix: one mesh moves and hides as one, so close the gap in the merged geometry, or author the component as its own part. It spans ${spanText(a.box)}.`
+        : nearest && nearestGap
           ? ` Fix: shift "${a.name}" by [${nearestGap.x.toFixed(3)}, ${nearestGap.y.toFixed(3)}, ${nearestGap.z.toFixed(3)}] toward "${nearest.name}", or call snapTo(part, hostPart) to do it automatically.`
           : '';
       const mismatch = declared
         ? ` It is named in a declared external support at Y=${declared.planeY.toFixed(3)}, but its bottom is at Y=${a.box.min.y.toFixed(3)}.`
         : '';
-      floaters.push({ name: a.name, fix: fix + mismatch });
+      const name = a.welded
+        ? `${a.welded.mesh} (welded component ${a.welded.index} of ${a.welded.of})`
+        : a.name;
+      floaters.push({
+        name,
+        fix: fix + mismatch,
+        ...(a.welded ? { welded: a.welded.mesh } : {}),
+      });
     }
+    collapseWeldedFloaters(floaters, pieces);
     if (floaters.length > 0) {
       // The per-part fix text is 170 characters; a scattered asset repeated it
       // for every part. The first few floaters keep their fix, the rest are
@@ -2999,7 +3051,7 @@ export function inspectSceneStructure(
         );
       }
       warnings.push(
-        `Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(' | ')} — Coverage: drawn meshes only, at 2cm. A smaller gap reads as contact and a primitive welded into another mesh is never seen, so a silent pass is not a fit audit; measure contacts in the destination.`,
+        `Floating parts (no mesh overlap with any sibling, 2cm tol): ${entries.join(' | ')} — Coverage: drawn meshes only, at 2cm. Welded components inside one mesh are compared the same way, box to box. A smaller gap reads as contact, so a silent pass is not a fit audit; measure contacts in the destination.${budget.unsplit.length ? ` Over the split budget, so measured as one box: ${budget.unsplit.slice(0, FLOATER_NAMES_SHOWN).join(', ')}.` : ''}`,
       );
     }
     if (supported.length > 0) {

@@ -15,6 +15,10 @@
  * adjacent to. These are bounding-box components, not proof that every part
  * should be attached or that overlapping boxes establish physical contact.
  *
+ * A mesh holding several welded components enters the graph once per component
+ * (`mesh-components.ts`, #304), so a primitive merged into another is compared
+ * with the rest rather than hidden inside one box.
+ *
  * ## Exemptions
  *
  * Some parts are legitimately separate and always will be:
@@ -28,14 +32,21 @@
  *
  * ## Cost
  *
- * Pure AABB work: O(n²) box comparisons to build the graph, then a linear
- * flood fill. No booleans, no WASM, so unlike T4.1 this runs inside the
- * synchronous rule with no pre-pass.
+ * AABB work: O(n²) box comparisons to build the graph, then a linear flood
+ * fill, after one bounded vertex walk per geometry to split welded components.
+ * No booleans, no WASM, so unlike T4.1 this runs inside the synchronous rule
+ * with no pre-pass.
  */
 
 import * as THREE from 'three';
 import { type ExternalSupportV1, restingSupport } from '../external-support';
 import { lodLevel } from './lod';
+import {
+  meshComponentBoxes,
+  type SplitBudget,
+  splitBudget,
+  STANDS_APART_NAME,
+} from './mesh-components';
 import { KILN_ENGINE_QA_OWNER, type QaRule } from './registry';
 import type { QaContext, QaFinding } from './types';
 
@@ -45,17 +56,14 @@ import type { QaContext, QaFinding } from './types';
  */
 export const CONNECTIVITY_TOLERANCE = 0.02;
 
-/**
- * Names that are expected to stand apart from the body.
- *
- * Matched against the mesh name, which Kiln's own helpers control (`createPart`
- * prefixes `Mesh_`, `createPivot` prefixes `Joint_`), so this keys off declared
- * structure rather than inferred shape.
- */
-const EXEMPT_NAME = /(?:^|_)(?:leaf|leaves|foliage|frond|card|decal|billboard|petal)/i;
+const MAX_LISTED_PARTS = 12;
 
 interface ConnectivityPart {
   name: string;
+  /** The scene node: `name` itself, unless this is one welded component of it. */
+  node: string;
+  /** Component count of the mesh, for a welded component. */
+  weldedOf?: number;
   box: THREE.Box3;
   /** The requirements-declared external support this part's bottom meets, if any. */
   support?: ExternalSupportV1;
@@ -64,10 +72,27 @@ interface ConnectivityPart {
 export interface DisconnectedGroupV1 {
   /** Parts in this component, in traversal order. */
   parts: string[];
+  /** The scene node of the first part; a welded component's name is not a node. */
+  node: string;
   /** Shortest distance from this component to the main one, in meters. */
   gap: number;
   /** Present when every part rests on a requirements-declared external support. */
   externalSupport?: { planeY: number; bottomY: number; tolerance: number };
+  /** Present when every part is a welded component of one mesh; these collapse to one group. */
+  welded?: {
+    mesh: string;
+    /** How many components the mesh holds; `parts.length` of them are detached. */
+    components: number;
+    detached: ComponentLocationV1;
+    nearest: ComponentLocationV1;
+  };
+}
+
+/** Where a part sits, so a component inside one node can be found without selecting it. */
+export interface ComponentLocationV1 {
+  part: string;
+  min: [number, number, number];
+  max: [number, number, number];
 }
 
 export interface PartConnectivityReportV1 {
@@ -77,6 +102,8 @@ export interface PartConnectivityReportV1 {
   exempt: string[];
   /** Visible meshes on LOD levels above 0: alternates of the analyzed parts, left out. */
   lodExcluded: number;
+  /** Meshes over a split budget, measured as one box; welded parts in them stay unseen. */
+  unsplit: string[];
   groups: DisconnectedGroupV1[];
 }
 
@@ -88,6 +115,7 @@ export interface PartConnectivityReportV1 {
 function collectParts(
   root: THREE.Object3D,
   exempt: string[],
+  budget: SplitBudget,
   supports?: readonly ExternalSupportV1[],
 ): { parts: ConnectivityPart[]; lodExcluded: number } {
   const parts: ConnectivityPart[] = [];
@@ -101,14 +129,28 @@ function collectParts(
       lodExcluded++;
       return;
     }
-    if (EXEMPT_NAME.test(name)) {
+    if (STANDS_APART_NAME.test(name)) {
       exempt.push(name);
       return;
     }
     const box = new THREE.Box3().setFromObject(mesh);
     if (box.isEmpty()) return;
+    const components = meshComponentBoxes(mesh, budget);
+    if (components && components.length > 1) {
+      for (const [index, piece] of components.entries()) {
+        const support = restingSupport(mesh, piece.min.y, supports);
+        parts.push({
+          name: `${name} (welded component ${index + 1} of ${components.length})`,
+          node: name,
+          weldedOf: components.length,
+          box: piece,
+          ...(support ? { support } : {}),
+        });
+      }
+      return;
+    }
     const support = restingSupport(mesh, box.min.y, supports);
-    parts.push({ name, box, ...(support ? { support } : {}) });
+    parts.push({ name, node: name, box, ...(support ? { support } : {}) });
   });
   return { parts, lodExcluded };
 }
@@ -119,6 +161,42 @@ function boxGap(a: THREE.Box3, b: THREE.Box3): number {
   const dy = Math.max(0, Math.max(a.min.y - b.max.y, b.min.y - a.max.y));
   const dz = Math.max(0, Math.max(a.min.z - b.max.z, b.min.z - a.max.z));
   return Math.hypot(dx, dy, dz);
+}
+
+const rounded = (v: THREE.Vector3): [number, number, number] => [
+  Math.round(v.x * 1e4) / 1e4,
+  Math.round(v.y * 1e4) / 1e4,
+  Math.round(v.z * 1e4) / 1e4,
+];
+const locationOf = (part: ConnectivityPart): ComponentLocationV1 => ({
+  part: part.name,
+  min: rounded(part.box.min),
+  max: rounded(part.box.max),
+});
+
+/**
+ * One mesh with forty loose components is one thing to look at, not forty findings. Its
+ * groups become one, keeping the location of the component nearest the body.
+ */
+function collapseWeldedGroups(groups: DisconnectedGroupV1[]): DisconnectedGroupV1[] {
+  const byMesh = new Map<string, DisconnectedGroupV1>();
+  const out: DisconnectedGroupV1[] = [];
+  for (const group of groups) {
+    const mesh = group.welded?.mesh;
+    const first = mesh === undefined ? undefined : byMesh.get(mesh);
+    if (mesh === undefined) out.push(group);
+    else if (!first) {
+      byMesh.set(mesh, group);
+      out.push(group);
+    } else {
+      first.parts.push(...group.parts);
+      if (group.gap < first.gap) {
+        first.gap = group.gap;
+        first.welded = group.welded;
+      }
+    }
+  }
+  return out;
 }
 
 /**
@@ -132,12 +210,14 @@ export function analyzePartConnectivity(
   supports?: readonly ExternalSupportV1[],
 ): PartConnectivityReportV1 {
   const exempt: string[] = [];
-  const { parts, lodExcluded } = collectParts(root, exempt, supports);
+  const budget = splitBudget();
+  const { parts, lodExcluded } = collectParts(root, exempt, budget, supports);
   const report: PartConnectivityReportV1 = {
     partsAnalyzed: parts.length,
     mainComponentSize: parts.length,
     exempt,
     lodExcluded,
+    unsplit: budget.unsplit,
     groups: [],
   };
   if (parts.length < 2) return report;
@@ -192,16 +272,26 @@ export function analyzePartConnectivity(
   for (const [index, members] of components.entries()) {
     if (index === mainIndex) continue;
     let gap = Number.POSITIVE_INFINITY;
+    let nearestMember = members[0]!;
+    let nearestMain = main[0]!;
     for (const m of members) {
       for (const b of main) {
-        gap = Math.min(gap, boxGap(parts[m]!.box, parts[b]!.box));
+        const between = boxGap(parts[m]!.box, parts[b]!.box);
+        if (between < gap) {
+          gap = between;
+          nearestMember = m;
+          nearestMain = b;
+        }
       }
     }
+    const node = parts[members[0]!]!.node;
+    const welded = members.every((m) => parts[m]!.weldedOf && parts[m]!.node === node);
     // The lowest part names the plane the group rests on when all of it is declared.
     const lowest = members.reduce((a, b) => (parts[b]!.box.min.y < parts[a]!.box.min.y ? b : a));
     const support = parts[lowest]!.support;
     report.groups.push({
       parts: members.map((m) => parts[m]!.name),
+      node,
       gap: Math.round(gap * 1e6) / 1e6,
       ...(support && members.every((m) => parts[m]!.support)
         ? {
@@ -211,9 +301,19 @@ export function analyzePartConnectivity(
               tolerance: support.tolerance ?? CONNECTIVITY_TOLERANCE,
             },
           }
-        : {}),
+        : welded
+          ? {
+              welded: {
+                mesh: node,
+                components: parts[members[0]!]!.weldedOf!,
+                detached: locationOf(parts[nearestMember]!),
+                nearest: locationOf(parts[nearestMain]!),
+              },
+            }
+          : {}),
     });
   }
+  report.groups = collapseWeldedGroups(report.groups);
 
   // Largest detached group first — the biggest missing join is the one to fix.
   report.groups.sort((a, b) => b.parts.length - a.parts.length || a.gap - b.gap);
@@ -239,8 +339,17 @@ export function inspectPartConnectivity(
       : report.lodExcluded > 1
         ? ` ${report.lodExcluded} parts on LOD levels above 0 were not analyzed.`
         : '';
+  const unsplitNote = report.unsplit.length
+    ? ` Over the split budget, so measured as one box: ${report.unsplit
+        .slice(0, 5)
+        .map((mesh) => JSON.stringify(mesh))
+        .join(', ')}${report.unsplit.length > 5 ? ` and ${report.unsplit.length - 5} more` : ''}.`
+    : '';
   return report.groups.map((group) => {
-    const listed = group.parts.map((p) => JSON.stringify(p)).join(', ');
+    // Splitting welded meshes makes groups of a hundred parts ordinary; the count says the rest.
+    const named = group.parts.slice(0, MAX_LISTED_PARTS).map((p) => JSON.stringify(p));
+    const unnamed = group.parts.length - named.length;
+    const listed = `${named.join(', ')}${unnamed > 0 ? `, +${unnamed} more` : ''}`;
     const subject =
       group.parts.length === 1
         ? `Part ${listed} is`
@@ -253,7 +362,7 @@ export function inspectPartConnectivity(
         dimension: 'visualQuality' as const,
         profile: 'geometry.partConnectivity',
         message: `${subject} separate from the largest component and rests on the support declared in requirements.externalSupport at Y=${declared.planeY.toFixed(3)} m (bottom at Y=${declared.bottomY.toFixed(3)} m). Information only: the support is composed outside this asset.${lodNote}`,
-        affected: { node: group.parts[0]! },
+        affected: { node: group.node },
         measurement: {
           name: 'bottomToSupportPlane',
           actual: declared.bottomY,
@@ -263,13 +372,38 @@ export function inspectPartConnectivity(
         repairText:
           'No change is needed for a declared support. Remove the part from requirements.externalSupport if it should attach within this asset.',
       };
+    if (group.welded) {
+      const { mesh, components, detached, nearest } = group.welded;
+      const span = ({ min, max }: ComponentLocationV1) =>
+        `[${min.join(', ')}] to [${max.join(', ')}]`;
+      return {
+        code: 'GEO_PART_CONNECTIVITY',
+        disposition: 'observe' as const,
+        dimension: 'visualQuality' as const,
+        profile: 'geometry.partConnectivity',
+        message: `Mesh ${JSON.stringify(mesh)} is one drawn part, but ${group.parts.length} of its ${components} welded components ${group.parts.length === 1 ? 'is' : 'are'} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. Nearest detached: ${span(detached)}. It is nearest to ${JSON.stringify(nearest.part)} at ${span(nearest)}. This may be intentional. Box adjacency is not physical attachment evidence: a gap under ${CONNECTIVITY_TOLERANCE} m reads as contact.${lodNote}${unsplitNote}`,
+        affected: { node: mesh },
+        measurement: {
+          name: 'gapToMainComponent',
+          actual: group.gap,
+          expected: CONNECTIVITY_TOLERANCE,
+          breakdown: {
+            weldedComponents: components,
+            detachedComponents: group.parts.length,
+            ...(report.lodExcluded ? { lodExcludedParts: report.lodExcluded } : {}),
+          },
+        },
+        repairText:
+          'Check whether the separation is intentional. One mesh moves and hides as one, so a component meant to attach needs its gap closed in the merged geometry; one meant to stand apart reads better as its own part.',
+      };
+    }
     return {
       code: 'GEO_PART_CONNECTIVITY',
       disposition: 'observe' as const,
       dimension: 'visualQuality' as const,
       profile: 'geometry.partConnectivity',
-      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence: a gap under ${CONNECTIVITY_TOLERANCE} m reads as contact, and primitives welded into one mesh form one box.${lodNote}`,
-      affected: { node: group.parts[0]! },
+      message: `${subject} separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is ${group.gap.toFixed(3)} m. This may be intentional. Box adjacency is not physical attachment evidence: a gap under ${CONNECTIVITY_TOLERANCE} m reads as contact.${lodNote}${unsplitNote}`,
+      affected: { node: group.node },
       measurement: {
         name: 'gapToMainComponent',
         actual: group.gap,

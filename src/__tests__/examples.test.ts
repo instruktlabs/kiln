@@ -26,10 +26,54 @@ import { resolveEvaluatorPortV2 } from '../evaluator/protocol';
 const EXAMPLES = exampleArchivePath();
 const RENDERS = join(EXAMPLES, 'renders');
 
-const names = (await readdir(EXAMPLES))
+const names = (
+  await readdir(EXAMPLES).catch((cause: unknown) => {
+    throw new Error(
+      `Historical examples are missing from ${EXAMPLES}; run: node scripts/example-archive.mjs --fetch`,
+      { cause },
+    );
+  })
+)
   .filter((f) => f.endsWith('.kiln.js'))
   .map((f) => basename(f, '.kiln.js'))
   .sort();
+
+/**
+ * Reaches every line the whole corpus reaches, in 29% of its execution time, measured on 5 November
+ * 2026 by running each example alone. Lines are not inputs, so the full corpus still runs
+ * once per CI run: in the Linux coverage pass, and in any plain local run. The Windows leg
+ * and the community exporter pass repeat the suite, so they execute only this subset. The
+ * inventory checks below always see every example.
+ */
+const CORPUS_SUBSET = new Set([
+  'air-defense-radar',
+  'alpine-cable-terminal',
+  'arcade-cabinet',
+  'blast-furnace',
+  'cafe-racer',
+  'cathedral',
+  'comms-satellite',
+  'crate',
+  'crawler-crane',
+  'demo-argent-aircraft-carrier',
+  'demo-clockwork-dragonfly',
+  'demo-dauntless-cv-08',
+  'demo-floating-observatory',
+  'demo-solar-sail-courier',
+  'demo-umbra-submarine',
+  'field-gun',
+  'fighter-jet',
+  'lighthouse',
+  'mechanical-peacock',
+  'radio-telescope',
+  'sushi-store',
+  'well',
+  'windmill',
+]);
+const executed =
+  process.platform === 'win32' || process.env['KILN_GLTF_EXPORTER']
+    ? names.filter((name) => CORPUS_SUBSET.has(name))
+    : names;
 
 type Outcome = { tris: number; bytes: number; warnings: string[] } | { error: string };
 
@@ -41,7 +85,7 @@ type Outcome = { tris: number; bytes: number; warnings: string[] } | { error: st
  */
 const outcomes = new Map<string, Outcome>(
   await Promise.all(
-    names.map(async (name): Promise<[string, Outcome]> => {
+    executed.map(async (name): Promise<[string, Outcome]> => {
       try {
         const code = await readFile(join(EXAMPLES, `${name}.kiln.js`), 'utf8');
         const evaluator = resolveEvaluatorPortV2(undefined, 'trusted-local');
@@ -57,17 +101,23 @@ const outcomes = new Map<string, Outcome>(
 // Completed local sweep/loft checks no longer emit unconditional unchecked warnings.
 // Exact remaining advisory groups are still asserted, without a blanket filter.
 const documentedAdvisories: Record<string, string[]> = {
+  // Its deck markings were one box across the whole deck until #304 split welded meshes.
+  'demo-dauntless-cv-08': [
+    'Floating parts (no mesh overlap with any sibling, 2cm tol): Mesh_Deck_Markings_ivory (4 of its 50 welded components) — Fix: one mesh moves and hides as one, so close the gap in the merged geometry, or author the component as its own part. It spans [-22.075, 12.392, -4.854] to [-19.066, 12.417, -4.417]. — Coverage: drawn meshes only, at 2cm. Welded components inside one mesh are compared the same way, box to box. A smaller gap reads as contact, so a silent pass is not a fit audit; measure contacts in the destination.',
+  ],
   'demo-floating-observatory': [
-    'Floating parts (no mesh overlap with any sibling, 2cm tol): Mesh_WaterfallSprayDroplet_3 — Fix: shift "Mesh_WaterfallSprayDroplet_3" by [0.000, 0.000, -0.024] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_5 — Fix: shift "Mesh_WaterfallSprayDroplet_5" by [0.000, 0.000, -0.026] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_9 — Fix: shift "Mesh_WaterfallSprayDroplet_9" by [0.000, 0.000, -0.046] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_11 — Fix: shift "Mesh_WaterfallSprayDroplet_11" by [0.000, 0.000, -0.059] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. — Coverage: drawn meshes only, at 2cm. A smaller gap reads as contact and a primitive welded into another mesh is never seen, so a silent pass is not a fit audit; measure contacts in the destination.',
+    'Floating parts (no mesh overlap with any sibling, 2cm tol): Mesh_WaterfallSprayDroplet_3 — Fix: shift "Mesh_WaterfallSprayDroplet_3" by [0.000, 0.000, -0.024] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_5 — Fix: shift "Mesh_WaterfallSprayDroplet_5" by [0.000, 0.000, -0.026] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_9 — Fix: shift "Mesh_WaterfallSprayDroplet_9" by [0.000, 0.000, -0.046] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. | Mesh_WaterfallSprayDroplet_11 — Fix: shift "Mesh_WaterfallSprayDroplet_11" by [0.000, 0.000, -0.059] toward "Mesh_ContinuousWaterCurtain", or call snapTo(part, hostPart) to do it automatically. — Coverage: drawn meshes only, at 2cm. Welded components inside one mesh are compared the same way, box to box. A smaller gap reads as contact, so a silent pass is not a fit audit; measure contacts in the destination.',
   ],
 };
 
 describe('examples', () => {
   it('finds a non-trivial set to check', () => {
     expect(names.length).toBeGreaterThanOrEqual(10);
+    // A renamed example must not quietly leave the subset that two CI legs rely on.
+    expect(names).toEqual(expect.arrayContaining([...CORPUS_SUBSET]));
   });
 
-  for (const name of names) {
+  for (const name of executed) {
     it(`${name} executes and produces geometry`, () => {
       const out = outcomes.get(name)!;
       if ('error' in out) throw new Error(`${name} failed to execute: ${out.error}`);

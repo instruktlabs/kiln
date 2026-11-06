@@ -139,37 +139,55 @@ const commands = [
   { name: 'save', args: ['save', 'source.js', '--name', 'RenderEnvironment'] },
 ];
 
-for (const { name, args } of commands) {
-  test(`${name}: KILN_RENDER=cpu selects CPU without discovering or starting a service`, async () => {
-    const result = await run(args);
+// Every command reaches the same `resolveRenderMode`, so the full matrix runs on `render`
+// and each other command proves only its own wiring of the flag and of the environment.
+const CLI_RUN_BUDGET = 60_000; // One compiled-CLI run: 0.4 to 0.9 s in CI, past 20 s at load 50 on 5 November 2026.
+
+test(
+  'KILN_RENDER=cpu selects CPU without discovering or starting a service',
+  async () => {
+    const result = await run(commands[0]!.args);
     expect(result.code, result.stdout + result.stderr).toBe(0);
-    const fidelity = result.fidelity;
-    expect(fidelity.materialFaithful).toBe(false);
-    if (name === 'render' || name === 'capture')
-      expect(fidelity.rendererId).toStartWith('cpu-raster:');
+    expect(result.fidelity.materialFaithful).toBe(false);
+    expect(result.fidelity.rendererId).toStartWith('cpu-raster:');
     expect(result.paths).toEqual([]);
-  });
+  },
+  CLI_RUN_BUDGET,
+);
 
-  test(`${name}: explicit GPU overrides KILN_RENDER=cpu`, async () => {
-    const result = await run([...args, '--render', 'gpu']);
-    expect(result.code, result.stdout + result.stderr).toBe(0);
-    expect(result.fidelity.materialFaithful).toBe(true);
-    expect(result.paths).toContain('/render');
-  });
-
-  test(`${name}: invalid environment fails before service discovery`, async () => {
-    const result = await run(args, 'invalid-render-mode');
-    expect(result.code).not.toBe(0);
-    expect(result.stdout + result.stderr).toContain('KILN_RENDER must be auto, cpu or gpu');
-    expect(result.paths).toEqual([]);
-  });
-
-  test(`${name}: explicit CPU overrides an invalid environment`, async () => {
-    const result = await run([...args, '--render', 'cpu'], 'invalid-render-mode');
+test(
+  'explicit CPU overrides an invalid environment',
+  async () => {
+    const result = await run([...commands[0]!.args, '--render', 'cpu'], 'invalid-render-mode');
     expect(result.code, result.stdout + result.stderr).toBe(0);
     expect(result.fidelity.materialFaithful).toBe(false);
     expect(result.paths).toEqual([]);
-  });
+  },
+  CLI_RUN_BUDGET,
+);
+
+for (const { name, args } of commands) {
+  test(
+    `${name}: explicit GPU overrides KILN_RENDER=cpu`,
+    async () => {
+      const result = await run([...args, '--render', 'gpu']);
+      expect(result.code, result.stdout + result.stderr).toBe(0);
+      expect(result.fidelity.materialFaithful).toBe(true);
+      expect(result.paths).toContain('/render');
+    },
+    CLI_RUN_BUDGET,
+  );
+
+  test(
+    `${name}: invalid environment fails before service discovery`,
+    async () => {
+      const result = await run(args, 'invalid-render-mode');
+      expect(result.code).not.toBe(0);
+      expect(result.stdout + result.stderr).toContain('KILN_RENDER must be auto, cpu or gpu');
+      expect(result.paths).toEqual([]);
+    },
+    CLI_RUN_BUDGET,
+  );
 }
 
 test('an invalid explicit render option is not replaced by the CPU environment', async () => {
