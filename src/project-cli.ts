@@ -34,7 +34,7 @@ MATERIALS
   kiln material create-preset --file <preset-options.json>
   kiln material list
   kiln material get <id> <sha256:revision>
-  kiln material procedural --file <procedural-material-draft.json>
+  kiln material procedural --file <procedural-material-draft.json> [--parent <sha256:revision>]
   kiln material import --file <portable-material-payload.json>
   kiln material export <id> <sha256:revision> --out <portable-material-payload.json>
   kiln material export <id> <sha256:revision> --maps <dir> --size <px> [--repeat <metres>]
@@ -91,6 +91,17 @@ async function jsonFile(path: string, limit: number): Promise<unknown> {
 }
 
 /** `material export --maps`: a strict decimal reading, then the SDK's own range checks. */
+/** `--parent` sets a draft's parent, as `kiln save --parent` does; it never overrides a different one. */
+function withParentFlag(draft: unknown, parent: string | undefined): unknown {
+  if (!parent || !draft || typeof draft !== 'object' || Array.isArray(draft)) return draft;
+  const stated = (draft as { parentRevision?: unknown }).parentRevision;
+  if (stated !== undefined && stated !== parent)
+    throw new Error(
+      `--parent ${parent} disagrees with the draft's parentRevision ${String(stated)}`,
+    );
+  return { ...draft, parentRevision: parent };
+}
+
 async function exportMaterialMapsCommand(
   materials: FileWorkspace['materials'],
   positional: readonly string[],
@@ -177,7 +188,7 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
     'material:presets': ['tag'],
     'material:create-preset': ['file'],
     'material:get': [],
-    'material:procedural': ['file'],
+    'material:procedural': ['file', 'parent'],
     'material:import': ['file'],
     'material:export': ['out', 'maps', 'size', 'repeat', 'tiles', 'render'],
   };
@@ -325,7 +336,10 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
       action === 'procedural' ? MATERIAL_LIBRARY_LIMITS.maxManifestBytes : 24 * 1024 * 1024,
     );
     if (action === 'procedural') {
-      const { record, dependencies } = await createProceduralMaterialRecord(input, materials);
+      const { record, dependencies } = await createProceduralMaterialRecord(
+        withParentFlag(input, flags.parent),
+        materials,
+      );
       output = {
         materials: await materials.import(
           [record],

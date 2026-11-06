@@ -16,6 +16,26 @@ import {
 import { canonicalizeTextureAtlasSpecV1 } from './texture-atlas-contract';
 import type { MaterialMapPinV1 } from './pinned-material-map';
 
+/**
+ * A save names a parent the library holds; import does not, as asset import does not. The record
+ * builders cannot check this because they have no library.
+ */
+async function assertMaterialParent(
+  draft: { materialId: string; parentRevision?: string | undefined },
+  library: MaterialLibrary,
+): Promise<void> {
+  if (!draft.parentRevision) return;
+  try {
+    if (library.readManifest) await library.readManifest(draft.materialId, draft.parentRevision);
+    else await library.read(draft.materialId, draft.parentRevision);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
+    throw new Error(
+      `parentRevision ${draft.parentRevision} is not a saved revision of material ${draft.materialId}. A parent must be an existing revision of the same materialId; list materials to see their revision IDs.`,
+    );
+  }
+}
+
 export async function createProceduralMaterialRecord(
   value: unknown,
   library: MaterialLibrary,
@@ -28,13 +48,14 @@ export async function createProceduralMaterialRecord(
     throw new Error('Material draft exceeds size limit');
   if (!value || typeof value !== 'object' || Array.isArray(value))
     throw new Error('Material draft must be a JSON object');
-  if (!Object.hasOwn(value, 'schemaVersion'))
-    return {
-      record: await createMaterialRecordV1(proceduralMaterialDraftSchema.parse(value)),
-      dependencies: [],
-    };
+  if (!Object.hasOwn(value, 'schemaVersion')) {
+    const draft = proceduralMaterialDraftSchema.parse(value);
+    await assertMaterialParent(draft, library);
+    return { record: await createMaterialRecordV1(draft), dependencies: [] };
+  }
 
   const draft = proceduralMaterialDraftV2Schema.parse(value);
+  await assertMaterialParent(draft, library);
   const pins = new Map<string, MaterialMapPinV1>();
   for (const map of draft.maps) {
     if (!map.atlas) continue;
