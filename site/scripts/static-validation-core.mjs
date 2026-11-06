@@ -384,7 +384,6 @@ export function headersFor(rules, pathname, host = new URL(ORIGIN).host) {
 
 /** Raw files that must stay out of the index on the production host (site/public/_headers), one of each kind. */
 export const RAW_NOINDEX_SAMPLES = [
-  '/llms.txt',
   '/asset-demos/cabin-woods-psx-horror/metadata/rock/manifest.json',
   '/asset-demos/cabin-woods-psx-horror/models/rock.kiln-metadata.json',
   '/scene-packs/golden-gate/g9-code6/THIRD-PARTY-NOTICES.txt',
