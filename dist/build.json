@@ -2,18 +2,18 @@
   "schemaVersion": 1,
   "entries": {
     "worker": {
-      "identity": "sha256:6e016f7b365827d8fda0fae3a864c3da4f1cde1a26ef6042e4c8c2d23367551c",
+      "identity": "sha256:b7939aae93d3c8c730f22b6cf2dcc76f88baac9e9e2a43b7dba24ec8013bc831",
       "engineVersion": "1.6.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "fbe285f483135cb3d6dc85650a05061094675e846c547a0b8667bb5121053ec0",
+      "sourceHash": "25ed77f2cde078e7b99148eafe328af5f9480c083e82fa713b0aa5e5d0e2bd7c",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "af916d063d319fe3c11d1acc13211950eea82bb5ebb87ae4eb60008d72fa7f10",
+      "dependencyHash": "73cddf0cd8364a4555ebc2a6a2b508120c4553dc8aa71469532e9c1b3dad35c5",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
         "@gltf-transform/functions": "4.5.1",
         "@modelcontextprotocol/client": "^2.3.0",
-        "@modelcontextprotocol/ext-apps": "2.0.3",
+        "@modelcontextprotocol/ext-apps": "2.0.4",
         "@modelcontextprotocol/server": "^2.3.0",
         "@types/three": "^0.186.0",
         "acorn": "^8.18.0",
@@ -32,26 +32,26 @@
         "zod": "^4.6.5"
       },
       "optionalDependencies": {
-        "@napi-rs/canvas": "1.0.11",
+        "@napi-rs/canvas": "1.0.13",
         "webgpu": "0.6.2"
       },
       "target": "node",
       "file": "evaluator-worker.mjs",
-      "bundleHash": "sha256:df18308c79fd90fc2ab8af54027d160d75048c36e4b7e9f75aaa901be9060b03"
+      "bundleHash": "sha256:b077c0896cc118dccea90f1d844b84bb4408d0ed2ad3060f8d4d7c43a22dfb47"
     },
     "agent-run": {
-      "identity": "sha256:6e016f7b365827d8fda0fae3a864c3da4f1cde1a26ef6042e4c8c2d23367551c",
+      "identity": "sha256:b7939aae93d3c8c730f22b6cf2dcc76f88baac9e9e2a43b7dba24ec8013bc831",
       "engineVersion": "1.6.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "fbe285f483135cb3d6dc85650a05061094675e846c547a0b8667bb5121053ec0",
+      "sourceHash": "25ed77f2cde078e7b99148eafe328af5f9480c083e82fa713b0aa5e5d0e2bd7c",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "af916d063d319fe3c11d1acc13211950eea82bb5ebb87ae4eb60008d72fa7f10",
+      "dependencyHash": "73cddf0cd8364a4555ebc2a6a2b508120c4553dc8aa71469532e9c1b3dad35c5",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
         "@gltf-transform/functions": "4.5.1",
         "@modelcontextprotocol/client": "^2.3.0",
-        "@modelcontextprotocol/ext-apps": "2.0.3",
+        "@modelcontextprotocol/ext-apps": "2.0.4",
         "@modelcontextprotocol/server": "^2.3.0",
         "@types/three": "^0.186.0",
         "acorn": "^8.18.0",
@@ -70,26 +70,26 @@
         "zod": "^4.6.5"
       },
       "optionalDependencies": {
-        "@napi-rs/canvas": "1.0.11",
+        "@napi-rs/canvas": "1.0.13",
         "webgpu": "0.6.2"
       },
       "target": "node",
       "file": "agent-run.mjs",
-      "bundleHash": "sha256:c8336be791961778887f5757d0b62923f93631a139b74527ecdd7e21d7d87285"
+      "bundleHash": "sha256:c931aae6946317bf3f5dc998f1de0a45c4370461aa698428c16b7523b0d01769"
     },
     "agent-providers": {
-      "identity": "sha256:6e016f7b365827d8fda0fae3a864c3da4f1cde1a26ef6042e4c8c2d23367551c",
+      "identity": "sha256:b7939aae93d3c8c730f22b6cf2dcc76f88baac9e9e2a43b7dba24ec8013bc831",
       "engineVersion": "1.6.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "fbe285f483135cb3d6dc85650a05061094675e846c547a0b8667bb5121053ec0",
+      "sourceHash": "25ed77f2cde078e7b99148eafe328af5f9480c083e82fa713b0aa5e5d0e2bd7c",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "af916d063d319fe3c11d1acc13211950eea82bb5ebb87ae4eb60008d72fa7f10",
+      "dependencyHash": "73cddf0cd8364a4555ebc2a6a2b508120c4553dc8aa71469532e9c1b3dad35c5",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
         "@gltf-transform/functions": "4.5.1",
         "@modelcontextprotocol/client": "^2.3.0",
-        "@modelcontextprotocol/ext-apps": "2.0.3",
+        "@modelcontextprotocol/ext-apps": "2.0.4",
         "@modelcontextprotocol/server": "^2.3.0",
         "@types/three": "^0.186.0",
         "acorn": "^8.18.0",
@@ -108,7 +108,7 @@
         "zod": "^4.6.5"
       },
       "optionalDependencies": {
-        "@napi-rs/canvas": "1.0.11",
+        "@napi-rs/canvas": "1.0.13",
         "webgpu": "0.6.2"
       },
       "target": "node",
@@ -116,18 +116,18 @@
       "bundleHash": "sha256:9d6faf03d307321bc2e3bd5ce5bdee0bbbf61e0ebed8bfebfa1fb072287b83fa"
     },
     "mcp": {
-      "identity": "sha256:6e016f7b365827d8fda0fae3a864c3da4f1cde1a26ef6042e4c8c2d23367551c",
+      "identity": "sha256:b7939aae93d3c8c730f22b6cf2dcc76f88baac9e9e2a43b7dba24ec8013bc831",
       "engineVersion": "1.6.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "fbe285f483135cb3d6dc85650a05061094675e846c547a0b8667bb5121053ec0",
+      "sourceHash": "25ed77f2cde078e7b99148eafe328af5f9480c083e82fa713b0aa5e5d0e2bd7c",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "af916d063d319fe3c11d1acc13211950eea82bb5ebb87ae4eb60008d72fa7f10",
+      "dependencyHash": "73cddf0cd8364a4555ebc2a6a2b508120c4553dc8aa71469532e9c1b3dad35c5",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
         "@gltf-transform/functions": "4.5.1",
         "@modelcontextprotocol/client": "^2.3.0",
-        "@modelcontextprotocol/ext-apps": "2.0.3",
+        "@modelcontextprotocol/ext-apps": "2.0.4",
         "@modelcontextprotocol/server": "^2.3.0",
         "@types/three": "^0.186.0",
         "acorn": "^8.18.0",
@@ -146,7 +146,7 @@
         "zod": "^4.6.5"
       },
       "optionalDependencies": {
-        "@napi-rs/canvas": "1.0.11",
+        "@napi-rs/canvas": "1.0.13",
         "webgpu": "0.6.2"
       },
       "target": "node",
@@ -154,18 +154,18 @@
       "bundleHash": "sha256:ec8ccc0d1f25184650191131ad5dcd25e1434408f92bdf8d2ef150e1bf5f266b"
     },
     "cli": {
-      "identity": "sha256:6e016f7b365827d8fda0fae3a864c3da4f1cde1a26ef6042e4c8c2d23367551c",
+      "identity": "sha256:b7939aae93d3c8c730f22b6cf2dcc76f88baac9e9e2a43b7dba24ec8013bc831",
       "engineVersion": "1.6.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "fbe285f483135cb3d6dc85650a05061094675e846c547a0b8667bb5121053ec0",
+      "sourceHash": "25ed77f2cde078e7b99148eafe328af5f9480c083e82fa713b0aa5e5d0e2bd7c",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "af916d063d319fe3c11d1acc13211950eea82bb5ebb87ae4eb60008d72fa7f10",
+      "dependencyHash": "73cddf0cd8364a4555ebc2a6a2b508120c4553dc8aa71469532e9c1b3dad35c5",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
         "@gltf-transform/functions": "4.5.1",
         "@modelcontextprotocol/client": "^2.3.0",
-        "@modelcontextprotocol/ext-apps": "2.0.3",
+        "@modelcontextprotocol/ext-apps": "2.0.4",
         "@modelcontextprotocol/server": "^2.3.0",
         "@types/three": "^0.186.0",
         "acorn": "^8.18.0",
@@ -184,26 +184,26 @@
         "zod": "^4.6.5"
       },
       "optionalDependencies": {
-        "@napi-rs/canvas": "1.0.11",
+        "@napi-rs/canvas": "1.0.13",
         "webgpu": "0.6.2"
       },
       "target": "node",
       "file": "cli.mjs",
-      "bundleHash": "sha256:be27eea12bbb89c4ad325eaf66417c8cb6a1d010735af14cd958f58233e59228"
+      "bundleHash": "sha256:aedab71cd93bf352ade99c3a28acdbfc9379cc806f54a401f1515a3449ec2c1b"
     },
     "engine": {
-      "identity": "sha256:6e016f7b365827d8fda0fae3a864c3da4f1cde1a26ef6042e4c8c2d23367551c",
+      "identity": "sha256:b7939aae93d3c8c730f22b6cf2dcc76f88baac9e9e2a43b7dba24ec8013bc831",
       "engineVersion": "1.6.0",
       "toolchain": "bun@1.4.2",
-      "sourceHash": "fbe285f483135cb3d6dc85650a05061094675e846c547a0b8667bb5121053ec0",
+      "sourceHash": "25ed77f2cde078e7b99148eafe328af5f9480c083e82fa713b0aa5e5d0e2bd7c",
       "rendererSourceHash": "27927c48b377f7694251a76c0cecd05216fcbbb8a7d03e8bf2bd681dabb5573a",
-      "dependencyHash": "af916d063d319fe3c11d1acc13211950eea82bb5ebb87ae4eb60008d72fa7f10",
+      "dependencyHash": "73cddf0cd8364a4555ebc2a6a2b508120c4553dc8aa71469532e9c1b3dad35c5",
       "dependencies": {
         "@gltf-transform/core": "4.5.1",
         "@gltf-transform/extensions": "4.5.1",
         "@gltf-transform/functions": "4.5.1",
         "@modelcontextprotocol/client": "^2.3.0",
-        "@modelcontextprotocol/ext-apps": "2.0.3",
+        "@modelcontextprotocol/ext-apps": "2.0.4",
         "@modelcontextprotocol/server": "^2.3.0",
         "@types/three": "^0.186.0",
         "acorn": "^8.18.0",
@@ -222,12 +222,12 @@
         "zod": "^4.6.5"
       },
       "optionalDependencies": {
-        "@napi-rs/canvas": "1.0.11",
+        "@napi-rs/canvas": "1.0.13",
         "webgpu": "0.6.2"
       },
       "target": "node",
       "file": "mcp-engine.mjs",
-      "bundleHash": "sha256:1b307454900dcfcdd168c6619a8a6abe1b21b06d96d125bdf19483e6bf0db3bd"
+      "bundleHash": "sha256:07a40ac289bcd7eec991fca1241a4f02e93f12aeca03039f391b9bd7394776fd"
     }
   }
 }

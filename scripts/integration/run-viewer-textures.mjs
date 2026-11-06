@@ -166,7 +166,7 @@ try {
           throw new Error('Wrong fallback surface');
         if (
           preview &&
-          !(await page.locator('#status').innerText()).includes('Showing saved preview')
+          !(await page.locator('#status').textContent()).includes('Showing saved preview')
         )
           throw new Error('Unlabeled fallback');
         await present(fixture.glb, true);
