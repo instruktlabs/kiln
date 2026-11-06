@@ -25,6 +25,11 @@ renaming nodes so nothing matches is reported as
 change the profile. Without a declared profile these checks do not exist; do not
 apply another destination's checks to a standalone asset.
 
+A destination audit that reads geometry can run before a save: `kiln_export` with a `programRef`
+returns a resource for the bytes `kiln_save` would persist and writes nothing, and the CLI's
+`render REF --out x.glb` reaches the same bytes. A part summary cannot stand in for them, because one
+merged mesh reports as one box whatever it contains.
+
 ## What to measure
 
 | Question | Evidence |

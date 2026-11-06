@@ -2892,6 +2892,23 @@ async function parentRevisionComparison(
   }
 }
 
+/**
+ * The evaluation `kiln_save` persists, without its preview and with nothing written: a destination
+ * audit reads these bytes before a save, not after one (#309).
+ */
+export async function buildProgramGlb(
+  programRef: string,
+  context: KilnToolContext,
+): Promise<RenderResult> {
+  if (!context.programStore) throw new Error('Building a programRef requires a program store.');
+  const code = await context.programStore.get(programRef);
+  await context.prepareBuildProvenance?.();
+  return evaluateGeneratedSource(code, {
+    ...context,
+    requirements: toolRequirements(context).binding,
+  });
+}
+
 /** Build one current-policy revision for ordinary save or explicit migration. */
 export async function buildProgramAssetDraft(
   code: string,
@@ -3054,6 +3071,15 @@ export function createKilnAssetDefs(
   });
   const exportInput = z.object(selector);
   const profileExportInput = exportInput.extend({
+    assetId: selector.assetId.optional(),
+    revisionId: selector.revisionId.optional(),
+    programRef: z
+      .string()
+      .regex(programRefPattern)
+      .optional()
+      .describe(
+        'A program to build instead of a saved revision; assetId and revisionId stay unset.',
+      ),
     profile: z
       .enum(['editable', 'runtime'])
       .default('editable')
@@ -3283,10 +3309,37 @@ export function createKilnAssetDefs(
     {
       name: 'kiln_export',
       description:
-        'Export one saved revision. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.',
+        'Export one saved revision, or the GLB a programRef builds. With programRef, nothing is saved: it returns a resource for the bytes kiln_save would persist, so a destination audit can read them before a save. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.',
       inputSchema: profileExportInput,
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
+        if (input.programRef) {
+          if (input.assetId || input.revisionId)
+            throw new Error(
+              'kiln_export takes programRef or assetId and revisionId, not both: programRef builds a program, the others select a saved revision.',
+            );
+          if (input.profile === 'runtime')
+            throw new Error(
+              'The runtime profile exports a saved revision. Call kiln_save with this programRef first, or omit profile for the built GLB.',
+            );
+          const rendered = await buildProgramGlb(input.programRef, context);
+          const { inspectDrawDiagnostics } = await import('../draw-diagnostics');
+          return {
+            ok: true,
+            programRef: input.programRef,
+            profile: input.profile,
+            sha256: rendered.artifactGlbSha256,
+            triangles: rendered.tris,
+            drawDiagnostics: await inspectDrawDiagnostics(rendered.glb),
+            resources: [
+              (await import('../assets-resources')).programBuildLink(input.programRef, rendered),
+            ],
+          };
+        }
+        if (!input.assetId || !input.revisionId)
+          throw new Error(
+            'kiln_export requires assetId and revisionId for a saved revision, or programRef for a built program.',
+          );
         const record = await readSavedRevision(
           library(),
           input.collection,

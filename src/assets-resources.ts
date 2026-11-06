@@ -95,6 +95,21 @@ export async function runtimeAssetLinks(
     annotations: { audience: ['user'], priority: name.endsWith('.glb') ? 0.9 : 0.3 },
   }));
 }
+/** The built GLB of a program that may never be saved. The URI pins the bytes it was issued for. */
+export function programBuildLink(
+  programRef: string,
+  rendered: { glb: Uint8Array; artifactGlbSha256: string },
+): AssetLink {
+  return {
+    type: 'resource_link',
+    name: 'asset.glb',
+    uri: `kiln://programs/${encodeURIComponent(programRef)}/${rendered.artifactGlbSha256.replace('sha256:', '')}/asset.glb`,
+    mimeType: 'model/gltf-binary',
+    size: rendered.glb.byteLength,
+    annotations: { audience: ['user'], priority: priorities['asset.glb']! },
+  };
+}
+
 export async function readAssetResource(
   library: AssetLibrary,
   uri: string,

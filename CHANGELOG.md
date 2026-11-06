@@ -33,8 +33,15 @@ does not publish a package.
   generator or prove the bytes came from it. `external` still requires an HTTP(S) URL and existing
   records keep their revision ids. A record with this source is refused by an engine older than
   this one.
-||||||| 8e08b9c
-||||||| cde4dfe
+
+- `kiln_export` takes a `programRef`, so a destination audit can read the built GLB before a save
+  instead of after one (#309). It returns a `kiln://programs/{program}/{sha256}/asset.glb` resource
+  with the size, hash, triangle count and draw diagnostics, and writes nothing. The bytes are the
+  ones `kiln_save` then persists. The URI pins the hash it was issued for and the build runs again
+  on read, so a program this host now builds differently is refused rather than served as the same
+  bytes. The `runtime` profile still needs a saved revision. This changes `kiln_export`'s input
+  schema: `assetId` and `revisionId` are now optional in the advertised shape and checked when the
+  tool runs. `kiln_present` and `kiln_export_to` are unchanged.
 
 ## 1.6.0 (2026-10-27)
 
@@ -175,8 +182,6 @@ does not publish a package.
   both list — so an author whose call failed for an unrelated reason was told those fields did
   not exist. A test now asserts the advice names every field the validator accepts, so the text
   and the validator cannot drift apart again.
-||||||| 24bc8fd
-
 
 ## 1.5.0 (2026-10-25)
 

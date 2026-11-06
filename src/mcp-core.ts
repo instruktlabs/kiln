@@ -180,6 +180,11 @@ export const KILN_RESOURCE_TEMPLATES = {
     uriTemplate: 'kiln://projects/{project}/{revision}/{profile}',
     description: 'Exact editable project bundle or runtime derivative ZIP.',
   },
+  programBuild: {
+    name: 'program-build',
+    uriTemplate: 'kiln://programs/{program}/{sha256}/asset.glb',
+    description: 'The GLB a program builds, from kiln_export with a programRef; nothing is saved.',
+  },
 } as const satisfies Record<string, KilnMcpManifestTemplate>;
 
 /**
