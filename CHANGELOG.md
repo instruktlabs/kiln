@@ -19,6 +19,13 @@ does not publish a package.
   was reported as invalid input. [Large assets](docs/runtime.md#large-assets) gives the measured
   sizes and the supported routes.
 
+- Material revisions can record their parent (#310). `parentRevision` on a V1 or V2 draft, or
+  `kiln material procedural --parent <sha256:revision>`, must name a saved revision of the same
+  `materialId`; `get`, `list` and the `kiln.material-maps.v1` sidecar report it, and it survives
+  export and import. It is optional, and the key is omitted when absent, so existing records keep
+  their revision ids. A record that carries it is refused by an engine older than this one, whose
+  manifest schema is strict.
+
 - `kiln_export` takes a `programRef`, so a destination audit can read the built GLB before a save
   instead of after one (#309). It returns a `kiln://programs/{program}/{sha256}/asset.glb` resource
   with the size, hash, triangle count and draw diagnostics, and writes nothing. The bytes are the
@@ -27,6 +34,7 @@ does not publish a package.
   bytes. The `runtime` profile still needs a saved revision. This changes `kiln_export`'s input
   schema: `assetId` and `revisionId` are now optional in the advertised shape and checked when the
   tool runs. `kiln_present` and `kiln_export_to` are unchanged.
+||||||| 8e08b9c
 ||||||| cde4dfe
 
 ## 1.6.0 (2026-10-27)
