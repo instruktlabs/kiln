@@ -187,6 +187,8 @@ describe('repository reliability contracts', () => {
       'typecheck \u00b7 lint \u00b7 coverage',
       'engine tests \u00b7 community exporter',
       'typecheck \u00b7 lint \u00b7 test (Windows)',
+      'typecheck \u00b7 lint \u00b7 test (Windows shard 1)',
+      'typecheck \u00b7 lint \u00b7 test (Windows shard 2)',
     ];
 
     // Derived from the workflow rather than restated, so a renamed or added job is a
@@ -203,6 +205,12 @@ describe('repository reliability contracts', () => {
         .split(',')
         .map((node) => node.trim());
       if (nodes) return nodes.map((node) => declared.replace(/\$\{\{ matrix\.node \}\}/u, node));
+      const shards = job
+        .match(/^ {8}shard: \[([^\]]+)\]$/mu)?.[1]
+        .split(',')
+        .map((shard) => shard.trim());
+      if (shards)
+        return shards.map((shard) => declared.replace(/\$\{\{ matrix\.shard \}\}/u, shard));
       return legs.length > 0
         ? legs.map((arch) => declared.replace(/\$\{\{ matrix\.arch \}\}/u, arch))
         : [declared];

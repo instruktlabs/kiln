@@ -247,6 +247,8 @@ test('release receipt requirements stay aligned with the CI platform matrix', as
     if (!matrix) return [job.name];
     if (matrix.include)
       return matrix.include.map((item) => job.name.replace(/\$\{\{ matrix\.arch \}\}/, item.arch));
+    if (matrix.shard)
+      return matrix.shard.map((shard) => job.name.replace(/\$\{\{ matrix\.shard \}\}/, shard));
     return matrix.node.map((node) => job.name.replace(/\$\{\{ matrix\.node \}\}/, node));
   });
   expect([...RELEASE_JOBS].sort()).toEqual(names.sort());
