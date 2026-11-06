@@ -3655,6 +3655,241 @@ var init_universal = __esm(() => {
 import * as THREE3 from "three";
 var init_gltf_texture_binding = () => {};
 
+// src/procedural-cellular.ts
+function cellularSearchRadius(layer) {
+  const { jitterX, jitterY, metricX, metricY, weight } = layer;
+  const ownX = (1 + jitterX) / 2;
+  const ownY = (1 + jitterY) / 2;
+  const nearX = 1 + jitterX / 2;
+  const nearY = 1 + jitterY / 2;
+  const f1Bound = distanceOf(metricX * ownX, metricY * ownY) + weight;
+  const f2Bound = Math.min(distanceOf(metricX * nearX, metricY * ownY), distanceOf(metricX * ownX, metricY * nearY)) + weight;
+  const reach = layer.feature === "facet" ? Math.max(f2Bound, f1Bound + layer.facetBlend) : f2Bound;
+  return {
+    x: Math.max(1, Math.ceil(reach / metricX + ownX - 1)),
+    y: Math.max(1, Math.ceil(reach / metricY + ownY - 1))
+  };
+}
+function cellularWorkPerTexel(layer) {
+  const { x, y } = cellularSearchRadius(layer);
+  const search = 46 + Math.ceil((2 * x + 1) * (2 * y + 1) / 8) + (layer.weight > 0 ? 10 : 0);
+  if (layer.feature === "border")
+    return search + 8;
+  if (layer.feature === "facet")
+    return search + 32 + Math.ceil(layer.facetBlend * 30);
+  return search;
+}
+function cellularFieldWork(layer) {
+  return layer.cellsX * layer.cellsY * 12;
+}
+function cellularFieldBytes(layer) {
+  return layer.cellsX * layer.cellsY * 48 + 4096;
+}
+function mix(value) {
+  let h = value | 0;
+  h ^= h >>> 16;
+  h = Math.imul(h, 2246822507);
+  h ^= h >>> 13;
+  h = Math.imul(h, 3266489909);
+  h ^= h >>> 16;
+  return h >>> 0;
+}
+function centreOut(radius) {
+  const order = new Int32Array(2 * radius + 1);
+  for (let k = 1;k <= radius; k++) {
+    order[2 * k - 1] = -k;
+    order[2 * k] = k;
+  }
+  return order;
+}
+function wrapTable(cells, radius) {
+  const table = new Int32Array(cells + 2 * radius + 1);
+  for (let i = 0;i < table.length; i++) {
+    table[i] = ((i - radius) % cells + cells) % cells;
+  }
+  return table;
+}
+function prepareCellularField(layer, radius = cellularSearchRadius(layer)) {
+  const { cellsX, cellsY, seed, jitterX, jitterY, weight, feature } = layer;
+  const count = cellsX * cellsY;
+  const px = new Float64Array(count);
+  const py = new Float64Array(count);
+  const weights = new Float64Array(count);
+  const tones = new Float64Array(feature === "cell" ? count : 0);
+  const slopeX = new Float64Array(feature === "facet" ? count : 0);
+  const slopeY = new Float64Array(feature === "facet" ? count : 0);
+  for (let j = 0;j < cellsY; j++) {
+    for (let i = 0;i < cellsX; i++) {
+      const id = j * cellsX + i;
+      const root = lattice(i, j, seed);
+      px[id] = 0.5 + (stream(root, 0) - 0.5) * jitterX;
+      py[id] = 0.5 + (stream(root, 1) - 0.5) * jitterY;
+      weights[id] = stream(root, 2) * weight;
+      if (feature === "cell")
+        tones[id] = stream(root, 3);
+      if (feature === "facet") {
+        slopeX[id] = stream(root, 4) - 0.5;
+        slopeY[id] = stream(root, 5) - 0.5;
+      }
+    }
+  }
+  return {
+    layer,
+    radius,
+    px,
+    py,
+    weights,
+    tones,
+    slopeX,
+    slopeY,
+    wrapX: wrapTable(cellsX, radius.x),
+    wrapY: wrapTable(cellsY, radius.y),
+    orderX: centreOut(radius.x),
+    orderY: centreOut(radius.y),
+    squared: new Float64Array(2),
+    found: new Int32Array(3)
+  };
+}
+function scan(field, x, y) {
+  const { layer, px, py, weights, wrapX, wrapY, orderX, orderY } = field;
+  const { metricX, metricY, jitterX, jitterY, cellsX } = layer;
+  const radiusX = field.radius.x;
+  const radiusY = field.radius.y;
+  const weighted = layer.weight > 0;
+  const lowX = (1 - jitterX) / 2;
+  const highX = (1 + jitterX) / 2;
+  const lowY = (1 - jitterY) / 2;
+  const highY = (1 + jitterY) / 2;
+  const xi = Math.floor(x);
+  const yi = Math.floor(y);
+  const xf = x - xi;
+  const yf = y - yi;
+  let f1 = Infinity;
+  let f2 = Infinity;
+  let id1 = -1;
+  let id2 = -1;
+  let visited = 0;
+  for (let n = 0;n < orderY.length; n++) {
+    const dj = orderY[n];
+    const gapY = dj > 0 ? (dj + lowY - yf) * metricY : dj < 0 ? (yf - dj - highY) * metricY : 0;
+    const floorY = gapY * gapY;
+    if (floorY >= f2)
+      continue;
+    const row = wrapY[yi + dj + radiusY] * cellsX;
+    for (let m = 0;m < orderX.length; m++) {
+      const di = orderX[m];
+      const gapX = di > 0 ? (di + lowX - xf) * metricX : di < 0 ? (xf - di - highX) * metricX : 0;
+      if (gapX * gapX + floorY >= f2)
+        continue;
+      const id = row + wrapX[xi + di + radiusX];
+      visited++;
+      const dx = (di + px[id] - xf) * metricX;
+      const dy = (dj + py[id] - yf) * metricY;
+      let d = dx * dx + dy * dy;
+      if (d >= f2)
+        continue;
+      if (weighted) {
+        const total = Math.sqrt(d) + weights[id];
+        d = total * total;
+        if (d >= f2)
+          continue;
+      }
+      if (d < f1) {
+        f2 = f1;
+        id2 = id1;
+        f1 = d;
+        id1 = id;
+      } else {
+        f2 = d;
+        id2 = id;
+      }
+    }
+  }
+  field.squared[0] = f1;
+  field.squared[1] = f2;
+  field.found[0] = id1;
+  field.found[1] = id2;
+  field.found[2] = visited;
+}
+function facetHeight(field, x, y, f1) {
+  const { layer, px, py, weights, slopeX, slopeY, wrapX, wrapY, orderX, orderY } = field;
+  const { metricX, metricY, jitterX, jitterY, cellsX, facetBlend, facetSlope } = layer;
+  const radiusX = field.radius.x;
+  const radiusY = field.radius.y;
+  const limit = f1 + facetBlend;
+  const limitSquared = limit * limit;
+  const lowX = (1 - jitterX) / 2;
+  const highX = (1 + jitterX) / 2;
+  const lowY = (1 - jitterY) / 2;
+  const highY = (1 + jitterY) / 2;
+  const xi = Math.floor(x);
+  const yi = Math.floor(y);
+  const xf = x - xi;
+  const yf = y - yi;
+  let sum = 0;
+  let total = 0;
+  for (let n = 0;n < orderY.length; n++) {
+    const dj = orderY[n];
+    const gapY = dj > 0 ? (dj + lowY - yf) * metricY : dj < 0 ? (yf - dj - highY) * metricY : 0;
+    const floorY = gapY * gapY;
+    if (floorY >= limitSquared)
+      continue;
+    const row = wrapY[yi + dj + radiusY] * cellsX;
+    for (let m = 0;m < orderX.length; m++) {
+      const di = orderX[m];
+      const gapX = di > 0 ? (di + lowX - xf) * metricX : di < 0 ? (xf - di - highX) * metricX : 0;
+      if (gapX * gapX + floorY >= limitSquared)
+        continue;
+      const id = row + wrapX[xi + di + radiusX];
+      const dx = (di + px[id] - xf) * metricX;
+      const dy = (dj + py[id] - yf) * metricY;
+      const d = Math.sqrt(dx * dx + dy * dy) + weights[id];
+      if (d >= limit)
+        continue;
+      const falloff = 1 - (d - f1) / facetBlend;
+      const blend = falloff * falloff;
+      sum += blend * (slopeX[id] * dx + slopeY[id] * dy);
+      total += blend;
+    }
+  }
+  return Math.max(0, Math.min(1, 0.5 + facetSlope * sum / total));
+}
+function sampleCellularFeature(field, u, v) {
+  const { layer } = field;
+  const x = u * layer.cellsX;
+  const y = v * layer.cellsY;
+  scan(field, x, y);
+  const f1 = Math.sqrt(field.squared[0]);
+  switch (layer.feature) {
+    case "f1":
+      return Math.min(1, f1 / layer.range);
+    case "f2":
+      return Math.min(1, Math.sqrt(field.squared[1]) / layer.range);
+    case "f2-f1":
+      return Math.min(1, (Math.sqrt(field.squared[1]) - f1) / layer.range);
+    case "cell":
+      return Math.min(1, field.tones[field.found[0]] / layer.range);
+    case "border": {
+      const gap = (Math.sqrt(field.squared[1]) - f1) / layer.borderWidth;
+      if (gap >= 1)
+        return 0;
+      const id1 = field.found[0];
+      const id2 = field.found[1];
+      const pair = lattice(Math.min(id1, id2), Math.max(id1, id2), layer.seed);
+      if (mix(pair + 789269127) * TO_UNIT >= layer.borderOpen)
+        return 0;
+      return 1 - gap * gap * (3 - 2 * gap);
+    }
+    case "facet":
+      return facetHeight(field, x, y, f1);
+  }
+}
+var CELLULAR_FEATURES, MIN_CELLULAR_METRIC = 1, MAX_CELLULAR_METRIC = 4, MAX_CELLULAR_WEIGHT = 1, distanceOf = (x, y) => Math.sqrt(x * x + y * y), TO_UNIT, lattice = (x, y, seed) => Math.imul(x, 374761393) + Math.imul(y, 668265263) + Math.imul(seed, 1274126177) | 0, stream = (root, index) => mix(root + Math.imul(index + 1, 2654435769)) * TO_UNIT;
+var init_procedural_cellular = __esm(() => {
+  CELLULAR_FEATURES = ["f1", "f2", "f2-f1", "cell", "border", "facet"];
+  TO_UNIT = 1 / 4294967296;
+});
+
 // src/texture-contract.ts
 var TEXTURE_USAGES;
 var init_texture_contract = __esm(() => {
@@ -3781,6 +4016,23 @@ function blend(record, path) {
   }
   return value;
 }
+function featureControl(record, path, feature, control, owners) {
+  const { name, fallback, min, max } = control;
+  const value = finite2(record[name], `${path}.${name}`, fallback, min, max);
+  if (value !== fallback && !owners.includes(feature)) {
+    const noun = owners.length > 1 ? "features" : "feature";
+    const named = owners.length > 1 ? owners.join(", ") : JSON.stringify(owners[0]);
+    throw new ProceduralTextureError(`${path}.${name} applies only to ${noun} ${named}, not ${JSON.stringify(feature)}. Remove it or change feature.`);
+  }
+  return value;
+}
+function cellularFeature(value, path) {
+  const feature = value ?? "f1";
+  if (!CELLULAR_FEATURES.includes(feature)) {
+    throw new ProceduralTextureError(`${path}.feature ${JSON.stringify(feature)} is not one of ${CELLULAR_FEATURES.join(", ")}.`);
+  }
+  return feature;
+}
 function canonicalLayer(value, index) {
   const path = `proceduralTexture.layers[${index}]`;
   const record = strictRecord(value, path);
@@ -3849,6 +4101,50 @@ function canonicalLayer(value, index) {
         seed: integer(record["seed"], `${path}.seed`, 0, -2147483648, 2147483647),
         ...common
       };
+    case "cellular": {
+      assertKeys(record, [
+        "op",
+        "colorA",
+        "colorB",
+        "cellsX",
+        "cellsY",
+        "seed",
+        "jitterX",
+        "jitterY",
+        "metricX",
+        "metricY",
+        "weight",
+        "feature",
+        "range",
+        "borderOpen",
+        "borderWidth",
+        "facetSlope",
+        "facetBlend",
+        "blend",
+        "opacity"
+      ], path);
+      const feature = cellularFeature(record["feature"], path);
+      return {
+        op,
+        colorA: color(record["colorA"], `${path}.colorA`),
+        colorB: color(record["colorB"], `${path}.colorB`),
+        cellsX: integer(record["cellsX"], `${path}.cellsX`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
+        cellsY: integer(record["cellsY"], `${path}.cellsY`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
+        seed: integer(record["seed"], `${path}.seed`, 0, -2147483648, 2147483647),
+        jitterX: unit(record["jitterX"], `${path}.jitterX`, 1),
+        jitterY: unit(record["jitterY"], `${path}.jitterY`, 1),
+        metricX: finite2(record["metricX"], `${path}.metricX`, 1, MIN_CELLULAR_METRIC, MAX_CELLULAR_METRIC),
+        metricY: finite2(record["metricY"], `${path}.metricY`, 1, MIN_CELLULAR_METRIC, MAX_CELLULAR_METRIC),
+        weight: finite2(record["weight"], `${path}.weight`, 0, 0, MAX_CELLULAR_WEIGHT),
+        feature,
+        range: featureControl(record, path, feature, { name: "range", fallback: 1, min: 0.01, max: 8 }, ["f1", "f2", "f2-f1", "cell"]),
+        borderOpen: featureControl(record, path, feature, { name: "borderOpen", fallback: 0.5, min: 0, max: 1 }, ["border"]),
+        borderWidth: featureControl(record, path, feature, { name: "borderWidth", fallback: 0.05, min: 0.001, max: 1 }, ["border"]),
+        facetSlope: featureControl(record, path, feature, { name: "facetSlope", fallback: 0.5, min: 0, max: 1 }, ["facet"]),
+        facetBlend: featureControl(record, path, feature, { name: "facetBlend", fallback: 0.1, min: 0.001, max: 1 }, ["facet"]),
+        ...common
+      };
+    }
     default:
       throw new ProceduralTextureError(`${path}.op is unsupported.`);
   }
@@ -4058,6 +4354,7 @@ function canonicalizePortableMaterialSpecV2(input) {
 }
 var MAX_PROCEDURAL_SIZE = 1024, MIN_PROCEDURAL_SIZE = 4, MAX_PROCEDURAL_LAYERS = 8, MAX_NOISE_OCTAVES = 6, MAX_PROCEDURAL_NAME_LENGTH = 80, MAX_PROCEDURAL_PATTERN_COUNT = 256, MAX_PORTABLE_MATERIAL_TEXTURES = 5, MAX_PORTABLE_MATERIAL_TEXELS, ProceduralTextureError, OPS, BLENDS, FORBIDDEN_KEYS, SHA256_K, rotateRight = (value, bits) => value >>> bits | value << 32 - bits, MATERIAL_TEXTURE_USAGE;
 var init_procedural_material_v2 = __esm(() => {
+  init_procedural_cellular();
   init_texture_contract();
   init_authoring_diagnostic();
   MAX_PORTABLE_MATERIAL_TEXELS = 4 * 1024 * 1024;
@@ -4067,7 +4364,7 @@ var init_procedural_material_v2 = __esm(() => {
       this.name = "ProceduralTextureError";
     }
   };
-  OPS = ["solid", "checker", "stripes", "gradient", "bricks", "noise"];
+  OPS = ["solid", "checker", "stripes", "gradient", "bricks", "noise", "cellular"];
   BLENDS = ["normal", "multiply", "screen", "overlay"];
   FORBIDDEN_KEYS = new Set(["__proto__", "prototype", "constructor"]);
   SHA256_K = new Uint32Array([
@@ -4380,8 +4677,14 @@ function admitProceduralTextureSpecV3(input) {
       const spec = canonicalizeProceduralTextureSpecV2(legacyRecord);
       if (spec.size !== width || spec.size !== height || spec.usage !== usage)
         fail(`${path} legacy-v2 dimensions and usage must match the V3 surface.`);
-      work += texels * (1 + spec.layers.reduce((cost, layer) => cost + (layer.op === "noise" ? layer.octaves * 16 : 4), 0));
+      work += texels * (1 + spec.layers.reduce((cost, layer) => cost + (layer.op === "noise" ? layer.octaves * 16 : layer.op === "cellular" ? cellularWorkPerTexel(layer) : 4), 0));
       legacyTransientBytes += texels * 4;
+      for (const layer of spec.layers) {
+        if (layer.op !== "cellular")
+          continue;
+        work += cellularFieldWork(layer);
+        legacyTransientBytes += cellularFieldBytes(layer);
+      }
       return {
         op: "legacy-v2",
         spec,
@@ -4487,6 +4790,7 @@ ${canonicalProceduralTextureJsonV3(input)}`)}`;
 }
 var PROCEDURAL_TEXTURE_V3_COMPILER_ID = "kiln.procedural-rgba.v3.1", MAX_PROCEDURAL_V3_EDGE = 1024, MAX_PROCEDURAL_V3_TEXELS = 1048576, MAX_PROCEDURAL_V3_OPERATIONS = 64, MAX_PROCEDURAL_V3_VERTICES = 64, MAX_PROCEDURAL_V3_STAMPS = 256, MAX_PROCEDURAL_V3_PALETTE = 32, MAX_PROCEDURAL_V3_WORK = 64000000, MAX_PROCEDURAL_V3_TRANSIENT_BYTES, forbidden;
 var init_procedural_texture_v3_contract = __esm(() => {
+  init_procedural_cellular();
   init_procedural_material_v2();
   init_texture_contract();
   MAX_PROCEDURAL_V3_TRANSIENT_BYTES = 64 * 1024 * 1024;
@@ -22479,7 +22783,7 @@ function project(u, v, angleDeg) {
   const a = angleDeg * Math.PI / 180;
   return (u - 0.5) * Math.cos(a) + (v - 0.5) * Math.sin(a) + 0.5;
 }
-function evalLayer(layer, u, v) {
+function evalLayer(layer, u, v, field) {
   switch (layer.op) {
     case "solid":
       return rgbOf(layer.color);
@@ -22512,6 +22816,12 @@ function evalLayer(layer, u, v) {
       const b = rgbOf(layer.colorB);
       return [lerp(a[0], b[0], n), lerp(a[1], b[1], n), lerp(a[2], b[2], n)];
     }
+    case "cellular": {
+      const n = sampleCellularFeature(field, u, v);
+      const a = rgbOf(layer.colorA);
+      const b = rgbOf(layer.colorB);
+      return [lerp(a[0], b[0], n), lerp(a[1], b[1], n), lerp(a[2], b[2], n)];
+    }
   }
 }
 function blendChannel(mode, base, top) {
@@ -22537,6 +22847,7 @@ function compileProceduralTextureSpecV2(input) {
   const spec = canonicalizeProceduralTextureSpecV2(input);
   const { size, layers } = spec;
   const data = new Uint8Array(size * size * 4);
+  const fields = layers.map((layer) => layer.op === "cellular" ? prepareCellularField(layer) : undefined);
   for (let y = 0;y < size; y++) {
     const v = (y + 0.5) / size;
     for (let x = 0;x < size; x++) {
@@ -22545,7 +22856,7 @@ function compileProceduralTextureSpecV2(input) {
       let g = 0;
       let b = 0;
       for (const [i, layer] of layers.entries()) {
-        const [lr, lg, lb] = evalLayer(layer, u, v);
+        const [lr, lg, lb] = evalLayer(layer, u, v, fields[i]);
         if (i === 0) {
           r = lr;
           g = lg;
@@ -22576,6 +22887,7 @@ var smoothstep2 = (t) => t * t * (3 - 2 * t), rgbOf = (color) => [
   color & 255
 ], lerp = (a, b, t) => a + (b - a) * t;
 var init_procedural_texture_v2_compiler = __esm(() => {
+  init_procedural_cellular();
   init_procedural_material_v2();
 });
 
@@ -29483,7 +29795,7 @@ const mesh = new THREE.Mesh(unwrapped, bakedPbr);`
       category: "textures",
       description: "Builds a repeat-wrapped deterministic texture without an image file. V2 retains opaque pattern layers. Explicit V3 adds rectangular RGBA, pixel shapes/masks, color palettes and seeded stamps. Repeat wrapping alone does not prove seamless pixels. Baked to PNG and embedded in the GLB automatically.",
       example: "const bark = proceduralTexture({ schemaVersion: 2, size: 256, usage: 'albedo', name: 'Bark', layers: [{ op: 'solid', color: 0x5a4632 }, { op: 'noise', colorA: 0x3d2f21, colorB: 0x7a6248, scale: 6, octaves: 4, blend: 'overlay' }] });",
-      promptNotes: "V2 layer fields by op: solid: { color }; checker: { colorA, colorB, squares? }; stripes: { colorA, colorB, count?, angleDeg? }; gradient: { from, to, angleDeg? }; bricks: { brick, mortar, rows?, cols?, mortarWidth?: 0..1 (fraction of a brick cell, default 0.06), stagger?: 0..1 (row offset fraction, default 0.5) }; noise: { colorA, colorB, scale?, octaves?, seed? }. V2 blend normal|multiply|screen|overlay; opacity 0..1; max 8 layers, counts 1..256, octaves 1..6. V3 operations: paint {shape,rgba,opacity?}; mask {shape,alpha?,invert?}; stamps {shape,rgba,count,seed,area,periodic?,opacity?}; legacy-v2 {spec,alpha?,opacity?} delegates an explicit V2 recipe with matching square dimensions/usage. RGBA is four bytes; V3 opacity/alpha are bytes0..255 default255. Shape kinds: rectangle/ellipse {x,y,width,height}; polygon {points:[[x,y],...]}; line {from:[x,y],to:[x,y],width}. Coordinates are integer pixel edges; centers define binary coverage, round line caps. Mask clears outside; invert keeps outside instead. area {x,y,width,height} sets seeded stamp translation offsets; periodic:true wraps copies explicitly. V3 background defaults transparent black, max64 ops,64 polygon vertices,256 expanded stamps (periodic counts9),32 palette colors,64million estimated work including edges. palette {colors:[RGB integers],dither?:'none'|'bayer4'} and stamps are albedo/emissive only. Zero alpha normalizes RGB to0. Sampler defaults remain repeat/linear/mips; alphaMode belongs to pbrMaterial. Sync; strict JSON rejects unknown/prototype fields and accessors. See docs/procedural-surfaces-v3.md for exact rounding and bounds."
+      promptNotes: "V2 layer fields by op: solid: { color }; checker: { colorA, colorB, squares? }; stripes: { colorA, colorB, count?, angleDeg? }; gradient: { from, to, angleDeg? }; bricks: { brick, mortar, rows?, cols?, mortarWidth?: 0..1 (fraction of a brick cell, default 0.06), stagger?: 0..1 (row offset fraction, default 0.5) }; noise: { colorA, colorB, scale?, octaves?, seed? }; cellular: { colorA, colorB, cellsX?, cellsY?: 1..256 cells per tile, default 8; seed?; jitterX?, jitterY?: 0..1, default 1; metricX?, metricY?: 1..4, default 1, a larger metric thins joints across that axis; weight?: 0..1 additive cell weight drawn from the seed, default 0, curves borders and varies cell size; feature?: 'f1'|'f2'|'f2-f1'|'cell'|'border'|'facet', default f1; range?: 0.01..8 (f1, f2, f2-f1 and cell: the value that reaches colorB, default 1; below 1 on cell it leaves a sparse population of toned cells); borderOpen?: 0..1, default 0.5, borderWidth?: 0.001..1, default 0.05 (border: colorB in the opened joints); facetSlope?: 0..1, default 0.5, facetBlend?: 0.001..1, default 0.1 (facet: a tilted plane per cell, blended across borders, for height) }. A field the chosen feature ignores is an error. Reuse one layout and seed across layers and maps so joints line up. V2 blend normal|multiply|screen|overlay; opacity 0..1; max 8 layers, counts 1..256, octaves 1..6. V3 operations: paint {shape,rgba,opacity?}; mask {shape,alpha?,invert?}; stamps {shape,rgba,count,seed,area,periodic?,opacity?}; legacy-v2 {spec,alpha?,opacity?} delegates an explicit V2 recipe with matching square dimensions/usage. RGBA is four bytes; V3 opacity/alpha are bytes0..255 default255. Shape kinds: rectangle/ellipse {x,y,width,height}; polygon {points:[[x,y],...]}; line {from:[x,y],to:[x,y],width}. Coordinates are integer pixel edges; centers define binary coverage, round line caps. Mask clears outside; invert keeps outside instead. area {x,y,width,height} sets seeded stamp translation offsets; periodic:true wraps copies explicitly. V3 background defaults transparent black, max64 ops,64 polygon vertices,256 expanded stamps (periodic counts9),32 palette colors,64million estimated work including edges. palette {colors:[RGB integers],dither?:'none'|'bayer4'} and stamps are albedo/emissive only. Zero alpha normalizes RGB to0. Sampler defaults remain repeat/linear/mips; alphaMode belongs to pbrMaterial. Sync; strict JSON rejects unknown/prototype fields and accessors. See docs/procedural-surfaces-v3.md for exact rounding and bounds."
     },
     {
       name: "textureAtlas",
@@ -32928,6 +33240,7 @@ var init_material_authoring_schema = __esm(() => {
   init_procedural_material_v2();
   init_procedural_texture_v3_contract();
   init_texture_atlas_contract();
+  init_procedural_cellular();
   init_portable_sampler();
   init_texture_contract();
   canonicalLegacyV2FieldSchema = (() => {
@@ -32976,6 +33289,26 @@ var init_material_authoring_schema = __esm(() => {
           scale: count,
           octaves: z5.number().int().min(1).max(MAX_NOISE_OCTAVES),
           seed: z5.number().int().min(-2147483648).max(2147483647),
+          ...common
+        }).strict(),
+        z5.object({
+          op: z5.literal("cellular"),
+          colorA: color,
+          colorB: color,
+          cellsX: count,
+          cellsY: count,
+          seed: z5.number().int().min(-2147483648).max(2147483647),
+          jitterX: unit,
+          jitterY: unit,
+          metricX: z5.number().min(MIN_CELLULAR_METRIC).max(MAX_CELLULAR_METRIC),
+          metricY: z5.number().min(MIN_CELLULAR_METRIC).max(MAX_CELLULAR_METRIC),
+          weight: z5.number().min(0).max(MAX_CELLULAR_WEIGHT),
+          feature: z5.enum(CELLULAR_FEATURES),
+          range: z5.number().min(0.01).max(8),
+          borderOpen: unit,
+          borderWidth: z5.number().min(0.001).max(1),
+          facetSlope: unit,
+          facetBlend: z5.number().min(0.001).max(1),
           ...common
         }).strict()
       ])).min(1).max(MAX_PROCEDURAL_LAYERS)
@@ -33181,6 +33514,7 @@ var MATERIAL_LIBRARY_LIMITS, MATERIAL_LIBRARY_SLOTS, MATERIAL_LIBRARY_USAGE, slo
 var init_material_library = __esm(() => {
   init_procedural_material_v2();
   init_procedural_texture_v3_contract();
+  init_procedural_cellular();
   init_portable_sampler();
   init_texture_atlas_contract();
   init_material_authoring_schema();
@@ -33325,6 +33659,26 @@ var init_material_library = __esm(() => {
         scale: count4.default(8),
         octaves: z6.number().int().min(1).max(6).default(3),
         seed: z6.number().int().min(-2147483648).max(2147483647).default(0),
+        ...layerCommon
+      }).strict(),
+      z6.object({
+        op: z6.literal("cellular"),
+        colorA: color2,
+        colorB: color2,
+        cellsX: count4.default(8),
+        cellsY: count4.default(8),
+        seed: z6.number().int().min(-2147483648).max(2147483647).default(0),
+        jitterX: z6.number().min(0).max(1).default(1),
+        jitterY: z6.number().min(0).max(1).default(1),
+        metricX: z6.number().min(MIN_CELLULAR_METRIC).max(MAX_CELLULAR_METRIC).default(1),
+        metricY: z6.number().min(MIN_CELLULAR_METRIC).max(MAX_CELLULAR_METRIC).default(1),
+        weight: z6.number().min(0).max(MAX_CELLULAR_WEIGHT).default(0),
+        feature: z6.enum(CELLULAR_FEATURES).default("f1"),
+        range: z6.number().min(0.01).max(8).default(1),
+        borderOpen: z6.number().min(0).max(1).default(0.5),
+        borderWidth: z6.number().min(0.001).max(1).default(0.05),
+        facetSlope: z6.number().min(0).max(1).default(0.5),
+        facetBlend: z6.number().min(0.001).max(1).default(0.1),
         ...layerCommon
       }).strict()
     ])).min(1).max(8)
