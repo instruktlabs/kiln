@@ -182,6 +182,8 @@ describe('repository reliability contracts', () => {
       'Node package \u00b7 macOS x64',
       'render service tests',
       'typecheck \u00b7 lint \u00b7 test',
+      'typecheck \u00b7 lint \u00b7 coverage',
+      'engine tests \u00b7 community exporter',
       'typecheck \u00b7 lint \u00b7 test (Windows)',
     ];
 
