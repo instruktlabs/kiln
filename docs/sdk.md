@@ -230,7 +230,7 @@ or deploy a hosted service. Actual client acceptance is still required.
 tree after successful compilation and module resolution, so removed modules cannot
 linger in a new package.
 
-On a fresh checkout, run `bun run build:sdk` before typechecking or running tests
+On a fresh checkout, run `bun run build:runtime` before typechecking or running tests
 that exercise public package imports. Rebuild after source changes; package tests
 must exercise the generated code that a consumer will receive. Coverage measures
 the source engine and excludes its generated `lib/` copy without changing thresholds.

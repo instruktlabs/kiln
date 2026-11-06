@@ -2,13 +2,12 @@
  * Fails on merge-conflict lines in tracked files. Merge-conflict lines reached
  * CHANGELOG.md on main twice, once in a published release, because no other gate reads
  * Markdown. `=======` alone is left out: it is also a Markdown heading underline.
- * `dist/` is generated, and minified output can start a line with anything.
  */
 import { spawnSync } from 'node:child_process';
 
 const result = spawnSync(
   'git',
-  ['grep', '-nIE', '^(<<<<<<< |\\|\\|\\|\\|\\|\\|\\| |>>>>>>> )', '--', '.', ':(exclude)dist/**'],
+  ['grep', '-nIE', '^(<<<<<<< |\\|\\|\\|\\|\\|\\|\\| |>>>>>>> )', '--', '.'],
   { encoding: 'utf8' },
 );
 

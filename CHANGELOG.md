@@ -7,6 +7,10 @@ does not publish a package.
 
 ## Unreleased
 
+- `dist/` is built, not tracked, so two source pull requests no longer conflict on it. A clone needs
+  `bun run build:runtime` before its bundles, MCP server or tests work, and a pull needs it again;
+  `bun run test` refuses a missing or stale build and names the command. The npm package is unchanged:
+  it already shipped what CI builds. CI listens for `merge_group`, ready for a merge queue on `main`.
 - Project inventory items can state where they stand, and a project can be measured as it is composed
   (#277). `placement` on an inventory item holds optional `translation`, `rotation` (Euler XYZ degrees)
   and `scale`; `{}` means the shared origin, and a missing placement means the item is not composed,

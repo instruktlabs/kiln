@@ -1,5 +1,5 @@
 /**
- * The committed MCP server bundles are the thing every harness actually
+ * The built MCP server bundles are the thing every harness actually
  * launches, and they are generated, so they can go stale without anybody
  * noticing until an install fails on someone else's machine. This file is what
  * stops that.
@@ -17,11 +17,9 @@
  * so bundling for Node removes Bun from the consumer's requirements entirely.
  * Bun stays the development toolchain; it is no longer a thing users must have.
  *
- * A plugin install is a git clone with no build step, which is why the
- * artifacts are committed rather than built on demand. There are two: the thin
- * entry `dist/mcp-server.mjs`, which answers the handshake from a generated
- * manifest, and `dist/mcp-engine.mjs`, which it loads on the first call that
- * needs the engine.
+ * There are two: the thin entry `dist/mcp-server.mjs`, which answers the handshake
+ * from a generated manifest, and `dist/mcp-engine.mjs`, which it loads on the first
+ * call that needs the engine.
  */
 import { spawnSync } from 'node:child_process';
 import { Client } from '@modelcontextprotocol/client';
@@ -49,7 +47,7 @@ const sha256 = (b: Buffer | Uint8Array) => createHash('sha256').update(b).digest
 
 describe('mcp server bundles', () => {
   for (const { file, minBytes } of BUNDLES) {
-    it(`dist/${file} is committed`, async () => {
+    it(`dist/${file} is built`, async () => {
       const bytes = await readFile(join(REPO, 'dist', file));
       expect(bytes.byteLength).toBeGreaterThan(minBytes);
     });
@@ -64,11 +62,11 @@ describe('mcp server bundles', () => {
       const args = ['build', entry, '--target=node', '--packages=external', `--outfile=${out}`];
       const built = spawnSync(process.execPath, args, { cwd: REPO, encoding: 'utf8' });
       expect(built.status, built.stderr).toBe(0);
-      const [fresh, committed] = await Promise.all([
+      const [fresh, existing] = await Promise.all([
         readFile(out),
         readFile(join(REPO, 'dist', file)),
       ]);
-      expect(`dist/${file} ${sha256(committed)}`).toBe(`dist/${file} ${sha256(fresh)}`);
+      expect(`dist/${file} ${sha256(existing)}`).toBe(`dist/${file} ${sha256(fresh)}`);
     });
   }
 
@@ -177,7 +175,7 @@ describe('harness manifests', () => {
    * Root `.mcp.json` is a third case with a different job, asserted separately
    * below. It is not a plugin manifest: Claude Code reads it as project-scoped
    * configuration in a plain `git clone`, where no plugin variable is defined at
-   * all. It once carried `${PLUGIN_ROOT}`, which only Antigravity intends to
+   * all and the server starts once `bun run build:runtime` has run. It once carried `${PLUGIN_ROOT}`, which only Antigravity intends to
    * expand, so a fresh clone opened onto a `kiln` server that could not start --
    * no tools, on first contact, before the reader had done anything wrong.
    */

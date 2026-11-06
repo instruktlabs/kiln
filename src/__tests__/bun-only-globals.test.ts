@@ -60,7 +60,7 @@ async function shippedSources(directory = join(REPO, 'src')): Promise<string[]> 
 }
 
 describe('Bun-only APIs', () => {
-  it('do not appear in any committed runtime bundle', async () => {
+  it('do not appear in any built runtime bundle', async () => {
     const dist = join(REPO, 'dist');
     const bundles = (await readdir(dist)).filter((file) => file.endsWith('.mjs'));
     // A passing assertion over an empty list would be no assertion at all.

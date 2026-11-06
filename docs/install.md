@@ -262,6 +262,11 @@ bun run build:runtime
 node scripts/create-workspace.mjs ../my-assets --harness opencode
 ```
 
+`dist/` is built, not tracked, so a clone has no runtime until that build runs, and a
+pull leaves the previous build in place. After pulling, run `bun run build:runtime`
+again, then rerun setup with `--check` and `--upgrade` for any workspace that runs
+from this checkout.
+
 `--filter=blob:none` checks out the current tree in full and leaves historical
 file contents on the server, so the clone transfers less and finishes sooner.
 Git fetches an old file version on demand the first time something asks for one,

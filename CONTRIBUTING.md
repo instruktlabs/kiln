@@ -18,7 +18,7 @@ Read [AGENTS.md](AGENTS.md) and the [README](README.md). Contributor checks use 
 bun install --frozen-lockfile
 bun run check:toolchain
 bun run check:skills
-bun run build:sdk
+bun run build:runtime
 node scripts/example-archive.mjs --fetch
 bun run typecheck
 bun run lint
@@ -82,7 +82,7 @@ the explicitly experimental exceptions.
 
 Bumping it means rebuilding: `runtimeBuildIdentity` hashes the version into each
 entry's `identity` in `dist/build.json`, which is the value a build receipt cites. Run
-`bun run build:runtime` and commit `dist/`. A test asserts the two agree -- nothing else
+`bun run build:runtime`; `dist/` is not tracked, and CI builds its own. A test asserts the two agree -- nothing else
 does, because the version is read from `package.json` at runtime rather than inlined, so
 the bundle bytes are identical either way and a byte comparison cannot see the drift.
 
@@ -91,7 +91,8 @@ and run the relevant checks. Keep the coverage thresholds. Ordinary tests use CP
 rendering and make no model calls. Live provider tests are optional and can spend
 credits; they are not required for a documentation or platform contribution.
 
-Rebuild the runtime bundles after changing the CLI, MCP server or evaluator:
+`dist/` is built, not tracked. Rebuild it on a fresh clone, after a pull and after changing
+the CLI, MCP server or evaluator; `bun run test` refuses a missing or stale build:
 
 ```sh
 bun run build:runtime
