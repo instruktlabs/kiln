@@ -60,6 +60,7 @@ describe('generated MCP manifest', () => {
     expect(manifest.resourceTemplates).toEqual([
       KILN_RESOURCE_TEMPLATES.assetFile,
       KILN_RESOURCE_TEMPLATES.projectPackage,
+      KILN_RESOURCE_TEMPLATES.programBuild,
     ]);
   });
 });

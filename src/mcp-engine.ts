@@ -34,6 +34,7 @@ import { localProgramStore } from './program-store-node';
 import { validateRequirementsBinding } from './requirements-context';
 import { describeInputError, schemaFields } from './tools/actions';
 import {
+  buildProgramGlb,
   createKilnProgramToolRegistry,
   createKilnOperationToolRegistry,
   type KilnToolContext,
@@ -236,6 +237,25 @@ export function createKilnToolHost(
           file === 'editable.zip' ? 'editable' : 'runtime',
         );
         return { uri, mimeType: 'application/zip', blob: Buffer.from(bytes).toString('base64') };
+      }
+      if (uri.startsWith('kiln://programs/')) {
+        const [program, sha256, file, ...extra] = new URL(uri).pathname
+          .split('/')
+          .filter(Boolean)
+          .map(decodeURIComponent);
+        if (extra.length || !program || !sha256 || file !== 'asset.glb')
+          throw new Error('Invalid program build URI');
+        const rendered = await buildProgramGlb(program, requestContext);
+        // Rebuilt on read, so this host's policy or engine can have moved since the export.
+        if (rendered.artifactGlbSha256 !== `sha256:${sha256}`)
+          throw new Error(
+            `${program} no longer builds to ${sha256} on this host. Call kiln_export with this programRef again for the current bytes.`,
+          );
+        return {
+          uri,
+          mimeType: 'model/gltf-binary',
+          blob: Buffer.from(rendered.glb).toString('base64'),
+        };
       }
       throw new Error(`Resource not found: ${uri}`);
     },

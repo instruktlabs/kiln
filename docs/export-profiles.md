@@ -122,6 +122,10 @@ Runtime results do not reuse configured canonical download URLs: those would del
 the wrong GLB. Client support for saving MCP resources varies. No binary data is put
 into tool text. To write files, configure an export root (below) or use the local CLI.
 
+### Bytes before a save: `programRef`
+
+`kiln_export` also takes a `programRef` in place of `assetId` and `revisionId`. It builds the program, saves nothing, and returns a `kiln://programs/{program}/{sha256}/asset.glb` resource with the size, hash, triangle count and draw diagnostics. A destination whose audit reads geometry can run before the save this way, so a repair lands before the revision exists rather than as its child. The bytes are the ones `kiln_save` then persists. The build runs again on read, and a program this host now builds to different bytes is refused rather than served under the old hash; export again for the current ones. The `runtime` profile needs a saved revision. The CLI's `kiln render REF --out x.glb` reaches the same bytes.
+
 ### Writing files: `kiln_export_to`
 
 When the host sets `KILN_EXPORT_ROOT` on the MCP server, it also advertises

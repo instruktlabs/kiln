@@ -82,6 +82,8 @@ export function resourceTemplatesFor(context: KilnToolContext): KilnMcpManifestT
   return [
     ...(context.assetLibrary ? [KILN_RESOURCE_TEMPLATES.assetFile] : []),
     ...(context.projectBundleReader ? [KILN_RESOURCE_TEMPLATES.projectPackage] : []),
+    // kiln_export issues these, and it comes with the library whether or not a program is saved.
+    ...(context.assetLibrary ? [KILN_RESOURCE_TEMPLATES.programBuild] : []),
   ];
 }
 

@@ -1443,7 +1443,7 @@ Present one exact saved revision. Supporting MCP App clients show an interactive
 
 ## kiln_export
 
-Export one saved revision. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.
+Export one saved revision, or the GLB a programRef builds. With programRef, nothing is saved: it returns a resource for the bytes kiln_save would persist, so a destination audit can read them before a save. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -1467,6 +1467,11 @@ Export one saved revision. Default editable returns exact GLB, source, preview, 
       "type": "string",
       "pattern": "^[a-z][a-z0-9_-]{0,79}$"
     },
+    "programRef": {
+      "description": "A program to build instead of a saved revision; assetId and revisionId stay unset.",
+      "type": "string",
+      "pattern": "^(?:sha256:[a-f0-9]{64}|p_[a-f0-9]{12}(?:[a-f0-9]{4}){0,13})(?![\\s\\S])"
+    },
     "profile": {
       "default": "editable",
       "description": "editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.",
@@ -1476,11 +1481,7 @@ Export one saved revision. Default editable returns exact GLB, source, preview, 
         "runtime"
       ]
     }
-  },
-  "required": [
-    "assetId",
-    "revisionId"
-  ]
+  }
 }
 ```
 
