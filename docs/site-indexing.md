@@ -103,3 +103,30 @@ sits under a retired directory, that each target directory has files (in a packs
 build; the reduced `KILN_SITE_PACKS=0` build has no scene packs), and that no target
 is itself redirected. Asset JSON and GLB 404s and the retired `play.` hosts
 are left alone.
+
+## Raw data files — November 5, 2026
+
+Search Console showed Google crawling raw files as documents, for example
+`/asset-demos/**/manifest.json`, `/asset-demos/**/*.kiln-metadata.json` and
+`/scene-packs/**/THIRD-PARTY-NOTICES.txt`. `_headers` now sends `X-Robots-Tag: noindex`
+on `.json`, `.txt`, `.md` and `SHA256SUMS` under `/asset-demos/` and `/scene-packs/`, and on the
+same kind of file elsewhere: `/assets/*.json`, `/scene-runtime/*.json`, `/sources/*.md`, `/fonts/*.txt`,
+licence and lock files beside the raw data, and the root build receipts.
+The header does not stop a fetch: scenes and agents load these files as before. `/llms.txt`
+is deliberately left indexable so agents and AI tools can find it. `robots.txt` stays allow-all, because a crawler cannot see a noindex on a
+blocked URL. `validate-static` fails a build where a raw sample loses the header, where a
+rule reaches a built `.html` file, a sitemap URL, `llms.txt`, the media a page shows or
+`.well-known`, or where `robots.txt` blocks a raw file. GLBs, images and the `scene-source`
+code files are unchanged. To check production after a deploy:
+
+```sh
+curl -sI https://kilnstudio.tools/scene-packs/golden-gate/g9-code6/SHA256SUMS | grep -i x-robots   # noindex
+curl -sI https://kilnstudio.tools/assets/abyssal-surveyor.poster.json | grep -i x-robots           # noindex
+curl -sI https://kilnstudio.tools/llms.txt | grep -i x-robots                                      # nothing
+curl -sI https://kilnstudio.tools/ | grep -i x-robots                                              # nothing
+curl -s https://kilnstudio.tools/ | grep -c 'cdn-cgi/l/email-protection'                           # 0
+```
+
+The footer's Contact link sits inside `<!--email_off-->`, because Cloudflare's Email Address
+Obfuscation is on for this zone outside `/docs/`. It would otherwise rewrite the link to a
+`/cdn-cgi/` URL that answers 404 to crawlers and to visitors without JavaScript.
