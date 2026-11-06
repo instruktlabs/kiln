@@ -152,4 +152,9 @@ test('Cove authoring words reach welding, crease, packed-roughness and V3 shape 
   expect(await first('roughness map')).toBe('operation:pbrMaterial');
   expect(await first('packed roughness metalness texture')).toBe('operation:pbrMaterial');
   expect(await first('V3 texture ellipse polygon shape')).toBe('operation:proceduralTexture');
+  // #312: the op is `cellular`, and authors search for it by these names.
+  for (const name of ['voronoi', 'worley', 'cellular noise'])
+    expect(['operation:proceduralTexture', 'recipe:cellular-stone-v1']).toContain(
+      (await first(name)) ?? '',
+    );
 });

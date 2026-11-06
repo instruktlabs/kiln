@@ -7,6 +7,19 @@ does not publish a package.
 
 ## Unreleased
 
+- Procedural materials have a periodic cellular (Worley/Voronoi) layer (#312). `op: 'cellular'` is a
+  V2 layer, so it also reaches V3 through `legacy-v2`: integer `cellsX`/`cellsY` per tile, a seed,
+  per-axis `jitterX`/`jitterY` and `metricX`/`metricY`, and optional additive `weight`. Its `feature`
+  maps onto `colorA`→`colorB`: `f1`, `f2`, `f2-f1`, a flat `cell` tone, `border` (joints opened by an
+  order-independent hash of the two cell ids, with `borderOpen` and `borderWidth`) and `facet` (a
+  tilted plane per cell, blended without a step, for height). The search is exact for every seed, by a
+  stated bound that tests hold against an unbounded search. Golden pixel hashes pin each feature,
+  because a V2 recipe hash has no compiler id. In V3 it is charged measured work, about 50 units per
+  texel, instead of the flat 4: one default layer fits at 1024, and a `facet` or a stack is refused
+  there and fits at 512. Existing recipes keep their hashes and compiler ids.
+  `kiln discover --query voronoi` and `--query worley` find it, with `recipe:cellular-stone-v1` as a
+  worked example. [Cellular layers](docs/rendering.md#cellular-layers) has the fields and the bound.
+
 - A build over the evaluator's output budget now says which budget it reached (#317). The error
   names the stage (`glb` or `response`), the limit, the size and, for a GLB, the triangle count,
   and says what to try next; it was `Evaluator output limit exceeded.` alone. The fixed wire

@@ -1,5 +1,10 @@
 /** Legacy V1/V2 pixel compiler. Extraction preserves arithmetic and recipe identity. */
 import {
+  type CellularField,
+  prepareCellularField,
+  sampleCellularFeature,
+} from './procedural-cellular';
+import {
   type CanonicalProceduralLayerV2,
   type CanonicalProceduralTextureSpecV2,
   type ProceduralBlend,
@@ -93,6 +98,7 @@ function evalLayer(
   layer: CanonicalProceduralLayerV2,
   u: number,
   v: number,
+  field: CellularField | undefined,
 ): [number, number, number] {
   switch (layer.op) {
     case 'solid':
@@ -132,6 +138,13 @@ function evalLayer(
 
     case 'noise': {
       const n = fbm(u, v, layer.scale, layer.octaves, layer.seed);
+      const a = rgbOf(layer.colorA);
+      const b = rgbOf(layer.colorB);
+      return [lerp(a[0], b[0], n), lerp(a[1], b[1], n), lerp(a[2], b[2], n)];
+    }
+
+    case 'cellular': {
+      const n = sampleCellularFeature(field!, u, v);
       const a = rgbOf(layer.colorA);
       const b = rgbOf(layer.colorB);
       return [lerp(a[0], b[0], n), lerp(a[1], b[1], n), lerp(a[2], b[2], n)];
@@ -196,6 +209,9 @@ export function compileProceduralTextureSpecV2(input: unknown): CompiledProcedur
   const spec = canonicalizeProceduralTextureSpecV2(input);
   const { size, layers } = spec;
   const data = new Uint8Array(size * size * 4);
+  const fields = layers.map((layer) =>
+    layer.op === 'cellular' ? prepareCellularField(layer) : undefined,
+  );
   for (let y = 0; y < size; y++) {
     // Sample at texel centers so a pattern with N divisions lands on exact
     // boundaries instead of drifting half a texel.
@@ -206,7 +222,7 @@ export function compileProceduralTextureSpecV2(input: unknown): CompiledProcedur
       let g = 0;
       let b = 0;
       for (const [i, layer] of layers.entries()) {
-        const [lr, lg, lb] = evalLayer(layer, u, v);
+        const [lr, lg, lb] = evalLayer(layer, u, v, fields[i]);
         if (i === 0) {
           r = lr;
           g = lg;

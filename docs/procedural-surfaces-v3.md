@@ -147,6 +147,37 @@ transient pixel buffers stay below 64MiB. The compiler creates one RGBA output;
 legacy layers temporarily create matching RGBA outputs and palette metadata is
 bounded. These limits do not raise legacy or portable-material budgets.
 
+A [cellular](rendering.md#cellular-layers) layer through `legacy-v2` is charged per texel, on the
+scale where one noise octave costs 16:
+
+```
+46 + ceil(windowCells / 8) + (weight > 0 ? 10 : 0)
+   + (border ? 8 : 0) + (facet ? 32 + ceil(facetBlend * 30) : 0)
+```
+
+where `windowCells` is `(2·Rx + 1)(2·Ry + 1)` for the exact search radius, plus 12 units per cell
+for its table and 48 bytes per cell plus 4 KiB of transient allocation. This is fitted to the real
+compile path against noise, as CPU time under Node and Bun on a loaded 8-core machine, where one
+unit is about 9 to 14 ns and repeat runs vary by about 15%. The search prunes, so it reads about 6
+to 11 cells a texel whatever the window, and the window adds little:
+
+| Layer | Window | Measured units | Charged |
+| --- | --- | --- | --- |
+| No jitter | 9 | 35 to 45 | 48 |
+| Default `f1`, `f2-f1`, `cell` | 25 | 44 to 62 | 50 |
+| Default `border` | 25 | 48 to 51 | 58 |
+| Beds: `metricY: 3`, `jitterY: 0.3`, `weight: 0.3` | 21 | 41 to 43 | 59 |
+| `weight: 0.5` to `1` | 49 | 55 to 64 | 63 |
+| `metricY: 4` | 55 | 51 | 53 |
+| `metricY: 4`, `weight: 1` | 65 | 57 to 77 | 65 |
+| Default `facet` | 25 | 79 to 98 | 85 |
+| `facet`, `facetBlend: 1` | 49 | 116 to 130 | 115 |
+| `facet`, `metricY: 4`, `weight: 1`, `facetBlend: 1` | 75 | 110 to 121 | 128 |
+
+At 1024 square the budget leaves 59 units per texel after the output and the legacy result, so one
+default, `border` or bedded layer fits. Any `weight` at full jitter, any `facet` or a stack is refused
+there and fits at 512, which leaves 242. A V2 recipe compiled directly has no work budget.
+
 The compiler ID is `kiln.procedural-rgba.v3.1`. V3 recipe hashes are SHA-256 of
 `compilerId + '\n' + canonicalJson`; property order and omitted defaults produce
 the same canonical result. A changed pixel algorithm requires a new compiler ID.
