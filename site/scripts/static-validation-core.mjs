@@ -382,6 +382,17 @@ export function headersFor(rules, pathname, host = new URL(ORIGIN).host) {
   return Object.fromEntries(headers);
 }
 
+/** Raw files that must stay out of the index on the production host (site/public/_headers), one of each kind. */
+export const RAW_NOINDEX_SAMPLES = [
+  '/llms.txt',
+  '/asset-demos/cabin-woods-psx-horror/metadata/rock/manifest.json',
+  '/asset-demos/cabin-woods-psx-horror/models/rock.kiln-metadata.json',
+  '/scene-packs/golden-gate/g9-code6/THIRD-PARTY-NOTICES.txt',
+  '/scene-packs/golden-gate/g9-code6/licenses/FEDERAL-DATA.txt',
+  '/scene-packs/golden-gate/g9-code6/pack.json',
+  '/scene-packs/golden-gate/g9-code6/SHA256SUMS',
+];
+
 /** A script element's content hash as a CSP source expression. */
 export const scriptHashSource = (text) => `'sha256-${createHash('sha256').update(text, 'utf8').digest('base64')}'`;
 
@@ -397,7 +408,7 @@ const ASTRO_TRANSFORMED_IMAGE = /^_astro\/[^/]+\.[A-Za-z0-9_-]{8}_[A-Za-z0-9]{1,
  * carry. HTML revalidates on every visit; only files with a content hash in their name are cached as immutable, and
  * every file under `/_astro/` is.
  */
-export function headersErrors({ text, inlineScripts = [], files = [], sealedFiles = [] }) {
+export function headersErrors({ text, inlineScripts = [], files = [], sealedFiles = [], sitemapPaths = [] }) {
   const errors = [];
   const sealed = new Set(sealedFiles);
   let rules;
@@ -414,6 +425,11 @@ export function headersErrors({ text, inlineScripts = [], files = [], sealedFile
   if (!policy) errors.push('Pages carry no Content-Security-Policy-Report-Only');
   // The Pages project also answers on its pages.dev hosts with the same bytes; only the production host is indexed.
   if (/noindex/i.test(page['x-robots-tag'] ?? '')) errors.push(`The production host ${new URL(ORIGIN).host} must not be served X-Robots-Tag: noindex`);
+  // Raw data is noindexed by header; a rule that reached a page or a sitemap URL would drop it from search.
+  const noindexed = (path) => /noindex/i.test(headersFor(rules, path)['x-robots-tag'] ?? '');
+  for (const path of RAW_NOINDEX_SAMPLES) if (!noindexed(path)) errors.push(`${path} must be served X-Robots-Tag: noindex`);
+  for (const file of files) if (/\.html$/.test(file) && noindexed(`/${file}`)) errors.push(`The page /${file} must not be served X-Robots-Tag: noindex`);
+  for (const path of sitemapPaths) if (noindexed(path)) errors.push(`The sitemap URL ${path} must not be served X-Robots-Tag: noindex`);
   for (const host of PAGES_DEV_HOSTS) {
     for (const path of ['/', '/docs/', '/robots.txt']) {
       if (!/noindex/i.test(headersFor(rules, path, host)['x-robots-tag'] ?? '')) errors.push(`https://${host}${path} must be served X-Robots-Tag: noindex`);

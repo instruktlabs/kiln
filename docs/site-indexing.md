@@ -103,3 +103,15 @@ sits under a retired directory, that each target directory has files (in a packs
 build; the reduced `KILN_SITE_PACKS=0` build has no scene packs), and that no target
 is itself redirected. Asset JSON and GLB 404s and the retired `play.` hosts
 are left alone.
+
+## Raw data files — November 5, 2026
+
+Search Console showed Google crawling raw files as documents, for example
+`/asset-demos/**/manifest.json`, `/asset-demos/**/*.kiln-metadata.json` and
+`/scene-packs/**/THIRD-PARTY-NOTICES.txt`. `_headers` now sends `X-Robots-Tag: noindex`
+on `.json`, `.txt`, `.md` and `SHA256SUMS` under `/asset-demos/` and `/scene-packs/`,
+and on `/llms.txt`. The header does not stop a fetch: scenes and agents load these files
+as before. `robots.txt` stays allow-all, because a crawler cannot see a noindex on a
+blocked URL. `validate-static` fails a build where a raw sample loses the header or
+where a rule reaches a built `.html` file or a sitemap URL. GLBs, images and the
+`scene-source` code files are unchanged.

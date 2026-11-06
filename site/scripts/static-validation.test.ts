@@ -385,12 +385,27 @@ https://kilnstudio.pages.dev/*
 
 https://:version.kilnstudio.pages.dev/*
   X-Robots-Tag: noindex
+
+/asset-demos/*.json
+  X-Robots-Tag: noindex
+
+/scene-packs/*.json
+  X-Robots-Tag: noindex
+
+/scene-packs/*.txt
+  X-Robots-Tag: noindex
+
+/scene-packs/*/SHA256SUMS
+  X-Robots-Tag: noindex
+
+/llms.txt
+  X-Robots-Tag: noindex
 ${extra}`;
   const good = file(`default-src 'self'; script-src 'self' ${scriptHashSource(script)}`);
 
   test('rules apply in order, "!" removes what an earlier rule set, placeholders match one segment', () => {
     const rules = parseHeaderRules(good);
-    expect(rules.map((rule) => `${rule.host ?? ''}${rule.path}`)).toEqual(['/*', '/_astro/*', '/scene-runtime/:scene/*.js', 'kilnstudio.pages.dev/*', ':version.kilnstudio.pages.dev/*']);
+    expect(rules.map((rule) => `${rule.host ?? ''}${rule.path}`)).toEqual(['/*', '/_astro/*', '/scene-runtime/:scene/*.js', 'kilnstudio.pages.dev/*', ':version.kilnstudio.pages.dev/*', '/asset-demos/*.json', '/scene-packs/*.json', '/scene-packs/*.txt', '/scene-packs/*/SHA256SUMS', '/llms.txt']);
     expect(headersFor(rules, '/')['cache-control']).toBe('public, max-age=0, must-revalidate');
     expect(headersFor(rules, '/_astro/viewer.GoKKfp1n.js')['cache-control']).toBe('public, max-age=31536000, immutable');
     expect(headersFor(rules, '/scene-runtime/golden-gate/index-CA13LcNQ.js')['cache-control']).toBe('public, max-age=31536000, immutable');
@@ -448,6 +463,28 @@ ${extra}`;
     expect(headersErrors({ text: open, inlineScripts: [script] })).toEqual(['/', '/docs/', '/robots.txt'].map((path) => `https://kilnstudio.pages.dev${path} must be served X-Robots-Tag: noindex`));
     const everywhere = `${good}\n/*\n  X-Robots-Tag: noindex\n`;
     expect(headersErrors({ text: everywhere, inlineScripts: [script] })).toEqual(['The production host kilnstudio.tools must not be served X-Robots-Tag: noindex']);
+  });
+
+  test('raw data is noindexed by header on production, never a page, a sitemap URL or a robots.txt block', () => {
+    const published = readFileSync(new URL('../public/_headers', import.meta.url), 'utf8');
+    const rules = parseHeaderRules(published);
+    const robots = (path: string) => headersFor(rules, path)['x-robots-tag'];
+    for (const path of ['/llms.txt', '/asset-demos/a/metadata/rock/manifest.json', '/asset-demos/a/b/c/rock.kiln-metadata.json', '/asset-demos/a/THIRD-PARTY-NOTICES.txt', '/scene-packs/a/b/THIRD-PARTY-NOTICES.txt', '/scene-packs/a/b/licenses/vehicles/suv.ASSET-LICENSE.txt', '/scene-packs/a/b/data/layout.json', '/scene-packs/a/b/SHA256SUMS']) {
+      expect(robots(path)).toBe('noindex');
+    }
+    for (const path of ['/', '/docs/', '/docs/install/', '/gallery/', '/gallery/some-asset/', '/packs/farm/', '/scenes/farm/', '/robots.txt', '/sitemap.xml', '/asset-demos/a/web/game.html', '/asset-demos/a/scene-source/index.html', '/asset-demos/a/models/rock.glb', '/scene-packs/troy/t/web/', '/scene-packs/troy/t/web/qualification/a.html', '/scene-packs/a/b/models/x.glb', '/scene-runtime/a/runtime.json']) {
+      expect(robots(path)).toBeUndefined();
+    }
+    expect(headersErrors({ text: published.replace(/sha256-[^']+/g, 'x') }).filter((error) => /X-Robots-Tag/.test(error))).toEqual([]);
+  });
+
+  test('a raw data rule that is missing, or reaches a page or a sitemap URL, is reported', () => {
+    expect(headersErrors({ text: good.replace('/llms.txt\n  X-Robots-Tag: noindex\n', ''), inlineScripts: [script] })).toEqual(['/llms.txt must be served X-Robots-Tag: noindex']);
+    const wide = `${good}\n/asset-demos/*\n  X-Robots-Tag: noindex\n`;
+    expect(headersErrors({ text: wide, inlineScripts: [script], files: ['asset-demos/a/web/game.html', 'asset-demos/a/models/rock.glb'], sitemapPaths: ['/asset-demos/a/', '/docs/'] }).filter((error) => /must not/.test(error))).toEqual([
+      'The page /asset-demos/a/web/game.html must not be served X-Robots-Tag: noindex',
+      'The sitemap URL /asset-demos/a/ must not be served X-Robots-Tag: noindex',
+    ]);
   });
 
   test('inline scripts are found in pages; JSON-LD data blocks are not scripts to a CSP', () => {
