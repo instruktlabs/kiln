@@ -215,7 +215,7 @@ not establish acceptable motion, distant cutouts, or atlas gutter behavior.
 Read `shape:material-draft` and `shape:material-import` with Discovery for the
 complete runtime-validated fields. Sources keep explicit creator and license
 records. The JSON authoring surface accepts no file paths, URLs to fetch, or
-raw image bytes. Existing external image records enter through verified import.
+raw image bytes. Existing external or generated image records enter through verified import.
 
 A normal-slot map with a V3 recipe of `usage: 'normal'` may add
 `derive: {"kind":"normal-from-height","strength":4}`. The compiled pixels are

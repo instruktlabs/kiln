@@ -26,6 +26,14 @@ does not publish a package.
   their revision ids. A record that carries it is refused by an engine older than this one, whose
   manifest schema is strict.
 
+- Materials accept a `generated` source for maps from a local deterministic program (#311). It
+  needs no `assetUrl`, which is what forced an invented URL before, and requires a `generator`
+  record: the program's name, version and sha256, its toolkit hashes, the seed when it takes one,
+  and runtime versions. Kiln verifies the shape and the stored bytes, and does not run the
+  generator or prove the bytes came from it. `external` still requires an HTTP(S) URL and existing
+  records keep their revision ids. A record with this source is refused by an engine older than
+  this one.
+
 - `kiln_export` takes a `programRef`, so a destination audit can read the built GLB before a save
   instead of after one (#309). It returns a `kiln://programs/{program}/{sha256}/asset.glb` resource
   with the size, hash, triangle count and draw diagnostics, and writes nothing. The bytes are the
@@ -34,6 +42,7 @@ does not publish a package.
   bytes. The `runtime` profile still needs a saved revision. This changes `kiln_export`'s input
   schema: `assetId` and `revisionId` are now optional in the advertised shape and checked when the
   tool runs. `kiln_present` and `kiln_export_to` are unchanged.
+||||||| 0468a19
 ||||||| 8e08b9c
 ||||||| cde4dfe
 

@@ -32832,9 +32832,11 @@ function validateMaterialManifest(value) {
         throw new Error("Height derivation requires a normal map slot");
       if (canonicalMaterialJson(map.procedural.spec) !== canonicalMaterialJson(canonicalizeProceduralTextureSpecV2(map.procedural.spec)))
         throw new Error("Stored procedural material recipe must be canonical");
+      if (source.kind === "generated")
+        throw new Error("A recipe map cannot use a generated source; use a procedural source");
       if (source.kind !== "procedural" || map.originalFile || map.procedural.spec.usage !== map.usage || map.procedural.spec.size !== map.width || map.width !== map.height)
         throw new Error("Procedural material source or map convention mismatch");
-    } else if (source.kind !== "external" || !source.originalFiles.some((file) => file.name === map.originalFile)) {
+    } else if (source.kind === "procedural" || !source.originalFiles.some((file) => file.name === map.originalFile)) {
       throw new Error("Material map must reference an original source file");
     }
     bytes += map.bytes;
@@ -32906,6 +32908,8 @@ function validateMaterialManifestAny(value) {
       throw Error("Material map source/usage/convention mismatch");
     const recipe = map.recipe;
     if (recipe) {
+      if (source.kind === "generated")
+        throw Error("A recipe map cannot use a generated source; use a procedural source");
       if (source.kind !== "procedural" || map.originalFile)
         throw Error("Procedural/atlas map source convention mismatch");
       if (recipe.kind === "procedural") {
@@ -32927,8 +32931,8 @@ function validateMaterialManifestAny(value) {
             pins.set(`${pin.resourceId}/${pin.revisionId}`, pin);
           }
       }
-    } else if (source.kind !== "external" || !source.originalFiles.some((f) => f.name === map.originalFile))
-      throw Error("External material source original file missing");
+    } else if (source.kind === "procedural" || !source.originalFiles.some((f) => f.name === map.originalFile))
+      throw Error(`${source.kind === "generated" ? "Generated" : "External"} material source original file missing`);
     bytes += map.bytes;
     pixels += map.width * map.height;
   }
@@ -32958,7 +32962,7 @@ function validateMaterialRecordShapeAny(record) {
   }
   return manifest;
 }
-var MATERIAL_LIBRARY_LIMITS, MATERIAL_LIBRARY_SLOTS, MATERIAL_LIBRARY_USAGE, slotNames, materialLibraryIdSchema, materialLibraryHashSchema, text4, url, materialSourceSchema, materialTransformSchema, color2, count4, layerCommon, materialProceduralSpecSchema, materialNormalDerivationSchema, proceduralSchema, parametersSchema, materialManifestSchema, proceduralMaterialDraftSchema, materialLibraryPayloadSchema, authoringSchemas, afterShape, reason = (error) => error instanceof Error ? error.message : String(error), samplerSchema, v3SpecSchema, atlasSpecSchema, atlasManifestSchema, materialMapPinSchema, materialRecipeV2Schema, materialManifestV2Schema, materialManifestAnySchema, materialLibraryPayloadV2Schema, materialLibraryPayloadAnySchema, proceduralMaterialDraftV2Schema, proceduralMaterialDraftAnySchema;
+var MATERIAL_LIBRARY_LIMITS, MATERIAL_LIBRARY_SLOTS, MATERIAL_LIBRARY_USAGE, slotNames, materialLibraryIdSchema, materialLibraryHashSchema, text4, url, materialGeneratorSchema, materialSourceSchema, materialTransformSchema, color2, count4, layerCommon, materialProceduralSpecSchema, materialNormalDerivationSchema, proceduralSchema, parametersSchema, materialManifestSchema, proceduralMaterialDraftSchema, materialLibraryPayloadSchema, authoringSchemas, afterShape, reason = (error) => error instanceof Error ? error.message : String(error), samplerSchema, v3SpecSchema, atlasSpecSchema, atlasManifestSchema, materialMapPinSchema, materialRecipeV2Schema, materialManifestV2Schema, materialManifestAnySchema, materialLibraryPayloadV2Schema, materialLibraryPayloadAnySchema, proceduralMaterialDraftV2Schema, proceduralMaterialDraftAnySchema;
 var init_material_library = __esm(() => {
   init_procedural_material_v2();
   init_procedural_texture_v3_contract();
@@ -33000,15 +33004,22 @@ var init_material_library = __esm(() => {
   materialLibraryHashSchema = z6.string().regex(/^sha256:[a-f0-9]{64}$/);
   text4 = z6.string().min(1).max(1000);
   url = z6.string().max(2000).url().refine((value) => /^https?:\/\//.test(value), "Provenance URL must be HTTP(S)");
+  materialGeneratorSchema = z6.object({
+    program: z6.object({ name: text4, version: text4, sha256: materialLibraryHashSchema }).strict(),
+    toolkit: z6.array(z6.object({ name: text4, sha256: materialLibraryHashSchema }).strict()).max(32),
+    seed: z6.number().int().optional(),
+    runtimes: z6.array(z6.object({ name: text4, version: text4 }).strict()).min(1).max(32)
+  }).strict();
   materialSourceSchema = z6.object({
     id: materialLibraryIdSchema,
-    kind: z6.enum(["external", "procedural"]),
+    kind: z6.enum(["external", "procedural", "generated"]),
     provider: text4,
     creator: text4,
     assetId: text4.optional(),
     assetUrl: url.optional(),
     accessedAt: z6.string().datetime().optional(),
     license: z6.object({ spdx: text4, url, attribution: z6.string().max(4000) }).strict(),
+    generator: materialGeneratorSchema.optional(),
     originalFiles: z6.array(z6.object({
       name: z6.string().min(1).max(200),
       sha256: materialLibraryHashSchema,
@@ -33019,6 +33030,16 @@ var init_material_library = __esm(() => {
       context.addIssue({
         code: "custom",
         message: "External materials require a source URL and original file hashes"
+      });
+    if (source.kind === "generated" && (!source.generator || !source.originalFiles.length))
+      context.addIssue({
+        code: "custom",
+        message: "Generated materials require a generator record and original file hashes"
+      });
+    if (source.kind !== "generated" && source.generator)
+      context.addIssue({
+        code: "custom",
+        message: "Only a generated material source carries a generator record"
       });
     if (new Set(source.originalFiles.map((file) => file.name)).size !== source.originalFiles.length)
       context.addIssue({ code: "custom", message: "Duplicate original filename" });
