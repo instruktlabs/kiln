@@ -178,7 +178,7 @@ test('unprunable work remains incomplete with distance bounds, never a fabricate
   expect(batch.status).toBe('partial');
   expect(batch.results[0]!.measurement).toEqual(result);
   expect(() => measureSurfacePairs(pair(a, b), [])).toThrow('1..12');
-});
+}, 60_000); // Exhaustive CPU measurement: 2.0 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 test('unsupported deformation and invalid or excessive geometry fail visibly before reporting a minimum', () => {
   const box = () => new Mesh(new BoxGeometry(1, 1, 1));
