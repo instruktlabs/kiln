@@ -89,13 +89,20 @@ Do not invent a universal performance cap. State the destination, tested conditi
 Kiln's own structural checks — the floating-parts warning and the part-connectivity
 observation — read the bounding boxes of drawn meshes with a 2 cm adjacency
 tolerance. They report a part or subassembly detached from the body; they are not a
-fit audit. Two consequences bound what a clean pass means. A separation under the
-tolerance reads as contact, so a part standing a millimetre or two off its host is
-not reported. And one mesh is one box, so primitives merged into a single mesh —
-what per-material welding for draw-call reduction produces — are not compared with
-each other at any separation. Where millimetre contact is a requirement, measure it
-in the destination against the exported file, and run that audit before saving the
+fit audit. A mesh holding several welded components is compared once per component,
+so a primitive merged into another is seen, but the same limits bound what a clean
+pass means. A separation under the tolerance reads as contact, so a part standing a
+millimetre or two off its host is not reported. Boxes are not surfaces: components
+of a diagonal or wrapped shape can read as touching when they are not. And foliage
+and decal names, instanced and skinned meshes, LOD alternates and meshes over the
+split budget stay one box. Where millimetre contact is a requirement, measure it in
+the destination against the exported file, and run that audit before saving the
 revision rather than after.
+
+A welded finding can also reveal more than the mesh it names. A merged mesh spread
+across an asset used to be one large box that touched everything near it, so splitting
+one can report other parts as detached for the first time. That is the box no longer
+bridging them, not a change in the geometry.
 
 For an enterable building or gate, test the intended actor through the exported
 opening with collision enabled. Include thresholds, plinths, lintels, trim and

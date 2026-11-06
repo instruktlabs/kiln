@@ -20,6 +20,18 @@ does not publish a package.
   assets get no report and no warning. A draft is not measured until it is saved. The key is omitted when
   absent, so existing project revisions keep their ids; a record that states one is refused by an engine
   older than this one, whose project schema is strict. The `kiln_project` schema gains the action.
+- The floating-parts warning and `GEO_PART_CONNECTIVITY` now see primitives merged into one mesh
+  (#304). One mesh was one bounding box, so a welded component was never compared with the rest at
+  any distance. Each mesh is now split into its connected components, through triangles and shared
+  positions, and each gets its own box; the 2 cm floor is unchanged. Many loose components of one
+  mesh collapse to one finding that locates the nearest one and what it sits nearest to. Instanced
+  and skinned meshes, LOD alternates and foliage or decal names stay whole, as does a mesh over
+  262,144 vertices or 256 components, which a finding names. Over the 86 historical examples this
+  moves connectivity findings from 18 in 8 assets to 43 in 9, beside part-volume's 3,575 in 86 and
+  open-surface's 916 in 50. All 25 new ones are in `demo-dauntless-cv-08`, whose per-material meshes
+  had bridged unrelated parts: its deck markings were one box across the whole deck. A split can
+  therefore report parts that no welded mesh contains. `partsAnalyzed` now counts components, and
+  connectivity groups gain a `node` field.
 
 - A build over the evaluator's output budget now says which budget it reached (#317). The error
   names the stage (`glb` or `response`), the limit, the size and, for a GLB, the triangle count,

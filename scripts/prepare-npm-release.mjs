@@ -12,6 +12,8 @@ export const RELEASE_REPOSITORY = 'instruktlabs/kiln';
 export const RELEASE_REPOSITORY_ID = 1278326592;
 export const RELEASE_JOBS = [
   'typecheck · lint · test',
+  'typecheck · lint · coverage',
+  'engine tests · community exporter',
   'typecheck · lint · test (Windows)',
   'render service tests',
   'build portable Node package',
