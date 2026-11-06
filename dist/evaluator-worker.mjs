@@ -8287,7 +8287,7 @@ function inside(root, point, budget) {
   }
   return null;
 }
-function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CONTACT_TOLERANCE) {
+function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CONTACT_TOLERANCE, options = {}) {
   const evidence = {
     schemaVersion: 1,
     source: "engine-scene-analysis",
@@ -8310,11 +8310,15 @@ function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CON
   const closed = parts.filter((part) => part.closed);
   evidence.openParts = open.length;
   evidence.closedParts = closed.length;
+  if (options.comparable)
+    evidence.openPartNames = open.map((part) => part.name);
   const candidates = [];
   let considered = 0;
   broadPhase:
     for (const surface of open) {
       for (const solid of closed) {
+        if (options.comparable && !options.comparable(surface.mesh, solid.mesh))
+          continue;
         if (considered++ === MAX_BROAD_PHASE_PAIRS) {
           evidence.broadPhaseTruncated = true;
           break broadPhase;
@@ -8853,7 +8857,7 @@ function meshToArrays(part) {
       [tris[i + 1], tris[i + 2]] = [tris[i + 2], tris[i + 1]];
   return { vertProperties: verts, triVerts: tris };
 }
-async function analyzePartPenetration(root) {
+async function analyzePartPenetration(root, options = {}) {
   const skipped = [];
   const parts = collectParts4(root, skipped);
   const base = {
@@ -8876,12 +8880,14 @@ async function analyzePartPenetration(root) {
   broadPhase:
     for (let i = 0;i < parts.length; i++) {
       for (let j = i + 1;j < parts.length; j++) {
+        const a = parts[i];
+        const b = parts[j];
+        if (options.comparable && !options.comparable(a.mesh, b.mesh))
+          continue;
         if (considered++ === MAX_BROAD_PHASE_PAIRS2) {
           base.broadPhaseTruncated = true;
           break broadPhase;
         }
-        const a = parts[i];
-        const b = parts[j];
         if (!a.box.intersectsBox(b.box))
           continue;
         if (a.lod && b.lod && a.lod.parent === b.lod.parent && a.lod.stem === b.lod.stem && a.lod.level !== b.lod.level) {
