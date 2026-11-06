@@ -1967,7 +1967,7 @@ var mcp_manifest_default = {
     },
     {
       name: "kiln_export",
-      description: "Export one saved revision, or the GLB a programRef builds. With programRef, nothing is saved: it returns a resource for the bytes kiln_save would persist, so a destination audit can read them before a save. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.",
+      description: "Export one saved revision. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.",
       inputSchema: {
         type: "object",
         properties: {
@@ -1985,11 +1985,6 @@ var mcp_manifest_default = {
             type: "string",
             pattern: "^[a-z][a-z0-9_-]{0,79}$"
           },
-          programRef: {
-            description: "A program to build instead of a saved revision; assetId and revisionId stay unset.",
-            type: "string",
-            pattern: "^(?:sha256:[a-f0-9]{64}|p_[a-f0-9]{12}(?:[a-f0-9]{4}){0,13})(?![\\s\\S])"
-          },
           profile: {
             default: "editable",
             description: "editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.",
@@ -1999,7 +1994,11 @@ var mcp_manifest_default = {
               "runtime"
             ]
           }
-        }
+        },
+        required: [
+          "assetId",
+          "revisionId"
+        ]
       },
       annotations: {
         readOnlyHint: true,
@@ -2139,11 +2138,6 @@ var mcp_manifest_default = {
       name: "project-package",
       uriTemplate: "kiln://projects/{project}/{revision}/{profile}",
       description: "Exact editable project bundle or runtime derivative ZIP."
-    },
-    {
-      name: "program-build",
-      uriTemplate: "kiln://programs/{program}/{sha256}/asset.glb",
-      description: "The GLB a program builds, from kiln_export with a programRef; nothing is saved."
     }
   ]
 };
