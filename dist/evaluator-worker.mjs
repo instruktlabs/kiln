@@ -33119,6 +33119,7 @@ var init_material_library = __esm(() => {
     schemaVersion: z6.literal(1),
     materialId: materialLibraryIdSchema,
     revisionId: materialLibraryHashSchema,
+    parentRevision: materialLibraryHashSchema.optional(),
     name: z6.string().min(1).max(200),
     tags: z6.array(z6.string().min(1).max(80)).max(30),
     tileable: z6.boolean(),
@@ -33153,6 +33154,7 @@ var init_material_library = __esm(() => {
   }).strict();
   proceduralMaterialDraftSchema = z6.object({
     materialId: materialLibraryIdSchema,
+    parentRevision: materialLibraryHashSchema.optional().describe("The saved revision of this materialId that this one replaces."),
     name: z6.string().min(1).max(200),
     tags: z6.array(z6.string().min(1).max(80)).max(30).optional(),
     tileable: z6.boolean(),

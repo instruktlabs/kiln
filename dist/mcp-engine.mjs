@@ -2110,6 +2110,7 @@ var init_material_library = __esm(() => {
     schemaVersion: z2.literal(1),
     materialId: materialLibraryIdSchema,
     revisionId: materialLibraryHashSchema,
+    parentRevision: materialLibraryHashSchema.optional(),
     name: z2.string().min(1).max(200),
     tags: z2.array(z2.string().min(1).max(80)).max(30),
     tileable: z2.boolean(),
@@ -2144,6 +2145,7 @@ var init_material_library = __esm(() => {
   }).strict();
   proceduralMaterialDraftSchema = z2.object({
     materialId: materialLibraryIdSchema,
+    parentRevision: materialLibraryHashSchema.optional().describe("The saved revision of this materialId that this one replaces."),
     name: z2.string().min(1).max(200),
     tags: z2.array(z2.string().min(1).max(80)).max(30).optional(),
     tileable: z2.boolean(),
@@ -5950,6 +5952,7 @@ async function createMaterialRecordV1(draft) {
   assertMaterialJson(draft, true);
   exactKeys(draft, [
     "materialId",
+    "parentRevision",
     "name",
     "tags",
     "tileable",
@@ -6035,6 +6038,7 @@ async function createMaterialRecordV1(draft) {
     schemaVersion: 1,
     materialId: draft.materialId,
     revisionId: `sha256:${"0".repeat(64)}`,
+    ...draft.parentRevision ? { parentRevision: draft.parentRevision } : {},
     name: draft.name,
     tags: draft.tags ?? [],
     tileable: draft.tileable,
@@ -6676,6 +6680,7 @@ async function createMaterialRecordV2(draft, options) {
   exactKeys(draft, [
     "schemaVersion",
     "materialId",
+    "parentRevision",
     "name",
     "tags",
     "tileable",
@@ -51905,18 +51910,33 @@ import { z as z20 } from "zod";
 init_material_library();
 init_material_library_node();
 init_texture_atlas_contract();
+async function assertMaterialParent(draft, library) {
+  if (!draft.parentRevision)
+    return;
+  try {
+    if (library.readManifest)
+      await library.readManifest(draft.materialId, draft.parentRevision);
+    else
+      await library.read(draft.materialId, draft.parentRevision);
+  } catch (error) {
+    if (error.code !== "ENOENT")
+      throw error;
+    throw new Error(`parentRevision ${draft.parentRevision} is not a saved revision of material ${draft.materialId}. A parent must be an existing revision of the same materialId; list materials to see their revision IDs.`);
+  }
+}
 async function createProceduralMaterialRecord(value, library) {
   assertMaterialJson(value);
   if (new TextEncoder().encode(JSON.stringify(value)).length > MATERIAL_LIBRARY_LIMITS.maxManifestBytes)
     throw new Error("Material draft exceeds size limit");
   if (!value || typeof value !== "object" || Array.isArray(value))
     throw new Error("Material draft must be a JSON object");
-  if (!Object.hasOwn(value, "schemaVersion"))
-    return {
-      record: await createMaterialRecordV1(proceduralMaterialDraftSchema.parse(value)),
-      dependencies: []
-    };
+  if (!Object.hasOwn(value, "schemaVersion")) {
+    const draft = proceduralMaterialDraftSchema.parse(value);
+    await assertMaterialParent(draft, library);
+    return { record: await createMaterialRecordV1(draft), dependencies: [] };
+  }
   const draft = proceduralMaterialDraftV2Schema.parse(value);
+  await assertMaterialParent(draft, library);
   const pins = new Map;
   for (const map of draft.maps) {
     if (!map.atlas)
@@ -52533,6 +52553,7 @@ function createKilnMaterialDef(library, presentation = "grouped") {
             materials: records.filter((item) => !input.tag || item.tags.includes(input.tag)).map((item) => ({
               materialId: item.materialId,
               revisionId: item.revisionId,
+              ...item.parentRevision ? { parentRevision: item.parentRevision } : {},
               name: item.name,
               tags: item.tags,
               tileable: item.tileable,

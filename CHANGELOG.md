@@ -7,6 +7,12 @@ does not publish a package.
 
 ## Unreleased
 
+- Material revisions can record their parent (#310). `parentRevision` on a V1 or V2 draft, or
+  `kiln material procedural --parent <sha256:revision>`, must name a saved revision of the same
+  `materialId`; `get`, `list` and the `kiln.material-maps.v1` sidecar report it, and it survives
+  export and import. It is optional, and the key is omitted when absent, so existing records keep
+  their revision ids. A record that carries it is refused by an engine older than this one, whose
+  manifest schema is strict.
 
 ## 1.6.0 (2026-10-27)
 

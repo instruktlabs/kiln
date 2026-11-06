@@ -69,6 +69,14 @@ to MCP `create-procedural`. These paths need no imports from internal `dist/` fi
 or extra TypeScript loader. The public host APIs below are for a configured TypeScript
 toolchain; ordinary Node cannot directly execute TypeScript inside `node_modules`.
 
+A new revision of an existing material can name the revision it replaces: `parentRevision` in the
+draft, or `material procedural --file draft.json --parent sha256:...`. It must be a saved revision of
+the same `materialId`. The field is optional, and the revision hash covers it when it is present, so
+a record without it keeps its id and the same draft with and without a parent are two revisions.
+`get`, `list` and the `material export --maps` sidecar report it. It survives export and import, and
+import does not require the parent to be in the receiving library. Revisions have no other order, so
+this is the only statement that one supersedes another.
+
 `list` returns compact summaries and accepts a `tag`. `get` requires `materialId` and `revisionId`
 and returns provenance plus a code-ready `portableSpec`. `create-procedural` accepts an editable
 draft using the same bounded layer recipes as the existing procedural compiler. Opt-in

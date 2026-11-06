@@ -81,6 +81,7 @@ export interface MaterialMapExportSidecarV1 {
   material: {
     materialId: string;
     revisionId: string;
+    parentRevision?: string;
     name: string;
     tileable: boolean;
     physicalSizeMeters?: { width: number; height: number };
@@ -535,6 +536,7 @@ export async function createMaterialMapExport(
     material: {
       materialId: id,
       revisionId: manifest.revisionId,
+      ...(manifest.parentRevision ? { parentRevision: manifest.parentRevision } : {}),
       name: manifest.name,
       tileable: manifest.tileable,
       ...(manifest.physicalSizeMeters

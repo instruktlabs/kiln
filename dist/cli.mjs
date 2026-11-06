@@ -17596,6 +17596,7 @@ var init_material_library = __esm(() => {
     schemaVersion: z5.literal(1),
     materialId: materialLibraryIdSchema,
     revisionId: materialLibraryHashSchema,
+    parentRevision: materialLibraryHashSchema.optional(),
     name: z5.string().min(1).max(200),
     tags: z5.array(z5.string().min(1).max(80)).max(30),
     tileable: z5.boolean(),
@@ -17630,6 +17631,7 @@ var init_material_library = __esm(() => {
   }).strict();
   proceduralMaterialDraftSchema = z5.object({
     materialId: materialLibraryIdSchema,
+    parentRevision: materialLibraryHashSchema.optional().describe("The saved revision of this materialId that this one replaces."),
     name: z5.string().min(1).max(200),
     tags: z5.array(z5.string().min(1).max(80)).max(30).optional(),
     tileable: z5.boolean(),
@@ -41007,6 +41009,7 @@ async function createMaterialMapExport(record, options) {
     material: {
       materialId: id,
       revisionId: manifest.revisionId,
+      ...manifest.parentRevision ? { parentRevision: manifest.parentRevision } : {},
       name: manifest.name,
       tileable: manifest.tileable,
       ...manifest.physicalSizeMeters ? { physicalSizeMeters: { ...manifest.physicalSizeMeters } } : {},
@@ -41126,6 +41129,7 @@ async function createMaterialRecordV1(draft) {
   assertMaterialJson(draft, true);
   exactKeys(draft, [
     "materialId",
+    "parentRevision",
     "name",
     "tags",
     "tileable",
@@ -41211,6 +41215,7 @@ async function createMaterialRecordV1(draft) {
     schemaVersion: 1,
     materialId: draft.materialId,
     revisionId: `sha256:${"0".repeat(64)}`,
+    ...draft.parentRevision ? { parentRevision: draft.parentRevision } : {},
     name: draft.name,
     tags: draft.tags ?? [],
     tileable: draft.tileable,
@@ -41852,6 +41857,7 @@ async function createMaterialRecordV2(draft, options) {
   exactKeys(draft, [
     "schemaVersion",
     "materialId",
+    "parentRevision",
     "name",
     "tags",
     "tileable",
@@ -51587,18 +51593,33 @@ async function listAssetCatalog(library) {
 }
 
 // src/material-authoring-node.ts
+async function assertMaterialParent(draft, library) {
+  if (!draft.parentRevision)
+    return;
+  try {
+    if (library.readManifest)
+      await library.readManifest(draft.materialId, draft.parentRevision);
+    else
+      await library.read(draft.materialId, draft.parentRevision);
+  } catch (error) {
+    if (error.code !== "ENOENT")
+      throw error;
+    throw new Error(`parentRevision ${draft.parentRevision} is not a saved revision of material ${draft.materialId}. A parent must be an existing revision of the same materialId; list materials to see their revision IDs.`);
+  }
+}
 async function createProceduralMaterialRecord(value, library) {
   assertMaterialJson(value);
   if (new TextEncoder().encode(JSON.stringify(value)).length > MATERIAL_LIBRARY_LIMITS.maxManifestBytes)
     throw new Error("Material draft exceeds size limit");
   if (!value || typeof value !== "object" || Array.isArray(value))
     throw new Error("Material draft must be a JSON object");
-  if (!Object.hasOwn(value, "schemaVersion"))
-    return {
-      record: await createMaterialRecordV1(proceduralMaterialDraftSchema.parse(value)),
-      dependencies: []
-    };
+  if (!Object.hasOwn(value, "schemaVersion")) {
+    const draft = proceduralMaterialDraftSchema.parse(value);
+    await assertMaterialParent(draft, library);
+    return { record: await createMaterialRecordV1(draft), dependencies: [] };
+  }
   const draft = proceduralMaterialDraftV2Schema.parse(value);
+  await assertMaterialParent(draft, library);
   const pins = new Map;
   for (const map of draft.maps) {
     if (!map.atlas)
@@ -52161,6 +52182,7 @@ function createKilnMaterialDef(library, presentation = "grouped") {
             materials: records.filter((item) => !input.tag || item.tags.includes(input.tag)).map((item) => ({
               materialId: item.materialId,
               revisionId: item.revisionId,
+              ...item.parentRevision ? { parentRevision: item.parentRevision } : {},
               name: item.name,
               tags: item.tags,
               tileable: item.tileable,
@@ -57735,6 +57757,14 @@ async function inputFile(path, limit) {
 async function jsonFile(path, limit) {
   return JSON.parse((await inputFile(path, limit)).toString("utf8").replace(/^\uFEFF/, ""));
 }
+function withParentFlag(draft, parent) {
+  if (!parent || !draft || typeof draft !== "object" || Array.isArray(draft))
+    return draft;
+  const stated = draft.parentRevision;
+  if (stated !== undefined && stated !== parent)
+    throw new Error(`--parent ${parent} disagrees with the draft's parentRevision ${String(stated)}`);
+  return { ...draft, parentRevision: parent };
+}
 async function exportMaterialMapsCommand(materials, positional, flags) {
   const integer = (name) => {
     const value = flags[name];
@@ -57813,7 +57843,7 @@ async function projectMain(argv) {
     "material:presets": ["tag"],
     "material:create-preset": ["file"],
     "material:get": [],
-    "material:procedural": ["file"],
+    "material:procedural": ["file", "parent"],
     "material:import": ["file"],
     "material:export": ["out", "maps", "size", "repeat", "tiles", "render"]
   };
@@ -57943,7 +57973,7 @@ async function projectMain(argv) {
       throw new Error(`material ${action} requires --file`);
     const input = await jsonFile(flags.file, action === "procedural" ? MATERIAL_LIBRARY_LIMITS.maxManifestBytes : 24 * 1024 * 1024);
     if (action === "procedural") {
-      const { record, dependencies } = await createProceduralMaterialRecord(input, materials);
+      const { record, dependencies } = await createProceduralMaterialRecord(withParentFlag(input, flags.parent), materials);
       output = {
         materials: await materials.import([record], dependencies.length ? { materials: dependencies } : undefined)
       };
@@ -57968,7 +57998,7 @@ MATERIALS
   kiln material create-preset --file <preset-options.json>
   kiln material list
   kiln material get <id> <sha256:revision>
-  kiln material procedural --file <procedural-material-draft.json>
+  kiln material procedural --file <procedural-material-draft.json> [--parent <sha256:revision>]
   kiln material import --file <portable-material-payload.json>
   kiln material export <id> <sha256:revision> --out <portable-material-payload.json>
   kiln material export <id> <sha256:revision> --maps <dir> --size <px> [--repeat <metres>]
