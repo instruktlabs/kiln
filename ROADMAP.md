@@ -132,7 +132,7 @@ Projects remain optional for standalone authoring.
 | Large `kiln_present` metadata | Existing bounded behavior retained; resource-fetch redesign deferred |
 | SEP-2640 / `skill://` resources | Deferred by decision; engine ledger sections 7.12 and 14.1 |
 | Three.js/types/WebGPU | Exact compatible pins 0.186.1 / 0.186.0 / 0.6.2 on main |
-| Maintainer Node/Bun/npm | 22.23.3 / 1.4.2 / 12.2.0; consumer Node support is a separate contract |
+| Maintainer Node/Bun/npm | 22.23.4 / 1.4.2 / 12.2.0; consumer Node support is a separate contract |
 | TypeScript | Root/scenes 7.0.2; site and compiler-API alias 6.0.3 intentionally |
 | AI SDK/provider/OpenRouter/OpenAI majors | Held by Strands peer compatibility; compatible updates are implemented |
 

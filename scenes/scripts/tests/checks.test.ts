@@ -18,8 +18,8 @@ function fixture(): PinSnapshot {
     site: { dependencies: peers, devDependencies: { '@types/react': '^19.3.0', '@types/react-dom': '^19.3.0', '@types/three': '0.186.0', typescript: '6.0.3' } },
     engine: { dependencies: { three: '0.186.1' } },
     renderService: { dependencies: { three: '0.186.1' } },
-    toolchain: { bun: '1.4.2', node: '22.23.3', npm: '12.2.0' },
-    siteToolchain: { bun: '1.4.2', node: '22.23.3', npm: '12.2.0' },
+    toolchain: { bun: '1.4.2', node: '22.23.4', npm: '12.2.0' },
+    siteToolchain: { bun: '1.4.2', node: '22.23.4', npm: '12.2.0' },
     siteViteVersions: ['8.3.2'],
     installedThree: [{ path: 'node_modules/three', version: '0.186.1' }],
   };

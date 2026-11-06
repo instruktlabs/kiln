@@ -95,7 +95,7 @@ test('the staged copy of this repository passes, so every rule below can fail', 
   try {
     const { status, out } = run(root);
     expect(status, out).toBe(0);
-    expect(out.trim()).toBe('Toolchain metadata: Bun 1.4.2, Node 22.23.3, npm 12.2.0');
+    expect(out.trim()).toBe('Toolchain metadata: Bun 1.4.2, Node 22.23.4, npm 12.2.0');
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -126,7 +126,7 @@ test('a stale consumer floor is named independently of maintainer pins', async (
     'package.json',
     (text) => {
       const pkg = JSON.parse(text);
-      pkg.engines.node = '22.23.3';
+      pkg.engines.node = '22.23.4';
       return JSON.stringify(pkg);
     },
     'engines.node must match the runtime compatibility contract',

@@ -7,6 +7,10 @@ does not publish a package.
 
 ## Unreleased
 
+- The maintainer toolchain moves to Node 22.23.4, a security release, retaining Bun 1.4.2, npm 12.2.0 and
+  consumer Node compatibility. The site takes `astro` 7.4.7 and `@astrojs/react` 7.1.4, which require it,
+  and declares `@emnapi/runtime` 1.11.3: `@astrojs/astro2tsx` needs that runtime without declaring it, and
+  `rolldown`'s WASM binding otherwise hoists a 2.0 beta in its place, which stops `astro check` from loading.
 - `dist/` is built, not tracked, so two source pull requests no longer conflict on it. A clone needs
   `bun run build:runtime` before its bundles, MCP server or tests work, and a pull needs it again;
   `bun run test` refuses a missing or stale build and names the command. The npm package is unchanged:
