@@ -39,7 +39,7 @@ const names = (
   .sort();
 
 /**
- * Reaches every line the whole corpus reaches, in 29% of its time, measured on 5 November
+ * Reaches every line the whole corpus reaches, in 29% of its execution time, measured on 5 November
  * 2026 by running each example alone. Lines are not inputs, so the full corpus still runs
  * once per CI run: in the Linux coverage pass, and in any plain local run. The Windows leg
  * and the community exporter pass repeat the suite, so they execute only this subset. The
