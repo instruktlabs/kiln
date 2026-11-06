@@ -61,7 +61,7 @@ it('executes a Node CLI symlink once and stays inert when imported', async () =>
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
-}, 20000);
+}, 60_000); // Compiled-CLI runs: 1.5 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 it('holds the process open until a command settles, instead of exiting 0 in silence', async () => {
   // A CLI entry that awaits `main()` and then sets `process.exitCode` assumes the

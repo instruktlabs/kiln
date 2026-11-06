@@ -80,7 +80,7 @@ describe('contract rule 10: durable program handles', () => {
     expect(source.result!['isError'], text(source)).not.toBe(true);
     expect(text(source)).toContain('createRoot');
     await second.close();
-  });
+  }, 60_000); // Two MCP server starts: 1.1 s in CI, past its old budget at load 20+ on 5 November 2026.
 
   it('an unknown handle is a result that names the next call and no local path', async () => {
     const server = await start();
@@ -100,7 +100,7 @@ describe('contract rule 10: durable program handles', () => {
       expect(body).not.toContain(REPO_ROOT);
     }
     await server.close();
-  });
+  }, 60_000); // MCP server starts: 0.6 s in CI, past its old budget at load 20+ on 5 November 2026.
 
   it('every tool that issues a handle says how long it is kept', () => {
     for (const name of HANDLE_ISSUERS) {

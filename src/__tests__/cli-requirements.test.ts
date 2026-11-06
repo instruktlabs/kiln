@@ -92,4 +92,4 @@ test('actual CLI saves and restores a host-bound source without dropping require
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
-}, 20000);
+}, 60_000); // Compiled-CLI runs: 2.7 s in CI, past its old budget at load 20+ on 5 November 2026.
