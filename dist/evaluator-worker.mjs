@@ -33822,6 +33822,13 @@ var init_material_library_node = __esm(() => {
 function evaluatorOutcomeMessage(code) {
   return EVALUATOR_OUTCOME_MESSAGES[code];
 }
+function evaluatorOutputLimitAdvice(limit) {
+  if (!limit)
+    return "";
+  const size = `${limit.atLeast ? "at least " : ""}${limit.observedBytes} bytes`;
+  const reached = limit.stage === "glb" ? `The built GLB is ${size}${limit.triangles === undefined ? "" : ` (${limit.triangles} triangles)`}` : `The evaluator response, which carries the GLB as base64 with its review data, is ${size}`;
+  return ` ${reached}; this host allows at most ${limit.limitBytes} bytes, and nothing was exported.` + " Lower the vertex count or attribute data, reuse one geometry across parts so its copies" + " share the bytes, or split the asset into parts exported separately. A local host can raise" + ` the GLB limit to ${MAX_EVALUATOR_GLB_BYTES} with KILN_EVALUATOR_MAX_GLB_BYTES.` + " kiln_discover with capabilities:true reports the limits in force.";
+}
 function isRecord4(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -33898,7 +33905,7 @@ function decodeEvaluatorRequestV2(json) {
     if (Buffer.byteLength(JSON.stringify({ ...value, options: metadataOptions }), "utf8") > 1024 * 1024)
       return fail10("request");
   }
-  if (!isRecord4(value) || !hasExactKeys(value, ["version", "requestId", "operation", "code", "options", "limits"]) || value.version !== EVALUATOR_REQUEST_VERSION || !validRequestId(value.requestId) || value.operation !== "execute-export-glb" || typeof value.code !== "string" || Buffer.byteLength(value.code, "utf8") > MAX_EVALUATOR_CODE_BYTES || !isRecord4(value.limits) || !hasExactKeys(value.limits, ["maxGlbBytes"]) || !validInteger(value.limits.maxGlbBytes, 1, 64 * 1024 * 1024)) {
+  if (!isRecord4(value) || !hasExactKeys(value, ["version", "requestId", "operation", "code", "options", "limits"]) || value.version !== EVALUATOR_REQUEST_VERSION || !validRequestId(value.requestId) || value.operation !== "execute-export-glb" || typeof value.code !== "string" || Buffer.byteLength(value.code, "utf8") > MAX_EVALUATOR_CODE_BYTES || !isRecord4(value.limits) || !hasExactKeys(value.limits, ["maxGlbBytes"]) || !validInteger(value.limits.maxGlbBytes, 1, MAX_EVALUATOR_GLB_BYTES)) {
     return fail10("request");
   }
   return {
@@ -33928,7 +33935,7 @@ function encodeRenderResultV2(requestId, render) {
     }
   };
 }
-var EVALUATOR_REQUEST_VERSION = "kiln.evaluator.request.v2", EVALUATOR_RESULT_VERSION = "kiln.evaluator.result.v2", MAX_EVALUATOR_CODE_BYTES, MAX_EVALUATOR_REQUEST_BYTES, DEFAULT_EVALUATOR_DEADLINE_MS = 60000, DEFAULT_EVALUATOR_MAX_GLB_BYTES, DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES, EVALUATOR_OUTCOME_MESSAGES, EvaluatorPortError;
+var EVALUATOR_REQUEST_VERSION = "kiln.evaluator.request.v2", EVALUATOR_RESULT_VERSION = "kiln.evaluator.result.v2", MAX_EVALUATOR_CODE_BYTES, MAX_EVALUATOR_REQUEST_BYTES, DEFAULT_EVALUATOR_DEADLINE_MS = 60000, DEFAULT_EVALUATOR_MAX_GLB_BYTES, DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES, MAX_EVALUATOR_GLB_BYTES, MAX_EVALUATOR_RESPONSE_BYTES, EVALUATOR_OUTCOME_MESSAGES, EvaluatorPortError;
 var init_protocol = __esm(() => {
   init_authoring_diagnostic();
   init_requirements_context();
@@ -33941,6 +33948,8 @@ var init_protocol = __esm(() => {
   MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
+  MAX_EVALUATOR_GLB_BYTES = 64 * 1024 * 1024;
+  MAX_EVALUATOR_RESPONSE_BYTES = 96 * 1024 * 1024;
   EVALUATOR_OUTCOME_MESSAGES = {
     INPUT_INVALID: "Evaluator request was invalid. Use kiln.evaluator.request.v2 and update the host and worker together. Retired category/intent options require explicit requirements migration; see docs/migration.md.",
     EXECUTION_REJECTED: "Generated asset execution was rejected.",
@@ -33956,11 +33965,13 @@ var init_protocol = __esm(() => {
     code;
     diagnostic;
     solid;
-    constructor(code, message = evaluatorOutcomeMessage(code), diagnostic, solid) {
-      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}` : code === "EXECUTION_REJECTED" ? `${message} ${EXECUTION_REJECTED_ADVICE}` : message);
+    limit;
+    constructor(code, message = evaluatorOutcomeMessage(code), diagnostic, solid, limit) {
+      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}` : code === "EXECUTION_REJECTED" ? `${message} ${EXECUTION_REJECTED_ADVICE}` : `${message}${evaluatorOutputLimitAdvice(limit)}`);
       this.code = code;
       this.diagnostic = diagnostic;
       this.solid = solid;
+      this.limit = limit;
       this.name = "EvaluatorPortError";
     }
   };
@@ -35949,7 +35960,7 @@ var init_render = __esm(() => {
 });
 
 // src/evaluator/handler.ts
-function failure(requestId, code, diagnostic, qa, solid) {
+function failure(requestId, code, diagnostic, qa, solid, limit) {
   return {
     version: EVALUATOR_RESULT_VERSION,
     requestId,
@@ -35959,13 +35970,14 @@ function failure(requestId, code, diagnostic, qa, solid) {
       message: evaluatorOutcomeMessage(code),
       ...qa ? { qa } : {},
       ...diagnostic ? { diagnostic } : {},
-      ...solid ? { solid } : {}
+      ...solid ? { solid } : {},
+      ...limit ? { limit } : {}
     }
   };
 }
 function boundedMaxResponseBytes(value) {
   const resolved = value ?? DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES;
-  if (!Number.isInteger(resolved) || resolved < 1 || resolved > 96 * 1024 * 1024) {
+  if (!Number.isInteger(resolved) || resolved < 1 || resolved > MAX_EVALUATOR_RESPONSE_BYTES) {
     throw new EvaluatorPortError("INPUT_INVALID");
   }
   return resolved;
@@ -35996,7 +36008,12 @@ async function evaluateEvaluatorRequestV2(requestJson, dependencies = {}, contro
       })
     ]);
     if (render.glb.byteLength > request.limits.maxGlbBytes) {
-      wire = failure(request.requestId, "OUTPUT_LIMIT_EXCEEDED");
+      wire = failure(request.requestId, "OUTPUT_LIMIT_EXCEEDED", undefined, undefined, undefined, {
+        stage: "glb",
+        limitBytes: request.limits.maxGlbBytes,
+        observedBytes: render.glb.byteLength,
+        triangles: render.tris
+      });
     } else {
       wire = encodeRenderResultV2(request.requestId, render);
     }
@@ -36016,8 +36033,17 @@ async function evaluateEvaluatorRequestV2(requestJson, dependencies = {}, contro
     clearTimeout(timer);
   }
   const json = JSON.stringify(wire);
-  if (Buffer.byteLength(json, "utf8") > maxResponseBytes) {
-    throw new EvaluatorPortError("OUTPUT_LIMIT_EXCEEDED");
+  const responseBytes = Buffer.byteLength(json, "utf8");
+  if (responseBytes > maxResponseBytes) {
+    const limit = {
+      stage: "response",
+      limitBytes: maxResponseBytes,
+      observedBytes: responseBytes
+    };
+    const limited = JSON.stringify(failure(request.requestId, "OUTPUT_LIMIT_EXCEEDED", undefined, undefined, undefined, limit));
+    if (Buffer.byteLength(limited, "utf8") <= maxResponseBytes)
+      return limited;
+    throw new EvaluatorPortError("OUTPUT_LIMIT_EXCEEDED", undefined, undefined, undefined, limit);
   }
   return json;
 }
@@ -36046,9 +36072,7 @@ async function readBoundedInput() {
   return Buffer.concat(chunks).toString("utf8");
 }
 try {
-  writeFileSync(3, await evaluateEvaluatorRequestV2(await readBoundedInput()), {
-    encoding: "utf8"
-  });
+  writeFileSync(3, await evaluateEvaluatorRequestV2(await readBoundedInput(), {}, { maxResponseBytes: MAX_EVALUATOR_RESPONSE_BYTES }), { encoding: "utf8" });
 } catch {
   writeFileSync(3, await evaluateEvaluatorRequestV2(""), { encoding: "utf8" });
 }

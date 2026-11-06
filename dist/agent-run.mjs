@@ -40050,6 +40050,13 @@ var init_render = __esm(() => {
 function evaluatorOutcomeMessage(code) {
   return EVALUATOR_OUTCOME_MESSAGES[code];
 }
+function evaluatorOutputLimitAdvice(limit) {
+  if (!limit)
+    return "";
+  const size = `${limit.atLeast ? "at least " : ""}${limit.observedBytes} bytes`;
+  const reached = limit.stage === "glb" ? `The built GLB is ${size}${limit.triangles === undefined ? "" : ` (${limit.triangles} triangles)`}` : `The evaluator response, which carries the GLB as base64 with its review data, is ${size}`;
+  return ` ${reached}; this host allows at most ${limit.limitBytes} bytes, and nothing was exported.` + " Lower the vertex count or attribute data, reuse one geometry across parts so its copies" + " share the bytes, or split the asset into parts exported separately. A local host can raise" + ` the GLB limit to ${MAX_EVALUATOR_GLB_BYTES} with KILN_EVALUATOR_MAX_GLB_BYTES.` + " kiln_discover with capabilities:true reports the limits in force.";
+}
 function evaluatorSourceBudgetFailure(code) {
   if (typeof code !== "string")
     return;
@@ -40066,7 +40073,7 @@ function resolveEvaluatorPortV2(port, profile) {
   }
   return trustedInProcessEvaluatorPortV2;
 }
-var MAX_EVALUATOR_CODE_BYTES, MAX_EVALUATOR_REQUEST_BYTES, DEFAULT_EVALUATOR_MAX_GLB_BYTES, DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES, EVALUATOR_OUTCOME_MESSAGES, EvaluatorPortError, trustedInProcessEvaluatorPortV2;
+var MAX_EVALUATOR_CODE_BYTES, MAX_EVALUATOR_REQUEST_BYTES, DEFAULT_EVALUATOR_MAX_GLB_BYTES, DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES, MAX_EVALUATOR_GLB_BYTES, MAX_EVALUATOR_RESPONSE_BYTES, EVALUATOR_OUTCOME_MESSAGES, EvaluatorPortError, trustedInProcessEvaluatorPortV2;
 var init_protocol = __esm(() => {
   init_authoring_diagnostic();
   init_requirements_context();
@@ -40079,6 +40086,8 @@ var init_protocol = __esm(() => {
   MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
   DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
+  MAX_EVALUATOR_GLB_BYTES = 64 * 1024 * 1024;
+  MAX_EVALUATOR_RESPONSE_BYTES = 96 * 1024 * 1024;
   EVALUATOR_OUTCOME_MESSAGES = {
     INPUT_INVALID: "Evaluator request was invalid. Use kiln.evaluator.request.v2 and update the host and worker together. Retired category/intent options require explicit requirements migration; see docs/migration.md.",
     EXECUTION_REJECTED: "Generated asset execution was rejected.",
@@ -40094,11 +40103,13 @@ var init_protocol = __esm(() => {
     code;
     diagnostic;
     solid;
-    constructor(code, message = evaluatorOutcomeMessage(code), diagnostic, solid) {
-      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}` : code === "EXECUTION_REJECTED" ? `${message} ${EXECUTION_REJECTED_ADVICE}` : message);
+    limit;
+    constructor(code, message = evaluatorOutcomeMessage(code), diagnostic, solid, limit) {
+      super(diagnostic ? `${message} ${authoringDiagnosticAdvice(diagnostic)}${solidFailureAdvice(solid)}` : code === "EXECUTION_REJECTED" ? `${message} ${EXECUTION_REJECTED_ADVICE}` : `${message}${evaluatorOutputLimitAdvice(limit)}`);
       this.code = code;
       this.diagnostic = diagnostic;
       this.solid = solid;
+      this.limit = limit;
       this.name = "EvaluatorPortError";
     }
   };
