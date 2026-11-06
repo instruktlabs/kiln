@@ -134,7 +134,7 @@ test('explicit CLI migration rebuilds an immutable child with current policy and
   } finally {
     await rm(f.dir, { recursive: true, force: true });
   }
-}, 20000);
+}, 60_000); // CLI runs: 2.5 s in CI, past its old budget at load 20+ on 5 November 2026.
 
 test('unresolved data, wrong authority and failed rebuilds leave the old revision as the only revision', async () => {
   const f = await fixture();

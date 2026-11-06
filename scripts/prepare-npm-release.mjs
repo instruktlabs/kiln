@@ -15,6 +15,8 @@ export const RELEASE_JOBS = [
   'typecheck · lint · coverage',
   'engine tests · community exporter',
   'typecheck · lint · test (Windows)',
+  'typecheck · lint · test (Windows shard 1)',
+  'typecheck · lint · test (Windows shard 2)',
   'render service tests',
   'build portable Node package',
   'Node package · macOS arm64',
