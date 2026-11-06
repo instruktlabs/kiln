@@ -42,9 +42,6 @@ does not publish a package.
   bytes. The `runtime` profile still needs a saved revision. This changes `kiln_export`'s input
   schema: `assetId` and `revisionId` are now optional in the advertised shape and checked when the
   tool runs. `kiln_present` and `kiln_export_to` are unchanged.
-||||||| 0468a19
-||||||| 8e08b9c
-||||||| cde4dfe
 
 ## 1.6.0 (2026-10-27)
 
@@ -185,8 +182,6 @@ does not publish a package.
   both list — so an author whose call failed for an unrelated reason was told those fields did
   not exist. A test now asserts the advice names every field the validator accepts, so the text
   and the validator cannot drift apart again.
-||||||| 24bc8fd
-
 
 ## 1.5.0 (2026-10-25)
 
