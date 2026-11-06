@@ -67,6 +67,19 @@ async function fixture(runtime: string, revision: string) {
     await put(join(runtime, 'skills', name, 'SKILL.md'), `# ${name} ${revision}\n`);
 }
 
+// Windows CI saw EBUSY here after every assertion and child exit passed: it can keep a
+// handle on a copied interpreter once the process has gone. The verdict is already in
+// by then and the directory is under the OS temp root, so a lock left after bounded
+// retries (5.5 s) must not turn a passing test red. Anything else still fails.
+async function removeCopiedInterpreter(path: string) {
+  await rm(path, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 }).catch(
+    (error: NodeJS.ErrnoException) => {
+      if (process.platform !== 'win32' || !['EBUSY', 'EPERM'].includes(error.code ?? ''))
+        throw error;
+    },
+  );
+}
+
 it('workspace paths stay current across parent directory aliases and canonical Node entry paths', async () => {
   const temp = await mkdtemp(join(tmpdir(), 'kiln-workspace-alias-'));
   try {
@@ -133,9 +146,7 @@ it('checks the recorded interpreter without treating another supported caller as
     const parent = await realpath(tmpdir());
     expect(dirname(actual)).toBe(parent);
     expect(actual.slice(parent.length + 1)).toStartWith('kiln-check-node-');
-    // Windows CI observed EBUSY here after every assertion and child exit passed.
-    // Retry only fixture removal, bounded to 5.5 seconds; persistent locks still fail.
-    await rm(actual, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
+    await removeCopiedInterpreter(actual);
   }
 }, 60_000); // Workspace and CLI runs: 2.0 s in CI, past its old budget at load 20+ on 5 November 2026.
 
@@ -173,8 +184,7 @@ it('the CLI launcher runs under the pinned interpreter that the MCP server uses'
     // The pinned interpreter itself runs the CLI in process.
     expect(await run(pinned)).toHaveLength(1);
   } finally {
-    // Windows may briefly retain a handle to the copied interpreter after it exits.
-    await rm(temp, { recursive: true, force: true, maxRetries: 3, retryDelay: 100 });
+    await removeCopiedInterpreter(temp);
   }
 }, 30000);
 
