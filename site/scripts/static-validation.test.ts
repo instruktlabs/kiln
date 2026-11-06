@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test';
-import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, parseHeaderRules, scriptHashSource, isArchiveItemRoute, isEmbeddedDocument, licenceSpellingErrors, ownerReviewErrors, parseRedirectRules, redirectsErrors, resolveInternalLink, retiredNameErrors, routeForFile, socialMetadataErrors } from './static-validation-core.mjs';
+import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, emailLinkErrors, headersErrors, headersFor, inspectHtml, parseHeaderRules, scriptHashSource, isArchiveItemRoute, isEmbeddedDocument, licenceSpellingErrors, ownerReviewErrors, parseRedirectRules, redirectsErrors, resolveInternalLink, retiredNameErrors, routeForFile, socialMetadataErrors } from './static-validation-core.mjs';
 import foundryFloor from '../src/data/foundry-floor.json';
 import { readFileSync } from 'node:fs';
 test('static routes use directory URLs while 404 keeps its HTML route', () => {
@@ -252,6 +252,8 @@ describe('discovery files', () => {
     expect(check({ robots: 'User-agent: *\nAllow: /\n' })).toEqual(['/robots.txt: robots.txt does not name https://kilnstudio.tools/sitemap.xml']);
     expect(check({ robots: 'User-agent: *\nDisallow: /\n\nSitemap: https://kilnstudio.tools/sitemap.xml\n' })).toEqual(['/robots.txt: robots.txt blocks the whole site with "Disallow: /"']);
     expect(check({ robots: '' })).toEqual(['/robots.txt: robots.txt is missing or empty']);
+    // A rule that blocks raw data would hide its noindex header from crawlers.
+    expect(check({ robots: 'User-agent: *\nDisallow: /asset-demos/\n\nSitemap: https://kilnstudio.tools/sitemap.xml\n' })).toEqual(['/robots.txt: robots.txt blocks /asset-demos/, so a crawler can never see its noindex header']);
     // A rule for one path is not the whole site, and an empty Disallow allows everything.
     expect(check({ robots: 'User-agent: *\nDisallow: /private/\nDisallow:\n\nSitemap: https://kilnstudio.tools/sitemap.xml\n' })).toEqual([]);
   });
@@ -397,12 +399,57 @@ https://:version.kilnstudio.pages.dev/*
 
 /scene-packs/*/SHA256SUMS
   X-Robots-Tag: noindex
+
+/asset-demos/*.txt
+  X-Robots-Tag: noindex
+
+/asset-demos/*.md
+  X-Robots-Tag: noindex
+
+/asset-demos/*/SHA256SUMS
+  X-Robots-Tag: noindex
+
+/scene-packs/*.md
+  X-Robots-Tag: noindex
+
+/asset-demos/*/LICENSE
+  X-Robots-Tag: noindex
+
+/asset-demos/*.lock
+  X-Robots-Tag: noindex
+
+/asset-demos/*/.gitignore
+  X-Robots-Tag: noindex
+
+/scene-packs/*/LICENSE
+  X-Robots-Tag: noindex
+
+/assets/*.json
+  X-Robots-Tag: noindex
+
+/scene-runtime/*.json
+  X-Robots-Tag: noindex
+
+/sources/*.md
+  X-Robots-Tag: noindex
+
+/fonts/*.txt
+  X-Robots-Tag: noindex
+
+/build-info.json
+  X-Robots-Tag: noindex
+
+/artifact-files.json
+  X-Robots-Tag: noindex
+
+/source-files.json
+  X-Robots-Tag: noindex
 ${extra}`;
   const good = file(`default-src 'self'; script-src 'self' ${scriptHashSource(script)}`);
 
   test('rules apply in order, "!" removes what an earlier rule set, placeholders match one segment', () => {
     const rules = parseHeaderRules(good);
-    expect(rules.map((rule) => `${rule.host ?? ''}${rule.path}`)).toEqual(['/*', '/_astro/*', '/scene-runtime/:scene/*.js', 'kilnstudio.pages.dev/*', ':version.kilnstudio.pages.dev/*', '/asset-demos/*.json', '/scene-packs/*.json', '/scene-packs/*.txt', '/scene-packs/*/SHA256SUMS']);
+    expect(rules.map((rule) => `${rule.host ?? ''}${rule.path}`)).toEqual(['/*', '/_astro/*', '/scene-runtime/:scene/*.js', 'kilnstudio.pages.dev/*', ':version.kilnstudio.pages.dev/*', '/asset-demos/*.json', '/scene-packs/*.json', '/scene-packs/*.txt', '/scene-packs/*/SHA256SUMS', '/asset-demos/*.txt', '/asset-demos/*.md', '/asset-demos/*/SHA256SUMS', '/scene-packs/*.md', '/asset-demos/*/LICENSE', '/asset-demos/*.lock', '/asset-demos/*/.gitignore', '/scene-packs/*/LICENSE', '/assets/*.json', '/scene-runtime/*.json', '/sources/*.md', '/fonts/*.txt', '/build-info.json', '/artifact-files.json', '/source-files.json']);
     expect(headersFor(rules, '/')['cache-control']).toBe('public, max-age=0, must-revalidate');
     expect(headersFor(rules, '/_astro/viewer.GoKKfp1n.js')['cache-control']).toBe('public, max-age=31536000, immutable');
     expect(headersFor(rules, '/scene-runtime/golden-gate/index-CA13LcNQ.js')['cache-control']).toBe('public, max-age=31536000, immutable');
@@ -459,26 +506,46 @@ ${extra}`;
     const open = good.replace('\nhttps://kilnstudio.pages.dev/*\n  X-Robots-Tag: noindex\n', '\n');
     expect(headersErrors({ text: open, inlineScripts: [script] })).toEqual(['/', '/docs/', '/robots.txt'].map((path) => `https://kilnstudio.pages.dev${path} must be served X-Robots-Tag: noindex`));
     const everywhere = `${good}\n/*\n  X-Robots-Tag: noindex\n`;
-    expect(headersErrors({ text: everywhere, inlineScripts: [script] })).toEqual(['The production host kilnstudio.tools must not be served X-Robots-Tag: noindex']);
+    expect(headersErrors({ text: everywhere, inlineScripts: [script] })).toContain('The production host kilnstudio.tools must not be served X-Robots-Tag: noindex');
   });
 
   test('raw data is noindexed by header on production, never a page, a sitemap URL or a robots.txt block', () => {
     const published = readFileSync(new URL('../public/_headers', import.meta.url), 'utf8');
     const rules = parseHeaderRules(published);
     const robots = (path: string) => headersFor(rules, path)['x-robots-tag'];
-    for (const path of ['/asset-demos/a/metadata/rock/manifest.json', '/asset-demos/a/b/c/rock.kiln-metadata.json', '/asset-demos/a/THIRD-PARTY-NOTICES.txt', '/scene-packs/a/b/THIRD-PARTY-NOTICES.txt', '/scene-packs/a/b/licenses/vehicles/suv.ASSET-LICENSE.txt', '/scene-packs/a/b/data/layout.json', '/scene-packs/a/b/SHA256SUMS']) {
+    for (const path of ['/asset-demos/a/metadata/rock/manifest.json', '/asset-demos/a/b/c/rock.kiln-metadata.json', '/asset-demos/a/THIRD-PARTY-NOTICES.txt', '/scene-packs/a/b/THIRD-PARTY-NOTICES.txt', '/scene-packs/a/b/licenses/vehicles/suv.ASSET-LICENSE.txt', '/scene-packs/a/b/data/layout.json', '/scene-packs/a/b/SHA256SUMS', '/assets/a.poster.json', '/assets/a.kiln-metadata.json', '/scene-runtime/a/runtime.json', '/sources/a/REFERENCE.md', '/fonts/A-OFL.txt', '/build-info.json']) {
       expect(robots(path)).toBe('noindex');
     }
-    for (const path of ['/', '/llms.txt', '/docs/', '/docs/install/', '/gallery/', '/gallery/some-asset/', '/packs/farm/', '/scenes/farm/', '/robots.txt', '/sitemap.xml', '/asset-demos/a/web/game.html', '/asset-demos/a/scene-source/index.html', '/asset-demos/a/models/rock.glb', '/scene-packs/troy/t/web/', '/scene-packs/troy/t/web/qualification/a.html', '/scene-packs/a/b/models/x.glb', '/scene-runtime/a/runtime.json']) {
+    for (const path of ['/', '/llms.txt', '/docs/', '/docs/install/', '/gallery/', '/gallery/some-asset/', '/packs/farm/', '/scenes/farm/', '/robots.txt', '/sitemap.xml', '/asset-demos/a/web/game.html', '/asset-demos/a/scene-source/index.html', '/asset-demos/a/models/rock.glb', '/scene-packs/troy/t/web/', '/scene-packs/troy/t/web/qualification/a.html', '/scene-packs/a/b/models/x.glb', '/assets/a.glb', '/assets/a.webp', '/fonts/a.woff2', '/.well-known/agent-skills/index.json', '/sitemap-index.xml']) {
       expect(robots(path)).toBeUndefined();
     }
     expect(headersErrors({ text: published.replace(/sha256-[^']+/g, 'x') }).filter((error) => /X-Robots-Tag/.test(error))).toEqual([]);
+  });
+
+  test('every kind of raw file is guarded, and a rule that reaches what must stay indexable is reported', () => {
+    for (const rule of ['/asset-demos/*.md', '/scene-packs/*.md', '/asset-demos/*/SHA256SUMS', '/asset-demos/*.txt', '/assets/*.json', '/fonts/*.txt', '/build-info.json']) {
+      const removed = good.replace(`${rule}\n  X-Robots-Tag: noindex\n`, '');
+      expect(removed).not.toBe(good);
+      expect(headersErrors({ text: removed, inlineScripts: [script] }).filter((error) => /must be served X-Robots-Tag/.test(error)).length).toBeGreaterThan(0);
+    }
+    for (const rule of ['/*.png', '/*.webp', '/media/*', '/llms.txt', '/*.txt', '/sitemap.xml', '/*.glb', '/.well-known/*']) {
+      const errors = headersErrors({ text: `${good}\n${rule}\n  X-Robots-Tag: noindex\n`, inlineScripts: [script] });
+      expect(errors.filter((error) => /must not be served X-Robots-Tag/.test(error)).length).toBeGreaterThan(0);
+    }
+  });
+
+  test('a mailto link is only allowed inside email_off, where Cloudflare leaves it alone', () => {
+    expect(emailLinkErrors('<a href="https://example.com/">Site</a>')).toEqual([]);
+    expect(emailLinkErrors('<!--email_off--><a href="mailto:a@example.com">Contact</a><!--/email_off-->')).toEqual([]);
+    expect(emailLinkErrors('<a href="mailto:a@example.com">Contact</a>')).toHaveLength(1);
+    expect(emailLinkErrors('<!--email_off--><a href="mailto:a@example.com">A</a><!--/email_off--><a href="mailto:b@example.com">B</a>')).toHaveLength(1);
   });
 
   test('a raw data rule that is missing, or reaches a page or a sitemap URL, is reported', () => {
     expect(headersErrors({ text: good.replace('/asset-demos/*.json\n  X-Robots-Tag: noindex\n', ''), inlineScripts: [script] })).toEqual(['/asset-demos/cabin-woods-psx-horror/metadata/rock/manifest.json must be served X-Robots-Tag: noindex', '/asset-demos/cabin-woods-psx-horror/models/rock.kiln-metadata.json must be served X-Robots-Tag: noindex']);
     const wide = `${good}\n/asset-demos/*\n  X-Robots-Tag: noindex\n`;
     expect(headersErrors({ text: wide, inlineScripts: [script], files: ['asset-demos/a/web/game.html', 'asset-demos/a/models/rock.glb'], sitemapPaths: ['/asset-demos/a/', '/docs/'] }).filter((error) => /must not/.test(error))).toEqual([
+      '/asset-demos/cabin-woods-psx-horror/models/rock.glb must not be served X-Robots-Tag: noindex',
       'The page /asset-demos/a/web/game.html must not be served X-Robots-Tag: noindex',
       'The sitemap URL /asset-demos/a/ must not be served X-Robots-Tag: noindex',
     ]);
