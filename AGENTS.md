@@ -150,7 +150,7 @@ cache-point blocks. Preserve that and the provider usage fields when changing mo
 
 ## Toolchain and validation
 
-Maintainer toolchain: Bun `1.4.2`; Node `22.23.3`; npm `12.2.0`, pinned in `toolchain.json`.
+Maintainer toolchain: Bun `1.4.2`; Node `22.23.4`; npm `12.2.0`, pinned in `toolchain.json`.
 Consumer Node compatibility is defined separately in `src/runtime-support.mjs` and
 `engines.node`; do not add Bun or npm maintainer pins to end-user `engines` or use a Bun
 canary or implicit latest for a release gate.

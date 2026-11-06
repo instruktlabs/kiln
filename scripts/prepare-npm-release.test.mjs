@@ -290,7 +290,7 @@ async function fixture(version = '1.0.0-rc.1') {
     repository: { type: 'git', url: 'git+https://github.com/instruktlabs/kiln.git' },
     publishConfig: { access: 'public', provenance: true },
   };
-  const toolchain = { bun: '1.4.2', node: '22.23.3', npm: '12.2.0' };
+  const toolchain = { bun: '1.4.2', node: '22.23.4', npm: '12.2.0' };
   await mkdir(join(root, 'package'));
   await writeFile(join(root, 'package/package.json'), JSON.stringify(manifest));
   const candidate = join(root, 'node-package-candidate');

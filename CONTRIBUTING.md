@@ -12,7 +12,7 @@ credentials and private assets out of public issues.
 ## Work on the engine
 
 Read [AGENTS.md](AGENTS.md) and the [README](README.md). Contributor checks use Bun
-1.4.2, Node 22.23.3 and npm 12.2.0. End users only need Node/npm for a built package.
+1.4.2, Node 22.23.4 and npm 12.2.0. End users only need Node/npm for a built package.
 
 ```sh
 bun install --frozen-lockfile

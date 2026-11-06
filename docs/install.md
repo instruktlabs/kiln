@@ -199,7 +199,7 @@ require Strands or its model-provider packages. The v1 library and commands are
 compiled; package imports need no TypeScript loader.
 Maintainer release checks still use the exact versions in the source repository's
 `toolchain.json`. Package CI checks Linux Node 20.15.0, 22.2.0 and 24.20.0,
-plus Node 22.23.3 on Linux, Windows and both macOS architectures. Each receipt
+plus Node 22.23.4 on Linux, Windows and both macOS architectures. Each receipt
 qualifies only its named tarball; a later candidate needs its own passing checks.
 Physical GPU coverage and distribution-specific Debian/Cline setup remain separate checks.
 
@@ -585,7 +585,7 @@ with Docker running. See the [recorded Linux package check](https://github.com/i
 for the pinned image, exact candidate hash, coverage, and limitations.
 
 CI builds one tarball on Linux, then runs the same npm package smoke natively on
-`macos-15` (ARM64) and `macos-15-intel` (x64), with Node 22.23.3 and npm 12.2.0.
+`macos-15` (ARM64) and `macos-15-intel` (x64), with Node 22.23.4 and npm 12.2.0.
 The Mac jobs install no contributor dependencies and do not set up Bun. Their
 retained receipts include the tarball hash, native architecture and completed
 checks. These versioned runner labels follow [GitHub's runner catalog](https://docs.github.com/en/actions/reference/runners/github-hosted-runners);

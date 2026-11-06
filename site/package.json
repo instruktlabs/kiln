@@ -13,8 +13,8 @@
     "test": "bun test scripts --timeout 20000"
   },
   "dependencies": {
-    "astro": "7.4.1",
-    "@astrojs/react": "7.1.0",
+    "astro": "7.4.7",
+    "@astrojs/react": "7.1.4",
     "@astrojs/markdown-remark": "7.3.5",
     "@react-three/drei": "10.7.9",
     "@react-three/fiber": "9.8.2",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "0.9.12",
+    "@emnapi/runtime": "1.11.3",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "0.186.0",
