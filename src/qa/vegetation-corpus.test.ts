@@ -94,5 +94,5 @@ describe('VEG-019 helper-independent vegetation regression corpus', () => {
       expect(first.gltfValidation.issues.numWarnings).toBe(0);
       expect(sha256(first.bytes)).toBe(sha256(repeat.bytes));
     }
-  }, 30_000);
+  }, 60_000); // Corpus build: 2.7 s in CI, past its old budget at load 20 on 5 November 2026.
 });

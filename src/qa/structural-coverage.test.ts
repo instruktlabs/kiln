@@ -6,11 +6,11 @@
  * audit caught both. The reported suspicion was that per-material welding hid
  * the detached primitive inside a mesh the checks treat as one part.
  *
- * Welding does hide a primitive, but it is not what hid these two. Both checks
+ * Welding did hide a primitive, but it is not what hid these two. Both checks
  * read bounding boxes with a 2 cm adjacency tolerance, so a sub-centimetre gap
- * reads as contact whether or not the parts are welded. These tests pin both
- * limits with the reported measurements, so neither can drift silently and
- * neither gets mistaken for the other again.
+ * reads as contact whether or not the parts are welded. That limit still stands
+ * and these tests pin it with the reported measurements. The welding limit is gone:
+ * #304 compares a mesh's components with each other (`welded-components.test.ts`).
  */
 
 import { expect, test } from 'bun:test';
@@ -85,23 +85,27 @@ test('the warning fires once the gap clears the tolerance it states', () => {
 });
 
 // -----------------------------------------------------------------------------
-// Limit 2 — mesh granularity, real but not the cause here
+// The welded case: closed by #304, with the same floor
 // -----------------------------------------------------------------------------
 
-test('a primitive welded into another mesh is invisible at any separation', () => {
-  // 20 cm is ten times the tolerance and still silent: one mesh is one box.
-  for (const gap of [0.002, 0.05, 0.2]) {
+test('a primitive welded into another mesh is seen once it clears the same tolerance', () => {
+  // The gaps #289 reported still read as contact, welded or not.
+  for (const gap of [0.002, 0.00085]) {
     expect(floatingWarnings(weldedSightPost(gap))).toEqual([]);
     expect(analyzePartConnectivity(weldedSightPost(gap)).groups).toEqual([]);
   }
-  // Unwelded, the same 20 cm separation is reported.
+  // 5 cm and 20 cm were silent before the split; both now report, as the unwelded parts do.
+  for (const gap of [0.05, 0.2]) {
+    expect(floatingWarnings(weldedSightPost(gap))).toHaveLength(1);
+    expect(analyzePartConnectivity(weldedSightPost(gap)).groups).toHaveLength(1);
+  }
   expect(floatingWarnings(sightPost(0.2))).toHaveLength(1);
 });
 
-test('the connectivity report counts welded primitives as one analyzed part', () => {
+test('the connectivity report counts each welded component as an analyzed part', () => {
   const report = analyzePartConnectivity(weldedSightPost(0.2));
-  expect(report.partsAnalyzed).toBe(2);
-  expect(report.mainComponentSize).toBe(2);
+  expect(report.partsAnalyzed).toBe(3);
+  expect(report.groups[0]!.welded?.mesh).toBe('Mesh_receiver');
 });
 
 // -----------------------------------------------------------------------------
@@ -111,5 +115,6 @@ test('the connectivity report counts welded primitives as one analyzed part', ()
 test('the floating-parts warning states what it does not cover', () => {
   const warning = floatingWarnings(sightPost(0.05))[0]!;
   expect(warning).toContain('2cm');
-  expect(warning).toMatch(/welded|within a mesh|one mesh/i);
+  expect(warning).toContain('Welded components');
+  expect(warning).toContain('A smaller gap reads as contact');
 });

@@ -123,7 +123,7 @@ describe('trusted neutral tool context', () => {
     ]);
     for (const output of outputs)
       expect(orientation(output)).toMatchObject({ disposition: 'observe' });
-  });
+  }, 60_000); // Evaluator worker runs: 1.5 s in CI, past its old budget at load 20+ on 5 November 2026.
 
   test('unbound source registry remains neutral regardless of source metadata', async () => {
     const output = await find(createKilnProgramToolRegistry(), 'kiln_render').run({
