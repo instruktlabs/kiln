@@ -23,6 +23,12 @@ import {
   TEXTURE_ATLAS_PACK_EDGES,
 } from './texture-atlas-contract';
 import {
+  CELLULAR_FEATURES,
+  MAX_CELLULAR_METRIC,
+  MAX_CELLULAR_WEIGHT,
+  MIN_CELLULAR_METRIC,
+} from './procedural-cellular';
+import {
   PORTABLE_MIN_FILTERS_V1,
   PORTABLE_MAG_FILTERS_V1,
   PORTABLE_WRAPS_V1,
@@ -88,6 +94,28 @@ export const canonicalLegacyV2FieldSchema = (() => {
                 scale: count,
                 octaves: z.number().int().min(1).max(MAX_NOISE_OCTAVES),
                 seed: z.number().int().min(-2147483648).max(2147483647),
+                ...common,
+              })
+              .strict(),
+            z
+              .object({
+                op: z.literal('cellular'),
+                colorA: color,
+                colorB: color,
+                cellsX: count,
+                cellsY: count,
+                seed: z.number().int().min(-2147483648).max(2147483647),
+                jitterX: unit,
+                jitterY: unit,
+                metricX: z.number().min(MIN_CELLULAR_METRIC).max(MAX_CELLULAR_METRIC),
+                metricY: z.number().min(MIN_CELLULAR_METRIC).max(MAX_CELLULAR_METRIC),
+                weight: z.number().min(0).max(MAX_CELLULAR_WEIGHT),
+                feature: z.enum(CELLULAR_FEATURES),
+                range: z.number().min(0.01).max(8),
+                borderOpen: unit,
+                borderWidth: z.number().min(0.001).max(1),
+                facetSlope: unit,
+                facetBlend: z.number().min(0.001).max(1),
                 ...common,
               })
               .strict(),

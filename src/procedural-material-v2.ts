@@ -8,6 +8,13 @@
  * the pixel compiler allocates an output buffer.
  */
 
+import {
+  CELLULAR_FEATURES,
+  type CellularFeature,
+  MAX_CELLULAR_METRIC,
+  MAX_CELLULAR_WEIGHT,
+  MIN_CELLULAR_METRIC,
+} from './procedural-cellular';
 import { TEXTURE_USAGES, type TextureUsage } from './texture-contract';
 import {
   AuthoringDiagnosticError,
@@ -56,6 +63,25 @@ export type ProceduralLayer = LayerCommon &
         scale?: number;
         octaves?: number;
         seed?: number;
+      }
+    | {
+        op: 'cellular';
+        colorA: number;
+        colorB: number;
+        cellsX?: number;
+        cellsY?: number;
+        seed?: number;
+        jitterX?: number;
+        jitterY?: number;
+        metricX?: number;
+        metricY?: number;
+        weight?: number;
+        feature?: CellularFeature;
+        range?: number;
+        borderOpen?: number;
+        borderWidth?: number;
+        facetSlope?: number;
+        facetBlend?: number;
       }
   );
 
@@ -107,6 +133,25 @@ export type CanonicalProceduralLayerV2 = CanonicalLayerCommon &
         scale: number;
         octaves: number;
         seed: number;
+      }
+    | {
+        op: 'cellular';
+        colorA: number;
+        colorB: number;
+        cellsX: number;
+        cellsY: number;
+        seed: number;
+        jitterX: number;
+        jitterY: number;
+        metricX: number;
+        metricY: number;
+        weight: number;
+        feature: CellularFeature;
+        range: number;
+        borderOpen: number;
+        borderWidth: number;
+        facetSlope: number;
+        facetBlend: number;
       }
   );
 
@@ -175,7 +220,7 @@ export class ProceduralTextureError extends AuthoringDiagnosticError {
   }
 }
 
-const OPS = ['solid', 'checker', 'stripes', 'gradient', 'bricks', 'noise'] as const;
+const OPS = ['solid', 'checker', 'stripes', 'gradient', 'bricks', 'noise', 'cellular'] as const;
 const BLENDS: readonly ProceduralBlend[] = ['normal', 'multiply', 'screen', 'overlay'];
 const FORBIDDEN_KEYS = new Set(['__proto__', 'prototype', 'constructor']);
 
@@ -339,6 +384,36 @@ function blend(record: Record<string, unknown>, path: string): ProceduralBlend {
   return value as ProceduralBlend;
 }
 
+/** A control one feature reads. Any other feature has it at its default, so the hash is stable. */
+function featureControl(
+  record: Record<string, unknown>,
+  path: string,
+  feature: CellularFeature,
+  control: { name: string; fallback: number; min: number; max: number },
+  owners: readonly CellularFeature[],
+): number {
+  const { name, fallback, min, max } = control;
+  const value = finite(record[name], `${path}.${name}`, fallback, min, max);
+  if (value !== fallback && !owners.includes(feature)) {
+    const noun = owners.length > 1 ? 'features' : 'feature';
+    const named = owners.length > 1 ? owners.join(', ') : JSON.stringify(owners[0]);
+    throw new ProceduralTextureError(
+      `${path}.${name} applies only to ${noun} ${named}, not ${JSON.stringify(feature)}. Remove it or change feature.`,
+    );
+  }
+  return value;
+}
+
+function cellularFeature(value: unknown, path: string): CellularFeature {
+  const feature = value ?? 'f1';
+  if (!(CELLULAR_FEATURES as readonly unknown[]).includes(feature)) {
+    throw new ProceduralTextureError(
+      `${path}.feature ${JSON.stringify(feature)} is not one of ${CELLULAR_FEATURES.join(', ')}.`,
+    );
+  }
+  return feature as CellularFeature;
+}
+
 function canonicalLayer(value: unknown, index: number): CanonicalProceduralLayerV2 {
   const path = `proceduralTexture.layers[${index}]`;
   const record = strictRecord(value, path);
@@ -419,6 +494,96 @@ function canonicalLayer(value: unknown, index: number): CanonicalProceduralLayer
         seed: integer(record['seed'], `${path}.seed`, 0, -0x80000000, 0x7fffffff),
         ...common,
       };
+    case 'cellular': {
+      assertKeys(
+        record,
+        [
+          'op',
+          'colorA',
+          'colorB',
+          'cellsX',
+          'cellsY',
+          'seed',
+          'jitterX',
+          'jitterY',
+          'metricX',
+          'metricY',
+          'weight',
+          'feature',
+          'range',
+          'borderOpen',
+          'borderWidth',
+          'facetSlope',
+          'facetBlend',
+          'blend',
+          'opacity',
+        ],
+        path,
+      );
+      const feature = cellularFeature(record['feature'], path);
+      return {
+        op,
+        colorA: color(record['colorA'], `${path}.colorA`),
+        colorB: color(record['colorB'], `${path}.colorB`),
+        cellsX: integer(record['cellsX'], `${path}.cellsX`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
+        cellsY: integer(record['cellsY'], `${path}.cellsY`, 8, 1, MAX_PROCEDURAL_PATTERN_COUNT),
+        seed: integer(record['seed'], `${path}.seed`, 0, -0x80000000, 0x7fffffff),
+        jitterX: unit(record['jitterX'], `${path}.jitterX`, 1),
+        jitterY: unit(record['jitterY'], `${path}.jitterY`, 1),
+        metricX: finite(
+          record['metricX'],
+          `${path}.metricX`,
+          1,
+          MIN_CELLULAR_METRIC,
+          MAX_CELLULAR_METRIC,
+        ),
+        metricY: finite(
+          record['metricY'],
+          `${path}.metricY`,
+          1,
+          MIN_CELLULAR_METRIC,
+          MAX_CELLULAR_METRIC,
+        ),
+        weight: finite(record['weight'], `${path}.weight`, 0, 0, MAX_CELLULAR_WEIGHT),
+        feature,
+        range: featureControl(
+          record,
+          path,
+          feature,
+          { name: 'range', fallback: 1, min: 0.01, max: 8 },
+          ['f1', 'f2', 'f2-f1', 'cell'],
+        ),
+        borderOpen: featureControl(
+          record,
+          path,
+          feature,
+          { name: 'borderOpen', fallback: 0.5, min: 0, max: 1 },
+          ['border'],
+        ),
+        borderWidth: featureControl(
+          record,
+          path,
+          feature,
+          { name: 'borderWidth', fallback: 0.05, min: 0.001, max: 1 },
+          ['border'],
+        ),
+        facetSlope: featureControl(
+          record,
+          path,
+          feature,
+          { name: 'facetSlope', fallback: 0.5, min: 0, max: 1 },
+          ['facet'],
+        ),
+        facetBlend: featureControl(
+          record,
+          path,
+          feature,
+          { name: 'facetBlend', fallback: 0.1, min: 0.001, max: 1 },
+          ['facet'],
+        ),
+        ...common,
+      };
+    }
     default:
       throw new ProceduralTextureError(`${path}.op is unsupported.`);
   }

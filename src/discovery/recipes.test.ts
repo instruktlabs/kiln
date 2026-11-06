@@ -47,6 +47,8 @@ test('recipe retrieval finds related ordinary language without changing host pol
     ['attached raised vein seam', 'recipe:surface-detail-v1'],
     ['alpha leaf card cutout', 'recipe:foliage-cutout-v1'],
     ['stripes follow a curved rail', 'recipe:directional-sweep-v1'],
+    ['fractured rock with open cracks', 'recipe:cellular-stone-v1'],
+    ['rubble stones voronoi', 'recipe:cellular-stone-v1'],
   ] as const) {
     const result = await query({ query: text, kind: 'recipe' });
     expect(result.entries.slice(0, 6).map((e) => e.id)).toContain(id);
@@ -130,6 +132,18 @@ function constructionExample(id: string): string {
   expect(entry).toBeDefined();
   return entry!.recipe.example;
 }
+
+test('cellular stone recipe builds tiling colour and a matching height-derived normal', async () => {
+  const source = constructionExample('recipe:cellular-stone-v1');
+  const { root } = await executeKilnCode(source);
+  const doc = await new WebIO().readBinary(
+    (await renderSceneToGLB(root, { optimize: 'off' })).bytes,
+  );
+  const material = doc.getRoot().listMaterials()[0]!;
+  expect(material.getBaseColorTexture()).not.toBeNull();
+  expect(material.getNormalTexture()).not.toBeNull();
+  expect(material.getMetallicRoughnessTexture()).not.toBeNull();
+});
 
 test('cutout recipe exports alpha-bearing material and UVs without treating its placeholder as production foliage', async () => {
   const source = constructionExample('recipe:foliage-cutout-v1');
