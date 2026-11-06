@@ -214,7 +214,7 @@ let headersText = '';
 try { headersText = await readFile(resolve(root, '_headers'), 'utf8'); } catch { add('/_headers', 'headers', 'dist/_headers is missing (site/public/_headers)'); }
 let sealedFiles=[];
 try {sealedFiles=(await sealedTroyCache(root)).files;} catch(error) {add('/scene-packs/troy/','headers',error.message);}
-const headerProblems = headersText ? headersErrors({ text: headersText, inlineScripts, files: distFiles, sealedFiles }) : [];
+const headerProblems = headersText ? headersErrors({ text: headersText, inlineScripts, files: distFiles, sealedFiles, sitemapPaths: sitemapUrls.map((url) => new URL(url).pathname) }) : [];
 for (const message of headerProblems) add('/_headers', 'headers', message);
 const headerRules = headersText ? parseHeaderRules(headersText) : [];
 const immutableFiles = distFiles.filter((file) => /immutable/.test(headersFor(headerRules, `/${file}`)['cache-control'] ?? ''));
