@@ -155,19 +155,6 @@
       }
     },
     {
-      "includes": ["src/project-cli.ts"],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noExcessiveCognitiveComplexity": {
-              "level": "error",
-              "options": { "maxAllowedComplexity": 113 }
-            }
-          }
-        }
-      }
-    },
-    {
       "includes": ["src/geometry-export.ts"],
       "linter": {
         "rules": {

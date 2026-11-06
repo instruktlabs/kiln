@@ -170,6 +170,40 @@ async function exportMaterialMapsCommand(
   };
 }
 
+/** The `kiln_project` call behind each CLI action that is not a bundle transfer. */
+async function projectToolCall(
+  action: string,
+  positional: readonly string[],
+  flags: Readonly<Record<string, string>>,
+): Promise<unknown> {
+  if (action === 'list') return { action: 'list' };
+  if (action === 'get' || action === 'check')
+    return {
+      action,
+      projectId: positional[0],
+      ...(flags.revision ? { revisionId: flags.revision } : {}),
+    };
+  if (action === 'create') {
+    if (flags.file && (flags.name || flags.id))
+      throw new Error('Use --file or --name with optional --id, not both');
+    if (!flags.file && !flags.name) throw new Error('project create requires --file or --name');
+    return {
+      action: 'create',
+      draft: flags.file
+        ? await jsonFile(flags.file, MAX_PROJECT_BYTES)
+        : { name: flags.name, ...(flags.id ? { projectId: flags.id } : {}) },
+    };
+  }
+  if (!flags.file || !flags.expected)
+    throw new Error('project update requires --expected and --file');
+  return {
+    action: 'update',
+    projectId: positional[0],
+    expectedRevision: flags.expected,
+    patch: await jsonFile(flags.file, MAX_PROJECT_BYTES),
+  };
+}
+
 export async function projectMain(argv: readonly string[]): Promise<number> {
   const [family, action] = argv;
   if (argv.some((value) => value === '--help' || value === '-h')) {
@@ -260,35 +294,9 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
       return 0;
     }
     const tool = createKilnProjectDef(store, undefined, localAssetLibrary());
-    let input: unknown;
-    if (action === 'list') input = { action: 'list' };
-    else if (action === 'get' || action === 'check')
-      input = {
-        action,
-        projectId: positional[0],
-        ...(flags.revision ? { revisionId: flags.revision } : {}),
-      };
-    else if (action === 'create') {
-      if (flags.file && (flags.name || flags.id))
-        throw new Error('Use --file or --name with optional --id, not both');
-      if (!flags.file && !flags.name) throw new Error('project create requires --file or --name');
-      input = {
-        action: 'create',
-        draft: flags.file
-          ? await jsonFile(flags.file, MAX_PROJECT_BYTES)
-          : { name: flags.name, ...(flags.id ? { projectId: flags.id } : {}) },
-      };
-    } else {
-      if (!flags.file || !flags.expected)
-        throw new Error('project update requires --expected and --file');
-      input = {
-        action: 'update',
-        projectId: positional[0],
-        expectedRevision: flags.expected,
-        patch: await jsonFile(flags.file, MAX_PROJECT_BYTES),
-      };
-    }
-    console.log(JSON.stringify(await tool.run(input), null, 2));
+    console.log(
+      JSON.stringify(await tool.run(await projectToolCall(action, positional, flags)), null, 2),
+    );
     return 0;
   }
   const materials = workspace.materials;
