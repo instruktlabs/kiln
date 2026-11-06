@@ -7,12 +7,25 @@ does not publish a package.
 
 ## Unreleased
 
+- A build over the evaluator's output budget now says which budget it reached (#317). The error
+  names the stage (`glb` or `response`), the limit, the size and, for a GLB, the triangle count,
+  and says what to try next; it was `Evaluator output limit exceeded.` alone. The fixed wire
+  message is unchanged, and the numbers travel in a closed `limit` field that the protocol
+  validates, so a new worker needs a host that knows the field. `KILN_EVALUATOR_MAX_GLB_BYTES`
+  raises the GLB limit to 64 MiB, with the response budget following to at most 96 MiB. It is
+  host-only and the defaults stay 16 and 32 MiB. The subprocess worker now bounds its response by
+  the protocol's ceiling and leaves the budget to the host, which stops reading at it; without
+  that, a raised limit would have failed inside the worker at 32 MiB, and an over-budget response
+  was reported as invalid input. [Large assets](docs/runtime.md#large-assets) gives the measured
+  sizes and the supported routes.
+
 - Material revisions can record their parent (#310). `parentRevision` on a V1 or V2 draft, or
   `kiln material procedural --parent <sha256:revision>`, must name a saved revision of the same
   `materialId`; `get`, `list` and the `kiln.material-maps.v1` sidecar report it, and it survives
   export and import. It is optional, and the key is omitted when absent, so existing records keep
   their revision ids. A record that carries it is refused by an engine older than this one, whose
   manifest schema is strict.
+||||||| cde4dfe
 
 ## 1.6.0 (2026-10-27)
 
