@@ -2443,6 +2443,7 @@ var init_assets = __esm(() => {
       warnings: z3.array(z3.string()),
       integration: z3.unknown().optional(),
       qa: z3.unknown().optional(),
+      composition: z3.unknown().optional(),
       dependencies: z3.array(z3.unknown()).optional(),
       rebuild: z3.enum(["engine-required", "external-dependencies-required"])
     }).optional(),
@@ -16245,7 +16246,7 @@ function inside2(root, point, budget) {
   }
   return null;
 }
-function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CONTACT_TOLERANCE) {
+function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CONTACT_TOLERANCE, options = {}) {
   const evidence = {
     schemaVersion: 1,
     source: "engine-scene-analysis",
@@ -16268,11 +16269,15 @@ function analyzeOpenSurfacePenetration(root, contactTolerance = OPEN_SURFACE_CON
   const closed = parts.filter((part) => part.closed);
   evidence.openParts = open.length;
   evidence.closedParts = closed.length;
+  if (options.comparable)
+    evidence.openPartNames = open.map((part) => part.name);
   const candidates = [];
   let considered = 0;
   broadPhase:
     for (const surface of open) {
       for (const solid of closed) {
+        if (options.comparable && !options.comparable(surface.mesh, solid.mesh))
+          continue;
         if (considered++ === MAX_BROAD_PHASE_PAIRS) {
           evidence.broadPhaseTruncated = true;
           break broadPhase;
@@ -16811,7 +16816,7 @@ function meshToArrays(part) {
       [tris[i + 1], tris[i + 2]] = [tris[i + 2], tris[i + 1]];
   return { vertProperties: verts, triVerts: tris };
 }
-async function analyzePartPenetration(root) {
+async function analyzePartPenetration(root, options = {}) {
   const skipped = [];
   const parts = collectParts4(root, skipped);
   const base = {
@@ -16834,12 +16839,14 @@ async function analyzePartPenetration(root) {
   broadPhase:
     for (let i = 0;i < parts.length; i++) {
       for (let j = i + 1;j < parts.length; j++) {
+        const a = parts[i];
+        const b = parts[j];
+        if (options.comparable && !options.comparable(a.mesh, b.mesh))
+          continue;
         if (considered++ === MAX_BROAD_PHASE_PAIRS2) {
           base.broadPhaseTruncated = true;
           break broadPhase;
         }
-        const a = parts[i];
-        const b = parts[j];
         if (!a.box.intersectsBox(b.box))
           continue;
         if (a.lod && b.lod && a.lod.parent === b.lod.parent && a.lod.stem === b.lod.stem && a.lod.level !== b.lod.level) {
@@ -41444,7 +41451,7 @@ function checkContent(data, ctx) {
       message: "Material role requires a locked resource"
     });
 }
-var MAX_PROJECT_BYTES, MAX_PROJECT_REVISIONS = 1e4, projectIdSchema, projectRevisionIdSchema, hash5, text6, resourceId2, assetReference, projectDesignSchema, projectMaterialDependencySchema, materialDependenciesSchema, content, projectDraftSchema, projectPatchSchema, projectRevisionSchema, ProjectConflictError, ProjectNotFoundError, ProjectExistsError;
+var MAX_PROJECT_BYTES, MAX_PROJECT_REVISIONS = 1e4, projectIdSchema, projectRevisionIdSchema, hash5, text6, resourceId2, assetReference, placementNumber, placementVector, placementScale, inventoryPlacementSchema, projectDesignSchema, projectMaterialDependencySchema, materialDependenciesSchema, content, projectDraftSchema, projectPatchSchema, projectRevisionSchema, ProjectConflictError, ProjectNotFoundError, ProjectExistsError;
 var init_projects = __esm(() => {
   MAX_PROJECT_BYTES = 1024 * 1024;
   projectIdSchema = z9.string().regex(/^[a-z][a-z0-9_-]{0,79}$/).refine((value) => !/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/.test(value), "Reserved filesystem name");
@@ -41456,6 +41463,16 @@ var init_projects = __esm(() => {
     collectionId: projectIdSchema,
     assetId: projectIdSchema,
     revisionId: projectIdSchema
+  }).strict();
+  placementNumber = z9.number().min(-1e6).max(1e6);
+  placementVector = z9.tuple([placementNumber, placementNumber, placementNumber]);
+  placementScale = placementNumber.min(-1000).max(1000).refine((value) => value !== 0, {
+    message: "A zero scale collapses the module."
+  });
+  inventoryPlacementSchema = z9.object({
+    translation: placementVector.optional(),
+    rotation: placementVector.optional(),
+    scale: z9.tuple([placementScale, placementScale, placementScale]).optional()
   }).strict();
   projectDesignSchema = z9.object({
     style: text6.default(""),
@@ -41489,7 +41506,8 @@ var init_projects = __esm(() => {
       kind: z9.enum(["asset", "environment"]).default("asset"),
       brief: text6.default(""),
       references: z9.array(projectIdSchema).max(64).default([]),
-      asset: assetReference.optional()
+      asset: assetReference.optional(),
+      placement: inventoryPlacementSchema.optional()
     }).strict()).max(1000).default([]),
     deliveryProfiles: z9.array(z9.object({
       id: projectIdSchema,
@@ -41823,6 +41841,258 @@ var init_source_check = __esm(() => {
   init_protocol();
 });
 
+// src/project-composition.ts
+import * as THREE60 from "three";
+function placementMatrix(placement) {
+  const [rx, ry, rz] = placement.rotation ?? [0, 0, 0];
+  return new THREE60.Matrix4().compose(new THREE60.Vector3(...placement.translation ?? [0, 0, 0]), new THREE60.Quaternion().setFromEuler(new THREE60.Euler(THREE60.MathUtils.degToRad(rx), THREE60.MathUtils.degToRad(ry), THREE60.MathUtils.degToRad(rz), "XYZ")), new THREE60.Vector3(...placement.scale ?? [1, 1, 1]));
+}
+function nameParts(name) {
+  const at = name.indexOf("/");
+  return { inventoryId: name.slice(0, at), part: name.slice(at + 1).slice(0, 200) };
+}
+function readFailure(item, error) {
+  const code = error?.code;
+  const message = error instanceof Error ? error.message : String(error);
+  const { collectionId, assetId, revisionId } = item.asset;
+  const pin = `${collectionId}/${assetId} at ${revisionId}`;
+  if (code === "ENOENT" || /Unknown collection/.test(message))
+    return {
+      inventoryId: item.id,
+      reason: "unavailable",
+      detail: `The pinned revision ${pin} is not in the configured collections.`
+    };
+  return {
+    inventoryId: item.id,
+    reason: "unreadable",
+    detail: `The pinned revision ${pin} could not be read (${code ?? message}).`
+  };
+}
+async function composeModule(moduleOf, index, item, glb) {
+  const loaded = (await loadGlbReviewScene(glb)).root;
+  const group = new THREE60.Group;
+  group.matrix.copy(placementMatrix(item.placement));
+  group.matrixAutoUpdate = false;
+  group.add(loaded);
+  let parts = 0;
+  let lodExcluded = 0;
+  loaded.traverse((node) => {
+    const mesh = node;
+    if (!mesh.isMesh)
+      return;
+    if ((lodLevel(mesh) ?? 0) > 0) {
+      mesh.visible = false;
+      lodExcluded++;
+    }
+    moduleOf.set(mesh, index);
+    mesh.name = moduleName(item.id, mesh.name || "(unnamed mesh)");
+    parts++;
+  });
+  return { parts, lodExcluded, group };
+}
+function failedCompositionReport(project, error) {
+  return {
+    ...emptyReport(project),
+    coverage: "failed",
+    error: error instanceof Error ? error.message : String(error)
+  };
+}
+function emptyReport(project) {
+  return {
+    schemaVersion: 1,
+    source: "host-composed-scene",
+    projectId: project.projectId,
+    projectRevision: project.revisionId,
+    coverage: "nothing-to-compare",
+    modules: [],
+    notComposed: { count: 0, ids: [] },
+    unmeasured: [],
+    overlaps: [],
+    overlapsOmitted: 0,
+    openSurfaces: [],
+    openSurfacesOmitted: 0,
+    unmeasuredParts: [],
+    unmeasuredPartsOmitted: 0,
+    lodAlternatesExcluded: 0,
+    solids: { candidatePairs: 0, pairsTested: 0, pairsUnmeasurable: 0, pairsNotReached: 0 },
+    surfaces: { candidatePairs: 0, pairsTested: 0, pairsNotReached: 0, verticesUnresolved: 0 },
+    truncated: false,
+    note: COMPOSITION_NOTE
+  };
+}
+async function composeProjectModules(project, library, options = {}) {
+  const limits = { ...PROJECT_COMPOSITION_LIMITS, ...options.limits };
+  const report = emptyReport(project);
+  const { subject } = options;
+  const holdsSubject = (item) => subject !== undefined && item.asset?.collectionId === subject.collectionId && item.asset.assetId === subject.assetId;
+  const placed = project.inventory.filter((item) => item.placement);
+  const outside = project.inventory.filter((item) => !item.placement);
+  report.notComposed = {
+    count: outside.length,
+    ids: outside.slice(0, limits.maxListed).map((item) => item.id)
+  };
+  const held = placed.filter(holdsSubject);
+  if (subject)
+    report.subject = held.map((item) => item.id);
+  const scene = new THREE60.Group;
+  const moduleOf = new Map;
+  const subjectModules = new Set;
+  let bytes = 0;
+  let parts = 0;
+  let exhausted = false;
+  const overBudget = (item, detail) => {
+    exhausted = true;
+    report.unmeasured.push({ inventoryId: item.id, reason: "budget", detail });
+  };
+  for (const item of [...held, ...placed.filter((item) => !holdsSubject(item))]) {
+    if (!item.asset) {
+      report.unmeasured.push({
+        inventoryId: item.id,
+        reason: "unpinned",
+        detail: "This item states a placement but links no saved revision."
+      });
+      continue;
+    }
+    if (exhausted || report.modules.length >= limits.maxModules) {
+      overBudget(item, `Not loaded: the check composes at most ${limits.maxModules} modules, ${limits.maxBytes} bytes and ${limits.maxParts} parts.`);
+      continue;
+    }
+    const saved = holdsSubject(item);
+    let glb;
+    if (saved)
+      glb = subject.glb;
+    else {
+      try {
+        const { collectionId, assetId, revisionId } = item.asset;
+        glb = (await library.read(collectionId, assetId, revisionId)).files["asset.glb"];
+      } catch (error) {
+        report.unmeasured.push(readFailure(item, error));
+        continue;
+      }
+      if (!glb) {
+        report.unmeasured.push({
+          inventoryId: item.id,
+          reason: "unreadable",
+          detail: "The pinned revision has no asset.glb."
+        });
+        continue;
+      }
+    }
+    if (bytes + glb.length > limits.maxBytes) {
+      overBudget(item, `Not loaded: the check loads at most ${limits.maxBytes} GLB bytes.`);
+      continue;
+    }
+    bytes += glb.length;
+    let module;
+    try {
+      module = await composeModule(moduleOf, report.modules.length, item, glb);
+    } catch (error) {
+      report.unmeasured.push({
+        inventoryId: item.id,
+        reason: "unreadable",
+        detail: `The GLB could not be loaded (${error instanceof Error ? error.message : String(error)}).`
+      });
+      continue;
+    }
+    if (parts + module.parts > limits.maxParts) {
+      overBudget(item, `Not composed: the check composes at most ${limits.maxParts} parts.`);
+      continue;
+    }
+    parts += module.parts;
+    report.lodAlternatesExcluded += module.lodExcluded;
+    scene.add(module.group);
+    if (saved)
+      subjectModules.add(report.modules.length);
+    report.modules.push({
+      inventoryId: item.id,
+      collectionId: item.asset.collectionId,
+      assetId: item.asset.assetId,
+      ...saved ? { saved: true } : { revisionId: item.asset.revisionId },
+      parts: module.parts
+    });
+  }
+  let failed = false;
+  if (report.modules.length >= 2) {
+    const comparable = (a, b) => {
+      const left = moduleOf.get(a);
+      const right = moduleOf.get(b);
+      if (left === right)
+        return false;
+      return !subject || subjectModules.has(left) || subjectModules.has(right);
+    };
+    const unmeasured = [];
+    let open = new Set;
+    try {
+      const surfaces = analyzeOpenSurfacePenetration(scene, undefined, { comparable });
+      open = new Set(surfaces.openPartNames);
+      report.surfaces = {
+        candidatePairs: surfaces.candidatePairs,
+        pairsTested: surfaces.pairsTested,
+        pairsNotReached: surfaces.pairsNotReached,
+        verticesUnresolved: surfaces.verticesUnresolved
+      };
+      report.truncated ||= surfaces.truncated;
+      report.openSurfaces = surfaces.penetrations.slice(0, limits.maxReportedPairs).map((pair) => ({
+        open: nameParts(pair.open),
+        solid: nameParts(pair.solid),
+        depth: pair.depth,
+        vertices: pair.vertices,
+        tested: pair.tested
+      }));
+      report.openSurfacesOmitted = surfaces.penetrations.length - report.openSurfaces.length;
+      for (const { part, reason } of surfaces.skipped)
+        unmeasured.push({ ...nameParts(part), pass: "surfaces", reason });
+    } catch {
+      report.surfaces.failed = true;
+      failed = true;
+    }
+    try {
+      const solids = await analyzePartPenetration(scene, { comparable });
+      report.solids = {
+        candidatePairs: solids.candidatePairs,
+        pairsTested: solids.pairsTested,
+        pairsUnmeasurable: solids.pairsUnmeasurable,
+        pairsNotReached: solids.pairsNotReached
+      };
+      report.truncated ||= solids.truncated;
+      report.overlaps = solids.penetrations.slice(0, limits.maxReportedPairs).map((pair) => ({
+        a: nameParts(pair.a),
+        b: nameParts(pair.b),
+        volume: pair.volume,
+        fraction: pair.fraction
+      }));
+      report.overlapsOmitted = solids.penetrations.length - report.overlaps.length;
+      for (const { part, reason } of [...solids.skipped, ...solids.acknowledged ?? []])
+        if (!open.has(part))
+          unmeasured.push({ ...nameParts(part), pass: "solids", reason });
+    } catch {
+      report.solids.failed = true;
+      failed = true;
+    }
+    report.unmeasuredParts = unmeasured.slice(0, limits.maxListed);
+    report.unmeasuredPartsOmitted = unmeasured.length - report.unmeasuredParts.length;
+    report.truncated ||= report.overlapsOmitted > 0 || report.openSurfacesOmitted > 0;
+    failed ||= unmeasured.length > 0;
+  }
+  report.truncated ||= exhausted;
+  report.coverage = failed || report.truncated || report.unmeasured.length > 0 ? "partial" : report.modules.length < 2 ? "nothing-to-compare" : "complete";
+  return report;
+}
+var PROJECT_COMPOSITION_LIMITS, COMPOSITION_NOTE = "A positive is a measurement, not a verdict: a fitting socketed into a neighbour is reported as a bolt in a hole is. Measured at rest over visible static parts; open surfaces are not measured against each other, and a solid thinner than a surface’s facet spacing can pass between its vertices. A clean result is not a fit audit.", moduleName = (inventoryId, part) => `${inventoryId}/${part}`;
+var init_project_composition = __esm(() => {
+  init_lod2();
+  init_open_surface_penetration();
+  init_self_intersection();
+  init_glb();
+  PROJECT_COMPOSITION_LIMITS = Object.freeze({
+    maxModules: 64,
+    maxBytes: 256 * 1024 * 1024,
+    maxParts: 4096,
+    maxReportedPairs: 100,
+    maxListed: 32
+  });
+});
+
 // src/views/port.ts
 async function sha256Bytes(bytes) {
   const input = new Uint8Array(bytes.byteLength);
@@ -42036,12 +42306,12 @@ var exports_part_placement = {};
 __export(exports_part_placement, {
   createPartPlacementReader: () => createPartPlacementReader
 });
-import * as THREE60 from "three";
+import * as THREE61 from "three";
 function createPartPlacementReader(root) {
   const bounds = createPartBoundsReader(root);
-  const position = new THREE60.Vector3;
-  const quaternion = new THREE60.Quaternion;
-  const scale = new THREE60.Vector3;
+  const position = new THREE61.Vector3;
+  const quaternion = new THREE61.Quaternion;
+  const scale = new THREE61.Vector3;
   return (node) => {
     node.matrixWorld.decompose(position, quaternion, scale);
     const box = bounds(node);
@@ -42192,7 +42462,7 @@ var init_inspect = __esm(() => {
 });
 
 // src/views/measurement.ts
-import { Box3 as Box328, Vector3 as Vector347 } from "three";
+import { Box3 as Box328, Vector3 as Vector348 } from "three";
 function describeSubjectFrame(root, subject) {
   const selected = selectCameraSubject(root, subject);
   selected.node.updateWorldMatrix(true, true);
@@ -42209,10 +42479,10 @@ function describeSubjectFrame(root, subject) {
     if (!attr)
       return;
     for (let i = 0;i < attr.count; i++)
-      local.expandByPoint(new Vector347().fromBufferAttribute(attr, i).applyMatrix4(mesh.matrixWorld).applyMatrix4(inverse));
+      local.expandByPoint(new Vector348().fromBufferAttribute(attr, i).applyMatrix4(mesh.matrixWorld).applyMatrix4(inverse));
   });
   const box = (b) => b.isEmpty() ? null : { min: b.min.toArray(), max: b.max.toArray() };
-  const axis = (i) => new Vector347().setFromMatrixColumn(matrix, i).normalize().toArray();
+  const axis = (i) => new Vector348().setFromMatrixColumn(matrix, i).normalize().toArray();
   return {
     path: selected.path,
     name: selected.name,
@@ -42222,7 +42492,7 @@ function describeSubjectFrame(root, subject) {
     invertible,
     worldMatrix: matrix.toArray(),
     axes: { frame: "world", x: axis(0), y: axis(1), z: axis(2) },
-    origin: new Vector347().setFromMatrixPosition(matrix).toArray()
+    origin: new Vector348().setFromMatrixPosition(matrix).toArray()
   };
 }
 function measureAttachment(root, input) {
@@ -42235,7 +42505,7 @@ function measureAttachment(root, input) {
     return {
       path: selected.path,
       local: [...local],
-      world: new Vector347(...local).applyMatrix4(selected.node.matrixWorld).toArray()
+      world: new Vector348(...local).applyMatrix4(selected.node.matrixWorld).toArray()
     };
   };
   const from = endpoint(input.from), to = endpoint(input.to);
@@ -42245,7 +42515,7 @@ function measureAttachment(root, input) {
     method: "straight-line anchor distance",
     from,
     to,
-    distance: new Vector347(...from.world).distanceTo(new Vector347(...to.world))
+    distance: new Vector348(...from.world).distanceTo(new Vector348(...to.world))
   };
 }
 var init_measurement = __esm(() => {
@@ -42257,7 +42527,7 @@ import {
   PropertyType as PropertyType6
 } from "@gltf-transform/core";
 import { ALL_EXTENSIONS as ALL_EXTENSIONS2 } from "@gltf-transform/extensions";
-import { Box3 as Box329, Matrix4 as Matrix419, Quaternion as Quaternion23, Vector3 as Vector348 } from "three";
+import { Box3 as Box329, Matrix4 as Matrix420, Quaternion as Quaternion24, Vector3 as Vector349 } from "three";
 async function accessorFingerprint(accessor) {
   const array = accessor?.getArray();
   if (!accessor || !array)
@@ -42276,7 +42546,7 @@ function bounds(box) {
   return box.isEmpty() ? null : {
     min: box.min.toArray(),
     max: box.max.toArray(),
-    size: box.getSize(new Vector348).toArray()
+    size: box.getSize(new Vector349).toArray()
   };
 }
 async function digest8(bytes) {
@@ -42284,7 +42554,7 @@ async function digest8(bytes) {
   return `sha256:${[...hash].map((b) => b.toString(16).padStart(2, "0")).join("")}`;
 }
 function placements(node) {
-  const world = new Matrix419().fromArray(node.getWorldMatrix());
+  const world = new Matrix420().fromArray(node.getWorldMatrix());
   const instances = node.getExtension("EXT_mesh_gpu_instancing");
   if (!instances)
     return [world];
@@ -42292,7 +42562,7 @@ function placements(node) {
   const rotation = instances.getAttribute("ROTATION");
   const scale = instances.getAttribute("SCALE");
   const count = translation?.getCount() ?? rotation?.getCount() ?? scale?.getCount() ?? 1;
-  return Array.from({ length: count }, (_, i) => world.clone().multiply(new Matrix419().compose(new Vector348().fromArray(translation?.getElement(i, []) ?? [0, 0, 0]), new Quaternion23().fromArray(rotation?.getElement(i, []) ?? [0, 0, 0, 1]), new Vector348().fromArray(scale?.getElement(i, []) ?? [1, 1, 1]))));
+  return Array.from({ length: count }, (_, i) => world.clone().multiply(new Matrix420().compose(new Vector349().fromArray(translation?.getElement(i, []) ?? [0, 0, 0]), new Quaternion24().fromArray(rotation?.getElement(i, []) ?? [0, 0, 0, 1]), new Vector349().fromArray(scale?.getElement(i, []) ?? [1, 1, 1]))));
 }
 function triangleCorners(mode, count) {
   const corners = [];
@@ -42359,7 +42629,7 @@ async function drawnGeometryDigests(doc) {
   }
   const data = new Float32Array(triangles * RECORD);
   const others = [];
-  const point = new Vector348;
+  const point = new Vector349;
   const element = [0, 0, 0];
   const texcoord = [0, 0];
   const corner = new Float32Array(15);
@@ -42442,7 +42712,7 @@ async function revisionTotals(doc) {
   const { vertices, geometry, uv } = await drawnGeometryDigests(doc);
   const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
   const drawnBounds = scene ? drawnSceneBounds(scene) : null;
-  const box = drawnBounds && [...drawnBounds.min, ...drawnBounds.max].every(Number.isFinite) ? new Box329(new Vector348(...drawnBounds.min), new Vector348(...drawnBounds.max)) : new Box329;
+  const box = drawnBounds && [...drawnBounds.min, ...drawnBounds.max].every(Number.isFinite) ? new Box329(new Vector349(...drawnBounds.min), new Vector349(...drawnBounds.max)) : new Box329;
   return {
     triangles: metrics.triangles,
     vertices,
@@ -42535,7 +42805,7 @@ async function snapshot3(bytes) {
         throw new Error("Revision comparison does not support node/mesh extensions (including instancing).");
       const primitives = mesh?.listPrimitives() ?? [];
       const own = new Box329;
-      const matrix = parentWorld.clone().multiply(new Matrix419().fromArray(node.getMatrix()));
+      const matrix = parentWorld.clone().multiply(new Matrix420().fromArray(node.getMatrix()));
       if (matrix.elements.some((value) => !Number.isFinite(value)))
         throw new Error("Revision comparison requires finite transforms.");
       for (const primitive of primitives) {
@@ -42555,7 +42825,7 @@ async function snapshot3(bytes) {
           if (!Number.isInteger(vertex) || vertex < 0 || vertex >= position.getCount())
             throw new Error("Revision comparison found an invalid vertex index.");
           position.getElement(vertex, element);
-          const point = new Vector348(...element).applyMatrix4(matrix);
+          const point = new Vector349(...element).applyMatrix4(matrix);
           if (point.toArray().some((value) => !Number.isFinite(value)))
             throw new Error("Revision comparison requires finite positions.");
           own.expandByPoint(point);
@@ -42574,7 +42844,7 @@ async function snapshot3(bytes) {
   if (scenes[0].listExtensions().length)
     throw new Error("Revision comparison does not support scene extensions.");
   const scenePath = `/${encodeURIComponent(scenes[0].getName() || "Scene")}[0]`;
-  const box = visit(scenes[0].listChildren(), "", 0, new Matrix419);
+  const box = visit(scenes[0].listChildren(), "", 0, new Matrix420);
   const nodePaths = new Map([...parts].map(([path, part]) => [part.node, path]));
   const animation = new Map;
   const clipNames = new Set;
@@ -42756,10 +43026,10 @@ var init_revision_comparison = __esm(() => {
 // src/views/surface-distance.ts
 import {
   Box3 as Box330,
-  Matrix4 as Matrix420,
+  Matrix4 as Matrix421,
   Ray as Ray3,
   Triangle as Triangle3,
-  Vector3 as Vector349
+  Vector3 as Vector350
 } from "three";
 function hierarchy(triangles) {
   const box = new Box330;
@@ -42768,7 +43038,7 @@ function hierarchy(triangles) {
   const count = triangles.length;
   if (count <= 4)
     return { box, count, triangles };
-  const size = box.getSize(new Vector349);
+  const size = box.getSize(new Vector350);
   const axis = size.x >= size.y && size.x >= size.z ? "x" : size.y >= size.z ? "y" : "z";
   const center = (triangle) => triangle.box.min[axis] / 2 + triangle.box.max[axis] / 2;
   triangles.sort((a, b) => center(a) - center(b));
@@ -42811,7 +43081,7 @@ function collect(node, paths) {
     for (let instance = 0;instance < instances; instance++) {
       const matrix = mesh.matrixWorld.clone();
       if (instanced.isInstancedMesh) {
-        const local = new Matrix420;
+        const local = new Matrix421;
         instanced.getMatrixAt(instance, local);
         matrix.multiply(local);
       }
@@ -42820,7 +43090,7 @@ function collect(node, paths) {
           const id = index ? index.getX(i + offset) : i + offset;
           if (!Number.isSafeInteger(id) || id < 0 || id >= position.count)
             throw new Error("Surface distance encountered an invalid triangle index.");
-          const point = new Vector349().fromBufferAttribute(position, id).applyMatrix4(matrix);
+          const point = new Vector350().fromBufferAttribute(position, id).applyMatrix4(matrix);
           if (![point.x, point.y, point.z].every(Number.isFinite))
             throw new Error("Surface distance encountered a non-finite world position.");
           return point;
@@ -42879,10 +43149,10 @@ function trianglePair(a, b) {
   const av = [a.a, a.b, a.c], bv = [b.a, b.b, b.c];
   if (b.getArea() > 0)
     for (const p of av)
-      record(p, b.closestPointToPoint(p, new Vector349));
+      record(p, b.closestPointToPoint(p, new Vector350));
   if (a.getArea() > 0)
     for (const q of bv)
-      record(a.closestPointToPoint(q, new Vector349), q);
+      record(a.closestPointToPoint(q, new Vector350), q);
   for (let i = 0;i < 3; i++) {
     const p = av[i], q = av[(i + 1) % 3];
     for (let j = 0;j < 3; j++)
@@ -42895,9 +43165,9 @@ function trianglePair(a, b) {
       const length = delta.length();
       if (length === 0)
         continue;
-      const hit = new Ray3(origin, delta.divideScalar(length)).intersectTriangle(target.a, target.b, target.c, false, new Vector349);
+      const hit = new Ray3(origin, delta.divideScalar(length)).intersectTriangle(target.a, target.b, target.c, false, new Vector350);
       if (hit && origin.distanceTo(hit) <= length) {
-        const onFace = target.closestPointToPoint(hit, new Vector349);
+        const onFace = target.closestPointToPoint(hit, new Vector350);
         if (vertices === av)
           record(hit, onFace);
         else
@@ -43063,7 +43333,7 @@ __export(exports_draw_diagnostics, {
 });
 import { Primitive as Primitive3 } from "@gltf-transform/core";
 import { cloneDocument as cloneDocument2 } from "@gltf-transform/functions";
-import * as THREE61 from "three";
+import * as THREE62 from "three";
 function withinLimits(doc) {
   const root = doc.getRoot();
   if (root.listNodes().length > MAX_NODES2 || root.listAccessors().length > 4096 || root.listMaterials().length > 2048 || root.listTextures().length > 256 || root.listScenes().length > 32 || doc.getGraph().listEdges().length > 32768)
@@ -43116,7 +43386,7 @@ function collect2(doc, keep) {
 function overlaps(a, b) {
   if (Math.abs(a.normal.dot(b.normal)) < 1 - 0.00000001 || !a.bounds.intersectsBox(b.bounds))
     return false;
-  const tolerance = Math.max(a.bounds.getSize(new THREE61.Vector3).length(), b.bounds.getSize(new THREE61.Vector3).length(), 0.000000000001) * 0.000001;
+  const tolerance = Math.max(a.bounds.getSize(new THREE62.Vector3).length(), b.bounds.getSize(new THREE62.Vector3).length(), 0.000000000001) * 0.000001;
   if (b.points.some((p) => Math.abs(a.normal.dot(p.clone().sub(a.points[0]))) > tolerance))
     return false;
   const normal = a.normal.toArray().map(Math.abs);
@@ -43158,7 +43428,7 @@ function observe(uses) {
       unexaminedPrimitiveUses++;
       continue;
     }
-    const matrix = new THREE61.Matrix4().fromArray(node.getWorldMatrix());
+    const matrix = new THREE62.Matrix4().fromArray(node.getWorldMatrix());
     if (primitive.getAttribute("TANGENT") && matrix.determinant() < 0)
       mirrored.set(part.id, part);
     const position = primitive.getAttribute("POSITION");
@@ -43172,14 +43442,14 @@ function observe(uses) {
     const amount = Math.min(count, 8, MAX_SAMPLES - samples.length);
     for (let i = 0;i < amount; i++) {
       const start = Math.floor(i * count / amount) * 3;
-      const points = [0, 1, 2].map((j) => new THREE61.Vector3().fromArray(position.getElement(indices ? indices.getScalar(start + j) : start + j, [])).applyMatrix4(matrix));
+      const points = [0, 1, 2].map((j) => new THREE62.Vector3().fromArray(position.getElement(indices ? indices.getScalar(start + j) : start + j, [])).applyMatrix4(matrix));
       const normal = points[1].clone().sub(points[0]).cross(points[2].clone().sub(points[0]));
       if (!Number.isFinite(normal.lengthSq()) || normal.lengthSq() === 0)
         continue;
       samples.push({
         points,
         normal: normal.normalize(),
-        bounds: new THREE61.Box3().setFromPoints(points),
+        bounds: new THREE62.Box3().setFromPoints(points),
         part
       });
     }
@@ -52110,7 +52380,7 @@ function flattenIssuePaths(issues, prefix = []) {
 }
 
 // src/tools/projects.ts
-var PROJECT_ACTIONS = ["list", "get", "create", "update", "export"];
+var PROJECT_ACTIONS = ["list", "get", "create", "update", "export", "check"];
 var REQUIREMENTS = {
   list: { required: [] },
   get: { required: ["projectId"] },
@@ -52119,25 +52389,26 @@ var REQUIREMENTS = {
     required: ["projectId", "expectedRevision", "patch"],
     shapes: { patch: "shape:project-patch" }
   },
-  export: { required: ["projectId"] }
+  export: { required: ["projectId"] },
+  check: { required: ["projectId"] }
 };
 var record10 = (description) => z18.record(z18.string(), z18.unknown()).optional().describe(description);
 function projectToolInput(actions = PROJECT_ACTIONS) {
   return z18.strictObject({
     action: z18.enum(actions),
-    projectId: projectIdSchema.optional().describe("get, update, export."),
-    revisionId: projectRevisionIdSchema.optional().describe("get, export: an exact revision; omit for the current one."),
+    projectId: projectIdSchema.optional().describe("get, update, export, check."),
+    revisionId: projectRevisionIdSchema.optional().describe("get, export, check: an exact revision; omit for the current one."),
     expectedRevision: projectRevisionIdSchema.optional().describe("update: the revision being replaced; a stale value is a conflict."),
     draft: record10(nestedRecordDescription("create: name, brief, design, inventory, deliveryProfiles, materialDependencies, references, reviews; optional projectId.", "shape:project-draft")),
     patch: record10(nestedRecordDescription("update: the same top-level fields as draft; each supplied field replaces its previous value whole.", "shape:project-patch")),
     profile: z18.enum(["editable", "runtime"]).optional().describe("export: editable (default) keeps source and resources; runtime is GLB plus metadata.")
   });
 }
-function createKilnProjectDef(store, bundleReader) {
-  const schema = projectToolInput(bundleReader ? PROJECT_ACTIONS : PROJECT_ACTIONS.filter((action) => action !== "export"));
+function createKilnProjectDef(store, bundleReader, assetLibrary) {
+  const schema = projectToolInput(PROJECT_ACTIONS.filter((action) => (action !== "export" || bundleReader) && (action !== "check" || assetLibrary)));
   return {
     name: "kiln_project",
-    description: "Manage optional shared workspace projects: list discovers IDs; get reads the current or an exact historical configuration; create adds a project; update needs the exact expectedRevision and replaces each supplied top-level field. Assets and materials are authored, saved and exported without a project, and creating one never binds unrelated authoring. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned; review annotations do not change trusted QA or authorize a release. CLI and the local dashboard use the same records." + (bundleReader ? " export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP; only inventory entries linked to saved revisions contribute assets, and referenced concept images and acquisition archives are not embedded." : ""),
+    description: "Manage optional shared workspace projects: list discovers IDs; get reads the current or an exact historical configuration; create adds a project; update needs the exact expectedRevision and replaces each supplied top-level field. Assets and materials are authored, saved and exported without a project, and creating one never binds unrelated authoring. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned; review annotations do not change trusted QA or authorize a release." + (bundleReader ? " export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP; only inventory entries linked to saved revisions contribute assets, and referenced concept images and acquisition archives are not embedded." : "") + (assetLibrary ? " check measures items that state a placement against each other at pinned revisions: shared volume, and open surfaces inside a neighbour. An unreadable pin is unmeasured, not clear; a positive is not a verdict." : ""),
     inputSchema: schema,
     annotations: {
       readOnlyHint: false,
@@ -52170,6 +52441,13 @@ function createKilnProjectDef(store, bundleReader) {
           ok: true,
           project: await store.update(input.projectId, input.expectedRevision, projectPatchSchema.parse(input.patch))
         };
+      case "check": {
+        await Promise.resolve().then(() => init_project_composition());
+        return {
+          ok: true,
+          composition: await composeProjectModules(await store.read(input.projectId, input.revisionId), assetLibrary)
+        };
+      }
       case "export": {
         const profile = input.profile ?? "editable";
         const project = await store.read(input.projectId, input.revisionId);
@@ -53379,7 +53657,7 @@ init_render();
 init_requirements_context();
 init_evaluator();
 init_material_resources();
-import * as THREE62 from "three";
+import * as THREE63 from "three";
 
 // src/render-route.ts
 var GPU_SERVES = new Set([
@@ -53980,8 +54258,8 @@ function collectSceneMetrics(root) {
   let meshes = 0;
   const materialSet = new Set;
   let lowestPart;
-  const box = new THREE62.Box3;
-  const point = new THREE62.Vector3;
+  const box = new THREE63.Box3;
+  const point = new THREE63.Vector3;
   root.updateWorldMatrix(true, true);
   root.traverseVisible((node) => {
     const n = node;
@@ -53997,7 +54275,7 @@ function collectSceneMetrics(root) {
       const mesh = node;
       const position = mesh.geometry.getAttribute("position");
       const index = mesh.geometry.index;
-      const mb = new THREE62.Box3;
+      const mb = new THREE63.Box3;
       if (position) {
         for (let i = 0;i < (index?.count ?? position.count); i++) {
           point.fromBufferAttribute(position, index ? index.getX(i) : i);
@@ -54012,7 +54290,7 @@ function collectSceneMetrics(root) {
   });
   let bbox;
   if (!box.isEmpty()) {
-    const size = new THREE62.Vector3;
+    const size = new THREE63.Vector3;
     box.getSize(size);
     bbox = {
       min: [box.min.x, box.min.y, box.min.z],
@@ -54899,7 +55177,9 @@ function createProgramDefs(suppliedContext, presentation) {
       createKilnEditDef(context)
     ].map((def) => withProgramReferences(def, store, context.readSourceFile)),
     createKilnSourceDef(store),
-    ...context.projectStore ? [createKilnProjectDef(context.projectStore, context.projectBundleReader)] : [],
+    ...context.projectStore ? [
+      createKilnProjectDef(context.projectStore, context.projectBundleReader, context.assetLibrary)
+    ] : [],
     ...context.materialLibrary ? [createKilnMaterialDef(context.materialLibrary, presentation)] : [],
     ...context.reviewStore && context.assetLibrary ? [
       createKilnReviewDef({
@@ -54999,6 +55279,19 @@ async function parentRevisionComparison(parent, child) {
     return {
       unavailable: `Parent comparison unavailable: ${error instanceof Error ? error.message : String(error)}`
     };
+  }
+}
+async function savedComposition(context, library, { collection, assetId }, glb) {
+  const project = context.workspace?.current()?.project;
+  if (!project || !assetId || !project.inventory.some(({ asset, placement }) => placement && asset?.collectionId === collection && asset.assetId === assetId))
+    return;
+  await Promise.resolve().then(() => init_project_composition());
+  try {
+    return await composeProjectModules(project, library, {
+      subject: { collectionId: collection, assetId, glb }
+    });
+  } catch (error) {
+    return failedCompositionReport(project, error);
   }
 }
 async function buildProgramGlb(programRef, context) {
@@ -55165,9 +55458,15 @@ function createKilnAssetDefs(context, presentation = "grouped") {
         }
         const code = await context.programStore.get(input.programRef);
         const draft = await buildProgramAssetDraft(code, callContext, backdrop);
-        const asset = await target.save(input.collection, { ...input, ...draft });
+        const composition = await savedComposition(context, target, input, draft.glb);
+        const asset = await target.save(input.collection, {
+          ...input,
+          ...draft,
+          ...composition ? { build: { ...draft.build, composition } } : {}
+        });
         return {
           ...await links(input.collection, asset),
+          ...composition ? { composition } : {},
           ...parent ? { comparison: await parentRevisionComparison(parent.files["asset.glb"], draft.glb) } : {}
         };
       }

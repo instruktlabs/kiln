@@ -85,7 +85,7 @@ export function createKilnProjectDef(
         ? ' export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP; only inventory entries linked to saved revisions contribute assets, and referenced concept images and acquisition archives are not embedded.'
         : '') +
       (assetLibrary
-        ? ' check measures items that state a placement against each other at their pinned revisions: shared volume, and open surfaces inside a neighbour. An unreadable pin is unmeasured, not clear; a positive is a measurement, not a verdict.'
+        ? ' check measures items that state a placement against each other at pinned revisions: shared volume, and open surfaces inside a neighbour. An unreadable pin is unmeasured, not clear; a positive is not a verdict.'
         : ''),
     inputSchema: schema,
     annotations: {

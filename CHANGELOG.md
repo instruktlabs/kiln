@@ -20,6 +20,7 @@ does not publish a package.
   assets get no report and no warning. A draft is not measured until it is saved. The key is omitted when
   absent, so existing project revisions keep their ids; a record that states one is refused by an engine
   older than this one, whose project schema is strict. The `kiln_project` schema gains the action.
+
 - The floating-parts warning and `GEO_PART_CONNECTIVITY` now see primitives merged into one mesh
   (#304). One mesh was one bounding box, so a welded component was never compared with the rest at
   any distance. Each mesh is now split into its connected components, through triangles and shared
