@@ -76,6 +76,6 @@ bun run test:coverage
 
 Prepare the pinned historical corpus once with the explicit fetch command above.
 Subsequent tests stay offline, pin CPU rendering and include those archived programs.
-The coverage ratchet lives in [scripts/check-coverage.mjs](https://github.com/instruktlabs/kiln/blob/main/scripts/check-coverage.mjs). Threshold decreases require an explicit measured rationale. Biome limits cognitive complexity to 100; `overrides` in `biome.json` hold each of the 13 existing functions above that at its current score, so they cannot grow. Lower a ceiling when its function is refactored. Live provider tests require an explicit opt-in.
+The coverage ratchet lives in [scripts/check-coverage.mjs](https://github.com/instruktlabs/kiln/blob/main/scripts/check-coverage.mjs). Threshold decreases require an explicit measured rationale. Biome limits cognitive complexity to 100; `overrides` in `biome.json` hold each of the 12 existing functions above that at its current score, so they cannot grow. Lower a ceiling when its function is refactored. Live provider tests require an explicit opt-in.
 
 Core dependencies include Three.js, glTF Transform, Manifold, Acorn, and Zod. The agent SDK is an optional peer. Keep provider adapters compatible with the SDK's declared interface version; a TypeScript cast cannot fix a runtime protocol mismatch.

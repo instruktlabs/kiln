@@ -7,6 +7,7 @@ import {
   projectRevisionIdSchema,
   type ProjectStore,
 } from '../projects';
+import type { AssetLibrary } from '../assets';
 import { nestedRecordDescription, requireActionFields } from './actions';
 import type { KilnToolDef } from './registry';
 
@@ -16,7 +17,7 @@ export type ProjectBundleReader = (
   profile: 'editable' | 'runtime',
 ) => Promise<Uint8Array>;
 
-const PROJECT_ACTIONS = ['list', 'get', 'create', 'update', 'export'] as const;
+const PROJECT_ACTIONS = ['list', 'get', 'create', 'update', 'export', 'check'] as const;
 type ProjectAction = (typeof PROJECT_ACTIONS)[number];
 const REQUIREMENTS: Record<ProjectAction, Parameters<typeof requireActionFields>[3]> = {
   list: { required: [] },
@@ -27,20 +28,21 @@ const REQUIREMENTS: Record<ProjectAction, Parameters<typeof requireActionFields>
     shapes: { patch: 'shape:project-patch' },
   },
   export: { required: ['projectId'] },
+  check: { required: ['projectId'] },
 };
 
 /** The nested records stay opaque in the advertised schema and are validated when the action runs. */
 const record = (description: string) =>
   z.record(z.string(), z.unknown()).optional().describe(description);
 
-/** One flat object: `export` is offered only when the host can read project bundles. */
+/** One flat object: `export` and `check` are offered only when the host can back them. */
 export function projectToolInput(actions: readonly ProjectAction[] = PROJECT_ACTIONS) {
   return z.strictObject({
     action: z.enum(actions as [ProjectAction, ...ProjectAction[]]),
-    projectId: projectIdSchema.optional().describe('get, update, export.'),
+    projectId: projectIdSchema.optional().describe('get, update, export, check.'),
     revisionId: projectRevisionIdSchema
       .optional()
-      .describe('get, export: an exact revision; omit for the current one.'),
+      .describe('get, export, check: an exact revision; omit for the current one.'),
     expectedRevision: projectRevisionIdSchema
       .optional()
       .describe('update: the revision being replaced; a stale value is a conflict.'),
@@ -68,16 +70,22 @@ export function projectToolInput(actions: readonly ProjectAction[] = PROJECT_ACT
 export function createKilnProjectDef(
   store: ProjectStore,
   bundleReader?: ProjectBundleReader,
+  assetLibrary?: Pick<AssetLibrary, 'read'>,
 ): KilnToolDef {
   const schema = projectToolInput(
-    bundleReader ? PROJECT_ACTIONS : PROJECT_ACTIONS.filter((action) => action !== 'export'),
+    PROJECT_ACTIONS.filter(
+      (action) => (action !== 'export' || bundleReader) && (action !== 'check' || assetLibrary),
+    ),
   );
   return {
     name: 'kiln_project',
     description:
-      'Manage optional shared workspace projects: list discovers IDs; get reads the current or an exact historical configuration; create adds a project; update needs the exact expectedRevision and replaces each supplied top-level field. Assets and materials are authored, saved and exported without a project, and creating one never binds unrelated authoring. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned; review annotations do not change trusted QA or authorize a release. CLI and the local dashboard use the same records.' +
+      'Manage optional shared workspace projects: list discovers IDs; get reads the current or an exact historical configuration; create adds a project; update needs the exact expectedRevision and replaces each supplied top-level field. Assets and materials are authored, saved and exported without a project, and creating one never binds unrelated authoring. Design preferences, inventory, references, delivery profiles and pinned material dependencies are versioned; review annotations do not change trusted QA or authorize a release.' +
       (bundleReader
         ? ' export returns an MCP resource URI for an exact editable project ZIP with normalized material maps and recipes, or a runtime GLB/metadata ZIP; only inventory entries linked to saved revisions contribute assets, and referenced concept images and acquisition archives are not embedded.'
+        : '') +
+      (assetLibrary
+        ? ' check measures items that state a placement against each other at pinned revisions: shared volume, and open surfaces inside a neighbour. An unreadable pin is unmeasured, not clear; a positive is not a verdict.'
         : ''),
     inputSchema: schema,
     annotations: {
@@ -118,6 +126,16 @@ export function createKilnProjectDef(
             projectPatchSchema.parse(input.patch),
           ),
         };
+      case 'check': {
+        const { composeProjectModules } = await import('../project-composition');
+        return {
+          ok: true,
+          composition: await composeProjectModules(
+            await store.read(input.projectId!, input.revisionId),
+            assetLibrary!,
+          ),
+        };
+      }
       case 'export': {
         const profile = input.profile ?? 'editable';
         const project = await store.read(input.projectId!, input.revisionId);

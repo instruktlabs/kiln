@@ -28,6 +28,7 @@ PROJECTS
   kiln project update <id> --expected <revision> --file <project-patch.json>
   kiln project export <id> --out <project.zip> [--revision <revision>] [--profile editable|runtime]
   kiln project import <project.zip> --id <new-project-id> --collection <collection> [--name <name>]
+  kiln project check <id> [--revision <revision>]
 
 MATERIALS
   kiln material presets [--tag <tag>]
@@ -55,6 +56,12 @@ Projects are optional. Authoring stays standalone unless --project or KILN_PROJE
 selects a project; --no-project overrides that configured default. Use --materials
 with an array of exact resourceId/revisionId/sha256 pins for standalone materials.
 All commands return JSON; export refuses to overwrite an existing destination.
+
+Project check composes the inventory items that state a placement, at their exact pinned
+revisions, and reports parts of different modules that share volume or where an open surface
+reaches inside a neighbour. An item with no placement is not composed. A placed item it cannot
+read is reported unmeasured rather than clear. Findings are measurements, not verdicts, so the
+command exits 0 with them.
 
 Material export --maps writes <id>.<slot>.png for each map at --size pixels square,
 <id>.preview.png (the material on a lit plane repeated --tiles × --tiles, default 3)
@@ -163,6 +170,40 @@ async function exportMaterialMapsCommand(
   };
 }
 
+/** The `kiln_project` call behind each CLI action that is not a bundle transfer. */
+async function projectToolCall(
+  action: string,
+  positional: readonly string[],
+  flags: Readonly<Record<string, string>>,
+): Promise<unknown> {
+  if (action === 'list') return { action: 'list' };
+  if (action === 'get' || action === 'check')
+    return {
+      action,
+      projectId: positional[0],
+      ...(flags.revision ? { revisionId: flags.revision } : {}),
+    };
+  if (action === 'create') {
+    if (flags.file && (flags.name || flags.id))
+      throw new Error('Use --file or --name with optional --id, not both');
+    if (!flags.file && !flags.name) throw new Error('project create requires --file or --name');
+    return {
+      action: 'create',
+      draft: flags.file
+        ? await jsonFile(flags.file, MAX_PROJECT_BYTES)
+        : { name: flags.name, ...(flags.id ? { projectId: flags.id } : {}) },
+    };
+  }
+  if (!flags.file || !flags.expected)
+    throw new Error('project update requires --expected and --file');
+  return {
+    action: 'update',
+    projectId: positional[0],
+    expectedRevision: flags.expected,
+    patch: await jsonFile(flags.file, MAX_PROJECT_BYTES),
+  };
+}
+
 export async function projectMain(argv: readonly string[]): Promise<number> {
   const [family, action] = argv;
   if (argv.some((value) => value === '--help' || value === '-h')) {
@@ -173,7 +214,7 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
     throw new Error('Expected project or material command');
   const supported =
     family === 'project'
-      ? ['list', 'get', 'create', 'update', 'export', 'import']
+      ? ['list', 'get', 'create', 'update', 'export', 'import', 'check']
       : ['list', 'get', 'procedural', 'import', 'export', 'presets', 'create-preset'];
   if (!action || !supported.includes(action))
     throw new Error(`Unknown ${family} action. Run kiln ${family} --help.`);
@@ -184,6 +225,7 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
     'project:update': ['file', 'expected'],
     'project:export': ['out', 'revision', 'profile'],
     'project:import': ['id', 'collection', 'name'],
+    'project:check': ['revision'],
     'material:list': [],
     'material:presets': ['tag'],
     'material:create-preset': ['file'],
@@ -209,7 +251,7 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
     flags[key] = next;
   }
   const expectedArgs =
-    action === 'get' || action === 'export'
+    action === 'get' || action === 'export' || action === 'check'
       ? family === 'project'
         ? 1
         : 2
@@ -251,36 +293,10 @@ export async function projectMain(argv: readonly string[]): Promise<number> {
       console.log(JSON.stringify({ ok: true, project }, null, 2));
       return 0;
     }
-    const tool = createKilnProjectDef(store);
-    let input: unknown;
-    if (action === 'list') input = { action: 'list' };
-    else if (action === 'get')
-      input = {
-        action: 'get',
-        projectId: positional[0],
-        ...(flags.revision ? { revisionId: flags.revision } : {}),
-      };
-    else if (action === 'create') {
-      if (flags.file && (flags.name || flags.id))
-        throw new Error('Use --file or --name with optional --id, not both');
-      if (!flags.file && !flags.name) throw new Error('project create requires --file or --name');
-      input = {
-        action: 'create',
-        draft: flags.file
-          ? await jsonFile(flags.file, MAX_PROJECT_BYTES)
-          : { name: flags.name, ...(flags.id ? { projectId: flags.id } : {}) },
-      };
-    } else {
-      if (!flags.file || !flags.expected)
-        throw new Error('project update requires --expected and --file');
-      input = {
-        action: 'update',
-        projectId: positional[0],
-        expectedRevision: flags.expected,
-        patch: await jsonFile(flags.file, MAX_PROJECT_BYTES),
-      };
-    }
-    console.log(JSON.stringify(await tool.run(input), null, 2));
+    const tool = createKilnProjectDef(store, undefined, localAssetLibrary());
+    console.log(
+      JSON.stringify(await tool.run(await projectToolCall(action, positional, flags)), null, 2),
+    );
     return 0;
   }
   const materials = workspace.materials;

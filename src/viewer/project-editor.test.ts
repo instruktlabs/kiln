@@ -1,6 +1,6 @@
 import { expect, test } from 'bun:test';
 import { projectDraftSchema, projectRevisionSchema } from '../projects';
-import { editableProjectConfig, projectFormDraft } from './project-editor';
+import { editableProjectConfig, placementLabel, projectFormDraft } from './project-editor';
 
 test('editing basic project fields preserves inventory, exact dependency lock and design governance', () => {
   const draft = projectDraftSchema.parse({
@@ -43,4 +43,32 @@ test('editable configuration excludes immutable identity and rejects invalid pal
     ),
   ).toThrow();
   expect(() => projectFormDraft('{"revisionId":"overwrite"}', fields)).toThrow();
+});
+
+test('saving the form keeps a stated placement and leaves an absent one absent', () => {
+  const draft = projectDraftSchema.parse({
+    name: 'Cove',
+    inventory: [
+      { id: 'wall', name: 'Wall', placement: { translation: [1, 2, 3], rotation: [0, 90, 0] } },
+      { id: 'identity', name: 'Identity', placement: {} },
+      { id: 'plan', name: 'Plan' },
+    ],
+  });
+  const result = projectFormDraft(JSON.stringify(editableProjectConfig(draft)), {
+    name: 'Cove',
+    brief: '',
+    style: '',
+    scale: '',
+  });
+  expect(result.inventory[0]!.placement).toEqual({ translation: [1, 2, 3], rotation: [0, 90, 0] });
+  expect(result.inventory[1]!.placement).toEqual({});
+  expect('placement' in result.inventory[2]!).toBe(false);
+});
+
+test('placement reads as what the check does with the item', () => {
+  expect(placementLabel(undefined)).toBe('Not composed');
+  expect(placementLabel({})).toBe('At origin');
+  expect(placementLabel({ translation: [1, 2, 3], rotation: [0, 90, 0], scale: [2, 2, 2] })).toBe(
+    'Move 1, 2, 3 · turn 0, 90, 0° · scale 2, 2, 2',
+  );
 });

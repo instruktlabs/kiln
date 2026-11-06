@@ -30,6 +30,12 @@ returns a resource for the bytes `kiln_save` would persist and writes nothing, a
 `render REF --out x.glb` reaches the same bytes. A part summary cannot stand in for them, because one
 merged mesh reports as one box whatever it contains.
 
+## Modules composed in a project
+
+An asset's own QA cannot see a neighbour. When modules saved separately stand together, measure them together: give each inventory item a `placement` (`{}` states the shared origin; a missing placement means not composed, never identity), then run `node kiln.mjs project check ID --revision REVISION` or `kiln_project { action: "check", projectId }`. Each `kiln_save` of a placed asset under its bound project also returns this as `composition`, measuring the revision being saved against the pinned neighbours, and records it in the build record.
+
+Read `coverage` before the findings: only `complete` means everything in scope was measured. `partial` names what was not, and an item in `unmeasured` is not certified clear. `overlaps` and `openSurfaces` name the module and part on each side with volume or depth. A positive is a measurement rather than a verdict: a fitting socketed into a neighbour's shell is reported as a bolt in a hole is. A draft is not measured until it is saved, and a standalone asset gets no report. Do not create a project or a placement to obtain one for an asset that stands alone.
+
 ## What to measure
 
 | Question | Evidence |

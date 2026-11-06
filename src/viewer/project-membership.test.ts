@@ -35,3 +35,24 @@ test('a new membership creates an inventory item, while detach cannot invent one
   });
   expect(() => membershipPatch(project, 'missing', null, '')).toThrow('Inventory item not found');
 });
+test('replacing or removing a link keeps the item in its declared place', () => {
+  const placement = { translation: [1, 0, 0] as [number, number, number] };
+  const project = {
+    inventory: projectDraftSchema.parse({
+      name: 'Cove',
+      inventory: [{ id: 'wall', name: 'Wall', placement }],
+    }).inventory,
+  } as unknown as ProjectRevision;
+  const asset = { collectionId: 'project', assetId: 'wall', revisionId: 'r_two' };
+  const linked = membershipPatch(project, 'wall', asset, '').inventory[0]!;
+  expect(linked.placement).toEqual(placement);
+  expect(linked.asset).toEqual(asset);
+  const removed = membershipPatch(
+    { inventory: [linked] } as unknown as ProjectRevision,
+    'wall',
+    null,
+    '',
+  ).inventory[0]!;
+  expect(removed.placement).toEqual(placement);
+  expect(removed.asset).toBeUndefined();
+});

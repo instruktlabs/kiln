@@ -264,6 +264,12 @@ function collectParts(
 }
 
 /**
+ * Which pairs a caller wants measured. Filtered pairs spend no budget, so a composition of
+ * modules is not starved by the overlaps inside each one, which normal QA already reported.
+ */
+export type PartPairFilter = (a: THREE.Mesh, b: THREE.Mesh) => boolean;
+
+/**
  * Normalized triangle soup for one static mesh, as manifold wants it.
  *
  * Deliberately independent of `solids.ts`'s `threeToManifold`: that one walks a
@@ -329,6 +335,7 @@ function meshToArrays(
  */
 export async function analyzePartPenetration(
   root: THREE.Object3D,
+  options: { comparable?: PartPairFilter } = {},
 ): Promise<PartPenetrationEvidenceV1> {
   const skipped: PartPenetrationEvidenceV1['skipped'] = [];
   const parts = collectParts(root, skipped);
@@ -353,12 +360,13 @@ export async function analyzePartPenetration(
   let considered = 0;
   broadPhase: for (let i = 0; i < parts.length; i++) {
     for (let j = i + 1; j < parts.length; j++) {
+      const a = parts[i]!;
+      const b = parts[j]!;
+      if (options.comparable && !options.comparable(a.mesh, b.mesh)) continue;
       if (considered++ === MAX_BROAD_PHASE_PAIRS) {
         base.broadPhaseTruncated = true;
         break broadPhase;
       }
-      const a = parts[i]!;
-      const b = parts[j]!;
       if (!a.box.intersectsBox(b.box)) continue;
       if (
         a.lod &&

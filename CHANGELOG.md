@@ -7,6 +7,20 @@ does not publish a package.
 
 ## Unreleased
 
+- Project inventory items can state where they stand, and a project can be measured as it is composed
+  (#277). `placement` on an inventory item holds optional `translation`, `rotation` (Euler XYZ degrees)
+  and `scale`; `{}` means the shared origin, and a missing placement means the item is not composed,
+  never identity. `kiln project check <id> [--revision <r>]` and `kiln_project` action `check` load the
+  exact pinned GLBs of the placed items, compose them on the host, and run the existing part-volume and
+  open-surface passes over cross-module pairs only, naming the module and part on each side with volume
+  or depth. `kiln_save` records the same report as `composition` and in `build.composition` when the
+  call's bound project pins this collection and asset at a placement, measuring the revision being saved
+  rather than the older pin. A pin that cannot be read is reported unmeasured with coverage `partial`,
+  never clear; a positive is a measurement rather than a verdict and never stops a save. Standalone
+  assets get no report and no warning. A draft is not measured until it is saved. The key is omitted when
+  absent, so existing project revisions keep their ids; a record that states one is refused by an engine
+  older than this one, whose project schema is strict. The `kiln_project` schema gains the action.
+
 - Procedural materials have a periodic cellular (Worley/Voronoi) layer (#312). `op: 'cellular'` is a
   V2 layer, so it also reaches V3 through `legacy-v2`: integer `cellsX`/`cellsY` per tile, a seed,
   per-axis `jitterX`/`jitterY` and `metricX`/`metricY`, and optional additive `weight`. Its `feature`

@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 import type { ProjectRevision } from '../projects';
-import { editableProjectConfig, projectFormDraft } from './project-editor';
+import { editableProjectConfig, placementLabel, projectFormDraft } from './project-editor';
 import { el, node, notice, request, empty, remember, recall, shortId, recordDetails } from './dom';
 
 type AssetLink = NonNullable<ProjectRevision['inventory'][number]['asset']>;
@@ -122,7 +122,7 @@ export function mountProjects(options: {
         table = node('table'),
         head = node('thead'),
         tr = node('tr');
-      for (const label of ['Item', 'Kind', 'Saved revision', 'Review'])
+      for (const label of ['Item', 'Kind', 'Saved revision', 'Placement', 'Review'])
         tr.append(node('th', label));
       head.append(tr);
       table.append(head);
@@ -156,7 +156,8 @@ export function mountProjects(options: {
           saved.textContent = 'Not linked';
           review.textContent = 'No saved revision';
         }
-        row.append(name, node('td', item.kind), saved, review);
+        const placement = node('td', placementLabel(item.placement));
+        row.append(name, node('td', item.kind), saved, placement, review);
         body.append(row);
       }
       table.append(body);
