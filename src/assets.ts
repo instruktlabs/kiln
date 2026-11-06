@@ -45,6 +45,8 @@ export const assetManifestSchema = z.object({
       warnings: z.array(z.string()),
       integration: z.unknown().optional(),
       qa: z.unknown().optional(),
+      /** ProjectCompositionReportV1: measured against the bound project's placed neighbours. */
+      composition: z.unknown().optional(),
       dependencies: z.array(z.unknown()).optional(),
       rebuild: z.enum(['engine-required', 'external-dependencies-required']),
     })

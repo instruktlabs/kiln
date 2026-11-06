@@ -70,6 +70,44 @@ node kiln.mjs review save OPERATION_ID --expected OPERATION_REVISION --name "Rev
 
 The default journal retains at most 200 operations and 256 MiB, including pinned operations. It reports overflow or unavailable observation storage without replacing the authoring result. Durable saved assets are separate and are not evicted by the journal. `KILN_LIVE_REVIEW=off` disables automatic observation for local authoring hosts. Feedback still belongs in the agent's existing conversation; launch, cancel, retry, pause and harness proxies are outside this foundation.
 
+## Modules composed together
+
+Modules saved separately can each pass their own QA and still collide once they stand together, because neither one contains both parts. A project declares that arrangement once, on its inventory: an item's optional `placement` says where its pinned revision sits in the project's shared frame.
+
+```json
+{ "id": "wall", "name": "Wall", "asset": { "collectionId": "project", "assetId": "wall", "revisionId": "r_..." }, "placement": {} }
+```
+
+`placement` holds optional `translation` (metres), `rotation` (Euler XYZ degrees, as Kiln's helpers) and `scale`, applied in the order scale, rotation, translation. Each defaults to identity, so `{}` states "at the shared origin". A missing placement means the item is **not composed**, never identity: most of a pack is unrelated props, and identity would report them all as overlapping at the origin. The field is omitted when absent, so existing project revisions keep their ids. It travels through project bundles, export and import, and the dashboard shows it in the Projects inventory and edits it in the configuration JSON. Linking or unlinking an asset keeps it.
+
+```sh
+node kiln.mjs project check pilot --revision REVISION
+```
+
+`kiln_project` action `check` is the same operation. It reads the exact pinned GLB of every placed item, composes them, and runs the part-volume and open-surface measurements over cross-module pairs only; overlaps inside one module belong to that module's own QA and spend no budget here. `overlaps` names the module and part on each side with shared volume and fraction, and `openSurfaces` names them with depth in metres. Both follow the same contact tolerances as normal QA, so a cloth resting on a neighbour's surface is silent.
+
+`coverage` says what the result can be read as, and only `complete` means every placed item and pair in scope was measured:
+
+| `coverage` | Meaning |
+| --- | --- |
+| `complete` | Every placed item loaded and no budget was reached. Open surfaces are still not measured against each other. |
+| `partial` | Something was not measured, and is named: a placed item in `unmeasured`, a part in `unmeasuredParts`, or `truncated` for a budget. |
+| `nothing-to-compare` | Fewer than two modules were composed. |
+| `failed` | The check itself could not run. This says nothing about the geometry. |
+
+An item in `unmeasured` is not certified clear. Its `reason` is `unpinned` (a placement with no linked revision), `unavailable` (the revision or its collection is not configured), `unreadable` (the bytes failed integrity or would not load) or `budget`. One check composes at most 64 modules, 256 MiB of GLBs and 4,096 parts, and the two passes keep their normal budgets. Items are loaded in inventory order until a budget is reached, and lists are capped with the remainder counted.
+
+A positive is a measurement, not a verdict, and the command exits 0 with findings. A fitting socketed into a neighbour's shell is reported exactly as a bolt in a hole is, so review the pairs you did not intend. The check is at rest and over visible static parts: instanced GLB nodes are expanded, but skinned and morph-deformed parts are named as unmeasured, and LOD alternates are left out. It reads saved GLBs, so a part is measured per glTF primitive. Kiln's builder writes one primitive per mesh node (0 of 20,569 nodes across 64 rendered examples had more), but in an imported GLB a closed part split across materials can read as open surfaces, which are not measured against each other.
+
+`kiln_save` and `kiln save` run the same measurement when the invocation's bound project pins this exact collection and asset at a stated placement. The report is returned as `composition` and recorded in the revision's `build.composition`. It measures the revision being saved in place of the item's older pin, marking that module `saved` because its revision id does not exist until the write, and it covers only pairs involving that asset; `project check` covers the rest. The save happens whatever the report says.
+
+These limits are deliberate:
+
+- A draft is not measured against its neighbours until it is saved. A draft has no inventory identity, and `kiln_render` and `kiln_edit` do not read sibling GLBs.
+- The first save of a new asset has no report, because no item can pin a revision that does not exist yet. Link it, then `project check` or save a child revision.
+- `kiln_review` exact saves and explicit migrations record no report, since they preserve a recorded build without evaluating again. Run `project check` after linking them.
+- A standalone asset has no neighbours. Omitting the project, `--no-project` and `projectId: null` produce no report and no warning, and nothing is inferred from other projects, names or the collection named `project`.
+
 ## Editable packages and runtime delivery
 
 ```sh

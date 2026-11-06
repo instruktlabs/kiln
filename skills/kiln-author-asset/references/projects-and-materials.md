@@ -178,6 +178,14 @@ Preserve the returned collection, asset and revision IDs. When an asset belongs 
 an inventory entry, bind that exact saved revision with a project update. A later
 asset revision does not silently update the project inventory.
 
+When modules are composed, such as room pieces saved separately and assembled at one origin,
+state each item's `placement`: optional `translation` (metres), `rotation` (Euler XYZ degrees)
+and `scale`, with `{}` meaning the shared origin. Only items that state one are composed; a
+missing placement means not composed, never identity, so leave it off unrelated props. Then
+`project check ID` reports parts of different modules that share volume or where a cloth reaches
+inside a neighbour, and each save of a placed asset under its project returns the same report. A
+draft is not measured until it is saved. See `kiln-qa-asset/references/integration-checks.md`.
+
 Deliver a standalone asset directly through its collection exports. When delivering
 a pack, `project export ID --revision REVISION --profile editable|runtime --out FILE`
 packages the linked saved inventory. Editable delivery needs source, build settings

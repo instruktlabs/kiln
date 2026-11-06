@@ -1,4 +1,16 @@
-import { projectDraftSchema, type ProjectDraft } from '../projects';
+import { projectDraftSchema, type InventoryPlacement, type ProjectDraft } from '../projects';
+
+/** What the composed check does with an item: only a stated placement joins it. */
+export function placementLabel(placement: InventoryPlacement | undefined): string {
+  if (!placement) return 'Not composed';
+  const { translation, rotation, scale } = placement;
+  const parts = [
+    translation && `Move ${translation.join(', ')}`,
+    rotation && `turn ${rotation.join(', ')}°`,
+    scale && `scale ${scale.join(', ')}`,
+  ].filter(Boolean);
+  return parts.join(' · ') || 'At origin';
+}
 
 export function editableProjectConfig(project: ProjectDraft) {
   const { palette, materialRoles, conventions, exceptions } = project.design ?? {};

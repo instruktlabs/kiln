@@ -22,6 +22,29 @@ const assetReference = z
   })
   .strict();
 
+/** Metres or degrees; large enough for a world, small enough that a composed matrix stays finite. */
+const placementNumber = z.number().min(-1e6).max(1e6);
+const placementVector = z.tuple([placementNumber, placementNumber, placementNumber]);
+const placementScale = placementNumber
+  .min(-1e3)
+  .max(1e3)
+  .refine((value) => value !== 0, {
+    message: 'A zero scale collapses the module.',
+  });
+/**
+ * Where a module sits in the project's shared frame: scale, then rotation (Euler XYZ degrees, as
+ * Kiln's helpers), then translation, each defaulting to identity. Stating one, even empty, is what
+ * joins the composition; an item with none is not composed, never placed at the origin.
+ */
+export const inventoryPlacementSchema = z
+  .object({
+    translation: placementVector.optional(),
+    rotation: placementVector.optional(),
+    scale: z.tuple([placementScale, placementScale, placementScale]).optional(),
+  })
+  .strict();
+export type InventoryPlacement = z.infer<typeof inventoryPlacementSchema>;
+
 export const projectDesignSchema = z
   .object({
     style: text.default(''),
@@ -80,6 +103,7 @@ const content = {
           brief: text.default(''),
           references: z.array(projectIdSchema).max(64).default([]),
           asset: assetReference.optional(),
+          placement: inventoryPlacementSchema.optional(),
         })
         .strict(),
     )

@@ -73,6 +73,7 @@
 import * as THREE from 'three';
 import { geometryDiagnostics } from '../geometry';
 import { lodMembership } from './lod';
+import type { PartPairFilter } from './self-intersection';
 import { KILN_ENGINE_QA_OWNER, type QaRule } from './registry';
 import type { QaContext, QaFinding } from './types';
 
@@ -127,6 +128,8 @@ export interface OpenSurfacePenetrationEvidenceV1 {
   openParts: number;
   /** Eligible closed-solid parts collected. */
   closedParts: number;
+  /** The open parts by name, for a caller reconciling this pass with the volume pass. */
+  openPartNames?: string[];
   /**
    * Open/closed pairs whose world boxes overlap, excluding LOD alternates; a
    * lower bound when `broadPhaseTruncated` is true.
@@ -420,6 +423,7 @@ const round = (value: number): number => Number(value.toPrecision(9));
 export function analyzeOpenSurfacePenetration(
   root: unknown,
   contactTolerance: number = OPEN_SURFACE_CONTACT_TOLERANCE,
+  options: { comparable?: PartPairFilter } = {},
 ): OpenSurfacePenetrationEvidenceV1 {
   const evidence: OpenSurfacePenetrationEvidenceV1 = {
     schemaVersion: 1,
@@ -442,6 +446,7 @@ export function analyzeOpenSurfacePenetration(
   const closed = parts.filter((part) => part.closed);
   evidence.openParts = open.length;
   evidence.closedParts = closed.length;
+  if (options.comparable) evidence.openPartNames = open.map((part) => part.name);
 
   const candidates: {
     open: AnalyzedPart;
@@ -452,6 +457,7 @@ export function analyzeOpenSurfacePenetration(
   let considered = 0;
   broadPhase: for (const surface of open) {
     for (const solid of closed) {
+      if (options.comparable && !options.comparable(surface.mesh, solid.mesh)) continue;
       if (considered++ === MAX_BROAD_PHASE_PAIRS) {
         evidence.broadPhaseTruncated = true;
         break broadPhase;

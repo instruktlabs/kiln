@@ -400,7 +400,7 @@ Export any time: node kiln.mjs source PROGRAM_REF --out revised.kiln.js and node
 
 ## Projects and materials
 
-Standalone work needs no project. Omitted project selection stays standalone unless KILN_PROJECT is configured (kiln_discover capabilities shows it); --no-project or projectId: null overrides it. A project holds a shared brief, inventory, design profile and material pins; select it per call with --project or projectId. Read skills/kiln-author-asset/references/projects-and-materials.md before creating or updating one. The save collection named project is a destination, not membership.
+Standalone work needs no project. Omitted project selection stays standalone unless KILN_PROJECT is configured (kiln_discover capabilities shows it); --no-project or projectId: null overrides it. A project holds a shared brief, inventory, design profile and material pins; select it per call with --project or projectId. An inventory item that states a placement is measured against the other placed items by project check and on each save under that project; one that states none is not composed. Read skills/kiln-author-asset/references/projects-and-materials.md before creating or updating one. The save collection named project is a destination, not membership.
 
 ## Material-faithful views
 

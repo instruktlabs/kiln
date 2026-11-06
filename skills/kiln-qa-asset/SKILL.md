@@ -58,7 +58,8 @@ them by code, then review the pairs you did not intend. Vertices are the samples
 thinner than the surface's own facet spacing can pass between two of them: `_TRUNCATED`
 reports pairs left for budget and vertices whose side could not be settled, and `_UNMEASURED`
 names parts that were not sampled at all. A clean result here is not a fit audit, and it says
-nothing about open surfaces meeting each other.
+nothing about open surfaces meeting each other. Both observations see one asset; modules composed
+in a project are measured against each other by the check in `references/integration-checks.md`.
 
 `SWEEP_SELF_INTERSECTION` observes tight station curvature or intersecting
 consecutive rings in a sweep/loft. Inspect the station and radius evidence. A

@@ -2654,7 +2654,13 @@ function createProgramDefs(
     ].map((def) => withProgramReferences(def, store, context.readSourceFile)),
     createKilnSourceDef(store),
     ...(context.projectStore
-      ? [createKilnProjectDef(context.projectStore, context.projectBundleReader)]
+      ? [
+          createKilnProjectDef(
+            context.projectStore,
+            context.projectBundleReader,
+            context.assetLibrary,
+          ),
+        ]
       : []),
     ...(context.materialLibrary
       ? [createKilnMaterialDef(context.materialLibrary, presentation)]
@@ -2889,6 +2895,37 @@ async function parentRevisionComparison(
     return {
       unavailable: `Parent comparison unavailable: ${error instanceof Error ? error.message : String(error)}`,
     };
+  }
+}
+
+/**
+ * The save-time report (#277): the revision being saved against its declared neighbours. It runs
+ * only when the call's bound project pins this exact collection and asset at a stated placement,
+ * so standalone work pays nothing and hears nothing. A check that cannot run never fails a save.
+ */
+async function savedComposition(
+  context: KilnToolContext,
+  library: import('../assets').AssetLibrary,
+  { collection, assetId }: { collection: string; assetId?: string },
+  glb: Uint8Array,
+): Promise<import('../project-composition').ProjectCompositionReportV1 | undefined> {
+  const project = context.workspace?.current()?.project;
+  if (
+    !project ||
+    !assetId ||
+    !project.inventory.some(
+      ({ asset, placement }) =>
+        placement && asset?.collectionId === collection && asset.assetId === assetId,
+    )
+  )
+    return undefined;
+  const { composeProjectModules, failedCompositionReport } = await import('../project-composition');
+  try {
+    return await composeProjectModules(project, library, {
+      subject: { collectionId: collection, assetId, glb },
+    });
+  } catch (error) {
+    return failedCompositionReport(project, error);
   }
 }
 
@@ -3140,9 +3177,15 @@ export function createKilnAssetDefs(
         }
         const code = await context.programStore!.get(input.programRef);
         const draft = await buildProgramAssetDraft(code, callContext, backdrop);
-        const asset = await target.save(input.collection, { ...input, ...draft });
+        const composition = await savedComposition(context, target, input, draft.glb);
+        const asset = await target.save(input.collection, {
+          ...input,
+          ...draft,
+          ...(composition ? { build: { ...draft.build!, composition } } : {}),
+        });
         return {
           ...(await links(input.collection, asset)),
+          ...(composition ? { composition } : {}),
           ...(parent
             ? { comparison: await parentRevisionComparison(parent.files['asset.glb'], draft.glb) }
             : {}),
