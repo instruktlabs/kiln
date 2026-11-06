@@ -200,7 +200,7 @@ For engine development, use the [pinned toolchain](toolchain.json):
 git clone --filter=blob:none https://github.com/instruktlabs/kiln
 cd kiln
 bun install --frozen-lockfile
-bun run build:sdk
+bun run build:runtime
 node scripts/example-archive.mjs --fetch
 bun run typecheck
 bun run test

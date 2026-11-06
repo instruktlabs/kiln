@@ -253,7 +253,7 @@ describe('repository reliability contracts', () => {
   // `version` sat at 0.6.0 through 21 shipped changes while CI named every tarball from
   // it, so two people could hold `kiln-engine-0.6.0.tgz` and have materially different
   // software -- across a three.js major, a history rewrite and a `dist/` re-add. The
-  // version moves per shipped change now, which only means anything if the committed
+  // version moves per shipped change now, which only means anything if the built
   // bundle agrees with it.
   //
   // Nothing caught the disagreement before. `mcp-bundle.test.ts` rebuilds
@@ -261,7 +261,7 @@ describe('repository reliability contracts', () => {
   // package.json at runtime rather than inlined, so the bytes are identical and the
   // stale `engineVersion` in `dist/build.json` passed unnoticed. `runtimeBuildIdentity`
   // hashes that version into `identity`, which is the value a receipt cites.
-  test('the committed runtime bundle records the version it ships as', async () => {
+  test('the built runtime bundle records the version it ships as', async () => {
     const { version } = await readJson('package.json');
     const build = await readJson('dist/build.json');
 
@@ -271,6 +271,56 @@ describe('repository reliability contracts', () => {
     for (const [name, entry] of entries) {
       expect(`${name} ${entry.engineVersion}`).toBe(`${name} ${version}`);
     }
+  });
+
+  // Committing `dist/` made any two source PRs conflict on `dist/build.json`, so only one
+  // could land per CI run and every landing forced the rest to rebuild. Nothing needs it in
+  // the tree: the release ships the bundles the package job builds, a plugin installs the
+  // npm package, and a build takes seconds.
+  test('the runtime bundles are built, not tracked', () => {
+    const tracked = spawnSync('git', ['ls-files', 'dist'], { cwd: rootPath, encoding: 'utf8' });
+    expect(tracked.status, tracked.stderr).toBe(0);
+    expect(tracked.stdout).toBe('');
+  });
+
+  test('every CI job that reads the bundles gets them before its tests', async () => {
+    const { jobs } = Bun.YAML.parse(await readText('.github/workflows/ci.yml'));
+    const runs = (job) => job.steps.map((step) => step.run ?? '');
+    const buildsBeforeTests = (job, command) => {
+      const commands = runs(job);
+      const built = commands.indexOf('bun run build:runtime');
+      expect(built).toBeGreaterThanOrEqual(0);
+      expect(built).toBeLessThan(commands.findIndex((run) => run.startsWith(command)));
+    };
+    buildsBeforeTests(jobs.checks, 'bun run test:coverage');
+    buildsBeforeTests(jobs['exporter-checks'], 'bun run test');
+
+    // Windows runs the bundles Linux built. `mcp-bundle.test.ts` compares them with a fresh
+    // Windows build, which is the only proof that a build is the same on both platforms; a
+    // bundle built in this job would only be compared with itself.
+    const windows = jobs['windows-checks'];
+    expect(windows.needs).toBe('package-candidate');
+    expect(runs(windows)).not.toContain('bun run build:runtime');
+    const downloaded = windows.steps.filter((step) => step.uses?.includes('download-artifact'));
+    expect(downloaded.map((step) => step.with)).toEqual([{ name: 'runtime-dist', path: 'dist' }]);
+    const uploaded = jobs['package-candidate'].steps.filter(
+      (step) => step.with?.name === 'runtime-dist',
+    );
+    expect(uploaded.map((step) => step.with.path)).toEqual(['dist/']);
+  });
+
+  // A merge queue only reports required checks on a workflow that listens for it. `push`
+  // stays: `prepare-npm-release.mjs` accepts only a main push run as a release candidate.
+  test('CI reports to the merge queue and still runs on main pushes', async () => {
+    const workflow = Bun.YAML.parse(await readText('.github/workflows/ci.yml'));
+    expect(Object.keys(workflow.on).sort()).toEqual(['merge_group', 'pull_request', 'push']);
+    expect(workflow.on.push.branches).toEqual(['main']);
+  });
+
+  test('the test scripts refuse a missing or stale runtime build', async () => {
+    const { scripts } = await readJson('package.json');
+    for (const name of ['test', 'test:coverage'])
+      expect(scripts[name]).toStartWith('node scripts/check-runtime-build.mjs && ');
   });
 
   // `docs/install.md` spent a release cycle telling readers to use a checkout "until an

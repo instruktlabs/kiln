@@ -159,7 +159,7 @@ canary or implicit latest for a release gate.
 bun install --frozen-lockfile
 bun run check:toolchain
 bun run check:skills
-bun run build:sdk
+bun run build:runtime
 node scripts/example-archive.mjs --fetch
 bun run typecheck
 bun run lint
@@ -168,12 +168,11 @@ bun run test:render-service
 bun run test:coverage
 ```
 
-`bun run build` only typechecks. After runtime changes, run `node scripts/build-runtime.mjs all`
-to rebuild `dist/`, its identity and SDK `lib/` before CLI/MCP dogfood and full gates.
-Use `bun run build:runtime` when viewer assets also changed.
+`bun run build` only typechecks. `dist/` and SDK `lib/` are built, not tracked: never commit
+them. Run `bun run build:runtime` on a fresh clone, after a pull and after runtime changes,
+before CLI/MCP dogfood and full gates. `bun run test` refuses a missing or stale build.
 
-Fast loop: `bun run build:sdk` (a fresh checkout has no `lib/`: a missing build step, not
-a broken tree), nearest test file, then `bun run typecheck && bun run lint && bun run test`.
+Fast loop: `bun run build:runtime`, nearest test file, then `bun run typecheck && bun run lint && bun run test`.
 The full offline gate adds `bun run test:coverage`, which emits `coverage/lcov.info` and
 enforces the line/function ratchet in `bunfig.toml`. Raise thresholds when practical; never
 lower them without a measured rationale. Live model tests are opt-in via `bun run test:live`.
