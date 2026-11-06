@@ -420,7 +420,7 @@ function semanticRoles(node: DuckNode): readonly string[] {
 }
 
 function clamp01(value: number): number {
-  return value < 0 ? 0 : value > 1 ? 1 : value;
+  return value < 0 ? 0 : Math.min(value, 1);
 }
 
 function collectScene(root: unknown, requestValue: DiagnosticViewRequest): CollectedScene {
