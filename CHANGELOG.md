@@ -10,13 +10,21 @@ does not publish a package.
 - GPU instancing now draws what the copies drew as separate nodes, in both `KILN_BAKE_INSTANCE` and the
   three runtime target's `repeatInstances`. A mirrored copy no longer shares a batch with unmirrored ones,
   where it drew inside out: single-sided surfaces vanished. Mirrored copies form their own batch on a node
-  scaled `[-1, 1, 1]`, with no second copy of the geometry. The bake pass also keeps a sheared copy as a
-  separate node, because instance transforms cannot state shear. Both passes keep a turned, non-uniformly
-  scaled or mirrored copy of a mesh with `TANGENT` separate, because three r186's WebGPU renderer does not
-  transform instance tangents, which shaded a quarter-turned copy black. Batches drop and draws rise on
-  affected assets, including `role: 'fill'` assets under the default `auto`. A saved revision built with
-  instancing on can now rebuild with `matchesSavedArtifact: false`; the saved GLB is unchanged, and a new
-  save picks up the correct batches.
+  scaled `[-1, 1, 1]`, with no second copy of the geometry. three r186's WebGPU renderer does not transform
+  instance tangents, which shaded a quarter-turned normal-mapped copy black. The bake pass now batches
+  tangent-bearing copies by the rotation they share and puts it on the batch node, and the runtime target
+  keeps a turned, stretched or mirrored tangent-bearing child separate. The bake pass also keeps a sheared
+  copy separate, because instance transforms cannot state shear. `EXT_mesh_gpu_instancing` is now required
+  wherever Kiln batches, so a viewer without it refuses the file instead of drawing one copy. Batches and
+  draws change on affected assets, including `role: 'fill'` assets under the default `auto`. A saved
+  revision built with instancing on can now rebuild with `matchesSavedArtifact: false`; the saved GLB is
+  unchanged.
+- `kiln export ... --profile runtime --draws minimal [--draw-cell M]` (and `draws: 'minimal'` in
+  `exportAssetGlb`) derives a file with fewer draw calls. Every repeated mesh becomes a batch, and parts
+  with a single-user mesh merge per material within cells of `M` metres (default 15). It runs no
+  `palette()` or `weld()`, and the saved revision is unchanged. The sidecar's `drawReduction` reports the
+  result. On the 1,834-draw cathedral revision it gives 283 draws, with the same triangles and 1% fewer
+  bytes. `mergeRigidGroups` gains opt-in `cellSize` and `positionTolerance`; `optimize: 'full'` is unchanged.
 - `KILN_EVALUATOR_TIMEOUT_MS` now works above 60,000, as documented. Only the host read it: the worker
   kept its own 60-second timer, so a build that yielded to the event loop after that failed with
   `DEADLINE_EXCEEDED` at any limit, usually once the abandoned build had run to its end. The worker now

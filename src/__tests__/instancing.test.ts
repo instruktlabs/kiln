@@ -7,6 +7,7 @@
  */
 
 import { describe, it, expect } from 'bun:test';
+import type { InstancedMesh } from '@gltf-transform/extensions';
 import * as THREE from 'three';
 import {
   createRoot,
@@ -343,7 +344,8 @@ describe('M1c: mirrored copies under the GPU-instancing pass', () => {
 
   // three r186's WebGPU instance node moves positions and normals but not TANGENT, so a turned
   // copy keeps its source tangent. At 90 degrees that lies along the normal and shades black.
-  it('a turned, stretched or mirrored copy of a tangent-bearing mesh stays a plain node', async () => {
+  // A batch node's transform does reach the tangent, so it carries what the copies share.
+  it('tangent-bearing copies batch per shared rotation, with the rotation on the node', async () => {
     const build = () => {
       const r = createRoot('Tangents');
       const geo = planeGeo(1, 2);
@@ -357,8 +359,9 @@ describe('M1c: mirrored copies under the GPU-instancing pass', () => {
         });
       for (let i = 0; i < 6; i++)
         createInstance(`Turned${i}`, source, {
-          position: [i * 2, 4, 0],
+          position: [i * 2, 4, 3],
           rotation: [0, 90, 0],
+          scale: i % 2 ? [2, 2, 2] : [1, 1, 1],
           parent: r,
         });
       for (let i = 0; i < 6; i++)
@@ -370,16 +373,38 @@ describe('M1c: mirrored copies under the GPU-instancing pass', () => {
       for (let i = 0; i < 6; i++)
         createInstance(`Mirrored${i}`, source, {
           position: [i * 2, 12, 0],
+          rotation: [0, 30, 0],
           scale: [1, 1, -1],
+          parent: r,
+        });
+      for (let i = 0; i < 4; i++)
+        createInstance(`Varied${i}`, source, {
+          position: [i * 2, 16, 0],
+          rotation: [0, i * 40 + 15, 0],
           parent: r,
         });
       return r;
     };
     const inst = await expectDrawnLikeUninstanced(build);
+    expect(inst.instancing).toMatchObject({ batches: 4, instances: 24 });
     const doc = await createGltfIO().readBinary(inst.bytes);
-    const meshes = doc.getRoot().listMeshes();
-    expect(meshes.some((mesh) => mesh.listPrimitives()[0]!.getAttribute('TANGENT'))).toBe(true);
-    expect(inst.instancing).toMatchObject({ batches: 1, instances: 6 });
+    for (const node of doc.getRoot().listNodes()) {
+      const batch = node.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
+      if (!batch) continue;
+      expect(batch.getAttribute('ROTATION')).toBeNull();
+      const scale = batch.getAttribute('SCALE');
+      for (let i = 0; i < (scale?.getCount() ?? 0); i++) {
+        const [x, y, z] = scale!.getElement(i, [0, 0, 0]);
+        expect(y).toBeCloseTo(x!, 5);
+        expect(z).toBeCloseTo(x!, 5);
+      }
+    }
+  });
+
+  it('requires the extension, so a viewer without it refuses rather than drawing one copy', async () => {
+    const inst = await renderSceneToGLB(paneScene(6, 6), { instance: 'on' });
+    const json = glbJson(inst.bytes) as { extensionsRequired?: string[] };
+    expect(json.extensionsRequired).toContain('EXT_mesh_gpu_instancing');
   });
 
   it('an optimizeGlbBytes pass honours handedness too', async () => {

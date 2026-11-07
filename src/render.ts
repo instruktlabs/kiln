@@ -29,7 +29,7 @@ import { AuthoringDiagnosticError, rethrowAuthoringError } from './evaluator/aut
  */
 
 import * as THREE from 'three';
-import { createGltfIO, MSFT_LOD } from './gltf-io';
+import { createGltfIO } from './gltf-io';
 import { collectLodSets } from './lod';
 import { applyLodChains, summarizeLodChains } from './lod-export';
 import { applyNodeVisibility, drawnSceneBounds, summarizeHiddenNodes } from './node-visibility';
@@ -70,7 +70,11 @@ import { createHash } from 'node:crypto';
 import { Document, Logger, type TextureInfo } from '@gltf-transform/core';
 import { KHRMaterialsEmissiveStrength } from '@gltf-transform/extensions';
 import { dedup, palette, weld, prune, mergeDocuments } from '@gltf-transform/functions';
-import { instanceByHandedness } from './instance-handedness';
+import {
+  countInstanceBatches,
+  instanceByHandedness,
+  instancingBlocker,
+} from './instance-handedness';
 
 import {
   buildSlotIndex,
@@ -1575,39 +1579,6 @@ function resolveInstance(opt?: InstanceMode): InstanceMode {
   return env === 'off' || env === 'auto' || env === 'on' ? env : 'auto';
 }
 
-/** True when any node carries a `Joint*` name — the Kiln City runtime targets
- *  those pivots by NAME (wheel spin/steer rigs), and instance() drops per-node
- *  names when it folds nodes into a batch. Such assets are never instanced. */
-function hasJointPivots(doc: Document): boolean {
-  return doc
-    .getRoot()
-    .listNodes()
-    .some((n) => /^joint[_-]/i.test(n.getName()));
-}
-
-/** True when any node carries an `MSFT_lod` chain. Its lower levels sit outside the
- *  scene and stand in for that node under the same parent, so a pass that moves the node
- *  (flatten), merges it into a sibling (join) or folds it into an instance batch would
- *  leave the levels describing geometry that is no longer there. */
-function hasNodeLevelsOfDetail(doc: Document): boolean {
-  return doc
-    .getRoot()
-    .listNodes()
-    .some((n) => n.getExtension(MSFT_LOD) !== null);
-}
-
-/** These transforms cannot preserve per-node state when they remove or reparent nodes. */
-function hasPreservedNodeState(doc: Document): boolean {
-  return doc
-    .getRoot()
-    .listNodes()
-    .some(
-      (node) =>
-        node.getExtension('KHR_node_visibility') !== null ||
-        Object.keys(node.getExtras()).length > 0,
-    );
-}
-
 /**
  * Run the opt-in GPU-instancing pass (M1c) on a baked Document, in place.
  *
@@ -1635,29 +1606,12 @@ async function applyGpuInstancing(
 ): Promise<InstancingSummary | undefined> {
   if (mode === 'off') return undefined;
   if (mode === 'auto' && role !== 'fill') return undefined;
-  const root = doc.getRoot();
-  if (root.listAnimations().length > 0 || root.listSkins().length > 0) return undefined;
-  if (hasJointPivots(doc) || hasNodeLevelsOfDetail(doc) || hasPreservedNodeState(doc))
-    return undefined;
+  if (instancingBlocker(doc)) return undefined;
 
   const before = collectGlbMetrics(doc);
   await instanceByHandedness(doc, INSTANCE_MIN);
 
-  let batches = 0;
-  let instances = 0;
-  for (const node of root.listNodes()) {
-    const ext = node.getExtension('EXT_mesh_gpu_instancing') as {
-      getAttribute?: (name: string) => { getCount(): number } | null;
-    } | null;
-    if (!ext) continue;
-    batches += 1;
-    // Identity channels are disposed by the library, so read whichever survives.
-    instances +=
-      ext.getAttribute?.('TRANSLATION')?.getCount() ??
-      ext.getAttribute?.('ROTATION')?.getCount() ??
-      ext.getAttribute?.('SCALE')?.getCount() ??
-      0;
-  }
+  const { batches, instances } = countInstanceBatches(doc);
   if (batches === 0) return undefined;
 
   const after = collectGlbMetrics(doc);

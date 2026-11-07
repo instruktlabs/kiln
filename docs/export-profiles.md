@@ -203,6 +203,37 @@ scene list; their GLB can grow slightly. This is not geometry optimization, comp
 mesh merging, texture compression, or an FPS improvement. Measure actual delivery size
 and target-scene performance separately.
 
+## Fewer draw calls
+
+`--draws minimal` (runtime profile only; `draws: 'minimal'` in `exportAssetGlb`) derives a
+file with as few draws as the saved revision allows, and composes with `--target three`. The
+saved revision does not change.
+
+1. Every mesh used by two or more nodes becomes an `EXT_mesh_gpu_instancing` batch, within the
+   limits in [the runtime notes](runtime.md): one handedness per batch, no shear, and tangent-bearing
+   copies batched by the rotation they share.
+2. Parts whose mesh has a single user merge per material, vertex layout and tangent handedness,
+   within cubes `--draw-cell` metres wide (default 15), so a viewer can still cull a large asset by
+   region. Blended and transmissive parts, and nodes a consumer reads by name (`Joint_*` pivots,
+   semantic roles, extras, visibility, LOD), are never merged. A part keeps its node name; its
+   geometry can move to another node of its cell.
+
+Unlike `optimize: 'full'`, it runs no `palette()`, which rewrites materials, and no `weld()`,
+which splits accessors that parts share. On a 16 MB cathedral, `weld()` alone added 10 MB. The
+sidecar's `drawReduction` reports draws before and after, batches, merges, and what stayed
+separate and why.
+
+Measured on copies of the 1,834-draw cathedral revision:
+
+| Export | Draws | Triangles | Bytes | Time |
+| --- | --- | --- | --- | --- |
+| Saved revision | 1,834 | 3,979,304 | 15,993,092 | |
+| `--draws minimal` | 283 | 3,979,304 | 15,851,728 | 1.5 s |
+| `--draws minimal --target three` | 283 | 3,979,304 | 6,839,500 | 1.9 s |
+
+Batches cost a renderer more per draw than plain meshes do, so measure frame time in the target
+scene, not only the draw count.
+
 ## three.js runtime target
 
 `--target three` (runtime profile only) derives a GLB for a three.js application:

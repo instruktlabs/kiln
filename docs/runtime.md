@@ -173,9 +173,12 @@ A batch draws what its copies drew as separate nodes, within these limits:
 
 - **One handedness per batch.** glTF and three.js take a triangle's winding from the node's global transform and have no per-instance winding, so a mirrored copy (negative determinant) in a right-handed batch would draw inside out. Mirrored copies form their own batch on a node scaled `[-1, 1, 1]`, which needs no second copy of the geometry. The five-node threshold counts each hand separately, so fewer than five mirrored copies of a mesh stay separate nodes. A batch of mirrored copies costs one draw per primitive like any other.
 - **No shear.** A copy whose world matrix has shear, such as a rotated child of a non-uniformly scaled parent, stays a separate node, because an instance's translation, rotation and scale cannot state it.
-- **Tangents stay correct.** A copy of a mesh with `TANGENT` stays a separate node unless it only moves or scales uniformly. three r186's WebGPU renderer transforms an instance's positions and normals but not its tangents, so a turned copy would light its normal map wrongly and a quarter-turned one would shade black. This costs draws on normal-mapped repeats, and can go once the pinned three.js transforms instance tangents.
+- **Tangents stay correct.** three r186's WebGPU renderer transforms an instance's positions and normals but not its tangents, so a turned copy of a mesh with `TANGENT` would light its normal map wrongly and a quarter-turned one would shade black. Copies of such a mesh batch only with copies that share their rotation and stretch, which the batch node carries; the instances keep only translation and uniform scale. A rotation with fewer than five copies stays separate.
+- **Required.** Batches mark `EXT_mesh_gpu_instancing` as required, so a viewer without it refuses the file instead of drawing one copy per batch.
 
 CPU views expand every instance to its own matrix and draw these cases correctly either way, so they cannot confirm how a batch draws on the GPU.
+
+The bake default stays as it is: `auto` batches only `role: 'fill'` assets, because a batch folds named mesh nodes into one. On the published cathedral, batching at bake folds 1,403 of its 1,707 named mesh nodes, which inspection, live review and exact rebuilds read. To cut draws for delivery without changing the saved revision, derive a runtime export with `--draws minimal`; see [export profiles](export-profiles.md#fewer-draw-calls).
 
 Full mode's rigid-merge pass retains every node name, parent and transform. Geometry on a protected
 boundary stays there; other named mesh nodes can become empty or hold their group's
