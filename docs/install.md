@@ -623,7 +623,8 @@ see [large assets](runtime.md#large-assets). Host callers can cancel through an 
 `KILN_EVALUATOR_MODE=in-process` retains the trusted legacy path, with no hard
 synchronous interruption. A separate process is not an operating-system security
 sandbox. The isolated mode remains host-specific and requires its verified Linux
-isolation setup.
+isolation setup; its fixed 65-second CPU-time limit stays in force whatever
+`KILN_EVALUATOR_TIMEOUT_MS` says.
 
 Optimize and instancing options are sent explicitly to the worker. The legacy
 `KILN_QA_MODE=observe|off` override is rejected in subprocess mode rather than silently

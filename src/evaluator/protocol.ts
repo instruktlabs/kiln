@@ -34,6 +34,7 @@ export const MAX_EVALUATOR_CODE_BYTES = 512 * 1024;
 /** Includes bounded, host-approved PNG payloads; non-resource request data stays at 1 MiB. */
 export const MAX_EVALUATOR_REQUEST_BYTES = 24 * 1024 * 1024;
 export const DEFAULT_EVALUATOR_DEADLINE_MS = 60_000;
+export const MAX_EVALUATOR_DEADLINE_MS = 120_000;
 export const DEFAULT_EVALUATOR_MAX_GLB_BYTES = 16 * 1024 * 1024;
 export const DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES = 32 * 1024 * 1024;
 export const MAX_EVALUATOR_GLB_BYTES = 64 * 1024 * 1024;
@@ -672,7 +673,7 @@ export function createEvaluatorPortV2(
       const deadlineMs = boundedControl(
         controls.deadlineMs ?? defaults.deadlineMs,
         DEFAULT_EVALUATOR_DEADLINE_MS,
-        120_000,
+        MAX_EVALUATOR_DEADLINE_MS,
       );
       const maxGlbBytes = boundedControl(
         controls.maxGlbBytes ?? defaults.maxGlbBytes,
