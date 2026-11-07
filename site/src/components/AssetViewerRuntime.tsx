@@ -13,7 +13,14 @@ import {
   reviewToneMapping,
   toneMappingChoice,
 } from '../lib/review-rig-three';
-import { AZIMUTH, frameAsset, orbitDirection } from './viewer-framing';
+import {
+  AZIMUTH,
+  frameAsset,
+  groundGrid,
+  meshTops,
+  orbitDirection,
+  wantsMeshTops,
+} from './viewer-framing';
 import { clearingOnError } from './viewer-retry';
 import { createVehiclePaint, PAINT_SWATCHES } from './vehicle-paint';
 
@@ -65,6 +72,7 @@ function surfacePoints(root: THREE.Object3D, budget = 4000): THREE.Vector3[] {
       points.push(v.fromBufferAttribute(pos, i).applyMatrix4(mesh.matrixWorld).clone());
     }
   }
+  if (wantsMeshTops(total)) points.push(...meshTops(meshes));
   return points;
 }
 
@@ -383,15 +391,10 @@ function Viewer({ name, modelUrl, onError, paintAssetId }: ViewerProps) {
           />
           {grid && (
             <Grid
-              args={[radius * 10, radius * 10]}
-              cellSize={radius / 5}
+              {...groundGrid(radius)}
               cellColor="#9ba4b0"
-              sectionSize={radius}
               sectionColor="#7b8492"
-              fadeDistance={radius * 9}
               fadeStrength={1.4}
-              infiniteGrid
-              followCamera={false}
             />
           )}
         </Canvas>
