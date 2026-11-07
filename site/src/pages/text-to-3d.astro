@@ -1,0 +1,227 @@
+---
+import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import CodeBlock from "../components/CodeBlock.astro";
+import ResponsiveImage from "../components/ResponsiveImage.astro";
+import TextTo3dRun from "../components/TextTo3dRun.astro";
+import { HARNESSES, INSTALL_COMMAND, REPO, SITE, VERSION, VERSION_SHORT } from "../lib/config";
+import { harnessWithVersion, modelName } from "../lib/attribution";
+import { number } from "../lib/catalog";
+import { holodeckWorldUrl } from "../lib/holodeck";
+import { featuredWorlds } from "../lib/site-curation";
+import { LOOK_INSIDE, sourceExcerpt, type TextTo3dSubject } from "../lib/text-to-3d";
+import record from "../data/text-to-3d.json";
+import mechUse from "../data/text-to-3d-mech-use.js?raw";
+
+const subjects = record.subjects as unknown as TextTo3dSubject[];
+const { tools } = record;
+const mech = subjects.find((subject) => subject.id === "mech")!;
+const cathedral = subjects.find((subject) => subject.id === "cathedral")!;
+const hero = cathedral.images.hero!;
+const geometry = cathedral.steps.find((step) => step.id === "revise")!.geometry!;
+const lightGeometry = cathedral.steps.find((step) => step.id === "light")!.geometry!;
+const finalProgram = (subject: TextTo3dSubject) => readFile(resolve("public", subject.steps.at(-1)!.sourceHref.slice(1)), "utf8");
+const [mechProgram, cathedralProgram] = await Promise.all([finalProgram(mech), finalProgram(cathedral)]);
+const leadWorld = featuredWorlds[0]!;
+// Said once, near the top of the cathedral's section. When the polished revision lands, delete this and its prop.
+const POLISH_NOTE = "The cathedral isn't fully polished yet. A better revision will replace this one here.";
+const title = "Text to 3D with your coding agent";
+const description = "Text to 3D through Claude Code, Codex or another coding agent: it writes a program, Kiln runs it over MCP, and you keep a GLB with editable source.";
+const url = new URL("/text-to-3d/", SITE).href;
+const absolute = (path: string) => new URL(path, SITE).href;
+const model3d = (subject: TextTo3dSubject, summary: string) => ({
+    "@type": "3DModel",
+    name: subject.name,
+    description: summary,
+    license: "https://creativecommons.org/publicdomain/zero/1.0/",
+    url: `${url}#${subject.id}`,
+    image: absolute(subject.images.final!.src),
+    encoding: {
+      "@type": "MediaObject",
+      contentUrl: subject.glbHref,
+      encodingFormat: "model/gltf-binary",
+      contentSize: String(subject.glbBytes),
+    },
+});
+const schema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      headline: title,
+      description,
+      url,
+      image: absolute(hero.src),
+      datePublished: "2026-11-07",
+      dateModified: "2026-11-07",
+      author: { "@type": "Organization", name: "Instrukt Labs", url: "https://github.com/instruktlabs" },
+      about: { "@type": "SoftwareSourceCode", name: "Kiln", codeRepository: REPO, version: VERSION },
+    },
+    model3d(mech, "A 6 m walking mech with named joints, pistons that follow them and a Walk clip, written as a JavaScript program by a coding agent using Kiln."),
+    model3d(cathedral, "A Gothic cathedral about 144 m long, with towers about 80 m tall and a 100 m lead spire, written as one JavaScript program by a coding agent using Kiln."),
+  ],
+};
+const HERO_SIZES = "(max-width: 1279px) calc(100vw - 2rem), 60vw";
+const installCommand = `mkdir kiln-install\ncd kiln-install\nnpm init -y\n${INSTALL_COMMAND}\nnpx --offline --no -- kiln-init ../my-assets --harness claude\ncd ../my-assets\nclaude`;
+const how = [
+  ["You describe it", "In your own words, with the numbers and part names you care about, or from a photo, sketch or concept art."],
+  ["Your agent writes a program", "JavaScript against Kiln's geometry, material and animation helpers. Nine bays means nine bays, and named parts and pivots are there for your code to find."],
+  ["Kiln shows it what it built", "Rendered views, part paths and measurements go back to the agent, which edits the source."],
+  ["You keep the source and the GLB", "Both stay in your workspace, on your disk. A later change is an edit to that program, with a diff."],
+];
+const questions = [
+  ["Can Claude Code make 3D models?", "Yes, given a tool that lets it build a model and look at the result. Kiln gives it that, over MCP or the CLI."],
+  ["What can it make?", "Anything an agent can build from parts: buildings, vehicles, machines, props and rigged things that move. Kiln is working towards creatures."],
+  ["Does it work with Codex, Cursor and other agents?", `kiln-init ships setups for ${HARNESSES.length} coding agents, including both of those. Results vary by agent and model.`],
+  ["Can it work from a photo, sketch or concept art?", "Yes, as a reference. Hand your agent the image and it uses it for silhouette, materials and art direction, then builds the model as a program rather than tracing the picture."],
+  ["Does it need an API key?", "Kiln needs no key or account of its own. Your agent signs in the way it already does."],
+  ["Can I use the result in a game or in Blender?", "The output is a standard GLB, and the mech's three.js code above drives the file you download.", { href: "/docs/engine-handoff/", label: "The Blender and Unity guide" }],
+] as const;
+---
+
+<BaseLayout
+  title={`${title} · Kiln`}
+  description={description}
+  breadcrumbs={[{ label: title, href: "/text-to-3d/" }]}
+  card="text-to-3d"
+  jsonLd={schema}
+  preloadImage={{ src: hero.src, srcset: hero.srcsetAvif, sizes: HERO_SIZES }}
+>
+  <div class="container">
+    <div class="drawing-sheet">
+      <div class="grid px-5 pt-6 md:px-8 md:pt-8 xl:grid-cols-5 xl:gap-x-12 xl:pt-4">
+        <div class="pt-4 md:pt-6 xl:col-span-2 xl:pt-12">
+          <PageHeader class="max-w-lead">{title}.</PageHeader>
+          <p class="lead mt-6">
+            Describe a 3D model, or hand your agent a photo, sketch or concept
+            art. It writes the model as a program, Kiln shows it what it built,
+            and you keep a GLB with its source.
+          </p>
+        </div>
+        <figure class="min-w-0 py-6 xl:col-span-3 xl:col-start-3 xl:row-span-2 xl:row-start-1 xl:self-center xl:py-8">
+          <ResponsiveImage image={hero} sizes={HERO_SIZES} eager class="w-full bg-backdrop" />
+          <figcaption class="mt-2 font-mono text-code text-dim">{hero.caption}</figcaption>
+        </figure>
+        <div class="pb-8 xl:col-span-2 xl:pb-12 xl:pt-2">
+          <div class="grid gap-3 sm:flex sm:flex-wrap">
+            <a href="#mech" class="btn">See the models <span aria-hidden="true">↓</span></a>
+            <a href="#try" class="btn btn-secondary">Try it <span aria-hidden="true">↓</span></a>
+          </div>
+          <p class="mt-6 max-w-lead font-mono text-code text-dim">
+            MIT · runs on your machine · MCP, CLI and TypeScript library · setups for {HARNESSES.length} coding agents
+          </p>
+        </div>
+      </div>
+      <p class="border-t border-rule px-5 py-4 text-dim md:px-8">
+        Text to 3D is one way into Kiln. <a class="text-link" href={holodeckWorldUrl(leadWorld.id)}>Walk {leadWorld.name} <span aria-hidden="true">↗</span></a>, a world built with Kiln assets, or browse the <a class="text-link" href="/gallery/">gallery</a>.
+      </p>
+    </div>
+  </div>
+
+  <TextTo3dRun
+    subject={mech}
+    short="Mech"
+    title="A walking mech you can drive from code."
+    intro="A 6 m walker with named joints, pistons that follow them and a Walk clip whose feet don't slide. All of it is there for your game code to find."
+    tryIt="Open it, then choose Walk in the Animation menu."
+    revisions={[
+      { step: "make", title: "First prompt", line: "A rigged walker with a Walk clip. Each toe stays within 0.4 mm of where it lands.", figures: ["make-sheet"] },
+      { step: "direct", title: "Art note", line: "Chipped paint, grime in the panel lines, rust from the joints and real gunmetal. Height, joints and clip untouched.", figures: ["paint-before", "paint-after"] },
+      { step: "revise", title: "One swap", line: "The claw becomes a rail cannon. The Walk data stays identical, byte for byte.", figures: ["before", "after"] },
+    ]}
+    code={[
+      { summary: "How the feet stay planted", code: sourceExcerpt(mechProgram, "function solveLeg(", "toe: qToe };\n}"), label: "Solving a leg", previewLines: 18 },
+      { summary: "Drive it from three.js", code: mechUse, label: "three.js, for mech.glb", previewLines: 24 },
+    ]}
+  />
+
+  <TextTo3dRun
+    subject={cathedral}
+    short="Cathedral"
+    title="A 144 m Gothic cathedral, written as one program."
+    intro="Towers about 80 m tall, a 100 m lead spire, ribbed vaults, carved portals and stained glass, inside and out. Because it's one program, two more bays took one short prompt."
+    note={POLISH_NOTE}
+    credit="Its oak and iron textures come from Poly Haven, also CC0."
+    tryIt="Open it, then choose Look inside to stand in the nave. It's a heavy model, so it needs a reasonable graphics card, and it hasn't been tried on a phone."
+    views={[LOOK_INSIDE]}
+    feature={{ image: "nave", title: "Stand in the nave.", line: "The sun baked into the stone also comes through the south windows, so each one lands on the floor in its own colours, between the columns." }}
+    revisions={[
+      { step: "make", title: "First prompt", line: "The plan, the vaults, the statues and the stained glass.", figures: ["first-look"] },
+      { step: "direct", title: "First art note", line: "Sculpted saints with real faces, medieval glass, and a sun baked into the stone.", figures: ["art-1", "art-2"] },
+      { step: "direct-2", title: "Second art note", line: "Real ground, stepped buttresses, carved portals and glass that reads dark from outside.", figures: ["west-2", "west-3"] },
+      { step: "revise", title: "Two bays and a spire", line: `One short prompt. Of the ${number(geometry.parent)} meshes before it, ${number(geometry.inPlace + geometry.moved)} kept their exact shape: ${number(geometry.inPlace)} stayed put and ${number(geometry.moved)} moved east together.`, figures: ["before", "after"] },
+      { step: "light", title: "Light from the windows", line: `Light traced from the south windows falls on the floor, with the piers' shadows cut through it. ${number(lightGeometry.inPlace)} of ${number(lightGeometry.parent)} meshes didn't move.`, figures: ["light-before", "light-after"] },
+      { step: "sun", title: "A higher sun", line: "Each window now lands between the columns, and all the stone re-baked to match.", figures: ["sun-before", "sun-after"] },
+      { step: "daylight", title: "Softer daylight", line: "The west front takes light from the sky and the sunlit forecourt, with the portals still deep.", figures: ["daylight-before", "daylight-after"] },
+    ]}
+    code={[
+      { summary: "The parameters: change a number, change the building", code: sourceExcerpt(cathedralProgram, "const P = {", "chapelFacets: 5,\n};"), label: "The parameters" },
+      { summary: "The diff for two bays and a spire", code: cathedral.diff!, lang: "diff", label: "Two bays and a spire", previewLines: 22 },
+    ]}
+  />
+
+  <section class="container" aria-labelledby="how-heading">
+    <div class="grid gap-6 border-t border-ink pt-8 lg:grid-cols-2 lg:gap-12">
+      <h2 id="how-heading">How text to 3D works with Claude Code, Codex or Cursor.</h2>
+      <p class="max-w-reading text-dim">
+        Kiln is a local MCP server and CLI. Your coding agent writes 3D models as
+        code and calls Kiln to build them and export GLBs. No model runs inside Kiln.
+      </p>
+    </div>
+    <ol class="mt-8 grid list-none gap-6 p-0 md:grid-cols-2 md:gap-8 xl:grid-cols-4">
+      {how.map(([heading, body], index) => (
+        <li class="border-t border-rule pt-5">
+          <p class="font-mono text-code text-dim">{String(index + 1).padStart(2, "0")}</p>
+          <h3 class="mt-2 text-title">{heading}</h3>
+          <p class="mt-3 text-dim">{body}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section id="try" class="container section-space" aria-labelledby="try-heading">
+    <div class="grid gap-8 border-t border-ink pt-8 lg:grid-cols-12 lg:gap-12">
+      <div class="lg:col-span-4">
+        <h2 id="try-heading" class="text-subheading">Try the mech prompt.</h2>
+        <p class="mt-5 max-w-reading">
+          Install the package, create a workspace and open your agent in it, on
+          Node.js 22 or 24 LTS. To match these models, start it with <code>claude --model {tools.model} --effort {tools.effort}</code>,
+          and approve Kiln's tools when asked.
+        </p>
+        <p class="mt-4 max-w-reading">
+          With no supported GPU, the agent sees shape and flat colour only.
+        </p>
+        <p class="mt-4 max-w-reading text-dim">
+          Using another agent? Change <code>--harness claude</code> and put its own command on the last line.
+        </p>
+        <a href="/docs/install/" class="text-link mt-3">Read the installation guide <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="min-w-0 space-y-4 lg:col-span-8">
+        <CodeBlock code={installCommand} lang="bash" label={`Install Kiln ${VERSION_SHORT} and open a workspace`} />
+        <CodeBlock code={mech.steps[0]!.prompt} lang="text" label="Then paste the mech prompt" />
+      </div>
+    </div>
+  </section>
+
+  <section class="container" aria-labelledby="questions-heading">
+    <div class="grid gap-8 border-t border-ink pt-8 lg:grid-cols-12 lg:gap-12">
+      <h2 id="questions-heading" class="text-subheading lg:col-span-4">Questions.</h2>
+      <div class="min-w-0 lg:col-span-8">
+        {questions.map(([question, answer, link]) => (
+          <details class="border-b border-rule">
+            <summary class="font-semibold">{question}</summary>
+            <p class="max-w-reading px-4 pb-4 text-dim">{answer}{link && <> <a class="text-link" href={link.href}>{link.label}</a></>}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+    <p class="mt-10 max-w-none text-caption text-dim">
+      Kiln {tools.kiln}, {harnessWithVersion(tools.harness, tools.harnessVersion)}, {modelName(tools.model)} at {tools.effort}. CC0-1.0 to the extent of Instrukt Labs' rights.
+    </p>
+  </section>
+</BaseLayout>
+<style is:global>
+  .code-block[data-language="text"] .code-scroll pre { width: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+</style>

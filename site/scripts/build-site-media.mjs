@@ -94,7 +94,8 @@ async function buildMedia() {
   const hero = { poster: shots.packs[curation.featuredWorlds[0]][1] };
   const archiveIndex = join(publicDir, 'assets/index.json');
   const archive = existsSync(archiveIndex) ? await json(archiveIndex) : [];
-  const cards = socialCards({ packsEnabled, release, farm, vehicles, bridge, hero, foundryFloor, archive });
+  const textTo3d = await json(join(site, 'src/data/text-to-3d-card.json'));
+  const cards = socialCards({ packsEnabled, release, farm, vehicles, bridge, hero, foundryFloor, archive, textTo3d });
   const archivoData = (await readFile(join(publicDir, 'fonts/archivo-latin-full-normal.woff2'))).toString('base64');
   const plexData = (await readFile(join(publicDir, 'fonts/ibm-plex-mono-latin-400-normal.woff2'))).toString('base64');
   let prior = {};

@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { ContactShadows, Grid, OrbitControls, useGLTF, useProgress } from '@react-three/drei';
-import { Component, Suspense, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Component, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import * as THREE from 'three';
 import { REVIEW_RIG } from '../lib/review-rig';
@@ -19,6 +19,8 @@ import {
   groundGrid,
   meshTops,
   orbitDirection,
+  type SavedView,
+  showView,
   wantsMeshTops,
 } from './viewer-framing';
 import { clearingOnError } from './viewer-retry';
@@ -103,6 +105,7 @@ function Model({
   url,
   wireframe,
   framing,
+  viewShowing,
   onBounds,
   clipIndex,
   paused,
@@ -116,6 +119,7 @@ function Model({
   onReady: () => void;
   wireframe: boolean;
   framing: number;
+  viewShowing: { current: boolean };
   onBounds: (radius: number) => void;
   clipIndex: number;
   paused: boolean;
@@ -210,7 +214,7 @@ function Model({
   // job.
   // biome-ignore lint/correctness/useExhaustiveDependencies: framing is a trigger, not an input.
   useEffect(() => {
-    if (!controls) return;
+    if (!controls || viewShowing.current) return;
     const box = new THREE.Box3().setFromObject(scene);
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
@@ -234,7 +238,7 @@ function Model({
     controls.maxDistance = radius * 14;
     controls.update();
     onBounds(radius);
-  }, [scene, points, camera, controls, framing, onBounds, width, height]);
+  }, [scene, points, camera, controls, framing, viewShowing, onBounds, width, height]);
 
   useEffect(() => {
     const touched: THREE.Material[] = [];
@@ -262,6 +266,8 @@ interface ViewerProps {
   modelUrl: string;
   onError: (error: Error) => void;
   paintAssetId?: string;
+  /** Saved cameras to offer as buttons. Most models have none. */
+  views?: SavedView[];
 }
 
 class ViewerBoundary extends Component<
@@ -299,13 +305,20 @@ function ContextMonitor({ onError }: { onError: (error: Error) => void }) {
   return null;
 }
 
-type CameraCommand = { action: 'left' | 'right' | 'up' | 'down' | 'in' | 'out'; sequence: number };
+type CameraCommand =
+  | { action: 'left' | 'right' | 'up' | 'down' | 'in' | 'out'; sequence: number }
+  | { action: 'view'; view: SavedView; sequence: number };
 
 function KeyboardCamera({ command }: { command: CameraCommand | undefined }) {
   const camera = useThree((state) => state.camera);
   const controls = useThree((state) => state.controls) as OrbitLike | null;
   useEffect(() => {
     if (!command || !controls) return;
+    if (command.action === 'view') {
+      showView(camera, controls.target, command.view);
+      controls.update();
+      return;
+    }
     const offset = camera.position.clone().sub(controls.target);
     const spherical = new THREE.Spherical().setFromVector3(offset);
     if (command.action === 'left') spherical.theta -= 0.15;
@@ -322,7 +335,7 @@ function KeyboardCamera({ command }: { command: CameraCommand | undefined }) {
   return null;
 }
 
-function Viewer({ name, modelUrl, onError, paintAssetId }: ViewerProps) {
+function Viewer({ name, modelUrl, onError, paintAssetId, views }: ViewerProps) {
   const [wireframe, setWireframe] = useState(false);
   const [grid, setGrid] = useState(true);
   const [spin, setSpin] = useState(false);
@@ -337,8 +350,15 @@ function Viewer({ name, modelUrl, onError, paintAssetId }: ViewerProps) {
   const [paintColour, setPaintColour] = useState<string | null>(null);
   const [originalPaint, setOriginalPaint] = useState<string>();
   const onReady = useMemo(() => () => setReady(true), []);
-  const move = (action: CameraCommand['action']) =>
+  const move = (action: Exclude<CameraCommand['action'], 'view'>) =>
     setCommand((previous) => ({ action, sequence: (previous?.sequence ?? 0) + 1 }));
+  // A saved camera stays until reset: refitting the whole model on a resize or a phone's turn would throw it back outside.
+  const viewShowing = useRef(false);
+  const look = (view: SavedView) => {
+    viewShowing.current = true;
+    setSpin(false);
+    setCommand((previous) => ({ action: 'view', view, sequence: (previous?.sequence ?? 0) + 1 }));
+  };
   return (
     <div>
       <section className="relative h-viewer" aria-label={`Interactive ${name} model`}>
@@ -370,6 +390,7 @@ function Viewer({ name, modelUrl, onError, paintAssetId }: ViewerProps) {
               url={modelUrl}
               wireframe={wireframe}
               framing={framing}
+              viewShowing={viewShowing}
               onBounds={setRadius}
               clipIndex={clipIndex}
               paused={paused}
@@ -452,6 +473,17 @@ function Viewer({ name, modelUrl, onError, paintAssetId }: ViewerProps) {
         className="flex flex-wrap gap-2 border-t border-rule bg-sheet p-4"
         aria-label="3D inspection controls"
       >
+        {views?.map((view) => (
+          <button
+            key={view.label}
+            type="button"
+            className="btn"
+            disabled={!ready}
+            onClick={() => look(view)}
+          >
+            {view.label}
+          </button>
+        ))}
         <button
           type="button"
           className="btn btn-secondary"
@@ -529,6 +561,7 @@ function Viewer({ name, modelUrl, onError, paintAssetId }: ViewerProps) {
           className="btn btn-secondary"
           onClick={() => {
             setSpin(false);
+            viewShowing.current = false;
             setFraming((value) => value + 1);
           }}
         >

@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/* The page's record and programs hold prompts and code comments, and a word in them must not become a rule on every page. */
+@source not "../data/text-to-3d.json";
+@source not "../../public/text-to-3d";
+@source not inline("shadow");
 @plugin "@tailwindcss/typography";
 @theme {
   --color-*: initial;

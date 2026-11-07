@@ -1,6 +1,7 @@
 import { expect, test } from 'bun:test';
+import { readFile } from 'node:fs/promises';
 import * as THREE from 'three';
-import { AZIMUTH, frameAsset, groundGrid, meshTops, orbitDirection, wantsMeshTops } from '../src/components/viewer-framing';
+import { AZIMUTH, frameAsset, groundGrid, meshTops, orbitDirection, showView, wantsMeshTops } from '../src/components/viewer-framing';
 
 test('a very large model offers each mesh\'s top, so a slim spire stays in the frame', () => {
   const body = new THREE.Mesh(new THREE.BoxGeometry(100, 40, 40));
@@ -33,6 +34,16 @@ test('only a model past a million vertices offers its mesh tops', () => {
   expect(wantsMeshTops(80_069)).toBe(false);
   expect(wantsMeshTops(1_000_000)).toBe(false);
   expect(wantsMeshTops(2_489_344)).toBe(true);
+});
+
+test('a saved view puts the camera and the orbit target where the page says, and nothing else moves', () => {
+  const camera = new THREE.PerspectiveCamera(34, 2, 0.1, 5000);
+  camera.position.set(600, 200, 400);
+  const target = new THREE.Vector3(2, 40, 0);
+  showView(camera, target, { label: 'Look inside', position: [46, 2, 0], target: [-40, 20, 0] });
+  expect(camera.position.toArray()).toEqual([46, 2, 0]);
+  expect(target.toArray()).toEqual([-40, 20, 0]);
+  expect(camera.fov).toBe(34);
 });
 
 // One unit in the last place of a 32-bit float, which is what the grid's shader has.
@@ -70,3 +81,15 @@ for (const aspect of [0.59, 1, 2.4]) {
     }
   });
 }
+
+const runtime = await readFile(new URL('../src/components/AssetViewerRuntime.tsx', import.meta.url), 'utf8');
+
+test('a saved view waits for the model, because framing the model when it arrives would undo the click', () => {
+  expect(runtime).toMatch(/views\?\.map\(\(view\) => \(\s*<button[^>]*disabled=\{!ready\}/);
+});
+
+test('a resize leaves a saved view where it is, and reset still frames the whole model', () => {
+  expect(runtime).toMatch(/if \(!controls \|\| viewShowing\.current\) return;/);
+  expect(runtime).toMatch(/viewShowing\.current = true;\s*setSpin\(false\)/);
+  expect(runtime).toMatch(/viewShowing\.current = false;\s*setFraming\(/);
+});

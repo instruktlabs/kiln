@@ -6535,6 +6535,16 @@
       "path": "media/holodeck/scenes/fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d/meridian-sanctuary-arrival.png",
       "bytes": 1974966,
       "sha256": "fcb5b7444adbd92180e943b0207ef923c222134c340b5cda4f281494d352f71d"
+    },
+    {
+      "path": "text-to-3d/9b1b004c460cc0a9/mech.glb",
+      "bytes": 4777424,
+      "sha256": "9b1b004c460cc0a924f6a4d2d218a2d292ebbd507add1653cfc5152799d96df5"
+    },
+    {
+      "path": "text-to-3d/6f1ee50efb3aa2ab/cathedral.glb",
+      "bytes": 14948932,
+      "sha256": "6f1ee50efb3aa2ab733c9159a108a02b43862eb880a9a3e0ac7eb805b533d64c"
     }
   ]
 }

@@ -30,11 +30,11 @@ export function engineProvenance(engineDir) {
   return { commit: git('rev-parse', 'HEAD'), subject: git('log', '-1', '--format=%s'), dirty: git('status', '--porcelain', '--untracked-files=no') !== '' };
 }
 
-export async function loadRigEngine(engineDir = resolveRigEngine()) {
+export async function loadRigEngine(engineDir = resolveRigEngine(), { provenance = engineProvenance } = {}) {
   if (!existsSync(join(engineDir, 'src/render-service-client.ts'))) throw new Error('No compatible Kiln engine tree. Set KILN_RIG_ENGINE_DIR to a tree containing the review rig.');
   const load = (file) => import(pathToFileURL(join(engineDir, file)).href);
   const [client, mode, camera] = await Promise.all([load('src/render-service-client.ts'), load('src/cli-render-mode.ts'), load('src/views/camera.ts')]);
-  return { engineDir, client, mode, camera, provenance: engineProvenance(engineDir) };
+  return { engineDir, client, mode, camera, provenance: provenance(engineDir) };
 }
 
 /**
@@ -43,8 +43,8 @@ export async function loadRigEngine(engineDir = resolveRigEngine()) {
  * renderer attested full-material fidelity for exactly the GLB sent, echoed every camera unchanged, and did
  * not change identity while it worked.
  */
-export async function connectRig({ url = process.env.KILN_RENDER_SERVICE_URL ?? 'http://127.0.0.1:8000', token = process.env.RENDER_SERVICE_TOKEN, engineDir } = {}) {
-  const engine = await loadRigEngine(engineDir);
+export async function connectRig({ url = process.env.KILN_RENDER_SERVICE_URL ?? 'http://127.0.0.1:8000', token = process.env.RENDER_SERVICE_TOKEN, engineDir, provenance } = {}) {
+  const engine = await loadRigEngine(engineDir, { provenance });
   const sourceFingerprint = engine.client.packagedRendererSourceFingerprint();
   const identity = await engine.mode.probeCaptureIdentity(url, token, sourceFingerprint);
   if (!identity) throw new Error(`The render service at ${url} did not provide an exact build identity for this engine (start it from ${engine.engineDir}).`);

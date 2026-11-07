@@ -6,6 +6,7 @@ import { featuredWorlds, worldCover } from './site-curation';
 import { farm, vehicles, bridge } from './catalog';
 import { PACKS_ENABLED, SITE } from './config';
 import { SOCIAL_CARD, socialCardAlt, socialCardPath, socialCards } from './social-cards.mjs';
+import textTo3d from '../data/text-to-3d-card.json';
 
 /** The cards `scripts/build-site-media.mjs` drew for this build, from the same inputs (it runs before the Astro build). */
 const archiveIndex = resolve('public/assets/index.json');
@@ -19,6 +20,7 @@ const cards = new Map(
     hero: { poster: worldCover(featuredWorlds[0]!.id)! },
     foundryFloor,
     archive: existsSync(archiveIndex) ? JSON.parse(readFileSync(archiveIndex, 'utf8')) : [],
+    textTo3d,
   }).map((card) => [card.slug, card]),
 );
 
