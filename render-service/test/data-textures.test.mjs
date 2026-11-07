@@ -85,7 +85,14 @@ function glb() {
     samplers: [{ wrapS: 33071, wrapT: 33648 }],
     images: [{ bufferView: 5, mimeType: 'image/png' }],
     accessors: [
-      { bufferView: 0, componentType: 5126, count: 3, type: 'VEC3', min: [0, 0, 0], max: [1, 1, 0] },
+      {
+        bufferView: 0,
+        componentType: 5126,
+        count: 3,
+        type: 'VEC3',
+        min: [0, 0, 0],
+        max: [1, 1, 0],
+      },
       ...[1, 2, 3, 4].map((bufferView) => ({
         bufferView,
         componentType: 5126,

@@ -44,7 +44,9 @@ describe('keyMaterialsByProjection', () => {
       afterFirst,
     );
     keyMaterialsByProjection(root, persp);
-    materials.forEach((m, i) => assert.ok(m.version > afterFirst[i]));
+    materials.forEach((m, i) => {
+      assert.ok(m.version > afterFirst[i]);
+    });
   });
 
   it('keys a perspective draw the same whether or not an orthographic one came first', () => {
