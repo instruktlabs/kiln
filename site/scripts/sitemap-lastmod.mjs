@@ -9,7 +9,11 @@
  * those files is the page's lastmod. A file with no commit yet (an uncommitted addition) counts as changed at HEAD.
  * The shared chrome every page carries (`SITE_CHROME`: the base layout's header, footer and share card, and the
  * site constants with the release label) is not followed: Google asks for the last *significant* change to a page, and
- * a navigation link or version label changing on all pages at once would otherwise redate the whole sitemap.
+ * a navigation link or version label changing on all pages at once would otherwise redate the whole sitemap. The 3D
+ * viewer is left out for the same reason: fixing it changes no asset page's content. That covers its component, the
+ * runtime behind its button and what only they import (island-session, viewer-retry, viewer-framing, vehicle-paint and
+ * review-rig-three), none of which is in a page's crawled HTML beyond the viewer's own controls, and none of which may
+ * import a data record: a test holds that.
  * Files read at build time from untracked inputs (the restored example archive, generated sources) are pinned by
  * tracked records, which are the files that carry the date.
  */
@@ -23,7 +27,7 @@ const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const EXTENSIONS = ['', '.ts', '.tsx', '.mjs', '.js', '.astro', '.json'];
 const SOURCE = /\.(?:astro|[cm]?[jt]sx?|json)$/;
 /** Repository paths of the site-wide chrome that no page's lastmod follows (see above). */
-export const SITE_CHROME = ['site/src/layouts/BaseLayout.astro', 'site/src/lib/config.ts'];
+export const SITE_CHROME = ['site/src/layouts/BaseLayout.astro', 'site/src/lib/config.ts', 'site/src/components/AssetViewer.astro', 'site/src/components/AssetViewerRuntime.tsx'];
 const IMPORT = /(?:^|[\s;])(?:import|export)\s+(?:[^'"`;]*?\sfrom\s*)?['"]([^'"]+)['"]|\bimport\s*\(\s*['"]([^'"]+)['"]\s*\)/g;
 
 /** The Astro page pattern for a file under src/pages: static segments, `[name]` (one segment) or `[...name]` (any). */

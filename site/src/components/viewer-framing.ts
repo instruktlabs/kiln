@@ -13,6 +13,45 @@ export const orbitDirection = (azimuth: number) =>
     Math.sin(azimuth) * Math.cos(ELEVATION),
   );
 
+/**
+ * The ground grid's size, from the asset's radius.
+ *
+ * A plane just big enough for the fade, carried along under the camera, rather
+ * than drei's `infiniteGrid`. That option multiplies the plane by 1 + fadeDistance,
+ * and the fade grows with the asset, so the plane grows with the square of the
+ * radius: about 310 km out from a cathedral 83 m in radius, and tens of thousands
+ * of kilometres from the Golden Gate Bridge. The shader's 32-bit coordinates can't
+ * hold a line still at that scale, so the grid broke into stair-steps and stripes
+ * that jumped as the camera moved. `followCamera` keeps the lines fixed in the
+ * world while the plane stays small.
+ */
+export function groundGrid(radius: number) {
+  const fadeDistance = radius * 9;
+  return {
+    args: [radius * 20, radius * 20] as [number, number],
+    cellSize: radius / 5,
+    sectionSize: radius,
+    fadeDistance,
+    followCamera: true,
+  };
+}
+
+/** Past this many vertices, the surface sample below is coarse enough to step over a slim part altogether. */
+const MESH_TOPS_ABOVE_VERTICES = 1_000_000;
+export const wantsMeshTops = (vertices: number) => vertices > MESH_TOPS_ABOVE_VERTICES;
+
+/**
+ * The top of each mesh, added to the sample when framing a very large model. At one
+ * vertex in hundreds the sample can miss a spire entirely, and it then sticks out of
+ * the frame. Smaller models are framed from their vertices alone, as before.
+ */
+export function meshTops(meshes: readonly THREE.Object3D[]) {
+  return meshes.map((mesh) => {
+    const box = new THREE.Box3().setFromObject(mesh);
+    return new THREE.Vector3((box.min.x + box.max.x) / 2, box.max.y, (box.min.z + box.max.z) / 2);
+  });
+}
+
 const AZIMUTH_SAMPLES = 16;
 
 /**
