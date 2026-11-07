@@ -107,3 +107,14 @@ test('stdin, stderr, unknown errors and non-Windows-Bun runtimes keep failing cl
     expect(String(result)).not.toContain('private pipe detail');
   }
 });
+
+test('Windows Node reports a dead worker stdin as EOF, which waits for the worker close like EPIPE', async () => {
+  for (const stream of ['stdin', 'stderr', 'fd3'] as const) {
+    const { result, killed } = await exercise({ stream, errno: 'EOF', bun: false });
+    expect(result).toMatchObject({ code: 'EXECUTION_REJECTED' });
+    expect(killed).toBe(false);
+  }
+  expect((await exercise({ stream: 'stdin', errno: 'EOF', exit: 1 })).result).toMatchObject({
+    code: 'WORKER_FAILED',
+  });
+});

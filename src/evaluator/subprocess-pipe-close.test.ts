@@ -1,4 +1,6 @@
 import { test, expect } from 'bun:test';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { renderGLBViaProcessLaunch, sanitizedEvaluatorEnv } from './subprocess';
 const result = JSON.stringify({
   version: 'kiln.evaluator.result.v2',
@@ -59,3 +61,41 @@ test('input-close errors retain deadline and cancellation authority', async () =
     clearTimeout(timer);
   }
 }, 10000);
+
+test('a missing worker file names the rebuild, whatever size the request was', async () => {
+  const missing = join(tmpdir(), 'kiln-missing-worker', 'evaluator-worker.mjs');
+  for (const source of ['small', UNFLUSHABLE_SOURCE]) {
+    const failure = await renderGLBViaProcessLaunch(
+      source,
+      {},
+      { deadlineMs: 15000 },
+      {
+        command: process.execPath,
+        args: ['-e', 'process.exit(1)'],
+        env: sanitizedEvaluatorEnv(),
+        workerFile: missing,
+      },
+    ).catch((error) => error);
+    expect(failure.code).toBe('WORKER_FAILED');
+    expect(failure.message).toContain('evaluator-worker.mjs is missing');
+    expect(failure.message).toContain('bun run build:runtime');
+    expect(failure.message).toContain('restart');
+    expect(failure.message).not.toContain(tmpdir());
+  }
+}, 30000); // Two process launches.
+
+test('a worker that exists keeps the plain failure', async () => {
+  const failure = await renderGLBViaProcessLaunch(
+    'small',
+    {},
+    { deadlineMs: 15000 },
+    {
+      command: process.execPath,
+      args: ['-e', 'process.exit(1)'],
+      env: sanitizedEvaluatorEnv(),
+      workerFile: process.execPath,
+    },
+  ).catch((error) => error);
+  expect(failure.code).toBe('WORKER_FAILED');
+  expect(failure.message).toBe('Evaluator worker failed.');
+}, 20000);

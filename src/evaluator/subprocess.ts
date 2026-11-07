@@ -4,6 +4,8 @@ import {
   type AuthoringDiagnostic,
 } from './authoring-diagnostic';
 import { spawn, type SpawnOptions } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { basename } from 'node:path';
 import { solidFailureAdvice, type SolidFailureDetails } from './solid-diagnostic';
 import { fileURLToPath } from 'node:url';
 import type { RenderGlbOptions, RenderResult } from '../render';
@@ -47,6 +49,8 @@ export interface EvaluatorProcessLaunch {
   args: string[];
   env: NodeJS.ProcessEnv;
   detached?: boolean;
+  /** The worker the launch runs, checked when it fails so the error can name the rebuild. */
+  workerFile?: string;
 }
 
 export class EvaluatorSubprocessError extends Error {
@@ -178,8 +182,18 @@ export async function renderGLBViaProcessLaunch(
     command: process.execPath,
     args: process.versions.bun ? [workerPath] : [`--max-old-space-size=${maxHeapMb}`, workerPath],
     env: sanitizedEvaluatorEnv(),
+    workerFile: workerPath,
   };
   const resolvedLaunch = launch ?? defaultLaunch;
+  // A worker that dies at once fails differently by request size and platform; a missing file is
+  // the one cause with a known next step, so every failure path asks about it.
+  const workerFailure = (message: string) =>
+    new EvaluatorSubprocessError(
+      'WORKER_FAILED',
+      resolvedLaunch.workerFile && !existsSync(resolvedLaunch.workerFile)
+        ? `Evaluator worker failed: ${basename(resolvedLaunch.workerFile)} is missing beside the engine. Reinstall Kiln (bun install, then bun run build:runtime), run kiln-init . --repair in the workspace, and restart the MCP session.`
+        : message,
+    );
   const detached = resolvedLaunch.detached === true;
 
   return await new Promise<RenderResult>((resolve, reject) => {
@@ -193,7 +207,7 @@ export async function renderGLBViaProcessLaunch(
     const protocol = child.stdio[3];
     if (!protocol) {
       terminateProcess(child, detached);
-      reject(new EvaluatorSubprocessError('WORKER_FAILED', 'Evaluator worker did not start.'));
+      reject(workerFailure('Evaluator worker did not start.'));
       return;
     }
     const chunks: Buffer[] = [];
@@ -223,15 +237,20 @@ export async function renderGLBViaProcessLaunch(
       // Always consume pipe errors; only an active request becomes a worker error.
       if (settled) return;
       // Windows/Bun can report a closed input/stderr/protocol pipe before the
-      // process close event drains its complete fd3 envelope. Keep the host
+      // process close event drains its complete fd3 envelope, and Windows/Node
+      // reports writing to a worker that already exited as EOF. Keep the host
       // deadline and cancellation armed, then require exit 0 plus strict decode.
       if (
-        ['EPIPE', 'ECONNRESET', 'ERR_STREAM_DESTROYED', 'ERR_STREAM_PREMATURE_CLOSE'].includes(
-          error.code ?? '',
-        )
+        [
+          'EOF',
+          'EPIPE',
+          'ECONNRESET',
+          'ERR_STREAM_DESTROYED',
+          'ERR_STREAM_PREMATURE_CLOSE',
+        ].includes(error.code ?? '')
       )
         return;
-      finish(new EvaluatorSubprocessError('WORKER_FAILED', 'Evaluator worker pipe failed.'));
+      finish(workerFailure('Evaluator worker pipe failed.'));
       terminateProcess(child, detached);
     };
     child.stdin?.on('error', pipeFailed);
@@ -272,12 +291,12 @@ export async function renderGLBViaProcessLaunch(
       stderrBytes = Math.min(MAX_STDERR_BYTES, stderrBytes + chunk.byteLength);
     });
     child.on('error', () => {
-      finish(new EvaluatorSubprocessError('WORKER_FAILED', 'Evaluator worker failed to start.'));
+      finish(workerFailure('Evaluator worker failed to start.'));
     });
     child.on('close', (exitCode) => {
       if (settled) return;
       if (exitCode !== 0 || chunks.length === 0) {
-        finish(new EvaluatorSubprocessError('WORKER_FAILED', 'Evaluator worker failed.'));
+        finish(workerFailure('Evaluator worker failed.'));
         return;
       }
       try {
