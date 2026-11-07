@@ -1,0 +1,138 @@
+---
+import AssetViewer from "./AssetViewer.astro";
+import CodeBlock from "./CodeBlock.astro";
+import ResponsiveImage from "./ResponsiveImage.astro";
+import type { SavedView } from "./viewer-framing";
+import { number } from "../lib/catalog";
+import { megabytes, wordCount, type TextTo3dSubject } from "../lib/text-to-3d";
+
+interface RevisionCard {
+  /** The step of the record this card shows. */
+  step: string;
+  title: string;
+  /** One line: what changed, and why it's worth seeing. */
+  line: string;
+  /** Pictures by name in the record: one, or a before and an after. */
+  figures: string[];
+}
+interface Props {
+  subject: TextTo3dSubject;
+  /** The subject's short name, for labels that must fit on a phone beside a Copy button. */
+  short: string;
+  title: string;
+  intro: string;
+  /** Something a reader should know before downloading this model. */
+  note?: string;
+  /** Said with the licence, for what the model takes from elsewhere. */
+  credit?: string;
+  /** Said once, under the viewer: what to try in it. */
+  tryIt: string;
+  /** Saved cameras the viewer offers as buttons. */
+  views?: SavedView[];
+  /** A second picture worth stopping for, by name in the record, and what it shows. */
+  feature?: { image: string; title: string; line: string };
+  /** Closed until asked for: someone may only want the model. */
+  revisions: RevisionCard[];
+  /** Code worth reading, closed for the same reason. */
+  code: { summary: string; code: string; label: string; lang?: "javascript" | "diff"; previewLines?: number }[];
+}
+const { subject, short, title, intro, note, credit, tryIt, views, feature, revisions, code } = Astro.props;
+const headingId = `${subject.id}-heading`;
+const final = subject.steps.at(-1)!;
+const finalImage = subject.images.final!;
+const featureImage = feature && subject.images[feature.image]!;
+const stepOf = (id: string) => subject.steps.find((step) => step.id === id)!;
+const stats = [
+  ["Prompts", subject.steps.length],
+  ["Triangles", subject.triangles >= 1_000_000 ? `${(subject.triangles / 1_000_000).toFixed(1)} M` : number(subject.triangles)],
+  ["GLB", `${megabytes(subject.glbBytes)} MB`],
+] as const;
+const THUMB_SIZES = "(max-width: 639px) 3.5rem, 5rem";
+const FEATURE_SIZES = "(max-width: 1023px) calc(100vw - 2rem), 66vw";
+const CARD_SIZES = "(max-width: 767px) calc(100vw - 2rem), (max-width: 1279px) calc(50vw - 2rem), 26rem";
+const PAIR_SIZES = "(max-width: 767px) calc(50vw - 1rem), (max-width: 1279px) calc(25vw - 1rem), 13rem";
+---
+<section id={subject.id} class="container section-space" aria-labelledby={headingId}>
+  <div class="grid gap-x-8 gap-y-6 border-t border-ink pt-8 lg:grid-cols-3 lg:grid-rows-[auto_1fr]">
+    <div class="min-w-0 lg:col-start-3">
+      <h2 id={headingId}>{title}</h2>
+      <p class="mt-4 text-dim">{intro}</p>
+      {note && <p class="mt-4 border-l-2 border-ember pl-4">{note}</p>}
+    </div>
+    <div class="drawing-sheet min-w-0 lg:col-span-2 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:self-start">
+      <AssetViewer
+        name={subject.name}
+        modelUrl={subject.glbHref}
+        poster={finalImage.src}
+        posterAlt={finalImage.alt}
+        posterWidth={finalImage.width}
+        posterHeight={finalImage.height}
+        srcsetWebp={finalImage.srcsetWebp}
+        srcsetAvif={finalImage.srcsetAvif}
+        views={views}
+        openLabel={`Open 3D view, ${megabytes(subject.glbBytes)} MB`}
+      />
+      <p class="border-t border-ink bg-sheet px-5 py-4">{tryIt}</p>
+    </div>
+    <div class="min-w-0 lg:col-start-3">
+      <div class="grid gap-3">
+        <a class="btn" href={subject.glbHref} download>Download GLB, {megabytes(subject.glbBytes)} MB<span class="sr-only">, {subject.name}</span> <span aria-hidden="true">↓</span></a>
+        <a class="btn btn-secondary" href={final.sourceHref} download>Download source, {number(final.sourceLines)} lines<span class="sr-only">, {subject.name}</span> <span aria-hidden="true">↓</span></a>
+      </div>
+      <p class="mt-3 text-caption text-dim"><a class="text-link" href="https://creativecommons.org/publicdomain/zero/1.0/">CC0-1.0 <span aria-hidden="true">↗</span></a>: use both for anything.{credit && ` ${credit}`}</p>
+      <dl class="mt-5 grid grid-cols-3 border-y border-ink">
+        {stats.map(([label, value]) => <div class="min-w-0 border-r border-rule px-3 py-4 last:border-r-0 lg:px-2 xl:px-3"><dt class="font-mono text-xs uppercase tracking-wide text-dim">{label}</dt><dd class="mt-2 text-xl font-semibold leading-7 sm:text-2xl lg:text-lg xl:text-2xl">{value}</dd></div>)}
+      </dl>
+    </div>
+  </div>
+  {feature && featureImage && (
+    <div class="mt-8 grid gap-x-8 gap-y-4 lg:grid-cols-3">
+      <figure class="min-w-0 lg:col-span-2">
+        <ResponsiveImage image={featureImage} sizes={FEATURE_SIZES} class="w-full bg-backdrop" />
+      </figure>
+      <div>
+        <h3 class="text-subheading">{feature.title}</h3>
+        <p class="mt-4 text-dim">{feature.line}</p>
+      </div>
+    </div>
+  )}
+  <div class="mt-8 border-t border-rule">
+    <details class="group border-b border-rule">
+      <summary class="font-semibold">
+        See all {subject.steps.length} revisions and their prompts
+        <span class="mt-3 flex flex-wrap gap-2 group-open:hidden">
+          {revisions.map((card) => <ResponsiveImage image={{ ...subject.images[card.figures.at(-1)!]!, alt: "" }} sizes={THUMB_SIZES} class="size-14 bg-backdrop object-cover sm:size-20" />)}
+        </span>
+      </summary>
+      <ol class="grid list-none gap-8 px-4 pb-8 pt-2 md:grid-cols-2 xl:grid-cols-3">
+        {revisions.map((card) => {
+          const step = stepOf(card.step);
+          const revision = subject.steps.indexOf(step) + 1;
+          const { prompt } = step;
+          const figures = card.figures.map((name) => subject.images[name]!);
+          return (
+            <li class="min-w-0">
+              <div class={figures.length > 1 ? "grid grid-cols-2 gap-2" : undefined}>
+                {figures.map((image) => <ResponsiveImage image={image} sizes={figures.length > 1 ? PAIR_SIZES : CARD_SIZES} class="w-full bg-backdrop" />)}
+              </div>
+              <p class="mt-3 font-mono text-code text-dim">Revision {revision}</p>
+              <h3 class="text-title">{card.title}</h3>
+              <p class="mt-1 text-dim">{card.line}</p>
+              <a class="text-link" href={step.sourceHref} download>Its source, {number(step.sourceLines)} lines<span class="sr-only">, {short} revision {revision}</span> <span aria-hidden="true">↓</span></a>
+              <details class="mt-1 border border-rule bg-sheet">
+                <summary class="font-mono text-code">Read the prompt, {number(wordCount(prompt))} words</summary>
+                <div class="px-2 pb-2"><CodeBlock code={prompt} lang="text" label={`${short}, prompt ${revision}`} /></div>
+              </details>
+            </li>
+          );
+        })}
+      </ol>
+    </details>
+    {code.map((block) => (
+      <details class="border-b border-rule">
+        <summary class="font-semibold">{block.summary}</summary>
+        <div class="min-w-0 px-4 pb-6"><CodeBlock code={block.code} lang={block.lang ?? "javascript"} label={block.label} previewLines={block.previewLines} /></div>
+      </details>
+    ))}
+  </div>
+</section>

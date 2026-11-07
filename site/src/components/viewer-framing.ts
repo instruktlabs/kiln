@@ -36,6 +36,19 @@ export function groundGrid(radius: number) {
   };
 }
 
+/** A saved camera a page can offer beside the orbit controls, in the model's own metres. */
+export interface SavedView {
+  label: string;
+  position: [number, number, number];
+  target: [number, number, number];
+}
+
+/** Moves the camera and the orbit target to a saved view; the orbit controls take it from there. */
+export function showView(camera: THREE.Camera, target: THREE.Vector3, view: SavedView) {
+  camera.position.fromArray(view.position);
+  target.fromArray(view.target);
+}
+
 /** Past this many vertices, the surface sample below is coarse enough to step over a slim part altogether. */
 const MESH_TOPS_ABOVE_VERTICES = 1_000_000;
 export const wantsMeshTops = (vertices: number) => vertices > MESH_TOPS_ABOVE_VERTICES;

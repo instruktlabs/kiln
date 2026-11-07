@@ -1,4 +1,6 @@
 ---
+import type { SavedView } from "./viewer-framing";
+
 interface Props {
   name: string;
   modelUrl: string;
@@ -13,6 +15,10 @@ interface Props {
   frameClass?: string;
   /** Exact allowlisted Vehicles catalog ID; omitted on all other assets. */
   paintAssetId?: string;
+  /** Saved cameras to offer as buttons once the viewer is open; omitted on most assets. */
+  views?: SavedView[];
+  /** What the open button says, when the page wants the download's size on it. */
+  openLabel?: string;
 }
 const {
   name,
@@ -25,6 +31,8 @@ const {
   srcsetAvif,
   frameClass = "bg-backdrop",
   paintAssetId,
+  views,
+  openLabel = "Open 3D view",
 } = Astro.props;
 // A single-file poster has no candidates to choose from, so it declares no sizes.
 const sizes = srcsetWebp || srcsetAvif ? "(max-width: 768px) 100vw, 70vw" : undefined;
@@ -34,6 +42,7 @@ const sizes = srcsetWebp || srcsetAvif ? "(max-width: 768px) 100vw, 70vw" : unde
   data-name={name}
   data-model={modelUrl}
   data-paint-asset={paintAssetId}
+  data-views={views && JSON.stringify(views)}
   class:list={["block border border-rule", frameClass]}
 >
   <div data-poster>
@@ -59,7 +68,7 @@ const sizes = srcsetWebp || srcsetAvif ? "(max-width: 768px) 100vw, 70vw" : unde
   </div>
   <div class="flex flex-wrap items-center gap-4 border-t border-rule bg-sheet p-4">
     <button type="button" data-open hidden class="btn">
-      Open 3D view
+      {openLabel}
     </button>
     <button type="button" data-close hidden class="btn btn-secondary">
       Close 3D view
@@ -96,6 +105,7 @@ const sizes = srcsetWebp || srcsetAvif ? "(max-width: 768px) 100vw, 70vw" : unde
             name: this.dataset.name!,
             modelUrl: this.dataset.model!,
             paintAssetId: this.dataset.paintAsset,
+            views: this.dataset.views ? JSON.parse(this.dataset.views) : undefined,
             onError: (error) => {
               session.stop();
               status.textContent = viewerErrorMessage(error);

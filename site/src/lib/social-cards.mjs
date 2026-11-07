@@ -17,7 +17,7 @@ const poster = (image) => (image ? { src: image.src, alt: image.alt } : undefine
  * Every card the build draws, from the parsed catalog files; the archive list is `public/assets/index.json`, or an empty
  * list when the archive has not been built.
  */
-export function socialCards({ packsEnabled, release, farm, vehicles, bridge, hero, foundryFloor, archive = [] }) {
+export function socialCards({ packsEnabled, release, farm, vehicles, bridge, hero, foundryFloor, archive = [], textTo3d }) {
   const version = release.version.replace(/\.0$/, '');
   const heroPoster = packsEnabled ? poster(hero.poster) : undefined;
   const cards = [
@@ -31,6 +31,8 @@ export function socialCards({ packsEnabled, release, farm, vehicles, bridge, her
     { slug: 'gallery', title: 'Read the source. Inspect the asset.', note: 'The Kiln gallery', poster: heroPoster },
     { slug: 'archive', title: 'Earlier Kiln examples.', note: 'Unreviewed historical examples' },
   ];
+  // Its picture is committed with the page, so the card is the same with or without Commons packs.
+  if (textTo3d) cards.push({ slug: 'text-to-3d', title: 'Text to 3D with your coding agent.', note: 'A walking mech and a cathedral, prompt to GLB', poster: poster(textTo3d) });
   if (packsEnabled) {
     for (const asset of [...farm.assets, ...vehicles.assets, bridge]) {
       cards.push({ slug: asset.slug, title: asset.name, note: asset.pack ? `${PACK_NAMES[asset.pack]} · Kiln Commons` : 'Standalone · Kiln Commons', poster: poster(asset.poster) });
