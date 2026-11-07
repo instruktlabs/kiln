@@ -23,6 +23,13 @@ import { renderGLBInProcess, renderSceneToGLB } from '../render';
 import { validateAtlasDocumentProvenance } from '../atlas-provenance';
 import { createGltfIO } from '../gltf-io';
 import { encodePng } from '../views/png';
+import {
+  REVIEW_DIRECTIONS,
+  drawnFaces,
+  facesDifference,
+  loadThreeScene,
+  wronglyWoundInstances,
+} from './helpers/three-winding';
 
 const BUNKER = readFileSync(resolve('src/__tests__/fixtures/bunker-door-frame.kiln.js'), 'utf8');
 
@@ -92,6 +99,55 @@ describe('repeatInstances', () => {
 });
 
 describe('three runtime target', () => {
+  test('repeatInstances keeps mirrored copies drawn the right way round', async () => {
+    const program = `const meta={name:'Mirrored Panes'};
+function build(){
+  const root=createRoot('Root');
+  const pane=gameMaterial('#556677');
+  const panes=new THREE.Group(); panes.name='Panes'; root.add(panes);
+  const geo=planeGeo(1,2);
+  for(let i=0;i<3;i++) createPart('Plain_'+i,geo,pane,{parent:panes,position:[i*2,0,0],rotation:[0,i*20,0]});
+  for(let i=0;i<3;i++) createPart('Mirror_'+i,geo,pane,{parent:panes,position:[i*2,4,1],rotation:[0,180+i*15,i*10],scale:[1.5,0.75,-1]});
+  repeatInstances(panes);
+  return root;
+}`;
+    const rendered = await renderGLBInProcess(program);
+    const source = new Uint8Array(rendered.glb);
+    const delivered = await deliverThreeRuntimeGlb(source);
+    const before = await loadThreeScene(source);
+    const after = await loadThreeScene(delivered.glb);
+    expect(wronglyWoundInstances(after)).toBe(0);
+    let compared = 0;
+    for (const direction of REVIEW_DIRECTIONS) {
+      const expected = drawnFaces(before, direction);
+      compared += expected.length;
+      expect(facesDifference(drawnFaces(after, direction), expected, 2e-3)).toEqual({
+        extra: 0,
+        missing: 0,
+      });
+    }
+    expect(compared).toBeGreaterThan(0);
+  });
+
+  test('repeatInstances batches a tangent-bearing mesh only where three can keep its tangents', async () => {
+    const program = `const meta={name:'Tangent Panes'};
+function build(){
+  const root=createRoot('Root');
+  const pane=gameMaterial('#556677');
+  const panes=new THREE.Group(); panes.name='Panes'; root.add(panes);
+  const geo=planeGeo(1,2); geo.computeTangents();
+  for(let i=0;i<3;i++) createPart('Moved_'+i,geo,pane,{parent:panes,position:[i*2,0,0]});
+  for(let i=0;i<3;i++) createPart('Turned_'+i,geo,pane,{parent:panes,position:[i*2,4,0],rotation:[0,90,0]});
+  repeatInstances(panes);
+  return root;
+}`;
+    const rendered = await renderGLBInProcess(program);
+    const { delivery } = await deliverThreeRuntimeGlb(new Uint8Array(rendered.glb));
+    expect(delivery.instancing.map((entry) => entry.instances)).toEqual([
+      ['Mesh_Moved_0', 'Mesh_Moved_1', 'Mesh_Moved_2'],
+    ]);
+  });
+
   for (const gltfExporter of ['legacy', 'three'] as const)
     test(`${gltfExporter} converter output qualifies through GLTFLoader`, async () => {
       const rendered = await renderGLBInProcess(RUNTIME_PROGRAM, { gltfExporter });

@@ -7,6 +7,16 @@ does not publish a package.
 
 ## Unreleased
 
+- GPU instancing now draws what the copies drew as separate nodes, in both `KILN_BAKE_INSTANCE` and the
+  three runtime target's `repeatInstances`. A mirrored copy no longer shares a batch with unmirrored ones,
+  where it drew inside out: single-sided surfaces vanished. Mirrored copies form their own batch on a node
+  scaled `[-1, 1, 1]`, with no second copy of the geometry. The bake pass also keeps a sheared copy as a
+  separate node, because instance transforms cannot state shear. Both passes keep a turned, non-uniformly
+  scaled or mirrored copy of a mesh with `TANGENT` separate, because three r186's WebGPU renderer does not
+  transform instance tangents, which shaded a quarter-turned copy black. Batches drop and draws rise on
+  affected assets, including `role: 'fill'` assets under the default `auto`. A saved revision built with
+  instancing on can now rebuild with `matchesSavedArtifact: false`; the saved GLB is unchanged, and a new
+  save picks up the correct batches.
 - `KILN_EVALUATOR_TIMEOUT_MS` now works above 60,000, as documented. Only the host read it: the worker
   kept its own 60-second timer, so a build that yielded to the event loop after that failed with
   `DEADLINE_EXCEEDED` at any limit, usually once the abandoned build had run to its end. The worker now

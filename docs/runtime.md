@@ -169,6 +169,14 @@ see the [migration notes](migration.md#changes-in-10).
 
 The MCP and CLI tools pin `optimize: 'off'` for every render, inspection and save, so `KILN_BAKE_OPTIMIZE` does not change a tool's GLB; they leave `instance` to the host, so `KILN_BAKE_INSTANCE` does. Library calls that omit `optimize` take the variable: `renderGLB` in process, `renderSceneToGLB` (including the review copies some tool views are rendered from), `renderCodeViewGrid` and `rasterizeComposedScene`. The library's own subprocess mode does not pass either variable to its worker. `node kiln.mjs asset ASSET_ID REVISION --rebuild --out rebuilt.glb` replays the `optimize` and `instance` the saved manifest recorded, whatever the variables say. Both variables are part of the local build-cache key.
 
+A batch draws what its copies drew as separate nodes, within these limits:
+
+- **One handedness per batch.** glTF and three.js take a triangle's winding from the node's global transform and have no per-instance winding, so a mirrored copy (negative determinant) in a right-handed batch would draw inside out. Mirrored copies form their own batch on a node scaled `[-1, 1, 1]`, which needs no second copy of the geometry. The five-node threshold counts each hand separately, so fewer than five mirrored copies of a mesh stay separate nodes. A batch of mirrored copies costs one draw per primitive like any other.
+- **No shear.** A copy whose world matrix has shear, such as a rotated child of a non-uniformly scaled parent, stays a separate node, because an instance's translation, rotation and scale cannot state it.
+- **Tangents stay correct.** A copy of a mesh with `TANGENT` stays a separate node unless it only moves or scales uniformly. three r186's WebGPU renderer transforms an instance's positions and normals but not its tangents, so a turned copy would light its normal map wrongly and a quarter-turned one would shade black. This costs draws on normal-mapped repeats, and can go once the pinned three.js transforms instance tangents.
+
+CPU views expand every instance to its own matrix and draw these cases correctly either way, so they cannot confirm how a batch draws on the GPU.
+
 Full mode's rigid-merge pass retains every node name, parent and transform. Geometry on a protected
 boundary stays there; other named mesh nodes can become empty or hold their group's
 merged geometry. Consumers that require geometry attached to each ordinary named

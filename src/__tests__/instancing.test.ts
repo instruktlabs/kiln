@@ -15,8 +15,17 @@ import {
   cylinderGeo,
   boxGeo,
   gameMaterial,
+  planeGeo,
 } from '../primitives';
+import { createGltfIO } from '../gltf-io';
 import { gradeGlbBytes, optimizeGlbBytes, renderSceneToGLB } from '../render';
+import {
+  REVIEW_DIRECTIONS,
+  drawnFaces,
+  facesDifference,
+  loadThreeScene,
+  wronglyWoundInstances,
+} from './helpers/three-winding';
 
 describe('Wave 1B: instancing primitives', () => {
   it('direct references share geometry and material between parts', () => {
@@ -235,5 +244,154 @@ describe('M1c: GPU-instancing pass (instance option)', () => {
     expect(
       await optimizeGlbBytes(plain.bytes, { mode: 'off', instance: 'auto', role: 'prop' }),
     ).toBeUndefined();
+  });
+});
+
+// three.js picks the winding per object from matrixWorld, so one batch cannot hold both hands.
+describe('M1c: mirrored copies under the GPU-instancing pass', () => {
+  /** Single-sided panes: rotated, non-uniformly scaled, half of them mirrored on Z. */
+  function paneScene(plain: number, mirrored: number): THREE.Object3D {
+    const r = createRoot('Panes');
+    const pane = createPart('Pane0', planeGeo(1, 2), gameMaterial(0x445566), {
+      position: [0, 0, 0],
+      parent: r,
+    });
+    for (let i = 1; i < plain; i++)
+      createInstance(`Pane${i}`, pane, {
+        position: [i * 2, 0, 0],
+        rotation: [0, i * 20, 0],
+        parent: r,
+      });
+    for (let i = 0; i < mirrored; i++)
+      createInstance(`Mirror${i}`, pane, {
+        position: [i * 2, 5, 1],
+        rotation: [0, 180 + i * 15, i * 10],
+        scale: [1.5, 0.75, -1],
+        parent: r,
+      });
+    return r;
+  }
+
+  async function expectDrawnLikeUninstanced(build: () => THREE.Object3D) {
+    const plain = await renderSceneToGLB(build(), { instance: 'off' });
+    const inst = await renderSceneToGLB(build(), { instance: 'on' });
+    expect(inst.instancing).toBeDefined();
+    const plainScene = await loadThreeScene(plain.bytes);
+    const instScene = await loadThreeScene(inst.bytes);
+    expect(wronglyWoundInstances(instScene)).toBe(0);
+    let compared = 0;
+    for (const direction of REVIEW_DIRECTIONS) {
+      const expected = drawnFaces(plainScene, direction);
+      compared += expected.length;
+      expect(facesDifference(drawnFaces(instScene, direction), expected)).toEqual({
+        extra: 0,
+        missing: 0,
+      });
+    }
+    expect(compared).toBeGreaterThan(0);
+    return inst;
+  }
+
+  it('a mirrored single-sided copy draws the same faces with instancing on and off', async () => {
+    await expectDrawnLikeUninstanced(() => paneScene(6, 6));
+  });
+
+  it('too few mirrored copies to batch still draw the same', async () => {
+    const inst = await expectDrawnLikeUninstanced(() => paneScene(6, 2));
+    expect(inst.instancing!.instances).toBe(6);
+  });
+
+  it('handedness counts the whole world matrix, not the node scale alone', async () => {
+    const build = () => {
+      const r = paneScene(6, 0);
+      const pane = r.children[0]!;
+      const flipped = new THREE.Group();
+      flipped.name = 'Flipped';
+      flipped.scale.set(-1, 1, 1);
+      flipped.position.set(0, 10, 0);
+      r.add(flipped);
+      // Mirrored through the parent alone, and mirrored twice back to right-handed.
+      for (let i = 0; i < 6; i++)
+        createInstance(`Parent${i}`, pane, { position: [i * 2, 0, 0], parent: flipped });
+      for (let i = 0; i < 6; i++)
+        createInstance(`Twice${i}`, pane, {
+          position: [i * 2, 4, 0],
+          scale: [1, 1, -1],
+          parent: flipped,
+        });
+      return r;
+    };
+    await expectDrawnLikeUninstanced(build);
+  });
+
+  it('a copy that TRS cannot represent stays a plain node', async () => {
+    const build = () => {
+      const r = paneScene(6, 0);
+      const pane = r.children[0]!;
+      const stretched = new THREE.Group();
+      stretched.name = 'Stretched';
+      stretched.scale.set(1, 3, 1);
+      stretched.position.set(0, 10, 0);
+      r.add(stretched);
+      // A rotated child under a non-uniform parent shears: instance TRS would straighten it.
+      createInstance('Sheared', pane, { rotation: [0, 0, 40], parent: stretched });
+      return r;
+    };
+    const inst = await expectDrawnLikeUninstanced(build);
+    expect(inst.instancing!.instances).toBe(6);
+  });
+
+  // three r186's WebGPU instance node moves positions and normals but not TANGENT, so a turned
+  // copy keeps its source tangent. At 90 degrees that lies along the normal and shades black.
+  it('a turned, stretched or mirrored copy of a tangent-bearing mesh stays a plain node', async () => {
+    const build = () => {
+      const r = createRoot('Tangents');
+      const geo = planeGeo(1, 2);
+      geo.computeTangents();
+      const source = createPart('Moved0', geo, gameMaterial(0x667788), { parent: r });
+      for (let i = 1; i < 6; i++)
+        createInstance(`Moved${i}`, source, {
+          position: [i * 2, 0, 0],
+          scale: i % 2 ? [2, 2, 2] : [1, 1, 1],
+          parent: r,
+        });
+      for (let i = 0; i < 6; i++)
+        createInstance(`Turned${i}`, source, {
+          position: [i * 2, 4, 0],
+          rotation: [0, 90, 0],
+          parent: r,
+        });
+      for (let i = 0; i < 6; i++)
+        createInstance(`Stretched${i}`, source, {
+          position: [i * 2, 8, 0],
+          scale: [3, 1, 1],
+          parent: r,
+        });
+      for (let i = 0; i < 6; i++)
+        createInstance(`Mirrored${i}`, source, {
+          position: [i * 2, 12, 0],
+          scale: [1, 1, -1],
+          parent: r,
+        });
+      return r;
+    };
+    const inst = await expectDrawnLikeUninstanced(build);
+    const doc = await createGltfIO().readBinary(inst.bytes);
+    const meshes = doc.getRoot().listMeshes();
+    expect(meshes.some((mesh) => mesh.listPrimitives()[0]!.getAttribute('TANGENT'))).toBe(true);
+    expect(inst.instancing).toMatchObject({ batches: 1, instances: 6 });
+  });
+
+  it('an optimizeGlbBytes pass honours handedness too', async () => {
+    const plain = await renderSceneToGLB(paneScene(6, 6));
+    const out = await optimizeGlbBytes(plain.bytes, { mode: 'off', instance: 'on' });
+    const before = await loadThreeScene(plain.bytes);
+    const after = await loadThreeScene(out!.bytes);
+    expect(wronglyWoundInstances(after)).toBe(0);
+    for (const direction of REVIEW_DIRECTIONS)
+      expect(facesDifference(drawnFaces(after, direction), drawnFaces(before, direction))).toEqual({
+        extra: 0,
+        missing: 0,
+      });
   });
 });

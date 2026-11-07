@@ -69,7 +69,8 @@ import {
 import { createHash } from 'node:crypto';
 import { Document, Logger, type TextureInfo } from '@gltf-transform/core';
 import { KHRMaterialsEmissiveStrength } from '@gltf-transform/extensions';
-import { dedup, instance, palette, weld, prune, mergeDocuments } from '@gltf-transform/functions';
+import { dedup, palette, weld, prune, mergeDocuments } from '@gltf-transform/functions';
+import { instanceByHandedness } from './instance-handedness';
 
 import {
   buildSlotIndex,
@@ -1616,7 +1617,8 @@ function hasPreservedNodeState(doc: Document): boolean {
  * grade keys on material count and does not move.** Runs after dedup (which
  * links duplicate meshes so sharing is detectable) and before palette()
  * (the upstream-canonical dedup → instance → palette order; join() skips
- * instanced nodes by design so `full` stays safe).
+ * instanced nodes by design so `full` stays safe). {@link instanceByHandedness} keeps mirrored,
+ * sheared and tangent-bearing copies drawing as they did as separate nodes.
  *
  * Skipped (returns undefined) when:
  *   - mode is `off`, or `auto` and the role is not `'fill'`;
@@ -1639,7 +1641,7 @@ async function applyGpuInstancing(
     return undefined;
 
   const before = collectGlbMetrics(doc);
-  await doc.transform(instance({ min: INSTANCE_MIN }));
+  await instanceByHandedness(doc, INSTANCE_MIN);
 
   let batches = 0;
   let instances = 0;

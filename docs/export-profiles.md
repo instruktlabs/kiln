@@ -226,7 +226,10 @@ What it does, in order:
 1. Identical accessors are merged. Under each node marked by `repeatInstances(parent)`,
    direct children with the same mesh content (accessors, material, mode) and no
    children, roles, extras, skin, morph weights or hidden flag become one node
-   `<parent>_Instances` with `EXT_mesh_gpu_instancing`.
+   `<parent>_Instances` with `EXT_mesh_gpu_instancing`. Mirrored children form their own
+   batch on a node scaled `[-1, 1, 1]`, named `<parent>_Instances_<n>` like any further
+   batch under that parent. A turned, stretched or mirrored child of a mesh with `TANGENT`
+   stays separate.
 2. Each collider's proxy mesh moves to a child `<collider>_Proxy`, so the collider node
    keeps its authored transform (its scale is the collider size).
 3. Vertices are reordered for compression, then quantized with `KHR_mesh_quantization`
