@@ -1,21 +1,51 @@
-import * as THREE from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { REVIEW_RIG, type RigLight, installReviewNeutral } from './review-rig';
+import { Fn, If, float, max, min, mix, vec3 } from 'three/tsl';
+import * as THREE from 'three/webgpu';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { REVIEW_RIG, type RigLight, backdropLinear } from './review-rig';
+
+/** The slot the rig's mapper is installed in on each renderer (see `installReviewToneMapping`). */
+export const reviewToneMapping: THREE.ToneMapping = THREE.CustomToneMapping;
 
 /**
- * The tone mapping of the rig, or three's own Neutral mapping when the installed three no longer has the stub
- * the rig's shader replaces (see `installReviewNeutral`). Decided once, when this module first loads, before
- * any program is compiled; the patch touches only three's `CustomToneMapping` slot, which nothing else on the
- * page uses.
+ * Review Neutral as a shader node: the same construction as `reviewNeutral` and as the engine's
+ * `render-service/src/review-tone-mapping.mjs`, adapted from three.js r186 neutralToneMapping (MIT), with the rig's
+ * constants. Both of the view's backends compile it, as they do for the render service's captures.
  */
-export const reviewToneMapping: THREE.ToneMapping = installReviewNeutral(
-  THREE.ShaderChunk as unknown as Record<string, string>,
-)
-  ? THREE.CustomToneMapping
-  : THREE.NeutralToneMapping;
+const reviewNeutralNode = Fn(([input, exposure]: [THREE.Node<'vec3'>, THREE.Node<'float'>]) => {
+  const { offset, startCompression: start, desaturation } = REVIEW_RIG.toneMapping;
+  const colour = vec3(input).mul(exposure).toVar();
+  const minimum = min(colour.r, min(colour.g, colour.b));
+  const glare = minimum
+    .lessThan(2 * offset)
+    .select(minimum.sub(minimum.mul(minimum).div(4 * offset)), float(offset));
+  colour.subAssign(glare);
+  const peak = max(colour.r, max(colour.g, colour.b));
+  // A shader return inside If needs the explicit function layout below.
+  If(peak.lessThan(start), () => {
+    return colour;
+  });
+  const d = 1 - start;
+  const newPeak = float(1).sub(float(d * d).div(peak.add(1 - 2 * start)));
+  colour.mulAssign(newPeak.div(peak));
+  const whiteMix = float(1).sub(float(1).div(peak.sub(newPeak).mul(desaturation).add(1)));
+  return mix(colour, vec3(newPeak), whiteMix);
+}).setLayout({
+  name: 'reviewNeutralToneMapping',
+  type: 'vec3',
+  inputs: [
+    { name: 'color', type: 'vec3' },
+    { name: 'exposure', type: 'float' },
+  ],
+});
 
-/** True when the viewer is using the rig's own mapper rather than the fallback. */
-export const usesReviewNeutral = reviewToneMapping === THREE.CustomToneMapping;
+/** Give a renderer the rig's mapper, in three's `CustomToneMapping` slot. */
+export function installReviewToneMapping(renderer: THREE.WebGPURenderer): void {
+  (
+    renderer.library as unknown as {
+      addToneMapping(node: unknown, mapping: THREE.ToneMapping): void;
+    }
+  ).addToneMapping(reviewNeutralNode, THREE.CustomToneMapping);
+}
 
 export type ToneMappingId = 'neutral' | 'aces' | 'linear';
 
@@ -57,13 +87,14 @@ export function toneMappingChoice(id: string): ToneMappingChoice {
  * materials already in the scene are rebuilt for it.
  */
 export function applyToneMapping(
-  renderer: THREE.WebGLRenderer,
+  renderer: THREE.WebGPURenderer,
   scene: THREE.Scene,
   id: string,
 ): void {
   const choice = toneMappingChoice(id);
   renderer.toneMapping = choice.mapping;
   renderer.toneMappingExposure = choice.exposure;
+  scene.background = backdropColour(choice.id);
   scene.traverse((object) => {
     const material = (object as THREE.Mesh).material as
       | THREE.Material
@@ -73,6 +104,12 @@ export function applyToneMapping(
     for (const item of Array.isArray(material) ? material : [material]) item.needsUpdate = true;
   });
 }
+
+/** The background that reads back as the rig's backdrop under the mapping named `id`. */
+const backdropColour = (id: ToneMappingId) => {
+  const [r, g, b] = backdropLinear(id);
+  return new THREE.Color().setRGB(r, g, b, THREE.LinearSRGBColorSpace);
+};
 
 function directional(spec: RigLight, name: string) {
   const light = new THREE.DirectionalLight(spec.color, spec.intensity);
@@ -88,8 +125,8 @@ function directional(spec: RigLight, name: string) {
  * its neutral backdrop. Returns a function that removes all of it again. The lights are fixed in the world, as
  * the rig's are, so orbiting the camera changes the view but not the light.
  */
-export function applyReviewRig(renderer: THREE.WebGLRenderer, scene: THREE.Scene): () => void {
-  const { environment, hemisphere, exposure, backdrop } = REVIEW_RIG;
+export function applyReviewRig(renderer: THREE.WebGPURenderer, scene: THREE.Scene): () => void {
+  const { environment, hemisphere, exposure } = REVIEW_RIG;
   const before = {
     toneMapping: renderer.toneMapping,
     exposure: renderer.toneMappingExposure,
@@ -105,7 +142,7 @@ export function applyReviewRig(renderer: THREE.WebGLRenderer, scene: THREE.Scene
   const target = pmrem.fromScene(room, environment.sigma);
   scene.environment = target.texture;
   scene.environmentIntensity = environment.intensity;
-  scene.background = new THREE.Color(backdrop);
+  scene.background = backdropColour(DEFAULT_TONE_MAPPING);
 
   const ambient = new THREE.HemisphereLight(
     hemisphere.sky,
