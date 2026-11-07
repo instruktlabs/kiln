@@ -9,15 +9,16 @@ does not publish a package.
 
 - `kiln_render` and `kiln_edit` draw `shots` that change only the camera from the artifact itself, in one
   request per projection and service limit, after asking the capture cache. On a 2.6M-triangle cathedral on
-  Node 22.23.4, nine shots at 1000 px on a built program went from 301 s to 8.8 s, all nine cached from
-  260 s to 5.3 s, and one shot from 42 s to 7.0 s. Same-camera images differ by at most one level per
+  Node 22.23.4, nine shots at 1000 px on a built program went from 301 s to 7.1 s, all nine cached from
+  260 s to 4.2 s, and one shot from 42 s to 3.6 s. Same-camera images differ by at most one level per
   channel. A shot that changes what draws (`visibility: 'isolate'`, `hide`, or a subject in a lower level
   of detail) keeps a derivative for that shot, which now skips the QA, validator, metrics and manifest
-  work that derivative discarded (9.1 s to 3.0 s for one isolated shot). `kiln_inspect` shots stay on the derivative route.
-  Results change where they report this: `derivativeReceipts[].inputGlbSha256` of a camera-only shot is the
-  artifact's hash, its compact receipt can omit the hash when `viewFidelity` already states it, a receipt on
-  a host with no retained artifact reads `reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED']`, and on a host with
-  one `viewFidelity.exactArtifact` is true when every shot was exact. `./render` exports `renderReviewDerivativeGlb`.
+  work that derivative discarded (9.1 s to 2.5 s for one isolated shot). `kiln_inspect` shots stay on the
+  derivative route. Results change where they report this: `derivativeReceipts[].inputGlbSha256` of a
+  camera-only shot is the artifact's hash, its compact receipt can omit the hash when `viewFidelity` already
+  states it, a receipt on a host with no retained artifact reads `reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED']`,
+  and on a host with one `viewFidelity.exactArtifact` is true when every shot was exact. `./render` exports
+  `renderReviewDerivativeGlb`.
 - Camera bounds, GLB accessor decode and the integration manifest allocate and read less on large
   assets: bounds no longer build a record per triangle, unnormalized accessors copy directly, and
   `drawnSceneBounds` visits each referenced vertex once per placement. Cameras, review geometry, bounds and
