@@ -2,6 +2,7 @@ import type { KilnToolContext } from './tools/registry';
 import {
   DEFAULT_EVALUATOR_MAX_GLB_BYTES,
   DEFAULT_EVALUATOR_MAX_RESPONSE_BYTES,
+  MAX_EVALUATOR_DEADLINE_MS,
   MAX_EVALUATOR_GLB_BYTES,
   MAX_EVALUATOR_RESPONSE_BYTES,
   type EvaluatorPortV2,
@@ -129,7 +130,7 @@ export function createLocalToolContext(
   if (!['warn', 'strict'].includes(geometryPolicy))
     throw new Error('KILN_GEOMETRY_POLICY must be warn or strict.');
   const mode = localEvaluatorMode(env);
-  const deadlineMs = integer(env, 'KILN_EVALUATOR_TIMEOUT_MS', 60000, 1, 120000);
+  const deadlineMs = integer(env, 'KILN_EVALUATOR_TIMEOUT_MS', 60000, 1, MAX_EVALUATOR_DEADLINE_MS);
   const heapMb = integer(env, 'KILN_EVALUATOR_HEAP_MB', 512, 64, 4096);
   if (mode === 'subprocess' && process.versions.bun && env.KILN_EVALUATOR_HEAP_MB !== undefined) {
     throw new Error('KILN_EVALUATOR_HEAP_MB requires the packaged Node runtime.');

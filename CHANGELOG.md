@@ -7,6 +7,13 @@ does not publish a package.
 
 ## Unreleased
 
+- `KILN_EVALUATOR_TIMEOUT_MS` now works above 60,000, as documented. Only the host read it: the worker
+  kept its own 60-second timer, so a build that yielded to the event loop after that failed with
+  `DEADLINE_EXCEEDED` at any limit, usually once the abandoned build had run to its end. The worker now
+  takes the protocol maximum and leaves the deadline to the host, which kills it at the limit in force.
+  The default stays 60 seconds, a host calling `evaluateEvaluatorRequestV2` directly keeps its own
+  60-second default, and the `isolated` transport keeps its fixed 65-second CPU-time limit, which the
+  setting does not raise.
 - The maintainer toolchain moves to Node 22.23.4, a security release, retaining Bun 1.4.2, npm 12.2.0 and
   consumer Node compatibility. The site takes `astro` 7.4.7 and `@astrojs/react` 7.1.4, which require it,
   and declares `@emnapi/runtime` 1.11.3: `@astrojs/astro2tsx` needs that runtime without declaring it, and

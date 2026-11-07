@@ -1,6 +1,6 @@
 import { resolveRequirementsContext } from '../requirements-context';
 import { createRequirementsQaReport } from '../qa/requirements-report';
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, spyOn, test } from 'bun:test';
 
 import type { RenderResult } from '../render';
 import {
@@ -115,5 +115,28 @@ describe('transport-neutral evaluator handler', () => {
       ok: false,
       error: { code: 'DEADLINE_EXCEEDED' },
     });
+  });
+
+  // The fd3 worker leaves its deadline to the host that kills it. A host calling this entry has
+  // only this timer, so naming no deadline has to keep meaning the default.
+  test('a host entry naming no deadline keeps the 60-second default', async () => {
+    const built = createEvaluatorRequestV2({ requestId: 'http-default', code: 'fixture' });
+    const timers = spyOn(globalThis, 'setTimeout');
+    try {
+      await evaluateEvaluatorRequestV2(built.json, { render: async () => RENDER });
+      expect(timers.mock.calls.map(([, ms]) => ms)).toEqual([60_000]);
+    } finally {
+      timers.mockRestore();
+    }
+  });
+
+  test('accepts a deadline up to the protocol maximum and refuses one above it', async () => {
+    const built = createEvaluatorRequestV2({ requestId: 'http-maximum', code: 'fixture' });
+    const render = { render: async () => RENDER };
+    const accepted = await evaluateEvaluatorRequestV2(built.json, render, { deadlineMs: 120_000 });
+    expect(decodeEvaluatorResultV2(accepted, 1024, 'http-maximum').ok).toBe(true);
+    await expect(
+      evaluateEvaluatorRequestV2(built.json, render, { deadlineMs: 120_001 }),
+    ).rejects.toMatchObject({ code: 'INPUT_INVALID' });
   });
 });

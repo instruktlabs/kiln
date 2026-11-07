@@ -21,6 +21,7 @@ import {
   type EvaluatorOutcomeCode,
   type EvaluatorOutputLimitDetails,
   type EvaluatorRequestV2,
+  MAX_EVALUATOR_DEADLINE_MS,
   MAX_EVALUATOR_GLB_BYTES,
   MAX_EVALUATOR_REQUEST_BYTES,
   MAX_EVALUATOR_RESPONSE_BYTES,
@@ -121,7 +122,11 @@ export async function renderGLBViaProcessLaunch(
   // decode reports an oversize request as a malformed one (#299).
   const oversizeSource = evaluatorSourceBudgetFailure(code);
   if (oversizeSource) throw new EvaluatorSubprocessError('INPUT_INVALID', oversizeSource);
-  const deadlineMs = boundedInteger(controls.deadlineMs, DEFAULT_DEADLINE_MS, 120_000);
+  const deadlineMs = boundedInteger(
+    controls.deadlineMs,
+    DEFAULT_DEADLINE_MS,
+    MAX_EVALUATOR_DEADLINE_MS,
+  );
   const maxGlbBytes = boundedInteger(
     controls.maxGlbBytes,
     DEFAULT_MAX_GLB_BYTES,
