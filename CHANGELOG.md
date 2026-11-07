@@ -7,6 +7,20 @@ does not publish a package.
 
 ## Unreleased
 
+- **The GPU render service samples the UV set a texture names, with its `KHR_texture_transform`.** The
+  service replaces each decoded map with a `DataTexture` for upload and copied only colour space, flip,
+  wrap and filters, so a map with `texCoord: 2` sampled UV0 and a transformed map drew untransformed:
+  four assets whose base colour sampled UV0..UV3 rendered pixel-identical. The replacement now keeps
+  `channel`, `offset`, `repeat`, `rotation`, `center` and the texture matrix.
+- **A perspective view drawn after orthographic ones in one render-service request is shaded for its
+  own camera.** three compiles a node material's view direction for the first camera that draws it,
+  and its program cache ignores the camera, so the legacy `beauty` view, and any perspective camera
+  after an orthographic one in camera mode, reused the orthographic program: on a glossy metal sphere
+  9% of the beauty's pixels differed by up to 97/255 from the same camera drawn alone. Materials are
+  now keyed by projection, so the beauty matches a perspective-only render byte for byte; orthographic
+  sheet views are unchanged. A request that switches projection builds one more program per material.
+  Both changes alter render-service source, so its build identity changes and a running service of
+  the previous build is reported as incompatible rather than joined.
 - `KILN_EVALUATOR_TIMEOUT_MS` now works above 60,000, as documented. Only the host read it: the worker
   kept its own 60-second timer, so a build that yielded to the event loop after that failed with
   `DEADLINE_EXCEEDED` at any limit, usually once the abandoned build had run to its end. The worker now
