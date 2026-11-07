@@ -18,7 +18,8 @@ import { ASSET_BASE } from './mirror-core.mjs';
  *
  * <directory>/tools.json names the tools. <directory>/<subject>/ is a workspace holding `assets/`, `run/` with the prompts and
  * `steps.json`, which lists each step's prompt and saved revision, and `renders/manifest.json` from
- * scripts/render-text-to-3d.mjs.
+ * scripts/render-text-to-3d.mjs. A steps.json may name a `delivery` file, `{ file, madeFrom: "sha256:…" }`, to serve
+ * in place of the final revision's GLB (see `checkDelivery`); the page's claims are still checked on the revisions.
  *
  * Images and programs are committed under public/text-to-3d/. The two GLBs go to the asset host, the way Golden Gate's do:
  * each is named by its own hash, pinned in the mirror manifest and copied to .localdata/asset-delivery with an upload list
@@ -126,6 +127,32 @@ export function clipDigests(bytes) {
     return sum.digest('hex');
   };
   return new Map((gltf.animations ?? []).map((clip) => [clip.name, digest(clip)]));
+}
+
+/**
+ * The file a subject is served as, when its steps.json names one in `delivery`: a form of the final revision made for
+ * playing, such as its parts merged into one skinned mesh. It is served only if it was made from that revision's exact
+ * bytes and keeps what code reaches for: every named node that is not a mesh part, with its notes, every clip's
+ * targets and keyframes, the material names and the triangle count. Returns the delivery file.
+ */
+export function checkDelivery(saved, delivered, madeFrom) {
+  if (madeFrom !== `sha256:${hash(saved)}`) throw Error(`the delivery file was made from ${madeFrom}, not the final revision; make it again`);
+  const before = openGlb(saved).gltf;
+  const after = openGlb(delivered).gltf;
+  const named = new Map(after.nodes.map((node) => [node.name, node]));
+  for (const node of before.nodes) {
+    if (node.mesh !== undefined) continue;
+    const kept = named.get(node.name);
+    if (!kept) throw Error(`the delivery file has no ${node.name}`);
+    if (JSON.stringify(kept.extras ?? null) !== JSON.stringify(node.extras ?? null)) throw Error(`the delivery file changes the notes on ${node.name}`);
+  }
+  const clips = clipDigests(delivered);
+  for (const [name, digest] of clipDigests(saved)) if (clips.get(name) !== digest) throw Error(`the delivery file's ${name} clip differs`);
+  const materials = (gltf) => JSON.stringify((gltf.materials ?? []).map(({ name }) => name).sort());
+  if (materials(before) !== materials(after)) throw Error('the delivery file has other materials');
+  const [was, now] = [inspectGlb(saved).triangles, inspectGlb(delivered).triangles];
+  if (was !== now) throw Error(`the delivery file has ${now} triangles, not ${was}`);
+  return delivered;
 }
 
 /** Every mesh node in a GLB by name, with where it sits in the world and a digest of its vertex positions alone: baked colours may share the buffer. */
@@ -314,19 +341,22 @@ async function stageSubject(run, subject) {
     images[render.name] = { name, width: meta.width, height: meta.height, alt: render.alt, ...(render.caption ? { caption: render.caption } : {}), variants };
   }
   const diffAt = plan.steps.findIndex((step) => step.id === plan.diffStep);
-  const { triangles } = inspectGlb(glbs.at(-1));
+  const model = plan.delivery
+    ? checkDelivery(glbs.at(-1), await readFile(join(directory, plan.delivery.file)), plan.delivery.madeFrom)
+    : glbs.at(-1);
+  const { triangles } = inspectGlb(model);
   return {
     record: {
       id: subject,
       name: plan.name,
-      glbBytes: glbs.at(-1).length,
+      glbBytes: model.length,
       triangles,
       steps,
       ...(plan.diffStep ? { diff: await unifiedDiff(sources[diffAt - 1], sources[diffAt], steps[diffAt - 1].sourceFile, steps[diffAt].sourceFile) } : {}),
       images,
     },
     files,
-    model: glbs.at(-1),
+    model,
     hero: renders.find(({ name }) => name === 'hero'),
     finalRevision: plan.steps.at(-1).revision,
   };
