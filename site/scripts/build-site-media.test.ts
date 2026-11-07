@@ -1,10 +1,20 @@
 import { expect, test } from 'bun:test';
+import { readFile } from 'node:fs/promises';
+import { SOCIAL_CARD } from '../src/lib/social-cards.mjs';
 import { SOCIAL_CARD_EXTENSION, pngIco, staleSocialCards } from './build-site-media.mjs';
 
 // Share cards are JPEG: every network's crawler reads JPEG and PNG, and the previous site's fixture required a PNG after two
 // LinkedIn-specific preview fixes (#111, #112), so a format only some crawlers document (WebP) is not used for them.
 test('share cards are JPEG files', () => {
   expect(SOCIAL_CARD_EXTENSION).toBe('.jpg');
+});
+
+// Chrome 150 sizes a fresh window 780 x 580, and about one first capture in twelve came back with the card wrapped around at that size.
+test('the browser that captures a card has a window at least the size of the card', async () => {
+  const source = await readFile(new URL('./build-site-media.mjs', import.meta.url), 'utf8');
+  const [, width, height] = source.match(/--window-size=(\d+),(\d+)/) ?? [];
+  expect(Number(width)).toBeGreaterThanOrEqual(SOCIAL_CARD.width);
+  expect(Number(height)).toBeGreaterThanOrEqual(SOCIAL_CARD.height);
 });
 
 test('social cards no page uses are the ones left over from an earlier build', () => {
