@@ -23,6 +23,16 @@ it('rejects unsupported policy and limit overrides instead of silently ignoring 
   );
 });
 
+it('takes the documented deadline range and keeps the 60-second default', () => {
+  expect(createLocalToolContext({}, {}).localExecution.deadlineMs).toBe(60_000);
+  expect(
+    createLocalToolContext({}, { KILN_EVALUATOR_TIMEOUT_MS: '120000' }).localExecution.deadlineMs,
+  ).toBe(120_000);
+  expect(() => createLocalToolContext({}, { KILN_EVALUATOR_TIMEOUT_MS: '120001' })).toThrow(
+    'KILN_EVALUATOR_TIMEOUT_MS',
+  );
+});
+
 it('keeps cancellation out of source and cached results', async () => {
   const controller = new AbortController();
   controller.abort();

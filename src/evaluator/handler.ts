@@ -15,6 +15,7 @@ import {
   evaluatorOutcomeMessage,
   EVALUATOR_RESULT_VERSION,
   EvaluatorPortError,
+  MAX_EVALUATOR_DEADLINE_MS,
   MAX_EVALUATOR_RESPONSE_BYTES,
   type EvaluatorOutcomeCode,
   type EvaluatorOutputLimitDetails,
@@ -64,7 +65,7 @@ function boundedMaxResponseBytes(value: number | undefined): number {
 
 function boundedDeadlineMs(value: number | undefined): number {
   const resolved = value ?? DEFAULT_EVALUATOR_DEADLINE_MS;
-  if (!Number.isInteger(resolved) || resolved < 1 || resolved > 120_000) {
+  if (!Number.isInteger(resolved) || resolved < 1 || resolved > MAX_EVALUATOR_DEADLINE_MS) {
     throw new EvaluatorPortError('INPUT_INVALID');
   }
   return resolved;

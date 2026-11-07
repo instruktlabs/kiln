@@ -1,6 +1,10 @@
 import { writeFileSync } from 'node:fs';
 import { evaluateEvaluatorRequestV2 } from './handler';
-import { MAX_EVALUATOR_REQUEST_BYTES, MAX_EVALUATOR_RESPONSE_BYTES } from './protocol';
+import {
+  MAX_EVALUATOR_DEADLINE_MS,
+  MAX_EVALUATOR_REQUEST_BYTES,
+  MAX_EVALUATOR_RESPONSE_BYTES,
+} from './protocol';
 
 async function readBoundedInput(): Promise<string> {
   const chunks: Buffer[] = [];
@@ -15,14 +19,15 @@ async function readBoundedInput(): Promise<string> {
 }
 
 try {
-  // The request carries the GLB limit but not the response budget. The host stops reading at its
-  // own budget, so the worker bounds this only by what the protocol can ever carry.
+  // The request carries the GLB limit but neither the response budget nor the deadline. The host
+  // stops reading at its own budget and kills this process at its own deadline, which a timer in
+  // here could only follow, so the worker bounds both only by what the protocol can ever carry.
   writeFileSync(
     3,
     await evaluateEvaluatorRequestV2(
       await readBoundedInput(),
       {},
-      { maxResponseBytes: MAX_EVALUATOR_RESPONSE_BYTES },
+      { deadlineMs: MAX_EVALUATOR_DEADLINE_MS, maxResponseBytes: MAX_EVALUATOR_RESPONSE_BYTES },
     ),
     { encoding: 'utf8' },
   );
