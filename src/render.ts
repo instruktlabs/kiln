@@ -1743,36 +1743,15 @@ function optimizeWarnings(summary: OptimizeSummary): string[] {
 }
 
 /**
- * Serialize a pre-built Three.js scene graph to a GLB byte stream.
- *
- * This is the shared bridge used by both `renderGLB(code)` (headless, re-
- * executes code) and the in-editor `exportGLB()` (uses the live scene).
- *
- * Works in both Node and browser - uses WebIO, which only touches network
- * APIs on the read side. The write side is pure bytes-in/bytes-out, so the
- * same function serializes identically on either platform. That unifies
- * the two historical paths (Three.js GLTFExporter in the editor vs.
- * gltf-transform bridge headlessly) into one canonical pipeline.
- *
- * Pure function: no file I/O, no globals, no WebGL.
+ * Source-data invariants that precede any operation dereferencing bindings. Reuses the structured
+ * QA transport without claiming that the full QA rules ran. Like invalid geometry buffers,
+ * malformed skin data cannot be made safe by QA-warn or derivative mode. No automatic weight
+ * normalization or rest-pose repair occurs.
  */
-export async function renderSceneToGLB(
+function assertSceneSourceIntegrity(
   root: THREE.Object3D,
-  opts: RenderSceneOptions = {},
-): Promise<RenderSceneResult> {
-  assertNoLegacyRuntimePolicy(opts);
-  const requirements = resolveRequirementsContext(opts.requirements);
-  const clips = opts.clips ?? [];
-  const indexPolicy = resolveIndexPolicy(opts.indexPolicy);
-  if (indexPolicy === 'asBuilt' && resolveOptimize(opts.optimize) !== 'off')
-    throw new Error('asBuilt indexPolicy requires optimize off to preserve authored buffers');
-  if (opts.geometryPolicy !== undefined && !['warn', 'strict'].includes(opts.geometryPolicy))
-    throw new Error('geometryPolicy must be warn or strict');
-  const exporter = resolveGltfExporter(opts.gltfExporter);
-  // Mandatory source-data invariants precede any operation that dereferences bindings.
-  // Reuse the structured QA transport without claiming that the full QA rules ran.
-  // Like invalid geometry buffers, malformed skin data cannot be made safe by QA-warn
-  // or derivative mode. No automatic weight normalization or rest-pose repair occurs.
+  requirements: ReturnType<typeof resolveRequirementsContext>,
+): void {
   const skinIntegrity = inspectSkinIntegrity(root);
   if (skinIntegrity.findings.length) {
     throw new AssetQaBlockedError(
@@ -1792,13 +1771,13 @@ export async function renderSceneToGLB(
     );
   }
   assertPortableMaterialSides(root);
-  // A set of LOD tiers needs its declared thresholds before anything is written. A
-  // derivative re-serializes a review scene that has no declarations, so it is not judged.
-  const lodSets = opts.derivative === true ? [] : collectLodSets(root);
-  // An opt-in solid assertion is the author's, so a derivative re-serialization is not judged.
-  if (opts.derivative !== true) assertRequiredSolids(root);
-  const warnings = inspectGeometryExport(root, opts.geometryPolicy, exporter);
-  // The headline counts what a plain loader draws: LOD0 and the parts outside every set.
+}
+
+/** The headline counts what a plain loader draws: LOD0 and the parts outside every set. */
+function drawnTriangleCount(
+  root: THREE.Object3D,
+  lodSets: ReturnType<typeof collectLodSets>,
+): number {
   let tris = countTriangles(root);
   for (const set of lodSets) for (const level of set.levels.slice(1)) tris -= countTriangles(level);
   const hiddenTris = hiddenTriangles(root, new Set(lodSets.flatMap((set) => set.levels.slice(1))));
@@ -1806,50 +1785,24 @@ export async function renderSceneToGLB(
     throw new Error(
       'renderSceneToGLB: every triangle is hidden (visible = false on the root or on every part), so nothing draws. Hide parts inside the asset, not all of it.',
     );
-  tris -= hiddenTris;
-  const materialRecipeApplications = collectMaterialRecipeApplications(root);
-  const materialResourceProvenance = collectMaterialResourceProvenance(root);
+  return tris - hiddenTris;
+}
 
-  // Runtime-aware joint-name validation (follow-up #6 from the W1.1 spike
-  // report). Walk the scene graph + animation tracks and surface any track
-  // whose target name doesn't resolve to a scene node. Non-fatal - the GLB
-  // still renders; agents iterating on code use these warnings to fix the
-  // next iteration. Runs before the bridge so the descriptive "rename the
-  // pivot" hint is first; the bridge also emits a briefer "target not
-  // found - skipped" for each unresolved track (kept for compatibility).
-  for (const w of inspectGeneratedAnimation(root, clips)) warnings.push(w);
-  const externalSupport = requirements.requirements.requirements.externalSupport;
-  for (const w of inspectSceneStructure(root, {
-    ...(externalSupport?.state === 'requested'
-      ? { externalSupport: externalSupport.value.supports }
-      : {}),
-  }))
-    warnings.push(w);
-
-  // T2.2 — encode in-memory textures to PNG BEFORE QA, so QA judges the file
-  // that will actually be written. A procedural DataTexture used to reach the
-  // bridge with no encoded bytes and be dropped without a word; now it is
-  // either baked into the GLB or warned about by name.
-  const atlas = collectAtlasProvenance(root);
-  const bakedTextures = await bakeSceneTextures(root, warnings);
-  // A normal-mapped mesh without tangents makes every runtime invent its own
-  // tangent basis, so the same asset lights differently in different engines.
-  // Only touches meshes that actually carry a normal map — the attribute
-  // changes the exported bytes.
-  ensureNormalMapTangents(root, warnings);
-
-  const qaPolicy = qaPolicyFromEnv();
-  const sceneEvidence = await collectRequirementsSceneEvidence(requirements, root, qaPolicy);
-  const sceneQaReport = runRequirementsSceneQa(requirements, root, clips, qaPolicy, sceneEvidence);
-  // A derivative export withholds the throw without hiding the finding.
-  const qaBlocks = qaBlockingEnabled() && opts.derivative !== true;
-  const qaSuppressedBy = opts.derivative === true ? 'derivative re-serialization' : 'KILN_QA_MODE';
-  if (sceneQaReport.disposition === 'block') {
-    const blocked = new AssetQaBlockedError(sceneQaReport, 'scene');
-    if (qaBlocks) throw blocked;
-    warnings.push(`${blocked.message} — block suppressed by ${qaSuppressedBy}`);
-  }
-
+/** Write the scene into a transformed glTF document: everything that decides the bytes. */
+async function buildSceneDocument(
+  root: THREE.Object3D,
+  opts: RenderSceneOptions,
+  scene: {
+    clips: NonNullable<RenderSceneOptions['clips']>;
+    exporter: ReturnType<typeof resolveGltfExporter>;
+    indexPolicy: ReturnType<typeof resolveIndexPolicy>;
+    lodSets: ReturnType<typeof collectLodSets>;
+    tris: number;
+    atlas: ReturnType<typeof collectAtlasProvenance>;
+    warnings: string[];
+  },
+) {
+  const { clips, exporter, indexPolicy, lodSets, tris, atlas, warnings } = scene;
   const nativeClips = clipsWithDurationSamples(clips);
   // Author userData decided once, so both exporters write the same extras.
   const authorExtras = collectAuthorExtras(root);
@@ -1983,6 +1936,102 @@ export async function renderSceneToGLB(
       );
     }
   }
+
+  return {
+    doc,
+    indexBuffers,
+    ...(instancing ? { instancing } : {}),
+    ...(optimize ? { optimize } : {}),
+  };
+}
+
+/**
+ * Serialize a pre-built Three.js scene graph to a GLB byte stream.
+ *
+ * This is the shared bridge used by both `renderGLB(code)` (headless, re-
+ * executes code) and the in-editor `exportGLB()` (uses the live scene).
+ *
+ * Works in both Node and browser - uses WebIO, which only touches network
+ * APIs on the read side. The write side is pure bytes-in/bytes-out, so the
+ * same function serializes identically on either platform. That unifies
+ * the two historical paths (Three.js GLTFExporter in the editor vs.
+ * gltf-transform bridge headlessly) into one canonical pipeline.
+ *
+ * Pure function: no file I/O, no globals, no WebGL.
+ */
+export async function renderSceneToGLB(
+  root: THREE.Object3D,
+  opts: RenderSceneOptions = {},
+): Promise<RenderSceneResult> {
+  assertNoLegacyRuntimePolicy(opts);
+  const requirements = resolveRequirementsContext(opts.requirements);
+  const clips = opts.clips ?? [];
+  const indexPolicy = resolveIndexPolicy(opts.indexPolicy);
+  if (indexPolicy === 'asBuilt' && resolveOptimize(opts.optimize) !== 'off')
+    throw new Error('asBuilt indexPolicy requires optimize off to preserve authored buffers');
+  if (opts.geometryPolicy !== undefined && !['warn', 'strict'].includes(opts.geometryPolicy))
+    throw new Error('geometryPolicy must be warn or strict');
+  const exporter = resolveGltfExporter(opts.gltfExporter);
+  assertSceneSourceIntegrity(root, requirements);
+  // A set of LOD tiers needs its declared thresholds before anything is written. A
+  // derivative re-serializes a review scene that has no declarations, so it is not judged.
+  const lodSets = opts.derivative === true ? [] : collectLodSets(root);
+  // An opt-in solid assertion is the author's, so a derivative re-serialization is not judged.
+  if (opts.derivative !== true) assertRequiredSolids(root);
+  const warnings = inspectGeometryExport(root, opts.geometryPolicy, exporter);
+  const tris = drawnTriangleCount(root, lodSets);
+  const materialRecipeApplications = collectMaterialRecipeApplications(root);
+  const materialResourceProvenance = collectMaterialResourceProvenance(root);
+
+  // Runtime-aware joint-name validation (follow-up #6 from the W1.1 spike
+  // report). Walk the scene graph + animation tracks and surface any track
+  // whose target name doesn't resolve to a scene node. Non-fatal - the GLB
+  // still renders; agents iterating on code use these warnings to fix the
+  // next iteration. Runs before the bridge so the descriptive "rename the
+  // pivot" hint is first; the bridge also emits a briefer "target not
+  // found - skipped" for each unresolved track (kept for compatibility).
+  for (const w of inspectGeneratedAnimation(root, clips)) warnings.push(w);
+  const externalSupport = requirements.requirements.requirements.externalSupport;
+  for (const w of inspectSceneStructure(root, {
+    ...(externalSupport?.state === 'requested'
+      ? { externalSupport: externalSupport.value.supports }
+      : {}),
+  }))
+    warnings.push(w);
+
+  // T2.2 — encode in-memory textures to PNG BEFORE QA, so QA judges the file
+  // that will actually be written. A procedural DataTexture used to reach the
+  // bridge with no encoded bytes and be dropped without a word; now it is
+  // either baked into the GLB or warned about by name.
+  const atlas = collectAtlasProvenance(root);
+  const bakedTextures = await bakeSceneTextures(root, warnings);
+  // A normal-mapped mesh without tangents makes every runtime invent its own
+  // tangent basis, so the same asset lights differently in different engines.
+  // Only touches meshes that actually carry a normal map — the attribute
+  // changes the exported bytes.
+  ensureNormalMapTangents(root, warnings);
+
+  const qaPolicy = qaPolicyFromEnv();
+  const sceneEvidence = await collectRequirementsSceneEvidence(requirements, root, qaPolicy);
+  const sceneQaReport = runRequirementsSceneQa(requirements, root, clips, qaPolicy, sceneEvidence);
+  // A derivative export withholds the throw without hiding the finding.
+  const qaBlocks = qaBlockingEnabled() && opts.derivative !== true;
+  const qaSuppressedBy = opts.derivative === true ? 'derivative re-serialization' : 'KILN_QA_MODE';
+  if (sceneQaReport.disposition === 'block') {
+    const blocked = new AssetQaBlockedError(sceneQaReport, 'scene');
+    if (qaBlocks) throw blocked;
+    warnings.push(`${blocked.message} — block suppressed by ${qaSuppressedBy}`);
+  }
+
+  const { doc, indexBuffers, instancing, optimize } = await buildSceneDocument(root, opts, {
+    clips,
+    exporter,
+    indexPolicy,
+    lodSets,
+    tris,
+    atlas,
+    warnings,
+  });
 
   // Instanceability metrics, measured against the post-dedup() (and post-optimize,
   // when enabled) Document so the counts reflect the GLB the runtime actually
@@ -2122,6 +2171,43 @@ export async function renderSceneToGLB(
     integrationManifest,
     ...(diagnosticViews.length ? { diagnosticViews } : {}),
   };
+}
+
+/**
+ * The bytes of a review derivative and nothing else: the same bytes `renderSceneToGLB` writes with
+ * `derivative: true`, without the QA, validator, metrics and manifest evidence a view cell would
+ * discard. The scene was already adjudicated when its artifact was built; the source invariants
+ * that make a scene unsafe to serialize still throw.
+ */
+export async function renderReviewDerivativeGlb(
+  root: THREE.Object3D,
+  opts: Pick<RenderSceneOptions, 'gltfExporter'> = {},
+): Promise<Uint8Array> {
+  assertSceneSourceIntegrity(root, resolveRequirementsContext(undefined));
+  const tris = drawnTriangleCount(root, []);
+  if (tris <= 0) throw new Error('renderSceneToGLB: final GLB has no measurable scene');
+  // Warnings are evidence about the source, reported when the artifact was built.
+  const warnings: string[] = [];
+  const atlas = collectAtlasProvenance(root);
+  await bakeSceneTextures(root, warnings);
+  ensureNormalMapTangents(root, warnings);
+  const { doc } = await buildSceneDocument(
+    root,
+    { ...opts, derivative: true },
+    {
+      clips: [],
+      exporter: resolveGltfExporter(opts.gltfExporter),
+      indexPolicy: resolveIndexPolicy(undefined),
+      lodSets: [],
+      tris,
+      atlas,
+      warnings,
+    },
+  );
+  ensureDefaultScene(doc);
+  await refreshAtlasDocumentProvenance(doc);
+  await validateAtlasDocumentProvenance(doc);
+  return engineIO().writeBinary(doc);
 }
 
 /**

@@ -5,7 +5,12 @@ import {
   type CaptureLimits,
 } from './capture-limits';
 import type { PbrRenderPort } from '../composer/render-port';
-import { validateResolvedAssetCamera, type ResolvedAssetCameraV1 } from './camera';
+import {
+  validateResolvedAssetCamera,
+  type ResolvedAssetCameraV1,
+  type ResolvedCameraShotV1,
+} from './camera';
+import type { DerivativeCellRenderResult } from './index';
 import {
   resolveGridCapture,
   type CaptureConfig,
@@ -15,6 +20,9 @@ import {
 import { decodePng } from './png';
 import { compositeViewPngGrid } from './grid';
 export const DEFAULT_VIEW_RENDER_TIMEOUT_MS = 8000;
+/** What one render request may carry; the render service refuses anything more. */
+export const MAX_CAMERAS_PER_REQUEST = 12;
+export const MAX_PIXELS_PER_REQUEST = 16_777_216;
 
 export async function sha256Bytes(bytes: Uint8Array): Promise<`sha256:${string}`> {
   const input = new Uint8Array(bytes.byteLength);
@@ -47,6 +55,7 @@ export type PortViewPngsOutcome =
       pngs: Uint8Array[];
       rendererId: string;
       captureCache?: { hit: boolean; reused: number; total: number };
+      captureCacheHits?: boolean[];
       derivativeFidelityAttested: boolean;
       inputGlbSha256?: `sha256:${string}`;
     }
@@ -161,6 +170,7 @@ export async function captureViewPngsViaPort(
       pngs: result.viewsPng.map((png) => Uint8Array.from(png)),
       rendererId: result.rendererId,
       ...(result.captureCache ? { captureCache: result.captureCache } : {}),
+      ...(result.captureCacheHits ? { captureCacheHits: result.captureCacheHits } : {}),
       derivativeFidelityAttested: result.derivativeFidelity?.materialFaithful === true,
       ...(result.derivativeFidelity ? { inputGlbSha256 } : {}),
     };
@@ -170,6 +180,109 @@ export async function captureViewPngsViaPort(
     if (timer !== undefined) clearTimeout(timer);
     if (abort) execution?.signal?.removeEventListener('abort', abort);
   }
+}
+
+/** How many shots of one size go in each render request, in order. */
+export function exactShotRequestSizes(shots: number, size: number): number[] {
+  const fit = Math.max(
+    1,
+    Math.min(MAX_CAMERAS_PER_REQUEST, Math.floor(MAX_PIXELS_PER_REQUEST / (size * size))),
+  );
+  const sizes: number[] = [];
+  for (let left = shots; left > 0; left -= fit) sizes.push(Math.min(left, fit));
+  return sizes;
+}
+
+/**
+ * The shot indices of each render request. Projections stay in separate requests: the renderer
+ * compiles a material's view direction for the first camera that draws it and reuses that shader
+ * for the scene's later cameras, so a perspective camera after an orthographic one in the same
+ * request comes back shaded wrong.
+ */
+function exactShotRequests(shots: readonly ResolvedCameraShotV1[], size: number): number[][] {
+  const byProjection = new Map<string, number[]>();
+  for (const [index, shot] of shots.entries()) {
+    const group = byProjection.get(shot.camera.projection);
+    if (group) group.push(index);
+    else byProjection.set(shot.camera.projection, [index]);
+  }
+  const requests: number[][] = [];
+  for (const indices of byProjection.values()) {
+    let start = 0;
+    for (const count of exactShotRequestSizes(indices.length, size)) {
+      requests.push(indices.slice(start, start + count));
+      start += count;
+    }
+  }
+  return requests;
+}
+
+/**
+ * Draw shots that change only the camera from the artifact bytes themselves: one request per
+ * projection and service limit, so the renderer loads the scene once for them and a capture cache
+ * answers before any upload. Each request keeps its own deadline in {@link captureViewPngsViaPort}, the single owner
+ * of that policy. Never throws. A shot left undefined was not drawn, because its request failed or
+ * its renderer differed from the earlier ones, and takes the caller's per-shot route with its own
+ * degrade; a cancellation surfaces there too.
+ */
+export async function captureExactArtifactShotsViaPort(
+  port: PbrRenderPort,
+  glb: Buffer | Uint8Array,
+  timeoutMs: number,
+  shots: readonly ResolvedCameraShotV1[],
+  size: number,
+  options: {
+    /** Whether these bytes are the artifact a caller can select: see {@link ViewFidelityV1}. */
+    exactArtifact: boolean;
+    limits?: CaptureLimits;
+    backdrop?: import('./background').BackdropId;
+    execution?: { signal?: AbortSignal };
+  },
+): Promise<(DerivativeCellRenderResult | undefined)[]> {
+  const cells: (DerivativeCellRenderResult | undefined)[] = shots.map(() => undefined);
+  let rendererId: string | undefined;
+  for (const indices of exactShotRequests(shots, size)) {
+    const batch = indices.map((index) => shots[index]!);
+    const result = await captureViewPngsViaPort(
+      port,
+      glb,
+      timeoutMs,
+      batch.map(
+        ({ camera }) =>
+          camera.position.map((n, axis) => n - camera.target[axis]!) as [number, number, number],
+      ),
+      size,
+      batch.map((shot) => shot.camera),
+      options.limits,
+      options.backdrop,
+      options.execution,
+    );
+    if (!result.ok || !result.derivativeFidelityAttested || !result.inputGlbSha256) break;
+    if (rendererId !== undefined && rendererId !== result.rendererId) break;
+    rendererId = result.rendererId;
+    for (const [index, shot] of batch.entries()) {
+      const hit = result.captureCacheHits?.[index];
+      cells[indices[index]!] = {
+        png: Buffer.from(result.pngs[index]!),
+        receipt: {
+          version: 'kiln.view-fidelity.v1',
+          derivativeLabel: shot.name,
+          requested: 'full-preferred',
+          delivered: 'full-material',
+          exactArtifact: options.exactArtifact,
+          rendererId: result.rendererId,
+          materialFaithful: true,
+          degraded: false,
+          inputGlbSha256: result.inputGlbSha256,
+          camera: shot.camera,
+          cameraFidelity: 'echo-validated',
+          ...(hit === undefined ? {} : { captureCache: { hit, reused: hit ? 1 : 0, total: 1 } }),
+          ...(options.exactArtifact ? {} : { reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED'] }),
+        },
+      };
+    }
+  }
+  return cells;
 }
 
 /**
@@ -205,22 +318,21 @@ export async function captureViewsViaPort(
       const { loadGlbReviewScene } = await import('./index');
       const { renderCaptureGrid } = await import('./camera-capture');
       const { withoutHiddenMeshes } = await import('./camera');
-      const { renderSceneToGLB } = await import('../render');
+      const { renderReviewDerivativeGlb } = await import('../render');
       const loaded = await loadGlbReviewScene(Uint8Array.from(glb));
-      let rendererId = '';
       const grid = await renderCaptureGrid(
         loaded.root,
         capture,
         async (input) => {
           execution?.signal?.throwIfAborted();
           // An isolated shot hides the other meshes; send the GPU only what it may draw.
-          const derivative = await renderSceneToGLB(
+          const derivative = await renderReviewDerivativeGlb(
             withoutHiddenMeshes(input.root as import('three').Object3D),
-            { derivative: true, gltfExporter: 'three' },
+            { gltfExporter: 'three' },
           );
           const result = await captureViewPngsViaPort(
             port,
-            derivative.bytes,
+            derivative,
             timeoutMs,
             [input.view.dir],
             input.size,
@@ -232,9 +344,6 @@ export async function captureViewsViaPort(
           if (!result.ok) throw new Error(result.reason);
           if (!result.derivativeFidelityAttested || !result.inputGlbSha256)
             throw new Error('advanced capture requires derivative material receipt');
-          if (rendererId && rendererId !== result.rendererId)
-            throw new Error('capture renderer changed between cells');
-          rendererId = result.rendererId;
           return {
             png: Buffer.from(result.pngs[0]!),
             receipt: {
@@ -254,11 +363,23 @@ export async function captureViewsViaPort(
           };
         },
         limits,
+        {
+          renderExactShots: ({ shots, size, backdrop }) =>
+            captureExactArtifactShotsViaPort(port, glb, timeoutMs, shots, size, {
+              // These are the bytes the caller produced, which is what it asked to see.
+              exactArtifact: true,
+              ...(limits ? { limits } : {}),
+              backdrop,
+              ...(execution ? { execution } : {}),
+            }),
+        },
       );
+      const rendererIds = new Set(grid.derivativeReceipts.map((receipt) => receipt.rendererId));
+      if (rendererIds.size > 1) throw new Error('capture renderer changed between cells');
       return {
         ok: true,
         png: grid.png,
-        rendererId,
+        rendererId: grid.derivativeReceipts[0]!.rendererId,
         capture: grid.capture!,
         width: grid.width,
         height: grid.height,

@@ -49,7 +49,7 @@ import * as THREE from 'three';
 
 import { validate, type ValidationIssue } from '../validation';
 import { appendSourceCheck } from '../evaluator/source-check';
-import { inspectSceneStructure, renderSceneToGLB, type RenderResult } from '../render';
+import { inspectSceneStructure, renderReviewDerivativeGlb, type RenderResult } from '../render';
 import type {
   AssetCategory,
   AssetIntentV1,
@@ -515,16 +515,11 @@ async function renderDerivativeCell(
   // joint ancestors survive as transform-only nodes in the derivative.
   const { withoutHiddenMeshes } = await import('../views/camera');
   derivativeRoot = withoutHiddenMeshes(derivativeRoot);
-  const rendered = await renderSceneToGLB(derivativeRoot, {
-    // The scene here was loaded back from a GLB this engine already produced
-    // and adjudicated. Submitting it for judgement a second time fails on the
-    // round trip rather than on the asset: see `derivative` in render.ts.
-    derivative: true,
-    // Review reconstruction preserves UV2 and UV3; the legacy authored exporter
-    // does not carry them into the GPU derivative.
-    gltfExporter: 'three',
-    requirements: toolRequirements(context).binding,
-  });
+  // The scene here was loaded back from a GLB this engine already produced and
+  // adjudicated, so a cell needs its bytes and none of the build's evidence.
+  // Review reconstruction preserves UV2 and UV3; the legacy authored exporter
+  // does not carry them into the GPU derivative.
+  const reviewBytes = await renderReviewDerivativeGlb(derivativeRoot, { gltfExporter: 'three' });
   const { cameraFromBounds, measureBounds } = await import('../views');
   const camera =
     input.camera ??
@@ -535,7 +530,7 @@ async function renderDerivativeCell(
       undefined,
       measureBounds(input.root),
     );
-  const derivativeGlb = Uint8Array.from(rendered.bytes);
+  const derivativeGlb = Uint8Array.from(reviewBytes);
   const inputGlbSha256 = await sha256Glb(derivativeGlb);
   let degradeReason: string | undefined;
   const derivativeReasonCodes: ViewFidelityReasonCode[] = [];
@@ -672,6 +667,50 @@ async function renderDerivativeCell(
     /* best effort */
   }
   return { png: flat.png, receipt };
+}
+
+/**
+ * Shots that change only the camera, drawn from the build's own bytes. Host telemetry counts each
+ * one, as it does a derivative cell; a shot left undrawn renders as a derivative cell and reports there.
+ */
+async function renderExactArtifactShots(
+  input: {
+    shots: import('../views').ResolvedCameraShotV1[];
+    size: number;
+    backdrop: import('../views/background').BackdropId;
+  },
+  glb: Uint8Array,
+  context: KilnToolContext,
+): Promise<readonly (import('../views').DerivativeCellRenderResult | undefined)[] | undefined> {
+  if (!context.viewRenderPort) return undefined;
+  const { captureExactArtifactShotsViaPort } = await import('../views/port');
+  const cells = await captureExactArtifactShotsViaPort(
+    context.viewRenderPort,
+    glb,
+    resolveInLoopViewRenderTimeoutMs(context, 'derivative-cell'),
+    input.shots,
+    input.size,
+    {
+      exactArtifact: context.programArtifacts !== undefined,
+      ...(context.captureLimits ? { limits: context.captureLimits } : {}),
+      backdrop: input.backdrop,
+      ...(context.evaluationControls ? { execution: context.evaluationControls() } : {}),
+    },
+  );
+  context.evaluationControls?.().signal?.throwIfAborted();
+  for (const cell of cells) {
+    if (!cell) continue;
+    try {
+      context.onViewsRendered?.({
+        renderer: cell.receipt.rendererId,
+        degraded: false,
+        neededPbr: true,
+      });
+    } catch {
+      /* best effort */
+    }
+  }
+  return cells;
 }
 
 function derivativeReviewFidelity(
@@ -1190,8 +1229,9 @@ async function retainReviewedArtifact(
 ): Promise<KilnRenderViewsResult> {
   context.evaluationControls?.().signal?.throwIfAborted();
   if (!context.programArtifacts) return reviewed;
-  // Full-asset grids depict the exact retained bytes. Derivative shots remain
-  // derivative evidence even though their source artifact is retained as well.
+  // Full-asset grids depict the exact retained bytes. A capture with shots has
+  // already said so per receipt: a derivative among them stays derivative
+  // evidence even though its source artifact is retained as well.
   if (reviewed.viewFidelity && !reviewed.derivativeReceipts) {
     reviewed.viewFidelity = {
       ...reviewed.viewFidelity,
@@ -1239,11 +1279,19 @@ async function runRenderViews(
     const metrics = collectSceneMetrics(root);
     if ('shots' in (input.capture ?? {})) {
       const { renderCaptureGrid } = await import('../views');
-      const grid = await renderCaptureGrid(root, input.capture!, (cell) =>
-        renderDerivativeCell(cell, context),
+      const grid = await renderCaptureGrid(
+        root,
+        input.capture!,
+        (cell) => renderDerivativeCell(cell, context),
+        context.captureLimits,
+        {
+          framesOnly: true,
+          renderExactShots: (shots) => renderExactArtifactShots(shots, rendered.glb, context),
+        },
       );
       const receipts = grid.derivativeReceipts;
       const materialFaithful = receipts.every((r) => r.materialFaithful);
+      const exactArtifact = receipts.every((r) => r.exactArtifact);
       context.evaluationControls?.().signal?.throwIfAborted();
       const reviewed: KilnRenderViewsResult = {
         ok: true,
@@ -1279,11 +1327,11 @@ async function runRenderViews(
           requested: 'full-preferred',
           delivered: materialFaithful ? 'full-material' : 'geometry-flat',
           materialFaithful,
-          exactArtifact: false,
+          exactArtifact,
           rendererId: [...new Set(receipts.map((r) => r.rendererId))].join(', '),
           inputGlbSha256: await sha256Glb(Uint8Array.from(rendered.glb)),
           degraded: !materialFaithful,
-          reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED'],
+          reasonCodes: exactArtifact ? [] : ['IN_LOOP_BUILD_NOT_PERSISTED'],
         },
         warnings: [...rendered.warnings],
       };
@@ -2443,7 +2491,8 @@ async function guardCaptureBudget(
     let cells = 6,
       size = 384,
       cols = 3,
-      compose = true;
+      compose = true,
+      nameFit = false;
     if (name === 'kiln_inspect') {
       cells = 1;
       size = 512;
@@ -2461,6 +2510,10 @@ async function guardCaptureBudget(
         cells = args.capture.shots.length;
         size = args.capture.size ?? 384;
         cols = args.capture.cols ?? Math.min(3, cells);
+        // Only these tools deliver separate frames without a sheet.
+        if (['kiln_render', 'kiln_edit'].includes(name) && args.capture.output === 'separate')
+          compose = false;
+        nameFit = true;
       } else {
         const { resolveGridCapture } = await import('../views/capture');
         const resolved = resolveGridCapture(args.capture);
@@ -2468,7 +2521,7 @@ async function guardCaptureBudget(
         cols = resolved.cols;
       }
     }
-    enforceCapturePixels(cells, size, cols, context.captureLimits, compose);
+    enforceCapturePixels(cells, size, cols, context.captureLimits, compose, nameFit);
     const out = await run();
     if (out && typeof out === 'object') {
       const media = out as { pngBase64?: string; framesBase64?: string[] };

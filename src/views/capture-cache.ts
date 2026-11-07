@@ -227,6 +227,7 @@ export function createCachedRenderPort(
         reused: selectors.length - missing.length,
         total: selectors.length,
       },
+      captureCacheHits: selectors.map((_, index) => !missing.includes(index)),
     };
   };
 }

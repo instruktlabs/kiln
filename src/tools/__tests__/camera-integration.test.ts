@@ -308,7 +308,8 @@ test('isolate hides surrounding geometry on the GPU path, not only the CPU raste
     },
   })) as Record<string, unknown>;
   expect(mixed.ok).toBe(true);
-  expect(requests.map((r) => glbMeshCount(r.glb))).toEqual([1, 2]);
+  // The context shot draws the artifact, in a request made before any derivative cell.
+  expect(requests.map((r) => glbMeshCount(r.glb))).toEqual([2, 1]);
   expect(await run('context')).toBe(2);
   // The CPU rasterizer culls on `mesh.visible` (views/raster.ts), but a GLB has no
   // per-mesh visibility, so an unfiltered serialization makes isolate a silent

@@ -7,6 +7,25 @@ does not publish a package.
 
 ## Unreleased
 
+- `kiln_render` and `kiln_edit` draw `shots` that change only the camera from the artifact itself, in one
+  request per projection and service limit, after asking the capture cache. On a 2.6M-triangle cathedral on
+  Node 22.23.4, nine shots at 1000 px on a built program went from 301 s to 8.8 s, all nine cached from
+  260 s to 5.3 s, and one shot from 42 s to 7.0 s. Same-camera images differ by at most one level per
+  channel. A shot that changes what draws (`visibility: 'isolate'`, `hide`, or a subject in a lower level
+  of detail) keeps a derivative for that shot, which now skips the QA, validator, metrics and manifest
+  work that derivative discarded (9.1 s to 3.0 s for one isolated shot). `kiln_inspect` shots stay on the derivative route.
+  Results change where they report this: `derivativeReceipts[].inputGlbSha256` of a camera-only shot is the
+  artifact's hash, its compact receipt can omit the hash when `viewFidelity` already states it, a receipt on
+  a host with no retained artifact reads `reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED']`, and on a host with
+  one `viewFidelity.exactArtifact` is true when every shot was exact. `./render` exports `renderReviewDerivativeGlb`.
+- Camera bounds, GLB accessor decode and the integration manifest allocate and read less on large
+  assets: bounds no longer build a record per triangle, unnormalized accessors copy directly, and
+  `drawnSceneBounds` visits each referenced vertex once per placement. Cameras, review geometry, bounds and
+  the manifest are byte-identical on the cathedral.
+- `output: 'separate'` is no longer charged for a grid sheet it never builds, and a refused capture states the
+  shots, the size and the largest size that fits as a grid and as separate images.
+- A missing evaluator worker file now names the rebuild instead of `Evaluator worker pipe failed.`, and
+  Windows' `EOF` on the worker pipe waits for the worker to close like `EPIPE`.
 - `KILN_EVALUATOR_TIMEOUT_MS` now works above 60,000, as documented. Only the host read it: the worker
   kept its own 60-second timer, so a build that yielded to the event loop after that failed with
   `DEADLINE_EXCEEDED` at any limit, usually once the abandoned build had run to its end. The worker now
