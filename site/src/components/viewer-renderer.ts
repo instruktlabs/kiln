@@ -36,9 +36,9 @@ function trackTextures(renderer: THREE.WebGPURenderer): () => void {
 
 const releases = new WeakMap<THREE.WebGPURenderer, () => void>();
 
-interface NodeCapabilities {
-  getUniformBufferLimit(): number;
-}
+/** The viewer's renderers, whose instanced parts are built to share shaders. */
+const sharing = new WeakSet<object>();
+let builderPatched = false;
 
 /**
  * Let every GPU batch with the same material share one shader. Below 1,024 copies, r186's
@@ -50,13 +50,25 @@ interface NodeCapabilities {
  * are named by slot. With a limit of zero every batch does that: 29 programs and a first frame at
  * 10 s on WebGL2, and 55 modules with no task over 0.2 s on WebGPU.
  *
- * Only skinning and `RangeNode` read the same limit. A skeleton then reads its bones from a
- * texture, as three already does for skeletons too large for a uniform block.
+ * Skinning and `RangeNode` read the same limit, so the zero is reported only while an instanced
+ * part is being built, and a skeleton keeps its bones in a uniform block as before. Only the
+ * viewer's renderers are changed.
  */
 export function shareInstancedShaders(renderer: THREE.WebGPURenderer): void {
-  const capabilities = (renderer.backend as unknown as { capabilities?: NodeCapabilities })
-    .capabilities;
-  if (capabilities) capabilities.getUniformBufferLimit = () => 0;
+  sharing.add(renderer);
+  if (builderPatched) return;
+  builderPatched = true;
+  const prototype = THREE.NodeBuilder.prototype as unknown as {
+    getUniformBufferLimit(this: {
+      renderer: object;
+      object?: { isInstancedMesh?: boolean };
+    }): number;
+  };
+  const limit = prototype.getUniformBufferLimit;
+  prototype.getUniformBufferLimit = function () {
+    if (sharing.has(this.renderer) && this.object?.isInstancedMesh) return 0;
+    return limit.call(this);
+  };
 }
 
 /**
@@ -114,9 +126,9 @@ export const compilesOnPageThread = (renderer: THREE.WebGPURenderer, object?: TH
 
 /**
  * Where the page would wait on shaders, build every pipeline `object` needs before it is first drawn, culled parts
- * included. With it the WebGL2 mech first drew at 1.5-1.7 s, and nothing held the page longer than the unskinned
- * file's own 1 s. `compileAsync` reads everything it uses before its first wait, so culling is restored as soon as it
- * returns.
+ * included. With it nothing held the page longer than about 0.9 s while the WebGL2 mech loaded, the unskinned file's
+ * own figure, and it first drew at 3.6-4.5 s. `compileAsync` reads everything it uses before its first wait, so
+ * culling is restored as soon as it returns.
  */
 export function compileAhead(
   renderer: THREE.WebGPURenderer,

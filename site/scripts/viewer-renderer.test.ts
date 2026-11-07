@@ -38,22 +38,34 @@ const rendererWithLimit = (bytes: number) => ({
   backend: { capabilities: { getUniformBufferLimit: () => bytes } },
 });
 
-/** What three r186's node builder reports to `nodes/accessors/Instance.js` for this renderer. */
-const limitSeenByNodes = (renderer: object) =>
-  NodeBuilder.prototype.getUniformBufferLimit.call({ renderer } as unknown as NodeBuilder);
+/** What three r186's node builder reports to `nodes/accessors/Instance.js` and `Skinning.js` while it builds `object`. */
+const limitSeenByNodes = (renderer: object, object: object) =>
+  NodeBuilder.prototype.getUniformBufferLimit.call({ renderer, object } as unknown as NodeBuilder);
+
+const batch = new THREE.InstancedMesh(new THREE.BoxGeometry(), new THREE.MeshStandardNodeMaterial(), 3);
+const skinned = new THREE.SkinnedMesh(new THREE.BoxGeometry(), new THREE.MeshStandardNodeMaterial());
 
 describe('instanced parts share their shaders', () => {
   test('a GPU batch of any size takes the instanced-attribute path', () => {
     const renderer = rendererWithLimit(65536);
     // Unpatched, a batch under 1,024 copies is a uniform array named after its own node, so each
     // batch is a shader of its own: 176 batches cost 203 WebGL2 programs and 399 WebGPU modules.
-    expect(limitSeenByNodes(renderer)).toBeGreaterThanOrEqual(64);
+    expect(limitSeenByNodes(renderer, batch)).toBeGreaterThanOrEqual(64);
     shareInstancedShaders(renderer as never);
     // `createInstanceMatrixNode` uses the uniform array only when `count * 64` fits the limit.
-    expect(limitSeenByNodes(renderer)).toBeLessThan(64);
+    expect(limitSeenByNodes(renderer, batch)).toBeLessThan(64);
   });
 
-  test('a renderer without node capabilities is left alone', () => {
-    expect(() => shareInstancedShaders({ backend: {} } as never)).not.toThrow();
+  test('a skinned part keeps its bones in a uniform block', () => {
+    // Skinning reads the same limit; only instanced parts are moved off the uniform path.
+    const renderer = rendererWithLimit(65536);
+    shareInstancedShaders(renderer as never);
+    expect(limitSeenByNodes(renderer, skinned)).toBe(65536);
+  });
+
+  test('another renderer on the page is left alone', () => {
+    const other = rendererWithLimit(65536);
+    shareInstancedShaders(rendererWithLimit(65536) as never);
+    expect(limitSeenByNodes(other, batch)).toBe(65536);
   });
 });
