@@ -13,10 +13,10 @@
 //
 //   node scripts/check-vision.mjs opencode-go/kimi-k3 opencode-go/glm-5.3
 //
-// Exits non-zero and names the offenders. OpenCode 1.x prints capabilities with
-// `opencode models <provider> --verbose`. OpenCode 2.2 rejects that flag, so the
-// fallback reads the whole catalogue once from `GET /api/model` on a private
-// server. Both answer from a local cache in a few seconds.
+// Exits non-zero and names the offenders. On OpenCode 2.x it reads the whole
+// catalogue once from `GET /api/model` on a private server. Older 1.x installs
+// print capabilities with `opencode models <provider> --verbose` instead. Both
+// answer from a local cache in a few seconds.
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -72,30 +72,39 @@ function catalogueByProvider(stdout) {
   return byProvider;
 }
 
+/** The major version `opencode --version` reports, or null when it reports nothing usable. */
+function majorVersion(run) {
+  const r = run(['--version']);
+  const match = r.status === 0 ? /(\d+)\.\d+/.exec(r.stdout ?? '') : null;
+  return match ? Number(match[1]) : null;
+}
+
 /**
  * Model capabilities per provider, as `Map<provider, Map<modelId, capabilities>>`.
- * Tries the 1.x `--verbose` listing first; it fails fast on 2.x.
+ * OpenCode 2.x is the primary path: one catalogue request serves every provider.
+ * The version picks the route, because 1.x has no `api` command and 2.x has no
+ * `--verbose`.
  */
 export function loadCapabilities(providers, run = runOpencode) {
   const out = new Map();
-  let catalogue;
+  const major = majorVersion(run);
+  if (major === null) {
+    for (const provider of providers) out.set(provider, new Map());
+    return out;
+  }
+  if (major >= 2) {
+    const r = run(['api', '--standalone', 'GET', '/api/model']);
+    const catalogue = r.status === 0 ? catalogueByProvider(r.stdout ?? '') : new Map();
+    for (const provider of providers) out.set(provider, catalogue.get(provider) ?? new Map());
+    return out;
+  }
   for (const provider of providers) {
     const legacy = run(['models', provider, '--verbose']);
-    if (legacy.status === 0) {
-      const map = new Map();
-      for (const o of jsonBlocks(legacy.stdout ?? '')) {
-        if (o.id) map.set(o.id, o.capabilities ?? {});
-      }
-      if (map.size) {
-        out.set(provider, map);
-        continue;
-      }
+    const map = new Map();
+    for (const o of legacy.status === 0 ? jsonBlocks(legacy.stdout ?? '') : []) {
+      if (o.id) map.set(o.id, o.capabilities ?? {});
     }
-    if (!catalogue) {
-      const r = run(['api', '--standalone', 'GET', '/api/model']);
-      catalogue = r.status === 0 ? catalogueByProvider(r.stdout ?? '') : new Map();
-    }
-    out.set(provider, catalogue.get(provider) ?? new Map());
+    out.set(provider, map);
   }
   return out;
 }

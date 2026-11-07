@@ -353,8 +353,8 @@ node scripts/observe-mcp.mjs
 process runs the engine over whatever program came back -- the child's own claim of success is
 the one piece of evidence that proves nothing.
 
-Before trusting a new model id, confirm image support with
-`node scripts/check-vision.mjs PROVIDER/MODEL`, then confirm the harness actually forwards
+Before trusting a new OpenCode model id, confirm image support with
+`node scripts/check-vision.mjs PROVIDER/MODEL` (it reads OpenCode's model catalogue), then confirm the harness actually forwards
 the images. Provider metadata alone verifies neither.
 
 ### Reading a result honestly

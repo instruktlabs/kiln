@@ -1,11 +1,12 @@
 /**
  * The vision gate's own test.
  *
- * `check-vision.mjs` reads model capabilities from the installed OpenCode. OpenCode 1.x
- * printed them with `opencode models <provider> --verbose`; 2.2 rejects that flag and
- * serves the catalogue at `GET /api/model` instead. A gate that can no longer read
- * capabilities reports every model as unverified, so both shapes are pinned here with a
- * fake runner. Nothing spawns OpenCode or touches the network.
+ * `check-vision.mjs` reads model capabilities from the installed OpenCode. OpenCode 2.x
+ * serves the catalogue at `GET /api/model` and rejects the 1.x
+ * `opencode models <provider> --verbose`. 2.x is the primary path; 1.x is kept for older
+ * installs. A gate that can no longer read capabilities reports every model as
+ * unverified, so both shapes are pinned here with a fake runner. Nothing spawns
+ * OpenCode or touches the network.
  */
 import { expect, test } from 'bun:test';
 import { spawnSync } from 'node:child_process';
@@ -54,11 +55,8 @@ opencode-go/glm-5.3
 }
 `;
 
-const REJECTED = {
-  status: 1,
-  stdout: '',
-  stderr: 'Unrecognized flag: --verbose in command opencode models',
-};
+const V2 = { status: 0, stdout: 'opencode v2.2.0\n', stderr: '' };
+const V1 = { status: 0, stdout: '1.18.30\n', stderr: '' };
 
 function fakeRunner(replies) {
   const calls = [];
@@ -70,10 +68,9 @@ function fakeRunner(replies) {
   return { run, calls };
 }
 
-test('OpenCode 2.2: falls back to the /api/model catalogue when --verbose is rejected', () => {
+test('OpenCode 2.x: reads the /api/model catalogue once and never tries --verbose', () => {
   const { run, calls } = fakeRunner({
-    'models opencode-go --verbose': REJECTED,
-    'models openrouter --verbose': REJECTED,
+    '--version': V2,
     'api --standalone GET /api/model': { status: 0, stdout: CATALOGUE_V2, stderr: '' },
   });
   const caps = loadCapabilities(['opencode-go', 'openrouter'], run);
@@ -83,26 +80,31 @@ test('OpenCode 2.2: falls back to the /api/model catalogue when --verbose is rej
   expect(caps.get('opencode-go').has('kimi-k3')).toBe(false);
   // A model id containing a slash stays whole under its provider.
   expect(seesImages(caps.get('openrouter').get('liquid/lfm-3-1.7b'))).toBe(true);
-  // One catalogue request serves every provider.
-  expect(calls.filter((c) => c.startsWith('api ')).length).toBe(1);
+  expect(calls).toEqual(['--version', 'api --standalone GET /api/model']);
 });
 
-test('OpenCode 1.x: reads --verbose and never calls the 2.x API', () => {
+test('OpenCode 1.x: reads --verbose per provider and never calls the 2.x API', () => {
   const { run, calls } = fakeRunner({
+    '--version': V1,
     'models opencode-go --verbose': { status: 0, stdout: VERBOSE_V1, stderr: '' },
   });
   const caps = loadCapabilities(['opencode-go'], run);
 
   expect(seesImages(caps.get('opencode-go').get('kimi-k3'))).toBe(true);
   expect(seesImages(caps.get('opencode-go').get('glm-5.3'))).toBe(false);
-  expect(calls).toEqual(['models opencode-go --verbose']);
+  expect(calls).toEqual(['--version', 'models opencode-go --verbose']);
 });
 
 test('an unreadable catalogue leaves models unlisted rather than throwing', () => {
   const { run } = fakeRunner({
-    'models opencode-go --verbose': REJECTED,
+    '--version': V2,
     'api --standalone GET /api/model': { status: 1, stdout: '', stderr: 'boom' },
   });
+  expect(loadCapabilities(['opencode-go'], run).get('opencode-go').size).toBe(0);
+});
+
+test('a missing opencode leaves models unlisted rather than throwing', () => {
+  const { run } = fakeRunner({});
   expect(loadCapabilities(['opencode-go'], run).get('opencode-go').size).toBe(0);
 });
 
