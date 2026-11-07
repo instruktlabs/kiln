@@ -11,6 +11,8 @@ does not publish a package.
   kept its own 60-second timer, so a build that yielded to the event loop after that failed with
   `DEADLINE_EXCEEDED` at any limit, usually once the abandoned build had run to its end. The worker now
   takes the protocol maximum and leaves the deadline to the host, which kills it at the limit in force.
+  The worker's own timer moves from 60 to 120 seconds, so a worker left behind by a host that died stops a
+  build that yields at 120 seconds rather than 60.
   The default stays 60 seconds, a host calling `evaluateEvaluatorRequestV2` directly keeps its own
   60-second default, and the `isolated` transport keeps its fixed 65-second CPU-time limit, which the
   setting does not raise.

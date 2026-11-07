@@ -124,7 +124,7 @@ Use `kiln_discover({ capabilities: true })` or `node kiln.mjs discover --capabil
 | Environment variable | Supported values |
 | --- | --- |
 | `KILN_EVALUATOR_MODE` | `subprocess` (local default), `in-process`, or the separately configured `isolated` transport |
-| `KILN_EVALUATOR_TIMEOUT_MS` | 1–120,000; default 60,000. The host ends the worker at this limit, counted from the worker's launch, so it covers the whole build and export. The `isolated` transport also has a fixed 65-second CPU-time limit, which this does not raise; a build stopped by that limit reports `WORKER_FAILED` |
+| `KILN_EVALUATOR_TIMEOUT_MS` | 1–120,000; default 60,000. In `subprocess` and `isolated` modes the host ends the worker at this limit, counted from the worker's launch, so it covers the whole build and export; `in-process` has no deadline. The `isolated` transport also has a fixed 65-second CPU-time limit, which this does not raise; a build stopped by that limit reports `WORKER_FAILED` |
 | `KILN_EVALUATOR_HEAP_MB` | Node subprocess only, 64–4,096; default 512 |
 | `KILN_EVALUATOR_MAX_GLB_BYTES` | Subprocess and isolated evaluators, 1–67,108,864; default 16,777,216. See [large assets](#large-assets) |
 | `KILN_BUILD_CACHE` | `disk` (packaged default), `memory`, or `off` |
