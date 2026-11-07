@@ -1,6 +1,7 @@
 ---
 import GalleryTags from "../../components/GalleryTags.astro";
 import AssetDownloads from '../../components/AssetDownloads.astro';
+import AssetTierDownloads from '../../components/AssetTierDownloads.astro';
 import { assetDelivery } from '../../lib/delivery';
 import PageHeader from "../../components/PageHeader.astro";
 import StatRow from "../../components/StatRow.astro";
@@ -118,6 +119,13 @@ const tierNotes: Record<string, string> = {
   web: "The 3D preview uses this lighter version, with reduced segment counts and paired thin suspender ropes.",
   far: "A distance version with single suspender ropes; it has no under-deck framing and no expansion joints.",
 };
+// One bridge at three levels of detail: the full one is what most people came for, and the lighter two wait in one closed row.
+const [fullTier, ...otherTiers] = isBridge
+  ? bridge.tiers.map((tier) => {
+      const { runtimeDownload, editableDownload } = assetDelivery('golden-gate-bridge', tier.tier === 'full' ? 'golden-gate-bridge' : `golden-gate-bridge-${tier.tier}`);
+      return { tier: tier.tier, note: tierNotes[tier.tier]!, runtime: runtimeDownload, editable: editableDownload };
+    })
+  : [];
 const description = `${asset.description.split(/(?<=\.)\s/)[0]} ${number(asset.metrics.triangles)} triangles. Source, GLB and revision history.`.replace(/^(.{0,154})\s[\s\S]*$/, '$1');
 const schema = {
   "@context": "https://schema.org",
@@ -209,7 +217,6 @@ const schema = {
       The 3D view applies the same rig ({REVIEW_RIG.id}): its light directions
       and strengths, exposure, tone mapping and backdrop.
     </p>
-    <EngineNote vehicle={Boolean(vehicle)} />
     <StatRow values={[{ label: vehicle ? "Triangles · LOD0 + wheels" : "Triangles", value: number(asset.metrics.triangles) }, { label: "Meshes drawn", value: asset.metrics.meshes }, { label: "Materials", value: asset.metrics.materials }]} />
     <dl class="grid grid-cols-1 gap-5 border-b border-rule py-6 md:grid-cols-2">
       <div>
@@ -225,6 +232,20 @@ const schema = {
         </dd>
       </div>
     </dl>
+    <section class="pt-12" aria-labelledby="downloads">
+      <h2 id="downloads">Download the assets</h2>
+      {isBridge ? (
+        <div class="mt-6">
+          <AssetTierDownloads {...fullTier!} />
+          <details class="mt-6 border-y border-rule">
+            <summary class="font-semibold">Other detail levels</summary>
+            <div class="space-y-8 px-4 pb-6">{otherTiers.map((tier) => <AssetTierDownloads {...tier} />)}</div>
+          </details>
+        </div>
+      ) : <AssetDownloads runtime={downloads.runtimeDownload} editable={downloads.editableDownload} />}
+      <p class="mt-6 max-w-reading text-dim" data-verbatim={isBridge ? undefined : ""}>{isBridge ? bridge.licenseScope : vehicle ? vehicles.licenseScope : farm.licenseScope}</p>
+      <EngineNote vehicle={Boolean(vehicle)} />
+    </section>
     {vehicle && <VehicleTiers asset={vehicle} />}
     <section class="grid gap-8 pt-12 lg:grid-cols-12" aria-labelledby="review">
       <div class="lg:col-span-4">
@@ -273,7 +294,10 @@ const schema = {
       </details>
     </section>
     <section class="pt-16" aria-labelledby="history">
-      <h2 id="history">Follow the saved revisions.</h2>
+      <details>
+      <summary class="p-0 marker:text-2xl">
+        <h2 id="history" class="inline">Follow the saved revisions.</h2>
+      </summary>
       <p class="mt-4 max-w-reading">
         Originally authored by {asset.provenance.originalModel}.{" "}
         {asset.provenance.refinementModels.length
@@ -428,6 +452,7 @@ const schema = {
           Displayed revision’s parent: {asset.parentRevision}
         </p>
       )}
+      </details>
     </section>
     {isBridge && (
       <section class="pt-16" aria-labelledby="reference">
@@ -473,13 +498,5 @@ const schema = {
         </a>
       </section>
     )}
-    <section class="pt-16" aria-labelledby="downloads">
-      <h2 id="downloads">Download the assets</h2>
-      {isBridge ? <div class="mt-6 space-y-8">{bridge.tiers.map(tier => {
-        const tierDownloads=assetDelivery('golden-gate-bridge', tier.tier === 'full' ? 'golden-gate-bridge' : 'golden-gate-bridge-'+tier.tier);
-        return <article><h3 class="text-title capitalize">{tier.tier} detail</h3><p class="mt-2 text-dim">{tierNotes[tier.tier]}</p><AssetDownloads runtime={tierDownloads.runtimeDownload} editable={tierDownloads.editableDownload} /></article>;
-      })}</div> : <AssetDownloads runtime={downloads.runtimeDownload} editable={downloads.editableDownload} />}
-      <p class="mt-6 max-w-reading text-dim" data-verbatim={isBridge ? undefined : ""}>{isBridge ? bridge.licenseScope : vehicle ? vehicles.licenseScope : farm.licenseScope}</p>
-    </section>
   </div>
 </BaseLayout>
