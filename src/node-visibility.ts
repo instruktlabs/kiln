@@ -7,7 +7,7 @@
  * counts (triangles, draw calls, bounds) is what draws; each hidden subtree is listed apart
  * with its own triangles, so hidden state costs no variant program.
  */
-import type { Document, Node as GltfNode, Scene } from '@gltf-transform/core';
+import type { Accessor, Document, Node as GltfNode, Scene } from '@gltf-transform/core';
 import { KHRNodeVisibility, type InstancedMesh } from '@gltf-transform/extensions';
 import * as THREE from 'three';
 import type { HiddenNodeV1 } from './contracts/integration';
@@ -57,9 +57,28 @@ export function summarizeHiddenNodes(doc: Document): HiddenNodeV1[] {
   return found;
 }
 
+/** Each vertex a primitive's indices reach, once, in first-use order; every vertex without them. */
+function referencedVertices(indices: Accessor | null, position: Accessor): Uint32Array {
+  const vertexCount = position.getCount();
+  if (!indices) return Uint32Array.from({ length: vertexCount }, (_, vertex) => vertex);
+  const count = indices.getCount();
+  const stored = indices.getNormalized() ? null : indices.getArray();
+  const seen = new Uint8Array(vertexCount);
+  const vertices = new Uint32Array(count);
+  let unique = 0;
+  for (let i = 0; i < count; i++) {
+    const vertex = stored ? stored[i]! : indices.getScalar(i);
+    if (seen[vertex]) continue;
+    seen[vertex] = 1;
+    vertices[unique++] = vertex;
+  }
+  return vertices.subarray(0, unique);
+}
+
 /**
- * World bounds of the geometry a loader draws: `getBounds` without hidden subtrees, vertex by
- * vertex so rotated geometry stays tight, including every GPU instance placement.
+ * World bounds of the geometry a loader draws: `getBounds` without hidden subtrees, each vertex a
+ * triangle reaches once per placement so rotated geometry stays tight, including every GPU
+ * instance placement.
  */
 export function drawnSceneBounds(scene: Scene): { min: number[]; max: number[] } {
   const min = [Infinity, Infinity, Infinity];
@@ -91,21 +110,24 @@ export function drawnSceneBounds(scene: Scene): { min: number[]; max: number[] }
       for (const primitive of mesh.listPrimitives()) {
         const position = primitive.getAttribute('POSITION');
         if (!position) continue;
-        const indices = primitive.getIndices();
-        const count = indices ? indices.getCount() : position.getCount();
+        const vertices = referencedVertices(primitive.getIndices(), position);
+        const stored = position.getNormalized() ? null : position.getArray();
         for (const m of matrices)
-          for (let i = 0; i < count; i++) {
-            position.getElement(indices ? indices.getScalar(i) : i, local);
-            const [x, y, z] = local as [number, number, number];
-            const world = [
-              m[0]! * x + m[4]! * y + m[8]! * z + m[12]!,
-              m[1]! * x + m[5]! * y + m[9]! * z + m[13]!,
-              m[2]! * x + m[6]! * y + m[10]! * z + m[14]!,
-            ];
-            for (let k = 0; k < 3; k++) {
-              if (world[k]! < min[k]!) min[k] = world[k]!;
-              if (world[k]! > max[k]!) max[k] = world[k]!;
-            }
+          for (let i = 0; i < vertices.length; i++) {
+            const vertex = vertices[i]!;
+            if (!stored) position.getElement(vertex, local);
+            const x = stored ? stored[vertex * 3]! : local[0]!;
+            const y = stored ? stored[vertex * 3 + 1]! : local[1]!;
+            const z = stored ? stored[vertex * 3 + 2]! : local[2]!;
+            const wx = m[0]! * x + m[4]! * y + m[8]! * z + m[12]!;
+            const wy = m[1]! * x + m[5]! * y + m[9]! * z + m[13]!;
+            const wz = m[2]! * x + m[6]! * y + m[10]! * z + m[14]!;
+            if (wx < min[0]!) min[0] = wx;
+            if (wy < min[1]!) min[1] = wy;
+            if (wz < min[2]!) min[2] = wz;
+            if (wx > max[0]!) max[0] = wx;
+            if (wy > max[1]!) max[1] = wy;
+            if (wz > max[2]!) max[2] = wz;
           }
       }
     }
