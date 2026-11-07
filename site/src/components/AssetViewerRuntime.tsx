@@ -26,7 +26,7 @@ import { createVehiclePaint, PAINT_SWATCHES } from './vehicle-paint';
 import { OrbitControls, clearModel, useModel } from './viewer-controls';
 import { restoreCulling, viewerFrameloop } from './viewer-draws';
 import { BakedContactShadow, GroundGrid } from './viewer-ground';
-import { releaseViewerRenderer, viewerRendererFactory } from './viewer-renderer';
+import { compileAhead, releaseViewerRenderer, viewerRendererFactory } from './viewer-renderer';
 
 interface OrbitLike {
   target: THREE.Vector3;
@@ -154,7 +154,6 @@ function Model({
     invalidate();
   }, [paint, paintColour, invalidate]);
   useEffect(() => {
-    onReady();
     return () => {
       const geometries = new Set<THREE.BufferGeometry>();
       const materials = new Set<THREE.Material>();
@@ -175,7 +174,7 @@ function Model({
       for (const texture of textures) texture.dispose();
       clearModel(url);
     };
-  }, [scene, url, onReady]);
+  }, [scene, url]);
   const mixer = useMemo(() => new THREE.AnimationMixer(scene), [scene]);
   useEffect(() => {
     onClips(animations.map((clip) => ({ id: clip.uuid, name: clip.name })));
@@ -251,6 +250,28 @@ function Model({
     invalidate();
   }, [scene, points, camera, controls, framing, viewShowing, onBounds, width, height, invalidate]);
 
+  // The model joins the view once its shaders are built, and the view counts as ready from then (see `compileAhead`).
+  const renderer = useThree((s) => s.gl) as unknown as THREE.WebGPURenderer;
+  const root = useThree((s) => s.scene);
+  const [compiled, setCompiled] = useState<THREE.Object3D | null>(null);
+  useEffect(() => {
+    let live = true;
+    compileAhead(renderer, scene, camera, root)
+      .catch(() => undefined)
+      .then(() => {
+        if (live) setCompiled(scene);
+      });
+    return () => {
+      live = false;
+    };
+  }, [renderer, scene, camera, root]);
+  const shown = compiled === scene;
+  useEffect(() => {
+    if (!shown) return;
+    onReady();
+    invalidate();
+  }, [shown, onReady, invalidate]);
+
   useEffect(() => {
     const touched: THREE.Material[] = [];
     scene.traverse((o) => {
@@ -270,7 +291,7 @@ function Model({
     };
   }, [scene, wireframe, invalidate]);
 
-  return <primitive object={scene} />;
+  return shown ? <primitive object={scene} /> : null;
 }
 
 interface ViewerProps {

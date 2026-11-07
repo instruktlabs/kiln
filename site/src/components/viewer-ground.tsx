@@ -17,7 +17,7 @@ import {
   vec2,
   vec3,
 } from 'three/tsl';
-import { viewerBackend } from './viewer-renderer';
+import { compilesOnPageThread, viewerBackend } from './viewer-renderer';
 import { SHADOW_RESOLUTION, composeContactShadow, rebakeDue } from './viewer-draws';
 
 const SHADOW = { opacity: 0.3, blur: 2.4, colour: [0x29, 0x2d, 0x29] as const };
@@ -85,28 +85,40 @@ export function BakedContactShadow({
     const camera = new THREE.OrthographicCamera(-size / 2, size / 2, size / 2, -size / 2, 0, far);
     camera.rotation.x = Math.PI / 2;
     camera.updateMatrixWorld();
-    const before = {
-      background: scene.background,
-      override: scene.overrideMaterial,
-      target: renderer.getRenderTarget(),
-      alpha: renderer.getClearAlpha(),
-      clear: renderer.getClearColor(new THREE.Color()),
+    /** Runs `step` with the scene set up for the bake, and puts the scene back before anything else can draw. */
+    const asBaked = <T,>(step: () => T): T => {
+      const before = {
+        background: scene.background,
+        override: scene.overrideMaterial,
+        target: renderer.getRenderTarget(),
+        alpha: renderer.getClearAlpha(),
+        clear: renderer.getClearColor(new THREE.Color()),
+      };
+      const ground = plane.current?.parent;
+      const groundShown = ground?.visible;
+      if (ground) ground.visible = false;
+      scene.background = null;
+      scene.overrideMaterial = closeness;
+      renderer.setRenderTarget(target);
+      renderer.setClearColor(0x000000, 0);
+      try {
+        return step();
+      } finally {
+        scene.background = before.background;
+        scene.overrideMaterial = before.override;
+        renderer.setRenderTarget(before.target);
+        renderer.setClearColor(before.clear, before.alpha);
+        if (ground) ground.visible = groundShown ?? true;
+      }
     };
-    const ground = plane.current?.parent;
-    const groundShown = ground?.visible;
-    if (ground) ground.visible = false;
-    scene.background = null;
-    scene.overrideMaterial = closeness;
-    renderer.setRenderTarget(target);
-    renderer.setClearColor(0x000000, 0);
     try {
-      renderer.render(scene, camera);
-    } finally {
-      scene.background = before.background;
-      scene.overrideMaterial = before.override;
-      renderer.setRenderTarget(before.target);
-      renderer.setClearColor(before.clear, before.alpha);
-      if (ground) ground.visible = groundShown ?? true;
+      // Where the page would wait on them, the bake's own shaders are built first, as the model's are (see `compileAhead`).
+      if (compilesOnPageThread(renderer))
+        await asBaked(() => renderer.compileAsync(scene, camera)).catch(() => undefined);
+      asBaked(() => renderer.render(scene, camera));
+    } catch (error) {
+      baking.current = false;
+      throw error;
     }
     try {
       const read = (await renderer.readRenderTargetPixelsAsync(

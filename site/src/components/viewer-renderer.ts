@@ -63,6 +63,40 @@ export function viewerBackend(renderer: THREE.WebGPURenderer): ViewerBackend {
     : 'webgl2';
 }
 
+/**
+ * Whether drawing something new makes the page wait for its shaders. WebGL2 compiles on the page's thread: through
+ * Direct3D a skinned mech held the page for up to 2.9 s and first drew at 4.7 s. WebGPU builds pipelines in the GPU
+ * process, and compiling there first only delayed the mech's first frame, by 1-2.7 s.
+ */
+export const compilesOnPageThread = (renderer: THREE.WebGPURenderer) =>
+  viewerBackend(renderer) === 'webgl2';
+
+/**
+ * Where the page would wait on shaders, build every pipeline `object` needs before it is first drawn, culled parts
+ * included. With it the WebGL2 mech first drew at 1.5-1.7 s, and nothing held the page longer than the unskinned
+ * file's own 1 s. `compileAsync` reads everything it uses before its first wait, so culling is restored as soon as it
+ * returns.
+ */
+export function compileAhead(
+  renderer: THREE.WebGPURenderer,
+  object: THREE.Object3D,
+  camera: THREE.Camera,
+  scene: THREE.Scene,
+): Promise<void> {
+  if (!compilesOnPageThread(renderer)) return Promise.resolve();
+  const culled: THREE.Object3D[] = [];
+  object.traverse((part) => {
+    if (!part.frustumCulled) return;
+    culled.push(part);
+    part.frustumCulled = false;
+  });
+  try {
+    return renderer.compileAsync(object, camera, scene);
+  } finally {
+    for (const part of culled) part.frustumCulled = true;
+  }
+}
+
 /** Close a view's renderer and let go of what it uploaded. */
 export function releaseViewerRenderer(renderer: THREE.WebGPURenderer) {
   releases.get(renderer)?.();

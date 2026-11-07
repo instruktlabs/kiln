@@ -24,8 +24,12 @@ const sleep = (ms) => new Promise((done) => setTimeout(done, ms));
 
 /** Runs in the page before its scripts. Counts every draw and groups the counts by animation frame. */
 export function installDrawCounter() {
-  const state = { frames: [], current: { draws: 0, triangles: 0, instanced: 0 } };
+  const state = { frames: [], current: { draws: 0, triangles: 0, instanced: 0 }, blocked: [] };
   window.kilnDraws = state;
+  // Main-thread tasks over 50 ms, such as a shader compile the page has to wait for.
+  new PerformanceObserver((list) => {
+    for (const entry of list.getEntries()) state.blocked.push(Math.round(entry.duration));
+  }).observe({ type: 'longtask', buffered: true });
   const count = (vertices, instances, mode) => {
     state.current.draws += 1;
     if (instances > 1) state.current.instanced += 1;
@@ -139,6 +143,16 @@ async function measure(browser, origin, backend, views, output) {
       last = now;
     }
     const firstFrameMs = Date.now() - started - quiet;
+    // When the model first drew, on the page's own clock, and the longest the page could not respond while loading. The
+    // environment map's build comes first and draws many calls but few triangles, so the model's frame is told by those.
+    const { modelShownMs, longestBlockMs } = await page.evaluate(() => {
+      const { frames, blocked } = window.kilnDraws;
+      const most = Math.max(0, ...frames.map((frame) => frame.triangles));
+      return {
+        modelShownMs: frames.find((frame) => frame.triangles >= most / 2)?.at ?? null,
+        longestBlockMs: Math.max(0, ...blocked),
+      };
+    });
     const load = await heaviest(page, 0);
     const idleFrom = await frameCount(page);
     await sleep(2000);
@@ -166,7 +180,7 @@ async function measure(browser, origin, backend, views, output) {
       pictures[view.label] = picture;
     }
     const failures = await page.evaluate(() => window.kilnViewerFailures);
-    return { requested: backend, backend: actual, firstFrameMs, load, idle, orbit, views: counted, pictures, failures, problems };
+    return { requested: backend, backend: actual, firstFrameMs, modelShownMs, longestBlockMs, load, idle, orbit, views: counted, pictures, failures, problems };
   } finally {
     await page.close();
   }
