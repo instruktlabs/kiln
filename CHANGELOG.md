@@ -7,6 +7,11 @@ does not publish a package.
 
 ## Unreleased
 
+- `scripts/check-vision.mjs` works on OpenCode 2.2. That release rejects `opencode models --verbose`,
+  so the gate reported every model as unverified. It now falls back to the catalogue from
+  `opencode api --standalone GET /api/model` and reads `capabilities.input`; OpenCode 1.x still uses
+  `--verbose`. `docs/harnesses.md` records that OpenCode 2.2.0 delivers MCP images to the provider in
+  Code Mode and with `codemode: false`.
 - `KILN_EVALUATOR_TIMEOUT_MS` now works above 60,000, as documented. Only the host read it: the worker
   kept its own 60-second timer, so a build that yielded to the event loop after that failed with
   `DEADLINE_EXCEEDED` at any limit, usually once the abandoned build had run to its end. The worker now
