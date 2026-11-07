@@ -1,0 +1,11 @@
+---
+import AssetDownloads from './AssetDownloads.astro';
+import type { DownloadFile } from '../lib/download-choices';
+interface Props { tier: string; note: string; runtime: DownloadFile; editable: DownloadFile }
+const { tier, note, runtime, editable } = Astro.props;
+---
+<article>
+  <h3 class="text-title capitalize">{tier} detail</h3>
+  <p class="mt-2 text-dim">{note}</p>
+  <AssetDownloads runtime={runtime} editable={editable} />
+</article>
