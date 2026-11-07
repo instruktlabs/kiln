@@ -116,15 +116,17 @@ describe('captureViewsViaPort with shots', () => {
     expect(out.ok).toBe(true);
     expect(requests).toHaveLength(2);
     for (const request of requests)
-      expect(new Set(request.cameras!.map((camera) => camera.projection)).size).toBe(1);
+      expect(
+        new Set(request.cameras!.map((camera) => (camera as { projection?: string }).projection))
+          .size,
+      ).toBe(1);
     expect(requests.map((request) => request.cameras!.length)).toEqual([2, 2]);
     if (out.ok)
-      expect(out.derivativeReceipts?.map((receipt) => receipt.camera?.projection)).toEqual([
-        'orthographic',
-        'perspective',
-        'orthographic',
-        'perspective',
-      ]);
+      expect(
+        out.derivativeReceipts?.map(
+          (receipt) => (receipt.camera as { projection?: string } | undefined)?.projection,
+        ),
+      ).toEqual(['orthographic', 'perspective', 'orthographic', 'perspective']);
   });
 
   test('a renderer that changes between requests does not reach one sheet', async () => {
