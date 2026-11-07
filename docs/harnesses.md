@@ -106,7 +106,7 @@ Verified against the versions in the footer. The traps are not stylistic -- each
 | agy | `--print=TEXT` | **attached to the flag** | print mode | `--add-dir` |
 | claude | `-p` then `TEXT` | positional; `-p` selects print mode | `--permission-mode acceptEdits` + `--allowedTools` | `--add-dir` |
 | codex | `exec TEXT` | positional after `exec` | `--approve-for-me` | `--cd` |
-| opencode | `run --standalone TEXT` | positional | `--auto` | process CWD only |
+| opencode | `run --standalone TEXT` | positional | `--auto` | `PWD`, then process CWD |
 | copilot | `-p TEXT` | flag value | `--allow-all-tools` | `-C` and `--add-dir` |
 | cursor-agent | `-p` then `TEXT` | **positional; `-p` is a boolean** | `--force --approve-mcps --trust` | `--workspace` |
 | hermes | `-z TEXT` | flag value | none; `-z` resolves prompts | process CWD only |
@@ -124,6 +124,11 @@ The ones that cost real time:
 - **`codex exec` pins the approval policy to `never`,** under which an MCP call is not asked
   about, it is refused. `--approve-for-me` is the flag that both selects a workspace-write
   sandbox and moves approval to `on-request`.
+- **OpenCode 2.2 reads `PWD` before the process working directory.** `opencode run` uses
+  `process.env.PWD ?? process.cwd()`, and POSIX shells and Git Bash export `PWD`. A launcher
+  that sets only `cwd` sends OpenCode to the caller's directory: it skips the workspace's
+  `opencode.json`, so the model never sees the Kiln tools. `scripts/harness.mjs` sets `PWD` to
+  the child's working directory; set it yourself when you launch OpenCode another way.
 - **A bare temp directory is not a trusted directory.** codex needs `--skip-git-repo-check`;
   cursor-agent needs `--trust`.
 - **An older Claude Code does not know newer model ids.** On 29 September 2026 a driver's
