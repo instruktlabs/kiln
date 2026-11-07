@@ -39,7 +39,7 @@ test('the memo validates again after an in-place edit, for another object, and a
   const raw: Record<string, unknown> = { version: 1, atlases: [] };
   memo(raw);
   raw['atlases'] = [{ id: 'b' }];
-  expect(memo(raw)).toEqual({ version: 1, atlases: [{ id: 'b' }] });
+  expect(memo(raw) as unknown).toEqual({ version: 1, atlases: [{ id: 'b' }] });
   expect(calls).toBe(2);
   memo({ version: 1, atlases: [{ id: 'b' }] });
   expect(calls).toBe(3);
