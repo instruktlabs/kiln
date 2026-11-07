@@ -8,8 +8,9 @@
  * geometry. Every one has a fixture here beside the true positives.
  */
 
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, spyOn, test } from 'bun:test';
 import * as THREE from 'three';
+import * as geometryModule from '../geometry';
 import {
   analyzeOpenSurfacePenetration,
   inspectOpenSurfacePenetration,
@@ -243,6 +244,36 @@ describe('determinism and wiring', () => {
     const first = analyzeOpenSurfacePenetration(build());
     expect(JSON.stringify(analyzeOpenSurfacePenetration(build()))).toBe(JSON.stringify(first));
     expect(first.penetrations.map((pair) => pair.solid)).toEqual(['Mesh_CurvedWall']);
+  });
+
+  test('a geometry shared by many meshes is measured once, with the same evidence', () => {
+    // The 2.6M-triangle cathedral places 1,707 meshes over 184 geometries; topology belongs to
+    // the geometry, so each placement measuring it again was pure repetition.
+    const wall = new THREE.BoxGeometry(2, 1.4, 0.12);
+    const sheet = new THREE.PlaneGeometry(1.4, 1.4, 8, 8);
+    const place = (geometry: THREE.BufferGeometry, name: string, x: number) => {
+      const mesh = new THREE.Mesh(geometry);
+      mesh.name = name;
+      mesh.position.set(x, 0.7, 0.4);
+      return mesh;
+    };
+    const build = (shared: boolean) =>
+      sceneOf(
+        ...[0, 3, 6].flatMap((x, i) => [
+          place(shared ? wall : wall.clone(), `Mesh_Wall_${i}`, x),
+          place(shared ? sheet : sheet.clone(), `Mesh_Throw_${i}`, x),
+        ]),
+      );
+    const separate = analyzeOpenSurfacePenetration(build(false));
+    const measured = spyOn(geometryModule, 'geometryDiagnostics');
+    try {
+      const sharedEvidence = analyzeOpenSurfacePenetration(build(true));
+      expect(measured).toHaveBeenCalledTimes(2);
+      expect(JSON.stringify(sharedEvidence)).toBe(JSON.stringify(separate));
+      expect(sharedEvidence.penetrations).toHaveLength(3);
+    } finally {
+      measured.mockRestore();
+    }
   });
 
   test('the rule takes its own measurement from the scene', () => {
