@@ -234,6 +234,32 @@ Measured on copies of the 1,834-draw cathedral revision:
 Batches cost a renderer more per draw than plain meshes do, so measure frame time in the target
 scene, not only the draw count.
 
+In three r186, every batch costs load time, about 17 ms per render pass, for two reasons:
+
+- **A shader per batch.** Below 1,024 copies, `nodes/accessors/Instance.js` stores a batch's
+  matrices in a uniform array named after the batch's own node and sized to its count.
+- **A node graph per batch.** `RenderObject` adds each `InstancedMesh`'s uuid to its cache key,
+  so three builds each batch's node graph separately.
+
+The cathedral above has 176 batches. In an unmodified r186 viewer:
+
+- WebGL2 compiled 203 programs and first drew at 33 s; the saved revision first drew at 4 s.
+- WebGPU built 399 shader modules and held the page for 3.9 s after its first frame.
+
+Two viewer changes remove most of that cost:
+
+- **Share shaders.** Report a uniform-buffer limit of zero:
+  `renderer.backend.capabilities.getUniformBufferLimit = () => 0` after `init()`. Every batch
+  then reads its matrices as instanced attributes, which are named by slot, so batches with the
+  same material share a shader. That gave 29 programs on WebGL2 and 55 modules on WebGPU. Only
+  skinning and `RangeNode` read the same limit, and a skeleton then reads its bones from a
+  texture.
+- **Build ahead.** Call `renderer.compileAsync(model, camera, scene)` before the model is first
+  drawn, on WebGPU too when it has many batches. `compileAsync` yields between objects.
+
+With both, WebGL2 first drew at 7.9 s. WebGPU had no task over 150 ms and first drew at 6.1 s,
+where the saved revision draws at 1.1 s.
+
 ## three.js runtime target
 
 `--target three` (runtime profile only) derives a GLB for a three.js application:
