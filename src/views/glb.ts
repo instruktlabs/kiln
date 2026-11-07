@@ -244,6 +244,10 @@ export function geometryFlatTextureReasonCode(mimeType: string | null): GlbGeome
 }
 
 function decodedAccessor(accessor: Accessor): Float64Array {
+  // An unnormalized element reads as the stored value, so the array copies directly. This is the
+  // geometry of every shot and every repeat: a per-element read costs seconds on a large asset.
+  const stored = accessor.getArray();
+  if (stored && !accessor.getNormalized()) return new Float64Array(stored);
   const itemSize = accessor.getElementSize();
   const output = new Float64Array(accessor.getCount() * itemSize);
   const element: number[] = [];
@@ -256,17 +260,26 @@ function decodedAccessor(accessor: Accessor): Float64Array {
   return output;
 }
 
+/** The same decode as a float attribute takes, stored the way a BufferAttribute holds it. */
+function decodedFloat32(accessor: Accessor): Float32Array {
+  const stored = accessor.getArray();
+  return new Float32Array(stored && !accessor.getNormalized() ? stored : decodedAccessor(accessor));
+}
+
 function triangleIndices(
   primitive: import('@gltf-transform/core').Primitive,
   vertexCount: number,
 ): Uint32Array | undefined {
   const sourceAccessor = primitive.getIndices();
-  const source = sourceAccessor
-    ? Array.from(decodedAccessor(sourceAccessor), (value) => Math.trunc(value))
-    : Array.from({ length: vertexCount }, (_, index) => index);
+  let source: Uint32Array;
+  if (sourceAccessor) source = new Uint32Array(decodedAccessor(sourceAccessor));
+  else {
+    source = new Uint32Array(vertexCount);
+    for (let index = 0; index < vertexCount; index++) source[index] = index;
+  }
   switch (primitive.getMode()) {
     case Primitive.Mode.TRIANGLES:
-      return Uint32Array.from(source);
+      return source;
     case Primitive.Mode.TRIANGLE_STRIP: {
       const triangles: number[] = [];
       for (let index = 0; index + 2 < source.length; index++) {
@@ -675,16 +688,10 @@ function reviewSceneFromDocument(
         const atlasBinding = primitive.getExtras()['kilnAtlasBinding'];
         if (atlasBinding !== undefined && atlas)
           geometry.userData.kilnAtlasBinding = expandAtlasBinding(atlasBinding, atlas);
-        geometry.setAttribute(
-          'position',
-          new BufferAttribute(Float32Array.from(decodedAccessor(position)), 3),
-        );
+        geometry.setAttribute('position', new BufferAttribute(decodedFloat32(position), 3));
         const normal = primitive.getAttribute('NORMAL');
         if (normal) {
-          geometry.setAttribute(
-            'normal',
-            new BufferAttribute(Float32Array.from(decodedAccessor(normal)), 3),
-          );
+          geometry.setAttribute('normal', new BufferAttribute(decodedFloat32(normal), 3));
         }
         // Texture bindings retain their UV channel, so retain the matching vertex data too.
         for (let channel = 0; channel < 4; channel++) {
@@ -692,21 +699,18 @@ function reviewSceneFromDocument(
           if (uv)
             geometry.setAttribute(
               channel ? `uv${channel}` : 'uv',
-              new BufferAttribute(Float32Array.from(decodedAccessor(uv)), 2),
+              new BufferAttribute(decodedFloat32(uv), 2),
             );
         }
         const color = primitive.getAttribute('COLOR_0');
         if (color)
           geometry.setAttribute(
             'color',
-            new BufferAttribute(Float32Array.from(decodedAccessor(color)), color.getElementSize()),
+            new BufferAttribute(decodedFloat32(color), color.getElementSize()),
           );
         const tangent = primitive.getAttribute('TANGENT');
         if (tangent) {
-          geometry.setAttribute(
-            'tangent',
-            new BufferAttribute(Float32Array.from(decodedAccessor(tangent)), 4),
-          );
+          geometry.setAttribute('tangent', new BufferAttribute(decodedFloat32(tangent), 4));
         }
         geometry.setIndex(new BufferAttribute(indices, 1));
         if (targetCount) {
@@ -737,7 +741,7 @@ function reviewSceneFromDocument(
             const attributes = targets.map((target) => {
               const attribute = target.getAttribute(semantic);
               const values = attribute
-                ? Float32Array.from(decodedAccessor(attribute))
+                ? decodedFloat32(attribute)
                 : new Float32Array(position.getCount() * 3);
               if (!values.every(Number.isFinite)) morphError(`nonfinite ${semantic} displacement.`);
               return new BufferAttribute(values, 3);
@@ -770,10 +774,7 @@ function reviewSceneFromDocument(
             'skinIndex',
             new BufferAttribute(Uint16Array.from(decodedAccessor(skinIndices)), 4),
           );
-          geometry.setAttribute(
-            'skinWeight',
-            new BufferAttribute(Float32Array.from(decodedAccessor(skinWeights)), 4),
-          );
+          geometry.setAttribute('skinWeight', new BufferAttribute(decodedFloat32(skinWeights), 4));
         }
         const threeMaterial = new MeshStandardMaterial({
           vertexColors: color !== null,
