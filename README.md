@@ -55,7 +55,8 @@ Editable assets: [Meridian (53)](https://kilnstudio.tools/packs/holodeck/meridia
 [Golden Gate bridge](https://kilnstudio.tools/gallery/golden-gate-bridge/).
 
 [Explore all scenes](https://kilnstudio.tools/scenes/) or
-[browse the asset gallery](https://kilnstudio.tools/gallery/).
+[browse the asset gallery](https://kilnstudio.tools/gallery/). To make your own, see
+[text to 3D with your coding agent](https://kilnstudio.tools/text-to-3d/): a walking mech and a cathedral, prompt to GLB.
 Scene code and asset content retain their own licences; each pack records its scope.
 
 ## From asset to scene

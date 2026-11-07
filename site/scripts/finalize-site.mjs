@@ -31,6 +31,7 @@ export function buildIndexFiles(pages, { lastmod } = {}) {
   const home = published.find((page) => page.route === '/');
   const docs = published.filter((page) => page.route.startsWith('/docs/'));
   const catalog = published.filter((page) => /^\/(?:packs|gallery|scenes)\/(?:[^/]+\/)?$/.test(page.route) && page.route !== ARCHIVE_INDEX_ROUTE);
+  const guides = published.filter((page) => page.route === '/text-to-3d/');
   const archive = published.find((page) => page.route === ARCHIVE_INDEX_ROUTE);
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${published.map((page) => {
     const date = lastmod?.(page.route);
@@ -44,6 +45,7 @@ export function buildIndexFiles(pages, { lastmod } = {}) {
     '# Kiln', '',
     home?.description ?? 'Build and revise 3D assets with your coding agent.', '',
     '## Documentation', '', ...docs.map(link), '',
+    ...(guides.length ? ['## Guides', '', ...guides.map(link), ''] : []),
     '## Assets and scenes', '', ...catalog.map(link), '',
     ...(archive ? [
       '## Archive', '',
