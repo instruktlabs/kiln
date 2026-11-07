@@ -1,5 +1,12 @@
 import { Vector3, Matrix4, Euler, Group, type Object3D } from 'three';
-import { collectTriangles, compositingOrder, measureBounds, orbitDir } from './raster';
+import {
+  collectTriangles,
+  compositingOrder,
+  measureBounds,
+  measureDrawnGeometry,
+  nearestDrawnTriangleDistance,
+  orbitDir,
+} from './raster';
 import { resolveBackdrop, type BackdropId } from './background';
 import { cloneReviewScene } from './scene-copy';
 import { visibleNormalSign } from './face-policy';
@@ -180,15 +187,7 @@ export function defaultPerspectiveNear(root: unknown, position: CameraVec3, far:
       deforms = true;
   });
   if (deforms) return FLOOR;
-  const [px, py, pz] = position;
-  let nearest = Number.POSITIVE_INFINITY;
-  for (const { v } of collectTriangles(root as Object3D).tris) {
-    const dx = Math.max(Math.min(v[0]!, v[3]!, v[6]!) - px, 0, px - Math.max(v[0]!, v[3]!, v[6]!));
-    const dy = Math.max(Math.min(v[1]!, v[4]!, v[7]!) - py, 0, py - Math.max(v[1]!, v[4]!, v[7]!));
-    const dz = Math.max(Math.min(v[2]!, v[5]!, v[8]!) - pz, 0, pz - Math.max(v[2]!, v[5]!, v[8]!));
-    nearest = Math.min(nearest, Math.sqrt(dx * dx + dy * dy + dz * dz));
-    if (nearest === 0) break;
-  }
+  const nearest = nearestDrawnTriangleDistance(root, position);
   if (!Number.isFinite(nearest)) return FLOOR;
   return Math.max(FLOOR, Math.min(nearest / 2, far / 2));
 }
@@ -305,9 +304,8 @@ export function resolveAssetCamera(root: unknown, shot: CameraShotV1 = {}): Reso
   const rootNode = root as Object3D;
   rootNode.updateMatrixWorld(true);
   const selected = selectCameraSubject(root, shot.subject);
-  const bounds = measureBounds(selected.node);
-  if (!collectTriangles(selected.node).tris.length)
-    throw new Error(`subject ${selected.path} has no visible geometry`);
+  const { triangles, ...bounds } = measureDrawnGeometry(selected.node);
+  if (!triangles) throw new Error(`subject ${selected.path} has no visible geometry`);
   const request = shot.camera ?? { type: 'orbit' };
   let camera: ResolvedAssetCameraV1;
   if (request.type === 'orbit') {

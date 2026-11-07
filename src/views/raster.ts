@@ -525,22 +525,119 @@ export function rasterizeView(
   return out;
 }
 
-/** World-space AABB of a (possibly sandbox-created) scene's drawable geometry.
- *  Reuses the rasterizer's own triangle collection so the box matches exactly what
- *  gets drawn. Empty scenes report a zero box. Used by the animation grid to union
- *  bounds across posed frames into one steady camera framing. */
+/** The position attribute and world matrix of a drawn mesh, under the rasterizer's own rules. */
+function drawnMeshPositions(obj: unknown):
+  | {
+      mesh: DuckMesh;
+      position: DuckAttribute;
+      matrix: ArrayLike<number>;
+    }
+  | undefined {
+  const mesh = obj as DuckMesh;
+  if (!mesh.isMesh) return undefined;
+  const position = mesh.geometry?.getAttribute?.('position');
+  const matrix = mesh.matrixWorld?.elements;
+  if (position?.itemSize !== 3 || !matrix) return undefined;
+  return { mesh, position, matrix };
+}
+
+/**
+ * The box and triangle count of what `collectTriangles` draws, in one walk over positions: no
+ * per-triangle record, so measuring a scene costs its vertices and not its garbage. The box covers
+ * every position of every drawn mesh, as the rasterizer's does, and is zero when nothing draws.
+ */
+export function measureDrawnGeometry(root: unknown): {
+  min: [number, number, number];
+  max: [number, number, number];
+  triangles: number;
+} {
+  updateSurfaceMatrices(root as DuckObject3D);
+  const min: Vec3 = [Infinity, Infinity, Infinity];
+  const max: Vec3 = [-Infinity, -Infinity, -Infinity];
+  let triangles = 0;
+  forEachDrawn(root as DuckObject3D, (obj) => {
+    const drawn = drawnMeshPositions(obj);
+    if (!drawn) return;
+    const { mesh, position, matrix: m } = drawn;
+    const readVertex = surfaceVertexReader(mesh, position);
+    for (let i = 0; i < position.count; i++) {
+      const { x, y, z } = readVertex(i);
+      const wx = m[0]! * x + m[4]! * y + m[8]! * z + m[12]!;
+      const wy = m[1]! * x + m[5]! * y + m[9]! * z + m[13]!;
+      const wz = m[2]! * x + m[6]! * y + m[10]! * z + m[14]!;
+      if (wx < min[0]) min[0] = wx;
+      if (wy < min[1]) min[1] = wy;
+      if (wz < min[2]) min[2] = wz;
+      if (wx > max[0]) max[0] = wx;
+      if (wy > max[1]) max[1] = wy;
+      if (wz > max[2]) max[2] = wz;
+    }
+    triangles += Math.floor((mesh.geometry!.index?.count ?? position.count) / 3);
+  });
+  if (!Number.isFinite(min[0])) return { min: [0, 0, 0], max: [0, 0, 0], triangles };
+  return { min, max, triangles };
+}
+
+/** How far `at` lies outside the span of three coordinates; zero inside it. */
+function gapToInterval(a: number, b: number, c: number, at: number): number {
+  return Math.max(Math.min(a, b, c) - at, 0, at - Math.max(a, b, c));
+}
+
+/**
+ * Distance from a point to the nearest drawn triangle's world box, without a record per triangle.
+ * Infinity when nothing draws. Each mesh's world positions are computed once and shared by its
+ * triangles.
+ */
+export function nearestDrawnTriangleDistance(
+  root: unknown,
+  point: readonly [number, number, number],
+): number {
+  updateSurfaceMatrices(root as DuckObject3D);
+  const [px, py, pz] = point;
+  let nearest = Number.POSITIVE_INFINITY;
+  forEachDrawn(root as DuckObject3D, (obj) => {
+    if (nearest === 0) return;
+    const drawn = drawnMeshPositions(obj);
+    if (!drawn) return;
+    const { mesh, position, matrix: m } = drawn;
+    const readVertex = surfaceVertexReader(mesh, position);
+    const world = new Float64Array(position.count * 3);
+    for (let i = 0; i < position.count; i++) {
+      const { x, y, z } = readVertex(i);
+      world[i * 3] = m[0]! * x + m[4]! * y + m[8]! * z + m[12]!;
+      world[i * 3 + 1] = m[1]! * x + m[5]! * y + m[9]! * z + m[13]!;
+      world[i * 3 + 2] = m[2]! * x + m[6]! * y + m[10]! * z + m[14]!;
+    }
+    const index = mesh.geometry!.index;
+    const slots = index ? index.count : position.count;
+    for (let i = 0; i + 2 < slots && nearest !== 0; i += 3) {
+      const a = (index ? index.array[i]! : i) * 3;
+      const b = (index ? index.array[i + 1]! : i + 1) * 3;
+      const c = (index ? index.array[i + 2]! : i + 2) * 3;
+      const dx = gapToInterval(world[a]!, world[b]!, world[c]!, px);
+      const dy = gapToInterval(world[a + 1]!, world[b + 1]!, world[c + 1]!, py);
+      const dz = gapToInterval(world[a + 2]!, world[b + 2]!, world[c + 2]!, pz);
+      nearest = Math.min(nearest, Math.sqrt(dx * dx + dy * dy + dz * dz));
+    }
+  });
+  return nearest;
+}
+
+/** World-space AABB of a (possibly sandbox-created) scene's drawable geometry: the box
+ *  the rasterizer draws within. Empty scenes report a zero box. Used by the animation
+ *  grid to union bounds across posed frames into one steady camera framing. */
 export function measureBounds(root: unknown): {
   min: [number, number, number];
   max: [number, number, number];
 } {
-  const { bbox } = collectTriangles(root as DuckObject3D);
-  return { min: [...bbox.min], max: [...bbox.max] };
+  const { min, max } = measureDrawnGeometry(root);
+  return { min, max };
 }
 
 /** Unlike camera framing, an empty part has no measurable geometry bounds. */
 export function measurePartBounds(root: unknown): ReturnType<typeof measureBounds> | null {
-  const { tris, bbox } = collectTriangles(root as DuckObject3D);
-  return tris.length ? { min: [...bbox.min], max: [...bbox.max] } : null;
+  const { min, max, triangles } = measureDrawnGeometry(root);
+  return triangles ? { min, max } : null;
 }
 
 /**
