@@ -324,9 +324,35 @@ function rawDocumentTable(doc: Document): unknown {
   const scene = doc.getRoot().getDefaultScene() ?? doc.getRoot().listScenes()[0];
   return scene ? field(scene.getExtras(), 'kilnAtlasProvenance') : undefined;
 }
+/**
+ * One validation per unchanged table. An entry is keyed by the extras object and answers only
+ * while that object's canonical JSON is the one validated; the fingerprint runs the validator's
+ * own preflight first, so a table it would reject (accessors included) always reaches `validate`.
+ * Failures are never kept, and every caller receives its own copy.
+ */
+export function createAtlasTableMemo(
+  validate: (raw: unknown) => AtlasProvenanceTableV1,
+): (raw: unknown) => AtlasProvenanceTableV1 {
+  const validated = new WeakMap<object, { json: string; table: AtlasProvenanceTableV1 }>();
+  return (raw) => {
+    if (raw === null || typeof raw !== 'object') return validate(raw);
+    let json: string;
+    try {
+      json = canonicalAtlasMetadataJsonV1(raw);
+    } catch {
+      return validate(raw);
+    }
+    const hit = validated.get(raw);
+    if (hit?.json === json) return structuredClone(hit.table);
+    const table = validate(raw);
+    validated.set(raw, { json, table: structuredClone(table) });
+    return table;
+  };
+}
+const documentTable = createAtlasTableMemo(validateAtlasProvenanceTable);
 export function atlasDocumentTable(doc: Document): AtlasProvenanceTableV1 | undefined {
   const raw = rawDocumentTable(doc);
-  return raw === undefined ? undefined : validateAtlasProvenanceTable(raw);
+  return raw === undefined ? undefined : documentTable(raw);
 }
 export function atlasMaterialUses(doc: Document): { texture: GltfTexture; info: TextureInfo }[] {
   const uses: { texture: GltfTexture; info: TextureInfo }[] = [];
