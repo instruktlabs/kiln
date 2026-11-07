@@ -1,8 +1,8 @@
 import { expect, test } from 'bun:test';
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
-import { commitDates, pageForRoute, sitemapLastmod, sourceClosure } from './sitemap-lastmod.mjs';
+import { join, resolve, sep } from 'node:path';
+import { commitDates, pageForRoute, SITE_CHROME, sitemapLastmod, sourceClosure } from './sitemap-lastmod.mjs';
 
 const pages = ['index.astro', '404.astro', 'docs/index.astro', 'docs/[slug].astro', 'gallery/[slug].astro', 'gallery/archive/index.astro', 'gallery/archive/[slug].astro', 'packs/troy/[...page].astro', 'scenes/farm.astro'];
 
@@ -45,6 +45,34 @@ test('commit dates keep the newest commit per path from git log order', () => {
   const log = '\0' + '2026-10-25T22:07:37-04:00\n\nsite/a.json\ndocs/install.md\n\0' + '2026-09-01T10:00:00Z\n\nsite/a.json\nsite/b.ts\n';
   const dates = commitDates(() => log);
   expect(Object.fromEntries(dates)).toEqual({ 'site/a.json': '2026-10-25T22:07:37-04:00', 'docs/install.md': '2026-10-25T22:07:37-04:00', 'site/b.ts': '2026-09-01T10:00:00Z' });
+});
+
+test('nothing skipped as site chrome can carry a page\'s content', () => {
+  const site = resolve(import.meta.dir, '..');
+  const skipped = SITE_CHROME.map((path) => resolve(site, '..', path)).filter((file) => file.includes(`${sep}components${sep}`));
+  expect(skipped.length).toBeGreaterThan(0);
+  const reached = skipped.flatMap((file) => sourceClosure(file));
+  // Everything the viewer reaches is behind a click; a data record imported here would stop dating the pages it changes.
+  expect(reached.filter((file) => file.includes(`${sep}src${sep}data${sep}`))).toEqual([]);
+  for (const name of ['AssetViewer.astro', 'island-session.ts', 'viewer-retry.ts', 'AssetViewerRuntime.tsx', 'viewer-framing.ts', 'vehicle-paint.ts', 'review-rig-three.ts']) expect(reached.some((file) => file.endsWith(`${sep}${name}`))).toBe(true);
+});
+
+test('a change to the 3D viewer redates no page', () => {
+  const root = mkdtempSync(join(tmpdir(), 'kiln-lastmod-'));
+  try {
+    const site = join(root, 'site');
+    for (const directory of ['src/pages', 'src/components', 'src/data']) mkdirSync(join(site, directory), { recursive: true });
+    writeFileSync(join(site, 'src/pages/asset.astro'), "import AssetViewer from '../components/AssetViewer.astro';\nimport record from '../data/asset.json';\n");
+    writeFileSync(join(site, 'src/components/AssetViewer.astro'), 'const { mountAssetViewer } = await import("./AssetViewerRuntime");\n');
+    writeFileSync(join(site, 'src/components/AssetViewerRuntime.tsx'), "import { frameAsset } from './viewer-framing';\n");
+    writeFileSync(join(site, 'src/components/viewer-framing.ts'), '');
+    writeFileSync(join(site, 'src/data/asset.json'), '{}');
+    const log = '\0' + '2026-11-06T18:00:00Z\n\nsite/src/components/AssetViewer.astro\nsite/src/components/AssetViewerRuntime.tsx\nsite/src/components/viewer-framing.ts\n\0' + '2026-10-28T12:00:00Z\n\nsite/src/data/asset.json\nsite/src/pages/asset.astro\n';
+    const git = (args: string[]) => (args[0] === 'rev-parse' ? root : args[0] === 'log' && args[1] === '-1' ? '2026-11-07T00:00:00Z' : log);
+    expect(sitemapLastmod({ site, git })('/asset/')).toBe('2026-10-28T12:00:00Z');
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test('a page is dated by its newest source but not the site chrome, a doc by its Markdown too, an uncommitted file at HEAD', () => {
