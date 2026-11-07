@@ -36,6 +36,29 @@ function trackTextures(renderer: THREE.WebGPURenderer): () => void {
 
 const releases = new WeakMap<THREE.WebGPURenderer, () => void>();
 
+interface NodeCapabilities {
+  getUniformBufferLimit(): number;
+}
+
+/**
+ * Let every GPU batch with the same material share one shader. Below 1,024 copies, r186's
+ * `nodes/accessors/Instance.js` puts a batch's matrices in a uniform array named after that
+ * batch's own node and sized to its count, so each `InstancedMesh` builds a shader of its own.
+ * A cathedral exported with `--draws minimal` has 176 batches. On WebGL2 they cost 203 programs,
+ * and it first drew at 52 s against 9 s for the plain file. On WebGPU they cost 399 modules and
+ * held the page for 5 s. Above the limit, three reads the matrices as instanced attributes, which
+ * are named by slot. With a limit of zero every batch does that: 29 programs and a first frame at
+ * 10 s on WebGL2, and 55 modules with no task over 0.2 s on WebGPU.
+ *
+ * Only skinning and `RangeNode` read the same limit. A skeleton then reads its bones from a
+ * texture, as three already does for skeletons too large for a uniform block.
+ */
+export function shareInstancedShaders(renderer: THREE.WebGPURenderer): void {
+  const capabilities = (renderer.backend as unknown as { capabilities?: NodeCapabilities })
+    .capabilities;
+  if (capabilities) capabilities.getUniformBufferLimit = () => 0;
+}
+
 /**
  * The view's renderer: WebGPU where the browser has it, and three's own WebGL2 backend where it does not. Everything
  * drawn is three's node materials, so both backends run the same shaders. No power preference is passed: Chromium on
@@ -51,6 +74,7 @@ export function viewerRendererFactory(options: { forceWebGL?: boolean } = {}) {
     });
     installReviewToneMapping(renderer);
     await renderer.init();
+    shareInstancedShaders(renderer);
     releases.set(renderer, trackTextures(renderer));
     (canvas as HTMLCanvasElement).dataset.viewerBackend = viewerBackend(renderer);
     return renderer;
@@ -64,12 +88,29 @@ export function viewerBackend(renderer: THREE.WebGPURenderer): ViewerBackend {
 }
 
 /**
- * Whether drawing something new makes the page wait for its shaders. WebGL2 compiles on the page's thread: through
- * Direct3D a skinned mech held the page for up to 2.9 s and first drew at 4.7 s. WebGPU builds pipelines in the GPU
- * process, and compiling there first only delayed the mech's first frame, by 1-2.7 s.
+ * GPU batches from which WebGPU builds ahead too. Each one is a node graph of its own, about 17 ms per pass on the
+ * page's thread, and the view and its shadow bake are two passes: 16 batches hold the page for about half a second.
  */
-export const compilesOnPageThread = (renderer: THREE.WebGPURenderer) =>
-  viewerBackend(renderer) === 'webgl2';
+const BATCHES_BUILT_AHEAD = 16;
+
+function gpuBatches(object: THREE.Object3D): number {
+  let batches = 0;
+  object.traverse((part) => {
+    if ((part as THREE.InstancedMesh).isInstancedMesh) batches += 1;
+  });
+  return batches;
+}
+
+/**
+ * Whether drawing `object` for the first time makes the page wait for its shaders. WebGL2 compiles on the page's
+ * thread: through Direct3D a skinned mech held the page for up to 2.9 s and first drew at 4.7 s. WebGPU builds
+ * pipelines in the GPU process, and compiling there first only delayed the mech's first frame, by 1-2.7 s. Its node
+ * graphs are built on the page's thread, though, and r186 builds each `InstancedMesh`'s alone: `RenderObject` adds
+ * the object's uuid to the cache key. A cathedral with 176 batches held the page for 5.7 s in its first frame.
+ */
+export const compilesOnPageThread = (renderer: THREE.WebGPURenderer, object?: THREE.Object3D) =>
+  viewerBackend(renderer) === 'webgl2' ||
+  (object !== undefined && gpuBatches(object) >= BATCHES_BUILT_AHEAD);
 
 /**
  * Where the page would wait on shaders, build every pipeline `object` needs before it is first drawn, culled parts
@@ -83,7 +124,7 @@ export function compileAhead(
   camera: THREE.Camera,
   scene: THREE.Scene,
 ): Promise<void> {
-  if (!compilesOnPageThread(renderer)) return Promise.resolve();
+  if (!compilesOnPageThread(renderer, object)) return Promise.resolve();
   const culled: THREE.Object3D[] = [];
   object.traverse((part) => {
     if (!part.frustumCulled) return;

@@ -134,6 +134,12 @@ async function measure(browser, origin, backend, views, output) {
     const actual = await page.$eval('canvas[data-viewer-backend]', (canvas) => canvas.dataset.viewerBackend);
     // The model is in when a frame draws more than the view's own ground and the page then goes quiet.
     await page.waitForFunction(() => window.kilnDraws.frames.some((frame) => frame.draws > 4), { timeout: 180000 });
+    // The view buttons are enabled once the model's shaders are built. Before that the page draws nothing while it
+    // compiles, which would pass for going quiet, and a view clicked then is ignored.
+    await page.waitForFunction(
+      () => ![...document.querySelectorAll('section[aria-label="3D inspection controls"] button')].some((button) => button.disabled),
+      { timeout: 240000 },
+    );
     let quiet = 0;
     let last = await frameCount(page);
     while (quiet < 2000 && Date.now() - started < 240000) {

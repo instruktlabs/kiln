@@ -113,7 +113,7 @@ export function BakedContactShadow({
     };
     try {
       // Where the page would wait on them, the bake's own shaders are built first, as the model's are (see `compileAhead`).
-      if (compilesOnPageThread(renderer))
+      if (compilesOnPageThread(renderer, scene))
         await asBaked(() => renderer.compileAsync(scene, camera)).catch(() => undefined);
       asBaked(() => renderer.render(scene, camera));
     } catch (error) {
