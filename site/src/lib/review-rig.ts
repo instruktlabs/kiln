@@ -151,11 +151,14 @@ function invert3(m: readonly number[]): number[] {
   ].map((v) => v / det);
 }
 
-/** The non-negative root of the ACES fit, which is monotonic there: one quadratic per channel. */
+/**
+ * The non-negative root of the ACES fit, which is monotonic there: one quadratic per channel. The fit is three r187's
+ * `(x (x + a) - b) / (x (c x + d) + e)`; r187 corrected the TSL denominator to match its GLSL chunk.
+ */
 function acesFitInverse(t: number) {
   const { a, b, c, d, e } = ACES_FIT;
   const qa = 1 - c * t;
-  const qb = a - c * d * t;
+  const qb = a - d * t;
   const qc = -(b + e * t);
   return (-qb + Math.sqrt(qb * qb - 4 * qa * qc)) / (2 * qa);
 }

@@ -432,7 +432,7 @@ export async function stageVehicles({ commons, scenePack, mirror, data = DATA, l
     path: runtimePin.path,
     url: `${mirrorBase}${runtimePin.path}`,
     contents: ['Six runtime GLBs with their three detail tiers linked by MSFT_lod', 'One licence text per vehicle', 'A delivery.json inventory with member hashes'],
-    compatibility: 'Standard glTF 2.0. A loader that does not know the MSFT_lod extension draws LOD0 and the wheels; the viewer on this site (Three.js 0.186) does exactly that. Other engines are not qualified by this download.',
+    compatibility: 'Standard glTF 2.0. A loader that does not know the MSFT_lod extension draws LOD0 and the wheels; the viewer on this site does exactly that. Other engines are not qualified by this download.',
   }];
 
   // The manifest and the build plan hold exactly this pack's entries under its own prefixes; a repeated run

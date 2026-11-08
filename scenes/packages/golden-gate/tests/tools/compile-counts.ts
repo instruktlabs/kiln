@@ -5,8 +5,9 @@
 // page script. Phases: load (navigation to ready), start (the first 120 frames after ready at the postcard), tour
 // (the ten named cameras, then the vegetation poses beside each approach, 30 frames each: whatever first comes into
 // view compiles here), steady (120 frames back at the postcard: uploads per frame). A program or WGSL module counts
-// as per mesh when its vertex stage declares an array of mat4 in a NodeBuffer uniform block, three 0.186.0's
-// matrices of an instanced mesh with at most 1,024 instances (FARM-008). The tour records each lazy creation's
+// as per mesh when its vertex stage declares an array of mat4 in a uniform block: three 0.186.0's matrices of every
+// instanced mesh with at most 1,024 instances (FARM-008), and in 0.187.0 only its per-object fallback, for geometry
+// that leaves no vertex buffer for the matrices. WGSL names that block NodeBuffer_<id> in 0.186.0, nodeUniform<n> in 0.187.0. The tour records each lazy creation's
 // WebGPU pipeline label (three's material name and id) or WebGL2 vertex shader length.
 //   ./scripts/toolchain-run.ps1 x bun packages/golden-gate/tests/tools/compile-counts.ts
 // Writes evidence/build/compile-counts.json.
@@ -30,7 +31,7 @@ function instrument() {
       proto[name] = function (this: unknown) { fn(Array.prototype.slice.call(arguments)); return original.apply(this, arguments as never); };
     }
   };
-  const PER_MESH_GLSL = /uniform\s+NodeBuffer_\w+\s*\{\s*mat4\s+\w+\s*\[\s*\d+\s*\]/, PER_MESH_WGSL = /NodeBuffer_\w+[\s\S]{0,200}?array\s*<\s*mat4x4\s*<\s*f32\s*>\s*,\s*\d+\s*>/;
+  const PER_MESH_GLSL = /uniform\s+NodeBuffer_\w+\s*\{\s*mat4\s+\w+\s*\[\s*\d+\s*\]/, PER_MESH_WGSL = /(?:NodeBuffer_\w+|struct\s+nodeUniform\d+Struct)[\s\S]{0,200}?array\s*<\s*mat4x4\s*<\s*f32\s*>\s*,\s*\d+\s*>/;
   const touring = () => String(h.phase).startsWith('tour');
   const gl = w.WebGL2RenderingContext?.prototype;
   if (gl) {
@@ -110,6 +111,6 @@ try {
   }
 } finally { await chrome.close(); await hosted.close(); }
 writeJson(resolve(PACKAGE_ROOT, 'evidence/build/compile-counts.json'), {
-  description: 'Fix round 3 item 7 (FARM-008): program and pipeline creation and buffer uploads on the test build, counts and bytes only (no timing), per backend and tier at 1920 x 1080. load: navigation to ready; start: the first 120 frames after ready at the postcard; tour: the ten named cameras and the two vegetation poses, 30 frames each (lazy: each creation there, by WebGPU pipeline label or WebGL2 vertex shader length); steady: 120 frames at the postcard, uploads (WebGPU writeBuffer, WebGL2 bufferData and bufferSubData) per frame; draws are WebGL2 draw calls (WebGPU render pass draws are not wrapped). perMesh: programs or shader modules whose vertex stage keeps an instanced mesh\'s matrices in its own NodeBuffer uniform block (three 0.186.0, FARM-008).',
+  description: 'Fix round 3 item 7 (FARM-008): program and pipeline creation and buffer uploads on the test build, counts and bytes only (no timing), per backend and tier at 1920 x 1080. load: navigation to ready; start: the first 120 frames after ready at the postcard; tour: the ten named cameras and the two vegetation poses, 30 frames each (lazy: each creation there, by WebGPU pipeline label or WebGL2 vertex shader length); steady: 120 frames at the postcard, uploads (WebGPU writeBuffer, WebGL2 bufferData and bufferSubData) per frame; draws are WebGL2 draw calls (WebGPU render pass draws are not wrapped). perMesh: programs or shader modules whose vertex stage keeps an instanced mesh\'s matrices in its own uniform block (three 0.186.0 for every instanced mesh, FARM-008; 0.187.0 only in its per-object fallback).',
   runs,
 });

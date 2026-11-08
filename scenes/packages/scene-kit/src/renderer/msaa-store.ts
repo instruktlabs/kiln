@@ -1,7 +1,7 @@
 import type { Object3D, RenderTarget, Scene, WebGPURenderer } from 'three/webgpu';
 import type { TierKnobs } from '../quality/core';
 /**
- * OD-10. With antialias and tone mapping, three r186 renders the canvas through an internal 4x frame-buffer target
+ * OD-10. With antialias and tone mapping, three r187 renders the canvas through an internal 4x frame-buffer target
  * and resets its public storeMultisampled* flags to `true` on every call (Renderer._getFrameBufferTarget); nothing
  * public reaches that target. Storing is three's conservative default, needed only when a mid-pass framebuffer copy
  * splits the pass (viewport depth/texture nodes, transmission). For a scene whose main pass is never split, this

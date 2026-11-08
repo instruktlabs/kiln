@@ -7,6 +7,33 @@ does not publish a package.
 
 ## Unreleased
 
+- three.js and `@types/three` are now 0.187.0, up from 0.186.1, in the package, the render service, the
+  website and the scene packages; `webgpu` stays 0.6.2. On nine gallery assets, CPU views and exported GLBs
+  are byte-identical to 0.186.1 output apart from one lathe-built GLB (below), and every view was
+  byte-identical across two runs on each release. GPU views change, by a mean of 0.2 to 1.4 levels per
+  channel; at most 3.1% of an asset's pixels moved by more than 12 levels:
+  - three r187 prefilters environment maps differently. Under `review-neutral-v1` the room environment
+    lights a matte surface about 8% more, a metal at roughness 0.14 about 17% more and one at roughness 0.4
+    about 56% more; the hemisphere and direct lights are unchanged. The rig keeps its id and values. On the
+    calibration chart the `#C0362C` matte panel reads `(198,54,42)` instead of `(193,51,40)`, and the mean
+    CIEDE2000 error rises from 0.51 to 1.28 ([review lighting](docs/rendering.md#review-lighting)).
+  - three r187 corrects the denominator of TSL's ACES Filmic fit. The render service's backdrop transform
+    and the website's review rig use the corrected fit and its inverse, so backdrops keep their named
+    colours under ACES presets.
+  - The render service's build identity names three 0.187.0, so a host on this release does not join a
+    service still running 0.186.1; it reports that service as incompatible, and `kiln service stop` ends it.
+    GPU capture-cache keys include the identity, so views cached from the old service are not reused.
+  - three r187's `LatheGeometry` normalises the last profile ring's normals, which `lathe` and `revolveGeo`
+    already did. Their normals stay unit but can differ from 0.186.1 output in the last bit, which changes a
+    lathe-built part's GLB bytes, as on the espresso machine's saucer.
+  - three r187 parses a colour string with a negative hue or decimal percentages, such as
+    `hsl(-30, 60%, 50%)` or `rgb(50.5%, 0%, 0%)`; 0.186 read both as white without a warning. A source that
+    passes one to `gameMaterial`, `pbrMaterial` or another colour argument now renders and exports the colour
+    it names.
+  - `kiln-compose-scene`'s runtime-scenes reference now describes r187. Reversed depth needs two scene
+    adaptations, not three: r187 negates polygon offsets itself on both backends, so a scene keeps their
+    standard-depth sign. An `InstancedMesh` binds its matrices as an instanced vertex attribute when its
+    geometry leaves a vertex buffer free, and instanced meshes of one material and layout share a shader build.
 - `kiln_inspect` and the CPU route draw camera-only views from the artifact itself, as `kiln_render`
   shots on a view port already do:
   - A `kiln_inspect` `shot` that changes only the camera, and a legacy `kiln_inspect` view without
@@ -98,8 +125,8 @@ does not publish a package.
 - GPU instancing now draws what the copies drew as separate nodes, in both `KILN_BAKE_INSTANCE` and the
   three runtime target's `repeatInstances`. A mirrored copy no longer shares a batch with unmirrored ones,
   where it drew inside out: single-sided surfaces vanished. Mirrored copies form their own batch on a node
-  scaled `[-1, 1, 1]`, with no second copy of the geometry. three r186's WebGPU renderer does not transform
-  instance tangents, which shaded a quarter-turned normal-mapped copy black. The bake pass now batches
+  scaled `[-1, 1, 1]`, with no second copy of the geometry. three's WebGPU renderer, through r187, does not
+  transform instance tangents, which shaded a quarter-turned normal-mapped copy black. The bake pass now batches
   tangent-bearing copies by the rotation they share and puts it on the batch node, and the runtime target
   keeps a turned, stretched or mirrored tangent-bearing child separate. The bake pass also keeps a sheared
   copy separate, because instance transforms cannot state shear. `EXT_mesh_gpu_instancing` is now required

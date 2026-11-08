@@ -66,7 +66,16 @@ if (!new RegExp(`^\\s*bun-version:\\s*${toolchain.bun}\\s*$`, 'mu').test(pages))
 // the engine and the service and missed the site, which is why this is a gate and
 // not a note: the same class of drift had already been caught in the prose that
 // morning, by a person, hours earlier.
-const manifests = ['package.json', 'render-service/package.json', 'site/package.json'];
+// The scene workspace is the fourth: its own pin check holds every scene package to
+// APPROVED_PINS in scenes/scripts/check-pins.ts, but the scenes workflow starts only
+// on scenes changes, and this gate runs on every pull request. Dependabot leaves three
+// alone (docs/three-upgrades.md), so a bump is one deliberate change across all four.
+const manifests = [
+  'package.json',
+  'render-service/package.json',
+  'site/package.json',
+  'scenes/package.json',
+];
 const threePins = new Map();
 /** Leading range operator off a pin, so `^19.3.0` and `19.3.0` compare the same. */
 const release = (range) => String(range).replace(/^[\^~><=\s]+/u, '');
@@ -101,7 +110,9 @@ for (const name of manifests) {
   const distinct = new Set(threePins.values());
   if (distinct.size > 1) {
     const shown = [...threePins].map(([name, pin]) => `${name}=${pin}`).join(', ');
-    errors.push(`three must be identical in every manifest that pins it: ${shown}`);
+    errors.push(
+      `three must be identical in every manifest that pins it: ${shown}. Move every tree in one change: docs/three-upgrades.md`,
+    );
   }
 }
 const guidance = [

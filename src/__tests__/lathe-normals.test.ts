@@ -4,10 +4,12 @@ import * as THREE from 'three';
 import { lathe, revolveGeo } from '../ops';
 
 /**
- * Regression: three.js LatheGeometry leaves the final profile ring's normals
- * un-normalised at the length of the last profile segment, which the glTF
- * validator rejects (GLTF_ACCESSOR_VECTOR3_NON_UNIT). Found by a dispatched
- * agent's espresso machine: 15 of 105 vertices per saucer, length 0.030017.
+ * Regression: three.js LatheGeometry before r187 left the final profile ring's
+ * normals un-normalised at the length of the last profile segment, which the
+ * glTF validator rejects (GLTF_ACCESSOR_VECTOR3_NON_UNIT). Found by a
+ * dispatched agent's espresso machine: 15 of 105 vertices per saucer, length
+ * 0.030017. three r187 normalises that ring; `lathe` and `revolveGeo` keep
+ * their own pass, so their guarantee does not depend on the three version.
  */
 function nonUnitNormals(geo: THREE.BufferGeometry): number {
   const n = geo.getAttribute('normal') as THREE.BufferAttribute | undefined;
@@ -30,9 +32,9 @@ const SAUCER: Array<[number, number]> = [
 ];
 
 describe('lathe normals', () => {
-  test('raw LatheGeometry is the thing that is broken', () => {
+  test('raw LatheGeometry returns unit normals since three r187', () => {
     const points = SAUCER.map((p) => new THREE.Vector2(p[0], p[1]));
-    expect(nonUnitNormals(new THREE.LatheGeometry(points, 14))).toBeGreaterThan(0);
+    expect(nonUnitNormals(new THREE.LatheGeometry(points, 14))).toBe(0);
   });
 
   test('lathe returns unit normals', () => {

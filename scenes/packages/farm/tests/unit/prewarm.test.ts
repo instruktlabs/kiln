@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
 import { BoxGeometry, Group, InstancedMesh, Mesh, MeshStandardMaterial, PerspectiveCamera, Scene, type Object3D } from 'three/webgpu';
 import { startWarmPass, registerWarmPoseVariant, WARM_CONCURRENCY, warmChainKey, warmRenderables, type WarmPassRenderer } from '../../src/world/prewarm';
 
@@ -60,7 +61,7 @@ describe('SPEC 6.4 warm pass', () => {
     expect(pass.step()).toBe(true);
   });
 
-  test('at most `concurrency` chains compile at once (three builds node materials in slices across tasks; many concurrent builds keep their temporaries alive into the old generation); a finished chain frees its slot for the next', async () => {
+  test('at most `concurrency` chains compile at once; a finished chain frees its slot for the next', async () => {
     const f = fixture(), r = recorder(f.root);
     const pass = startWarmPass(r.renderer, f.scene, f.camera, f.root, { reveal: true, concurrency: 2 });
     expect(pass.stats.concurrency).toBe(2);
@@ -86,6 +87,30 @@ describe('SPEC 6.4 warm pass', () => {
     bounded.dispose();
   });
 
+  // three r187's compileAsync sets one pre-compile state on the renderer and awaits node builds inside it, so a second
+  // call in flight overwrites the first's: the later finish throws, the call depth leaks and a double-sided material can
+  // keep its back pass's side. r186 awaited without that shared state.
+  test('three r187 compileAsync keeps one pre-compile state per renderer across its awaits', () => {
+    const source = readFileSync(Bun.resolveSync('three/webgpu', import.meta.dir), 'utf8');
+    expect(source).toContain('this._precompilationState = precompilationState;');
+    expect(source).toContain('await this._nodes.getForRenderAsync( renderObject, yieldPreCompile );');
+    expect(source).toContain('const { useFrameBufferTarget, outputRenderTarget, activeCubeFace, activeMipmapLevel, outputMRT, previousRenderContext, item, materialSide } = this._precompilationState;');
+  });
+
+  test('by default each compileAsync call starts only after the previous one settles', async () => {
+    const f = fixture(), r = recorder(f.root);
+    const pass = startWarmPass(r.renderer, f.scene, f.camera, f.root, { reveal: false });
+    expect(pass.stats.concurrency).toBe(1);
+    // Chains in first-seen order: [a, b], [child], [batch1], [batch2].
+    const order = ['a', 'b', 'child', 'batch1', 'batch2'];
+    for (const [i, name] of order.entries()) {
+      expect(r.calls.map(c => c.name)).toEqual(order.slice(0, i + 1));
+      r.pending.find(p => p.name === name)!.settle(); await flush();
+    }
+    expect(pass.step()).toBe(false); expect(pass.phase).toBe('drawing');
+    expect(pass.step()).toBe(true);
+  });
+
   test('a rebuilt world (no reveal) stays visible; disposing mid-pass shows a hidden world and stops the chains', async () => {
     const shown = fixture(), r1 = recorder(shown.root);
     const rebuilt = startWarmPass(r1.renderer, shown.scene, shown.camera, shown.root, { reveal: false });
@@ -108,7 +133,7 @@ describe('SPEC 6.4 warm pass', () => {
     expect(warmRenderables(f.root).map(o => o.name)).toEqual(['a', 'child', 'b', 'stand-in', 'batch1', 'batch2']);
     const pass = startWarmPass(r.renderer, f.scene, f.camera, f.root, { reveal: true, onDraw: () => seen.push(`${pass.phase} ${f.root.visible} ${f.a.frustumCulled} ${proxy.frustumCulled}`) });
     expect(pass.stats.renderables).toBe(5);
-    for (let i = 0; i < 3; i++) { for (const p of r.pending.splice(0)) p.settle(); await flush(); }
+    await settleAll(r);
     expect(r.calls.map(c => c.name)).not.toContain('stand-in');
     expect(pass.step()).toBe(false); expect(seen).toEqual(['drawing true false false']);
     expect(pass.step()).toBe(true); expect(proxy.frustumCulled && f.a.frustumCulled).toBe(true); expect(pass.step()).toBe(true);
@@ -126,8 +151,9 @@ function poseFixture() {
   const unregister = registerWarmPoseVariant(variant);
   return { ...f, variant, proxy, hiddenChild, unregister };
 }
+/** Settles calls until none is pending: by default each starts only after the previous one settles. */
 async function settleAll(r: ReturnType<typeof recorder>, fail?: string) {
-  for (let i = 0; i < 5; i++) { for (const p of r.pending.splice(0)) p.settle(p.name === fail); await flush(); }
+  for (let i = 0; i < 50 && r.pending.length; i++) { for (const p of r.pending.splice(0)) p.settle(p.name === fail); await flush(); }
 }
 
 test('registered hidden pose and its shadow branch warm before ready, with exact visibility/culling restoration', async () => {

@@ -300,7 +300,7 @@ export async function stageGoldenGate(args: readonly string[] = process.argv.sli
     ] };
   write('credits.json', JSON.stringify(creditsFile, null, 2) + '\n', 'credits.json');
 
-  const result = stageFiles({ id: 'golden-gate', release: options.release, three: '0.186.1', out, force: options.force, models,
+  const result = stageFiles({ id: 'golden-gate', release: options.release, three: '0.187.0', out, force: options.force, models,
     data: { scene: 'data/scene.json', collision: `terrain/${collision.file}`, ...DATA_FILES }, files, credits,
     source: { bridge: Object.fromEntries(Object.entries(BRIDGE_PINS).map(([k, v]) => [k, v.revision])), terrainSchema: terrain.schema, terrainManifestSha256: sha256(readFileSync(terrainManifestPath)), vehicles: Object.keys(vehicles) } });
   const verification = verifyStaged(out); if (!verification.ok) throw new Error(verification.problems.join('\n'));

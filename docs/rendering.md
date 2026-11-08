@@ -83,10 +83,14 @@ transform preserve base-colour hue while leaving orientation and specular cues.
 The analytic inverse keeps every named backdrop inside the tone-mapped pass,
 so clear pixels match the CPU table and silhouettes retain the existing MSAA path.
 
-In the calibrated D3D12 chart, a key-facing metalness-0, roughness-1 panel authored
-as sRGB `#C0362C` reads `(193,51,40)`, compared with `(255,177,147)` under
-`neutral-studio-v1`. Mean CIEDE2000 error over 24 ColorChecker sRGB patches plus
-that orange is 0.51 for the new rig, versus 28.09 for tool v1. This is a reference
+The rig was calibrated on three r186. In that D3D12 chart, a key-facing
+metalness-0, roughness-1 panel authored as sRGB `#C0362C` read `(193,51,40)`,
+compared with `(255,177,147)` under `neutral-studio-v1`, and the mean CIEDE2000
+error over 24 ColorChecker sRGB patches plus that orange was 0.51 for the new rig,
+versus 28.09 for tool v1. three r187 prefilters the room environment differently and
+lights a matte surface through it about 8% more, so with the same rig values the
+panel reads `(198,54,42)` and the mean error is 1.28 (tool v1: 28.47); the
+hemisphere and direct lights are unchanged. This is a reference
 orientation calibration, not a promise that every shaded pixel equals its albedo.
 Roughness, surface orientation, reflections and the destination's lighting still
 change appearance. Review dark silhouettes on neutral or light when they merge

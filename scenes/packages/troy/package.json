@@ -9,6 +9,6 @@
     "hydrate": "node scripts/hydrate-runtime.mjs",
     "dev": "node scripts/serve.mjs"
   },
-  "peerDependencies": { "three": "0.186.1" },
-  "devDependencies": { "three": "0.186.1", "acorn": "8.19.0" }
+  "peerDependencies": { "three": "0.187.0" },
+  "devDependencies": { "three": "0.187.0", "acorn": "8.19.0" }
 }

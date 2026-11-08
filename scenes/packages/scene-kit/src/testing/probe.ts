@@ -2,8 +2,9 @@
 // shadow and reflection renders re-enter through it), `backend.draw` (renderer.info deltas per RenderContext) and
 // `_pipelines.isReady` (draws skipped while a pipeline compiles), records one frame at a time and stops once K frames
 // agree. What-ifs are count-only, applied for one probe and always restored, also when installing the probe fails.
-// A pass record is one RenderContext within one render call: three keys contexts by attachment format, MRT and call
-// depth (RenderContexts.js:41-67), so two same-format renders at one depth (two shadow maps) share a context id.
+// A pass record is one RenderContext within one render call: three r187 keys contexts by attachment format, MRT, camera
+// type and call depth (RenderContexts.js:42-75), so two same-format renders of one camera type at one depth (two
+// directional shadow maps) share a context id.
 import { attributionPath, casterSize, classifyRender, classifyTarget, isSmallCaster, passKinds, shadowTexelWorld, summarizeFrames, totalsByKind } from './probe-core';
 import type { KindTotals, PassKind, RenderKind } from './probe-core';
 /* eslint-disable @typescript-eslint/no-explicit-any */

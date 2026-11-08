@@ -296,7 +296,7 @@ interface Frame {
 
 /**
  * Every vertex's world position, normal and tangent, with the bitangent as two renderer
- * families build it: three r186 uses cross(N, T) * w (normal_vertex.glsl.js:9); a renderer that
+ * families build it: three (r186, r187) uses cross(N, T) * w (normal_vertex.glsl.js:9); a renderer that
  * corrects mirrored transforms also multiplies by sign(det(world)).
  */
 function frames(doc: Document): Frame[] {
@@ -510,7 +510,7 @@ describe('mergeRigidGroups: tangents', () => {
     expect(summary.primitivesAfter).toBe(1);
     expectSameFingerprint(shape, fingerprint(doc));
     // A renderer that applies the world determinant sees the same frame everywhere, while
-    // three r186, which does not, sees both mirrored parts' bitangents flip (2 x 24 vertices).
+    // three (r186, r187), which does not, sees both mirrored parts' bitangents flip (2 x 24 vertices).
     expect(compareFrames(before, frames(doc))).toEqual({
       unmatched: 0,
       tangent: 0,

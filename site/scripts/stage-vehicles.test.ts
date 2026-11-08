@@ -27,6 +27,8 @@ async function verify(fixture: WrittenFixture, vehicle = fixture.vehicles[0]!) {
 
 const revisionDir = (fixture: WrittenFixture, revisionId: string) => join(fixture.commons, 'showcase/authors', fixture.vehicles[0]!.author, 'assets/kiln', fixture.vehicles[0]!.assetId, 'revisions', revisionId);
 const readJsonFile = async (path: string) => JSON.parse(await readFile(path, 'utf8'));
+/** "Three.js 0.186", "three.js r187" and the like: copy that goes stale at the next upgrade. */
+const NAMES_A_THREE_RELEASE = /three\.js\)? *\(?(?:r|0\.)\d{3}/i;
 const writeJsonFile = (path: string, value: unknown) => writeFile(path, `${JSON.stringify(value, null, 2)}\n`);
 
 describe('an accepted vehicle', () => {
@@ -270,6 +272,9 @@ describe('staging into the mirror, the manifest, the plan and the catalog', () =
       expect(catalog.assets[0].licence.statesDeliveredGlbSha256).toBe(sha(fixture.glb));
       expect(catalog.ownerReview).toMatchObject({ acceptedAssets: 1, total: 1, status: 'all-current-revisions-accepted' });
       expect(catalog.downloads[0]).toMatchObject({ profile: 'runtime', assets: 1, files: 3, path: RUNTIME_ARCHIVE_PATH });
+      // The site's three moves with every upgrade (docs/three-upgrades.md), so the download names no release of it.
+      expect(catalog.downloads[0].compatibility).toContain('the viewer on this site does exactly that');
+      expect(catalog.downloads[0].compatibility).not.toMatch(NAMES_A_THREE_RELEASE);
       expect(catalog.assets[0].poster).toBeNull();
 
       const before = await state(fixture);
@@ -337,4 +342,10 @@ describe('the pack specification', () => {
     expect(VEHICLE_DOCUMENTS.map((document) => document.role).length).toBeGreaterThanOrEqual(4);
     for (const document of VEHICLE_DOCUMENTS) expect(document.path).not.toStartWith('/');
   });
+});
+
+// The committed catalog is the stager's output, so it reads the same.
+test('the published vehicle catalog names no three.js release', async () => {
+  const catalog = JSON.parse(await readFile(join(import.meta.dir, '../src/data/packs/vehicles.json'), 'utf8'));
+  for (const download of catalog.downloads) expect(download.compatibility).not.toMatch(NAMES_A_THREE_RELEASE);
 });

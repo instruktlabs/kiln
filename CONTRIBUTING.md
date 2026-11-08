@@ -51,6 +51,8 @@ bun run test
 ```
 
 The pin check reads the engine, render service and site from the same checkout.
+three.js is pinned exactly in the engine, render service, site and scenes, and Dependabot
+leaves it alone: upgrade it in one change by the [three.js upgrade checklist](docs/three-upgrades.md).
 The portable test runner covers scene source contracts and script tests for
 validation and evidence tooling. Asset and browser qualification
 require staged inputs; see [scenes/README.md](scenes/README.md).

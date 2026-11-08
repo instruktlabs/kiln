@@ -9,7 +9,7 @@ import { FARM_LOOK } from '../constants';
 export type FarmAntialias = 'msaa' | 'none' | 'fxaa' | 'smaa' | 'traa' | 'ssaa';
 export type FarmToneMapping = 'aces' | 'neutral';
 export interface FarmLookOptions {
-  /** Anti-aliasing: the renderer's 4x MSAA (default), none, or one of three 0.186's post-process AA nodes. */
+  /** Anti-aliasing: the renderer's 4x MSAA (default), none, or one of three 0.187's post-process AA nodes. */
   aa: FarmAntialias;
   /** Ground-truth ambient occlusion (GTAO) on indirect light, half resolution; off on the tablet tiers. */
   ao: boolean;
@@ -32,12 +32,12 @@ export const FARM_VIGNETTE = Object.freeze({ inner: .45, outer: .95, strength: .
 export const FARM_BLOOM = Object.freeze({ strength: .8, radius: .35, threshold: 0 });
 export const FARM_AO = Object.freeze({ resolutionScale: .5, radius: .6, samples: 16 });
 
-/** three.js 0.186 ACES Filmic (ToneMappingFunctions.js) for a grey input: exposure / .6, then the RRT and ODT fit. */
+/** three.js r187 ACES Filmic (ToneMappingFunctions.js) for a grey input: exposure / .6, then the RRT and ODT fit (r187's TSL fit matches the GLSL chunk). */
 export function acesGrey(value: number, exposure: number): number {
   const v = value * exposure / .6, a = v * (v + .0245786) - .000090537, b = v * (.983729 * v + .432951) + .238081;
   return Math.min(1, Math.max(0, a / b));
 }
-/** three.js 0.186 Khronos PBR Neutral for a grey input below the compression start (.76). */
+/** three.js r187 Khronos PBR Neutral for a grey input below the compression start (.76). */
 export function neutralGrey(value: number, exposure: number): number {
   const x = value * exposure, offset = x < .08 ? x - 6.25 * x * x : .04, y = x - offset;
   if (y < .76) return y;

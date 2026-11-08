@@ -4,7 +4,7 @@ export type RenderKind = 'main' | 'shadow' | 'reflection' | 'offscreen';
 export type PassKind = RenderKind | 'output';
 export const PASS_KINDS: readonly PassKind[] = ['main', 'shadow', 'reflection', 'output', 'offscreen'];
 const SHADOW = /^(?:Shadow Map|Point Light Shadow) \[/, REFLECTION = / \[ Reflector \]$/;
-/** three r186 names its nested renders through `scene.name` (ShadowNode.js:652, PointShadowNode.js:302, ReflectorNode.js:561). */
+/** three r187 names its nested renders through `scene.name` (ShadowNode.js:654, PointShadowNode.js:346, ReflectorNode.js:585). */
 export function classifyRender(sceneName: string, depth: number, mainScene = depth === 0): RenderKind {
   if (SHADOW.test(sceneName)) return 'shadow';
   if (REFLECTION.test(sceneName)) return 'reflection';

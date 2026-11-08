@@ -15,9 +15,9 @@ function fixture() {
   const pins = {} as ReleasePins;
   for (const scene of RELEASE_SCENES) {
     const out = releasedAssetRoot(root, scene);
-    stageFiles({ id: scene, release: 'test-release', three: '0.186.1', out,
+    stageFiles({ id: scene, release: 'test-release', three: '0.187.0', out,
       models: [{ id: 'example', to: 'models/example.glb' }], data: {}, files: [{ from: source, to: 'models/example.glb' }] });
-    pins[scene] = { id: scene, release: 'test-release', three: '0.186.1',
+    pins[scene] = { id: scene, release: 'test-release', three: '0.187.0',
       packJsonSha256: sha(readFileSync(resolve(out, 'pack.json'))), sha256sumsSha256: sha(readFileSync(resolve(out, 'SHA256SUMS'))) };
   }
   return { root, pins, source };

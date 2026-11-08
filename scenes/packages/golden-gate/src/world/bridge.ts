@@ -56,8 +56,6 @@ const drawnLast = (m: Mesh) => m.parent?.name === 'span' && (m.material as Mater
 export interface BridgeOptions {
   layout: SceneLayout;
   farSwitch: number; castShadow: boolean;
-  /** Effective initialized renderer setting, false when WebGL lacks EXT_clip_control. */
-  reversedDepthBuffer?: boolean;
   /** Merge each model's parts by material inside its south, north and span groups (the `bridgeMerge` development parameter). */
   merge?: boolean;
   /** Shadow depth stand-ins on this layer for the web model and the near approaches; the sun's shadow camera must enable it. */
@@ -89,16 +87,16 @@ export interface Bridge {
 /**
  * layout.json bridge.jointPlates (fix round 3): the expansion-joint plates lie 1.5 mm above the Roadway, which
  * runs on beneath them, so their material takes a polygon offset toward the camera (both backends map it to the
- * depth bias). Returns the number of materials changed.
+ * depth bias, and three r187 negates it under reversed depth, so the authored values hold in either convention).
+ * Returns the number of materials changed.
  */
-export function offsetJointPlates(scene: Object3D, reversedDepthBuffer = false): number {
+export function offsetJointPlates(scene: Object3D): number {
   const { material: name, polygonOffset: { factor, units } } = LAYOUT.bridge.jointPlates, done = new Set<Material>();
   scene.traverse(node => {
     const mesh = node as Mesh; if (!mesh.isMesh) return;
     for (const m of (Array.isArray(mesh.material) ? mesh.material : [mesh.material]) as Material[]) {
       if (m.name !== name || done.has(m)) continue;
-      const sign = reversedDepthBuffer ? -1 : 1;
-      m.polygonOffset = true; m.polygonOffsetFactor = sign * factor; m.polygonOffsetUnits = sign * units; m.needsUpdate = true; done.add(m);
+      m.polygonOffset = true; m.polygonOffsetFactor = factor; m.polygonOffsetUnits = units; m.needsUpdate = true; done.add(m);
     }
   });
   return done.size;
@@ -153,20 +151,9 @@ function polylineDistance(p: Vector3, line: readonly Vec3[]): number {
 export function createBridge(web: GLTF, far: GLTF, o: BridgeOptions): Bridge {
   const root = new Group(); root.name = 'bridge';
   const lamps = new Set<MeshStandardMaterial>(), source = web.scene.clone(), views = { web: view(web.scene, 'web'), far: view(far.scene, 'far') };
-  // Opposite depth conventions may share one loaded pack. Own only the materials
-  // whose bias changes, leaving its standard materials and other worlds intact.
-  const jointCopies = new Map<Material, Material>();
-  if (o.reversedDepthBuffer) for (const v of Object.values(views)) v.root.traverse(node => {
-    const mesh = node as Mesh; if (!mesh.isMesh) return;
-    const own = (m: Material) => {
-      if (m.name !== LAYOUT.bridge.jointPlates.material) return m;
-      let copy = jointCopies.get(m); if (!copy) { copy = m.clone(); jointCopies.set(m, copy); } return copy;
-    };
-    mesh.material = Array.isArray(mesh.material) ? mesh.material.map(own) : own(mesh.material);
-  });
   source.updateMatrixWorld(true);
   const webMeshes = prepare(views.web.root, o.castShadow, lamps), farMeshes = prepare(views.far.root, false, lamps);
-  const jointMaterials = offsetJointPlates(views.web.root, o.reversedDepthBuffer) + offsetJointPlates(views.far.root, o.reversedDepthBuffer);
+  const jointMaterials = offsetJointPlates(views.web.root) + offsetJointPlates(views.far.root);
   root.add(views.web.root, views.far.root); views.far.root.visible = false;
   root.updateMatrixWorld(true);
   const roadway = source.getObjectByName('Roadway');
@@ -219,7 +206,6 @@ export function createBridge(web: GLTF, far: GLTF, o: BridgeOptions): Bridge {
       for (const m of merged) m.restore();
       for (const p of proxies) p.restore();
       reflection?.restore(); meshes.near.dispose(); meshes.far.dispose(); paint.dispose();
-      for (const material of jointCopies.values()) material.dispose();
       bridge.setLamps(1);
     },
   };

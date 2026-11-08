@@ -2,7 +2,7 @@ import { Matrix4, Plane, Vector3, Vector4 } from 'three/webgpu';
 import type { Camera, PerspectiveCamera, Scene } from 'three/webgpu';
 
 interface Reflector { target: { matrixWorld: Matrix4 }; getVirtualCamera(camera: Camera): Camera }
-/** r186's ReflectorNode replaces the near plane assuming standard depth. Correct
+/** three r187's ReflectorNode, like r186's, replaces the near plane assuming standard depth. Correct
  * its virtual projection after Renderer updates the camera, before frustum setup.
  * Reversed WebGPU and WebGL EXT_clip_control both use the [0,1] clip interval. */
 export function installReflectionDepth(scene: Scene, reflector: Reflector) {

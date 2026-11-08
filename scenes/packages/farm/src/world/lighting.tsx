@@ -13,7 +13,7 @@ import { createFarmSun, farmShadowMask, farmShadowOptions } from './shadows';
 import type { FarmShadowOptions } from './shadows';
 
 /**
- * INV 4.1 lights. On tiers with shadows the OD-9 cached sun shadow is installed here, before any receiver builds (three r186
+ * INV 4.1 lights. On tiers with shadows the OD-9 cached sun shadow is installed here, before any receiver builds (three r187
  * reads a light's custom shadow node once), and published on the session; it is disposed after the lights leave the scene.
  * With stand-ins the sun's own camera also sees their layer (a mask with a bit above 0 keeps its own layers).
  */

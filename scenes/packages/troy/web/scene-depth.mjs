@@ -7,7 +7,7 @@ export function depthRendererOptions(mode=DEFAULT_SCENE_DEPTH){
 }
 export function configureDepthCamera(camera,renderer){
  camera.coordinateSystem=renderer.coordinateSystem;
- // three r186 exposes a readonly getter; Renderer uses this same backing flag.
+ // three r187, like r186, exposes a readonly getter; Renderer uses this same backing flag.
  // Set it before the scene's pre-render frustum/projection consumers run.
  camera._reversedDepth=renderer.reversedDepthBuffer===true;
  camera.updateProjectionMatrix();

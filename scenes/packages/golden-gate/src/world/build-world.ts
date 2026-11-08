@@ -109,7 +109,7 @@ export async function buildGoldenGateWorld(c: BuildContext) {
     abortIfNeeded(c.signal); step('Water maps');
     const web = c.pack.models.get(index.bridge.web.model), far = c.pack.models.get(index.bridge.far.model);
     if (!web || !far) throw new Error('Bridge models are missing from the verified pack');
-    const bridge: Bridge = createBridge(web, far, { layout, farSwitch: features.bridgeFarSwitch, castShadow: c.knobs.shadows.enabled, reversedDepthBuffer: c.renderer.reversedDepthBuffer, merge: draw.merge, standInLayer: draw.depth ? LAYERS.shadowStandIn : undefined, passLayers: pass });
+    const bridge: Bridge = createBridge(web, far, { layout, farSwitch: features.bridgeFarSwitch, castShadow: c.knobs.shadows.enabled, merge: draw.merge, standInLayer: draw.depth ? LAYERS.shadowStandIn : undefined, passLayers: pass });
     owned.push(bridge); step('Bridge');
     // The vegetation impostors switch with the approaches' near representation (fix round 3 item 5).
     bridge.approachMeshes.near.group.add(terrain.vegetation.root);

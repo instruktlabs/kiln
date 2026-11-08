@@ -4,14 +4,14 @@ import { shadow } from 'three/tsl';
 import { shadowOncePerFrame } from '../../src/shadows/once';
 
 /**
- * three r186's own ShadowNode.updateBefore gating with the GPU work stubbed out: updateShadow counts renders and bumps the
- * depth version on the first one, as the first updateRenderTarget does, so the first update spans two frames.
+ * three r187's own ShadowNode.updateBefore gating with the GPU work stubbed out: updateShadow counts renders. Every render
+ * clears the flag (r186 kept it after a first render that recreated the depth texture; r187 arms the map in setupShadow).
  */
 function counted(light: DirectionalLight) {
-  const node = shadow(light) as any;let first = true;const renders: string[] = [];
-  node.shadowMap = { depthTexture: { version: 0 } };
-  node.updateShadow = (frame: any) => { node._depthVersionCached = node.shadowMap.depthTexture.version; if (first) { node.shadowMap.depthTexture.version++; first = false; } renders.push(`${frame.frameId}:${frame.camera.name}`); };
-  return { renders, draw: (frameId: number, camera: PerspectiveCamera, precompiling = false) => node.updateBefore({ renderer: { _isPreCompiling: precompiling }, camera, frameId }) };
+  const node = shadow(light) as any;const renders: string[] = [];
+  node.shadowMap = { dispose() {} };
+  node.updateShadow = (frame: any) => { renders.push(`${frame.frameId}:${frame.camera.name}`); };
+  return { renders, draw: (frameId: number, camera: PerspectiveCamera, precompiling = false) => node.updateBefore({ renderer: { _precompilationState: precompiling ? {} : null }, camera, frameId }) };
 }
 const main = Object.assign(new PerspectiveCamera(), { name: 'main' }), mirror = Object.assign(new PerspectiveCamera(), { name: 'mirror' });
 /** A sun whose shadow camera keeps its own layers (a bit above 0), as Golden Gate's enables LAYERS.dynamic. */
@@ -28,13 +28,14 @@ test('once per frame: armed at install, re-armed by update, reused by the second
   expect([light.shadow.autoUpdate, light.shadow.needsUpdate]).toEqual([false, true]);
   draw(0, main, true); expect(renders).toEqual([]);              // compileAsync never renders shadows
   for (let f = 0; f < 4; f++) { once.update(); draw(f, main); draw(f, mirror); }
-  // Frame 0 is the first render, whose depth-texture recreation keeps needsUpdate for the mirror; then one render a frame.
-  expect(renders).toEqual(['0:main', '0:mirror', '1:main', '2:main', '3:main']);
-  draw(4, main); expect(renders.length).toBe(5);                  // no update(): nothing armed, nothing rendered
+  // One render a frame from the first: r187 clears the flag on every render (r186 kept it after the first render, which
+  // recreated the depth texture, so the mirror drew frame 0 again).
+  expect(renders).toEqual(['0:main', '1:main', '2:main', '3:main']);
+  draw(4, main); expect(renders.length).toBe(4);                  // no update(): nothing armed, nothing rendered
   once.restore(); once.restore();
   expect([light.shadow.autoUpdate, light.shadow.needsUpdate]).toEqual([true, true]);
   light.shadow.needsUpdate = false; once.update(); expect(light.shadow.needsUpdate).toBe(false);
-  draw(5, main); draw(5, mirror); expect(renders.slice(5)).toEqual(['5:main', '5:mirror']);
+  draw(5, main); draw(5, mirror); expect(renders.slice(4)).toEqual(['5:main', '5:mirror']);
 });
 
 test('restore keeps an author-frozen shadow frozen', () => {

@@ -6,8 +6,9 @@ import type { Camera, Group, Scene, WebGPURenderer } from 'three/webgpu';
  * otherwise creates two WebGPU pipelines during interaction. Compile only this material/geometry:
  * water and fog-bank depth bindings cannot be compiled by a blanket world pass.
  *
- * Three's queued compileAsync sees DoubleSide after its temporary back/front side changes have
- * been restored. Explicit sides on separate cache owners retain both actual render variants.
+ * three 0.186's queued compileAsync saw DoubleSide after its temporary back/front side changes had
+ * been restored; 0.187 compiles each queued item with its own side, so the explicit sides on separate
+ * cache owners are now redundant, and still retain both actual render variants.
  */
 export async function prewarmContactShadows(renderer: WebGPURenderer, traffic: Group, scene: Scene, camera: Camera, signal: AbortSignal): Promise<{ dispose(): void }> {
   signal.throwIfAborted();

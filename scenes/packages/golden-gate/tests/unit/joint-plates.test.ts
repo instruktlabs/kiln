@@ -4,6 +4,7 @@
 // a polygon offset on their material (data/layout.json bridge.jointPlates) when the bridge loads; the GLB is
 // not changed. The material name is the GLB's; nothing else in the bridge uses it.
 import { describe, expect, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
 import { BoxGeometry, Group, Mesh, MeshStandardMaterial } from 'three/webgpu';
 import { LAYOUT } from '../../scripts/authored-layout';
 await import('three');
@@ -36,15 +37,12 @@ describe('joint plates', () => {
     expect(offsetJointPlates(root)).toBe(0);
   });
 
-  test('effective reversed depth changes the bias sign once and standard fallback restores it', () => {
-    const root = new Group(), steel = new MeshStandardMaterial({ name: 'JointSteel' }), geometry = new BoxGeometry();
-    root.add(new Mesh(geometry, steel), new Mesh(geometry, steel));
-    const { factor, units } = LAYOUT.bridge.jointPlates.polygonOffset;
-    for (const reversed of [false, true, true, false]) {
-      expect(offsetJointPlates(root, reversed)).toBe(1);
-      expect(steel.polygonOffsetFactor).toBe(reversed ? -factor : factor);
-      expect(steel.polygonOffsetUnits).toBe(reversed ? -units : units);
-    }
-    geometry.dispose();steel.dispose();
+  // Golden Gate opts into reversed depth. three r187 negates a material's polygon offset itself on both backends; r186
+  // did not, and the scene flipped the sign, which r187 would undo, pushing the plates away from the camera.
+  test('three r187 negates polygon offsets under reversed depth on both backends, so the layout keeps one sign', () => {
+    const source = readFileSync(Bun.resolveSync('three/webgpu', import.meta.dir), 'utf8');
+    expect(source).toContain('depthStencil.depthBias = ( this.backend.parameters.reversedDepthBuffer ) ? - material.polygonOffsetUnits : material.polygonOffsetUnits;');
+    expect(source).toContain('depthStencil.depthBiasSlopeScale = ( this.backend.parameters.reversedDepthBuffer ) ? - material.polygonOffsetFactor : material.polygonOffsetFactor;');
+    expect(source).toMatch(/if \( this\.currentDepthReversed \) \{\s*factor = - factor;\s*units = - units;\s*\}\s*gl\.polygonOffset\( factor, units \);/);
   });
 });

@@ -159,19 +159,27 @@ test('RK-7d merged meshes copy their anchor matrix flags, so a merge after freez
 /** A box whose position, normal and uv share one Float32 InterleavedBuffer of stride 8, as GLTFLoader builds a strided bufferView. */
 const interleavedBox=()=>{const s=box(),n=s.attributes.position!.count,data=new Float32Array(n*8);for(let i=0;i<n;i++){data.set([s.attributes.position!.getX(i),s.attributes.position!.getY(i),s.attributes.position!.getZ(i)],i*8);data.set([s.attributes.normal!.getX(i),s.attributes.normal!.getY(i),s.attributes.normal!.getZ(i)],i*8+3);data.set([s.attributes.uv!.getX(i),s.attributes.uv!.getY(i)],i*8+6);}
  const ib=new InterleavedBuffer(data,8),g=new BufferGeometry();g.setAttribute('position',new InterleavedBufferAttribute(ib,3,0));g.setAttribute('normal',new InterleavedBufferAttribute(ib,3,3));g.setAttribute('uv',new InterleavedBufferAttribute(ib,2,6));g.setIndex(s.index);return g;};
-/** three r186 RenderObject.getGeometryCacheKey, which the WebGPU pipeline key includes. */
-const geometryKey=(g:BufferGeometry)=>Object.keys(g.attributes).sort().map(n=>{const a=g.attributes[n] as BufferAttribute&{data?:{stride:number};offset?:number};return n+','+(a.data?a.data.stride+',':'')+(a.offset?a.offset+',':'')+a.itemSize+','+(a.normalized?'n,':'');}).join('');
-test("RK-1 layout 'source' mirrors the first part's interleaved Float32 layout, so the pipeline geometry key matches its parts; values equal the canonical merge",()=>{
+/**
+ * three r187's WebGPU vertex-buffer layout key (WebGPUAttributeUtils.getVertexBufferLayoutCacheKey), which the pipeline key
+ * includes: per buffer its byte stride and step mode, per attribute its location, byte offset and format. Locations follow
+ * name order here; a shader assigns its own order, the same for every mesh it draws.
+ */
+const layoutKey=(g:BufferGeometry)=>{const buffers=new Map<unknown,string[]>();let slot=0;
+ for(const n of Object.keys(g.attributes).sort()){const a=g.attributes[n] as BufferAttribute|InterleavedBufferAttribute,interleaved=a instanceof InterleavedBufferAttribute,array=interleaved?a.data.array:a.array,bytes=array.BYTES_PER_ELEMENT,buffer=interleaved?a.data:a;
+  let entry=buffers.get(buffer);if(!entry){const stride=(interleaved?a.data.stride:a.itemSize)*bytes;entry=[`${!interleaved&&a.itemSize>1?Math.ceil(stride/4)*4:stride},vertex`];buffers.set(buffer,entry);}
+  entry.push(`${slot++},${interleaved?a.offset*bytes:0},${array.constructor.name}x${a.itemSize}${a.normalized?'n':''}`);}
+ return[...buffers.values()].map(e=>e.join(',')).join(';');};
+test("RK-1 layout 'source' mirrors the first part's interleaved Float32 layout, so the pipeline's vertex-buffer layout key matches its parts; values equal the canonical merge",()=>{
  const merge=(layout?:'canonical'|'source',cache?:Map<string,BufferGeometry>)=>{const root=node('R',null),mat=new MeshStandardMaterial({name:'M'});mesh('a',mat,root,0,0,0,interleavedBox());const b=mesh('b',mat,root,0,2,0,interleavedBox());b.rotation.x=.7;root.updateMatrixWorld(true);return mergeRigidByMaterial(root,{isAnchor,layout,cache,cacheKey:cache&&(()=>'r')}).merged[0]!.geometry;};
  const source=merge('source'),canonical=merge(),part=interleavedBox();
- expect(geometryKey(source)).toBe(geometryKey(part));expect(geometryKey(canonical)).not.toBe(geometryKey(part));expect(geometryKey(merge('canonical'))).toBe(geometryKey(canonical));
+ expect(layoutKey(source)).toBe(layoutKey(part));expect(layoutKey(canonical)).not.toBe(layoutKey(part));expect(layoutKey(merge('canonical'))).toBe(layoutKey(canonical));
  const p=source.attributes.position as InterleavedBufferAttribute;expect(p.isInterleavedBufferAttribute).toBe(true);expect(p.data).toBe((source.attributes.uv as InterleavedBufferAttribute).data);expect(p.data.array).toBeInstanceOf(Float32Array);expect(p.data.count).toBe(2*part.attributes.position!.count);
  for(const name of ['position','normal','uv']){const s=source.getAttribute(name)!,c=canonical.getAttribute(name)!;expect(s.count).toBe(c.count);for(let i=0;i<s.count;i++)for(let k=0;k<s.itemSize;k++)expect(s.getComponent(i,k)).toBe(c.getComponent(i,k));}
  expect(Array.from(source.index!.array)).toEqual(Array.from(canonical.index!.array));expect(source.boundingSphere!.equals(canonical.boundingSphere!)).toBe(true);
- const shared=new Map<string,BufferGeometry>(),a=merge('canonical',shared),b=merge('source',shared);expect(shared.size).toBe(2);expect(geometryKey(b)).toBe(geometryKey(part));expect(a).not.toBe(b);
+ const shared=new Map<string,BufferGeometry>(),a=merge('canonical',shared),b=merge('source',shared);expect(shared.size).toBe(2);expect(layoutKey(b)).toBe(layoutKey(part));expect(a).not.toBe(b);
  // Plain and normalised inputs keep the canonical non-interleaved Float32 output in either layout.
  const plain=()=>{const root=node('R',null),mat=new MeshStandardMaterial();mesh('a',mat,root);mesh('b',mat,root,2);return mergeRigidByMaterial(root,{isAnchor,layout:'source'}).merged[0]!.geometry;};
- expect(geometryKey(plain())).toBe(geometryKey(box()));
+ expect(layoutKey(plain())).toBe(layoutKey(box()));
 });
 test('R1 order puts parts with a lower value first in the merged vertex and index ranges; ties keep scene order',()=>{
  const build=(order?:(m:Mesh)=>number)=>{const root=node('R',null),mat=new MeshStandardMaterial();mesh('Walk',mat,root,0,0,0);mesh('Curb',mat,root,5,0,0);mesh('Rail',mat,root,10,0,0);root.updateMatrixWorld(true);return mergeRigidByMaterial(root,{isAnchor,order});};

@@ -3,11 +3,14 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { REVISION } from 'three/webgpu';
 
-// The private three r186 contract src/shadows/{cache,once,threshold}.ts rely on, pinned as source snippets and their order
-// in the builds `three/webgpu` and `three/tsl` resolve to (not three/src). An upgrade that moves any of them fails here
-// before a cached map can bind a destroyed texture, share a light or render twice. Line numbers are deliberately not pinned.
+// The private three r187 contract src/shadows/{cache,once,threshold}.ts rely on, pinned as source snippets and their order
+// in the builds `three/webgpu` and `three/tsl` resolve to (not three/src). Since r187 the node classes (shadow and light
+// nodes, the material observer) live in three.tsl.js, which three.webgpu.js imports, so the two are searched as one
+// source. An upgrade that moves any of them fails here before a cached map can bind a destroyed texture, share a light
+// or render twice. Line numbers are deliberately not pinned.
 const BUILD = Bun.resolveSync('three/webgpu', import.meta.dir), TSL_BUILD = Bun.resolveSync('three/tsl', import.meta.dir);
-const SOURCE = readFileSync(BUILD, 'utf8'), CORE = readFileSync(join(dirname(BUILD), 'three.core.js'), 'utf8'), TSL = readFileSync(TSL_BUILD, 'utf8');
+const WEBGPU = readFileSync(BUILD, 'utf8'), CORE = readFileSync(join(dirname(BUILD), 'three.core.js'), 'utf8'), TSL = readFileSync(TSL_BUILD, 'utf8');
+const SOURCE = `${WEBGPU}\n${TSL}`;
 const VERSION = JSON.parse(readFileSync(join(dirname(BUILD), '..', 'package.json'), 'utf8')).version as string;
 
 /** One class member, from its one-tab-indented signature to its closing brace, searched after `anchor`. */
@@ -25,12 +28,10 @@ function unordered(body: string, snippets: string[]): string[] {
 const count = (src: string, s: string) => src.split(s).length - 1;
 const SHADOW_NODE = 'class ShadowNode extends ShadowBaseNode {', LIGHT_NODE = 'class AnalyticLightNode extends LightingNode {', OBSERVER = 'class NodeMaterialObserver {';
 
-function pinFailures(src: string, core: string, tsl: string): Record<string, string[]> {
+function pinFailures(src: string, core: string, tsl: string, webgpu = WEBGPU): Record<string, string[]> {
   const pins: Record<string, string[]> = {
     // A shadow camera mask with no bit at layer 1 or above is swapped for the viewing camera's for the render.
     maskFallback: unordered(member(src, SHADOW_NODE, 'updateShadow( frame ) {'), [
-      'const depthVersion = shadowMap.depthTexture.version;',
-      'this._depthVersionCached = depthVersion;',
       'const _shadowCameraLayer = shadow.camera.layers.mask;',
       'if ( ( shadow.camera.layers.mask & 0xFFFFFFFE ) === 0 ) {',
       'shadow.camera.layers.mask = camera.layers.mask;',
@@ -38,17 +39,17 @@ function pinFailures(src: string, core: string, tsl: string): Record<string, str
       'this.renderShadow( frame );',
       'shadow.camera.layers.mask = _shadowCameraLayer;',
     ]),
-    // Never during pre-compile; once per (camera, frameId) while armed; the flag clears only when the depth version held.
+    // Never during pre-compile; once per (camera, frameId) while armed; every render clears the flag (r187; r186 kept it
+    // when the first render recreated the depth texture, and r187 arms the map in setupShadow instead, below).
     updateBefore: [
       ...unordered(member(src, SHADOW_NODE, 'updateBefore( frame ) {'), [
-        'if ( frame.renderer._isPreCompiling === true ) return;',
+        'if ( frame.renderer._precompilationState !== null ) return;',
         'let needsUpdate = shadow.needsUpdate || shadow.autoUpdate;',
         'if ( needsUpdate ) {',
         'if ( this._cameraFrameId.get( frame.camera ) === frame.frameId ) {',
         'needsUpdate = false;',
         'this._cameraFrameId.set( frame.camera, frame.frameId );',
         'this.updateShadow( frame );',
-        'if ( this.shadowMap.depthTexture.version === this._depthVersionCached ) {',
         'shadow.needsUpdate = false;',
       ]),
       ...(count(member(src, SHADOW_NODE, 'updateBefore( frame ) {'), 'needsUpdate = ') === 3 ? [] : ['another needsUpdate write']),
@@ -61,10 +62,11 @@ function pinFailures(src: string, core: string, tsl: string): Record<string, str
       "scene.name = `Shadow Map [ ${ light.name || 'ID: ' + light.id } ]`;",
       'renderer.render( scene, shadow.camera );',
     ]),
-    // shadow(light, S) samples S through its own node; dispose frees the node's map and the per-light material.
+    // shadow(light, S) samples S through its own node, which arms S once when it builds its map; dispose frees the node's
+    // map and the per-light material.
     shadowNode: [
       ...unordered(src, ['this.shadow = shadow || light.shadow;', 'const shadow = ( light, shadow ) => new ShadowNode( light, shadow );']),
-      ...unordered(member(src, SHADOW_NODE, 'setupShadow( builder ) {'), ['shadow.camera.coordinateSystem = camera.coordinateSystem;', 'shadow.camera.updateProjectionMatrix();', 'this.shadow.map = shadowMap;']),
+      ...unordered(member(src, SHADOW_NODE, 'setupShadow( builder ) {'), ['shadow.camera.coordinateSystem = camera.coordinateSystem;', 'shadow.camera.updateProjectionMatrix();', 'this.shadow.map = shadowMap;', 'this.shadow.needsUpdate = true;']),
       ...unordered(member(src, SHADOW_NODE, '_reset() {'), ['this.disposeShadowMaterial();', 'this.shadowMap.dispose();', 'this.shadowMap = null;']),
       ...unordered(src, ['const _getShadowMaterial = ( light ) => {', 'let material = _shadowMaterialLib.get( light );']),
       ...unordered(src, ['if ( object.castShadow === true || ( object.receiveShadow && shadowType === VSMShadowMap ) ) {']),
@@ -79,7 +81,8 @@ function pinFailures(src: string, core: string, tsl: string): Record<string, str
         'shadowNode = nodeObject( customShadowNode );',
         'this.shadowColorNode = shadowColorNode = this.colorNode.mul( shadowNode );',
       ]),
-      ...unordered(member(src, LIGHT_NODE, 'setup( builder ) {'), ['if ( this.light.castShadow ) {', '} else if ( this.shadowNode !== null ) {', 'this.shadowNode.dispose();']),
+      ...unordered(member(src, LIGHT_NODE, 'setup( builder ) {'), ['if ( this.light.castShadow ) {', '} else if ( this.shadowNode !== null ) {', 'this.disposeShadow();']),
+      ...unordered(member(src, LIGHT_NODE, 'disposeShadow() {'), ['this.shadowNode.dispose();', 'this.shadowNode = null;', 'this.shadowColorNode = null;']),
       ...(count(src, 'shadow.shadowNode') === 1 ? [] : ['another shadowNode reader']),
     ],
     // Receivers rebind on a shadow map resize only through the scene light's mapSize (the kit's sentinel).
@@ -98,13 +101,17 @@ function pinFailures(src: string, core: string, tsl: string): Record<string, str
       'light.shadow.updateMatrices( light );',
       'return light.shadow.matrix;',
     ]),
-    // Visibility is inherited, layers are tested per object, children are always visited.
-    projectObject: unordered(member(src, 'class Renderer {', '_projectObject( object, camera, groupOrder, renderList, clippingContext ) {'), [
-      'if ( object.visible === false ) return;',
-      'const visible = object.layers.test( camera.layers );',
-      'const children = object.children;',
-      'this._projectObject( children[ i ], camera, groupOrder, renderList, clippingContext );',
-    ]),
+    // Visibility is inherited, layers are tested per object, children are always visited: r187's default drawing
+    // pipeline, which the kit never replaces, projects the scene.
+    projectObject: [
+      ...unordered(member(src, 'class StandardDrawingPipeline {', 'project( object, camera, groupOrder, renderList, clippingContext ) {'), [
+        'if ( object.visible === false ) return;',
+        'const visible = object.layers.test( camera.layers );',
+        'const children = object.children;',
+        'this.project( children[ i ], camera, groupOrder, renderList, clippingContext );',
+      ]),
+      ...unordered(src.slice(src.indexOf('class Renderer {')), ['this.drawingPipeline = new StandardDrawingPipeline();', 'this.drawingPipeline.project( scene, camera, 0, renderList, renderContext.clippingContext );']),
+    ],
     // Clones get their own camera (and mask); matrices come from the light's and target's world matrices, and the
     // projection is not recomputed there, so synced extents need updateProjectionMatrix.
     lightShadow: [
@@ -114,17 +121,23 @@ function pinFailures(src: string, core: string, tsl: string): Record<string, str
       ...(member(core, 'class LightShadow {', 'updateMatrices( light ) {').includes('updateProjectionMatrix') ? ['updateMatrices recomputes the projection'] : []),
     ],
     layers: unordered(core.slice(core.indexOf('class Layers {')), ['this.mask |= 1 << layer | 0;', 'return ( this.mask & layers.mask ) !== 0;']),
-    tsl: unordered(tsl, ['const min = TSL.min;', 'const shadow = TSL.shadow;']),
+    // three/tsl defines min and shadow, and three/webgpu imports its node classes from it rather than defining its own,
+    // so the kit's min(S, D) and shadow() are the nodes the renderer runs.
+    tsl: [
+      ...unordered(tsl, ['const min = /*@__PURE__*/ nodeProxyAssignable( MathNode, MathNode.MIN )', 'const shadow = ( light, shadow ) => new ShadowNode( light, shadow );']),
+      ...(webgpu.includes("from './three.tsl.js';") ? [] : ['three/webgpu does not import three/tsl']),
+      ...[SHADOW_NODE, LIGHT_NODE, 'class MathNode extends '].filter(s => webgpu.includes(s)).map(s => `three/webgpu defines its own ${s}`),
+    ],
   };
   return pins;
 }
 const clean = (pins: Record<string, string[]>) => Object.fromEntries(Object.entries(pins).filter(([, bad]) => bad.length));
 
-describe('three r186 contract for the cached sun shadow, once-per-frame and threshold', () => {
-  test('the builds three/webgpu and three/tsl resolve to are 0.186.1', () => {
+describe('three r187 contract for the cached sun shadow, once-per-frame and threshold', () => {
+  test('the builds three/webgpu and three/tsl resolve to are 0.187.0', () => {
     expect(BUILD.replaceAll('\\', '/')).toEndWith('three/build/three.webgpu.js');
     expect(TSL_BUILD.replaceAll('\\', '/')).toEndWith('three/build/three.tsl.js');
-    expect(VERSION).toBe('0.186.1'); expect(REVISION).toBe('186');
+    expect(VERSION).toBe('0.187.0'); expect(REVISION).toBe('187');
   });
   test('every pinned snippet is present and in order', () => {
     expect(clean(pinFailures(SOURCE, CORE, TSL))).toEqual({});
@@ -132,7 +145,8 @@ describe('three r186 contract for the cached sun shadow, once-per-frame and thre
   test('the pins notice a dropped mask fallback, pre-compile guard, frame dedupe, sentinel, second reader or projection change', () => {
     const fails = (src: string, core = CORE) => Object.keys(clean(pinFailures(src, core, TSL)));
     expect(fails(SOURCE.replace('if ( ( shadow.camera.layers.mask & 0xFFFFFFFE ) === 0 ) {', 'if ( shadow.camera.layers.mask === 0 ) {'))).toEqual(['maskFallback']);
-    expect(fails(SOURCE.replace('if ( frame.renderer._isPreCompiling === true ) return;', ''))).toEqual(['updateBefore']);
+    expect(fails(SOURCE.replace('if ( frame.renderer._precompilationState !== null ) return;', ''))).toEqual(['updateBefore']);
+    expect(fails(SOURCE.replace('this.shadow.map = shadowMap;\n\t\tthis.shadow.needsUpdate = true;', 'this.shadow.map = shadowMap;'))).toEqual(['shadowNode']);
     expect(fails(SOURCE.replace('if ( this._cameraFrameId.get( frame.camera ) === frame.frameId ) {', 'if ( false ) {'))).toEqual(['updateBefore']);
     const before = member(SOURCE, SHADOW_NODE, 'updateBefore( frame ) {');
     expect(fails(SOURCE.replace(before, before.replace('this.updateShadow( frame );', 'this.updateShadow( frame ); shadow.needsUpdate = false;')))).toEqual(['updateBefore']);

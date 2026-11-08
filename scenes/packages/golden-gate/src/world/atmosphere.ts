@@ -8,7 +8,7 @@
 //   point with texel snapping; the shadow camera sees the traffic layer too.
 // - During the planar-reflection render the sky hides its sun disc: the water adds the sun itself
 //   through its GGX term, so the disc would otherwise be counted twice.
-import { DirectionalLight, PMREMGenerator, Scene, Vector3, type Camera, type RenderTarget, type Texture, type WebGPURenderer } from 'three/webgpu';
+import { DirectionalLight, PMREMGenerator, Scene, Vector3, type Camera, type CubeRenderTarget, type Texture, type WebGPURenderer } from 'three/webgpu';
 import { Fn, cameraPosition, luminance, mix, normalize, positionWorld, smoothstep, vec3, vec4 } from 'three/tsl';
 import { SkyMesh } from 'three/addons/objects/SkyMesh.js';
 import { createAtmosphereUniforms, skyWithFog, type AtmosphereUniforms } from './fog';
@@ -81,7 +81,8 @@ export function createAtmosphere(renderer: WebGPURenderer, scene: Scene, o: Atmo
   const envSky = createSky(u, true), envScene = new Scene();
   envSky.scale.setScalar(100); envSky.showSunDisc.value = 0; envScene.add(envSky);
   const pmrem = new PMREMGenerator(renderer);
-  let envTarget: RenderTarget = pmrem.fromScene(envScene, 0, .1, 1000, { size: o.envSize });
+  // three r187 PMREMs are cube render targets, and its size is at least 256 (a 128 request gets 256).
+  let envTarget: CubeRenderTarget = pmrem.fromScene(envScene, 0, .1, 1000, { size: o.envSize });
   const stats = { environmentRenders: 1 };
   let fitR = 0, fitV = 0, fitExtent = 0;
 

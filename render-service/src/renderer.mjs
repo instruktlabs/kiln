@@ -6,7 +6,8 @@ import { packRgbaReadback } from './readback.mjs';
 // B1a engineering notes encoded here:
 // - bare 'three' is aliased to 'three/webgpu' via module hooks (see register-hooks.mjs);
 //   loading this module without the hooks would split three's class identity.
-// - Renderer.init() starts an internal loop via self.requestAnimationFrame — shimmed.
+// - three's renderer starts an internal loop via self.requestAnimationFrame on its first
+//   render, which initRenderer's PMREM bake makes (r186 started it in init()) — shimmed.
 // - GLTFLoader's ImageBitmapLoader path yields fake bitmaps that Dawn uploads as
 //   black; decoded images are converted to DataTexture (writeTexture path).
 // - WebGPU readback rows are already top-down: no Y flip.
@@ -28,6 +29,7 @@ export { MAX_VIEW_DIRS, validateViewDirs } from './contract.mjs';
 import { beautyCameraSpec, orthoDepth, orthoHalfExtent } from './framing.mjs';
 import { applyNodeVisibility, expandByDrawnObject } from './node-visibility.mjs';
 import { toDataTextures } from './data-textures.mjs';
+import { disposeGltf } from './dispose-gltf.mjs';
 
 globalThis.self = globalThis;
 globalThis.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 16);
@@ -147,32 +149,6 @@ export async function initRenderer(opts = {}) {
   loader.manager.setURLModifier(selfContainedResourceUrl);
   ctx = { renderer, environment, environments, loader, gpuState, device: gpuState.device };
   return ctx;
-}
-
-/**
- * Release the GPU resources this request's parse allocated. `ctx.environment` is
- * seeded into the visited set because it is shared across every request and
- * disposing it would break every later render; pooled render targets are never
- * reached from here for the same reason. three removes its own dispose listener
- * on the first call, so re-disposing a shared texture is a no-op.
- */
-function disposeGltf(gltf) {
-  const seen = new Set(ctx?.environments?.values() ?? [ctx?.environment]);
-  const dispose = (r) => {
-    if (!r || seen.has(r)) return;
-    seen.add(r);
-    r.dispose();
-  };
-  for (const root of gltf.scenes?.length ? gltf.scenes : [gltf.scene]) {
-    root?.traverse((o) => {
-      dispose(o.geometry);
-      for (const mat of Array.isArray(o.material) ? o.material : o.material ? [o.material] : []) {
-        if (seen.has(mat)) continue;
-        for (const v of Object.values(mat)) if (v?.isTexture) dispose(v);
-        dispose(mat);
-      }
-    });
-  }
 }
 
 /**
@@ -438,7 +414,7 @@ export async function renderGlb(glbBytes, opts = {}) {
       renderer.setRenderTarget(null);
       for (const target of requestTargets) target.dispose();
       scene?.clear();
-      disposeGltf(gltf);
+      disposeGltf(gltf, ctx?.environments?.values() ?? [ctx?.environment]);
     } catch (e) {
       console.warn(JSON.stringify({ evt: 'dispose-failed', error: String(e?.message ?? e) }));
     }

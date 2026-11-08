@@ -276,6 +276,61 @@ describe('derivative state key, textures, morphs, skins and instances', () => {
   });
 });
 
+describe('derivative state key on three r187 materials', () => {
+  // r187 adds diffuse roughness to MeshPhysicalMaterial (an own `_diffuseRoughness` behind an accessor) and replaces the
+  // iridescence thickness range with two own numbers, keeping the range as a prototype accessor that warns. The key
+  // reads own fields by value, so the new ones count and the deprecated one is never touched.
+  test('diffuse roughness and the iridescence thickness count, and the deprecated range is never read', () => {
+    const prototype = THREE.MeshPhysicalMaterial.prototype;
+    const range = Object.getOwnPropertyDescriptor(prototype, 'iridescenceThicknessRange')!;
+    expect(range.get).toBeFunction();
+    let rangeReads = 0;
+    Object.defineProperty(prototype, 'iridescenceThicknessRange', {
+      ...range,
+      get(this: THREE.MeshPhysicalMaterial) {
+        rangeReads++;
+        return range.get!.call(this);
+      },
+    });
+    try {
+      const root = new THREE.Group();
+      // Not 0: crossing 0 also bumps the material's version, which the key reads too.
+      const material = new THREE.MeshPhysicalMaterial({ diffuseRoughness: 0.5 });
+      root.add(new THREE.Mesh(new THREE.BoxGeometry(), material));
+      registerReviewArtifact(root, SHA);
+      const before = derivativeStateKey(root, {});
+      expect(before).toBeString();
+      const changes: Array<[string, () => void, () => void]> = [
+        [
+          'diffuse roughness',
+          () => (material.diffuseRoughness = 0.75),
+          () => (material.diffuseRoughness = 0.5),
+        ],
+        [
+          'iridescence thickness',
+          () => (material.iridescenceThicknessMaximum = 600),
+          () => (material.iridescenceThicknessMaximum = 400),
+        ],
+      ];
+      for (const [name, apply, undo] of changes) {
+        apply();
+        expect({ name, changed: derivativeStateKey(root, {}) !== before }).toEqual({
+          name,
+          changed: true,
+        });
+        undo();
+        expect({ name, restored: derivativeStateKey(root, {}) === before }).toEqual({
+          name,
+          restored: true,
+        });
+      }
+      expect(rangeReads).toBe(0);
+    } finally {
+      Object.defineProperty(prototype, 'iridescenceThicknessRange', range);
+    }
+  });
+});
+
 describe('derivative GLB memo', () => {
   test('returns a copy of the stored bytes and exports only on a miss', async () => {
     const memo = createDerivativeGlbMemo();

@@ -6,22 +6,27 @@ import { collectPinSnapshot, validatePins, type PinSnapshot, APPROVED_PINS } fro
 import { findHygieneHits, DENYLIST } from '../check-bundle-hygiene';
 import { isAllowedLicense } from '../check-licenses';
 
+// A consistent checkout is the approved pins themselves, so a version bump edits APPROVED_PINS alone.
+const pin = (name: string): string => APPROVED_PINS[name]!;
+/** The approved version with its last component raised by one: drift the check must reject. */
+const drift = (version: string): string => version.replace(/\d+$/, (n) => String(Number(n) + 1));
+
 function fixture(): PinSnapshot {
-  const peers = { react: '19.3.0', 'react-dom': '19.3.0', three: '0.186.1', '@react-three/fiber': '9.8.1' };
+  const peers = { react: pin('react'), 'react-dom': pin('react-dom'), three: pin('three'), '@react-three/fiber': pin('@react-three/fiber') };
   return {
     manifests: [
       { path: 'package.json', json: { private: true, packageManager: 'bun@1.4.2', devDependencies: { ...APPROVED_PINS } } },
       { path: 'packages/scene-kit/package.json', json: { name: '@kiln-scenes/scene-kit', private: true, peerDependencies: peers, devDependencies: peers } },
     ],
     lockfiles: ['bun.lock'],
-    lock: { packages: { three: ['three@0.186.1', '', {}, 'sha512-fixture'], '@types/three': ['@types/three@0.186.0', '', {}, 'sha512-types-fixture'] } },
-    site: { dependencies: peers, devDependencies: { '@types/react': '^19.3.0', '@types/react-dom': '^19.3.0', '@types/three': '0.186.0', typescript: '6.0.3' } },
-    engine: { dependencies: { three: '0.186.1' } },
-    renderService: { dependencies: { three: '0.186.1' } },
+    lock: { packages: { three: [`three@${pin('three')}`, '', {}, 'sha512-fixture'], '@types/three': [`@types/three@${pin('@types/three')}`, '', {}, 'sha512-types-fixture'] } },
+    site: { dependencies: peers, devDependencies: { '@types/react': '^19.3.0', '@types/react-dom': '^19.3.0', '@types/three': pin('@types/three'), typescript: '6.0.3' } },
+    engine: { dependencies: { three: pin('three') } },
+    renderService: { dependencies: { three: pin('three') } },
     toolchain: { bun: '1.4.2', node: '22.23.4', npm: '12.2.0' },
     siteToolchain: { bun: '1.4.2', node: '22.23.4', npm: '12.2.0' },
-    siteViteVersions: ['8.3.2'],
-    installedThree: [{ path: 'node_modules/three', version: '0.186.1' }],
+    siteViteVersions: [pin('vite')],
+    installedThree: [{ path: 'node_modules/three', version: pin('three') }],
   };
 }
 
@@ -39,9 +44,9 @@ describe('U-20 pin fixture repositories', () => {
         ...f.manifests.map(m => write(join(root, m.path), m.json)),
         write(join(root, 'bun.lock'), f.lock),
         write(join(root, 'toolchain.json'), f.toolchain),
-        write(join(root, 'node_modules/three/package.json'), { version: '0.186.1' }),
+        write(join(root, 'node_modules/three/package.json'), { version: pin('three') }),
         write(join(repo, 'site/package.json'), f.site),
-        write(join(repo, 'site/bun.lock'), { packages: { vite: ['vite@8.3.2'] } }),
+        write(join(repo, 'site/bun.lock'), { packages: { vite: [`vite@${pin('vite')}`] } }),
         write(join(repo, 'package.json'), f.engine),
         write(join(repo, 'render-service/package.json'), f.renderService),
         write(join(repo, 'toolchain.json'), f.siteToolchain),
@@ -51,7 +56,7 @@ describe('U-20 pin fixture repositories', () => {
       expect(snapshot.site).toEqual(f.site);
       expect(snapshot.engine).toEqual(f.engine);
       expect(snapshot.renderService).toEqual(f.renderService);
-      await write(join(repo, 'package.json'), { dependencies: { three: '0.186.2' } });
+      await write(join(repo, 'package.json'), { dependencies: { three: drift(pin('three')) } });
       expect(validatePins(collectPinSnapshot(root)).join('\n')).toContain('engine three');
     } finally {
       await rm(repo, { recursive: true, force: true });
@@ -60,33 +65,45 @@ describe('U-20 pin fixture repositories', () => {
   test('accepts exact pins and the website React types exception', () => expect(validatePins(fixture())).toEqual([]));
   test('accepts the direct Three.js Troy package while preserving React peers on R3F scenes', () => {
     const f = fixture();
-    f.manifests.push({ path: 'packages/troy/package.json', json: { private: true, peerDependencies: { three: '0.186.1' }, devDependencies: { three: '0.186.1', acorn: '8.18.0' } } });
+    f.manifests.push({ path: 'packages/troy/package.json', json: { private: true, peerDependencies: { three: pin('three') }, devDependencies: { three: pin('three'), acorn: pin('acorn') } } });
     expect(validatePins(f)).toEqual([]);
     f.manifests[2]!.path = 'packages/farm/package.json';
     expect(validatePins(f).join('\n')).toContain('missing exact react');
   });
   test('rejects Troy parser version drift and ranges while retaining its exact approved pin', () => {
-    for (const acorn of ['8.18.1', '^8.18.0', '~8.18.0']) {
+    for (const acorn of [drift(pin('acorn')), `^${pin('acorn')}`, `~${pin('acorn')}`]) {
       const f = fixture();
-      f.manifests.push({ path: 'packages/troy/package.json', json: { private: true, peerDependencies: { three: '0.186.1' }, devDependencies: { three: '0.186.1', acorn } } });
-      expect(validatePins(f).join('\n')).toContain(`acorn must be 8.18.0, got ${acorn}`);
+      f.manifests.push({ path: 'packages/troy/package.json', json: { private: true, peerDependencies: { three: pin('three') }, devDependencies: { three: pin('three'), acorn } } });
+      expect(validatePins(f).join('\n')).toContain(`acorn must be ${pin('acorn')}, got ${acorn}`);
     }
   });
   test('rejects a different three in a package', () => {
-    const f = fixture(); f.manifests[1]!.json.devDependencies!.three = '0.186.2';
-    expect(validatePins(f).join('\n')).toContain('three must be 0.186.1');
+    const f = fixture(); f.manifests[1]!.json.devDependencies!.three = drift(pin('three'));
+    expect(validatePins(f).join('\n')).toContain(`three must be ${pin('three')}`);
   });
   test('rejects a range outside the two website types exceptions', () => {
-    const f = fixture(); f.manifests[0]!.json.devDependencies!.react = '^19.3.0';
-    expect(validatePins(f).join('\n')).toContain('react must be 19.3.0');
+    const f = fixture(); f.manifests[0]!.json.devDependencies!.react = `^${pin('react')}`;
+    expect(validatePins(f).join('\n')).toContain(`react must be ${pin('react')}`);
   });
   test('detects a website mismatch', () => {
-    const f = fixture(); f.site.dependencies!.three = '0.186.2';
+    const f = fixture(); f.site.dependencies!.three = drift(pin('three'));
     expect(validatePins(f).join('\n')).toContain('website three');
   });
+  test('detects website types drift', () => {
+    const f = fixture(); f.site.devDependencies!['@types/three'] = drift(pin('@types/three'));
+    expect(validatePins(f).join('\n')).toContain(`website @types/three must be ${pin('@types/three')}`);
+  });
   test('detects a second lockfile resolution even with an exact direct pin', () => {
-    const f = fixture(); f.lock.packages['nested/three'] = ['three@0.186.2', '', {}, 'sha512-other'];
+    const f = fixture(); f.lock.packages['nested/three'] = [`three@${drift(pin('three'))}`, '', {}, 'sha512-other'];
     expect(validatePins(f).join('\n')).toContain('exactly one three resolution');
+  });
+  test('rejects a single lockfile resolution at a version other than the approved pin', () => {
+    const f = fixture(); f.lock.packages.three = [`three@${drift(pin('three'))}`, '', {}, 'sha512-other'];
+    expect(validatePins(f).join('\n')).toContain(`exactly one three resolution at ${pin('three')}`);
+  });
+  test('rejects a render service three that differs from the scenes pin', () => {
+    const f = fixture(); f.renderService.dependencies!.three = drift(pin('three'));
+    expect(validatePins(f).join('\n')).toContain(`render service three must equal scenes pin ${pin('three')}`);
   });
   test('rejects a second lockfile and an unapproved direct package', () => {
     const f = fixture(); f.lockfiles.push('packages/scene-kit/package-lock.json');
@@ -96,8 +113,8 @@ describe('U-20 pin fixture repositories', () => {
   });
   test('rejects missing TS6 alias, two physical three copies, and a wrong engine pin', () => {
     const f = fixture(); delete f.manifests[0]!.json.devDependencies!['typescript-6'];
-    f.installedThree.push({ path: 'packages/scene-kit/node_modules/three', version: '0.186.1' });
-    f.engine.dependencies!.three = '^0.186.1';
+    f.installedThree.push({ path: 'packages/scene-kit/node_modules/three', version: pin('three') });
+    f.engine.dependencies!.three = `^${pin('three')}`;
     const result = validatePins(f).join('\n');
     expect(result).toContain('typescript-6'); expect(result).toContain('physical three'); expect(result).toContain('engine three');
   });

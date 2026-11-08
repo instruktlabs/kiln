@@ -33,6 +33,7 @@ const INSPECTED = [
   'package.json',
   'render-service/package.json',
   'site/package.json',
+  'scenes/package.json',
   '.github/workflows/ci.yml',
   '.github/workflows/pages.yml',
   'AGENTS.md',
@@ -147,24 +148,43 @@ test('prose that tells a contributor to install the wrong Bun is named', async (
 test('three drifting in the site manifest is named, with the manifest', async () => {
   await rejects(
     'site/package.json',
-    (text) => text.replace('"three": "0.186.1"', '"three": "0.185.1"'),
-    'site/package.json=0.185.1',
+    (text) => text.replace('"three": "0.187.0"', '"three": "0.186.1"'),
+    'site/package.json=0.186.1',
   );
 });
 
 test('three drifting in the render service is named, with the manifest', async () => {
   await rejects(
     'render-service/package.json',
-    (text) => text.replace('"three": "0.186.1"', '"three": "0.187.0"'),
-    'render-service/package.json=0.187.0',
+    (text) => text.replace('"three": "0.187.0"', '"three": "0.188.0"'),
+    'render-service/package.json=0.188.0',
+  );
+});
+
+// The scenes workflow, which runs the scene pin check, starts only on scenes changes; this
+// gate runs on every pull request, so it is the one that sees a bump that left the scenes behind.
+test('three drifting in the scene workspace is named, with the manifest', async () => {
+  await rejects(
+    'scenes/package.json',
+    (text) => text.replace('"three": "0.187.0"', '"three": "0.186.1"'),
+    'scenes/package.json=0.186.1',
+  );
+});
+
+// Dependabot leaves three alone, so a drift is a hand bump that stopped short: the failure says how to finish it.
+test('a three drift points at the upgrade checklist', async () => {
+  await rejects(
+    'site/package.json',
+    (text) => text.replace('"three": "0.187.0"', '"three": "0.188.0"'),
+    'docs/three-upgrades.md',
   );
 });
 
 test('types left a minor behind their own runtime are named', async () => {
   await rejects(
     'package.json',
-    (text) => text.replace('"@types/three": "^0.186.0"', '"@types/three": "^0.185.4"'),
-    '@types/three ^0.185.4 does not track three 0.186.x',
+    (text) => text.replace('"@types/three": "^0.187.0"', '"@types/three": "^0.186.0"'),
+    '@types/three ^0.186.0 does not track three 0.187.x',
   );
 });
 

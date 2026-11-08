@@ -1,9 +1,10 @@
 // One program per camera projection.
 //
-// three 0.186's node material compiles `positionViewDirection` from the camera of the first
-// draw (`nodes/accessors/Position.js`): the constant (0, 0, 1) for an orthographic camera,
-// per-fragment for a perspective one. The render object and its program cache key ignore the
-// camera, so a perspective view drawn after orthographic views in one request reuses the
+// three's node material compiles `positionViewDirection` from the camera of the first draw
+// (`nodes/accessors/Position.js`, the same in 0.186 and 0.187): the constant (0, 0, 1) for an
+// orthographic camera, per-fragment for a perspective one. Its program cache key ignores the
+// projection (0.187 keys render contexts by camera type, but `RenderObject.getCacheKey` still
+// does not name it), so a perspective view drawn after orthographic views in one request reuses the
 // orthographic program and shades its reflections from the wrong direction. Naming the
 // projection in the program cache key, and marking the material for update when it changes,
 // makes three build the program for the camera that is drawing. No three import.

@@ -1,4 +1,4 @@
-/** M0 B-00e failed on both r186 backends. Z4: DPR is selected only at startup. */
+/** M0 B-00e failed on both r186 backends and has not been re-run on r187. Z4: DPR is selected only at startup. */
 export const DYNAMIC_DPR_SUPPORTED = false;
 export const RUNTIME_PIXEL_RATIO_SUPPORTED = DYNAMIC_DPR_SUPPORTED;
 export type TierName = 'minimal' | 'economy' | 'balanced' | 'high';

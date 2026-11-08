@@ -42,7 +42,7 @@
         "One licence text per vehicle",
         "A delivery.json inventory with member hashes"
       ],
-      "compatibility": "Standard glTF 2.0. A loader that does not know the MSFT_lod extension draws LOD0 and the wheels; the viewer on this site (Three.js 0.186) does exactly that. Other engines are not qualified by this download."
+      "compatibility": "Standard glTF 2.0. A loader that does not know the MSFT_lod extension draws LOD0 and the wheels; the viewer on this site does exactly that. Other engines are not qualified by this download."
     }
   ],
   "documents": [

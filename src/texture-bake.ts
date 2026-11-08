@@ -444,13 +444,17 @@ export async function bakeSceneTextures(
  * and the attribute changes the exported bytes, so computing it unconditionally
  * would move every existing textured asset for no benefit.
  *
- * MikkTSpace is the gold standard and glTF's reference basis, but it is a
- * separate WASM package. This engine is vendored into Studio as a tarball and
- * installed into two container images by two different package managers, so a
- * new native/WASM dependency is a real cost there — `computeTangentBasis` below
- * implements the standard per-triangle formulation directly instead. three's
- * own `computeTangents` used the same method before it was removed. If tangent
- * seams ever show on a shipped asset, MikkTSpace is the upgrade path.
+ * MikkTSpace is the gold standard and glTF's reference basis. Through three
+ * r186 it was a separate WASM module, and this engine is vendored into Studio as
+ * a tarball and installed into two container images by two different package
+ * managers, so a new native/WASM dependency was a real cost there —
+ * `computeTangentBasis` below implements the standard per-triangle formulation
+ * directly instead, the method three's own `BufferGeometry.computeTangents`
+ * uses. three r187 ships MikkTSpace as plain JavaScript
+ * (`three/addons/libs/mikktspace.module.js`), so that cost is gone; adopting it
+ * changes the tangent bytes of every normal-mapped asset and needs a render
+ * comparison first. If tangent seams ever show on a shipped asset, MikkTSpace is
+ * the upgrade path.
  *
  * @param root Scene root, traversed for meshes.
  * @param warnings Appended to for each mesh that needs tangents but cannot get them.

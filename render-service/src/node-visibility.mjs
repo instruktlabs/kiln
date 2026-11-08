@@ -1,6 +1,6 @@
 // KHR_node_visibility for the service's GLTFLoader.
 //
-// three 0.186's GLTFLoader does not implement the extension, so it would draw every node. A node
+// three's GLTFLoader, 0.187 as 0.186, does not implement the extension, so it would draw every node. A node
 // whose extension says `visible: false` is hidden here with its subtree, as a conforming loader
 // draws it, and the legacy sheet frames what draws. The engine's viewer does the same in
 // `src/viewer/visibility.ts`. No three import: the caller owns the Box3 instances.

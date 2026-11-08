@@ -16,25 +16,24 @@ function farmSun() {
   return light;
 }
 /**
- * Drives one child ShadowNode through three r186's own updateBefore gating (per camera and frame dedupe, never during
- * pre-compile, needsUpdate cleared only when the depth version held). updateShadow is stubbed: it logs the casters the
- * shadow camera would draw (visible through ancestors, on a camera layer, castShadow) and bumps the depth version on the
- * first render, as the first updateRenderTarget does.
+ * Drives one child ShadowNode through three r187's own updateBefore gating (per camera and frame dedupe, never during
+ * pre-compile, needsUpdate cleared by every render). updateShadow is stubbed: it logs the casters the shadow camera would
+ * draw (visible through ancestors, on a camera layer, castShadow).
  */
 function drive(node: any, scene: Scene) {
-  let first = true;const log: (string | number)[][] = [];
-  node.shadowMap = { depthTexture: { version: 0 }, dispose() {} };
+  const log: (string | number)[][] = [];
+  node.shadowMap = { dispose() {} };
   node.updateShadow = (frame: { frameId: number }) => {
-    node._depthVersionCached = node.shadowMap.depthTexture.version; if (first) { node.shadowMap.depthTexture.version++; first = false; }
     const drawn: (string | number)[] = [frame.frameId]; const layers: Layers = node.shadow.camera.layers;
     scene.traverseVisible(o => { if ((o as Mesh).isMesh && o.castShadow && o.layers.test(layers)) drawn.push(o.name); });
     log.push(drawn);
   };
-  return { log, draw: (frameId: number, camera: PerspectiveCamera) => node.updateBefore({ renderer: { _isPreCompiling: false }, camera, frameId }) };
+  return { log, draw: (frameId: number, camera: PerspectiveCamera) => node.updateBefore({ renderer: { _precompilationState: null }, camera, frameId }) };
 }
 function setup(o: Partial<CachedSunShadowOptions> = {}) {
   const scene = new Scene(), light = farmSun(); scene.add(light, light.target); scene.updateMatrixWorld(true);
-  const cache = cachedSunShadow({ light, settleFrames: 3, ...o }), composite = (light.shadow as any).shadowNode.node;
+  // r187's min() returns the MathNode itself (r186 wrapped it in a VarNode).
+  const cache = cachedSunShadow({ light, settleFrames: 3, ...o }), composite = (light.shadow as any).shadowNode;
   const S = drive(composite.aNode, scene), D = drive(composite.bNode, scene);let frame = 0;
   /** One frame: the scene's update at SystemOrder.shadows, then every camera that draws a receiver. */
   const step = (cameras = [main]) => { cache.update(); for (const c of cameras) { S.draw(frame, c); D.draw(frame, c); } frame++; };
@@ -53,7 +52,7 @@ test('mask math: kit bits sit above every scene layer and keep their own shadow 
 
 test('install: two armed clones with their own placeholder lights, combined with min; one custom node per light', () => {
   const light = farmSun(), filter = () => 0; Object.assign(light.shadow, { filterNode: filter, mapType: HalfFloatType });
-  const cache = cachedSunShadow({ light, liveMapSize: 1024 }), template = light.shadow as any, composite = template.shadowNode.node;
+  const cache = cachedSunShadow({ light, liveMapSize: 1024 }), template = light.shadow as any, composite = template.shadowNode;
   const S = cache.staticShadow as any, D = cache.liveShadow as any;
   expect(composite.method).toBe('min');
   const nodes = [composite.aNode, composite.bNode];
@@ -85,27 +84,27 @@ test('track adds the static bit per object to casters, suppressed casters and st
   expect(cache.stats).toMatchObject({ staticCasters: 4, liveCasters: 0 });
 });
 
-test('arming: both maps render on the first two frames, a mover goes live and back, the live map clears once', () => {
+test('arming: both maps render once, on the first frame a receiver draws; a mover goes live and back, the live map clears once', () => {
   const { scene, cache, S, D, step } = setup(), still = box('still'), mover = box('mover'), rig = new Group();
   rig.add(mover); scene.add(still, rig); scene.updateMatrixWorld(true); cache.track(scene, { movable: n => n === rig });
   step([]); step([]);                                                    // no receiver drawn yet: the arms wait
   step(); step(); step();
-  expect(S.log).toEqual([[2, 'still', 'mover'], [3, 'still', 'mover']]); // first render recreates the texture: two frames
-  expect(D.log).toEqual([[2], [3]]);
+  expect(S.log).toEqual([[2, 'still', 'mover']]);                         // every render clears the flag (r187)
+  expect(D.log).toEqual([[2]]);
   rig.position.x = 1; rig.updateMatrixWorld(true); step();               // frame 5: promote, static map re-armed without it
   expect(mover.layers.mask).toBe(1 | D_BIT);
   expect([S.log.at(-1), D.log.at(-1)]).toEqual([[5, 'still'], [5, 'mover']]);
   expect(cache.stats).toMatchObject({ staticCasters: 1, liveCasters: 1, staticRenders: 2 });
   expect(cache.stats.pendingSettle).toBeGreaterThan(0);
   rig.position.x = 2; rig.updateMatrixWorld(true); step([main, mirror]); // frame 6: live map only, once for two cameras
-  expect(S.log.length).toBe(3); expect(D.log.slice(-2)).toEqual([[5, 'mover'], [6, 'mover']]);
+  expect(S.log.length).toBe(2); expect(D.log.slice(-2)).toEqual([[5, 'mover'], [6, 'mover']]);
   step(); step();                                                        // frames 7, 8: unchanged, still live
   expect(D.log.at(-1)).toEqual([8, 'mover']);
   step();                                                                // frame 9: settled, back to static, live map cleared
   expect(mover.layers.mask).toBe(1 | S_BIT);
   expect([S.log.at(-1), D.log.at(-1)]).toEqual([[9, 'still', 'mover'], [9]]);
   step(); step();
-  expect([S.log.length, D.log.length]).toEqual([4, 7]);
+  expect([S.log.length, D.log.length]).toEqual([3, 6]);
   expect(cache.stats).toMatchObject({ staticCasters: 2, liveCasters: 0, staticRenders: 3, pendingSettle: 0 });
 });
 
@@ -195,7 +194,7 @@ test('invalidate re-arms the static map and records why; prime fills the live ma
   cache.invalidate('door'); cache.invalidate('door'); cache.invalidate('tier');
   expect(cache.stats).toMatchObject({ invalidations: 3, reasons: { door: 2, tier: 1 }, staticRenders: 4 });
   step(); step();
-  expect(S.log.slice(2)).toEqual([[3, 'still', 'mover']]);
+  expect(S.log.slice(1)).toEqual([[3, 'still', 'mover']]);
   cache.prime();
   expect(cache.liveShadow.camera.layers.mask).toBe(S_BIT | D_BIT);
   step();
@@ -210,7 +209,7 @@ test('a prime before the first frame holds its mask until three clears the flag'
   const { scene, cache, D, step } = setup(), still = box('still');
   scene.add(still); scene.updateMatrixWorld(true); cache.track(scene); cache.prime();
   step(); step(); step(); step();
-  expect(D.log).toEqual([[0, 'still'], [1, 'still'], [2]]);
+  expect(D.log).toEqual([[0, 'still'], [1]]);                             // the prime render clears it (r187)
 });
 
 test('template sync: extents, depth range and zoom reach the live map every frame, the static map on re-arm; sampling values reach both every frame', () => {
@@ -245,7 +244,7 @@ test('a resize re-arms both maps and moves the real light mapSize sentinel monot
 });
 
 test('dispose: both shadow nodes, both shadows, then the custom node; only the bits it added come off', () => {
-  const scene = new Scene(), light = farmSun(), cache = cachedSunShadow({ light, settleFrames: 1 }), composite = (light.shadow as any).shadowNode.node, order: string[] = [];
+  const scene = new Scene(), light = farmSun(), cache = cachedSunShadow({ light, settleFrames: 1 }), composite = (light.shadow as any).shadowNode, order: string[] = [];
   const spy = (o: any, name: string) => { const original = o.dispose.bind(o); o.dispose = () => { order.push(name); original(); }; };
   spy(composite.aNode, 'static node'); spy(composite.bNode, 'live node'); spy(cache.staticShadow, 'static shadow'); spy(cache.liveShadow, 'live shadow');
   const plain = box('plain'), owned = box('owned'), mover = box('mover'), rig = new Group(); owned.layers.enable(30); rig.add(mover); scene.add(light, plain, owned, rig); scene.updateMatrixWorld(true);
@@ -325,12 +324,12 @@ test('live() casters, whose motion the watch cannot see, draw in the live map ev
   const t = cache.track(scene, { live: n => n === cars, movable: () => true });
   expect([t.added, still.layers.mask, car.layers.mask]).toEqual([2, 1 | S_BIT, 1 | D_BIT]);
   step(); step(); step();
-  expect(S.log).toEqual([[0, 'still'], [1, 'still']]); expect(D.log).toEqual([[0, 'car'], [1, 'car'], [2, 'car']]);
+  expect(S.log).toEqual([[0, 'still']]); expect(D.log).toEqual([[0, 'car'], [1, 'car'], [2, 'car']]);
   expect(cache.stats).toMatchObject({ staticCasters: 1, liveCasters: 1, pendingSettle: 0 });
   cars.visible = false; step(); step();
   expect(D.log.slice(-2)).toEqual([[2, 'car'], [3]]); expect(cache.stats.liveCasters).toBe(0);
   car.count = 0; cars.visible = true; step(); expect(D.log.length).toBe(4);   // nothing to draw: no render
   car.count = 4; step(); expect(D.log.at(-1)).toEqual([6, 'car']);
-  expect(S.log.length).toBe(2);                                          // live casters never re-arm the static map
+  expect(S.log.length).toBe(1);                                          // live casters never re-arm the static map
   cache.dispose(); expect([car.layers.mask, still.layers.mask]).toEqual([1, 1]);
 });
