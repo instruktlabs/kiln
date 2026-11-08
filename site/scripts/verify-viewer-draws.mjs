@@ -48,6 +48,25 @@ export function installDrawCounter() {
     wrap('drawElementsInstanced', (gl, a) => count(a[1], a[4], a[0] === gl.TRIANGLES ? 4 : 0));
     wrap('drawArraysInstanced', (gl, a) => count(a[2], a[3], a[0] === gl.TRIANGLES ? 4 : 0));
   }
+  // Shaders the page asked for: WebGPU modules and linked WebGL2 programs. three caches both by source, so this is
+  // how many distinct shaders the model cost, the count that instanced parts building their own shaders inflates.
+  state.shaders = { modules: 0, programs: 0 };
+  const device = globalThis.GPUDevice?.prototype;
+  if (device) {
+    const create = device.createShaderModule;
+    device.createShaderModule = function (...args) {
+      state.shaders.modules += 1;
+      return create.apply(this, args);
+    };
+  }
+  const gl2 = globalThis.WebGL2RenderingContext?.prototype;
+  if (gl2) {
+    const link = gl2.linkProgram;
+    gl2.linkProgram = function (...args) {
+      state.shaders.programs += 1;
+      return link.apply(this, args);
+    };
+  }
   const pass = globalThis.GPURenderPassEncoder?.prototype;
   if (pass) {
     for (const [name, read] of [
@@ -191,7 +210,8 @@ async function measure(browser, origin, backend, views, output) {
       pictures[view.label] = picture;
     }
     const failures = await page.evaluate(() => window.kilnViewerFailures);
-    return { requested: backend, backend: actual, firstFrameMs, modelShownMs, longestBlockMs, load, idle, orbit, views: counted, pictures, failures, problems };
+    const shaders = await page.evaluate(() => window.kilnDraws.shaders);
+    return { requested: backend, backend: actual, firstFrameMs, modelShownMs, longestBlockMs, shaders, load, idle, orbit, views: counted, pictures, failures, problems };
   } finally {
     await page.close();
   }
