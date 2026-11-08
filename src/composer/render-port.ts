@@ -202,9 +202,10 @@ export interface DerivativeReviewFidelityV1 {
   requested: ViewFidelityPolicy;
   delivered: DeliveredViewFidelity;
   materialFaithful: boolean;
-  exactArtifact: false;
+  /** True only when every receipt is: each cell was drawn from the artifact bytes themselves. */
+  exactArtifact: boolean;
   degraded: boolean;
-  /** One receipt per deterministic derivative GLB, in displayed order. */
+  /** One receipt per GLB drawn (a derivative, or the artifact for a camera-only shot), in displayed order. */
   receipts: DerivativeViewReceiptV1[];
   reasonCodes?: ViewFidelityReasonCode[];
 }
