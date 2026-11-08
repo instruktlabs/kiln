@@ -2,8 +2,7 @@ import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import toneMappingChunk from 'three/src/renderers/shaders/ShaderChunk/tonemapping_pars_fragment.glsl.js';
-import { CUSTOM_TONE_MAPPING_STUB, REVIEW_RIG, REVIEW_RIG_SOURCE, installReviewNeutral, reviewNeutral, reviewNeutralBytes, reviewNeutralGlsl } from '../src/lib/review-rig';
+import { REVIEW_RIG, REVIEW_RIG_SOURCE, reviewNeutral, reviewNeutralBytes } from '../src/lib/review-rig';
 import { DEFAULT_ENGINE_DIR } from './rig-render.mjs';
 
 const engineDir = process.env.KILN_RIG_ENGINE_DIR ?? DEFAULT_ENGINE_DIR;
@@ -92,43 +91,3 @@ describe('Review Neutral, computed on the CPU', () => {
   });
 });
 
-describe('the WebGL tone mapping shader', () => {
-  test('is generated from the rig constants, with the same construction as the engine’s node', () => {
-    const glsl = reviewNeutralGlsl();
-    expect(glsl).toContain('vec3 CustomToneMapping( vec3 color ) {');
-    expect(glsl).toContain(`ReviewNeutralOffset = ${REVIEW_RIG.toneMapping.offset};`);
-    expect(glsl).toContain(`ReviewNeutralStart = ${REVIEW_RIG.toneMapping.startCompression};`);
-    expect(glsl).toContain(`ReviewNeutralDesaturation = ${REVIEW_RIG.toneMapping.desaturation};`);
-    expect(glsl).toContain('color *= toneMappingExposure;');
-    // Whole numbers are written as GLSL floats, or the compiler rejects the integer.
-    expect(reviewNeutralGlsl({ offset: 1, startCompression: 0.5, desaturation: 2 })).toContain('ReviewNeutralOffset = 1.0;');
-  });
-
-  test('differs from three’s own Neutral mapping only in constants, which this documents', () => {
-    const neutral = toneMappingChunk;
-    expect(neutral).toContain('const float StartCompression = 0.8 - 0.04;');
-    expect(neutral).toContain('float offset = x < 0.08 ? x - 6.25 * x * x : 0.04;');
-    expect(neutral).toContain('const float Desaturation = 0.15;');
-  });
-
-  test('replaces only the empty CustomToneMapping stub of three’s chunk, once', () => {
-    const chunks = chunkWithStub();
-    const original = chunks.tonemapping_pars_fragment;
-    expect(original).toContain(CUSTOM_TONE_MAPPING_STUB);
-    expect(installReviewNeutral(chunks)).toBe(true);
-    expect(chunks.tonemapping_pars_fragment).not.toContain(CUSTOM_TONE_MAPPING_STUB);
-    expect(chunks.tonemapping_pars_fragment).toContain('ReviewNeutralOffset');
-    // Everything else in the chunk (the built-in mappers) is untouched.
-    expect(chunks.tonemapping_pars_fragment.replace(reviewNeutralGlsl(), CUSTOM_TONE_MAPPING_STUB)).toBe(original);
-    const installed = chunks.tonemapping_pars_fragment;
-    expect(installReviewNeutral(chunks)).toBe(true);
-    expect(chunks.tonemapping_pars_fragment).toBe(installed);
-  });
-
-  test('refuses a chunk it was not written against instead of guessing', () => {
-    const changed = { tonemapping_pars_fragment: 'vec3 CustomToneMapping( vec3 color ) { return color * 2.0; }' };
-    expect(installReviewNeutral(changed)).toBe(false);
-    expect(changed.tonemapping_pars_fragment).toBe('vec3 CustomToneMapping( vec3 color ) { return color * 2.0; }');
-    expect(installReviewNeutral({})).toBe(false);
-  });
-});

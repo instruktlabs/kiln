@@ -5,6 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import puppeteer from 'puppeteer-core';
 import { chromeExecutable } from './build-site-media.mjs';
+import { VIEWER_THREE_ALIAS } from './viewer-three-alias.mjs';
 
 /**
  * Check, in a real browser, that the site viewer's lighting reproduces the review rig.
@@ -13,7 +14,7 @@ import { chromeExecutable } from './build-site-media.mjs';
  *
  * The rig's calibration chart (`assets/calibration.glb`: 48 patches, two roughness values, four panel
  * orientations: key, up, side, away) is rendered from the rig's four fixed cameras with the viewer's own
- * `applyReviewRig`, in a WebGL renderer built into a small page by Vite. The median of each patch's central
+ * `applyReviewRig`, in the viewer's own renderer built into a small page by Vite. The median of each patch's central
  * 11x11 pixels is compared with `measurements/review-neutral-v1.json`, which the engine's render service
  * measured on the same chart (WebGPU, Dawn/D3D12). Nothing is written next to the chart; the evidence goes to
  * `--out`. It needs Chrome or Chromium (CHROME_PATH) and the site's installed dependencies.
@@ -36,7 +37,7 @@ export async function buildHarness(outDir) {
     root: SITE,
     logLevel: 'warn',
     publicDir: false,
-    resolve: { dedupe: ['three'] },
+    resolve: { alias: [VIEWER_THREE_ALIAS] },
     build: {
       outDir,
       emptyOutDir: true,
