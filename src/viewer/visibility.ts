@@ -1,7 +1,7 @@
 /**
  * `KHR_node_visibility` in the local viewer (R44).
  *
- * three's GLTFLoader (0.186) does not implement the extension, so it would draw every node. The
+ * three's GLTFLoader (0.187, as 0.186) does not implement the extension, so it would draw every node. The
  * viewer hides each node the extension marks `visible: false`, and with it the node's subtree,
  * in the loaded scene and in the lower levels of detail it builds. The camera frames what draws.
  */

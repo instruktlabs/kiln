@@ -30,9 +30,10 @@
  *
  * Tangents are baked here, not with gltf-transform's `transformPrimitive` (4.5.0's
  * `applyTangentMatrix` reads x after overwriting it and never flips w): xyz through the upper
- * 3x3, normalised, w *= sign(det). Renderers disagree on mirrored frames. three r186 builds the
- * bitangent as cross(N, T) * w with no determinant term (`normal_vertex.glsl.js:9`,
- * `nodes/accessors/Bitangent.js:58`); a renderer that applies the world determinant does not. So
+ * 3x3, normalised, w *= sign(det). Renderers disagree on mirrored frames. three (r186 and r187,
+ * whose two files are identical) builds the bitangent as cross(N, T) * w with no determinant term
+ * (`normal_vertex.glsl.js:9`, `nodes/accessors/Bitangent.js:58`); a renderer that applies the world
+ * determinant does not. So
  * by default a tangent-bearing primitive joins only parts of the same world handedness, where both
  * agree; `mergeMirroredTangents` joins across handedness and keeps the determinant-corrected frame.
  *
