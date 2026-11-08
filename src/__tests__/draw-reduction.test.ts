@@ -4,11 +4,13 @@
  */
 import { describe, expect, it } from 'bun:test';
 import { createHash } from 'node:crypto';
+import type { Document, Node } from '@gltf-transform/core';
+import { type InstancedMesh, KHRNodeVisibility, type Visibility } from '@gltf-transform/extensions';
 import * as THREE from 'three';
 import { exportAssetGlb } from '../asset-export';
 import type { AssetRecord } from '../assets';
 import { reduceDrawCalls } from '../draw-reduction';
-import { createGltfIO } from '../gltf-io';
+import { createGltfIO, type Lod, MSFT_LOD, MSFTLod } from '../gltf-io';
 import { collectGlbMetrics } from '../metrics';
 import {
   boxGeo,
@@ -162,6 +164,235 @@ describe('reduceDrawCalls', () => {
       .listNodes()
       .find((node) => node.getName() === 'Mesh_Door');
     expect(door?.getMesh()).not.toBeNull();
+  });
+
+  it('names each batch and records which copies went into it, in instance order', async () => {
+    const { bytes } = await renderSceneToGLB(buildingScene(), { instance: 'off' });
+    const before = await createGltfIO().readBinary(bytes);
+    const at = new Map(
+      before
+        .getRoot()
+        .listNodes()
+        .map((node) => [node.getName(), node.getWorldTranslation()]),
+    );
+    // The legacy exporter names meshes and the community one does not; batch names hold either way.
+    const mesh =
+      before
+        .getRoot()
+        .listNodes()
+        .find((node) => node.getName() === 'Mesh_Pane0')
+        ?.getMesh()
+        ?.getName() ?? '';
+    const doc = await createGltfIO().readBinary(bytes);
+    const summary = await reduceDrawCalls(doc);
+
+    expect(summary.instancing).toEqual([
+      {
+        node: 'Mesh_Pane0_Instances',
+        mesh,
+        count: 2,
+        instances: ['Mesh_Pane0', 'Mesh_Pane1'],
+      },
+      {
+        node: 'Mesh_MirrorPane0_Instances',
+        mesh,
+        count: 2,
+        instances: ['Mesh_MirrorPane0', 'Mesh_MirrorPane1'],
+      },
+    ]);
+    for (const { node: name, instances } of summary.instancing) {
+      const node = doc
+        .getRoot()
+        .listNodes()
+        .find((candidate) => candidate.getName() === name);
+      const batch = node?.getExtension<InstancedMesh>('EXT_mesh_gpu_instancing');
+      if (!node || !batch) throw new Error(`no batch named ${name}`);
+      const world = new THREE.Matrix4().fromArray(node.getWorldMatrix());
+      const translations = batch.getAttribute('TRANSLATION')!;
+      instances.forEach((copy, i) => {
+        const placed = new THREE.Vector3(...translations.getElement(i, [])).applyMatrix4(world);
+        const expected = at.get(copy)!;
+        for (let k = 0; k < 3; k++) expect(placed.getComponent(k)).toBeCloseTo(expected[k]!, 5);
+      });
+    }
+  });
+});
+
+/**
+ * Four one-off stone parts that merge into one draw, and a repeated pane. `mark` makes the door a
+ * part something addresses; the door must then keep its own geometry where it was authored.
+ */
+async function reduceWithMarkedDoor(mark: (doc: Document, door: Node) => void) {
+  const root = createRoot('Probe');
+  const stone = gameMaterial(0x999999);
+  createPart('Wall', boxGeo(4, 3, 0.4), stone, { parent: root });
+  createPart('Pier', boxGeo(0.5, 3, 0.5), stone, { position: [3, 0, 0], parent: root });
+  createPart('Door', boxGeo(1, 2, 0.1), stone, { position: [1, 0, 1], parent: root });
+  createPart('Plinth', boxGeo(1, 0.5, 1), stone, { position: [5, 0, 1], parent: root });
+  const pane = createPart('Pane0', planeGeo(1, 2), gameMaterial(0x803030), {
+    position: [0, 1, 4],
+    parent: root,
+  });
+  createInstance('Pane1', pane, { position: [3, 1, 4], parent: root });
+  const { bytes } = await renderSceneToGLB(root, { instance: 'off' });
+  const doc = await createGltfIO().readBinary(bytes);
+  const find = (name: string) =>
+    doc
+      .getRoot()
+      .listNodes()
+      .find((node) => node.getName() === name);
+  const door = find('Mesh_Door')!;
+  const authored = Array.from(
+    door.getMesh()!.listPrimitives()[0]!.getAttribute('POSITION')!.getArray()!,
+  );
+  mark(doc, door);
+  const summary = await reduceDrawCalls(doc);
+  const kept = find('Mesh_Door');
+  const positions = kept?.getMesh()?.listPrimitives()[0]?.getAttribute('POSITION')?.getArray();
+  return {
+    doc,
+    summary,
+    find,
+    door: kept,
+    doorPositions: positions ? Array.from(positions) : undefined,
+    authored,
+  };
+}
+
+describe('--draws minimal keeps what a consumer addresses', () => {
+  it('merges an unmarked door with the other stone', async () => {
+    const { summary, door, find } = await reduceWithMarkedDoor(() => {});
+    expect(summary.merges).toBeGreaterThan(0);
+    expect(summary.batches).toBe(1);
+    expect(find('Mesh_Pane1')).toBeUndefined();
+    expect(door?.getMesh() ?? null).toBeNull();
+  });
+
+  it('keeps an animated part and its channel', async () => {
+    const { doc, summary, door, doorPositions, authored } = await reduceWithMarkedDoor(
+      (doc, door) => {
+        const buffer = doc.getRoot().listBuffers()[0]!;
+        const accessor = (type: 'SCALAR' | 'VEC3', values: number[]) =>
+          doc.createAccessor().setType(type).setArray(new Float32Array(values)).setBuffer(buffer);
+        const sampler = doc
+          .createAnimationSampler()
+          .setInput(accessor('SCALAR', [0, 1]))
+          .setOutput(accessor('VEC3', [1, 0, 1, 2, 0, 1]));
+        const channel = doc
+          .createAnimationChannel()
+          .setTargetNode(door)
+          .setTargetPath('translation')
+          .setSampler(sampler);
+        doc.createAnimation('Open').addSampler(sampler).addChannel(channel);
+      },
+    );
+    expect(summary.merges).toBeGreaterThan(0);
+    expect(summary.batchingSkipped).toBe('animations');
+    expect(doorPositions).toEqual(authored);
+    expect(doc.getRoot().listAnimations()[0]!.listChannels()[0]!.getTargetNode()).toBe(door!);
+  });
+
+  it('keeps a level-of-detail chain', async () => {
+    const { doc, summary, door, doorPositions, authored } = await reduceWithMarkedDoor(
+      (doc, door) => {
+        const level = doc.createNode('Mesh_Door_Lod1').setMesh(door.getMesh());
+        door.setExtension(MSFT_LOD, doc.createExtension(MSFTLod).createLod().addLevel(level));
+      },
+    );
+    expect(summary.merges).toBeGreaterThan(0);
+    expect(summary.batchingSkipped).toBe('levels of detail');
+    expect(doorPositions).toEqual(authored);
+    const levels = door!.getExtension<Lod>(MSFT_LOD)!.listLevels();
+    expect(levels.map((level) => level.getName())).toEqual(['Mesh_Door_Lod1']);
+    expect(doc.getRoot().listNodes()).toContain(levels[0] as Node);
+  });
+
+  it('keeps a hidden part', async () => {
+    const { summary, door, doorPositions, authored } = await reduceWithMarkedDoor((doc, door) => {
+      door.setExtension(
+        'KHR_node_visibility',
+        doc.createExtension(KHRNodeVisibility).createVisibility().setVisible(false),
+      );
+    });
+    expect(summary.merges).toBeGreaterThan(0);
+    expect(summary.batchingSkipped).toBe('node extras or visibility');
+    expect(doorPositions).toEqual(authored);
+    expect(door!.getExtension<Visibility>('KHR_node_visibility')!.getVisible()).toBe(false);
+  });
+
+  it('keeps a part with semantic metadata, and a part a relationship names', async () => {
+    const semantic = { kilnSemantic: { version: 1, roles: ['interaction.door'] } };
+    const marked = await reduceWithMarkedDoor((_, door) => door.setExtras(semantic));
+    expect(marked.summary.merges).toBeGreaterThan(0);
+    expect(marked.summary.batchingSkipped).toBe('node extras or visibility');
+    expect(marked.doorPositions).toEqual(marked.authored);
+    expect(marked.door!.getExtras()).toEqual(semantic);
+
+    const named = await reduceWithMarkedDoor((doc) => {
+      const wall = doc
+        .getRoot()
+        .listNodes()
+        .find((node) => node.getName() === 'Mesh_Wall')!;
+      wall.setExtras({
+        kilnSemantic: {
+          version: 1,
+          relationships: [{ type: 'opens', targetType: 'node', target: 'Mesh_Door' }],
+        },
+      });
+    });
+    expect(named.summary.merges).toBeGreaterThan(0);
+    expect(named.doorPositions).toEqual(named.authored);
+  });
+
+  it('keeps every part a review clip animates', async () => {
+    const { doc, summary, find, doorPositions, authored } = await reduceWithMarkedDoor((doc) => {
+      const track = (name: string) => ({ name, times: [0, 1], values: [1, 0] });
+      doc
+        .getRoot()
+        .listScenes()[0]!
+        .setExtras({
+          kilnReviewClipsV1: {
+            version: 1,
+            clips: [
+              {
+                name: 'Fade',
+                duration: 1,
+                tracks: [track('Mesh_Door.material.opacity'), track('Mesh_Pane1.material.opacity')],
+              },
+            ],
+          },
+        });
+    });
+    expect(summary.merges).toBeGreaterThan(0);
+    expect(summary.batchingSkipped).toBe('review clips');
+    expect(doorPositions).toEqual(authored);
+    const pane = find('Mesh_Pane0')?.getMesh();
+    expect(pane).toBeDefined();
+    expect(find('Mesh_Pane1')?.getMesh()).toBe(pane!);
+    expect(Object.keys(doc.getRoot().listScenes()[0]!.getExtras())).toContain('kilnReviewClipsV1');
+  });
+
+  it('reads a review track name three cannot parse as the node it names', async () => {
+    const { summary, doorPositions, authored } = await reduceWithMarkedDoor((doc) => {
+      doc
+        .getRoot()
+        .listScenes()[0]!
+        .setExtras({
+          kilnReviewClipsV1: {
+            version: 1,
+            clips: [
+              {
+                name: 'Odd',
+                duration: 1,
+                tracks: [{ name: 'Mesh_Door', times: [0], values: [1] }],
+              },
+            ],
+          },
+        });
+    });
+    expect(summary.merges).toBeGreaterThan(0);
+    expect(summary.batchingSkipped).toBe('review clips');
+    expect(doorPositions).toEqual(authored);
   });
 });
 
