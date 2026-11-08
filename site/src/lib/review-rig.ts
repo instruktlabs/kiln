@@ -71,7 +71,7 @@ export type ReviewNeutralConstants = {
   readonly desaturation: number;
 };
 
-/** The rig's tone mapping of a linear colour, exactly as its render service computes it (used to check the shader). */
+/** The rig's tone mapping of a linear colour, exactly as its render service computes it. */
 export function reviewNeutral(
   linear: Vec3,
   exposure: number = REVIEW_RIG.exposure,
@@ -104,50 +104,89 @@ export const reviewNeutralBytes = (linear: Vec3, exposure: number = REVIEW_RIG.e
     Math.round(srgbEncode(Math.min(1, Math.max(0, c))) * 255),
   );
 
-const glslNumber = (value: number) => (Number.isInteger(value) ? value.toFixed(1) : String(value));
+const srgbDecode = (e: number) =>
+  e <= 0.04045 ? e / 12.92 : ((e + 0.055) / 1.055) ** (1 / 0.41666);
 
-/** The GLSL of `CustomToneMapping` for three's WebGL renderer: the same construction as `reviewNeutral`, from the same constants. */
-export function reviewNeutralGlsl(
-  constants: ReviewNeutralConstants = REVIEW_RIG.toneMapping,
-): string {
-  const { offset, startCompression, desaturation } = constants;
-  return `// ${REVIEW_RIG.id}: Review Neutral (Khronos PBR Neutral construction, rig-calibrated constants)
-vec3 CustomToneMapping( vec3 color ) {
-	const float ReviewNeutralOffset = ${glslNumber(offset)};
-	const float ReviewNeutralStart = ${glslNumber(startCompression)};
-	const float ReviewNeutralDesaturation = ${glslNumber(desaturation)};
-	color *= toneMappingExposure;
-	float x = min( color.r, min( color.g, color.b ) );
-	float glare = x < 2. * ReviewNeutralOffset ? x - x * x / ( 4. * ReviewNeutralOffset ) : ReviewNeutralOffset;
-	color -= glare;
-	float peak = max( color.r, max( color.g, color.b ) );
-	if ( peak < ReviewNeutralStart ) return color;
-	float d = 1. - ReviewNeutralStart;
-	float newPeak = 1. - d * d / ( peak + d - ReviewNeutralStart );
-	color *= newPeak / peak;
-	float g = 1. - 1. / ( ReviewNeutralDesaturation * ( peak - newPeak ) + 1. );
-	return mix( color, vec3( newPeak ), g );
-}`;
+// three's ACES filmic mapping, read row-major (the engine's `render-service/src/display-transform.mjs`), inverted.
+const ACES_INPUT = [0.59719, 0.35458, 0.04823, 0.076, 0.90834, 0.01566, 0.0284, 0.13383, 0.83777];
+const ACES_OUTPUT = [
+  1.60475, -0.53108, -0.07367, -0.10208, 1.10813, -0.00605, -0.00327, -0.07276, 1.07602,
+];
+const ACES_FIT = { a: 0.0245786, b: 0.000090537, c: 0.983729, d: 0.432951, e: 0.238081 };
+
+const multiply = (m: readonly number[], v: readonly number[]): [number, number, number] =>
+  [0, 1, 2].map(
+    (row) =>
+      (m[row * 3] as number) * (v[0] as number) +
+      (m[row * 3 + 1] as number) * (v[1] as number) +
+      (m[row * 3 + 2] as number) * (v[2] as number),
+  ) as [number, number, number];
+
+function invert3(m: readonly number[]): number[] {
+  const [a, b, c, d, e, f, g, h, i] = m as [
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+    number,
+  ];
+  const A = e * i - f * h;
+  const B = -(d * i - f * g);
+  const C = d * h - e * g;
+  const det = a * A + b * B + c * C;
+  return [
+    A,
+    -(b * i - c * h),
+    b * f - c * e,
+    B,
+    a * i - c * g,
+    -(a * f - c * d),
+    C,
+    -(a * h - b * g),
+    a * e - b * d,
+  ].map((v) => v / det);
 }
 
-/** The stub three ships for its `CustomToneMapping` slot: the only text the rig's shader replaces. */
-export const CUSTOM_TONE_MAPPING_STUB = 'vec3 CustomToneMapping( vec3 color ) { return color; }';
+/** The non-negative root of the ACES fit, which is monotonic there: one quadratic per channel. */
+function acesFitInverse(t: number) {
+  const { a, b, c, d, e } = ACES_FIT;
+  const qa = 1 - c * t;
+  const qb = a - c * d * t;
+  const qc = -(b + e * t);
+  return (-qb + Math.sqrt(qb * qb - 4 * qa * qc)) / (2 * qa);
+}
+
+function reviewNeutralInverse(display: Vec3, exposure: number): [number, number, number] {
+  const { offset, startCompression: start, desaturation } = REVIEW_RIG.toneMapping;
+  const newPeak = Math.max(...display);
+  let colour: readonly number[] = display;
+  if (newPeak >= start) {
+    const d = 1 - start;
+    const peak = 2 * start - 1 + (d * d) / (1 - newPeak);
+    const whiteMix = 1 - 1 / (desaturation * (peak - newPeak) + 1);
+    colour = display.map((c) => (((c - newPeak * whiteMix) / (1 - whiteMix)) * peak) / newPeak);
+  }
+  const minimum = Math.min(...colour);
+  const originalMinimum = minimum < offset ? Math.sqrt(4 * offset * minimum) : minimum + offset;
+  return colour.map((c) => (c + originalMinimum - minimum) / exposure) as [number, number, number];
+}
 
 /**
- * Put Review Neutral into three's tone mapping chunk, in place of the empty `CustomToneMapping` stub. Returns
- * whether the rig's mapper is installed. It refuses (and changes nothing) when the chunk is not the text this
- * was written against, so a three upgrade falls back to three's own Neutral mapping instead of a broken shader.
- * Idempotent. `chunks` is three's `ShaderChunk` object; nothing else about three is modified.
+ * The linear clear colour that comes out of the output pass as the rig's backdrop. The scene background is cleared into
+ * the same framebuffer as the model and tone mapped with it, so a plain colour would come out shifted. Compositing the
+ * backdrop afterwards would leave a fringe on every silhouette, so it stays in the pass and this answers what goes in,
+ * as the engine's `backdropClearColor` does for its captures.
  */
-export function installReviewNeutral(
-  chunks: Record<string, string>,
-  constants: ReviewNeutralConstants = REVIEW_RIG.toneMapping,
-): boolean {
-  const chunk = chunks.tonemapping_pars_fragment;
-  if (typeof chunk !== 'string') return false;
-  if (chunk.includes('ReviewNeutralOffset')) return true;
-  if (!chunk.includes(CUSTOM_TONE_MAPPING_STUB)) return false;
-  const glsl = reviewNeutralGlsl(constants);
-  chunks.tonemapping_pars_fragment = chunk.replace(CUSTOM_TONE_MAPPING_STUB, () => glsl);
-  return true;
+export function backdropLinear(mapping: 'neutral' | 'aces' | 'linear'): [number, number, number] {
+  const display = [1, 3, 5].map((at) =>
+    srgbDecode(Number.parseInt(REVIEW_RIG.backdrop.slice(at, at + 2), 16) / 255),
+  ) as [number, number, number];
+  if (mapping === 'neutral') return reviewNeutralInverse(display, REVIEW_RIG.exposure);
+  if (mapping === 'linear') return display;
+  const fitted = multiply(invert3(ACES_OUTPUT), display).map(acesFitInverse);
+  return multiply(invert3(ACES_INPUT), fitted).map((c) => c * 0.6) as [number, number, number];
 }

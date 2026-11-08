@@ -2,6 +2,7 @@
  * Saved-asset delivery profiles. No renderer, filesystem, or network dependencies; the
  * three.js runtime target loads its glTF passes and the meshopt encoder lazily.
  */
+import type { DrawReductionV1 } from './draw-reduction';
 import {
   ASSET_LIMIT,
   assetMaterialRootManifests,
@@ -54,6 +55,10 @@ export interface AssetGlbExportOptions extends RuntimeThreeOptionsV1 {
   textures?: AssetExportTextures;
   /** External textures only: a portable sibling `*.gltf` filename. */
   gltfFileName?: string;
+  /** Runtime only, opt-in: batch every repeat and merge one-off parts (see docs/export-profiles.md). */
+  draws?: 'minimal';
+  /** `draws` only: metres per merge cell; a viewer can cull one cell at a time. */
+  drawCellSize?: number;
 }
 export type AssetGlbExport =
   | { profile: 'editable'; glb: Uint8Array }
@@ -92,6 +97,8 @@ export interface RuntimeMetadataV1 {
   delivery?: RuntimeThreeDeliveryV1;
   /** Opt-in texture manifest: each delivered image's exact identity, by image index. */
   textures?: RuntimeTextureManifestEntryV1[];
+  /** Present when `draws: 'minimal'` derived this file: what the reduction did. */
+  drawReduction?: DrawReductionV1;
 }
 
 const encoder = new TextEncoder();
@@ -253,6 +260,14 @@ export async function exportAssetGlb(
     throw new Error('Runtime maxLod requires the three runtime target');
   if (options.positionBits !== undefined && options.target !== 'three')
     throw new Error('Runtime positionBits requires the three runtime target');
+  if (options.draws !== undefined && options.draws !== 'minimal')
+    throw new Error('Unknown runtime draws option');
+  if (options.draws !== undefined && profile !== 'runtime')
+    throw new Error('A draw reduction requires the runtime profile');
+  if (options.drawCellSize !== undefined && options.draws === undefined)
+    throw new Error('A draw cell size requires the minimal draws option');
+  if (options.drawCellSize !== undefined && !(options.drawCellSize > 0))
+    throw new Error('The draw cell size must be a positive number of metres');
   const textures = options.textures;
   if (textures !== undefined && textures !== 'manifest' && textures !== 'external')
     throw new Error('Unknown runtime texture option');
@@ -263,13 +278,24 @@ export async function exportAssetGlb(
   const gltfName = options.gltfFileName ?? 'runtime.gltf';
   if (textures === 'external') validateGltfFileName(gltfName);
   validateRecordShape(record);
-  const bytes = record.files['asset.glb']!;
+  let bytes = record.files['asset.glb']!;
   if (profile === 'editable') return { profile, glb: bytes };
   const name = options.metadataFileName ?? 'runtime.kiln-metadata.json';
   validateMetadataFileName(name);
   for (const [file, data] of Object.entries(record.files)) {
     if ((await sha256(data)) !== record.manifest.files[file]!.sha256)
       throw new Error(`Asset integrity mismatch: ${file}`);
+  }
+
+  let drawReduction: DrawReductionV1 | undefined;
+  if (options.draws) {
+    const { reduceGlbDrawCalls } = await import('./draw-reduction');
+    const reduced = await reduceGlbDrawCalls(bytes, {
+      ...(options.drawCellSize !== undefined ? { cellSize: options.drawCellSize } : {}),
+    });
+    if (reduced.glb.byteLength > ASSET_LIMIT) throw new Error('Runtime export exceeds 64 MiB');
+    bytes = reduced.glb;
+    drawReduction = reduced.summary;
   }
 
   const { json, jsonEnd } = readGlbJson(bytes);
@@ -309,6 +335,7 @@ export async function exportAssetGlb(
         : {}),
     },
     scenes,
+    ...(drawReduction ? { drawReduction } : {}),
   };
   // The three target derives from the review-free GLB; provenance is stamped on its result.
   let base = bytes,

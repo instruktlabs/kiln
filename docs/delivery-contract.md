@@ -33,7 +33,10 @@ Hidden nodes are excluded from triangle counts, bounds and QA.
 
 `repeatInstances(parent)` marks a parent (`extras.kilnRepeatInstances`) whose
 identical leaf children the three.js runtime target turns into one
-`EXT_mesh_gpu_instancing` node. The editable GLB keeps every child.
+`EXT_mesh_gpu_instancing` node. The editable GLB keeps every child. Mirrored children
+form a second batch on a node scaled `[-1, 1, 1]`, because a node states the winding for
+all its copies. A turned, stretched or mirrored child of a mesh with `TANGENT` stays a
+separate node; see [the runtime notes](runtime.md).
 
 ## Baked vertex attributes
 
