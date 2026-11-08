@@ -1,16 +1,14 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { ContactShadows, Grid, OrbitControls, useGLTF, useProgress } from '@react-three/drei';
+import { useProgress } from '@react-three/drei/core/Progress';
 import { Component, Suspense, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import * as THREE from 'three';
-import { REVIEW_RIG } from '../lib/review-rig';
+import * as THREE from 'three/webgpu';
 import {
   DEFAULT_TONE_MAPPING,
   TONE_MAPPINGS,
   type ToneMappingId,
   applyReviewRig,
   applyToneMapping,
-  reviewToneMapping,
   toneMappingChoice,
 } from '../lib/review-rig-three';
 import {
@@ -25,6 +23,10 @@ import {
 } from './viewer-framing';
 import { clearingOnError } from './viewer-retry';
 import { createVehiclePaint, PAINT_SWATCHES } from './vehicle-paint';
+import { OrbitControls, clearModel, useModel } from './viewer-controls';
+import { restoreCulling, viewerFrameloop } from './viewer-draws';
+import { BakedContactShadow, GroundGrid } from './viewer-ground';
+import { compileAhead, releaseViewerRenderer, viewerRendererFactory } from './viewer-renderer';
 
 interface OrbitLike {
   target: THREE.Vector3;
@@ -87,17 +89,26 @@ function surfacePoints(root: THREE.Object3D, budget = 4000): THREE.Vector3[] {
  * is generated in the browser from three's own room scene (a few milliseconds, once) rather than fetched.
  */
 function ReviewLighting() {
-  const gl = useThree((s) => s.gl);
+  const gl = useThree((s) => s.gl) as unknown as THREE.WebGPURenderer;
   const scene = useThree((s) => s.scene);
-  useEffect(() => applyReviewRig(gl, scene), [gl, scene]);
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    const remove = applyReviewRig(gl, scene);
+    invalidate();
+    return remove;
+  }, [gl, scene, invalidate]);
   return null;
 }
 
 /** The tone mapping the visitor chose: the rig's own until they pick another (see `TONE_MAPPINGS`). */
 function ToneMapping({ id }: { id: ToneMappingId }) {
-  const gl = useThree((s) => s.gl);
+  const gl = useThree((s) => s.gl) as unknown as THREE.WebGPURenderer;
   const scene = useThree((s) => s.scene);
-  useEffect(() => applyToneMapping(gl, scene, id), [gl, scene, id]);
+  const invalidate = useThree((s) => s.invalidate);
+  useEffect(() => {
+    applyToneMapping(gl, scene, id);
+    invalidate();
+  }, [gl, scene, id, invalidate]);
   return null;
 }
 
@@ -128,18 +139,21 @@ function Model({
   paintColour: string | null;
   onPaintReady: (originalHex: string | undefined) => void;
 }) {
-  // No Draco decoder path: drei's default would fetch the decoder from a third-party host. No shipped GLB uses
-  // KHR_draco_mesh_compression, and validate-static fails the build if one ever does.
-  const { scene: loadedScene, animations } = useGLTF(url, false);
+  // No Draco decoder: it would have to be fetched from another host. No shipped GLB uses KHR_draco_mesh_compression,
+  // and validate-static fails the build if one ever does.
+  const { scene: loadedScene, animations } = useModel(url);
   const paint = useMemo(
     () => createVehiclePaint(loadedScene, paintAssetId),
     [loadedScene, paintAssetId],
   );
   const scene = paint?.scene ?? loadedScene;
   useEffect(() => onPaintReady(paint?.originalHex), [paint, onPaintReady]);
-  useEffect(() => paint?.setColour(paintColour), [paint, paintColour]);
+  const invalidate = useThree((s) => s.invalidate);
   useEffect(() => {
-    onReady();
+    paint?.setColour(paintColour);
+    invalidate();
+  }, [paint, paintColour, invalidate]);
+  useEffect(() => {
     return () => {
       const geometries = new Set<THREE.BufferGeometry>();
       const materials = new Set<THREE.Material>();
@@ -158,9 +172,9 @@ function Model({
       for (const geometry of geometries) geometry.dispose();
       for (const material of materials) material.dispose();
       for (const texture of textures) texture.dispose();
-      useGLTF.clear(url);
+      clearModel(url);
     };
-  }, [scene, url, onReady]);
+  }, [scene, url]);
   const mixer = useMemo(() => new THREE.AnimationMixer(scene), [scene]);
   useEffect(() => {
     onClips(animations.map((clip) => ({ id: clip.uuid, name: clip.name })));
@@ -173,10 +187,11 @@ function Model({
     mixer.stopAllAction();
     const clip = animations[clipIndex];
     if (clip) mixer.clipAction(clip).reset().play();
+    invalidate();
     return () => {
       mixer.stopAllAction();
     };
-  }, [animations, clipIndex, mixer]);
+  }, [animations, clipIndex, mixer, invalidate]);
   useFrame((_, delta) => {
     if (!paused) mixer.update(Math.min(delta, 0.1));
   });
@@ -191,19 +206,13 @@ function Model({
   // walk every vertex again.
   const points = useMemo(() => surfacePoints(scene), [scene]);
 
-  /**
-   * `frustumCulled` off across the board. Several of these programs place parts
-   * a long way from the origin -- the airship's mooring mast, the carrier's
-   * island -- and three culls against a bounding sphere it computes per mesh, so
-   * a part whose geometry was built with a large offset baked into its vertices
-   * can blink out at certain angles. Fifty draw calls more is nothing here; a
-   * disappearing funnel is not.
-   */
+  // Several of these programs place parts a long way from the origin -- the airship's mooring mast, the carrier's
+  // island -- with the offset baked into their vertices. Measuring each sphere from those vertices keeps them in
+  // view; on a model of thousands of parts, culling is what stops every part being drawn from inside the nave.
   useEffect(() => {
-    scene.traverse((o) => {
-      o.frustumCulled = false;
-    });
-  }, [scene]);
+    restoreCulling(scene);
+    invalidate();
+  }, [scene, invalidate]);
 
   // Frame on load, on every explicit reset, and on resize. The engine's contract
   // puts an asset on Y=0 facing +X, so the camera can be placed from the geometry
@@ -238,7 +247,30 @@ function Model({
     controls.maxDistance = radius * 14;
     controls.update();
     onBounds(radius);
-  }, [scene, points, camera, controls, framing, viewShowing, onBounds, width, height]);
+    invalidate();
+  }, [scene, points, camera, controls, framing, viewShowing, onBounds, width, height, invalidate]);
+
+  // The model joins the view once its shaders are built, and the view counts as ready from then (see `compileAhead`).
+  const renderer = useThree((s) => s.gl) as unknown as THREE.WebGPURenderer;
+  const root = useThree((s) => s.scene);
+  const [compiled, setCompiled] = useState<THREE.Object3D | null>(null);
+  useEffect(() => {
+    let live = true;
+    compileAhead(renderer, scene, camera, root)
+      .catch(() => undefined)
+      .then(() => {
+        if (live) setCompiled(scene);
+      });
+    return () => {
+      live = false;
+    };
+  }, [renderer, scene, camera, root]);
+  const shown = compiled === scene;
+  useEffect(() => {
+    if (!shown) return;
+    onReady();
+    invalidate();
+  }, [shown, onReady, invalidate]);
 
   useEffect(() => {
     const touched: THREE.Material[] = [];
@@ -251,14 +283,15 @@ function Model({
         touched.push(mat);
       }
     });
+    invalidate();
     // Restored on the way out because drei caches the loaded scene by URL, and a
     // material left in wireframe would come back that way on the next visit.
     return () => {
       for (const m of touched) (m as THREE.MeshStandardMaterial).wireframe = false;
     };
-  }, [scene, wireframe]);
+  }, [scene, wireframe, invalidate]);
 
-  return <primitive object={scene} />;
+  return shown ? <primitive object={scene} /> : null;
 }
 
 interface ViewerProps {
@@ -268,6 +301,8 @@ interface ViewerProps {
   paintAssetId?: string;
   /** Saved cameras to offer as buttons. Most models have none. */
   views?: SavedView[];
+  /** Skip WebGPU, as a browser without it would: for checks of the fallback. */
+  forceWebGL?: boolean;
 }
 
 class ViewerBoundary extends Component<
@@ -295,13 +330,23 @@ function Loading() {
   ) : null;
 }
 
-function ContextMonitor({ onError }: { onError: (error: Error) => void }) {
-  const canvas = useThree((state) => state.gl.domElement);
+/** Reports a lost GPU, on either backend, and releases the renderer when the view closes. */
+function RendererMonitor({ onError }: { onError: (error: Error) => void }) {
+  const renderer = useThree((state) => state.gl) as unknown as THREE.WebGPURenderer;
   useEffect(() => {
-    const lost = () => onError(new Error('WebGL context lost'));
+    const canvas = renderer.domElement;
+    let closing = false;
+    const lost = () => {
+      if (!closing) onError(new Error('The graphics device was lost'));
+    };
     canvas.addEventListener('webglcontextlost', lost);
-    return () => canvas.removeEventListener('webglcontextlost', lost);
-  }, [canvas, onError]);
+    renderer.onDeviceLost = lost;
+    return () => {
+      closing = true;
+      canvas.removeEventListener('webglcontextlost', lost);
+      void releaseViewerRenderer(renderer);
+    };
+  }, [renderer, onError]);
   return null;
 }
 
@@ -335,7 +380,8 @@ function KeyboardCamera({ command }: { command: CameraCommand | undefined }) {
   return null;
 }
 
-function Viewer({ name, modelUrl, onError, paintAssetId, views }: ViewerProps) {
+function Viewer({ name, modelUrl, onError, paintAssetId, views, forceWebGL }: ViewerProps) {
+  const renderer = useMemo(() => viewerRendererFactory({ forceWebGL }), [forceWebGL]);
   const [wireframe, setWireframe] = useState(false);
   const [grid, setGrid] = useState(true);
   const [spin, setSpin] = useState(false);
@@ -366,24 +412,14 @@ function Viewer({ name, modelUrl, onError, paintAssetId, views }: ViewerProps) {
           role="img"
           aria-label={`3D preview of ${name}. Use the controls below to orbit, zoom or inspect.`}
           dpr={[1, 1.5]}
-          gl={{
-            antialias: true,
-            alpha: true,
-            toneMapping: reviewToneMapping,
-            toneMappingExposure: REVIEW_RIG.exposure,
-          }}
+          frameloop={viewerFrameloop({ spin, clipPlaying: clipIndex >= 0 && !paused })}
+          gl={renderer as never}
           camera={{ fov: 34, position: [6, 3, 5] }}
         >
-          <ContextMonitor onError={onError} />
+          <RendererMonitor onError={onError} />
           <ReviewLighting />
           <ToneMapping id={toneMapping} />
-          <OrbitControls
-            makeDefault
-            autoRotate={spin}
-            autoRotateSpeed={0.55}
-            enableDamping
-            dampingFactor={0.06}
-          />
+          <OrbitControls autoRotate={spin} autoRotateSpeed={0.55} dampingFactor={0.06} />
           <KeyboardCamera command={command} />
           <Suspense fallback={null}>
             <Model
@@ -401,23 +437,22 @@ function Viewer({ name, modelUrl, onError, paintAssetId, views }: ViewerProps) {
               onPaintReady={setOriginalPaint}
             />
           </Suspense>
-          <ContactShadows
-            position={[0, 0.001, 0]}
-            scale={radius * 4}
-            far={radius * 1.5}
-            opacity={0.45}
-            blur={2.4}
-            resolution={512}
-            color="#292d29"
-          />
-          {grid && (
-            <Grid
-              {...groundGrid(radius)}
-              cellColor="#9ba4b0"
-              sectionColor="#7b8492"
-              fadeStrength={1.4}
+          <group>
+            <BakedContactShadow
+              radius={radius}
+              ready={ready}
+              playing={clipIndex >= 0 && !paused}
+              pose={clipIndex}
             />
-          )}
+            {grid && (
+              <GroundGrid
+                {...groundGrid(radius)}
+                cellColor="#9ba4b0"
+                sectionColor="#7b8492"
+                fadeStrength={1.4}
+              />
+            )}
+          </group>
         </Canvas>
         {!ready && <Loading />}
       </section>
@@ -618,12 +653,15 @@ function Viewer({ name, modelUrl, onError, paintAssetId, views }: ViewerProps) {
 }
 
 export function mountAssetViewer(element: HTMLElement, props: ViewerProps) {
-  // Check before React/Three initialize a renderer, so the fallback does not leave a failed canvas.
-  const probe = document.createElement('canvas');
-  const context = probe.getContext('webgl2');
-  if (!context) throw new Error('WebGL2 is unavailable');
-  context.getExtension('WEBGL_lose_context')?.loseContext();
-  const onError = clearingOnError(props.modelUrl, props.onError, (url) => useGLTF.clear(url));
+  // Check before React/Three initialize a renderer, so the page's fallback does not leave a failed canvas. A browser
+  // with WebGPU can still lack an adapter, so WebGL2 is what proves the view can draw when `navigator.gpu` is absent.
+  if (!('gpu' in navigator)) {
+    const probe = document.createElement('canvas');
+    const context = probe.getContext('webgl2');
+    if (!context) throw new Error('Neither WebGPU nor WebGL2 is available');
+    context.getExtension('WEBGL_lose_context')?.loseContext();
+  }
+  const onError = clearingOnError(props.modelUrl, props.onError, clearModel);
   const root = createRoot(element);
   root.render(
     <ViewerBoundary onError={onError}>

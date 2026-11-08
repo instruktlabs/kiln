@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { copyFileSync, mkdirSync, mkdtempSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { HARNESSES, resolveBin } from './harness.mjs';
+import { HARNESSES, resolveBin, run } from './harness.mjs';
 
 test('OpenCode uses the caller working directory without removed V1 flags', () => {
   const args = HARNESSES.opencode.argv({
@@ -14,6 +14,32 @@ test('OpenCode uses the caller working directory without removed V1 flags', () =
   expect(args).not.toContain('--dir');
   expect(args).toContain('--standalone');
   expect(args.at(-1)).toBe('Build a curved leaf');
+});
+
+// OpenCode 2.2.0's `run` takes its directory from `process.env.PWD ?? process.cwd()`
+// and changes into it, so a child that inherits the caller's PWD ignores `cwd` and
+// loads the caller's project instead of the workspace and its MCP configuration.
+test('run gives the child a PWD that matches its working directory', async () => {
+  const root = mkdtempSync(join(tmpdir(), 'kiln-harness-pwd-'));
+  const saved = process.env.PWD;
+  try {
+    const workspace = join(root, 'workspace');
+    mkdirSync(workspace);
+    process.env.PWD = root;
+    for (const env of [null, { PWD: root, KILN_HARNESS_PROBE: '1' }]) {
+      const result = await run(
+        process.execPath,
+        ['-e', 'process.stdout.write(JSON.stringify(process.env.PWD ?? null))'],
+        { cwd: workspace, env },
+      );
+      expect(result.code).toBe(0);
+      expect(JSON.parse(result.out)).toBe(workspace);
+    }
+  } finally {
+    if (saved === undefined) delete process.env.PWD;
+    else process.env.PWD = saved;
+    rmSync(root, { recursive: true, force: true });
+  }
 });
 
 test.skipIf(process.platform !== 'win32')(

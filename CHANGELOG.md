@@ -27,6 +27,24 @@ does not publish a package.
   shots, the size and the largest size that fits as a grid and as separate images.
 - A missing evaluator worker file now names the rebuild instead of `Evaluator worker pipe failed.`, and
   Windows' `EOF` on the worker pipe waits for the worker to close like `EPIPE`.
+- GPU instancing now draws what the copies drew as separate nodes, in both `KILN_BAKE_INSTANCE` and the
+  three runtime target's `repeatInstances`. A mirrored copy no longer shares a batch with unmirrored ones,
+  where it drew inside out: single-sided surfaces vanished. Mirrored copies form their own batch on a node
+  scaled `[-1, 1, 1]`, with no second copy of the geometry. three r186's WebGPU renderer does not transform
+  instance tangents, which shaded a quarter-turned normal-mapped copy black. The bake pass now batches
+  tangent-bearing copies by the rotation they share and puts it on the batch node, and the runtime target
+  keeps a turned, stretched or mirrored tangent-bearing child separate. The bake pass also keeps a sheared
+  copy separate, because instance transforms cannot state shear. `EXT_mesh_gpu_instancing` is now required
+  wherever Kiln batches, so a viewer without it refuses the file instead of drawing one copy. Batches and
+  draws change on affected assets, including `role: 'fill'` assets under the default `auto`. A saved
+  revision built with instancing on can now rebuild with `matchesSavedArtifact: false`; the saved GLB is
+  unchanged.
+- `kiln export ... --profile runtime --draws minimal [--draw-cell M]` (and `draws: 'minimal'` in
+  `exportAssetGlb`) derives a file with fewer draw calls. Every repeated mesh becomes a batch, and parts
+  with a single-user mesh merge per material within cells of `M` metres (default 15). It runs no
+  `palette()` or `weld()`, and the saved revision is unchanged. The sidecar's `drawReduction` reports the
+  result. On the 1,834-draw cathedral revision it gives 283 draws, with the same triangles and 1% fewer
+  bytes. `mergeRigidGroups` gains opt-in `cellSize` and `positionTolerance`; `optimize: 'full'` is unchanged.
 - Three repeated costs on large assets are paid once. Measured on the 2,635,224-triangle cathedral, whose
   1,707 meshes share 184 geometries:
   - The open-surface penetration rule measures each shared geometry's topology once per pass. The
@@ -39,6 +57,25 @@ does not publish a package.
     render. That first capture is cached like any other: its repeat is a hit, where before it rendered
     again (4.9 s instead of about 2 s for the default grid). The identity follows the port's own
     connection, so the start it makes is the one the first request would make.
+- **The GPU render service samples the UV set a texture names, with its `KHR_texture_transform`.** The
+  service replaces each decoded map with a `DataTexture` for upload and copied only colour space, flip,
+  wrap and filters, so a map with `texCoord: 2` sampled UV0 and a transformed map drew untransformed:
+  four assets whose base colour sampled UV0..UV3 rendered pixel-identical. The replacement now keeps
+  `channel`, `offset`, `repeat`, `rotation`, `center` and the texture matrix.
+- **A perspective view drawn after orthographic ones in one render-service request is shaded for its
+  own camera.** three compiles a node material's view direction for the first camera that draws it,
+  and its program cache ignores the camera, so the legacy `beauty` view, and any perspective camera
+  after an orthographic one in camera mode, reused the orthographic program: on a glossy metal sphere
+  9% of the beauty's pixels differed by up to 97/255 from the same camera drawn alone. Materials are
+  now keyed by projection, so the beauty matches a perspective-only render byte for byte; orthographic
+  sheet views are unchanged. A request that switches projection builds one more program per material.
+  Both changes alter render-service source, so its build identity changes and a running service of
+  the previous build is reported as incompatible rather than joined.
+- `scripts/check-vision.mjs` works on OpenCode 2.x. OpenCode 2.2 rejects `opencode models --verbose`,
+  so the gate reported every model as unverified. On 2.x it now reads the catalogue from
+  `opencode api --standalone GET /api/model` and its `capabilities.input`; a 1.x install still uses
+  `--verbose`. The docs say the script covers OpenCode models only. `docs/harnesses.md` records that OpenCode 2.2.0 delivers MCP images to the provider in
+  Code Mode and with `codemode: false`.
 - `KILN_EVALUATOR_TIMEOUT_MS` now works above 60,000, as documented. Only the host read it: the worker
   kept its own 60-second timer, so a build that yielded to the event loop after that failed with
   `DEADLINE_EXCEEDED` at any limit, usually once the abandoned build had run to its end. The worker now

@@ -24,6 +24,11 @@ as text before inference. Do not treat those MCP results as visual review or
 increase text limits to carry base64. See the
 [reproduction and supported route](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-22-cline-image-qualification.md).
 OpenCode 2.0.14 preserves standard MCP images in captured provider requests.
+OpenCode 2.2.0 does too, both in default Code Mode (`execute` calling
+`tools.kiln_workspace.kiln_render`) and with per-server `codemode: false`. A loopback
+Responses API mock received the Kiln PNG as `input_image` inside `function_call_output`,
+byte-identical in both modes. In 2.2.0 `--format json` output the image is at
+`part.state.metadata.content`; there is no `state.attachments` field.
 Hermes 0.21.4 preserves MCP images as cached files; its vision tool can load them
 for the main model when that route supports images. Activated Cline VS Code 4.1.20
 tests preserve MCP images in Legacy and reproduce the CLI defect in Next/SDK.
@@ -106,7 +111,7 @@ Verified against the versions in the footer. The traps are not stylistic -- each
 | agy | `--print=TEXT` | **attached to the flag** | print mode | `--add-dir` |
 | claude | `-p` then `TEXT` | positional; `-p` selects print mode | `--permission-mode acceptEdits` + `--allowedTools` | `--add-dir` |
 | codex | `exec TEXT` | positional after `exec` | `--approve-for-me` | `--cd` |
-| opencode | `run --standalone TEXT` | positional | `--auto` | process CWD only |
+| opencode | `run --standalone TEXT` | positional | `--auto` | `PWD`, then process CWD |
 | copilot | `-p TEXT` | flag value | `--allow-all-tools` | `-C` and `--add-dir` |
 | cursor-agent | `-p` then `TEXT` | **positional; `-p` is a boolean** | `--force --approve-mcps --trust` | `--workspace` |
 | hermes | `-z TEXT` | flag value | none; `-z` resolves prompts | process CWD only |
@@ -124,6 +129,11 @@ The ones that cost real time:
 - **`codex exec` pins the approval policy to `never`,** under which an MCP call is not asked
   about, it is refused. `--approve-for-me` is the flag that both selects a workspace-write
   sandbox and moves approval to `on-request`.
+- **OpenCode 2.2 reads `PWD` before the process working directory.** `opencode run` uses
+  `process.env.PWD ?? process.cwd()`, and POSIX shells and Git Bash export `PWD`. A launcher
+  that sets only `cwd` sends OpenCode to the caller's directory: it skips the workspace's
+  `opencode.json`, so the model never sees the Kiln tools. `scripts/harness.mjs` sets `PWD` to
+  the child's working directory; set it yourself when you launch OpenCode another way.
 - **A bare temp directory is not a trusted directory.** codex needs `--skip-git-repo-check`;
   cursor-agent needs `--trust`.
 - **An older Claude Code does not know newer model ids.** On 29 September 2026 a driver's
@@ -348,8 +358,8 @@ node scripts/observe-mcp.mjs
 process runs the engine over whatever program came back -- the child's own claim of success is
 the one piece of evidence that proves nothing.
 
-Before trusting a new model id, confirm image support with
-`node scripts/check-vision.mjs PROVIDER/MODEL`, then confirm the harness actually forwards
+Before trusting a new OpenCode model id, confirm image support with
+`node scripts/check-vision.mjs PROVIDER/MODEL` (it reads OpenCode's model catalogue), then confirm the harness actually forwards
 the images. Provider metadata alone verifies neither.
 
 ### Reading a result honestly

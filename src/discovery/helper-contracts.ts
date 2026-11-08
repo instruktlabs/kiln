@@ -1022,7 +1022,8 @@ define(
     parameters: ['parent: a scene node whose direct children repeat one mesh.'],
     semantics: [
       'The three.js runtime target groups direct children by mesh content (accessors, material, mode) and turns each group of two or more into one node named <parent>_Instances with EXT_mesh_gpu_instancing TRANSLATION/ROTATION/SCALE; the sidecar lists the instance names in order.',
-      'Children with their own children, roles, extras, skins, morph weights or hidden flags stay separate nodes. Other export profiles ignore the mark.',
+      'Mirrored children form their own batch on a node scaled [-1, 1, 1], because a node states the winding for all its copies; the batch keeps the same mesh.',
+      'Children with their own children, roles, extras, skins, morph weights or hidden flags stay separate nodes, as does a turned, non-uniformly scaled or mirrored child of a mesh with TANGENT, whose tangents three.js WebGPU instancing would not transform. Other export profiles ignore the mark.',
     ],
     cost: 'Metadata on one node.',
   },
