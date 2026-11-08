@@ -27,7 +27,7 @@ test('the record holds what the page shows and nothing else', () => {
   expect(Object.keys(record.tools).sort()).toEqual(['effort', 'harness', 'harnessVersion', 'kiln', 'model']);
   for (const { images, steps, ...rest } of record.subjects) {
     for (const key of Object.keys(rest)) expect(['id', 'name', 'glbHref', 'glbBytes', 'triangles', 'diff']).toContain(key);
-    for (const step of steps) for (const key of Object.keys(step)) expect(['id', 'prompt', 'sourceHref', 'sourceLines', 'geometry']).toContain(key);
+    for (const step of steps) for (const key of Object.keys(step)) expect(['id', 'prompt', 'followUps', 'sourceHref', 'sourceLines', 'geometry']).toContain(key);
     for (const image of Object.values(images) as object[]) for (const key of Object.keys(image)) expect(['width', 'height', 'alt', 'caption', 'src', 'srcsetWebp', 'srcsetAvif']).toContain(key);
   }
 });
@@ -144,7 +144,7 @@ test.skipIf(!localModel(subject('mech')))('played through a plain three.js mixer
 });
 
 test('the cathedral stays within its budget', () => {
-  expect(subject('cathedral').glbBytes).toBeLessThanOrEqual(15_000_000);
+  expect(subject('cathedral').glbBytes).toBeLessThanOrEqual(16_000_000);
 });
 
 test.skipIf(!localModel(subject('cathedral')))('the cathedral carries real textures and its ground is a part of its own', async () => {

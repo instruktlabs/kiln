@@ -155,6 +155,8 @@ const questions = [
       { step: "light", title: "Light from the windows", line: `Light traced from the south windows falls on the floor, with the piers' shadows cut through it. ${number(lightGeometry.inPlace)} of ${number(lightGeometry.parent)} meshes didn't move.`, figures: ["light-before", "light-after"] },
       { step: "sun", title: "A higher sun", line: "Each window now lands between the columns, and all the stone re-baked to match.", figures: ["sun-before", "sun-after"] },
       { step: "daylight", title: "Softer daylight", line: "The west front takes light from the sky and the sunlit forecourt, with the portals still deep.", figures: ["daylight-before", "daylight-after"] },
+      { step: "architecture", title: "An architect's review", line: "Six faults fixed at their cause: colliding buttresses, open tower roofs, solid transept windows, shapeless canopies, blank glass outside and flicker inside.", figures: ["architecture-before", "architecture-after"] },
+      { step: "glass", title: "Brighter glass outside", line: "One number: the windows show more of their colour from outside, still darker than from within.", figures: ["glass-before", "glass-after"] },
     ]}
     code={[
       { summary: "The parameters: change a number, change the building", code: sourceExcerpt(cathedralProgram, "const P = {", "chapelFacets: 5,\n};"), label: "The parameters" },

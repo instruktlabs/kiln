@@ -32,6 +32,16 @@ const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const json = async (file) => JSON.parse(await readFile(file, 'utf8'));
 export const lineCount = (text) => text.split('\n').length - (text.endsWith('\n') || !text ? 1 : 0);
 
+/**
+ * What was said to the author for one step: its prompt, then anything sent while it worked, each verbatim. A steps.json
+ * step names one prompt file, or a list whose first is the prompt and whose rest are those later messages.
+ */
+export async function stepPrompts(directory, step) {
+  const [first, ...later] = [step.prompt].flat();
+  const read = async (file) => (await readFile(join(directory, 'run', file), 'utf8')).trim();
+  return { prompt: await read(first), ...(later.length ? { followUps: await Promise.all(later.map(read)) } : {}) };
+}
+
 /** A GLB's JSON chunk, and a reader for the float accessors its animation samplers point at. */
 export function openGlb(bytes) {
   if (bytes.readUInt32LE(0) !== 0x46546c67) throw Error('Not a GLB');
@@ -395,7 +405,7 @@ async function stageSubject(run, subject) {
     glbs.push(glb);
     steps.push({
       id: step.id,
-      prompt: (await readFile(join(directory, 'run', step.prompt), 'utf8')).trim(),
+      ...(await stepPrompts(directory, step)),
       sourceFile: `${subject}-${steps.length + 1}.kiln.js`,
       sourceLines: lineCount(sources.at(-1)),
     });

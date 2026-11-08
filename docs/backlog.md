@@ -1,8 +1,8 @@
 # Kiln current backlog
 
-Current release status (27 October 2026): npm 1.6.0 and
-[GitHub v1.6.0](https://github.com/instruktlabs/kiln/releases/tag/v1.6.0) are published;
-the public site follows the 1.6.0 publication record. 1.6.0 adds texture-sharing tools, open-surface QA and clearer size and budget diagnostics.
+Current release status (8 November 2026): npm 1.7.0 and
+[GitHub v1.7.0](https://github.com/instruktlabs/kiln/releases/tag/v1.7.0) are published;
+the public site follows the 1.7.0 publication record. 1.7.0 moves to three.js r187, makes `kiln_render` and `kiln_inspect` faster on large assets, and adds `--draws minimal` runtime exports, a periodic cellular material layer and generated material maps.
 Open work is listed under [Cycle handoff](#cycle-handoff-17-october).
 Scene performance evidence retains its original candidate scope; Cabin carries
 its own review report.

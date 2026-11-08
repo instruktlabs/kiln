@@ -7,6 +7,8 @@ does not publish a package.
 
 ## Unreleased
 
+## 1.7.0 (2026-11-08)
+
 - three.js and `@types/three` are now 0.187.0, up from 0.186.1, in the package, the render service, the
   website and the scene packages; `webgpu` stays 0.6.2. On nine gallery assets, CPU views and exported GLBs
   are byte-identical to 0.186.1 output apart from one lathe-built GLB (below), and every view was
