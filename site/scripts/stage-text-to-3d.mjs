@@ -18,8 +18,8 @@ import { ASSET_BASE } from './mirror-core.mjs';
  *
  * <directory>/tools.json names the tools. <directory>/<subject>/ is a workspace holding `assets/`, `run/` with the prompts and
  * `steps.json`, which lists each step's prompt and saved revision, and `renders/manifest.json` from
- * scripts/render-text-to-3d.mjs. A steps.json may name a `delivery` file, `{ file, madeFrom: "sha256:…" }`, to serve
- * in place of the final revision's GLB (see `checkDelivery`); the page's claims are still checked on the revisions.
+ * scripts/render-text-to-3d.mjs. A steps.json may name a `delivery` file, `{ file, madeFrom: "sha256:…", drops?: [names] }`,
+ * to serve in place of the final revision's GLB (see `checkDelivery`); the page's claims are still checked on the revisions.
  *
  * Images and programs are committed under public/text-to-3d/. The two GLBs go to the asset host, the way Golden Gate's do:
  * each is named by its own hash, pinned in the mirror manifest and copied to .localdata/asset-delivery with an upload list
@@ -131,28 +131,111 @@ export function clipDigests(bytes) {
 
 /**
  * The file a subject is served as, when its steps.json names one in `delivery`: a form of the final revision made for
- * playing, such as its parts merged into one skinned mesh. It is served only if it was made from that revision's exact
- * bytes and keeps what code reaches for: every named node that is not a mesh part, with its notes, every clip's
- * targets and keyframes, the material names and the triangle count. Returns the delivery file.
+ * playing, such as its parts merged into one skinned mesh or into fewer draws. It is served only if it was made from
+ * that revision's exact bytes and keeps what code reaches for:
+ * - every named node that is not a mesh part, in order where a name repeats, with its notes, its parent and its place;
+ * - parts that still follow every node a clip moves, as meshes beneath it or skinned to it;
+ * - every clip's targets and keyframes, every material in full and the triangle count.
+ * `drops` names grouping nodes the delivery may leave out, as a draw reduction does once their parts become batches;
+ * each must be one the record states, with no notes, moved by no clip and binding no skin. Returns the delivery file.
  */
-export function checkDelivery(saved, delivered, madeFrom) {
+export function checkDelivery(saved, delivered, madeFrom, { drops = [] } = {}) {
   if (madeFrom !== `sha256:${hash(saved)}`) throw Error(`the delivery file was made from ${madeFrom}, not the final revision; make it again`);
   const before = openGlb(saved).gltf;
   const after = openGlb(delivered).gltf;
-  const named = new Map(after.nodes.map((node) => [node.name, node]));
-  for (const node of before.nodes) {
-    if (node.mesh !== undefined) continue;
-    const kept = named.get(node.name);
-    if (!kept) throw Error(`the delivery file has no ${node.name}`);
-    if (JSON.stringify(kept.extras ?? null) !== JSON.stringify(node.extras ?? null)) throw Error(`the delivery file changes the notes on ${node.name}`);
+  const named = byName(after);
+  const moved = movedByClips(before);
+  const joints = new Set((before.skins ?? []).flatMap((skin) => skin.joints.map((joint) => before.nodes[joint].name)));
+  for (const [name, nodes] of byName(before)) {
+    const kept = named.get(name) ?? [];
+    if (kept.length === 0 && drops.includes(name)) {
+      if (nodes.some(({ node }) => node.extras) || moved.has(name) || joints.has(name)) throw Error(`the delivery file may not drop ${name}: code can reach for it`);
+      continue;
+    }
+    nodes.forEach((node, nth) => {
+      const same = kept[nth];
+      const which = nodes.length > 1 ? `${name} (number ${nth + 1} of that name)` : name;
+      if (!same) throw Error(`the delivery file has no ${which}`);
+      if (JSON.stringify(same.node.extras ?? null) !== JSON.stringify(node.node.extras ?? null)) throw Error(`the delivery file changes the notes on ${which}`);
+      if (same.parent !== node.parent) throw Error(`the delivery file moves ${which} from ${node.parent} to ${same.parent}`);
+      if (!samePlace(same.node, node.node)) throw Error(`the delivery file moves ${which}`);
+    });
+  }
+  const carriers = carriersOf(after);
+  for (const name of moved) {
+    if (!carriesParts(before, name)) continue;
+    if (!carriers.has(name)) throw Error(`the delivery file's ${name} no longer carries its parts: the clip would move nothing`);
   }
   const clips = clipDigests(delivered);
   for (const [name, digest] of clipDigests(saved)) if (clips.get(name) !== digest) throw Error(`the delivery file's ${name} clip differs`);
-  const materials = (gltf) => JSON.stringify((gltf.materials ?? []).map(({ name }) => name).sort());
-  if (materials(before) !== materials(after)) throw Error('the delivery file has other materials');
-  const [was, now] = [inspectGlb(saved).triangles, inspectGlb(delivered).triangles];
-  if (was !== now) throw Error(`the delivery file has ${now} triangles, not ${was}`);
+  const [was, now] = [materialsOf(saved), materialsOf(delivered)];
+  for (const [name, definition] of was) if (now.get(name) !== definition) throw Error(`the delivery file changes the material ${name}`);
+  if (was.size !== now.size) throw Error('the delivery file has other materials');
+  const [trianglesWere, trianglesNow] = [inspectGlb(saved).triangles, inspectGlb(delivered).triangles];
+  if (trianglesWere !== trianglesNow) throw Error(`the delivery file has ${trianglesNow} triangles, not ${trianglesWere}`);
   return delivered;
+}
+
+/** Each named node that is not a mesh part, by name, in file order, with its parent's name. */
+function byName(gltf) {
+  const parentOf = new Map();
+  gltf.nodes.forEach((node, index) => (node.children ?? []).forEach((child) => parentOf.set(child, index)));
+  const names = new Map();
+  gltf.nodes.forEach((node, index) => {
+    if (node.mesh !== undefined || !node.name) return;
+    const up = parentOf.get(index);
+    const parent = up === undefined ? '(the scene)' : (gltf.nodes[up].name ?? `node ${up}`);
+    names.set(node.name, [...(names.get(node.name) ?? []), { node, parent }]);
+  });
+  return names;
+}
+
+/** Whether two nodes sit in the same place under their parents, to within float rounding. */
+function samePlace(a, b) {
+  const place = (node) =>
+    node.matrix ?? [...(node.translation ?? [0, 0, 0]), ...(node.rotation ?? [0, 0, 0, 1]), ...(node.scale ?? [1, 1, 1])];
+  const [p, q] = [place(a), place(b)];
+  return p.length === q.length && p.every((value, i) => Math.abs(value - q[i]) <= 1e-6 * Math.max(1, Math.abs(value)));
+}
+
+/** The names of the nodes any clip moves. */
+function movedByClips(gltf) {
+  return new Set((gltf.animations ?? []).flatMap((clip) => clip.channels.map((channel) => gltf.nodes[channel.target.node]?.name)).filter(Boolean));
+}
+
+/** Whether a node of this name has mesh parts beneath it. */
+function carriesParts(gltf, name) {
+  const below = (index) => (gltf.nodes[index].children ?? []).some((child) => gltf.nodes[child].mesh !== undefined || below(child));
+  return gltf.nodes.some((node, index) => node.name === name && below(index));
+}
+
+/** The names of the nodes that move parts: those with meshes beneath them, and the joints of a skin a mesh uses. */
+function carriersOf(gltf) {
+  const carriers = new Set(gltf.nodes.filter((node) => node.name && carriesParts(gltf, node.name)).map((node) => node.name));
+  const used = new Set(gltf.nodes.filter((node) => node.mesh !== undefined && node.skin !== undefined).map((node) => node.skin));
+  for (const skin of used) for (const joint of gltf.skins[skin].joints) if (gltf.nodes[joint].name) carriers.add(gltf.nodes[joint].name);
+  return carriers;
+}
+
+/** Every material by name, in full, with each texture named by its image's bytes rather than its place in the file. */
+function materialsOf(bytes) {
+  const { gltf } = openGlb(bytes);
+  const bin = bytes.subarray(20 + bytes.readUInt32LE(12) + 8);
+  const image = (texture) => {
+    const source = gltf.images?.[gltf.textures?.[texture]?.source];
+    const view = source && gltf.bufferViews[source.bufferView];
+    return view ? hash(bin.subarray(view.byteOffset ?? 0, (view.byteOffset ?? 0) + view.byteLength)) : (source?.uri ?? `texture ${texture}`);
+  };
+  const named = (value) => {
+    if (Array.isArray(value)) return value.map(named);
+    if (!value || typeof value !== 'object') return value;
+    return Object.fromEntries(
+      Object.entries(value)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([key, inner]) => [key, /Texture$/.test(key) && typeof inner?.index === 'number' ? named({ ...inner, index: image(inner.index) }) : named(inner)]),
+    );
+  };
+  return new Map((gltf.materials ?? []).map((material) => [material.name, JSON.stringify(named(material))]));
 }
 
 /** Every mesh node in a GLB by name, with where it sits in the world and a digest of its vertex positions alone: baked colours may share the buffer. */
@@ -342,7 +425,7 @@ async function stageSubject(run, subject) {
   }
   const diffAt = plan.steps.findIndex((step) => step.id === plan.diffStep);
   const model = plan.delivery
-    ? checkDelivery(glbs.at(-1), await readFile(join(directory, plan.delivery.file)), plan.delivery.madeFrom)
+    ? checkDelivery(glbs.at(-1), await readFile(join(directory, plan.delivery.file)), plan.delivery.madeFrom, { drops: plan.delivery.drops })
     : glbs.at(-1);
   const { triangles } = inspectGlb(model);
   return {
