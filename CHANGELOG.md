@@ -31,6 +31,14 @@ does not publish a package.
     standard-depth sign. An `InstancedMesh` binds its matrices as an instanced vertex attribute when its
     geometry leaves a vertex buffer free, and instanced meshes of one material and layout share a shader build.
 
+- `--draws minimal` names each batch node after its first copy, `<copy>_Instances`, and
+  `drawReduction.instancing` records which node names went into each batch, in instance order. A
+  batched copy loses its mesh, and a mesh-less copy with no children or extensions is removed. Clips
+  kept only as the review copy (`scenes[].extras.kilnReviewClipsV1`) now protect the nodes their tracks
+  name, as native animations do. Such a file is not batched (`batchingSkipped: 'review clips'`), and a node a
+  track names is never merged, which also holds for `optimize: 'full'`. The `KILN_BAKE_INSTANCE` pass
+  skips these files too, so an instanced build of one now has its copies as separate nodes. Tests now
+  show the draw reduction keeping animated, LOD, hidden, semantic and relationship-target parts.
 - A review shot no longer exports the same derivative GLB, or decodes the same frame, more than once.
   Measured on the 2,635,224-triangle cathedral against a warm GPU service (two runs each):
   - Shots that draw the same scene state share one derivative export, within a call and across calls on

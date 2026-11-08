@@ -43,6 +43,12 @@ export interface DrawReductionV1 {
   instances: number;
   /** Why no copy was batched, when something in the asset rules batching out. */
   batchingSkipped?: string;
+  /**
+   * Each batch node, its mesh and the names of the nodes it replaced, in instance order: copy `i`
+   * is the batch's instance `i`. A batched copy loses its mesh, and one with no children or
+   * extensions is removed with its name; this is where its geometry went.
+   */
+  instancing: { node: string; mesh: string; count: number; instances: string[] }[];
   merges: number;
   cellSize: number;
   /** Primitives the merge left alone, by reason. */
@@ -68,8 +74,25 @@ export async function reduceDrawCalls(
   const drawsBefore = collectGlbMetrics(doc).drawCalls;
 
   const batchingSkipped = instancingBlocker(doc);
-  if (!batchingSkipped) await instanceByHandedness(doc, REPEAT_MIN);
+  const created = batchingSkipped ? [] : await instanceByHandedness(doc, REPEAT_MIN);
   const { batches, instances } = countInstanceBatches(doc);
+  // `instance()` leaves batch nodes unnamed. Naming each after its first copy, uniquely, makes it
+  // addressable whether or not the exporter named the mesh.
+  const names = new Set(
+    doc
+      .getRoot()
+      .listNodes()
+      .map((node) => node.getName()),
+  );
+  const instancing = created.map(({ node, instances: copies }) => {
+    const mesh = node.getMesh()?.getName() ?? '';
+    const base = `${copies[0] || mesh || 'Mesh'}_Instances`;
+    let name = base;
+    for (let k = 1; names.has(name); k++) name = `${base}_${k}`;
+    names.add(name);
+    node.setName(name);
+    return { node: name, mesh, count: copies.length, instances: copies };
+  });
 
   // Repeats are batches now. A copy left over shares its mesh with a batch, and baking it would
   // duplicate geometry; mixed into a bucket it can also push the join past the vertex limit,
@@ -90,6 +113,7 @@ export async function reduceDrawCalls(
     batches,
     instances,
     ...(batchingSkipped ? { batchingSkipped } : {}),
+    instancing,
     merges: merge.merges,
     cellSize,
     locked,

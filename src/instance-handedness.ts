@@ -17,7 +17,7 @@
  * stretch they share, carried on the batch node, leaving only translation and uniform scale on the
  * instances.
  */
-import type { Accessor, Document, Mesh, Node, mat4, vec3, vec4 } from '@gltf-transform/core';
+import type { Accessor, Document, Mesh, Node, Scene, mat4, vec3, vec4 } from '@gltf-transform/core';
 import { instance } from '@gltf-transform/functions';
 import type { InstancedMesh } from '@gltf-transform/extensions';
 import * as THREE from 'three';
@@ -149,9 +149,13 @@ function carrySharedLinear(doc: Document, node: Node, batch: InstancedMesh, shar
  * hands, straightens shear and rotates tangent-bearing copies. Stand-in meshes steer that grouping:
  * mirrored nodes share one per mesh and become their own batch, tangent-bearing nodes share one per
  * mesh and shared rotation, and a node no batch can draw faithfully gets its own and stays below
- * `min`. Every node and batch gets its real mesh back.
+ * `min`. Every node and batch gets its real mesh back. Returns each new batch node with the names
+ * of the nodes it replaced, in instance order.
  */
-export async function instanceByHandedness(doc: Document, min: number): Promise<void> {
+export async function instanceByHandedness(
+  doc: Document,
+  min: number,
+): Promise<{ node: Node; instances: string[] }[]> {
   const root = doc.getRoot();
   const originals = new Map<Mesh, Mesh>();
   const standIn = (mesh: Mesh) => {
@@ -192,7 +196,33 @@ export async function instanceByHandedness(doc: Document, min: number): Promise<
     }
   }
 
+  // `instance()` orders a batch's copies as its scene traversal meets them and adds the batch to
+  // that scene, so the same traversal names them.
+  const users = new Map<Scene, Map<Mesh, string[]>>();
+  const existing = new Set<Node>();
+  for (const scene of root.listScenes()) {
+    const byMesh = new Map<Mesh, string[]>();
+    users.set(scene, byMesh);
+    scene.traverse((node) => {
+      const mesh = node.getMesh();
+      if (node.getExtension('EXT_mesh_gpu_instancing')) existing.add(node);
+      else if (mesh) {
+        const names = byMesh.get(mesh) ?? [];
+        names.push(node.getName());
+        byMesh.set(mesh, names);
+      }
+    });
+  }
+
   await doc.transform(instance({ min }));
+
+  const created: { node: Node; instances: string[] }[] = [];
+  for (const [scene, byMesh] of users)
+    for (const node of scene.listChildren()) {
+      const mesh = node.getMesh();
+      if (!mesh || existing.has(node) || !node.getExtension('EXT_mesh_gpu_instancing')) continue;
+      created.push({ node, instances: byMesh.get(mesh) ?? [] });
+    }
 
   const mirroredStandIns = new Set(mirrored.values());
   for (const node of root.listNodes()) {
@@ -209,6 +239,30 @@ export async function instanceByHandedness(doc: Document, min: number): Promise<
   // A viewer without the extension would silently draw one copy per batch: make it refuse instead.
   for (const extension of root.listExtensionsUsed())
     if (extension.extensionName === 'EXT_mesh_gpu_instancing') extension.setRequired(true);
+  return created;
+}
+
+/** A three track's node name; a name three cannot parse protects itself whole. */
+function trackNodeName(name: string): string {
+  try {
+    return THREE.PropertyBinding.parseTrackName(name).nodeName || name;
+  } catch {
+    return name;
+  }
+}
+
+/** The node names a scene's `kilnReviewClipsV1` tracks animate, as three's track names state them. */
+export function reviewClipTargets(doc: Document): Set<string> {
+  const targets = new Set<string>();
+  for (const scene of doc.getRoot().listScenes()) {
+    const review = scene.getExtras().kilnReviewClipsV1 as { clips?: unknown } | undefined;
+    if (!Array.isArray(review?.clips)) continue;
+    for (const clip of review.clips as { tracks?: unknown }[])
+      if (Array.isArray(clip?.tracks))
+        for (const track of clip.tracks as { name?: unknown }[])
+          if (typeof track?.name === 'string') targets.add(trackNodeName(track.name));
+  }
+  return targets;
 }
 
 /** Why this document cannot be batched at all, or undefined when it can. */
@@ -216,6 +270,8 @@ export function instancingBlocker(doc: Document): string | undefined {
   const root = doc.getRoot();
   if (root.listAnimations().length > 0) return 'animations';
   if (root.listSkins().length > 0) return 'skins';
+  // The review copy of clips glTF cannot state targets nodes by name, as animations do.
+  if (reviewClipTargets(doc).size > 0) return 'review clips';
   const nodes = root.listNodes();
   // Kiln City runtimes target pivots by name, and a batch drops per-node names.
   if (nodes.some((node) => /^joint[_-]/i.test(node.getName()))) return 'joint pivots';
