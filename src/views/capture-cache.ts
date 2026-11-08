@@ -7,7 +7,7 @@ import {
 } from '../composer/render-port';
 import type { GlbViewCellResult } from './index';
 import type { ResolvedAssetCameraV1 } from './camera';
-import { decodePng } from './png';
+import { decodePngShared } from './png-memo';
 import { enforcePngCaptureBudget } from './capture-limits';
 export type CaptureCacheEntry =
   | { kind: 'gpu'; result: PbrRenderResult }
@@ -110,7 +110,7 @@ function usable(result: PbrRenderResult, request: PbrRenderRequest, hash: string
       return false;
     enforcePngCaptureBudget(result.viewsPng);
     for (const png of result.viewsPng) {
-      const image = decodePng(png);
+      const image = decodePngShared(png);
       if (
         image.width !== image.height ||
         (request.cameras && (image.width !== request.width || image.height !== request.height))
@@ -251,7 +251,7 @@ export async function captureCpuCell(
   const valid = (result: GlbViewCellResult) => {
     try {
       enforcePngCaptureBudget([result.png]);
-      const image = decodePng(result.png);
+      const image = decodePngShared(result.png);
       return (
         result.inputGlbSha256 === snapshot.artifactGlbSha256 &&
         image.width === snapshot.size &&

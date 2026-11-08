@@ -7,6 +7,19 @@ does not publish a package.
 
 ## Unreleased
 
+- A review shot no longer exports the same derivative GLB, or decodes the same frame, more than once.
+  Measured on the 2,635,224-triangle cathedral against a warm GPU service (two runs each):
+  - Shots that draw the same scene state share one derivative export, within a call and across calls on
+    the same artifact. A repeated isolated shot goes from 3.8–4.2 s to 1.6–1.9 s, the same part from a new
+    camera from 6.0–6.2 s to 2.3–2.8 s, and a repeated `kiln_inspect` shot from 5.6–5.9 s to 1.5–1.7 s.
+    The key is read off the scene as the shot leaves it, not off the request: the artifact hash, every
+    node's visibility, transform and place in the tree, each geometry's and material's identity and edit
+    version, and the export options. A hidden part, a level-of-detail swap or a posed clip therefore
+    exports its own bytes. The host keeps at most 64 MB of derivatives.
+  - The capture cache's check, the port's trust check and the annotator decode one frame once between
+    them, keyed by its bytes. A fully cached 9-shot call goes from 4.0–4.6 s to 2.8 s.
+  - Images, hashes and receipts are unchanged.
+
 - `kiln_render` and `kiln_edit` draw `shots` that change only the camera from the artifact itself, in one
   request per projection and service limit, after asking the capture cache. On a 2.6M-triangle cathedral on
   Node 22.23.4, nine shots at 1000 px on a built program went from 301 s to 7.1 s, all nine cached from

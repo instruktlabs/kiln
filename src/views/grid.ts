@@ -8,7 +8,8 @@
  */
 
 import { annotateViewCell } from './annotate';
-import { decodePng, encodePng } from './png';
+import { encodePng } from './png';
+import { decodePngShared } from './png-memo';
 
 export const PAD = 4;
 export const PAD_COLOR: [number, number, number] = [10, 11, 13];
@@ -95,7 +96,7 @@ export function compositeViewPngGrid(
       `compositeViewPngGrid: ${views.length} view specs for ${pngs.length} PNGs — they must align 1:1`,
     );
   }
-  const decoded = pngs.map((png) => decodePng(png));
+  const decoded = pngs.map((png) => decodePngShared(png));
   const size = decoded[0]!.width;
   for (const d of decoded) {
     if (d.width !== size || d.height !== size) {
@@ -105,7 +106,7 @@ export function compositeViewPngGrid(
     }
   }
   if (views) {
-    // decodePng returns cell-owned buffers, so this mutates nothing the caller
+    // decodePngShared returns cell-owned buffers, so this mutates nothing the caller
     // still holds — the host's PNG bytes are untouched.
     for (let i = 0; i < decoded.length; i++) annotateViewCell(decoded[i]!.rgb, size, views[i]!);
   }
