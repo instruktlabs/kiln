@@ -175,19 +175,27 @@ describe('reduceDrawCalls', () => {
         .listNodes()
         .map((node) => [node.getName(), node.getWorldTranslation()]),
     );
+    // The legacy exporter names meshes and the community one does not; batch names hold either way.
+    const mesh =
+      before
+        .getRoot()
+        .listNodes()
+        .find((node) => node.getName() === 'Mesh_Pane0')
+        ?.getMesh()
+        ?.getName() ?? '';
     const doc = await createGltfIO().readBinary(bytes);
     const summary = await reduceDrawCalls(doc);
 
     expect(summary.instancing).toEqual([
       {
         node: 'Mesh_Pane0_Instances',
-        mesh: 'Mesh_Pane0',
+        mesh,
         count: 2,
         instances: ['Mesh_Pane0', 'Mesh_Pane1'],
       },
       {
-        node: 'Mesh_Pane0_Instances_1',
-        mesh: 'Mesh_Pane0',
+        node: 'Mesh_MirrorPane0_Instances',
+        mesh,
         count: 2,
         instances: ['Mesh_MirrorPane0', 'Mesh_MirrorPane1'],
       },
@@ -351,7 +359,9 @@ describe('--draws minimal keeps what a consumer addresses', () => {
     });
     expect(summary.batchingSkipped).toBe('review clips');
     expect(doorPositions).toEqual(authored);
-    expect(find('Mesh_Pane1')?.getMesh()?.getName()).toBe('Mesh_Pane0');
+    const pane = find('Mesh_Pane0')?.getMesh();
+    expect(pane).toBeDefined();
+    expect(find('Mesh_Pane1')?.getMesh()).toBe(pane!);
     expect(Object.keys(doc.getRoot().listScenes()[0]!.getExtras())).toContain('kilnReviewClipsV1');
   });
 
@@ -364,7 +374,11 @@ describe('--draws minimal keeps what a consumer addresses', () => {
           kilnReviewClipsV1: {
             version: 1,
             clips: [
-              { name: 'Odd', duration: 1, tracks: [{ name: 'Mesh_Door', times: [0], values: [1] }] },
+              {
+                name: 'Odd',
+                duration: 1,
+                tracks: [{ name: 'Mesh_Door', times: [0], values: [1] }],
+              },
             ],
           },
         });

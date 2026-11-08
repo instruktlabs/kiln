@@ -7,8 +7,9 @@ does not publish a package.
 
 ## Unreleased
 
-- `--draws minimal` names each batch node `<mesh>_Instances`, and `drawReduction.instancing` records
-  which node names went into each batch, in instance order: the batched nodes leave the file. Clips kept
+- `--draws minimal` names each batch node after its first copy, `<copy>_Instances`, and
+  `drawReduction.instancing` records which node names went into each batch, in instance order: the
+  batched nodes leave the file. Clips kept
   only as the review copy (`scenes[].extras.kilnReviewClipsV1`) now protect the nodes their tracks name,
   as native animations do. Such a file is not batched (`batchingSkipped: 'review clips'`), and a node a
   track names is never merged, which also holds for `optimize: 'full'`. The `KILN_BAKE_INSTANCE` pass

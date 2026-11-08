@@ -75,7 +75,8 @@ export async function reduceDrawCalls(
   const batchingSkipped = instancingBlocker(doc);
   const created = batchingSkipped ? [] : await instanceByHandedness(doc, REPEAT_MIN);
   const { batches, instances } = countInstanceBatches(doc);
-  // `instance()` leaves batch nodes unnamed; a unique name makes each one addressable.
+  // `instance()` leaves batch nodes unnamed. Naming each after its first copy, uniquely, makes it
+  // addressable whether or not the exporter named the mesh.
   const names = new Set(
     doc
       .getRoot()
@@ -84,7 +85,7 @@ export async function reduceDrawCalls(
   );
   const instancing = created.map(({ node, instances: copies }) => {
     const mesh = node.getMesh()?.getName() ?? '';
-    const base = `${mesh || 'Mesh'}_Instances`;
+    const base = `${copies[0] || mesh || 'Mesh'}_Instances`;
     let name = base;
     for (let k = 1; names.has(name); k++) name = `${base}_${k}`;
     names.add(name);
