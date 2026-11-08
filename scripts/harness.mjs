@@ -443,7 +443,11 @@ export function run(
     // lets `killTree` signal the group rather than just the shell in front of it.
     // Windows has no process groups to lead; `taskkill /T` covers it there.
     const detached = process.platform !== 'win32';
-    const childEnv = env ? { ...process.env, ...env } : process.env;
+    // PWD follows cwd. POSIX shells (and Git Bash) export PWD, and OpenCode 2.2's
+    // `run` takes its directory from `process.env.PWD ?? process.cwd()`, so an
+    // inherited PWD sends it to the caller's directory: it skips the workspace's
+    // opencode.json and Kiln MCP server and works in the caller's project.
+    const childEnv = { ...process.env, ...env, PWD: resolve(cwd) };
     const child = resolved.shell
       ? spawn(quoteArg(resolved.cmd), args.map(quoteArg), {
           cwd,
