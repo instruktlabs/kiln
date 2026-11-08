@@ -1,8 +1,11 @@
 {
   "tools": {
-    "kiln": "1.6.0",
+    "kiln": "1.7.0",
     "harness": "claude",
-    "harnessVersion": "2.1.319",
+    "harnessVersion": [
+      "2.1.319",
+      "2.1.300"
+    ],
     "model": "claude-opus-5-5",
     "effort": "xhigh"
   },
@@ -17,19 +20,19 @@
           "id": "make",
           "prompt": "Make a heavy walking mech for a three.js game, about 6 m tall. Two digitigrade legs, an armoured torso that turns at the waist, a cockpit with a glass canopy, a shoulder-mounted missile pod and two heavy arms: a rotary cannon on the right and a claw on the left. Every joint has to be its own named pivot (hip, knee, ankle, toe, waist, shoulder, elbow) so I can drive it from code, and the hydraulic pistons on the legs should really follow the joints. Add one looping Walk clip where the feet plant without sliding and the torso sways and counter-rotates. It should look like it came out of a AAA concept: layered armour plates with panel lines, weathered paint, hazard stripes, exposed cables and machinery at the joints. Keep the GLB under 5 MB so it loads in a browser. Save it when you're happy with it.",
           "sourceLines": 1430,
-          "sourceHref": "/text-to-3d/5833329625b2f4ed/mech-1.kiln.js"
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/mech-1.kiln.js"
         },
         {
           "id": "direct",
           "prompt": "Good bones. Three notes from me.\n\nThe paint still reads as flat olive with specks on it. I want wear you can believe: chipped paint showing bare metal along plate edges, grime settled into the panel lines, oil and rust streaks running down from the joints and bolts, and lower legs that are darker and dustier than the torso.\n\nThe shoulders, forearms and feet are plain boxes and wedges next to the detail on the legs. Give them layered plates, bevelled edges, bolts and vents, and make the feet read as armoured toes with rubber soles.\n\nThe cannon barrels and joint machinery should read as real gunmetal, with some sharp highlights.\n\nKeep the height, every joint name, the Walk clip and the 5 MB limit, and save it as a new revision of the same asset.",
           "sourceLines": 1763,
-          "sourceHref": "/text-to-3d/5833329625b2f4ed/mech-2.kiln.js"
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/mech-2.kiln.js"
         },
         {
           "id": "revise",
           "prompt": "Swap the left claw for a long rail cannon with glowing coils along the barrel. Keep the Walk clip, every joint name and every other part as they are, and save it as a new revision of the same asset.",
           "sourceLines": 1814,
-          "sourceHref": "/text-to-3d/5833329625b2f4ed/mech-3.kiln.js"
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/mech-3.kiln.js"
         }
       ],
       "images": {
@@ -37,49 +40,49 @@
           "width": 1440,
           "height": 1440,
           "alt": "The finished walking mech in three-quarter view: olive armour with chipped edges and hazard stripes, a rotary cannon on its right arm, a long rail cannon with glowing cyan coils on its left, a glass cockpit and a shoulder missile pod, standing on two digitigrade legs with hydraulic pistons.",
-          "src": "/text-to-3d/5833329625b2f4ed/mech-final.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/mech-final-480.webp 480w, /text-to-3d/5833329625b2f4ed/mech-final-768.webp 768w, /text-to-3d/5833329625b2f4ed/mech-final-1024.webp 1024w, /text-to-3d/5833329625b2f4ed/mech-final-1440.webp 1440w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/mech-final-480.avif 480w, /text-to-3d/5833329625b2f4ed/mech-final-768.avif 768w, /text-to-3d/5833329625b2f4ed/mech-final-1024.avif 1024w, /text-to-3d/5833329625b2f4ed/mech-final-1440.avif 1440w"
+          "src": "/text-to-3d/a4225874aa33ff3a/mech-final.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/mech-final-480.webp 480w, /text-to-3d/a4225874aa33ff3a/mech-final-768.webp 768w, /text-to-3d/a4225874aa33ff3a/mech-final-1024.webp 1024w, /text-to-3d/a4225874aa33ff3a/mech-final-1440.webp 1440w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/mech-final-480.avif 480w, /text-to-3d/a4225874aa33ff3a/mech-final-768.avif 768w, /text-to-3d/a4225874aa33ff3a/mech-final-1024.avif 1024w, /text-to-3d/a4225874aa33ff3a/mech-final-1440.avif 1440w"
         },
         "paint-before": {
           "width": 1000,
           "height": 1000,
           "alt": "Close view of the shoulder armour on the first revision: flat olive paint with a few specks.",
-          "src": "/text-to-3d/5833329625b2f4ed/mech-paint-before.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/mech-paint-before-480.webp 480w, /text-to-3d/5833329625b2f4ed/mech-paint-before-768.webp 768w, /text-to-3d/5833329625b2f4ed/mech-paint-before-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/mech-paint-before-480.avif 480w, /text-to-3d/5833329625b2f4ed/mech-paint-before-768.avif 768w, /text-to-3d/5833329625b2f4ed/mech-paint-before-1000.avif 1000w"
+          "src": "/text-to-3d/a4225874aa33ff3a/mech-paint-before.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/mech-paint-before-480.webp 480w, /text-to-3d/a4225874aa33ff3a/mech-paint-before-768.webp 768w, /text-to-3d/a4225874aa33ff3a/mech-paint-before-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/mech-paint-before-480.avif 480w, /text-to-3d/a4225874aa33ff3a/mech-paint-before-768.avif 768w, /text-to-3d/a4225874aa33ff3a/mech-paint-before-1000.avif 1000w"
         },
         "paint-after": {
           "width": 1000,
           "height": 1000,
           "alt": "The same shoulder on the second revision: chipped edges down to bare metal, grime in the panel lines, rust streaks, bolts, louvred vents and layered plates.",
-          "src": "/text-to-3d/5833329625b2f4ed/mech-paint-after.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/mech-paint-after-480.webp 480w, /text-to-3d/5833329625b2f4ed/mech-paint-after-768.webp 768w, /text-to-3d/5833329625b2f4ed/mech-paint-after-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/mech-paint-after-480.avif 480w, /text-to-3d/5833329625b2f4ed/mech-paint-after-768.avif 768w, /text-to-3d/5833329625b2f4ed/mech-paint-after-1000.avif 1000w"
+          "src": "/text-to-3d/a4225874aa33ff3a/mech-paint-after.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/mech-paint-after-480.webp 480w, /text-to-3d/a4225874aa33ff3a/mech-paint-after-768.webp 768w, /text-to-3d/a4225874aa33ff3a/mech-paint-after-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/mech-paint-after-480.avif 480w, /text-to-3d/a4225874aa33ff3a/mech-paint-after-768.avif 768w, /text-to-3d/a4225874aa33ff3a/mech-paint-after-1000.avif 1000w"
         },
         "before": {
           "width": 1000,
           "height": 1000,
           "alt": "The mech on revision 2, with a three-fingered claw on its left arm.",
-          "src": "/text-to-3d/5833329625b2f4ed/mech-before.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/mech-before-480.webp 480w, /text-to-3d/5833329625b2f4ed/mech-before-768.webp 768w, /text-to-3d/5833329625b2f4ed/mech-before-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/mech-before-480.avif 480w, /text-to-3d/5833329625b2f4ed/mech-before-768.avif 768w, /text-to-3d/5833329625b2f4ed/mech-before-1000.avif 1000w"
+          "src": "/text-to-3d/a4225874aa33ff3a/mech-before.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/mech-before-480.webp 480w, /text-to-3d/a4225874aa33ff3a/mech-before-768.webp 768w, /text-to-3d/a4225874aa33ff3a/mech-before-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/mech-before-480.avif 480w, /text-to-3d/a4225874aa33ff3a/mech-before-768.avif 768w, /text-to-3d/a4225874aa33ff3a/mech-before-1000.avif 1000w"
         },
         "after": {
           "width": 1000,
           "height": 1000,
           "alt": "The mech on revision 3 from the same camera, with a long rail cannon and glowing coils in place of the claw.",
-          "src": "/text-to-3d/5833329625b2f4ed/mech-after.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/mech-after-480.webp 480w, /text-to-3d/5833329625b2f4ed/mech-after-768.webp 768w, /text-to-3d/5833329625b2f4ed/mech-after-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/mech-after-480.avif 480w, /text-to-3d/5833329625b2f4ed/mech-after-768.avif 768w, /text-to-3d/5833329625b2f4ed/mech-after-1000.avif 1000w"
+          "src": "/text-to-3d/a4225874aa33ff3a/mech-after.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/mech-after-480.webp 480w, /text-to-3d/a4225874aa33ff3a/mech-after-768.webp 768w, /text-to-3d/a4225874aa33ff3a/mech-after-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/mech-after-480.avif 480w, /text-to-3d/a4225874aa33ff3a/mech-after-768.avif 768w, /text-to-3d/a4225874aa33ff3a/mech-after-1000.avif 1000w"
         },
         "make-sheet": {
           "width": 1168,
           "height": 780,
           "alt": "The agent's six-view contact sheet of the first saved revision: front, right, back, left, top and three-quarter, each with a yellow label.",
-          "src": "/text-to-3d/5833329625b2f4ed/mech-make-sheet.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/mech-make-sheet-480.webp 480w, /text-to-3d/5833329625b2f4ed/mech-make-sheet-768.webp 768w, /text-to-3d/5833329625b2f4ed/mech-make-sheet-1024.webp 1024w, /text-to-3d/5833329625b2f4ed/mech-make-sheet-1168.webp 1168w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/mech-make-sheet-480.avif 480w, /text-to-3d/5833329625b2f4ed/mech-make-sheet-768.avif 768w, /text-to-3d/5833329625b2f4ed/mech-make-sheet-1024.avif 1024w, /text-to-3d/5833329625b2f4ed/mech-make-sheet-1168.avif 1168w"
+          "src": "/text-to-3d/a4225874aa33ff3a/mech-make-sheet.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/mech-make-sheet-480.webp 480w, /text-to-3d/a4225874aa33ff3a/mech-make-sheet-768.webp 768w, /text-to-3d/a4225874aa33ff3a/mech-make-sheet-1024.webp 1024w, /text-to-3d/a4225874aa33ff3a/mech-make-sheet-1168.webp 1168w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/mech-make-sheet-480.avif 480w, /text-to-3d/a4225874aa33ff3a/mech-make-sheet-768.avif 768w, /text-to-3d/a4225874aa33ff3a/mech-make-sheet-1024.avif 1024w, /text-to-3d/a4225874aa33ff3a/mech-make-sheet-1168.avif 1168w"
         }
       },
       "glbHref": "https://assets.kilnstudio.tools/text-to-3d/c4100fecfc3b94ea/mech.glb"
@@ -87,26 +90,26 @@
     {
       "id": "cathedral",
       "name": "Gothic cathedral",
-      "glbBytes": 14948932,
-      "triangles": 2635224,
+      "glbBytes": 15859692,
+      "triangles": 3979304,
       "steps": [
         {
           "id": "make",
           "prompt": "Build a massive Gothic cathedral, the kind of model that makes a professional 3D artist stop and look. True scale: about 130 m long with twin west towers about 80 m tall. A nave of nine bays with side aisles, transepts, and an apse ringed with radiating chapels. Flying buttresses with crocketed pinnacles on every bay, and gargoyles along the walls. A west front with three deep portals, robed saints in the door jambs, carved tympana over the doors, a gallery of kings, and a great rose window with real stone tracery. The statues have to read as sculpted figures, not blocks. Stained glass in every window, as real art: the rose and the big windows should depict figures and scenes in leaded panes, not just coloured squares. Use real textured PBR materials: weathered limestone with carved detail in the normals, patinated lead roofs, aged oak doors with iron straps, gilded accents. The inside has to hold up too: clustered columns, triforium, clerestory and ribbed vaults, statues in niches and glass that colours the view. Keep the GLB under 15 MB so it can load in a browser. Build it from parameters so the design can change later. Save it when you're happy with it.",
           "sourceLines": 2853,
-          "sourceHref": "/text-to-3d/5833329625b2f4ed/cathedral-1.kiln.js"
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/cathedral-1.kiln.js"
         },
         {
           "id": "direct",
           "prompt": "Strong bones. The plan, the vaults and the view down the nave are right, and I believe the scale. As art it isn't there yet, and this has to stop a professional 3D artist. I looked at it from the ground outside, up close at the portals and from inside. My notes, most important first.\n\nThe statues look like melted candles. Faces have no real features, hands are mittens, feet are two balls and the heads jam straight into the canopies. The figures in the door arches are thin cut-outs floating on the stone, and the lintel's reliefs are buried so only stray bits poke out. Sculpt them like the real thing at Chartres and Reims: long columnar bodies, deep folds you could put a finger in, real faces with brow, nose, lips, hair and beards, hands that grip what they hold, feet on a carved base and room above the head. Make them different people: a bishop in a mitre, a crowned king, a veiled queen, an apostle with a key, a smiling angel, the Virgin and Child on the central door post. I would rather have fewer figure types that are truly good than many that are poor. Carve the tympana as scenes, with figures that overlap and turn to each other, not a row of people on wallpaper.\n\nThe glass looks like clip art: flat primary colours and cartoon people. Real medieval glass is deep ruby and cobalt with no two panes quite alike, black lead lines, and brown painted shading that draws faces, hair and drapery. The rose should be the most beautiful thing in the building. From outside, glass should read dark and deep with the colour only hinting through. Right now the windows are as bright as toys outside, and some wash out to pale pink at an angle. The colour belongs inside.\n\nThe stone has no age and no depth. Outside it is one clean cream everywhere, so you can't feel how deep the portals are. This building has stood for 700 years: soot in the recesses, rain streaks under every ledge and sill, each block a slightly different colour, darker and greener toward the ground. The viewer has no cast shadows, so bake the light in: a low sun from one side, so the portals go deep, the galleries go dark behind their columns and every ledge throws a shadow below it. The printed quatrefoil pattern on the portal walls and tympana looks like wallpaper, so carve it or remove it. The tower walls are flat ashlar with thin lines stuck on, so give them real blind arcades and relief. Inside, warm the stone, and let it go darker low in the aisles and lighter up in the vault. The coloured light on the floor looks like painted tiles: make it soft pools with the shape of the windows.\n\nMaterials should hold up close: lead roofs with visible sheets, seams and streaked patina instead of stretched noise, stone with tool marks instead of round pockmarks, and gold that looks like gold instead of mustard. The altar's gold box should become a carved retable or go.\n\nFaults I can see. A free-standing column sticks out of the north transept front, between the portal and the big window. The flying buttresses are thick flat boards: make them real arches, thin and pierced, with a sloped top. The bell openings are dark walls with nothing in them: make them real openings with louvres. The arches around the apse look like fangs hanging from above instead of springing from the piers.\n\nKeep the plan, the dimensions and the parameters. Keep the GLB under 15 MB and leave about 1 MB free, because I will want changes later. Textures are only 1.4 MB of the file, so spend your bytes on what gets looked at closely. Save it as a new revision of the same asset.",
           "sourceLines": 3775,
-          "sourceHref": "/text-to-3d/5833329625b2f4ed/cathedral-2.kiln.js"
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/cathedral-2.kiln.js"
         },
         {
           "id": "direct-2",
           "prompt": "I'm back, and thanks for the honest report. The nave, the vaults and the rose seen from outside are what I wanted, and the stone finally looks old. Here's what comes next, most important first.\n\nA correction before that. I told you the build limit was 120 seconds, and your kiln_save still failed after about a minute. I don't know why yet, so plan on 60. With this machine quiet, your saved revision builds in 32 seconds, so most of those failures were other jobs on the machine rather than your program. You have more room than you thought.\n\nIt has no ground. Apart from a paved patch at the west doors, the building floats. Give it real ground all the way round: worn flagstones for about 20 m, a step or two up to each door, rough grass or packed earth at the edge, and dark grime where the walls meet it. Make the ground its own named part, so it can be taken away if the building is later placed in a town. Keep its top a few centimetres above y = 0, so it doesn't fight with a viewer's ground plane.\n\nThe corners aren't real architecture. At the corners of the towers and transepts, thick wall plates stick out past the corner and overlap each other, and high on the towers some hang in the air with a slanted edge. Around the apse and along the sides, the buttresses are huge plain boxes, and the set-offs on the west front's buttresses are thin sheets that stick out like awnings. Build real buttresses: solid piers tied into the wall, narrower as they rise, stepping back in two or three stages, each step a sloped stone cap that belongs to the pier. Where two meet at a corner they should meet cleanly, or run diagonally as one. From any angle, nothing should float, overlap or pass through anything else.\n\nInside. Fix the light bug you found: the piers on one side are still blue-grey. The shadows on the vaults and piers have hard-edged bands, and the light pools on the floor break into hard-edged islands up close. Make them smooth gradients.\n\nThe portals, up close. The canopies over the door statues float far above their heads on thin sticks, like hanging lamps. Bring each one down to just above its head, with the figure standing against its column. The tympanum figures stand on shelves like dolls, in front of a wall of blocks. Carve them out of the stone as relief, with no block joints behind them. The gold frame around Christ is a thin wire with angels passing through it, so make it a carved frame, gilded. The kneeling figures have pumpkin-shaped skirts. From the ground the gallery kings are faceless slivers, so give them bodies and crowns. The queen and the Virgin need different faces. The door straps end in curls that read as the number 3, so make them forged hinges. Remove the yellow blotches like coins at the foot of the portal walls, and the little L-shaped chips scattered around the rose.\n\nThe glass. From outside, the windows read as flat purple with red specks. Make them nearly black, with faint lead lines and only a hint of colour, the way the rose already does. Inside, the grounds lean magenta, so keep them ruby and cobalt. The high apse windows have a white ladder across the middle: take it out. I still want the rose to be the most beautiful thing in the building, so look at it from inside and make it so.\n\nThe roofs look like a patchwork quilt from above. Make long lead sheets running down the slope, with raised seams and streaks.\n\nThen, if there's room, what your report left open: rain streaks on the apse, chapels and buttress sides, and a shadow under every main ledge.\n\nKeep the plan, the parameters and the height. Keep the GLB under 15 MB and leave at least 1 MB and some build time free, because I'll ask for a change that adds geometry afterwards. Save it as a new revision of the same asset, then tell me plainly what's done and what isn't.",
           "sourceLines": 3960,
-          "sourceHref": "/text-to-3d/5833329625b2f4ed/cathedral-3.kiln.js"
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/cathedral-3.kiln.js"
         },
         {
           "id": "revise",
@@ -117,7 +120,7 @@
             "inPlace": 971,
             "moved": 639
           },
-          "sourceHref": "/text-to-3d/5833329625b2f4ed/cathedral-4.kiln.js"
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/cathedral-4.kiln.js"
         },
         {
           "id": "light",
@@ -128,154 +131,211 @@
             "inPlace": 1705,
             "moved": 0
           },
-          "sourceHref": "/text-to-3d/5833329625b2f4ed/cathedral-5.kiln.js"
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/cathedral-5.kiln.js"
         },
         {
           "id": "sun",
           "prompt": "I looked at the floor light again and it still isn't right. At this sun it runs the whole way across the nave, past the columns and up the north piers, and your own number says almost none of it could get past the buttresses outside.\n\nFix it by moving the sun. Set P.sun to about [0.11, 0.79, -0.61]: about 52 degrees up and about 10 degrees west of due south. I tried a few suns on a scratch copy of your source, with the outside counted. With this one each south aisle window lands as its own window-shaped pool that passes between the piers and stops around the middle of the nave, short of the north piers. Further west, the buttresses and piers cut the pools into thin streaks. Adjust it a little if your own checks say so, and tell me if you do.\n\nCount everything in the trace, including the outside: buttresses, flyers, pinnacles, towers and transepts. No light passes through stone. Tell me what share of the rays reaching a window now clear everything.\n\nStart the floor image at the south aisle wall, because light now lands in the aisle, and end it just past where the last light falls, so the texels go where the light is. Where rays stop on a pier, that's now the south faces of the south piers, so put the pier skins there. The north piers should get nothing.\n\nThe colour reads as pink and lavender with pale blobs. Make it read as ruby and cobalt light falling on stone, with the paving still showing through, and soften the pale patches so they don't look like spots.\n\nRe-bake the stone from this same sun, inside and out, and keep the portals deep. The west front now only gets raking light. Don't add a second sun to brighten it. If it goes dull, tell me.\n\nLeave the plan, the height and the glass as they are. Keep the GLB under 15 MB and the build inside the limit. Save it as a new revision of the same asset, then tell me plainly what's done and what isn't.",
           "sourceLines": 4240,
-          "sourceHref": "/text-to-3d/5833329625b2f4ed/cathedral-6.kiln.js"
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/cathedral-6.kiln.js"
         },
         {
           "id": "daylight",
           "prompt": "Two things from looking at this revision. The floor is right, so don't change it.\n\nThe light on the south piers isn't right. Up close it reads as dark red and blue paint running up the column, blotchy and darker than the stone around it. Light can't make stone darker. Make it read as light falling on stone: brighter than the stone it lands on, smooth, with soft edges. If the overlay can't do that at any height, fade it out low on the pier, by about 3 m, or take it off and say so. Check it close up from the south aisle, camera at [24, 2, -10.5] looking at [0, 3, -5], as well as from the nave.\n\nThe west front is what people see first, and it has gone dull. Keep the one sun, but shaded walls really do get light from the sky and off the sunlit paving. Lift that on the west front until it reads as soft daylight, with the portals still deep. Check it from [165, 1.6, -115] looking at [5, 66.6, 9].\n\nEverything else stays. Keep the GLB under 15 MB and the build inside the limit. Save it as a new revision, then tell me plainly what's done and what isn't.",
           "sourceLines": 4289,
-          "sourceHref": "/text-to-3d/5833329625b2f4ed/cathedral-7.kiln.js"
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/cathedral-7.kiln.js"
+        },
+        {
+          "id": "architecture",
+          "prompt": "Thanks. You're on a new, faster machine now, in a new session, so read KILN_PROGRESS.md first. The saved revision builds in about 30 seconds here, so you have room to work. Start from revision r_028002e80aa342a1a55d2d35311420bf.\n\nI've looked at this as an architect and a 3D modeller would, and too much of it is one module stamped down wherever it lands, with nobody deciding what happens where two things meet. I want quality, not patches. Fix the rule that causes each fault, in the parameters and the plan, so that changing the plan can't bring it back. Get one example of each fix right and look at it before you repeat it. Here's my list, most important first. +X is west and +Z is north.\n\n1. The corners where the nave and choir meet the transepts. Two buttresses collide at all four corners: each stands 5.7 m along its wall from the inner corner and sticks out 5.2 m, so their bases overlap by nearly a metre, and their two gargoyles are at the same height, biting through each other. One has to lead. Keep the nave and choir buttresses at full depth, so their rows run unbroken, and step the transept buttress back so it stops about 0.8 m clear, still with real stages. Don't join them into one L-shaped mass: that would seal a pit against the windows with no way for the water out. A gargoyle is a water spout, so give each corner one, on the full-depth buttress, throwing water away from the building. Have the program work this out from the plan, and count any solid footprints that collide. That count should be zero. Look from [6, 13, 38] towards [-13, 11, 17], from [-4, 16.5, 27] towards [-11.4, 15.3, 19], and from [-60, 12, 34] towards [-50, 12, 18].\n\nThere's a stone block indoors that shouldn't be there. The choir buttress nearest each transept stands about 1 m inside the transept's east aisle. The nave leaves out its matching buttress, and the choir should too. Check from [-40.5, 1.7, 24] towards [-44, 5, 15]. Around the apse, the gargoyles over the chapels are almost on the buttress lines, and they run into the buttress gargoyles and the piers. Centre them on their chapels. One more pair clashes near [-57.4, 15.3, -19]. No gargoyle should touch another gargoyle, or go through stone other than the stone it grows from.\n\n2. The tops of the two west towers. The roof is an octagon floating in a square tower with nothing joining it to the walls. Look over the parapet and you see straight down past it to a floor about 19 m below. Replace it with a square lead roof with four hips and rolled seams, sitting on a wall plate, with a lead gutter behind the parapet, so there's no gap anywhere. Keep the gilt finial and the overall height. The walls up there have no inner face, so from some angles they vanish and you see the nave roof through them. Give the upper walls and parapets real inner faces. Close the bell chamber behind the louvres, so it reads as a dark room and not as boards floating in a shaft. Don't make materials double-sided to hide this. Then go looking for any other wall you can see through from above or behind. Check from [68, 86, 30] towards [54, 69, 13], from [33, 75, 14.5] towards [55, 68, 14.5], and from [61, 72.5, 8.7] towards [48.5, 62, 8.9].\n\n3. The windows on the transept fronts. They aren't openings. The wall behind them is solid, and the glass sits 2 cm in front of it with a frame stuck on. They're also too wide, so the corner piers cut through the glass: at 4.65 m wide they run about 0.3 m into the pier. The tracery reads as cheap: the circle comes out as a hexagon, the bars end in stubs, and pieces poke past the frame. The string courses stop short and leave odd stubs beside the window head. Cut real openings through the wall, with moulded sides that splay inwards and the glass set back about 0.45 m, so the stone throws depth around it. Size each window from the wall that's really there between the portal and the corner pier, about 3.4 m wide, with its mouldings clear of both. Redraw the glass to fit rather than squeezing the figures. Draw the tracery the way a mason does, with a compass: one continuous stone shape with the lights cut out of it, then given depth, with curves smooth enough that a circle is a circle. Each string course runs up to the window's moulding and stops against it. Do the same on the towers' outer sides, where the windows are also stuck on solid wall, and look for anywhere else this happens. Check from [-21.5, 12, 39] towards [-21.5, 16.5, 27.2] and from [-28, 7, 34] towards [-18.5, 10, 27.2].\n\n4. The canopies over the statues on the piers. Each is a 2 m cone with three solid triangles, pushed into the pier. From the floor it's a lump, and I can't tell what it's meant to be. Replace it with a clean half-hexagon canopy about 1.1 m tall: three crisp pointed arches, a closed vaulted underside because that's the side you see from the floor, a simple cornice and a low top, properly tied into the pier. No spire. Clean beats busy here. Keep room above the statue's head. Check from [21, 1.7, 0] towards [28.2, 9, 5.4], from [25.2, 9.2, 2] towards [28.2, 9.2, 5.36], and down the nave from [47, 2, 0] towards [-60, 12, 0].\n\n5. The glass from outside. I pushed you too far on this. It should stay darker than it is from inside, but today it reads as black holes with a faint lattice. Most windows have no figures on the outside at all. I want dark jewels. Put each window's real panes on the outside, as the rose already does. Mirrored shared geometry should cost almost no bytes, but tell me what it really costs. Raise the outside glow so the ruby and cobalt show as deep, saturated colour with the lead lines visible. Try two or three levels side by side and choose. Make the surface smoother, and tilt each pane very slightly so that panes catch the sky differently, without the grazing washout to pale pink coming back. Compare single shots, not grids. Check from [165, 1.6, -115] towards [5, 66.6, 9], from [-21.5, 12, 39] towards [-21.5, 16.5, 27.2], and along the south side.\n\n6. Flicker in the glass from inside. Panes are stacked in layers 3.5 mm apart, and some only 0.35 mm apart, so a browser viewer can't tell which is in front at a distance or at a grazing angle. Cut each upper pane out of the panes below it, so all the glass of a window lies in one plane. If that costs too much build time, use whole layer steps of at least 15 mm with no fractional steps, and tell me you did. Nothing may rely on a viewer's depth settings, because people will download this file. The inside of the glass should otherwise look as it does now. Don't change the rose's design.\n\nLeave everything else as it is: the plan, the dimensions, the sun, the floor light, the statues, the portals, the stone and the roofs of the nave. Keep the GLB under 15 MB and the fresh build under 60 seconds. You start with only about 50 KB free, so find the bytes first. Take them from detail nobody sees up close, not from the statues, portals or rose.\n\nKeep KILN_PROGRESS.md current as you go, with the working program reference and the next action. Save one new revision of the same asset when all of it is finished, as a child of r_028002e80aa342a1a55d2d35311420bf. Then tell me plainly what's done, what isn't, what you changed your mind about, the GLB size, the triangle and mesh counts, the build time, and the footprint collision count.",
+          "followUps": [
+            "One change while you work: the limit is now 16 MB, not 15. Keep the GLB under 16,000,000 bytes. Everything else in my list stands.\n\nUse the extra room so you don't have to cut what people look at. If you've already thinned the crossing spire, the gilded cresting or the apse stonework for the sake of the old limit, put back whatever a viewer would notice. Don't spend it on new detail, and keep the fresh build under 60 seconds. Carry on from where you were."
+          ],
+          "sourceLines": 4936,
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/cathedral-8.kiln.js"
+        },
+        {
+          "id": "glass",
+          "prompt": "One change. The glass from outside is right in kind now, dark jewels with their real panes, but it's still a little too dark: in daylight the colours barely come through. I tried a few strengths on a scratch copy of your file, changing only how much the outside glass glows. About 0.3 reads best, roughly twice what it is now, and it still stays clearly darker than the glass from inside. Set P.glassOuterGlow to about 0.3, then look at the west rose and both transept fronts from outside to check they read as coloured glass, not lamps.\n\nLeave everything else as it is: the plan, the stone, the inside glass and the light on the floor. Keep the GLB under 16,000,000 bytes and the build inside the limit. Save it as a new revision of the same asset, then tell me plainly what's done and what isn't.",
+          "sourceLines": 4936,
+          "sourceHref": "/text-to-3d/a4225874aa33ff3a/cathedral-9.kiln.js"
         }
       ],
       "diff": "--- cathedral-3.kiln.js\n+++ cathedral-4.kiln.js\n@@ -8,7 +8,7 @@\n const P = {\n   preview: 'all',          // 'all', or 'size' (true buffer bytes, fast), 'stats' (per-mesh list), 'textures' (map payload), 'unique' (no instances), 'statues' (test row)\n   // Plan\n-  naveBays: 9, bay: 6.6, naveSpan: 13, aisleSpan: 6.6,\n+  naveBays: 11, bay: 6.6, naveSpan: 13, aisleSpan: 6.6,\n   xWest: 62,               // west face of the towers\n   towerDepth: 14, towerWidth: 14,\n   choirBays: 3, transeptBays: 2,\n@@ -18,7 +18,7 @@\n   vaultSpring: 26.6, vaultCrown: 39.6, eaves: 41.4, roofPitch: 1.6,\n   aisleWallTop: 23, aisleRoofHigh: 26.2,\n   towerTop: 72, spireTip: 80,\n-  flecheTip: 74,\n+  flecheTip: 100,          // top of the cross on the lead spire over the crossing\n   // Detail\n   jambStatues: 5, kings: 16, seed: 1163,\n   archFigureTris: 720, statueTest: ['apostle', 'bishop', 'king', 'queen', 'angel', 'virgin'],\n@@ -1528,7 +1528,7 @@\n   }\n }\n // Crockets up an edge from p to q (3D), with `dir` the outward direction in the frame\n-function crocketsAlong(b, p, q, n, size, out, lod = 1) {\n+function crocketsAlong(b, p, q, n, size, out, lod = 1, maker = addCrocket) {\n   const d = [q[0] - p[0], q[1] - p[1], q[2] - p[2]], L = Math.hypot(...d);\n   const dn = d.map((c) => c / L);\n   let ox = out[0], oy = out[1], oz = out[2]; const od = ox * dn[0] + oy * dn[1] + oz * dn[2]; ox -= od * dn[0]; oy -= od * dn[1]; oz -= od * dn[2];\n@@ -1538,9 +1538,16 @@\n   for (let i = 0; i < n; i++) {\n     const t = (i + 0.5) / n, pz = [lerp(p[0], q[0], t), lerp(p[1], q[1], t), lerp(p[2], q[2], t)];\n     const m = [ox, dn[0], -side[0], pz[0], oy, dn[1], -side[1], pz[1], oz, dn[2], -side[2], pz[2]];\n-    addCrocket(b, m, size * lerp(1, 0.78, t), lod);\n+    maker(b, m, size * lerp(1, 0.78, t), lod);\n   }\n }\n+// A crocket beaten in lead: one thick leaf turning up off the arris with a lobe either side. Same frame as addCrocket: X out, Y along the edge\n+function addLeadCrocket(b, m, s = 1) {\n+  b.at(m, () => {\n+    b.tube([[-0.04 * s, -0.02 * s, 0], [0.2 * s, 0.1 * s, 0], [0.34 * s, 0.3 * s, 0], [0.3 * s, 0.46 * s, 0]], (t) => [lerp(0.13, 0.015, t) * s, lerp(0.17, 0.02, t) * s], 4, { capEnd: false });\n+    for (const z of [-1, 1]) b.tube([[0, 0, z * 0.04 * s], [0.16 * s, 0.1 * s, z * 0.2 * s], [0.2 * s, 0.24 * s, z * 0.3 * s]], (t) => lerp(0.07, 0.012, t) * s, 3, { capEnd: false });\n+  });\n+}\n \n // Crocketed pinnacle: square shaft with gablets, a spirelet with crockets and a finial.\n function addPinnacle(b, w, h, o = {}) {\n@@ -2665,36 +2672,123 @@\n   addCapital(F, ring, P.pierTop - 0.9, 0.9, 1.18, { leaves: 8 });\n   return set;\n }\n+// The spire over the crossing: an oak frame sheathed in lead. A plinth straddles the roofs, two open lantern stages stand on it,\n+// and a long octagonal needle rises to a gilded orb and cross. Everything follows P.flecheTip, the ridge and the width of the crossing.\n function buildFleche(parent, x, z) {\n-  const L = new Batch(TILE.lead), G = new Batch(TILE.gold), F = new Batch(TILE.fine);\n-  const y0 = LAY.ridge - 2.5, yB = LAY.ridge + 7, yT = P.flecheTip - 3.2, R = 2.9, n = 8;\n-  // Octagonal base and open arcaded lantern\n-  L.lathe([[R + 0.4, y0], [R + 0.25, y0 + 2.8], [R + 0.5, y0 + 3], [R + 0.5, y0 + 3.3], [R, y0 + 3.5]], n, { faceted: true, phase: PI / 8 });\n-  L.lathe([[R * 0.78, y0 + 3.5], [R * 0.78, yB + 0.3]], n, { faceted: true, phase: PI / 8, s: 0.34 });\n-  for (let i = 0; i < n; i++) {\n-    const a = i * 45, ap = R * Math.cos(rad(22.5)), side = 2 * R * Math.sin(rad(22.5));\n-    L.at(M.of(M.Ry(a + 22.5), M.T(0, 0, ap)), () => {\n-      for (const s of [-1, 1]) L.tube([[s * side * 0.5, y0 + 3.5, 0], [s * side * 0.5, yB, 0]], 0.13, 6, {});\n-      const arc = pointedArc(side * 0.92, 2.2, 6).map((p) => [p[0], yB - 2.45 + p[1]]);\n-      L.sweep(arc, traceryBar(0.13, 0.2), {});\n-      G.at(M.of(M.Ry(a + 22.5), M.T(0, 0, ap + 0.1)), () => addGable(G, side * 1.04, 1.6, -0.05, 0.08, yB - 0.24, { size: 0.26, crockets: 2, finial: 0.44, lod: 0, solid: true }));\n+  const L = new Batch(TILE.lead), G = new Batch(TILE.gold);\n+  L.noReduce = true; // a single careful mesh, its seams and crockets are the design\n+  const n = 8, PH = PI / 8, cos8 = Math.cos(PH), sin8 = Math.sin(PH), oct = { faceted: true, phase: PH };\n+  const yR = LAY.ridge, tip = P.flecheTip, y0 = yR - 5.9, yP = yR + 2.7, H = tip - yP, yA = yP + 0.19 * H, yB = yA + 0.15 * H, yN1 = yB + 1.7, yT = tip - 3.3;\n+  const R0 = zn * 0.73, R1 = zn * 0.66, R2 = zn * 0.5, RN = zn * 0.44;\n+  const faceFrame = (k, ap) => M.of(M.Ry(k * 45), M.T(0, 0, ap));\n+  const vertex = (k, R) => { const a = rad((k + 0.5) * 45); return [R * Math.sin(a), R * Math.cos(a)]; };\n+  // A small gilded knop finishing a gablet or a lucarne\n+  const knop = (m, s) => G.at(m, () => G.lathe([[0.05 * s, 0], [0.11 * s, 0.1 * s], [0.09 * s, 0.2 * s], [0.03 * s, 0.32 * s], [0.004, 0.72 * s]], 6));\n+  const gablet = (k, ap, w, h, y, nC, sz) => {\n+    const fr = faceFrame(k, ap + 0.05);\n+    L.at(fr, () => {\n+      L.slab([[-w / 2, y], [w / 2, y], [0, y + h]], [], -0.05, 0.05, { sb: 0.7 });\n+      L.shade(0.42, () => L.face([[-w * 0.2, y + h * 0.16, 0.06], [w * 0.2, y + h * 0.16, 0.06], [0, y + h * 0.62, 0.06]]));\n+      const rake = barSection(0.14, 0.2);\n+      L.sweep([[-w / 2 - 0.05, y - 0.02], [0, y + h + 0.04]], rake, {}); L.sweep([[0, y + h + 0.04], [w / 2 + 0.05, y - 0.02]], rake, {});\n+      crocketsAlong(L, [-w / 2, y + 0.05, 0], [-0.03, y + h * 0.97, 0], nC, sz, [-h, w / 2, 0], 0, addLeadCrocket);\n+      crocketsAlong(L, [w / 2, y + 0.05, 0], [0.03, y + h * 0.97, 0], nC, sz, [h, w / 2, 0], 0, addLeadCrocket);\n     });\n-  }\n-  L.lathe([[R + 0.2, yB - 0.05], [R + 0.34, yB + 0.1], [R + 0.2, yB + 0.26]], n, { faceted: true, phase: PI / 8 });\n-  // The spire, its ribs and gilded crockets\n-  L.lathe([[R * 0.98, yB + 0.26], [R * 0.72, yB + 3.2], [0.1, yT]], n, { faceted: true, phase: PI / 8 });\n-  for (let i = 0; i < n; i++) {\n-    const a = rad(i * 45 + 22.5 + 22.5), c = Math.cos(a), s = Math.sin(a);\n-    const pts = [[R * 0.98 * c * 1.0, yB + 0.3, R * 0.98 * s], [R * 0.72 * c, yB + 3.2, R * 0.72 * s], [0.14 * c, yT - 0.2, 0.14 * s]];\n-    G.tube(pts, (t) => lerp(0.1, 0.03, t), 5);\n-    crocketsAlong(G, pts[1], pts[2], 7, 0.66, [c, 0.1, s], 0);\n-  }\n-  G.at(M.T(0, yT - 0.15, 0), () => {\n-    G.lathe([[0.14, 0], [0.3, 0.28], [0.34, 0.5], [0.22, 0.72], [0.06, 0.9], [0.05, 3.2]], 10);\n-    G.box(-0.06, 0.06, 2.2, 3.35, -0.06, 0.06, {}); G.box(-0.6, 0.6, 2.56, 2.72, -0.06, 0.06, {});\n+    knop(M.of(fr, M.T(0, y + h - 0.02, 0)), 0.9);\n+  };\n+  // One open stage: a dark core, a pointed opening in every face, a clustered post at every angle, a cornice closing the top\n+  const stage = (R, yBase, yTop, coreR, rPost, open) => {\n+    const hs = R * sin8, ap = R * cos8, { w, sill, ys, rise, tracery } = open;\n+    L.shade(0.34, () => L.lathe([[coreR, yBase], [coreR, yTop - 0.4]], n, oct));\n+    L.shade(0.5, () => { L.lathe([[coreR, yTop - 0.4], [R, yTop - 0.4]], n, oct); L.lathe([[R, yBase + 0.01], [coreR, yBase + 0.01]], n, oct); });\n+    for (let k = 0; k < n; k++) {\n+      L.at(faceFrame(k, ap), () => {\n+        L.slab([[-hs, yBase], [hs, yBase], [hs, yTop], [-hs, yTop]], [archOutline(w, sill, ys, rise, 5)], -0.14, 0.02, { noOuterSides: true, sr: 0.6, sb: 0.5 });\n+        L.sweep(pointedArc(w + 0.16, rise + 0.16, 5).map((p) => [p[0], p[1] + ys]), hexBar(0.1, 0.14), { z: 0.03, caps: false });\n+        if (tracery) {\n+          L.at(M.T(0, 0, -0.06), () => L.lathe([[0.1, sill], [0.065, sill + 0.16], [0.065, ys - 0.08], [0.11, ys]], 5));\n+          for (const s of [-1, 1]) L.sweep(pointedArc(w / 2 - 0.03, rise * 0.58, 3).map((p) => [s * w / 4 + p[0], ys + p[1]]), hexBar(0.08, 0.13), { z: -0.06, caps: false });\n+          L.sweep(ringPts(0, ys + rise * 0.76, rise * 0.13, 6), hexBar(0.06, 0.1), { z: -0.06, closed: true });\n+        }\n+      });\n+      const [px, pz] = vertex(k, R + 0.03);\n+      L.at(M.T(px, 0, pz), () => L.lathe([[rPost * 1.35, yBase], [rPost, yBase + 0.22], [rPost, yTop - 0.3], [rPost * 1.35, yTop - 0.12], [rPost * 1.2, yTop]], 6));\n+    }\n+    L.lathe([[R + 0.02, yTop - 0.5], [R + 0.22, yTop - 0.3], [R + 0.22, yTop - 0.12], [R + 0.08, yTop]], n, oct);\n+  };\n+  // A raised roll standing on a sloping face, in the face's own frame: two faces, a low ridge\n+  const roll = (u, ya, yb, apF, h = 0.07, w = 0.05) => {\n+    const za = apF(ya), zb = apF(yb), dy = yb - ya, dz = zb - za, l = Math.hypot(dy, dz) || 1, ny = -dz / l, nz = dy / l;\n+    const A0 = [u - w, ya, za], B0 = [u + w, ya, za], A1 = [u - w, yb, zb], B1 = [u + w, yb, zb], T0 = [u, ya + ny * h, za + nz * h], T1 = [u, yb + ny * h, zb + nz * h];\n+    L.face([A0, T0, T1, A1]); L.face([T0, B0, B1, T1]);\n+  };\n+\n+  // ---- The plinth: batters up out of the slates of all four roofs, its foot well below their surface all round ----\n+  L.lathe([[R0, y0], [R0 - 0.16, yP - 0.62], [R0 + 0.12, yP - 0.46], [R0 + 0.12, yP - 0.2], [R0 - 0.2, yP], [R1 * 0.6, yP]], n, oct);\n+  { const apF = (y) => lerp(R0, R0 - 0.16, (y - y0) / (yP - 0.62 - y0)) * cos8;\n+    for (let k = 0; k < n; k++) L.at(faceFrame(k, 0), () => { for (const u of [-1.2, 0, 1.2]) roll(u, y0, yP - 0.62, apF); }); }\n+\n+  // ---- First stage: tall two-light openings, a gablet on every face, a pinnacle at every angle, a lead pentice behind them ----\n+  stage(R1, yP, yA, R1 * 0.6, 0.26, { w: R1 * 0.56, sill: yP + 0.95, ys: yA - 3.35, rise: 2, tracery: true });\n+  L.lathe([[R1 + 0.08, yA], [R2 + 0.02, yA + 1.55]], n, oct);\n+  for (let k = 0; k < n; k++) {\n+    gablet(k, R1 * cos8, R1 * 0.67, 2.6, yA - 0.3, 2, 0.34);\n+    const [px, pz] = vertex(k, R1 + 0.02);\n+    L.at(M.of(M.T(px, yA - 0.2, pz), M.Ry((k + 0.5) * 45)), () => addPinnacle(L, 0.62, 5, { simple: true, lod: 0 }));\n+  }\n+  // ---- Second stage: slimmer, single lancets ----\n+  stage(R2, yA + 1.5, yB, R2 * 0.62, 0.18, { w: R2 * 0.53, sill: yA + 2.45, ys: yB - 2.3, rise: 1.5, tracery: false });\n+  for (let k = 0; k < n; k++) gablet(k, R2 * cos8, R2 * 0.65, 1.9, yB - 0.25, 1, 0.3);\n+\n+  // ---- The needle: a flared foot, then eight long faces. u stays metric, so the sheets run straight up and are cut by the arrises as they close ----\n+  const rTip = 0.09, RF = R2 + 0.08, rAt = (y) => (y <= yN1 ? lerp(RF, RN, (y - yB) / (yN1 - yB)) : lerp(RN, rTip, (y - yN1) / (yT - yN1)));\n+  const levels = [yB, yN1]; for (const t of [0.22, 0.5, 0.75, 1]) levels.push(lerp(yN1, yT, t));\n+  const apAt = (y) => rAt(y) * cos8;\n+  for (let k = 0; k < n; k++) L.at(faceFrame(k, 0), () => {\n+    let vv = 0;\n+    for (let j = 0; j < levels.length - 1; j++) {\n+      const ya = levels[j], yb = levels[j + 1], za = apAt(ya), zb = apAt(yb), wa = rAt(ya) * sin8, wb = rAt(yb) * sin8, dy = yb - ya, dz = zb - za, l = Math.hypot(dy, dz), ny = -dz / l, nz = dy / l;\n+      const a = L.v(-wa, ya, za, 0, ny, nz, -wa, vv), b = L.v(wa, ya, za, 0, ny, nz, wa, vv), c = L.v(wb, yb, zb, 0, ny, nz, wb, vv + l), d = L.v(-wb, yb, zb, 0, ny, nz, -wb, vv + l);\n+      L.quad(a, b, c, d); vv += l;\n+    }\n+    // Standing seams, each stopping where the closing arrises overtake it\n+    for (const u of [-0.55, 0, 0.55]) { const rEnd = (Math.abs(u) + 0.1) / sin8; if (rEnd < RN) roll(u, yN1, lerp(yN1, yT, (RN - rEnd) / (RN - rTip)), apAt); }\n+  });\n+  // Rolled arrises from the flare to the tip, crockets thinning as they climb\n+  for (let k = 0; k < n; k++) {\n+    const vAt = (y) => { const [vx, vz] = vertex(k, rAt(y)); return [vx, y, vz]; };\n+    L.tube([vAt(yB), vAt(yN1), vAt(yT - 0.05)], (t) => lerp(0.12, 0.04, t), 4, { capEnd: false });\n+    const [ox, oz] = vertex(k, 1), nC = 11, y1 = yN1 + 1.2, y2 = yT - 1.5;\n+    for (let i = 0; i < nC; i++) {\n+      const t = (i + 0.5) / nC, ya = lerp(y1, y2, t - 0.02), yb = lerp(y1, y2, t + 0.02);\n+      crocketsAlong(L, vAt(ya), vAt(yb), 1, lerp(1.2, 0.42, t), [ox, 0.12, oz], 0, addLeadCrocket);\n+    }\n+  }\n+  // Tie-bands round the needle where the sheets are lapped\n+  for (const t of [0.22, 0.5, 0.75]) { const y = lerp(yN1, yT, t), r = rAt(y); L.lathe([[rAt(y - 0.1), y - 0.1], [r + 0.08, y - 0.05], [r + 0.08, y + 0.05], [rAt(y + 0.12), y + 0.12]], n, oct); }\n+  // Two tiers of lucarnes on alternate faces\n+  const lucarne = (k, yD, a, c, g) => {\n+    const zf = apAt(yD) + 0.06, yE2 = yD + c, yG = yE2 + g, zb0 = apAt(yD), zbE = apAt(yE2), zbG = apAt(yG);\n+    L.at(faceFrame(k, 0), () => {\n+      L.face([[-a, yD, zf], [a, yD, zf], [a, yE2, zf], [0, yG, zf], [-a, yE2, zf]]);\n+      L.shade(0.22, () => L.face([[-a * 0.5, yD + 0.16, zf + 0.012], [a * 0.5, yD + 0.16, zf + 0.012], [a * 0.5, yE2, zf + 0.012], [0, yE2 + g * 0.55, zf + 0.012], [-a * 0.5, yE2, zf + 0.012]]));\n+      L.face([[a, yD, zb0], [a, yE2, zbE], [a, yE2, zf], [a, yD, zf]]);\n+      L.face([[-a, yD, zb0], [-a, yD, zf], [-a, yE2, zf], [-a, yE2, zbE]]);\n+      L.face([[a, yE2, zf], [a, yE2, zbE], [0, yG, zbG], [0, yG, zf]]);\n+      L.face([[-a, yE2, zf], [0, yG, zf], [0, yG, zbG], [-a, yE2, zbE]]);\n+    });\n+    knop(M.of(faceFrame(k, zf), M.T(0, yG - 0.02, 0)), 0.8);\n+  };\n+  for (let k = 0; k < n; k++) { if (k % 2 === 0) lucarne(k, yN1 + 5, 0.5, 1.25, 0.75); else lucarne(k, yN1 + 12, 0.36, 0.95, 0.55); }\n+\n+  // ---- The tip: a gilded collar, an orb and a cross, its head at exactly P.flecheTip ----\n+  G.at(M.T(0, yT - 0.25, 0), () => {\n+    G.lathe([[0.12, 0], [0.24, 0.12], [0.22, 0.22], [0.13, 0.3], [0.11, 0.44], [0.2, 0.52], [0.36, 0.68], [0.42, 0.9], [0.36, 1.12], [0.2, 1.28], [0.08, 1.36], [0.06, 2.2]], 10);\n+    G.box(-0.07, 0.07, 2.2, 3.55, -0.07, 0.07, {});\n+    G.box(-0.62, 0.62, 2.82, 2.98, -0.07, 0.07, {});\n   });\n-  place('Fleche_Lead', L, MAT.lead, { pos: [x, 0, z], parent });\n-  place('Fleche_Gilt', G, MAT.gold, { pos: [x, 0, z], parent });\n+  place('CrossingSpire_Lead', L, MAT.lead, { pos: [x, 0, z], parent });\n+  place('CrossingSpire_Gilt', G, MAT.gold, { pos: [x, 0, z], parent });\n }\n \n // Coloured light thrown onto the paving by the south aisle windows (sun from the south-west)\n@@ -3673,7 +3767,7 @@\n   for (const e of PLACED) uses.set(e.batch, (uses.get(e.batch) || 0) + 1);\n   for (const e of PLACED) {\n     const m = e.mat;\n-    if (e.batch.isFigure || m.transparent || m === MAT.glassIn || m === MAT.glassOut || m === MAT.glassOutWin || m === MAT.glassRose || m === MAT.ashlar || m === MAT.oak || m === MAT.iron || m === MAT.pave || m === MAT.flag || m === MAT.earth) continue;\n+    if (e.batch.isFigure || e.batch.noReduce || m.transparent || m === MAT.glassIn || m === MAT.glassOut || m === MAT.glassOutWin || m === MAT.glassRose || m === MAT.ashlar || m === MAT.oak || m === MAT.iron || m === MAT.pave || m === MAT.flag || m === MAT.earth) continue;\n     let nb = seen.get(e.batch);\n     if (nb === undefined) {\n       const tris = e.batch.I.length / 3, s = uses.get(e.batch) >= 8 ? repeatedShare : share; // a mesh repeated down the whole building costs the most\n@@ -3700,7 +3794,8 @@\n }\n function bakeLight() {\n   ROOT.updateMatrixWorld(true);\n-  const CELL = 0.4, X0 = -72, Y0 = -2, Z0 = -36, NX = 365, NY = 220, NZ = 180, CK = 8, CX = (NX >> 3) + 1, CY = (NY >> 3) + 1, CZ = (NZ >> 3) + 1;\n+  // The world follows the plan: from beyond the chapels to beyond the west front. A spire tip above the top simply casts no shadow up there\n+  const CELL = 0.4, X0 = LAY.xa - 27.8, Y0 = -2, Z0 = -36, NX = Math.ceil((P.xWest + 12 - X0) / CELL), NY = 220, NZ = 180, CK = 8, CX = (NX >> 3) + 1, CY = (NY >> 3) + 1, CZ = (NZ >> 3) + 1;\n   const grid = new Uint8Array(NX * NY * NZ), coarse = new Uint8Array(CX * CY * CZ);\n   const SUN = (() => { const v = P.sun, l = len3(v[0], v[1], v[2]); return [v[0] / l, v[1] / l, v[2] / l]; })();\n   const SUN2 = [[SUN[0] + 0.06, SUN[1], SUN[2] + 0.05], [SUN[0] - 0.05, SUN[1] + 0.05, SUN[2] - 0.05]].map((v) => { const l = len3(v[0], v[1], v[2]); return [v[0] / l, v[1] / l, v[2] / l]; });\n",
       "images": {
-        "art-1": {
-          "width": 1000,
-          "height": 1000,
-          "alt": "The central west portal in revision 1: clean pale stone, smooth melted-looking statues in the door jambs and flat figures in the arches.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-art-1.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-art-1-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-art-1-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-art-1-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-art-1-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-art-1-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-art-1-1000.avif 1000w"
-        },
-        "art-2": {
-          "width": 1000,
-          "height": 1000,
-          "alt": "The same portal in revision 2, from the same camera: weathered stone with soot and rain streaks, sculpted figures in the jambs and arches, and canopies floating high above the statues.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-art-2.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-art-2-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-art-2-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-art-2-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-art-2-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-art-2-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-art-2-1000.avif 1000w"
-        },
-        "west-2": {
-          "width": 1000,
-          "height": 1000,
-          "alt": "The west front in revision 2 from the ground, floating with no ground around it, with flat wall plates at the tower corners and thin sheets sticking out over the portals.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-west-2.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-west-2-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-west-2-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-west-2-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-west-2-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-west-2-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-west-2-1000.avif 1000w"
-        },
-        "west-3": {
-          "width": 1000,
-          "height": 1000,
-          "alt": "The same view in revision 3: paved ground, buttresses that step back as they rise with sloped caps, and diagonal piers at the corners.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-west-3.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-west-3-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-west-3-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-west-3-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-west-3-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-west-3-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-west-3-1000.avif 1000w"
-        },
-        "before": {
-          "width": 1000,
-          "height": 1000,
-          "alt": "The whole south side of the cathedral in revision 3, with its low flèche over the crossing.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-before.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-before-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-before-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-before-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-before-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-before-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-before-1000.avif 1000w"
-        },
-        "after": {
-          "width": 1000,
-          "height": 1000,
-          "alt": "The same view after the revision: a longer nave and a tall lead spire over the crossing.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-after.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-after-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-after-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-after-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-after-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-after-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-after-1000.avif 1000w"
-        },
-        "light-before": {
-          "width": 1000,
-          "height": 1000,
-          "alt": "The nave floor before the light revision: flat painted bands of pink and blue laid across the paving, running under the piers.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-light-before.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-light-before-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-light-before-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-light-before-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-light-before-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-light-before-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-light-before-1000.avif 1000w"
-        },
-        "light-after": {
-          "width": 1000,
-          "height": 1000,
-          "alt": "The nave floor after the light revision: soft slanted lanes of red and blue light from the south windows, with the shadows of the piers cut through them and colour climbing the feet of the north piers.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-light-after.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-light-after-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-light-after-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-light-after-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-light-after-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-light-after-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-light-after-1000.avif 1000w"
-        },
         "hero": {
           "width": 1600,
           "height": 1067,
           "alt": "A Gothic cathedral seen from the ground at its south-west corner: twin west towers about 80 m tall, three deep portals, a rose window, flying buttresses and a lead spire over the crossing. In front of the south tower stands a 6 m walking mech in olive armour, small against the building, with a rotary cannon and a rail cannon with glowing coils.",
           "caption": "Both models below, placed together for this picture at their true sizes: a 6 m mech in front of a 100 m spire.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-hero.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-hero-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-hero-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-hero-1024.webp 1024w, /text-to-3d/5833329625b2f4ed/cathedral-hero-1440.webp 1440w, /text-to-3d/5833329625b2f4ed/cathedral-hero-1440.webp 1440w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-hero-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-hero-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-hero-1024.avif 1024w, /text-to-3d/5833329625b2f4ed/cathedral-hero-1440.avif 1440w, /text-to-3d/5833329625b2f4ed/cathedral-hero-1440.avif 1440w"
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-hero.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-hero-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-hero-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-hero-1024.webp 1024w, /text-to-3d/a4225874aa33ff3a/cathedral-hero-1440.webp 1440w, /text-to-3d/a4225874aa33ff3a/cathedral-hero-1440.webp 1440w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-hero-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-hero-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-hero-1024.avif 1024w, /text-to-3d/a4225874aa33ff3a/cathedral-hero-1440.avif 1440w, /text-to-3d/a4225874aa33ff3a/cathedral-hero-1440.avif 1440w"
         },
         "final": {
           "width": 1440,
           "height": 1440,
           "alt": "The finished Gothic cathedral from the ground at the south-west: twin west towers, three deep portals, a rose window, stepped buttresses, flying buttresses and a lead spire over the crossing, in weathered stone with the sun baked in.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-final.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-final-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-final-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-final-1024.webp 1024w, /text-to-3d/5833329625b2f4ed/cathedral-final-1440.webp 1440w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-final-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-final-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-final-1024.avif 1024w, /text-to-3d/5833329625b2f4ed/cathedral-final-1440.avif 1440w"
+          "caption": "The saved revision, on the same review rig as the gallery",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-final.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-final-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-final-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-final-1024.webp 1024w, /text-to-3d/a4225874aa33ff3a/cathedral-final-1440.webp 1440w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-final-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-final-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-final-1024.avif 1024w, /text-to-3d/a4225874aa33ff3a/cathedral-final-1440.avif 1440w"
         },
         "nave": {
           "width": 1600,
           "height": 1200,
           "alt": "The view down the cathedral nave from the floor: clustered piers, ribbed vaults, statues on the piers, stained glass in the apse, and ruby and cobalt light from the south windows lying on the paving between the piers on the right.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-nave.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-nave-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-nave-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-nave-1024.webp 1024w, /text-to-3d/5833329625b2f4ed/cathedral-nave-1440.webp 1440w, /text-to-3d/5833329625b2f4ed/cathedral-nave-1440.webp 1440w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-nave-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-nave-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-nave-1024.avif 1024w, /text-to-3d/5833329625b2f4ed/cathedral-nave-1440.avif 1440w, /text-to-3d/5833329625b2f4ed/cathedral-nave-1440.avif 1440w"
+          "caption": "The nave, rendered from the saved GLB.",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-nave.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-nave-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-nave-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-nave-1024.webp 1024w, /text-to-3d/a4225874aa33ff3a/cathedral-nave-1440.webp 1440w, /text-to-3d/a4225874aa33ff3a/cathedral-nave-1440.webp 1440w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-nave-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-nave-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-nave-1024.avif 1024w, /text-to-3d/a4225874aa33ff3a/cathedral-nave-1440.avif 1440w, /text-to-3d/a4225874aa33ff3a/cathedral-nave-1440.avif 1440w"
+        },
+        "art-1": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The central west portal in revision 1: clean pale stone, smooth melted-looking statues in the door jambs and flat figures in the arches.",
+          "caption": "Central portal, revision 1",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-art-1.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-art-1-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-art-1-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-art-1-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-art-1-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-art-1-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-art-1-1000.avif 1000w"
+        },
+        "art-2": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The same portal in revision 2, from the same camera: weathered stone with soot and rain streaks, sculpted figures in the jambs and arches, and canopies floating high above the statues.",
+          "caption": "The same camera, revision 2",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-art-2.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-art-2-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-art-2-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-art-2-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-art-2-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-art-2-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-art-2-1000.avif 1000w"
+        },
+        "west-2": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The west front in revision 2 from the ground, floating with no ground around it, with flat wall plates at the tower corners and thin sheets sticking out over the portals.",
+          "caption": "West front, revision 2: no ground, plates at the corners",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-west-2.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-west-2-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-west-2-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-west-2-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-west-2-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-west-2-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-west-2-1000.avif 1000w"
+        },
+        "west-3": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The same view in revision 3: paved ground, buttresses that step back as they rise with sloped caps, and diagonal piers at the corners.",
+          "caption": "The same camera, revision 3",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-west-3.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-west-3-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-west-3-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-west-3-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-west-3-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-west-3-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-west-3-1000.avif 1000w"
+        },
+        "before": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The whole south side of the cathedral in revision 3, with its low flèche over the crossing.",
+          "caption": "South side, revision 3",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-before.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-before-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-before-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-before-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-before-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-before-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-before-1000.avif 1000w"
+        },
+        "after": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The same view after the revision: a longer nave and a tall lead spire over the crossing.",
+          "caption": "The same camera, revision 4: two more bays and the spire",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-after.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-after-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-after-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-after-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-after-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-after-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-after-1000.avif 1000w"
+        },
+        "light-before": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The nave floor before the light revision: flat painted bands of pink and blue laid across the paving, running under the piers.",
+          "caption": "The nave floor, revision 4",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-light-before.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-light-before-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-light-before-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-light-before-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-light-before-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-light-before-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-light-before-1000.avif 1000w"
+        },
+        "light-after": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The nave floor after the light revision: soft slanted lanes of red and blue light from the south windows, with the shadows of the piers cut through them and colour climbing the feet of the north piers.",
+          "caption": "The same camera, revision 5: light from the windows",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-light-after.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-light-after-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-light-after-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-light-after-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-light-after-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-light-after-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-light-after-1000.avif 1000w"
         },
         "sun-before": {
           "width": 1000,
           "height": 1000,
           "alt": "The nave floor from above the west end in revision 5: long slanted bands of coloured light run the whole way across the nave and onto the far piers.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-sun-before.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-sun-before-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-sun-before-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-sun-before-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-sun-before-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-sun-before-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-sun-before-1000.avif 1000w"
+          "caption": "Revision 5: the light runs past the columns",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-sun-before.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-sun-before-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-sun-before-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-sun-before-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-sun-before-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-sun-before-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-sun-before-1000.avif 1000w"
         },
         "sun-after": {
           "width": 1000,
           "height": 1000,
           "alt": "The same view in revision 6: each south window lands as its own ruby or cobalt pool, passing between the piers and stopping around the middle of the nave.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-sun-after.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-sun-after-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-sun-after-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-sun-after-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-sun-after-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-sun-after-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-sun-after-1000.avif 1000w"
+          "caption": "The same camera, revision 6",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-sun-after.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-sun-after-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-sun-after-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-sun-after-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-sun-after-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-sun-after-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-sun-after-1000.avif 1000w"
         },
         "daylight-before": {
           "width": 1000,
           "height": 1000,
           "alt": "The west front in revision 6 from the ground: with the sun now high and to the south, the front is dull and flat.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-daylight-before.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-daylight-before-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-daylight-before-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-daylight-before-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-daylight-before-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-daylight-before-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-daylight-before-1000.avif 1000w"
+          "caption": "West front, revision 6",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-daylight-before.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-daylight-before-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-daylight-before-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-daylight-before-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-daylight-before-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-daylight-before-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-daylight-before-1000.avif 1000w"
         },
         "daylight-after": {
           "width": 1000,
           "height": 1000,
           "alt": "The same view in revision 7: the west front reads as soft daylight, paler and clearer, with the portals still deep.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-daylight-after.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-daylight-after-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-daylight-after-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-daylight-after-1000.webp 1000w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-daylight-after-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-daylight-after-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-daylight-after-1000.avif 1000w"
+          "caption": "The same camera, revision 7",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-daylight-after.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-daylight-after-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-daylight-after-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-daylight-after-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-daylight-after-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-daylight-after-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-daylight-after-1000.avif 1000w"
         },
-        "first-look": {
-          "width": 1812,
-          "height": 1812,
-          "alt": "Four labelled views the agent rendered of its first revision: the rose window in flat primary colours, the pale west front, the view down the nave with blocky coloured light on the floor, and the east end.",
-          "src": "/text-to-3d/5833329625b2f4ed/cathedral-first-look.webp",
-          "srcsetWebp": "/text-to-3d/5833329625b2f4ed/cathedral-first-look-480.webp 480w, /text-to-3d/5833329625b2f4ed/cathedral-first-look-768.webp 768w, /text-to-3d/5833329625b2f4ed/cathedral-first-look-1024.webp 1024w, /text-to-3d/5833329625b2f4ed/cathedral-first-look-1440.webp 1440w, /text-to-3d/5833329625b2f4ed/cathedral-first-look-1440.webp 1440w",
-          "srcsetAvif": "/text-to-3d/5833329625b2f4ed/cathedral-first-look-480.avif 480w, /text-to-3d/5833329625b2f4ed/cathedral-first-look-768.avif 768w, /text-to-3d/5833329625b2f4ed/cathedral-first-look-1024.avif 1024w, /text-to-3d/5833329625b2f4ed/cathedral-first-look-1440.avif 1440w, /text-to-3d/5833329625b2f4ed/cathedral-first-look-1440.avif 1440w"
+        "architecture-before": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "Where the nave meets the north transept in revision 7: two buttresses run into each other at the corner, their two gargoyles biting through each other at the same height, and the windows between them are blank dark glass.",
+          "caption": "Where the nave meets the north transept, revision 7",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-architecture-before.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-architecture-before-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-architecture-before-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-architecture-before-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-architecture-before-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-architecture-before-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-architecture-before-1000.avif 1000w"
+        },
+        "architecture-after": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The same corner in revision 8: the transept buttress steps back and stands clear of the nave buttress, one gargoyle throws water from the corner, and the windows show their red and blue panes and figures.",
+          "caption": "The same camera, revision 8",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-architecture-after.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-architecture-after-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-architecture-after-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-architecture-after-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-architecture-after-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-architecture-after-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-architecture-after-1000.avif 1000w"
+        },
+        "glass-before": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The west rose and the two tower windows beside it from outside in revision 8: the coloured glass reads, but dark.",
+          "caption": "The west rose from outside, revision 8",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-glass-before.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-glass-before-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-glass-before-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-glass-before-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-glass-before-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-glass-before-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-glass-before-1000.avif 1000w"
+        },
+        "glass-after": {
+          "width": 1000,
+          "height": 1000,
+          "alt": "The same view in revision 9: the rose and tower windows show brighter reds and blues, still darker than the glass seen from inside.",
+          "caption": "The same camera, revision 9",
+          "src": "/text-to-3d/a4225874aa33ff3a/cathedral-glass-after.webp",
+          "srcsetWebp": "/text-to-3d/a4225874aa33ff3a/cathedral-glass-after-480.webp 480w, /text-to-3d/a4225874aa33ff3a/cathedral-glass-after-768.webp 768w, /text-to-3d/a4225874aa33ff3a/cathedral-glass-after-1000.webp 1000w",
+          "srcsetAvif": "/text-to-3d/a4225874aa33ff3a/cathedral-glass-after-480.avif 480w, /text-to-3d/a4225874aa33ff3a/cathedral-glass-after-768.avif 768w, /text-to-3d/a4225874aa33ff3a/cathedral-glass-after-1000.avif 1000w"
         }
       },
-      "glbHref": "https://assets.kilnstudio.tools/text-to-3d/6f1ee50efb3aa2ab/cathedral.glb"
+      "glbHref": "https://assets.kilnstudio.tools/text-to-3d/d9920f71f33de794/cathedral.glb"
     }
   ]
 }
