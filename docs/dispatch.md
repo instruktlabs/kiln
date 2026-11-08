@@ -6,7 +6,7 @@ The repository's dispatcher runs a coding-agent harness in a temporary authoring
 node scripts/dispatch-asset.mjs --harness opencode --model PROVIDER/MODEL --name water-tower "A steel water tower on a riveted lattice frame"
 ```
 
-Use a model available through your configured provider. Confirm image input support with `node scripts/check-vision.mjs PROVIDER/MODEL`, then check that the harness actually forwards render images. Provider metadata alone does not verify the whole path.
+Use a model available through your configured provider. For an OpenCode model, confirm image input support with `node scripts/check-vision.mjs PROVIDER/MODEL`, which reads the installed OpenCode's model catalogue; for other harnesses, use the provider's model documentation. Then check that the harness actually forwards render images. Provider metadata alone does not verify the whole path.
 
 Run `bun run smoke:harness -- --harness opencode` before a batch. A quota or authentication failure is not a measure of asset quality. Inspect the retained transcript and build result when a run fails.
 
