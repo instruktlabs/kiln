@@ -64,6 +64,9 @@ ${SAVE_LINES}
                           (default 14) or float positions; the sidecar reports the grid step
        [--ktx2]   with --target three: KTX2 through the optional ktx2-encoder@0.6.0 peer
                           (npm install ktx2-encoder@0.6.0), ETC1S colour, UASTC data maps
+       [--draws minimal]   runtime only: batch every repeated mesh and merge one-off parts
+                          per material; the saved revision is unchanged, the sidecar reports it
+       [--draw-cell M]   with --draws minimal: merge cell size in metres (default 15)
        [--textures manifest]   runtime only: the sidecar names each image's exact bytes
        [--textures external]   with --target three and --out x.gltf: x.gltf, x.bin and
                           shared textures/<sha256>.<ext> files that are never replaced
@@ -113,6 +116,8 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     'compression',
     'max-lod',
     'position-bits',
+    'draws',
+    'draw-cell',
     'textures',
     'port',
     'render',
@@ -428,6 +433,16 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
         throw new Error('--position-bits requires --target three');
       const positionBits =
         bitsFlag === undefined || bitsFlag === 'float' ? bitsFlag : Number(bitsFlag);
+      const draws = flags.draws;
+      if (draws !== undefined && draws !== 'minimal') throw new Error('--draws must be minimal');
+      if (draws !== undefined && profile !== 'runtime')
+        throw new Error('--draws requires --profile runtime');
+      const drawCellFlag = flags['draw-cell'];
+      if (drawCellFlag !== undefined && draws === undefined)
+        throw new Error('--draw-cell requires --draws minimal');
+      const drawCellSize = drawCellFlag === undefined ? undefined : Number(drawCellFlag);
+      if (drawCellSize !== undefined && !(drawCellSize > 0))
+        throw new Error('--draw-cell must be a positive number of metres');
       const textures = flags.textures;
       if (textures !== undefined && textures !== 'manifest' && textures !== 'external')
         throw new Error('Unknown --textures value; use manifest or external');
@@ -467,6 +482,8 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
           ...(compression ? { compression } : {}),
           ...(maxLod !== undefined ? { maxLod } : {}),
           ...(positionBits !== undefined ? { positionBits } : {}),
+          ...(draws ? { draws } : {}),
+          ...(drawCellSize !== undefined ? { drawCellSize } : {}),
           ...(textures ? { textures } : {}),
           ...(gltfLayout ? { gltfFileName: basename(destination) } : {}),
           ...(flags.ktx2 ? { ktx2Encoder: await createKtx2Encoder() } : {}),
@@ -539,6 +556,8 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
               ...(compression ? { compression } : {}),
               ...(maxLod !== undefined ? { maxLod } : {}),
               ...(positionBits !== undefined ? { positionBits } : {}),
+              ...(draws ? { draws } : {}),
+              ...(drawCellSize !== undefined ? { drawCellSize } : {}),
               format,
               ...(ktx2Receipt ? { ktx2: ktx2Receipt } : {}),
               ...(format !== 'source'

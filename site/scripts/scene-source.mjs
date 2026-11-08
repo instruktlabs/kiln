@@ -170,8 +170,8 @@ function announce(message) {
 /**
  * Site (Astro) build settings for scenes. The scene code is not part of the site's module graph:
  * scripts/scene-runtime.mjs builds it separately (bare `three` resolved to the scene kit's facade, as
- * in the kit's own build) and scripts/scene-pack.mjs stages the data, so the gallery viewer keeps the
- * classic three build. This exposes which runtimes are staged as `virtual:kiln-scenes`.
+ * in the kit's own build) and scripts/scene-pack.mjs stages the data, so the gallery viewer keeps its
+ * own copy of three. This exposes which runtimes are staged as `virtual:kiln-scenes`.
  */
 export function sceneSiteConfig({ site = SITE } = {}) {
   const scenes = stagedScenes(site);

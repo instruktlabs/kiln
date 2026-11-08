@@ -41,7 +41,7 @@ describe('the tone mappings the 3D view offers', () => {
 });
 
 describe('putting the renderer on a tone mapping', () => {
-  const renderer = () => ({ toneMapping: THREE.NoToneMapping, toneMappingExposure: 1 }) as unknown as THREE.WebGLRenderer;
+  const renderer = () => ({ toneMapping: THREE.NoToneMapping, toneMappingExposure: 1 }) as unknown as Parameters<typeof applyToneMapping>[0];
   const sceneWithMaterials = () => {
     const scene = new THREE.Scene();
     const single = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshStandardMaterial());
