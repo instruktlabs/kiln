@@ -1,4 +1,5 @@
 import { renderDisplayTarget } from './display-output.mjs';
+import { keyMaterialsByProjection } from './projection-cache-key.mjs';
 import { packRgbaReadback } from './readback.mjs';
 // GLB bytes -> PBR PNG views. Headless three.js WebGPURenderer, RenderTarget-only.
 //
@@ -26,6 +27,7 @@ import { reviewNeutralToneMapping } from './review-tone-mapping.mjs';
 export { MAX_VIEW_DIRS, validateViewDirs } from './contract.mjs';
 import { beautyCameraSpec, orthoDepth, orthoHalfExtent } from './framing.mjs';
 import { applyNodeVisibility, expandByDrawnObject } from './node-visibility.mjs';
+import { toDataTextures } from './data-textures.mjs';
 
 globalThis.self = globalThis;
 globalThis.requestAnimationFrame = (cb) => setTimeout(() => cb(performance.now()), 16);
@@ -147,41 +149,6 @@ export async function initRenderer(opts = {}) {
   return ctx;
 }
 
-function toDataTextures(root) {
-  root.traverse((o) => {
-    for (const mat of Array.isArray(o.material) ? o.material : o.material ? [o.material] : []) {
-      for (const slot of [
-        'map',
-        'normalMap',
-        'roughnessMap',
-        'metalnessMap',
-        'aoMap',
-        'emissiveMap',
-      ]) {
-        const tex = mat[slot];
-        if (tex?.image?.data && !tex.isDataTexture) {
-          const dt = new THREE.DataTexture(
-            tex.image.data,
-            tex.image.width,
-            tex.image.height,
-            THREE.RGBAFormat,
-          );
-          dt.colorSpace = tex.colorSpace;
-          dt.flipY = tex.flipY;
-          dt.wrapS = tex.wrapS;
-          dt.wrapT = tex.wrapT;
-          dt.magFilter = tex.magFilter;
-          dt.minFilter = THREE.LinearMipmapLinearFilter;
-          dt.generateMipmaps = true;
-          dt.needsUpdate = true;
-          mat[slot] = dt;
-          mat.needsUpdate = true;
-        }
-      }
-    }
-  });
-}
-
 /**
  * Release the GPU resources this request's parse allocated. `ctx.environment` is
  * seeded into the visited set because it is shared across every request and
@@ -287,6 +254,12 @@ function orthoCam(center, min, max, dir) {
   return cam;
 }
 
+/** Draw one view, with every material compiled for this camera's projection. */
+function drawView(renderer, scene, camera, target) {
+  keyMaterialsByProjection(scene, camera);
+  renderDisplayTarget(renderer, scene, camera, target);
+}
+
 function exactPerspectiveCam(spec) {
   const cam =
     spec.projection === 'orthographic'
@@ -359,7 +332,7 @@ export async function renderGlb(glbBytes, opts = {}) {
   const requestTargets = [];
   try {
     const hiddenNodes = applyNodeVisibility(gltf);
-    toDataTextures(gltf.scene);
+    toDataTextures(gltf.scene, THREE);
     const tLoad = performance.now();
 
     scene = new THREE.Scene();
@@ -383,7 +356,7 @@ export async function renderGlb(glbBytes, opts = {}) {
           samples: 4,
         });
         requestTargets.push(target);
-        renderDisplayTarget(renderer, scene, exactPerspectiveCam(camera), target);
+        drawView(renderer, scene, exactPerspectiveCam(camera), target);
       }
       const views = [];
       for (const target of requestTargets) {
@@ -420,7 +393,7 @@ export async function renderGlb(glbBytes, opts = {}) {
     // sync per view.
     const rts = rtPool(size, viewDirs.length);
     viewDirs.forEach((dir, i) => {
-      renderDisplayTarget(renderer, scene, orthoCam(center, boxMin, boxMax, dir), rts[i]);
+      drawView(renderer, scene, orthoCam(center, boxMin, boxMax, dir), rts[i]);
     });
     const views = [];
     for (const vrt of rts) {
@@ -432,7 +405,7 @@ export async function renderGlb(glbBytes, opts = {}) {
     if (beautySize) {
       const rtB = new THREE.RenderTarget(beautySize, beautySize, { depthBuffer: true, samples: 4 });
       requestTargets.push(rtB);
-      renderDisplayTarget(
+      drawView(
         renderer,
         scene,
         exactPerspectiveCam(beautyCameraSpec(center.toArray(), sizes.length() * 0.62 + 1e-3)),
