@@ -19,8 +19,10 @@
  *
  * Reproduced offline with the actual OpenRouter 2.10.0 + Strands SDK 1.18.0
  * packages in openrouter-conformance.test.ts, including a complete tool loop and
- * usage accounting. Re-test and remove this adapter when that provider emits
- * conformant V3 streams. Do not patch the SDK or coerce the V4 provider into V3.
+ * usage accounting. Strands SDK 1.24.0 tolerates the missing part, so with the
+ * pinned SDK this adapter is redundant; the conformance test records both facts.
+ * Remove it in its own change, after a live OpenRouter check. Do not patch the
+ * SDK or coerce the V4 provider into V3.
  */
 import type {
   LanguageModelV3,
