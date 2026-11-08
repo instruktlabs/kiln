@@ -6,7 +6,8 @@ import { packRgbaReadback } from './readback.mjs';
 // B1a engineering notes encoded here:
 // - bare 'three' is aliased to 'three/webgpu' via module hooks (see register-hooks.mjs);
 //   loading this module without the hooks would split three's class identity.
-// - Renderer.init() starts an internal loop via self.requestAnimationFrame — shimmed.
+// - three's renderer starts an internal loop via self.requestAnimationFrame on its first
+//   render, which initRenderer's PMREM bake makes (r186 started it in init()) — shimmed.
 // - GLTFLoader's ImageBitmapLoader path yields fake bitmaps that Dawn uploads as
 //   black; decoded images are converted to DataTexture (writeTexture path).
 // - WebGPU readback rows are already top-down: no Y flip.
