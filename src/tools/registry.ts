@@ -471,6 +471,11 @@ async function loadEvaluatedReviewScene(code: string, context: KilnToolContext) 
   }
   const { loadGlbReviewScene } = await import('../views');
   const scene = await loadGlbReviewScene(rendered.glb);
+  // Shots of one scene state, in this call or a later one on the same artifact, share an export.
+  (await import('../views/derivative-memo')).registerReviewArtifact(
+    scene.root,
+    rendered.artifactGlbSha256,
+  );
   return { rendered, ...scene };
 }
 
@@ -501,25 +506,34 @@ async function renderDerivativeCell(
   input: import('../views').DerivativeCellRenderInput,
   context: KilnToolContext,
 ): Promise<import('../views').DerivativeCellRenderResult> {
-  let derivativeRoot = input.root as THREE.Object3D;
-  if (input.backfaceCull === false) {
-    const { cloneReviewScene } = await import('../views/scene-copy');
-    derivativeRoot = cloneReviewScene(derivativeRoot, { omitHidden: true, doubleSided: true });
-  }
-  // `withCameraVisibility` and `isolateSubtree` express isolation by clearing
-  // `mesh.visible`. The CPU rasterizer culls on that flag (see views/raster.ts),
-  // but glTF carries no per-mesh visibility, so serializing unfiltered ships the
-  // hidden geometry to the GPU service and makes isolate a silent no-op on exactly
-  // the material-faithful path it is most useful on. Prune on a copy: the caller
-  // restores `.visible` afterwards and must not observe a mutated scene. Required
-  // joint ancestors survive as transform-only nodes in the derivative.
-  const { withoutHiddenMeshes } = await import('../views/camera');
-  derivativeRoot = withoutHiddenMeshes(derivativeRoot);
-  // The scene here was loaded back from a GLB this engine already produced and
-  // adjudicated, so a cell needs its bytes and none of the build's evidence.
-  // Review reconstruction preserves UV2 and UV3; the legacy authored exporter
-  // does not carry them into the GPU derivative.
-  const reviewBytes = await renderReviewDerivativeGlb(derivativeRoot, { gltfExporter: 'three' });
+  const exportDerivative = async () => {
+    let derivativeRoot = input.root as THREE.Object3D;
+    if (input.backfaceCull === false) {
+      const { cloneReviewScene } = await import('../views/scene-copy');
+      derivativeRoot = cloneReviewScene(derivativeRoot, { omitHidden: true, doubleSided: true });
+    }
+    // `withCameraVisibility` and `isolateSubtree` express isolation by clearing
+    // `mesh.visible`. The CPU rasterizer culls on that flag (see views/raster.ts),
+    // but glTF carries no per-mesh visibility, so serializing unfiltered ships the
+    // hidden geometry to the GPU service and makes isolate a silent no-op on exactly
+    // the material-faithful path it is most useful on. Prune on a copy: the caller
+    // restores `.visible` afterwards and must not observe a mutated scene. Required
+    // joint ancestors survive as transform-only nodes in the derivative.
+    const { withoutHiddenMeshes } = await import('../views/camera');
+    derivativeRoot = withoutHiddenMeshes(derivativeRoot);
+    // The scene here was loaded back from a GLB this engine already produced and
+    // adjudicated, so a cell needs its bytes and none of the build's evidence.
+    // Review reconstruction preserves UV2 and UV3; the legacy authored exporter
+    // does not carry them into the GPU derivative.
+    return renderReviewDerivativeGlb(derivativeRoot, { gltfExporter: 'three' });
+  };
+  // Shots of one scene state share an export. The key is read off the scene as it stands
+  // for this shot, not off the request; see views/derivative-memo.ts.
+  const { derivativeGlbMemo, derivativeStateKey } = await import('../views/derivative-memo');
+  const derivativeGlb = await derivativeGlbMemo.bytes(
+    derivativeStateKey(input.root, { backfaceCull: input.backfaceCull !== false }),
+    exportDerivative,
+  );
   const { cameraFromBounds, measureBounds } = await import('../views');
   const camera =
     input.camera ??
@@ -530,7 +544,6 @@ async function renderDerivativeCell(
       undefined,
       measureBounds(input.root),
     );
-  const derivativeGlb = Uint8Array.from(reviewBytes);
   const inputGlbSha256 = await sha256Glb(derivativeGlb);
   let degradeReason: string | undefined;
   const derivativeReasonCodes: ViewFidelityReasonCode[] = [];

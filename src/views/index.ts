@@ -41,7 +41,7 @@ import {
   type ViewSpec,
 } from './raster';
 import { encodePng } from './png';
-import { decodePng } from './png';
+import { decodePngShared } from './png-memo';
 import { compositeCellGrid } from './grid';
 import { annotateViewCell } from './annotate';
 import { resolveGridCapture, type CaptureConfig, type CaptureShape } from './capture';
@@ -425,7 +425,7 @@ export async function renderViewGrid(
         }),
       );
       if (result.captureCache?.hit) reused++;
-      cell = decodePng(result.png).rgb;
+      cell = decodePngShared(result.png).rgb;
     } else cell = rasterizeView(root, views[vi]!.dir, rasterOptions);
     // H-30: view name + axis gnomon, via the annotator the GPU port shares.
     annotateViewCell(cell, size, views[vi]!);
@@ -871,7 +871,7 @@ export async function renderClipAnimation(
       const rendered = resolvedShot
         ? await withCameraVisibility(root, resolvedShot, produce)
         : await produce();
-      const decoded = decodePng(rendered.png);
+      const decoded = decodePngShared(rendered.png);
       if (decoded.width !== size || decoded.height !== size) {
         throw new Error(
           `derivative animation cell must be ${size}x${size}; got ${decoded.width}x${decoded.height}`,
@@ -1033,7 +1033,7 @@ export async function renderInteriorGrid(
         size,
         backfaceCull: false,
       });
-      const decoded = decodePng(rendered.png);
+      const decoded = decodePngShared(rendered.png);
       if (decoded.width !== size || decoded.height !== size) {
         throw new Error(
           `derivative interior cell must be ${size}x${size}; got ${decoded.width}x${decoded.height}`,

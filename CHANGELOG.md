@@ -15,6 +15,26 @@ does not publish a package.
   track names is never merged, which also holds for `optimize: 'full'`. The `KILN_BAKE_INSTANCE` pass
   skips these files too, so an instanced build of one now has its copies as separate nodes. Tests now
   show the draw reduction keeping animated, LOD, hidden, semantic and relationship-target parts.
+- A review shot no longer exports the same derivative GLB, or decodes the same frame, more than once.
+  Measured on the 2,635,224-triangle cathedral against a warm GPU service (two runs each):
+  - Shots that draw the same scene state share one derivative export, within a call and across calls on
+    the same artifact. A repeated isolated shot goes from 3.8–4.2 s to 1.6–1.9 s, the same part from a new
+    camera from 6.0–6.2 s to 2.3–2.8 s, and a repeated `kiln_inspect` shot from 5.6–5.9 s to 1.5–1.7 s.
+    The key is read off the scene as the shot leaves it, not off the request. It covers:
+    - the artifact hash and the export options;
+    - every node's visibility, transform and place in the tree;
+    - each geometry attribute's identity and edit version;
+    - every material property, and each texture's identity, version and transform;
+    - morph weights, skinned bone poses and instance buffers.
+
+    A hidden part or a posed clip therefore exports its own bytes. A shot of a lower level of detail,
+    or a scene holding anything added after it was loaded, has no key and exports every time, as
+    before. The host keeps up to 64 MB of derivatives for its lifetime.
+  - The capture cache's check, the port's trust check and the annotator decode one frame once between
+    them, keyed by its bytes. A fully cached 9-shot call goes from 4.0–4.6 s to 2.8 s. The host keeps up
+    to 64 MB of decoded frames for its lifetime.
+  - Images, hashes and receipts are unchanged.
+
 - `kiln_render` and `kiln_edit` draw `shots` that change only the camera from the artifact itself, in one
   request per projection and service limit, after asking the capture cache. On a 2.6M-triangle cathedral on
   Node 22.23.4, nine shots at 1000 px on a built program went from 301 s to 7.1 s, all nine cached from
