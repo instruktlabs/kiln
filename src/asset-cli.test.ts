@@ -262,7 +262,31 @@ test('CLI saves, exports, imports, and restores a revision across independent st
       JSON.parse(await readFile(join(root, 'float.kiln-metadata.json'), 'utf8')).delivery
         .quantization,
     ).toMatchObject({ bits: { position: 'float32' }, maxPositionStep: 0 });
+    // --draws minimal derives the reduced runtime file and states what it did.
+    const drawsRun = run('first', [
+      'export',
+      asset.assetId,
+      asset.revisionId,
+      '--out',
+      join(root, 'draws.glb'),
+      '--profile',
+      'runtime',
+      '--draws',
+      'minimal',
+      '--draw-cell',
+      '30',
+      '--json',
+    ]);
+    expect(drawsRun.status, drawsRun.stderr).toBe(0);
+    expect(JSON.parse(drawsRun.stdout)).toMatchObject({ draws: 'minimal', drawCellSize: 30 });
+    expect(
+      JSON.parse(await readFile(join(root, 'draws.kiln-metadata.json'), 'utf8')).drawReduction,
+    ).toMatchObject({ cellSize: 30 });
     for (const flags of [
+      ['--draws', 'minimal'],
+      ['--profile', 'runtime', '--draws', 'max'],
+      ['--profile', 'runtime', '--draw-cell', '15'],
+      ['--profile', 'runtime', '--draws', 'minimal', '--draw-cell', '0'],
       ['--profile', 'runtime', '--position-bits', '16'],
       ['--profile', 'runtime', '--target', 'three', '--position-bits', '7'],
       ['--profile', 'runtime', '--target', 'three', '--position-bits', '17'],

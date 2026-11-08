@@ -40,6 +40,11 @@ import { KILN_SEMANTIC_ROLES, readSemanticMetadataV1FromExtras } from './contrac
 import { createGltfIO, type Lod, MSFT_LOD } from './gltf-io';
 import { deliveryNodePaths } from './delivery-inspect';
 import { KILN_REPEAT_INSTANCES_KEY } from './delivery';
+import {
+  instancingLosesTangents,
+  isMirroredScale,
+  reflectInstanceBatch,
+} from './instance-handedness';
 import { collectGlbMetrics, isHiddenGltfNode } from './metrics';
 import { isKtx2, sha256Hex } from './runtime-textures';
 import { trimLodChains, type TrimmedLodChain } from './lod-export';
@@ -261,10 +266,13 @@ function applyScopedInstancing(doc: Document): InstancingRecord[] {
         isHiddenGltfNode(child) ||
         rolesOf(child).length ||
         Object.keys(child.getExtras()).length ||
-        child.getWeights().length
+        child.getWeights().length ||
+        instancingLosesTangents(mesh, child.getRotation(), child.getScale())
       )
         continue;
-      const signature = meshSignature(mesh, ids);
+      // One batch holds one handedness, because a node states the winding for all its copies.
+      const hand = isMirroredScale(child.getScale()) ? 'mirrored' : 'plain';
+      const signature = `${hand}/${meshSignature(mesh, ids)}`;
       groups.set(signature, [...(groups.get(signature) ?? []), child]);
     }
     let batchIndex = 0;
@@ -298,6 +306,7 @@ function applyScopedInstancing(doc: Document): InstancingRecord[] {
         .createNode(name)
         .setMesh(mesh)
         .setExtension('EXT_mesh_gpu_instancing', batch);
+      if (isMirroredScale(nodes[0]!.getScale())) reflectInstanceBatch(batchNode, batch);
       parent.addChild(batchNode);
       report.push({
         node: batchNode,
