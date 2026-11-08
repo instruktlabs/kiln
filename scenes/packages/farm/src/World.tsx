@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { asWebGPU, assertInstancingSafe, SystemOrder, useBuilt, useLoadedPack, useQuality, useRegisterTestHooks, useSceneBuilt, useSceneClock, useSystem } from '@kiln-scenes/scene-kit';
 import { buildFarmWorld } from './world/build-world';
@@ -8,7 +8,6 @@ import { useFarmPlaySystems } from './play/systems';
 import { useFarmWorkloads } from './play/workloads';
 import { bindFarmFrameGraph } from './world/frame-graph';
 import { startWarmPass, type WarmPass } from './world/prewarm';
-import { installInstanceAttributes, type InstanceAttributeRenderer } from './world/instance-attributes';
 import { farmProbeHooks } from './world/probe-systems';
 import { bindFarmShadow, farmShadowOptions } from './world/shadows';
 import { readFarmDevParams } from './dev-params';
@@ -20,11 +19,9 @@ export function FarmWorldContent() {
   // SPEC 6.4 warm pass (owner decision 2026-09-29 22:05): the first world of a mount stays hidden until its pipelines are compiled.
   const warm = useRef<{ world: FarmWorld; pass: WarmPass } | null>(null), revealed = useRef(false);
   const params = useMemo(readFarmDevParams, []), shadowOptions = useMemo(() => farmShadowOptions(params), [params]);
-  // M4 item 1: instanced meshes read their matrices as vertex attributes (shared programs; uploads only when they change),
-  // which three 0.187 does itself, so the hook acts only in its per-object fallback. Test and dev builds skip the hook with
-  // ?instanceUniforms=1, and take ?warmConcurrency=<n> (chains the warm pass compiles at once, default WARM_CONCURRENCY;
-  // above 1 the compileAsync calls overlap, which three 0.187 does not support), for A/B checks.
-  useLayoutEffect(() => params.instanceUniforms === true ? undefined : installInstanceAttributes(asWebGPU(gl) as unknown as InstanceAttributeRenderer), [gl, params]);
+  // M4 item 1: three 0.187 reads instanced matrices as vertex attributes itself (shared programs; uploads only when they
+  // change), so the Farm no longer installs its own hook. Test and dev builds take ?warmConcurrency=<n> (chains the warm pass
+  // compiles at once, default WARM_CONCURRENCY; above 1 the compileAsync calls overlap, which three 0.187 does not support).
   const world = useBuilt(() => {
     // S4b/S4 (OD-18, OD-4): hero merge and, on tiers with shadows, stand-ins and the small-caster threshold; ?heroMerge=0,
     // ?standIns=0 and ?casterTexels=0 turn them off for A/B counts.
