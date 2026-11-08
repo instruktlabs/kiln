@@ -1,13 +1,25 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { packRgbaReadback } from '../src/readback.mjs';
-test('1200-wide GPU rows discard 256-byte alignment padding and preserve every row', () => {
+// three r187's copyTextureToBuffer strips WebGPU's 256-byte row alignment itself (r186 returned the aligned rows).
+// A padded buffer would mean the pinned three changed under the service, so it is refused, not unpadded by guess.
+test('a 1200-wide readback with 256-byte-aligned rows is refused', () => {
   const width = 1200,
     height = 3,
     row = width * 4,
     stride = Math.ceil(row / 256) * 256;
-  const input = new Uint8Array((height - 1) * stride + row).fill(255);
-  for (let y = 0; y < height; y++) input.fill(y + 1, y * stride, y * stride + row);
+  assert.throws(
+    () => packRgbaReadback(new Uint8Array((height - 1) * stride + row), width, height),
+    /readback/,
+  );
+  assert.throws(() => packRgbaReadback(new Uint8Array(height * stride), width, height), /readback/);
+});
+test('a tightly packed 1200-wide readback keeps every row', () => {
+  const width = 1200,
+    height = 3,
+    row = width * 4;
+  const input = new Uint8Array(row * height);
+  for (let y = 0; y < height; y++) input.fill(y + 1, y * row, (y + 1) * row);
   const output = packRgbaReadback(input, width, height);
   assert.equal(output.length, row * height);
   for (let y = 0; y < height; y++)
