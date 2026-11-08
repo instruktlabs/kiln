@@ -38,8 +38,11 @@ const rig = await connectRig({ url: service, engineDir, provenance: () => null }
 const out = join(workspace, 'renders');
 await mkdir(out, { recursive: true });
 const manifestPath = join(out, 'manifest.json');
-const previous = only ? JSON.parse(await readFile(manifestPath, 'utf8').catch(() => '{"images":[]}')).images : [];
-const images = previous.filter((image) => !stills.some((still) => still.name === image.name && only?.includes(still.name)));
+const previous = JSON.parse(await readFile(manifestPath, 'utf8').catch(() => '{"images":[]}')).images;
+const renderedNow = new Set(stills.filter((still) => !only || only.includes(still.name)).map((still) => still.name));
+// Keep what this run does not redraw: other rig stills on an --only run, and pictures the rig never made (an agent's own
+// contact sheet) on any run. A rig still that stills.json no longer lists is dropped.
+const images = previous.filter((image) => !renderedNow.has(image.name) && (image.origin !== 'review-rig' || stills.some((still) => still.name === image.name)));
 for (const still of stills.filter((candidate) => !only || only.includes(candidate.name))) {
   const revision = revisions[still.step - 1];
   if (!revision) throw Error(`${still.name}: no saved revision ${still.step}`);
