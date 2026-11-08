@@ -119,6 +119,31 @@ describe('derivative state key', () => {
         },
       ],
       [
+        'a fresh attribute in place of one',
+        () => {
+          const own = box.geometry.getAttribute('position');
+          box.geometry.setAttribute('position', own.clone());
+          return () => box.geometry.setAttribute('position', own);
+        },
+      ],
+      [
+        'a recoloured material, without needsUpdate',
+        () => {
+          const color = (box.material as THREE.MeshStandardMaterial).color;
+          const own = color.getHex();
+          color.setHex(0x00ff00);
+          return () => color.setHex(own);
+        },
+      ],
+      [
+        'a changed opacity, without needsUpdate',
+        () => set(box.material as THREE.MeshStandardMaterial, 'opacity', 0.5),
+      ],
+      [
+        'a texture added to a material',
+        () => set(box.material as THREE.MeshStandardMaterial, 'map', new THREE.Texture()),
+      ],
+      [
         'an edited vertex buffer',
         () => {
           box.geometry.getAttribute('position').needsUpdate = true;
@@ -156,6 +181,76 @@ describe('derivative state key', () => {
     expect(key).not.toBe(derivativeStateKey(root, {}));
     find(root, 'Right').position.x++;
     expect(derivativeStateKey(left, {})).toBe(key!);
+  });
+});
+
+describe('derivative state key, textures, morphs, skins and instances', () => {
+  test('a texture transform, a morph weight, a skinned pose and an instance buffer each count', () => {
+    const root = new THREE.Group();
+    const texture = new THREE.Texture();
+    const morphGeometry = new THREE.BoxGeometry();
+    morphGeometry.morphAttributes['position'] = [morphGeometry.getAttribute('position').clone()];
+    const morphed = new THREE.Mesh(morphGeometry, new THREE.MeshStandardMaterial({ map: texture }));
+    morphed.updateMorphTargets();
+    root.add(morphed);
+    const body = new THREE.Group();
+    const skinGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const count = skinGeometry.getAttribute('position').count;
+    skinGeometry.setAttribute(
+      'skinIndex',
+      new THREE.Uint16BufferAttribute(new Uint16Array(count * 4), 4),
+    );
+    skinGeometry.setAttribute(
+      'skinWeight',
+      new THREE.Float32BufferAttribute(
+        Array.from({ length: count * 4 }, (_, i) => (i % 4 === 0 ? 1 : 0)),
+        4,
+      ),
+    );
+    const skinned = new THREE.SkinnedMesh(skinGeometry, new THREE.MeshStandardMaterial());
+    // The bone sits outside the subtree that holds its skin.
+    const bone = new THREE.Bone();
+    root.add(bone);
+    body.add(skinned);
+    root.add(body);
+    root.updateMatrixWorld(true);
+    skinned.bind(new THREE.Skeleton([bone]));
+    const instanced = new THREE.InstancedMesh(
+      new THREE.BoxGeometry(),
+      new THREE.MeshStandardMaterial(),
+      2,
+    );
+    root.add(instanced);
+    registerReviewArtifact(root, SHA);
+
+    const changes: Array<[string, unknown, () => void, () => void]> = [
+      ['a moved texture', root, () => texture.offset.set(0.5, 0), () => texture.offset.set(0, 0)],
+      [
+        'a morph weight',
+        root,
+        () => (morphed.morphTargetInfluences![0] = 0.5),
+        () => (morphed.morphTargetInfluences![0] = 0),
+      ],
+      ['a skinned pose', body, () => (bone.rotation.z = 0.5), () => (bone.rotation.z = 0)],
+    ];
+    for (const [name, keyed, apply, undo] of changes) {
+      const before = derivativeStateKey(keyed, {});
+      expect(before).toBeString();
+      apply();
+      expect({ name, changed: derivativeStateKey(keyed, {}) !== before }).toEqual({
+        name,
+        changed: true,
+      });
+      undo();
+      expect({ name, restored: derivativeStateKey(keyed, {}) === before }).toEqual({
+        name,
+        restored: true,
+      });
+    }
+    const whole = derivativeStateKey(root, {});
+    instanced.setMatrixAt(1, new THREE.Matrix4().makeTranslation(3, 0, 0));
+    instanced.instanceMatrix.needsUpdate = true;
+    expect(derivativeStateKey(root, {})).not.toBe(whole!);
   });
 });
 

@@ -37,7 +37,8 @@ function framePng(size: number, seed: number): Uint8Array {
 
 const sha = (bytes: Uint8Array) => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 
-function gpuPort(requests: PbrRenderRequest[]): PbrRenderPort {
+/** Frames carry `salt`, so one test's frames are never already decoded by another's. */
+function gpuPort(requests: PbrRenderRequest[], salt = 0): PbrRenderPort {
   return async (request) => {
     requests.push(request);
     return {
@@ -47,7 +48,7 @@ function gpuPort(requests: PbrRenderRequest[]): PbrRenderPort {
       width: request.width,
       height: request.height,
       viewsPng: (request.cameras ?? []).map((_, i) =>
-        framePng(request.width!, requests.length * 10 + i),
+        framePng(request.width!, salt * 1000 + requests.length * 10 + i),
       ),
       derivativeFidelity: {
         materialFaithful: true,
@@ -125,7 +126,7 @@ describe('one derivative export per scene state', () => {
   test('a repeated kiln_inspect shot reuses the export and decodes its frame once', async () => {
     const requests: PbrRenderRequest[] = [];
     const def = tool('kiln_inspect', {
-      viewRenderPort: gpuPort(requests),
+      viewRenderPort: gpuPort(requests, 3),
       captureCacheIdentity: 'derivative-reuse-3',
     });
     const shot = orbit(41);
