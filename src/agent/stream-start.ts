@@ -19,10 +19,12 @@
  *
  * Reproduced offline with the actual OpenRouter 2.10.0 + Strands SDK 1.18.0
  * packages in openrouter-conformance.test.ts, including a complete tool loop and
- * usage accounting. Strands SDK 1.24.0 tolerates the missing part, so with the
- * pinned SDK this adapter is redundant; the conformance test records both facts.
- * Remove it in its own change, after a live OpenRouter check. Do not patch the
- * SDK or coerce the V4 provider into V3.
+ * usage accounting. Strands SDK 1.24.0 tolerates the missing part (the
+ * conformance test records both facts), but Kiln's peer range is
+ * `@strands-agents/sdk` ^1.18.0, and consumers on 1.18–1.22 still need this
+ * adapter. On 1.24 it only prepends a spec-conformant part. Remove it when the
+ * peer floor moves to 1.24 or later, with a live OpenRouter check. Do not patch
+ * the SDK or coerce the V4 provider into V3.
  */
 import type {
   LanguageModelV3,

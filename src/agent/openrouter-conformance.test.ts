@@ -63,8 +63,9 @@ test('OpenRouter 2.x still omits the required V3 stream-start event', async () =
   expect(first.value?.type).not.toBe('stream-start');
 });
 
-// Strands 1.18–1.22 threw `Stream ended without completing a message` here; 1.24 tolerates the missing part. If this
-// fails, the SDK has regressed and `ensureStreamStart` is load-bearing again.
+// Strands 1.18–1.22 threw `Stream ended without completing a message` here; 1.24 tolerates the missing part. Kiln's
+// peer range still admits 1.18, so `ensureStreamStart` stays in the OpenRouter path (see stream-start.ts). If this
+// fails, the pinned SDK has regressed.
 test('Strands 1.24 completes an unadapted OpenRouter tool loop', async () => {
   const { provider, requests } = fixture();
   let received: unknown;
