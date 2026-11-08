@@ -399,7 +399,7 @@
     "@biomejs/biome": "^2.5.15",
     "@google/genai": "^2.27.0",
     "@openrouter/ai-sdk-provider": "^2.10.0",
-    "@strands-agents/sdk": "1.22.0",
+    "@strands-agents/sdk": "1.24.0",
     "@types/bun": "^1.4.2",
     "ai": "^6.0.300",
     "ktx2-encoder": "0.6.0",
@@ -407,7 +407,7 @@
     "typescript": "^7.0.2"
   },
   "optionalDependencies": {
-    "@napi-rs/canvas": "1.0.13",
+    "@napi-rs/canvas": "1.1.0",
     "webgpu": "0.6.2"
   },
   "repository": {
