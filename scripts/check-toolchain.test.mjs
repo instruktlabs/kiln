@@ -171,6 +171,15 @@ test('three drifting in the scene workspace is named, with the manifest', async 
   );
 });
 
+// Dependabot leaves three alone, so a drift is a hand bump that stopped short: the failure says how to finish it.
+test('a three drift points at the upgrade checklist', async () => {
+  await rejects(
+    'site/package.json',
+    (text) => text.replace('"three": "0.187.0"', '"three": "0.188.0"'),
+    'docs/three-upgrades.md',
+  );
+});
+
 test('types left a minor behind their own runtime are named', async () => {
   await rejects(
     'package.json',

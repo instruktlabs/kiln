@@ -110,7 +110,9 @@ for (const name of manifests) {
   const distinct = new Set(threePins.values());
   if (distinct.size > 1) {
     const shown = [...threePins].map(([name, pin]) => `${name}=${pin}`).join(', ');
-    errors.push(`three must be identical in every manifest that pins it: ${shown}`);
+    errors.push(
+      `three must be identical in every manifest that pins it: ${shown}. Move every tree in one change: docs/three-upgrades.md`,
+    );
   }
 }
 const guidance = [
