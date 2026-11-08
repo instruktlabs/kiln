@@ -40,6 +40,28 @@ async function loaded(bytes: Uint8Array, sha = SHA) {
 }
 
 const find = (root: THREE.Object3D, name: string) => root.getObjectByName(name)!;
+
+describe('derivative memo under concurrent calls', () => {
+  test('two calls producing one key store it once, and later stores still fit', async () => {
+    const memo = createDerivativeGlbMemo(100);
+    let release!: () => void;
+    const gate = new Promise<void>((resolve) => {
+      release = resolve;
+    });
+    const produce = async () => {
+      await gate;
+      return new Uint8Array(40);
+    };
+    const both = Promise.all([memo.bytes('k', produce), memo.bytes('k', produce)]);
+    release();
+    await both;
+    expect(memo.stats()).toMatchObject({ entries: 1, bytes: 40 });
+    await memo.bytes('other', async () => new Uint8Array(70));
+    expect(memo.stats()).toMatchObject({ entries: 1, bytes: 70 });
+    await memo.bytes('third', async () => new Uint8Array(70));
+    expect(memo.stats()).toMatchObject({ entries: 1, bytes: 70 });
+  });
+});
 const meshes = (root: THREE.Object3D) => {
   const found: THREE.Mesh[] = [];
   root.traverse((node) => {

@@ -188,4 +188,8 @@ test('checking cached cells lets other work run between them', async () => {
   running = false;
   expect(hit.captureCache).toEqual({ hit: true, reused: 3, total: 3 });
   expect(turns).toBeGreaterThanOrEqual(3);
+  // A call cancelled while its cells are checked stops at the next pause.
+  const controller = new AbortController();
+  setImmediate(() => controller.abort(new Error('call cancelled')));
+  await expect(port(request, { signal: controller.signal })).rejects.toThrow('call cancelled');
 });

@@ -47,6 +47,7 @@ describe('one review scene per artifact across calls', () => {
       const first = (await render.run({ code: code('reuse-a'), capture: shot(30) })) as Result;
       expect(first.ok).toBe(true);
       const loads = load.mock.calls.length;
+      expect(loads).toBeGreaterThanOrEqual(1);
       const isolated = (await render.run({
         programRef: first.programRef!,
         capture: shot(60, {
@@ -76,6 +77,7 @@ describe('one review scene per artifact across calls', () => {
         capture: shot(30),
       })) as Result;
       const loads = load.mock.calls.length;
+      expect(loads).toBeGreaterThanOrEqual(1);
       const inspected = (await tool('kiln_inspect').run({
         code: code('reuse-b'),
         listParts: {},

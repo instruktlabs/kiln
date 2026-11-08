@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { reviewLodChains } from './lod';
 import type {
   BufferAttribute,
   BufferGeometry,
@@ -29,8 +30,9 @@ import type {
  *
  * A scene is keyed only once it is registered with the hash of the GLB it was loaded from, and
  * only while every node, geometry, attribute, material and texture in it was there at
- * registration. Anything new (a fresh attribute, a swapped-in level of detail, a new texture)
- * gives no key, and the export runs. What the key cannot see is an edit inside an attribute's
+ * registration, lower levels of detail included. An export key also describes the levels set
+ * aside, so an edit to one shows. Anything new (a fresh attribute, a new texture) gives no key,
+ * and the export runs. What the key cannot see is an edit inside an attribute's
  * array or a texture's image that does not bump its `version`. three needs that bump
  * (`needsUpdate`) to draw such an edit too, and no review path makes one.
  */
@@ -58,7 +60,7 @@ export function registerReviewArtifact(root: unknown, artifact: string): void {
     if ((attribute as InterleavedBufferAttribute).isInterleavedBufferAttribute)
       number((attribute as InterleavedBufferAttribute).data);
   };
-  scene.traverse((node) => {
+  const visit = (node: Object3D) => {
     number(node);
     registrations.set(node, registration);
     const mesh = node as Mesh;
@@ -77,7 +79,11 @@ export function registerReviewArtifact(root: unknown, artifact: string): void {
         for (const value of Object.values(material))
           if ((value as Texture | null)?.isTexture) number(value as Texture);
       }
-  });
+  };
+  scene.traverse(visit);
+  // Lower levels of detail are built beside the scene, detached until a shot draws one.
+  for (const chain of reviewLodChains(scene))
+    for (const level of chain.levels) level.traverse(visit);
 }
 
 class Unkeyable extends Error {}
@@ -251,6 +257,16 @@ export function derivativeStateKey(
       if (registrations.get(node) !== registration) throw new Unkeyable();
       nodes.push(nodeState(node, id, materials, scope));
     });
+    // The levels of detail set aside: what a swap would draw, and what it would put back.
+    const detached: unknown[] = [];
+    if (scope === 'export')
+      for (const chain of reviewLodChains(scene))
+        for (const member of [chain.base, ...chain.levels])
+          if (member.parent === null)
+            member.traverse((node) => {
+              if (registrations.get(node) !== registration) throw new Unkeyable();
+              detached.push(nodeState(node, id, materials, scope));
+            });
     // A subtree's placement is its ancestors'.
     const ancestors: unknown[] = [];
     for (let node = scene.parent; node; node = node.parent)
@@ -263,6 +279,7 @@ export function derivativeStateKey(
           artifact: registration.artifact,
           options,
           nodes,
+          detached,
           ancestors,
           materials: [...materials.values()],
         }),
@@ -293,7 +310,13 @@ export function createDerivativeGlbMemo(maxBytes = 64 * 1024 * 1024): Derivative
       }
       const produced = Uint8Array.from(await produce());
       if (key !== undefined && produced.byteLength <= maxBytes) {
-        while (held + produced.byteLength > maxBytes) {
+        // Two calls on one scene state can both miss and both produce: the later replaces.
+        const stored = entries.get(key);
+        if (stored) {
+          entries.delete(key);
+          held -= stored.byteLength;
+        }
+        while (entries.size > 0 && held + produced.byteLength > maxBytes) {
           const [oldest, value] = entries.entries().next().value!;
           entries.delete(oldest);
           held -= value.byteLength;

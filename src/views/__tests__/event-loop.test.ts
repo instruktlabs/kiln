@@ -1,6 +1,7 @@
-import { describe, expect, test } from 'bun:test';
+import { describe, expect, spyOn, test } from 'bun:test';
 import * as THREE from 'three';
 import { renderSceneToGLB } from '../../render';
+import * as eventLoopModule from '../event-loop';
 import { eventLoopPace, TRIANGLE_BUDGET, VERTEX_BUDGET } from '../event-loop';
 import { rasterizeCamera, rasterizeCameraPaced, resolveAssetCamera } from '../camera';
 import { renderCaptureGrid } from '../camera-capture';
@@ -80,9 +81,21 @@ describe('loading a large review scene', () => {
       root.traverse((node) => out.push([node.name, node.type, node.position.toArray()]));
       return out;
     };
-    const a = await loadGlbReviewScene(bytes);
-    const b = await loadGlbReviewScene(bytes, { signal: new AbortController().signal });
-    expect(describe(b.root as THREE.Object3D)).toEqual(describe(a.root as THREE.Object3D));
+    const paced = eventLoopModule.eventLoopPace;
+    const unpaced = spyOn(eventLoopModule, 'eventLoopPace').mockImplementation((_, signal) =>
+      paced(Number.POSITIVE_INFINITY, signal),
+    );
+    let a: Awaited<ReturnType<typeof loadGlbReviewScene>>;
+    try {
+      const counted = await turnsDuring(() => loadGlbReviewScene(bytes));
+      expect(counted.turns).toBe(0);
+      a = counted.value;
+    } finally {
+      unpaced.mockRestore();
+    }
+    const b = await turnsDuring(() => loadGlbReviewScene(bytes));
+    expect(b.turns).toBeGreaterThanOrEqual(2);
+    expect(describe(b.value.root as THREE.Object3D)).toEqual(describe(a.root as THREE.Object3D));
   });
 });
 

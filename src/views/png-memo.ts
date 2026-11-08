@@ -25,7 +25,7 @@ export function createPngDecodeMemo(
     const decoded = png.decodePng(bytes);
     const size = decoded.rgb.byteLength;
     if (size <= maxBytes) {
-      while (held + size > maxBytes) {
+      while (entries.size > 0 && held + size > maxBytes) {
         const [oldest, value] = entries.entries().next().value!;
         entries.delete(oldest);
         held -= value.rgb.byteLength;

@@ -59,6 +59,52 @@ describe('drawn geometry measured once per scene state', () => {
     expect(measuredDrawnGeometry(root)).toEqual(first);
   });
 
+  test('a morph weight or a bone pose that changes is measured again', async () => {
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    geometry.morphAttributes.position = [geometry.getAttribute('position').clone()];
+    const morph = new THREE.Mesh(geometry, new THREE.MeshStandardMaterial());
+    morph.name = 'Morph';
+    morph.updateMorphTargets();
+    const bone = new THREE.Bone();
+    const skinGeometry = new THREE.BoxGeometry(1, 1, 1);
+    const count = skinGeometry.getAttribute('position').count;
+    skinGeometry.setAttribute(
+      'skinIndex',
+      new THREE.Uint16BufferAttribute(new Uint16Array(count * 4), 4),
+    );
+    skinGeometry.setAttribute(
+      'skinWeight',
+      new THREE.Float32BufferAttribute(
+        new Float32Array(count * 4).map((_, i) => (i % 4 === 0 ? 1 : 0)),
+        4,
+      ),
+    );
+    const skinned = new THREE.SkinnedMesh(skinGeometry, new THREE.MeshStandardMaterial());
+    skinned.add(bone);
+    skinned.bind(new THREE.Skeleton([bone]));
+    const root = new THREE.Group();
+    root.add(morph, skinned);
+    root.updateMatrixWorld(true);
+    registerReviewArtifact(root, 'sha256:poses');
+    const walk = spyOn(rasterModule, 'measureDrawnGeometry');
+    try {
+      measuredDrawnGeometry(root);
+      measuredDrawnGeometry(root);
+      expect(walk).toHaveBeenCalledTimes(1);
+      morph.morphTargetInfluences![0] = 0.5;
+      measuredDrawnGeometry(root);
+      expect(walk).toHaveBeenCalledTimes(2);
+      bone.position.x = 2;
+      bone.updateMatrixWorld(true);
+      measuredDrawnGeometry(root);
+      expect(walk).toHaveBeenCalledTimes(3);
+      measuredDrawnGeometry(root);
+      expect(walk).toHaveBeenCalledTimes(3);
+    } finally {
+      walk.mockRestore();
+    }
+  });
+
   test('callers get their own copies, and an unregistered scene is always walked', async () => {
     const root = await scene();
     const box = measuredDrawnGeometry(root);
