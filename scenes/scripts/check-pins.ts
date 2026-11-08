@@ -5,8 +5,8 @@ import { inspectToolchain, REQUIRED_TOOLCHAIN, type Toolchain } from './check-to
 
 export const APPROVED_PINS: Record<string, string> = {
   react: '19.3.1', 'react-dom': '19.3.1', '@react-three/fiber': '9.8.2', three: '0.187.0',
-  '@types/three': '0.187.0', '@types/react': '^19.3.0', '@types/react-dom': '^19.3.0', 'three-mesh-bvh': '0.9.17',
-  typescript: '7.0.2', 'typescript-6': 'npm:typescript@6.0.3', vite: '8.3.5', '@vitejs/plugin-react': '6.1.2',
+  '@types/three': '0.187.0', '@types/react': '^19.3.0', '@types/react-dom': '^19.3.0', 'three-mesh-bvh': '0.9.18',
+  typescript: '7.0.2', 'typescript-6': 'npm:typescript@6.0.3', vite: '8.3.6', '@vitejs/plugin-react': '6.2.1',
   'puppeteer-core': '25.16.0', 'axe-core': '4.14.0', acorn: '8.19.0', fflate: '0.8.3', pngjs: '7.0.0', pixelmatch: '7.2.0', npm: '12.2.0',
 };
 const RUNTIME_PEERS = ['react', 'react-dom', '@react-three/fiber', 'three'] as const;
