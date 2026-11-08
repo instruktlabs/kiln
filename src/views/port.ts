@@ -220,8 +220,9 @@ function exactShotRequests(shots: readonly ResolvedCameraShotV1[], size: number)
 /**
  * Draw shots that change only the camera from the artifact bytes themselves: one request per
  * projection and service limit, so the renderer loads the scene once for them and a capture cache
- * answers before any upload. Each request keeps its own deadline in {@link captureViewPngsViaPort}, the single owner
- * of that policy. Never throws. A shot left undefined was not drawn, because its request failed or
+ * answers before any upload. `timeoutMs` is one shot's deadline and each request gets one per camera
+ * it carries, as separate requests would have; {@link captureViewPngsViaPort} enforces it, the
+ * single owner of that policy. Never throws. A shot left undefined was not drawn, because its request failed or
  * its renderer differed from the earlier ones, and takes the caller's per-shot route with its own
  * degrade; a cancellation surfaces there too.
  */
@@ -243,10 +244,11 @@ export async function captureExactArtifactShotsViaPort(
   let rendererId: string | undefined;
   for (const indices of exactShotRequests(shots, size)) {
     const batch = indices.map((index) => shots[index]!);
+    // `timeoutMs` is one shot's deadline; a request draws a view per camera, so it gets one each.
     const result = await captureViewPngsViaPort(
       port,
       glb,
-      timeoutMs,
+      timeoutMs * batch.length,
       batch.map(
         ({ camera }) =>
           camera.position.map((n, axis) => n - camera.target[axis]!) as [number, number, number],

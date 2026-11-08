@@ -129,6 +129,26 @@ describe('captureViewsViaPort with shots', () => {
       ).toEqual(['orthographic', 'perspective', 'orthographic', 'perspective']);
   });
 
+  test('a batch gets one shot deadline per camera, as separate requests had', async () => {
+    const artifact = await channelAsset(0);
+    const { root } = await loadGlbReviewScene(artifact);
+    const shots = [0, 90, 180, 270].map((azimuthDeg) =>
+      resolveAssetCamera(root, { camera: { type: 'orbit', azimuthDeg } }),
+    );
+    const requests: PbrRenderRequest[] = [];
+    const answer = gpu(requests);
+    // A renderer that takes 150 ms per view: four views need 600 ms, more than one shot's 400.
+    const slow = async (req: PbrRenderRequest) => {
+      await new Promise((resolve) => setTimeout(resolve, 150 * req.cameras!.length));
+      return answer(req);
+    };
+    const cells = await captureExactArtifactShotsViaPort(slow, artifact, 400, shots, 128, {
+      exactArtifact: true,
+    });
+    expect(requests).toHaveLength(1);
+    expect(cells.every((cell) => cell?.receipt.rendererId === 'gpu:test')).toBe(true);
+  });
+
   test('a renderer that changes between requests does not reach one sheet', async () => {
     const artifact = await channelAsset(0);
     const { root } = await loadGlbReviewScene(artifact);
