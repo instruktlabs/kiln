@@ -4,6 +4,8 @@ import type { CatalogImage } from './catalog';
 export interface TextTo3dStep {
   id: string;
   prompt: string;
+  /** Messages sent to the author while it worked on this revision, verbatim and in order. */
+  followUps?: string[];
   sourceHref: string;
   sourceLines: number;
   /** On a revision the page gives numbers for: its parent's meshes that kept their shape, matched by vertex positions and place. */

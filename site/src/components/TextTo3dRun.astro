@@ -43,7 +43,7 @@ const finalImage = subject.images.final!;
 const featureImage = feature && subject.images[feature.image]!;
 const stepOf = (id: string) => subject.steps.find((step) => step.id === id)!;
 const stats = [
-  ["Prompts", subject.steps.length],
+  ["Prompts", subject.steps.reduce((count, step) => count + 1 + (step.followUps?.length ?? 0), 0)],
   ["Triangles", subject.triangles >= 1_000_000 ? `${(subject.triangles / 1_000_000).toFixed(1)} M` : number(subject.triangles)],
   ["GLB", `${megabytes(subject.glbBytes)} MB`],
 ] as const;
@@ -108,7 +108,7 @@ const PAIR_SIZES = "(max-width: 767px) calc(50vw - 1rem), (max-width: 1279px) ca
         {revisions.map((card) => {
           const step = stepOf(card.step);
           const revision = subject.steps.indexOf(step) + 1;
-          const { prompt } = step;
+          const { prompt, followUps = [] } = step;
           const figures = card.figures.map((name) => subject.images[name]!);
           return (
             <li class="min-w-0">
@@ -123,6 +123,12 @@ const PAIR_SIZES = "(max-width: 767px) calc(50vw - 1rem), (max-width: 1279px) ca
                 <summary class="font-mono text-code">Read the prompt, {number(wordCount(prompt))} words</summary>
                 <div class="px-2 pb-2"><CodeBlock code={prompt} lang="text" label={`${short}, prompt ${revision}`} /></div>
               </details>
+              {followUps.map((message, nth) => (
+                <details class="mt-1 border border-rule bg-sheet">
+                  <summary class="font-mono text-code">Read what was sent while it worked, {number(wordCount(message))} words</summary>
+                  <div class="px-2 pb-2"><CodeBlock code={message} lang="text" label={`${short}, prompt ${revision}, message ${nth + 2}`} /></div>
+                </details>
+              ))}
             </li>
           );
         })}
