@@ -7,7 +7,7 @@ import {
 } from './capture-limits';
 import {
   resolveAssetCamera,
-  rasterizeCamera,
+  rasterizeCameraPaced,
   withCameraVisibility,
   type CameraShotV1,
   type ResolvedCameraShotV1,
@@ -17,6 +17,7 @@ import type { BackdropId } from './background';
 import type { DerivativeCellRenderer, DerivativeCellRenderResult, ViewGridResult } from './index';
 import { encodePng } from './png';
 import { decodePngShared } from './png-memo';
+import { eventLoopPace } from './event-loop';
 import { compositeCellGrid, PAD } from './grid';
 import { annotateViewCell } from './annotate';
 import type { DerivativeViewReceiptV1 } from '../composer/render-port';
@@ -30,6 +31,8 @@ export interface CameraCaptureGridResult extends ViewGridResult {
   viewLevels?: number[][];
 }
 export interface CaptureGridOptions {
+  /** The call's cancellation, honoured at the pause after each shot is planned and drawn. */
+  execution?: { signal?: AbortSignal };
   /**
    * The caller delivers `perFramePngs` for `output: 'separate'` and never reads the sheet, so it
    * is neither built nor charged to the pixel budget; `png` is then empty.
@@ -79,6 +82,9 @@ export async function renderCaptureGrid(
   options: CaptureGridOptions = {},
 ): Promise<CameraCaptureGridResult> {
   validateAdvancedCapture(config);
+  // Each shot's planning and drawing is a long synchronous stretch on a large asset; other calls
+  // on this process run, and cancellation lands, at the pause after each.
+  const pace = eventLoopPace(1, options.execution?.signal);
   // A shot whose subject names a lower level of detail resolves and draws with that level in
   // its LOD0's place; every shot resolves before any draws.
   const plans: {
@@ -86,7 +92,7 @@ export async function renderCaptureGrid(
     shot: ResolvedCameraShotV1;
     levels: number[];
   }[] = [];
-  for (const request of config.shots!)
+  for (const request of config.shots!) {
     plans.push(
       await withSubjectLevel(root, request.subject, async (levels) => ({
         subject: request.subject,
@@ -94,6 +100,8 @@ export async function renderCaptureGrid(
         levels,
       })),
     );
+    await pace.pause();
+  }
   const shots = plans.map((plan) => plan.shot);
   const size = config.size ?? 384;
   const cols = config.cols ?? Math.min(3, shots.length);
@@ -147,7 +155,15 @@ export async function renderCaptureGrid(
             derivativeReceipts.push(result.receipt);
             return result.png;
           }
-          return encodePng(rasterizeCamera(root, shot.camera, size, true, backdrop), size, size);
+          const rgb = await rasterizeCameraPaced(
+            root,
+            shot.camera,
+            size,
+            true,
+            backdrop,
+            options.execution?.signal,
+          );
+          return encodePng(rgb, size, size);
         }),
       ));
     const decoded = decodePngShared(png);
@@ -156,6 +172,7 @@ export async function renderCaptureGrid(
     annotateViewCell(decoded.rgb, size, view);
     cells.push(decoded.rgb);
     perFramePngs.push(encodePng(decoded.rgb, size, size));
+    await pace.pause();
   }
   const rows = Math.ceil(shots.length / cols);
   const sheet = framesOnly ? undefined : compositeCellGrid(cells, size, cols);
