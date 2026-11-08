@@ -1,7 +1,8 @@
 import { describe, expect, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
 import * as THREE from 'three/webgpu';
 import { NodeBuilder } from 'three/webgpu';
-import { compilesOnPageThread, shareInstancedShaders } from '../src/components/viewer-renderer';
+import { compilesOnPageThread } from '../src/components/viewer-renderer';
 
 const backendOf = (webgpu: boolean) =>
   ({ backend: { isWebGPUBackend: webgpu } }) as unknown as THREE.WebGPURenderer;
@@ -21,8 +22,10 @@ describe('which models build their shaders before they are first drawn', () => {
     expect(compilesOnPageThread(backendOf(false), withBatches(0))).toBe(true);
   });
 
-  test('WebGPU does for a model with many GPU batches, whose node graphs are each built alone', () => {
-    // r186 adds an InstancedMesh's uuid to its render cache key. 176 batches held the first frame for 5.7 s.
+  test('WebGPU does for a model with many GPU batches', () => {
+    // r186 added an InstancedMesh's uuid to its render cache key, so each batch's node graph was built alone: 176
+    // batches held the first frame for 5.7 s. r187 keys a batch by its instance data; the threshold stays until the
+    // first frame is re-measured without it.
     expect(compilesOnPageThread(backendOf(true), withBatches(16))).toBe(true);
   });
 
@@ -33,39 +36,43 @@ describe('which models build their shaders before they are first drawn', () => {
   });
 });
 
-/** A renderer as three's node builder sees it: only the backend's capabilities are read. */
-const rendererWithLimit = (bytes: number) => ({
-  backend: { capabilities: { getUniformBufferLimit: () => bytes } },
-});
+/** three's build as the site bundles it; from r187 `three/tsl` holds the node classes. */
+const threeBuild = (entry: string) => readFileSync(Bun.resolveSync(entry, import.meta.dir), 'utf8');
 
-/** What three r186's node builder reports to `nodes/accessors/Instance.js` and `Skinning.js` while it builds `object`. */
-const limitSeenByNodes = (renderer: object, object: object) =>
-  NodeBuilder.prototype.getUniformBufferLimit.call({ renderer, object } as unknown as NodeBuilder);
-
-const batch = new THREE.InstancedMesh(new THREE.BoxGeometry(), new THREE.MeshStandardNodeMaterial(), 3);
-const skinned = new THREE.SkinnedMesh(new THREE.BoxGeometry(), new THREE.MeshStandardNodeMaterial());
-
-describe('instanced parts share their shaders', () => {
-  test('a GPU batch of any size takes the instanced-attribute path', () => {
-    const renderer = rendererWithLimit(65536);
-    // Unpatched, a batch under 1,024 copies is a uniform array named after its own node, so each
-    // batch is a shader of its own: 176 batches cost 203 WebGL2 programs and 399 WebGPU modules.
-    expect(limitSeenByNodes(renderer, batch)).toBeGreaterThanOrEqual(64);
-    shareInstancedShaders(renderer as never);
-    // `createInstanceMatrixNode` uses the uniform array only when `count * 64` fits the limit.
-    expect(limitSeenByNodes(renderer, batch)).toBeLessThan(64);
+// r186 put a batch's matrices in a uniform array named after its own node below 1,024 copies, so each batch was a
+// shader of its own: a cathedral exported with `--draws minimal` (176 batches) cost 203 WebGL2 programs and 399
+// WebGPU modules until the viewer reported a zero uniform limit for instanced parts. r187 shares those shaders itself.
+// Counted at the graphics API in Chrome 156 on that cathedral, with the patch and without: 55 WebGPU modules, 29
+// WebGL2 programs and 286 draws either way.
+describe('instanced parts share their shaders without help from the viewer', () => {
+  test('three r187 binds the matrices as an instanced attribute where the geometry leaves a vertex buffer free', () => {
+    const tsl = threeBuild('three/tsl');
+    expect(tsl).toContain('const MAX_VERTEX_BUFFERS = 8;');
+    expect(tsl).toContain(
+      'return Object.keys( object.geometry.attributes ).length + instanceBuffers <= MAX_VERTEX_BUFFERS;',
+    );
+    // Only the fallback is built per object, and only it reads the uniform limit (`createInstanceMatrixNode`).
+    expect(tsl).toMatch(
+      /if \( canReferenceInstanceData\( instancedMesh, builder \) \) \{[\s\S]{0,800}?transformInstance\( builder, referenceAttribute\( 'instanceMatrix', 'mat4' \)[\s\S]{0,400}?\} else \{\s*builder\.objectSpecific = true;\s*instance\( instancedMesh\.instanceMatrix, instancedMesh\.instanceColor \);/,
+    );
+    expect(tsl).toMatch(/if \( uniformBufferSize <= builder\.getUniformBufferLimit\(\) \) \{/);
   });
 
-  test('a skinned part keeps its bones in a uniform block', () => {
-    // Skinning reads the same limit; only instanced parts are moved off the uniform path.
-    const renderer = rendererWithLimit(65536);
-    shareInstancedShaders(renderer as never);
-    expect(limitSeenByNodes(renderer, skinned)).toBe(65536);
+  test('three r187 keys a batch by the kind of its instance data, not its uuid, and shares the build', () => {
+    const webgpu = threeBuild('three/webgpu');
+    expect(webgpu).toContain(
+      "cacheKey += getInstanceDataKey( instanceMatrix ) + getInstanceDataKey( instanceColor ) + ( morphTexture !== null ? 'm' : '' ) + ',';",
+    );
+    expect(webgpu).toContain(
+      'if ( nodeBuilder.objectSpecific === false ) nodeBuilderCache.set( cacheKey, nodeBuilderState );',
+    );
   });
 
-  test('another renderer on the page is left alone', () => {
-    const other = rendererWithLimit(65536);
-    shareInstancedShaders(rendererWithLimit(65536) as never);
-    expect(limitSeenByNodes(other, batch)).toBe(65536);
+  test('the viewer leaves the uniform limit to three', async () => {
+    // A zero limit in r187's fallback would move a batch's matrices from a uniform array onto one more vertex
+    // buffer, for exactly the geometry that has none to spare.
+    const viewer = await import('../src/components/viewer-renderer');
+    expect(Object.keys(viewer)).not.toContain('shareInstancedShaders');
+    expect(String(NodeBuilder.prototype.getUniformBufferLimit)).toContain('capabilities.getUniformBufferLimit()');
   });
 });

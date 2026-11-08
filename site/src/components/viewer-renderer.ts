@@ -11,7 +11,9 @@ interface TextureManager {
 /**
  * r186's texture manager keeps its disposal listeners after `dispose()`, and a texture shared between renderers then
  * holds every closed viewer in memory. The scene kit found this (`scene-kit/src/renderer/texture-cleanup.ts`); the
- * same release is needed here, where a visitor can open and close a view many times on one page.
+ * same release is needed here, where a visitor can open and close a view many times on one page. r187's
+ * `Textures.dispose()` releases the textures it tracked itself; this release runs first and stays until a browser
+ * heap check on r187 shows a closed viewer is collected without it.
  */
 function trackTextures(renderer: THREE.WebGPURenderer): () => void {
   const manager = (renderer as unknown as { _textures?: TextureManager })._textures;
@@ -36,45 +38,16 @@ function trackTextures(renderer: THREE.WebGPURenderer): () => void {
 
 const releases = new WeakMap<THREE.WebGPURenderer, () => void>();
 
-/** The viewer's renderers, whose instanced parts are built to share shaders. */
-const sharing = new WeakSet<object>();
-let builderPatched = false;
-
-/**
- * Let every GPU batch with the same material share one shader. Below 1,024 copies, r186's
- * `nodes/accessors/Instance.js` puts a batch's matrices in a uniform array named after that
- * batch's own node and sized to its count, so each `InstancedMesh` builds a shader of its own.
- * A cathedral exported with `--draws minimal` has 176 batches. On WebGL2 they cost 203 programs,
- * and it first drew at 52 s against 9 s for the plain file. On WebGPU they cost 399 modules and
- * held the page for 5 s. Above the limit, three reads the matrices as instanced attributes, which
- * are named by slot. With a limit of zero every batch does that: 29 programs and a first frame at
- * 10 s on WebGL2, and 55 modules with no task over 0.2 s on WebGPU.
- *
- * Skinning and `RangeNode` read the same limit, so the zero is reported only while an instanced
- * part is being built, and a skeleton keeps its bones in a uniform block as before. Only the
- * viewer's renderers are changed.
- */
-export function shareInstancedShaders(renderer: THREE.WebGPURenderer): void {
-  sharing.add(renderer);
-  if (builderPatched) return;
-  builderPatched = true;
-  const prototype = THREE.NodeBuilder.prototype as unknown as {
-    getUniformBufferLimit(this: {
-      renderer: object;
-      object?: { isInstancedMesh?: boolean };
-    }): number;
-  };
-  const limit = prototype.getUniformBufferLimit;
-  prototype.getUniformBufferLimit = function () {
-    if (sharing.has(this.renderer) && this.object?.isInstancedMesh) return 0;
-    return limit.call(this);
-  };
-}
-
 /**
  * The view's renderer: WebGPU where the browser has it, and three's own WebGL2 backend where it does not. Everything
  * drawn is three's node materials, so both backends run the same shaders. No power preference is passed: Chromium on
  * Windows ignores it and warns.
+ *
+ * GPU batches of one material share their shaders without help: three r187 binds an `InstancedMesh`'s matrices as an
+ * instanced attribute wherever its geometry leaves a vertex buffer free. A cathedral exported with `--draws minimal`
+ * (176 batches) costs 55 WebGPU modules and 29 WebGL2 programs; r186 built each batch alone, 399 modules and 203
+ * programs, until the viewer reported a zero uniform limit for instanced parts. In r187 that zero would reach only the
+ * per-object fallback for geometry with no vertex buffer to spare, and push the matrices onto one more.
  */
 export function viewerRendererFactory(options: { forceWebGL?: boolean } = {}) {
   return async ({ canvas }: { canvas: HTMLCanvasElement | OffscreenCanvas }) => {
@@ -86,7 +59,6 @@ export function viewerRendererFactory(options: { forceWebGL?: boolean } = {}) {
     });
     installReviewToneMapping(renderer);
     await renderer.init();
-    shareInstancedShaders(renderer);
     releases.set(renderer, trackTextures(renderer));
     (canvas as HTMLCanvasElement).dataset.viewerBackend = viewerBackend(renderer);
     return renderer;
@@ -117,8 +89,9 @@ function gpuBatches(object: THREE.Object3D): number {
  * Whether drawing `object` for the first time makes the page wait for its shaders. WebGL2 compiles on the page's
  * thread: through Direct3D a skinned mech held the page for up to 2.9 s and first drew at 4.7 s. WebGPU builds
  * pipelines in the GPU process, and compiling there first only delayed the mech's first frame, by 1-2.7 s. Its node
- * graphs are built on the page's thread, though, and r186 builds each `InstancedMesh`'s alone: `RenderObject` adds
- * the object's uuid to the cache key. A cathedral with 176 batches held the page for 5.7 s in its first frame.
+ * graphs are built on the page's thread, though, and r186 built each `InstancedMesh`'s alone: `RenderObject` added
+ * the object's uuid to the cache key. A cathedral with 176 batches held the page for 5.7 s in its first frame. r187
+ * keys a batch by the kind of its instance data instead; the threshold stays until that is re-measured without it.
  */
 export const compilesOnPageThread = (renderer: THREE.WebGPURenderer, object?: THREE.Object3D) =>
   viewerBackend(renderer) === 'webgl2' ||
