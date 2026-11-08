@@ -5,6 +5,7 @@ import { isCubicSplineTrack } from '../animation-spline';
 import { createGltfIO } from '../gltf-io';
 import { listLodChainNodes } from '../lod-export';
 import { isHiddenGltfNode } from '../metrics';
+import { eventLoopPace, VERTEX_BUDGET, type EventLoopPace } from './event-loop';
 import { registerReviewLodChains } from './lod';
 import {
   atlasDocumentTable,
@@ -585,20 +586,35 @@ function localInstanceMatrices(node: import('@gltf-transform/core').Node): Matri
  * production replacement for re-executing generated source in animation,
  * interior, inspect, and composed-scene review tools. Textures are deliberately
  * not sampled by the CPU scene; the same reason codes remain explicit. */
-export async function loadGlbReviewScene(bytes: Uint8Array): Promise<LoadedGlbReviewScene> {
+export async function loadGlbReviewScene(
+  bytes: Uint8Array,
+  execution?: { signal?: AbortSignal },
+): Promise<LoadedGlbReviewScene> {
   let document: import('@gltf-transform/core').Document;
   try {
     document = await glbIO().readBinary(Uint8Array.from(bytes));
   } catch {
     throw new GlbGeometryFlatError('GLB_FLAT_PARSE_FAILED', 'Could not parse final GLB bytes.');
   }
+  execution?.signal?.throwIfAborted();
   await validateAtlasDocumentProvenance(document);
-  return reviewSceneFromDocument(document);
+  // Building a large scene takes long enough to hold up other calls on this process: pause
+  // between node batches, and stop there if the call was cancelled.
+  return reviewSceneFromDocument(document, eventLoopPace(VERTEX_BUDGET, execution?.signal));
 }
 
-function reviewSceneFromDocument(
+/** A node just built, and the vertices of the meshes built for it: its share of a load's work. */
+function builtVertices(target: Object3D): number {
+  let work = 1;
+  for (const child of target.children)
+    work += (child as Mesh).geometry?.getAttribute('position')?.count ?? 0;
+  return work;
+}
+
+async function reviewSceneFromDocument(
   document: import('@gltf-transform/core').Document,
-): LoadedGlbReviewScene {
+  pace?: EventLoopPace,
+): Promise<LoadedGlbReviewScene> {
   const sourceScene = document.getRoot().getDefaultScene() ?? document.getRoot().listScenes()[0];
   if (!sourceScene) throw new GlbGeometryFlatError('GLB_FLAT_NO_SCENE', 'Final GLB has no scene.');
   const reasons = new Set<GlbGeometryFlatReasonCode>();
@@ -637,7 +653,7 @@ function reviewSceneFromDocument(
   let meshCount = 0;
   let instanceCount = 0;
 
-  const buildNode = (source: import('@gltf-transform/core').Node): Object3D => {
+  const buildNode = async (source: import('@gltf-transform/core').Node): Promise<Object3D> => {
     const existing = nodeMap.get(source);
     if (existing) return existing;
     const target = joints.has(source) ? new Bone() : new Group();
@@ -866,10 +882,11 @@ function reviewSceneFromDocument(
         }
       }
     }
-    for (const child of source.listChildren()) target.add(buildNode(child));
+    await pace?.step(builtVertices(target));
+    for (const child of source.listChildren()) target.add(await buildNode(child));
     return target;
   };
-  for (const child of sourceScene.listChildren()) root.add(buildNode(child));
+  for (const child of sourceScene.listChildren()) root.add(await buildNode(child));
   root.updateMatrixWorld(true);
   if (meshCount === 0)
     throw new GlbGeometryFlatError(
@@ -881,13 +898,16 @@ function reviewSceneFromDocument(
   const sceneMeshCount = meshCount;
   const sceneInstanceCount = instanceCount;
   const sceneReasons = new Set(reasons);
-  registerReviewLodChains(
-    root,
-    listLodChainNodes(document).map(({ levels: [base, ...lower] }) => ({
-      base: nodeMap.get(base!)!,
-      levels: lower.some((level) => nodeMap.has(level)) ? [] : lower.map(buildNode),
-    })),
-  );
+  const chains: Array<{ base: Object3D; levels: Object3D[] }> = [];
+  for (const {
+    levels: [base, ...lower],
+  } of listLodChainNodes(document)) {
+    const levels: Object3D[] = [];
+    if (!lower.some((level) => nodeMap.has(level)))
+      for (const level of lower) levels.push(await buildNode(level));
+    chains.push({ base: nodeMap.get(base!)!, levels });
+  }
+  registerReviewLodChains(root, chains);
 
   for (const { source, mesh } of pendingSkins) {
     const skin = source.getSkin()!;

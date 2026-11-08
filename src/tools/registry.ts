@@ -462,7 +462,17 @@ function evaluationEvidence(rendered: RenderResult): EvaluationEvidence {
   };
 }
 
-async function loadEvaluatedReviewScene(code: string, context: KilnToolContext) {
+/**
+ * Build (or take from the build cache) and load the review scene. The scene is lent by the
+ * host's review scene cache: the caller owns it until it runs the release pushed onto
+ * `releases`, which it must do in a `finally`. A later call on the same artifact then skips the
+ * load, and a concurrent one loads its own copy.
+ */
+async function loadEvaluatedReviewScene(
+  code: string,
+  context: KilnToolContext,
+  releases: Array<() => void>,
+) {
   const rendered = await evaluateGeneratedSource(code, context);
   try {
     context.liveReview?.artifact(code, rendered);
@@ -470,13 +480,19 @@ async function loadEvaluatedReviewScene(code: string, context: KilnToolContext) 
     /* Optional observation. */
   }
   const { loadGlbReviewScene } = await import('../views');
-  const scene = await loadGlbReviewScene(rendered.glb);
-  // Shots of one scene state, in this call or a later one on the same artifact, share an export.
-  (await import('../views/derivative-memo')).registerReviewArtifact(
-    scene.root,
+  const { reviewSceneCache } = await import('../views/review-scene-cache');
+  // The cache registers the scene, so shots of one state also share a derivative export.
+  const lease = await reviewSceneCache.lease(
     rendered.artifactGlbSha256,
+    () => loadGlbReviewScene(rendered.glb, context.evaluationControls?.()),
+    rendered.tris,
   );
-  return { rendered, ...scene };
+  releases.push(lease.release);
+  // The build, the load and the scene check are long steps; let other calls run between them.
+  await (await import('../views/event-loop')).pauseForEventLoop(
+    context.evaluationControls?.().signal,
+  );
+  return { rendered, ...lease.scene };
 }
 
 const viewEvidenceHistoryByContext = new WeakMap<KilnToolContext, ViewEvidenceHistoryStore>();
@@ -614,6 +630,7 @@ async function renderDerivativeCell(
     renderGlbViewCell(derivativeGlb, input.view, {
       size: input.size,
       camera,
+      ...(context.evaluationControls ? { execution: context.evaluationControls() } : {}),
       ...(input.backdrop ? { backdrop: input.backdrop } : {}),
       ...(input.backfaceCull !== undefined ? { backfaceCull: input.backfaceCull } : {}),
       ...(input.frameBounds ? { frameBounds: input.frameBounds } : {}),
@@ -1269,6 +1286,7 @@ async function runRenderViews(
   onEvaluated?: (artifact: RenderResult) => void,
 ): Promise<KilnRenderViewsResult> {
   context = snapshotRenderContext(context);
+  const releases: Array<() => void> = [];
   try {
     context.evaluationControls?.().signal?.throwIfAborted();
     // `CPU_RASTER_RENDERER_ID` and `resolveGridCapture` come from this SAME lazy
@@ -1280,7 +1298,11 @@ async function runRenderViews(
     const { renderGlbViewGrid, CPU_RASTER_RENDERER_ID, resolveGridCapture } = await import(
       '../views'
     );
-    const { root, rendered, reasonCodes } = await loadEvaluatedReviewScene(input.code, context);
+    const { root, rendered, reasonCodes } = await loadEvaluatedReviewScene(
+      input.code,
+      context,
+      releases,
+    );
     onEvaluated?.(rendered);
     context = { ...context, requirements: rendered.requirements.binding };
     const materialContractFailure = missingProceduralTextureResult(rendered, context);
@@ -1290,6 +1312,9 @@ async function runRenderViews(
     // scene; repeating it over the re-imported review scene named every
     // floating part a second time under its primitive name.
     const metrics = collectSceneMetrics(root);
+    await (await import('../views/event-loop')).pauseForEventLoop(
+      context.evaluationControls?.().signal,
+    );
     if ('shots' in (input.capture ?? {})) {
       const { renderCaptureGrid } = await import('../views');
       const grid = await renderCaptureGrid(
@@ -1299,6 +1324,7 @@ async function runRenderViews(
         context.captureLimits,
         {
           framesOnly: true,
+          ...(context.evaluationControls ? { execution: context.evaluationControls() } : {}),
           renderExactShots: (shots) => renderExactArtifactShots(shots, rendered.glb, context),
         },
       );
@@ -1514,6 +1540,9 @@ async function runRenderViews(
       error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
       warnings: [],
     };
+  } finally {
+    // Give the review scene back for a later call on this artifact; see views/review-scene-cache.ts.
+    for (const release of releases) release();
   }
 }
 
@@ -1586,9 +1615,10 @@ async function runScreenshotAnimation(
   context: KilnToolContext,
 ): Promise<KilnScreenshotAnimationResult> {
   context = snapshotRenderContext(context);
+  const releases: Array<() => void> = [];
   try {
     const { renderClipAnimation } = await import('../views');
-    const { root, clips, rendered } = await loadEvaluatedReviewScene(input.code, context);
+    const { root, clips, rendered } = await loadEvaluatedReviewScene(input.code, context, releases);
     context = { ...context, requirements: rendered.requirements.binding };
     const warnings = inspectSceneStructure(root);
     const r = await renderClipAnimation(root, clips, {
@@ -1648,6 +1678,9 @@ async function runScreenshotAnimation(
       error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
       warnings: [],
     };
+  } finally {
+    // Give the review scene back for a later call on this artifact; see views/review-scene-cache.ts.
+    for (const release of releases) release();
   }
 }
 
@@ -1759,9 +1792,14 @@ async function runViewInterior(
   context: KilnToolContext,
 ): Promise<KilnViewInteriorResult> {
   context = snapshotRenderContext(context);
+  const releases: Array<() => void> = [];
   try {
     const { renderInteriorGrid } = await import('../views');
-    const { root, rendered: evaluated } = await loadEvaluatedReviewScene(input.code, context);
+    const { root, rendered: evaluated } = await loadEvaluatedReviewScene(
+      input.code,
+      context,
+      releases,
+    );
     context = { ...context, requirements: evaluated.requirements.binding };
     // No default name. An explicit nodeName stays an exact-name override; with
     // none, the grid resolves the roof from its semantic role (and only then
@@ -1808,6 +1846,9 @@ async function runViewInterior(
       error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
       warnings: [],
     };
+  } finally {
+    // Give the review scene back for a later call on this artifact; see views/review-scene-cache.ts.
+    for (const release of releases) release();
   }
 }
 
@@ -2001,6 +2042,7 @@ async function runInspect(
   context: KilnToolContext,
 ): Promise<KilnInspectResult> {
   context = snapshotRenderContext(context);
+  const releases: Array<() => void> = [];
   try {
     const legacyCamera = [
       input.part,
@@ -2027,7 +2069,7 @@ async function runInspect(
       root,
       rendered: evaluated,
       reasonCodes,
-    } = await loadEvaluatedReviewScene(input.code, context);
+    } = await loadEvaluatedReviewScene(input.code, context, releases);
     context = { ...context, requirements: evaluated.requirements.binding };
     const { measureAttachment, describeSubjectFrame } = await import('../views/measurement');
     let comparison: KilnInspectResult['comparison'];
@@ -2083,6 +2125,8 @@ async function runInspect(
           root,
           { version: shot.hide ? 'kiln.capture.v2' : 'kiln.capture.v1', shots: [shot], size: 512 },
           (cell) => renderDerivativeCell(cell, context),
+          context.captureLimits,
+          context.evaluationControls ? { execution: context.evaluationControls() } : {},
         );
         return {
           ok: true,
@@ -2166,6 +2210,9 @@ async function runInspect(
       ok: false,
       error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
     };
+  } finally {
+    // Give the review scene back for a later call on this artifact; see views/review-scene-cache.ts.
+    for (const release of releases) release();
   }
 }
 

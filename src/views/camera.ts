@@ -2,12 +2,12 @@ import { Vector3, Matrix4, Euler, Group, type Object3D } from 'three';
 import {
   collectTriangles,
   compositingOrder,
-  measureBounds,
-  measureDrawnGeometry,
   nearestDrawnTriangleDistance,
   orbitDir,
 } from './raster';
 import { resolveBackdrop, type BackdropId } from './background';
+import { measuredDrawnGeometry } from './drawn-geometry-memo';
+import { eventLoopPace, TRIANGLE_BUDGET } from './event-loop';
 import { cloneReviewScene } from './scene-copy';
 import { visibleNormalSign } from './face-policy';
 import { prepareTriangleCoverage } from './triangle-coverage';
@@ -304,7 +304,12 @@ export function resolveAssetCamera(root: unknown, shot: CameraShotV1 = {}): Reso
   const rootNode = root as Object3D;
   rootNode.updateMatrixWorld(true);
   const selected = selectCameraSubject(root, shot.subject);
-  const { triangles, ...bounds } = measureDrawnGeometry(selected.node);
+  // Shots of one scene state share these walks; see views/drawn-geometry-memo.ts.
+  const { triangles, ...bounds } = measuredDrawnGeometry(selected.node);
+  const sceneBounds = () => {
+    const { min, max } = measuredDrawnGeometry(root);
+    return { min, max };
+  };
   if (!triangles) throw new Error(`subject ${selected.path} has no visible geometry`);
   const request = shot.camera ?? { type: 'orbit' };
   let camera: ResolvedAssetCameraV1;
@@ -324,7 +329,7 @@ export function resolveAssetCamera(root: unknown, shot: CameraShotV1 = {}): Reso
       dir.transformDirection(node.matrixWorld);
       up = tuple(new Vector3(0, 1, 0).transformDirection(node.matrixWorld));
     }
-    camera = cameraFromBounds(bounds, tuple(dir), request.padding ?? 1.2, up, measureBounds(root));
+    camera = cameraFromBounds(bounds, tuple(dir), request.padding ?? 1.2, up, sceneBounds());
   } else if (request.type === 'explicit') {
     strict(
       request,
@@ -402,13 +407,7 @@ export function resolveAssetCamera(root: unknown, shot: CameraShotV1 = {}): Reso
       if (direction.lengthSq() < 1e-20)
         throw new Error('bounds framing position and target must differ');
       const padding = request.padding ?? 1.2;
-      const fit = cameraFromBounds(
-        bounds,
-        tuple(direction),
-        padding,
-        tuple(up),
-        measureBounds(root),
-      );
+      const fit = cameraFromBounds(bounds, tuple(direction), padding, tuple(up), sceneBounds());
       if (request.projection === 'orthographic')
         camera = {
           ...fit,
@@ -519,6 +518,44 @@ export function rasterizeCamera(
   backfaceCull = true,
   backdrop?: BackdropId,
 ): Uint8Array {
+  const steps = rasterizeCameraSteps(root, input, size, backfaceCull, backdrop, Infinity);
+  for (;;) {
+    const step = steps.next();
+    if (step.done) return step.value;
+  }
+}
+
+/**
+ * `rasterizeCamera`, pausing for the event loop every `TRIANGLE_BUDGET` triangles and stopping
+ * there when `signal` aborts. A large asset takes seconds to draw on the CPU; the pauses let
+ * the process serve other calls meanwhile. The pixels are `rasterizeCamera`'s.
+ */
+export async function rasterizeCameraPaced(
+  root: unknown,
+  input: ResolvedAssetCameraV1,
+  size = 384,
+  backfaceCull = true,
+  backdrop?: BackdropId,
+  signal?: AbortSignal,
+): Promise<Uint8Array> {
+  const pace = eventLoopPace(1, signal);
+  const steps = rasterizeCameraSteps(root, input, size, backfaceCull, backdrop, TRIANGLE_BUDGET);
+  for (;;) {
+    const step = steps.next();
+    if (step.done) return step.value;
+    await pace.pause();
+  }
+}
+
+/** The rasterizer, yielding after every `every` triangles drawn or skipped. */
+function* rasterizeCameraSteps(
+  root: unknown,
+  input: ResolvedAssetCameraV1,
+  size: number,
+  backfaceCull: boolean,
+  backdrop: BackdropId | undefined,
+  every: number,
+): Generator<void, Uint8Array> {
   const camera = validateResolvedAssetCamera(input);
   const bg = resolveBackdrop(backdrop).rgb;
   if (!Number.isInteger(size) || size < 1 || size > 2048)
@@ -557,7 +594,12 @@ export function rasterizeCamera(
       ? Math.hypot(px - position.x, py - position.y, pz - position.z)
       : (position.x - px) * z.x + (position.y - py) * z.y + (position.z - pz) * z.z,
   );
+  let sincePause = 0;
   for (const tri of ordered) {
+    if (++sincePause >= every) {
+      sincePause = 0;
+      yield;
+    }
     const world = [0, 1, 2].map(
       (i) => new Vector3(tri.v[i * 3]!, tri.v[i * 3 + 1]!, tri.v[i * 3 + 2]!),
     );
