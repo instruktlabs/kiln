@@ -40,6 +40,25 @@ const readJson = async (path) => JSON.parse(await readFile(path, 'utf8'));
 const writeJson = async (path, value) => { await mkdir(dirname(path), { recursive: true }); await writeFile(path, `${JSON.stringify(value, null, 2)}\n`); };
 const modelNames = { 'claude-opus-5-5': 'Claude Opus 5.5', 'gpt-6-astra': 'GPT-6 Astra', 'claude-sonnet-5-5': 'Claude Sonnet 5.5', 'gemini-3.8-flash-high': 'Gemini 3.8 Flash High' };
 
+/** Each copy's place under a node with EXT_mesh_gpu_instancing, or the node's own place alone. Float attributes only. */
+function instancePlaces(json, data, node) {
+  const attributes = node.extensions?.EXT_mesh_gpu_instancing?.attributes;
+  if (!attributes) return [new Matrix4()];
+  const bin = data.subarray(20 + data.readUInt32LE(12) + 8);
+  const read = (name, width) => {
+    if (attributes[name] === undefined) return undefined;
+    const accessor = json.accessors[attributes[name]];
+    if (accessor.componentType !== 5126) throw new Error(`Instanced ${name} is not float data`);
+    const view = json.bufferViews[accessor.bufferView];
+    const stride = view.byteStride ?? width * 4;
+    const start = (view.byteOffset ?? 0) + (accessor.byteOffset ?? 0);
+    return Array.from({ length: accessor.count }, (_, i) => Array.from({ length: width }, (_, k) => bin.readFloatLE(start + i * stride + k * 4)));
+  };
+  const [moves, turns, sizes] = [read('TRANSLATION', 3), read('ROTATION', 4), read('SCALE', 3)];
+  const count = (moves ?? turns ?? sizes ?? []).length;
+  return Array.from({ length: count }, (_, i) => new Matrix4().compose(new Vector3(...(moves?.[i] ?? [0, 0, 0])), new Quaternion(...(turns?.[i] ?? [0, 0, 0, 1])), new Vector3(...(sizes?.[i] ?? [1, 1, 1]))));
+}
+
 export function inspectGlb(bytes) {
   const data = Buffer.from(bytes);
   if (data.toString('ascii', 0, 4) !== 'glTF' || data.readUInt32LE(4) !== 2 || data.readUInt32LE(8) !== data.length) throw new Error('Invalid GLB header');
@@ -53,12 +72,14 @@ export function inspectGlb(bytes) {
     const path = [...parentPath, node.name ?? `node_${index}`];
     if (node.mesh !== undefined) {
       meshes++; parts.push(path.join('/'));
+      // A GPU-instanced batch draws its mesh once per copy, each at its own place under the node.
+      const copies = instancePlaces(json, data, node).map((place) => world.clone().multiply(place));
       for (const primitive of json.meshes[node.mesh].primitives) {
         const accessor = json.accessors[primitive.attributes.POSITION];
         const count = primitive.indices !== undefined ? json.accessors[primitive.indices].count : accessor.count;
-        triangles += (primitive.mode ?? 4) === 4 ? count / 3 : 0;
+        triangles += (primitive.mode ?? 4) === 4 ? (count / 3) * copies.length : 0;
         if (!accessor.min || !accessor.max) throw new Error(`GLB position bounds missing: ${path.join('/')}`);
-        for (let corner = 0; corner < 8; corner++) bounds.expandByPoint(new Vector3(...[0, 1, 2].map((axis) => ((corner >> axis) & 1) ? accessor.max[axis] : accessor.min[axis])).applyMatrix4(world));
+        for (const place of copies) for (let corner = 0; corner < 8; corner++) bounds.expandByPoint(new Vector3(...[0, 1, 2].map((axis) => ((corner >> axis) & 1) ? accessor.max[axis] : accessor.min[axis])).applyMatrix4(place));
       }
     }
     for (const child of node.children ?? []) visit(child, world, path);
