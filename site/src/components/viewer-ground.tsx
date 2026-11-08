@@ -141,10 +141,11 @@ export function BakedContactShadow({
     }
   };
 
+  // Pausing bakes once more, so the shadow matches the pose the clip stopped on.
   // biome-ignore lint/correctness/useExhaustiveDependencies: bake reads the size and scene these trigger on.
   useEffect(() => {
     if (ready) void bake();
-  }, [ready, radius, pose]);
+  }, [ready, radius, pose, playing]);
 
   useFrame(({ clock }) => {
     if (!playing || !ready) return;

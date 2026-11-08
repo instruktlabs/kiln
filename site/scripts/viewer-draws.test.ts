@@ -86,6 +86,11 @@ describe('drawing only when something changes', () => {
     expect(rebakeDue(0.25, 0)).toBe(true);
     expect(rebakeDue(10, 9.9)).toBe(false);
   });
+
+  test('a clip played again after a pause re-bakes at once, though the clock restarted at zero', () => {
+    // React Three Fiber restarts its clock whenever the frame loop changes, so the last bake can be in the clock's future.
+    expect(rebakeDue(0.02, 40)).toBe(true);
+  });
 });
 
 describe('culling that cannot make a part blink', () => {

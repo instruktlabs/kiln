@@ -82,9 +82,13 @@ export function viewerFrameloop(state: {
 
 const SHADOW_REFRESH_SECONDS = 0.25;
 
-/** Whether a playing clip's shadow is due for a new bake: a few times a second is enough for a soft shadow. */
+/**
+ * Whether a playing clip's shadow is due for a new bake: a few times a second is enough for a soft shadow. A last
+ * bake later than `now` means the clock restarted (React Three Fiber resets it when the frame loop changes), so the
+ * shadow is due at once rather than frozen until the clock catches up.
+ */
 export const rebakeDue = (now: number, lastBake: number) =>
-  now - lastBake >= SHADOW_REFRESH_SECONDS;
+  now < lastBake || now - lastBake >= SHADOW_REFRESH_SECONDS;
 
 /**
  * Culling on for everything whose bounding sphere can be trusted, and measured here rather than taken from the file:
