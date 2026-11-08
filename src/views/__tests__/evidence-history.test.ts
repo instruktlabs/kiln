@@ -101,6 +101,37 @@ describe('bounded model-visible view evidence history', () => {
     expect(state.lastFaithful?.sequence).toBe(1);
   });
 
+  test('a surface drawn from the artifact itself carries exactArtifact; a claim its receipts deny is invalid', () => {
+    const surface = (exact: boolean[], claimed: boolean): DerivativeReviewFidelityV1 => ({
+      version: 'kiln.derivative-review-fidelity.v1',
+      requested: 'full-preferred',
+      delivered: 'full-material',
+      materialFaithful: true,
+      exactArtifact: claimed,
+      degraded: false,
+      receipts: exact.map((exactArtifact, index) => ({
+        ...faithful(hash(String(index))),
+        derivativeLabel: `shot-${index}`,
+        exactArtifact,
+      })),
+    });
+    const store = new ViewEvidenceHistoryStore();
+    const exact = store.record('kiln_inspect', surface([true], true));
+    expect(exact.current).toMatchObject({ exactArtifact: true, materialFaithful: true });
+    expect(exact.lastFaithful?.exactArtifact).toBe(true);
+    expect(store.record('kiln_inspect', surface([true, false], false)).current).toMatchObject({
+      exactArtifact: false,
+      materialFaithful: true,
+    });
+    for (const [receipts, claimed] of [
+      [[true, false], true],
+      [[true], false],
+    ] as [boolean[], boolean][])
+      expect(store.record('kiln_inspect', surface(receipts, claimed)).current.reasonCodes).toEqual([
+        'DERIVATIVE_RECEIPT_INVALID',
+      ]);
+  });
+
   test('faithful history is bounded and returned snapshots cannot mutate the store', () => {
     const store = new ViewEvidenceHistoryStore(2);
     store.record('kiln_render', faithful(hash('a')));

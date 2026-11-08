@@ -66,11 +66,12 @@ function currentEvidence(
   }
 
   const valid =
-    fidelity.exactArtifact === false &&
     fidelity.receipts.length > 0 &&
+    fidelity.exactArtifact ===
+      fidelity.receipts.every((receipt) => receipt.exactArtifact === true) &&
     fidelity.receipts.every(
       (receipt) =>
-        receipt.exactArtifact === false &&
+        typeof receipt.exactArtifact === 'boolean' &&
         receipt.derivativeLabel.trim().length > 0 &&
         receipt.rendererId.trim().length > 0 &&
         SHA256.test(receipt.inputGlbSha256),
@@ -105,7 +106,7 @@ function currentEvidence(
     surface,
     delivered: fidelity.delivered,
     materialFaithful: fidelity.materialFaithful,
-    exactArtifact: false,
+    exactArtifact: fidelity.exactArtifact,
     degraded: fidelity.degraded,
     inputGlbSha256: fidelity.receipts.map((receipt) => receipt.inputGlbSha256),
     rendererIds: unique(fidelity.receipts.map((receipt) => receipt.rendererId)),
