@@ -26,6 +26,10 @@ does not publish a package.
   - three r187's `LatheGeometry` normalises the last profile ring's normals, which `lathe` and `revolveGeo`
     already did. Their normals stay unit but can differ from 0.186.1 output in the last bit, which changes a
     lathe-built part's GLB bytes, as on the espresso machine's saucer.
+  - three r187 parses a colour string with a negative hue or decimal percentages, such as
+    `hsl(-30, 60%, 50%)` or `rgb(50.5%, 0%, 0%)`; 0.186 read both as white without a warning. A source that
+    passes one to `gameMaterial`, `pbrMaterial` or another colour argument now renders and exports the colour
+    it names.
   - `kiln-compose-scene`'s runtime-scenes reference now describes r187. Reversed depth needs two scene
     adaptations, not three: r187 negates polygon offsets itself on both backends, so a scene keeps their
     standard-depth sign. An `InstancedMesh` binds its matrices as an instanced vertex attribute when its
