@@ -15,7 +15,8 @@ import {
 import { resolveCaptureBackdrop, type CaptureConfig } from './capture';
 import type { BackdropId } from './background';
 import type { DerivativeCellRenderer, DerivativeCellRenderResult, ViewGridResult } from './index';
-import { encodePng, decodePng } from './png';
+import { encodePng } from './png';
+import { decodePngShared } from './png-memo';
 import { compositeCellGrid, PAD } from './grid';
 import { annotateViewCell } from './annotate';
 import type { DerivativeViewReceiptV1 } from '../composer/render-port';
@@ -149,7 +150,7 @@ export async function renderCaptureGrid(
           return encodePng(rasterizeCamera(root, shot.camera, size, true, backdrop), size, size);
         }),
       ));
-    const decoded = decodePng(png);
+    const decoded = decodePngShared(png);
     if (decoded.width !== size || decoded.height !== size)
       throw new Error('capture cell dimensions do not match request');
     annotateViewCell(decoded.rgb, size, view);

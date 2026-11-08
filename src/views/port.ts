@@ -17,7 +17,7 @@ import {
   type CaptureShape,
   type ResolvedCapture,
 } from './capture';
-import { decodePng } from './png';
+import { decodePngShared } from './png-memo';
 import { compositeViewPngGrid } from './grid';
 export const DEFAULT_VIEW_RENDER_TIMEOUT_MS = 8000;
 /** What one render request may carry; the render service refuses anything more. */
@@ -155,7 +155,7 @@ export async function captureViewPngsViaPort(
     // pixels is a degrade, never a successful material attestation.
     enforcePngCaptureBudget(result.viewsPng, limits);
     for (const png of result.viewsPng) {
-      const decoded = decodePng(png);
+      const decoded = decodePngShared(png);
       if (exactCameras && (decoded.width !== size || decoded.height !== size))
         return { ok: false, reason: 'camera PNG dimensions mismatch' };
       if (decoded.width !== decoded.height) {
@@ -321,16 +321,29 @@ export async function captureViewsViaPort(
       const { renderCaptureGrid } = await import('./camera-capture');
       const { withoutHiddenMeshes } = await import('./camera');
       const { renderReviewDerivativeGlb } = await import('../render');
+      const { derivativeGlbMemo, derivativeStateKey, registerReviewArtifact } = await import(
+        './derivative-memo'
+      );
+      const { createHash } = await import('node:crypto');
       const loaded = await loadGlbReviewScene(Uint8Array.from(glb));
+      registerReviewArtifact(
+        loaded.root,
+        `sha256:${createHash('sha256').update(glb).digest('hex')}`,
+      );
       const grid = await renderCaptureGrid(
         loaded.root,
         capture,
         async (input) => {
           execution?.signal?.throwIfAborted();
           // An isolated shot hides the other meshes; send the GPU only what it may draw.
-          const derivative = await renderReviewDerivativeGlb(
-            withoutHiddenMeshes(input.root as import('three').Object3D),
-            { gltfExporter: 'three' },
+          // Shots of one scene state share that export.
+          const derivative = await derivativeGlbMemo.bytes(
+            derivativeStateKey(input.root, { backfaceCull: true }),
+            () =>
+              renderReviewDerivativeGlb(
+                withoutHiddenMeshes(input.root as import('three').Object3D),
+                { gltfExporter: 'three' },
+              ),
           );
           const result = await captureViewPngsViaPort(
             port,
