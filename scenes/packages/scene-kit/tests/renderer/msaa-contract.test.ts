@@ -3,10 +3,12 @@ import { readFileSync } from 'node:fs';
 import { REVISION } from 'three/webgpu';
 
 // OD-10: the private three contract src/renderer/msaa-store.ts relies on, pinned as source snippets and their order in
-// the build that `three/webgpu` resolves to (not three/src). A three upgrade that moves any of these fails here before
-// the policy can encode a wrong load or store op. Line numbers are deliberately not pinned.
-const BUILD = Bun.resolveSync('three/webgpu', import.meta.dir);
-const SOURCE = readFileSync(BUILD, 'utf8');
+// the builds that `three/webgpu` and `three/tsl` resolve to (not three/src). Since r187 the node classes (viewport
+// textures, reflectors) live in three.tsl.js, which three.webgpu.js imports, so the two are searched as one source.
+// A three upgrade that moves any of these fails here before the policy can encode a wrong load or store op. Line
+// numbers are deliberately not pinned.
+const BUILD = Bun.resolveSync('three/webgpu', import.meta.dir), TSL_BUILD = Bun.resolveSync('three/tsl', import.meta.dir);
+const SOURCE = `${readFileSync(BUILD, 'utf8')}\n${readFileSync(TSL_BUILD, 'utf8')}`;
 
 /** One class member, from its one-tab-indented signature to its closing brace, searched after `anchor`. */
 function member(src: string, anchor: string, signature: string): string {
@@ -91,14 +93,16 @@ function pinFailures(src: string): Record<string, string[]> {
       'if ( renderContext.clearStencil || discardStencil ) {',
       'depthStencilAttachment.stencilStoreOp = GPUStoreOp.Discard;',
     ]),
-    // A mid-pass copy ends the pass and restarts the same descriptor with Load and an unchanged storeOp.
+    // A mid-pass copy ends the pass and restarts the same descriptor with Load and an unchanged storeOp. (An array
+    // camera's layered draws defer the copy to finishRender instead; the kit renders no array camera.)
     copyRestartsWithLoad: [
       ...unordered(member(src, BACKEND, 'copyFramebufferToTexture( texture, renderContext, rectangle ) {'), [
         'if ( renderContextData.currentPass ) {',
         'renderContextData.currentPass.end();',
-        'this._copyFramebufferToTexture( encoder, texture, sourceGPU, destinationGPU, rectangle );',
+        'this._copyFramebufferToTexture( encoder, texture, sourceGPU, destinationGPU, rectangle, 0, generateMipmaps );',
         'descriptor.colorAttachments[ i ].loadOp = GPULoadOp.Load;',
         'if ( renderContext.depth ) descriptor.depthStencilAttachment.depthLoadOp = GPULoadOp.Load;',
+        'if ( renderContext.stencil ) descriptor.depthStencilAttachment.stencilLoadOp = GPULoadOp.Load;',
         'renderContextData.currentPass = encoder.beginRenderPass( descriptor );',
       ]),
       ...(/storeOp\s*=/i.test(member(src, BACKEND, 'copyFramebufferToTexture( texture, renderContext, rectangle ) {')) ? ['copy rewrites a storeOp'] : []),
@@ -167,10 +171,11 @@ function pinFailures(src: string): Record<string, string[]> {
 }
 const clean = (pins: Record<string, string[]>) => Object.fromEntries(Object.entries(pins).filter(([, bad]) => bad.length));
 
-describe('OD-10 three r186 contract for the MSAA store policy', () => {
-  test('the build three/webgpu resolves to is r186', () => {
+describe('OD-10 three r187 contract for the MSAA store policy', () => {
+  test('the builds three/webgpu and three/tsl resolve to are r187', () => {
     expect(BUILD.replaceAll('\\', '/')).toEndWith('three/build/three.webgpu.js');
-    expect(REVISION).toBe('186');
+    expect(TSL_BUILD.replaceAll('\\', '/')).toEndWith('three/build/three.tsl.js');
+    expect(REVISION).toBe('187');
   });
   test('every pinned snippet is present and in order', () => {
     expect(clean(pinFailures(SOURCE))).toEqual({});

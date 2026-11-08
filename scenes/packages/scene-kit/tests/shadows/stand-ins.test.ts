@@ -194,12 +194,13 @@ test('every exclusion is counted by reason and left casting as it was', () => {
   r.restore();
 });
 
-test('plain transparent glass is included as opaque depth; three r186 draws it so in the shadow pass', () => {
+test('plain transparent glass is included as opaque depth; three r187 draws it so in the shadow pass', () => {
   // The shadow material blends nothing and writes depth, and a transparent source only adds a second (back) draw when double-sided.
-  const src = readFileSync(Bun.resolveSync('three/webgpu', import.meta.dir), 'utf8');
+  // r187 builds the shadow material in three.tsl.js, which three.webgpu.js imports, and copies alphaTest past its setter.
+  const src = ['three/webgpu', 'three/tsl'].map(id => readFileSync(Bun.resolveSync(id, import.meta.dir), 'utf8')).join('\n');
   expect(src).toContain("material.name = 'ShadowMaterial';\n\t\tmaterial.blending = NoBlending;");
   expect(src).toContain('overrideMaterial.side = ( material.shadowSide !== null ) ? material.shadowSide : _shadowSide[ material.side ];');
-  expect(src).toContain('overrideMaterial.alphaTest = material.alphaTest;');
+  expect(src).toContain('overrideMaterial._alphaTest = material.alphaTest;');
   expect(src).toContain('if ( object.castShadow === true || ( object.receiveShadow && shadowType === VSMShadowMap ) ) {');
   const h = farmhouse(), r = shadowStandIns(h.root, { layer: LAYER, isAnchor }), pane = h.double[1]!;
   expect(r.sources).toContain(pane); expect(pane.castShadow).toBe(false);

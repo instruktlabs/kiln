@@ -30,8 +30,9 @@ function expected(c, exposure) {
     ],
     c.map((v) => (v * exposure) / 0.6),
   );
+  // three r187's RRTAndODTFit (mrdoob/three.js#35110 corrected the TSL denominator).
   const fit = input.map(
-    (v) => (v * (v + 0.0245786) - 0.000090537) / (v * (v + 0.432951) * 0.983729 + 0.238081),
+    (v) => (v * (v + 0.0245786) - 0.000090537) / (v * (0.983729 * v + 0.432951) + 0.238081),
   );
   const linear = mul(
     [

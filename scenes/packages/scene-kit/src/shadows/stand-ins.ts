@@ -12,7 +12,7 @@ export interface ShadowStandIns {
   readonly stats: { groups: number; sourceMeshes: number; proxies: number; triangles: number; dropped: number; skipped: Record<string, number> }; restore(): void;
 }
 interface Bucket { anchor: Object3D; side: Side; parts: Mesh[] }
-/** The side three r186 gives a PCF or basic shadow override: `shadowSide ?? {Front: Back, Back: Front, Double: Double}[side]` (Renderer._shadowSide). */
+/** The side three r187 gives a PCF or basic shadow override: `shadowSide ?? {Front: Back, Back: Front, Double: Double}[side]` (Renderer._shadowSide). */
 const FLIP: Side[] = [BackSide, FrontSide, DoubleSide];
 /** Material inputs the shadow override carries into its depth draw (alpha, discard, position, depth or transparency nodes). */
 const OWN = ['alphaMap', 'alphaHash', 'positionNode', 'castShadowPositionNode', 'displacementMap', 'maskNode', 'maskShadowNode', 'castShadowNode', 'transmissionNode', 'backdropNode', 'depthNode'] as const;
@@ -40,7 +40,7 @@ function excluded(m: Mesh): string | undefined {
  * pass. Sources stop casting and stay on shadow layers through suppressedCasters. Eligible: visible below its anchor,
  * castShadow, on a layer the shadow camera sees (`shadowMask`, default layer 0), one material, a plain mesh with the default draw range and no own render hooks, not under a LOD or
  * ClippingGroup below its anchor, and a material the override draws as plain depth. Plain transparency qualifies: three
- * r186 draws it with NoBlending, depth written and no discard (twice when double-sided). Parts whose sphere diameter is under
+ * r187 draws it with NoBlending, depth written and no discard (twice when double-sided). Parts whose sphere diameter is under
  * `minCasterTexels` texels drop before the merge. Build after batching. The proxy's matrixWorld is set once and it copies
  * the anchor's matrixWorldAutoUpdate, so a frozen owner stays frozen. Assumes a non-VSM map and shadowMap.transmitted off.
  */

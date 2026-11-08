@@ -13,7 +13,7 @@ export interface FarmPipeline { pipeline: RenderPipeline; samples: number; passe
 type Disposable = { dispose(): void };
 
 /**
- * One three 0.186 `RenderPipeline` for a look option set (dev build only). Order: scene pass (with MRT outputs as
+ * One three 0.187 `RenderPipeline` for a look option set (dev build only). Order: scene pass (with MRT outputs as
  * needed) → GTAO on indirect light through a normal/depth pre-pass → emissive-only bloom → TRAA or SMAA on linear
  * colour → tone mapping and sRGB (`renderOutput`) → grade → vignette → FXAA on display colour (it needs sRGB input).
  * MSAA stays the renderer's 4 samples inside the scene pass when `aa` is `msaa`; every other option renders the scene

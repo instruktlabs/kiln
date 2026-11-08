@@ -27,16 +27,14 @@ export interface WarmPass {
 }
 
 /**
- * Chains compiled at once by default. three 0.186.0's compileAsync builds each node material in slices, yielding to the
- * main thread between shader stages, so every concurrent build keeps its temporaries alive across the others' slices:
- * with all of the Farm's chains at once (221 on minimal, 165 on balanced and high) about 210 to 230 MB of them outlived
- * the young generation and one major collection of that size followed ready by seconds (17 to 26 ms here, M4). A few
- * builds at a time still overlap one build's CPU work with another's program link or pipeline creation, and were also
- * faster to ready: cold loads at 1, 2, 4, 6, 8, 12, 16 and all chains on both backends (evidence/m4/hitches/README.md),
- * 8 was at or near the shortest time to ready in every case and left about 100 to 140 MB, collected by one major
- * collection of 3.6 to 4.4 ms here.
+ * Chains compiled at once by default: one. three 0.187.0's compileAsync sets one pre-compile state on the renderer and
+ * awaits node builds inside it, so a second call in flight overwrites the first's state: the later finish throws, the
+ * renderer's call depth leaks and a double-sided material can keep its back pass's side. Under 0.186.0, which had no
+ * shared state, 8 at once was at or near the shortest time to ready in cold loads at 1 to all chains on both backends
+ * and left the least garbage for one major collection (evidence/m4/hitches/README.md). Ready time and collections
+ * under 0.187.0 have not been re-measured; that needs an idle machine.
  */
-export const WARM_CONCURRENCY = 8;
+export const WARM_CONCURRENCY = 1;
 export interface WarmPassOptions {
   /** Hide the world while compiling and show it after (the first world of a mount; a rebuilt world stays visible). */
   reveal: boolean;
@@ -73,12 +71,10 @@ export function warmRenderables(root: Object3D, layers?: Layers): Object3D[] {
 }
 
 /**
- * Compile chains. three keys node builds per material structure and vertex layout, but per object for instanced
- * meshes (0.186.0 puts an instanced mesh's own id in its render-object cache key), so each instanced mesh is its own
- * chain (on the Farm's instanced-attribute path those builds produce shared shader code, and three compiles each
- * distinct program or pipeline once; instance-attributes.ts); other drawables that share material instances and vertex
- * layout are compiled one after another, so the first builds the shaders and the rest reuse them instead of building the
- * same shaders concurrently.
+ * Compile chains. three keys node builds per material structure and vertex layout. 0.186.0 also keyed an instanced
+ * mesh by its own id, so each instanced mesh is its own chain; 0.187.0 keys it by its instance data instead, and with
+ * calls one at a time the split only orders them. Other drawables that share material instances and vertex layout are
+ * compiled one after another, so the first builds the shaders and the rest reuse them.
  */
 export function warmChainKey(object: Object3D): string {
   const o = object as unknown as { isInstancedMesh?: boolean; isBatchedMesh?: boolean; isSkinnedMesh?: boolean; count?: number; material?: Material | Material[];
@@ -95,9 +91,9 @@ export function warmChainKey(object: Object3D): string {
  * programs linked when batches first came into view).
  *
  * 1. compiling: three's compileAsync for every drawable below root, one call per drawable with frustum culling off for
- *    that call, a few chains at a time (WARM_CONCURRENCY), so that WebGPU creates pipelines with
- *    createRenderPipelineAsync and WebGL2 links programs through KHR_parallel_shader_compile beside the next node
- *    builds rather than one after another inside a frame. With
+ *    that call, one call at a time by default (WARM_CONCURRENCY), so that WebGPU creates pipelines with
+ *    createRenderPipelineAsync and WebGL2 links programs through KHR_parallel_shader_compile before the world draws
+ *    rather than inside a frame. With
  *    reveal (the first world of a mount) the world stays hidden meanwhile, so no frame compiles synchronously, and is
  *    shown when the compiles are done; the lights are outside the world, so the pipelines match the lit frame.
  * 2. drawing: the world is shown and one frame is drawn with frustum culling off for every drawable, which compiles

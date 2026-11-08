@@ -9,7 +9,7 @@ export interface DeviceApi<D> {
 
 /**
  * Chromium on Windows warns on any powerPreference hint, and ignores it.
- * Supply an owned device using the same effective selection/features as r186.
+ * Supply an owned device using the same effective selection/features as r186 and r187.
  * Other platforms and failed probes remain on three's native initialization
  * and fallback path. No browser API or console function is replaced.
  */

@@ -130,7 +130,7 @@ describe.skipIf(!available)('the GLB world (accepted GLBs through data/assets.js
   }, 240_000);
 
   test('entity sets draw through a handful of shared materials and no per-mesh instancing programs', async () => {
-    // three 0.186 builds one program per InstancedMesh (uniform buffer named by node id, uuid in the material cache
+    // three 0.186 built one program per InstancedMesh (uniform buffer named by node id, uuid in the material cache
     // key); the sets instead put the instance matrix in attributes on plain meshes that share the GLB materials.
     const models = await loadModels();
     const fab = createFab({ snapshot, mode: 'pilot' });

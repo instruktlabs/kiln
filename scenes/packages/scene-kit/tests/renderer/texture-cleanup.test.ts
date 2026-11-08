@@ -1,7 +1,7 @@
 import { test, expect } from 'bun:test';
 import { DataTexture } from 'three/webgpu';
 import { installRendererTextureCleanup } from '../../src/renderer/texture-cleanup';
-test('r186 shared texture releases only this renderer listeners and backend data',()=>{
+test('shared texture releases only this renderer listeners and backend data',()=>{
   const shared=new DataTexture(),local=new DataTexture(),data=new Map<any,{onDispose:()=>void}>(),destroyed:unknown[]=[];
   let cpuDisposed=0;shared.addEventListener('dispose',()=>cpuDisposed++);
   const other=()=>{};shared.addEventListener('dispose',other);

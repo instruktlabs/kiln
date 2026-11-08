@@ -186,14 +186,18 @@ call `invalidate` after discrete unobserved changes to static casters. Verify
 that the deformation also reaches the shadow pass. These are consumer cache APIs,
 not extra requirements on standalone assets.
 
-In three r186's WebGPU renderer every `InstancedMesh` binds its own pipeline,
-because its uuid is part of the material cache key. `EXT_mesh_gpu_instancing`
-therefore saves draws but adds a pipeline per instanced group: instancing one
+In three r186's WebGPU renderer every `InstancedMesh` bound its own pipeline,
+because its uuid was part of the material cache key. `EXT_mesh_gpu_instancing`
+therefore saved draws but added a pipeline per instanced group: instancing one
 campus's structures raised its main-pass pipelines, summed over its views, from
 77 to 346. What worked was one shared material reading per-part data: colour
 and roughness as vertex data, instance matrices as attributes of plain meshes.
 That took a campus planting from 21 pipelines to 10 at the overview and from
-40-49 to 11-13 near the ground, with pixel parity.
+40-49 to 11-13 near the ground, with pixel parity. three r187 binds an
+`InstancedMesh`'s matrices as an instanced vertex attribute when its geometry
+leaves a vertex buffer free, and instanced meshes of one material and vertex
+layout then share a shader build. These pipeline counts have not been
+re-measured on r187; measure both forms before choosing one.
 
 Transforms implemented only in a material graph may be bypassed by override
 materials in shadow, depth or picking passes. Supply equivalent transforms for
@@ -223,15 +227,17 @@ tablet's busy column read mixed, busy × clock fell by 15% and 24%.
 Over long view distances, a 24-bit depth buffer with a 0.5 m near plane steps
 by about 0.12 m at 1 km, 3 m at 5 km and 48 m at 20 km, growing with distance
 squared, so distant near-coplanar surfaces flicker as the camera moves.
-Reversed depth addresses that loss of precision. In three r186 it needs three adaptations: draw
-the sky first without a depth test, rebuild a planar reflector's oblique
-projection, and flip the sign of polygon offsets. On WebGL2 it also needs
-`EXT_clip_control`, or three falls back to a standard buffer.
+Reversed depth addresses that loss of precision. In three r187 it needs two adaptations: draw
+the sky first without a depth test, and rebuild a planar reflector's oblique
+projection. Keep polygon offsets at their standard-depth sign: r187 negates them
+itself under reversed depth on both backends, so a scene that also flips them,
+as r186 required, pushes the surface away from the camera. On WebGL2 reversed
+depth also needs `EXT_clip_control`, or three falls back to a standard buffer.
 This repository's optional scene-kit exposes `reversedDepthBuffer` on
 `SceneDefinition` and `RendererFactoryOptions`, defaulting to `false`. A scene
 must opt in and implement its own adaptations. After renderer initialization,
-use the effective `renderer.reversedDepthBuffer` for projection and offset
-changes: a request can become `false` on unsupported WebGL2. Pass the camera's
+use the effective `renderer.reversedDepthBuffer` for projection changes: a
+request can become `false` on unsupported WebGL2. Pass the camera's
 coordinate system and effective reversed-depth flag to custom frustum tests.
 Recheck sky, reflection clipping, offsets and depth-reading materials on both
 backends when upgrading three; support in the renderer alone is not scene

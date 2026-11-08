@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "pngjs": "^7.0.0",
-    "three": "0.186.1",
+    "three": "0.187.0",
     "webgpu": "0.6.2"
   },
   "allowScripts": {

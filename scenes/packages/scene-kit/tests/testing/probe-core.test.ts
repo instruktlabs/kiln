@@ -1,7 +1,7 @@
 import { expect, test } from 'bun:test';
 import { attributionPath, casterSize, classifyRender, classifyTarget, diffCounts, isSmallCaster, maxInstanceScale, passKinds, shadowTexelWorld, summarizeFrames, totalsByKind } from '../../src/testing/probe-core';
 
-test('renders classify by three r186 nested scene names, then by depth', () => {
+test('renders classify by three r187 nested scene names, then by depth', () => {
   expect(classifyRender('', 0)).toBe('main');
   expect(classifyRender('Farm', 0)).toBe('main');
   expect(classifyRender('Shadow Map [ sun ]', 1)).toBe('shadow');

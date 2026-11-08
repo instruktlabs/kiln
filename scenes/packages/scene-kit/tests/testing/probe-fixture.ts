@@ -1,6 +1,7 @@
-// A fake renderer shaped like three r186's for the count-probe tests: nested renders re-enter through the instance
+// A fake renderer shaped like three r187's for the count-probe tests: nested renders re-enter through the instance
 // `render`, every draw goes through `backend.draw(renderObject, info)` after `_pipelines.isReady`, shadow renders rename
-// the scene, and every shadow map shares one render context (RenderContexts.js keys by format and call depth).
+// the scene, and every shadow map shares one render context. r187's RenderContexts.js also keys by camera type, so a sun
+// and a point lamp would not share one there; the probe records a pass per context and call, which counts the same.
 export function probeFixture(o: { lamp?: boolean } = {}) {
   const node = (name: string, parent: any = null, extra: Record<string, unknown> = {}): any => {
     const n = { name, parent, children: [] as any[], visible: true, ...extra }; parent?.children.push(n); return n;

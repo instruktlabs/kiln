@@ -104,13 +104,15 @@ function invert(m) {
 const ACES_INPUT_INVERSE = Object.freeze(invert(ACES_INPUT));
 const ACES_OUTPUT_INVERSE = Object.freeze(invert(ACES_OUTPUT));
 
-const rrtOdtFit = (x) => (x * (x + FIT.a) - FIT.b) / (x * (x + FIT.d) * FIT.c + FIT.e);
+// three r187's RRTAndODTFit, which corrected the TSL denominator to the GLSL chunk's
+// `x (c x + d) + e` (mrdoob/three.js#35110); r186 computed `c x (x + d) + e`.
+const rrtOdtFit = (x) => (x * (x + FIT.a) - FIT.b) / (x * (FIT.c * x + FIT.d) + FIT.e);
 
 /** The non-negative root of `rrtOdtFit(x) = t`; the fit is monotonic there. */
 function rrtOdtFitInverse(t) {
-  // (1 - c t) x^2 + (a - c d t) x - (b + e t) = 0
+  // (1 - c t) x^2 + (a - d t) x - (b + e t) = 0
   const qa = 1 - FIT.c * t;
-  const qb = FIT.a - FIT.c * FIT.d * t;
+  const qb = FIT.a - FIT.d * t;
   const qc = -(FIT.b + FIT.e * t);
   if (qa <= 0) return Number.POSITIVE_INFINITY;
   return (-qb + Math.sqrt(qb * qb - 4 * qa * qc)) / (2 * qa);

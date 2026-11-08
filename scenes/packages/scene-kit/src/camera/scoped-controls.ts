@@ -1,6 +1,7 @@
 /**
- * r186 OrbitControls uses ownerDocument for captured pointer moves and getRootNode
- * for Control-key tracking. Redirect only those event targets to the scene root.
+ * r187 OrbitControls attaches captured pointer moves and Control-key tracking to
+ * ownerDocument; r186 tracked Control keys through getRootNode, which stays redirected.
+ * Redirect only those event targets to the scene root.
  * Canvas methods retain their real receiver, including setPointerCapture, so drags
  * that leave the canvas continue to bubble through the root without global listeners.
  */

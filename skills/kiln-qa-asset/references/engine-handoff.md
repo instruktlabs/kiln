@@ -227,7 +227,7 @@ and silhouette remain part of owner review.
 - Declared LOD sets export as `MSFT_lod` chains: LOD0 stays in the scene carrying
   `extensions.MSFT_lod.ids` and `extras.MSFT_screencoverage`, and the lower levels are
   off-scene nodes whose transforms are relative to LOD0's parent. An importer without the
-  extension shows LOD0 only, as three.js `GLTFLoader` 0.186 does. The measured Blender and
+  extension shows LOD0 only, as three.js `GLTFLoader` 0.187 does. The measured Blender and
   glTFast behavior is recorded above; automatic threshold switching still needs destination
   qualification. An imported GLB's chains survive save, optimisation and export too. GPU
   instancing skips a file with chains. In builds with rigid-group `full` optimisation,

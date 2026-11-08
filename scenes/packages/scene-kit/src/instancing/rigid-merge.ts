@@ -4,8 +4,9 @@ export interface RigidMergeOptions {
  isAnchor(n:Object3D):boolean;keepMesh?(m:Mesh):boolean;cache?:Map<string,BufferGeometry>;cacheKey?(anchor:Object3D):string|undefined;minGroup?:number;
  /**
   * Merged vertex layout. 'canonical' (default): one Float32 attribute each, so parts of any layout share a pipeline. 'source':
-  * the first part's interleaved Float32 buffers keep their stride and offsets, so the merged mesh shares three r186's geometry
-  * pipeline key (RenderObject.getGeometryCacheKey) with unmerged meshes of that layout; other attributes stay canonical.
+  * the first part's interleaved Float32 buffers keep their stride and offsets, so the merged mesh shares three r187's WebGPU
+  * vertex-buffer layout key (WebGPUAttributeUtils.getVertexBufferLayoutCacheKey), and with it a pipeline, with unmerged meshes of
+  * that layout; other attributes stay canonical. A 'canonical' merge shares their shader build but not their pipeline.
   */
  layout?:'canonical'|'source';
  /** Parts with a lower value come first in their merged mesh (ties keep scene order): one draw resolves coplanar depth ties by index order. */
@@ -56,7 +57,7 @@ export function bakeRigidGeometry(meshes:Mesh[],anchor:Object3D,o:{attributes:'a
  * their identity, transform and children; merged meshes are their children with identity transforms; sources stay in the graph,
  * hidden. Never merged: transparent or transmissive, multi-material or grouped, skinned, morphed or instanced meshes, meshes with
  * children, anchors, meshes with userData beyond name, a partial drawRange, hidden meshes (directly or below their anchor),
- * keepMesh, and tangent-bearing parts mirrored against their anchor (three r186 builds the bitangent with no determinant term).
+ * keepMesh, and tangent-bearing parts mirrored against their anchor (three r187 builds the bitangent with no determinant term).
  * Merged meshes copy their anchor's matrix flags, so a merge after freezeTransforms keeps a frozen owner frozen.
  */
 export function mergeRigidByMaterial(root:Object3D,o:RigidMergeOptions):RigidMerge{

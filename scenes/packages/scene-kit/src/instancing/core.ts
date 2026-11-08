@@ -7,9 +7,11 @@ function normalMapped(material:Material|Material[]):boolean{return(Array.isArray
 /**
  * FARM-006 (M4 WebGL2 hitch work): write a dynamic batch's instance matrices only when a source moved. Values are compared
  * as the Float32 the instance buffer stores, so an unchanged batch keeps its version: no matrix rewrite and no bounding-sphere
- * pass that frame, and no upload where the matrices are an instanced vertex attribute with static usage (three 0.186 uploads
- * an instanced mesh's per-object uniform buffer every frame it draws, and a DynamicDrawUsage attribute every frame, whatever
- * the version; the Farm takes the attribute path with static usage, packages/farm/src/world/instance-attributes.ts).
+ * pass that frame, and no upload where the matrices are an instanced vertex attribute with static usage (three 0.187 binds an
+ * InstancedMesh's matrices as that attribute when its geometry and instance buffers fit in eight vertex buffers, and otherwise
+ * as the per-object uniform buffer that 0.186 used for every instanced mesh and uploaded every frame it drew; a
+ * DynamicDrawUsage attribute uploads every frame, whatever the version. The Farm takes the attribute path with static usage,
+ * packages/farm/src/world/instance-attributes.ts).
  */
 function writeDynamicBatch(b:{mesh:InstancedMesh;sources:{o:Mesh}[]}):boolean{
  const array=b.mesh.instanceMatrix.array as Float32Array;let changed=false;

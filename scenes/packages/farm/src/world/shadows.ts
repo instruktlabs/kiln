@@ -15,7 +15,7 @@ export function farmShadowOptions(p: { shadowCache?: boolean; standIns?: boolean
     ...(p.liveMapSize && p.liveMapSize > 0 ? { liveMapSize: p.liveMapSize } : {}) };
 }
 /**
- * The layers the sun's shadow camera draws: layer 0, plus the stand-in layer when stand-ins are on (three r186 keeps a shadow
+ * The layers the sun's shadow camera draws: layer 0, plus the stand-in layer when stand-ins are on (three r187 keeps a shadow
  * camera's own mask once it has a bit above 0). Lighting sets it, and the stand-ins bake only sources it draws.
  */
 export function farmShadowMask(standIns: boolean): number { return 1 | (standIns ? 1 << FARM_SHADOW.standInLayer : 0); }

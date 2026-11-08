@@ -1,4 +1,4 @@
-/** The node builder method the hook overrides (three 0.186.0 `NodeBuilder.getUniformBufferLimit`, in bytes). */
+/** The node builder method the hook overrides (three `NodeBuilder.getUniformBufferLimit`, in bytes). */
 export interface InstanceAttributeBuilder { getUniformBufferLimit(): number }
 type BuilderCreated = (builder: InstanceAttributeBuilder, target: unknown) => void;
 /** The part of three's renderer the hook uses: the documented `debug.onNodeBuilderCreated` callback, run after a node builder is created and before it builds. */
@@ -11,7 +11,10 @@ export function takesInstanceAttributes(target: unknown): boolean {
 }
 
 /**
- * M4 item 1 (the WebGL2 hitches). three 0.186.0 puts the matrices of an instanced mesh that fit the backend's uniform
+ * M4 item 1 (the WebGL2 hitches), made for three 0.186.0. three 0.187.0 binds an instanced mesh's matrices as an
+ * instanced vertex attribute itself whenever its geometry and instance buffers fit in eight vertex buffers, sharing builds
+ * and uploading only on change, and reads the limit only in its per-object fallback beyond that, so on 0.187.0 the hook
+ * no longer changes the Farm's instanced meshes. three 0.186.0 puts the matrices of an instanced mesh that fit the backend's uniform
  * buffer limit (64 KB, 1,024 matrices, on both backends here) into a uniform buffer declared in that mesh's own vertex
  * shader (`uniform NodeBuffer_<node id> { mat4 buffer<node id>[<count>]; }`). So every such mesh compiles a program or
  * pipeline of its own, which is what linked lazily as batches first came into view, and its whole buffer is uploaded

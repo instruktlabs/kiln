@@ -4,9 +4,11 @@ interface TextureManager {
   _destroyTexture(texture: Texture): void;
 }
 /**
- * r186 Textures inherits DataMap.dispose(), which drops its WeakMap without
- * detaching texture disposal listeners. Shared DFG_LUT then retains every old
- * renderer. Track this manager's uploads and release its own records before
+ * r186 Textures inherited DataMap.dispose(), which dropped its WeakMap without
+ * detaching texture disposal listeners, so the shared DFG_LUT retained every old
+ * renderer. r187 Textures.dispose() itself releases the textures it tracked; this
+ * release runs first and stays until the B05 heap-retainer check is re-run in a
+ * browser. Track this manager's uploads and release its own records before
  * renderer.dispose(). Never dispose the shared CPU Texture or another renderer.
  * Source evidence: evidence/m1/b05-investigation/retainer-paths-*.txt.
  */

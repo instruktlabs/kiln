@@ -49,11 +49,11 @@ const shown = (o: Object3D) => { for (let n: Object3D | null = o; n; n = n.paren
 const draws = (o: Object3D) => { const im = o as InstancedMesh; return o.castShadow && (!im.isInstancedMesh || im.count > 0) && shown(o); };
 /**
  * OD-9 cached sun shadow: a static map S rendered only when armed, plus a live map D for casters that moved, sampled as
- * min(S, D) through `light.shadow.shadowNode` (three r186 AnalyticLightNode reads it once, so install before any receiver
+ * min(S, D) through `light.shadow.shadowNode` (three r187 AnalyticLightNode reads it once, so install before any receiver
  * builds, which the light's stock map betrays; keep light.castShadow true). Each map is a clone of the configured
- * light.shadow on its own placeholder light that shares the sun's matrixWorld and target. Both are armed at install, the
- * only safe first render (a later first render leaves shared-refresh receivers bound to a destroyed texture); the kit never
- * clears a flag itself. `update()` runs every frame after all motion and visibility (SystemOrder.shadows): watched casters
+ * light.shadow on its own placeholder light that shares the sun's matrixWorld and target. Both are armed at install, so
+ * each first render follows its node's first build (three r187 also arms a map then; under r186 a later first render left
+ * shared-refresh receivers bound to a destroyed texture); the kit never clears a flag itself, and every render clears it. `update()` runs every frame after all motion and visibility (SystemOrder.shadows): watched casters
  * that changed move to the live bit and re-arm S; after `settleFrames` quiet frames they return. The sampling values (bias,
  * normal bias, radius, intensity) reach both maps every frame; S takes the camera extents when it re-arms (a VSM blur takes
  * its radius then too). Call `prime()` when a warm pass starts drawing (D draws every caster once, so a later promotion

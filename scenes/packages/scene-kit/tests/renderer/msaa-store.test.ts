@@ -3,7 +3,7 @@ import { PerspectiveCamera, RenderTarget, Scene } from 'three/webgpu';
 import { installMsaaStorePolicy, resolveMsaaDiscard, type MsaaStorePolicy } from '../../src/renderer/msaa-store';
 import type { TierKnobs } from '../../src/quality/core';
 
-// OD-10 on fake objects. `frame` mirrors r186 Renderer._renderScene for the canvas path, in the order the contract
+// OD-10 on fake objects. `frame` mirrors r187 Renderer._renderScene for the canvas path, in the order the contract
 // test pins in three.webgpu.js: _getFrameBufferTarget resets the flags, setRenderTarget, scene.onBeforeRender, texture
 // creation and beginRender read the flags, the pass ends, setRenderTarget(null), scene.onAfterRender. The kit's render
 // wrapper brackets it: beforeRender first, afterRender in its finally.

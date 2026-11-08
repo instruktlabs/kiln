@@ -221,7 +221,9 @@ describe('geometry notes', () => {
 });
 
 describe('non-unit normals on export', () => {
-  // A cup whose profile starts and ends a millimetre from the axis, as in the Cove pass.
+  // A cup whose profile starts and ends a millimetre from the axis, as in the Cove pass, with the
+  // normals three's LatheGeometry gave it before r187: the last ring's left at the length of the
+  // last profile segment. r187 normalises that ring, so the fixture scales it back.
   const cup = () => {
     const points = [
       [0.001, 0],
@@ -230,7 +232,18 @@ describe('non-unit normals on export', () => {
       [0.03, 0.09],
       [0.001, 0.09],
     ].map(([x, y]) => new THREE.Vector2(x, y));
-    return mergeVertices(new THREE.LatheGeometry(points, 24));
+    const lathe = new THREE.LatheGeometry(points, 24);
+    const normal = lathe.getAttribute('normal') as THREE.BufferAttribute;
+    const last = points.length - 1;
+    const segment = points[last]!.distanceTo(points[last - 1]!);
+    for (let i = last; i < normal.count; i += points.length)
+      normal.setXYZ(
+        i,
+        normal.getX(i) * segment,
+        normal.getY(i) * segment,
+        normal.getZ(i) * segment,
+      );
+    return mergeVertices(lathe);
   };
   const lengths = (values: ArrayLike<number>) =>
     Array.from({ length: values.length / 3 }, (_, i) =>
@@ -238,7 +251,7 @@ describe('non-unit normals on export', () => {
     );
 
   for (const exporter of ['legacy', 'three'] as const) {
-    it(`normalises raw LatheGeometry normals with one note naming the part (${exporter})`, async () => {
+    it(`normalises non-unit lathe normals with one note naming the part (${exporter})`, async () => {
       const geometry = cup();
       const before = Array.from(geometry.getAttribute('normal').array);
       const bad = lengths(before).filter((length) => Math.abs(length - 1) > 0.0005).length;

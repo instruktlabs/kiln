@@ -26,7 +26,8 @@ describe('instanced meshes read their matrices as vertex attributes', () => {
     const instanced = builder(), plain = builder(), batch = { object: new InstancedMesh(geometry, material, 3) }, mesh = { object: new Mesh(geometry, material) };
     renderer.debug.onNodeBuilderCreated!(instanced, batch);
     renderer.debug.onNodeBuilderCreated!(plain, mesh);
-    // three 0.186.0 keeps the uniform buffer only while count * 64 bytes <= the limit, so 0 selects the attribute path for any count.
+    // three keeps the per-object uniform buffer only while count * 64 bytes <= the limit (0.186.0 for every instanced mesh,
+    // 0.187.0 in its fallback), so 0 selects the attribute path for any count.
     expect(instanced.getUniformBufferLimit()).toBe(0);
     expect(plain.getUniformBufferLimit()).toBe(65536);
     expect(seen).toEqual([batch, mesh]);

@@ -62,7 +62,7 @@ test('a multi-material source keeps every material by reference; a source holdin
 test('passCameraLayers sets only the two pass bits, idempotently, for a pass camera cloned from the main camera', () => {
   const main = new PerspectiveCamera(); main.layers.enable(1); main.layers.enable(2);
   expect(passCameraLayers(main, L, 'main')).toBe(1 | 2 | 4 | 1 << MAIN); expect(main.layers.mask).toBe(1 | 2 | 4 | 1 << MAIN);
-  const virtual = main.clone();  // three r186 ReflectorNode clones the main camera once and never copies its layers again
+  const virtual = main.clone();  // three r187 ReflectorNode clones the main camera once and never copies its layers again
   expect(passCameraLayers(virtual, L)).toBe(1 | 2 | 4 | 1 << PASS); expect(passCameraLayers(virtual, L)).toBe(1 | 2 | 4 | 1 << PASS);
   expect(main.layers.mask).toBe(1 | 2 | 4 | 1 << MAIN);
   const a = approaches(), moved = mainOnly([a.near], MAIN), stand = passStandIn(a.far, { layer: PASS });

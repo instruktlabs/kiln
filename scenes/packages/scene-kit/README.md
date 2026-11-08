@@ -32,8 +32,8 @@ Open `http://127.0.0.1:4400/`. Stop the foreground server with Ctrl+C when finis
 
 ## Host build configuration
 
-Use the workspace pins: `react` / `react-dom` 19.3.0, `@react-three/fiber` 9.8.1,
-`three` 0.186.1 and `@types/three` 0.186.0. Do not add drei or a second three build.
+Use the workspace pins: `react` / `react-dom` 19.3.1, `@react-three/fiber` 9.8.2,
+`three` 0.187.0 and `@types/three` 0.187.0. Do not add drei or a second three build.
 The source configuration supplies the required aliases, deduplication and explicit public/test/dev constants:
 
 ```ts
@@ -46,7 +46,7 @@ export default defineConfig(sceneSourceConfig('public'));
 
 For an existing host, merge these settings into its Vite configuration while retaining its other plugins and aliases. The exported `THREE_RUNTIME_FACADE` and `SCENE_DEDUPE` are available when the host needs to assemble the equivalent settings itself.
 
-The facade maps the bare `three` import to the same `three/webgpu` build used by the kit. It adapts R3F’s legacy `Clock` dependency to r186 `Timer`, avoiding deprecated-clock diagnostics. It does not fork R3F, modify three, or create a second renderer implementation. Scene code imports renderer classes and materials from `three/webgpu`, node functions from `three/tsl`, and helpers from `three/addons/*`.
+The facade maps the bare `three` import to the same `three/webgpu` build used by the kit. It adapts R3F’s legacy `Clock` dependency to three’s `Timer`, avoiding deprecated-clock diagnostics. It does not fork R3F, modify three, or create a second renderer implementation. Scene code imports renderer classes and materials from `three/webgpu`, node functions from `three/tsl`, and helpers from `three/addons/*`.
 
 ## Scene component and mount contract
 
@@ -167,7 +167,7 @@ Run `bun packages/scene-kit/tests/browser/run-hud-layout.ts` from `scenes/` for 
 
 `defineTiers` accepts a static entry or `(device: DeviceClass) => knobs`. Device classification selects the initial structural tier. `useQuality()` exposes that tier, the stable `live` object, its current ladder level and reduced-motion policy. Subscribe with `onLiveChange` when a density change should immediately update an instance count or streamer setting.
 
-**Pixel ratio is startup-only on both backends.** M0 B-00e failed; Z4 therefore applies. `DYNAMIC_DPR_SUPPORTED` is `false`. `buildLadder` removes pixel-ratio changes, including from custom ladders. `QualityController.setLive` also ignores a pixel-ratio patch. Changing scene quality requires a remount for new structural settings; never call R3F `setDpr` from a consumer’s live governor.
+**Pixel ratio is startup-only on both backends.** M0 B-00e failed on three r186 and has not been re-run on r187; Z4 therefore applies. `DYNAMIC_DPR_SUPPORTED` is `false`. `buildLadder` removes pixel-ratio changes, including from custom ladders. `QualityController.setLive` also ignores a pixel-ratio patch. Changing scene quality requires a remount for new structural settings; never call R3F `setDpr` from a consumer’s live governor.
 
 The governor ignores warmup/settling, hidden/paused intervals and isolated stalls. A downgrade that fails to improve the median by 8 percent is reverted. A constant slow trace therefore does not justify repeated quality cuts; the floor-reaching test uses an improving trace under C-02. C-01 preserves the Farm high-tier ratio floor of 1.0.
 
@@ -202,6 +202,6 @@ Farm keeps its ACES Filmic appearance. Golden Gate and Foundry Floor use Neutral
 
 `mergeRigidByMaterial(root, { isAnchor })` (in `instancing`) merges rigid parts by material inside each anchor: the nearest `isAnchor` ancestor, with the root always counting. Anchors keep their identity, transform and children, and the merged meshes become their children with identity transforms. Sources stay in the graph, hidden, so name lookups, mixers and colliders keep working, and `restore()` undoes the merge. These are never merged: transparent, multi-material, skinned, morphed, instanced, hidden and extras-carrying meshes, and parts that carry tangents and are mirrored against their anchor. An optional `cache` with `cacheKey` lets identical placements share merged geometry. `bakeRigidGeometry(meshes, anchor, { attributes: 'position' })` makes the same anchor-frame bake for material-free stand-ins.
 
-`shadows` holds the opt-in sun-shadow features. `cachedSunShadow({ light, liveMapSize?, settleFrames? })` splits the sun map into a static map, rendered only when armed, and a live map for casters that moved, sampled as `min` through `light.shadow.shadowNode`. Install it before receivers build and keep `castShadow` on. `track(root, { movable })` puts casters on kit layer 30 (`ShadowLayers`; scenes keep 0-29), and casters under `movable` nodes move to layer 31 while they change. Call `update()` every frame at `SystemOrder.shadows` (800), `prime()` when a warm pass starts drawing, and `invalidate(reason)` for static changes the watch cannot see. `shadowOncePerFrame(light)` lets a second camera, such as a planar reflector, reuse the frame's map. `smallCasterThreshold(root, light, { minTexels: 2 })` switches off casters below two shadow texels by the count probe's measure, and `restore()` brings them back. The three r186 behaviour these rely on is pinned in `tests/shadows/shadow-contract.test.ts`.
+`shadows` holds the opt-in sun-shadow features. `cachedSunShadow({ light, liveMapSize?, settleFrames? })` splits the sun map into a static map, rendered only when armed, and a live map for casters that moved, sampled as `min` through `light.shadow.shadowNode`. Install it before receivers build and keep `castShadow` on. `track(root, { movable })` puts casters on kit layer 30 (`ShadowLayers`; scenes keep 0-29), and casters under `movable` nodes move to layer 31 while they change. Call `update()` every frame at `SystemOrder.shadows` (800), `prime()` when a warm pass starts drawing, and `invalidate(reason)` for static changes the watch cannot see. `shadowOncePerFrame(light)` lets a second camera, such as a planar reflector, reuse the frame's map. `smallCasterThreshold(root, light, { minTexels: 2 })` switches off casters below two shadow texels by the count probe's measure, and `restore()` brings them back. The three r187 behaviour these rely on is pinned in `tests/shadows/shadow-contract.test.ts`.
 
 `shadowStandIns(root, { layer, isAnchor, chunk?, texel?, minCasterTexels? })` bakes eligible casters into one position-only depth proxy per anchor, shadow side and optional x/z cell, with an optional triangle cap. Each proxy is a child of its anchor, so it moves and hides with it. It sits on `layer` only, never on layer 0, so the shadow camera must enable that layer. Its sources stop casting. Small parts can be dropped first, and `stats.skipped` counts each excluded mesh by reason. Build stand-ins after batching. Each proxy copies its anchor's `matrixWorldAutoUpdate`, so a frozen owner stays frozen. For other passes, such as a planar reflection, `mainOnly(roots, layer)` moves drawables off layer 0, and `passStandIn(source, { layer })` adds a coloured clone that shares geometry and materials. `passCameraLayers(camera, { main, pass }, role)` sets just those two bits on each camera. Collision skips both kinds of stand-in.

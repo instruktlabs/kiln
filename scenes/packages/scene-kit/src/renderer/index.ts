@@ -49,7 +49,7 @@ export function ownRenderer(renderer: WebGPURenderer, suppliedDevice?: Device) {
 }
 export function createGlFactory(o: RendererFactoryOptions): (defaults: GlDefaults) => Promise<WebGPURenderer> {
   return async defaults => {
-    if (REVISION !== '186') throw new SceneError('three-version','Scene kit requires three revision 186');
+    if (REVISION !== '187') throw new SceneError('three-version','Scene kit requires three revision 187');
     let renderer: WebGPURenderer | undefined, supplied: Device | undefined;
     try {
       if (!o.makeRenderer && typeof navigator !== 'undefined') supplied = await requestWindowsDevice({ platform:navigator.platform,forceWebGL:!!o.forceWebGL,gpu:(navigator as unknown as {gpu?: Parameters<typeof requestWindowsDevice<Device>>[0]['gpu']}).gpu });

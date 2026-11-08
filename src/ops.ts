@@ -796,12 +796,12 @@ export function curveToMesh(
  * @param segments — radial segments (default 12)
  */
 /**
- * three.js `LatheGeometry` emits one ring of NON-UNIT normals.
+ * three.js `LatheGeometry` before r187 emitted one ring of NON-UNIT normals.
  *
- * Its meridian pre-pass copies the running normal into `prevNormal` *before*
- * normalising it, and the final profile point then pushes `prevNormal`
- * verbatim -- so every vertex on the last ring carries a normal whose length is
- * the length of the last profile segment rather than 1. Nothing shows in a
+ * Its meridian pre-pass copied the running normal into `prevNormal` *before*
+ * normalising it, and the final profile point then pushed `prevNormal`
+ * verbatim -- so every vertex on the last ring carried a normal whose length
+ * was the length of the last profile segment rather than 1. Nothing shows in a
  * raster, because a shader normalises before it lights; it is fatal on export,
  * because the glTF validator rejects it with GLTF_ACCESSOR_VECTOR3_NON_UNIT and
  * the asset never ships.
@@ -810,9 +810,11 @@ export function curveToMesh(
  * lathed saucers with a 0.03 m final profile segment produced 15 of 105
  * vertices at length 0.030017 each, and blocked the build at final-glb.
  *
- * Only the broken ring is touched. Rebuilding the whole attribute with
- * `computeVertexNormals` would throw away the smooth meridian shading that is
- * the entire reason to lathe a profile in the first place.
+ * three r187 normalises that ring itself. This pass stays, so the guarantee
+ * does not depend on the three version; a unit normal is left untouched.
+ * Rebuilding the whole attribute with `computeVertexNormals` would throw away
+ * the smooth meridian shading that is the entire reason to lathe a profile in
+ * the first place.
  */
 function normalizeSurfaceNormals(geo: THREE.BufferGeometry): THREE.BufferGeometry {
   const normal = geo.getAttribute('normal') as THREE.BufferAttribute | undefined;

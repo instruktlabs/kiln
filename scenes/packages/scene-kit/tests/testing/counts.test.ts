@@ -1,7 +1,7 @@
 import { expect, test } from 'bun:test';
 import { rendererProgramCounts } from '../../src/testing/counts';
 
-test('actual r186 pipeline cache is distinct from shader-stage program count', () => {
+test('actual r187 pipeline cache is distinct from shader-stage program count', () => {
   const renderer = { _pipelines: { caches: new Map([['render-a', {}], ['render-b', {}], ['compute-c', {}]]), pipelines: new Map([['obsolete-shape', {}]]) }, info: { memory: { programs: 7 } } };
   expect(rendererProgramCounts(renderer)).toEqual({ pipelines: 3, programs: 7 });
 });

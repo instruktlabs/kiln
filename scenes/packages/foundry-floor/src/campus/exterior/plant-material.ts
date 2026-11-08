@@ -3,8 +3,9 @@
 // rgb then roughness), so the leaf, needle and bark materials of eight plant types draw through one material. Instancing is
 // the material's, as in the fab's baked groups (scene/glb/materials.ts): each instance's matrix arrives as four instanced
 // vec4 attributes (PLANT_COLUMNS) on a plain Mesh, so every plant mesh shares one node build, one program pair and one
-// pipeline, where three 0.186 gives every InstancedMesh of at most 1,024 instances a uniform buffer named after its node id
-// and its uuid in the cache key (a pipeline per mesh).
+// pipeline. three 0.186 gave every InstancedMesh of at most 1,024 instances a uniform buffer named after its node id and
+// its uuid in the cache key (a pipeline per mesh); 0.187 binds an InstancedMesh's matrices as an instanced attribute and
+// shares its builds too.
 import { FrontSide, MeshStandardNodeMaterial } from 'three/webgpu';
 import type { Material, MeshStandardMaterial, Node, NodeBuilder } from 'three/webgpu';
 import { attribute, mat4, normalLocal, positionLocal, transformNormal, vec4 } from 'three/tsl';

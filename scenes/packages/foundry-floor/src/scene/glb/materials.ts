@@ -4,9 +4,10 @@
 // vertices flagged with the entity's tint material (lot class on FOUPs, synthetic traffic on vehicles).
 //
 // Instancing is the material's, not three's InstancedMesh: each instance's matrix arrives as four instanced vec4
-// attributes (INSTANCE_COLUMNS, written by entity-set.ts) on a plain Mesh. three 0.186 gives every InstancedMesh of at
-// most 1,024 instances a uniform buffer named after its node id and adds the mesh's uuid to the material cache key, so
-// each instanced mesh would build and link its own program (sim-spec 11: at most 32 programs; SPEC INV 4.4). Plain
+// attributes (INSTANCE_COLUMNS, written by entity-set.ts) on a plain Mesh. three 0.186 gave every InstancedMesh of at
+// most 1,024 instances a uniform buffer named after its node id and added the mesh's uuid to the material cache key, so
+// each instanced mesh would build and link its own program (sim-spec 11: at most 32 programs; SPEC INV 4.4); 0.187
+// binds an InstancedMesh's matrices as an instanced attribute and shares its builds too. Plain
 // meshes with the same material and attribute layout share one node build, one program pair and one pipeline.
 import { FrontSide, MeshBasicNodeMaterial, MeshStandardNodeMaterial } from 'three/webgpu';
 import type { Node, NodeBuilder } from 'three/webgpu';

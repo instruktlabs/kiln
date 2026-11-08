@@ -5,7 +5,7 @@ const bit = (layer: number) => { if (!(Number.isInteger(layer) && layer >= 1 && 
 const drawable = (n: Object3D) => { const d = n as Mesh & { isLine?: boolean; isPoints?: boolean; isSprite?: boolean }; return !!(d.isMesh || d.isLine || d.isPoints || d.isSprite); };
 /**
  * Moves every drawable under `roots` from layer 0 to a main-only layer, so a pass camera cloned from the main camera stops
- * drawing it (three r186 ReflectorNode clones its virtual camera once and never copies layers again). Cameras that keep
+ * drawing it (three r187 ReflectorNode clones its virtual camera once and never copies layers again). Cameras that keep
  * drawing it, the main camera and a shadow camera while it casts, take passCameraLayers(camera, l, 'main'). Restore puts
  * bit 0 back and clears only the bits it set.
  */

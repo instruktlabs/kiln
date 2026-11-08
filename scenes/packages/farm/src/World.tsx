@@ -20,9 +20,10 @@ export function FarmWorldContent() {
   // SPEC 6.4 warm pass (owner decision 2026-09-29 22:05): the first world of a mount stays hidden until its pipelines are compiled.
   const warm = useRef<{ world: FarmWorld; pass: WarmPass } | null>(null), revealed = useRef(false);
   const params = useMemo(readFarmDevParams, []), shadowOptions = useMemo(() => farmShadowOptions(params), [params]);
-  // M4 item 1: instanced meshes read their matrices as vertex attributes (shared programs; uploads only when they change).
-  // Test and dev builds keep three's per-mesh uniform buffers with ?instanceUniforms=1, and take ?warmConcurrency=<n>
-  // (chains the warm pass compiles at once, default WARM_CONCURRENCY), for A/B checks.
+  // M4 item 1: instanced meshes read their matrices as vertex attributes (shared programs; uploads only when they change),
+  // which three 0.187 does itself, so the hook acts only in its per-object fallback. Test and dev builds skip the hook with
+  // ?instanceUniforms=1, and take ?warmConcurrency=<n> (chains the warm pass compiles at once, default WARM_CONCURRENCY;
+  // above 1 the compileAsync calls overlap, which three 0.187 does not support), for A/B checks.
   useLayoutEffect(() => params.instanceUniforms === true ? undefined : installInstanceAttributes(asWebGPU(gl) as unknown as InstanceAttributeRenderer), [gl, params]);
   const world = useBuilt(() => {
     // S4b/S4 (OD-18, OD-4): hero merge and, on tiers with shadows, stand-ins and the small-caster threshold; ?heroMerge=0,

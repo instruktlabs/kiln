@@ -147,24 +147,24 @@ test('prose that tells a contributor to install the wrong Bun is named', async (
 test('three drifting in the site manifest is named, with the manifest', async () => {
   await rejects(
     'site/package.json',
-    (text) => text.replace('"three": "0.186.1"', '"three": "0.185.1"'),
-    'site/package.json=0.185.1',
+    (text) => text.replace('"three": "0.187.0"', '"three": "0.186.1"'),
+    'site/package.json=0.186.1',
   );
 });
 
 test('three drifting in the render service is named, with the manifest', async () => {
   await rejects(
     'render-service/package.json',
-    (text) => text.replace('"three": "0.186.1"', '"three": "0.187.0"'),
-    'render-service/package.json=0.187.0',
+    (text) => text.replace('"three": "0.187.0"', '"three": "0.188.0"'),
+    'render-service/package.json=0.188.0',
   );
 });
 
 test('types left a minor behind their own runtime are named', async () => {
   await rejects(
     'package.json',
-    (text) => text.replace('"@types/three": "^0.186.0"', '"@types/three": "^0.185.4"'),
-    '@types/three ^0.185.4 does not track three 0.186.x',
+    (text) => text.replace('"@types/three": "^0.187.0"', '"@types/three": "^0.186.0"'),
+    '@types/three ^0.186.0 does not track three 0.187.x',
   );
 });
 

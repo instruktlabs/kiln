@@ -78,14 +78,16 @@ function snapshot(gltf: GLTF) {
 const near = new Vector3(300, 120, 900), distant = new Vector3(0, 100, 8000);
 
 describe('bridge draws', () => {
-  test('a reversed-depth world owns its joint bias without changing another world sharing the pack', () => {
-    const p=pack(), normal=createBridge(p.web,p.far,HIGH), reversed=createBridge(p.web,p.far,{...HIGH,reversedDepthBuffer:true});
+  // three r187 negates a material's polygon offset itself under reversed depth (pinned in joint-plates.test.ts), so worlds
+  // of either convention share the pack's joint material at the authored bias, and disposing one leaves it to the other.
+  test('worlds share the pack\'s joint material at its authored bias, and disposing one keeps it', () => {
+    const p=pack(), first=createBridge(p.web,p.far,HIGH), second=createBridge(p.web,p.far,HIGH);
     const joints=(bridge:ReturnType<typeof createBridge>)=>[...drawn(bridge.views.web).materials].filter(m=>m.name==='JointSteel');
-    const original=p.materials.JointSteel, own=joints(reversed)[0]!;
-    expect(joints(normal)).toEqual([original]);expect(own).not.toBe(original);
-    expect(original.polygonOffsetFactor).toBeLessThan(0);expect(own.polygonOffsetFactor).toBeGreaterThan(0);
-    let released=0;own.addEventListener('dispose',()=>released++);reversed.dispose();
-    expect(released).toBe(1);expect(original.polygonOffsetFactor).toBeLessThan(0);normal.dispose();
+    const original=p.materials.JointSteel, { factor, units }=LAYOUT.bridge.jointPlates.polygonOffset;
+    expect(joints(first)).toEqual([original]);expect(joints(second)).toEqual([original]);
+    expect(original.polygonOffsetFactor).toBe(factor);expect(original.polygonOffsetUnits).toBe(units);
+    let released=0;original.addEventListener('dispose',()=>released++);second.dispose();
+    expect(released).toBe(0);expect(original.polygonOffsetFactor).toBe(factor);first.dispose();
   });
   test('two worlds use their own verified dressing, and disposing one retains the other’s materials', () => {
     const layout = (color: string) => {
