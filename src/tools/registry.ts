@@ -699,9 +699,17 @@ async function renderDerivativeCell(
   return { png: flat.png, receipt };
 }
 
+/** The artifact a call loaded: its bytes, their hash, and the review scene loaded from them. */
+interface LoadedArtifactScene {
+  rendered: Pick<RenderResult, 'glb' | 'artifactGlbSha256'>;
+  root: unknown;
+  reasonCodes: readonly string[];
+}
+
 /**
  * Shots that change only the camera, drawn from the build's own bytes. Host telemetry counts each
  * one, as it does a derivative cell; a shot left undrawn renders as a derivative cell and reports there.
+ * Without a view port the CPU rasterizer draws them from the review scene loaded from those bytes.
  */
 async function renderExactArtifactShots(
   input: {
@@ -709,14 +717,19 @@ async function renderExactArtifactShots(
     size: number;
     backdrop: import('../views/background').BackdropId;
   },
-  glb: Uint8Array,
+  artifact: LoadedArtifactScene,
   context: KilnToolContext,
 ): Promise<readonly (import('../views').DerivativeCellRenderResult | undefined)[] | undefined> {
-  if (!context.viewRenderPort) return undefined;
+  if (!context.viewRenderPort) {
+    // A required GPU render fails on the derivative route, which says why.
+    return context.viewRenderRequired
+      ? undefined
+      : renderExactArtifactShotsOnCpu(input, artifact, context);
+  }
   const { captureExactArtifactShotsViaPort } = await import('../views/port');
   const cells = await captureExactArtifactShotsViaPort(
     context.viewRenderPort,
-    glb,
+    artifact.rendered.glb,
     resolveInLoopViewRenderTimeoutMs(context, 'derivative-cell'),
     input.shots,
     input.size,
@@ -743,11 +756,117 @@ async function renderExactArtifactShots(
   return cells;
 }
 
+/**
+ * Geometry-flat cells of camera-only shots, rasterized from the review scene the artifact loaded
+ * into, so no derivative is exported or parsed. Cached under the artifact's hash.
+ */
+async function renderExactArtifactShotsOnCpu(
+  input: {
+    shots: import('../views').ResolvedCameraShotV1[];
+    size: number;
+    backdrop: import('../views/background').BackdropId;
+  },
+  artifact: LoadedArtifactScene,
+  context: KilnToolContext,
+): Promise<import('../views').DerivativeCellRenderResult[]> {
+  const { rasterizeCameraPaced } = await import('../views/camera');
+  const { encodePng, CPU_RASTER_RENDERER_ID } = await import('../views');
+  const { captureCpuCell } = await import('../views/capture-cache');
+  const { size, backdrop } = input;
+  const inputGlbSha256 = artifact.rendered.artifactGlbSha256;
+  const exactArtifact = context.programArtifacts !== undefined;
+  const degradeReason = 'material-faithful view render port unavailable';
+  const reasonCodes = [
+    'FULL_MATERIAL_RENDER_UNAVAILABLE',
+    ...artifact.reasonCodes,
+    ...(exactArtifact ? [] : ['IN_LOOP_BUILD_NOT_PERSISTED']),
+  ] as ViewFidelityReasonCode[];
+  const cells: import('../views').DerivativeCellRenderResult[] = [];
+  for (const shot of input.shots) {
+    const produce = async (): Promise<import('../views').GlbViewCellResult> => ({
+      png: encodePng(
+        await rasterizeCameraPaced(
+          artifact.root,
+          shot.camera,
+          size,
+          true,
+          backdrop,
+          context.evaluationControls?.().signal,
+        ),
+        size,
+        size,
+      ),
+      width: size,
+      height: size,
+      inputGlbSha256,
+      reasonCodes: [],
+      meshCount: 0,
+      instanceCount: 0,
+    });
+    const flat: import('../views').GlbViewCellResult & { captureCache?: { hit: boolean } } =
+      context.captureCache
+        ? await captureCpuCell(
+            context.captureCache,
+            {
+              artifactGlbSha256: inputGlbSha256,
+              // Drawn from the loaded review scene, not a parse of the bytes: its own key space.
+              rendererId: `${CPU_RASTER_RENDERER_ID}/review-scene`,
+              camera: shot.camera,
+              size,
+              backfaceCull: true,
+              backdrop,
+            },
+            produce,
+          )
+        : await produce();
+    context.evaluationControls?.().signal?.throwIfAborted();
+    cells.push({
+      png: flat.png,
+      receipt: {
+        version: 'kiln.view-fidelity.v1',
+        derivativeLabel: shot.name,
+        camera: shot.camera,
+        cameraFidelity: 'engine-resolved',
+        ...(flat.captureCache
+          ? {
+              captureCache: {
+                hit: flat.captureCache.hit,
+                reused: flat.captureCache.hit ? 1 : 0,
+                total: 1,
+              },
+            }
+          : {}),
+        requested: 'full-preferred',
+        delivered: 'geometry-flat',
+        materialFaithful: false,
+        exactArtifact,
+        rendererId: CPU_RASTER_RENDERER_ID,
+        inputGlbSha256,
+        degraded: true,
+        degradeReason,
+        reasonCodes: [...reasonCodes],
+      },
+    });
+    try {
+      context.onViewsRendered?.({
+        renderer: CPU_RASTER_RENDERER_ID,
+        degraded: true,
+        degradedReason: degradeReason,
+        neededPbr: true,
+      });
+    } catch {
+      /* best effort */
+    }
+  }
+  return cells;
+}
+
 function derivativeReviewFidelity(
   receipts: DerivativeViewReceiptV1[] | undefined,
 ): DerivativeReviewFidelityV1 | undefined {
   if (!receipts?.length) return undefined;
   const materialFaithful = receipts.every((receipt) => receipt.materialFaithful);
+  const exactArtifact = receipts.every((receipt) => receipt.exactArtifact);
   const reasonCodes = [
     ...new Set(receipts.flatMap((receipt) => receipt.reasonCodes ?? [])),
   ] as ViewFidelityReasonCode[];
@@ -756,7 +875,7 @@ function derivativeReviewFidelity(
     requested: 'full-preferred',
     delivered: materialFaithful ? 'full-material' : 'geometry-flat',
     materialFaithful,
-    exactArtifact: false,
+    exactArtifact,
     degraded: receipts.some((receipt) => receipt.degraded),
     receipts,
     ...(reasonCodes.length ? { reasonCodes } : {}),
@@ -1325,7 +1444,8 @@ async function runRenderViews(
         {
           framesOnly: true,
           ...(context.evaluationControls ? { execution: context.evaluationControls() } : {}),
-          renderExactShots: (shots) => renderExactArtifactShots(shots, rendered.glb, context),
+          renderExactShots: (shots) =>
+            renderExactArtifactShots(shots, { rendered, root, reasonCodes }, context),
         },
       );
       const receipts = grid.derivativeReceipts;
@@ -2126,7 +2246,11 @@ async function runInspect(
           { version: shot.hide ? 'kiln.capture.v2' : 'kiln.capture.v1', shots: [shot], size: 512 },
           (cell) => renderDerivativeCell(cell, context),
           context.captureLimits,
-          context.evaluationControls ? { execution: context.evaluationControls() } : {},
+          {
+            ...(context.evaluationControls ? { execution: context.evaluationControls() } : {}),
+            renderExactShots: (shots) =>
+              renderExactArtifactShots(shots, { rendered: evaluated, root, reasonCodes }, context),
+          },
         );
         return {
           ok: true,
@@ -2162,16 +2286,51 @@ async function runInspect(
           availableParts: r.availableParts,
         };
       }
-      const rendered = await renderDerivativeCell(
-        {
-          root: r.root,
-          label: r.part ? `inspect:${r.part}` : 'inspect:whole-asset',
-          view: r.viewSpec,
-          size: r.size,
-          frameBounds: r.frameBounds,
-        },
-        context,
+      const label = r.part ? `inspect:${r.part}` : 'inspect:whole-asset';
+      const { cameraFromBounds, measureBounds } = await import('../views');
+      const camera = cameraFromBounds(
+        r.frameBounds,
+        r.viewSpec.dir,
+        1,
+        undefined,
+        measureBounds(r.root),
       );
+      // Nothing hidden and every level at LOD0: the view changes only the camera, so it is
+      // drawn from the artifact itself, as a camera-only shot is.
+      const exact =
+        !r.isolated && levels.every((level) => level === 0)
+          ? (
+              await renderExactArtifactShots(
+                {
+                  shots: [
+                    {
+                      name: label,
+                      camera,
+                      subject: { path: '', name: r.part ?? '', bounds: r.frameBounds },
+                      visibility: 'context',
+                    },
+                  ],
+                  size: r.size,
+                  backdrop: 'neutral',
+                },
+                { rendered: evaluated, root, reasonCodes },
+                context,
+              )
+            )?.[0]
+          : undefined;
+      const rendered =
+        exact ??
+        (await renderDerivativeCell(
+          {
+            root: r.root,
+            label,
+            view: r.viewSpec,
+            size: r.size,
+            frameBounds: r.frameBounds,
+            camera,
+          },
+          context,
+        ));
       const viewFidelity = derivativeReviewFidelity([rendered.receipt]);
       const viewEvidence = viewFidelity
         ? context.viewEvidenceHistory?.record('kiln_inspect', viewFidelity)

@@ -7,6 +7,21 @@ does not publish a package.
 
 ## Unreleased
 
+- `kiln_inspect` and the CPU route draw camera-only views from the artifact itself, as `kiln_render`
+  shots on a view port already do:
+  - A `kiln_inspect` `shot` that changes only the camera, and a legacy `kiln_inspect` view without
+    `isolate`, no longer export a derivative.
+  - Without a view render port, `kiln_render` and `kiln_inspect` rasterize camera-only shots from the
+    review scene the artifact loaded into. They neither export nor re-parse a derivative, and the capture
+    cache keys them by the artifact's hash. The pixels match the derivative's on a test scene with
+    opaque, double-sided, instanced and hidden parts.
+
+  Receipts change where they say so. A camera-only view's `inputGlbSha256` is the artifact's hash. On a
+  host that retains reviewed artifacts its `exactArtifact` is true, and so is the
+  `kiln.derivative-review-fidelity.v1` aggregate when every receipt is. On a host that does not, it reads
+  `reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED']`. `DerivativeReviewFidelityV1.exactArtifact` is now
+  `boolean`. View evidence history accepts an exact surface, and rejects an aggregate that its receipts
+  contradict. An isolated view, a view with `hide`, and a lower level of detail keep their derivative.
 - Calls on an artifact the host already loaded skip the load, and long host steps no longer hold up
   other calls on the same MCP process. Measured on the 2,635,224-triangle cathedral against a warm
   GPU service (two runs each):
@@ -65,8 +80,8 @@ does not publish a package.
   260 s to 4.2 s, and one shot from 42 s to 3.6 s. Same-camera images differ by at most one level per
   channel. A shot that changes what draws (`visibility: 'isolate'`, `hide`, or a subject in a lower level
   of detail) keeps a derivative for that shot, which now skips the QA, validator, metrics and manifest
-  work that derivative discarded (9.1 s to 2.5 s for one isolated shot). `kiln_inspect` shots stay on the
-  derivative route. Results change where they report this: `derivativeReceipts[].inputGlbSha256` of a
+  work that derivative discarded (9.1 s to 2.5 s for one isolated shot). `kiln_inspect` shots stayed on the
+  derivative route until the first entry above. Results change where they report this: `derivativeReceipts[].inputGlbSha256` of a
   camera-only shot is the artifact's hash, its compact receipt can omit the hash when `viewFidelity` already
   states it, a receipt on a host with no retained artifact reads `reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED']`,
   and on a host with one `viewFidelity.exactArtifact` is true when every shot was exact. `./render` exports

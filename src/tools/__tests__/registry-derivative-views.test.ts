@@ -178,7 +178,9 @@ describe('derivative review surfaces', () => {
       },
     }).run({ code: ANIMATED, part: 'Blade' })) as KilnInspectResult;
     expect(result.ok).toBe(true);
-    expect(portCalls).toBe(1);
+    // A contextual view changes only the camera: the port is asked for the artifact first, and
+    // the view the port did not draw then takes the derivative route, which degrades.
+    expect(portCalls).toBe(2);
     expect(result.viewFidelity).toMatchObject({
       delivered: 'geometry-flat',
       materialFaithful: false,
