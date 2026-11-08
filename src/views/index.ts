@@ -6,6 +6,7 @@ import { captureCpuCell, type CaptureCache } from './capture-cache';
 export * from './capture-cache';
 import {
   rasterizeCamera,
+  rasterizeCameraPaced,
   cameraFromBounds,
   resolveAssetCamera,
   selectCameraSubject,
@@ -476,13 +477,24 @@ export interface GlbViewCellResult {
 export async function renderGlbViewCell(
   bytes: Uint8Array,
   view: ViewSpec,
-  options: RasterOptions & { camera?: ResolvedAssetCameraV1 } = {},
+  options: RasterOptions & {
+    camera?: ResolvedAssetCameraV1;
+    /** The call's cancellation, honoured at the rasterizer's pauses. */
+    execution?: { signal?: AbortSignal };
+  } = {},
 ): Promise<GlbViewCellResult> {
   const exactBytes = Uint8Array.from(bytes);
   const loaded = await loadGlbGeometryFlatScene(exactBytes);
   const size = options.size ?? 256;
   const rgb = options.camera
-    ? rasterizeCamera(loaded.root, options.camera, size, options.backfaceCull, options.backdrop)
+    ? await rasterizeCameraPaced(
+        loaded.root,
+        options.camera,
+        size,
+        options.backfaceCull,
+        options.backdrop,
+        options.execution?.signal,
+      )
     : rasterizeView(loaded.root, view.dir, {
         size,
         ...(options.backdrop ? { backdrop: options.backdrop } : {}),

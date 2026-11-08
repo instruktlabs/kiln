@@ -7,6 +7,26 @@ does not publish a package.
 
 ## Unreleased
 
+- Calls on an artifact the host already loaded skip the load, and long host steps no longer hold up
+  other calls on the same MCP process. Measured on the 2,635,224-triangle cathedral against a warm
+  GPU service (two runs each):
+  - `kiln_render`, `kiln_inspect`, `kiln_screenshot_animation` and `kiln_view_interior` borrow the
+    review scene from a host cache keyed by the artifact hash. Each call has the scene to itself. A
+    concurrent call on the same artifact loads its own copy rather than wait. A scene goes back only if
+    its state key matches the one taken at load; a scene a call left changed, posed or added to is
+    dropped. The host keeps up to two idle scenes and 6,000,000 triangles. A fully cached 9-shot call
+    goes from 2.7–2.8 s to 1.4–2.0 s, a default-grid repeat from 1.5–1.6 s to 0.7–0.8 s, and a repeated
+    isolated or `kiln_inspect` shot from 1.6–1.9 s to 0.7–1.0 s.
+  - Every shot of a call frames against bounds walked once per scene state.
+  - Scene loading, shot planning and drawing, the capture cache's cell checks and the CPU rasterizer
+    pause for the event loop. They pause per batch of vertices or triangles, per shot or per cell, and
+    the call's cancellation takes effect at the next pause. Pauses are counted in work, never timed, and
+    change no output. The longest wait a concurrent call saw during a cached 9-shot call goes from
+    1.4–1.5 s to 0.35 s. On the CPU route the longest wait during rendering goes from 5.5–6.1 s to
+    3.0–3.1 s. A derivative export (about 2 s on this asset, most of it atlas provenance validation)
+    is still one stretch.
+  - Images, hashes, receipts and tool schemas are unchanged.
+
 - `--draws minimal` names each batch node after its first copy, `<copy>_Instances`, and
   `drawReduction.instancing` records which node names went into each batch, in instance order. A
   batched copy loses its mesh, and a mesh-less copy with no children or extensions is removed. Clips

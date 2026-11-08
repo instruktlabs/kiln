@@ -9,6 +9,7 @@ import type { GlbViewCellResult } from './index';
 import type { ResolvedAssetCameraV1 } from './camera';
 import { decodePngShared } from './png-memo';
 import { enforcePngCaptureBudget } from './capture-limits';
+import { pauseForEventLoop } from './event-loop';
 export type CaptureCacheEntry =
   | { kind: 'gpu'; result: PbrRenderResult }
   | { kind: 'cpu'; result: GlbViewCellResult };
@@ -168,6 +169,8 @@ export function createCachedRenderPort(
       };
       if (cached?.kind === 'gpu' && usable(cached.result, single, hash)) cells[i] = cached.result;
       else missing.push(i);
+      // Checking a cell decodes its frame: let other calls run between cells.
+      await pauseForEventLoop(execution?.signal);
     }
     if (missing.length) {
       const subrequest = {

@@ -169,26 +169,34 @@ function materialState(material: Material, id: (value: object) => number): unkno
   return fields;
 }
 
+/**
+ * What a key covers. An `export` key covers everything a derivative export reads. A
+ * `geometry` key covers only what decides where drawn vertices land: the tree, visibility,
+ * transforms, attributes, morph weights, skins and instances. It leaves out names, userData,
+ * materials and textures, which no bounds walk reads.
+ */
+export type StateKeyScope = 'export' | 'geometry';
+
 function nodeState(
   node: Object3D,
   id: (value: object) => number,
   materials: Map<Material, unknown>,
+  scope: StateKeyScope,
 ): unknown[] {
   const state: unknown[] = [
     id(node),
     node.parent ? id(node.parent) : null,
-    node.name,
     node.visible,
     node.position.toArray(),
     node.quaternion.toArray(),
     node.scale.toArray(),
     node.matrixAutoUpdate,
     Array.from(node.matrix.elements),
-    JSON.stringify(node.userData),
   ];
+  if (scope === 'export') state.push(node.name, JSON.stringify(node.userData));
   const mesh = node as Mesh;
   if (mesh.geometry) state.push(geometryState(mesh.geometry, id));
-  if (mesh.material)
+  if (scope === 'export' && mesh.material)
     state.push(
       materialsOf(mesh).map((material) => {
         // Shared by many meshes: describe each once per key.
@@ -223,7 +231,11 @@ function nodeState(
  * `undefined` when the scene is not registered, holds something added since, or cannot be
  * described as data.
  */
-export function derivativeStateKey(root: unknown, options: unknown): string | undefined {
+export function derivativeStateKey(
+  root: unknown,
+  options: unknown,
+  scope: StateKeyScope = 'export',
+): string | undefined {
   const scene = root as Object3D;
   const registration = registrations.get(scene);
   if (!registration) return undefined;
@@ -237,16 +249,17 @@ export function derivativeStateKey(root: unknown, options: unknown): string | un
     const nodes: unknown[] = [];
     scene.traverse((node) => {
       if (registrations.get(node) !== registration) throw new Unkeyable();
-      nodes.push(nodeState(node, id, materials));
+      nodes.push(nodeState(node, id, materials, scope));
     });
     // A subtree's placement is its ancestors'.
     const ancestors: unknown[] = [];
     for (let node = scene.parent; node; node = node.parent)
-      ancestors.push(nodeState(node, id, materials));
+      ancestors.push(nodeState(node, id, materials, scope));
     return createHash('sha256')
       .update(
         JSON.stringify({
           version: 'kiln.derivative-memo.v1',
+          scope,
           artifact: registration.artifact,
           options,
           nodes,

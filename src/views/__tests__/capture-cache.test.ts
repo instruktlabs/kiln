@@ -157,3 +157,35 @@ test('producer changing during render never populates an older identity', async 
   await port(request);
   expect(calls).toBe(2);
 });
+
+test('checking cached cells lets other work run between them', async () => {
+  const port = createCachedRenderPort(
+    async (request) => ({
+      ok: true,
+      rendererId: 'gpu',
+      cameras: request.cameras,
+      width: 128,
+      height: 128,
+      viewsPng: request.cameras!.map(() => png),
+      derivativeFidelity: { materialFaithful: true, inputGlbSha256: hash },
+    }),
+    { cache: new MemoryCaptureCache(), identity: () => 'paced-producer' },
+  );
+  const cameras = [1, 2, 3].map((x) =>
+    cameraFromBounds({ min: [-1, -1, -1], max: [1, 1, 1] }, [x, 1, 0]),
+  );
+  const request = { glb, cameras, width: 128, height: 128 };
+  await port(request);
+  let turns = 0;
+  let running = true;
+  const tick = () => {
+    if (!running) return;
+    turns++;
+    setImmediate(tick);
+  };
+  setImmediate(tick);
+  const hit = await port(request);
+  running = false;
+  expect(hit.captureCache).toEqual({ hit: true, reused: 3, total: 3 });
+  expect(turns).toBeGreaterThanOrEqual(3);
+});

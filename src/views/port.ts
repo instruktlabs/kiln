@@ -325,7 +325,7 @@ export async function captureViewsViaPort(
         './derivative-memo'
       );
       const { createHash } = await import('node:crypto');
-      const loaded = await loadGlbReviewScene(Uint8Array.from(glb));
+      const loaded = await loadGlbReviewScene(Uint8Array.from(glb), execution);
       registerReviewArtifact(
         loaded.root,
         `sha256:${createHash('sha256').update(glb).digest('hex')}`,
@@ -379,6 +379,7 @@ export async function captureViewsViaPort(
         },
         limits,
         {
+          ...(execution ? { execution } : {}),
           renderExactShots: ({ shots, size, backdrop }) =>
             captureExactArtifactShotsViaPort(port, glb, timeoutMs, shots, size, {
               // These are the bytes the caller produced, which is what it asked to see.
