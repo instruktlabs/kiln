@@ -25,6 +25,18 @@ does not publish a package.
   `palette()` or `weld()`, and the saved revision is unchanged. The sidecar's `drawReduction` reports the
   result. On the 1,834-draw cathedral revision it gives 283 draws, with the same triangles and 1% fewer
   bytes. `mergeRigidGroups` gains opt-in `cellSize` and `positionTolerance`; `optimize: 'full'` is unchanged.
+- Three repeated costs on large assets are paid once. Measured on the 2,635,224-triangle cathedral, whose
+  1,707 meshes share 184 geometries:
+  - The open-surface penetration rule measures each shared geometry's topology once per pass. The
+    pass goes from 3.9 s to 0.5 s and an in-process cold build from 23 s to 20 s. The evidence is
+    byte-identical.
+  - An unchanged atlas provenance table is validated once rather than by every reader. Loading the
+    review scene goes from 1.4 s to 1.1 s. An entry answers only while the table's canonical JSON is
+    unchanged, so an edit in place is validated again.
+  - A host that found no render service at startup now knows the capture identity before its first
+    render. That first capture is cached like any other: its repeat is a hit, where before it rendered
+    again (4.9 s instead of about 2 s for the default grid). The identity follows the port's own
+    connection, so the start it makes is the one the first request would make.
 - `KILN_EVALUATOR_TIMEOUT_MS` now works above 60,000, as documented. Only the host read it: the worker
   kept its own 60-second timer, so a build that yielded to the event loop after that failed with
   `DEADLINE_EXCEEDED` at any limit, usually once the abandoned build had run to its end. The worker now
