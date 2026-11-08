@@ -9,6 +9,7 @@ export interface CaptureLimits {
  * is its top legacy rung; the capture pixel and byte budgets below bound the sheet.
  */
 export const MAX_CAPTURE_SHOT_SIZE = 2048;
+export const MIN_CAPTURE_SHOT_SIZE = 128;
 export const DEFAULT_CAPTURE_LIMITS = Object.freeze({
   maxTotalPixels: 24_000_000,
   maxOutputBytes: 32 * 1024 * 1024,
@@ -25,12 +26,36 @@ export function resolveCaptureLimits(limits: CaptureLimits = {}) {
   }
   return result;
 }
+/** Pixels a capture allocates: every cell, and the sheet they compose into when one is built. */
+function capturePixels(cells: number, size: number, cols: number, compose: boolean): number {
+  const rows = Math.ceil(cells / cols);
+  return (
+    cells * size * size +
+    (compose ? (cols * size + (cols + 1) * PAD) * (rows * size + (rows + 1) * PAD) : 0)
+  );
+}
+/** Largest shot size under the budget, or undefined when even the smallest shot is over it. */
+function largestShotSize(
+  cells: number,
+  cols: number,
+  compose: boolean,
+  maxTotalPixels: number,
+): number | undefined {
+  for (let size = MAX_CAPTURE_SHOT_SIZE; size >= MIN_CAPTURE_SHOT_SIZE; size--)
+    if (capturePixels(cells, size, cols, compose) <= maxTotalPixels) return size;
+  return undefined;
+}
+/**
+ * `nameFit` is for a capture whose caller chose the shots and their size: the error then says
+ * which sizes fit, since the bare count gives a model nothing to change.
+ */
 export function enforceCapturePixels(
   cells: number,
   size: number,
   cols: number,
   limits?: CaptureLimits,
   compose = true,
+  nameFit = false,
 ) {
   if (
     !Number.isSafeInteger(cells) ||
@@ -41,14 +66,22 @@ export function enforceCapturePixels(
     cols < 1
   )
     throw new Error('invalid capture dimensions');
-  const pixels =
-    cells * size * size +
-    (compose
-      ? (cols * size + (cols + 1) * PAD) *
-        (Math.ceil(cells / cols) * size + (Math.ceil(cells / cols) + 1) * PAD)
-      : 0);
-  if (pixels > resolveCaptureLimits(limits).maxTotalPixels)
-    throw new Error(`capture pixel budget exceeded: ${pixels}`);
+  const pixels = capturePixels(cells, size, cols, compose);
+  const { maxTotalPixels } = resolveCaptureLimits(limits);
+  if (pixels > maxTotalPixels) {
+    const exceeded = `capture pixel budget exceeded: ${pixels} pixels against a limit of ${maxTotalPixels}`;
+    if (!nameFit) throw new Error(`${exceeded}.`);
+    const asGrid = compose ? largestShotSize(cells, cols, true, maxTotalPixels) : undefined;
+    const separate = largestShotSize(cells, cols, false, maxTotalPixels);
+    let fits = 'Use fewer shots.';
+    if (separate !== undefined)
+      fits = compose
+        ? `Largest size that fits: ${asGrid ?? 'none'} as a grid, ${separate} with output: "separate".`
+        : `Largest size that fits: ${separate}.`;
+    throw new Error(
+      `${exceeded} (${cells} shots at size ${size}${compose ? ', plus their grid sheet' : ''}). ${fits}`,
+    );
+  }
   return pixels;
 }
 export function enforceCaptureBytes(images: readonly Uint8Array[], limits?: CaptureLimits) {

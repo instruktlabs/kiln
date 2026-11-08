@@ -4,8 +4,9 @@
  * A default sheet draws what a loader without the extension draws: LOD0 and the parts outside
  * every set. A shot whose subject names a lower level, by path or by name, draws that level in
  * LOD0's place, and every result says which level each chain drew in each view. The CPU and GPU
- * producers draw the same scene: a default sheet sends both the artifact bytes, and a shot
- * sends both the same derivative bytes.
+ * producers draw the same scene: a default sheet sends both the artifact bytes, a shot of a lower
+ * level sends both the same derivative bytes, and a shot that only moves the camera draws LOD0
+ * from the artifact on the GPU.
  */
 import { describe, expect, test } from 'bun:test';
 import { createHash } from 'node:crypto';
@@ -166,7 +167,8 @@ describe('a shot draws the level its subject names', () => {
     expect(result.levelsOfDetail![0]!.drawn).toEqual([1, 2]);
   });
 
-  test('the CPU and the GPU draw the same derivative bytes for every shot', async () => {
+  test('the CPU and the GPU draw the same scene for every shot', async () => {
+    const artifact = (await renderGLBInProcess(TIERED_CAR)).glb;
     // Whole receipts (renderer and input bytes per view) are full detail; compact and lean
     // keep only what differs from the viewFidelity summary.
     const cpu = await tool('kiln_render')({ code: TIERED_CAR, capture: SHOTS, detail: 'full' });
@@ -182,16 +184,21 @@ describe('a shot draws the level its subject names', () => {
       'gpu:lod-test',
       'gpu:lod-test',
     ]);
-    expect(gpu.derivativeReceipts!.map((receipt) => receipt.inputGlbSha256)).toEqual(
-      cpu.derivativeReceipts!.map((receipt) => receipt.inputGlbSha256),
+    // The shots of a lower level share their derivative with the CPU; the shot of LOD0 only moves
+    // the camera, so the GPU draws it first, from the artifact.
+    const gpuInputs = gpu.derivativeReceipts!.map((receipt) => receipt.inputGlbSha256);
+    expect(gpuInputs.slice(0, 2)).toEqual(
+      cpu.derivativeReceipts!.slice(0, 2).map((receipt) => receipt.inputGlbSha256),
     );
+    expect(gpuInputs[2]).toBe(sha(artifact));
     expect(drawnByChain(gpu)).toEqual(drawnByChain(cpu));
     const tyres = ['Wheel_FL', 'Wheel_FR', 'Wheel_RL', 'Wheel_RR'].map((w) => `Mesh_Tyre_${w}`);
-    expect(await drawnMeshes(requests[0]!.glb)).toEqual(['Mesh_Shell2']);
-    expect(await drawnMeshes(requests[1]!.glb)).toEqual(['Mesh_Shell1', ...tyres].sort());
-    expect(await drawnMeshes(requests[2]!.glb)).toEqual(
+    expect(sha(requests[0]!.glb)).toBe(sha(artifact));
+    expect(await drawnMeshes(requests[0]!.glb)).toEqual(
       ['Mesh_Mirror', 'Mesh_Shell0', ...tyres].sort(),
     );
+    expect(await drawnMeshes(requests[1]!.glb)).toEqual(['Mesh_Shell2']);
+    expect(await drawnMeshes(requests[2]!.glb)).toEqual(['Mesh_Shell1', ...tyres].sort());
   });
 
   test('a name two lower levels share is ambiguous; a path picks one', async () => {

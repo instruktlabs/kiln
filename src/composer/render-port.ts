@@ -183,15 +183,17 @@ export interface ViewFidelityV1 {
   reasonCodes?: ViewFidelityReasonCode[];
 }
 
-/** One purpose-built review GLB and the pixels derived from those exact bytes. */
+/**
+ * One view cell and the GLB its pixels were drawn from. Most cells draw a purpose-built review
+ * derivative. A shot that changes only the camera draws the artifact bytes themselves, and then
+ * `exactArtifact` is true under the same rule as a full-asset grid.
+ */
 export interface DerivativeViewReceiptV1 extends ViewFidelityV1 {
   captureCache?: { hit: boolean; reused: number; total: number };
   camera?: ResolvedAssetCameraV1;
   cameraFidelity?: 'echo-validated' | 'engine-resolved';
   /** Stable cell/frame identity within the review surface. */
   derivativeLabel: string;
-  /** Derivative bytes are never the persisted/final artifact. */
-  exactArtifact: false;
 }
 
 /** Aggregate material-fidelity truth for a derivative review surface. */
@@ -482,6 +484,8 @@ export type { Backdrop, BackdropId } from '../views/background';
 
 export interface PbrRenderResult {
   captureCache?: { hit: boolean; reused: number; total: number };
+  /** Per view, whether a capture cache supplied it, in request order. */
+  captureCacheHits?: boolean[];
   ok: boolean;
   /** Honest producer identity, e.g. "dawn-vulkan:nvidia-rtx-a4500:NVIDIA: 550.100"
    *  or the CPU fallback's deterministic "cpu-raster:<engine-version>". */

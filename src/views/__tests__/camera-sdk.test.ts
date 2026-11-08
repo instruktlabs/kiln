@@ -34,7 +34,7 @@ test('advanced capture preserves vertex colors in the exact derivative sent to t
     },
     rendered.bytes,
     5000,
-    { version: 'kiln.capture.v1', shots: [{}], size: 128 },
+    { version: 'kiln.capture.v1', shots: [{ visibility: 'isolate' }], size: 128 },
   );
   expect(out.ok).toBe(true);
   expect(received).toBeDefined();
