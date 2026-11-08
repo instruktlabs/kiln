@@ -234,3 +234,19 @@ test('unregistered pose branches return to ordinary hidden behavior', () => {
   expect(warmRenderables(f.root).map(object => object.name)).not.toContain('relaxed pose');
   expect(warmRenderables(f.root).map(object => object.name)).not.toContain('pose shadow');
 });
+
+test('a rebuilt world waits for the disposed pass on the same renderer: three 0.187 compileAsync calls must not overlap', async () => {
+  const first = fixture(), second = fixture(), r = recorder(first.root);
+  const old = startWarmPass(r.renderer, first.scene, first.camera, first.root, { reveal: true });
+  expect(r.calls.map(c => c.name)).toEqual(['a']);
+  old.dispose();
+  const next = startWarmPass(r.renderer, second.scene, second.camera, second.root, { reveal: true });
+  await flush();
+  // The disposed pass still has 'a' in flight, so the new pass starts nothing yet.
+  expect(r.calls).toHaveLength(1);
+  r.pending[0]!.settle(); await flush();
+  // Disposed, the old pass compiles nothing more; the new pass now starts with its own first drawable.
+  expect(r.calls).toHaveLength(2);
+  expect(r.calls[1]!.name).toBe('a');
+  expect(next.phase).toBe('compiling');
+});
