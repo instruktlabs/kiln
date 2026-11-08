@@ -241,6 +241,12 @@ function collectParts(
   skipped: OpenSurfacePenetrationEvidenceV1['skipped'],
 ): AnalyzedPart[] {
   const parts: AnalyzedPart[] = [];
+  // Topology belongs to the geometry, not the placement: a geometry shared by many meshes is
+  // measured once per pass, and a failure is reported for every mesh that uses it.
+  const topology = new Map<
+    THREE.BufferGeometry,
+    { diagnostics: ReturnType<typeof geometryDiagnostics> } | { error: unknown }
+  >();
   root.updateWorldMatrix(true, true);
   root.traverseVisible((node) => {
     const mesh = node as THREE.Mesh;
@@ -284,16 +290,24 @@ function collectParts(
       skipped.push({ part: name, reason: 'non-finite transformed bounds cannot be measured' });
       return;
     }
-    let diagnostics: ReturnType<typeof geometryDiagnostics>;
-    try {
-      diagnostics = geometryDiagnostics(mesh.geometry);
-    } catch (error) {
+    let measured = topology.get(mesh.geometry);
+    if (!measured) {
+      try {
+        measured = { diagnostics: geometryDiagnostics(mesh.geometry) };
+      } catch (error) {
+        measured = { error };
+      }
+      topology.set(mesh.geometry, measured);
+    }
+    if ('error' in measured) {
+      const { error } = measured;
       skipped.push({
         part: name,
         reason: `topology could not be analyzed (${error instanceof Error ? error.message : String(error)})`,
       });
       return;
     }
+    const { diagnostics } = measured;
     // A watertight, orientable shell is a solid a ray can be counted against.
     // Anything else — a sheet, a card, a shell with a hole — is an open surface.
     const closed =
