@@ -95,6 +95,10 @@ export interface RigidMergeOptions {
    * False locks every user as `shared-mesh`.
    */
   expandSharedMeshes?: boolean;
+  /** Join only parts whose bounds centres share a cube this many world units wide. */
+  cellSize?: number;
+  /** World units a vertex may move to float32 rounding in its destination frame, beyond the strict default. */
+  positionTolerance?: number;
 }
 
 export interface RigidMergeSummary {
@@ -232,6 +236,7 @@ function bucketKey(
   prim: Primitive,
   materials: ReadonlyMap<Material | null, number>,
   handedness: number | null,
+  cell: string,
 ): string {
   const layout = prim
     .listSemantics()
@@ -242,7 +247,18 @@ function bucketKey(
     })
     .join('+');
   const hand = handedness !== null && prim.getAttribute('TANGENT') ? `|${handedness}` : '';
-  return `${materials.get(prim.getMaterial()) ?? -1}|${prim.getMode()}|${!!prim.getIndices()}|${layout}${hand}`;
+  return `${materials.get(prim.getMaterial()) ?? -1}|${prim.getMode()}|${!!prim.getIndices()}|${layout}${hand}${cell}`;
+}
+
+/** The spatial cell of a primitive's world-space bounds centre. */
+function cellOf(prim: Primitive, world: THREE.Matrix4, size: number): string {
+  const position = prim.getAttribute('POSITION')!;
+  const centre = new THREE.Vector3()
+    .fromArray(position.getMinNormalized([]))
+    .add(new THREE.Vector3().fromArray(position.getMaxNormalized([])))
+    .multiplyScalar(0.5)
+    .applyMatrix4(world);
+  return `|${Math.floor(centre.x / size)},${Math.floor(centre.y / size)},${Math.floor(centre.z / size)}`;
 }
 
 function reverseWinding(prim: Primitive): void {
@@ -322,6 +338,7 @@ function checkPositionPrecision(
   sourceWorld: THREE.Matrix4,
   destinationWorld: THREE.Matrix4,
   reversed: boolean,
+  minimumTolerance: number,
 ): void {
   const expected = new THREE.Vector3();
   const actual = new THREE.Vector3();
@@ -341,6 +358,7 @@ function checkPositionPrecision(
     bounds.getSize(expected).length() * 1e-6,
     magnitude * Number.EPSILON * 32,
     Number.EPSILON,
+    minimumTolerance,
   );
   if (error > tolerance) throw new Error('rigid merge: destination frame loses position precision');
 }
@@ -401,7 +419,12 @@ function splitVertices(prim: Primitive, created: Property[]): Primitive[] {
 }
 
 /** Join one bucket into detached, checked primitives without touching the originals. */
-function prepare(entries: Entry[], dst: Node, created: Property[]): Primitive[] {
+function prepare(
+  entries: Entry[],
+  dst: Node,
+  created: Property[],
+  positionTolerance: number,
+): Primitive[] {
   const destinationWorld = worldOf(dst);
   const inverse = destinationWorld.clone().invert();
   const copies = entries.map(({ node, prim }) => {
@@ -432,6 +455,7 @@ function prepare(entries: Entry[], dst: Node, created: Property[]): Primitive[] 
         sourceWorld,
         destinationWorld,
         reversed,
+        positionTolerance,
       );
     }
     return copy;
@@ -574,7 +598,8 @@ export function mergeRigidGroups(
           const primReason = primLock(prim, options.mergeTransparent === true);
           if (primReason) lock(node, primReason, 1);
           else {
-            const key = bucketKey(prim, materials, handedness);
+            const cell = options.cellSize ? cellOf(prim, world, options.cellSize) : '';
+            const key = bucketKey(prim, materials, handedness, cell);
             const list = group.get(key);
             if (list) list.push({ node, prim });
             else group.set(key, [{ node, prim }]);
@@ -603,7 +628,7 @@ export function mergeRigidGroups(
         doc.getGraph().addEventListener('node:create', track);
         try {
           const destination = destinationOf(entries);
-          const merged = prepare(entries, destination, created);
+          const merged = prepare(entries, destination, created, options.positionTolerance ?? 0);
           const savedDraws = entries.length - merged.length;
           const shared = entries.filter(
             (entry) => removableBytes([entry]) < primitiveBytes([entry.prim]),

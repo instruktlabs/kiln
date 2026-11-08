@@ -37,13 +37,19 @@ export function resolveRenderMode(value?: string): RenderMode {
 export const GPU_REQUIRED_NEXT_STEP =
   'A GPU renderer is required by KILN_RENDER=gpu (CLI --render gpu). Set KILN_RENDER=auto (--render auto) to continue with CPU geometry views, or KILN_RENDER_PORT_URL (--render-port) for a renderer on another device; after repairing the local service call kiln_renderer { action: "reprobe" } (CLI: kiln service reprobe)';
 
+/** A lazily started port that can also say where its next request goes. */
+export interface LazyRenderPort extends PbrRenderPort {
+  /** The URL the next request uses, starting the service exactly as that request would. */
+  resolveUrl(): Promise<string>;
+}
+
 /** Failed starts are cached. Only an explicitly refused socket permits a new local start. */
 export function makeLazyRenderPort(
   start: () => Promise<string>,
   token?: string,
   sourceFingerprint?: string,
   initialUrl?: string,
-): PbrRenderPort {
+): LazyRenderPort {
   let resolving: Promise<{ url: string; port: PbrRenderPort }> | undefined = initialUrl
     ? Promise.resolve({
         url: initialUrl,
@@ -62,7 +68,7 @@ export function makeLazyRenderPort(
         );
       },
     ));
-  return async (req, execution) => {
+  const render: PbrRenderPort = async (req, execution) => {
     execution?.signal?.throwIfAborted();
     const pending = resolve();
     const { url, port } = await pending;
@@ -87,6 +93,7 @@ export function makeLazyRenderPort(
       return (await resolve()).port(req, execution);
     }
   };
+  return Object.assign(render, { resolveUrl: async () => (await resolve()).url });
 }
 
 /** What actually got selected, for honest CLI reporting. */
@@ -204,20 +211,15 @@ export async function buildRenderPort(
     if (explicitUrl)
       return attach(explicitUrl, `GPU service (explicit remote ${explicitUrl})`, remoteToken);
     const attachLocal = (initialUrl?: string, label = 'GPU service (local, started on demand)') => {
-      let resolvedUrl = initialUrl;
       const start = options?.start ?? (() => startLocalRenderService(dir, startupEnvironment));
-      context.viewRenderPort = makeLazyRenderPort(
-        async () => {
-          resolvedUrl = await start();
-          return resolvedUrl;
-        },
-        localToken,
-        source,
-        initialUrl,
-      );
+      const port = makeLazyRenderPort(start, localToken, source, initialUrl);
+      context.viewRenderPort = port;
       context.viewRenderTimeoutMs = CLI_VIEW_RENDER_TIMEOUT_MS;
-      context.captureCacheIdentity = () =>
-        resolvedUrl ? probeCaptureIdentity(resolvedUrl, localToken, source) : undefined;
+      // The identity follows the port's own connection. On a cold session that means the start
+      // the first request would make next, so even that request is cached. A failed start stays
+      // the port's cached failure, and an unknown identity still bypasses the cache.
+      context.captureCacheIdentity = async () =>
+        probeCaptureIdentity(await port.resolveUrl(), localToken, source);
       selected.set(context, label);
       return context;
     };

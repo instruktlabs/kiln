@@ -1,13 +1,14 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
+import * as THREE from 'three/webgpu';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { REVIEW_RIG } from '../src/lib/review-rig';
-import { applyReviewRig, usesReviewNeutral } from '../src/lib/review-rig-three';
+import { applyReviewRig } from '../src/lib/review-rig-three';
+import { viewerBackend, viewerRendererFactory } from '../src/components/viewer-renderer';
 
 /**
  * Browser side of `verify-viewer-rig.mjs`: renders the rig's calibration chart with the site viewer's own
- * lighting module (`applyReviewRig`, the same call the viewer's React component makes) in a WebGL renderer,
- * and reports the median colour of each patch's central 11x11 pixels, as the rig's own measurements do.
+ * lighting module (`applyReviewRig`, the same call the viewer's React component makes) in the viewer's own
+ * renderer, on the backend asked for, and reports the median colour of each patch's central 11x11 pixels, as the rig's own measurements do.
  */
 
 interface ChartCamera {
@@ -27,6 +28,7 @@ interface ChartGroup {
 interface ChartRequest {
   /** 'rig' is the viewer's lighting now; 'previous' is the lighting it had before the rig, kept only as a measured comparison. */
   lighting?: 'rig' | 'previous';
+  backend?: 'webgpu' | 'webgl2';
   glbUrl: string;
   width: number;
   height: number;
@@ -39,7 +41,7 @@ const median = (values: number[]) => {
 };
 
 /** The viewer's lighting before it followed the rig (room environment .6, two directional lights, Neutral tone mapping, exposure 1). */
-function applyPreviousViewerLighting(renderer: THREE.WebGLRenderer, scene: THREE.Scene) {
+function applyPreviousViewerLighting(renderer: THREE.WebGPURenderer, scene: THREE.Scene) {
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1;
   const pmrem = new THREE.PMREMGenerator(renderer);
@@ -54,9 +56,9 @@ function applyPreviousViewerLighting(renderer: THREE.WebGLRenderer, scene: THREE
   scene.background = new THREE.Color('#aab1bc');
 }
 
-async function renderChart({ glbUrl, width, height, groups, lighting = 'rig' }: ChartRequest) {
+async function renderChart({ glbUrl, width, height, groups, lighting = 'rig', backend = 'webgpu' }: ChartRequest) {
   const canvas = document.createElement('canvas');
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, preserveDrawingBuffer: true });
+  const renderer = await viewerRendererFactory({ forceWebGL: backend === 'webgl2' })({ canvas });
   renderer.setPixelRatio(1);
   renderer.setSize(width, height, false);
   const scene = new THREE.Scene();
@@ -65,8 +67,6 @@ async function renderChart({ glbUrl, width, height, groups, lighting = 'rig' }: 
   const gltf = await new GLTFLoader().loadAsync(glbUrl);
   scene.add(gltf.scene);
 
-  const gl = renderer.getContext();
-  const debug = gl.getExtension('WEBGL_debug_renderer_info');
   const copy = document.createElement('canvas');
   copy.width = width;
   copy.height = height;
@@ -96,9 +96,9 @@ async function renderChart({ glbUrl, width, height, groups, lighting = 'rig' }: 
     const corner = (x: number, y: number) => [...data.subarray((y * width + x) * 4, (y * width + x) * 4 + 3)];
     results.push({ name: group.name, samples, corners: [corner(0, 0), corner(width - 1, 0), corner(0, height - 1), corner(width - 1, height - 1)], png: copy.toDataURL('image/png') });
   }
-  const renderedBy = debug ? String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)) : String(gl.getParameter(gl.RENDERER));
+  const renderedBy = viewerBackend(renderer);
   renderer.dispose();
-  return { renderedBy, three: THREE.REVISION, usesReviewNeutral, lighting, rig: JSON.parse(JSON.stringify(REVIEW_RIG)), results };
+  return { renderedBy, three: THREE.REVISION, usesReviewNeutral: true, lighting, rig: JSON.parse(JSON.stringify(REVIEW_RIG)), results };
 }
 
 (window as unknown as { kilnRigChart: typeof renderChart }).kilnRigChart = renderChart;
