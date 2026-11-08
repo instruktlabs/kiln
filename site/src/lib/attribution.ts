@@ -30,9 +30,17 @@ export const revisionBriefForDisplay = (value: string): string =>
 export const harnessName = (value: string): string =>
   HARNESS_NAMES[value.trim().toLowerCase()] ?? value;
 
-/** "Claude Code 2.1.280", or the name alone when no version is recorded. */
-export const harnessWithVersion = (value: string, version?: string | null): string =>
-  version ? `${harnessName(value)} ${version}` : harnessName(value);
+/**
+ * "Claude Code 2.1.280", or the name alone when no version is recorded. A run that moved between versions names
+ * each, in the order it used them: "Claude Code 2.1.319 and 2.1.300".
+ */
+export const harnessWithVersion = (
+  value: string,
+  version?: string | readonly string[] | null,
+): string => {
+  const versions = [version ?? []].flat().filter(Boolean);
+  return versions.length ? `${harnessName(value)} ${versions.join(' and ')}` : harnessName(value);
+};
 
 type AssetAttribution = {
   author: string;
