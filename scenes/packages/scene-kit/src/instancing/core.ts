@@ -10,8 +10,8 @@ function normalMapped(material:Material|Material[]):boolean{return(Array.isArray
  * pass that frame, and no upload where the matrices are an instanced vertex attribute with static usage (three 0.187 binds an
  * InstancedMesh's matrices as that attribute when its geometry and instance buffers fit in eight vertex buffers, and otherwise
  * as the per-object uniform buffer that 0.186 used for every instanced mesh and uploaded every frame it drew; a
- * DynamicDrawUsage attribute uploads every frame, whatever the version. The Farm takes the attribute path with static usage,
- * packages/farm/src/world/instance-attributes.ts).
+ * DynamicDrawUsage attribute uploads every frame, whatever the version). The Farm's batches take the attribute path with
+ * static usage.
  */
 function writeDynamicBatch(b:{mesh:InstancedMesh;sources:{o:Mesh}[]}):boolean{
  const array=b.mesh.instanceMatrix.array as Float32Array;let changed=false;

@@ -35,6 +35,12 @@ export interface WarmPass {
  * under 0.187.0 have not been re-measured; that needs an idle machine.
  */
 export const WARM_CONCURRENCY = 1;
+/**
+ * The compiles each renderer's latest pass still has in flight. A rebuilt world disposes its pass, but a disposed pass
+ * only stops starting compiles: the one it awaits still runs. The next pass on that renderer starts once it settles,
+ * so two passes never overlap compileAsync calls (see WARM_CONCURRENCY).
+ */
+const inFlight = new WeakMap<WarmPassRenderer, { settled: boolean; done: Promise<void> }>();
 export interface WarmPassOptions {
   /** Hide the world while compiling and show it after (the first world of a mount; a rebuilt world stays visible). */
   reveal: boolean;
@@ -135,7 +141,13 @@ export function startWarmPass(renderer: WarmPassRenderer, scene: Scene, camera: 
       }
     }
   };
-  void Promise.all(Array.from({ length: chains.size ? concurrency : 0 }, slot)).then(() => { compiled = true; });
+  const run = () => Promise.all(Array.from({ length: chains.size ? concurrency : 0 }, slot));
+  const previous = inFlight.get(renderer);
+  const all = previous && !previous.settled ? previous.done.then(run) : run();
+  const entry = { settled: false, done: all.then(() => undefined, () => undefined) };
+  void entry.done.then(() => { entry.settled = true; });
+  inFlight.set(renderer, entry);
+  void all.then(() => { compiled = true; });
   return {
     get phase() { return phase; },
     stats,

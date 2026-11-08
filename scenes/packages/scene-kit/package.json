@@ -23,7 +23,7 @@
     "./testing/node": "./src/testing/node.ts",
     "./build": "./src/build/index.ts"
   },
-  "dependencies": { "fflate": "0.8.3", "three-mesh-bvh": "0.9.17" },
+  "dependencies": { "fflate": "0.8.3", "three-mesh-bvh": "0.9.18" },
   "peerDependencies": {
     "react": "19.3.1",
     "react-dom": "19.3.1",

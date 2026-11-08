@@ -150,7 +150,7 @@ export function parsePilotPlayState(text: string) {
   return match ? { mode: match[1]!, position: [Number(match[2]), Number(match[3]), Number(match[4])] as [number, number, number] } : null;
 }
 
-export async function captureFarmNew(o: { browser: Browser; url: string; ports: ReadonlySet<number>; backend: ParityBackend; view: string; file: string; woodlandTangents?: boolean; staticBaseline?: boolean; instanceUniforms?: boolean; play?: PlayFixture; ambientTime?: number }): Promise<CapturedFarm> {
+export async function captureFarmNew(o: { browser: Browser; url: string; ports: ReadonlySet<number>; backend: ParityBackend; view: string; file: string; woodlandTangents?: boolean; staticBaseline?: boolean; play?: PlayFixture; ambientTime?: number }): Promise<CapturedFarm> {
   const ambientTime = o.ambientTime ?? 0; assert(Number.isFinite(ambientTime) && ambientTime >= 0, 'Fixed ambient time must be a nonnegative number');
   const page = await o.browser.newPage(), diagnostics: Diagnostic[] = [];
   try {
@@ -161,7 +161,6 @@ export async function captureFarmNew(o: { browser: Browser; url: string; ports: 
     if (o.woodlandTangents === false) url.searchParams.set('woodlandTangents', 'false');
     if (o.staticBaseline === true) url.searchParams.set('staticBaseline', 'true');
     // M4 item 1 A/B: three's per-mesh instance uniform buffers instead of the Farm's instanced-attribute path.
-    if (o.instanceUniforms === true) url.searchParams.set('instanceUniforms', 'true');
     await page.goto(url.href, { waitUntil: 'load', timeout: TIMEOUT }); await waitForReady(page);
     await page.waitForFunction(() => typeof (window as any).__kilnScene?.setView === 'function' && typeof (window as any).__kilnScene?.setAmbient === 'function', { timeout: TIMEOUT });
     await page.evaluate(({ view, time }) => { const api = (window as any).__kilnScene; api.feedFrameTimes([]); api.setAmbient(false); api.setTimeScale(0); api.setTime(time); api.setView(view); }, { view: initialView, time: ambientTime });
