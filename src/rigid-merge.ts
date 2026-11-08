@@ -7,7 +7,7 @@
  * and joined into fewer draws. No node is removed, renamed or reparented; a node whose
  * primitives all moved keeps its name with no mesh.
  *
- * Boundaries: animation targets, skin joints, `Joint_*` pivots (`hasJointPivots`' rule), nodes
+ * Boundaries: animation targets (including nodes a scene's `kilnReviewClipsV1` tracks name), skin joints, `Joint_*` pivots (`hasJointPivots`' rule), nodes
  * with any extras (a superset of Kiln semantic metadata), nodes a semantic relationship names
  * (`targetType: 'node'`, resolved by name in `assembly.ts`), `KHR_node_visibility`, `MSFT_lod`,
  * shared scene entry points, and names the caller keeps. A boundary's own primitives never move.
@@ -55,6 +55,7 @@ import { createTransform, dequantizePrimitive, joinPrimitives } from '@gltf-tran
 import * as THREE from 'three';
 import { KILN_SEMANTIC_EXTRAS_KEY, type SemanticRelationshipV1 } from './contracts/semantic';
 import { type Lod, MSFT_LOD } from './gltf-io';
+import { reviewClipTargets } from './instance-handedness';
 
 export type RigidBoundaryReason =
   | 'animated'
@@ -163,6 +164,7 @@ export function findRigidBoundaries(
       const target = channel.getTargetNode();
       if (target) add(target, 'animated');
     }
+  const reviewed = reviewClipTargets(doc);
   for (const skin of root.listSkins())
     for (const joint of skin.listJoints()) add(joint, 'skin-joint');
   const targets = new Set<string>();
@@ -183,6 +185,7 @@ export function findRigidBoundaries(
     // Scene roots can be shared; nodes otherwise have a single parent. Only
     // merges wholly inside a shared subtree are safe in every scene using it.
     if (sceneParents > 1) add(node, 'shared-scene');
+    if (reviewed.has(name)) add(node, 'animated');
     if (JOINT_PIVOT.test(name)) add(node, 'joint-pivot');
     if (hasKeys(node.getExtras())) add(node, 'extras');
     if (targets.has(name)) add(node, 'relationship-target');

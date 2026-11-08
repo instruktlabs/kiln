@@ -211,17 +211,31 @@ saved revision does not change.
 
 1. Every mesh used by two or more nodes becomes an `EXT_mesh_gpu_instancing` batch, within the
    limits in [the runtime notes](runtime.md): one handedness per batch, no shear, and tangent-bearing
-   copies batched by the rotation they share.
+   copies batched by the rotation they share. A batch replaces its copies' nodes, so their names
+   leave the file; the batch node is named `<mesh>_Instances`, with `_1`, `_2` and so on when
+   that name is taken.
+   - **Nothing is batched** when the file has animations, skins or review clips
+     (`scenes[].extras.kilnReviewClipsV1`), or when any node has extras (semantic metadata
+     included), `KHR_node_visibility`, an `MSFT_lod` chain or a `Joint_*` name.
+   - In that case `drawReduction.batchingSkipped` gives the reason, and only step 2 runs.
 2. Parts whose mesh has a single user merge per material, vertex layout and tangent handedness,
    within cubes `--draw-cell` metres wide (default 15), so a viewer can still cull a large asset by
-   region. Blended and transmissive parts, and nodes a consumer reads by name (`Joint_*` pivots,
-   semantic roles, extras, visibility, LOD), are never merged. A part keeps its node name; its
-   geometry can move to another node of its cell.
+   region.
+   - **Never merged:** blended and transmissive parts, and the nodes a consumer reads by name.
+     Those are animation and review-clip targets, `Joint_*` pivots, nodes with extras, nodes a
+     semantic relationship names, and visibility and LOD nodes.
+   - A merged part keeps its node name, but its geometry can move to another node of its cell.
 
 Unlike `optimize: 'full'`, it runs no `palette()`, which rewrites materials, and no `weld()`,
-which splits accessors that parts share. On a 16 MB cathedral, `weld()` alone added 10 MB. The
-sidecar's `drawReduction` reports draws before and after, batches, merges, and what stayed
-separate and why.
+which splits accessors that parts share. On a 16 MB cathedral, `weld()` alone added 10 MB.
+
+The sidecar's `drawReduction` reports:
+
+- draws before and after, batches and merges;
+- what stayed separate, and why;
+- `instancing`, one entry per batch: `{ node, mesh, count, instances }`. Here `instances[i]` is
+  the name of the node that instance `i` replaced, as in `--target three`'s
+  `delivery.instancing`. A consumer that found a copy by name finds it there.
 
 Measured on copies of the 1,834-draw cathedral revision:
 
@@ -237,7 +251,7 @@ scene, not only the draw count.
 In three r186, every batch costs load time, about 17 ms per render pass, for two reasons:
 
 - **A shader per batch.** Below 1,024 copies, `nodes/accessors/Instance.js` stores a batch's
-  matrices in a uniform array named after the batch's own node and sized to its count.
+  matrices in a uniform array whose shader name and length are its own.
 - **A node graph per batch.** `RenderObject` adds each `InstancedMesh`'s uuid to its cache key,
   so three builds each batch's node graph separately.
 
