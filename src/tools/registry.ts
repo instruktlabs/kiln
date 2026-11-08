@@ -704,6 +704,34 @@ interface LoadedArtifactScene {
   rendered: Pick<RenderResult, 'glb' | 'artifactGlbSha256'>;
   root: unknown;
   reasonCodes: readonly string[];
+  /**
+   * Whether these bytes are a retained reviewed artifact a caller can select: see
+   * {@link ViewFidelityV1}. The caller decides, because only it knows what it retains.
+   */
+  exactArtifact: boolean;
+}
+
+/**
+ * Whether the host already retains these exact bytes as the reviewed artifact of `code`, so a
+ * view of them is a view of what `kiln_finish` would select. A tool that retains nothing itself
+ * (`kiln_inspect`) asks this; one that retains what it reviews (`kiln_render`) does not need to.
+ */
+async function retainsArtifact(
+  code: string,
+  rendered: Pick<RenderResult, 'artifactGlbSha256' | 'requirements'>,
+  context: KilnToolContext,
+): Promise<boolean> {
+  if (!context.programArtifacts) return false;
+  try {
+    const { programReference } = await import('../program-store');
+    const retained = context.programArtifacts.get(
+      await programReference(code),
+      rendered.requirements,
+    );
+    return retained.rendered.artifactGlbSha256 === rendered.artifactGlbSha256;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -734,7 +762,7 @@ async function renderExactArtifactShots(
     input.shots,
     input.size,
     {
-      exactArtifact: context.programArtifacts !== undefined,
+      exactArtifact: artifact.exactArtifact,
       ...(context.captureLimits ? { limits: context.captureLimits } : {}),
       backdrop: input.backdrop,
       ...(context.evaluationControls ? { execution: context.evaluationControls() } : {}),
@@ -774,7 +802,7 @@ async function renderExactArtifactShotsOnCpu(
   const { captureCpuCell } = await import('../views/capture-cache');
   const { size, backdrop } = input;
   const inputGlbSha256 = artifact.rendered.artifactGlbSha256;
-  const exactArtifact = context.programArtifacts !== undefined;
+  const { exactArtifact } = artifact;
   const degradeReason = 'material-faithful view render port unavailable';
   const reasonCodes = [
     'FULL_MATERIAL_RENDER_UNAVAILABLE',
@@ -1444,8 +1472,18 @@ async function runRenderViews(
         {
           framesOnly: true,
           ...(context.evaluationControls ? { execution: context.evaluationControls() } : {}),
+          // This call retains what it reviews (`retainReviewedArtifact`) on a host with a store.
           renderExactShots: (shots) =>
-            renderExactArtifactShots(shots, { rendered, root, reasonCodes }, context),
+            renderExactArtifactShots(
+              shots,
+              {
+                rendered,
+                root,
+                reasonCodes,
+                exactArtifact: context.programArtifacts !== undefined,
+              },
+              context,
+            ),
         },
       );
       const receipts = grid.derivativeReceipts;
@@ -2237,6 +2275,13 @@ async function runInspect(
       };
     // A subject or part that names a lower level of detail draws it in its LOD0's place.
     const { withSubjectLevel } = await import('../views/lod');
+    // Inspection retains nothing: its views are exact only of an artifact kiln_render retained.
+    const artifact = {
+      rendered: evaluated,
+      root,
+      reasonCodes,
+      exactArtifact: await retainsArtifact(input.code, evaluated, context),
+    };
     if (input.shot) {
       const shot = input.shot;
       const { renderCaptureGrid } = await import('../views');
@@ -2248,8 +2293,7 @@ async function runInspect(
           context.captureLimits,
           {
             ...(context.evaluationControls ? { execution: context.evaluationControls() } : {}),
-            renderExactShots: (shots) =>
-              renderExactArtifactShots(shots, { rendered: evaluated, root, reasonCodes }, context),
+            renderExactShots: (shots) => renderExactArtifactShots(shots, artifact, context),
           },
         );
         return {
@@ -2313,7 +2357,7 @@ async function runInspect(
                   size: r.size,
                   backdrop: 'neutral',
                 },
-                { rendered: evaluated, root, reasonCodes },
+                artifact,
                 context,
               )
             )?.[0]
@@ -2393,9 +2437,10 @@ const KILN_INSPECT_DESCRIPTION =
   'If the part name does not resolve you get the list of available part names back — pick one and ' +
   'retry. By default surrounding geometry stays visible for context and can occlude the part: ' +
   'either pick a different view, or set isolate:true to hide everything else and see the part ' +
-  'unobstructed (use it for anything buried inside or behind other geometry). The view is rendered ' +
-  'from deterministic derivative GLB bytes; GPU PBR is used only when it can preserve the requested ' +
-  'framing, otherwise the GLB-native geometry-flat fallback reports why in viewFidelity. Writes no files.' +
+  'unobstructed (use it for anything buried inside or behind other geometry). A view that changes ' +
+  'only the camera is rendered from the artifact GLB bytes; isolate, hide or a lower level of detail ' +
+  'renders from a deterministic derivative GLB. viewFidelity names the bytes, whether they are a ' +
+  'retained reviewed artifact, and why a geometry-flat fallback was used. Writes no files.' +
   VIEW_EVIDENCE_GUIDANCE;
 
 /** Create the close-up inspection definition. */

@@ -2,19 +2,32 @@ import { createHash } from 'node:crypto';
 import { describe, expect, spyOn, test } from 'bun:test';
 
 import * as renderModule from '../../render';
+import { TIERED_CAR } from '../../__tests__/helpers/lod-fixture';
 import type { PbrRenderPort, PbrRenderRequest } from '../../composer/render-port';
 import { encodePng } from '../../views';
+import * as glbModule from '../../views/glb';
+import { reviewSceneCache } from '../../views/review-scene-cache';
 import { createKilnProgramToolRegistry, type KilnToolContext } from '../registry';
 import { ProgramArtifactStore } from '../program-artifacts';
 
-/** A host that retains reviewed artifacts, so a view of the artifact bytes is `exactArtifact`. */
-function tool(name: string, context: KilnToolContext = {}) {
-  const def = createKilnProgramToolRegistry({
+/**
+ * A host that retains the artifacts `kiln_render` reviews. A view of the artifact bytes is
+ * `exactArtifact` only once that revision has been retained.
+ */
+function host(context: KilnToolContext = {}) {
+  const tools = createKilnProgramToolRegistry({
     programArtifacts: new ProgramArtifactStore(),
     ...context,
-  }).find((candidate) => candidate.name === name);
-  if (!def) throw new Error(`no ${name}`);
-  return def;
+  });
+  return (name: string) => {
+    const def = tools.find((candidate) => candidate.name === name);
+    if (!def) throw new Error(`no ${name}`);
+    return def;
+  };
+}
+
+function tool(name: string, context: KilnToolContext = {}) {
+  return host(context)(name);
 }
 
 const code = (name: string) => `
@@ -67,26 +80,43 @@ interface Result {
 }
 
 describe('kiln_inspect draws camera-only shots from the artifact', () => {
-  test('a shot sends the artifact itself, and its receipt says so', async () => {
+  test('a shot sends the artifact itself; it is exact only once kiln_render retained it', async () => {
     const requests: PbrRenderRequest[] = [];
     const exports = spyOn(renderModule, 'renderReviewDerivativeGlb');
     try {
-      const inspect = tool('kiln_inspect', {
+      const tools = host({
         viewRenderPort: gpuPort(requests),
         captureCacheIdentity: 'exact-inspect-1',
       });
-      const result = (await inspect.run({
+      const shot = { name: 'insp', camera: { type: 'orbit', azimuthDeg: 41, elevationDeg: 22 } };
+      const before = (await tools('kiln_inspect').run({
         code: code('exact-inspect-a'),
-        shot: { name: 'insp', camera: { type: 'orbit', azimuthDeg: 41, elevationDeg: 22 } },
+        shot,
         detail: 'full',
       })) as Result;
-      expect(result.ok).toBe(true);
+      expect(before.ok).toBe(true);
       expect(exports).toHaveBeenCalledTimes(0);
       expect(requests).toHaveLength(1);
-      const receipt = result.viewFidelity!.receipts![0]!;
-      expect(receipt.inputGlbSha256).toBe(sha(requests[0]!.glb));
-      expect(receipt.exactArtifact).toBe(true);
-      expect(result.viewFidelity!.exactArtifact).toBe(true);
+      const unretained = before.viewFidelity!.receipts![0]!;
+      expect(unretained.inputGlbSha256).toBe(sha(requests[0]!.glb));
+      // The host retains reviewed artifacts, but not this one: kiln_finish would reject it.
+      expect(unretained.exactArtifact).toBe(false);
+      expect(unretained.reasonCodes).toContain('IN_LOOP_BUILD_NOT_PERSISTED');
+      expect(before.viewFidelity!.exactArtifact).toBe(false);
+      const rendered = (await tools('kiln_render').run({
+        code: code('exact-inspect-a'),
+      })) as Result;
+      expect(rendered.ok).toBe(true);
+      const after = (await tools('kiln_inspect').run({
+        programRef: rendered.programRef!,
+        shot,
+        detail: 'full',
+      })) as Result;
+      const retained = after.viewFidelity!.receipts![0]!;
+      expect(retained.inputGlbSha256).toBe(unretained.inputGlbSha256);
+      expect(retained.exactArtifact).toBe(true);
+      expect(retained.reasonCodes ?? []).not.toContain('IN_LOOP_BUILD_NOT_PERSISTED');
+      expect(after.viewFidelity!.exactArtifact).toBe(true);
     } finally {
       exports.mockRestore();
     }
@@ -115,10 +145,14 @@ describe('kiln_inspect draws camera-only shots from the artifact', () => {
     const requests: PbrRenderRequest[] = [];
     const exports = spyOn(renderModule, 'renderReviewDerivativeGlb');
     try {
-      const inspect = tool('kiln_inspect', {
+      const tools = host({
         viewRenderPort: gpuPort(requests),
         captureCacheIdentity: 'exact-inspect-2',
       });
+      expect(
+        ((await tools('kiln_render').run({ code: code('exact-inspect-b') })) as Result).ok,
+      ).toBe(true);
+      const inspect = tools('kiln_inspect');
       const whole = (await inspect.run({
         code: code('exact-inspect-b'),
         azimuthDeg: 30,
@@ -144,6 +178,33 @@ describe('kiln_inspect draws camera-only shots from the artifact', () => {
       expect(isolated.ok).toBe(true);
       expect(exports).toHaveBeenCalledTimes(1);
       expect(isolated.viewFidelity!.exactArtifact).toBe(false);
+    } finally {
+      exports.mockRestore();
+    }
+  });
+
+  test('a legacy part that names a lower level of detail keeps its derivative', async () => {
+    const exports = spyOn(renderModule, 'renderReviewDerivativeGlb');
+    try {
+      const tools = host();
+      expect(((await tools('kiln_render').run({ code: TIERED_CAR })) as Result).ok).toBe(true);
+      const level = (await tools('kiln_inspect').run({
+        code: TIERED_CAR,
+        part: 'Body_LOD1',
+        detail: 'full',
+      })) as Result;
+      expect(level.ok).toBe(true);
+      expect(exports).toHaveBeenCalledTimes(1);
+      expect(level.viewFidelity!.exactArtifact).toBe(false);
+      // The same tool on LOD0 is drawn from the artifact.
+      const base = (await tools('kiln_inspect').run({
+        code: TIERED_CAR,
+        part: 'Body_LOD0',
+        detail: 'full',
+      })) as Result;
+      expect(exports).toHaveBeenCalledTimes(1);
+      expect(base.viewFidelity!.exactArtifact).toBe(true);
+      expect(base.pngBase64).not.toBe(level.pngBase64);
     } finally {
       exports.mockRestore();
     }
@@ -190,6 +251,37 @@ describe('the CPU route draws camera-only shots from the artifact', () => {
       expect(again.framesBase64).toEqual(first.framesBase64!);
     } finally {
       exports.mockRestore();
+    }
+  });
+
+  test('a new camera on a reused scene draws what a fresh load draws', async () => {
+    const loads = spyOn(glbModule, 'loadGlbReviewScene');
+    try {
+      const shot = (azimuthDeg: number) => ({
+        version: 'kiln.capture.v1',
+        size: 128,
+        output: 'separate',
+        shots: [{ name: 'S', camera: { type: 'orbit', azimuthDeg, elevationDeg: 20 } }],
+      });
+      const render = tool('kiln_render');
+      const first = (await render.run({ code: code('exact-cpu-c'), capture: shot(10) })) as Result;
+      const loaded = loads.mock.calls.length;
+      const reused = (await render.run({
+        programRef: first.programRef!,
+        capture: shot(200),
+        detail: 'full',
+      })) as Result;
+      expect(loads.mock.calls.length).toBe(loaded);
+      expect(reused.derivativeReceipts![0]!.captureCache?.hit).toBe(false);
+      reviewSceneCache.clear();
+      const fresh = (await tool('kiln_render', { cacheCaptures: false }).run({
+        code: code('exact-cpu-c'),
+        capture: shot(200),
+      })) as Result;
+      expect(loads.mock.calls.length).toBe(loaded + 1);
+      expect(fresh.framesBase64).toEqual(reused.framesBase64!);
+    } finally {
+      loads.mockRestore();
     }
   });
 

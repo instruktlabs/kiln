@@ -16,10 +16,11 @@ does not publish a package.
     cache keys them by the artifact's hash. The pixels match the derivative's on a test scene with
     opaque, double-sided, instanced and hidden parts.
 
-  Receipts change where they say so. A camera-only view's `inputGlbSha256` is the artifact's hash. On a
-  host that retains reviewed artifacts its `exactArtifact` is true, and so is the
-  `kiln.derivative-review-fidelity.v1` aggregate when every receipt is. On a host that does not, it reads
-  `reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED']`. `DerivativeReviewFidelityV1.exactArtifact` is now
+  Receipts change where they say so. A camera-only view's `inputGlbSha256` is the artifact's hash. Its
+  `exactArtifact` is true when the host retains those bytes as a reviewed artifact: on such a host a
+  `kiln_render` view always, and a `kiln_inspect` view once `kiln_render` has reviewed that revision, since
+  inspection retains nothing. The `kiln.derivative-review-fidelity.v1` aggregate is true when every receipt
+  is. Otherwise the receipt reads `reasonCodes: ['IN_LOOP_BUILD_NOT_PERSISTED']`. `DerivativeReviewFidelityV1.exactArtifact` is now
   `boolean`. View evidence history accepts an exact surface, and rejects an aggregate that its receipts
   contradict. An isolated view, a view with `hide`, and a lower level of detail keep their derivative.
 - Calls on an artifact the host already loaded skip the load, and long host steps no longer hold up
