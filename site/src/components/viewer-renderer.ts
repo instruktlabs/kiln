@@ -101,7 +101,7 @@ export const compilesOnPageThread = (renderer: THREE.WebGPURenderer, object?: TH
  * Where the page would wait on shaders, build every pipeline `object` needs before it is first drawn, culled parts
  * included. With it nothing held the page longer than about 0.9 s while the WebGL2 mech loaded, the unskinned file's
  * own figure, and it first drew at 3.6-4.5 s. `compileAsync` reads everything it uses before its first wait, so
- * culling is restored as soon as it returns.
+ * culling is restored as soon as it returns. The model is built for the page's target, in its turn (`compileInTurn`).
  */
 export function compileAhead(
   renderer: THREE.WebGPURenderer,
@@ -110,17 +110,81 @@ export function compileAhead(
   scene: THREE.Scene,
 ): Promise<void> {
   if (!compilesOnPageThread(renderer, object)) return Promise.resolve();
-  const culled: THREE.Object3D[] = [];
-  object.traverse((part) => {
-    if (!part.frustumCulled) return;
-    culled.push(part);
-    part.frustumCulled = false;
+  return compileInTurn(renderer, null, () => {
+    const culled: THREE.Object3D[] = [];
+    object.traverse((part) => {
+      if (!part.frustumCulled) return;
+      culled.push(part);
+      part.frustumCulled = false;
+    });
+    try {
+      return renderer.compileAsync(object, camera, scene);
+    } finally {
+      for (const part of culled) part.frustumCulled = true;
+    }
   });
-  try {
-    return renderer.compileAsync(object, camera, scene);
-  } finally {
-    for (const part of culled) part.frustumCulled = true;
-  }
+}
+
+/** The target a build holds current between the pieces of its work, and the page's own (see `compileInTurn`). */
+const holds = new WeakMap<
+  THREE.WebGPURenderer,
+  { target: THREE.RenderTarget | null; page: THREE.RenderTarget | null }
+>();
+const turns = new WeakMap<THREE.WebGPURenderer, Promise<unknown>>();
+const framesKeptOnPage = new WeakSet<THREE.WebGPURenderer>();
+
+/** A frame drawn while a build holds its target current is drawn to the page's target, and the build's is put back. */
+function keepFramesOnPage(renderer: THREE.WebGPURenderer) {
+  if (framesKeptOnPage.has(renderer)) return;
+  framesKeptOnPage.add(renderer);
+  const render = renderer.render;
+  renderer.render = function (
+    this: THREE.WebGPURenderer,
+    scene: THREE.Object3D,
+    camera: THREE.Camera,
+  ) {
+    const hold = holds.get(this);
+    if (hold === undefined || this.getRenderTarget() !== hold.target)
+      return render.call(this, scene, camera);
+    this.setRenderTarget(hold.page);
+    try {
+      render.call(this, scene, camera);
+    } finally {
+      this.setRenderTarget(hold.target);
+    }
+  };
+}
+
+/**
+ * Run `start`, which asks three to build shaders with `target` current (null: the page's), once every build already
+ * asked of this renderer has settled. three r187's `compileAsync` makes the target that was current when it began
+ * current again after each piece of its later work, and leaves it current when it settles, though the caller put its
+ * own back as soon as the call returned: once the shadow bake had built its shaders, every frame was drawn into the
+ * bake's target and the model never reached the canvas. So a frame drawn while a build runs goes to the page's target,
+ * the page's target is current again when the build settles, and builds take turns, since each would leave its target
+ * behind for the other.
+ */
+export function compileInTurn(
+  renderer: THREE.WebGPURenderer,
+  target: THREE.RenderTarget | null,
+  start: () => Promise<void>,
+): Promise<void> {
+  keepFramesOnPage(renderer);
+  const run = (turns.get(renderer) ?? Promise.resolve()).then(async () => {
+    const page = renderer.getRenderTarget();
+    if (target !== page) holds.set(renderer, { target, page });
+    try {
+      await start();
+    } finally {
+      holds.delete(renderer);
+      renderer.setRenderTarget(page);
+    }
+  });
+  turns.set(
+    renderer,
+    run.catch(() => undefined),
+  );
+  return run;
 }
 
 /** Close a view's renderer and let go of what it uploaded. */

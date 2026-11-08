@@ -17,7 +17,7 @@ import {
   vec2,
   vec3,
 } from 'three/tsl';
-import { compilesOnPageThread, viewerBackend } from './viewer-renderer';
+import { compileInTurn, compilesOnPageThread, viewerBackend } from './viewer-renderer';
 import { SHADOW_RESOLUTION, composeContactShadow, rebakeDue } from './viewer-draws';
 
 const SHADOW = { opacity: 0.3, blur: 2.4, colour: [0x29, 0x2d, 0x29] as const };
@@ -113,8 +113,11 @@ export function BakedContactShadow({
     };
     try {
       // Where the page would wait on them, the bake's own shaders are built first, as the model's are (see `compileAhead`).
+      // three r187 keeps the bake's target current until that build settles; `compileInTurn` keeps the page's frames off it.
       if (compilesOnPageThread(renderer, scene))
-        await asBaked(() => renderer.compileAsync(scene, camera)).catch(() => undefined);
+        await compileInTurn(renderer, target, () =>
+          asBaked(() => renderer.compileAsync(scene, camera)),
+        ).catch(() => undefined);
       asBaked(() => renderer.render(scene, camera));
     } catch (error) {
       baking.current = false;
