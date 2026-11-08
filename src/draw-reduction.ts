@@ -45,7 +45,8 @@ export interface DrawReductionV1 {
   batchingSkipped?: string;
   /**
    * Each batch node, its mesh and the names of the nodes it replaced, in instance order: copy `i`
-   * is the batch's instance `i`. Batched nodes are gone from the file; this is where they went.
+   * is the batch's instance `i`. A batched copy loses its mesh, and one with no children or
+   * extensions is removed with its name; this is where its geometry went.
    */
   instancing: { node: string; mesh: string; count: number; instances: string[] }[];
   merges: number;

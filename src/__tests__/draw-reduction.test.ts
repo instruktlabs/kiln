@@ -219,7 +219,7 @@ describe('reduceDrawCalls', () => {
 });
 
 /**
- * Three one-off stone parts that merge into one draw, and a repeated pane. `mark` makes the door a
+ * Four one-off stone parts that merge into one draw, and a repeated pane. `mark` makes the door a
  * part something addresses; the door must then keep its own geometry where it was authored.
  */
 async function reduceWithMarkedDoor(mark: (doc: Document, door: Node) => void) {
@@ -228,6 +228,7 @@ async function reduceWithMarkedDoor(mark: (doc: Document, door: Node) => void) {
   createPart('Wall', boxGeo(4, 3, 0.4), stone, { parent: root });
   createPart('Pier', boxGeo(0.5, 3, 0.5), stone, { position: [3, 0, 0], parent: root });
   createPart('Door', boxGeo(1, 2, 0.1), stone, { position: [1, 0, 1], parent: root });
+  createPart('Plinth', boxGeo(1, 0.5, 1), stone, { position: [5, 0, 1], parent: root });
   const pane = createPart('Pane0', planeGeo(1, 2), gameMaterial(0x803030), {
     position: [0, 1, 4],
     parent: root,
@@ -285,6 +286,7 @@ describe('--draws minimal keeps what a consumer addresses', () => {
         doc.createAnimation('Open').addSampler(sampler).addChannel(channel);
       },
     );
+    expect(summary.merges).toBeGreaterThan(0);
     expect(summary.batchingSkipped).toBe('animations');
     expect(doorPositions).toEqual(authored);
     expect(doc.getRoot().listAnimations()[0]!.listChannels()[0]!.getTargetNode()).toBe(door!);
@@ -297,6 +299,7 @@ describe('--draws minimal keeps what a consumer addresses', () => {
         door.setExtension(MSFT_LOD, doc.createExtension(MSFTLod).createLod().addLevel(level));
       },
     );
+    expect(summary.merges).toBeGreaterThan(0);
     expect(summary.batchingSkipped).toBe('levels of detail');
     expect(doorPositions).toEqual(authored);
     const levels = door!.getExtension<Lod>(MSFT_LOD)!.listLevels();
@@ -311,6 +314,7 @@ describe('--draws minimal keeps what a consumer addresses', () => {
         doc.createExtension(KHRNodeVisibility).createVisibility().setVisible(false),
       );
     });
+    expect(summary.merges).toBeGreaterThan(0);
     expect(summary.batchingSkipped).toBe('node extras or visibility');
     expect(doorPositions).toEqual(authored);
     expect(door!.getExtension<Visibility>('KHR_node_visibility')!.getVisible()).toBe(false);
@@ -319,6 +323,7 @@ describe('--draws minimal keeps what a consumer addresses', () => {
   it('keeps a part with semantic metadata, and a part a relationship names', async () => {
     const semantic = { kilnSemantic: { version: 1, roles: ['interaction.door'] } };
     const marked = await reduceWithMarkedDoor((_, door) => door.setExtras(semantic));
+    expect(marked.summary.merges).toBeGreaterThan(0);
     expect(marked.summary.batchingSkipped).toBe('node extras or visibility');
     expect(marked.doorPositions).toEqual(marked.authored);
     expect(marked.door!.getExtras()).toEqual(semantic);
@@ -335,6 +340,7 @@ describe('--draws minimal keeps what a consumer addresses', () => {
         },
       });
     });
+    expect(named.summary.merges).toBeGreaterThan(0);
     expect(named.doorPositions).toEqual(named.authored);
   });
 
@@ -357,6 +363,7 @@ describe('--draws minimal keeps what a consumer addresses', () => {
           },
         });
     });
+    expect(summary.merges).toBeGreaterThan(0);
     expect(summary.batchingSkipped).toBe('review clips');
     expect(doorPositions).toEqual(authored);
     const pane = find('Mesh_Pane0')?.getMesh();
@@ -383,6 +390,7 @@ describe('--draws minimal keeps what a consumer addresses', () => {
           },
         });
     });
+    expect(summary.merges).toBeGreaterThan(0);
     expect(summary.batchingSkipped).toBe('review clips');
     expect(doorPositions).toEqual(authored);
   });

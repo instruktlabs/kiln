@@ -211,9 +211,10 @@ saved revision does not change.
 
 1. Every mesh used by two or more nodes becomes an `EXT_mesh_gpu_instancing` batch, within the
    limits in [the runtime notes](runtime.md): one handedness per batch, no shear, and tangent-bearing
-   copies batched by the rotation they share. A batch replaces its copies' nodes, so their names
-   leave the file; the batch node is named after its first copy, `<copy>_Instances`, with `_1`,
-   `_2` and so on when that name is taken.
+   copies batched by the rotation they share. A batched copy loses its mesh. A mesh-less copy with
+   no children or extensions is removed, name and all; one with either stays as a named node with
+   no mesh. The batch node is named after its first copy, `<copy>_Instances`, with `_1`, `_2` and
+   so on when that name is taken.
    - **Nothing is batched** when the file has animations, skins or review clips
      (`scenes[].extras.kilnReviewClipsV1`), or when any node has extras (semantic metadata
      included), `KHR_node_visibility`, an `MSFT_lod` chain or a `Joint_*` name.
