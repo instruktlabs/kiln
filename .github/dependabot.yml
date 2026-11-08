@@ -34,6 +34,13 @@ updates:
       # scenes pins npm as a toolchain version (scenes/toolchain.json); it moves with the
       # maintainer toolchain, never on its own.
       - dependency-name: "npm"
+      # three moves by hand, in one change across the engine, render service, site and
+      # scenes (docs/three-upgrades.md). A release changes GPU views, and the change
+      # must move the render service's build identity, the scene kit's revision guards
+      # and the scene pin table with it; a Dependabot update edits manifests and
+      # lockfiles only.
+      - dependency-name: "three"
+      - dependency-name: "@types/three"
     groups:
       bun-minor-and-patch:
         patterns:
@@ -49,6 +56,9 @@ updates:
     schedule:
       interval: monthly
     open-pull-requests-limit: 1
+    ignore:
+      # three moves by hand with the other trees (docs/three-upgrades.md); see the bun entry.
+      - dependency-name: "three"
     groups:
       npm-minor-and-patch:
         patterns:

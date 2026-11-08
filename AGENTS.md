@@ -155,6 +155,10 @@ Consumer Node compatibility is defined separately in `src/runtime-support.mjs` a
 `engines.node`; do not add Bun or npm maintainer pins to end-user `engines` or use a Bun
 canary or implicit latest for a release gate.
 
+three.js is pinned exactly in the engine, render service, site and scenes, and Dependabot
+leaves it alone. Upgrade it in one change by the [three.js upgrade checklist](docs/three-upgrades.md):
+release notes, audit, bump, gate, before/after renders, adopt/defer list.
+
 ```bash
 bun install --frozen-lockfile
 bun run check:toolchain

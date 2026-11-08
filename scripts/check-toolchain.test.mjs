@@ -33,6 +33,7 @@ const INSPECTED = [
   'package.json',
   'render-service/package.json',
   'site/package.json',
+  'scenes/package.json',
   '.github/workflows/ci.yml',
   '.github/workflows/pages.yml',
   'AGENTS.md',
@@ -157,6 +158,16 @@ test('three drifting in the render service is named, with the manifest', async (
     'render-service/package.json',
     (text) => text.replace('"three": "0.187.0"', '"three": "0.188.0"'),
     'render-service/package.json=0.188.0',
+  );
+});
+
+// The scenes workflow, which runs the scene pin check, starts only on scenes changes; this
+// gate runs on every pull request, so it is the one that sees a bump that left the scenes behind.
+test('three drifting in the scene workspace is named, with the manifest', async () => {
+  await rejects(
+    'scenes/package.json',
+    (text) => text.replace('"three": "0.187.0"', '"three": "0.186.1"'),
+    'scenes/package.json=0.186.1',
   );
 });
 
