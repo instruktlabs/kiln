@@ -51,6 +51,11 @@ does not publish a package.
   sheet views are unchanged. A request that switches projection builds one more program per material.
   Both changes alter render-service source, so its build identity changes and a running service of
   the previous build is reported as incompatible rather than joined.
+- `scripts/check-vision.mjs` works on OpenCode 2.x. OpenCode 2.2 rejects `opencode models --verbose`,
+  so the gate reported every model as unverified. On 2.x it now reads the catalogue from
+  `opencode api --standalone GET /api/model` and its `capabilities.input`; a 1.x install still uses
+  `--verbose`. The docs say the script covers OpenCode models only. `docs/harnesses.md` records that OpenCode 2.2.0 delivers MCP images to the provider in
+  Code Mode and with `codemode: false`.
 - `KILN_EVALUATOR_TIMEOUT_MS` now works above 60,000, as documented. Only the host read it: the worker
   kept its own 60-second timer, so a build that yielded to the event loop after that failed with
   `DEADLINE_EXCEEDED` at any limit, usually once the abandoned build had run to its end. The worker now

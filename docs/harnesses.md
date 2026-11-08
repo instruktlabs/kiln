@@ -24,6 +24,11 @@ as text before inference. Do not treat those MCP results as visual review or
 increase text limits to carry base64. See the
 [reproduction and supported route](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-09-22-cline-image-qualification.md).
 OpenCode 2.0.14 preserves standard MCP images in captured provider requests.
+OpenCode 2.2.0 does too, both in default Code Mode (`execute` calling
+`tools.kiln_workspace.kiln_render`) and with per-server `codemode: false`. A loopback
+Responses API mock received the Kiln PNG as `input_image` inside `function_call_output`,
+byte-identical in both modes. In 2.2.0 `--format json` output the image is at
+`part.state.metadata.content`; there is no `state.attachments` field.
 Hermes 0.21.4 preserves MCP images as cached files; its vision tool can load them
 for the main model when that route supports images. Activated Cline VS Code 4.1.20
 tests preserve MCP images in Legacy and reproduce the CLI defect in Next/SDK.
@@ -348,8 +353,8 @@ node scripts/observe-mcp.mjs
 process runs the engine over whatever program came back -- the child's own claim of success is
 the one piece of evidence that proves nothing.
 
-Before trusting a new model id, confirm image support with
-`node scripts/check-vision.mjs PROVIDER/MODEL`, then confirm the harness actually forwards
+Before trusting a new OpenCode model id, confirm image support with
+`node scripts/check-vision.mjs PROVIDER/MODEL` (it reads OpenCode's model catalogue), then confirm the harness actually forwards
 the images. Provider metadata alone verifies neither.
 
 ### Reading a result honestly
