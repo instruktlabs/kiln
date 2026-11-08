@@ -1193,3 +1193,49 @@ describe('mergeRigidGroups: release policies', () => {
         expect(prim.getIndices()!.getArray()).toBeInstanceOf(Uint16Array);
   });
 });
+
+describe('mergeRigidGroups cellSize', () => {
+  function spread() {
+    const doc = new Document();
+    const buffer = doc.createBuffer();
+    const material = doc.createMaterial('Stone');
+    const scene = doc.createScene('Scene');
+    const positions = (x: number) =>
+      new Float32Array([x + 0.123, 0.456, 0.789, x + 1.321, 0.654, 0.987, x + 0.111, 1.222, 0.333]);
+    const part = (name: string, x: number) => {
+      const position = doc
+        .createAccessor()
+        .setType('VEC3')
+        .setArray(positions(x))
+        .setBuffer(buffer);
+      const prim = doc.createPrimitive().setAttribute('POSITION', position).setMaterial(material);
+      scene.addChild(doc.createNode(name).setMesh(doc.createMesh(name).addPrimitive(prim)));
+    };
+    part('NearA', 0);
+    part('NearB', 3);
+    part('FarA', 40);
+    part('FarB', 43);
+    return doc;
+  }
+
+  test('merges only within a cell and keeps every triangle', () => {
+    const whole = spread();
+    expect(mergeRigidGroups(whole).primitivesAfter).toBe(1);
+
+    const celled = spread();
+    const summary = mergeRigidGroups(celled, { cellSize: 15 });
+    expect(summary.primitivesAfter).toBe(2);
+    expect(collectGlbMetrics(celled).triangles).toBe(4);
+  });
+
+  test('a loosened position tolerance is opt-in', () => {
+    const far = () => {
+      const doc = spread();
+      for (const node of doc.getRoot().listNodes())
+        node.setTranslation([node.getName() === 'NearA' ? 1000 : 0, 0, 0]);
+      return doc;
+    };
+    expect(mergeRigidGroups(far()).rejected.length).toBeGreaterThan(0);
+    expect(mergeRigidGroups(far(), { positionTolerance: 1e-3 }).rejected).toEqual([]);
+  });
+});

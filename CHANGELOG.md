@@ -7,6 +7,24 @@ does not publish a package.
 
 ## Unreleased
 
+- GPU instancing now draws what the copies drew as separate nodes, in both `KILN_BAKE_INSTANCE` and the
+  three runtime target's `repeatInstances`. A mirrored copy no longer shares a batch with unmirrored ones,
+  where it drew inside out: single-sided surfaces vanished. Mirrored copies form their own batch on a node
+  scaled `[-1, 1, 1]`, with no second copy of the geometry. three r186's WebGPU renderer does not transform
+  instance tangents, which shaded a quarter-turned normal-mapped copy black. The bake pass now batches
+  tangent-bearing copies by the rotation they share and puts it on the batch node, and the runtime target
+  keeps a turned, stretched or mirrored tangent-bearing child separate. The bake pass also keeps a sheared
+  copy separate, because instance transforms cannot state shear. `EXT_mesh_gpu_instancing` is now required
+  wherever Kiln batches, so a viewer without it refuses the file instead of drawing one copy. Batches and
+  draws change on affected assets, including `role: 'fill'` assets under the default `auto`. A saved
+  revision built with instancing on can now rebuild with `matchesSavedArtifact: false`; the saved GLB is
+  unchanged.
+- `kiln export ... --profile runtime --draws minimal [--draw-cell M]` (and `draws: 'minimal'` in
+  `exportAssetGlb`) derives a file with fewer draw calls. Every repeated mesh becomes a batch, and parts
+  with a single-user mesh merge per material within cells of `M` metres (default 15). It runs no
+  `palette()` or `weld()`, and the saved revision is unchanged. The sidecar's `drawReduction` reports the
+  result. On the 1,834-draw cathedral revision it gives 283 draws, with the same triangles and 1% fewer
+  bytes. `mergeRigidGroups` gains opt-in `cellSize` and `positionTolerance`; `optimize: 'full'` is unchanged.
 - Three repeated costs on large assets are paid once. Measured on the 2,635,224-triangle cathedral, whose
   1,707 meshes share 184 geometries:
   - The open-surface penetration rule measures each shared geometry's topology once per pass. The
