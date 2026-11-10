@@ -15,7 +15,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: accelerometer=(), bluetooth=(), camera=(), display-capture=(), gamepad=(), geolocation=(), gyroscope=(), hid=(), magnetometer=(), microphone=(), midi=(), payment=(), serial=(), usb=(), xr-spatial-tracking=()
   Cache-Control: public, max-age=0, must-revalidate
-  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-wAGukfde07th8FeXAlx31NqovrboToJ/niuiFbyoI70=' 'sha256-nQyK+pVXDH5RpnnZ8bk4KjsgiC91NvDr20Qc7mo8J4w=' 'sha256-qsHLNpEk33lPgo1MnVDl/NNWHbeSVPK4+ksw8A84/ls=' 'sha256-pi2avave5D7tqBWNSP54Cy8gsoNF+VSK2JuekU4lFcg=' 'sha256-ynl5VnLFfq74TN1iDcyssM5zkT3yce8NSUQIazX5/GY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' blob: https://assets.kilnstudio.tools; worker-src blob:
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'sha256-wAGukfde07th8FeXAlx31NqovrboToJ/niuiFbyoI70=' 'sha256-nQyK+pVXDH5RpnnZ8bk4KjsgiC91NvDr20Qc7mo8J4w=' 'sha256-qsHLNpEk33lPgo1MnVDl/NNWHbeSVPK4+ksw8A84/ls=' 'sha256-pi2avave5D7tqBWNSP54Cy8gsoNF+VSK2JuekU4lFcg=' 'sha256-ynl5VnLFfq74TN1iDcyssM5zkT3yce8NSUQIazX5/GY='; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' blob: https://assets.kilnstudio.tools; worker-src 'self' blob:
 
 # The project's own pages.dev hosts serve these same bytes (production at kilnstudio.pages.dev, each deployment and
 # branch alias beneath it), so they are kept out of search indexes; only https://kilnstudio.tools is indexed. Pages
@@ -99,3 +99,9 @@ https://:version.kilnstudio.pages.dev/*
 /scene-runtime/:scene/*.js
   ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
+
+# The standalone H-7 game uses its own gamepad input; other site pages remain unchanged.
+/play/h-7/*
+  ! Permissions-Policy
+  Permissions-Policy: accelerometer=(), bluetooth=(), camera=(), display-capture=(), gamepad=(self), geolocation=(), gyroscope=(), hid=(), magnetometer=(), microphone=(), midi=(), payment=(), serial=(), usb=(), xr-spatial-tracking=()
+  X-Robots-Tag: noindex

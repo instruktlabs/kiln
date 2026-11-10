@@ -135,7 +135,12 @@ const questions = [
       { summary: "How the feet stay planted", code: sourceExcerpt(mechProgram, "function solveLeg(", "toe: qToe };\n}"), label: "Solving a leg", previewLines: 18 },
       { summary: "Drive it from three.js", code: mechUse, label: "three.js, for mech.glb", previewLines: 24 },
     ]}
-  />
+  >
+    <p slot="related" class="mt-4 border-l-2 border-ember pl-4">
+      Pilot a version of this walker in a desktop browser mech defense demo.
+      <a href="/play/h-7/" class="text-link">Play H-7 pre-alpha <span aria-hidden="true">→</span></a>
+    </p>
+  </TextTo3dRun>
 
   <TextTo3dRun
     subject={cathedral}

@@ -42,6 +42,7 @@ const nav = [
   ["Packs", "/packs/"],
   ["Gallery", "/gallery/"],
   ["Scenes", "/scenes/"],
+  ["Game demos", "/play/"],
 ] as const;
 const structured = [
   ...(jsonLd ? [jsonLd] : []),
@@ -173,7 +174,7 @@ const structured = [
                 Astro.url.pathname.startsWith(href) ? "page" : undefined
               }
               class:list={[
-                "flex min-h-12 items-center border-t border-rule px-1 py-2 text-base font-medium no-underline nav:min-h-11 nav:border-t-0 nav:px-3",
+                "flex min-h-12 items-center whitespace-nowrap border-t border-rule px-1 py-2 text-base font-medium no-underline nav:min-h-11 nav:border-t-0 nav:px-3",
                 Astro.url.pathname.startsWith(href)
                   ? "text-ember underline"
                   : "text-ink",
@@ -200,7 +201,7 @@ const structured = [
     </header>
     <script is:inline>
       {
-        const desktop = matchMedia("(min-width: 60rem)").matches;
+        const desktop = matchMedia("(min-width: 64rem)").matches;
         document.getElementById("menu-toggle").hidden = desktop;
         document.getElementById("primary-nav").hidden = !desktop;
       }
@@ -291,7 +292,7 @@ const structured = [
       const toggle = document.querySelector<HTMLButtonElement>("#menu-toggle");
       const nav = document.querySelector<HTMLElement>("#primary-nav");
       if (toggle && nav) {
-        const media = window.matchMedia("(min-width: 60rem)");
+        const media = window.matchMedia("(min-width: 64rem)");
         const sync = () => {
           toggle.hidden = media.matches;
           toggle.textContent = toggle.getAttribute("aria-expanded") === "true" ? "Close" : "Menu";

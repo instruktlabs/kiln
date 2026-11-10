@@ -10,6 +10,7 @@ import {viewerModelInput} from './viewer-model-input.mjs';
 import { glbJsonText } from './private-data.mjs';
 import {validatePublicText} from './validate-public-text.mjs';
 import { sitemapLastmodErrors } from './sitemap-routes.mjs';
+import { gameDocumentErrors, gameHtmlValidationRules, isGameDocument } from './static-validation-core.mjs';
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
@@ -52,12 +53,16 @@ const validator = new HtmlValidate({ extends: ['html-validate:recommended'], rul
   // Shiki deliberately sets per-token styles at build time; there is no runtime styling engine.
   'no-inline-style': 'off',
 } });
+const gameValidator = new HtmlValidate({ extends: ['html-validate:recommended'], rules: {
+  'attribute-boolean-style': 'off', 'void-style': 'off', 'no-inline-style': 'off', ...gameHtmlValidationRules,
+} });
 let htmlErrorCount = 0;
 const htmlResults = [];
 for (const [route, page] of pages) {
   if (new Set(page.ids).size !== page.ids.length) add(route, 'anchors', 'Duplicate element IDs');
   // A staged scene frame is served inside a page's iframe, so it is held to what a frame needs, not to page metadata.
-  if (isEmbeddedDocument(route) || isSceneSourceDocument(route)) for (const message of embeddedDocumentErrors(page)) add(route, 'metadata', message);
+  if (isGameDocument(route)) for (const message of gameDocumentErrors(page)) add(route, 'metadata', message);
+  else if (isEmbeddedDocument(route) || isSceneSourceDocument(route)) for (const message of embeddedDocumentErrors(page)) add(route, 'metadata', message);
   else {
     for (const [name, text, seen] of [['title', page.title, titles], ['description', page.description, descriptions]]) {
       if (!text?.trim()) add(route, 'metadata', `Missing ${name}`);
@@ -120,7 +125,7 @@ for (const [route, page] of pages) {
       if (!targetPage?.ids.includes(target.fragment)) add(route, 'anchors', `Missing anchor: ${url}`);
     }
   }
-  const validation = await validator.validateString(page.html, page.file);
+  const validation = await (isGameDocument(route) ? gameValidator : validator).validateString(page.html, page.file);
   if (!validation.valid) {
     const results = validation.results.map((result) => ({ file: relative(root, result.filePath), messages: result.messages }));
     htmlResults.push(...results);

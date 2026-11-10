@@ -1,0 +1,69 @@
+---
+import PageHeader from "../../components/PageHeader.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import poster from "../../data/h7-poster.json";
+---
+
+<BaseLayout
+  title="Game demos · Kiln"
+  description="Play the H-7 pre-alpha, a desktop WebGPU mech defense demo built with Kiln assets. Protect the relay and keep the evacuation shuttles flying."
+  breadcrumbs={[{ label: "Game demos", href: "/play/" }]}
+  card="game-demos"
+>
+  <div class="container pt-6 md:pt-8">
+    <PageHeader>Game demos</PageHeader>
+    <p class="lead mt-5">Choose a browser game demo and see how it uses Kiln assets.</p>
+
+    <article aria-labelledby="h7-title" class="drawing-sheet mt-7 grid md:mt-9 md:grid-cols-2 lg:grid-cols-5">
+      <div class="contents md:flex md:min-w-0 md:flex-col lg:col-span-3">
+        <img
+          src={poster.src}
+          alt={poster.alt}
+          width={poster.width}
+          height={poster.height}
+          fetchpriority="high"
+          class="block w-full border-ink bg-carbon md:min-h-0 md:flex-1 md:border-b md:object-cover"
+        />
+        <dl class="order-last grid grid-cols-3 divide-x divide-rule border-t border-ink bg-sheet text-center md:border-t-0">
+          <div class="px-2 py-3 sm:py-4">
+            <dt class="font-mono text-xs uppercase tracking-wide text-dim">First night</dt>
+            <dd class="mt-1 font-semibold sm:text-xl">8 min</dd>
+          </div>
+          <div class="px-2 py-3 sm:py-4">
+            <dt class="font-mono text-xs uppercase tracking-wide text-dim">Shuttle flights</dt>
+            <dd class="mt-1 font-semibold sm:text-xl">6</dd>
+          </div>
+          <div class="px-2 py-3 sm:py-4">
+            <dt class="font-mono text-xs uppercase tracking-wide text-dim">Colonists</dt>
+            <dd class="mt-1 font-semibold sm:text-xl">Up to 144</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="min-w-0 border-t border-ink px-5 py-6 sm:px-8 md:border-t-0 md:border-l lg:col-span-2">
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <h2 id="h7-title" class="text-heading">H-7</h2>
+          <span class="border border-ember bg-sheet px-2 py-1 font-mono text-xs uppercase tracking-wide text-ember">Pre-alpha</span>
+        </div>
+        <p class="mt-4">
+          Pilot a heavy walker and defend the outpost relay from the swarm. Keep the evacuation shuttles flying. Start with Training to learn the controls.
+        </p>
+        <p id="h7-requirements" class="mt-4 text-caption text-dim">
+          <strong class="text-ink">Desktop only.</strong> Open H-7 on a desktop or laptop with a WebGPU-capable browser, keyboard and mouse. Mobile play and touch controls are unsupported.
+        </p>
+        <p id="h7-status" class="mt-2 text-caption text-dim">
+          This pre-alpha is a work in progress. Hardware compatibility is still being tested, and performance varies by GPU and browser.
+        </p>
+        <a href="/play/h-7/" class="btn mt-5 w-full sm:w-auto" aria-describedby="h7-requirements h7-status">
+          Play H-7 pre-alpha <span aria-hidden="true">→</span>
+        </a>
+        <div class="mt-5 border-t border-rule pt-3">
+          <p class="font-mono text-code text-dim">Three.js · WebGPU · TypeGPU · React Three Fiber</p>
+          <a href="/text-to-3d/#mech" class="text-link mt-1">
+            Original Kiln mech, source and prompts <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+</BaseLayout>

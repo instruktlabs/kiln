@@ -1,4 +1,5 @@
 import { archiveLabel } from './archive-names.mjs';
+import h7Poster from '../data/h7-poster.json' with { type: 'json' };
 
 /**
  * The share cards, in one list: `scripts/build-site-media.mjs` draws each card from these inputs and `BaseLayout` describes
@@ -26,6 +27,7 @@ export function socialCards({ packsEnabled, release, farm, vehicles, bridge, her
     { slug: 'farm', title: PACK_NAMES.farm, note: `${farm.assetCount} assets · Kiln Commons`, poster: packsEnabled ? poster(farm.scene.poster) : undefined },
     { slug: 'vehicles', title: PACK_NAMES.vehicles, note: `${vehicles.assetCount} assets · Kiln Commons`, poster: packsEnabled ? poster(vehicles.assets.find((asset) => asset.slug === 'sedan').poster) : undefined },
     { slug: 'scenes', title: 'Explore worlds made with Kiln.', note: 'Scenes made with Kiln', poster: heroPoster },
+    { slug: 'game-demos', title: 'Game demos', note: 'H-7 pre-alpha · Mech defense', poster: poster(h7Poster) },
     { slug: 'docs', title: 'Make the next revision.', note: 'Kiln documentation' },
     { slug: 'foundry-floor', title: foundryFloor.name, note: 'Kiln Commons' },
     { slug: 'gallery', title: 'Read the source. Inspect the asset.', note: 'The Kiln gallery', poster: heroPoster },

@@ -6,6 +6,7 @@ import hero from '../src/data/hero.json';
 import farm from '../src/data/packs/farm.json';
 import vehicles from '../src/data/packs/vehicles.json';
 import bridge from '../src/data/standalone/golden-gate-bridge.json';
+import h7Poster from '../src/data/h7-poster.json';
 import { SOCIAL_CARD, socialCardAlt, socialCardPath, socialCards } from '../src/lib/social-cards.mjs';
 import { featuredWorlds, worldCover } from '../src/lib/site-curation';
 
@@ -43,8 +44,14 @@ test('one card per slug; the home card pictures the hero poster; the pre-upload 
   expect(release.version).toMatch(/^\d+\.\d+\.\d+$/);
   expect(cards.find((card) => card.slug === 'home')?.note).toBe(`Kiln · ${release.version.replace(/\.0$/, '')} release package`);
   const preUpload = socialCards({ ...data, packsEnabled: false });
-  expect(preUpload.some((card) => card.poster && !card.slug.startsWith('archive-'))).toBe(false);
+  expect(preUpload.filter((card) => card.poster && !card.slug.startsWith('archive-')).map((card) => card.slug)).toEqual(['game-demos']);
   expect(preUpload.some((card) => card.slug === 'farmhouse')).toBe(false);
+});
+
+test('the Game demos share card uses the H-7 poster and labels it pre-alpha', () => {
+  const card = socialCards({ ...data, packsEnabled: false }).find((candidate) => candidate.slug === 'game-demos')!;
+  expect(card.poster).toEqual({ src: h7Poster.src, alt: h7Poster.alt });
+  expect(card.note).toContain('H-7 pre-alpha');
 });
 
 // Content review, finding 7: the alt text describes the card from the card's own inputs, never the page title.
