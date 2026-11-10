@@ -15,6 +15,7 @@ import { docsDirectory, skillsDirectory } from './source-dirs.mjs';
 import { verifyPack, NOTICES } from './scene-pack.mjs';
 import { verifyStagedRuntime } from './scene-runtime.mjs';
 import { snapshotSource } from './source-snapshot.mjs';
+import { verifyStagedGames } from './game-inputs.mjs';
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const hash = (bytes) => createHash('sha256').update(bytes).digest('hex');
@@ -86,6 +87,7 @@ export async function buildInfo({ env = process.env, site = SITE, dist = join(si
     skills: { commit: skills.commit, sameTreeAsSite: Boolean(skills.top && skills.top === own.top), clean: skills.clean, ...(skills.filesSha256 ? { filesSha256: skills.filesSha256, snapshotSha256: skills.snapshotSha256 } : {}) },
     scenePacks: Object.fromEntries(Object.entries(scenes).map(([id, scene]) => [id, scene.release])),
     scenes,
+    games: await verifyStagedGames({ site, dist, allowMissingManifest: true }),
     builtAt: now.toISOString(),
   };
 }

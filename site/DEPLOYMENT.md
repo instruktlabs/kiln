@@ -2,6 +2,15 @@
 
 ## Release procedure
 
+H-7 is listed under **Game demos** at `/play/` and runs as a separate document at
+`/play/h-7/`. Its private source repository produces a minified pre-alpha bundle
+without source maps. Publish the immutable ZIP with the asset publisher below,
+then update `src/data/game-inputs.json` from that release's manifest. The site
+stages and verifies its exact file inventory after Astro builds; `build-info.json`
+records the game source commit and archive hash. See
+[compiled game inputs](scripts/game-inputs.md). Do not rebuild H-7 with the site's
+dependencies or replace its sealed files during deployment.
+
 The website remains a direct upload to the `kilnstudio` Cloudflare Pages project,
 branch `production`. Generated downloads live in the `kiln-assets` R2 bucket at
 `https://assets.kilnstudio.tools/`; lightweight asset records and scene sources stay

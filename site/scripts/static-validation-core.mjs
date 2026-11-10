@@ -23,6 +23,20 @@ export function resolveInternalLink(href, route) {
 export const isEmbeddedDocument = (route) => /^\/scene-runtime\/[^/]+\/frame\.html$/.test(route) || /^\/scene-packs\/troy\/[^/]+\/web\/(?:qualification\/[^/]+\.html)?$/.test(route) || /^\/asset-demos\/[^/]+\/web\/game\.html$/.test(route);
 /** Raw project entrypoints accompany the source download; they are not site pages. */
 export const isSceneSourceDocument = (route) => /^\/asset-demos\/[^/]+\/scene-source\/(?:[^/]+\/)*[^/]+\.html$/.test(route);
+/** The pinned compiled game owns its document; the indexed /play/ listing keeps the normal site contract. */
+export const isGameDocument = (route) => route === '/play/h-7/';
+// The sealed Vite document uses valid lowercase HTML doctype syntax. Its bytes
+// must remain intact; only this stylistic rule differs from site HTML validation.
+export const gameHtmlValidationRules = { 'doctype-style': 'off' };
+export function gameDocumentErrors(page) {
+  const errors = [];
+  if (!page.title?.trim()) errors.push('Missing title');
+  if (!page.description?.trim()) errors.push('Missing description');
+  if (page.language !== 'en') errors.push('Missing lang="en"');
+  if (!page.noindex) errors.push('Game launch document must be noindex');
+  if (page.canonicalCount !== 1 || page.canonical !== `${ORIGIN}/play/h-7/`) errors.push(`Game launch canonical must be ${ORIGIN}/play/h-7/`);
+  return errors;
+}
 export function embeddedDocumentErrors(page) {
   const errors = [];
   if (!page.title?.trim()) errors.push('Missing title');
@@ -468,7 +482,7 @@ export function headersErrors({ text, inlineScripts = [], files = [], sealedFile
   const noindexed = (path) => /noindex/i.test(headersFor(rules, path)['x-robots-tag'] ?? '');
   for (const path of RAW_NOINDEX_SAMPLES) if (!noindexed(path)) errors.push(`${path} must be served X-Robots-Tag: noindex`);
   for (const path of KEEP_INDEXABLE_SAMPLES) if (noindexed(path)) errors.push(`${path} must not be served X-Robots-Tag: noindex`);
-  for (const file of files) if (/\.html$/.test(file) && noindexed(`/${file}`)) errors.push(`The page /${file} must not be served X-Robots-Tag: noindex`);
+  for (const file of files) if (/\.html$/.test(file) && !isGameDocument(routeForFile(file)) && noindexed(`/${file}`)) errors.push(`The page /${file} must not be served X-Robots-Tag: noindex`);
   for (const path of sitemapPaths) if (noindexed(path)) errors.push(`The sitemap URL ${path} must not be served X-Robots-Tag: noindex`);
   for (const host of PAGES_DEV_HOSTS) {
     for (const path of ['/', '/docs/', '/robots.txt']) {

@@ -133,7 +133,7 @@ describe('build info', () => {
 
   test('records commits, mode, scene releases and time, and holds no path', async () => {
     const dist = await mkdtemp(join(tmpdir(), 'kiln-empty-receipt-'));
-    const info = await buildInfo({ dist, env: { KILN_SITE_PACKS: '1', KILN_SITE_DOCS_DIR: join(tmpdir(), 'engine', 'docs') }, now: new Date('2026-09-30T12:00:00Z'), commitOf });
+    const info = await buildInfo({ site: dist, dist, env: { KILN_SITE_PACKS: '1', KILN_SITE_DOCS_DIR: join(tmpdir(), 'engine', 'docs') }, now: new Date('2026-09-30T12:00:00Z'), commitOf });
     await rm(dist, { recursive: true, force: true });
     expect(info.commit).toBe('abc1234');
     expect(info.kilnSitePacks).toBe('1');

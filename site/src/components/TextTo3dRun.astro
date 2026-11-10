@@ -58,6 +58,7 @@ const PAIR_SIZES = "(max-width: 767px) calc(50vw - 1rem), (max-width: 1279px) ca
       <h2 id={headingId}>{title}</h2>
       <p class="mt-4 text-dim">{intro}</p>
       {note && <p class="mt-4 border-l-2 border-ember pl-4">{note}</p>}
+      <slot name="related" />
     </div>
     <div class="drawing-sheet min-w-0 lg:col-span-2 lg:col-start-1 lg:row-span-2 lg:row-start-1 lg:self-start">
       <AssetViewer

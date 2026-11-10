@@ -1,4 +1,5 @@
 import { expect, test } from 'bun:test';
+import { readFile } from 'node:fs/promises';
 import { legacyDestination, matchesAsset } from '../src/lib/navigation';
 test('legacy links resolve only known archive slugs and safely fall back',()=>{
  expect(legacyDestination('#/gallery',['barn'])).toBe('/gallery/archive/');
@@ -18,4 +19,21 @@ test('an asset shared by two packs is visible in either pack filter without a du
  expect(matchesAsset(shared, 'vehicles', 'Road vehicles')).toBe(true);
  expect(matchesAsset(shared, 'farm', 'all')).toBe(false);
  expect(matchesAsset(shared, 'foundry-floor', 'Buildings')).toBe(false);
+});
+
+test('the primary nav links to Game demos, whose first entry launches the H-7 pre-alpha', async () => {
+  const layout = await readFile(new URL('../src/layouts/BaseLayout.astro', import.meta.url), 'utf8');
+  expect(layout).toContain('["Game demos", "/play/"]');
+  const listing = await readFile(new URL('../src/pages/play/index.astro', import.meta.url), 'utf8');
+  expect(listing).toMatch(/href="\/play\/h-7\/"[^>]*>\s*Play H-7 pre-alpha/);
+  expect(listing).toContain('WebGPU');
+  expect(listing).toContain('keyboard and mouse');
+  expect(listing).not.toMatch(/<iframe\b/);
+});
+
+test('the H-7 pre-alpha and its original mech walkthrough link to each other', async () => {
+  const listing = await readFile(new URL('../src/pages/play/index.astro', import.meta.url), 'utf8');
+  const walkthrough = await readFile(new URL('../src/pages/text-to-3d.astro', import.meta.url), 'utf8');
+  expect(listing).toContain('href="/text-to-3d/#mech"');
+  expect(walkthrough).toMatch(/subject=\{mech\}[\s\S]*?href="\/play\/h-7\/"[^>]*>\s*Play H-7 pre-alpha[\s\S]*?<\/TextTo3dRun>/);
 });
