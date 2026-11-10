@@ -37,3 +37,11 @@ test('the H-7 pre-alpha and its original mech walkthrough link to each other', a
   expect(listing).toContain('href="/text-to-3d/#mech"');
   expect(walkthrough).toMatch(/subject=\{mech\}[\s\S]*?href="\/play\/h-7\/"[^>]*>\s*Play H-7 pre-alpha[\s\S]*?<\/TextTo3dRun>/);
 });
+
+test('the H-7 listing explains desktop-only play and the work-in-progress status before launch', async () => {
+  const listing = await readFile(new URL('../src/pages/play/index.astro', import.meta.url), 'utf8');
+  expect(listing).toMatch(/href="\/play\/h-7\/"[^>]*aria-describedby="h7-requirements h7-status"/);
+  expect(listing).toMatch(/id="h7-requirements"[\s\S]*?desktop or laptop[\s\S]*?WebGPU[\s\S]*?keyboard and mouse[\s\S]*?Mobile play and touch controls are unsupported/);
+  expect(listing).toContain('work in progress');
+  expect(listing).toContain('Hardware compatibility is still being tested');
+});
