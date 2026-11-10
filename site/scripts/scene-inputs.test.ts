@@ -11,6 +11,16 @@ test('scene archives are hash pinned and refuse unsafe members before extraction
   const unsafe = zipSync({ '../outside.txt': strToU8('no') });
   expect(() => checkedSceneArchive(unsafe, { ...record, bytes: unsafe.length, sha256: hashBytes(unsafe) })).toThrow('Unsafe asset path');
 });
+
+test('portable scene input binds the archive to its selected embedded pack, id and release', () => {
+  const pack = strToU8(JSON.stringify({ id: 'cathedral-square', release: 'cs2' }));
+  const bytes = zipSync({ 'assets/pack.json': pack });
+  const record = { id: 'cathedral-square', release: 'cs2', bytes: bytes.length, sha256: hashBytes(bytes), packJsonSha256: hashBytes(pack), path: 'cathedral.zip' };
+  expect(Object.keys(checkedSceneArchive(bytes, record))).toEqual(['assets/pack.json']);
+  expect(() => checkedSceneArchive(bytes, { ...record, release: 'cs1' })).toThrow(/release/);
+  expect(() => checkedSceneArchive(bytes, { ...record, id: 'farm' })).toThrow(/id/);
+  expect(() => checkedSceneArchive(bytes, { ...record, packJsonSha256: '0'.repeat(64) })).toThrow(/pack/);
+});
 test('sealed scene staging refuses invalid UTF-8 metadata before extraction, retaining valid international text and binary inputs',()=>{
  const bad=zipSync({'terrain/manifest.json':Uint8Array.of(0x7b,0x22,0x78,0x22,0x3a,0x22,0xb1,0x22,0x7d)});
  expect(()=>checkedSceneArchive(bad,{bytes:bad.length,sha256:hashBytes(bad),path:'bridge.zip'})).toThrow(/bridge\.zip.*terrain\/manifest.json.*UTF-8/);

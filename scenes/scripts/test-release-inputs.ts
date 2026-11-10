@@ -7,6 +7,7 @@ const SUITES = [
   './packages/foundry-floor/tests/unit/glb-world.test.ts',
   './packages/foundry-floor/tests/unit/campus-vegetation-shared.test.ts',
   './packages/golden-gate/tests/unit/vehicle-models.test.ts',
+  './packages/cathedral-square/tests',
 ];
 interface GateOptions {
   root?: string;

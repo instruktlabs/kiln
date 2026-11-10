@@ -5,3 +5,8 @@ dist/
 coverage/
 .cache/
 evidence/
+packages/cathedral-square/standalone/public/
+# Local owner captures, authoring receipts and one-off inspection scripts.
+packages/cathedral-square/review/
+packages/cathedral-square/tests/_debug.ts
+packages/cathedral-square/tests/_windows.ts

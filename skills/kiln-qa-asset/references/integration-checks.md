@@ -111,6 +111,25 @@ Check the closed state blocks where intended, the opening sweep clears its
 surroundings, and the open state admits the actor. Repair obstructing asset
 geometry at its source rather than disabling the building's collision to pass.
 
+For connected interiors, continue through the vestibule and into the occupied
+aisle in both directions. A valid facade opening can still lead into a solid
+inner wall. Include the final furnishings and flared column bases in route
+checks; nominal row spacing is not capsule clearance. Audit repeated seams with
+surface rays or edge checks and eye-level views, distinguishing intentional doors
+and windows from accidental holes. Report sampled regions and tolerances rather
+than claiming every opening is a defect or every seam is proven closed.
+
+For stained-glass projections, verify the actual glass texture and sun direction,
+then test opaque obstruction on both sides of the glazing. Keep a fixed raster
+approximation identified as such, measure its build and frame costs separately,
+and check it again after destination batching and shadow setup.
+Include a column or wall that intercepts the colored beam: its lit face should
+receive the transmitted color while surfaces behind it remain shadowed. A floor
+overlay cannot establish this behavior. Inspect occlusion boundaries with the
+actual texture filtering and shadow settings, and qualify the shadows-disabled
+path separately so a lower quality tier cannot silently transmit light through
+opaque structure.
+
 For an operator and machine, inspect the actual seated pose with the controls at
 their relevant extremes. A seat socket proves an attachment transform, not body
 clearance or reach. Distinguish a demo controller's pose from clips included in the

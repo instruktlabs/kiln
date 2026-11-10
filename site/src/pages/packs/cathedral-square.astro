@@ -1,0 +1,39 @@
+---
+import AssetCard from "../../components/AssetCard.astro";
+import AssetDownloads from "../../components/AssetDownloads.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { galleryCards } from "../../lib/gallery";
+import { galleryCategories } from "../../lib/gallery-browse";
+import { PACKS_ENABLED } from "../../lib/config";
+import { packDelivery } from "../../lib/delivery";
+import { CATHEDRAL_SQUARE_ID, cathedralPack, cathedralPackHref, cathedralSceneHref } from "../../lib/cathedral-gallery";
+const assets = galleryCards.filter((asset) => asset.packs.includes(CATHEDRAL_SQUARE_ID));
+const downloads = PACKS_ENABLED ? packDelivery(CATHEDRAL_SQUARE_ID) : null;
+const categories = galleryCategories.filter((category) => assets.some((asset) => asset.category === category));
+---
+<BaseLayout title="Cathedral Square asset pack · Kiln"
+  description="The Gothic cathedral, old-town houses, trees, street furnishings and nave fittings used in the Cathedral Square walkthrough."
+  breadcrumbs={[{ label: "Packs", href: "/packs/" }, { label: "Cathedral Square", href: cathedralPackHref }]}
+  card="packs">
+  <div class="container pb-12">
+    <PageHeader class="py-8">Cathedral Square asset pack</PageHeader>
+    <p class="lead max-w-prose">A Gothic cathedral and the kit used to build the surrounding quarter, from timber and stone houses to street stalls, pews and a carved crucifix.</p>
+    <a class="btn btn-secondary mt-6" href={cathedralSceneHref}>Explore the scene</a>
+    {downloads && (
+      <>
+        <p class="mt-8 max-w-reading">The pack includes all {cathedralPack.assets.length} models used by the scene. Each gallery page shows the selected revision in isolation.</p>
+        <AssetDownloads runtime={downloads.runtime} editable={downloads.editable} />
+        <p class="mt-4 max-w-reading">The owner designated the authored assets and Kiln source <a class="text-link" href={cathedralPack.license.url}>{cathedralPack.license.spdx}</a> to the extent of the owner's rights. The archives include third-party material notices.</p>
+        {categories.map((category) => (
+          <section class="mt-12">
+            <h2 class="text-subheading">{category}</h2>
+            <div class="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+              {assets.filter((asset) => asset.category === category).map((asset) => <AssetCard asset={asset} />)}
+            </div>
+          </section>
+        ))}
+      </>
+    )}
+  </div>
+</BaseLayout>

@@ -24,6 +24,7 @@ function fixture() {
 }
 
 test('released inputs require every scene and the exact externally pinned pack, sums and members', () => {
+  expect(RELEASE_SCENES).toContain('cathedral-square');
   const { root, pins } = fixture();
   expect(verifyReleasedSceneInputs({ root, pins }).map(r => [r.scene, r.release, r.models, r.files])).toEqual(RELEASE_SCENES.map(s => [s, 'test-release', 1, 1]));
   const assets = releasedAssetRoot(root, 'foundry-floor'), model = resolve(assets, 'models/example.glb');
@@ -73,6 +74,7 @@ test('the release gate refuses absent inputs before tests and runs its selected 
   const run: Parameters<typeof runReleaseInputGate>[0]['run'] = (command, options) => {
     runs++; expect(command).toContain('./packages/foundry-floor/tests/unit/glb-world.test.ts');
     expect(command).toContain('./packages/golden-gate/tests/unit/vehicle-models.test.ts');
+    expect(command).toContain('./packages/cathedral-square/tests');
     expect(options.env.KILN_SCENE_RELEASE_INPUTS).toBe('1'); expect(options.cwd).toBe(root);
     return 7;
   };

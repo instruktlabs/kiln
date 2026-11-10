@@ -8,7 +8,10 @@ const PREFIX = '/_review/files/';
 const escape = text => String(text).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
 const MIME = { '.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.mjs':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.txt':'text/plain; charset=utf-8','.md':'text/plain; charset=utf-8','.xml':'application/xml','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.avif':'image/avif','.ico':'image/x-icon','.woff2':'font/woff2','.glb':'model/gltf-binary','.zip':'application/zip','.gz':'application/gzip' };
 /** A local HTTP adapter: original build files remain untouched; only CDN download anchor hrefs change. */
-export async function createLocalReview({ dist, mirror, manifest }) {
+export async function createLocalReview({ dist, mirror, manifest, downloadPrefix }) {
+  if (downloadPrefix !== undefined && (!assetPath(downloadPrefix).endsWith('/') || downloadPrefix.includes('//'))) {
+    throw new Error('Download prefix must be a mirror directory ending in /');
+  }
   const artifactBytes = await readFile(join(dist,'artifact-files.json'));
   const infoBytes = await readFile(join(dist,'build-info.json'));
   const info = JSON.parse(infoBytes);
@@ -24,7 +27,9 @@ export async function createLocalReview({ dist, mirror, manifest }) {
     const text=bytes.toString('utf8').replace(/(<a\b[^>]*\bhref=)(["'])([^"']+)\2/gi,(match,start,quote,href)=>{
       if (!href.startsWith(manifest.base)) return match;
       const url=new URL(href.replaceAll('&amp;','&')); if(url.origin!==origin.origin) return match;
-      const file=assetPath(decodeURIComponent(url.pathname.slice(origin.pathname.length)));
+      const relative=decodeURIComponent(url.pathname.slice(origin.pathname.length));
+      if(downloadPrefix && !relative.startsWith(downloadPrefix)) return match;
+      const file=assetPath(relative);
       requestedDownloads.add(file); links++;
       return `${start}${quote}${PREFIX}${file}${url.search}${url.hash}${quote}`;
     });
@@ -51,7 +56,8 @@ export async function createLocalReview({ dist, mirror, manifest }) {
   }
   for (const [path,bytes] of [['artifact-files.json',artifactBytes],['build-info.json',infoBytes]]) artifacts.set(path,{path,bytes:bytes.length,sha256:hashBytes(bytes)});
   const headers=parseHeaderRules(await readFile(join(dist,'_headers'),'utf8').catch(error=>{if(error.code==='ENOENT')return '';throw error;}));
-  const receipt={schema:'kiln.local-review/1',productionArtifactSha256:info.artifacts.sha256,productionBuild:info,transform:'Only anchor hrefs under the declared asset CDN base map to /_review/files/. All other build bytes and original files remain unchanged. Every requested build/download file is verified against its pin.',assetBase:manifest.base,localAssetBase:PREFIX,downloads:[...downloads.values()].sort((a,b)=>a.path.localeCompare(b.path)),html};
+  const scope = downloadPrefix ? ` under ${downloadPrefix}` : '';
+  const receipt={schema:'kiln.local-review/1',...(downloadPrefix ? {downloadPrefix} : {}),productionArtifactSha256:info.artifacts.sha256,productionBuild:info,transform:`Only anchor hrefs under the declared asset CDN base${scope} map to /_review/files/. All other build bytes and original files remain unchanged. Every requested build/download file is verified against its pin.`,assetBase:manifest.base,localAssetBase:PREFIX,downloads:[...downloads.values()].sort((a,b)=>a.path.localeCompare(b.path)),html};
   const receiptBytes=Buffer.from(`${JSON.stringify(receipt,null,2)}\n`);
   const index=Buffer.from(`<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Kiln local review files</title><style>body{max-width:60rem;margin:2rem auto;padding:1rem;font:18px/1.5 system-ui}a{overflow-wrap:anywhere}li{margin:1rem 0}</style><h1>Local review files</h1><p><a href="/">Open the site</a> · <a href="/_review/receipt.json">Read the exact build and download receipt</a></p><p>This local adapter maps the site's download links to verified local files. It does not upload or change the production build. The current build was made ${escape(info.builtAt)}.</p><p>Production artifact SHA-256: <code>${escape(info.artifacts.sha256)}</code></p><h2>${downloads.size} verified downloads</h2><ul>${[...downloads.values()].map(pin=>`<li><a href="${PREFIX}${escape(pin.path)}">${escape(pin.path)}</a> (${pin.bytes.toLocaleString('en-US')} bytes)<br><code>${pin.sha256}</code></li>`).join('')}</ul></html>`);
   const handler=async(req,res)=>{
@@ -82,7 +88,11 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const option=(name,fallback)=>{const at=process.argv.indexOf(name);return at<0?fallback:process.argv[at+1];};
   const dist=resolve(option('--dist','dist'));const mirror=option('--mirror',process.env.KILN_ASSET_MIRROR);if(!mirror)throw new Error('Use --mirror <verified-local-mirror>');
   const manifest=JSON.parse(await readFile(resolve(option('--manifest','src/data/mirror-manifest.json')),'utf8'));
-  const review=await createLocalReview({dist,mirror:resolve(mirror),manifest});
+  const downloadPrefix=option('--download-prefix');
+  if(process.argv.includes('--download-prefix') && (!downloadPrefix || downloadPrefix.startsWith('--'))) {
+    throw new Error('Use --download-prefix <mirror-directory/>');
+  }
+  const review=await createLocalReview({dist,mirror:resolve(mirror),manifest,downloadPrefix});
   const receiptFile=resolve(option('--receipt','.cache/local-review/receipt.json'));await mkdir(dirname(receiptFile),{recursive:true});await writeFile(receiptFile,`${JSON.stringify(review.receipt,null,2)}\n`);
   console.log(`Verified ${review.receipt.downloads.length} local downloads; ${review.receipt.html.length} HTML pages map download links. Production artifact ${review.receipt.productionArtifactSha256}.`);
   if(!process.argv.includes('--check')){const port=Number(option('--port','4412'));const host=option('--host','127.0.0.1');createServer(review.handler).listen(port,host,()=>console.log(`Local review listening on port ${port}; entry /, files /_review/, receipt /_review/receipt.json.`));}

@@ -279,5 +279,153 @@
         }
       }
     }
+  },
+  "cathedral-square": {
+    "poster": {
+      "src": "/media/scenes/cathedral-square/cs2-site1/exterior.webp",
+      "width": 1280,
+      "height": 500,
+      "alt": "The Gothic cathedral and its surrounding town seen from above the square in afternoon light.",
+      "srcsetWebp": "/media/scenes/cathedral-square/cs2-site1/exterior-320.webp 320w, /media/scenes/cathedral-square/cs2-site1/exterior-480.webp 480w, /media/scenes/cathedral-square/cs2-site1/exterior-672.webp 672w, /media/scenes/cathedral-square/cs2-site1/exterior-768.webp 768w, /media/scenes/cathedral-square/cs2-site1/exterior-1024.webp 1024w",
+      "srcsetAvif": "/media/scenes/cathedral-square/cs2-site1/exterior-320.avif 320w, /media/scenes/cathedral-square/cs2-site1/exterior-480.avif 480w, /media/scenes/cathedral-square/cs2-site1/exterior-672.avif 672w, /media/scenes/cathedral-square/cs2-site1/exterior-768.avif 768w, /media/scenes/cathedral-square/cs2-site1/exterior-1024.avif 1024w",
+      "inputPath": "media/scenes/cathedral-square/cs2-site1/exterior.png"
+    },
+    "capture": {
+      "tool": "CUA",
+      "browser": "Codex in-app browser",
+      "view": "Square overview",
+      "source": "CUA browser screenshot, standalone current source, cropped to remove controls",
+      "release": "cs2-site1",
+      "packRelease": "cs2",
+      "packJsonSha256": "2a68be81055f3b32fbb48f739af39026f28243d217301bf530d1a93d8f9344cf",
+      "renderer": {
+        "backend": "webgpu"
+      },
+      "sourceScreenshot": {
+        "filename": "scene-exterior.png",
+        "format": "jpeg",
+        "bytes": 100311,
+        "width": 1280,
+        "height": 628,
+        "sha256": "24d7460e77572d48c1168f3f5063887f98c1e85f2e0876c38c212288e6651c39"
+      },
+      "crop": {
+        "left": 0,
+        "top": 128,
+        "width": 1280,
+        "height": 500
+      },
+      "size": [
+        1280,
+        500
+      ],
+      "pngBytes": 989185,
+      "pngSha256": "cfeb2cc103530ad2324ffa8867d6cc5358e8fdf86bbcecd869b316d81a712f63"
+    },
+    "captures": {
+      "exterior": {
+        "poster": {
+          "src": "/media/scenes/cathedral-square/cs2-site1/exterior.webp",
+          "width": 1280,
+          "height": 500,
+          "alt": "The Gothic cathedral and its surrounding town seen from above the square in afternoon light.",
+          "srcsetWebp": "/media/scenes/cathedral-square/cs2-site1/exterior-320.webp 320w, /media/scenes/cathedral-square/cs2-site1/exterior-480.webp 480w, /media/scenes/cathedral-square/cs2-site1/exterior-672.webp 672w, /media/scenes/cathedral-square/cs2-site1/exterior-768.webp 768w, /media/scenes/cathedral-square/cs2-site1/exterior-1024.webp 1024w",
+          "srcsetAvif": "/media/scenes/cathedral-square/cs2-site1/exterior-320.avif 320w, /media/scenes/cathedral-square/cs2-site1/exterior-480.avif 480w, /media/scenes/cathedral-square/cs2-site1/exterior-672.avif 672w, /media/scenes/cathedral-square/cs2-site1/exterior-768.avif 768w, /media/scenes/cathedral-square/cs2-site1/exterior-1024.avif 1024w",
+          "inputPath": "media/scenes/cathedral-square/cs2-site1/exterior.png"
+        },
+        "capture": {
+          "tool": "CUA",
+          "browser": "Codex in-app browser",
+          "view": "Square overview",
+          "source": "CUA browser screenshot, standalone current source, cropped to remove controls",
+          "release": "cs2-site1",
+          "packRelease": "cs2",
+          "packJsonSha256": "2a68be81055f3b32fbb48f739af39026f28243d217301bf530d1a93d8f9344cf",
+          "renderer": {
+            "backend": "webgpu"
+          },
+          "sourceScreenshot": {
+            "filename": "scene-exterior.png",
+            "format": "jpeg",
+            "bytes": 100311,
+            "width": 1280,
+            "height": 628,
+            "sha256": "24d7460e77572d48c1168f3f5063887f98c1e85f2e0876c38c212288e6651c39"
+          },
+          "crop": {
+            "left": 0,
+            "top": 128,
+            "width": 1280,
+            "height": 500
+          },
+          "size": [
+            1280,
+            500
+          ],
+          "pngBytes": 989185,
+          "pngSha256": "cfeb2cc103530ad2324ffa8867d6cc5358e8fdf86bbcecd869b316d81a712f63"
+        }
+      },
+      "interior": {
+        "poster": {
+          "src": "/media/scenes/cathedral-square/cs3-site1/interior.webp",
+          "width": 1280,
+          "height": 564,
+          "alt": "The cathedral sanctuary with the suspended crucifix, candlelit altar, stained glass and stone vaults.",
+          "srcsetWebp": "/media/scenes/cathedral-square/cs3-site1/interior-320.webp 320w, /media/scenes/cathedral-square/cs3-site1/interior-480.webp 480w, /media/scenes/cathedral-square/cs3-site1/interior-672.webp 672w, /media/scenes/cathedral-square/cs3-site1/interior-768.webp 768w, /media/scenes/cathedral-square/cs3-site1/interior-1024.webp 1024w",
+          "srcsetAvif": "/media/scenes/cathedral-square/cs3-site1/interior-320.avif 320w, /media/scenes/cathedral-square/cs3-site1/interior-480.avif 480w, /media/scenes/cathedral-square/cs3-site1/interior-672.avif 672w, /media/scenes/cathedral-square/cs3-site1/interior-768.avif 768w, /media/scenes/cathedral-square/cs3-site1/interior-1024.avif 1024w",
+          "inputPath": "media/scenes/cathedral-square/cs3-site1/interior.png"
+        },
+        "capture": {
+          "tool": "CUA",
+          "browser": "Codex in-app browser",
+          "view": "Sanctuary",
+          "source": "CUA browser screenshot, standalone current source, cropped to remove controls",
+          "release": "cs3-site1",
+          "packRelease": "cs3",
+          "packJsonSha256": "7f32c63073d6c059258647c1db59d89081107b7c6678b71f35678c6057126ec5",
+          "camera": {
+            "position": [
+              -43,
+              2.2,
+              0
+            ],
+            "look": [
+              -0.982,
+              0.19,
+              0
+            ],
+            "fov": 58
+          },
+          "renderer": {
+            "backend": "webgpu",
+            "ambientOcclusion": {
+              "tier": "economy",
+              "blend": 1
+            }
+          },
+          "sourceScreenshot": {
+            "filename": "sanctuary-final.jpg",
+            "format": "jpeg",
+            "bytes": 85949,
+            "width": 1280,
+            "height": 720,
+            "sha256": "0526d428c0493f91f75d8e61c553a8634d465300fe3c47b0ac169ce31119d9cf"
+          },
+          "crop": {
+            "left": 0,
+            "top": 128,
+            "width": 1280,
+            "height": 564
+          },
+          "size": [
+            1280,
+            564
+          ],
+          "pngBytes": 927781,
+          "pngSha256": "293869c9269ab656cc4e8b0cbe5814416e6d848a89488fc1b8bbf224d8890c03"
+        }
+      }
+    }
   }
 }

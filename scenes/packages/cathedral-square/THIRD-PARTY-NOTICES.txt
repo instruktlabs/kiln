@@ -1,0 +1,19 @@
+Cathedral Square software and asset notices
+
+The Cathedral Square scene code is MIT, the same licence as the Kiln scene package that hosts it.
+
+The owner designated the authored model and editable source content of the 22 Cathedral Square gallery assets CC0 1.0 Universal, to the extent of the owner's rights.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The saved asset and revision IDs are in ASSET-MANIFEST.json. The gallery and editable downloads retain the recorded model and harness attribution for each revision. Historical and separately published revisions retain their own terms.
+
+Third-party materials retain their source terms. The following embedded maps come from the Kiln approved texture library, which records these Poly Haven originals under CC0 1.0 Universal:
+- Brown Planks 03: https://polyhaven.com/a/brown_planks_03
+- Rust Coarse 01: https://polyhaven.com/a/rust_coarse_01
+- Brown Mud Dry: https://polyhaven.com/a/brown_mud_dry
+- Clay Roof Tiles: https://polyhaven.com/a/clay_roof_tiles
+- Cobblestone Floor 01: https://polyhaven.com/a/cobblestone_floor_01
+- Oak Veneer 01: https://polyhaven.com/a/oak_veneer_01
+
+three 0.187.0 and three-mesh-bvh 0.9.18 are MIT.
+React and React Three Fiber follow their own MIT licences.

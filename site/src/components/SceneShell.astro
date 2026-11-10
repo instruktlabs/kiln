@@ -5,6 +5,7 @@ import { FULL_WIDTH_IMAGE_SIZES } from "../lib/catalog";
 import { PACKS_ENABLED } from "../lib/config";
 import PageHeader from "./PageHeader.astro";
 import ScenePoster from "./ScenePoster.astro";
+import SceneSelector from './SceneSelector.astro';
 
 interface Props {
   scene: SceneId;
@@ -22,6 +23,7 @@ const stateCopy = scene.available
 ---
 
 <div class="mb-8">
+  <SceneSelector current={id} />
   <PageHeader>{scene.name} scene</PageHeader>
   <p class="lead mt-4">{scene.description}</p>
   {PACKS_ENABLED && <a class="btn btn-secondary mt-6" href={scene.fallback.href}>{scene.fallback.label}</a>}

@@ -4,6 +4,12 @@ Search `kiln_discover` for the shape or operation you need, then fetch exact `id
 
 Parts use the asset frame: metres, +X forward, +Y up, +Z right. Forward is the direction the object faces; a bench's sitter faces +X. Part `rotation` is in degrees and follows the right-hand rule in this frame: `[0, 90, 0]` turns forward (+X) toward -Z, the object's left; `[0, 0, 90]` tips +X up to +Y; `[90, 0, 0]` rolls +Y toward +Z.
 
+Inspect raised lettering from its intended reading side. For a +X-facing plaque
+viewed from +X with +Y up, screen-right is -Z. Verify word order and each diagonal
+stroke independently: correct letter order can still contain a mirrored N or a
+backward R leg. Correct the affected stroke in source rather than mirroring the
+whole inscription, and check the saved export from the same reading direction.
+
 For a gripper or carrier, define the payload's occupied volume as well as its
 attachment marker. Check the complete gripper housing, palm and jaws against that
 volume; separated fingers do not prove the central body clears it. Size the open
@@ -555,6 +561,20 @@ const blob = await implicitSurface(([x,y,z]) => 1 - Math.hypot(x,y,z), {
 ```
 
 Positive values are inside. Bounds/resolution are required; smaller cells cost more and thin features can disappear. Explicit grid/evaluation limits apply. Output has no UVs. Use this for a deliberate organic/cellular experiment, not an unsupported promise of general shelling, remeshing, or CAD accuracy.
+
+## Architectural closures and repeated fittings
+
+An open revolved profile does not acquire a cap from a narrower shaft placed on
+top. Close the exposed shoulder with a correctly wound annulus or a deliberate
+profile return, and inspect it from the occupied eye height. At angled wall
+junctions, derive both offset faces from the same corner and close the end/reveal;
+matching wall centre lines does not close their visible skins.
+
+A dormer needs an opening in the main roof as well as its own cheeks and cap.
+Measure the full glazing aperture against the roof slope; raising the window
+alone can leave the roof cutting through the room. Repeated canopies, stalls and
+trim must use each instance's frame and the actual neighbouring supports. Check
+the first, last and mirrored instances, not only the central example.
 
 ## Organic curves and blended volumes
 
