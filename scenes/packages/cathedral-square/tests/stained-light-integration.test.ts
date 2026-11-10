@@ -1,21 +1,25 @@
 import { expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
+import { cathedralFixture } from './fixtures';
 import { PNG } from 'pngjs';
 await import('three');
-const { DataTexture, Matrix3, Mesh, Raycaster, SRGBColorSpace, Vector3 } = await import('three/webgpu');
+const { DataTexture, Group, Matrix3, Mesh, Raycaster, SRGBColorSpace, Vector3 } = await import('three/webgpu');
 const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
 const { createStainedSurfaceProbe, buildStainedLight } = await import('../src/stained-light');
 const { afternoonSunDirection } = await import('../src/light');
-const bytes = readFileSync(new URL('../standalone/public/assets/models/cathedral.glb', import.meta.url));
+const fixture = cathedralFixture('cathedral');
 const loader = new GLTFLoader();
 loader.register(parser => ({ name: 'cpu-png-atlases', loadTexture: async (index: number) => {
   const texture = parser.json.textures[index], image = parser.json.images[texture.source];
   const png = PNG.sync.read(Buffer.from(await parser.getDependency('bufferView', image.bufferView)));
   const map = new DataTexture(new Uint8Array(png.data), png.width, png.height); map.flipY = false; map.colorSpace = SRGBColorSpace; return map;
 } }));
-const cathedral = (await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '')).scene;
+const cathedral = fixture ? await (async () => {
+  const bytes = readFileSync(fixture);
+  return (await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '')).scene;
+})() : new Group();
 
-test('the exported cathedral pier receives stained sunlight while its projected floor shadow stays dark', () => {
+test.skipIf(!fixture)('the exported cathedral pier receives stained sunlight while its projected floor shadow stays dark', () => {
   const sun = new Vector3().copy(afternoonSunDirection()), horizontal = sun.clone().setY(0).normalize();
   const probe = createStainedSurfaceProbe(cathedral);
   cathedral.updateWorldMatrix(true, true);
@@ -48,7 +52,7 @@ test('the exported cathedral pier receives stained sunlight while its projected 
   } finally { probe.dispose(); }
 });
 
-test('the final exported glass produces a bounded sun-space field without floor overlay geometry', () => {
+test.skipIf(!fixture)('the final exported glass produces a bounded sun-space field without floor overlay geometry', () => {
   const started = performance.now(), light = buildStainedLight(cathedral);
   try {
     expect(light.stats.samples).toBeGreaterThan(10000);

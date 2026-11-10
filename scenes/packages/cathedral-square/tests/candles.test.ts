@@ -1,15 +1,19 @@
 import { expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
+import { cathedralFixture } from './fixtures';
 await import('three');
-const { Box3, Mesh, Raycaster, Vector3 } = await import('three/webgpu');
+const { Box3, Group, Mesh, Raycaster, Vector3 } = await import('three/webgpu');
 const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
 const { buildCandles, candlePulse, findCandleTips, interiorBounceWeight, interiorBounceDirection, createInteriorBounce } = await import('../src/candles');
-const bytes = readFileSync(new URL('../standalone/public/assets/models/cathedral.glb', import.meta.url));
+const fixture = cathedralFixture('cathedral');
 const loader = new GLTFLoader();
 loader.register(() => ({ name: 'candle-image-free', loadTexture: async () => null }));
-const cathedral = (await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '')).scene;
+const cathedral = fixture ? await (async () => {
+  const bytes = readFileSync(fixture);
+  return (await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '')).scene;
+})() : new Group();
 
-test('all six flames attach to the existing exported candle tips, preserving borrowed meshes', () => {
+test.skipIf(!fixture)('all six flames attach to the existing exported candle tips, preserving borrowed meshes', () => {
   const tips = findCandleTips(cathedral);
   expect(tips).toHaveLength(6);
   for (const [i, tip] of tips.entries()) {
@@ -34,7 +38,7 @@ test('all six flames attach to the existing exported candle tips, preserving bor
   expect(released).toBe(owned.size); expect(borrowedDisposals).toBe(0);
 });
 
-test('candle light is range-limited and shadowed, cached, and safely absent without shadows', () => {
+test.skipIf(!fixture)('candle light is range-limited and shadowed, cached, and safely absent without shadows', () => {
   const candles = buildCandles(cathedral), low = buildCandles(cathedral, { shadows: true, tier: 'minimal' });
   const unshadowed = buildCandles(cathedral, { shadows: false, tier: 'minimal' });
   try {
@@ -47,7 +51,7 @@ test('candle light is range-limited and shadowed, cached, and safely absent with
   } finally { candles.dispose(); low.dispose(); unshadowed.dispose(); }
 });
 
-test('actual sanctuary masonry intercepts rays from the candles before the floor behind a choir pier', () => {
+test.skipIf(!fixture)('actual sanctuary masonry intercepts rays from the candles before the floor behind a choir pier', () => {
   const candles = buildCandles(cathedral), source = candles.lights[1].position;
   const floor = new Vector3(-57.9, .06, 10), direction = floor.clone().sub(source), distance = direction.length();
   const ray = new Raycaster(source, direction.normalize(), .04, distance);
@@ -70,7 +74,7 @@ test('interior bounce improves nave and sanctuary without changing exterior, roo
   }
 });
 
-test('bounce reaches the actual seven chapel figure supports, ambulatory and transept aisles but not gaps outside', () => {
+test.skipIf(!fixture)('bounce reaches the actual seven chapel figure supports, ambulatory and transept aisles but not gaps outside', () => {
   cathedral.updateWorldMatrix(true, true);
   for (let i = 0; i < 7; i++) {
     const plinth = cathedral.getObjectByName(`Mesh_ChapelFigure_Plinth_${i}`)!;
@@ -93,7 +97,7 @@ test('bounce reaches the actual seven chapel figure supports, ambulatory and tra
   expect(interiorBounceWeight(new Vector3(-31.1, 30, 20))).toBeLessThan(interiorBounceWeight(new Vector3(-31.1, 3, 20)));
 });
 
-test('practicals provide restrained local warmth rather than a dominant altar hotspot', () => {
+test.skipIf(!fixture)('practicals provide restrained local warmth rather than a dominant altar hotspot', () => {
   const candles = buildCandles(cathedral), low = buildCandles(cathedral, { shadows: true, tier: 'minimal' });
   try {
     for (const light of candles.lights) expect(light.intensity).toBeLessThanOrEqual(2.5);

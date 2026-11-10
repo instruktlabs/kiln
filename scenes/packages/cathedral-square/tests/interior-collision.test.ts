@@ -1,5 +1,6 @@
 import { expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
+import { cathedralFixture } from './fixtures';
 await import('three');
 const { BoxGeometry, Group, Mesh, MeshStandardMaterial, Texture, Vector3 } = await import('three/webgpu');
 const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
@@ -22,14 +23,15 @@ test('the capsule mounts a threshold taller than its radius without climbing tal
 });
 
 async function loadCathedral() {
-  const bytes = readFileSync(process.env.CATHEDRAL_COLLISION_ASSET ?? new URL('../standalone/public/assets/models/cathedral.glb', import.meta.url));
+  const bytes = readFileSync(fixture!);
   const loader = new GLTFLoader();
   loader.register(() => ({ name: 'collision-image-free', loadTexture: () => Promise.resolve(new Texture()) }));
   return (await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '')).scene;
 }
-const cathedral = await loadCathedral();
+const fixture = cathedralFixture('cathedral');
+const cathedral = fixture ? await loadCathedral() : new Group();
 
-test.skipIf(!cathedral.getObjectByName('Mesh_WestEntrancePassage_Paving'))('repaired side vestibules connect both open portal leaves to the side aisles', () => {
+test.skipIf(!fixture)('repaired side vestibules connect both open portal leaves to the side aisles', () => {
   const world = buildRouteCollision(cathedral);
   try {
     for (const side of [-1, 1]) {
@@ -68,7 +70,7 @@ test('the inward route corrects lateral error toward its requested lane', () => 
   } finally { world.dispose(); }
 });
 
-test('exported cathedral walls, piers and altar are solid and the central entrance remains open', () => {
+test.skipIf(!fixture)('exported cathedral walls, piers and altar are solid and the central entrance remains open', () => {
   const world = buildRouteCollision(cathedral);
   try {
     expect(world.intersects(new Vector3(30, .06, 13), .28, 1.8)).toBe(true);

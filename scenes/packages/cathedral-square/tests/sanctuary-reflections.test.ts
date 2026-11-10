@@ -1,15 +1,17 @@
 import { expect, spyOn, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
+import { cathedralFixture } from './fixtures';
 await import('three');
 const { Group, Mesh, MeshStandardMaterial, Texture } = await import('three/webgpu');
 const { createSanctuaryGoldBinding } = await import('../src/sanctuary-gold');
 const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
 
-test('the staged cathedral and crucifix select both intended authored gold materials', async () => {
+const fixtures = { cathedral: cathedralFixture('cathedral'), crucifix: cathedralFixture('crucifix') };
+test.skipIf(!fixtures.cathedral || !fixtures.crucifix)('the staged cathedral and crucifix select both intended authored gold materials', async () => {
   const loader = new GLTFLoader();
   loader.register(() => ({ name: 'reflection-image-free', loadTexture: () => Promise.resolve(null) }));
-  const load = async (id: string) => {
-    const bytes = readFileSync(new URL(`../standalone/public/assets/models/${id}.glb`, import.meta.url));
+  const load = async (id: keyof typeof fixtures) => {
+    const bytes = readFileSync(fixtures[id]!);
     return (await loader.parseAsync(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), '')).scene;
   };
   const [cathedral, crucifix] = await Promise.all([load('cathedral'), load('crucifix')]);
