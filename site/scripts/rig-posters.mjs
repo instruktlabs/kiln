@@ -34,6 +34,26 @@ const DATA = join(SITE, 'src/data');
 export const FARM_POSTER = { width: 1024, height: 1024, direction: [0.7, 0.5, 0.7], padding: 1.05 };
 export const CABIN_WOODS_ID = 'cabin-woods-psx-horror';
 export const CABIN_WOODS_POSTER = FARM_POSTER;
+export const CATHEDRAL_SQUARE_ID = 'cathedral-square';
+
+
+/** Exact saved GLBs from the verified scene pack. Posters are independent of its lighting and placements. */
+export async function cathedralSquareTargets({ assetsDir = resolve(SITE, '../scenes/packages/cathedral-square/standalone/public/assets'), data = DATA } = {}) {
+  const catalog = await readJson(join(data, `packs/${CATHEDRAL_SQUARE_ID}.json`));
+  return Promise.all(catalog.assets.map(async (asset) => {
+    const model = asset.runtimeModelDownload;
+    const member = assetPath(model.member);
+    if (member !== `models/${asset.slug}.glb`) throw new Error(`Unexpected Cathedral Square model path: ${member}`);
+    const glb = await readFile(join(assetsDir, member));
+    verifyBytes(glb, model, asset.slug);
+    const direction = {
+      cathedral: [1, 0.52, 0.84],
+      crucifix: [1, 0.16, 0.35],
+      ground: [0.75, 1.25, 0.7],
+    }[asset.slug] ?? FARM_POSTER.direction;
+    return { pack: CATHEDRAL_SQUARE_ID, release: catalog.release, slug: asset.slug, name: asset.name, revisionId: asset.revisionId, assetId: asset.assetId, alt: asset.description, glb, glbPath: member, view: { ...FARM_POSTER, direction } };
+  }));
+}
 
 /** Cabin's staged runtime models are sealed separately from its ZIPs and saved review sheets. */
 export async function cabinWoodsTargets({ publicDir = join(SITE, 'public'), data = DATA } = {}) {
@@ -283,7 +303,7 @@ export async function recordPosters({ rig, rendered, mirror, data = DATA, render
     const run = rigRun({
       pack: target.pack,
       renderedOn,
-      engine: { commit: rig.engine.provenance.commit, subject: rig.engine.provenance.subject, dirty: rig.engine.provenance.dirty },
+      engine: { ...rig.engine.provenance },
       service: rig.service,
     });
     if (!runs.some((prior) => prior.id === run.id)) runs.push(run);
@@ -321,7 +341,7 @@ export async function refreshCatalog({ file, pack, data = DATA }) {
   const recorded = await readJson(join(data, 'rig-posters.json'));
   const catalog = await readJson(file);
   if (Array.isArray(catalog.assets)) {
-    const required = [CABIN_WOODS_ID, HOLODECK_POSTER_PACK].includes(pack);
+    const required = [CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID].includes(pack);
     if (required) catalog.assets = catalog.assets.map((asset) => ({ ...asset, poster: null }));
     catalog.assets = applyRigPosters(catalog.assets, pack, recorded, { required });
   }
@@ -333,10 +353,14 @@ async function main(argv = process.argv.slice(2), env = process.env) {
   const option = (flag, fallback) => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : fallback);
   const pack = argv[0];
   const mirror = option('--mirror', env.KILN_ASSET_MIRROR);
-  if (!['farm', 'bridge', 'vehicles', FOUNDRY_FLOOR_ID, HERO_PACK, CABIN_WOODS_ID, HOLODECK_POSTER_PACK].includes(pack) || !mirror) throw new Error('Usage: bun scripts/rig-posters.mjs farm|bridge|vehicles|foundry-floor|hero|cabin-woods-psx-horror|holodeck --mirror DIR [--service URL] [--engine DIR] [--only a,b] [--out DIR] [--dry]  (bridge also needs --outputs DIR --cameras DIR; hero needs --outputs DIR)');
+  if (!['farm', 'bridge', 'vehicles', FOUNDRY_FLOOR_ID, HERO_PACK, CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID].includes(pack) || !mirror) throw new Error('Usage: bun scripts/rig-posters.mjs farm|bridge|vehicles|foundry-floor|hero|cabin-woods-psx-horror|holodeck|cathedral-square --mirror DIR [--service URL] [--engine DIR] [--only a,b] [--out DIR] [--dry]  (bridge also needs --outputs DIR --cameras DIR; hero needs --outputs DIR)');
   const only = option('--only')?.split(',');
   const rig = await connectRig({ url: option('--service', env.KILN_RENDER_SERVICE_URL), engineDir: option('--engine') });
-  console.log(`Rig ${RIG_ID} on ${rig.service.rendererId}; engine ${rig.engine.provenance.commit.slice(0, 7)} (${rig.engine.provenance.subject})${rig.engine.provenance.dirty ? ' with local changes' : ''}`);
+  const provenance = rig.engine.provenance;
+  const engine = provenance.commit
+    ? `${provenance.commit.slice(0, 7)} (${provenance.subject})${provenance.dirty ? ' with local changes' : ''}`
+    : `${provenance.packageName} ${provenance.packageVersion}`;
+  console.log(`Rig ${RIG_ID} on ${rig.service.rendererId}; engine ${engine}`);
   let targets;
   if (pack === 'bridge') {
     const outputs = option('--outputs');
@@ -351,6 +375,8 @@ async function main(argv = process.argv.slice(2), env = process.env) {
     targets = (await cabinWoodsTargets()).filter((target) => !only || only.includes(target.slug));
   } else if (pack === HOLODECK_POSTER_PACK) {
     targets = (await holodeckTargets({ mirror })).filter((target) => !only || only.includes(target.slug));
+  } else if (pack === CATHEDRAL_SQUARE_ID) {
+    targets = (await cathedralSquareTargets({ assetsDir: option('--assets') })).filter((target) => !only || only.includes(target.slug));
   } else if (pack === 'vehicles') {
     targets = (await vehicleTargets({ mirror })).filter((target) => !only || only.includes(target.slug));
   } else if (pack === FOUNDRY_FLOOR_ID) {
@@ -378,7 +404,7 @@ async function main(argv = process.argv.slice(2), env = process.env) {
     await refreshCatalog({ file: join(DATA, [CABIN_WOODS_ID, HOLODECK_POSTER_PACK].includes(pack) ? `${pack}.json` : `packs/${pack}.json`), pack });
     if (pack === FOUNDRY_FLOOR_ID && (await recordFoundryFloorScenePoster({ posters }))) console.log('Recorded the scene page poster in scene-media.json.');
     // Cabin's saved sheets were direct delivery URLs and Holodeck had no earlier posters, so nothing needs pruning.
-    if (![CABIN_WOODS_ID, HOLODECK_POSTER_PACK].includes(pack)) {
+    if (![CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID].includes(pack)) {
       const dropped = await pruneImagePlan();
       if (dropped.length) console.log(`Dropped ${dropped.length} replaced images from the build plan (their mirror pins stay).`);
     }

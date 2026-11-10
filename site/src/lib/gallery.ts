@@ -7,6 +7,12 @@ import { cabinWoodsAssets, cabinWoodsHref } from './cabin-woods';
 import { holodeckAssetHref, holodeckAssets, holodeckScenes } from './holodeck';
 import taxonomy from '../data/gallery-taxonomy.json';
 import { browseGallery } from './gallery-browse';
+import {
+  CATHEDRAL_SQUARE_ID,
+  cathedralAssetHref,
+  cathedralGalleryAssets,
+  cathedralSceneHref,
+} from './cathedral-gallery';
 
 export { foundry };
 export type FoundryAsset = (typeof foundry.assets)[number];
@@ -73,6 +79,18 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
       ...asset,
       href: holodeckAssetHref(asset),
       scenes: holodeckScenes(asset).map(({ label, href }) => ({ label, href })),
+    })),
+  );
+  cards.push(
+    ...cathedralGalleryAssets(packsEnabled).map((asset) => ({
+      ...asset,
+      pack: CATHEDRAL_SQUARE_ID,
+      packs: [CATHEDRAL_SQUARE_ID],
+      category: '',
+      href: cathedralAssetHref(asset.slug),
+      runtimeDownload: asset.runtimeModelDownload,
+      review: { ownerAccepted: false, status: 'awaiting-owner-review' },
+      scenes: [{ label: 'Explore Cathedral Square', href: cathedralSceneHref }],
     })),
   );
   return browseGallery(

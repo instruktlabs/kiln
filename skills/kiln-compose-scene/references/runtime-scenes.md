@@ -18,6 +18,10 @@ planting, environmental effects and controllers can be scene dependencies withou
 altering saved asset revisions or requiring a Kiln project. Preserve exact input
 identities when building a project's proving scene.
 
+A walkable site scene proves an eye-height route and its colliders in the scene
+package. It does not inherit a baked sun or path-traced glass light. Controllers
+and terrain stay out of the asset program.
+
 Review the ground with vegetation reduced as well as at full density. Select
 material scale, color, roughness and normal detail for the intended scene; a crop
 soil material is not automatically a suitable meadow. Record original procedural

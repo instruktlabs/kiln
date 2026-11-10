@@ -18,7 +18,7 @@ import { sceneStandaloneConfig, type SceneBuildMode } from '../packages/scene-ki
 import { verifyStaged } from '../packages/scene-kit/src/staging';
 import { auditLicenses, renderNotices } from './check-licenses';
 
-export const SCENES = { farm: 'packages/farm/standalone', 'foundry-floor': 'packages/foundry-floor/standalone-campus', 'golden-gate': 'packages/golden-gate/standalone' } as const;
+export const SCENES = { farm: 'packages/farm/standalone', 'foundry-floor': 'packages/foundry-floor/standalone-campus', 'golden-gate': 'packages/golden-gate/standalone', 'cathedral-square': 'packages/cathedral-square/standalone' } as const;
 export type SceneId = keyof typeof SCENES;
 const ROOT = resolve(import.meta.dir, '..');
 const CODE_CHUNK = /^[^/]+\.(?:js|css): extra staged file$/;

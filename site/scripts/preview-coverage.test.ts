@@ -13,7 +13,8 @@ test('earlier Troy remains reachable from scenes with both current captures and 
   expect(troy.posters).toHaveLength(2);
   expect(page).toMatch(/<ScenePoster\s+images=\{troy\.posters\}/);
   expect(page).toContain('href="/scenes/troy/"');
-  expect(page.indexOf('Earlier scenes')).toBeLessThan(page.indexOf('href="/scenes/troy/"'));
+  const { sceneBrowseGroups } = await import('../src/data/scenes');
+  expect(sceneBrowseGroups(true).find(group => group.label === 'Earlier Kiln scenes')?.scenes.some(scene => scene.id === 'troy')).toBe(true);
   const scene = await source('../src/pages/scenes/troy/[...page].astro');
   expect(scene).toContain('/packs/troy/');
 });

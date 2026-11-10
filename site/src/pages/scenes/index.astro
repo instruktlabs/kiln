@@ -3,14 +3,20 @@ import HolodeckShowcase from "../../components/HolodeckShowcase.astro";
 import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { sceneRuntimes } from "virtual:kiln-scenes";
-import { cabinWoodsScene, farmScene, foundryFloorScene, goldenGateScene } from "../../data/scenes";
+import { cabinWoodsScene, cathedralSquareScene, farmScene, foundryFloorScene, goldenGateScene, sceneBrowseGroups } from "../../data/scenes";
+import SceneSelector from '../../components/SceneSelector.astro';
 import { PACKS_ENABLED } from "../../lib/config";
 import troy from "../../data/troy.json";
 import ScenePoster from "../../components/ScenePoster.astro";
 
-// Each card states the scene's true status in this build: a staged runtime makes it a preview (none of the three
-// is qualified), and without one the page shows the scene's status panel.
+// Runtime availability controls each card's action; browsing groups describe when the scenes were made.
 const cards = [
+  {
+    scene: cathedralSquareScene,
+    alt: cathedralSquareScene.posterAlt,
+    staged: 'Walk the square, cathedral nave and chapels. The scene loads only when you choose Explore.',
+    unstaged: 'The browser scene is not included in this build.',
+  },
   {
     scene: farmScene,
     alt: "Barn, farmhouse and fields in the Farm scene",
@@ -46,24 +52,30 @@ const cards = [
 
 <BaseLayout
   title="Scenes · Kiln"
-  description="Explore Meridian Sanctuary, Crescent Cove and Winter Mountainside Cabin on Holodeck, plus earlier Kiln scenes including Troy, Farm and Golden Gate."
+  description="Explore Cathedral Square, worlds on Holodeck, and earlier Kiln scenes including Troy, Farm and Golden Gate."
   breadcrumbs={[{ label: "Scenes", href: "/scenes/" }]}
   card="scenes"
 >
   <div class="container py-8">
     <PageHeader class="max-w-prose font-semibold">Scenes</PageHeader>
+    <SceneSelector />
     <p class="mt-6 max-w-prose text-lg">
       Scenes put individual assets into a place you can explore. They load only
       when you choose to open them.
     </p>
-    {PACKS_ENABLED && <>
-      <HolodeckShowcase id="featured-worlds" heading="Featured worlds" />
-      <HolodeckShowcase id="more-worlds" heading="More Holodeck worlds" remaining />
-    </>}
-    <h2 class="mt-16 border-t border-ink pt-8 text-subheading">Earlier scenes</h2>
-    <p class="mt-4 max-w-reading text-dim">Earlier demonstrations remain available to explore, with their source and asset packs.</p>
-    {PACKS_ENABLED && <a href="/scenes/troy/" aria-label="Troy" class="no-underline text-ink mt-12 grid gap-8 border-t border-ink pt-8 lg:grid-cols-2"><ScenePoster images={troy.posters} sizes="(max-width: 1023px) 100vw, 50vw" decorative class="border border-rule" /><div><h2 class="font-semibold">Troy</h2><p class="mt-4 max-w-prose">{troy.description}</p><p class="mt-4 max-w-prose">Explore the city, watch the fleet land, or fight as either hero.</p><span class="text-link mt-6">Open the scene preview<span class="sr-only">: Troy</span></span></div></a>}
-    {cards.map(({ scene, staged, unstaged }) => {
+    {sceneBrowseGroups(PACKS_ENABLED).map(group => <>
+      {group.id === 'earlier-kiln-scenes' && PACKS_ENABLED && <>
+        <HolodeckShowcase id="featured-worlds" heading="Holodeck worlds" />
+        <HolodeckShowcase id="more-worlds" heading="More Holodeck worlds" remaining />
+      </>}
+      <section aria-labelledby={group.id} class="mt-16 border-t border-ink pt-8">
+        <h2 id={group.id} class="text-subheading">{group.label}</h2>
+        <p class="mt-4 max-w-reading text-dim">{group.description}</p>
+        {group.scenes.map(entry => {
+      if (entry.id === 'troy') return <a href="/scenes/troy/" aria-label="Troy" class="no-underline text-ink mt-12 grid gap-8 border-t border-ink pt-8 lg:grid-cols-2"><ScenePoster images={troy.posters} sizes="(max-width: 1023px) 100vw, 50vw" decorative class="border border-rule" /><div><h3 class="font-semibold">Troy</h3><p class="mt-4 max-w-prose">{troy.description}</p><p class="mt-4 max-w-prose">Explore the city, watch the fleet land, or fight as either hero.</p><span class="text-link mt-6">Open the scene preview<span class="sr-only">: Troy</span></span></div></a>;
+      const card = cards.find(card => card.scene.id === entry.id);
+      if (!card) throw new Error(`Missing scene card: ${entry.id}`);
+      const { scene, staged, unstaged } = card;
       const runtime = sceneRuntimes[scene.id];
       return (
         <a href={scene.href} aria-label={scene.name} class="no-underline text-ink mt-12 grid gap-8 border-t border-ink pt-8 lg:grid-cols-2">
@@ -78,7 +90,7 @@ const cards = [
             </div>
           )}
           <div>
-            <h2 class="font-semibold">{scene.name}</h2>
+            <h3 class="font-semibold">{scene.name}</h3>
             <p class="mt-4 max-w-prose">{scene.description}</p>
             <p class="mt-4 max-w-prose">{runtime ? staged : unstaged}</p>
             <span class="text-link mt-6">
@@ -89,6 +101,8 @@ const cards = [
           </div>
         </a>
       );
-    })}
+        })}
+      </section>
+    </>)}
   </div>
 </BaseLayout>

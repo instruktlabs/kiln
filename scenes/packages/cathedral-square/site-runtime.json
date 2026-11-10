@@ -1,0 +1,23 @@
+{
+  "schema": "kiln.cathedral-site-build/1",
+  "scene": "cathedral-square",
+  "release": "cs2",
+  "packJsonSha256": "2a68be81055f3b32fbb48f739af39026f28243d217301bf530d1a93d8f9344cf",
+  "firstPassingBuild": {
+    "file": "cathedral-square-B7xTsJqy.js",
+    "bytes": 1470199,
+    "gzipBytes": 427745,
+    "gzipMethod": "bun-zlib",
+    "sha256": "26c0b55c5e7cfadb1adf5a9918db5b45900fd59064dfb578cccc3d2e9f406a1c"
+  },
+  "ceiling": {
+    "decision": "D-15",
+    "basis": "First passing site module build plus 10 percent, rounded up",
+    "bytes": 1617219,
+    "gzipBytes": 470520
+  },
+  "dependencies": { "three": "0.187.0", "react": "19.3.1", "react-dom": "19.3.1", "@react-three/fiber": "9.8.2" },
+  "singleCopyGuard": true,
+  "threeFacade": true,
+  "qualification": "Build and typecheck evidence only. Browser and device qualification are separate."
+}

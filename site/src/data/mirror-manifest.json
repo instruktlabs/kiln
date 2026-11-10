@@ -6545,6 +6545,356 @@
       "path": "text-to-3d/d9920f71f33de794/cathedral.glb",
       "bytes": 15859692,
       "sha256": "d9920f71f33de7942b0d882fc561cda92d4afb4ca16fcd521e9da6a57004795d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/cathedral.png",
+      "bytes": 1563059,
+      "sha256": "dea1247731583dae1d6629c333b5a62e4305aa36bf64e60a3fb8daeaf5249c63"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door.png",
+      "bytes": 1955600,
+      "sha256": "807f9576eac74a3b2430891ac39ef0b9365ca239a493f23ce1e99a8bc3335857"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow.png",
+      "bytes": 1837862,
+      "sha256": "906f91fa5a499e54bcf35e4607c68012980bd57f14bb8b8a697921e7a1ce3f88"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop.png",
+      "bytes": 1936787,
+      "sha256": "e552d9499ed94a258b596bb789c67588fe5d9540e383d19ec44b5ac255e79f86"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop.png",
+      "bytes": 1908671,
+      "sha256": "59c4fcebcca5a6be0dd6b4da672041a0c6b9ce6626295393469914531e4933e8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall.png",
+      "bytes": 1904927,
+      "sha256": "7df4efabf7c099eeba67de5f8be3acd81f52c2540c4e6bfcb5ca52ab1584454f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade.png",
+      "bytes": 1931129,
+      "sha256": "e5c05861117ed195e07fbae3bcdbfe95ccf33deea04de05c36c66d9105035a28"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade.png",
+      "bytes": 1979859,
+      "sha256": "6ec6c86e29707a147ea76d8bad23884458613e1c746253ca2504b40ee571dafe"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop.png",
+      "bytes": 1841962,
+      "sha256": "845f085e84ba03b1daa78cb1da4c4b327a0121baba442aff16588b5f02293f04"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/lantern.png",
+      "bytes": 1309265,
+      "sha256": "8746b2e827f04f7eda2832346b367c86333dea5ebb69bf845c7351f22f8432e3"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/fountain.png",
+      "bytes": 1505663,
+      "sha256": "eeeb1d9a19c4fc5998b2cbd22fce8aefc1ddadd52319074f7db0f5941c2c3fe4"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/tree-a.png",
+      "bytes": 1486739,
+      "sha256": "359525cbac9d01bfa129d83bcaba89c3a71ec7971a5e9bddd18f6e4d1761f339"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/tree-b.png",
+      "bytes": 1464811,
+      "sha256": "84734d5441b1dbe8b9ac3378f7232feddbe0967aa0f4e961977fc57c2da5b9e1"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/stall-red.png",
+      "bytes": 2046888,
+      "sha256": "167c178494c336a654f33baac6e95e73a2ce95e86bbbcbce816556e2c3c8ea9f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/stall-green.png",
+      "bytes": 2037312,
+      "sha256": "67794bfdf5ff06ccf27bcef362fa350d7301003e4d31499718b40833812183cf"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/cafe-red.png",
+      "bytes": 1529679,
+      "sha256": "2e7524b6e79af61d311eec255c9cc67360d3ddca16e2094ff03a2639a783ed11"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/cafe-green.png",
+      "bytes": 1529802,
+      "sha256": "ce7218074cd722c732a947fb030a0ff94e0ce86c07421d685de358e24596ec94"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/bench.png",
+      "bytes": 1818545,
+      "sha256": "0777641825c04dde357818e5eda3e645186ad3302cf772267972065e72aab44e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/bollard.png",
+      "bytes": 1538693,
+      "sha256": "667d4106cf12fe2aad0fdc987334aa1bb2fbbe490bc153a748c72d57215b5d01"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/ground.png",
+      "bytes": 1848894,
+      "sha256": "48f40cd4d4b361d5d564312849657bfeda1d4ed4e5793fa37e33a8539ac5948a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/nave-pew.png",
+      "bytes": 1737538,
+      "sha256": "ba78b8014f0272f5bdb14d0d821e669cb2a91c7df3194623d9491a7c78cf6c05"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/cathedral.glb",
+      "bytes": 15353640,
+      "sha256": "9a3528f4c9e008d8a3f29d466ae4813c0dcdfb10101751a07b455f95ea1b4dea"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/cathedral.zip",
+      "bytes": 7175261,
+      "sha256": "fd2250ba8f92e674f547405012b7650906804c367ae3850bc478022f438195af"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/house-timber-gable-door.glb",
+      "bytes": 636348,
+      "sha256": "61deeb1769db059c6de7010ebf65b4dc60acffa3a7d9dde8a51a156849919a2d"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/house-timber-gable-door.zip",
+      "bytes": 1017354,
+      "sha256": "592d968ebead8c6587f47c6da66928b1e861e8de3881c55a45b01d99a5fd2858"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/house-timber-gable-narrow.glb",
+      "bytes": 723856,
+      "sha256": "a4fde55718dd7b9b40d1fdd41c92a876faf3a6be0ffb3f929435790f4eb00c8e"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/house-timber-gable-narrow.zip",
+      "bytes": 870111,
+      "sha256": "7b01016704306fb629dfa4ea4fd7abe949ff5eabc3d2bf5c887d99fb75c8d309"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/house-timber-gable-shop.glb",
+      "bytes": 704656,
+      "sha256": "3e6e2e23c3fda522c318648ecf7384a7e13f38e987dd49def916b7f5af5db6f7"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/house-timber-gable-shop.zip",
+      "bytes": 911739,
+      "sha256": "26f0c01c12fe21dc84085f2963ae6dc0272bb674f48472af89f3a9d7d7b84a27"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/house-stone-gable-shop.glb",
+      "bytes": 664224,
+      "sha256": "fe2870601c2b57cfa0092c0899625891205e4ccca3167b36290c218208526f5e"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/house-stone-gable-shop.zip",
+      "bytes": 940383,
+      "sha256": "b8705ed6a72a6c7bca38999a288e38a9b3384ef9e89b167b09f399737e6fb8df"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/house-stone-gable-tall.glb",
+      "bytes": 733788,
+      "sha256": "29b1fd8d32c8776dbc462e9cdcd11c8a1b52c3cf0646fbe8febe4cae8f0ee6f4"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/house-stone-gable-tall.zip",
+      "bytes": 960304,
+      "sha256": "6f94a0c34c0a0c5210b228e7a14c30657ba2dc4a02ef5c5c5154ad18c09b0d91"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/house-stone-eaves-arcade.glb",
+      "bytes": 744256,
+      "sha256": "8a97aa56f97de031a6f21ea94bca12a670639f45acf7228d76d194e7f36b7068"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/house-stone-eaves-arcade.zip",
+      "bytes": 1054550,
+      "sha256": "8719158dad7ad60eb9de44c87748ed9ec73ba8bc19a6d8db8afdbcc93f0584e1"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/house-plaster-eaves-arcade.glb",
+      "bytes": 730036,
+      "sha256": "963a1100dc356d527331ea9f1be757c6031154715972809af939243e46279573"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/house-plaster-eaves-arcade.zip",
+      "bytes": 1068668,
+      "sha256": "97b2cfb0a5fada177b6525b5258eb4ea7b98d78a72cbae6bcff33dd76c6b0c7b"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/house-plaster-eaves-shop.glb",
+      "bytes": 777772,
+      "sha256": "eaad2d95cfa199a78a1cb7e216275020497c67157025d43728507e55622c7e1e"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/house-plaster-eaves-shop.zip",
+      "bytes": 909578,
+      "sha256": "b60e43a33163f94b8dde198dd44f58155ce6c490d25936819f9def6a461ad81a"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/lantern.glb",
+      "bytes": 94492,
+      "sha256": "d1dc1db394e80376e0a98380d8d3e2eca1da3b3f4b84d541d9ed536026ebe65a"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/lantern.zip",
+      "bytes": 209562,
+      "sha256": "1f5d5f4cb2f222a4fff750748701cd3b5b9294d666cee3fff66266de972599ce"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/fountain.glb",
+      "bytes": 364012,
+      "sha256": "90b549174e54010615da8dac9ab6285fd16f8cf4daaffe49797feb841071a75e"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/fountain.zip",
+      "bytes": 491673,
+      "sha256": "ebd3bac1dbda8190ed5d59371ee5e828bc83cbee463a1ef91e470f81d6480cfd"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/tree-a.glb",
+      "bytes": 144160,
+      "sha256": "399795745f498039ca8d8ab3c7672584740874ec07bd1e4df9d9e9f3e1c90728"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/tree-a.zip",
+      "bytes": 552289,
+      "sha256": "dd972873ef3b3b082f8c6ff0a9fbb644bd13a560e9e3aa20a153c6b1f91e84bd"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/tree-b.glb",
+      "bytes": 161384,
+      "sha256": "7d7495c1abe482e3e965ea1a8424e111037166c4dfdbe9b652d40dead09e137c"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/tree-b.zip",
+      "bytes": 563467,
+      "sha256": "95e6e2354462d5571014991c8636854f4054e371cd12742353d7cd964f821a73"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/stall-red.glb",
+      "bytes": 158780,
+      "sha256": "d23185171b70bd6d7930548d1dbc0d98b2c77093e0d6f994f8a47e9ccbcff8bb"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/stall-red.zip",
+      "bytes": 461013,
+      "sha256": "8291ec643b69cd8daead16542a21ad66574e41c7d1e1b426a108b036a8bef106"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/stall-green.glb",
+      "bytes": 158832,
+      "sha256": "a85f648d1a66158f594f9f574850e1ba263f6701dc7d4dd7d4a569f2218cdf9d"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/stall-green.zip",
+      "bytes": 459667,
+      "sha256": "bedf2630c45e13a7ab6fa964493b17c1863889de13bd859ee25153aa14411e60"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/cafe-red.glb",
+      "bytes": 115152,
+      "sha256": "4b8878f9062b325c0533ba8d61a8124df6d662f199a5b73df403c334c45b466a"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/cafe-red.zip",
+      "bytes": 291524,
+      "sha256": "04a3fc825e4cca76af08d0aa93a23159f60fbc122bdd70be7f5ab114b26221b1"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/cafe-green.glb",
+      "bytes": 115204,
+      "sha256": "6014b200596cfc032c1547234b0cbe49d6966cfa15739bd2860bd48a8cd55dc2"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/cafe-green.zip",
+      "bytes": 291463,
+      "sha256": "11b2ed9868288aa01f3b688cc08582e3007e75080a98f77111ad59e5b3fd7448"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/bench.glb",
+      "bytes": 83224,
+      "sha256": "fa51e6a7abcb4655ea06b612b4c8354d524f84414d2e22a83e9047f3cead0eba"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/bench.zip",
+      "bytes": 321910,
+      "sha256": "413a4693ef14e00036939a6c143bae71a02c8419af46fa566caf81a6387f7f46"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/bollard.glb",
+      "bytes": 34144,
+      "sha256": "a993495bf216fbf4cc9f014a1f3a9de38ce0076bde8e8a23312870a7ab61fdce"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/bollard.zip",
+      "bytes": 164639,
+      "sha256": "6a44ac16bb5e186357207a61a780a463e9944c9d2ffd5ea1c462091102d7906f"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/ground.glb",
+      "bytes": 652556,
+      "sha256": "5af9c9c321da9d657e15b3f60fd5151b194fe5330d1f0ad3e4f5e9770a4cc5d8"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/ground.zip",
+      "bytes": 910839,
+      "sha256": "6320b9c8a41110ce63240148dcec48844fd11b1244e28dad82068a1027018b76"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/models/nave-pew.glb",
+      "bytes": 83296,
+      "sha256": "4c2e9e530168479bcde274eabf20ffac5246713b523e6bbb6a981ec4b6fd2414"
+    },
+    {
+      "path": "packs/cathedral-square/cs2/editable/nave-pew.zip",
+      "bytes": 295668,
+      "sha256": "fa25fd9831b2ae064fa39688a6a2d71613e8e706cf7a65bb893a9ce141b3df0b"
+    },
+    {
+      "path": "media/scenes/cathedral-square/cs2-site1/exterior.png",
+      "bytes": 989185,
+      "sha256": "cfeb2cc103530ad2324ffa8867d6cc5358e8fdf86bbcecd869b316d81a712f63"
+    },
+    {
+      "path": "packs/cathedral-square/cs3/models/crucifix.glb",
+      "bytes": 2508520,
+      "sha256": "7c18f3b29cd22c3d94867c87cbcd2c4800c4b62cdcec6ec766c2020da54d7a7e"
+    },
+    {
+      "path": "packs/cathedral-square/cs3/editable/crucifix.zip",
+      "bytes": 1781662,
+      "sha256": "5566707eb552857ee15ed3611b670318c33c871c44c240eb7851689072ccae84"
+    },
+    {
+      "path": "packs/cathedral-square/cs3/cathedral-square-runtime.zip",
+      "bytes": 14174568,
+      "sha256": "45e5cd357f1b76b07c3e03656a21434d6bb58fcdf0d267073c791cfe77a96d31"
+    },
+    {
+      "path": "packs/cathedral-square/cs3/cathedral-square-editable.zip",
+      "bytes": 21665643,
+      "sha256": "564d459184c8e0fb6b2599aa9b4793462b88373f72ab3b28b87a6ed50585d437"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs3/crucifix.png",
+      "bytes": 1535849,
+      "sha256": "b946455e43808986e28ad06756d3e8f51e73c8885cb3156c15a2b33f2c93493e"
+    },
+    {
+      "path": "media/scenes/cathedral-square/cs3-site1/interior.png",
+      "bytes": 927781,
+      "sha256": "293869c9269ab656cc4e8b0cbe5814416e6d848a89488fc1b8bbf224d8890c03"
     }
   ]
 }

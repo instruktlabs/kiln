@@ -35,6 +35,12 @@ declare module '@kiln-scenes/farm' {
 }
 
 /** Build-time module: which scene runtimes are staged (scripts/scene-source.mjs). */
+declare module '@kiln-scenes/cathedral-square' {
+  import type { FarmSceneProps, SceneHandle } from '@kiln-scenes/farm';
+  export function mountCathedralSquare(element: HTMLElement, props: FarmSceneProps): SceneHandle;
+}
+
+/** Build-time module: which scene runtimes are staged (scripts/scene-source.mjs). */
 declare module 'virtual:kiln-scenes' {
   export const sceneRuntimes: Record<
     string,

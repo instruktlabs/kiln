@@ -15,6 +15,7 @@ export const SCENE_SOURCES = {
   farm: 'packages/farm/dist/m4/standalone',
   'golden-gate': 'packages/golden-gate/dist/standalone',
   'foundry-floor': 'packages/foundry-floor/dist/ff3/standalone',
+  'cathedral-square': '.cache/site-inputs/cathedral-square/standalone',
 };
 /** Scenes staged as a standalone build (its public chunk served as built) rather than built by the site. */
 export const FRAME_SCENES = ['golden-gate', 'foundry-floor'];

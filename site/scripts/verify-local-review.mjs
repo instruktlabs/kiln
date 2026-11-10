@@ -22,7 +22,14 @@ await Promise.all([0,1,2,3].map(async()=>{
 for(const page of receipt.html)try {
  const response=await fetch(new URL(`/${page.path.replace(/index\.html$/,'')}`,base)); assert.equal(response.status,200,page.path);
  const text=await response.text(); assert.equal(hashBytes(text),page.localSha256);
- assert.ok(!text.match(/<a\b[^>]*\bhref=["']https:\/\/assets\.kilnstudio\.tools\//i),page.path);
+ const unmatched=inspectHtml(text).references.some(ref=>{
+  if(ref.tag!=='a'||ref.attribute!=='href'||!ref.url.startsWith(receipt.assetBase)) return false;
+  const target=new URL(ref.url);
+  const assetBase=new URL(receipt.assetBase);
+  const relative=decodeURIComponent(target.pathname.slice(assetBase.pathname.length));
+  return target.origin===assetBase.origin && (!receipt.downloadPrefix || relative.startsWith(receipt.downloadPrefix));
+ });
+ assert.ok(!unmatched,page.path);
  report.html.push({path:page.path,sha256:hashBytes(text)});
 }catch(error){report.errors.push(String(error));}
 const artifacts=await (await fetch(new URL('/artifact-files.json',base))).json();

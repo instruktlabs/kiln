@@ -45,6 +45,26 @@
         "three": "0.187.0",
       },
     },
+    "packages/cathedral-square": {
+      "name": "@kiln-scenes/cathedral-square",
+      "version": "0.1.0",
+      "dependencies": {
+        "@kiln-scenes/scene-kit": "workspace:*",
+      },
+      "devDependencies": {
+        "@react-three/fiber": "9.8.2",
+        "@types/three": "0.187.0",
+        "react": "19.3.1",
+        "react-dom": "19.3.1",
+        "three": "0.187.0",
+      },
+      "peerDependencies": {
+        "@react-three/fiber": "9.8.2",
+        "react": "19.3.1",
+        "react-dom": "19.3.1",
+        "three": "0.187.0",
+      },
+    },
     "packages/farm": {
       "name": "@kiln-scenes/farm",
       "version": "0.1.0",
@@ -144,6 +164,8 @@
     "@dimforge/rapier3d-compat": ["@dimforge/rapier3d-compat@0.12.0", "", {}, "sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow=="],
 
     "@kiln-scenes/cabin-woods-psx-horror": ["@kiln-scenes/cabin-woods-psx-horror@workspace:packages/cabin-woods-psx-horror"],
+
+    "@kiln-scenes/cathedral-square": ["@kiln-scenes/cathedral-square@workspace:packages/cathedral-square"],
 
     "@kiln-scenes/farm": ["@kiln-scenes/farm@workspace:packages/farm"],
 

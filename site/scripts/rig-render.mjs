@@ -1,14 +1,16 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { isDeepStrictEqual } from 'node:util';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 /**
  * Renders posters and captures under the Kiln review lighting rig. The rig (`review-neutral-v1`) lives in the
- * current engine tree when the rig is present, or an explicitly selected KILN_RIG_ENGINE_DIR, and talks to a
- * render service started from that same worktree. Nothing here starts a service, installs anything or reaches
+ * current engine tree when the rig is present, or an explicitly selected engine tree/installed Kiln package,
+ * and talks to a render service with that exact capture identity. Package provenance uses version and hash;
+ * source checkouts use Git provenance. Nothing here starts a service, installs anything or reaches
  * a network beyond the loopback render service. It needs Bun (the engine is TypeScript): `bun scripts/...`.
  */
 
@@ -30,11 +32,24 @@ export function engineProvenance(engineDir) {
   return { commit: git('rev-parse', 'HEAD'), subject: git('log', '-1', '--format=%s'), dirty: git('status', '--porcelain', '--untracked-files=no') !== '' };
 }
 
-export async function loadRigEngine(engineDir = resolveRigEngine(), { provenance = engineProvenance } = {}) {
-  if (!existsSync(join(engineDir, 'src/render-service-client.ts'))) throw new Error('No compatible Kiln engine tree. Set KILN_RIG_ENGINE_DIR to a tree containing the review rig.');
+export async function loadRigEngine(engineDir = resolveRigEngine(), { provenance } = {}) {
+  // Published packages may also contain source; their identity is the installed
+  // package, not the unrelated repository they happen to be installed beneath.
+  const compiled = existsSync(join(engineDir, 'lib/render-service-client.js'));
+  const source = existsSync(join(engineDir, 'src/render-service-client.ts')) && (existsSync(join(engineDir, '.git')) || !compiled);
+  let packageProvenance;
+  if (!source && compiled) {
+    const bytes = await readFile(join(engineDir, 'package.json'));
+    const metadata = JSON.parse(bytes);
+    if (metadata.name === '@instruktlabs/kiln' && typeof metadata.version === 'string') {
+      packageProvenance = { packageName: metadata.name, packageVersion: metadata.version, packageJsonSha256: hex(bytes) };
+    }
+  }
+  if (!source && !packageProvenance) throw new Error('No compatible Kiln engine tree or installed package. Select a matching engine with --engine.');
   const load = (file) => import(pathToFileURL(join(engineDir, file)).href);
-  const [client, mode, camera] = await Promise.all([load('src/render-service-client.ts'), load('src/cli-render-mode.ts'), load('src/views/camera.ts')]);
-  return { engineDir, client, mode, camera, provenance: provenance(engineDir) };
+  const base = source ? 'src' : 'lib', extension = source ? 'ts' : 'js';
+  const [client, mode, camera] = await Promise.all(['render-service-client', 'cli-render-mode', 'views/camera'].map(file => load(`${base}/${file}.${extension}`)));
+  return { engineDir, client, mode, camera, provenance: provenance ? provenance(engineDir) : packageProvenance ?? engineProvenance(engineDir) };
 }
 
 /**
