@@ -45,3 +45,10 @@ test('the H-7 listing explains desktop-only play and the work-in-progress status
   expect(listing).toContain('work in progress');
   expect(listing).toContain('Hardware compatibility is still being tested');
 });
+
+test('the wider primary nav opens at 64rem with matching responsive CSS and menu scripts', async () => {
+  const stylesheet = await readFile(new URL('../src/styles/global.css', import.meta.url), 'utf8');
+  const layout = await readFile(new URL('../src/layouts/BaseLayout.astro', import.meta.url), 'utf8');
+  expect(stylesheet).toContain('--breakpoint-nav: 64rem;');
+  expect([...layout.matchAll(/matchMedia\("\(min-width: (\d+rem)\)"\)/g)].map((match) => match[1])).toEqual(['64rem', '64rem']);
+});

@@ -46,7 +46,7 @@
   --container-reading: 36rem;
   --container-site: 90rem;
   --container-lead: 36rem;
-  --breakpoint-nav: 60rem;
+  --breakpoint-nav: 64rem;
 }
 @font-face {font-family:Archivo;src:url('/fonts/archivo-latin-full-normal.woff2') format('woff2');font-style:normal;font-weight:100 900;font-stretch:62% 125%;font-display:swap}
 @font-face {font-family:'IBM Plex Mono';src:url('/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}

@@ -201,7 +201,7 @@ const structured = [
     </header>
     <script is:inline>
       {
-        const desktop = matchMedia("(min-width: 60rem)").matches;
+        const desktop = matchMedia("(min-width: 64rem)").matches;
         document.getElementById("menu-toggle").hidden = desktop;
         document.getElementById("primary-nav").hidden = !desktop;
       }
@@ -292,7 +292,7 @@ const structured = [
       const toggle = document.querySelector<HTMLButtonElement>("#menu-toggle");
       const nav = document.querySelector<HTMLElement>("#primary-nav");
       if (toggle && nav) {
-        const media = window.matchMedia("(min-width: 60rem)");
+        const media = window.matchMedia("(min-width: 64rem)");
         const sync = () => {
           toggle.hidden = media.matches;
           toggle.textContent = toggle.getAttribute("aria-expanded") === "true" ? "Close" : "Menu";
