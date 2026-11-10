@@ -6895,6 +6895,16 @@
       "path": "media/scenes/cathedral-square/cs3-site1/interior.png",
       "bytes": 927781,
       "sha256": "293869c9269ab656cc4e8b0cbe5814416e6d848a89488fc1b8bbf224d8890c03"
+    },
+    {
+      "path": "media/scenes/cathedral-square/cs3-site2/exterior.png",
+      "bytes": 4410612,
+      "sha256": "4b3a6e143a59e456385fdd0c63efc80d1b60697cdb3c35ca61bc8a0deea92f8d"
+    },
+    {
+      "path": "media/scenes/cathedral-square/cs3-site2/interior.png",
+      "bytes": 3218954,
+      "sha256": "e79f87ebe15f3d3916552b2b80c06a68cb203d577fd360feab14d7ba1c56481f"
     }
   ]
 }

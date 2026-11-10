@@ -7,6 +7,14 @@ does not publish a package.
 
 ## Unreleased
 
+## 1.7.1 (2026-11-10)
+
+- Showcase Cathedral Square alongside the featured Holodeck worlds in the
+  README and npm package description. The README includes a shorter construction
+  GIF made from the Winter Mountainside Cabin assembly film.
+- Refresh the Cathedral Square scene previews with higher resolution WebGPU
+  captures of the town square and sanctuary.
+
 ## 1.7.0 (2026-11-08)
 
 - three.js and `@types/three` are now 0.187.0, up from 0.186.1, in the package, the render service, the
