@@ -25,51 +25,53 @@ do not require a separate model API key.
 <table>
   <tr>
     <td width="50%" align="center">
-      <a href="https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/"><img src="assets/readme/meridian-sanctuary.webp" alt="A marble causeway between mirror pools leading to Meridian Sanctuary's gate tower"></a><br>
+      <a href="https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/"><img src="https://raw.githubusercontent.com/instruktlabs/kiln/main/assets/readme/meridian-sanctuary.webp" alt="A marble causeway between mirror pools leading to Meridian Sanctuary's gate tower"></a><br>
       <a href="https://holodeck.kilnstudio.tools/worlds/meridian-sanctuary/"><strong>Meridian Sanctuary</strong></a>
     </td>
     <td width="50%" align="center">
-      <a href="https://holodeck.kilnstudio.tools/worlds/crescent-cove/"><img src="assets/readme/crescent-cove.webp" alt="The canopied Cove seat among palms overlooking Crescent Cove's lagoon"></a><br>
+      <a href="https://holodeck.kilnstudio.tools/worlds/crescent-cove/"><img src="https://raw.githubusercontent.com/instruktlabs/kiln/main/assets/readme/crescent-cove.webp" alt="The canopied Cove seat among palms overlooking Crescent Cove's lagoon"></a><br>
       <a href="https://holodeck.kilnstudio.tools/worlds/crescent-cove/"><strong>Crescent Cove</strong></a>
     </td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <a href="https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/"><img src="assets/readme/winter-mountainside-cabin.webp" alt="The timber cabin with its glazed gable, deck and stair among snow-covered firs and spruces"></a><br>
+      <a href="https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/"><img src="https://raw.githubusercontent.com/instruktlabs/kiln/main/assets/readme/winter-mountainside-cabin.webp" alt="The timber cabin with its glazed gable, deck and stair among snow-covered firs and spruces"></a><br>
       <a href="https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/"><strong>Winter Mountainside Cabin</strong></a>
     </td>
     <td width="50%" align="center">
-      <a href="https://kilnstudio.tools/scenes/golden-gate/"><img src="assets/readme/golden-gate.webp" alt="A blue sedan driving across Golden Gate Bridge, with traffic, suspension cables and a red tower ahead"></a><br>
-      <a href="https://kilnstudio.tools/scenes/golden-gate/"><strong>Golden Gate</strong></a>
+      <a href="https://kilnstudio.tools/scenes/cathedral-square/"><img src="https://raw.githubusercontent.com/instruktlabs/kiln/main/assets/readme/cathedral-square.webp" alt="The Gothic cathedral above its town square, surrounded by rows of stone and timber houses"></a><br>
+      <a href="https://kilnstudio.tools/scenes/cathedral-square/"><strong>Cathedral Square</strong></a>
     </td>
   </tr>
 </table>
 
-Holodeck provides the runtime for Meridian Sanctuary, Crescent Cove and Winter
-Mountainside Cabin; Kiln provides their editable assets and GLBs. Golden Gate is
-one of the bundled interactive scenes.
+Meridian Sanctuary, Crescent Cove and Winter Mountainside Cabin are walkable
+Holodeck worlds built with editable Kiln assets. In Kiln's Cathedral Square scene,
+walk from the town square into the nave, through stained-glass light and past
+the candlelit altar to the rear chapels.
 
 Editable assets: [Meridian (53)](https://kilnstudio.tools/packs/holodeck/meridian-sanctuary/) ·
 [Crescent Cove (49)](https://kilnstudio.tools/packs/holodeck/crescent-cove/) ·
 [Winter Cabin (56)](https://kilnstudio.tools/packs/holodeck/winter-mountainside-cabin/) ·
-[Golden Gate bridge](https://kilnstudio.tools/gallery/golden-gate-bridge/).
+[Cathedral Square (22)](https://kilnstudio.tools/packs/cathedral-square/).
 
-[Explore all scenes](https://kilnstudio.tools/scenes/) or
-[browse the asset gallery](https://kilnstudio.tools/gallery/). To make your own, see
+[Explore all Kiln scenes](https://kilnstudio.tools/scenes/), including
+[Golden Gate](https://kilnstudio.tools/scenes/golden-gate/), or visit
+[the full Holodeck world list](https://holodeck.kilnstudio.tools/#scenes).
+To make your own, see
 [text to 3D with your coding agent](https://kilnstudio.tools/text-to-3d/): a walking mech and a cathedral, prompt to GLB.
 Scene code and asset content retain their own licences; each pack records its scope.
 
 ## From asset to scene
 
-One timber wall becomes part of a modular cabin kit. Assemble its floors, walls
-and roof, furnish the kitchen and living room, then build the staircase,
-sleeping loft, bed and desk.
-The finished Winter Mountainside Cabin sits in a snowy Holodeck world.
+Watch one editable timber wall become part of a cabin kit. The short cut follows
+the saved Kiln models through shell assembly, furnishing and the loft staircase,
+then shows the finished cabin in its snowy Holodeck world.
 
-[![A timber wall and cabin kit assembling, the kitchen and loft bed being furnished, then the finished snowy Holodeck world](site/public/workflow/winter-cabin/7f7f5f16317afd7d/workflow.gif)](https://kilnstudio.tools/#workflow)
+[![A timber wall and cabin kit assembling, the kitchen and loft being furnished, then the finished snowy Holodeck world](https://raw.githubusercontent.com/instruktlabs/kiln/main/assets/readme/cabin-construction.gif)](https://kilnstudio.tools/#workflow)
 
-The assembly visualizes the saved Kiln modules; the final view is captured in
-Holodeck. Both use WebGPU rendering.
+The [full construction film](https://kilnstudio.tools/#workflow) shows the
+WebGPU assembly and the finished world.
 
 ## Used in live games
 

@@ -282,106 +282,132 @@
   },
   "cathedral-square": {
     "poster": {
-      "src": "/media/scenes/cathedral-square/cs2-site1/exterior.webp",
-      "width": 1280,
-      "height": 500,
+      "src": "/media/scenes/cathedral-square/cs3-site2/exterior.webp",
+      "width": 2560,
+      "height": 1248,
       "alt": "The Gothic cathedral and its surrounding town seen from above the square in afternoon light.",
-      "srcsetWebp": "/media/scenes/cathedral-square/cs2-site1/exterior-320.webp 320w, /media/scenes/cathedral-square/cs2-site1/exterior-480.webp 480w, /media/scenes/cathedral-square/cs2-site1/exterior-672.webp 672w, /media/scenes/cathedral-square/cs2-site1/exterior-768.webp 768w, /media/scenes/cathedral-square/cs2-site1/exterior-1024.webp 1024w",
-      "srcsetAvif": "/media/scenes/cathedral-square/cs2-site1/exterior-320.avif 320w, /media/scenes/cathedral-square/cs2-site1/exterior-480.avif 480w, /media/scenes/cathedral-square/cs2-site1/exterior-672.avif 672w, /media/scenes/cathedral-square/cs2-site1/exterior-768.avif 768w, /media/scenes/cathedral-square/cs2-site1/exterior-1024.avif 1024w",
-      "inputPath": "media/scenes/cathedral-square/cs2-site1/exterior.png"
+      "srcsetWebp": "/media/scenes/cathedral-square/cs3-site2/exterior-320.webp 320w, /media/scenes/cathedral-square/cs3-site2/exterior-480.webp 480w, /media/scenes/cathedral-square/cs3-site2/exterior-672.webp 672w, /media/scenes/cathedral-square/cs3-site2/exterior-768.webp 768w, /media/scenes/cathedral-square/cs3-site2/exterior-1024.webp 1024w, /media/scenes/cathedral-square/cs3-site2/exterior-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/cathedral-square/cs3-site2/exterior-320.avif 320w, /media/scenes/cathedral-square/cs3-site2/exterior-480.avif 480w, /media/scenes/cathedral-square/cs3-site2/exterior-672.avif 672w, /media/scenes/cathedral-square/cs3-site2/exterior-768.avif 768w, /media/scenes/cathedral-square/cs3-site2/exterior-1024.avif 1024w, /media/scenes/cathedral-square/cs3-site2/exterior-1440.avif 1440w",
+      "inputPath": "media/scenes/cathedral-square/cs3-site2/exterior.png"
     },
     "capture": {
       "tool": "CUA",
       "browser": "Codex in-app browser",
       "view": "Square overview",
-      "source": "CUA browser screenshot, standalone current source, cropped to remove controls",
-      "release": "cs2-site1",
-      "packRelease": "cs2",
-      "packJsonSha256": "2a68be81055f3b32fbb48f739af39026f28243d217301bf530d1a93d8f9344cf",
+      "source": "Native 2560-pixel WebGPU capture of the production scene, cropped to remove controls",
+      "release": "cs3-site2",
+      "packRelease": "cs3",
+      "packJsonSha256": "7f32c63073d6c059258647c1db59d89081107b7c6678b71f35678c6057126ec5",
+      "camera": {
+        "position": [
+          220,
+          42,
+          -90
+        ],
+        "look": [
+          -0.88,
+          -0.124,
+          0.459
+        ]
+      },
       "renderer": {
-        "backend": "webgpu"
+        "backend": "webgpu",
+        "tier": "balanced"
       },
       "sourceScreenshot": {
-        "filename": "scene-exterior.png",
+        "filename": "showcase-exterior-raw",
         "format": "jpeg",
-        "bytes": 100311,
-        "width": 1280,
-        "height": 628,
-        "sha256": "24d7460e77572d48c1168f3f5063887f98c1e85f2e0876c38c212288e6651c39"
+        "bytes": 429260,
+        "width": 2560,
+        "height": 1376,
+        "sha256": "c9698f274659716e29fe8c22ecbcf4b6bde9a651760aba0b799a0544a445fe1d"
       },
       "crop": {
         "left": 0,
         "top": 128,
-        "width": 1280,
-        "height": 500
+        "width": 2560,
+        "height": 1248
       },
       "size": [
-        1280,
-        500
+        2560,
+        1248
       ],
-      "pngBytes": 989185,
-      "pngSha256": "cfeb2cc103530ad2324ffa8867d6cc5358e8fdf86bbcecd869b316d81a712f63"
+      "pngBytes": 4410612,
+      "pngSha256": "4b3a6e143a59e456385fdd0c63efc80d1b60697cdb3c35ca61bc8a0deea92f8d"
     },
     "captures": {
       "exterior": {
         "poster": {
-          "src": "/media/scenes/cathedral-square/cs2-site1/exterior.webp",
-          "width": 1280,
-          "height": 500,
+          "src": "/media/scenes/cathedral-square/cs3-site2/exterior.webp",
+          "width": 2560,
+          "height": 1248,
           "alt": "The Gothic cathedral and its surrounding town seen from above the square in afternoon light.",
-          "srcsetWebp": "/media/scenes/cathedral-square/cs2-site1/exterior-320.webp 320w, /media/scenes/cathedral-square/cs2-site1/exterior-480.webp 480w, /media/scenes/cathedral-square/cs2-site1/exterior-672.webp 672w, /media/scenes/cathedral-square/cs2-site1/exterior-768.webp 768w, /media/scenes/cathedral-square/cs2-site1/exterior-1024.webp 1024w",
-          "srcsetAvif": "/media/scenes/cathedral-square/cs2-site1/exterior-320.avif 320w, /media/scenes/cathedral-square/cs2-site1/exterior-480.avif 480w, /media/scenes/cathedral-square/cs2-site1/exterior-672.avif 672w, /media/scenes/cathedral-square/cs2-site1/exterior-768.avif 768w, /media/scenes/cathedral-square/cs2-site1/exterior-1024.avif 1024w",
-          "inputPath": "media/scenes/cathedral-square/cs2-site1/exterior.png"
+          "srcsetWebp": "/media/scenes/cathedral-square/cs3-site2/exterior-320.webp 320w, /media/scenes/cathedral-square/cs3-site2/exterior-480.webp 480w, /media/scenes/cathedral-square/cs3-site2/exterior-672.webp 672w, /media/scenes/cathedral-square/cs3-site2/exterior-768.webp 768w, /media/scenes/cathedral-square/cs3-site2/exterior-1024.webp 1024w, /media/scenes/cathedral-square/cs3-site2/exterior-1440.webp 1440w",
+          "srcsetAvif": "/media/scenes/cathedral-square/cs3-site2/exterior-320.avif 320w, /media/scenes/cathedral-square/cs3-site2/exterior-480.avif 480w, /media/scenes/cathedral-square/cs3-site2/exterior-672.avif 672w, /media/scenes/cathedral-square/cs3-site2/exterior-768.avif 768w, /media/scenes/cathedral-square/cs3-site2/exterior-1024.avif 1024w, /media/scenes/cathedral-square/cs3-site2/exterior-1440.avif 1440w",
+          "inputPath": "media/scenes/cathedral-square/cs3-site2/exterior.png"
         },
         "capture": {
           "tool": "CUA",
           "browser": "Codex in-app browser",
           "view": "Square overview",
-          "source": "CUA browser screenshot, standalone current source, cropped to remove controls",
-          "release": "cs2-site1",
-          "packRelease": "cs2",
-          "packJsonSha256": "2a68be81055f3b32fbb48f739af39026f28243d217301bf530d1a93d8f9344cf",
+          "source": "Native 2560-pixel WebGPU capture of the production scene, cropped to remove controls",
+          "release": "cs3-site2",
+          "packRelease": "cs3",
+          "packJsonSha256": "7f32c63073d6c059258647c1db59d89081107b7c6678b71f35678c6057126ec5",
+          "camera": {
+            "position": [
+              220,
+              42,
+              -90
+            ],
+            "look": [
+              -0.88,
+              -0.124,
+              0.459
+            ]
+          },
           "renderer": {
-            "backend": "webgpu"
+            "backend": "webgpu",
+            "tier": "balanced"
           },
           "sourceScreenshot": {
-            "filename": "scene-exterior.png",
+            "filename": "showcase-exterior-raw",
             "format": "jpeg",
-            "bytes": 100311,
-            "width": 1280,
-            "height": 628,
-            "sha256": "24d7460e77572d48c1168f3f5063887f98c1e85f2e0876c38c212288e6651c39"
+            "bytes": 429260,
+            "width": 2560,
+            "height": 1376,
+            "sha256": "c9698f274659716e29fe8c22ecbcf4b6bde9a651760aba0b799a0544a445fe1d"
           },
           "crop": {
             "left": 0,
             "top": 128,
-            "width": 1280,
-            "height": 500
+            "width": 2560,
+            "height": 1248
           },
           "size": [
-            1280,
-            500
+            2560,
+            1248
           ],
-          "pngBytes": 989185,
-          "pngSha256": "cfeb2cc103530ad2324ffa8867d6cc5358e8fdf86bbcecd869b316d81a712f63"
+          "pngBytes": 4410612,
+          "pngSha256": "4b3a6e143a59e456385fdd0c63efc80d1b60697cdb3c35ca61bc8a0deea92f8d"
         }
       },
       "interior": {
         "poster": {
-          "src": "/media/scenes/cathedral-square/cs3-site1/interior.webp",
-          "width": 1280,
-          "height": 564,
+          "src": "/media/scenes/cathedral-square/cs3-site2/interior.webp",
+          "width": 2560,
+          "height": 1248,
           "alt": "The cathedral sanctuary with the suspended crucifix, candlelit altar, stained glass and stone vaults.",
-          "srcsetWebp": "/media/scenes/cathedral-square/cs3-site1/interior-320.webp 320w, /media/scenes/cathedral-square/cs3-site1/interior-480.webp 480w, /media/scenes/cathedral-square/cs3-site1/interior-672.webp 672w, /media/scenes/cathedral-square/cs3-site1/interior-768.webp 768w, /media/scenes/cathedral-square/cs3-site1/interior-1024.webp 1024w",
-          "srcsetAvif": "/media/scenes/cathedral-square/cs3-site1/interior-320.avif 320w, /media/scenes/cathedral-square/cs3-site1/interior-480.avif 480w, /media/scenes/cathedral-square/cs3-site1/interior-672.avif 672w, /media/scenes/cathedral-square/cs3-site1/interior-768.avif 768w, /media/scenes/cathedral-square/cs3-site1/interior-1024.avif 1024w",
-          "inputPath": "media/scenes/cathedral-square/cs3-site1/interior.png"
+          "srcsetWebp": "/media/scenes/cathedral-square/cs3-site2/interior-320.webp 320w, /media/scenes/cathedral-square/cs3-site2/interior-480.webp 480w, /media/scenes/cathedral-square/cs3-site2/interior-672.webp 672w, /media/scenes/cathedral-square/cs3-site2/interior-768.webp 768w, /media/scenes/cathedral-square/cs3-site2/interior-1024.webp 1024w, /media/scenes/cathedral-square/cs3-site2/interior-1440.webp 1440w",
+          "srcsetAvif": "/media/scenes/cathedral-square/cs3-site2/interior-320.avif 320w, /media/scenes/cathedral-square/cs3-site2/interior-480.avif 480w, /media/scenes/cathedral-square/cs3-site2/interior-672.avif 672w, /media/scenes/cathedral-square/cs3-site2/interior-768.avif 768w, /media/scenes/cathedral-square/cs3-site2/interior-1024.avif 1024w, /media/scenes/cathedral-square/cs3-site2/interior-1440.avif 1440w",
+          "inputPath": "media/scenes/cathedral-square/cs3-site2/interior.png"
         },
         "capture": {
           "tool": "CUA",
           "browser": "Codex in-app browser",
-          "view": "Sanctuary",
-          "source": "CUA browser screenshot, standalone current source, cropped to remove controls",
-          "release": "cs3-site1",
+          "view": "Sanctuary and crucifix",
+          "source": "Native 2560-pixel WebGPU capture of the production scene, cropped to remove controls",
+          "release": "cs3-site2",
           "packRelease": "cs3",
           "packJsonSha256": "7f32c63073d6c059258647c1db59d89081107b7c6678b71f35678c6057126ec5",
           "camera": {
@@ -399,31 +425,32 @@
           },
           "renderer": {
             "backend": "webgpu",
+            "tier": "balanced",
             "ambientOcclusion": {
-              "tier": "economy",
+              "tier": "balanced",
               "blend": 1
             }
           },
           "sourceScreenshot": {
-            "filename": "sanctuary-final.jpg",
+            "filename": "showcase-interior-raw",
             "format": "jpeg",
-            "bytes": 85949,
-            "width": 1280,
-            "height": 720,
-            "sha256": "0526d428c0493f91f75d8e61c553a8634d465300fe3c47b0ac169ce31119d9cf"
+            "bytes": 274632,
+            "width": 2560,
+            "height": 1376,
+            "sha256": "73fbc388532df2b3a76e6dad86cde00d1e94decfbaf419ff0720c7fdd456bec0"
           },
           "crop": {
             "left": 0,
             "top": 128,
-            "width": 1280,
-            "height": 564
+            "width": 2560,
+            "height": 1248
           },
           "size": [
-            1280,
-            564
+            2560,
+            1248
           ],
-          "pngBytes": 927781,
-          "pngSha256": "293869c9269ab656cc4e8b0cbe5814416e6d848a89488fc1b8bbf224d8890c03"
+          "pngBytes": 3218954,
+          "pngSha256": "e79f87ebe15f3d3916552b2b80c06a68cb203d577fd360feab14d7ba1c56481f"
         }
       }
     }

@@ -46,18 +46,18 @@
       }
     },
     {
-      "file": "golden-gate.webp",
-      "alt": "A blue sedan driving across the deck of the Golden Gate Bridge scene, with traffic around it and both towers ahead.",
-      "world": "https://kilnstudio.tools/scenes/golden-gate/",
-      "view": "drive",
-      "inputPath": "media/scenes/golden-gate/g9-code5/golden-gate-scene-drive.png",
-      "inputSha256": "487793596f730d5424c1b25016fbc27408d6d2ab707c57343acbbc6a52b1bc56",
-      "sha256": "506c1d12e86d3333030db7affe525e408b7ac04ced80f08879234db0367e250e",
+      "file": "cathedral-square.webp",
+      "alt": "The Gothic cathedral and its surrounding town seen from above the square in afternoon light.",
+      "world": "https://kilnstudio.tools/scenes/cathedral-square/",
+      "view": "Square overview",
+      "inputPath": "media/scenes/cathedral-square/cs3-site2/exterior.png",
+      "inputSha256": "4b3a6e143a59e456385fdd0c63efc80d1b60697cdb3c35ca61bc8a0deea92f8d",
+      "sha256": "5d7cc5950891489641748d634a1a427aa8864df906217cd63c55a441db14c526",
       "width": 960,
       "height": 540,
       "framing": {
         "fit": "cover",
-        "position": "south"
+        "position": "centre"
       }
     }
   ]
