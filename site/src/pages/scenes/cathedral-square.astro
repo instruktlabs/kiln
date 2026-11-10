@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SceneShell from '../../components/SceneShell.astro';
+import { cathedralSquareScene } from '../../data/scenes';
+import { PACKS_ENABLED } from '../../lib/config';
+---
+<BaseLayout title="Cathedral Square scene · Kiln" description={cathedralSquareScene.description} breadcrumbs={[{ label: 'Scenes', href: '/scenes/' }, { label: 'Cathedral Square scene', href: cathedralSquareScene.href }]} card="scenes">
+  <div class="container pb-12 pt-8">
+    <SceneShell scene="cathedral-square">
+      <div class="grid gap-8 md:grid-cols-2">
+        <div>
+          <h2 class="text-subheading">Walk from the square into the cathedral.</h2>
+          <p class="mt-3">Explore the surrounding streets, west entrances, nave and chapels. The sanctuary includes oak pews and a crucifix suspended above the altar.</p>
+          {PACKS_ENABLED && <a class="text-link mt-4" href="/packs/cathedral-square/">View the Cathedral Square assets</a>}
+        </div>
+        <div>
+          <h2 class="text-subheading">Scene preview.</h2>
+          <p class="mt-3">Choose Walk the square to enter, or View for named viewpoints. Follow the controls in the scene. Exit scene returns here and releases the scene. Desktop and touch controls are included; physical-device performance remains under review.</p>
+        </div>
+      </div>
+    </SceneShell>
+  </div>
+</BaseLayout>

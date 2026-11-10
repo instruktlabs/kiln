@@ -1,0 +1,76 @@
+---
+import { resolve } from "node:path";
+import { readGlbFacts } from "../../../../scripts/engine-note.mjs";
+import EngineNote from "../../../components/EngineNote.astro";
+import AssetDownloads from "../../../components/AssetDownloads.astro";
+import AssetViewer from "../../../components/AssetViewer.astro";
+import GalleryTags from "../../../components/GalleryTags.astro";
+import PageHeader from "../../../components/PageHeader.astro";
+import StatRow from "../../../components/StatRow.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { bounds, bytes, number } from "../../../lib/catalog";
+import {
+  CATHEDRAL_SQUARE_ID, cathedralAssetHref, cathedralGalleryAssets, cathedralModelUrl,
+  cathedralPack, cathedralPackHref, cathedralSceneHref, type CathedralAsset,
+} from "../../../lib/cathedral-gallery";
+import { assetDelivery } from "../../../lib/delivery";
+
+export function getStaticPaths() {
+  return cathedralGalleryAssets().map((asset) => ({ params: { slug: asset.slug }, props: { asset } }));
+}
+interface Props { asset: CathedralAsset }
+const { asset } = Astro.props;
+const href = cathedralAssetHref(asset.slug);
+const downloads = assetDelivery(CATHEDRAL_SQUARE_ID, asset.slug);
+const modelUrl = cathedralModelUrl(asset);
+const modelFacts = await readGlbFacts(resolve("public", modelUrl.split("?")[0]!.slice(1)));
+const poster = asset.poster;
+if (!poster) throw new Error(`Cathedral Square asset needs a rig poster: ${asset.slug}`);
+---
+<BaseLayout title={`${asset.name} · Cathedral Square · Kiln`} description={asset.description}
+  breadcrumbs={[
+    { label: "Gallery", href: "/gallery/" },
+    { label: "Cathedral Square", href: cathedralPackHref },
+    { label: asset.name, href },
+  ]} card="gallery">
+  <div class="container">
+    <div class="grid gap-6 py-8 lg:grid-cols-2">
+      <div>
+        <PageHeader>{asset.name}</PageHeader>
+        <GalleryTags />
+        <p class="mt-4 max-w-reading">{asset.description}</p>
+      </div>
+      <p class="font-mono text-code lg:text-right"><a class="text-link" href={cathedralPackHref}>Cathedral Square</a></p>
+    </div>
+    <div class="drawing-sheet">
+      <AssetViewer name={asset.name} modelUrl={modelUrl}
+        poster={poster.src} posterAlt={poster.alt} posterWidth={poster.width} posterHeight={poster.height}
+        srcsetWebp={poster.srcsetWebp} srcsetAvif={poster.srcsetAvif} />
+    </div>
+    <EngineNote extensions={modelFacts.extensionsUsed} />
+    <StatRow values={[
+      { label: "Default draw", value: `${number(asset.metrics.triangles)} triangles` },
+      { label: "Materials", value: asset.metrics.materials },
+      { label: "Dimensions", value: `${bounds(asset.metrics.bounds)} m` },
+    ]} />
+    <div class="mt-6 flex flex-wrap gap-4">
+      <a class="btn btn-secondary" href={cathedralSceneHref}>Explore the scene</a>
+      <a class="btn btn-secondary" href={cathedralPackHref}>View the full pack</a>
+    </div>
+    <AssetDownloads runtime={downloads.runtimeDownload} editable={downloads.editableDownload} />
+    <section class="pt-12" aria-labelledby="model-details">
+      <h2 id="model-details">Model details</h2>
+      <dl class="mt-6 divide-y divide-rule border-y border-ink">
+        <div class="grid gap-2 py-4 md:grid-cols-3"><dt class="font-semibold">Saved revision</dt><dd class="break-all font-mono text-code md:col-span-2">{asset.revisionId}</dd></div>
+        <div class="grid gap-2 py-4 md:grid-cols-3"><dt class="font-semibold">GLB</dt><dd class="break-all font-mono text-code md:col-span-2">{bytes(asset.runtimeModelDownload.bytes)}<br />SHA-256 {asset.runtimeModelDownload.sha256}</dd></div>
+        <div class="grid gap-2 py-4 md:grid-cols-3"><dt class="font-semibold">Recorded authoring</dt><dd class="md:col-span-2">{[asset.attribution.model, asset.attribution.harness].filter(Boolean).join(" · ")}</dd></div>
+      </dl>
+      {asset.slug === "cathedral" && <p class="mt-4 max-w-reading">The walkthrough hides the included ground swatches and portal leaves, places separate furnishings and adds scene lighting.</p>}
+      {asset.slug === "crucifix" && <p class="mt-4 max-w-reading">Gemini 4 Argon (High) in Antigravity authored the original carving. This saved child corrects two strokes in the raised INRI inscription. The walkthrough suspends its principal cross and reuses the timber post and beam on two aisle walls.</p>}
+    </section>
+    <section class="py-12" aria-labelledby="asset-license">
+      <h2 id="asset-license">Licence and attribution</h2>
+      <p class="mt-4 max-w-reading">The authored model and Kiln source are <a class="text-link" href={cathedralPack.license.url}>{cathedralPack.license.spdx}</a> to the extent of the owner's rights. Third-party materials retain their source terms. The editable archive contains the selected revision, its provenance and the notices.</p>
+    </section>
+  </div>
+</BaseLayout>

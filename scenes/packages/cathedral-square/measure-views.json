@@ -1,0 +1,162 @@
+{
+  "url": "http://127.0.0.1:4477/?backend=webgl2&tier=balanced",
+  "samples": [
+    {
+      "name": "nave",
+      "eyes": {
+        "x": 30,
+        "y": 1.70001,
+        "z": 0,
+        "feetY": 0.000010000000000010001,
+        "yaw": -1.5707963267948966
+      },
+      "backend": "webgl2",
+      "tier": "balanced",
+      "pixelRatio": 1,
+      "draws": 705,
+      "triangles": 1458218,
+      "byKind": {
+        "main": {
+          "passes": 1,
+          "draws": 704,
+          "triangles": 1458217,
+          "pipelines": 16
+        },
+        "output": {
+          "passes": 1,
+          "draws": 1,
+          "triangles": 1,
+          "pipelines": 1
+        }
+      },
+      "info": {
+        "calls": 178,
+        "drawCalls": 705,
+        "triangles": 1458218,
+        "frame": 62
+      },
+      "stable": true,
+      "frameMedianMs": 8,
+      "frames": 42,
+      "cpuRenderMedianMs": 7.599999999627471
+    },
+    {
+      "name": "nave-east",
+      "eyes": {
+        "x": 24,
+        "y": 1.70001,
+        "z": 0,
+        "feetY": 0.000010000000000010001,
+        "yaw": 1.5707963267948966
+      },
+      "backend": "webgl2",
+      "tier": "balanced",
+      "pixelRatio": 1,
+      "draws": 1205,
+      "triangles": 2051730,
+      "byKind": {
+        "main": {
+          "passes": 1,
+          "draws": 1204,
+          "triangles": 2051729,
+          "pipelines": 17
+        },
+        "output": {
+          "passes": 1,
+          "draws": 1,
+          "triangles": 1,
+          "pipelines": 1
+        }
+      },
+      "info": {
+        "calls": 302,
+        "drawCalls": 1205,
+        "triangles": 2051730,
+        "frame": 124
+      },
+      "stable": true,
+      "frameMedianMs": 13.599999999627471,
+      "frames": 42,
+      "cpuRenderMedianMs": 13.049999998882413
+    },
+    {
+      "name": "parvis",
+      "eyes": {
+        "x": 100,
+        "y": 1.70001,
+        "z": 0,
+        "feetY": 0.000010000000000010001,
+        "yaw": 1.5707963267948966
+      },
+      "backend": "webgl2",
+      "tier": "balanced",
+      "pixelRatio": 1,
+      "draws": 2062,
+      "triangles": 3763024,
+      "byKind": {
+        "main": {
+          "passes": 1,
+          "draws": 2061,
+          "triangles": 3763023,
+          "pipelines": 17
+        },
+        "output": {
+          "passes": 1,
+          "draws": 1,
+          "triangles": 1,
+          "pipelines": 1
+        }
+      },
+      "info": {
+        "calls": 426,
+        "drawCalls": 2062,
+        "triangles": 3763024,
+        "frame": 186
+      },
+      "stable": true,
+      "frameMedianMs": 19.399999998509884,
+      "frames": 42,
+      "cpuRenderMedianMs": 18.90000000037253
+    },
+    {
+      "name": "street",
+      "eyes": {
+        "x": 186,
+        "y": 1.70001,
+        "z": 0,
+        "feetY": 0.000010000000000010001,
+        "yaw": -1.5707963267948966
+      },
+      "backend": "webgl2",
+      "tier": "balanced",
+      "pixelRatio": 1,
+      "draws": 101,
+      "triangles": 51949,
+      "byKind": {
+        "main": {
+          "passes": 1,
+          "draws": 100,
+          "triangles": 51948,
+          "pipelines": 8
+        },
+        "output": {
+          "passes": 1,
+          "draws": 1,
+          "triangles": 1,
+          "pipelines": 1
+        }
+      },
+      "info": {
+        "calls": 544,
+        "drawCalls": 101,
+        "triangles": 51949,
+        "frame": 245
+      },
+      "stable": true,
+      "frameMedianMs": 6.900000000372529,
+      "frames": 40,
+      "cpuRenderMedianMs": 4.200000001117587
+    }
+  ],
+  "errors": []
+}

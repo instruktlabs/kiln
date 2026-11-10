@@ -55,8 +55,12 @@ test('search combines words across names and tags with category and shared pack 
 
 test('newest uses introduction date, with repeatable alphabetical ties', () => {
   const result = browseGallery(cards, { sort: 'newest' });
-  expect(result[0]?.slug.startsWith('meridian-')).toBe(true);
-  for (let i = 1; i < result.length; i++) expect(result[i - 1]!.addedOn >= result[i]!.addedOn).toBe(true);
+  expect(result[0]?.addedOn).toBe(cards.map((asset) => asset.addedOn).sort().at(-1));
+  for (let i = 1; i < result.length; i++) {
+    const previous = result[i - 1]!, current = result[i]!;
+    expect(previous.addedOn >= current.addedOn).toBe(true);
+    if (previous.addedOn === current.addedOn) expect(previous.name.localeCompare(current.name, 'en')).toBeLessThanOrEqual(0);
+  }
   expect(browseGallery([...cards].reverse(), { sort: 'newest' })).toEqual(result);
 });
 

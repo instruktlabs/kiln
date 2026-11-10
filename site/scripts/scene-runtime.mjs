@@ -26,11 +26,14 @@ export const CEILINGS = {
   // Frozen by the coordinator from FF1's first passing public build (1,591,477 B / 446,118 B gzip) plus 10 percent
   // (packages/foundry-floor/tests/tools/build.ts, CEILING).
   'foundry-floor': { bytes: 1_750_625, gzipBytes: 490_730 },
+  // First passing site module build, 2026-11-09: 1,470,199 B / 427,745 B Bun gzip, plus 10 percent (D-15).
+  'cathedral-square': { bytes: 1_617_219, gzipBytes: 470_520 },
 };
 
 /** Scene runtimes the site builds itself from scene source. Others are staged from a standalone build. */
 export const BUILT_RUNTIMES = {
   farm: { entry: 'src/scenes/runtime/farm.ts', packages: SCENE_PACKAGES },
+  'cathedral-square': { entry: 'src/scenes/runtime/cathedral-square.ts', packages: ['cathedral-square', 'scene-kit'] },
 };
 
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');

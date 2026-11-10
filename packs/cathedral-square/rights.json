@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "decision": {
+    "date": "2026-11-09",
+    "ownerStatement": "CC0, matching the existing free Kiln packs",
+    "spdx": "CC0-1.0",
+    "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "scope": "Authored model and editable source content of the listed revisions, to the extent of the owner's rights. Third-party resources keep their own terms."
+  },
+  "pins": [
+    {
+      "id": "cathedral",
+      "assetId": "a_d606fc5eebd44bd7b7db3611537b9570",
+      "revisionId": "r_4b6d19a4e1de409cad201987ce5f18d1",
+      "sha256": "9a3528f4c9e008d8a3f29d466ae4813c0dcdfb10101751a07b455f95ea1b4dea",
+      "source": {
+        "sha256": "sha256:26e878167bd79ed7cdc92b1f0befd0b9880aed08d87d201dbd847e219af53e96",
+        "bytes": 378135
+      }
+    },
+    {
+      "id": "house-timber-gable-door",
+      "assetId": "a_083b1837a7094134867ad0de95ab9e78",
+      "revisionId": "r_c55d316b8a59443f8795ca43f5ee99c7",
+      "sha256": "61deeb1769db059c6de7010ebf65b4dc60acffa3a7d9dde8a51a156849919a2d",
+      "source": {
+        "sha256": "sha256:c503c40d1026f6f158b65fcef7d8f34ee7ee5994f2830dedd4350cef70c38688",
+        "bytes": 39395
+      }
+    },
+    {
+      "id": "house-timber-gable-narrow",
+      "assetId": "a_a9cd08505ea5468ebef9d65837cb2484",
+      "revisionId": "r_426483d96ac140c1942bb2e225e08c03",
+      "sha256": "a4fde55718dd7b9b40d1fdd41c92a876faf3a6be0ffb3f929435790f4eb00c8e",
+      "source": {
+        "sha256": "sha256:fbb7975d78bfaa6912cb283a34f4bb59dc1d28279abd2f22a627c6c3dcdae04e",
+        "bytes": 39397
+      }
+    },
+    {
+      "id": "house-timber-gable-shop",
+      "assetId": "a_a9a108df19374d2cb9ee0a6b596a09a1",
+      "revisionId": "r_910fcc7b3dd1431099c8cbd65a9ffc3c",
+      "sha256": "3e6e2e23c3fda522c318648ecf7384a7e13f38e987dd49def916b7f5af5db6f7",
+      "source": {
+        "sha256": "sha256:9903d7c2eaadcfd2c8fa33b6d690bdf24403dec73cbe9d3b18e019b9cc5792d1",
+        "bytes": 39395
+      }
+    },
+    {
+      "id": "house-stone-gable-shop",
+      "assetId": "a_0a5b078406014355b98b967db65374e2",
+      "revisionId": "r_60900adf31c840d2a6bd3d68033f427a",
+      "sha256": "fe2870601c2b57cfa0092c0899625891205e4ccca3167b36290c218208526f5e",
+      "source": {
+        "sha256": "sha256:0af7848ec119d089b2f25488f3779037c96549bcd9e3effef5cead27c44114f8",
+        "bytes": 39394
+      }
+    },
+    {
+      "id": "house-stone-gable-tall",
+      "assetId": "a_4bed34bf68d643fd8ec4c28ba0b31f5e",
+      "revisionId": "r_171744bbc93c443b8d4cbd137692bf09",
+      "sha256": "29b1fd8d32c8776dbc462e9cdcd11c8a1b52c3cf0646fbe8febe4cae8f0ee6f4",
+      "source": {
+        "sha256": "sha256:29d61f9d40178d90c5c534870d15fa3bc62d0f3c2374bbc479e2e84abdacbb08",
+        "bytes": 39394
+      }
+    },
+    {
+      "id": "house-stone-eaves-arcade",
+      "assetId": "a_dca56b0a4d6243ac907f93a843074846",
+      "revisionId": "r_bfba41c9967b4f4c9d08932b30bce1f7",
+      "sha256": "8a97aa56f97de031a6f21ea94bca12a670639f45acf7228d76d194e7f36b7068",
+      "source": {
+        "sha256": "sha256:e5f43480f135549f02d7b1ae17618f724557a5efb835c86fdcbf9b791a13c5a4",
+        "bytes": 42182
+      }
+    },
+    {
+      "id": "house-plaster-eaves-arcade",
+      "assetId": "a_2a4337b615ed44e0a69db7459c369030",
+      "revisionId": "r_c91287f01b0d435a84f77846be132732",
+      "sha256": "963a1100dc356d527331ea9f1be757c6031154715972809af939243e46279573",
+      "source": {
+        "sha256": "sha256:52e1f915bf5494aa93870b493d1c85beb8b9eb0acd8fd89a470d90011fd932b7",
+        "bytes": 42184
+      }
+    },
+    {
+      "id": "house-plaster-eaves-shop",
+      "assetId": "a_8a1ce14aa5f2401b80c132279aa3e9a9",
+      "revisionId": "r_5dd53a57b04c4273b4c8a1ec8ee0fb66",
+      "sha256": "eaad2d95cfa199a78a1cb7e216275020497c67157025d43728507e55622c7e1e",
+      "source": {
+        "sha256": "sha256:06d373ddd41504f073ae5dc7165b37da63db23c316ee244732a06e43fa7071b9",
+        "bytes": 42182
+      }
+    },
+    {
+      "id": "lantern",
+      "assetId": "a_6aadbac69cf146198bef038c9cf5a360",
+      "revisionId": "r_b3e7274ac3f643cc8e36f551a6fff263",
+      "sha256": "d1dc1db394e80376e0a98380d8d3e2eca1da3b3f4b84d541d9ed536026ebe65a",
+      "source": {
+        "sha256": "sha256:106f1da352de673f2888959702a8608c231a08934a36a6caee33cb76188293b1",
+        "bytes": 13965
+      }
+    },
+    {
+      "id": "fountain",
+      "assetId": "a_f57b556e45454937b12286efcd0c475c",
+      "revisionId": "r_0c7211ecd4864000b5b10b0bd5bd3564",
+      "sha256": "90b549174e54010615da8dac9ab6285fd16f8cf4daaffe49797feb841071a75e",
+      "source": {
+        "sha256": "sha256:5d4ce465cb9bb9bde37823e40a38949cf1e64afd7045c9cc5e60123a65e6a750",
+        "bytes": 18136
+      }
+    },
+    {
+      "id": "tree-a",
+      "assetId": "a_b4bc9dd9c4d640e7ae7625f307367900",
+      "revisionId": "r_887a9606fc3a4ad7b3fbe759d5475e47",
+      "sha256": "399795745f498039ca8d8ab3c7672584740874ec07bd1e4df9d9e9f3e1c90728",
+      "source": {
+        "sha256": "sha256:c230e4087e5be5f6364130fb6e7a876df251e320565e44690dd3a31902f56ecf",
+        "bytes": 18986
+      }
+    },
+    {
+      "id": "tree-b",
+      "assetId": "a_bb189af3c05a4c3d837cdea7faca1a83",
+      "revisionId": "r_78471e528e4e4a16b11be4fc980db812",
+      "sha256": "7d7495c1abe482e3e965ea1a8424e111037166c4dfdbe9b652d40dead09e137c",
+      "source": {
+        "sha256": "sha256:ece06c8c5479b06baafe5c9f4d8857a65cdd63faac4e50c3bb22d477c7389e0b",
+        "bytes": 18989
+      }
+    },
+    {
+      "id": "stall-red",
+      "assetId": "a_fd6b2e0c65e74c7cb94a4b30ac2edc92",
+      "revisionId": "r_2a07e3e03a694ad8a9c4ca0b23553782",
+      "sha256": "d23185171b70bd6d7930548d1dbc0d98b2c77093e0d6f994f8a47e9ccbcff8bb",
+      "source": {
+        "sha256": "sha256:a80f18e5691358581e93ef6cdc57787c625e716af3dfe2f07b4b5764f11f524d",
+        "bytes": 18453
+      }
+    },
+    {
+      "id": "stall-green",
+      "assetId": "a_884d9b73f40143bea221bcd152fe7ae8",
+      "revisionId": "r_d6afad366bc541d782f612bc4ef3fa29",
+      "sha256": "a85f648d1a66158f594f9f574850e1ba263f6701dc7d4dd7d4a569f2218cdf9d",
+      "source": {
+        "sha256": "sha256:911bdce44a0ac92be0a41b7da3af1646e01fcde7df6ed801bff19a15e58a272f",
+        "bytes": 18457
+      }
+    },
+    {
+      "id": "cafe-red",
+      "assetId": "a_1605dec2bbd94fe6addbe52bcb517873",
+      "revisionId": "r_9967dc019f444b009896f5fa11b6e32c",
+      "sha256": "4b8878f9062b325c0533ba8d61a8124df6d662f199a5b73df403c334c45b466a",
+      "source": {
+        "sha256": "sha256:e912d1f8bb92a98e9268ca022f7fa2168ee5696cb204c9bb53fe53ed1023a52f",
+        "bytes": 18445
+      }
+    },
+    {
+      "id": "cafe-green",
+      "assetId": "a_5bca6704c761424fb0f3c7deed9249fd",
+      "revisionId": "r_2dad073e64d84ed18c3ef40adc4333bc",
+      "sha256": "6014b200596cfc032c1547234b0cbe49d6966cfa15739bd2860bd48a8cd55dc2",
+      "source": {
+        "sha256": "sha256:c2f5ff0a8a266ffa41b9da398e0345eb7e9580203b42d339d75643183b39e41c",
+        "bytes": 18449
+      }
+    },
+    {
+      "id": "bench",
+      "assetId": "a_a991e96034d244b187b03b1662c42185",
+      "revisionId": "r_dca7b0b8c45e484da522a44fe3c09d70",
+      "sha256": "fa51e6a7abcb4655ea06b612b4c8354d524f84414d2e22a83e9047f3cead0eba",
+      "source": {
+        "sha256": "sha256:2b8669941d152fe69604656dc16c998a39cd202cedcbd67a2ea04893fa8c58c9",
+        "bytes": 18435
+      }
+    },
+    {
+      "id": "bollard",
+      "assetId": "a_19faf6c3c518475393fac82ae22dc28c",
+      "revisionId": "r_2367c330f7c340308386bb1ce4dc7509",
+      "sha256": "a993495bf216fbf4cc9f014a1f3a9de38ce0076bde8e8a23312870a7ab61fdce",
+      "source": {
+        "sha256": "sha256:a9f1dbfd4cee0bc290c0c442e04369aaee0026c84401c0d137953f7f49afe660",
+        "bytes": 18439
+      }
+    },
+    {
+      "id": "ground",
+      "assetId": "a_e9bb9f7c3be04e85ad7a0b3337d414f5",
+      "revisionId": "r_5a2505e13cca4de3bc5af0626545d721",
+      "sha256": "5af9c9c321da9d657e15b3f60fd5151b194fe5330d1f0ad3e4f5e9770a4cc5d8",
+      "source": {
+        "sha256": "sha256:d549e73f23e5faf69309aa4a4881b413796f347c3019ff7ac6189a5807e1e161",
+        "bytes": 14596
+      }
+    },
+    {
+      "id": "crucifix",
+      "assetId": "a_1f6e07b0010946e080861252aa9030f9",
+      "revisionId": "r_fcf9c8cff5584d669f0a0b271b997ddb",
+      "sha256": "7c18f3b29cd22c3d94867c87cbcd2c4800c4b62cdcec6ec766c2020da54d7a7e",
+      "source": {
+        "sha256": "sha256:8d60452f48d32ca398b957fd7b546a79273ec71baf733e97b4a7fa2cc87260d6",
+        "bytes": 61552
+      }
+    },
+    {
+      "id": "nave-pew",
+      "assetId": "a_68afd1ab2da34189bd98f13fd6cc6d34",
+      "revisionId": "r_d9f9a759445b4d28a2b82cec591e8b5a",
+      "sha256": "4c2e9e530168479bcde274eabf20ffac5246713b523e6bbb6a981ec4b6fd2414",
+      "source": {
+        "sha256": "sha256:a6566f8576dc2f768f59b0f3e6d6b41ffe836df2ae66aa10b1e76a0f6bd9bd40",
+        "bytes": 4234
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "resourceId": "kiln.texture.clay-roof-tiles-albedo.v1",
+      "contentHash": "5ff8f7f247b138a0150a7cda88b4b8bea1dd86b310a2e79c56a66f2026f11c91",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/clay_roof_tiles"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.clay-roof-tiles-arm.v1",
+      "contentHash": "c5012b8fd81a3357919d86a3c1b37a34a5a3af73bc458c81ae2c4e993aa0ed78",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/clay_roof_tiles"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.clay-roof-tiles-normal.v1",
+      "contentHash": "b6f4cfff3c45f031a204f448e76ac3a9a20f6068d1feb8990c27fcec0efb68e0",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/clay_roof_tiles"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.cobblestone-floor-albedo.v1",
+      "contentHash": "9ef3e53260a84968bd1368bd392e170e65ee6685fcd7535588c2cc4c0c2141b4",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/cobblestone_floor_01"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.cobblestone-floor-arm.v1",
+      "contentHash": "0230a35e74af324bd83309e0942b5b08fcbe274e72cce8ea87bd3b958fd94e0b",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/cobblestone_floor_01"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.cobblestone-floor-normal.v1",
+      "contentHash": "a40ab18682b065840a1377662586cd67c1f6e18052babc09bd11e2d5c474cdcf",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/cobblestone_floor_01"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.dry-soil-albedo.v1",
+      "contentHash": "62d89b0758fdaf79b40509b32615523784b4437b0972796e2e224461d33b9d73",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/brown_mud_dry"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.dry-soil-arm.v1",
+      "contentHash": "1b75190e7ea61f27c0eb9f3c168f27397b6b5a185373b451940ff47045f07e4e",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/brown_mud_dry"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.dry-soil-normal.v1",
+      "contentHash": "a5b95ee77b4d0184d58a50a4950b2fde8a97a0b10a8a7aafe74ab9928cf01eb6",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/brown_mud_dry"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.oak-veneer-albedo.v1",
+      "contentHash": "68097838b07b4607ebf96a961aa08bb1fc0289c36299f4033a1d611ad5d4417f",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/oak_veneer_01"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.oak-veneer-arm.v1",
+      "contentHash": "a67bd7a35b7cc0506c2839afc48c2e777f73bcaaf6ea222511756f85fe166bcc",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/oak_veneer_01"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.oak-veneer-normal.v1",
+      "contentHash": "ab98029fc908548b3a7fe3ba4ff64fd95a03fcafb6c589a932739aa4875903f8",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/oak_veneer_01"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.rusted-metal-albedo.v1",
+      "contentHash": "4e0f7b0676278ed88380a83636bd79d3c5c7dd143c964af37f0cfe2407e187bc",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/rust_coarse_01"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.rusted-metal-arm.v1",
+      "contentHash": "8b51d0e9ab35de03d7311ef0026775cea78c47d01e15ef8e4d777cfa34e987fd",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/rust_coarse_01"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.weathered-planks-albedo.v1",
+      "contentHash": "bf135b0d4a2a66418fed30b71a08ea5ece851ae7595f2f22bb2ca741707dbfd8",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/brown_planks_03"
+      }
+    },
+    {
+      "resourceId": "kiln.texture.weathered-planks-normal.v1",
+      "contentHash": "b55dfca68683eaa84a88b94c3f422928e82dac28844a4952ec0e25c3c3778ab6",
+      "license": {
+        "spdx": "CC0-1.0",
+        "attribution": "",
+        "source": "https://polyhaven.com/a/brown_planks_03"
+      }
+    }
+  ]
+}

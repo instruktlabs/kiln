@@ -327,6 +327,78 @@
             "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
           ]
         }
+      },
+      {
+        "id": "cathedral-square-2026-11-10-044ca1e8",
+        "pack": "cathedral-square",
+        "renderedOn": "2026-11-10",
+        "engine": {
+          "packageName": "@instruktlabs/kiln",
+          "packageVersion": "1.1.0",
+          "packageJsonSha256": "894bc46b56ff0c263f5c8f53ab14cb69035860c8aa747e699e25c517913f6949"
+        },
+        "service": {
+          "url": "http://127.0.0.1:8000",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:d974d635ff5d3503d2373406186535fa437de9e753cfdeddce3eb46c68f0ad18",
+          "buildFingerprint": "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3",
+          "dependencies": {
+            "three": "0.186.1",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:cce389c57bf3d4c40328376512d8d914e93bafa9a56feb544330c8af9361055a",
+            "931623b5-7fb5-4d10-bcfa-677e48077206",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
+          ]
+        }
+      },
+      {
+        "id": "cathedral-square-2026-11-10-c86f0794",
+        "pack": "cathedral-square",
+        "renderedOn": "2026-11-10",
+        "engine": {
+          "packageName": "@instruktlabs/kiln",
+          "packageVersion": "1.6.0",
+          "packageJsonSha256": "d2f83beec371bd7c08fac17f0774e842ae1d38fc35fbf09c99e259e6ba739980"
+        },
+        "service": {
+          "url": "http://127.0.0.1:8000",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:d974d635ff5d3503d2373406186535fa437de9e753cfdeddce3eb46c68f0ad18",
+          "buildFingerprint": "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3",
+          "dependencies": {
+            "three": "0.186.1",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:6c59d6336d9de512729d5f98c240f8ee9fe0f5d45cf4630676db39a0b79d2d63",
+            "3204983d-c8d8-4076-8d62-b3eb31fd5192",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
+          ]
+        }
       }
     ]
   },
@@ -9214,6 +9286,600 @@
       },
       "rendererId": "dawn-vulkan:nvidia-geforce-gtx-1660-ti-with-max-q-design:NVIDIA: 615.78.08 615.78.8.0",
       "run": "holodeck-2026-10-28-e999b228"
+    },
+    "cathedral-square:cathedral": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/cathedral.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1563059,
+      "sha256": "dea1247731583dae1d6629c333b5a62e4305aa36bf64e60a3fb8daeaf5249c63",
+      "assetId": "a_d606fc5eebd44bd7b7db3611537b9570",
+      "revisionId": "r_4b6d19a4e1de409cad201987ce5f18d1",
+      "glb": {
+        "member": "models/cathedral.glb",
+        "bytes": 15353640,
+        "sha256": "9a3528f4c9e008d8a3f29d466ae4813c0dcdfb10101751a07b455f95ea1b4dea",
+        "triangles": 3193943
+      },
+      "view": {
+        "direction": [
+          1,
+          0.52,
+          0.84
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 148.36297460163505
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:house-timber-gable-door": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1955600,
+      "sha256": "807f9576eac74a3b2430891ac39ef0b9365ca239a493f23ce1e99a8bc3335857",
+      "assetId": "a_083b1837a7094134867ad0de95ab9e78",
+      "revisionId": "r_c55d316b8a59443f8795ca43f5ee99c7",
+      "glb": {
+        "member": "models/house-timber-gable-door.glb",
+        "bytes": 636348,
+        "sha256": "61deeb1769db059c6de7010ebf65b4dc60acffa3a7d9dde8a51a156849919a2d",
+        "triangles": 1772
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 11.894856183661187
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:house-timber-gable-narrow": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1837862,
+      "sha256": "906f91fa5a499e54bcf35e4607c68012980bd57f14bb8b8a697921e7a1ce3f88",
+      "assetId": "a_a9cd08505ea5468ebef9d65837cb2484",
+      "revisionId": "r_426483d96ac140c1942bb2e225e08c03",
+      "glb": {
+        "member": "models/house-timber-gable-narrow.glb",
+        "bytes": 723856,
+        "sha256": "a4fde55718dd7b9b40d1fdd41c92a876faf3a6be0ffb3f929435790f4eb00c8e",
+        "triangles": 2324
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 14.88109640040406
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:house-timber-gable-shop": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1936787,
+      "sha256": "e552d9499ed94a258b596bb789c67588fe5d9540e383d19ec44b5ac255e79f86",
+      "assetId": "a_a9a108df19374d2cb9ee0a6b596a09a1",
+      "revisionId": "r_910fcc7b3dd1431099c8cbd65a9ffc3c",
+      "glb": {
+        "member": "models/house-timber-gable-shop.glb",
+        "bytes": 704656,
+        "sha256": "3e6e2e23c3fda522c318648ecf7384a7e13f38e987dd49def916b7f5af5db6f7",
+        "triangles": 2418
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 14.24294747686007
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:house-stone-gable-shop": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1908671,
+      "sha256": "59c4fcebcca5a6be0dd6b4da672041a0c6b9ce6626295393469914531e4933e8",
+      "assetId": "a_0a5b078406014355b98b967db65374e2",
+      "revisionId": "r_60900adf31c840d2a6bd3d68033f427a",
+      "glb": {
+        "member": "models/house-stone-gable-shop.glb",
+        "bytes": 664224,
+        "sha256": "fe2870601c2b57cfa0092c0899625891205e4ccca3167b36290c218208526f5e",
+        "triangles": 2938
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 14.913683018676014
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:house-stone-gable-tall": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1904927,
+      "sha256": "7df4efabf7c099eeba67de5f8be3acd81f52c2540c4e6bfcb5ca52ab1584454f",
+      "assetId": "a_4bed34bf68d643fd8ec4c28ba0b31f5e",
+      "revisionId": "r_171744bbc93c443b8d4cbd137692bf09",
+      "glb": {
+        "member": "models/house-stone-gable-tall.glb",
+        "bytes": 733788,
+        "sha256": "29b1fd8d32c8776dbc462e9cdcd11c8a1b52c3cf0646fbe8febe4cae8f0ee6f4",
+        "triangles": 4264
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 15.637646530035676
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:house-stone-eaves-arcade": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1931129,
+      "sha256": "e5c05861117ed195e07fbae3bcdbfe95ccf33deea04de05c36c66d9105035a28",
+      "assetId": "a_dca56b0a4d6243ac907f93a843074846",
+      "revisionId": "r_bfba41c9967b4f4c9d08932b30bce1f7",
+      "glb": {
+        "member": "models/house-stone-eaves-arcade.glb",
+        "bytes": 744256,
+        "sha256": "8a97aa56f97de031a6f21ea94bca12a670639f45acf7228d76d194e7f36b7068",
+        "triangles": 2945
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 14.299040324395431
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:house-plaster-eaves-arcade": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1979859,
+      "sha256": "6ec6c86e29707a147ea76d8bad23884458613e1c746253ca2504b40ee571dafe",
+      "assetId": "a_2a4337b615ed44e0a69db7459c369030",
+      "revisionId": "r_c91287f01b0d435a84f77846be132732",
+      "glb": {
+        "member": "models/house-plaster-eaves-arcade.glb",
+        "bytes": 730036,
+        "sha256": "963a1100dc356d527331ea9f1be757c6031154715972809af939243e46279573",
+        "triangles": 3277
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 13.378910944110151
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:house-plaster-eaves-shop": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1841962,
+      "sha256": "845f085e84ba03b1daa78cb1da4c4b327a0121baba442aff16588b5f02293f04",
+      "assetId": "a_8a1ce14aa5f2401b80c132279aa3e9a9",
+      "revisionId": "r_5dd53a57b04c4273b4c8a1ec8ee0fb66",
+      "glb": {
+        "member": "models/house-plaster-eaves-shop.glb",
+        "bytes": 777772,
+        "sha256": "eaad2d95cfa199a78a1cb7e216275020497c67157025d43728507e55622c7e1e",
+        "triangles": 3520
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 15.093300853183983
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:lantern": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/lantern.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1309265,
+      "sha256": "8746b2e827f04f7eda2832346b367c86333dea5ebb69bf845c7351f22f8432e3",
+      "assetId": "a_6aadbac69cf146198bef038c9cf5a360",
+      "revisionId": "r_b3e7274ac3f643cc8e36f551a6fff263",
+      "glb": {
+        "member": "models/lantern.glb",
+        "bytes": 94492,
+        "sha256": "d1dc1db394e80376e0a98380d8d3e2eca1da3b3f4b84d541d9ed536026ebe65a",
+        "triangles": 628
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.489108961298838
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:fountain": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/fountain.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1505663,
+      "sha256": "eeeb1d9a19c4fc5998b2cbd22fce8aefc1ddadd52319074f7db0f5941c2c3fe4",
+      "assetId": "a_f57b556e45454937b12286efcd0c475c",
+      "revisionId": "r_0c7211ecd4864000b5b10b0bd5bd3564",
+      "glb": {
+        "member": "models/fountain.glb",
+        "bytes": 364012,
+        "sha256": "90b549174e54010615da8dac9ab6285fd16f8cf4daaffe49797feb841071a75e",
+        "triangles": 1650
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 6.472821512117739
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:tree-a": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/tree-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1486739,
+      "sha256": "359525cbac9d01bfa129d83bcaba89c3a71ec7971a5e9bddd18f6e4d1761f339",
+      "assetId": "a_b4bc9dd9c4d640e7ae7625f307367900",
+      "revisionId": "r_887a9606fc3a4ad7b3fbe759d5475e47",
+      "glb": {
+        "member": "models/tree-a.glb",
+        "bytes": 144160,
+        "sha256": "399795745f498039ca8d8ab3c7672584740874ec07bd1e4df9d9e9f3e1c90728",
+        "triangles": 1464
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 12.125414261085481
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:tree-b": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/tree-b.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1464811,
+      "sha256": "84734d5441b1dbe8b9ac3378f7232feddbe0967aa0f4e961977fc57c2da5b9e1",
+      "assetId": "a_bb189af3c05a4c3d837cdea7faca1a83",
+      "revisionId": "r_78471e528e4e4a16b11be4fc980db812",
+      "glb": {
+        "member": "models/tree-b.glb",
+        "bytes": 161384,
+        "sha256": "7d7495c1abe482e3e965ea1a8424e111037166c4dfdbe9b652d40dead09e137c",
+        "triangles": 1700
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 11.329912529244346
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:stall-red": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/stall-red.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 2046888,
+      "sha256": "167c178494c336a654f33baac6e95e73a2ce95e86bbbcbce816556e2c3c8ea9f",
+      "assetId": "a_fd6b2e0c65e74c7cb94a4b30ac2edc92",
+      "revisionId": "r_2a07e3e03a694ad8a9c4ca0b23553782",
+      "glb": {
+        "member": "models/stall-red.glb",
+        "bytes": 158780,
+        "sha256": "d23185171b70bd6d7930548d1dbc0d98b2c77093e0d6f994f8a47e9ccbcff8bb",
+        "triangles": 468
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.366525382270016
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:stall-green": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/stall-green.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 2037312,
+      "sha256": "67794bfdf5ff06ccf27bcef362fa350d7301003e4d31499718b40833812183cf",
+      "assetId": "a_884d9b73f40143bea221bcd152fe7ae8",
+      "revisionId": "r_d6afad366bc541d782f612bc4ef3fa29",
+      "glb": {
+        "member": "models/stall-green.glb",
+        "bytes": 158832,
+        "sha256": "a85f648d1a66158f594f9f574850e1ba263f6701dc7d4dd7d4a569f2218cdf9d",
+        "triangles": 468
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.366525382270016
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:cafe-red": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/cafe-red.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1529679,
+      "sha256": "2e7524b6e79af61d311eec255c9cc67360d3ddca16e2094ff03a2639a783ed11",
+      "assetId": "a_1605dec2bbd94fe6addbe52bcb517873",
+      "revisionId": "r_9967dc019f444b009896f5fa11b6e32c",
+      "glb": {
+        "member": "models/cafe-red.glb",
+        "bytes": 115152,
+        "sha256": "4b8878f9062b325c0533ba8d61a8124df6d662f199a5b73df403c334c45b466a",
+        "triangles": 448
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.2054841380999197
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:cafe-green": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/cafe-green.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1529802,
+      "sha256": "ce7218074cd722c732a947fb030a0ff94e0ce86c07421d685de358e24596ec94",
+      "assetId": "a_5bca6704c761424fb0f3c7deed9249fd",
+      "revisionId": "r_2dad073e64d84ed18c3ef40adc4333bc",
+      "glb": {
+        "member": "models/cafe-green.glb",
+        "bytes": 115204,
+        "sha256": "6014b200596cfc032c1547234b0cbe49d6966cfa15739bd2860bd48a8cd55dc2",
+        "triangles": 448
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.2054841380999197
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:bench": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/bench.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1818545,
+      "sha256": "0777641825c04dde357818e5eda3e645186ad3302cf772267972065e72aab44e",
+      "assetId": "a_a991e96034d244b187b03b1662c42185",
+      "revisionId": "r_dca7b0b8c45e484da522a44fe3c09d70",
+      "glb": {
+        "member": "models/bench.glb",
+        "bytes": 83224,
+        "sha256": "fa51e6a7abcb4655ea06b612b4c8354d524f84414d2e22a83e9047f3cead0eba",
+        "triangles": 120
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.0229478056911196
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:bollard": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/bollard.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1538693,
+      "sha256": "667d4106cf12fe2aad0fdc987334aa1bb2fbbe490bc153a748c72d57215b5d01",
+      "assetId": "a_19faf6c3c518475393fac82ae22dc28c",
+      "revisionId": "r_2367c330f7c340308386bb1ce4dc7509",
+      "glb": {
+        "member": "models/bollard.glb",
+        "bytes": 34144,
+        "sha256": "a993495bf216fbf4cc9f014a1f3a9de38ce0076bde8e8a23312870a7ab61fdce",
+        "triangles": 108
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.5563919286175187
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:ground": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/ground.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1848894,
+      "sha256": "48f40cd4d4b361d5d564312849657bfeda1d4ed4e5793fa37e33a8539ac5948a",
+      "assetId": "a_e9bb9f7c3be04e85ad7a0b3337d414f5",
+      "revisionId": "r_5a2505e13cca4de3bc5af0626545d721",
+      "glb": {
+        "member": "models/ground.glb",
+        "bytes": 652556,
+        "sha256": "5af9c9c321da9d657e15b3f60fd5151b194fe5330d1f0ad3e4f5e9770a4cc5d8",
+        "triangles": 32
+      },
+      "view": {
+        "direction": [
+          0.75,
+          1.25,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 8.244678858516801
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "cathedral-square:crucifix": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs3/crucifix.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1535849,
+      "sha256": "b946455e43808986e28ad06756d3e8f51e73c8885cb3156c15a2b33f2c93493e",
+      "assetId": "a_1f6e07b0010946e080861252aa9030f9",
+      "revisionId": "r_fcf9c8cff5584d669f0a0b271b997ddb",
+      "glb": {
+        "member": "models/crucifix.glb",
+        "bytes": 2508520,
+        "sha256": "7c18f3b29cd22c3d94867c87cbcd2c4800c4b62cdcec6ec766c2020da54d7a7e",
+        "triangles": 105032
+      },
+      "view": {
+        "direction": [
+          1,
+          0.16,
+          0.35
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.3537470351573992
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-c86f0794"
+    },
+    "cathedral-square:nave-pew": {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs2/nave-pew.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1737538,
+      "sha256": "ba78b8014f0272f5bdb14d0d821e669cb2a91c7df3194623d9491a7c78cf6c05",
+      "assetId": "a_68afd1ab2da34189bd98f13fd6cc6d34",
+      "revisionId": "r_d9f9a759445b4d28a2b82cec591e8b5a",
+      "glb": {
+        "member": "models/nave-pew.glb",
+        "bytes": 83296,
+        "sha256": "4c2e9e530168479bcde274eabf20ffac5246713b523e6bbb6a981ec4b6fd2414",
+        "triangles": 432
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.9378261283591307
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cathedral-square-2026-11-10-044ca1e8"
     }
   }
 }

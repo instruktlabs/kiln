@@ -21,6 +21,14 @@
       "path": "scene-inputs/alignment-motion3-20261003/foundry-floor.zip",
       "bytes": 2868640,
       "sha256": "22a49f2ef8e48fcdb37c12a9c475d94798870a3dca39d6798a3a6e60dd812ee4"
+    },
+    {
+      "id": "cathedral-square",
+      "release": "cs3",
+      "path": "scene-inputs/cathedral-square/cs3/cathedral-square.zip",
+      "bytes": 14174342,
+      "sha256": "b4fcfd310ba2e021d0cc96d4a7f6c06cb0df4d29342d1ae10b079a7f4038e972",
+      "packJsonSha256": "7f32c63073d6c059258647c1db59d89081107b7c6678b71f35678c6057126ec5"
     }
   ]
 }

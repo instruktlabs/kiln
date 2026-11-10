@@ -33,6 +33,39 @@ first. The engine's root `bun run lint` also covers site source.
 For a smaller documentation build, set `KILN_SITE_PACKS=0`; do not describe that
 build as qualifying the gallery or scenes. Release checks use packs enabled.
 
+### Cathedral Square local integration
+
+The Cathedral Square scene uses the common scene shell and scene selector at
+`/scenes/cathedral-square/`, linked to `/packs/cathedral-square/`. The site builds
+its module separately from the gallery viewer and loads it only after Explore.
+The normal build and `stage:scene` include Cathedral Square while the runtime
+CLI's default remains Farm.
+
+The sealed `cs2` input is pinned in `src/data/scene-inputs.json`, including the
+embedded pack hash. Set `KILN_ASSET_MIRROR` to the prepared local release mirror
+(`.localdata/cathedral-release` in this checkout) to restore the exact input without
+the original authoring workspaces. To stage just this scene:
+
+```sh
+node scripts/scene-inputs.mjs --scene cathedral-square
+node scripts/scene-pack.mjs --scene cathedral-square
+node scripts/scene-runtime.mjs --scene cathedral-square
+node scripts/typecheck-scenes.mjs
+```
+
+`scripts/stage-cathedral-site-inputs.mjs` prepares that portable input from an
+already staged standalone pack. It includes only verified assets, seals and
+notices, scans for private data, writes a deterministic ZIP, and updates the
+input/catalog pins. It does not upload or publish. The first passing module build
+and D-15 size ceiling are recorded in
+`../scenes/packages/cathedral-square/site-runtime.json`.
+
+Review Explore through the built static site (`bun run preview` after the full
+build). Astro dev refuses dynamic imports from generated `public/scene-runtime/`
+files. The standalone review build remains available through
+`bun scripts/build-scene.ts --scene cathedral-square --mode public --label review`
+from `../scenes/`, using the same restored input.
+
 ## Where changes belong
 
 | Content | Source |

@@ -15,6 +15,13 @@ const run = (entries: Record<string, { engineNotes: string[] }>, facts: Record<s
   engineNoteErrors({ pages: pages(entries) as never, facts: new Map(Object.entries(facts)) as never }).map((error: { page: string; message: string }) => `${error.page}: ${error.message}`);
 
 describe('which pages carry a 3D view of a GLB', () => {
+  test('Cathedral Square items require an engine note and the gallery namespace is not an item', () => {
+    const route = '/gallery/cathedral-square/nave-pew/';
+    expect(isAssetPageRoute(route)).toBe(true);
+    expect(isAssetPageRoute('/gallery/cathedral-square/')).toBe(false);
+    expect(isAssetPageRoute(route + 'extra/')).toBe(false);
+    expect(run({ [route]: { engineNotes: [] } }, { [route]: plain })).toEqual([`${route}: Asset page must carry exactly one engine note, found 0`]);
+  });
   test('cabin and woodland items participate without treating the pack namespace as an asset', () => {
     expect(isAssetPageRoute('/gallery/cabin-woods-psx-horror/stone-golem/')).toBe(true);
     expect(isAssetPageRoute('/gallery/cabin-woods-psx-horror/')).toBe(false);

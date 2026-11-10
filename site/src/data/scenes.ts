@@ -225,13 +225,90 @@ export const cabinWoodsScene = {
   fallback: { href: '/packs/cabin-woods-psx-horror/', label: 'View the cabin and woodland pack' },
 } as const;
 
+const cathedralPack = scenePacks['cathedral-square'];
+const cathedralMedia = (
+  sceneMedia as Record<
+    string,
+    { poster: CatalogImage; captures?: Record<string, { poster: CatalogImage }> }
+  >
+)['cathedral-square'];
+const cathedralPosters = cathedralMedia
+  ? [
+      cathedralMedia.poster,
+      ...Object.values(cathedralMedia.captures ?? {})
+        .map((capture) => capture.poster)
+        .filter((poster) => poster.src !== cathedralMedia.poster.src),
+    ]
+  : [];
+
+/** Local review: exact cs2 assets, separately built runtime, no device qualification claim. */
+export const cathedralSquareScene = {
+  id: 'cathedral-square',
+  available: false,
+  name: 'Cathedral Square',
+  href: '/scenes/cathedral-square/',
+  assetBase: cathedralPack.base,
+  pack: cathedralPack,
+  poster: cathedralMedia?.poster.src ?? '',
+  posterImage: cathedralMedia?.poster,
+  posterImages: cathedralPosters,
+  posterWidth: cathedralMedia?.poster.width ?? 0,
+  posterHeight: cathedralMedia?.poster.height ?? 0,
+  posterAlt: cathedralMedia?.poster.alt ?? '',
+  description:
+    'A Gothic cathedral and its surrounding town: walk the square, enter the nave, and explore the chapels and sanctuary.',
+  links: [{ label: 'Credits and notices', path: 'THIRD-PARTY-NOTICES.txt' }] satisfies SceneLink[],
+  copy: {
+    available: 'Explore Cathedral Square in your browser.',
+    preview: 'Explore opens the Cathedral Square scene preview.',
+    unavailable: 'The browser scene is not included in this build. Explore opens its status.',
+    devices:
+      'Desktop and touch controls. Loads only when you choose Explore; device performance is under review.',
+    unavailableTitle: 'Cathedral Square is not included in this build.',
+    unavailableBody: 'The pack page lists the cathedral, furnishings and town assets.',
+    errorText:
+      'The scene could not load. Check your connection and try Explore again. The Cathedral Square pack remains available.',
+  } satisfies SceneCopy,
+  fallback: { href: '/packs/cathedral-square/', label: 'View the Cathedral Square pack' },
+  preUpload: {
+    fallback: { href: '/packs/cathedral-square/', label: 'View the Cathedral Square pack' },
+    unavailableBody: 'The pack overview remains available.',
+    errorText: noDownloadsError,
+  },
+} as const;
+
 export const scenes = {
   farm: farmScene,
   'golden-gate': goldenGateScene,
   'foundry-floor': foundryFloorScene,
   'cabin-woods-psx-horror': cabinWoodsScene,
+  'cathedral-square': cathedralSquareScene,
 } as const;
 export type SceneId = keyof typeof scenes;
+
+/** Browsing history is separate from runtime delivery: Troy keeps its existing standalone route. */
+export function sceneBrowseGroups(packsEnabled: boolean) {
+  return [
+    {
+      id: 'current-kiln-scenes',
+      label: 'Current Kiln scenes',
+      description: 'Explore Cathedral Square and the town around it.',
+      scenes: [cathedralSquareScene],
+    },
+    {
+      id: 'earlier-kiln-scenes',
+      label: 'Earlier Kiln scenes',
+      description: 'Scenes made with earlier versions of Kiln, with their source and asset packs.',
+      scenes: [
+        ...(packsEnabled ? [{ id: 'troy', name: 'Troy', href: '/scenes/troy/' }] : []),
+        farmScene,
+        goldenGateScene,
+        foundryFloorScene,
+        cabinWoodsScene,
+      ],
+    },
+  ] as const;
+}
 
 /** The status panel's link and copy and the error surface's text for a build mode (KILN_SITE_PACKS). */
 export function sceneInMode(id: SceneId, packsEnabled: boolean) {

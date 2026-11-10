@@ -49,3 +49,46 @@ test('local review derives loose downloads only from verified sealed archive mem
   await writeFile(join(mirror,pin.path),'modified parent'); expect((await fetch(url)).status).toBe(409);
  } finally { if(server)await new Promise<void>(resolve=>server.close(()=>resolve())); await rm(root,{recursive:true,force:true}); }
 });
+
+test('scoped review rewrites only one download directory and still verifies every selected link', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-local-review-scoped-'));
+  let server;
+  try {
+    const dist = join(root, 'dist');
+    const mirror = join(root, 'mirror');
+    const base = 'https://assets.kilnstudio.tools/';
+    const downloadPrefix = 'packs/cathedral-square/';
+    const path = downloadPrefix + 'cs2/models/nave-pew.glb';
+    const other = 'packs/farm/delivery/editable/barn.zip';
+    const neighbor = 'packs/cathedral-square-old/runtime.zip';
+    const data = Buffer.from('sealed model');
+    const pin = { path, bytes: data.length, sha256: hashBytes(data) };
+    const html = [path, other, neighbor].map(file => `<a href="${base}${file}">Download</a>`).join('');
+    await mkdir(dist);
+    await mkdir(join(mirror, downloadPrefix, 'cs2/models'), { recursive: true });
+    await writeFile(join(dist, 'index.html'), html);
+    await writeFile(join(mirror, path), data);
+    const artifacts = JSON.stringify([{ path: 'index.html', bytes: Buffer.byteLength(html), sha256: hashBytes(html) }]);
+    await writeFile(join(dist, 'artifact-files.json'), artifacts);
+    await writeFile(join(dist, 'build-info.json'), JSON.stringify({ artifacts: { sha256: hashBytes(artifacts) } }));
+
+    const options = { dist, mirror, manifest: { base, files: [pin] } };
+    await expect(createLocalReview(options)).rejects.toThrow(other);
+    const review = await createLocalReview({ ...options, downloadPrefix });
+    expect(review.receipt.downloadPrefix).toBe(downloadPrefix);
+    expect(review.receipt.downloads).toEqual([pin]);
+    expect(review.receipt.html[0]?.downloadLinks).toBe(1);
+    server = createServer(review.handler);
+    await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+    const url = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+    const served = await (await fetch(url)).text();
+    expect(served).toBe(html.replace(base + path, '/_review/files/' + path));
+    expect(await readFile(join(dist, 'index.html'), 'utf8')).toBe(html);
+    expect(Buffer.from(await (await fetch(url + '/_review/files/' + path)).arrayBuffer())).toEqual(data);
+    expect((await fetch(url + '/_review/files/' + other)).status).toBe(404);
+    await expect(createLocalReview({ ...options, downloadPrefix, manifest: { base, files: [] } })).rejects.toThrow(path);
+  } finally {
+    if (server) await new Promise<void>(resolve => server.close(() => resolve()));
+    await rm(root, { recursive: true, force: true });
+  }
+});
