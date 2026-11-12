@@ -230,11 +230,72 @@ A `toggle` or `choice` that only shows and hides parts can also be changed in th
   are unchanged, so a loader without the extension shows the default build. A preset that
   also changes a size, a count, an option or a rebuild-only colour is not written. A file
   that already has material variants keeps them and gets none from presets.
-- **Not carried.** Sizes and counts (`range`, `int`) and seeds need a rebuild.
+- **Not carried.** Seeds need a rebuild. Sizes and counts (`range`, `int`) need one unless
+  the export is asked to carry them ([sizes](#sizes-a-glb-carries)).
 
 `applyCarriedParams(bytes, bindings, values)` from `@instruktlabs/kiln/param-bindings` sets
 carried colours and options on a saved GLB. Its result holds what a rebuild at those values
 holds: the same binary data and the same JSON values.
+
+### Sizes a GLB carries
+
+A `range` or `int` that only moves vertices and nodes, each along a straight line, can be
+written into a runtime file as morph targets. It is opt-in and happens at export:
+
+```bash
+kiln export <id> <revision> --format glb --profile runtime --carry-shapes --out cabinet.glb
+```
+
+The library form is `exportAssetGlb(record, { profile: 'runtime', paramBuilds })`, where
+`paramBuilds(values)` returns a build of the source at those values. `kiln_export` does not
+take the option.
+
+- **How it is decided.** By building, never by reading source. For each `range` and `int`
+  the export builds the saved source at the minimum and the maximum, and at one value halfway
+  between the default and each end: up to four builds per parameter, the others at their
+  defaults. The parameter is carried when the end builds have the default build's parts,
+  vertex counts, indices, texture coordinates and materials, differ from it only in
+  positions, normals, tangents and node transforms, and each halfway build lies on the
+  straight line within 0.5 mm (a thousandth of the asset's size if that is smaller).
+  Otherwise `params.shapes.<name>` in the sidecar is `rebuild` with a reason:
+  `STRUCTURE_CHANGED` (a count that adds parts, a vertex count that changes), `DATA_CHANGED`,
+  `HAS_MORPH_TARGETS` (the asset has its own), `NOT_LINEAR` (with the measured distance),
+  `NO_CHANGE` or `PROBE_FAILED`.
+- **What is written.** The default build stays the base mesh. Each end is one morph target
+  named `<name>=<value>` on every mesh it moves, and one animation `kiln.param.<name>` keys
+  the target weights and the node translations, rotations and scales. Time 0 is the minimum,
+  time 1 the maximum, and `params.shapes.<name>.keys` lists the time of each built value,
+  the default included. The saved revision is unchanged.
+- **To set a value.** Set the clip to the time for that value and hold it there. In three.js
+  clamp the action: a looping action wraps time 1 back to the minimum.
+
+  ```js
+  const shape = metadata.params.shapes.width; // keys: [{ time, value }, ...] ascending
+  const timeFor = (keys, value) => {
+    const i = Math.max(1, keys.findIndex((key) => key.value >= value));
+    const [a, b] = [keys[i - 1], keys[i]];
+    return a.time + ((value - a.value) / (b.value - a.value)) * (b.time - a.time);
+  };
+  const action = mixer.clipAction(gltf.animations[shape.animation]);
+  action.setLoop(THREE.LoopOnce, 1);
+  action.clampWhenFinished = true;
+  action.play();
+  mixer.setTime(timeFor(shape.keys, 1.1));
+  ```
+
+- **Limits.** The plain runtime profile only: `--target three` and `--draws minimal` refuse
+  it, because a derivation would have to re-derive every target with its mesh. The GLB is
+  re-serialized and grows by the targets (the test cabinet below: 11,108 to 19,344 bytes).
+  Each parameter is judged with the others at their defaults; two carried sizes moved
+  together add their deltas, which is exact only where they do not interact. The sweep does
+  not report sizes yet.
+- **Tested importers (2026-11-12).** A cabinet with a carried `width` (0.6 to 1.4 m), a
+  `doors` toggle and a `blue` preset was loaded by three.js r187's `GLTFLoader` and imported
+  headless into Blender 5.2.0 LTS. Both read the clip, the named targets (shape keys in
+  Blender) and the `blue` variant, and both measured 0.6, 0.8, 1.1 and 1.4 m wide with the
+  clip set to those values. Blender leaves the clip active at frame 1 after import, so the
+  cabinet opens 0.633 m wide, not at its 0.8 m default. Neither importer hides a
+  `KHR_node_visibility` node by itself. Unity and Unreal were not tested.
 
 ### Parameters in the local viewer
 

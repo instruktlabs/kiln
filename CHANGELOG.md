@@ -17,7 +17,22 @@ does not publish a package.
   sets carried options in the browser without a rebuild. `applyCarriedParams` in
   `@instruktlabs/kiln/param-bindings` applies colours and options to a saved GLB. The saved GLB
   is unchanged. A save spends at most 16 extra builds on classification; a draw reduction does
-  not batch a file with tagged nodes. Sizes and counts still need a rebuild.
+  not batch a file with tagged nodes. Sizes and counts need a rebuild unless the export
+  carries them (next entry).
+- **A runtime GLB can carry a size, on request.** `kiln export --profile runtime
+  --carry-shapes` (library: `exportAssetGlb` with `paramBuilds`) builds the saved source at
+  each `range` and `int` parameter's ends and halfway points, up to four builds per
+  parameter. A size whose builds keep the same parts and vertices and move them in straight
+  lines (within 0.5 mm) is written as morph targets named `<name>=<value>` and one clip
+  `kiln.param.<name>`: time 0 is the minimum, time 1 the maximum. The sidecar lists every
+  size under `params.shapes`, with the clip's keys or the reason it needs a rebuild
+  (`STRUCTURE_CHANGED`, `DATA_CHANGED`, `HAS_MORPH_TARGETS`, `NOT_LINEAR`, `NO_CHANGE`,
+  `PROBE_FAILED`). It is off by default, works on the plain runtime profile only (not with
+  `--target` or `--draws`), re-serializes the GLB and leaves the saved revision unchanged.
+  Clamp the clip rather than loop it: a looping action wraps time 1 to the minimum. Checked
+  on 2026-11-12 with three.js r187 and Blender 5.2.0 LTS, which both read the clip, the
+  targets and a preset variant and matched rebuilds at four widths; `kiln_export` and the
+  sweep do not take or report it yet.
 - **The refine skill fixes a small flush face it finds on a part it is editing.** When a
   `FLUSH_FACES` warning that was already in the parent names a part the edit touches and the
   remedy is the stated 2 mm move, the agent makes it and reports it as a separate change. In

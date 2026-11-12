@@ -192,7 +192,11 @@ materials of each carried colour and the nodes of each carried toggle or choice 
 them as `params.colors`, `params.switches` and `params.presets`, and names any parameter a
 derived file lost in `params.dropped`
 ([colours](programs.md#colours-a-glb-carries),
-[options and presets](programs.md#options-and-presets-a-glb-carries)). Apart from that, only
+[options and presets](programs.md#options-and-presets-a-glb-carries)). Asked to carry sizes
+(`--carry-shapes`, library option `paramBuilds`), the plain runtime profile rebuilds the saved
+source at each `range` and `int` parameter's ends, writes each size that moves in straight
+lines as morph targets with one `kiln.param.<name>` clip, and lists every size under
+`params.shapes` ([sizes](programs.md#sizes-a-glb-carries)). Apart from that, only
 `scenes[].extras.kilnReviewClipsV1` is moved into the JSON sidecar. It contains
 Kiln's authored animation review vocabulary, including advisory tracks that might not
 have valid native glTF targets. Native `animations` remain authoritative for playback.

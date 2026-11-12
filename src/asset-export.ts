@@ -10,7 +10,8 @@ import {
   type AssetRecord,
 } from './assets';
 import type { MaterialManifest } from './material-library';
-import { validateParamsDeclaration } from './params';
+import type { ShapeBindingV1 } from './param-shapes';
+import { type ParamsDeclarationV1, type ParamValue, validateParamsDeclaration } from './params';
 import {
   addPresetVariants,
   factorColorBindings,
@@ -21,6 +22,7 @@ import {
   validateParamBindings,
   type BoundMaterialV1,
   type BoundNodeV1,
+  type ParamBindingsV1,
 } from './param-bindings';
 import type {
   RuntimeThreeDeliveryV1,
@@ -71,6 +73,14 @@ export interface AssetGlbExportOptions extends RuntimeThreeOptionsV1 {
   draws?: 'minimal';
   /** `draws` only: metres per merge cell; a viewer can cull one cell at a time. */
   drawCellSize?: number;
+  /**
+   * Opt in to carrying sizes: builds the saved source at one parameter's value, the others at
+   * their defaults. With it, each `range` and `int` parameter that only moves vertices and
+   * nodes along straight lines is written as morph targets and one clip `kiln.param.<name>`,
+   * and reported under `params.shapes`. It runs the source several times per parameter and
+   * re-serializes the GLB, so the plain runtime profile only: no `target`, no `draws`.
+   */
+  paramBuilds?: (values: Record<string, ParamValue>) => Promise<Uint8Array>;
 }
 export type AssetGlbExport =
   | { profile: 'editable'; glb: Uint8Array }
@@ -124,7 +134,67 @@ export interface RuntimeMetadataV1 {
     colors: Record<string, BoundMaterialV1[]>;
     switches?: Record<string, BoundNodeV1[]>;
     presets?: Record<string, number>;
+    /** Present when the export was asked to carry sizes: each `range` and `int` parameter. */
+    shapes?: Record<string, ShapeBindingV1>;
     dropped?: string[];
+  };
+}
+
+/**
+ * Sizes ride as morph targets only when the caller supplies builds, and only in the plain
+ * runtime file: a derivation would have to re-derive every target with the mesh.
+ */
+async function withCarriedShapes(
+  record: AssetRecord,
+  glb: Uint8Array,
+  options: AssetGlbExportOptions,
+): Promise<{ glb: Uint8Array; shapes?: Record<string, ShapeBindingV1> }> {
+  if (!options.paramBuilds) return { glb };
+  if (options.target !== undefined || options.draws !== undefined)
+    throw new Error(
+      'Carried shapes need the plain runtime profile: export without a target and without a draw reduction.',
+    );
+  const declared = validateParamsDeclaration(record.manifest.build?.params);
+  if (!declared) return { glb };
+  const { carryShapes } = await import('./param-shapes');
+  const result = await carryShapes(glb, declared, options.paramBuilds);
+  if (result.glb.byteLength > ASSET_LIMIT) throw new Error('Runtime export exceeds 64 MiB');
+  return {
+    glb: result.glb,
+    ...(Object.keys(result.shapes).length ? { shapes: result.shapes } : {}),
+  };
+}
+
+/**
+ * What the delivered file carries of the declared parameters, read from its own tags, with
+ * each preset that only sets carried colours written into `json` as a material variant.
+ */
+function deliveredParams(
+  json: Record<string, unknown>,
+  declaration: ParamsDeclarationV1 | undefined,
+  bindings: ParamBindingsV1 | undefined,
+  shapes: Record<string, ShapeBindingV1> | undefined,
+): RuntimeMetadataV1['params'] {
+  const carriedColors = factorColorBindings(bindings);
+  const carriedSwitches = switchBindings(bindings);
+  const colors = taggedColorMaterials(json);
+  const switches = keptSwitches(json, carriedSwitches);
+  const dropped = [
+    ...Object.keys(carriedColors).filter((name) => !Object.hasOwn(colors, name)),
+    ...Object.keys(carriedSwitches).filter((name) => !Object.hasOwn(switches, name)),
+  ];
+  const presets =
+    declaration && Object.keys(colors).length
+      ? addPresetVariants(json, declaration, colors).presets
+      : {};
+  if (!Object.keys(colors).length && !Object.keys(switches).length && !dropped.length && !shapes)
+    return undefined;
+  return {
+    colors,
+    ...(Object.keys(switches).length ? { switches } : {}),
+    ...(Object.keys(presets).length ? { presets } : {}),
+    ...(shapes ? { shapes } : {}),
+    ...(dropped.length ? { dropped } : {}),
   };
 }
 
@@ -351,6 +421,10 @@ export async function exportAssetGlb(
     bytes = writeGlbJson(bytes, saved.jsonEnd, saved.json);
   }
 
+  const sized = await withCarriedShapes(record, bytes, options);
+  bytes = sized.glb;
+  const shapes = sized.shapes;
+
   let drawReduction: DrawReductionV1 | undefined;
   if (options.draws) {
     const { reduceGlbDrawCalls } = await import('./draw-reduction');
@@ -425,25 +499,10 @@ export async function exportAssetGlb(
     gltf = derived.gltf;
     ({ json: baseJson, jsonEnd: baseJsonEnd } = readGlbJson(base));
   }
-  const colors = taggedColorMaterials(baseJson);
-  const switches = keptSwitches(baseJson, carriedSwitches);
-  const dropped = [
-    ...Object.keys(carriedColors).filter((name) => !Object.hasOwn(colors, name)),
-    ...Object.keys(carriedSwitches).filter((name) => !Object.hasOwn(switches, name)),
-  ];
-  // Presets that only set carried colours ride as material variants of the delivered file.
   const declaration = validateParamsDeclaration(record.manifest.build?.params);
-  const presets =
-    declaration && Object.keys(colors).length
-      ? addPresetVariants(baseJson, declaration, colors).presets
-      : {};
-  if (Object.keys(colors).length || Object.keys(switches).length || dropped.length)
-    metadata.params = {
-      colors,
-      ...(Object.keys(switches).length ? { switches } : {}),
-      ...(Object.keys(presets).length ? { presets } : {}),
-      ...(dropped.length ? { dropped } : {}),
-    };
+  const carriedParams = deliveredParams(baseJson, declaration, bindings, shapes);
+  if (carriedParams) metadata.params = carriedParams;
+  const presets = carriedParams?.presets ?? {};
   if (textures !== undefined)
     metadata.textures = await runtimeTextureManifest(baseJson, readGlbBinary(base, baseJsonEnd), {
       ...(imageSources ? { sources: imageSources } : {}),

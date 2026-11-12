@@ -91,7 +91,9 @@ combinations; `notSwept` names what it left out. For each colour it reports `col
 `rebuild` with the reason. For each toggle and choice it reports `switches`: `visibility`
 with the nodes it shows, or `rebuild`. To make an option `visibility`, always build its part
 and set `part.visible` from the parameter. Check a combination you intend to offer as a
-preset, and declare it as one.
+preset, and declare it as one. A size is rebuild-only in the saved GLB;
+`kiln export --carry-shapes` writes it as morph targets when every value keeps the same parts
+and vertex counts and moves them in straight lines.
 
 ## 6. Save the child
 

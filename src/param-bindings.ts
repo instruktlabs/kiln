@@ -172,6 +172,9 @@ function splitGlb(bytes: Uint8Array): SplitGlb {
   return { json, jsonEnd };
 }
 
+/** The glTF JSON of a GLB. */
+export const glbJson = (bytes: Uint8Array): Record<string, unknown> => splitGlb(bytes).json;
+
 function joinGlb(bytes: Uint8Array, jsonEnd: number, json: unknown): Uint8Array {
   const text = new TextEncoder().encode(JSON.stringify(json));
   const length = Math.ceil(text.length / 4) * 4;
