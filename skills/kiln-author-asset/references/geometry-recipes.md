@@ -276,6 +276,20 @@ Use a shared surface, remove hidden duplicate faces or give a deliberate overlay
 the separation it needs. Inspect the actual exported surface from relevant views;
 do not offset every touching joint or treat a sampled coplanar flag as a defect.
 
+A build warning that starts `FLUSH_FACES` is a measurement of every triangle, not a
+sample. It counts the pairs of parts, or one part against itself, whose faces lie on one
+plane, face the same way and share area. It gives the worst pair with its area, a point
+to look at and the plane's normal, and names the next two. Those faces flicker
+(z-fighting) in every renderer the GLB reaches, so fix each pair: move the overlay at
+least 2 mm along the stated normal, remove the covered face, or cut the opening the
+overlay sits in. Build again until the warning is gone, since one build details only the
+worst pair. Two parts drawn with one plain material (no texture, no vertex colours, the
+same values) are not reported, because the tie does not show; the pair appears when one
+of them gets a different look. Shared faces that are buried are not reported either:
+undersides on the lowest plane of the asset, and faces lying against a face that points the
+other way. Faces that touch while facing each other, such as a
+crate on a floor, are contact and are not reported; leave those joints alone.
+
 ## Materials and directional UVs
 
 For a leaf-card alpha path, discover `recipe:foliage-cutout-v1`. It binds a real

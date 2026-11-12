@@ -493,6 +493,46 @@ hosts: `KILN_INDEX_POLICY=asBuilt`) keeps helper buffers as built and requires
 optimization off. The receipt's `indexBuffers` reports vertex, morph and index payload
 bytes before and after this pass, not GLB file size.
 
+## Find faces that will flicker
+
+Two faces that lie on one plane, face the same way and overlap cannot be ordered by a depth
+buffer. The pixels they share switch between the two as the camera moves: z-fighting. It is a
+property of the geometry. A GLB cannot carry polygon offset or a depth bias, which are
+renderer state, so the flicker follows the file into every engine.
+
+Every build measures its static meshes for this and adds one `FLUSH_FACES` line to `warnings`
+when it finds any:
+
+```text
+FLUSH_FACES: 3 pairs of parts have faces on one plane that will flicker (z-fighting) in any
+renderer. Worst: Mesh_Board and Mesh_Plaque, on one plane, sharing 0.08 m² near [0, 0.3,
+0.02], normal (0, 0, 1). Also: Mesh_Board and Mesh_Label (0.02 m²); Mesh_Floor and Mesh_Mat
+(0.01 m²). For each pair, move the smaller face at least 2 mm along the shared normal, remove the
+covered face, or cut the opening it sits in.
+```
+
+A pair is reported when all of these hold:
+
+| Test | Rule |
+| --- | --- |
+| Facing | Normals within one degree. Faces that face each other, such as a crate on a floor, are contact and are not reported, unless one of them is drawn on both sides. |
+| Plane | Every corner of each triangle is within 0.5 mm of the other's plane, or a thousandth of the asset's size when that is smaller. |
+| Area | The overlap, summed over the two parts, is at least a ten-thousandth of the asset's size squared: a patch a hundredth of the asset across. Faces that meet along an edge share none. |
+| Place | The shared area is not buried. Undersides on the asset's lowest plane are where it stands. Faces that lie against a face pointing the other way, such as two undersides on one deck, are in contact with it. Neither is reported. |
+| Look | The two parts differ in something a renderer draws. Two parts with one plain material (no texture, no vertex colours, the same values) put the same colour on a pixel whichever wins, so they are not reported. |
+
+The warning is advisory: the build succeeds and QA verdicts do not change. It is a
+measurement of every triangle, in world space, so it does not depend on a camera, and it is
+not a visibility test: a flush pair behind other parts is still reported. It does
+not measure instanced, skinned or morphing meshes, hidden parts, or a mesh drawn from part
+of its buffer, and it does not compare two levels of one `defineLod` chain. On a very large
+asset it can stop at its budget, and then the line says so.
+
+To fix a pair, change the geometry: move the overlay 2 mm or more along the normal, delete
+the face that is covered, or cut the opening the overlay sits in so only one face is left on
+that plane. Offsets much under 2 mm still fight at a distance, because depth precision
+falls with range.
+
 ## Derive a lower-detail tier
 
 `defineLod` declares tiers you build; it never generates one. To derive a lower tier

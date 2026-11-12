@@ -49,6 +49,18 @@ does not publish a package.
   Floor raised-floor module gave an identical hash and five sound sweep points; it also showed that the current
   engine builds that saved source to 26,340 bytes where the saved GLB is 26,336, which is why the baseline is the
   parent's current build and not its saved file. Installed workspaces keep their copied skills until upgraded.
+- Every build now measures its static meshes for flush faces: faces of two parts, or of one part, that lie
+  on one plane, face the same way and overlap, which flicker (z-fighting) in every renderer. When it finds
+  any it adds one `FLUSH_FACES` line to `warnings` with the number of pairs, the worst pair's parts, shared
+  area, position and normal, the next two pairs, and the fix. On the packs the line was at most 474
+  characters, inside the 1,000 a compact `kiln_render` result keeps; no schema, QA rule or verdict changes. Pairs with one plain
+  material are not reported, since the tie does not show; nor are faces that are buried, on the plane the
+  asset stands on or against a face of another part.
+  Instanced, skinned and morphing meshes are not measured, and it is not a visibility test. Of the 386
+  saved pack source revisions that build without project resources (253 assets), 103 revisions of 53
+  assets are reported, and 49 of the 86 examples. The check took a median of 16 ms and about a tenth of
+  build time, up to 2 s on 300,000-triangle assets
+  ([find faces that will flicker](docs/geometry.md#find-faces-that-will-flicker)).
 
 ## 1.7.0 (2026-11-08)
 

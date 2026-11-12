@@ -137,7 +137,16 @@ describe('examples', () => {
       // Meshes that removed the same number of faces share one grouped line.
       const precisionNotice =
         /^(?:.+: SOLID_FLOAT32_CANONICALIZED|SOLID_FLOAT32_CANONICALIZED \(\d+ meshes: .+\):) Removed [1-9]\d* zero-area Float32 faces and rebuilt their topology with Manifold\. Source runs and properties were retained; this is precision cleanup, not general mesh repair\.$/;
-      expect(out.warnings.filter((warning) => !precisionNotice.test(warning))).toEqual(expected);
+      // Flush faces are a measurement with its own numeric regressions
+      // (src/qa/flush-faces.test.ts). These examples are historical showcases and
+      // many have them; the line states areas and positions to a fraction of a
+      // millimetre, which this file does not pin for every example.
+      const flushFaces = /^FLUSH_FACES: \d+ pairs? of parts ha(?:s|ve) faces on one plane /;
+      expect(
+        out.warnings.filter(
+          (warning) => !precisionNotice.test(warning) && !flushFaces.test(warning),
+        ),
+      ).toEqual(expected);
     });
   }
 });

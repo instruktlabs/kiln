@@ -15,6 +15,7 @@ import type { AssetRequirementsQaReportV2 } from './qa/requirements-report';
 import { createRequirementsQaReport } from './qa/requirements-report';
 import { meshComponentBoxes, splitBudget } from './qa/mesh-components';
 import { inspectSkinIntegrity } from './qa/skin-integrity';
+import { analyzeFlushFaces, flushFaceWarnings } from './qa/flush-faces';
 import { AuthoringDiagnosticError, rethrowAuthoringError } from './evaluator/authoring-diagnostic';
 /**
  * Headless Kiln GLB Renderer
@@ -1976,6 +1977,13 @@ export async function renderSceneToGLB(
       : {}),
   }))
     warnings.push(w);
+  // Faces on one plane flicker in every renderer the GLB reaches. Advisory: it names the parts
+  // and the fix, and never changes acceptance. A failure here must not fail the build.
+  try {
+    for (const w of flushFaceWarnings(analyzeFlushFaces(root))) warnings.push(w);
+  } catch {
+    /* The check is an observation; the build stands without it. */
+  }
 
   // T2.2 — encode in-memory textures to PNG BEFORE QA, so QA judges the file
   // that will actually be written. A procedural DataTexture used to reach the
