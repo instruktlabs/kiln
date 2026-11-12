@@ -7,6 +7,15 @@ does not publish a package.
 
 ## Unreleased
 
+- A program can declare parameters with the new `defineParams(spec, { presets? })` sandbox helper: `range`,
+  `int`, `toggle`, `color`, `choice` and `seed`, each with a default. It is called once at top level and returns
+  the values to build with. `renderGLB` and `renderGLBInProcess` take `params: { preset?, values? }`, and the
+  result reports `params` (`kiln.params.v1`) with the declaration and every value used. A build with no host
+  values is byte-identical to the same program with its defaults written as literals. Refused specs are
+  `PARAMS_CONTRACT` and refused host values `PARAMS_VALUE`; nothing is clamped. Host values cross the evaluator
+  boundary as validated data and are part of the build-cache key. A GLB does not carry its parameters
+  ([declared parameters](docs/programs.md#declared-parameters)).
+
 ## 1.7.0 (2026-11-08)
 
 - three.js and `@types/three` are now 0.187.0, up from 0.186.1, in the package, the render service, the

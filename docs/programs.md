@@ -68,6 +68,48 @@ browser globals (`window`, `self`, `document`, `navigator`, `location`), `Bun` a
 `Deno`, and `this` outside a method. This is a safety net, not process isolation.
 `kiln validate` reports the first refused use with its line.
 
+## Declared parameters
+
+A program may declare the values a host can change without editing source. Call
+`defineParams` once, in top-level code, and build from the object it returns:
+
+```js
+const P = defineParams({
+  length: { type: 'range', default: 1.6, min: 1.0, max: 2.4, step: 0.05, unit: 'm' },
+  slats: { type: 'int', default: 5, min: 3, max: 8 },
+  arms: { type: 'toggle', default: true },
+  wood: { type: 'color', default: '#8a5a33' },
+  style: { type: 'choice', default: 'plain', options: ['plain', 'scroll'] },
+  seed: { type: 'seed', default: 7 },
+}, { presets: { long: { length: 2.4, slats: 8 } } });
+```
+
+Values resolve in order: each default, then the preset the host named, then the values
+the host passed. With no host values the program builds exactly as it would with its
+defaults written as literals, so declaring parameters does not change an asset's bytes.
+`step` is a hint for a slider unless `snap: true`, which refuses values off the step.
+Every parameter takes an optional `label` and `describe`.
+
+A host passes values through the render library:
+
+```ts
+import { renderGLB } from '@instruktlabs/kiln/render';
+
+const result = await renderGLB(code, { params: { preset: 'long', values: { arms: false } } });
+result.params; // { version: 'kiln.params.v1', declaration, preset, values }
+```
+
+Nothing is clamped. A spec that breaks its own rules, a second call, or a call from
+inside `build()` is a `PARAMS_CONTRACT` build error. A host value that names no declared
+parameter or preset, has the wrong type, is out of range, is off a snapped step or is not
+an option is `PARAMS_VALUE`, as are values for a program that declares no parameters. An
+evaluator worker reports only the code; `checkParamValues(declaration, input)` from
+`@instruktlabs/kiln/params` names each refused value, so a host that holds the declaration can check
+before it builds.
+
+Host values are part of the build-cache key. A GLB does not re-run its program, so another
+value is another build.
+
 ## Files and persistence
 
 From a generated workspace, import and export without model transcription:

@@ -119,6 +119,10 @@
       "types": "./lib/delivery.d.ts",
       "import": "./lib/delivery.js"
     },
+    "./params": {
+      "types": "./lib/params.d.ts",
+      "import": "./lib/params.js"
+    },
     "./palette": {
       "types": "./lib/palette.d.ts",
       "import": "./lib/palette.js"
