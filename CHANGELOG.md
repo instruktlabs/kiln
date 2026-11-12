@@ -27,6 +27,13 @@ does not publish a package.
   - The `kiln_render` schema gains `params` as an opaque record, described in the tool description and served by
     Discovery as `shape:params`. To stay inside the 5,000-byte schema limit, the capture `backdrop` hint is stated
     on the shots form only; both forms take the same three backdrops.
+- `kiln view` shows a Parameters panel for a saved revision that declares parameters: sliders and other
+  controls, preset buttons and a variant download. Opening a revision still loads the saved GLB and runs
+  nothing; the first rebuild of an asset needs an explicit choice, because it runs that revision's saved source
+  in the local evaluator. The viewer host gains `GET /api/variant` and a same-origin JSON `POST /api/variant`,
+  which build only when the host was given a builder, as `kiln view` is; `kiln view --no-variants` starts
+  without it. A rebuild took about 0.6 s on two small assets
+  ([parameters in the local viewer](docs/programs.md#parameters-in-the-local-viewer)).
 - A `color` parameter that is exactly one material value can now be changed without a rebuild. `kiln_save`
   and the sweep classify each colour by one extra build at a test colour: `factor` with the materials that
   carry it, or `rebuild` with a reason. The sweep reports `sweep.colors`, a saved manifest records

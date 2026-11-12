@@ -18,6 +18,7 @@ import type { ProjectRevision } from '../projects';
 import { assetIdentity, entriesForProject } from './library-state';
 import { mountMembership } from './membership-panel';
 import { materialViewerHref } from './material-preview';
+import { mountParamsPanel, type BuiltVariant } from './params-panel';
 
 const el = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id)! as T;
 const node = <K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string) => {
@@ -39,6 +40,8 @@ const opened: Entry[] = [];
 let currentCollection = '';
 let chosen: Entry | undefined;
 let loadedEntry: Entry | undefined;
+/** Set while the stage shows a variant build instead of the loaded entry's saved GLB. */
+let loadedVariant: { sha256?: string; values: Record<string, unknown> } | undefined;
 let stage: ReturnType<typeof createAssetStage> | undefined;
 let detailGeneration = 0;
 let listGeneration = 0;
@@ -292,6 +295,7 @@ async function openDetail(entry: Entry) {
   const generation = ++detailGeneration;
   chosen = entry;
   loadedEntry = undefined;
+  loadedVariant = undefined;
   stage?.cancelMeasurement('The Library selection changed. Measure the loaded revision again.');
   el('library-performance').replaceChildren();
   remember(
@@ -464,41 +468,83 @@ async function openDetail(entry: Entry) {
   level.hidden = true;
   el('library-lod').replaceChildren();
   el('library-lod').hidden = true;
-  try {
+  // One path puts bytes on the stage: the saved GLB on open, or a variant build that keeps
+  // the camera where the user left it.
+  const present = async (data: Uint8Array, variant?: BuiltVariant) => {
     stage ??= createAssetStage(el('stage'));
-    const data = await bytes(entry, 'asset.glb');
-    if (generation !== detailGeneration) return;
     const info = await stage.load(data, {
+      preserveView: variant !== undefined || loadedVariant !== undefined,
       isCurrent: () => generation === detailGeneration,
       onCommit: () => {
         loadedEntry = entry;
+        loadedVariant = variant && { sha256: variant.sha256, values: variant.values };
       },
     });
     if (!info || generation !== detailGeneration) return;
     loadedEntry = entry;
-    stage.wire(false);
+    loadedVariant = variant && { sha256: variant.sha256, values: variant.values };
+    el('library-performance').replaceChildren();
+    stage.wire(wire);
     stage.navigation(el<HTMLSelectElement>('library-navigation').value);
     stage.lighting(el<HTMLSelectElement>('lighting').value);
     bindLodControls(level, el('library-lod'), stage);
+    el('asset-stats').replaceChildren();
     for (const [value, label] of [
       ...(info.levels
         ? info.levels.map((count, i) => [count.toLocaleString(), `LOD${i} triangles`])
         : [[info.triangles.toLocaleString(), 'triangles']]),
       [info.meshes, info.levels ? 'LOD0 meshes' : 'meshes'],
       [info.materials, info.levels ? 'LOD0 materials' : 'materials'],
-      [`${(data.length / 1024).toFixed(0)} KB`, 'GLB'],
+      [
+        `${(data.length / 1024).toFixed(0)} KB`,
+        variant ? (variant.recoloured ? 'recoloured GLB' : 'variant GLB') : 'GLB',
+      ],
     ]) {
       const item = node('div');
       item.append(node('strong', String(value)), node('span', String(label)));
       el('asset-stats').append(item);
     }
+    paused = false;
+    el('play').textContent = 'Pause';
+    el<HTMLButtonElement>('play').disabled = true;
+    animation.replaceChildren(new Option('Rest pose', ''));
     for (let i = 0; i < info.clips.length; i++)
       animation.append(new Option(info.clips[i], String(i)));
-    el('stage-status').textContent = '';
+    el('stage-status').textContent = variant
+      ? variant.recoloured
+        ? 'Recoloured copy · not saved'
+        : 'Variant build · not saved'
+      : '';
+  };
+  mountParamsPanel(el('asset-params'), {
+    revision:
+      entry.local || entry.loose
+        ? undefined
+        : {
+            collection: entry.collection,
+            assetId: entry.manifest.assetId,
+            revisionId: entry.manifest.revisionId,
+          },
+    name: entry.manifest.name,
+    manifest: entry.manifest,
+    isCurrent: () => generation === detailGeneration,
+    saved: () => bytes(entry, 'asset.glb'),
+    show: (variant) => present(variant.glb, variant),
+    restore: async () => {
+      const data = await bytes(entry, 'asset.glb');
+      if (generation === detailGeneration) await present(data);
+    },
+    blobUrl,
+  });
+  try {
+    const data = await bytes(entry, 'asset.glb');
+    if (generation !== detailGeneration) return;
+    await present(data);
   } catch (error) {
     if (generation === detailGeneration) {
       stage?.dispose();
       stage = undefined;
+      loadedVariant = undefined;
       el('stage-status').textContent =
         `3D preview unavailable: ${error instanceof Error ? error.message : error}. Downloads remain available.`;
     }
@@ -570,6 +616,7 @@ el('close-detail').onclick = () => el<HTMLDialogElement>('detail').close();
 el<HTMLDialogElement>('detail').addEventListener('close', () => {
   detailGeneration++;
   loadedEntry = undefined;
+  loadedVariant = undefined;
   stage?.dispose();
   stage = undefined;
   for (const url of urls.splice(0)) URL.revokeObjectURL(url);
@@ -696,7 +743,14 @@ mountPerformanceControl(
           collection: loadedEntry.collection,
           assetId: loadedEntry.manifest.assetId,
           revisionId: loadedEntry.manifest.revisionId,
-          glbSha256: loadedEntry.manifest.files['asset.glb']?.sha256,
+          // A variant is other bytes than the saved revision; the receipt says which.
+          ...(loadedVariant
+            ? {
+                glbSha256: loadedVariant.sha256,
+                variantOfGlbSha256: loadedEntry.manifest.files['asset.glb']?.sha256,
+                params: loadedVariant.values,
+              }
+            : { glbSha256: loadedEntry.manifest.files['asset.glb']?.sha256 }),
         }
       : undefined,
 );

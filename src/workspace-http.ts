@@ -25,7 +25,7 @@ export class WorkspaceHttpError extends Error {
     super(message);
   }
 }
-async function readJson(req: IncomingMessage, origin: string) {
+export async function readJson(req: IncomingMessage, origin: string) {
   if (req.headers.origin !== origin) throw new WorkspaceHttpError(403, 'Same-origin writes only');
   if (req.headers['content-type']?.split(';')[0]?.trim() !== 'application/json')
     throw new WorkspaceHttpError(415, 'JSON body required');

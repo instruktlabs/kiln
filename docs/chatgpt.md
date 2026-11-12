@@ -53,7 +53,7 @@ Hosts can inject `KilnToolContext.assetDownloadUrls(collection, assetId, revisio
 
 The card tries the standard download bridge first. When that method is missing, it offers a host-provided URL; otherwise it feature-detects ChatGPT's optional upload/download helpers. It does not bypass a denied download. On September 6, 2026, this ChatGPT web client rendered the interactive 3D card, but returned `Method not found` for `ui/download-file` and `Unsupported file type` for both GLB and ZIP through `window.openai.uploadFile`. Native ChatGPT-stored attachments are therefore **not verified**. An actual file-link download must be proven separately before advertising that path as working in a particular client.
 
-The local viewer (`kiln view`) provides browser downloads, revision selection, collection browsing, animation controls, and source/build records. Both viewers open the exact GLB without executing its source.
+The local viewer (`kiln view`) provides browser downloads, revision selection, collection browsing, animation controls, and source/build records. Both viewers open the exact GLB without executing its source. The local viewer rebuilds a revision's source only when you ask it to in the Parameters panel ([parameters in the local viewer](programs.md#parameters-in-the-local-viewer)).
 
 The Node and Bun JavaScript runtimes can produce tiny floating-point differences in regenerated GLB JSON. Preserve the original artifact for byte-exact delivery and rebuild with the recorded engine's supported Node toolchain for reproducibility. ZIP import/export preserves original bytes regardless of runtime.
 

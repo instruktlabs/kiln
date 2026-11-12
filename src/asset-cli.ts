@@ -83,6 +83,9 @@ ${SAVE_LINES}
   kiln view [collection-directory|asset.glb|asset.zip] [--port 4318]
        [--collection project --asset <id> --revision <revision>]
        [--observe-workspace <directory>]   repeat to review other explicit workspaces
+       [--no-variants]   never rebuild from source. By default the viewer opens the saved
+       GLB without running its source, and rebuilds at other parameter values only when
+       you choose to in an asset's Parameters panel
 
 KILN_COLLECTIONS is an optional JSON map of collection names to absolute folders.
 On Windows these name a drive or share, such as C:/Users/you/kiln-assets; a Git Bash
@@ -155,6 +158,11 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     }
     if (arg === '--ktx2' && command === 'export') {
       flags.ktx2 = 'true';
+      continue;
+    }
+    if (arg === '--no-variants') {
+      if (command !== 'view') throw new Error('--no-variants is supported by view only.');
+      flags['no-variants'] = 'true';
       continue;
     }
     if (arg === '--restore' || arg === '--rebuild' || arg === '--no-project') {
@@ -678,9 +686,23 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
       const id = `w_${createHash('sha256').update(canonical).digest('hex').slice(0, 16)}`;
       reviewSources[id] = { label: basename(canonical), review: new FileLiveReview(canonical) };
     }
+    // A variant build runs a saved revision's source, so it has its own evaluator context,
+    // made on the first build. It writes nothing: no program store on disk, no Live Review.
+    const { createVariantBuilder } = await import('./variant-build');
+    const variants =
+      flags['no-variants'] === 'true'
+        ? undefined
+        : createVariantBuilder(target, async () => {
+            const { MemoryProgramStore } = await import('./program-store');
+            return createPackagedLocalToolContext(
+              { assetLibrary: target, programStore: new MemoryProgramStore() },
+              { ...process.env, KILN_LIVE_REVIEW: 'off' },
+            );
+          });
     const viewer = await startAssetViewer(target, {
       port,
       standalone,
+      variants,
       workspace: new FileWorkspace(root),
       liveReview: new FileLiveReview(root),
       reviewSources,

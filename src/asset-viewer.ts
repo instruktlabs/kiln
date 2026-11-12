@@ -3,15 +3,26 @@ import { createServer, type ServerResponse } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { AssetLibrary } from './assets';
+import { z } from 'zod';
+import { assetIdSchema, type AssetLibrary } from './assets';
 import { listAssetCatalog } from './asset-catalog';
 import { exportLibraryAssetBundle, readAssetResource } from './assets-resources';
 import { LOOPBACK_HOSTNAMES } from './loopback';
 import {
+  readJson,
   serveWorkspaceRequest,
   WorkspaceHttpError,
   type WorkspaceHttpServices,
 } from './workspace-http';
+import { paramValuesInput } from './tools/params-input';
+import type { VariantBuilder } from './variant-build';
+
+const variantRequestSchema = z.strictObject({
+  collection: z.string().min(1).max(80),
+  assetId: assetIdSchema,
+  revisionId: assetIdSchema,
+  params: paramValuesInput,
+});
 
 /** A bounded, escaped echo of a request header for a refusal message. */
 function quoted(value: string | undefined): string {
@@ -29,6 +40,11 @@ export async function startAssetViewer(
   options: WorkspaceHttpServices & {
     port?: number;
     staticDirectory?: string;
+    /**
+     * Builds a variant of a saved revision from its source. Running that source is the host's
+     * decision, so the viewer builds nothing unless one is supplied.
+     */
+    variants?: VariantBuilder;
     standalone?: { name: string; bytes: Uint8Array };
   } = {},
 ) {
@@ -69,6 +85,25 @@ export async function startAssetViewer(
     try {
       const url = new URL(req.url ?? '/', origin);
       if (await serveWorkspaceRequest(req, res, url, { ...options, assetLibrary: library })) return;
+      if (url.pathname === '/api/variant' && req.method === 'POST') {
+        // A build runs saved source. Only this page may ask: readJson requires its Origin and a
+        // JSON content type, which no cross-site form or image request can send.
+        const raw = await readJson(req, origin);
+        if (!options.variants)
+          throw new WorkspaceHttpError(
+            404,
+            'This viewer cannot build variants. Open the library with kiln view to rebuild from source.',
+          );
+        const parsed = variantRequestSchema.safeParse(raw);
+        if (!parsed.success)
+          throw new WorkspaceHttpError(
+            400,
+            'Expected { collection, assetId, revisionId, params: { preset?, values? } }.',
+          );
+        const { glb, ...described } = await options.variants(parsed.data);
+        res.setHeader('X-Kiln-Variant', encodeURIComponent(JSON.stringify(described)));
+        return send(glb, 'model/gltf-binary');
+      }
       if (req.method !== 'GET' && req.method !== 'HEAD') {
         res.writeHead(405);
         res.end('Method not available');
@@ -76,6 +111,8 @@ export async function startAssetViewer(
       }
       if (url.pathname === '/api/collections')
         return send(JSON.stringify({ collections: library.collections() }));
+      if (url.pathname === '/api/variant')
+        return send(JSON.stringify({ available: Boolean(options.variants) }));
       if (url.pathname === '/api/library')
         return send(JSON.stringify(await listAssetCatalog(library)));
       if (url.pathname === '/api/assets')

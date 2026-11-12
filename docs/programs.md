@@ -182,6 +182,31 @@ parameter that is exactly that factor can therefore be changed in the file, with
 colours on a saved GLB. For a carried colour its result is byte-identical to a rebuild at
 that colour.
 
+### Parameters in the local viewer
+
+`kiln view` shows a Parameters panel for a saved revision whose manifest records a
+declaration: a slider for each `range` and `int`, a checkbox, colour picker, list or number
+field for the other types, and a button for each preset.
+
+- Opening a revision loads its saved GLB and runs nothing. The controls stay off until you
+  choose **Rebuild at other values** for that asset, because a rebuild runs the revision's
+  saved source in the local evaluator. Do that only for source you trust; an imported asset's
+  source was written by someone else.
+- A colour the GLB carries is always on, for any revision or opened file: the viewer sets it
+  on the saved bytes in the browser, runs nothing, and follows the colour picker. Measured
+  on the 384-triangle floor module, a change showed in about 0.2 s.
+- Any other change rebuilds after you stop moving the control, keeps the camera where it is,
+  and labels the view as a variant. **Defaults** shows the saved GLB again. **Download this
+  variant** saves the built GLB as a file; nothing is added to the library.
+- It is a rebuild, not a live deformation. Measured on this project's host with two small
+  assets (108 and 384 triangles), a value not built before took about 0.6 s and a repeated
+  value about 20 ms. Larger assets take as long as their build.
+- `kiln view --no-variants` starts the viewer without the builder; the panel then lists the
+  parameters and cannot change them. A file opened in the browser only, and the public
+  gallery, have no builder either.
+- On the CLI, `--param name=value` reads `true`, `false` and numbers as such; wrap a text
+  value that looks like one in double quotes, such as `--param style='"3"'`.
+
 ## Files and persistence
 
 From a generated workspace, import and export without model transcription:
