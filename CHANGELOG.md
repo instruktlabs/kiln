@@ -7,6 +7,11 @@ does not publish a package.
 
 ## Unreleased
 
+- **The refine skill fixes a small flush face it finds on a part it is editing.** When a
+  `FLUSH_FACES` warning that was already in the parent names a part the edit touches and the
+  remedy is the stated 2 mm move, the agent makes it and reports it as a separate change. In
+  a dogfood on 2026-11-12, Claude Code (Sonnet 5.5) and Antigravity (Gemini 4 Hydrogen) both
+  left the warning and reported it under the old wording, and both fixed it under the new.
 - A program can declare parameters with the new `defineParams(spec, { presets? })` sandbox helper: `range`,
   `int`, `toggle`, `color`, `choice` and `seed`, each with a default. It is called once at top level and returns
   the values to build with. `renderGLB` and `renderGLBInProcess` take `params: { preset?, values? }`, and the

@@ -63,6 +63,8 @@ In the final response, distinguish measured preservation, intentional changes,
 unexpected changes and unassessed properties. An unavailable comparison is not a
 pass; resolve unexpected changes or disclose them before claiming completion.
 
+A warning the parent revision already had is outside the request, with one exception. When a `FLUSH_FACES` line names a part your edit touches and its remedy is the small move it states (about 2 mm along the shared normal), make that move in the same child revision, confirm the line is gone, and report it as a separate change with the bounds delta. Report every other warning that was already there and leave it.
+
 An edit renders by default and accepts the same `capture` object as `kiln_render`, including `backdrop` once a sheet on the default neutral grey has shown a part merging with it: `light` when that part is darker than the grey, `dark` when it is lighter. Use `render: false` when no image is needed. A missing or ambiguous anchor changes nothing; expand the anchor or use `replaceAll: true` only when every match should change. Long diffs may set `diffTruncated`; read more source instead of requesting a full-program echo by habit.
 
 For a CLI workflow, read exact source with `node kiln.mjs source RETURNED_REF --json`
