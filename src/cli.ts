@@ -10,7 +10,13 @@ import { resolve as resolvePath, extname } from 'node:path';
 import { writeDestinationAtomic, writeNewDestinationsAtomic } from './cli-output';
 import { isDirectEntry } from './direct-entry';
 import { createPackagedLocalToolContext, localEvaluatorMode } from './local-runtime';
-import { createKilnProgramToolRegistry, type KilnToolContext } from './tools/registry';
+import { isParamsVariant, type ParamsInputV1, type ParamValue } from './params';
+import {
+  createKilnProgramToolRegistry,
+  describeRefusedParams,
+  type KilnToolContext,
+  type ParamsSweepPointV1,
+} from './tools/registry';
 import { createKilnSourceDef } from './tools/programs';
 import { BACKDROP_IDS, isBackdropId, type BackdropId } from './views/background';
 import { resolveRenderMode, buildRenderPort, describeDrawnBy } from './cli-render-mode';
@@ -77,6 +83,12 @@ OPTIONS
                          JSON already accept it; generate and view refuse it
   --detail <level>       render --json: lean | compact | full QA detail (default: compact)
   --strict-budget        render: exit 1 when a defineBudget tier fails (advisory otherwise)
+  --param <name=value>   render: a value for a parameter the program declares with
+                         defineParams; repeat for more. true/false and numbers are read
+                         as such; quote a text value that looks like one: style='"3"'
+  --preset <name>        render: a preset the program declares; --param overrides it
+  --sweep                render: build the defaults, each parameter's extremes and every
+                         preset, print each build, write no file; exit 1 if one fails
   --offset <n>           source --json: page start; pass the returned nextOffset
   --limit <n>            source --json: page size in characters (1-16000)
   --query <text>         source --json: find literal text at or after --offset
@@ -117,8 +129,20 @@ interface Args extends WorkspaceSelection {
   detail?: ReviewDetail;
   /** render: a failing defineBudget tier makes the exit code non-zero. */
   strictBudget?: boolean;
+  /** render: values for the program's declared parameters. */
+  params?: ParamsInputV1;
+  /** render: build every probe point of the declared parameters instead of one asset. */
+  sweep?: boolean;
   help: boolean;
   json: boolean;
+}
+
+/** `true`, `false` and numbers as such; a double-quoted value, or anything else, as text. */
+function paramLiteral(raw: string): ParamValue {
+  if (raw === 'true') return true;
+  if (raw === 'false') return false;
+  if (raw.length >= 2 && raw.startsWith('"') && raw.endsWith('"')) return raw.slice(1, -1);
+  return raw !== '' && Number.isFinite(Number(raw)) ? Number(raw) : raw;
 }
 
 export function parseArgs(argv: readonly string[]): Args {
@@ -154,6 +178,22 @@ export function parseArgs(argv: readonly string[]): Args {
         break;
       case '--strict-budget':
         args.strictBudget = true;
+        break;
+      case '--param': {
+        const pair = next();
+        const at = pair.indexOf('=');
+        if (at <= 0) throw new Error(`--param takes name=value (got ${pair})`);
+        args.params = {
+          ...args.params,
+          values: { ...args.params?.values, [pair.slice(0, at)]: paramLiteral(pair.slice(at + 1)) },
+        };
+        break;
+      }
+      case '--preset':
+        args.params = { ...args.params, preset: next() };
+        break;
+      case '--sweep':
+        args.sweep = true;
         break;
       case '--json':
         args.json = true;
@@ -230,6 +270,10 @@ export function parseArgs(argv: readonly string[]): Args {
         else args.positional.push(a);
     }
   }
+  if (args.sweep && (args.params || args.out || args.views))
+    throw new Error(
+      '--sweep builds every point itself and writes no file: omit --param, --preset, --out and --views',
+    );
   args.render = resolveRenderMode(renderOption);
   Object.assign(args, cliWorkspaceSelection(args.projectId, args.projectRevision, args.noProject));
   return args;
@@ -321,16 +365,33 @@ async function emit(
   const programRef = await retainProgram(context.programStore, code);
   receipt.programRef = programRef;
   log(`  programRef ${programRef}`);
-  const result =
-    reviewed ??
-    (await context.evaluatorPort!.render(code, {
+  const build = (params?: ParamsInputV1) =>
+    context.evaluatorPort!.render(code, {
       optimize: 'off',
       requirements: context.requirements,
+      ...(params ? { params } : {}),
+    });
+  const result =
+    reviewed ??
+    (await build(args.params).catch(async (error) => {
+      // The evaluator reports a closed code; the default build's declaration names the value.
+      const refused = await describeRefusedParams(error, args.params, () => build());
+      throw refused ? new Error(refused.error) : error;
     }));
   try {
-    context.liveReview?.artifact(code, result);
+    // A variant is not the program's artifact: only the default build is observed as one.
+    if (!isParamsVariant(result.params)) context.liveReview?.artifact(code, result);
   } catch {
     /* Optional observation. */
+  }
+  if (result.params) {
+    const { preset, values } = result.params;
+    receipt.params = { ...(preset !== undefined ? { preset } : {}), values };
+    log(
+      `  params ${preset !== undefined ? `preset ${preset}  ` : ''}${Object.entries(values)
+        .map(([name, value]) => `${name}=${String(value)}`)
+        .join(' ')}`,
+    );
   }
   const project = context.workspace?.current()?.project;
   Object.assign(receipt, {
@@ -490,6 +551,53 @@ async function emit(
   return { ...captured, ...receipt, ok: true };
 }
 
+/** `render --sweep`: the kiln_render sweep MCP serves, printed; no GLB or image is written. */
+async function emitSweep(
+  code: string,
+  args: Args,
+  context: KilnToolContext,
+  receipt: RenderCliReceipt,
+): Promise<Record<string, unknown>> {
+  context.programStore ??= localProgramStore();
+  const def = createKilnProgramToolRegistry(context).find((d) => d.name === 'kiln_render');
+  if (!def) throw new Error('kiln_render is missing from the MCP tool surface');
+  const output = (await def.run({
+    code,
+    params: { sweep: true },
+    detail: args.detail ?? 'compact',
+  })) as Record<string, unknown> & {
+    ok?: boolean;
+    error?: string;
+    sweep?: {
+      points: ParamsSweepPointV1[];
+      built: number;
+      failed: number;
+      notSwept: string[];
+    };
+  };
+  if (output.ok !== true || !output.sweep)
+    throw new Error((output.error ?? 'The sweep returned no points.').slice(0, 2048));
+  Object.assign(receipt, output);
+  if (args.json) console.log(JSON.stringify({ ...receipt, ok: true }));
+  else {
+    console.log(`  programRef ${String(output.programRef)}`);
+    for (const point of output.sweep.points)
+      console.log(
+        point.ok
+          ? `  ${point.label}  ${point.tris} tris  ${point.draws} draws  ${(point.size ?? [])
+              .map((n) => Number(n).toFixed(2))
+              .join(
+                ' x ',
+              )} m${point.acceptance ? `  QA ${point.acceptance}` : ''}${point.budget && point.budget !== 'none' ? `  budget ${point.budget}` : ''}`
+          : `  ${point.label}  failed  ${point.error ?? ''}`,
+      );
+    if (output.sweep.notSwept.length)
+      console.log(`  not swept: ${output.sweep.notSwept.join(', ')}`);
+    console.log(`  ${output.sweep.built} built, ${output.sweep.failed} failed`);
+  }
+  return { ...receipt, ok: true };
+}
+
 async function cmdRender(args: Args): Promise<number> {
   const file = args.positional[0] ?? undefined;
   if (!file) {
@@ -522,8 +630,13 @@ async function cmdRender(args: Args): Promise<number> {
         projectRevision: args.projectRevision,
         materialDependencies: args.materialDependencies,
       },
-      () => emit(code, args, callContext, undefined, receipt),
+      () =>
+        args.sweep
+          ? emitSweep(code, args, callContext, receipt)
+          : emit(code, args, callContext, undefined, receipt),
     );
+    // A declared value that does not build is a defect in the declaration.
+    if (args.sweep) return (receipt as { sweep?: { failed?: number } }).sweep?.failed ? 1 : 0;
     const budget = (receipt as { budget?: { status?: string } }).budget;
     if (args.strictBudget && budget?.status === 'fail') {
       console.error('render: a defineBudget tier failed (--strict-budget).');

@@ -16,10 +16,10 @@ import { MAX_CAPTURE_SHOT_SIZE } from '../views/capture-limits';
  * runs, and a backdrop tuned to the asset colour hides the seams the model is
  * meant to find. Neutral is the measured default; see `views/background.ts`.
  */
-export const backdropInput = z
-  .enum(BACKDROP_IDS as [BackdropId, ...BackdropId[]])
-  .optional()
-  .describe('neutral (default); light for dark parts, dark for light parts.');
+const backdropEnum = z.enum(BACKDROP_IDS as [BackdropId, ...BackdropId[]]).optional();
+export const backdropInput = backdropEnum.describe(
+  'neutral (default); light for dark parts, dark for light parts.',
+);
 
 export const legacyCaptureInput = z
   .object({
@@ -45,7 +45,8 @@ export const legacyCaptureInput = z
       .describe(
         'Row-major cameras; omit for preset defaults. Count cannot exceed preset capacity (max 9).',
       ),
-    backdrop: backdropInput,
+    // The same enum as the shots form, which states the hint once for both (schema budget).
+    backdrop: backdropEnum,
   })
   .optional()
   .describe('Sheet layout and cameras; omit for six views in a 3x2 grid.');

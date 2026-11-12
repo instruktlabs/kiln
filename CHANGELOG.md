@@ -15,6 +15,18 @@ does not publish a package.
   `PARAMS_CONTRACT` and refused host values `PARAMS_VALUE`; nothing is clamped. Host values cross the evaluator
   boundary as validated data and are part of the build-cache key. A GLB does not carry its parameters
   ([declared parameters](docs/programs.md#declared-parameters)).
+- `kiln_render` and `kiln_export` take `params: { preset?, values? }`, and `kiln render` takes `--param name=value`
+  and `--preset`. Results report the values used; a refused call builds nothing and names each value in
+  `paramIssues`. A variant is reviewed but never retained: `kiln_save` and `kiln_finish` keep the default build,
+  and the saved manifest records the declaration as `build.params`.
+  - `kiln_render` `params: { sweep: true }` and `kiln render --sweep` build the defaults, each parameter's extremes
+    and every preset (at most 32 builds) and report each without images; the CLI exits 1 when a point fails to build.
+  - `kiln_export` with `params` returns a variant GLB as a `kiln://programs/...asset.glb?params=...` resource pinned
+    to its bytes, from a `programRef` or from a saved revision's source. The runtime profile and `kiln_export_to`
+    still deliver the saved GLB only.
+  - The `kiln_render` schema gains `params` as an opaque record, described in the tool description and served by
+    Discovery as `shape:params`. To stay inside the 5,000-byte schema limit, the capture `backdrop` hint is stated
+    on the shots form only; both forms take the same three backdrops.
 
 ## 1.7.0 (2026-11-08)
 

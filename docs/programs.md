@@ -110,6 +110,40 @@ before it builds.
 Host values are part of the build-cache key. A GLB does not re-run its program, so another
 value is another build.
 
+### Building and checking variants
+
+`kiln_render` and `kiln render` build a variant for review, and `kiln_export` returns a
+variant's GLB:
+
+```js
+kiln_render({ programRef, params: { preset: 'long', values: { arms: false } } })
+kiln_render({ programRef, params: { sweep: true } })
+kiln_export({ programRef, params: { values: { slats: 8 } } })
+kiln_export({ assetId, revisionId, params: { preset: 'long' } })
+```
+
+```sh
+node kiln.mjs render bench.kiln.js --preset long --param arms=false --out long.glb
+node kiln.mjs render bench.kiln.js --sweep
+```
+
+- Results report `params: { preset?, values }` with every value the build used. A refused
+  call builds nothing and names each value in `paramIssues` with what its parameter allows.
+- **A variant is derived, never saved.** `kiln_save` and `kiln_finish` keep the default build,
+  and a reviewed variant reports `exactArtifact: false`. The saved manifest records the
+  declaration as `build.params`.
+- **Sweep** builds the defaults, then each parameter alone at its minimum and maximum, its
+  other toggle state or each other option, then every preset: at most 32 builds. Each point
+  reports whether it built, triangles, draws, bounding size, QA acceptance and budget status,
+  without images. Colours and seeds are not swept and combinations are not built; `notSwept`
+  names what was left out. The CLI exits 1 when a point fails to build.
+- `kiln_export` with `params` builds from source and returns a
+  `kiln://programs/{program}/{sha256}/asset.glb?params=...` resource pinned to those bytes.
+  For a saved revision it builds that revision's source under the current engine, saves
+  nothing, and reports `defaultBuildMatchesSaved`: false means this engine builds the source
+  to other bytes than the saved GLB. The runtime profile and `kiln_export_to` deliver the
+  saved GLB only.
+
 ## Files and persistence
 
 From a generated workspace, import and export without model transcription:

@@ -239,13 +239,30 @@ export function createKilnToolHost(
         return { uri, mimeType: 'application/zip', blob: Buffer.from(bytes).toString('base64') };
       }
       if (uri.startsWith('kiln://programs/')) {
-        const [program, sha256, file, ...extra] = new URL(uri).pathname
+        const url = new URL(uri);
+        const [program, sha256, file, ...extra] = url.pathname
           .split('/')
           .filter(Boolean)
           .map(decodeURIComponent);
         if (extra.length || !program || !sha256 || file !== 'asset.glb')
           throw new Error('Invalid program build URI');
-        const rendered = await buildProgramGlb(program, requestContext);
+        // A variant link carries its values; nothing else may ride in the query.
+        let params: import('./params').ParamsInputV1 | undefined;
+        const queryKeys = [...url.searchParams.keys()];
+        if (queryKeys.length) {
+          try {
+            if (queryKeys.length !== 1 || queryKeys[0] !== 'params') throw new Error('query');
+            const { validateParamsInput } = await import('./params');
+            params = validateParamsInput(
+              JSON.parse(
+                Buffer.from(url.searchParams.get('params')!, 'base64url').toString('utf8'),
+              ),
+            );
+          } catch {
+            throw new Error('Invalid program build URI');
+          }
+        }
+        const rendered = await buildProgramGlb(program, requestContext, params);
         // Rebuilt on read, so this host's policy or engine can have moved since the export.
         if (rendered.artifactGlbSha256 !== `sha256:${sha256}`)
           throw new Error(

@@ -48,6 +48,8 @@ export const assetManifestSchema = z.object({
       /** ProjectCompositionReportV1: measured against the bound project's placed neighbours. */
       composition: z.unknown().optional(),
       dependencies: z.array(z.unknown()).optional(),
+      /** ParamsDeclarationV1 of the source. The saved GLB is always the default build. */
+      params: z.unknown().optional(),
       rebuild: z.enum(['engine-required', 'external-dependencies-required']),
     })
     .optional(),
