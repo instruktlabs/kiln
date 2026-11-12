@@ -108,7 +108,7 @@ evaluator worker reports only the code; `checkParamValues(declaration, input)` f
 before it builds.
 
 Host values are part of the build-cache key. A GLB does not re-run its program, so another
-value is another build.
+value is another build, with one exception: [a colour that is one material value](#colours-a-glb-carries).
 
 ### Building and checking variants
 
@@ -143,6 +143,44 @@ node kiln.mjs render bench.kiln.js --sweep
   nothing, and reports `defaultBuildMatchesSaved`: false means this engine builds the source
   to other bytes than the saved GLB. The runtime profile and `kiln_export_to` deliver the
   saved GLB only.
+
+### Colours a GLB carries
+
+glTF multiplies a material's base colour factor into its texture and vertex colours. A `color`
+parameter that is exactly that factor can therefore be changed in the file, with no rebuild.
+
+- **How it is decided.** `kiln_save` and the sweep build the program once more per colour
+  parameter, at a test colour, and compare with the default build. When nothing differs but
+  base colour factors, and each one equals the parameter's colour, the colour is `factor` and
+  names its materials. Otherwise it is `rebuild`, with a reason: `DATA_CHANGED` (baked into
+  mesh, vertex-colour or texture data), `DERIVED_COLOR` (computed from the parameter),
+  `OTHER_VALUES_CHANGED`, `NO_MATERIAL` or `PROBE_FAILED`. The other parameters stay at their
+  defaults for this check.
+- **Where it is recorded.** The sweep reports `sweep.colors`. A saved manifest records
+  `build.paramBindings` (`kiln.param-bindings.v1`). The saved GLB itself is still the plain
+  default build, byte for byte.
+- **In an exported file.** The runtime profile marks each carrying material with
+  `extras.kilnParamV1: { name, type: "color" }` and lists them under `params.colors` in the
+  metadata sidecar. In three.js the tag arrives as `material.userData.kilnParamV1`:
+
+  ```js
+  gltf.scene.traverse((object) => {
+    const material = object.material;
+    if (material?.userData.kilnParamV1?.name === 'paint') material.color.set('#2f6fa8');
+  });
+  ```
+
+  Other engines keep glTF extras as custom properties to different degrees; that support is
+  not qualified here. A named material can always be found by its name.
+- **To author one.** Give the colour its own named material, pass the parameter to it
+  unchanged, and keep surface detail in neutral greys so the colour tints it. A factor tints
+  a coloured texture; it cannot replace colours painted into pixels.
+- **Not yet.** Presets are not written as `KHR_materials_variants`, and only colour is
+  carried: sizes, counts and toggles need a rebuild.
+
+`recolorGlb(bytes, bindings, values)` from `@instruktlabs/kiln/param-bindings` sets carried
+colours on a saved GLB. For a carried colour its result is byte-identical to a rebuild at
+that colour.
 
 ## Files and persistence
 

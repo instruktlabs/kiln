@@ -1334,6 +1334,8 @@ export interface KilnRenderViewsResult extends PartPreview {
     built: number;
     failed: number;
     notSwept: string[];
+    /** Each colour parameter: carried by the GLB as material values, or rebuild-only and why. */
+    colors?: import('../param-bindings').ParamBindingsV1['colors'];
   };
   /** Exact vertex/index accessor payload before and after the export indexing pass. */
   indexBuffers?: import('../index-policy').IndexBufferReceipt;
@@ -1592,6 +1594,7 @@ async function runParamsSweep(
     await pauseForEventLoop(signal);
   }
   const failed = reported.filter((point) => !point.ok).length;
+  const bindings = await classifyBuiltColorParams(code, context, base);
   return {
     ok: true,
     requirements: base.requirements,
@@ -1601,9 +1604,27 @@ async function runParamsSweep(
       built: reported.length - failed,
       failed,
       notSwept,
+      ...(bindings ? { colors: bindings.colors } : {}),
     },
     warnings: [],
   };
+}
+
+/**
+ * Which colour parameters of a built program its GLB carries: one probe build per colour, with
+ * the other parameters at their defaults. Undefined when it declares no colour.
+ */
+async function classifyBuiltColorParams(
+  code: string,
+  context: KilnToolContext,
+  base: RenderResult,
+): Promise<import('../param-bindings').ParamBindingsV1 | undefined> {
+  if (!base.params) return undefined;
+  const { classifyColorParams } = await import('../param-bindings');
+  return classifyColorParams(base.params.declaration, base.glb, async (values) => {
+    context.evaluationControls?.().signal?.throwIfAborted();
+    return (await evaluateGeneratedSource(code, context, 'off', { values })).glb;
+  });
 }
 
 async function runRenderViews(
@@ -3510,6 +3531,8 @@ export async function buildProgramAssetDraft(
     requirements: toolRequirements(context).binding,
   };
   const rendered = await evaluateGeneratedSource(code, callContext);
+  // Recorded beside the declaration; the saved GLB itself stays the untagged default build.
+  const paramBindings = await classifyBuiltColorParams(code, callContext, rendered);
   let preview: Uint8Array | undefined;
   let previewInfo: import('../assets').AssetManifest['preview'];
   try {
@@ -3570,6 +3593,7 @@ export async function buildProgramAssetDraft(
       integration: rendered.integrationManifest,
       qa: rendered.meta.qaReport,
       ...(rendered.params ? { params: rendered.params.declaration } : {}),
+      ...(paramBindings ? { paramBindings } : {}),
       dependencies,
       rebuild: dependencies.some((d) => d.delivery === 'runtime')
         ? 'external-dependencies-required'

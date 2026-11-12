@@ -123,6 +123,10 @@
       "types": "./lib/params.d.ts",
       "import": "./lib/params.js"
     },
+    "./param-bindings": {
+      "types": "./lib/param-bindings.d.ts",
+      "import": "./lib/param-bindings.js"
+    },
     "./palette": {
       "types": "./lib/palette.d.ts",
       "import": "./lib/palette.js"

@@ -50,6 +50,8 @@ export const assetManifestSchema = z.object({
       dependencies: z.array(z.unknown()).optional(),
       /** ParamsDeclarationV1 of the source. The saved GLB is always the default build. */
       params: z.unknown().optional(),
+      /** ParamBindingsV1: which declared colours the saved GLB carries as material values. */
+      paramBindings: z.unknown().optional(),
       rebuild: z.enum(['engine-required', 'external-dependencies-required']),
     })
     .optional(),

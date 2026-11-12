@@ -27,6 +27,15 @@ does not publish a package.
   - The `kiln_render` schema gains `params` as an opaque record, described in the tool description and served by
     Discovery as `shape:params`. To stay inside the 5,000-byte schema limit, the capture `backdrop` hint is stated
     on the shots form only; both forms take the same three backdrops.
+- A `color` parameter that is exactly one material value can now be changed without a rebuild. `kiln_save`
+  and the sweep classify each colour by one extra build at a test colour: `factor` with the materials that
+  carry it, or `rebuild` with a reason. The sweep reports `sweep.colors`, a saved manifest records
+  `build.paramBindings` (`kiln.param-bindings.v1`), and the saved GLB stays the untagged default build. The
+  runtime export marks carrying materials with `extras.kilnParamV1` and lists them as `params.colors` in the
+  sidecar. `kiln view` sets a carried colour in the browser, for any revision or opened file, with nothing
+  run. `@instruktlabs/kiln/param-bindings` exports the classifier and `recolorGlb`, whose result for a carried
+  colour is byte-identical to a rebuild. A save with colour parameters takes one more build per colour
+  ([colours a GLB carries](docs/programs.md#colours-a-glb-carries)).
 
 ## 1.7.0 (2026-11-08)
 

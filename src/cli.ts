@@ -573,6 +573,7 @@ async function emitSweep(
       built: number;
       failed: number;
       notSwept: string[];
+      colors?: import('./param-bindings').ParamBindingsV1['colors'];
     };
   };
   if (output.ok !== true || !output.sweep)
@@ -593,6 +594,14 @@ async function emitSweep(
       );
     if (output.sweep.notSwept.length)
       console.log(`  not swept: ${output.sweep.notSwept.join(', ')}`);
+    for (const [name, binding] of Object.entries(output.sweep.colors ?? {}))
+      console.log(
+        binding.mode === 'factor'
+          ? `  colour ${name}  carried by the GLB: ${binding.materials
+              .map((material) => material.name ?? `material ${material.index}`)
+              .join(', ')}`
+          : `  colour ${name}  rebuild only (${binding.reason})  ${binding.detail}`,
+      );
     console.log(`  ${output.sweep.built} built, ${output.sweep.failed} failed`);
   }
   return { ...receipt, ok: true };

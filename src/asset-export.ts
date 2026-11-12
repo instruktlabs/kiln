@@ -10,6 +10,13 @@ import {
   type AssetRecord,
 } from './assets';
 import type { MaterialManifest } from './material-library';
+import {
+  factorColorBindings,
+  taggedColorMaterials,
+  tagGltfColorParams,
+  validateParamBindings,
+  type BoundMaterialV1,
+} from './param-bindings';
 import type {
   RuntimeThreeDeliveryV1,
   RuntimeThreeKtx2EncoderIdentityV1,
@@ -99,6 +106,12 @@ export interface RuntimeMetadataV1 {
   textures?: RuntimeTextureManifestEntryV1[];
   /** Present when `draws: 'minimal'` derived this file: what the reduction did. */
   drawReduction?: DrawReductionV1;
+  /**
+   * Declared parameters this file carries. `colors` maps a colour parameter to the materials
+   * of this GLB whose base colour factor takes its value; each is also tagged in the GLB as
+   * `materials[i].extras.kilnParamV1`.
+   */
+  params?: { colors: Record<string, BoundMaterialV1[]> };
 }
 
 const encoder = new TextEncoder();
@@ -287,6 +300,15 @@ export async function exportAssetGlb(
       throw new Error(`Asset integrity mismatch: ${file}`);
   }
 
+  // Tag carried colours on the saved file's own materials before anything re-derives them,
+  // so the tags follow each material through draw reduction and the three target.
+  const bindings = validateParamBindings(record.manifest.build?.paramBindings);
+  if (Object.keys(factorColorBindings(bindings)).length) {
+    const saved = readGlbJson(bytes);
+    tagGltfColorParams(saved.json, bindings);
+    bytes = writeGlbJson(bytes, saved.jsonEnd, saved.json);
+  }
+
   let drawReduction: DrawReductionV1 | undefined;
   if (options.draws) {
     const { reduceGlbDrawCalls } = await import('./draw-reduction');
@@ -361,6 +383,8 @@ export async function exportAssetGlb(
     gltf = derived.gltf;
     ({ json: baseJson, jsonEnd: baseJsonEnd } = readGlbJson(base));
   }
+  const colors = taggedColorMaterials(baseJson);
+  if (Object.keys(colors).length) metadata.params = { colors };
   if (textures !== undefined)
     metadata.textures = await runtimeTextureManifest(baseJson, readGlbBinary(base, baseJsonEnd), {
       ...(imageSources ? { sources: imageSources } : {}),

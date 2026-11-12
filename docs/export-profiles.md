@@ -185,7 +185,10 @@ glTF exporter or decode/re-encode textures.
 
 ## What runtime changes
 
-Only `scenes[].extras.kilnReviewClipsV1` is moved into the JSON sidecar. It contains
+For a revision whose manifest records carried colours, the runtime GLB also marks those
+materials with `extras.kilnParamV1` and the sidecar lists them as `params.colors`
+([colours a GLB carries](programs.md#colours-a-glb-carries)). Apart from that, only
+`scenes[].extras.kilnReviewClipsV1` is moved into the JSON sidecar. It contains
 Kiln's authored animation review vocabulary, including advisory tracks that might not
 have valid native glTF targets. Native `animations` remain authoritative for playback.
 The sidecar retains each source scene index and its original review object.
