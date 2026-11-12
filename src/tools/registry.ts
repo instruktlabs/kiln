@@ -1336,6 +1336,8 @@ export interface KilnRenderViewsResult extends PartPreview {
     notSwept: string[];
     /** Each colour parameter: carried by the GLB as material values, or rebuild-only and why. */
     colors?: import('../param-bindings').ParamBindingsV1['colors'];
+    /** Each toggle and choice: carried by the GLB as node visibility, or rebuild-only and why. */
+    switches?: import('../param-bindings').ParamBindingsV1['switches'];
   };
   /** Exact vertex/index accessor payload before and after the export indexing pass. */
   indexBuffers?: import('../index-policy').IndexBufferReceipt;
@@ -1594,7 +1596,7 @@ async function runParamsSweep(
     await pauseForEventLoop(signal);
   }
   const failed = reported.filter((point) => !point.ok).length;
-  const bindings = await classifyBuiltColorParams(code, context, base);
+  const bindings = await classifyBuiltParams(code, context, base);
   return {
     ok: true,
     requirements: base.requirements,
@@ -1604,27 +1606,38 @@ async function runParamsSweep(
       built: reported.length - failed,
       failed,
       notSwept,
-      ...(bindings ? { colors: bindings.colors } : {}),
+      ...(bindings && Object.keys(bindings.colors).length ? { colors: bindings.colors } : {}),
+      ...(bindings?.switches ? { switches: bindings.switches } : {}),
     },
     warnings: [],
   };
 }
 
+/** Extra builds a save spends on classifying parameters; a sweep classifies them all. */
+const SAVE_CLASSIFY_BUILDS = 16;
+
 /**
- * Which colour parameters of a built program its GLB carries: one probe build per colour, with
- * the other parameters at their defaults. Undefined when it declares no colour.
+ * Which parameters of a built program its GLB carries: one probe build per colour and one per
+ * other value of a toggle or choice, each with the other parameters at their defaults.
+ * Undefined when it declares none of those.
  */
-async function classifyBuiltColorParams(
+async function classifyBuiltParams(
   code: string,
   context: KilnToolContext,
   base: RenderResult,
+  maxBuilds?: number,
 ): Promise<import('../param-bindings').ParamBindingsV1 | undefined> {
   if (!base.params) return undefined;
-  const { classifyColorParams } = await import('../param-bindings');
-  return classifyColorParams(base.params.declaration, base.glb, async (values) => {
-    context.evaluationControls?.().signal?.throwIfAborted();
-    return (await evaluateGeneratedSource(code, context, 'off', { values })).glb;
-  });
+  const { classifyParamBindings } = await import('../param-bindings');
+  return classifyParamBindings(
+    base.params.declaration,
+    base.glb,
+    async (values) => {
+      context.evaluationControls?.().signal?.throwIfAborted();
+      return (await evaluateGeneratedSource(code, context, 'off', { values })).glb;
+    },
+    maxBuilds === undefined ? {} : { maxBuilds },
+  );
 }
 
 async function runRenderViews(
@@ -3532,7 +3545,12 @@ export async function buildProgramAssetDraft(
   };
   const rendered = await evaluateGeneratedSource(code, callContext);
   // Recorded beside the declaration; the saved GLB itself stays the untagged default build.
-  const paramBindings = await classifyBuiltColorParams(code, callContext, rendered);
+  const paramBindings = await classifyBuiltParams(
+    code,
+    callContext,
+    rendered,
+    SAVE_CLASSIFY_BUILDS,
+  );
   let preview: Uint8Array | undefined;
   let previewInfo: import('../assets').AssetManifest['preview'];
   try {

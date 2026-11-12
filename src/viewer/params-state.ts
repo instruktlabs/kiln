@@ -4,12 +4,13 @@
  */
 import {
   factorColorBindings,
+  switchBindings,
   validateParamBindings,
   type ParamBindingsV1,
 } from '../param-bindings';
 import {
   changedParamValues,
-  normalizeParamsSpec,
+  validateParamsDeclaration,
   type ParamsDeclarationV1,
   type ParamsInputV1,
   type ParamSpecV1,
@@ -25,19 +26,7 @@ export type ParamValues = Record<string, ParamValue>;
 export function manifestParams(manifest: {
   build?: { params?: unknown };
 }): ParamsDeclarationV1 | undefined {
-  const recorded = manifest.build?.params as
-    | { schemaVersion?: unknown; params?: unknown; presets?: unknown }
-    | undefined;
-  if (!recorded || typeof recorded !== 'object' || recorded.schemaVersion !== 1) return undefined;
-  try {
-    const declaration = normalizeParamsSpec(
-      recorded.params,
-      recorded.presets === undefined ? undefined : { presets: recorded.presets },
-    );
-    return JSON.stringify(declaration) === JSON.stringify(recorded) ? declaration : undefined;
-  } catch {
-    return undefined;
-  }
+  return validateParamsDeclaration(manifest.build?.params);
 }
 
 export function paramDefaults(declaration: ParamsDeclarationV1): ParamValues {
@@ -106,21 +95,26 @@ export function variantFileName(
 }
 
 /**
- * The colour parameters the saved GLB carries as material values, from the manifest's
- * `build.paramBindings`. Setting one needs no rebuild: the viewer recolours the saved bytes.
+ * The parameters the saved GLB carries, from the manifest's `build.paramBindings`: colours as
+ * material values, toggles and choices as node visibility. Setting one needs no rebuild: the
+ * viewer applies it to the saved bytes.
  */
-export function carriedColors(
+export function carriedParams(
   declaration: ParamsDeclarationV1,
   manifest: { build?: { paramBindings?: unknown } },
 ): { bindings: ParamBindingsV1 | undefined; names: string[] } {
   const bindings = validateParamBindings(manifest.build?.paramBindings);
-  const names = Object.keys(factorColorBindings(bindings)).filter(
+  const colours = Object.keys(factorColorBindings(bindings)).filter(
     (name) => declaration.params[name]?.type === 'color',
   );
-  return { bindings, names };
+  const switches = Object.keys(switchBindings(bindings)).filter((name) => {
+    const type = declaration.params[name]?.type;
+    return type === 'toggle' || type === 'choice';
+  });
+  return { bindings, names: [...colours, ...switches] };
 }
 
-/** Whether these values differ from the defaults in anything but a carried colour. */
+/** Whether these values differ from the defaults in anything but a carried parameter. */
 export function needsRebuild(
   declaration: ParamsDeclarationV1,
   carried: readonly string[],

@@ -12,6 +12,7 @@ import { exportAssetGlb } from '../../asset-export';
 import { FileAssetLibrary } from '../../assets-node';
 import { recolorGlb, validateParamBindings } from '../../param-bindings';
 import { MemoryProgramStore } from '../../program-store';
+import { renderGLBInProcess } from '../../render';
 import { createKilnProgramToolRegistry } from '../registry';
 
 const CODE = `const meta = { name: 'Crate' };
@@ -120,7 +121,10 @@ describe('colour parameters a GLB can carry', () => {
     });
     expect(materials[1]!.extras).toBeUndefined();
     const metadata = JSON.parse(new TextDecoder().decode(output.metadata.bytes));
-    expect(metadata.params).toEqual({ colors: { paint: [{ index: 0, name: 'body' }] } });
+    expect(metadata.params).toEqual({
+      colors: { paint: [{ index: 0, name: 'body' }] },
+      presets: { blue: 0 },
+    });
     // The tags follow each material through the three target and a draw reduction.
     for (const options of [{ target: 'three' as const }, { draws: 'minimal' as const }]) {
       const derived = await exportAssetGlb(record, { profile: 'runtime', ...options });
@@ -137,6 +141,49 @@ describe('colour parameters a GLB can carry', () => {
     // The editable profile is still the saved bytes.
     const editable = await exportAssetGlb(record, { profile: 'editable' });
     expect(sha(editable.glb)).toBe(record.manifest.files['asset.glb']!.sha256);
+  }, 60_000);
+
+  test('the runtime export writes a preset of carried colours as a material variant', async () => {
+    const record = await library.read('project', saved.assetId, saved.revisionId);
+    const rebuilt = jsonOf(
+      (await renderGLBInProcess(CODE, { params: { preset: 'blue' } })).glb,
+    ) as { materials: { name: string; pbrMetallicRoughness: { baseColorFactor: number[] } }[] };
+    for (const options of [{}, { target: 'three' as const }, { draws: 'minimal' as const }]) {
+      const output = await exportAssetGlb(record, { profile: 'runtime', ...options });
+      if (output.profile !== 'runtime') throw new Error('Expected a runtime export');
+      const json = jsonOf(output.glb);
+      expect(json.extensionsUsed).toContain('KHR_materials_variants');
+      expect(json.extensions.KHR_materials_variants.variants).toEqual([{ name: 'blue' }]);
+      const metadata = JSON.parse(new TextDecoder().decode(output.metadata.bytes));
+      expect(metadata.params.presets).toEqual({ blue: 0 });
+      // Choosing the variant gives the body the colour a rebuild at the preset gives it.
+      const body = metadata.params.colors.paint[0].index as number;
+      const primitives = (
+        json.meshes as {
+          primitives: {
+            material: number;
+            extensions: { KHR_materials_variants: { mappings: unknown } };
+          }[];
+        }[]
+      ).flatMap((mesh) => mesh.primitives);
+      const mapped = primitives.filter((primitive) => primitive.material === body);
+      expect(mapped.length).toBeGreaterThan(0);
+      for (const primitive of mapped) {
+        const mapping = primitive.extensions.KHR_materials_variants.mappings as {
+          material: number;
+          variants: number[];
+        }[];
+        expect(mapping).toHaveLength(1);
+        expect(mapping[0]!.variants).toEqual([0]);
+        const factor = json.materials[mapping[0]!.material].pbrMetallicRoughness.baseColorFactor;
+        const wanted = rebuilt.materials.find((material) => material.name === 'body')!
+          .pbrMetallicRoughness.baseColorFactor;
+        for (const [channel, value] of wanted.entries())
+          expect(factor[channel]).toBeCloseTo(value, 6);
+      }
+      // The default materials are the saved ones: a loader without the extension is unchanged.
+      expect(json.materials[body].name).toBe('body');
+    }
   }, 60_000);
 
   test('a program without colour parameters records nothing', async () => {

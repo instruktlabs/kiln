@@ -256,6 +256,24 @@ function normalizeParam(name: string, entry: unknown): ParamSpecV1 {
 }
 
 /** Validate an authored spec into the declaration that is recorded and transported. */
+/**
+ * A declaration read back from a manifest (`build.params`). A manifest is a file anyone can
+ * write, so anything that does not satisfy the declaration's own rules is treated as absent.
+ */
+export function validateParamsDeclaration(recorded: unknown): ParamsDeclarationV1 | undefined {
+  const value = recorded as { schemaVersion?: unknown; params?: unknown; presets?: unknown } | null;
+  if (!value || typeof value !== 'object' || value.schemaVersion !== 1) return undefined;
+  try {
+    const declaration = normalizeParamsSpec(
+      value.params,
+      value.presets === undefined ? undefined : { presets: value.presets },
+    );
+    return JSON.stringify(declaration) === JSON.stringify(value) ? declaration : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export function normalizeParamsSpec(spec: unknown, options?: unknown): ParamsDeclarationV1 {
   if (!isRecord(spec)) return contract('the first argument is an object of named parameters.');
   const names = Object.keys(spec);

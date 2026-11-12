@@ -88,7 +88,9 @@ kiln_render({ programRef: NEW_REF, params: { values: { plenum: 0.9 } } })
 A sweep moves one parameter at a time, does not sweep colours or seeds, and builds no
 combinations; `notSwept` names what it left out. For each colour it reports `colors`:
 `factor` with the materials that carry it, so it can be set in the GLB without a rebuild, or
-`rebuild` with the reason. Check a combination you intend to offer as a
+`rebuild` with the reason. For each toggle and choice it reports `switches`: `visibility`
+with the nodes it shows, or `rebuild`. To make an option `visibility`, always build its part
+and set `part.visible` from the parameter. Check a combination you intend to offer as a
 preset, and declare it as one.
 
 ## 6. Save the child

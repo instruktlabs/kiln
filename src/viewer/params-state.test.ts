@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test';
 import {
-  carriedColors,
+  carriedParams,
   controlStep,
   manifestParams,
   needsRebuild,
@@ -136,18 +136,18 @@ describe('colours the saved GLB carries', () => {
     },
   };
   test('are read from the manifest, and only for parameters the declaration has', () => {
-    const read = carriedColors(declaration, { build: { paramBindings: bindings } });
+    const read = carriedParams(declaration, { build: { paramBindings: bindings } });
     expect(read.names).toEqual(['wood']);
     expect(read.bindings as unknown).toEqual(bindings);
-    expect(carriedColors(declaration, { build: {} }).names).toEqual([]);
+    expect(carriedParams(declaration, { build: {} }).names).toEqual([]);
     expect(
-      carriedColors(declaration, { build: { paramBindings: { version: 'x' } } }).names,
+      carriedParams(declaration, { build: { paramBindings: { version: 'x' } } }).names,
     ).toEqual([]);
     const other = {
       version: 'kiln.param-bindings.v1',
       colors: { paint: { mode: 'factor', materials: [{ index: 0 }] } },
     };
-    expect(carriedColors(declaration, { build: { paramBindings: other } }).names).toEqual([]);
+    expect(carriedParams(declaration, { build: { paramBindings: other } }).names).toEqual([]);
   });
   test('a rebuild is needed only when something other than a carried colour changed', () => {
     const defaults = paramDefaults(declaration);
@@ -158,5 +158,20 @@ describe('colours the saved GLB carries', () => {
       true,
     );
     expect(needsRebuild(declaration, ['wood'], presetValues(declaration, 'long'))).toBe(true);
+  });
+  test('toggles and choices the file carries as node visibility are listed with the colours', () => {
+    const switched = {
+      ...bindings,
+      switches: {
+        arms: { mode: 'visibility', nodes: [{ index: 1, name: 'Arms', visibleWhen: [true] }] },
+        style: { mode: 'rebuild', reason: 'DATA_CHANGED', detail: 'reshaped' },
+        length: { mode: 'visibility', nodes: [{ index: 2, visibleWhen: [true] }] },
+      },
+    };
+    const read = carriedParams(declaration, { build: { paramBindings: switched } });
+    expect(read.names).toEqual(['wood', 'arms']);
+    const defaults = paramDefaults(declaration);
+    expect(needsRebuild(declaration, read.names, { ...defaults, arms: false })).toBe(false);
+    expect(needsRebuild(declaration, read.names, { ...defaults, style: 'scroll' })).toBe(true);
   });
 });

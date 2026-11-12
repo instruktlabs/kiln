@@ -497,7 +497,7 @@ async function openDetail(entry: Entry) {
       [info.materials, info.levels ? 'LOD0 materials' : 'materials'],
       [
         `${(data.length / 1024).toFixed(0)} KB`,
-        variant ? (variant.recoloured ? 'recoloured GLB' : 'variant GLB') : 'GLB',
+        variant ? (variant.recoloured ? 'adjusted GLB' : 'variant GLB') : 'GLB',
       ],
     ]) {
       const item = node('div');
@@ -512,7 +512,7 @@ async function openDetail(entry: Entry) {
       animation.append(new Option(info.clips[i], String(i)));
     el('stage-status').textContent = variant
       ? variant.recoloured
-        ? 'Recoloured copy · not saved'
+        ? 'Adjusted copy · not saved'
         : 'Variant build · not saved'
       : '';
   };

@@ -175,12 +175,66 @@ parameter that is exactly that factor can therefore be changed in the file, with
 - **To author one.** Give the colour its own named material, pass the parameter to it
   unchanged, and keep surface detail in neutral greys so the colour tints it. A factor tints
   a coloured texture; it cannot replace colours painted into pixels.
-- **Not yet.** Presets are not written as `KHR_materials_variants`, and only colour is
-  carried: sizes, counts and toggles need a rebuild.
 
 `recolorGlb(bytes, bindings, values)` from `@instruktlabs/kiln/param-bindings` sets carried
 colours on a saved GLB. For a carried colour its result is byte-identical to a rebuild at
 that colour.
+
+### Options and presets a GLB carries
+
+A `toggle` or `choice` that only shows and hides parts can also be changed in the file, as
+`KHR_node_visibility` on the nodes it controls
+([what destinations do with it](engine-handoff.md#animated-assets-and-visibility-tested-destination-limits)).
+
+- **To author one.** Always build the part and set its `visible` from the parameter:
+
+  ```js
+  const arms = createPart('Arms', armGeo, wood, { parent: root });
+  arms.visible = P.arms;
+  ```
+
+  A part built only when the option is on (`if (P.arms) createPart(...)`) changes the mesh
+  data, so that option needs a rebuild. Give each parameter its own node: a node that two
+  parameters hide is carried by neither.
+- **How it is decided.** `kiln_save` and the sweep build the program once per other value
+  (one build for a toggle, one per further option of a choice) and compare with the default
+  build. When nothing differs but which nodes are hidden, the parameter is `visibility` and
+  lists each node with `visibleWhen`, the values that show it. Otherwise it is `rebuild` with a
+  reason: `DATA_CHANGED`, `OTHER_VALUES_CHANGED`, `NO_NODE`, `SHARED_NODE`, `PROBE_FAILED` or
+  `NOT_CLASSIFIED`. A save spends at most 16 extra builds on classifying colours and options
+  and marks the rest `NOT_CLASSIFIED`; a sweep classifies all of them.
+- **Where it is recorded.** The sweep reports `sweep.switches`; the manifest records them in
+  `build.paramBindings.switches`. The saved GLB is still the default build: a part hidden at
+  the defaults is in it, hidden.
+- **In an exported file.** The runtime profile marks each node with
+  `extras.kilnParamV1: { name, type: "toggle" | "choice", visibleWhen: [...] }` and lists
+  them under `params.switches` in the sidecar. To set a value, show a tagged node when
+  `visibleWhen` includes the value and hide it otherwise. three.js r187's loader does not
+  read `KHR_node_visibility` itself, so apply the default from the tags too:
+
+  ```js
+  const values = { arms: false, style: 'scroll' };
+  gltf.scene.traverse((object) => {
+    const tag = object.userData.kilnParamV1;
+    if (tag?.visibleWhen) object.visible = tag.visibleWhen.includes(values[tag.name]);
+  });
+  ```
+
+  A draw reduction (`draws: 'minimal'`) does not batch a file with tagged or hidden nodes, so
+  the switches stay usable and the draw count stays as saved. A parameter a derived file
+  lost is named in `params.dropped`.
+- **Presets.** A preset that only sets carried colours is written by the runtime profile as
+  one `KHR_materials_variants` entry named after the preset, and listed under
+  `params.presets` with its variant index. Each bound material gets a copy at the preset's
+  colour (`paint@blue`), mapped on every primitive that draws with it; the default materials
+  are unchanged, so a loader without the extension shows the default build. A preset that
+  also changes a size, a count, an option or a rebuild-only colour is not written. A file
+  that already has material variants keeps them and gets none from presets.
+- **Not carried.** Sizes and counts (`range`, `int`) and seeds need a rebuild.
+
+`applyCarriedParams(bytes, bindings, values)` from `@instruktlabs/kiln/param-bindings` sets
+carried colours and options on a saved GLB. Its result holds what a rebuild at those values
+holds: the same binary data and the same JSON values.
 
 ### Parameters in the local viewer
 

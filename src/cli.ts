@@ -574,6 +574,7 @@ async function emitSweep(
       failed: number;
       notSwept: string[];
       colors?: import('./param-bindings').ParamBindingsV1['colors'];
+      switches?: import('./param-bindings').ParamBindingsV1['switches'];
     };
   };
   if (output.ok !== true || !output.sweep)
@@ -601,6 +602,14 @@ async function emitSweep(
               .map((material) => material.name ?? `material ${material.index}`)
               .join(', ')}`
           : `  colour ${name}  rebuild only (${binding.reason})  ${binding.detail}`,
+      );
+    for (const [name, binding] of Object.entries(output.sweep.switches ?? {}))
+      console.log(
+        binding.mode === 'visibility'
+          ? `  switch ${name}  carried by the GLB: ${binding.nodes
+              .map((node) => node.name ?? `node ${node.index}`)
+              .join(', ')}`
+          : `  switch ${name}  rebuild only (${binding.reason})  ${binding.detail}`,
       );
     console.log(`  ${output.sweep.built} built, ${output.sweep.failed} failed`);
   }

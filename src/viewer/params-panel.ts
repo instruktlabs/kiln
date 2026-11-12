@@ -1,15 +1,16 @@
 /// <reference lib="dom" />
 /**
  * The Library's parameter panel. Opening a revision shows its saved GLB and runs nothing.
- * A colour the saved GLB carries as a material value is changed here in the browser, on the
- * saved bytes. Any other value rebuilds the revision's saved source through the local host,
- * and only after the user has said so for that asset.
+ * A value the saved GLB carries (a colour as a material value, a toggle or choice as node
+ * visibility) is changed here in the browser, on the saved bytes. Any other value rebuilds the
+ * revision's saved source through the local host, and only after the user has said so for
+ * that asset.
  */
-import { factorColorBindings, recolorGlb } from '../param-bindings';
+import { applyCarriedParams, factorColorBindings, switchBindings } from '../param-bindings';
 import type { ParamSpecV1, ParamValue } from '../params';
 import { node } from './dom';
 import {
-  carriedColors,
+  carriedParams,
   controlStep,
   manifestParams,
   needsRebuild,
@@ -27,7 +28,7 @@ export interface BuiltVariant {
   sha256?: string;
   triangles?: number;
   values: ParamValues;
-  /** True when the saved GLB was recoloured in the browser instead of rebuilt. */
+  /** True when carried values were set on the saved GLB in the browser instead of a rebuild. */
   recoloured?: boolean;
 }
 
@@ -55,7 +56,7 @@ const hostBuilds = () =>
     .catch(() => false));
 
 const REBUILD_DEBOUNCE_MS = 250;
-/** A recolour only re-reads the saved bytes, so it can follow the colour picker closely. */
+/** A carried value only re-reads the saved bytes, so it can follow the control closely. */
 const RECOLOUR_DEBOUNCE_MS = 80;
 
 export function mountParamsPanel(target: HTMLElement, host: ParamsPanelHost): void {
@@ -64,8 +65,9 @@ export function mountParamsPanel(target: HTMLElement, host: ParamsPanelHost): vo
   target.hidden = !found;
   if (!found) return;
   const declaration = found;
-  const carried = carriedColors(declaration, host.manifest);
+  const carried = carriedParams(declaration, host.manifest);
   const carriedMaterials = factorColorBindings(carried.bindings);
+  const carriedNodes = switchBindings(carried.bindings);
 
   let values = paramDefaults(declaration);
   let canRebuild = false;
@@ -126,12 +128,12 @@ export function mountParamsPanel(target: HTMLElement, host: ParamsPanelHost): vo
           continue;
         }
         if (!needsRebuild(declaration, carried.names, asked)) {
-          // Only colours the file carries changed: set them on the saved bytes. Nothing runs.
-          const glb = recolorGlb(await host.saved(), carried.bindings, asked);
+          // Only values the file carries changed: set them on the saved bytes. Nothing runs.
+          const glb = applyCarriedParams(await host.saved(), carried.bindings, asked);
           if (!host.isCurrent() || again) continue;
           await host.show({ glb, values: asked, recoloured: true });
           if (!host.isCurrent()) return;
-          status.textContent = 'Recoloured in the browser · nothing was rebuilt · not saved.';
+          status.textContent = 'Set in the browser · nothing was rebuilt · not saved.';
           offer(glb, asked);
           continue;
         }
@@ -188,6 +190,8 @@ export function mountParamsPanel(target: HTMLElement, host: ParamsPanelHost): vo
 
   for (const [name, spec] of Object.entries(declaration.params)) {
     const materials = carriedMaterials[name];
+    const nodes = carriedNodes[name];
+    const isCarried = carried.names.includes(name);
     const control = paramControl(
       name,
       spec,
@@ -196,11 +200,15 @@ export function mountParamsPanel(target: HTMLElement, host: ParamsPanelHost): vo
         values = { ...values, [name]: value };
         changed();
       },
-      carried.names.includes(name) && materials
+      isCarried && materials
         ? `Carried by the GLB: ${materials
             .map((material) => material.name ?? `material ${material.index}`)
             .join(', ')}. Changes here without a rebuild.`
-        : undefined,
+        : isCarried && nodes
+          ? `Carried by the GLB: shows or hides ${nodes
+              .map((bound) => bound.name ?? `node ${bound.index}`)
+              .join(', ')}. Changes here without a rebuild.`
+          : undefined,
     );
     controls.push(control);
     list.append(control.row);
@@ -224,7 +232,7 @@ export function mountParamsPanel(target: HTMLElement, host: ParamsPanelHost): vo
   refreshEnabled();
 
   const colours = carried.names.length
-    ? ' Colours the GLB carries can be changed here; nothing runs for those.'
+    ? ' Values the GLB carries can be changed here; nothing runs for those.'
     : '';
   if (!host.revision) {
     note.textContent = `This revision declares parameters. It is open in your browser only; import it into a collection to rebuild it at other values.${colours}`;

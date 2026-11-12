@@ -185,9 +185,14 @@ glTF exporter or decode/re-encode textures.
 
 ## What runtime changes
 
-For a revision whose manifest records carried colours, the runtime GLB also marks those
-materials with `extras.kilnParamV1` and the sidecar lists them as `params.colors`
-([colours a GLB carries](programs.md#colours-a-glb-carries)). Apart from that, only
+For a revision whose manifest records carried parameters, the runtime GLB also marks the
+materials of each carried colour and the nodes of each carried toggle or choice with
+`extras.kilnParamV1`, and writes each preset that only sets carried colours as a
+`KHR_materials_variants` entry with a copy of the materials it recolours. The sidecar lists
+them as `params.colors`, `params.switches` and `params.presets`, and names any parameter a
+derived file lost in `params.dropped`
+([colours](programs.md#colours-a-glb-carries),
+[options and presets](programs.md#options-and-presets-a-glb-carries)). Apart from that, only
 `scenes[].extras.kilnReviewClipsV1` is moved into the JSON sidecar. It contains
 Kiln's authored animation review vocabulary, including advisory tracks that might not
 have valid native glTF targets. Native `animations` remain authoritative for playback.

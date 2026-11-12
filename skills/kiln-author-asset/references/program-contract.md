@@ -40,9 +40,10 @@ const P = defineParams({
 - Declare the few values a user would change, three to eight for most assets, each with a `describe` in plain words and a `unit`. Derive dependent dimensions inside the program, such as slat spacing from length and count, instead of declaring both.
 - Every value in a declared range must build a sound asset. Narrow a range rather than promise a value that opens a joint or sinks a part. For a kit dimension that must stay on a grid, give `step` with `snap: true`.
 - Check the range before finishing: `kiln_render` with `params: { sweep: true }` builds the defaults, each parameter at its extremes and every preset, and reports each build without images. Then look at the extremes that change proportion with `params: { values: { ... } }`. `kiln_discover` ids `["defineParams", "shape:params"]` give the full contract.
-- A parameter may change a count or the topology; each such value is a separate build from source. The one thing a GLB carries is a colour that is exactly one material value.
+- A parameter may change a count or the topology; each such value is a separate build from source. A GLB carries three things: a colour that is exactly one material value, a `toggle` or `choice` that only shows and hides nodes, and a preset that only sets carried colours.
+- Make an option changeable after export: always build the part and set `part.visible` from the parameter (`arms.visible = P.arms`; `scroll.visible = P.style === 'scroll'`), one node per parameter. A part built inside `if (P.arms)` is rebuild-only.
 - Make a colour changeable after export: give it its own material, pass the `color` parameter to that material unchanged, and name the material (`material.name = 'paint'`). Keep grain, dirt and panel lines in neutral greys (a grey texture or grey vertex colours), which the colour then tints. A colour painted into texture pixels or vertex colours, or computed from the parameter (darkened, mixed), is rebuild-only. Two colours on one surface are two materials.
-- The sweep reports each colour as `factor` with the materials that carry it, or `rebuild` with the reason. Fix a `rebuild` colour when the brief wants it changeable in a game or in the viewer without a rebuild.
+- The sweep reports each colour as `factor` with the materials that carry it, and each toggle or choice as `visibility` with the nodes it shows, or `rebuild` with the reason. Fix a `rebuild` one when the brief wants it changeable in a game or in the viewer without a rebuild.
 
 ## Frames and ownership
 

@@ -7,6 +7,17 @@ does not publish a package.
 
 ## Unreleased
 
+- **A GLB can carry a toggle, a choice and a colour preset.** A `toggle` or `choice` that
+  only shows and hides nodes (`part.visible = P.arms`) is classified at save and by the sweep
+  (`sweep.switches`, `build.paramBindings.switches`) and tagged by the runtime export as
+  `nodes[i].extras.kilnParamV1` with the values that show the node; hidden nodes use
+  `KHR_node_visibility`, as before. A preset that only sets carried colours is written by the
+  runtime export as one `KHR_materials_variants` entry. The sidecar lists `params.switches`,
+  `params.presets` and, for a derived file that lost a parameter, `params.dropped`. `kiln view`
+  sets carried options in the browser without a rebuild. `applyCarriedParams` in
+  `@instruktlabs/kiln/param-bindings` applies colours and options to a saved GLB. The saved GLB
+  is unchanged. A save spends at most 16 extra builds on classification; a draw reduction does
+  not batch a file with tagged nodes. Sizes and counts still need a rebuild.
 - **The refine skill fixes a small flush face it finds on a part it is editing.** When a
   `FLUSH_FACES` warning that was already in the parent names a part the edit touches and the
   remedy is the stated 2 mm move, the agent makes it and reports it as a separate change. In

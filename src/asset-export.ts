@@ -10,12 +10,17 @@ import {
   type AssetRecord,
 } from './assets';
 import type { MaterialManifest } from './material-library';
+import { validateParamsDeclaration } from './params';
 import {
+  addPresetVariants,
   factorColorBindings,
+  switchBindings,
   taggedColorMaterials,
-  tagGltfColorParams,
+  taggedSwitchNodes,
+  tagGltfParams,
   validateParamBindings,
   type BoundMaterialV1,
+  type BoundNodeV1,
 } from './param-bindings';
 import type {
   RuntimeThreeDeliveryV1,
@@ -108,10 +113,45 @@ export interface RuntimeMetadataV1 {
   drawReduction?: DrawReductionV1;
   /**
    * Declared parameters this file carries. `colors` maps a colour parameter to the materials
-   * of this GLB whose base colour factor takes its value; each is also tagged in the GLB as
-   * `materials[i].extras.kilnParamV1`.
+   * of this GLB whose base colour factor takes its value; `switches` maps a toggle or choice
+   * to the nodes it shows, each with the values that show it (`KHR_node_visibility` hides the
+   * rest). Each is also tagged in the GLB as `extras.kilnParamV1` on the material or node.
+   * `presets` maps each preset that only sets carried colours to its index in this file's
+   * `KHR_materials_variants`. `dropped` names parameters the saved revision carries that this
+   * derived file does not, because the derivation merged or removed what they were bound to.
    */
-  params?: { colors: Record<string, BoundMaterialV1[]> };
+  params?: {
+    colors: Record<string, BoundMaterialV1[]>;
+    switches?: Record<string, BoundNodeV1[]>;
+    presets?: Record<string, number>;
+    dropped?: string[];
+  };
+}
+
+/**
+ * The switches of a derived file that kept every node they were bound to. A switch that lost
+ * a node cannot be set correctly, so its remaining tags are removed and it is not listed.
+ */
+function keptSwitches(
+  json: Record<string, unknown>,
+  carried: Record<string, BoundNodeV1[]>,
+): Record<string, BoundNodeV1[]> {
+  const tagged = taggedSwitchNodes(json);
+  const kept: Record<string, BoundNodeV1[]> = {};
+  const nodes = json.nodes as Record<string, unknown>[];
+  for (const [name, found] of Object.entries(tagged)) {
+    if (found.length === carried[name]?.length) {
+      kept[name] = found;
+      continue;
+    }
+    for (const { index } of found) {
+      const extras = { ...(nodes[index]!.extras as Record<string, unknown>) };
+      delete extras.kilnParamV1;
+      if (Object.keys(extras).length) nodes[index]!.extras = extras;
+      else delete nodes[index]!.extras;
+    }
+  }
+  return kept;
 }
 
 const encoder = new TextEncoder();
@@ -300,12 +340,14 @@ export async function exportAssetGlb(
       throw new Error(`Asset integrity mismatch: ${file}`);
   }
 
-  // Tag carried colours on the saved file's own materials before anything re-derives them,
-  // so the tags follow each material through draw reduction and the three target.
+  // Tag carried parameters on the saved file's own materials and nodes before anything
+  // re-derives them, so the tags follow each through draw reduction and the three target.
   const bindings = validateParamBindings(record.manifest.build?.paramBindings);
-  if (Object.keys(factorColorBindings(bindings)).length) {
+  const carriedColors = factorColorBindings(bindings);
+  const carriedSwitches = switchBindings(bindings);
+  if (Object.keys(carriedColors).length || Object.keys(carriedSwitches).length) {
     const saved = readGlbJson(bytes);
-    tagGltfColorParams(saved.json, bindings);
+    tagGltfParams(saved.json, bindings);
     bytes = writeGlbJson(bytes, saved.jsonEnd, saved.json);
   }
 
@@ -384,7 +426,24 @@ export async function exportAssetGlb(
     ({ json: baseJson, jsonEnd: baseJsonEnd } = readGlbJson(base));
   }
   const colors = taggedColorMaterials(baseJson);
-  if (Object.keys(colors).length) metadata.params = { colors };
+  const switches = keptSwitches(baseJson, carriedSwitches);
+  const dropped = [
+    ...Object.keys(carriedColors).filter((name) => !Object.hasOwn(colors, name)),
+    ...Object.keys(carriedSwitches).filter((name) => !Object.hasOwn(switches, name)),
+  ];
+  // Presets that only set carried colours ride as material variants of the delivered file.
+  const declaration = validateParamsDeclaration(record.manifest.build?.params);
+  const presets =
+    declaration && Object.keys(colors).length
+      ? addPresetVariants(baseJson, declaration, colors).presets
+      : {};
+  if (Object.keys(colors).length || Object.keys(switches).length || dropped.length)
+    metadata.params = {
+      colors,
+      ...(Object.keys(switches).length ? { switches } : {}),
+      ...(Object.keys(presets).length ? { presets } : {}),
+      ...(dropped.length ? { dropped } : {}),
+    };
   if (textures !== undefined)
     metadata.textures = await runtimeTextureManifest(baseJson, readGlbBinary(base, baseJsonEnd), {
       ...(imageSources ? { sources: imageSources } : {}),
@@ -392,6 +451,8 @@ export async function exportAssetGlb(
     });
   // Content addresses join the manifest before the sidecar is hashed into the provenance.
   const external = gltf ? await externalLayout(gltf, metadata.textures ?? []) : undefined;
+  if (external && declaration && Object.keys(presets).length)
+    addPresetVariants(external.json, declaration, taggedColorMaterials(external.json));
   const metadataBytes = encoder.encode(JSON.stringify(metadata));
   if (metadataBytes.length > ASSET_LIMIT) throw new Error('Runtime export exceeds 64 MiB');
   const provenance = {
