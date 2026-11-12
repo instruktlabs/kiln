@@ -21,6 +21,29 @@ Optional `animate(root)` returns an array of `THREE.AnimationClip`. Follow catal
 
 To review that motion, `kiln_screenshot_animation` needs the clip **by name** -- `clip` is required, and a name that matches nothing comes back as an error listing the clips that do exist. `frameTimes` is optional and is expressed as **phases in 0..1**, not seconds: 1 to 9 strictly increasing values, scaled by the clip's own duration. Omit it and six frames are sampled evenly from start to end. A track whose target name binds to no node surfaces in `unresolvedTracks`, which is what a clip that renders frozen actually means -- a joint-name mismatch, not a broken clip.
 
+## Declared parameters
+
+Most assets need none: ordinary named constants share dimensions. Declare parameters when the brief asks for an asset that varies (sizes, counts, options, colourways), or when a user will want to change it without editing source.
+
+```js
+const P = defineParams({
+  length: { type: 'range', default: 1.6, min: 1.0, max: 2.4, step: 0.05, unit: 'm', describe: 'Seat length.' },
+  slats: { type: 'int', default: 5, min: 3, max: 8 },
+  arms: { type: 'toggle', default: true },
+  wood: { type: 'color', default: '#8a5a33' },
+  style: { type: 'choice', default: 'plain', options: ['plain', 'scroll'] },
+}, { presets: { long: { length: 2.4, slats: 8 } } });
+```
+
+- Call it once, in top-level code before `build()`, and read values from the object it returns. A second call, or a call inside `build()`, is a build error. `seed` is the sixth type, for `seededRandom`.
+- The defaults are the asset. The default build is what is saved and delivered; every other value is a derived variant built on request. A value outside its declaration is refused, never clamped.
+- Declare the few values a user would change, three to eight for most assets, each with a `describe` in plain words and a `unit`. Derive dependent dimensions inside the program, such as slat spacing from length and count, instead of declaring both.
+- Every value in a declared range must build a sound asset. Narrow a range rather than promise a value that opens a joint or sinks a part. For a kit dimension that must stay on a grid, give `step` with `snap: true`.
+- Check the range before finishing: `kiln_render` with `params: { sweep: true }` builds the defaults, each parameter at its extremes and every preset, and reports each build without images. Then look at the extremes that change proportion with `params: { values: { ... } }`. `kiln_discover` ids `["defineParams", "shape:params"]` give the full contract.
+- A parameter may change a count or the topology; each such value is a separate build from source. The one thing a GLB carries is a colour that is exactly one material value.
+- Make a colour changeable after export: give it its own material, pass the `color` parameter to that material unchanged, and name the material (`material.name = 'paint'`). Keep grain, dirt and panel lines in neutral greys (a grey texture or grey vertex colours), which the colour then tints. A colour painted into texture pixels or vertex colours, or computed from the parameter (darkened, mixed), is rebuild-only. Two colours on one surface are two materials.
+- The sweep reports each colour as `factor` with the materials that carry it, or `rebuild` with the reason. Fix a `rebuild` colour when the brief wants it changeable in a game or in the viewer without a rebuild.
+
 ## Frames and ownership
 
 - Asset coordinates: metres; +X forward, +Y up, +Z right.

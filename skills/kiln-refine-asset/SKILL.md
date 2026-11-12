@@ -75,6 +75,12 @@ render NEW_REF --out revised.glb --views revised.png --json` and read the image
 before saving. A failed edit keeps the original reference. Do not treat edit
 success as geometry or QA success.
 
+## Variants and parameters
+
+For an asset whose source declares parameters with `defineParams`, build another size, count or colour with `params: { preset?, values? }` on `kiln_render` and `kiln_export` instead of editing source; results report `params.values`, and a refused value is named in `paramIssues`. A variant is derived, never saved: the saved GLB stays the default build. Edit source when the change is to the asset itself or to what its parameters allow, then run `params: { sweep: true }` again.
+
+To add parameters to a saved asset that has none, follow [parameterise an existing asset](references/parameterise.md): the child's default build must have the same GLB hash as the current build of its parent, and every swept value must build.
+
 ## Preserve intended structure
 
 Direct mutation needs `copyGeometry`/`.clone()` or `copyMaterial`. Deformation helpers return independent geometry. Use `kiln_discover` with a natural-language `query` to find relevant helpers, then request their exact `ids` for contracts before changing a loft, sweep, UV workflow, or Boolean operation. Search results are suggestions; inspect limitations and ownership before applying them.

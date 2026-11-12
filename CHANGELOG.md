@@ -43,6 +43,12 @@ does not publish a package.
   run. `@instruktlabs/kiln/param-bindings` exports the classifier and `recolorGlb`, whose result for a carried
   colour is byte-identical to a rebuild. A save with colour parameters takes one more build per colour
   ([colours a GLB carries](docs/programs.md#colours-a-glb-carries)).
+- `kiln-author-asset`'s program contract says when to declare parameters and how to check their range, and
+  `kiln-refine-asset` gains a reference for parameterising a saved asset: the child's default build must have the
+  same GLB hash as the current build of its parent, and every swept value must build. Trying it on the Foundry
+  Floor raised-floor module gave an identical hash and five sound sweep points; it also showed that the current
+  engine builds that saved source to 26,340 bytes where the saved GLB is 26,336, which is why the baseline is the
+  parent's current build and not its saved file. Installed workspaces keep their copied skills until upgraded.
 
 ## 1.7.0 (2026-11-08)
 
