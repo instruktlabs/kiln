@@ -7,6 +7,15 @@ does not publish a package.
 
 ## Unreleased
 
+- **49 archived gallery examples no longer have flickering flush faces.** The example
+  archive pin in `scripts/example-archive.mjs` moves to a commit that descends from the
+  previous pin. In it, 49 historical programs carry a maintainer revision (117 part edits
+  that separate 335 pairs of faces lying on one plane), recorded in each source header,
+  in a `maintainerRevisions` entry of the credit sidecar and, for 17, as a new history
+  revision. Model credits are unchanged. The published posters were rendered before the
+  revision, so 46 receipts are kept as `historicalPosterReceipt`, as `field-gun` and
+  `windmill` already were. Run `node scripts/example-archive.mjs --fetch` once after
+  pulling.
 - **A GLB can carry a toggle, a choice and a colour preset.** A `toggle` or `choice` that
   only shows and hides nodes (`part.visible = P.arms`) is classified at save and by the sweep
   (`sweep.switches`, `build.paramBindings.switches`) and tagged by the runtime export as
