@@ -77,6 +77,12 @@ export async function verifyLineage({ lineage, tiers, requests, library }) {
       if (index > 0 && entry.parentRevisionId !== list[index - 1].revisionId) throw new Error(`${chainName}: ${entry.revisionId} does not follow ${list[index - 1].revisionId}`);
       const run = runs.get(entry.request);
       if (!run) throw new Error(`${entry.revisionId}: no recorded run ${entry.request}`);
+      if (!run.startedAt || !run.endedAt) {
+        // A session saved without a receipt (status "not recorded") has no window to check; any other run must have one.
+        if (run.status !== 'not recorded') throw new Error(`${entry.revisionId}: run ${entry.request} has no recorded window`);
+        lines.push(`${chainName.padEnd(5)} ${entry.revisionId.slice(0, 12)} saved ${manifest.createdAt.slice(0, 16)}; run ${entry.request} records no window`);
+        continue;
+      }
       const created = Date.parse(manifest.createdAt);
       if (created < Date.parse(run.startedAt) - WINDOW_SLACK_MS || created > Date.parse(run.endedAt) + WINDOW_SLACK_MS) {
         throw new Error(`${entry.revisionId} was saved at ${manifest.createdAt}, outside run ${entry.request} (${run.startedAt} to ${run.endedAt})`);

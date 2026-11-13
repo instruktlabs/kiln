@@ -4,7 +4,8 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { RIG_ID, resolveRigEngine, fitCamera, orbitDirection } from './rig-render.mjs';
 import { applyRigPoster, applyRigPosters, rigPosterImage, rigPosterKey, rigPosterPath } from './rig-posters-core.mjs';
-import { VEHICLE_POSTER, holodeckPosterView, pruneImagePlan, recordPosters, vehicleTargets } from './rig-posters.mjs';
+import { VEHICLE_POSTER, bridgeTargets, farmTargets, holodeckPosterView, pruneImagePlan, recordPosters, vehicleTargets } from './rig-posters.mjs';
+import { BRIDGE_CAPTURES, bridgeCaptureKey, bridgeCapturePath } from './bridge-captures.mjs';
 import { hashBytes } from './mirror-core.mjs';
 
 const DATA = resolve(import.meta.dir, '../src/data');
@@ -249,5 +250,50 @@ describe('poster run provenance', () => {
       expect(recorded.rig.runs[0]).toMatchObject({ renderedOn: '2026-10-01', engine: { commit: 'c'.repeat(40) } });
       for (const run of recorded.rig.runs) expect(run.id).toMatch(/^[a-z-]+-2026-10-\d\d-[0-9a-f]{8}$/);
     } finally { await rm(w.root, { recursive: true, force: true }); }
+  });
+});
+
+describe('the bridge views without the author capture files', () => {
+  test('reuse each view’s recorded camera and its source file hash, for the newly pinned full tier', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kiln-bridge-recorded-'));
+    try {
+      const glb = Buffer.from('full tier export');
+      await writeFile(join(root, 'golden-gate.glb'), glb);
+      const tiers = { assetId: 'a_bridge', tiers: [{ tier: 'full', revision: 'r_child', glb: { file: 'golden-gate.glb', bytes: glb.length, sha256: hashBytes(glb) } }] };
+      const camera = (name: string) => ({ version: 'kiln.camera.v1', projection: 'perspective', position: [1, 2, 3], target: [0, 0, 0], up: [0, 1, 0], aspect: 1, near: 0.5, far: 100, fovDeg: name.length });
+      const posters = Object.fromEntries(BRIDGE_CAPTURES.map((capture) => [bridgeCaptureKey(capture), { revisionId: 'r_parent', width: 1024, height: 1024, view: { camera: camera(capture.name), source: { file: `${capture.name}.json`, sha256: 'f'.repeat(64) } } }]));
+      const targets = await bridgeTargets({ outputs: root, recorded: { posters }, tiers });
+      expect(targets.map((target) => target.capture)).toEqual(BRIDGE_CAPTURES.map((capture) => capture.name));
+      for (const target of targets) {
+        expect(target.revisionId).toBe('r_child');
+        expect(target.path).toBe(bridgeCapturePath('r_child', target.capture));
+        expect(target.camera).toEqual(camera(target.capture));
+        expect(target.cameraSource).toEqual({ file: `${target.capture}.json`, sha256: 'f'.repeat(64) });
+        expect(target.view).toEqual({ width: 1024, height: 1024 });
+        expect(Buffer.from(target.glb).equals(glb)).toBe(true);
+      }
+      delete posters[bridgeCaptureKey(BRIDGE_CAPTURES[1]!)].view.camera;
+      await expect(bridgeTargets({ outputs: root, recorded: { posters }, tiers })).rejects.toThrow(/water-level has no recorded camera/);
+    } finally { await rm(root, { recursive: true, force: true }); }
+  });
+});
+describe('a Farm asset delivered as its own model file', () => {
+  test('is read from the mirror at its path, verified, and posted under its own delivery release', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kiln-farm-path-'));
+    try {
+      const glb = Buffer.from('fixed farmer');
+      const path = 'packs/farm/delivery-new/models/farmer.glb';
+      await mkdir(join(root, 'mirror', 'packs/farm/delivery-new/models'), { recursive: true });
+      await writeFile(join(root, 'mirror', path), glb);
+      await mkdir(join(root, 'data', 'packs'), { recursive: true });
+      const farmer = { slug: 'farmer', name: 'Farmer', revisionId: 'r_new', assetId: 'a_farmer', description: 'Farmer.', runtimeDownload: { path, url: `https://assets.kilnstudio.tools/${path}`, bytes: glb.length, sha256: hashBytes(glb) } };
+      await writeFile(join(root, 'data', 'packs/farm.json'), JSON.stringify({ revision: 'r36', assets: [farmer] }));
+      await writeFile(join(root, 'data', 'mirror-manifest.json'), JSON.stringify({ files: [{ path, bytes: glb.length, sha256: hashBytes(glb) }] }));
+      const [target] = await farmTargets({ mirror: join(root, 'mirror'), data: join(root, 'data') });
+      expect(target).toMatchObject({ pack: 'farm', release: 'delivery-new', slug: 'farmer', revisionId: 'r_new', glbPath: path });
+      expect(Buffer.from(target!.glb).equals(glb)).toBe(true);
+      await writeFile(join(root, 'mirror', path), 'tampered');
+      await expect(farmTargets({ mirror: join(root, 'mirror'), data: join(root, 'data') })).rejects.toThrow(/verification failed/);
+    } finally { await rm(root, { recursive: true, force: true }); }
   });
 });
