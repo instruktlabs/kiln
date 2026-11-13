@@ -153,7 +153,7 @@ export function swapPack({ files, swaps, release, usedReleases = [], regenerate 
     regenerated.push({ path, before: { bytes: before.length, sha256: hashBytes(before) }, after: { bytes: bytes.length, sha256: hashBytes(bytes) } });
   }
   const history = Object.entries(adapted.history ?? {}).map(([path, reason]) => {
-    if (!sealed.has(path) || typeof reason !== 'string' || !reason) fail(`${path}: history needs a sealed member and a reason`);
+    if ((!sealed.has(path) && path !== 'pack.json') || typeof reason !== 'string' || !reason) fail(`${path}: history needs a sealed member or pack.json, and a reason`);
     return { path, reason };
   });
   const rewritten = structuredClone(adapted.packJson ? adapted.packJson(structuredClone(manifest)) : manifest);

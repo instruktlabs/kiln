@@ -92,6 +92,14 @@ describe('scene pack swap', () => {
     expect(kept.report.history).toEqual([{ path: 'data/map.json', reason: 'fixture history' }]);
   });
 
+  test('lets pack.json name a replaced revision as lineage only when the adapter declares it history', () => {
+    const lineage = (pack: Record<string, any>) => ({ ...pack, source: { replacements: [{ id: 'a', parentRevision: OLD_A, revision: NEW_A }] } });
+    expect(() => run({ regenerate: (c: Parameters<typeof regenerate>[0]) => ({ ...regenerate(c), packJson: lineage }) })).toThrow(/pack\.json still names/);
+    const kept = run({ regenerate: (c: Parameters<typeof regenerate>[0]) => ({ ...regenerate(c), packJson: lineage, history: { 'pack.json': 'the replacement names its parent revision' } }) });
+    expect(JSON.parse(kept.files.get('assets/pack.json')!.toString('utf8')).source.replacements[0].parentRevision).toBe(OLD_A);
+    expect(kept.report.history).toEqual([{ path: 'pack.json', reason: 'the replacement names its parent revision' }]);
+  });
+
   test('reads a swap list as data and checks each file against its declared hash', async () => {
     const dir = await mkdtemp(join(tmpdir(), 'kiln-swap-list-'));
     try {
