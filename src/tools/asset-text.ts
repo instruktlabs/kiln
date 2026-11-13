@@ -1,5 +1,20 @@
 /** Text rules for kiln_save and kiln_assets results. */
 
+const SEPARATORS = /[\s_-]+/;
+
+/**
+ * Whether searchable asset text matches a query: every word of the query (split on whitespace,
+ * hyphens and underscores) appears in the text, case-insensitively, with the same separators
+ * treated as equal, in any order. A query with no words (empty, or only separators) keeps the
+ * literal substring test.
+ */
+export function matchesAssetQuery(text: string, query: string): boolean {
+  const words = query.toLowerCase().split(SEPARATORS).filter(Boolean);
+  if (!words.length) return text.toLowerCase().includes(query.toLowerCase());
+  const haystack = text.toLowerCase().split(SEPARATORS).filter(Boolean).join(' ');
+  return words.every((word) => haystack.includes(word));
+}
+
 /**
  * Longest build warning a save result returns whole. The longest realistic FLUSH_FACES line
  * (three named pairs with 24-character part names and the budget note) is 659 characters, and

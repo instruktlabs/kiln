@@ -7,6 +7,11 @@ does not publish a package.
 
 ## Unreleased
 
+- **`kiln_assets` finds a hyphenated name from a spaced query.** The `catalog` and `list`
+  searches were a single literal substring test, so `trail sign` found nothing for an asset
+  named `trail-sign`. A query is now split on spaces, hyphens and underscores, and an asset
+  matches when every word appears in its name or tags, in any order, ignoring case. An empty
+  or separator-only query behaves as before.
 - **`kiln_save` returns build warnings whole up to 700 characters.** It used to cut every
   warning at 200 characters, which removed the remedy from a flush-face warning and half
   of a "Floating parts" line. A longer warning is now cut after its last whole word and ends

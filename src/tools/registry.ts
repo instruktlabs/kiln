@@ -27,7 +27,7 @@ import {
 import { createKilnSourceDef, withProgramReferences } from './programs';
 import { ProgramArtifactStore, type NativeCompletion } from './program-artifacts';
 import { createKilnDiscoveryDef } from './discovery';
-import { cutWarning } from './asset-text';
+import { cutWarning, matchesAssetQuery } from './asset-text';
 import { createKilnProjectDef } from './projects';
 import { listAssetCatalog } from '../asset-catalog';
 import { createKilnMaterialDef } from './materials';
@@ -3825,11 +3825,11 @@ export function createKilnAssetDefs(
         if (input.action === 'collections') return { collections: target.collections() };
         if (input.action === 'catalog') {
           const catalog = await listAssetCatalog(target);
-          const query = input.query?.toLowerCase();
+          const query = input.query;
           const all = catalog.entries.filter(
             ({ manifest: a }) =>
               (!input.assetId || a.assetId === input.assetId) &&
-              (!query || `${a.name} ${a.tags.join(' ')}`.toLowerCase().includes(query)),
+              (!query || matchesAssetQuery(`${a.name} ${a.tags.join(' ')}`, query)),
           );
           return {
             errors: catalog.errors,
@@ -3850,11 +3850,11 @@ export function createKilnAssetDefs(
           };
         }
         if (input.action === 'list') {
-          const query = input.query?.toLowerCase();
+          const query = input.query;
           const all = (await target.list(input.collection)).filter(
             (a) =>
               (!input.assetId || a.assetId === input.assetId) &&
-              (!query || `${a.name} ${a.tags.join(' ')}`.toLowerCase().includes(query)),
+              (!query || matchesAssetQuery(`${a.name} ${a.tags.join(' ')}`, query)),
           );
           return {
             collection: input.collection,
