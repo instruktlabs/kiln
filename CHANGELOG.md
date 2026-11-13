@@ -7,6 +7,13 @@ does not publish a package.
 
 ## Unreleased
 
+- **`kiln_export` and `kiln_export_to` can carry sizes.** Both take an optional
+  `carryShapes: true`, the MCP form of `kiln export --profile runtime --carry-shapes`, so a
+  host with only MCP can get a runtime GLB with carried sizes. It needs `profile: 'runtime'`
+  and a saved revision with its source; it is refused with a `programRef`, with `params`, and
+  on `kiln_export_to` with `target`. Both return the bytes the CLI writes for the same
+  revision. `kiln_export` returns the usual two resources with `?carryShapes=true` on their
+  URIs; each read rebuilds the source, up to four builds per size. No other input changes.
 - **A `DATA_CHANGED` parameter says what changed.** When a colour, option or size needs a
   rebuild because its binary data differs, the `detail` in the sweep, `kiln_save` and the
   runtime export sidecar keeps its general sentence and now adds the first data that

@@ -1860,6 +1860,10 @@ Export one saved revision, or the GLB a programRef builds. With programRef, noth
         "type": "string"
       },
       "additionalProperties": {}
+    },
+    "carryShapes": {
+      "description": "Runtime only, saved revision with source: rebuilds it to carry each size that moves in straight lines as morph targets, listed in the sidecar params.shapes.",
+      "type": "boolean"
     }
   }
 }
@@ -1920,6 +1924,10 @@ Write one saved revision's GLB to a path under the host's export root. Default r
       "enum": [
         "manifest"
       ]
+    },
+    "carryShapes": {
+      "description": "Runtime only, saved revision with source: rebuilds it to carry each size that moves in straight lines as morph targets, listed in the sidecar params.shapes.",
+      "type": "boolean"
     }
   },
   "required": [

@@ -107,7 +107,11 @@ The shared tool registry accepts `editable` (default) or `runtime`. Runtime retu
 descriptors for `runtime.glb` and `runtime.kiln-metadata.json`, including byte sizes
 and `kiln://assets/...` resource URIs. Read them through MCP `resources/read`.
 These resources are derived from the pinned revision on demand, without persisting
-a new revision. The local viewer host also serves those resource filenames through
+a new revision. With `carryShapes: true` the runtime export also carries the revision's
+sizes, as `kiln export --carry-shapes` does ([sizes](programs.md#sizes-a-glb-carries)): the
+revision needs its saved source, `params` is refused, and the two URIs end in
+`?carryShapes=true`. Each read of those rebuilds the source several times per size, under
+this host's engine. The local viewer host also serves the plain resource filenames through
 its existing `/files/` endpoint. The local viewer offers **Original GLB** and
 **Runtime GLB**, plus a separate **Runtime metadata** download when that export is
 ready. Keep the metadata's filename unchanged next to `runtime.glb`. Opened editable
@@ -145,7 +149,8 @@ kiln_export_to({ assetId, revisionId, path: "archive/door.glb", profile: "editab
 - `profile` is `runtime` (default) or `editable`, which writes the exact saved GLB only;
   ZIP and source stay resources. `target: "three"` requires `runtime`, as in the CLI,
   and produces the same bytes as `export --profile runtime --target three` with the
-  same file name.
+  same file name. `carryShapes: true` requires `runtime` without `target` and writes the
+  same bytes as `export --profile runtime --carry-shapes`.
 - `path` is relative to the root: forward slashes, at most 240 characters and 8
   segments, each segment portable (the filename-stem rule above), ending in `.glb`.
   `..`, absolute, drive-letter and UNC paths, backslashes and Windows device names
@@ -193,7 +198,8 @@ them as `params.colors`, `params.switches` and `params.presets`, and names any p
 derived file lost in `params.dropped`
 ([colours](programs.md#colours-a-glb-carries),
 [options and presets](programs.md#options-and-presets-a-glb-carries)). Asked to carry sizes
-(`--carry-shapes`, library option `paramBuilds`), the plain runtime profile rebuilds the saved
+(`--carry-shapes`, MCP `carryShapes: true`, library option `paramBuilds`), the plain runtime
+profile rebuilds the saved
 source at each `range` and `int` parameter's ends, writes each size that moves in straight
 lines as morph targets with one `kiln.param.<name>` clip, and lists every size under
 `params.shapes` ([sizes](programs.md#sizes-a-glb-carries)). Apart from that, only
