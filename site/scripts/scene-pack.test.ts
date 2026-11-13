@@ -311,20 +311,20 @@ describe('scene pack catalog record', () => {
     expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g9-code6'));
   });
 
-  test('the Foundry Floor code5 delivery retains the review2 payload with a verified initial closure inside its ceiling', () => {
+  test('the Foundry Floor flush1 delivery carries the flush-face fix children with a verified initial closure inside its ceiling', () => {
     const record = scenePacks['foundry-floor'];
-    expect(record.release).toBe('ff3-review2-code5');
-    expect(record.base).toBe('/scene-packs/foundry-floor/ff3-review2-code5/');
+    expect(record.release).toBe('ff3-review2-flush1');
+    expect(record.base).toBe('/scene-packs/foundry-floor/ff3-review2-flush1/');
     expect(record.source).toBe('.cache/site-inputs/foundry-floor/standalone');
     expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
-    // Final frozen FF3 intake verifies 85 sealed files and every initial/deferred chunk.
-    expect(record).toMatchObject({ sealedFiles: 85, sealedBytes: 11_519_818, packJsonSha256: '822be1171621273dfdf857fe6ca320ed41d16e03c49fc49860c13e7092be4836' });
+    // The review2 pack with twelve models swapped for their flush-face fix children (scripts/scene-pack-swap.mjs): 85 sealed files.
+    expect(record).toMatchObject({ sealedFiles: 85, sealedBytes: 11_492_328, packJsonSha256: '99d949b5f5125b49ab2ef30cd07d29bd6998f010013020d96d721a14eb394255' });
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-BpDIz-38.js', bytes: 1_710_132, gzipBytes: 519_928, initialLoad: { bytes: 1_532_295, gzipBytes: 448_748 } });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-BjaWlY0a.js', bytes: 1_642_303, gzipBytes: 499_153, initialLoad: { bytes: 1_464_543, gzipBytes: 427_959 } });
     expect(checkCeiling('foundry-floor', record.runtime).within).toBe(true);
     expect(foundryFloorScene.assetBase).toBe(record.base);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2-code5'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2-flush1'));
   });
 
   // Owner decision 2026-10-26 (Matthew): these home-linked scene pages are indexed, whatever their availability says.

@@ -22,9 +22,11 @@ function importsOf(file, code) {
 }
 /** Verify FF3's explicit initial campus closure against every delivered chunk and its actual import statements. */
 export async function measureInitialLoad({receipt,chunks,code,packRelease=receipt.release}) {
-  // code1 through code5 are explicit metadata-only delivery namespaces, not appearance acceptance.
+  // code1 through code5 are explicit metadata-only delivery namespaces, not appearance acceptance. flush1 carries the
+  // flush-face fix child revisions of twelve models (scenes/packages/foundry-floor/scripts/flush-fix-swaps.json); it is not
+  // an acceptance either.
   // Each receipt must still name the delivered manifest and prove every chunk below.
-  if(receipt.mode!=='public' || !['ff3','ff3-review2','ff3-review2-code1','ff3-review2-code2','ff3-review2-code3','ff3-review2-code4','ff3-review2-code5'].includes(receipt.release) || !Array.isArray(receipt.chunks) || !Array.isArray(receipt.initialChunks))throw new Error('Expected a public FF3 initial-load receipt');
+  if(receipt.mode!=='public' || !['ff3','ff3-review2','ff3-review2-code1','ff3-review2-code2','ff3-review2-code3','ff3-review2-code4','ff3-review2-code5','ff3-review2-flush1'].includes(receipt.release) || !Array.isArray(receipt.chunks) || !Array.isArray(receipt.initialChunks))throw new Error('Expected a public FF3 initial-load receipt');
   if(receipt.release!==packRelease)throw new Error('Initial-load receipt names a different scene pack release');
   const records=receipt.chunks.map(record=>({...record,file:fileOf(record.name)}));
   if(new Set(records.map(c=>c.file)).size!==records.length || !same(records.map(c=>c.file),chunks.map(c=>c.file)))throw new Error('Initial-load chunk inventory differs from delivered files');
