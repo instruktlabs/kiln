@@ -414,7 +414,7 @@ export const RAW_NOINDEX_SAMPLES = [
   '/scene-packs/golden-gate/g9-code6/pack.json',
   '/scene-packs/golden-gate/g9-code6/SHA256SUMS',
   '/scene-packs/golden-gate/g9-code6/README.md',
-  '/scene-packs/troy/troy-20261005-07/web/vendor/three/LICENSE',
+  '/scene-packs/troy/troy-20261113-01/web/vendor/three/LICENSE',
   '/asset-demos/cabin-woods-psx-horror/THIRD-PARTY-NOTICES.txt',
   '/asset-demos/cabin-woods-psx-horror/scene-source/README.md',
   '/asset-demos/cabin-woods-psx-horror/scene-source/LICENSE',

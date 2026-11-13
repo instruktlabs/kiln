@@ -44,7 +44,7 @@ inventory in the ignored mirror. `--fetch-runtime` explicitly permits fetching
 existing pinned runtime bytes instead of supplying a runtime mirror. Never reuse
 an immutable release key for changed bytes.
 
-Troy's current sealed release is `troy-20261005-07`. Normal builds consume its
+Troy's current sealed release is `troy-20261113-01`. Normal builds consume its
 published archive; **do not regenerate that release**. For a future release, use an
 explicit previous pin and a fresh release ID:
 
@@ -55,7 +55,12 @@ node scripts/prepare-troy-candidate.mjs .localdata/asset-delivery \
 
 Preparation overlays `scenes/packages/troy/web`, uses the unified runtime model
 pins, preserves approved scene media, builds compressed runtime transport and
-seals the scene archive. It updates `troy-delivery.json`, `troy.json` and the scene's
+seals the scene archive. Selected revisions that differ from those the scene names
+in `web/inputs.json` replace its `web/assets` copies, and their input entries are
+measured from the new bytes. `--keep-web` keeps the previous release's compiled
+browser files and source manifest and replaces only models; `troy-20261113-01` was
+built that way, because rebuilding would move the scene's bundle to the
+repository's newer three.js without the release's vendored copy. It updates `troy-delivery.json`, `troy.json` and the scene's
 `runtime-pin.json`. Run `node scripts/troy-inventory.mjs` afterward to align the
 pack source inventory's selected revisions, canonical paths and public URLs.
 Include that archive record alongside the generated asset
