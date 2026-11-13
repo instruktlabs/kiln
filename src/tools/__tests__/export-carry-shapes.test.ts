@@ -243,12 +243,10 @@ describe('kiln_export_to carryShapes', () => {
   test('writes the bytes the CLI writes for the same revision', async () => {
     const { root, run } = await exportTo();
     await run({ ...saved, path: 'runtime.glb', carryShapes: true });
-    expect(sha256(new Uint8Array(await readFile(join(root, 'runtime.glb'))))).toBe(
-      sha256(cliGlb),
+    expect(sha256(new Uint8Array(await readFile(join(root, 'runtime.glb'))))).toBe(sha256(cliGlb));
+    expect(sha256(new Uint8Array(await readFile(join(root, 'runtime.kiln-metadata.json'))))).toBe(
+      sha256(cliMetadata),
     );
-    expect(
-      sha256(new Uint8Array(await readFile(join(root, 'runtime.kiln-metadata.json')))),
-    ).toBe(sha256(cliMetadata));
   }, 120_000);
 
   test('refuses what the CLI refuses, writing nothing', async () => {
