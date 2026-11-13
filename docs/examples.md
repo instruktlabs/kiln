@@ -25,8 +25,12 @@ packs are bundled into the npm package or automatically supplied to an agent.
 ## Historical collection
 
 The old standalone examples are preserved in the [website archive](https://kilnstudio.tools/gallery/archive/)
-and [Git history](https://github.com/instruktlabs/kiln/tree/fda71ac775750f25390b6ee30082ebc56463edc6/examples).
+and [Git history](https://github.com/instruktlabs/kiln/tree/903b9e9c985cc864ebbce833912f114581a4121e/examples).
 They are historical showcases, not recommended implementations or quality baselines.
+On 2026-11-12, 49 of them received a maintainer revision that separates faces lying on one
+plane, which flickered in any renderer. Each records it in its source header and credit
+sidecar; the programs as they were before are at the
+[previous archive commit](https://github.com/instruktlabs/kiln/tree/fda71ac775750f25390b6ee30082ebc56463edc6/examples).
 
 They are no longer part of the active source tree. Contributors building the
 archive gallery or running the full regression corpus can restore the exact

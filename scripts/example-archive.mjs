@@ -7,7 +7,7 @@ import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-export const EXAMPLE_ARCHIVE_REVISION = 'fda71ac775750f25390b6ee30082ebc56463edc6';
+export const EXAMPLE_ARCHIVE_REVISION = '903b9e9c985cc864ebbce833912f114581a4121e';
 export const EXAMPLE_ARCHIVE_ROOT = join(
   REPO,
   '.cache',

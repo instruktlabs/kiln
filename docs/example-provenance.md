@@ -21,6 +21,14 @@ context remains marked as unrecorded. Supplied examples, reviewer feedback and
 maintainer edits do not become independent model output merely because a later
 build succeeds. Asset quality still requires actual review.
 
+A maintainer revision of an archive program is recorded three ways: a
+`// Maintainer revision:` line in the source, a `maintainerRevisions` entry in the
+sidecar with the source hash before and after, and, when the poster was not retaken,
+the earlier receipt kept as `historicalPosterReceipt` with the poster described as
+rendered before the revision. The model credit stays. 49 programs carry the
+2026-11-12 flush-face revision this way: 117 part edits that separate faces lying on
+one plane, with materials, names, hierarchy and animation unchanged.
+
 Recent assets are maintained in separate authoring workspaces and delivered as
 versioned packs. Keep exact authored source, saved revisions, dependencies and
 licenses with those deliveries; do not promote new work into the archived corpus.
