@@ -36,11 +36,15 @@ declare module 'node:path' {
   export function resolve(...paths: string[]): string;
   export function join(...paths: string[]): string;
   export function dirname(path: string): string;
+  export function basename(path: string, suffix?: string): string;
   export function isAbsolute(path: string): boolean;
   export function extname(path: string): string;
   export function relative(from: string, to: string): string;
 }
-declare module 'node:url' { export function fileURLToPath(url: string | URL): string }
+declare module 'node:url' {
+  export function fileURLToPath(url: string | URL): string;
+  export function pathToFileURL(path: string): URL;
+}
 declare module 'node:assert/strict' {
   function assert(value: unknown, message?: string): asserts value;
   namespace assert {

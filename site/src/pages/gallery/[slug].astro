@@ -398,6 +398,7 @@ const schema = {
                       ? ` (${revision.run.stop})`
                       : ""}.
                     {revision.run.status !== "completed" &&
+                      revision.run.endedAt &&
                       Date.parse(revision.savedAt) < Date.parse(revision.run.endedAt) &&
                       ` The run stopped at ${savedAt(revision.run.endedAt)}, after this revision was saved.`}
                   </p>
