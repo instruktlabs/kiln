@@ -10,10 +10,11 @@
     },
     {
       "id": "golden-gate",
-      "release": "g9-code6",
-      "path": "scene-inputs/text-cleanup-20261005/golden-gate.zip",
-      "bytes": 8329691,
-      "sha256": "a2c5425ea357d1ef55237a89a05d364db3d891188d3a2453e6189941da14238f"
+      "release": "g9-flush1",
+      "path": "scene-inputs/flush-fix-20261113/golden-gate.zip",
+      "bytes": 8317135,
+      "sha256": "7ae3bc966705f2b272cda4511251af2cea7120f3f39360bd80254a45cbfceb70",
+      "packJsonSha256": "8171b87c257c693be482b7006429c29414939c640dcb9acc3aec50d82c51ca4b"
     },
     {
       "id": "foundry-floor",

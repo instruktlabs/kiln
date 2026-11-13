@@ -1,0 +1,105 @@
+{
+  "schema": "kiln.scene-pack-swap/1",
+  "scene": "golden-gate",
+  "change": "Flush-face fix: the web and far bridge tiers and the sedan, SUV and box truck are the verified child revisions of the pack's current revisions, saved with their coincident faces moved apart.",
+  "from": {
+    "release": "g9-code6",
+    "packJsonSha256": "68233d46076cbf86d57502ce612f09d63e8cc125f0b521f19f9eacbec419deb7"
+  },
+  "release": "g9-flush1",
+  "inputs": "The flush-fix children directory: golden-gate-bridge/<asset>-<tier>/child/ and foundry-floor/<asset>/child/, each with asset.glb, manifest.json and the files the manifest lists (not in the repository).",
+  "swaps": [
+    {
+      "id": "bridge-web",
+      "asset": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
+      "member": "bridge/golden-gate-web.glb",
+      "file": "golden-gate-bridge/a_9fafaa6e7f4c4868a372e8f3b0b84738-web/child/asset.glb",
+      "manifest": "golden-gate-bridge/a_9fafaa6e7f4c4868a372e8f3b0b84738-web/child/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "golden-gate-web.kiln-metadata.json",
+      "revision": "r_f0c5d702d8ca48dd8c4c16858a57ad53",
+      "parentRevision": "r_de88c9d5481d4642837b9d00c81cf0a9",
+      "bytes": 3558104,
+      "sha256": "f0e82c77f2b19c1d17928bab3787a02b48c22166b11eaa55981c52dc80ad98ae",
+      "previous": {
+        "revision": "r_de88c9d5481d4642837b9d00c81cf0a9",
+        "bytes": 3508476,
+        "sha256": "6effde24b2b9dfac04451244ee533bb755ba7d4c192a280caaec70ca31656a03"
+      },
+      "rule": "The scene file is the Kiln runtime profile of the saved revision (kiln export --profile runtime --out golden-gate-web.glb): applied to the parent it reproduces the current member and its sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "bridge-far",
+      "asset": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
+      "member": "bridge/golden-gate-far.glb",
+      "file": "golden-gate-bridge/a_9fafaa6e7f4c4868a372e8f3b0b84738-far/child/asset.glb",
+      "manifest": "golden-gate-bridge/a_9fafaa6e7f4c4868a372e8f3b0b84738-far/child/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "golden-gate-far.kiln-metadata.json",
+      "revision": "r_f0f9dc5506be4e0292c650efd318985e",
+      "parentRevision": "r_fcddc546fa134910b2221561353d97e2",
+      "bytes": 497416,
+      "sha256": "e6b5c60f0ba9424d9669c224c823f4ab9df8154019986f81fa495e602be4d16d",
+      "previous": {
+        "revision": "r_fcddc546fa134910b2221561353d97e2",
+        "bytes": 490460,
+        "sha256": "5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4"
+      },
+      "rule": "The scene file is the Kiln runtime profile of the saved revision (kiln export --profile runtime --out golden-gate-far.glb): applied to the parent it reproduces the current member and its sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "vehicle-sedan",
+      "asset": "generic-sedan",
+      "member": "vehicles/sedan.glb",
+      "file": "foundry-floor/generic-sedan/child/asset.glb",
+      "manifest": "foundry-floor/generic-sedan/child/manifest.json",
+      "derive": "vehicle-wheel-lod",
+      "revision": "r_35222363b36f4d2da720311bcad86215",
+      "parentRevision": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+      "bytes": 117972,
+      "sha256": "f925ac655662e848fd3a42b91468767ca0c6273d2487c39a97ed04cb41f1a30a",
+      "previous": {
+        "revision": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+        "bytes": 117780,
+        "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212"
+      },
+      "rule": "The scene file is ensureVehicleWheelLod (site/scripts/vehicle-glb.mjs) of the saved GLB: it reproduces the current member from the parent byte for byte and is applied to the child's saved asset.glb. The bytes equal the Foundry Floor ff3-review2-flush1 member."
+    },
+    {
+      "id": "vehicle-suv",
+      "asset": "generic-suv",
+      "member": "vehicles/suv.glb",
+      "file": "foundry-floor/generic-suv/child/asset.glb",
+      "manifest": "foundry-floor/generic-suv/child/manifest.json",
+      "derive": "vehicle-wheel-lod",
+      "revision": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
+      "parentRevision": "r_b4cc9048731b4c039de0b87ca6e75c17",
+      "bytes": 119940,
+      "sha256": "9d0fca47fa6d1a4187b2e27efa3bd008f79e9fd8c25f54b104e4cad2d54ed922",
+      "previous": {
+        "revision": "r_b4cc9048731b4c039de0b87ca6e75c17",
+        "bytes": 120120,
+        "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2"
+      },
+      "rule": "The scene file is ensureVehicleWheelLod (site/scripts/vehicle-glb.mjs) of the saved GLB: it reproduces the current member from the parent byte for byte and is applied to the child's saved asset.glb. The bytes equal the Foundry Floor ff3-review2-flush1 member."
+    },
+    {
+      "id": "vehicle-box-truck",
+      "asset": "a_2092ca0610c749b386c14c07dbaf4236",
+      "member": "vehicles/box-truck.glb",
+      "file": "foundry-floor/a_2092ca0610c749b386c14c07dbaf4236/child/asset.glb",
+      "manifest": "foundry-floor/a_2092ca0610c749b386c14c07dbaf4236/child/manifest.json",
+      "derive": "vehicle-wheel-lod",
+      "revision": "r_56e3859a78d84f5f922e5f64fe747f06",
+      "parentRevision": "r_538b8a19c46d4086b456e27b32ee7d33",
+      "bytes": 169724,
+      "sha256": "deed8053c8c9675a5687ecdd2ad5f1715177fce893607b74757b5b0f12503cc8",
+      "previous": {
+        "revision": "r_538b8a19c46d4086b456e27b32ee7d33",
+        "bytes": 169728,
+        "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420"
+      },
+      "rule": "The scene file is ensureVehicleWheelLod (site/scripts/vehicle-glb.mjs) of the saved GLB: it reproduces the current member from the parent byte for byte and is applied to the child's saved asset.glb. The bytes equal the Foundry Floor ff3-review2-flush1 member."
+    }
+  ]
+}
