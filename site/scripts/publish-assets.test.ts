@@ -21,7 +21,7 @@ test('publication verifies every local pin before any mutation and refuses diffe
   expect(uploads).toEqual(['a.zip']);expect(receipt.files[0].sha256).toBe(record.sha256);
   expect(new URL(checkedUrls[0]).searchParams.get('phase')).toBe('before');
   expect(new URL(checkedUrls[1]).searchParams.get('phase')).toBe('after');
-  expect(assetContentType('x.glb')).toBe('model/gltf-binary');expect(assetContentType('x.zip')).toBe('application/zip');expect(()=>assetContentType('x.exe')).toThrow('Unsupported');
+  expect(assetContentType('x.glb')).toBe('model/gltf-binary');expect(assetContentType('x.zip')).toBe('application/zip');expect(assetContentType('packs/vehicles/r5-flush-fix/licenses/sedan.ASSET-LICENSE.txt')).toBe('text/plain');expect(()=>assetContentType('x.exe')).toThrow('Unsupported');
   await expect(publishAssets({mirror,records:[{...record,path:'../a.zip'}],upload:async()=>{}})).rejects.toThrow('Unsafe');
  }finally{await rm(mirror,{recursive:true,force:true});}
 });

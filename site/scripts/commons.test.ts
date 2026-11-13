@@ -317,6 +317,14 @@ describe('Commons catalog bindings', () => {
         expect(Date.parse(revision.savedAt)).toBeLessThanOrEqual(Date.parse(revision.run.endedAt));
         continue;
       }
+      if (revision.request === 'flush-face-fix') {
+        // A maintenance revision: the saved manifest names the model and harness, and no author window was sealed for it.
+        expect(['sedan', 'suv', 'box-truck']).toContain(asset.slug);
+        expect(revision.revisionId).toBe(asset.revisionId);
+        expect(revision).toMatchObject({ modelId: 'claude-sonnet-5-5', requestedEffort: 'not recorded', harness: 'claude-code', harnessVersion: null });
+        expect(revision.run).toMatchObject({ status: 'not recorded', receiptSha256: null, invocationSha256: null, startedAt: null, endedAt: null });
+        continue;
+      }
       expect(revision).toMatchObject({ modelId: 'claude-sonnet-5-5', requestedEffort: 'max', harness: 'claude', harnessVersion: '2.1.280' });
       // The revision names the run that saved it, and that run's receipt hash is the one the run record holds.
       const saved = vehicleRuns.find((run) => run.source.receiptSha256 === revision.run.receiptSha256);
