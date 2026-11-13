@@ -533,7 +533,8 @@ function subtreeBounds(file: GlbFile, tree: SceneTree, rootName: string): Return
   return box(nodesBounds(file, tree, local, i => isUnder(tree, i, ri)));
 }
 
-function measure(key: string, c: Curated, file: GlbFile) {
+/** The measured fields of one entity from its GLB bytes (also used by the pack swap adapter, pack-swap-adapter.ts). */
+export function measure(key: string, c: Curated, file: GlbFile) {
   const tree = sceneTree(file), world = worldMatrices(tree), lod = tree.byName.get('lod1');
   const underLod = (i: number) => lod !== undefined && isUnder(tree, i, lod);
   const hidden = new Set(c.hideByDefault ?? []);

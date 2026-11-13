@@ -17,10 +17,11 @@
     },
     {
       "id": "foundry-floor",
-      "release": "ff3-review2-code5",
-      "path": "scene-inputs/alignment-motion3-20261003/foundry-floor.zip",
-      "bytes": 2868640,
-      "sha256": "22a49f2ef8e48fcdb37c12a9c475d94798870a3dca39d6798a3a6e60dd812ee4"
+      "release": "ff3-review2-flush1",
+      "path": "scene-inputs/flush-fix-20261113/foundry-floor.zip",
+      "bytes": 2849813,
+      "sha256": "d53a1f09dff290246bf7cfc1a1b9e79a5bf28b584b995eef414204c3e3f94da5",
+      "packJsonSha256": "99d949b5f5125b49ab2ef30cd07d29bd6998f010013020d96d721a14eb394255"
     },
     {
       "id": "cathedral-square",

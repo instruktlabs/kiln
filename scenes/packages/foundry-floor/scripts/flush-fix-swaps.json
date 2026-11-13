@@ -1,0 +1,220 @@
+{
+  "schema": "kiln.scene-pack-swap/1",
+  "scene": "foundry-floor",
+  "change": "Flush-face fix: each model is the verified child revision of the pack's current revision, saved with its coincident faces moved apart.",
+  "from": {
+    "release": "ff3-review2-code5",
+    "packJsonSha256": "822be1171621273dfdf857fe6ca320ed41d16e03c49fc49860c13e7092be4836"
+  },
+  "release": "ff3-review2-flush1",
+  "inputs": "The flush-fix children directory for foundry-floor: <asset>/child/{asset.glb,manifest.json} (not in the repository).",
+  "swaps": [
+    {
+      "id": "vehicle",
+      "asset": "oht-vehicle",
+      "member": "models/oht-vehicle.glb",
+      "file": "oht-vehicle/child/asset.glb",
+      "manifest": "oht-vehicle/child/manifest.json",
+      "revision": "r_f6f4e23a81ba486ab9def5f119af43c1",
+      "parentRevision": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
+      "bytes": 107472,
+      "sha256": "121c67e94c0a3f2afa2576aa2b8dd3cf271907fac7a164c3d074b37de7e06919",
+      "previous": {
+        "revision": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
+        "bytes": 107472,
+        "sha256": "27dd159eeeaeb4ed0748159e550096dda1e8faac895bfd4a1d86ed8f808a3024"
+      },
+      "rule": "The scene file is the saved GLB: the current member equals the parent revision's saved asset.glb byte for byte, so the child's saved asset.glb is the new member."
+    },
+    {
+      "id": "signalTower",
+      "asset": "signal-tower",
+      "member": "models/signal-tower.glb",
+      "file": "signal-tower/child/asset.glb",
+      "manifest": "signal-tower/child/manifest.json",
+      "revision": "r_9d238ec1a53f4caaa39daaef9c27c840",
+      "parentRevision": "r_0af702f0a7364dffbac3255c04a909ff",
+      "bytes": 13860,
+      "sha256": "65b0987c95c078495b31ff5769e44b9a2e7a276e0f557141c4463f6bef5d5aea",
+      "previous": {
+        "revision": "r_0af702f0a7364dffbac3255c04a909ff",
+        "bytes": 13844,
+        "sha256": "82f69eb2a5471bc0ea242ef79aa3686a7e8025d8172437813484c5f58fe881b9"
+      },
+      "rule": "The scene file is the current engine's rebuild of the saved source (kiln asset --rebuild): it reproduces the current member from the parent byte for byte, and the child's rebuild equals its saved asset.glb, so the child's saved asset.glb is the new member."
+    },
+    {
+      "id": "railSwitch",
+      "asset": "oht-rail-switch",
+      "member": "models/oht-rail-switch.glb",
+      "file": "oht-rail-switch/child/asset.glb",
+      "manifest": "oht-rail-switch/child/manifest.json",
+      "revision": "r_b863615819af4a838c84e92d928b1598",
+      "parentRevision": "r_b7fcebf6547545eab077be69796ec893",
+      "bytes": 61816,
+      "sha256": "8e218d405c44eb6110fe32e7e94f0f4b1bf2e14c612ce5bafb44dbe69a40fc12",
+      "previous": {
+        "revision": "r_b7fcebf6547545eab077be69796ec893",
+        "bytes": 61820,
+        "sha256": "1190709b4b55201db020cbb375001eb1d3c535ac9e8f93fefae20a11207753f4"
+      },
+      "rule": "The scene file is the saved GLB: the current member equals the parent revision's saved asset.glb byte for byte, so the child's saved asset.glb is the new member."
+    },
+    {
+      "id": "tool:etch",
+      "asset": "etch-cluster-tool",
+      "member": "models/etch-cluster-tool.glb",
+      "file": "etch-cluster-tool/child/asset.glb",
+      "manifest": "etch-cluster-tool/child/manifest.json",
+      "revision": "r_7bc813bf9cfa48e18d1f9be8520a96a1",
+      "parentRevision": "r_6456090ae2cb42f09b3ff18670f55c3e",
+      "bytes": 452440,
+      "sha256": "da14255feeb6b30c316c316c50f9b156e94344d8c676f3b8cf21e750483b5f0b",
+      "previous": {
+        "revision": "r_6456090ae2cb42f09b3ff18670f55c3e",
+        "bytes": 452424,
+        "sha256": "24d3ebb6818f54e7e341f9b4081ea29231b64f165ab6ffc3f2af562dea915c30"
+      },
+      "rule": "The scene file is the saved GLB: the current member equals the parent revision's saved asset.glb byte for byte, so the child's saved asset.glb is the new member."
+    },
+    {
+      "id": "tool:pvd",
+      "asset": "pvd-cluster-tool",
+      "member": "models/pvd-cluster-tool.glb",
+      "file": "pvd-cluster-tool/child/asset.glb",
+      "manifest": "pvd-cluster-tool/child/manifest.json",
+      "revision": "r_f5bb7ba48f7b4dc8b603e3a998f7da76",
+      "parentRevision": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
+      "bytes": 416672,
+      "sha256": "2658814eed4adc37f4f3ba99190a8ccc0ef206c93259b008f50801c738a279cb",
+      "previous": {
+        "revision": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
+        "bytes": 416676,
+        "sha256": "e87669b3c87279389f7ef1035dc3994e81f74803c9b4ec2b81eec035da8998fb"
+      },
+      "rule": "The scene file is the saved GLB: the current member equals the parent revision's saved asset.glb byte for byte, so the child's saved asset.glb is the new member."
+    },
+    {
+      "id": "tool:clean",
+      "asset": "single-wafer-clean-tool",
+      "member": "models/single-wafer-clean-tool.glb",
+      "file": "single-wafer-clean-tool/child/asset.glb",
+      "manifest": "single-wafer-clean-tool/child/manifest.json",
+      "revision": "r_40235531706e4818b24063e6c1df533c",
+      "parentRevision": "r_c268a0f6f6174f7ba2b87e120c4344e8",
+      "bytes": 63308,
+      "sha256": "db226cd08b73371756ab9553b7150be10e66d0a3fd4105e2a14e16923d276335",
+      "previous": {
+        "revision": "r_c268a0f6f6174f7ba2b87e120c4344e8",
+        "bytes": 63304,
+        "sha256": "dcc8f518e828db258990e737db96aa87b440d7772122c735f67ab32c5174b429"
+      },
+      "rule": "The scene file is the saved GLB: the current member equals the parent revision's saved asset.glb byte for byte, so the child's saved asset.glb is the new member."
+    },
+    {
+      "id": "tool:prober",
+      "asset": "wafer-prober-tester",
+      "member": "models/wafer-prober-tester.glb",
+      "file": "wafer-prober-tester/child/asset.glb",
+      "manifest": "wafer-prober-tester/child/manifest.json",
+      "revision": "r_92007aa1ae4244fc923befba0403e87f",
+      "parentRevision": "r_7357b53066af464abb6556bdde7866d4",
+      "bytes": 125044,
+      "sha256": "1c4dff379cb6248b9b24f09b24b1b46b93518454f7b1db760d96c08a5c290e34",
+      "previous": {
+        "revision": "r_7357b53066af464abb6556bdde7866d4",
+        "bytes": 125036,
+        "sha256": "4a53871b19898e53b7f057107eee9d2f40bbe3ba72948df3b190d21e910662af"
+      },
+      "rule": "The scene file is the saved GLB: the current member equals the parent revision's saved asset.glb byte for byte, so the child's saved asset.glb is the new member."
+    },
+    {
+      "id": "humanoidWorkRobot",
+      "asset": "humanoid-work-robot",
+      "member": "models/humanoid-work-robot.glb",
+      "file": "humanoid-work-robot/child/asset.glb",
+      "manifest": "humanoid-work-robot/child/manifest.json",
+      "revision": "r_87ffa104a0c04a408c928fa7260fd566",
+      "parentRevision": "r_9f717d17eec74f2dbd4c338612207ed5",
+      "bytes": 163488,
+      "sha256": "44a3621ffb0347e477b7622315971cb5ec429cabb3494b9f0af56d81a49fb877",
+      "previous": {
+        "revision": "r_9f717d17eec74f2dbd4c338612207ed5",
+        "bytes": 200656,
+        "sha256": "cd118485e113219ce8de9bb6d3b873634fb7dadebf81028142d0f6a644f88aa2"
+      },
+      "rule": "The scene file is the saved GLB: the current member equals the parent revision's saved asset.glb byte for byte, so the child's saved asset.glb is the new member."
+    },
+    {
+      "id": "amrFloorRobot",
+      "asset": "amr-floor-robot-fit",
+      "member": "models/amr-floor-robot.glb",
+      "file": "amr-floor-robot-fit/child/asset.glb",
+      "manifest": "amr-floor-robot-fit/child/manifest.json",
+      "revision": "r_23d6cdf68cc748a7a0005aa4c3e0a58f",
+      "parentRevision": "r_a27481224b474e9cb1dd747c45a71e23",
+      "bytes": 77144,
+      "sha256": "6740d2d346c98e79a438b7cec9698f31aa5b3331c63bf96894dfafb77f701195",
+      "previous": {
+        "revision": "r_a27481224b474e9cb1dd747c45a71e23",
+        "bytes": 77144,
+        "sha256": "ceb4d9565c396bed03d9ffd704447caac5e38e665e61224e0c092ec6df05da32"
+      },
+      "rule": "The scene file is the saved GLB: the current member equals the parent revision's saved asset.glb byte for byte, so the child's saved asset.glb is the new member."
+    },
+    {
+      "id": "vehicle-sedan",
+      "asset": "generic-sedan",
+      "member": "models/vehicles/sedan.glb",
+      "file": "generic-sedan/child/asset.glb",
+      "manifest": "generic-sedan/child/manifest.json",
+      "derive": "vehicle-wheel-lod",
+      "revision": "r_35222363b36f4d2da720311bcad86215",
+      "parentRevision": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+      "bytes": 117972,
+      "sha256": "f925ac655662e848fd3a42b91468767ca0c6273d2487c39a97ed04cb41f1a30a",
+      "previous": {
+        "revision": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+        "bytes": 117780,
+        "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212"
+      },
+      "rule": "The scene file is ensureVehicleWheelLod (site/scripts/vehicle-glb.mjs) of the saved GLB: it reproduces the current member from the parent byte for byte and is applied to the child's saved asset.glb."
+    },
+    {
+      "id": "vehicle-suv",
+      "asset": "generic-suv",
+      "member": "models/vehicles/suv.glb",
+      "file": "generic-suv/child/asset.glb",
+      "manifest": "generic-suv/child/manifest.json",
+      "derive": "vehicle-wheel-lod",
+      "revision": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
+      "parentRevision": "r_b4cc9048731b4c039de0b87ca6e75c17",
+      "bytes": 119940,
+      "sha256": "9d0fca47fa6d1a4187b2e27efa3bd008f79e9fd8c25f54b104e4cad2d54ed922",
+      "previous": {
+        "revision": "r_b4cc9048731b4c039de0b87ca6e75c17",
+        "bytes": 120120,
+        "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2"
+      },
+      "rule": "The scene file is ensureVehicleWheelLod (site/scripts/vehicle-glb.mjs) of the saved GLB: it reproduces the current member from the parent byte for byte and is applied to the child's saved asset.glb."
+    },
+    {
+      "id": "vehicle-box-truck",
+      "asset": "a_2092ca0610c749b386c14c07dbaf4236",
+      "member": "models/vehicles/box-truck.glb",
+      "file": "a_2092ca0610c749b386c14c07dbaf4236/child/asset.glb",
+      "manifest": "a_2092ca0610c749b386c14c07dbaf4236/child/manifest.json",
+      "derive": "vehicle-wheel-lod",
+      "revision": "r_56e3859a78d84f5f922e5f64fe747f06",
+      "parentRevision": "r_538b8a19c46d4086b456e27b32ee7d33",
+      "bytes": 169724,
+      "sha256": "deed8053c8c9675a5687ecdd2ad5f1715177fce893607b74757b5b0f12503cc8",
+      "previous": {
+        "revision": "r_538b8a19c46d4086b456e27b32ee7d33",
+        "bytes": 169728,
+        "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420"
+      },
+      "rule": "The scene file is ensureVehicleWheelLod (site/scripts/vehicle-glb.mjs) of the saved GLB: it reproduces the current member from the parent byte for byte and is applied to the child's saved asset.glb."
+    }
+  ]
+}
