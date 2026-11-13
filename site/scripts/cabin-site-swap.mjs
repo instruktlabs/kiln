@@ -61,7 +61,8 @@ export async function rebuildCabinInputs({ files, catalog, stores, swaps = [], r
   for (const asset of catalog.assets) {
     const key = keyOf.get(asset.assetId) ?? fail(`${asset.slug}: not in the scene collection`);
     const entry = collection.assets[key], swap = bySlug.get(asset.slug);
-    if (entry.revisionId !== asset.revisionId) fail(`${asset.slug}: the catalog names ${asset.revisionId}, the scene ${entry.revisionId}`);
+    // A catalog may already name the swap's revision (a rerun after the catalog moved); everything else is the scene's.
+    if (entry.revisionId !== asset.revisionId && swap?.revision !== asset.revisionId) fail(`${asset.slug}: the catalog names ${asset.revisionId}, the scene ${entry.revisionId}`);
     let revisionId = entry.revisionId, from, runtime, metadata;
     if (swap) {
       bySlug.delete(asset.slug);
@@ -168,17 +169,20 @@ export async function main(argv = process.argv.slice(2)) {
   const work = resolve(option('--work') ?? fail('--work DIR is required'));
   const stores = many('--store');
   if (!stores.length) fail('--store DIR is required');
-  const record = JSON.parse(await readFile(join(SITE, 'src/data/cabin-woods-site.json'), 'utf8'));
+  // --proof reproduces the pinned archive; a swap starts from the archive its list names (the pin may already be its result).
+  const pinned = JSON.parse(await readFile(join(SITE, 'src/data/cabin-woods-site.json'), 'utf8'));
+  const raw = proof ? null : JSON.parse(await readFile(option('--swaps') ?? fail('--swaps LIST.json is required'), 'utf8'));
+  const record = proof ? pinned : { release: raw.from?.release, sha256: raw.from?.archiveSha256 };
   const archive = await readFile(archivePath);
-  if (hashBytes(archive) !== record.sha256 || archive.length !== record.bytes) fail(`${archivePath} is not the pinned ${record.release} archive`);
+  if (hashBytes(archive) !== record.sha256 || (proof && archive.length !== record.bytes)) fail(`${archivePath} is not the ${record.release} archive`);
   const files = new Map(Object.entries(verifyArchive(archive).files).filter(([path]) => path !== 'delivery.json' && !path.endsWith('/')).map(([path, bytes]) => [path, Buffer.from(bytes)]));
   const catalog = JSON.parse(await readFile(join(SITE, `src/data/${CABIN_ID}.json`), 'utf8'));
   let list = { release: record.release, swaps: [] };
   if (!proof) {
     const inputs = resolve(option('--inputs') ?? fail('--inputs DIR is required'));
-    const raw = JSON.parse(await readFile(option('--swaps') ?? fail('--swaps LIST.json is required'), 'utf8'));
-    if (raw.scene !== CABIN_ID || raw.from?.release !== record.release || raw.from?.archiveSha256 !== record.sha256) fail(`The swap list does not start from ${CABIN_ID}/${record.release} (${record.sha256})`);
-    if (raw.release === record.release) fail(`Release ${raw.release} already exists; an immutable release id is never reused for changed bytes`);
+    if (raw.scene !== CABIN_ID || !raw.from?.release) fail(`The swap list does not name a ${CABIN_ID} release to start from`);
+    // A rerun may name the pinned release only if it seals the same bytes; packCabinSite refuses any other.
+    if (raw.release === raw.from.release) fail(`Release ${raw.release} already exists; an immutable release id is never reused for changed bytes`);
     list = await parseSwapList(raw, { inputs });
     list.swaps = list.swaps.map((swap) => ({ ...swap, fileAbsolute: join(inputs, swap.file) }));
   }

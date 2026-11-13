@@ -7605,6 +7605,61 @@
       "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-trail-marker.png",
       "bytes": 1548485,
       "sha256": "e18763202e01709548394cf6741d0038976c7417ae682e9d23ad563edba3db4f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin.png",
+      "bytes": 1668006,
+      "sha256": "a40b5413b0169832ce627150a4f7b036b84691782b00097c1649cff942902f67"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table.png",
+      "bytes": 1468466,
+      "sha256": "298bf76812d1d7bb28906f88be3432e31bcc82f46677051ec36e3a3765ad9f93"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop.png",
+      "bytes": 1555896,
+      "sha256": "fa839edf853a9bf2da324ae98920292be60670e5461181b2b13f85b3354d7c03"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet.png",
+      "bytes": 1597166,
+      "sha256": "59c8f621df90c54037ad9d3c99cb1f8fff2d71c0350dab8610ec58e33ba2df58"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard.png",
+      "bytes": 1572588,
+      "sha256": "f9bac17b0d102b80c16663ae0968605614a1fc37e2082cd1786fc158557e16f3"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet.png",
+      "bytes": 1529834,
+      "sha256": "5dc935d59d4cc3f7fa462e591e6f82cefdccf38b8ff92f977c35b206deea7eaa"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest.png",
+      "bytes": 1608429,
+      "sha256": "8333cc93c94fc108a26443da6653ae169f4ce43fc03e5e1076fe9c8571dcac41"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks.png",
+      "bytes": 1576610,
+      "sha256": "7d350ce56d3c960475b779cf2b7024d8cb704622e80f4514dce1b1b9b73fe94e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack.png",
+      "bytes": 1419667,
+      "sha256": "0fc297000b1ca403af39c30fee183a0e441434478c74ef01664091de29312524"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf.png",
+      "bytes": 1360900,
+      "sha256": "a54dbd48692bdeb654129a2600e488e3c49a01eca5e32373541c66f67789fcc1"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing.png",
+      "bytes": 1465511,
+      "sha256": "899b058c4205d66cac38e50f23f0afccdfb44fbf987b882a3b66695e38ae0f36"
     }
   ]
 }

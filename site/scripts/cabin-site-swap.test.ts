@@ -84,6 +84,16 @@ test('a swap replaces only the model, its sidecar and the records naming them; t
   expect(await readFile(join(out.workspace, 'assets/kiln', aid, 'revisions', child, 'materials.kiln.json'), 'utf8')).toContain('records');
 });
 
+test('a catalog already moved to the swap revisions rebuilds the same inputs', async () => {
+  const f = await fixture();
+  const swap = await childSwap(f);
+  const first = await rebuildCabinInputs({ files: f.files, catalog: f.catalog, stores: [f.store], swaps: [swap], release: 'cabin-new', work: join(f.root, 'w1') });
+  const moved = { ...f.catalog, assets: [{ ...f.catalog.assets[0], revisionId: child, sourceRef: 'p_moved' }] };
+  const again = await rebuildCabinInputs({ files: f.files, catalog: moved, stores: [f.store], swaps: [swap], release: 'cabin-new', work: join(f.root, 'w2') });
+  expect(again.selectionSha256).toBe(first.selectionSha256);
+  await expect(rebuildCabinInputs({ files: f.files, catalog: moved, stores: [f.store], release: 'cabin-new', work: join(f.root, 'w3') })).rejects.toThrow('the catalog names');
+});
+
 test('a swap must be a saved child of the scene revision and name the scene model it replaces', async () => {
   const f = await fixture();
   const stranger = await childSwap(f, (m) => { m.parentRevision = `r_${'d'.repeat(32)}`; });

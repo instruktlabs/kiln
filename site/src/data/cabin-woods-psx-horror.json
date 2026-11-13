@@ -353,15 +353,15 @@
         "sha256": "d50f1008904b73d40883d56e29ac72e0b02583e0127f7647570fb5148ba303e2"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Rebuilt modular cabin with an open living and dining area, bedroom, supplies, open kitchen, porch and side work exit.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin.png",
-        "sourceRevisionId": "r_c27b7f2836c14fd898a0d82f83b741a3",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/cabin.png",
+        "sourceRevisionId": "r_b57a8b63c96e4216bb51100e8707fcdd",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
@@ -3139,15 +3139,15 @@
         "sha256": "31080969f25d59c4afa5b1d5b70355ee88336476de4b4b5f8dcd9dc51725b8b3"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table.png",
-        "sourceRevisionId": "r_fa5a504db1e34fa49f529704e432e888",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/dining-table.png",
+        "sourceRevisionId": "r_c1c7038cde834adebe4e12f471cca7f5",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
@@ -3228,15 +3228,15 @@
         "sha256": "c67813b6df8b48d25ff7d5a0d3dd36c8a6937f5464eea8aa5301a2a03bd6daa1"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop.png",
-        "sourceRevisionId": "r_284c4d0549d543f18121eb51af3ec2a2",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-worktop.png",
+        "sourceRevisionId": "r_c1c3a1c15e30421c811eff1151af7671",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
@@ -3406,15 +3406,15 @@
         "sha256": "576d1f1d149058cb2f7b7369a1a52684057cbe82c07346446691b5b054bf9e71"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet.png",
-        "sourceRevisionId": "r_0b7a06e833124e00956a310c6220b6f3",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/bedroom-cabinet.png",
+        "sourceRevisionId": "r_90aa98be57b74bd1bd21ca9eecd35203",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
@@ -3497,15 +3497,15 @@
         "sha256": "c942dc6830371f4ff1882585f82af636a1e089154c44df31e527733c51dadb26"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard.png",
-        "sourceRevisionId": "r_45706bb944e84158ab90b91946645121",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/kitchen-cupboard.png",
+        "sourceRevisionId": "r_fd02fac328124eb294571d0e4e41aaac",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
@@ -3588,15 +3588,15 @@
         "sha256": "7854af56273b1bd8b80aad61abc1d0cad54d7d54f36781312c462506bff15766"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet.png",
-        "sourceRevisionId": "r_86fe790b72454c6dbc7062c33e1b0b87",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tall-cabinet.png",
+        "sourceRevisionId": "r_306baac427334ae18c8709a618322dfb",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
@@ -3679,15 +3679,15 @@
         "sha256": "c2f75ad2cc4370db14d44458b63fcf26790efb44d7dbd7bb36b7f25b09a74ac5"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest.png",
-        "sourceRevisionId": "r_8251fc93e84d4379aefb4ea761889b90",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/supply-chest.png",
+        "sourceRevisionId": "r_0d5f8af203454c1497d4c0a36c87ba4e",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
@@ -3948,15 +3948,15 @@
         "sha256": "e032135c44a32ecb75a34b3e24de3e2f381d1550d6300fb88de63a78cd8eda12"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks.png",
-        "sourceRevisionId": "r_052a68725d524ea6afd62254a5a0e676",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/map-coat-hooks.png",
+        "sourceRevisionId": "r_5946056d94bb4f8592f20e4e136cc38a",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
@@ -4037,15 +4037,15 @@
         "sha256": "f96fe6cafdded505b4a078e1e03df84a0bf34308a5d7c54831f342d764ef7d44"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack.png",
-        "sourceRevisionId": "r_c23e526f1c874f89b37a32a7c04c4834",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tool-rack.png",
+        "sourceRevisionId": "r_3a31ae31b85f41cab93c6126ddf05603",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
@@ -4126,15 +4126,15 @@
         "sha256": "b73eacf8066f0971e6e76ced9be849e45cebd85f6153a81eed058e133e25f07d"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf.png",
-        "sourceRevisionId": "r_dde877ffae644423ac3a1fc371443e57",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/wall-shelf.png",
+        "sourceRevisionId": "r_ff9a87bc5cc84f1ebc8d91414c44c53c",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
@@ -4393,15 +4393,15 @@
         "sha256": "c8f48da81ef5337bba79e20365c2ece75da44d579e6a9504d9d88914dedb1a61"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing.png",
-        "sourceRevisionId": "r_2f39fecba5634b46805f472e7615d7fd",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing.png",
+        "sourceRevisionId": "r_3125d3a4babb439d9fb50b9f7b89aa29",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
