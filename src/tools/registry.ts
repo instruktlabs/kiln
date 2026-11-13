@@ -27,6 +27,7 @@ import {
 import { createKilnSourceDef, withProgramReferences } from './programs';
 import { ProgramArtifactStore, type NativeCompletion } from './program-artifacts';
 import { createKilnDiscoveryDef } from './discovery';
+import { cutWarning } from './asset-text';
 import { createKilnProjectDef } from './projects';
 import { listAssetCatalog } from '../asset-catalog';
 import { createKilnMaterialDef } from './materials';
@@ -3684,7 +3685,7 @@ export function createKilnAssetDefs(
         engine: asset.build.engine,
         rebuild: asset.build.rebuild,
         warningCount: asset.build.warnings.length,
-        warnings: asset.build.warnings.slice(0, 3).map((warning) => warning.slice(0, 200)),
+        warnings: asset.build.warnings.slice(0, 3).map((warning) => cutWarning(warning)),
       },
     },
     resources: (await import('../assets-resources')).assetLinks(collection, asset),

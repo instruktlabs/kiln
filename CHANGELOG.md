@@ -7,6 +7,12 @@ does not publish a package.
 
 ## Unreleased
 
+- **`kiln_save` returns build warnings whole up to 700 characters.** It used to cut every
+  warning at 200 characters, which removed the remedy from a flush-face warning and half
+  of a "Floating parts" line. A longer warning is now cut after its last whole word and ends
+  with the number of characters left out and a note that the saved manifest has the full
+  line. It still returns the first three warnings and `warningCount`.
+
 - **49 archived gallery examples no longer have flickering flush faces.** The example
   archive pin in `scripts/example-archive.mjs` moves to a commit that descends from the
   previous pin. In it, 49 historical programs carry a maintainer revision (117 part edits
