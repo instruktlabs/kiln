@@ -111,6 +111,8 @@ replace edited skills. Consult the updated runtime documentation when working in
   needed. Resolve parts relative to the imported root instead of assuming one universal path.
 - **Animation:** play the imported clip and inspect intermediate poses. A clip existing in the
   file is not proof that its target moves. Check skin/morph deformation where applicable.
+  A clip named `kiln.param.<name>` is a carried size, not motion: see
+  [carried parameters](#carried-parameters-tested-destination-limits).
 - **FBX:** in Blender's FBX export, leave the experimental Apply Transform option
   (`bake_space_transform`) disabled for the tested nested-part route. This is separate from
   Bake Animation. Reimport the FBX and check offsets; materials and sidedness can still change.
@@ -212,6 +214,37 @@ triangles when each level was forced. This demonstrates an explicit destination 
 not automatic importer-created LODs or qualified distance thresholds. Material appearance
 and silhouette remain part of owner review.
 
+## Carried parameters: tested destination limits
+
+A runtime export can carry declared parameters: a colour as a tagged material, a `toggle`
+or `choice` as tagged nodes, a preset as a `KHR_materials_variants` entry and, when exported
+with `--carry-shapes`, a size as morph targets with one clip `kiln.param.<name>`. The export
+profile guide in the `kiln-author-asset` skill lists the tags and the sidecar's `params` block.
+
+A cabinet with a carried `width` (0.6 to 1.4 m, default 0.8 m), a `doors` toggle and a `blue`
+preset was loaded by three.js r187's `GLTFLoader` and imported headless into Blender 5.2.0
+LTS on 2026-11-12. Unity and Unreal were not tested with it.
+
+- **Sizes.** Both read the clip and the named targets (shape keys in Blender), and both
+  measured 0.6, 0.8, 1.1 and 1.4 m wide with the clip set to those values. Blender leaves the
+  clip active at frame 1 after import, so the cabinet opened 0.633 m wide, not at its default.
+  Set the clip to the default's time, or remove the action, before judging size or fit. Time 0
+  is the minimum and time 1 the maximum; `params.shapes.<name>.keys` in the sidecar gives the
+  time of each built value.
+- **Do not play it.** A consumer that plays every clip in the file scrubs the size, and a
+  looping action wraps time 1 back to the minimum. Clamp the action and hold it at one time;
+  keep it out of the list of motion clips.
+- **Options.** Neither importer hides a `KHR_node_visibility` node by itself, so an option
+  that is off by default is drawn. Show a node when its `extras.kilnParamV1.visibleWhen`
+  includes the value and hide it otherwise, at load as well as on change. Other engines
+  keep glTF extras to different degrees; check that the tag arrived.
+- **Presets and colours.** Both read the `blue` variant. A loader without
+  `KHR_materials_variants` shows the default materials. A carried colour is the base colour
+  factor of the tagged material and can also be found by the material's name.
+
+Two carried sizes moved together add their changes, which is exact only where they do not
+interact; compare a combination you intend to offer with a build at those values.
+
 ## Known experimental limits
 
 - Rotated nonuniform Three.js UV scaling and manually sheared/perspective UV matrices are
@@ -241,6 +274,7 @@ and silhouette remain part of owner review.
 
 Record the source revision, chosen exporter, delivered GLB, consumer/importer versions and
 render pipeline. Check scale and orientation alongside a known object; hierarchy and pivots;
-front/back visibility; materials/textures; and animation/deformation. For Unity delivery,
+front/back visibility; materials/textures; animation/deformation; and each carried
+parameter at its default and at one other value. For Unity delivery,
 exercise a player build as well as the editor. Say which checks were not run. Keep the baseline
 and source so a consumer-specific problem can be reproduced without regenerating the asset.

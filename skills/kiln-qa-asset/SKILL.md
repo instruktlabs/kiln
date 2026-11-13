@@ -20,6 +20,10 @@ Read the export profile guide (`references/export-profiles.md` in the `kiln-auth
 
 Read validation/build findings and export warnings. MCP render and inspection results are compact by default: the verdict, the blocking findings and the finding counts come first, repeated findings are grouped by code with the repair text once, and rules that were not requested are left out; decide from that compact result, and ask `detail: "full"` of `kiln_render`, `kiln_edit` or `kiln_screenshot_animation` only when every instance of a grouped finding or every rule record matters, with `retainedReport.path` (`.kiln/review/<operation>/evaluation.json`, pretty-printed) holding the rest; `detail: "lean"` keeps only the verdict, blockers and metrics. `kiln_validate` only checks source; render and inspect the actual geometry when that is the task. Choose broad or part-specific views that reveal the suspected defect. Copy the returned `programRef` exactly for every view, whether it is a short `p_` handle or a full SHA-256 reference; request source text only when a repair needs it. A handle identifies a revision in its store; use full source and artifact hashes for integrity evidence.
 
+Read `warnings` as well as findings. A line that starts `FLUSH_FACES` is not a QA finding and does not change `acceptance`, but it is a measurement of every triangle: faces of two parts, or of one part, lie on one plane, face the same way and share area, and they flicker in every renderer. It names the worst pair with its area, a point to look at and the plane's normal; a new build names the next. Report it as an open defect until the source moves the overlay about 2 mm along that normal, removes the covered face or cuts the opening. Faces that touch while facing each other are contact and are not reported.
+
+For source that declares parameters, the saved GLB and its QA cover the default build only. Run `kiln_render` with `params: { sweep: true }`: every point must build, and its size, triangles and acceptance should suit the value. Look at the extremes that change proportion with `params: { values }`. `colors`, `switches` and `shapes` say which values a GLB carries (`factor`, `visibility`, `morph`) and which need a `rebuild`, with the reason; compare them with what the brief promised can change without a rebuild. A sweep moves one parameter at a time and builds no combinations.
+
 Distinguish expected open sheets from invalid solid topology. `geometryDiagnostics` reports boundary edges, non-manifold edges, orientation conflicts and degenerates; it does not prove absence of self-intersection. A capped loft, shell-like surface, or sampled field is not automatically a manufacturing-grade solid.
 
 Use `requireSolid` only on parts whose intended use requires closed, manifold,
@@ -93,6 +97,8 @@ Do not darken albedo to compensate for review lighting; preserve the intended ma
 ## In the destination
 
 For Blender, Unity or FBX, read the [engine handoff guide](references/engine-handoff.md) before choosing import settings or trying the experimental exporter. Check the actual target importer and render pipeline; a successful Kiln preview alone does not establish destination compatibility.
+
+For a file that carries parameters, set each carried colour, option, preset and size in the destination and compare it with a build at that value; the handoff guide lists what the tested importers do by themselves, such as drawing an option that is hidden by default.
 
 Use the project's existing loader and renderer. Read the [integration checks](references/integration-checks.md) for manifests, frames, composition options, and limits.
 

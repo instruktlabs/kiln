@@ -20,6 +20,9 @@ is available: a runtime sidecar is **not** a replacement for it.
   duplicate review tracks out of the GLB, reducing the data the application loads.
   Compare the actual sizes; a static asset may gain nothing. Keep the sidecar for
   traceability and keep the editable ZIP for future authoring.
+- **Let the application change a colour, an option, a preset or a size without a
+  rebuild:** use `runtime`. It marks what the file carries; see
+  [parameters a runtime file carries](#parameters-a-runtime-file-carries).
 - **Need additional glTF feature preservation:** separately compare the experimental
   Three.js converter described in the engine handoff guide (`references/engine-handoff.md`
   in the `kiln-qa-asset` skill).
@@ -70,9 +73,7 @@ destination application when requested. Retain the editable asset and compare
 dimensions, colors, animation poses and the target's delivery receipt, not file size
 alone. A skipped draw assessment is unmeasured, never a passing performance result.
 
-## CLI
-
-### Optional game delivery semantics
+## Optional game delivery semantics
 
 Discover collider, anchor, kit, surface-bake and budget helpers when the request
 needs them. Add semantic roles for the consumer's intended interactions; the roles
@@ -81,7 +82,7 @@ not need anchors, projects or a kit declaration. Use `requireSolid` only for a p
 explicitly intended to satisfy that topology contract. These choices describe the
 requested asset, not a required modeling style.
 
-### Export commands
+## CLI
 
 From an asset workspace, using the IDs returned by `save` or `assets`:
 
@@ -99,6 +100,9 @@ node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --out mech.glb
 
 # Optional Three.js derivative, with a machine-readable export receipt.
 node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --target three --out mech-three.glb --json
+
+# Optional carried sizes: morph targets for each size that moves in straight lines.
+node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --carry-shapes --out mech.glb
 
 # Optional texture identities in the sidecar (any runtime export).
 node kiln.mjs export ASSET_ID REVISION_ID --profile runtime --textures manifest --out mech.glb
@@ -156,6 +160,12 @@ These resources are derived from the pinned revision on demand, without persisti
 a new revision. The local viewer host also serves those resource filenames through
 its existing `/files/` endpoint. Existing viewer download buttons retain editable behavior.
 
+`kiln_export` with `params: { preset?, values? }` is a different request: it builds the
+source at those values and returns that variant's GLB as a
+`kiln://programs/.../asset.glb?params=...` resource, saving nothing. For a saved revision
+it reports `defaultBuildMatchesSaved`. The runtime profile and `kiln_export_to` deliver the
+saved default build only, and neither MCP tool takes the carried-sizes option.
+
 Runtime results do not reuse configured canonical download URLs: those would deliver
 the wrong GLB. Client support for saving MCP resources varies. No binary data is put
 into tool text. To write files, use `kiln_export_to` when the host advertises it,
@@ -197,7 +207,8 @@ if (output.profile === 'runtime') {
 Omitting `profile` returns the exact canonical GLB bytes. Runtime verifies the saved
 file inventory and hashes, validates the GLB chunk table, and returns deterministic
 bytes for the same record and sibling filename. It does not serialize through a new
-glTF exporter or decode/re-encode textures.
+glTF exporter or decode/re-encode textures, unless it is asked to carry sizes with
+`paramBuilds`, which writes the GLB again.
 
 ## What runtime changes
 
@@ -205,7 +216,10 @@ This section describes runtime **without** `target: "three"`. The optional targe
 adds the transformations described above and records them in the sidecar's
 `delivery` block.
 
-Only `scenes[].extras.kilnReviewClipsV1` is moved into the JSON sidecar. It contains
+For a revision that records carried parameters, the profile also marks them in the GLB
+JSON and lists them in the sidecar; see
+[parameters a runtime file carries](#parameters-a-runtime-file-carries). Apart from that,
+only `scenes[].extras.kilnReviewClipsV1` is moved into the JSON sidecar. It contains
 Kiln's authored animation review vocabulary, including advisory tracks that might not
 have valid native glTF targets. Native `animations` remain authoritative for playback.
 The sidecar retains each source scene index and its original review object.
@@ -213,8 +227,9 @@ The sidecar retains each source scene index and its original review object.
 The profile preserves glTF hierarchy, node names, sockets, transforms, mesh topology,
 materials, textures, skins, morph targets, native animation channels, and application
 extras. Every chunk after JSON, including the BIN chunk, is copied byte for byte.
-JSON values are preserved outside the named review field and the added provenance
-record. Existing metadata is **not** generally scrubbed, so user-authored extras can
+JSON values are preserved outside the named review field, the parameter marks and the
+added provenance record. Carrying sizes is the exception: it adds morph targets and
+writes the whole GLB again. Existing metadata is **not** generally scrubbed, so user-authored extras can
 still contain information the author put there. The new provenance fields introduce
 no local paths, source text, build paths or provider information.
 
@@ -222,6 +237,36 @@ Assets with no review clips still receive the provenance link and an empty sidec
 scene list; their GLB can grow slightly. This is not geometry optimization, compression,
 mesh merging, texture compression, or an FPS improvement. Measure actual delivery size
 and target-scene performance separately.
+
+## Parameters a runtime file carries
+
+A saved GLB is the default build of its source. For source that declares parameters
+with `defineParams`, the saved manifest records which of them a file can carry
+(`build.paramBindings`), and the runtime profile writes that into the delivered pair.
+Before saving, `kiln_render` with `params: { sweep: true }` reports the same decisions.
+
+| Parameter | In the runtime GLB | In the sidecar | To set it in the application |
+| --- | --- | --- | --- |
+| `color` reported `factor` | `extras.kilnParamV1: { name, type: "color" }` on each material | `params.colors` | Set the tagged material's base colour |
+| `toggle` or `choice` reported `visibility` | `extras.kilnParamV1: { name, type, visibleWhen }` on each node; one hidden at the defaults also has `KHR_node_visibility` | `params.switches` | Show a tagged node when `visibleWhen` includes the value, hide it otherwise |
+| Preset that only sets carried colours | One `KHR_materials_variants` entry named after the preset | `params.presets` | Select the variant |
+| `range` or `int` reported `morph`, only with `--carry-shapes` | Morph targets `<name>=<value>` and one clip `kiln.param.<name>` | `params.shapes`, with `keys` | Hold the clip at the time for the value |
+
+- Anything else is another build from source: a seed, a count that adds parts, a colour
+  painted into pixels, an option built inside `if`. Deliver such a variant with
+  `kiln_export` and `params`, or `node kiln.mjs render asset.kiln.js --preset NAME --param name=value --out variant.glb`.
+- A loader that ignores `KHR_node_visibility` draws an option that is hidden by default,
+  so the application applies the tags at load as well as on change. three.js r187,
+  Blender 5.2.0 and Unity glTFast 6.20.0 all ignore it.
+- A size clip is not motion. Time 0 is the minimum and time 1 the maximum; clamp it and
+  never loop it or play it with the asset's other clips. `--carry-shapes` works on the
+  plain runtime profile only, rebuilds the saved source at each size's ends, and lists a
+  size it cannot carry as `rebuild` with the reason.
+- A derived file names any parameter it lost in `params.dropped`. Read the sidecar's
+  `params` block and report what the delivered file carries; do not infer it from source.
+
+Check the carried values in the destination: the
+`kiln-qa-asset` engine handoff guide records what the tested importers do with them.
 
 ## Pointer and hash contract
 
@@ -295,6 +340,8 @@ of exporter backend qualification and optional geometry/texture compression.
    GLB and the named sidecar without renaming or reserializing the sidecar. The CLI
    writes the pair; MCP resource delivery depends on the host's download support.
 4. Verify that the runtime GLB loads and its native animations play independently.
+   For carried parameters, set each one in the destination and compare with a build
+   at that value.
    Verify the sidecar filename and byte hash when checking provenance. Use the
    canonical asset for Kiln's full review workflow; standard loaders do not fetch
    the sidecar or restore missing source.

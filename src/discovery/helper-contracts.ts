@@ -1141,6 +1141,9 @@ define(
       'A host value that names no declared parameter or preset, has the wrong type, is outside min to max, is off a snapped step or is not an option is a PARAMS_VALUE build error. So are host values for a program that declares no parameters. Nothing is clamped.',
       'The render result reports params: { version: "kiln.params.v1", declaration, preset?, values } with every value the build used.',
       'Host values are declared build inputs: they are part of the build-cache key, and a program that declares parameters stays eligible for build reuse.',
+      'What an exported GLB carries is decided by building, and kiln_render with params: { sweep: true } reports it: each color as factor or rebuild, each toggle and choice as visibility or rebuild, each range and int as morph or rebuild, with the reason for a rebuild.',
+      'To have a color carried, give it its own named material and pass the parameter to it unchanged, with surface detail in neutral greys. To have a toggle or choice carried, always build its part and set part.visible from the parameter, one node per parameter. A preset that only sets carried colours is carried as a material variant.',
+      'A range or int is carried only when the export asks (kiln export --profile runtime --carry-shapes) and every value keeps the same parts and vertex counts and moves them in straight lines. A seed, a count that adds parts and every other value is another build from source.',
     ],
     cost: 'Metadata only.',
   },
@@ -1163,7 +1166,7 @@ define(
       'Declares typed parameters and presets once at top level and returns the values to build with; host values are validated and refused, never clamped.',
     limitations: [
       'Does not check that every value in a range builds a sound asset; build the extremes to find out.',
-      'A GLB does not carry the parameters: another value needs another build.',
+      'The saved GLB is the default build. A runtime export carries only the parameters the sweep reports as factor, visibility or morph; any other value needs another build.',
       'No constraint between parameters can be declared; derive dependent values in the program.',
     ],
     related: [{ name: 'seededRandom', relation: 'companion' }],

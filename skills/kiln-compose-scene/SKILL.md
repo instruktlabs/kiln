@@ -38,6 +38,8 @@ test access through the placed doors, gates and crossings with the intended acto
 Terrain and paths are scene infrastructure unless included in the asset brief.
 Use each asset's intended placement origin; hide an optional presentation base only
 through a supported part/variant rather than burying the whole plant or prop.
+Set a colour, option, preset or size that a runtime export carries in the scene, as
+[parameters an asset carries](references/runtime-scenes.md#parameters-an-asset-carries) describes.
 
 A walkable site scene proves an eye-height route and its colliders in the scene
 package. It does not inherit a baked sun or path-traced glass light. Controllers

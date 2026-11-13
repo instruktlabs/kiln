@@ -110,6 +110,8 @@ replace edited skills. Consult the updated runtime documentation when working in
   needed. Resolve parts relative to the imported root instead of assuming one universal path.
 - **Animation:** play the imported clip and inspect intermediate poses. A clip existing in the
   file is not proof that its target moves. Check skin/morph deformation where applicable.
+  A clip named `kiln.param.<name>` is a carried size, not motion: hold it at one time and
+  never loop it ([sizes a GLB carries](programs.md#sizes-a-glb-carries)).
 - **FBX:** in Blender's FBX export, leave the experimental Apply Transform option
   (`bake_space_transform`) disabled for the tested nested-part route. This is separate from
   Bake Animation. Reimport the FBX and check offsets; materials and sidedness can still change.

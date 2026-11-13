@@ -195,6 +195,8 @@ Read each observation's `evidence` and sampling/omission counts.
 `mirroredTangents` identifies static tangent-bearing parts with mirrored transforms;
 it does not establish a shading defect. `coplanarParts` samples triangle overlaps
 between parts; it neither proves visible z-fighting nor clears unsampled faces.
+The build warning `FLUSH_FACES` is the measurement to act on: it checks every
+triangle and names the worst pair with its area, a point and the plane's normal.
 Skinned, morphed and GPU-instanced uses are unexamined by these observations.
 Review candidate surfaces and normal-map lighting in the destination before
 changing geometry or material behavior.
