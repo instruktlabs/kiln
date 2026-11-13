@@ -1,37 +1,37 @@
 {
   "version": "kiln.asset.v1",
   "assetId": "a_65b2d411e2a14b41b490a575fc14e98a",
-  "revisionId": "r_de6797d6511b47a2a6da3c49448741a9",
-  "parentRevision": "r_6a593b8e58af4befb3db8f3c256b9cc2",
+  "revisionId": "r_c2fd70c01c754177bfa3df2dceb712f3",
+  "parentRevision": "r_de6797d6511b47a2a6da3c49448741a9",
   "name": "Trojan Walk-in House",
   "tags": [
     "troy",
     "house",
     "material-pass"
   ],
-  "createdAt": "2026-10-02T15:32:36.266Z",
-  "description": "Revision 2 (material pass): limestone footings and hearth, plastered mudbrick walls, floor, ramp and roof (troy-limestone, troy-mudbrick) mapped from world position in metres instead of one stretched tile per face; geometry, part names, the roof subtree and the ladder are revision 1's. Owner-directed material pass, 2 October 2026.",
+  "createdAt": "2026-11-13T00:21:27.701Z",
+  "description": "Trojan Walk-in House, child of r_de6797d6 with its model unchanged. Flush-face fix: CeilingTimbersAndRoofLadder: ceiling timbers 8 mm shorter (ends inside the side walls) and 4 mm deeper upward (tops 4…; FlatRoofAndRim: north and south rim strips 8 mm shorter and 2 mm lower so tops, bottoms and ends differ f…; StoneFootingsAndHearth: rear footing 4 mm wider each side so its sloped outer face leaves the side footings' plan…; FloorAndEntranceRamp: floor shifted 4 mm toward the ramp (ends -2.046 and 2.054) so its end faces leave the foo….",
   "attribution": {
-    "harness": "cli",
-    "author": "Claude Fable 5.1 (owner-directed)"
+    "model": "claude-sonnet-5-5",
+    "harness": "claude-code"
   },
   "editable": true,
   "files": {
     "asset.glb": {
-      "sha256": "sha256:d69aaca4db3b1963a28ea62fd5a54c9a2dbe277a083086f3c31e3270fd300b5b",
-      "bytes": 330524
+      "sha256": "sha256:95d35ce49e5ad9a60ae62cdce99ef420a1223788f388073aa331f822c7b27347",
+      "bytes": 330640
     },
     "source.kiln.js": {
-      "sha256": "sha256:b14b7847d3d0c92ba9784feeb0bb15fbe2279b85200a12b87da3dabf3b9f306c",
-      "bytes": 9412
+      "sha256": "sha256:38a3268cc83ca12a85366dd085e98e020a1a359917f27aa9a3b2608bd7496c4e",
+      "bytes": 9463
     },
     "preview.png": {
-      "sha256": "sha256:1af0c1bbfad7448af0b05623b569032a90ded88b886bbb2945ebd4e738689c6c",
-      "bytes": 408541
+      "sha256": "sha256:2c91d3ed88852805f7e2df9812ca036d067ac085ca647e13e7741fce3067b4ce",
+      "bytes": 412835
     }
   },
   "build": {
-    "engine": "sha256:efeef6a90e341b0c449b5c8a0227999448df227dee346c5181e08e5b596fabaf",
+    "engine": "sha256:ae628b3b5f18e33f8588e281f76c843c573d55647475b4312c5e61c62a0e5ae3",
     "options": {
       "gltfExporter": "legacy",
       "optimize": "off",
@@ -65,7 +65,7 @@
     "integration": {
       "schemaVersion": "kiln.integration-manifest.v1",
       "analyzerVersion": 1,
-      "artifactSha256": "d69aaca4db3b1963a28ea62fd5a54c9a2dbe277a083086f3c31e3270fd300b5b",
+      "artifactSha256": "95d35ce49e5ad9a60ae62cdce99ef420a1223788f388073aa331f822c7b27347",
       "units": "m",
       "axes": {
         "forward": "+X",
@@ -74,7 +74,7 @@
       },
       "bounds": {
         "min": [
-          -3.119999885559082,
+          -3.124000072479248,
           0,
           -2.619999885559082
         ],
@@ -84,12 +84,12 @@
           3.450000047683716
         ],
         "size": [
-          7.315868854522705,
+          7.319869041442871,
           3.962836265563965,
           6.069999933242798
         ],
         "center": [
-          0.5379345417022705,
+          0.5359344482421875,
           1.9814181327819824,
           0.4150000810623169
         ]
@@ -123,6 +123,21 @@
         "transparentMaterials": 0,
         "skinned": false
       },
+      "materialAdvice": [
+        {
+          "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+          "disposition": "advisory",
+          "reference": "web.portable.v1/standard",
+          "message": "6 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }).",
+          "measurement": {
+            "name": "imageCount",
+            "actual": 6,
+            "reference": 4,
+            "unit": "images"
+          },
+          "advice": "To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image."
+        }
+      ],
       "structuralQa": {
         "hasDefaultScene": true,
         "finiteBounds": true,
@@ -138,7 +153,7 @@
       "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
       "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
       "acceptance": "accepted",
-      "disposition": "warn",
+      "disposition": "pass",
       "dimensions": {
         "exportIntegrity": {
           "status": "pass",
@@ -164,22 +179,6 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_MudbrickWalls\" and \"Mesh_CeilingTimbersAndRoofLadder\" occupy the same space: they share 0.194 m³, which is 13.9% of the smaller part.",
-              "affected": {
-                "node": "Mesh_MudbrickWalls"
-              },
-              "measurement": {
-                "name": "intersectionVolumeFraction",
-                "actual": 0.138560942,
-                "expected": 0.001
-              },
-              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
-            },
-            {
-              "code": "GEO_PART_SELF_INTERSECTION",
-              "disposition": "observe",
-              "dimension": "visualQuality",
-              "profile": "geometry.selfIntersection",
               "message": "Parts \"Mesh_DoorLintel\" and \"Mesh_MudbrickWalls\" occupy the same space: they share 0.0356 m³, which is 13.6% of the smaller part.",
               "affected": {
                 "node": "Mesh_DoorLintel"
@@ -196,13 +195,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_StoneFootingsAndHearth\" and \"Mesh_FloorAndEntranceRamp\" occupy the same space: they share 0.211 m³, which is 8.0% of the smaller part.",
+              "message": "Parts \"Mesh_MudbrickWalls\" and \"Mesh_CeilingTimbersAndRoofLadder\" occupy the same space: they share 0.193 m³, which is 13.5% of the smaller part.",
               "affected": {
-                "node": "Mesh_StoneFootingsAndHearth"
+                "node": "Mesh_MudbrickWalls"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.080237084,
+                "actual": 0.134733237,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -212,13 +211,29 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_FlatRoofAndRim\" and \"Mesh_CeilingTimbersAndRoofLadder\" occupy the same space: they share 0.00400 m³, which is 0.3% of the smaller part.",
+              "message": "Parts \"Mesh_StoneFootingsAndHearth\" and \"Mesh_FloorAndEntranceRamp\" occupy the same space: they share 0.210 m³, which is 8.0% of the smaller part.",
+              "affected": {
+                "node": "Mesh_StoneFootingsAndHearth"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.079935912,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_FlatRoofAndRim\" and \"Mesh_CeilingTimbersAndRoofLadder\" occupy the same space: they share 0.0328 m³, which is 2.3% of the smaller part.",
               "affected": {
                 "node": "Mesh_FlatRoofAndRim"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.002851043,
+                "actual": 0.022909688,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -234,22 +249,33 @@
             "partVolumeUnmeasurablePairs": 0,
             "partVolumePairsNotReached": 0,
             "partVolumeLodAlternatePairs": 0,
-            "partVolumeSkipped": 0
+            "partVolumeSkipped": 0,
+            "openSurfaceCoverage": "complete-surface-pairs",
+            "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+            "openSurfaceContactTolerance": 0.005,
+            "openSurfaceOpenParts": 1,
+            "openSurfaceClosedParts": 7,
+            "openSurfaceCandidatePairs": 6,
+            "openSurfacePairsSampled": 6,
+            "openSurfacePairsNotReached": 0,
+            "openSurfaceVerticesUnresolved": 0,
+            "openSurfaceLodAlternatePairs": 0,
+            "openSurfaceSkipped": 0
           }
         },
         "runtimeCost": {
-          "status": "warn",
+          "status": "pass",
           "findings": [
             {
-              "code": "MATERIAL_IMAGE_COUNT_BUDGET",
-              "disposition": "warn",
+              "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+              "disposition": "observe",
               "dimension": "runtimeCost",
-              "profile": "web.portable.v1.standard",
-              "message": "6 images exceed the 4-image web.portable.v1/standard budget. Reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+              "profile": "web.portable.v1/standard",
+              "message": "6 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }). To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
               "measurement": {
                 "name": "imageCount",
                 "actual": 6,
-                "threshold": 4,
+                "expected": 4,
                 "unit": "images"
               }
             }
@@ -415,6 +441,11 @@
           "status": "evaluated"
         },
         {
+          "id": "GEO_OPEN_SURFACE_PENETRATION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
           "id": "REF_COMPARISON",
           "mode": "observe",
           "status": "notEvaluated",
@@ -424,6 +455,11 @@
           "id": "SWEEP_SELF_INTERSECTION",
           "mode": "observe",
           "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
         }
       ],
       "unevaluatedRequirements": []
@@ -1827,8 +1863,8 @@
       "delivered": "full-material",
       "materialFaithful": true,
       "exactArtifact": true,
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-      "inputGlbSha256": "sha256:d69aaca4db3b1963a28ea62fd5a54c9a2dbe277a083086f3c31e3270fd300b5b",
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "inputGlbSha256": "sha256:95d35ce49e5ad9a60ae62cdce99ef420a1223788f388073aa331f822c7b27347",
       "degraded": false,
       "reasonCodes": []
     },

@@ -1,8 +1,8 @@
 {
   "version": "kiln.asset.v1",
   "assetId": "wooden-horse",
-  "revisionId": "r_c58f87877fbf40548aed5cc051166a72",
-  "parentRevision": "r_7ee4d96189a4442bb0efdab61a46300f",
+  "revisionId": "r_235ebe9c60184eb38666f76703dc3b32",
+  "parentRevision": "r_c58f87877fbf40548aed5cc051166a72",
   "name": "Trojan Horse",
   "tags": [
     "troy",
@@ -11,28 +11,29 @@
     "hatch",
     "wheels"
   ],
-  "createdAt": "2026-10-05T22:25:12.325Z",
-  "description": "Attach both ears to the rotated head crest with a small base overlap. Retain hollow torso, belly hatch, wheel pivots, clips and pinned materials.",
+  "createdAt": "2026-11-13T00:23:13.340Z",
+  "description": "Trojan Horse, child of r_c58f8787 with its model unchanged. Flush-face fix: mane (every second of 7 boxes): box width 0.14 -> 0.144 so its x faces stand 2 mm outside its overlapping neighbours.",
   "attribution": {
-    "harness": "Codex"
+    "model": "claude-sonnet-5-5",
+    "harness": "claude-code"
   },
   "editable": true,
   "files": {
     "asset.glb": {
-      "sha256": "sha256:aeb622fb0a37233a707030a81a3e9b991fff0b2ed17924956bd6ab61c53d9770",
-      "bytes": 279516
+      "sha256": "sha256:d1b10019684539dc1ebbb5bd23429a4d529520983679e35583190d7741df8156",
+      "bytes": 279548
     },
     "source.kiln.js": {
-      "sha256": "sha256:38b61bc8e6ffdc047fd3e15b48c9a72605d5a1d0a0d1478f5899109bfb5a9c37",
-      "bytes": 12611
+      "sha256": "sha256:b032710f8f6a120d94a73ab7d3d3e6d40fe4b0b54b737179b02047afafa15b7c",
+      "bytes": 12627
     },
     "preview.png": {
-      "sha256": "sha256:f55e1ebc9b700646199b32d4f61ee9d31fa66e94741c39ae7b87f1e4839c142b",
-      "bytes": 323130
+      "sha256": "sha256:7b8b4a931ff3ece1c0790d1d5c1d84cedfe8b121446f69db3feb6f25c13e553d",
+      "bytes": 316288
     }
   },
   "build": {
-    "engine": "sha256:1525d682ada40cb79b1150f5081081e4d2782cd8f7d5790326c0d0693d0a99da",
+    "engine": "sha256:ae628b3b5f18e33f8588e281f76c843c573d55647475b4312c5e61c62a0e5ae3",
     "options": {
       "gltfExporter": "legacy",
       "optimize": "off",
@@ -64,7 +65,7 @@
     "integration": {
       "schemaVersion": "kiln.integration-manifest.v1",
       "analyzerVersion": 1,
-      "artifactSha256": "aeb622fb0a37233a707030a81a3e9b991fff0b2ed17924956bd6ab61c53d9770",
+      "artifactSha256": "d1b10019684539dc1ebbb5bd23429a4d529520983679e35583190d7741df8156",
       "units": "m",
       "axes": {
         "forward": "+X",
@@ -122,6 +123,21 @@
         "transparentMaterials": 0,
         "skinned": false
       },
+      "materialAdvice": [
+        {
+          "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+          "disposition": "advisory",
+          "reference": "web.portable.v1/standard",
+          "message": "6 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }).",
+          "measurement": {
+            "name": "imageCount",
+            "actual": 6,
+            "reference": 4,
+            "unit": "images"
+          },
+          "advice": "To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image."
+        }
+      ],
       "structuralQa": {
         "hasDefaultScene": true,
         "finiteBounds": true,
@@ -137,7 +153,7 @@
       "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
       "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
       "acceptance": "accepted",
-      "disposition": "warn",
+      "disposition": "pass",
       "dimensions": {
         "exportIntegrity": {
           "status": "pass",
@@ -419,13 +435,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_Torso\" and \"Mesh_static_dark\" occupy the same space: they share 0.0874 m³, which is 5.5% of the smaller part.",
+              "message": "Parts \"Mesh_Torso\" and \"Mesh_static_dark\" occupy the same space: they share 0.0875 m³, which is 5.5% of the smaller part.",
               "affected": {
                 "node": "Mesh_Torso"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.055243735,
+                "actual": 0.055282593,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -467,13 +483,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_static_timber\" and \"Mesh_static_dark\" occupy the same space: they share 0.0172 m³, which is 1.1% of the smaller part.",
+              "message": "Parts \"Mesh_static_timber\" and \"Mesh_static_dark\" occupy the same space: they share 0.0174 m³, which is 1.1% of the smaller part.",
               "affected": {
                 "node": "Mesh_static_timber"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.010862874,
+                "actual": 0.010966453,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -489,29 +505,40 @@
             "partVolumeUnmeasurablePairs": 0,
             "partVolumePairsNotReached": 0,
             "partVolumeLodAlternatePairs": 0,
-            "partVolumeSkipped": 0
+            "partVolumeSkipped": 0,
+            "openSurfaceCoverage": "complete-surface-pairs",
+            "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+            "openSurfaceContactTolerance": 0.005,
+            "openSurfaceOpenParts": 0,
+            "openSurfaceClosedParts": 14,
+            "openSurfaceCandidatePairs": 0,
+            "openSurfacePairsSampled": 0,
+            "openSurfacePairsNotReached": 0,
+            "openSurfaceVerticesUnresolved": 0,
+            "openSurfaceLodAlternatePairs": 0,
+            "openSurfaceSkipped": 0
           }
         },
         "runtimeCost": {
-          "status": "warn",
+          "status": "pass",
           "findings": [
             {
-              "code": "MATERIAL_IMAGE_COUNT_BUDGET",
-              "disposition": "warn",
+              "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+              "disposition": "observe",
               "dimension": "runtimeCost",
-              "profile": "web.portable.v1.standard",
-              "message": "6 images exceed the 4-image web.portable.v1/standard budget. Reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+              "profile": "web.portable.v1/standard",
+              "message": "6 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }). To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
               "measurement": {
                 "name": "imageCount",
                 "actual": 6,
-                "threshold": 4,
+                "expected": 4,
                 "unit": "images"
               }
             }
           ],
           "metrics": {
             "instanceabilityGrade": "C",
-            "instanceabilitySummary": "C (informational, not a QA verdict), set by 6 textures (over 4 lowers A/B to C). Also: 3 distinct materials (B at 2-3); 11 geometries; 16 draw calls.",
+            "instanceabilitySummary": "C (informational, not a QA verdict), set by 6 textures (over 4 lowers A/B to C). Also: 3 distinct materials (B at 2-3); 11 geometries; 16 draw calls. Optional advice, not a requirement: merging Warm straight wood grain + Warm straight wood grain (differ in baseColorFactor) would leave 2 materials (B at 2-3; other factors give C).",
             "uniqueGeometries": 11,
             "uniqueMaterials": 3,
             "meshNodes": 14,
@@ -670,6 +697,11 @@
           "status": "evaluated"
         },
         {
+          "id": "GEO_OPEN_SURFACE_PENETRATION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
           "id": "REF_COMPARISON",
           "mode": "observe",
           "status": "notEvaluated",
@@ -679,6 +711,11 @@
           "id": "SWEEP_SELF_INTERSECTION",
           "mode": "observe",
           "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
         }
       ],
       "unevaluatedRequirements": []
@@ -1778,8 +1815,8 @@
       "delivered": "full-material",
       "materialFaithful": true,
       "exactArtifact": true,
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-      "inputGlbSha256": "sha256:aeb622fb0a37233a707030a81a3e9b991fff0b2ed17924956bd6ab61c53d9770",
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "inputGlbSha256": "sha256:d1b10019684539dc1ebbb5bd23429a4d529520983679e35583190d7741df8156",
       "degraded": false,
       "reasonCodes": []
     },

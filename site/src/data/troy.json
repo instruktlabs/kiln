@@ -7,10 +7,10 @@
   "description": "A Bronze Age coast, battlefield and city. Explore Troy or fight as Achilles or Hector.",
   "models": {
     "profile": "runtime",
-    "path": "packs/troy/delivery-20261005-01/troy-runtime.zip",
-    "bytes": 8029101,
-    "sha256": "7d62f94b7a2bf56d9afa330691f7196bc725b96f40d39d623ab3488a0f197dc4",
-    "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/troy-runtime.zip"
+    "path": "packs/troy/delivery-20261113-01/troy-runtime.zip",
+    "bytes": 8029924,
+    "sha256": "31dadf59ffb22a18369dc1b9dd672e22e4dbdee55bef6ab401917137a85f4ecd",
+    "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/troy-runtime.zip"
   },
   "scene": {
     "release": "troy-20261005-07",
@@ -168,18 +168,18 @@
       "category": "Buildings",
       "description": "Trojan Walk-in House, from the Troy collection.",
       "assetId": "a_65b2d411e2a14b41b490a575fc14e98a",
-      "revisionId": "r_de6797d6511b47a2a6da3c49448741a9",
+      "revisionId": "r_c2fd70c01c754177bfa3df2dceb712f3",
       "metrics": {
         "triangles": 876,
         "meshes": 8,
         "materials": 3,
         "bounds": [
-          7.315868854522705,
+          7.319869041442871,
           3.962836265563965,
           6.069999933242798
         ],
         "boundsMin": [
-          -3.119999885559082,
+          -3.124000072479248,
           0,
           -2.619999885559082
         ],
@@ -201,9 +201,10 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 330524,
-        "sha256": "d69aaca4db3b1963a28ea62fd5a54c9a2dbe277a083086f3c31e3270fd300b5b",
-        "url": "/scene-packs/troy/troy-20261005-07/models/house.glb"
+        "path": "packs/troy/delivery-20261113-01/models/house.glb",
+        "bytes": 330640,
+        "sha256": "95d35ce49e5ad9a60ae62cdce99ef420a1223788f388073aa331f822c7b27347",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/house.glb"
       },
       "poster": {
         "src": "/scene-packs/troy/troy-20261005-07/media/house.webp",
@@ -225,7 +226,7 @@
       "category": "Buildings",
       "description": "Troy Citadel Temple Hall, from the Troy collection.",
       "assetId": "a_3a4fc574c2534f21977eeed0a3560f80",
-      "revisionId": "r_85c06c033d7c4f899a6f67c53069537a",
+      "revisionId": "r_67104831c85c4f879e889caf508527f2",
       "metrics": {
         "triangles": 2024,
         "meshes": 12,
@@ -262,9 +263,10 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 492876,
-        "sha256": "6609d8e4f5be92b88f5a14facad3cb9cb39f43d257bc2bcec51adeaca66f41ee",
-        "url": "/scene-packs/troy/troy-20261005-07/models/temple-hall.glb"
+        "path": "packs/troy/delivery-20261113-01/models/temple-hall.glb",
+        "bytes": 493168,
+        "sha256": "c106a6ff0c751ff9e552416f02a0b076034457a2e15dd2f0a4d604acb1835cb5",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/temple-hall.glb"
       },
       "poster": {
         "src": "/scene-packs/troy/troy-20261005-07/media/temple-hall.webp",
@@ -580,7 +582,7 @@
       "category": "Characters",
       "description": "Hector, from the Troy collection.",
       "assetId": "hector",
-      "revisionId": "r_90f525d443624ad58f5fadc3a7f52fb9",
+      "revisionId": "r_9f29a8b3f4204c5f892b6fca644b850b",
       "metrics": {
         "triangles": 2516,
         "meshes": 30,
@@ -638,9 +640,10 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 428112,
-        "sha256": "70b6e63f742413ef4d3348071b8f917507d521e9e80739fcf30aaff5de5e054a",
-        "url": "/scene-packs/troy/troy-20261005-07/models/hector.glb"
+        "path": "packs/troy/delivery-20261113-01/models/hector.glb",
+        "bytes": 428240,
+        "sha256": "cd89d602f977cd5180a00de9121d0f2c60b41ca1e27f190df7becacb0352a022",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/hector.glb"
       },
       "poster": {
         "src": "/scene-packs/troy/troy-20261005-07/media/hector.webp",
@@ -1334,7 +1337,7 @@
       "category": "Buildings",
       "description": "Trojan Horse, from the Troy collection.",
       "assetId": "wooden-horse",
-      "revisionId": "r_c58f87877fbf40548aed5cc051166a72",
+      "revisionId": "r_235ebe9c60184eb38666f76703dc3b32",
       "metrics": {
         "triangles": 2060,
         "meshes": 14,
@@ -1376,9 +1379,10 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 279516,
-        "sha256": "aeb622fb0a37233a707030a81a3e9b991fff0b2ed17924956bd6ab61c53d9770",
-        "url": "/scene-packs/troy/troy-20261005-07/models/wooden-horse.glb"
+        "path": "packs/troy/delivery-20261113-01/models/wooden-horse.glb",
+        "bytes": 279548,
+        "sha256": "d1b10019684539dc1ebbb5bd23429a4d529520983679e35583190d7741df8156",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/wooden-horse.glb"
       },
       "poster": {
         "src": "/scene-packs/troy/troy-20261005-07/media/wooden-horse.webp",
@@ -1400,7 +1404,7 @@
       "category": "Compositions",
       "description": "Battle before the gate, from the Troy collection.",
       "assetId": "battle-scene",
-      "revisionId": "r_4573e90abb4848c3b3d4996de6834184",
+      "revisionId": "r_97f6523694eb4b29a852ffeedd8babea",
       "metrics": {
         "triangles": 208178,
         "meshes": 130,
@@ -1555,9 +1559,10 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 14464712,
-        "sha256": "d2ba5e05718c7889134d51bb89680a7dc05b5b24100c4f3e9d89b18034991dfb",
-        "url": "/scene-packs/troy/troy-20261005-07/models/battle-scene-reference.glb"
+        "path": "packs/troy/delivery-20261113-01/models/battle-scene-reference.glb",
+        "bytes": 14464748,
+        "sha256": "8cba3af1b914dd2907a66bfc48f1be6beeaa15fbb9cc133c1a3ba7b3a390b8c7",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/battle-scene-reference.glb"
       },
       "poster": {
         "src": "/scene-packs/troy/troy-20261005-07/media/battle-scene-reference.webp",
