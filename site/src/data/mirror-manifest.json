@@ -7395,6 +7395,36 @@
       "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck.png",
       "bytes": 1568130,
       "sha256": "2e2eed5f0eb77899de5a231db588679ee202ffa403ca2b2da5d31ab82ac092db"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback.png",
+      "bytes": 1611532,
+      "sha256": "f60101692bee81595467eeb2c2f97c92e3f27f509efbd327d290735458a537f3"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan.png",
+      "bytes": 1551943,
+      "sha256": "c056340c9c36ba002cb200be1439604080d123fb1c623a35b52f25530a21516d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv.png",
+      "bytes": 1629536,
+      "sha256": "df431cf8d64eed5bf9f723dfb1145c8986b180ec5b291fdb49316f0319f8e4a5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup.png",
+      "bytes": 1429396,
+      "sha256": "23ef1e8d056f45117bbe27626b41b52624502fbfd699e665a179e5580ac92166"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck.png",
+      "bytes": 1553834,
+      "sha256": "7cfb2916081e4a61c3d9cd150c704ce8be3a3b96c60c12b4c98285fa6278fd1a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus.png",
+      "bytes": 1427974,
+      "sha256": "165135133db7ff96459fc9cfffdbe6ea0eb35c833531268bde9d119ee3c27b92"
     }
   ]
 }

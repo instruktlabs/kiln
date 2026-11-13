@@ -435,6 +435,42 @@
             "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
           ]
         }
+      },
+      {
+        "id": "vehicles-2026-11-13-14d298ef",
+        "pack": "vehicles",
+        "renderedOn": "2026-11-13",
+        "engine": {
+          "commit": "825dacd4eaed343ed1c6f7050f7248bc735cc5be",
+          "subject": "Render the Foundry Floor posters of the twelve flush-fix revisions",
+          "dirty": false
+        },
+        "service": {
+          "url": "http://127.0.0.1:8031",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:a8592bba54f59fe62af19701a8769a90aba42605d15f22491d957cd11d8e4f98",
+          "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+          "dependencies": {
+            "three": "0.187.0",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:173155fc4d02e984f6951805eba7f333693aaf111fb5399fea4da4c58ce86a8c",
+            "98d3c488-52e0-4c89-9fba-bb9cb4dab25f",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
+          ]
+        }
       }
     ]
   },
@@ -1268,15 +1304,15 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
     },
     "vehicles:hatchback": {
-      "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback.png",
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1616221,
-      "sha256": "cdbcc83c46d7115d77d62eed286819faacd7d4f2229810809a6a68e9a8067d08",
+      "bytes": 1611532,
+      "sha256": "f60101692bee81595467eeb2c2f97c92e3f27f509efbd327d290735458a537f3",
       "assetId": "generic-hatchback",
       "revisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
       "glb": {
-        "member": "packs/vehicles/r4-local-review/models/hatchback.glb",
+        "member": "packs/vehicles/r5-flush-fix/models/hatchback.glb",
         "bytes": 118752,
         "sha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0",
         "triangles": 3752
@@ -1291,20 +1327,21 @@
         "projection": "orthographic",
         "halfHeight": 2.5000604660398347
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "vehicles-2026-11-13-14d298ef"
     },
     "vehicles:sedan": {
-      "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.png",
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1554684,
-      "sha256": "8942008b658c3dd3fadf25492542661aa67ddfa76d50e62bcac23ee468c1a49a",
+      "bytes": 1551943,
+      "sha256": "c056340c9c36ba002cb200be1439604080d123fb1c623a35b52f25530a21516d",
       "assetId": "generic-sedan",
-      "revisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+      "revisionId": "r_35222363b36f4d2da720311bcad86215",
       "glb": {
-        "member": "packs/vehicles/r4-local-review/models/sedan.glb",
-        "bytes": 117780,
-        "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212",
+        "member": "packs/vehicles/r5-flush-fix/models/sedan.glb",
+        "bytes": 117972,
+        "sha256": "f925ac655662e848fd3a42b91468767ca0c6273d2487c39a97ed04cb41f1a30a",
         "triangles": 3758
       },
       "view": {
@@ -1317,20 +1354,21 @@
         "projection": "orthographic",
         "halfHeight": 2.7761483494651458
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "vehicles-2026-11-13-14d298ef"
     },
     "vehicles:suv": {
-      "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/suv.png",
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1630272,
-      "sha256": "2e78be010dc77763e9dfe7a0db4fab6c1fc4373cd195877fef5cb8c57d83e685",
+      "bytes": 1629536,
+      "sha256": "df431cf8d64eed5bf9f723dfb1145c8986b180ec5b291fdb49316f0319f8e4a5",
       "assetId": "generic-suv",
-      "revisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+      "revisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
       "glb": {
-        "member": "packs/vehicles/r4-local-review/models/suv.glb",
-        "bytes": 120120,
-        "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2",
+        "member": "packs/vehicles/r5-flush-fix/models/suv.glb",
+        "bytes": 119940,
+        "sha256": "9d0fca47fa6d1a4187b2e27efa3bd008f79e9fd8c25f54b104e4cad2d54ed922",
         "triangles": 3794
       },
       "view": {
@@ -1343,18 +1381,19 @@
         "projection": "orthographic",
         "halfHeight": 2.821521040491842
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "vehicles-2026-11-13-14d298ef"
     },
     "vehicles:pickup": {
-      "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/pickup.png",
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1436279,
-      "sha256": "92573abe8bd75ed18a4a9f55efedc6670d4f7fd009336d9188c9772eb3232884",
+      "bytes": 1429396,
+      "sha256": "23ef1e8d056f45117bbe27626b41b52624502fbfd699e665a179e5580ac92166",
       "assetId": "a_557b9bd6c2c34340804e802081a9b983",
       "revisionId": "r_218be4189a1b43e7b307c2263ba4f954",
       "glb": {
-        "member": "packs/vehicles/r4-local-review/models/pickup.glb",
+        "member": "packs/vehicles/r5-flush-fix/models/pickup.glb",
         "bytes": 170184,
         "sha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f",
         "triangles": 2992
@@ -1369,20 +1408,21 @@
         "projection": "orthographic",
         "halfHeight": 3.281270061061428
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "vehicles-2026-11-13-14d298ef"
     },
     "vehicles:box-truck": {
-      "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.png",
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1555264,
-      "sha256": "83662d6b537924cad8ffefb9b45d050d2f2ffe4b4c615547881c5eacc537e9b7",
+      "bytes": 1553834,
+      "sha256": "7cfb2916081e4a61c3d9cd150c704ce8be3a3b96c60c12b4c98285fa6278fd1a",
       "assetId": "a_2092ca0610c749b386c14c07dbaf4236",
-      "revisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+      "revisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
       "glb": {
-        "member": "packs/vehicles/r4-local-review/models/box-truck.glb",
-        "bytes": 169728,
-        "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420",
+        "member": "packs/vehicles/r5-flush-fix/models/box-truck.glb",
+        "bytes": 169724,
+        "sha256": "deed8053c8c9675a5687ecdd2ad5f1715177fce893607b74757b5b0f12503cc8",
         "triangles": 3546
       },
       "view": {
@@ -1395,18 +1435,19 @@
         "projection": "orthographic",
         "halfHeight": 4.167687406077087
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "vehicles-2026-11-13-14d298ef"
     },
     "vehicles:transit-bus": {
-      "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus.png",
+      "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1417978,
-      "sha256": "9c066499fca58bd3c5c18ac27c035dc0892ce1808157416af1ea3fe34479f723",
+      "bytes": 1427974,
+      "sha256": "165135133db7ff96459fc9cfffdbe6ea0eb35c833531268bde9d119ee3c27b92",
       "assetId": "a_a8c030b2570f4ae5aa54eefbd3767f4c",
       "revisionId": "r_85ff097a61384efab445c55372d3b6f5",
       "glb": {
-        "member": "packs/vehicles/r4-local-review/models/transit-bus.glb",
+        "member": "packs/vehicles/r5-flush-fix/models/transit-bus.glb",
         "bytes": 194148,
         "sha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067",
         "triangles": 3684
@@ -1421,7 +1462,8 @@
         "projection": "orthographic",
         "halfHeight": 6.1368618130993555
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "vehicles-2026-11-13-14d298ef"
     },
     "foundry-floor:foup": {
       "path": "media/rig/review-neutral-v1/foundry-floor/ff3/foup.png",

@@ -268,13 +268,13 @@
         "wheelsHiddenBeyondMetres": 250.3
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic five-door hatchback with a two-box roofline, a steep tailgate and taillight clusters at the rear corners. Its paint is a neutral near-white, so a scene can tint each instance.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback.png",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback.png",
         "sourceRevisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
         "exactRevision": true,
         "rig": "review-neutral-v1"
@@ -786,17 +786,16 @@
         "wheelsHiddenBeyondMetres": 250
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic four-door sedan with a low beltline, a notch-back deck and a full-width rear light bar. Authored as the drivable car of the Golden Gate scene, so its rear stays clean for a chase camera; the paint is a neutral near-white for scene tinting.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.png",
-        "sourceRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan.png",
+        "sourceRevisionId": "r_35222363b36f4d2da720311bcad86215",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/vehicles/r5-flush-fix/review/sedan.webp",
@@ -1306,17 +1305,16 @@
         "wheelsHiddenBeyondMetres": 249.9
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic five-door SUV with a tall, square greenhouse, raised ground clearance, larger wheel arches and a steep liftgate. Its paint is a neutral near-white for scene tinting.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/suv.png",
-        "sourceRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv.png",
+        "sourceRevisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/vehicles/r5-flush-fix/review/suv.webp",
@@ -1871,13 +1869,13 @@
         "wheelsHiddenBeyondMetres": 249.9
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic crew-cab pickup truck with a short bed. Made for traffic seen from about 3 m to 1 km, it steps from a detailed cab down to a boxy silhouette across three tiers.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/pickup.png",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup.png",
         "sourceRevisionId": "r_218be4189a1b43e7b307c2263ba4f954",
         "exactRevision": true,
         "rig": "review-neutral-v1"
@@ -2233,17 +2231,16 @@
         "wheelsHiddenBeyondMetres": 250
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic class 6 cab-over box truck with dual rear wheels. The cab takes the paint tint; the cargo box has its own untinted near-white material.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.png",
-        "sourceRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck.png",
+        "sourceRevisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       },
       "reviewImage": {
         "src": "/media/vehicles/r5-flush-fix/review/box-truck.webp",
@@ -2645,13 +2642,13 @@
         "wheelsHiddenBeyondMetres": 250.3
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic 40 ft low-floor transit bus with two doors on the right, a two-tone body (paint above, trim below), dual rear wheels and a roof equipment pod. No operator livery, text or numbers.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus.png",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus.png",
         "sourceRevisionId": "r_85ff097a61384efab445c55372d3b6f5",
         "exactRevision": true,
         "rig": "review-neutral-v1"
