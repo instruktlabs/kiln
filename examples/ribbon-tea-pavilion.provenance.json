@@ -1,5 +1,5 @@
 {
-  "sourceHash": "81c0880f18dc90290d667c9101ffbd08e0b74f48ecd605389e4de7a0bd62f054",
+  "sourceHash": "ca3bd07e49c614362116cba4e4c1916a12a11f5081d06429eb018989170b501f",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity",
   "authoredDate": "2026-09-05",
@@ -8,12 +8,19 @@
     "sourceAccess": "Fresh project-local authoring workspace with a brief, installed skills and Kiln tools.",
     "inheritedContext": "Fresh independent authoring conversation.",
     "startingExample": "None supplied.",
-    "humanIntervention": "Maintainer supplied the brief and reviewed actual exports and uniform gallery posters. Final source bytes are preserved from the model export.",
+    "humanIntervention": "Maintainer supplied the brief and reviewed actual exports and uniform gallery posters. Final source bytes are preserved from the model export. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Actual GPU images inspected independently. A restrained architectural study; structural engineering was not verified.",
     "evaluationPackageHash": "0d457e8f8763730079da013abfa6662aadc02843f090fcae594c0f711399d16c",
     "evaluationGlbHash": "70ba9966671238d98a97bf1a220e470024422ca9f86ca26a635a9636dcef533d",
-    "poster": "Gallery GPU render of this exact source. The separate poster receipt records image, camera, renderer, and the artifact hash of the GLB bytes the image was rendered from.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "81c0880f18dc90290d667c9101ffbd08e0b74f48ecd605389e4de7a0bd62f054",
+        "sourceHash": "ca3bd07e49c614362116cba4e4c1916a12a11f5081d06429eb018989170b501f",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). TsukubaiWater: raised 2 mm (y offset 0.43 -> 0.432) so the water top sits above the basin stone top"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

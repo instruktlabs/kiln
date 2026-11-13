@@ -1,5 +1,5 @@
 {
-  "sourceHash": "13f50784b88b7e018bd3eb27e1c04c99845b30d9f4e66ef8159ffddaf6c16139",
+  "sourceHash": "669dabfd56f78b88ec2c00107121c325f3f7a8ce63103f0f96eee14bf8dede0f",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "13f50784b88b7e018bd3eb27e1c04c99845b30d9f4e66ef8159ffddaf6c16139",
+        "sourceHash": "669dabfd56f78b88ec2c00107121c325f3f7a8ce63103f0f96eee14bf8dede0f",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). Panel_*_Backing (4): thickened 4->8 mm inward (centre 2 mm inward), height 76->72 mm, length 220->216 mm so no face shares a plane with the Trim parts; CrankEscutcheonCenter: length 8->7 mm, centre z +0.5 mm so its inner face no longer lies on the escutcheon back plane; MicaDiaphragm: moved 1.5 mm down in the sound box pivot (stays buried inside SoundBoxCase as before) so it is no longer 0.5 mm from the case top"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

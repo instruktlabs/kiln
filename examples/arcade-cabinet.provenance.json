@@ -1,5 +1,5 @@
 {
-  "sourceHash": "b824524867c88ffc1fc0c67fb9152c16cbfbb5bb207f91f7e27ee42994470409",
+  "sourceHash": "c21c8668679e02ee99a12c296b9542f7f0883d2dcbff976a75e468521c8fa3af",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Not recorded",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "Not recorded",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 5 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "b824524867c88ffc1fc0c67fb9152c16cbfbb5bb207f91f7e27ee42994470409",
+        "sourceHash": "c21c8668679e02ee99a12c296b9542f7f0883d2dcbff976a75e468521c8fa3af",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). MonitorRearChamber: boxGeo 0.420x0.180x0.588 -> 0.412x0.180x0.580 so its sides are 4 mm inside the bezel frame sides; MonitorSafetyGlass: moved 4 mm further out along the screen normal (offset 0.016 -> 0.020 sin, 0.012 cos) off the CRT and bezel inner front faces; SideArt_R/L: art geometry inset about 4 mm (scaled 0.452/0.46 x 1.292/1.30 about its centre) so its edge no longer lies on the border edge; CoinReturnPocket_R/L: depth 0.024 -> 0.022, centre x 0.278 -> 0.279 so the back face is 2 mm inside the door inner back plane; front face unchanged; RearCasterBracket_R/L: width 0.040 -> 0.036, centre x -0.34 -> -0.338 so the back face is 4 mm in from the cabinet floor back face"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

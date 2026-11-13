@@ -1,5 +1,5 @@
 {
-  "sourceHash": "c368480584e957410a252651f8e2254b3e8823be5cbc94324d65a12d5f5c6d90",
+  "sourceHash": "55fbe3869b5e34391f27f16234f7ab711a9e38665cb16abfd9fbc2059833b8a3",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity",
   "authoredDate": "2026-09-05",
@@ -8,12 +8,19 @@
     "sourceAccess": "Fresh project-local authoring workspace with a brief, installed skills and Kiln tools.",
     "inheritedContext": "Fresh independent authoring conversation.",
     "startingExample": "None supplied.",
-    "humanIntervention": "Maintainer supplied the brief and reviewed actual exports and uniform gallery posters. Final source bytes are preserved from the model export.",
+    "humanIntervention": "Maintainer supplied the brief and reviewed actual exports and uniform gallery posters. Final source bytes are preserved from the model export. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Actual GPU images inspected independently. A terminal module with deliberately ending cables. Pale cabin glazing and one completed visual refinement remain limitations; the run exhausted its tool-call budget.",
     "evaluationPackageHash": "0d457e8f8763730079da013abfa6662aadc02843f090fcae594c0f711399d16c",
     "evaluationGlbHash": "31e04202876fe738b5c47546785ca67ee4461e3dc06972052898aef094521869",
-    "poster": "Gallery GPU render of this exact source. The separate poster receipt records image, camera, renderer, and the artifact hash of the GLB bytes the image was rendered from.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "c368480584e957410a252651f8e2254b3e8823be5cbc94324d65a12d5f5c6d90",
+        "sourceHash": "55fbe3869b5e34391f27f16234f7ab711a9e38665cb16abfd9fbc2059833b8a3",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). GantryCross_Rear and GantryCross_Front: boxGeo x width 0.18 -> 0.174 so each x face sits 3 mm inside the BentTieBeam x faces"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

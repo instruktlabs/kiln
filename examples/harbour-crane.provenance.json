@@ -1,5 +1,5 @@
 {
-  "sourceHash": "0aa97fb40d1e35a3b12a33908d885fc461978975af9d3a5314f9ae784486aff8",
+  "sourceHash": "589ed2bd70b44292aaa0dddd565dc81cbacd197afa6c42f395e2b3e587381314",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "0aa97fb40d1e35a3b12a33908d885fc461978975af9d3a5314f9ae784486aff8",
+        "sourceHash": "589ed2bd70b44292aaa0dddd565dc81cbacd197afa6c42f395e2b3e587381314",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). CounterweightCradle: boxGeo 2.6x2.5x4.4 -> 2.64x2.54x4.4 so its bottom, top and rear faces stand 20 mm proud of the girders; BallastBlock: height 2.1 -> 2.06 so its bottom is 20 mm off the diaphragm bottom plane"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

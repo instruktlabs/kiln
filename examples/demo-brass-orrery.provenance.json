@@ -1,16 +1,23 @@
 {
-  "sourceHash": "23d56283da476ff69c39397722ba17a78e4fc247bf4d60e384f5a4e2173ca79b",
+  "sourceHash": "cd48346101557baa6e92161abc89db0ae2f42fbb69d698dfed4e5ef2ccd178c8",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "authoredDate": "2026-09-09",
   "provenance": {
     "attribution": "Recorded demo session; model credit supplied only where the retained run identifies it.",
     "sourceAccess": "See retained demo run; no stronger isolation claim is made.",
-    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte.",
+    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Authoring feedback and shaded demo previews where available. Not a destination-runtime acceptance claim.",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
     "evaluationGlbHash": "2c3d19a0a1f3842184828a28207106306984391cf836786eae41065808caf3d2",
-    "posterReceipt": {
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "23d56283da476ff69c39397722ba17a78e4fc247bf4d60e384f5a4e2173ca79b",
+        "sourceHash": "cd48346101557baa6e92161abc89db0ae2f42fbb69d698dfed4e5ef2ccd178c8",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). IdlerPinion0..5: all six pinions raised 2 mm (y + 0.002) so none shares a plane with the planet gear at the same level"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

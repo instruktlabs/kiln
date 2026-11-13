@@ -1,5 +1,5 @@
 {
-  "sourceHash": "32223e1d94c3034d14f5d3f401fd7fbb5da3e471ddf92c3acdc319a85a03106d",
+  "sourceHash": "5d472bfd6b58f47b2335073e7b5c4c288cbee8523dd97b633a7666bd76f00a7a",
   "model": "Muse Spark 1.3",
   "harness": "OpenCode",
   "authoredDate": "2026-09-05",
@@ -8,12 +8,19 @@
     "sourceAccess": "Installed Kiln author/refine/QA skills and tool definitions, plus the supplied Muse Q1 instrument source; no engine implementation or other finished examples.",
     "inheritedContext": "Fresh curation conversation with a supplied source from a separate Muse authoring journey.",
     "startingExample": "The earlier Muse optical instrument, source f21fc9f7ab93dfe56720232007668ba95fc541d6071454a7ba12289c5a519df0.",
-    "humanIntervention": "Maintainer supplied a creative refinement brief and reviewed returned images; no hand-edited geometry. Model redesigned the instrument and repaired a bore gap by reference.",
+    "humanIntervention": "Maintainer supplied a creative refinement brief and reviewed returned images; no hand-edited geometry. Model redesigned the instrument and repaired a bore gap by reference. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "GPU whole, part-relative, axial-opening and locked-motion views were delivered. Independent review found coherent geometry, bright brass highlights and smeared lens reflections. No engineering or optical-performance validation.",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
     "evaluationPackageHash": "1d3bf676c9439ab9507e797118b263f2b6f6ce70a8db1c4e6b48c1be022bb806",
     "evaluationGlbHash": "1c5def38ea152a30d5afee13c958eeed05858c7057e9048a0379fd515a820aa4",
-    "posterReceipt": {
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "32223e1d94c3034d14f5d3f401fd7fbb5da3e471ddf92c3acdc319a85a03106d",
+        "sourceHash": "5d472bfd6b58f47b2335073e7b5c4c288cbee8523dd97b633a7666bd76f00a7a",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). ObjectiveLens: moved down 2 mm (y 0.288 -> 0.286) so its bottom is inside BoreFloor instead of on its top plane; FinderLens: moved down 2 mm (y 0.212 -> 0.210) so it sinks into the FinderTube end instead of sitting on its end plane; VialGlass: length 0.070 -> 0.074 so each end pokes 2 mm into the brass caps instead of sharing their plane"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

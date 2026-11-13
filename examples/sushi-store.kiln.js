@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 11 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // A sushi-ya: the shopfront, not the cart.
 //
 // Authored by: Claude Opus 5, via Claude Code. Every part below was written by
@@ -197,10 +198,10 @@ async function build() {
 
   // ---------- Shell ----------
   await box('Plinth', PLAN_LEN + 0.50, PLINTH_Y, HZ * 2 + 0.24, [PLAN_MID - 0.14, PLINTH_Y / 2, 0], concrete, { r: 0.03 });
-  await box('BackBoard', 0.16, 1.42, HZ * 2, [DEPTH.BACK - 0.08, PLINTH_Y + 0.71, 0], char);
+  await box('BackBoard', 0.16, 1.42, HZ * 2 - 0.004, [DEPTH.BACK - 0.08, PLINTH_Y + 0.71, 0], char);
   await box('BackPlaster', 0.14, UPPER_Y - PLINTH_Y - 1.50, HZ * 2 - 0.06,
     [DEPTH.BACK - 0.08, PLINTH_Y + 1.42 + (UPPER_Y - PLINTH_Y - 1.50) / 2, 0], plaster);
-  bar('BackBand', 0.22, 0.10, HZ * 2, [DEPTH.BACK - 0.08, PLINTH_Y + 1.47, 0], char);
+  bar('BackBand', 0.22, 0.104, HZ * 2, [DEPTH.BACK - 0.08, PLINTH_Y + 1.47, 0], char);
   await box('Floor', PLAN_LEN, 0.08, HZ * 2 - 0.20, [PLAN_MID, PLINTH_Y + 0.04, 0], hinoki);
   await box('Ceiling', PLAN_LEN, 0.10, HZ * 2 - 0.20, [PLAN_MID, HEAD_Y + 0.20, 0], hinoki);
 
@@ -216,8 +217,8 @@ async function build() {
     bar(`SideBand_${s}`, PLAN_LEN, 0.10, 0.22, [PLAN_MID, PLINTH_Y + 1.47, sz * WALL_Z], char);
     // Sode-kabe: the short return that wraps the corner post, so the front and
     // the side are joined by a piece of building rather than a hard edge.
-    await box(`SideReturn_${s}`, 0.22, UPPER_Y - PLINTH_Y, 0.30,
-      [DEPTH.POST - 0.13, (UPPER_Y + PLINTH_Y) / 2, sz * (HZ + 0.02)], char);
+    await box(`SideReturn_${s}`, 0.222, UPPER_Y - PLINTH_Y - 0.004, 0.30,
+      [DEPTH.POST - 0.131, (UPPER_Y + PLINTH_Y) / 2 - 0.002, sz * (HZ + 0.02)], char);
   }
   // One side gets two small upper windows. One side. That is the whole point.
   for (const wx of [-1.10, -2.10]) {
@@ -237,7 +238,7 @@ async function build() {
   await box('WallSill', 0.30, 0.77, 2.14, [DEPTH.WALL - 0.15, PLINTH_Y + 0.385, 1.04], plaster);
   await box('WallPier', 0.30, HEAD_Y - PLINTH_Y, 0.16, [DEPTH.WALL - 0.15, (HEAD_Y + PLINTH_Y) / 2, MID_Z], plaster);
   for (const [zc, nm] of [[-2.04, 'DoorL'], [-0.26, 'DoorR'], [-0.10, 'WinL'], [2.04, 'WinR']]) {
-    bar(`Reveal_${nm}`, 0.30, HEAD_Y - PLINTH_Y, 0.03, [DEPTH.WALL - 0.15, (HEAD_Y + PLINTH_Y) / 2, zc], plaster);
+    bar(`Reveal_${nm}`, 0.296, HEAD_Y - PLINTH_Y, 0.03, [DEPTH.WALL - 0.15, (HEAD_Y + PLINTH_Y) / 2, zc], plaster);
   }
 
   // ---------- Posts: the outermost layer of the wall itself ----------
@@ -247,7 +248,7 @@ async function build() {
     // Stone footing under each post. Timber never touches the ground in this
     // tradition, and the little grey block at the base of a post is one of
     // those details nobody names and everybody misses.
-    await box(`PostFooting_${s}`, 0.32, 0.20, 0.30, [DEPTH.POST - 0.12, PLINTH_Y + 0.06, sz * POST_Z], concrete, { r: 0.02 });
+    await box(`PostFooting_${s}`, 0.32, 0.204, 0.30, [DEPTH.POST - 0.12, PLINTH_Y + 0.062, sz * POST_Z], concrete, { r: 0.02 });
   }
   await box('MidPost', 0.22, HEAD_Y - PLINTH_Y + 0.30, 0.18, [DEPTH.POST - 0.13, (HEAD_Y + PLINTH_Y) / 2 + 0.15, MID_Z], char);
   // Nageshi: the horizontal tie over the openings that visually carries the
@@ -274,13 +275,13 @@ async function build() {
     bar(`Mullion_${i}`, 0.09, HEAD_Y - SILL_Y, 0.07,
       [DEPTH.LATTICE - 0.05, (SILL_Y + HEAD_Y) / 2, WIN_Z0 + (WIN_Z1 - WIN_Z0) * (i / 4)], char);
   }
-  bar('WindowTransom', 0.09, 0.07, WIN_Z1 - WIN_Z0, [DEPTH.LATTICE - 0.05, HEAD_Y - 0.42, (WIN_Z0 + WIN_Z1) / 2], char);
+  bar('WindowTransom', 0.094, 0.07, WIN_Z1 - WIN_Z0, [DEPTH.LATTICE - 0.05, HEAD_Y - 0.42, (WIN_Z0 + WIN_Z1) / 2], char);
 
   // ---------- Interior, visible through the glass ----------
   // A metre of parallax between the glass and the counter, which is what the
   // whole depth argument was for.
   await box('Counter', 0.72, 0.10, HZ * 2 - 0.70, [DEPTH.COUNTER, 1.06, 0.10], hinoki);
-  await box('CounterApron', 0.10, 0.86, HZ * 2 - 0.70, [DEPTH.COUNTER + 0.31, 0.62, 0.10], hinoki);
+  await box('CounterApron', 0.098, 0.86, HZ * 2 - 0.70, [DEPTH.COUNTER + 0.309, 0.62, 0.10], hinoki);
   for (let i = 0; i < 5; i++) {
     const cz = -1.30 + i * 0.66;
     createPart(`StoolSeat_${i}`, cylinderGeo(0.17, 0.17, 0.07, 14), char,
@@ -365,7 +366,7 @@ async function build() {
   bar('NorenRod', 0.05, 0.05, DOOR_Z1 - DOOR_Z0 + 0.20, [DEPTH.NOREN, NOREN_TOP + 0.06, (DOOR_Z0 + DOOR_Z1) / 2], char);
   const NOREN_SWING = [0, 9, -11, 0];
   for (let i = 0; i < 4; i++) {
-    await box(`NorenPanel_${i}`, 0.02, 0.62, 0.44, [DEPTH.NOREN, NOREN_TOP - 0.31, DOOR_Z0 + 0.22 + i * 0.445],
+    await box(`NorenPanel_${i}`, 0.02, 0.62, 0.44, [DEPTH.NOREN + (i === 2 ? 0.004 : 0), NOREN_TOP - 0.31, DOOR_Z0 + 0.22 + i * 0.445],
       noren, { rotation: [NOREN_SWING[i], 0, 0], r: 0.006 });
   }
   // The shop name across the noren, in cream. Three glyph cells, each a real
@@ -402,7 +403,7 @@ async function build() {
       });
       // Gatou: the round cap that closes each cover tile at the eave. Tiny, and
       // the single most identifiable feature of a Japanese roof edge.
-      createPart(`${name}_Gatou_${i}`, cylinderXGeo(0.075, 0.075, 0.05, 12), mat, {
+      createPart(`${name}_Gatou_${i}`, cylinderXGeo(0.075, 0.075, 0.054, 12), mat, {
         position: [xEave + sign * 0.02, yEave + 0.055, cz], parent: root,
       });
     }
@@ -410,7 +411,7 @@ async function build() {
   };
 
   await kawaraSlope('ShopEave', DEPTH.WALL + 0.02, BAND_Y + 0.24, DEPTH.EAVE_1, BAND_Y + 0.02, HZ + 0.16, 13, tile);
-  bar('ShopEaveFlashing', 0.10, 0.14, (HZ + 0.16) * 2, [0.02, BAND_Y + 0.30, 0], tile);
+  bar('ShopEaveFlashing', 0.104, 0.14, (HZ + 0.16) * 2, [0.022, BAND_Y + 0.30, 0], tile);
   // Rafter tails under the canopy, an odd count against the tile pitch so the
   // two rhythms never line up. Aligned rhythms are what make architecture look
   // procedurally generated.
@@ -481,7 +482,7 @@ async function build() {
     const xf = nm === 'Front' ? GABLE_X1 : GABLE_X0;
     const y0 = UPPER_Y - 0.08;
     const y1 = roofUnder(xf);
-    await box(`${nm}Frieze`, 0.26, y1 - y0, wz, [wx, (y0 + y1) / 2, 0], plaster);
+    await box(`${nm}Frieze`, nm === 'Front' ? 0.262 : 0.26, y1 - y0, wz, [nm === 'Front' ? wx + 0.001 : wx, (y0 + y1) / 2, 0], plaster);
   }
   // Exposed rafter tails under the main eave, the same detail as the canopy but
   // at the larger scale. A metre of unsupported overhang with a blank soffit is

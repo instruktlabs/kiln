@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = { name: 'Mechanical Dragonfly', category: 'prop', role: 'prop' };
 
 function build() {
@@ -62,7 +63,7 @@ function build() {
     });
     // segment ring
     createPart('AbdomenRing' + i, torusGeo(r, 0.012, 6, 18), darkBrass, {
-      position: [x + 0.06, bodyY - 0.01 - i * 0.008, 0], rotation: [0, 90, 0], parent: root
+      position: [x + 0.064, bodyY - 0.01 - i * 0.008, 0], rotation: [0, 90, 0], parent: root
     });
   }
   // Tail tip stinger

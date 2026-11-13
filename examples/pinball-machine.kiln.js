@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 4 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: opencode-go/glm-5.3-flash, via opencode.
 //
 // Repaired by hand afterwards: the backbox was built entirely behind the
@@ -66,7 +67,7 @@ async function build() {
   }
 
   // Cabinet
-  add('CabinetBottom', boxGeo(1.34, 0.03, 0.476), woodInner, [-0.15, 0.59, 0]);
+  add('CabinetBottom', boxGeo(1.332, 0.03, 0.476), woodInner, [-0.15, 0.592, 0]);
   add('CabinetFrontWall', boxGeo(0.03, 0.19, 0.52), woodDark, [0.505, 0.67, 0]);
   add('CabinetBackWall', boxGeo(0.03, 0.27, 0.52), woodDark, [-0.805, 0.71, 0]);
   const wallProfile = [[-0.82, 0], [0.52, 0], [0.52, 0.19], [-0.82, 0.27]];
@@ -79,8 +80,8 @@ async function build() {
 
   add('PlayfieldBoard', boxGeo(1.13, 0.02, 0.46), pfBlue, [0, -0.011, 0], null, pf);
   add('Glass', boxGeo(1.14, 0.005, 0.475), glassMat, [0, 0.0565, 0], null, pf);
-  add('SideRailRight', boxGeo(1.14, 0.05, 0.024), chrome, [0.005, 0.025, 0.248], null, pf);
-  add('SideRailLeft', boxGeo(1.14, 0.05, 0.024), chrome, [0.005, 0.025, -0.248], null, pf);
+  add('SideRailRight', boxGeo(1.14, 0.05, 0.024), chrome, [0.005, 0.025, 0.246], null, pf);
+  add('SideRailLeft', boxGeo(1.14, 0.05, 0.024), chrome, [0.005, 0.025, -0.246], null, pf);
   add('LockdownBar', await roundedBoxGeo(0.055, 0.026, 0.50, 0.01), chrome, [0.575, 0.068, 0], null, pf);
 
   // Shooter lane
@@ -189,7 +190,7 @@ async function build() {
     add('BannerLetter' + i, decalBox(0.018, 0.03, 0.003), blackTrim, [-0.611, 1.655, lz], [0, 90, 0]);
 
   // Score window and reels
-  add('ScoreWindowGlass', boxGeo(0.01, 0.07, 0.40), glassMat, [-0.626, 0.955, 0]);
+  add('ScoreWindowGlass', boxGeo(0.011, 0.07, 0.396), glassMat, [-0.6265, 0.957, 0]);
   for (const [i, lz] of [-0.135, -0.045, 0.045, 0.135].entries()) {
     add('ScoreReel' + i, cylinderXGeo(0.03, 0.03, 0.05, 14), reelWhite, [-0.68, 0.955, lz]);
     add('ScoreDigits' + i, decalBox(0.022, 0.026, 0.002), blackTrim, [-0.6545, 0.955, lz], [0, 90, 0]);
@@ -216,8 +217,8 @@ async function build() {
   for (const s of [1, -1]) {
     add('SideStripeOrange' + s, boxGeo(0.85, 0.04, 0.005), artOrange, [-0.10, 0.665, s * 0.2625]);
     add('SideStripeCream' + s, boxGeo(0.85, 0.015, 0.005), artCream, [-0.10, 0.635, s * 0.263]);
-    add('SideDiscOuter' + s, cylinderZGeo(0.045, 0.045, 0.005, 18), artOrange, [-0.42, 0.655, s * 0.263]);
-    add('SideDiscInner' + s, cylinderZGeo(0.028, 0.028, 0.006, 18), artCream, [-0.42, 0.655, s * 0.264]);
+    add('SideDiscOuter' + s, cylinderZGeo(0.045, 0.045, 0.005, 18), artOrange, [-0.42, 0.655, s * 0.265]);
+    add('SideDiscInner' + s, cylinderZGeo(0.028, 0.028, 0.006, 18), artCream, [-0.42, 0.655, s * 0.267]);
     add('BackboxSideDisc' + s, cylinderZGeo(0.06, 0.06, 0.004, 18), bgOrange, [-0.72, 1.35, s * 0.236]);
   }
 

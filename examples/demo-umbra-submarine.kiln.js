@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {name:'UMBRA SSN - Nuclear Submarine',category:'vehicle',role:'vehicle'};
 function build(){
  const root=createRoot('UMBRA_SSN');
@@ -33,7 +34,7 @@ function build(){
  function foil(chord,width,cx=0){const p=[];const N=Q.foil;for(let i=0;i<=N;i++){let t=i/N;let z=5*width*(.2969*Math.sqrt(t)-.126*t-.3516*t*t+.2843*t*t*t-.1036*t*t*t*t);p.push([cx+chord/2-chord*t,z]);}for(let i=N-1;i>0;i--){let t=i/N;let z=5*width*(.2969*Math.sqrt(t)-.126*t-.3516*t*t+.2843*t*t*t-.1036*t*t*t*t);p.push([cx+chord/2-chord*t,-z]);}return p;}
  add('Dorsal_Casing',loftProfiles([{profile:foil(69,4.1),frame:{origin:[4,10.8,0]}},{profile:foil(68,3.6),frame:{origin:[4,11.55,0]}}]),hull);
  add('Tall_Streamlined_Sail',loftProfiles([
- {profile:foil(18,4.9),frame:{origin:[13,10.8,0]}},
+ {profile:foil(18,4.9),frame:{origin:[13,10.78,0]}},
  {profile:foil(16.8,4.3),frame:{origin:[13.2,13,0]}},
  {profile:foil(15.3,3.8),frame:{origin:[13.7,P.sailTop-.45,0]}},
  {profile:foil(14.7,3.5),frame:{origin:[13.65,P.sailTop,0]}}]),panel);

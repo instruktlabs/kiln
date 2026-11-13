@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 5 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // A 1980s upright arcade cabinet.
 //
 // Where the street lamp is a study in revolved profiles and the diving helmet in
@@ -228,6 +229,8 @@ async function build() {
   createPart('SideArtBorder_L', sideArtBackerGeo, plasticBlack, { position: [0, 0, -0.321], parent: root });
 
   const sideArtGeo = await uv(await extrudeProfile(sideArtPoly, { depth: 0.003, axis: 'z' }));
+  // Inset the art about 4 mm so its edge sits inside the border's edge instead of on it.
+  sideArtGeo.translate(0.04, -1.03, 0).scale(0.452 / 0.46, 1.292 / 1.30, 1).translate(-0.04, 1.03, 0);
   createPart('SideArt_R', sideArtGeo, sideArtMat, { position: [0, 0, 0.324], parent: root });
   createPart('SideArt_L', sideArtGeo, sideArtMat, { position: [0, 0, -0.324], parent: root });
 
@@ -262,8 +265,8 @@ async function build() {
   }
 
   for (const sz of [-1, 1]) {
-    createPart(`RearCasterBracket_${sz > 0 ? 'R' : 'L'}`, boxGeo(0.040, 0.030, 0.035), metalCast, {
-      position: [-0.34, 0.045, sz * 0.24], parent: root,
+    createPart(`RearCasterBracket_${sz > 0 ? 'R' : 'L'}`, boxGeo(0.036, 0.030, 0.035), metalCast, {
+      position: [-0.338, 0.045, sz * 0.24], parent: root,
     });
     createPart(`RearCasterWheel_${sz > 0 ? 'R' : 'L'}`, cylinderZGeo(0.022, 0.022, 0.025, 16), rubberBlack, {
       position: [-0.34, 0.024, sz * 0.24], parent: root,
@@ -350,8 +353,8 @@ async function build() {
 
   for (const sz of [-0.075, 0.075]) {
     const sideName = sz > 0 ? 'R' : 'L';
-    createPart(`CoinReturnPocket_${sideName}`, await roundedBoxGeo(0.024, 0.074, 0.068, 0.004), metalCast, {
-      position: [0.278, 0.385, sz], parent: root,
+    createPart(`CoinReturnPocket_${sideName}`, await roundedBoxGeo(0.022, 0.074, 0.068, 0.004), metalCast, {
+      position: [0.279, 0.385, sz], parent: root,
     });
     createPart(`CoinReturnFlap_${sideName}`, boxGeo(0.004, 0.052, 0.050), metalChrome, {
       position: [0.284, 0.385, sz], rotation: [0, 0, 16], parent: root,
@@ -490,7 +493,7 @@ async function build() {
   const monitorRad = (monitorAngleDeg * Math.PI) / 180;
   const monMidX = 0.100, monMidY = 1.240;
 
-  createPart('MonitorRearChamber', boxGeo(0.420, 0.180, 0.588), woodBlack, {
+  createPart('MonitorRearChamber', boxGeo(0.412, 0.180, 0.580), woodBlack, {
     position: [monMidX - 0.090 * Math.sin(monitorRad), monMidY - 0.090 * Math.cos(monitorRad), 0],
     rotation: [0, 0, monitorAngleDeg], parent: root,
   });
@@ -515,7 +518,7 @@ async function build() {
   });
 
   createPart('MonitorSafetyGlass', boxGeo(0.416, 0.006, 0.584), glass, {
-    position: [monMidX + 0.016 * Math.sin(monitorRad), monMidY + 0.016 * Math.cos(monitorRad), 0],
+    position: [monMidX + 0.020 * Math.sin(monitorRad), monMidY + 0.012 * Math.cos(monitorRad), 0],
     rotation: [0, 0, monitorAngleDeg], parent: root,
   });
 

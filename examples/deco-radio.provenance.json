@@ -1,5 +1,5 @@
 {
-  "sourceHash": "f0c0ec0dee84e5b8714744a16f8e66399ad66f35a415ad974c409efed4b7bf73",
+  "sourceHash": "fac347da468b54899bdca9d34ea2b029acf62d7b853f1e1459eea9c3e002946a",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity",
   "authoredDate": "2026-09-05",
@@ -8,12 +8,19 @@
     "sourceAccess": "Fresh project-local authoring workspace with a brief, installed skills and Kiln tools.",
     "inheritedContext": "Fresh independent authoring conversation.",
     "startingExample": "None supplied.",
-    "humanIntervention": "Maintainer supplied the brief and reviewed exports. Codex maintainer agent subsequently resized the rear panels to fit within the cabinet faces, matched the walnut finish, and repositioned rear details. Original model source is retained in revision history.",
+    "humanIntervention": "Maintainer supplied the brief and reviewed exports. Codex maintainer agent subsequently resized the rear panels to fit within the cabinet faces, matched the walnut finish, and repositioned rear details. Original model source is retained in revision history. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Actual GPU images inspected independently. The author repaired grille and dial orientation after image review. Dial markings remain pale; this is a decorative asset, not a functioning radio. Subsequent maintainer repair inspected in actual front and rear GPU images; rear panels no longer protrude beyond the stepped cabinet.",
     "evaluationPackageHash": "0d457e8f8763730079da013abfa6662aadc02843f090fcae594c0f711399d16c",
     "evaluationGlbHash": "6829cc3841de54672db8160be4b9517c0e006ff2ce082dff1e44faf0479544f7",
-    "poster": "Gallery GPU render of this exact source. The separate poster receipt records image, camera, renderer, and the artifact hash of the GLB bytes the image was rendered from.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "f0c0ec0dee84e5b8714744a16f8e66399ad66f35a415ad974c409efed4b7bf73",
+        "sourceHash": "fac347da468b54899bdca9d34ea2b029acf62d7b853f1e1459eea9c3e002946a",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). FootRing_1..4: ring centre y 0.005 -> 0.004 so its top sits 1 mm under the foot top (0.5 mm was still reported as too close to order); ScaleLineAM, ScaleLineSW, DialTick_0..16: x 0.0912 -> 0.0920 so they stand 0.8 mm further off the dial face; DialGlass: height 0.046 -> 0.050, width 0.090 -> 0.094 (ends embedded in the bezel bars) and x 0.0945 -> 0.0960"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

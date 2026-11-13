@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "currentSourceHash": "c368480584e957410a252651f8e2254b3e8823be5cbc94324d65a12d5f5c6d90",
+  "currentSourceHash": "55fbe3869b5e34391f27f16234f7ab711a9e38665cb16abfd9fbc2059833b8a3",
   "brief": {
     "kind": "summary",
     "text": "Build a compact alpine cable-car terminal with a curved pine-green roof, an exposed pulley assembly, a timber boarding platform and a red gondola suspended from the cable. Include a moving service mechanism and use clear, crafted proportions."
@@ -19,10 +19,16 @@
       "sourceHash": "dead910a6df337cb69907cd93cb9eaaed22a806941a154a2f6c415d56a6f2ae6"
     },
     {
-      "title": "Current gallery revision",
+      "title": "Previous gallery revision",
       "description": "Reoriented and shortened the canopy to expose the pulley, adjusted supports and the gondola position, and added curved end framing. These changes were reviewed together in one visual refinement pass.",
       "file": "current.kiln.js",
       "sourceHash": "c368480584e957410a252651f8e2254b3e8823be5cbc94324d65a12d5f5c6d90"
+    },
+    {
+      "title": "Flush faces fixed",
+      "description": "Maintainer revision by Claude Sonnet 5.5 via Claude Code (2026-11-12): 1 part edit that separates faces lying on one plane, which flickered in any renderer. Materials, names, hierarchy and animation are unchanged.",
+      "file": "flush-fix.kiln.js",
+      "sourceHash": "55fbe3869b5e34391f27f16234f7ab711a9e38665cb16abfd9fbc2059833b8a3"
     }
   ]
 }

@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // A 1970s cafe racer.
 //
 // Authored by: Claude Opus 5, via Claude Code. Every part below was written by
@@ -229,7 +230,7 @@ async function build() {
   await box('Barrels', 0.20, 0.19, 0.30, 0.020, [ENGINE[0] + 0.04, ENGINE[1] + 0.11, 0], alloy, [0, 0, -BARREL_TILT]);
   for (let i = 0; i < 9; i++) {
     const t = i / 8;
-    await box(`Fin_${i}`, 0.235, 0.011, 0.335, 0.005,
+    await box(`Fin_${i}`, i === 8 ? 0.231 : 0.235, 0.011, 0.335, 0.005,
       [ENGINE[0] + 0.078 - t * 0.040, ENGINE[1] + 0.035 + t * 0.155, 0], alloy, [0, 0, -BARREL_TILT]);
   }
   await box('Head', 0.22, 0.075, 0.32, 0.022, [ENGINE[0] + 0.005, ENGINE[1] + 0.225, 0], alloy, [0, 0, -BARREL_TILT]);

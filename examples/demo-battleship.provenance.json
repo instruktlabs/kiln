@@ -1,16 +1,23 @@
 {
-  "sourceHash": "6e1c9d1a85198c5e0f445e02caf4d46c01397c1ae61a66b8c72adcd64ead51c9",
+  "sourceHash": "67ab89fbf2fe1f7f85dbc09ab52c21b0396ab6f4866aa89194a1e9b6c931b49e",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "authoredDate": "2026-09-09",
   "provenance": {
     "attribution": "Recorded demo session; model credit supplied only where the retained run identifies it.",
     "sourceAccess": "See retained demo run; no stronger isolation claim is made.",
-    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte.",
+    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Authoring feedback and shaded demo previews where available. Not a destination-runtime acceptance claim.",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
     "evaluationGlbHash": "38e8c865c06b4966fed90348b1da7ac59b2808b5427b7a39b0ba28d7faf94042",
-    "posterReceipt": {
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "6e1c9d1a85198c5e0f445e02caf4d46c01397c1ae61a66b8c72adcd64ead51c9",
+        "sourceHash": "67ab89fbf2fe1f7f85dbc09ab52c21b0396ab6f4866aa89194a1e9b6c931b49e",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). Turret_1..3_Barbette: height -4 mm, centre +2 mm, so its underside lifts 4 mm off the ring bottom plane (top unchanged)"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

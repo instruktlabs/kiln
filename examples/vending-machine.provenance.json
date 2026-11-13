@@ -1,5 +1,5 @@
 {
-  "sourceHash": "4ea4db40981f8021107381b739300b4d184d42664eb4c8cf2b7aae756c8f2599",
+  "sourceHash": "e68859d165e894a3510a15bf96cb1ded03517290db4ad295810a7a7829c37ee8",
   "model": "Claude Opus 5",
   "harness": "Claude Code",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Not recorded",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "Not recorded",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "4ea4db40981f8021107381b739300b4d184d42664eb4c8cf2b7aae756c8f2599",
+        "sourceHash": "e68859d165e894a3510a15bf96cb1ded03517290db4ad295810a7a7829c37ee8",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). Mullion_0..5: depth 0.060 -> 0.062 and centre x 0.310 -> 0.311 so the +x face sinks 2 mm into the glass instead of lying on its back face; ShelfRail_* (all): centre x 0.353 -> 0.351 so its +x face sits 2 mm behind the well-bottom front plane; PortLip: centre y 0.292 -> 0.290 so its bottom is 2 mm below the PortVoid bottom plane"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

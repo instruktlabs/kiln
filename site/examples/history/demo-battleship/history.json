@@ -4,7 +4,7 @@
     "kind": "recorded",
     "text": "Turret roofs painted dark red."
   },
-  "currentSourceHash": "6e1c9d1a85198c5e0f445e02caf4d46c01397c1ae61a66b8c72adcd64ead51c9",
+  "currentSourceHash": "67ab89fbf2fe1f7f85dbc09ab52c21b0396ab6f4866aa89194a1e9b6c931b49e",
   "revisions": [
     {
       "file": "revision-1.kiln.js",
@@ -17,6 +17,12 @@
       "title": "Saved revision 2",
       "description": "Turret roofs painted dark red.",
       "sourceHash": "6e1c9d1a85198c5e0f445e02caf4d46c01397c1ae61a66b8c72adcd64ead51c9"
+    },
+    {
+      "title": "Flush faces fixed",
+      "description": "Maintainer revision by Claude Sonnet 5.5 via Claude Code (2026-11-12): 1 part edit that separates faces lying on one plane, which flickered in any renderer. Materials, names, hierarchy and animation are unchanged.",
+      "file": "flush-fix.kiln.js",
+      "sourceHash": "67ab89fbf2fe1f7f85dbc09ab52c21b0396ab6f4866aa89194a1e9b6c931b49e"
     }
   ]
 }

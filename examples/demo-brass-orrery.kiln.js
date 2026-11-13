@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {
   name: 'Intricate Brass Orrery',
   category: 'prop',
@@ -319,7 +320,7 @@ function build() {
       height: 0.005
     });
     createPart('IdlerPinion' + k, g, deepBronze, {
-      position: [0, p.y, 0],
+      position: [0, p.y + 0.002, 0],
       parent: jointIdler1
     });
   }

@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: opus, via claude.
 //
 // Written by the model itself through the Kiln MCP tools, and cut off
@@ -467,7 +468,7 @@ async function build() {
   {
     const st = stationByU(0.060);
     const caudal = await buildFin('CaudalFin',
-      fanRays(13, -0.92, 0.92, 0.0625, 0.0415, 0.055), 0.0026, finMat, skin, fish);
+      fanRays(13, -0.92, 0.92, 0.0625, 0.0415, 0.055), 0.0016, finMat, skin, fish);
     caudal.position.set(st.x + 0.002, st.cy, 0);
     orientX(caudal, [-1, 0.03, 0], [0, 0, 1]);
   }

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "ad5fc985db72c19ab43f6ac7d77d0d06a8d7be42a3e363bee5576a2992d58a6c",
+  "sourceHash": "15016620b0759ea4121dee8ab212d34a110fbd65e8ec149689412484cca72920",
   "model": "GLM 5.3 Flash",
   "harness": "OpenCode",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "ad5fc985db72c19ab43f6ac7d77d0d06a8d7be42a3e363bee5576a2992d58a6c",
+        "sourceHash": "15016620b0759ea4121dee8ab212d34a110fbd65e8ec149689412484cca72920",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). DripTrayRimFront/Left/Right: height 0.082 -> 0.080, y 0.091 -> 0.093 so rim bottoms clear the basin bottom plane; BoilerPressure_Body/PumpPressure_Body: depth 0.012 -> 0.010, x 0.175 -> 0.1745 so dial front is proud of the body front; BackMirrorPanel: height 0.36 -> 0.356, y 0.29 -> 0.288 so its top is 4 mm below carcass top"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

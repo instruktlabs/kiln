@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -96,8 +97,8 @@ function build() {
 
   // Recessed Side Panels with Moulding Trim
   // Front (+X) panel
-  createPart('Panel_Front_Backing', boxGeo(0.004, 0.076, 0.22), woodPanel, {
-    position: [0.161, 0.115, 0],
+  createPart('Panel_Front_Backing', boxGeo(0.008, 0.072, 0.216), woodPanel, {
+    position: [0.159, 0.115, 0],
     parent: root
   });
   createPart('Trim_Front_Top', boxGeo(0.006, 0.006, 0.22), woodMahogany, {
@@ -141,8 +142,8 @@ function build() {
   });
 
   // Back (-X) panel
-  createPart('Panel_Back_Backing', boxGeo(0.004, 0.076, 0.22), woodPanel, {
-    position: [-0.161, 0.115, 0],
+  createPart('Panel_Back_Backing', boxGeo(0.008, 0.072, 0.216), woodPanel, {
+    position: [-0.159, 0.115, 0],
     parent: root
   });
   createPart('Trim_Back_Top', boxGeo(0.006, 0.006, 0.22), woodMahogany, {
@@ -155,8 +156,8 @@ function build() {
   });
 
   // Left (-Z) panel
-  createPart('Panel_Left_Backing', boxGeo(0.22, 0.076, 0.004), woodPanel, {
-    position: [0, 0.115, -0.161],
+  createPart('Panel_Left_Backing', boxGeo(0.216, 0.072, 0.008), woodPanel, {
+    position: [0, 0.115, -0.159],
     parent: root
   });
   createPart('Trim_Left_Top', boxGeo(0.22, 0.006, 0.006), woodMahogany, {
@@ -169,8 +170,8 @@ function build() {
   });
 
   // Right (+Z) panel (around crank)
-  createPart('Panel_Right_Backing', boxGeo(0.22, 0.076, 0.004), woodPanel, {
-    position: [0, 0.115, 0.161],
+  createPart('Panel_Right_Backing', boxGeo(0.216, 0.072, 0.008), woodPanel, {
+    position: [0, 0.115, 0.159],
     parent: root
   });
   createPart('Trim_Right_Top', boxGeo(0.22, 0.006, 0.006), woodMahogany, {
@@ -200,8 +201,8 @@ function build() {
     position: [0.01, 0.115, 0.164],
     parent: root
   });
-  createPart('CrankEscutcheonCenter', cylinderZGeo(0.012, 0.012, 0.008, 10), darkBrass, {
-    position: [0.01, 0.115, 0.166],
+  createPart('CrankEscutcheonCenter', cylinderZGeo(0.012, 0.012, 0.007, 10), darkBrass, {
+    position: [0.01, 0.115, 0.1665],
     parent: root
   });
 
@@ -531,7 +532,7 @@ function build() {
 
   // Mica Diaphragm (translucent / pearlescent disc)
   createPart('MicaDiaphragm', cylinderGeo(0.021, 0.021, 0.001, 20), mica, {
-    position: [0, 0.004, 0],
+    position: [0, 0.0025, 0],
     parent: soundBoxPivot
   });
 

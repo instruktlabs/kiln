@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -368,9 +369,9 @@ function build() {
   beamBetween('MHRailEndMid', [mhRearX, mhTopY + 0.5, -mhWidth * 0.5 + 0.12], [mhRearX, mhTopY + 0.5, mhWidth * 0.5 - 0.12], 0.02, railingYellow, { parent: root });
 
   // Counterweight Blocks at rear boom tip (X = -13.2 to -15.5)
-  const cwFrameGeo = boxGeo(2.6, 2.5, 4.4);
+  const cwFrameGeo = boxGeo(2.64, 2.54, 4.4);
   createPart('CounterweightCradle', cwFrameGeo, darkSteel, { position: [-14.2, boomH + 1.25, 0], parent: root });
-  const ballastBlockGeo = boxGeo(2.2, 2.1, 4.0);
+  const ballastBlockGeo = boxGeo(2.2, 2.06, 4.0);
   createPart('BallastBlock', ballastBlockGeo, concreteGrey, { position: [-14.2, boomH + 1.25, 0], parent: root });
 
   // ==========================================

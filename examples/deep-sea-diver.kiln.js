@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -62,8 +63,8 @@ async function build() {
     });
 
     // --- Brass Toe Cap (curved shield over the toe) ---
-    createPart(`ToeCap_${sideSuffix}`, cylinderGeo(0.075, 0.075, 0.10, 14), brass, {
-      position: [0.14, 0.085, z],
+    createPart(`ToeCap_${sideSuffix}`, cylinderGeo(0.075, 0.075, 0.096, 14), brass, {
+      position: [0.138, 0.085, z],
       rotation: [0, 0, 90],
       parent: root,
     });
@@ -381,7 +382,7 @@ async function build() {
     parent: root,
   });
   createPart('FrontPortGlass', cylinderXGeo(0.080, 0.080, 0.025, 18), glass, {
-    position: [0.215, 1.75, 0],
+    position: [0.213, 1.75, 0],
     parent: root,
   });
   // Faceplate hinge & wing-latch
@@ -425,7 +426,7 @@ async function build() {
     parent: root,
   });
   createPart('RightPortGlass', cylinderZGeo(0.063, 0.063, 0.025, 16), glass, {
-    position: [0.02, 1.75, 0.215],
+    position: [0.02, 1.75, 0.213],
     parent: root,
   });
   // 3 Horizontal Protective Bars
@@ -448,7 +449,7 @@ async function build() {
     parent: root,
   });
   createPart('LeftPortGlass', cylinderZGeo(0.063, 0.063, 0.025, 16), glass, {
-    position: [0.02, 1.75, -0.215],
+    position: [0.02, 1.75, -0.213],
     parent: root,
   });
   // 3 Horizontal Protective Bars

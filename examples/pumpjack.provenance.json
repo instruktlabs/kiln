@@ -1,5 +1,5 @@
 {
-  "sourceHash": "c1b5c04953a5a398185f82cc7f8698089bdc00bc217ca4b2181b28c4dc4a7134",
+  "sourceHash": "4dd47e0e8a5f58cbbe4e1641ff872e1b9264b45e5426a13af86c66bbcc90a9d1",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 7 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "c1b5c04953a5a398185f82cc7f8698089bdc00bc217ca4b2181b28c4dc4a7134",
+        "sourceHash": "4dd47e0e8a5f58cbbe4e1641ff872e1b9264b45e5426a13af86c66bbcc90a9d1",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). ToeBoard_Outer: length +4 mm (end faces 2 mm proud of platform ends) and moved 2 mm outward in z; ToeBoard_Front / ToeBoard_Back: width +4 mm in z and moved 2 mm outward in x, so faces no longer share planes with SamsonPlatform; ReducerBearingHub_L: moved 2 mm outward in z, off the BeltGuard back plane; BorderTimber_Front/Back/Left/Right: each 4 mm longer so ends stand 2 mm proud of GravelPad ends; MotorCradle: height 0.12 -> 0.116 keeping bottom fixed, so MotorFin_5 stands 4 mm proud of its top; SkidRunner_TFlange_L/R: thickness 0.025 -> 0.021 keeping bottom fixed, off the counterweight plane; CounterWeight_Main_L/R: thickness 0.22 -> 0.224 so faces stand 2 mm off the TFlange edge planes"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

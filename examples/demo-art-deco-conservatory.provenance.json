@@ -1,16 +1,23 @@
 {
-  "sourceHash": "939586687895080c38d0683c75e370c9249fb7ddd9ecc17a791c0b4723f5a3d2",
+  "sourceHash": "6bbeeaf2ff87a0517c06d959350b41af019bc3d4e6b6f2c109ce1e21882ce13f",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "authoredDate": "2026-09-09",
   "provenance": {
     "attribution": "Recorded demo session; model credit supplied only where the retained run identifies it.",
     "sourceAccess": "See retained demo run; no stronger isolation claim is made.",
-    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte.",
+    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Authoring feedback and shaded demo previews where available. Not a destination-runtime acceptance claim.",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
     "evaluationGlbHash": "dd7a16fe454efe062a6d47148c034227436f43ded42e197c07e89cddbe86ad15",
-    "posterReceipt": {
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "939586687895080c38d0683c75e370c9249fb7ddd9ecc17a791c0b4723f5a3d2",
+        "sourceHash": "6bbeeaf2ff87a0517c06d959350b41af019bc3d4e6b6f2c109ce1e21882ce13f",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). StairStep_0: start 2 cm later: width 0.60 -> 0.58, x +0.01, so it no longer overlaps the plinth end and its top no longer shares the plinth top plane"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

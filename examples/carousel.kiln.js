@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -86,8 +87,8 @@ function build() {
   // =========================================================================
   // 3. Mirrored Centre Drum (Y: 0.32 to 2.65, radius 1.05m)
   // =========================================================================
-  createPart('DrumCore', cylinderGeo(1.02, 1.02, 2.25, 12), darkWood, {
-    position: [0, 1.485, 0],
+  createPart('DrumCore', cylinderGeo(1.02, 1.02, 2.248, 12), darkWood, {
+    position: [0, 1.484, 0],
     parent: carousel,
   });
   createPart('DrumPlinth', cylinderGeo(1.08, 1.12, 0.40, 12), baseMaroon, {

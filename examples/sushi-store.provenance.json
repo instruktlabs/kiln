@@ -1,5 +1,5 @@
 {
-  "sourceHash": "fdd92c6e2ed8fb371d22f8c94c1f0e6ae932d915f0e75cd50c70b6f876bd0743",
+  "sourceHash": "6e70611c0d8f5f12eb65afdd694e75249fcf2414e82484488d31587e25fa6984",
   "model": "Claude Opus 5",
   "harness": "Claude Code",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Not recorded",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "Not recorded",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 11 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "fdd92c6e2ed8fb371d22f8c94c1f0e6ae932d915f0e75cd50c70b6f876bd0743",
+        "sourceHash": "6e70611c0d8f5f12eb65afdd694e75249fcf2414e82484488d31587e25fa6984",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). Gatou cylinders (kawaraSlope helper, ShopEave/RoofFront/RoofRear): cylinderXGeo length 0.05 -> 0.054 so each round end cap stands 2 mm proud of the fascia faces it lay on (45 pairs); FrontFrieze: width 0.26 -> 0.262, centre +1 mm, front face 2 mm proud of UpperWall; SideReturn_L/R: back face 2 mm further back (width 0.22 -> 0.222) and top 4 mm lower (height -0.004) so neither shares a plane with CornerPost; BackBoard: length in z 4.6 -> 4.596 so its ends are 2 mm inside the SideBoard outer faces; CounterApron: width 0.10 -> 0.098, front face recessed 2 mm behind the Counter front; PostFooting_L/R: height 0.20 -> 0.204 (centre +2 mm) so the top is 4 mm above BaseRail top; Reveal_* (4): width 0.30 -> 0.296 so both x faces are 2 mm inside WallSill/WallHead faces; BackBand: height 0.10 -> 0.104 so its top is 2 mm above SideBand tops; NorenPanel_2: moved 4 mm along x so it no longer shares planes with NorenPanel_1; ShopEaveFlashing: width 0.10 -> 0.104, front face 4 mm proud of SidePlaster ends; WindowTransom: width 0.09 -> 0.094 so faces stand 2 mm proud of the mullions"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

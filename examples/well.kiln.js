@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // A small textured structure: the kind of thing people actually generate.
 //
 // Three real PBR materials with bound Poly Haven albedo/normal/ARM maps — brick
@@ -199,7 +200,7 @@ async function build() {
       parent: root,
     });
   }
-  createPart('Beam', boxGeo(0.13, 0.13, 2 * POST + 0.13), wood, {
+  createPart('Beam', boxGeo(0.134, 0.13, 2 * POST + 0.13), wood, {
     position: [0, 1.82, 0],
     parent: root,
   });

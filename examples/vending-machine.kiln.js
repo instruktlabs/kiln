@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // A Japanese street vending machine, at night.
 //
 // Authored by: Claude Opus 5, via Claude Code. Every part below was written by
@@ -377,7 +378,7 @@ async function build() {
   for (const sy of SHELF_Y) {
     const k = sy.toFixed(3);
     slab(`Shelf_${k}`, 0.065, 0.010, dispW - 0.03, [0.328, sy, dispCz], bezel);
-    slab(`ShelfRail_${k}`, 0.014, 0.026, dispW - 0.03, [0.353, sy - 0.017, dispCz], bezel);
+    slab(`ShelfRail_${k}`, 0.014, 0.026, dispW - 0.03, [0.351, sy - 0.017, dispCz], bezel);
     slab(`ShelfLed_${k}`, 0.010, 0.009, dispW - 0.06, [0.350, sy - 0.006, dispCz], backlight);
   }
   slab('CanopyLed', 0.010, 0.009, dispW - 0.06, [0.350, DISP_Y1 - 0.022, dispCz], backlight);
@@ -389,7 +390,7 @@ async function build() {
     // well, and at a 3/4 view a divider that deep occludes 112 mm of a 176 mm
     // cell -- so the lit panel behind was geometrically unreachable from any
     // angle a hero shot is taken at. A divider only has to divide at the front.
-    slab(`Mullion_${i}`, 0.060, dispH - 0.02, 0.012, [0.310, dispCy, z], black);
+    slab(`Mullion_${i}`, 0.062, dispH - 0.02, 0.012, [0.311, dispCy, z], black);
   }
 
   // Product columns. 0.186 m to the neck, 0.204 to the top of the cap, in a
@@ -481,7 +482,7 @@ async function build() {
   // this is the one part of the machine a person actually puts a hand into.
   await box('PortFlap', 0.016, 0.212, 0.400, [P.FASCIA + 0.016, 0.436, PORT_Z], rubber,
     { r: 0.006, rotation: [0, 0, 11], res: 512 });
-  slab('PortLip', 0.030, 0.018, 0.420, [P.FASCIA + 0.010, 0.292, PORT_Z], steel);
+  slab('PortLip', 0.030, 0.018, 0.420, [P.FASCIA + 0.010, 0.290, PORT_Z], steel);
   // Lower fascia, and the red band that carries the machine's colour down to
   // the ground so the bottom half is not a blank white slab.
   slab('LowerBand', 0.012, 0.088, 1.08, [P.FASCIA + 0.006, 0.196, 0], band);

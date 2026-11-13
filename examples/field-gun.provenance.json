@@ -1,5 +1,5 @@
 {
-  "sourceHash": "06cdd76fd0f71f57f83ff81e23cd8efa8d1bc73cd7ffb97d754702f26dff8ec0",
+  "sourceHash": "3b19c5ab03fbfc5fc6dd47e32ac9bb5cc8a6f29f40f9c3a666d38d89609aa21c",
   "model": "Claude Opus 5",
   "harness": "Claude Code",
   "provenance": {
@@ -7,7 +7,7 @@
     "sourceAccess": "Not recorded",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "Not recorded",
-    "humanIntervention": "Maintainer-directed UV API migration by Codex; original model-authored shape and UV values retained.",
+    "humanIntervention": "Maintainer-directed UV API migration by Codex; original model-authored shape and UV values retained. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Not recorded",
     "poster": "Archival GPU poster from the source before the UV API migration. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
     "maintainerRevisions": [
@@ -15,6 +15,11 @@
         "previousSourceHash": "f27ff0adf535ef28afb3f2818048d406ef639cdfd2bf163e548e07440832e304",
         "sourceHash": "06cdd76fd0f71f57f83ff81e23cd8efa8d1bc73cd7ffb97d754702f26dff8ec0",
         "description": "UV API migration by Codex: boxUnwrap replaced with copyGeometry to preserve existing built-in UVs."
+      },
+      {
+        "previousSourceHash": "06cdd76fd0f71f57f83ff81e23cd8efa8d1bc73cd7ffb97d754702f26dff8ec0",
+        "sourceHash": "3b19c5ab03fbfc5fc6dd47e32ac9bb5cc8a6f29f40f9c3a666d38d89609aa21c",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). TrailShoe: roundedBox depth 0.40 -> 0.396 so its +z/-z faces sit 2 mm inside the Transom_3 end faces"
       }
     ],
     "historicalPosterReceipt": {

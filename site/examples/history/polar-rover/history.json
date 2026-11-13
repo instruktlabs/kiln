@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "currentSourceHash": "aea09b2491cc06ac710648d0de30bb365fa1b2c0fff10712cb70db07e8216515",
+  "currentSourceHash": "a9fef121ab605cc28d9bc05febc2b8e4f8a5cc988f9281f50a68965625639fea",
   "brief": {
     "kind": "summary",
     "text": "Create a compact orange and ivory polar research rover with shaped tracks, a rounded cab, scientific instruments, an articulated mast and hinged solar panels."
@@ -31,10 +31,16 @@
       "sourceHash": "1b95d7f2a6ad8edfcc965624fccbfd89d67fadd5273041b4bd107dcc5874721b"
     },
     {
-      "title": "Current gallery revision",
+      "title": "Previous gallery revision",
       "description": "Added sample canisters, instrument cabling, a mast actuator, door handles and solar-panel grid lines.",
       "file": "current.kiln.js",
       "sourceHash": "aea09b2491cc06ac710648d0de30bb365fa1b2c0fff10712cb70db07e8216515"
+    },
+    {
+      "title": "Flush faces fixed",
+      "description": "Maintainer revision by Claude Sonnet 5.5 via Claude Code (2026-11-12): 7 part edits that separate faces lying on one plane, which flickered in any renderer. Materials, names, hierarchy and animation are unchanged.",
+      "file": "flush-fix.kiln.js",
+      "sourceHash": "a9fef121ab605cc28d9bc05febc2b8e4f8a5cc988f9281f50a68965625639fea"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "sourceHash": "c6ee2bf3d6ff7a6f8833425ecfef25888af0842ddcb9c749ae43b54d28968ddf",
+  "sourceHash": "935367366fbb6316ca2e4a399028532c6e37b202fd406bc9736514047831a64f",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Not recorded",
+    "humanIntervention": "Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "c6ee2bf3d6ff7a6f8833425ecfef25888af0842ddcb9c749ae43b54d28968ddf",
+        "sourceHash": "935367366fbb6316ca2e4a399028532c6e37b202fd406bc9736514047831a64f",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). FrisketWindow1/2: y offset +0.005 -> +0.007 so window bottoms leave the paper mask bottom plane; IronTrackL/R: width 0.04 -> 0.036 so outer side faces are 2 mm inside the coffin side outer faces; CoffinFloor: height 0.02 -> 0.016, y -0.03 -> -0.028 so its bottom is 2 mm above the coffin end bottoms; top unchanged"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

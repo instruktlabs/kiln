@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Kiln Battleship: Detailed battleship with triple gun turrets and a wooden deck
 const meta = {
   name: 'Battleship',
@@ -257,8 +258,8 @@ async function build() {
 
     // 1. Cylindrical Armored Barbette
     const barbetteRadius = 5.3;
-    createPart(`${name}_Barbette`, cylinderGeo(barbetteRadius, barbetteRadius, barbetteHeight, 32), mats.steelArmor, {
-      position: [0, barbetteHeight / 2, 0],
+    createPart(`${name}_Barbette`, cylinderGeo(barbetteRadius, barbetteRadius, barbetteHeight - 0.004, 32), mats.steelArmor, {
+      position: [0, barbetteHeight / 2 + 0.002, 0],
       parent: turretPivot
     });
 

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "currentSourceHash": "1f109fd8c5d6de9fe07507e473a1c7ba674565f1544ac68dd6067a5664371455",
+  "currentSourceHash": "a8a0ce73da654b06efb3124c7ce50ad7f8fce626f10f21d9e723152e89de8346",
   "brief": {
     "text": "Build an 8 m research vessel with a broad working stern, narrow raised bow, port-offset wheelhouse and open starboard deck. Shape a continuous curved hull with a visible chine, add a stern sampling crane and deck railings, and animate the crane carriage with its attached footplate and cable guide.",
     "kind": "summary"
@@ -19,10 +19,16 @@
       "sourceHash": "a0e702f76ca06c736997982394c7a388b23053a552c1a3e3975da49515a7d430"
     },
     {
-      "title": "Current gallery revision",
+      "title": "Previous gallery revision",
       "description": "A separate supplied-source refinement changed only serviceOffset from 0.25 to 0.40. All unrelated source bytes were preserved; a possible small mid-motion overlap remains a review limitation.",
       "file": "current.kiln.js",
       "sourceHash": "1f109fd8c5d6de9fe07507e473a1c7ba674565f1544ac68dd6067a5664371455"
+    },
+    {
+      "title": "Flush faces fixed",
+      "description": "Maintainer revision by Claude Sonnet 5.5 via Claude Code (2026-11-12): 1 part edit that separates faces lying on one plane, which flickered in any renderer. Materials, names, hierarchy and animation are unchanged.",
+      "file": "flush-fix.kiln.js",
+      "sourceHash": "a8a0ce73da654b06efb3124c7ce50ad7f8fce626f10f21d9e723152e89de8346"
     }
   ]
 }

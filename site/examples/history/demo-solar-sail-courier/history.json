@@ -4,13 +4,19 @@
     "kind": "recorded",
     "text": "Solar sail courier with ivory cargo pod, delicate structural spars, and folded copper-and-gold sails that animate deploying."
   },
-  "currentSourceHash": "aeb05750d6b48e52dc56f9e068c41cb897bcaa5159380b60e52748ca22bd6e66",
+  "currentSourceHash": "7912f206b1a87082c6bccd142d35967741f39383ce5720f6ec410ecf7e5c333a",
   "revisions": [
     {
       "file": "revision-1.kiln.js",
       "title": "Saved revision 1",
       "description": "Solar sail courier with ivory cargo pod, delicate structural spars, and folded copper-and-gold sails that animate deploying.",
       "sourceHash": "aeb05750d6b48e52dc56f9e068c41cb897bcaa5159380b60e52748ca22bd6e66"
+    },
+    {
+      "title": "Flush faces fixed",
+      "description": "Maintainer revision by Claude Sonnet 5.5 via Claude Code (2026-11-12): 1 part edit that separates faces lying on one plane, which flickered in any renderer. Materials, names, hierarchy and animation are unchanged.",
+      "file": "flush-fix.kiln.js",
+      "sourceHash": "7912f206b1a87082c6bccd142d35967741f39383ce5720f6ec410ecf7e5c333a"
     }
   ]
 }

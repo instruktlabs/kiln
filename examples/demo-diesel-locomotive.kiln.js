@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {name:"RCL 2406 — Red & Cream Diesel",category:"vehicle",role:"vehicle"};
 function build(){
 const root=createRoot("RCL_2406_Diesel");
@@ -32,7 +33,7 @@ box("Red_walkway_edge",16.35,.13,3.06,0,1.79,0,red);
 box("Walkway_tread",16.25,.065,3.02,0,1.89,0,dark);
 prism("Long_hood",-7.25,2.65,[[1.94,-1.06],[3.65,-1.06],[3.91,-.82],[3.91,.82],[3.65,1.06],[1.94,1.06]],red);
 for(const s of [-1,1]){
-box("Cream_hood_band_"+s,9.91,.42,.028,-2.3,3.06,s*1.077,cream);
+box("Cream_hood_band_"+s,9.91,.42,.024,-2.3,3.06,s*1.079,cream);
 box("Lower_cream_pinstripe_"+s,9.91,.055,.028,-2.3,2.77,s*1.079,cream);
 for(let i=0;i<10;i++){
 const x=-6.78+i*.92;
@@ -58,7 +59,7 @@ box("Cab_window_seal_"+s,1.56,.73,.038,3.77,3.7,s*1.451,black);
 box("Cab_side_glass_"+s,1.43,.61,.044,3.77,3.7,s*1.478,glass);
 box("Cab_window_mullion_"+s,.055,.65,.057,3.64,3.7,s*1.505,cream);
 box("Cab_sill_"+s,1.65,.055,.095,3.77,3.30,s*1.48,cream);
-box("Cab_door_seam_"+s,.72,.94,.02,3.92,2.44,s*1.45,dark);
+box("Cab_door_seam_"+s,.72,.94,.024,3.92,2.44,s*1.452,dark);
 box("Cab_door_panel_"+s,.68,.90,.025,3.92,2.44,s*1.464,red);
 box("Cab_door_latch_"+s,.17,.045,.07,4.13,2.71,s*1.5,steel);
 }

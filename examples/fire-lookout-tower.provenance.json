@@ -1,5 +1,5 @@
 {
-  "sourceHash": "556eba6d1a94c59f46b8f3758a3f476601e57713ed424b4aa43f4cecc5e7f6a3",
+  "sourceHash": "e47bae1eef5bddb1c5b385111fc2971740ee520620e8c8cfc30c411f6dc5ffbb",
   "model": "LongCat 2.0",
   "harness": "Hermes",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "556eba6d1a94c59f46b8f3758a3f476601e57713ed424b4aa43f4cecc5e7f6a3",
+        "sourceHash": "e47bae1eef5bddb1c5b385111fc2971740ee520620e8c8cfc30c411f6dc5ffbb",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). GlassFront/Back/Left/Right: glass span cabSize-0.8 -> cabSize-0.792 so each glass end sinks 4 mm into the frame post it lay flush with"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:a2ae15d1dc15399d79a95a005609087493c32c705210378b460bc442966032b1",

@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 7 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {
   name: 'Polar Research Rover',
   category: 'vehicle',
@@ -237,7 +238,7 @@ async function build() {
       const ry = 0.20;
 
       // Road wheel rim (dual rubber wheel)
-      const roadWheelGeo = cylinderZGeo(0.14, 0.14, 0.26, 16);
+      const roadWheelGeo = cylinderZGeo(0.14, 0.14, 0.252, 16);
       createPart(`RoadWheel_${sideName}_${rIdx}`, roadWheelGeo, matTrack, {
         position: [rx, ry, zTrack],
         parent: root
@@ -330,7 +331,7 @@ async function build() {
 
   // Lower nose front sensor fairing (ivory)
   const noseFairingGeo = await roundedBoxGeo(0.22, 0.22, 0.96, 0.05, { style: 'round' });
-  createPart('NoseFairingIvory', noseFairingGeo, matIvory, { position: [1.02, 0.76, 0.0], parent: root });
+  createPart('NoseFairingIvory', noseFairingGeo, matIvory, { position: [1.02, 0.758, 0.0], parent: root });
 
   // Radiator cooling intake grille slats
   for (let sIdx = 0; sIdx < 3; sIdx++) {
@@ -357,7 +358,7 @@ async function build() {
   });
   const windshieldGlassGeo = await roundedBoxGeo(0.04, 0.40, 1.08, 0.015);
   createPart('WindshieldGlass', windshieldGlassGeo, matGlass, {
-    position: [0.89, 1.15, 0.0],
+    position: [0.892, 1.15, 0.0],
     rotation: [0, 0, -18],
     parent: root
   });
@@ -385,7 +386,7 @@ async function build() {
     });
     const winFrontGlassGeo = await roundedBoxGeo(0.38, 0.28, 0.03, 0.01);
     createPart(`SideWinFrontGlass_${sideName}`, winFrontGlassGeo, matGlass, {
-      position: [0.42, 1.12, zWindow + zSign * 0.005],
+      position: [0.42, 1.12, zWindow + zSign * 0.007],
       parent: root
     });
 
@@ -397,7 +398,7 @@ async function build() {
     });
     const winAftGlassGeo = await roundedBoxGeo(0.32, 0.26, 0.03, 0.01);
     createPart(`SideWinAftGlass_${sideName}`, winAftGlassGeo, matGlass, {
-      position: [-0.14, 1.12, zWindow + zSign * 0.005],
+      position: [-0.14, 1.12, zWindow + zSign * 0.007],
       parent: root
     });
 
@@ -509,7 +510,7 @@ async function build() {
   // Spectrometer optical sampling aperture
   const specOpticGeo = cylinderXGeo(0.04, 0.03, 0.08, 12);
   createPart('SpectrometerOptic', specOpticGeo, matChrome, {
-    position: [-0.56, 0.92, -0.28],
+    position: [-0.562, 0.92, -0.28],
     parent: root
   });
 
@@ -531,7 +532,7 @@ async function build() {
 
   // Ground penetrating radar sled under rear chassis
   const gprAntennaGeo = boxGeo(0.24, 0.04, 0.88);
-  createPart('GprAntennaSled', gprAntennaGeo, matOrange, { position: [-1.18, 0.28, 0.0], parent: root });
+  createPart('GprAntennaSled', gprAntennaGeo, matOrange, { position: [-1.18, 0.278, 0.0], parent: root });
   for (const zSign of [-1, 1]) {
     const gprSkidGeo = cylinderXGeo(0.015, 0.015, 0.28, 8);
     createPart(`GprSkid_${zSign > 0 ? 'R' : 'L'}`, gprSkidGeo, matMachined, {
@@ -720,7 +721,7 @@ async function build() {
   for (const bx of [-0.22, 0.0, 0.22]) {
     const busbarGeo = boxGeo(0.008, 0.007, panelWidth - 0.04);
     createPart(`SolarBusbar_L_${bx.toFixed(2)}`, busbarGeo, matChrome, {
-      position: [bx, panelThick * 0.5 + 0.003, -panelWidth * 0.5],
+      position: [bx, panelThick * 0.5 + 0.005, -panelWidth * 0.5],
       parent: solarLeft
     });
   }
@@ -757,7 +758,7 @@ async function build() {
   for (const bx of [-0.22, 0.0, 0.22]) {
     const busbarGeo = boxGeo(0.008, 0.007, panelWidth - 0.04);
     createPart(`SolarBusbar_R_${bx.toFixed(2)}`, busbarGeo, matChrome, {
-      position: [bx, panelThick * 0.5 + 0.003, panelWidth * 0.5],
+      position: [bx, panelThick * 0.5 + 0.005, panelWidth * 0.5],
       parent: solarRight
     });
   }

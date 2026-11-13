@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools, and cut off
@@ -176,8 +177,8 @@ async function build() {
   createPart('RailL', boxGeo(railL, railH, railW), oakMedium, { position: [0.37, railY, -railZ], parent: root });
   createPart('RailR', boxGeo(railL, railH, railW), oakMedium, { position: [0.37, railY, railZ], parent: root });
   // Polished Iron Track Plates on Rails
-  createPart('IronTrackL', boxGeo(railL, 0.008, 0.04), ironWrought, { position: [0.37, railY + railH / 2 + 0.004, -railZ], parent: root });
-  createPart('IronTrackR', boxGeo(railL, 0.008, 0.04), ironWrought, { position: [0.37, railY + railH / 2 + 0.004, railZ], parent: root });
+  createPart('IronTrackL', boxGeo(railL, 0.008, 0.036), ironWrought, { position: [0.37, railY + railH / 2 + 0.004, -railZ], parent: root });
+  createPart('IronTrackR', boxGeo(railL, 0.008, 0.036), ironWrought, { position: [0.37, railY + railH / 2 + 0.004, railZ], parent: root });
 
   // Cross Transoms (ribs tying rails together)
   const transomW = railZ * 2 - railW;
@@ -214,7 +215,7 @@ async function build() {
   createPart('CoffinSideR', boxGeo(coffinL, 0.08, 0.05), oakMedium, { position: [coffinX, coffinY, coffinW / 2 - 0.025], parent: root });
   createPart('CoffinEndFront', boxGeo(0.05, 0.08, coffinW), oakMedium, { position: [coffinX + coffinL / 2 - 0.025, coffinY, 0], parent: root });
   createPart('CoffinEndBack', boxGeo(0.05, 0.08, coffinW), oakMedium, { position: [coffinX - coffinL / 2 + 0.025, coffinY, 0], parent: root });
-  createPart('CoffinFloor', boxGeo(coffinL - 0.08, 0.02, coffinW - 0.08), oakLight, { position: [coffinX, coffinY - 0.03, 0], parent: root });
+  createPart('CoffinFloor', boxGeo(coffinL - 0.08, 0.016, coffinW - 0.08), oakLight, { position: [coffinX, coffinY - 0.028, 0], parent: root });
 
   // Wrought Iron Corner Straps on Coffin
   createPart('CoffinBracketFL', ironStrapCornerGeo, ironWrought, { position: [coffinX + coffinL / 2 - 0.025, coffinY, -coffinW / 2 + 0.025], parent: root });
@@ -271,8 +272,8 @@ async function build() {
   // Paper aperture mask on frisket
   createPart('FrisketPaperMask', boxGeo(0.48, 0.004, 0.28), parchment, { position: [coffinX, frisketY + 0.004, 0], parent: root });
   // Cutout page apertures exposing the type columns below
-  createPart('FrisketWindow1', boxGeo(0.32, 0.006, 0.07), printerInk, { position: [coffinX, frisketY + 0.005, -0.05], parent: root });
-  createPart('FrisketWindow2', boxGeo(0.32, 0.006, 0.07), printerInk, { position: [coffinX, frisketY + 0.005, 0.05], parent: root });
+  createPart('FrisketWindow1', boxGeo(0.32, 0.006, 0.07), printerInk, { position: [coffinX, frisketY + 0.007, -0.05], parent: root });
+  createPart('FrisketWindow2', boxGeo(0.32, 0.006, 0.07), printerInk, { position: [coffinX, frisketY + 0.007, 0.05], parent: root });
 
   // ==========================================
   // 6. ROUNCE MECHANISM (WINCH, LEATHER STRAPS, CRANK)

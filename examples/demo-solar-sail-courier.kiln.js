@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {
   name: 'Solar sail courier',
   category: 'vehicle',
@@ -66,7 +67,7 @@ async function build() {
   createPart('NoseCap', cylinderXGeo(0.24, 0.09, 0.28, 16), ivoryHull, { position: [0.98, 0, 0], parent: podBody });
 
   // Optical LIDAR / Navigation Sensor Eye
-  createPart('SensorHousing', cylinderXGeo(0.12, 0.12, 0.08, 16), ivoryDarkTrim, { position: [1.08, 0, 0], parent: podBody });
+  createPart('SensorHousing', cylinderXGeo(0.12, 0.12, 0.084, 16), ivoryDarkTrim, { position: [1.082, 0, 0], parent: podBody });
   createPart('SensorLens', sphereGeo(0.09, 16, 12), amberSensor, { position: [1.11, 0, 0], parent: podBody });
 
   // Twin Star-Tracker Pods on upper nose

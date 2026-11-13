@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -76,7 +77,7 @@ function build() {
     parent: root,
   });
   createPart('PedestalDoor', boxGeo(0.04, 1.15, 0.65), accentYellowMat, {
-    position: [-2.07, 1.2, 0],
+    position: [-2.072, 1.2, 0],
     parent: root,
   });
 

@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = { name: 'RV Tern — asymmetric coastal research vessel', category: 'vehicle', role: 'vehicle', units: 'metres' };
 const serviceOffset = 0.40;
 const deckHeight = 1.20;
@@ -53,7 +54,7 @@ function build() {
   createPart('CurvedShell',hullGeometry(),navy,{parent:hull});
   // Deck is an explicit thin closed shell following the same sheer.
   const dp=[],di=[];
-  stations.forEach(s=>dp.push(s.x,s.y+0.025,s.w-0.025,s.x,s.y+0.025,-s.w+0.025,s.x,s.y-0.015,-s.w+0.025,s.x,s.y-0.015,s.w-0.025));
+  stations.forEach((s,si)=>{const sx=si===0?s.x+0.002:s.x;dp.push(sx,s.y+0.025,s.w-0.025,sx,s.y+0.025,-s.w+0.025,sx,s.y-0.015,-s.w+0.025,sx,s.y-0.015,s.w-0.025);});
   for(let i=0;i<64;i++)for(let j=0;j<4;j++){const a=4*i+j,b=4*i+(j+1)%4,c=4*(i+1)+(j+1)%4,d=4*(i+1)+j;di.push(a,d,c,a,c,b);}
   di.push(0,1,2,0,2,3,256,258,257,256,259,258);
   createPart('SheerFollowingDeck',meshGeo({positions:dp,indices:di}),deckMat,{parent:hull});

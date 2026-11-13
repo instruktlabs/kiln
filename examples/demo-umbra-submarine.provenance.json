@@ -1,16 +1,23 @@
 {
-  "sourceHash": "7d13398e5457d8acfad423430be3af6bd33d4fb83d939854593cc4c60a80b0a0",
+  "sourceHash": "311811b6bb143160512d08ae2f2e0355eefc2108ef360c03057c1f10c1969718",
   "model": "GPT-6 Astra",
   "harness": "ChatGPT Work",
   "authoredDate": "2026-09-09",
   "provenance": {
     "attribution": "Recorded demo session; model credit supplied only where the retained run identifies it.",
     "sourceAccess": "See retained demo run; no stronger isolation claim is made.",
-    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte.",
+    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Authoring feedback and shaded demo previews where available. Not a destination-runtime acceptance claim.",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
     "evaluationGlbHash": "79609a11b2f6b999f204f80b84ac4d264bf73c43d48329923ba82c3900bf944c",
-    "posterReceipt": {
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "7d13398e5457d8acfad423430be3af6bd33d4fb83d939854593cc4c60a80b0a0",
+        "sourceHash": "311811b6bb143160512d08ae2f2e0355eefc2108ef360c03057c1f10c1969718",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). Tall_Streamlined_Sail: base loft frame y 10.8 -> 10.78 so its hidden underside no longer shares the plane of Dorsal_Casing bottom (inside the pressure hull)"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

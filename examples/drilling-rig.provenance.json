@@ -1,5 +1,5 @@
 {
-  "sourceHash": "013e4ff5f7b414f8f387faa12934217959a78a1a436904cc1b447b1068f7e6dd",
+  "sourceHash": "484cd4840f3072750551e7edf3f8d4a0b56634316d8644fe8cbd69e5d5492600",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "013e4ff5f7b414f8f387faa12934217959a78a1a436904cc1b447b1068f7e6dd",
+        "sourceHash": "484cd4840f3072750551e7edf3f8d4a0b56634316d8644fe8cbd69e5d5492600",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). FloorStairs: totalRise floorY+0.18 -> floorY+0.178 so top step lies 2 mm under the DrillFloorDeck top; DogWindowGlass1/2: z offset +0.03 -> +0.032 so glass stands 2 mm proud of frame front"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

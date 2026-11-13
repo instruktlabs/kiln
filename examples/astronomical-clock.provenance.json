@@ -1,5 +1,5 @@
 {
-  "sourceHash": "4c027f3366e18a05a7d8b75fc98a3c10f0f3b86977cb81ea03555cdb67d2f61c",
+  "sourceHash": "e74273d9661a27d9ec40eeeb1aae5bce5eb2f3ee8fecab15e4711d2330ad34c1",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "4c027f3366e18a05a7d8b75fc98a3c10f0f3b86977cb81ea03555cdb67d2f61c",
+        "sourceHash": "e74273d9661a27d9ec40eeeb1aae5bce5eb2f3ee8fecab15e4711d2330ad34c1",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). ChamberWallLeft/Right: height 1.70 -> 1.696, centre y 1.45 unchanged: top 2 mm below the MidCornice top, bottom 2 mm above the jamb bottoms; ChamberBack: height 1.70 -> 1.694, centre y 1.45 -> 1.451: top 2 mm below the cornice top, bottom 4 mm above the wall bottoms"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

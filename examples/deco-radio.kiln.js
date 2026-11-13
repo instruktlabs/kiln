@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Art Deco Radio - Collectible 1930s Cathedral/Waterfall Tabletop Model
 const meta = {
   name: 'Art Deco Radio',
@@ -42,7 +43,7 @@ async function build() {
     const footGeo = cylinderYGeo(0.014, 0.011, 0.006, 32);
     createPart(`Foot_${idx + 1}`, footGeo, antiqueBrassMat, { position: pos, parent: root });
     const footRingGeo = cylinderYGeo(0.016, 0.016, 0.002, 32);
-    createPart(`FootRing_${idx + 1}`, footRingGeo, brassMat, { position: [pos[0], 0.005, pos[2]], parent: root });
+    createPart(`FootRing_${idx + 1}`, footRingGeo, brassMat, { position: [pos[0], 0.004, pos[2]], parent: root });
   });
 
   // 2. Stepped Silhouette Cabinet Body
@@ -176,17 +177,17 @@ async function build() {
 
   // Dial Frequency Scale Markings (crisp station bands)
   const scaleLineAM = boxGeo(0.001, 0.0018, 0.076);
-  createPart('ScaleLineAM', scaleLineAM, dialTickMat, { position: [0.0912, 0.176, 0], parent: root });
+  createPart('ScaleLineAM', scaleLineAM, dialTickMat, { position: [0.0920, 0.176, 0], parent: root });
 
   const scaleLineSW = boxGeo(0.001, 0.0018, 0.076);
-  createPart('ScaleLineSW', scaleLineSW, dialTickMat, { position: [0.0912, 0.154, 0], parent: root });
+  createPart('ScaleLineSW', scaleLineSW, dialTickMat, { position: [0.0920, 0.154, 0], parent: root });
 
   for (let t = -8; t <= 8; t++) {
     const isMajor = t % 2 === 0;
     const tickH = isMajor ? 0.006 : 0.0035;
     const tickGeo = boxGeo(0.001, tickH, 0.0012);
     createPart(`DialTick_${t + 8}`, tickGeo, dialTickMat, {
-      position: [0.0912, 0.176 - (isMajor ? 0.0025 : 0.001), t * 0.0044],
+      position: [0.0920, 0.176 - (isMajor ? 0.0025 : 0.001), t * 0.0044],
       parent: root
     });
   }
@@ -204,8 +205,8 @@ async function build() {
   createPart('NeedleHub', pointerHubGeo, brassMat, { position: [0, 0, 0], parent: pointerPivot });
 
   // Protective Inset Dial Glass (recessed inside bezel at X = 0.0945)
-  const glassGeo = boxGeo(0.0015, 0.046, 0.090);
-  createPart('DialGlass', glassGeo, dialGlassMat, { position: [0.0945, 0.165, 0], parent: root });
+  const glassGeo = boxGeo(0.0015, 0.050, 0.094);
+  createPart('DialGlass', glassGeo, dialGlassMat, { position: [0.0960, 0.165, 0], parent: root });
 
   // 5. Tactile Differentiated Knobs
   // Center Tuning Knob (with 18 flutes and brass cap, animated on Joint_TuningKnob)

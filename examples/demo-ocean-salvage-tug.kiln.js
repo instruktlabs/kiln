@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = { name: 'Ocean salvage tug', category: 'vehicle', role: 'vehicle' };
 
 // Dimensions in metres. +X forward, +Y up, +Z starboard.
@@ -16,7 +17,7 @@ const CABLE = 0x22262b;
 
 // Plan-view outline of the hull (X forward, Z starboard), ordered
 // stern-port -> bow -> stern-starboard so the loop closes across the transom.
-function hullOutline(beamScale) {
+function hullOutline(beamScale, sternInset = 0) {
   const pts = [
     [-2.4, -1.05],
     [-0.6, -1.15],
@@ -26,7 +27,7 @@ function hullOutline(beamScale) {
     [-0.6, 1.15],
     [-2.4, 1.05],
   ];
-  return pts.map(([x, z]) => [x, z * beamScale]);
+  return pts.map(([x, z]) => [x === -2.4 ? x + sternInset : x, z * beamScale]);
 }
 
 /** Vertical tire fender hung against the hull side. */
@@ -77,8 +78,8 @@ function build() {
   // Waterline boot stripe (thin loft band just above the waterline).
   // Kept slightly proud of the hull surface to avoid z-fighting.
   const stripeGeo = loftProfiles([
-    { profile: hullOutline(0.945), frame: { origin: [0, 0.64, 0], rotation: [0, 0, 0] } },
-    { profile: hullOutline(0.965), frame: { origin: [0, 0.76, 0], rotation: [0, 0, 0] } },
+    { profile: hullOutline(0.945, 0.002), frame: { origin: [0, 0.64, 0], rotation: [0, 0, 0] } },
+    { profile: hullOutline(0.965, 0.002), frame: { origin: [0, 0.76, 0], rotation: [0, 0, 0] } },
   ]);
   createPart('BootStripe', stripeGeo, mats.orange, { parent: root });
 
@@ -92,8 +93,8 @@ function build() {
   });
   // Deck anti-slip strips.
   for (let i = 0; i < 4; i++) {
-    createPart('DeckStrip' + i, boxGeo(2.5, 0.02, 0.05), mats.dark, {
-      position: [-0.95, 1.13, -0.6 + i * 0.4], parent: root,
+    createPart('DeckStrip' + i, boxGeo(2.5, 0.016, 0.05), mats.dark, {
+      position: [-0.95, 1.132, -0.6 + i * 0.4], parent: root,
     });
   }
 

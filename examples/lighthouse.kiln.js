@@ -4,6 +4,7 @@
 // program, rendered it, looked at its own six-view contact sheet, and
 // revised. The original geometry was authored by that model.
 // Maintainer revision: preserve rock UVs during subdivision (2026-09-05).
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 //
 // Dispatched into a clean directory containing only the brief and the Kiln
 // skills, with no access to this repository or to any finished example.
@@ -190,7 +191,7 @@ async function build() {
   const ridgeMidY = 3.38 + 0.975 * Math.sin((roofPitch * Math.PI) / 180);
   const roofUnderY = (dz) =>
     ridgeMidY - roofT / 2 / Math.cos((roofPitch * Math.PI) / 180) - roofSlope * Math.abs(dz);
-  const gableHalfZ = 1.6;                             // outer face of the end walls
+  const gableHalfZ = 1.596;                            // outer face of the end walls
   const gableGeo = await extrudeProfile(
     [
       [-gableHalfZ, 2.70],                            // buried 0.2 m into the wall below
@@ -199,7 +200,7 @@ async function build() {
       [0, roofUnderY(0) - 0.02],
       [-gableHalfZ, roofUnderY(gableHalfZ) - 0.02],
     ],
-    { depth: 0.18, axis: 'x' },
+    { depth: 0.176, axis: 'x' },
   );
   createPart('CottageWallN', boxGeo(3.6, 2.3, 0.18), stone, { position: [cx, 1.75, cz + 1.5], parent: root });
   createPart('CottageWallS', boxGeo(3.6, 2.3, 0.18), stone, { position: [cx, 1.75, cz - 1.5], parent: root });
@@ -224,10 +225,10 @@ async function build() {
   createPart('CottageDoorStep', boxGeo(0.5, 0.14, 1.1), plinthGray, { position: [cx + 2.2, 0.72, cz], parent: root });
   createPart('CottageWinN', boxGeo(1.0, 0.7, 0.1), iron, { position: [cx + 0.3, 2.0, cz + 1.55], parent: root });
   createPart('CottageWinTrimN', boxGeo(1.15, 0.85, 0.06), trimWhite, { position: [cx + 0.3, 2.0, cz + 1.52], parent: root });
-  createPart('CottageMullVN', boxGeo(0.06, 0.7, 0.12), trimWhite, { position: [cx + 0.3, 2.0, cz + 1.56], parent: root });
+  createPart('CottageMullVN', boxGeo(0.06, 0.7, 0.116), trimWhite, { position: [cx + 0.3, 2.0, cz + 1.562], parent: root });
   createPart('CottageWinS', boxGeo(1.0, 0.7, 0.1), iron, { position: [cx + 0.3, 2.0, cz - 1.55], parent: root });
   createPart('CottageWinTrimS', boxGeo(1.15, 0.85, 0.06), trimWhite, { position: [cx + 0.3, 2.0, cz - 1.52], parent: root });
-  createPart('CottageMullVS', boxGeo(0.06, 0.7, 0.12), trimWhite, { position: [cx + 0.3, 2.0, cz - 1.56], parent: root });
+  createPart('CottageMullVS', boxGeo(0.06, 0.7, 0.116), trimWhite, { position: [cx + 0.3, 2.0, cz - 1.562], parent: root });
   createPart('Passage', boxGeo(1.6, 1.9, 1.4), stone, { position: [-0.3, 1.6, 2.2], rotation: [0, 25, 0], parent: root });
   // stone path: tower door to cottage + edge
   createPart('Path1', boxGeo(1.0, 0.08, 1.1), plinthGray, { position: [2.6, 0.65, 0.4], parent: root });

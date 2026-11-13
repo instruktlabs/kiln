@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -61,19 +62,19 @@ function build() {
   // =========================================================================
   // 2. LOWER NICHE: CLOCKWORK & PENDULUM CHAMBER (Y = 0.55 to 2.3)
   // =========================================================================
-  createPart('ChamberBack', boxGeo(0.1, 1.7, 1.5), stoneDark, {
-    position: [-0.22, 1.45, 0],
+  createPart('ChamberBack', boxGeo(0.1, 1.694, 1.5), stoneDark, {
+    position: [-0.22, 1.451, 0],
     parent: root
   });
   createPart('ChamberFloor', boxGeo(0.4, 0.08, 1.5), stoneMid, {
     position: [-0.05, 0.58, 0],
     parent: root
   });
-  createPart('ChamberWallLeft', boxGeo(0.45, 1.7, 0.3), stoneMid, {
+  createPart('ChamberWallLeft', boxGeo(0.45, 1.696, 0.3), stoneMid, {
     position: [-0.05, 1.45, -0.85],
     parent: root
   });
-  createPart('ChamberWallRight', boxGeo(0.45, 1.7, 0.3), stoneMid, {
+  createPart('ChamberWallRight', boxGeo(0.45, 1.696, 0.3), stoneMid, {
     position: [-0.05, 1.45, 0.85],
     parent: root
   });

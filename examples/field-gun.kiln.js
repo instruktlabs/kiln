@@ -1,4 +1,5 @@
 // Maintainer revision: Kiln UV API migration replaces the old UV-preserving wrapper with copyGeometry; geometry and existing UV values are unchanged.
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // A 6-pounder field gun: the kind of asset a studio artist would build.
 //
 // This is the repository's hero, and it exists to show what the loop produces
@@ -240,7 +241,7 @@ async function build() {
     depth: 0.032, axis: 'y', holes: [circleProfile(0.062, 20)], bevel: 0.008,
   })), iron, { position: [-2.62, 0.09, 0], parent: root });
 
-  createPart('TrailShoe', await uv(await roundedBoxGeo(0.22, 0.10, 0.40, 0.016)), iron, {
+  createPart('TrailShoe', await uv(await roundedBoxGeo(0.22, 0.10, 0.396, 0.016)), iron, {
     position: [-2.44, 0.05, 0], parent: root,
   });
 

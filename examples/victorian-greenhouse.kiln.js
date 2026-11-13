@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -691,11 +692,11 @@ function build() {
       parent: root,
     });
   }
-  createPart('FrontMullion_L', boxGeo(0.04, eaveH - sillY, 0.04), ironMat, {
+  createPart('FrontMullion_L', boxGeo(0.04, eaveH - sillY, 0.044), ironMat, {
     position: [halfL, sillY + (eaveH - sillY) / 2, frontZ_L],
     parent: root,
   });
-  createPart('FrontMullion_R', boxGeo(0.04, eaveH - sillY, 0.04), ironMat, {
+  createPart('FrontMullion_R', boxGeo(0.04, eaveH - sillY, 0.044), ironMat, {
     position: [halfL, sillY + (eaveH - sillY) / 2, frontZ_R],
     parent: root,
   });

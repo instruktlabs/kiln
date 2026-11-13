@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // A six-axis industrial robot arm.
 //
 // Authored by: Claude Opus 5, via Claude Code. Every part below was written by
@@ -182,13 +183,13 @@ async function build() {
   // out to the anchor bolts and what stops the drum reading as a bucket.
   for (let i = 0; i < 6; i++) {
     const a = (i / 6) * Math.PI * 2 + Math.PI / 6;
-    await box(`BaseRib_${i}`, 0.090, 0.052, 0.026,
+    await box(`BaseRib_${i}`, 0.090, 0.048, 0.026,
       [Math.cos(a) * 0.208, 0.052, Math.sin(a) * 0.208], enamel,
       { r: 0.008, res: 256, rotation: [0, -(a * 180) / Math.PI, 0] });
   }
   // Black skirt at the parting line. Two-tone at the base is the cheapest
   // value break on the whole machine and the one a photograph always shows.
-  plain('BaseSkirt', cylinderGeo(0.270, 0.270, 0.026, 44), darkTrim, [0, 0.039, 0], root);
+  plain('BaseSkirt', cylinderGeo(0.270, 0.270, 0.030, 44), darkTrim, [0, 0.037, 0], root);
   plain('HazardBand', cylinderGeo(0.208, 0.208, 0.038, 44), hazard, [0, 0.126, 0], root);
   // Controller umbilical: connector panel on the back with cable glands, and
   // the trunk cable running out of frame the way it does in a real cell.
@@ -364,7 +365,7 @@ async function build() {
 
   for (const [nm, sz] of [['JawA', 1], ['JawB', -1]]) {
     const jaw = createPivot(nm, [0, JAW_Y, sz * JAW_OPEN], flange);
-    await box(`${nm}_Carriage`, 0.092, 0.052, 0.044, [0, 0.008, 0], alloy,
+    await box(`${nm}_Carriage`, 0.092, 0.052, 0.040, [0, 0.008, 0], alloy,
       { r: 0.007, parent: jaw });
     await box(`${nm}_Finger`, 0.058, 0.112, 0.028, [0, 0.086, sz * -0.008], darkTrim,
       { r: 0.006, parent: jaw });

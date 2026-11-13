@@ -1,5 +1,5 @@
 {
-  "sourceHash": "228406376aa8a86dfb4d0fb0335ae37b33ae36b2e063ec3ce14ab6b7fed08570",
+  "sourceHash": "8b2d7948e7f0c1ec820cf781517b98acc1ea5e8aff0189efeef278ab147882f4",
   "model": "MiniMax M3",
   "harness": "OpenCode",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "228406376aa8a86dfb4d0fb0335ae37b33ae36b2e063ec3ce14ab6b7fed08570",
+        "sourceHash": "8b2d7948e7f0c1ec820cf781517b98acc1ea5e8aff0189efeef278ab147882f4",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). TS_B/TS_R/TS_T/TS_L track shoes: boxGeo depth 0.55 -> 0.554 so shoe side faces stand 2 mm proud of tires, idlers and rollers they lay on; CabWindowFront: boxGeo width 1.22 -> 1.21 so its +x face (2.14) no longer lies on the CabDoor inner face; Bearing: position y 1.08 -> 1.078 so its bottom face leaves the Turntable bottom plane"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

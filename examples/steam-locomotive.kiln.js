@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: opencode-go/muse-spark-1.3-contributor, via opencode.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -291,7 +292,7 @@ async function build() {
   const cabRoofGeo = await roundedBoxGeo(2.35, 0.12, 2.7, 0.05);
   createPart('CabRoof', cabRoofGeo, roofBlack, { position: [-3.0, 3.94, 0], parent: root });
   createPart('Backhead', cylinderXGeo(0.7, 0.7, 0.5, 20), black, { position: [-2.1, 2.4, 0], parent: root });
-  createPart('GaugePanel', boxGeo(0.06, 0.5, 0.9), roofBlack, { position: [-2.32, 2.95, 0], parent: root });
+  createPart('GaugePanel', boxGeo(0.06, 0.5, 0.9), roofBlack, { position: [-2.322, 2.95, 0], parent: root });
   for (const s of [1, -1]) {
     createPart('Gauge_' + s, cylinderXGeo(0.09, 0.09, 0.06, 12), brass, { position: [-2.35, 3.0, s * 0.25], parent: root });
     createPart('GaugeFace_' + s, cylinderXGeo(0.07, 0.07, 0.065, 12), whitewall, { position: [-2.35, 3.0, s * 0.25], parent: root });

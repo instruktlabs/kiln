@@ -4,7 +4,7 @@
     "kind": "recorded",
     "text": "Broader emerald wings with rounded brass-rimmed tips"
   },
-  "currentSourceHash": "824ce3887151b2a551a7c1bd09a09924f9cb46bd6dd43b2606e2d1a3b7fc0317",
+  "currentSourceHash": "cddd5dcbb0543cf5e4399cd9132129310499abe1538a03b714509adfcb6fed70",
   "revisions": [
     {
       "file": "revision-1.kiln.js",
@@ -17,6 +17,12 @@
       "title": "Saved revision 2",
       "description": "Broader emerald wings with rounded brass-rimmed tips",
       "sourceHash": "824ce3887151b2a551a7c1bd09a09924f9cb46bd6dd43b2606e2d1a3b7fc0317"
+    },
+    {
+      "title": "Flush faces fixed",
+      "description": "Maintainer revision by Claude Sonnet 5.5 via Claude Code (2026-11-12): 1 part edit that separates faces lying on one plane, which flickered in any renderer. Materials, names, hierarchy and animation are unchanged.",
+      "file": "flush-fix.kiln.js",
+      "sourceHash": "cddd5dcbb0543cf5e4399cd9132129310499abe1538a03b714509adfcb6fed70"
     }
   ]
 }

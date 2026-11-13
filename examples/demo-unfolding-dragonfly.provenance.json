@@ -1,16 +1,23 @@
 {
-  "sourceHash": "ebb4e45d66b43fdbaad8d90290e005921bcca87a8712638b34ed344d8e70bd48",
+  "sourceHash": "c6b4c82cd1d0cc68d27662599ccd23c2265527859c59d6fc540cf37d97234d5a",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "authoredDate": "2026-09-09",
   "provenance": {
     "attribution": "Recorded demo session; model credit supplied only where the retained run identifies it.",
     "sourceAccess": "See retained demo run; no stronger isolation claim is made.",
-    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte.",
+    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Authoring feedback and shaded demo previews where available. Not a destination-runtime acceptance claim.",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
     "evaluationGlbHash": "4fc612c3d0278fe0d76789377781cc2b5562e5c49a01c03a9e4c2bab9d9e11d7",
-    "posterReceipt": {
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "ebb4e45d66b43fdbaad8d90290e005921bcca87a8712638b34ed344d8e70bd48",
+        "sourceHash": "c6b4c82cd1d0cc68d27662599ccd23c2265527859c59d6fc540cf37d97234d5a",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). Gear_Sec_Mesh: gear height 0.010 -> 0.008 so its faces no longer lie on the Gear_Main_Mesh planes; PressureGauge_Face: z 0.047 -> 0.048 so its back face clears the body back face"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

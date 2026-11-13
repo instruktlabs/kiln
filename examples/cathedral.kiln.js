@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // A Gothic cathedral, at dusk, with the lamps lit inside.
 //
 // Authored by: Claude Opus 5, via Claude Code. Every part below was written by
@@ -564,8 +565,8 @@ async function build() {
   const roseHole = solid(cylinderXGeo(3.8, 3.8, 6.0, 24));
   roseHole.position.set(X_WEST, 21.0, 0);
   westCutters.push(roseHole);
-  const westBody = solid(boxGeo(X_WEST - 10.2, 26.0 - Y_GROUND, Z_NAVE * 2 + 0.2));
-  westBody.position.set((X_WEST + 10.2) / 2, (26.0 + Y_GROUND) / 2, 0);
+  const westBody = solid(boxGeo(X_WEST - 0.002 - 10.2, 26.0 - Y_GROUND, Z_NAVE * 2 + 0.2));
+  westBody.position.set((X_WEST - 0.002 + 10.2) / 2, (26.0 + Y_GROUND) / 2, 0);
   const westMass = await boolDiff('WestFront', westBody, ...westCutters);
   westMass.geometry = await uv(westMass.geometry);
   root.add(westMass);
@@ -809,7 +810,7 @@ async function build() {
     ]) {
       const px = ox > 0 ? 'p' : ox < 0 ? 'n' : 'c';
       const pz = oz > 0 ? 'p' : oz < 0 ? 'n' : 'c';
-      slab(`Parapet_${tag}${px}${pz}`, w, 2.0, d, [TOWER_X + ox, Y_TOWER + 1.35, tz + oz], stone);
+      slab(`Parapet_${tag}${px}${pz}`, w - (ox === 0 ? 0 : 0.004), 2.0 - (ox === 0 ? 0 : 0.004), d - (ox === 0 ? 0 : 0.004), [TOWER_X + ox, Y_TOWER + 1.35, tz + oz], stone);
     }
     for (const cx of [1, -1]) {
       for (const cz of [1, -1]) {

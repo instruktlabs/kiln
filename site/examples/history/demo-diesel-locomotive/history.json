@@ -4,7 +4,7 @@
     "kind": "recorded",
     "text": "Make the red paint deep forest green and the handrails brass."
   },
-  "currentSourceHash": "483aef3d91f13d831e9c964dcd059957ee26b4c230b92cf2feb26d684e548378",
+  "currentSourceHash": "c5752f9c59a7e9fbb1d08eb17eabf59d71a9b81e9514949b2db040731c2e936d",
   "revisions": [
     {
       "file": "revision-1.kiln.js",
@@ -17,6 +17,12 @@
       "title": "Saved revision 2",
       "description": "Make the red paint deep forest green and the handrails brass.",
       "sourceHash": "483aef3d91f13d831e9c964dcd059957ee26b4c230b92cf2feb26d684e548378"
+    },
+    {
+      "title": "Flush faces fixed",
+      "description": "Maintainer revision by Claude Sonnet 5.5 via Claude Code (2026-11-12): 2 part edits that separate faces lying on one plane, which flickered in any renderer. Materials, names, hierarchy and animation are unchanged.",
+      "file": "flush-fix.kiln.js",
+      "sourceHash": "c5752f9c59a7e9fbb1d08eb17eabf59d71a9b81e9514949b2db040731c2e936d"
     }
   ]
 }

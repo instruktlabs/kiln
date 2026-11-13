@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: opencode/muse-spark-1.3-contributor-free, via opencode.
 // Dispatched into a clean directory with a brief, Kiln skills, and the MCP tools.
 // No example asset or engine implementation was supplied as authoring context.
@@ -126,7 +127,7 @@ async function build() {
     createPart('WinSill' + i, boxGeo(0.14, 0.06, 0.5), stoneDark, { position: [-0.35 + Math.cos(a) * 1.16, roomY + 0.7, -0.35 + Math.sin(a) * 1.16], rotation: [0, -a * 180 / Math.PI + 90, 0], parent: root });
   }
   // red door facing +X with steps
-  createPart('DoorFrame', boxGeo(0.12, 0.95, 0.62), brassDark, { position: [0.82, roomY + 0.75, -0.35], parent: root });
+  createPart('DoorFrame', boxGeo(0.12, 0.95, 0.62), brassDark, { position: [0.822, roomY + 0.75, -0.35], parent: root });
   createPart('DoorLeaf', boxGeo(0.08, 0.85, 0.5), redMat, { position: [0.85, roomY + 0.72, -0.35], parent: root });
   createPart('DoorStep', boxGeo(0.5, 0.12, 0.7), stoneDark, { position: [1.1, roomY + 0.06, -0.35], parent: root });
   // entablature + copper dome (sphere sunk into drum)

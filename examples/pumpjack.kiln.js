@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 7 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -53,19 +54,19 @@ async function build() {
   });
 
   // Perimeter retaining timbers
-  createPart('BorderTimber_Front', boxGeo(0.16, 0.14, 3.8), matDarkSteel, {
+  createPart('BorderTimber_Front', boxGeo(0.16, 0.14, 3.804), matDarkSteel, {
     position: [4.0, 0.07, 0],
     parent: root,
   });
-  createPart('BorderTimber_Back', boxGeo(0.16, 0.14, 3.8), matDarkSteel, {
+  createPart('BorderTimber_Back', boxGeo(0.16, 0.14, 3.804), matDarkSteel, {
     position: [-4.6, 0.07, 0],
     parent: root,
   });
-  createPart('BorderTimber_Left', boxGeo(8.6, 0.14, 0.16), matDarkSteel, {
+  createPart('BorderTimber_Left', boxGeo(8.604, 0.14, 0.16), matDarkSteel, {
     position: [-0.3, 0.07, -1.9],
     parent: root,
   });
-  createPart('BorderTimber_Right', boxGeo(8.6, 0.14, 0.16), matDarkSteel, {
+  createPart('BorderTimber_Right', boxGeo(8.604, 0.14, 0.16), matDarkSteel, {
     position: [-0.3, 0.07, 1.9],
     parent: root,
   });
@@ -102,8 +103,8 @@ async function build() {
       position: [-0.5, skidY, zSide],
       parent: root,
     });
-    createPart(`SkidRunner_TFlange_${sideName}`, boxGeo(skidLength, 0.025, skidWidth + 0.08), matDarkSteel, {
-      position: [-0.5, skidY + skidHeight / 2 + 0.012, zSide],
+    createPart(`SkidRunner_TFlange_${sideName}`, boxGeo(skidLength, 0.021, skidWidth + 0.08), matDarkSteel, {
+      position: [-0.5, skidY + skidHeight / 2 + 0.010, zSide],
       parent: root,
     });
     createPart(`SkidRunner_BFlange_${sideName}`, boxGeo(skidLength, 0.025, skidWidth + 0.08), matDarkSteel, {
@@ -293,16 +294,16 @@ async function build() {
   beamBetween('PlatSupport_B', [-0.04, samsonTopY, 0.24], [platX - 0.42, platY - 0.03, platPosZ + 0.2], 0.035, matDarkSteel, { parent: root });
 
   // Toe boards (kickplates) on platform perimeter
-  createPart('ToeBoard_Outer', boxGeo(platLengthX, 0.1, 0.025), matSafetyYellow, {
-    position: [platX, platY + 0.05, platPosZ + platWidthZ / 2 - 0.012],
+  createPart('ToeBoard_Outer', boxGeo(platLengthX + 0.004, 0.1, 0.025), matSafetyYellow, {
+    position: [platX, platY + 0.05, platPosZ + platWidthZ / 2 - 0.010],
     parent: root,
   });
-  createPart('ToeBoard_Front', boxGeo(0.025, 0.1, platWidthZ), matSafetyYellow, {
-    position: [platX + platLengthX / 2 - 0.012, platY + 0.05, platPosZ],
+  createPart('ToeBoard_Front', boxGeo(0.025, 0.1, platWidthZ + 0.004), matSafetyYellow, {
+    position: [platX + platLengthX / 2 - 0.010, platY + 0.05, platPosZ],
     parent: root,
   });
-  createPart('ToeBoard_Back', boxGeo(0.025, 0.1, platWidthZ), matSafetyYellow, {
-    position: [platX - platLengthX / 2 + 0.012, platY + 0.05, platPosZ],
+  createPart('ToeBoard_Back', boxGeo(0.025, 0.1, platWidthZ + 0.004), matSafetyYellow, {
+    position: [platX - platLengthX / 2 + 0.010, platY + 0.05, platPosZ],
     parent: root,
   });
 
@@ -752,7 +753,7 @@ async function build() {
   const crankShaftY = reducerBaseY + 0.64;
 
   createPart('ReducerBearingHub_L', cylinderZGeo(0.24, 0.24, 0.14, 16), matDarkSteel, {
-    position: [reducerX, crankShaftY, -0.52],
+    position: [reducerX, crankShaftY, -0.522],
     parent: root,
   });
   createPart('ReducerBearingHub_R', cylinderZGeo(0.24, 0.24, 0.14, 16), matDarkSteel, {
@@ -837,7 +838,7 @@ async function build() {
     const cwCenterY = crankShaftY + Math.sin(cwRad) * 0.52;
 
     // Main heavy counterweight body (safety hazard orange)
-    createPart(`CounterWeight_Main_${sName}`, boxGeo(0.9, 0.64, 0.22), matHazardOrange, {
+    createPart(`CounterWeight_Main_${sName}`, boxGeo(0.9, 0.64, 0.224), matHazardOrange, {
       position: [cwCenterX, cwCenterY, crankZ],
       rotation: [0, 0, crankAngleDeg],
       parent: root,
@@ -905,8 +906,8 @@ async function build() {
     parent: root,
   });
 
-  createPart('MotorCradle', boxGeo(0.72, 0.12, 0.65), matDarkSteel, {
-    position: [motorX, motorBaseY + 0.14, -0.15],
+  createPart('MotorCradle', boxGeo(0.72, 0.116, 0.65), matDarkSteel, {
+    position: [motorX, motorBaseY + 0.138, -0.15],
     parent: root,
   });
 

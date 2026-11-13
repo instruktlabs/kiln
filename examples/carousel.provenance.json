@@ -1,5 +1,5 @@
 {
-  "sourceHash": "f93b8b3c92a3cecba5620c61e7c4deb2d94470ca2c7fcb098579d5fa0d16a773",
+  "sourceHash": "1ba984c76709d0f59d6f4eb57710b00715cebe42f9c5eeff82bfef214dfe43b7",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Not recorded",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "Not recorded",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "f93b8b3c92a3cecba5620c61e7c4deb2d94470ca2c7fcb098579d5fa0d16a773",
+        "sourceHash": "1ba984c76709d0f59d6f4eb57710b00715cebe42f9c5eeff82bfef214dfe43b7",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). DrumCore: cylinder height 2.25 -> 2.248 and centre y 1.485 -> 1.484 so its top cap sits 2 mm below the DrumCornice top cap it shared (y 2.61); bottom unchanged"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

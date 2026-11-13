@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: opus, via claude.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -596,7 +597,7 @@ function build() {
     const cy = [7.6, 13.0, 18.2, 23.0][k];
     const cl = [42, 36, 24, 15][k];
     const cx = [0, -1, -3, -5][k];
-    box('IslandCatwalk_' + k, island, cl, 0.3, 15.4, cx, cy, 0, matDark);
+    box('IslandCatwalk_' + k, island, cl, 0.3, 15.4, cx, k === 0 ? cy - 0.002 : cy, 0, matDark);
     box('IslandRailPort_' + k, island, cl, 1.1, 0.16, cx, cy + 0.7, -7.6, matDark);
     box('IslandRailStb_' + k, island, cl, 1.1, 0.16, cx, cy + 0.7, 7.6, matDark);
   }

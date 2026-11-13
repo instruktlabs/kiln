@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {
   name: 'Museum Kinetic Wave Sculpture',
   category: 'prop',
@@ -155,19 +156,19 @@ function build() {
 
   // Base plinth bronze trim reveal
   createPart('BasePlinthTrimFront', boxGeo(0.012, 0.006, 1.76), bronzeMat, {
-    position: [0.285, 0.033, 0],
+    position: [0.285, 0.036, 0],
     parent: root,
   });
   createPart('BasePlinthTrimBack', boxGeo(0.012, 0.006, 1.76), bronzeMat, {
-    position: [-0.285, 0.033, 0],
+    position: [-0.285, 0.036, 0],
     parent: root,
   });
   createPart('BasePlinthTrimLeft', boxGeo(0.558, 0.006, 0.012), bronzeMat, {
-    position: [0, 0.033, -0.875],
+    position: [0, 0.036, -0.875],
     parent: root,
   });
   createPart('BasePlinthTrimRight', boxGeo(0.558, 0.006, 0.012), bronzeMat, {
-    position: [0, 0.033, 0.875],
+    position: [0, 0.036, 0.875],
     parent: root,
   });
 

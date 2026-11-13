@@ -1,5 +1,5 @@
 {
-  "sourceHash": "0c100fb9b080162f13d807920b02e0aa8d8263309b1a1160fcb1d6528c1716aa",
+  "sourceHash": "3f0b579253f87c1cc4513356bf6b9b7f914d9c3c5ed860e7a2f151a8ae2c9706",
   "model": "Muse Spark 1.3",
   "harness": "OpenCode",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "0c100fb9b080162f13d807920b02e0aa8d8263309b1a1160fcb1d6528c1716aa",
+        "sourceHash": "3f0b579253f87c1cc4513356bf6b9b7f914d9c3c5ed860e7a2f151a8ae2c9706",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). GaugePanel: position x -2.32 -> -2.322 so its back face moves 2 mm along -x off the Backhead end cap at x=-2.35"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

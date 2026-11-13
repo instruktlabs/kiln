@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {
   name: 'Sculptural Tea Pavilion',
   category: 'architecture',
@@ -409,7 +410,7 @@ async function build() {
     position: [basinBasePos[0], basinBasePos[1] + 0.22, basinBasePos[2]], parent: gardenGroup
   });
   createPart('TsukubaiWater', cylinderGeo(0.25, 0.25, 0.02, 16), matWater, {
-    position: [basinBasePos[0], basinBasePos[1] + 0.43, basinBasePos[2]], parent: gardenGroup
+    position: [basinBasePos[0], basinBasePos[1] + 0.432, basinBasePos[2]], parent: gardenGroup
   });
   createPart('KakehiUpright', cylinderGeo(0.025, 0.025, 0.70, 10), matBamboo, {
     position: [basinBasePos[0] + 0.28, basinBasePos[1] + 0.35, basinBasePos[2] - 0.25], parent: gardenGroup

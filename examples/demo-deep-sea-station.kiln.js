@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {
   name: 'Deep-Sea Research Station',
   category: 'architecture',
@@ -49,7 +50,7 @@ function build() {
   createPart('Docking_LightPort', sphereGeo(0.06, 8, 6), floodLight, { position: [-0.4, 7.15, -0.9], parent: root });
 
   // Sensor & Communications Mast
-  createPart('Mast_Base', cylinderGeo(0.2, 0.25, 0.3, 12), frameworkDark, { position: [0.6, 6.85, 0], parent: root });
+  createPart('Mast_Base', cylinderGeo(0.2, 0.25, 0.296, 12), frameworkDark, { position: [0.6, 6.852, 0], parent: root });
   createPart('Mast_Pylon', cylinderGeo(0.1, 0.16, 2.2, 10), frameworkDark, { position: [0.6, 8.1, 0], parent: root });
   createPart('Mast_SonarDome', sphereGeo(0.4, 14, 10), hullDark, { position: [0.6, 9.3, 0], parent: root });
   createPart('Mast_AcousticBoom', cylinderGeo(0.04, 0.04, 1.3, 8), frameworkDark, { position: [0.6, 8.8, 0], rotation: [90, 0, 0], parent: root });

@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: opencode-go/minimax-m3, via opencode.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -31,7 +32,7 @@ async function build() {
 
   createPart('CarbodyPlate', boxGeo(5.4, 0.08, 2.7), darkSteel, { position: [0, 0.6, 0], parent: undercarriage });
   createPart('Carbody', boxGeo(4.6, 0.3, 1.2), darkSteel, { position: [0, 0.92, 0], parent: undercarriage });
-  createPart('Bearing', cylinderYGeo(1.15, 1.15, 0.06, 24), steel, { position: [0, 1.08, 0], parent: undercarriage });
+  createPart('Bearing', cylinderYGeo(1.15, 1.15, 0.06, 24), steel, { position: [0, 1.078, 0], parent: undercarriage });
 
   for (const side of [-1, 1]) {
     const sName = side > 0 ? 'R' : 'L';
@@ -70,7 +71,7 @@ async function build() {
     for (let i = 0; i < numStraight; i++) {
       const t = i / numStraight;
       const x = -2.4 + t * 4.8;
-      createPart('TS_B_' + sName + '_' + i, boxGeo(0.42, 0.13, 0.55), black, { position: [x, 0.13, 0], parent: trackSide });
+      createPart('TS_B_' + sName + '_' + i, boxGeo(0.42, 0.13, 0.554), black, { position: [x, 0.13, 0], parent: trackSide });
       createPart('TS_B_Grouser_' + sName + '_' + i, boxGeo(0.42, 0.02, 0.08), steel, { position: [x, 0.22, 0], parent: trackSide });
     }
     for (let i = 0; i < numArc; i++) {
@@ -79,12 +80,12 @@ async function build() {
       const x = 2.4 + Math.cos(ang) * arcR;
       const y = 0.65 + Math.sin(ang) * arcR;
       const rotDeg = (ang + Math.PI / 2) * 180 / Math.PI;
-      createPart('TS_R_' + sName + '_' + i, boxGeo(0.42, 0.13, 0.55), black, { position: [x, y, 0], rotation: [0, 0, rotDeg], parent: trackSide });
+      createPart('TS_R_' + sName + '_' + i, boxGeo(0.42, 0.13, 0.554), black, { position: [x, y, 0], rotation: [0, 0, rotDeg], parent: trackSide });
     }
     for (let i = 0; i < numStraight; i++) {
       const t = i / numStraight;
       const x = 2.4 - t * 4.8;
-      createPart('TS_T_' + sName + '_' + i, boxGeo(0.42, 0.13, 0.55), black, { position: [x, 1.18, 0], parent: trackSide });
+      createPart('TS_T_' + sName + '_' + i, boxGeo(0.42, 0.13, 0.554), black, { position: [x, 1.18, 0], parent: trackSide });
     }
     for (let i = 0; i < numArc; i++) {
       const t = i / numArc;
@@ -92,7 +93,7 @@ async function build() {
       const x = -2.4 + Math.cos(ang) * arcR;
       const y = 0.65 + Math.sin(ang) * arcR;
       const rotDeg = (ang + Math.PI / 2) * 180 / Math.PI;
-      createPart('TS_L_' + sName + '_' + i, boxGeo(0.42, 0.13, 0.55), black, { position: [x, y, 0], rotation: [0, 0, rotDeg], parent: trackSide });
+      createPart('TS_L_' + sName + '_' + i, boxGeo(0.42, 0.13, 0.554), black, { position: [x, y, 0], rotation: [0, 0, rotDeg], parent: trackSide });
     }
     createPart('TrackTension_' + sName, cylinderYGeo(0.08, 0.08, 0.5, 8), yellow, { position: [-1.7, 0.5, side * 0.1], parent: trackSide });
   }
@@ -135,7 +136,7 @@ async function build() {
 
   const cabGeo = await roundedBoxGeo(1.3, 1.4, 1.5, 0.07);
   createPart('Cab', cabGeo, yellow, { position: [1.5, 1.0, -0.9], parent: house });
-  createPart('CabWindowFront', boxGeo(1.22, 0.95, 1.44), cabGlass, { position: [1.53, 1.3, -0.9], parent: house });
+  createPart('CabWindowFront', boxGeo(1.21, 0.95, 1.44), cabGlass, { position: [1.53, 1.3, -0.9], parent: house });
   createPart('CabWindowSide', boxGeo(1.22, 0.7, 0.02), cabGlass, { position: [1.5, 1.25, -1.65], parent: house });
   createPart('CabRoof', boxGeo(1.35, 0.07, 1.55), yellow, { position: [1.5, 1.72, -0.9], parent: house });
   createPart('CabBeacon', cylinderYGeo(0.07, 0.07, 0.08, 8), warnYellow, { position: [1.5, 1.8, -0.9], parent: house });

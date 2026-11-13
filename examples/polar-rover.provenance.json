@@ -1,5 +1,5 @@
 {
-  "sourceHash": "aea09b2491cc06ac710648d0de30bb365fa1b2c0fff10712cb70db07e8216515",
+  "sourceHash": "a9fef121ab605cc28d9bc05febc2b8e4f8a5cc988f9281f50a68965625639fea",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity",
   "authoredDate": "2026-09-05",
@@ -8,12 +8,19 @@
     "sourceAccess": "Fresh project-local authoring workspace with a brief, installed skills and Kiln tools.",
     "inheritedContext": "Fresh independent authoring conversation.",
     "startingExample": "None supplied.",
-    "humanIntervention": "Maintainer supplied the brief and reviewed actual exports and uniform gallery posters. Final source bytes are preserved from the model export.",
+    "humanIntervention": "Maintainer supplied the brief and reviewed actual exports and uniform gallery posters. Final source bytes are preserved from the model export. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 7 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Actual GPU images inspected independently. Roof highlights remain bright. Tracked motion and mechanical clearance are not certified; this is a stylized expedition vehicle.",
     "evaluationPackageHash": "0d457e8f8763730079da013abfa6662aadc02843f090fcae594c0f711399d16c",
     "evaluationGlbHash": "7fc979534fcaf752439d8db90b41227c25bd0bc7fe2ee616615e3ae05678d0c8",
-    "poster": "Gallery GPU render of this exact source. The separate poster receipt records image, camera, renderer, and the artifact hash of the GLB bytes the image was rendered from.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "aea09b2491cc06ac710648d0de30bb365fa1b2c0fff10712cb70db07e8216515",
+        "sourceHash": "a9fef121ab605cc28d9bc05febc2b8e4f8a5cc988f9281f50a68965625639fea",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). WindshieldGlass: position x 0.89 -> 0.892 so the glass outer face stands about 1.9 mm proud of the frame face; SideWinFront/AftGlass L,R: z offset 0.005 -> 0.007 so glass stands 2 mm proud of frame; RoadWheel_*: depth 0.26 -> 0.252 so rim faces no longer lie on the sprocket rim faces; NoseFairingIvory: y 0.76 -> 0.758 so its bottom sits 2 mm below the nose slope bottom; GprAntennaSled: y 0.28 -> 0.278 so bottom sits 2 mm below the chassis tub bottom; SolarBusbar_L/R_*: y offset +0.003 -> +0.005 so busbar bottoms no longer sit 0.5 mm from cell bottoms; SpectrometerOptic: x -0.56 -> -0.562 so its end cap is 2 mm proud of the cab side"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

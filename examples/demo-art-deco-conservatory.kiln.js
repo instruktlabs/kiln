@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {
   name: 'Art Deco Botanical Conservatory',
   category: 'architecture',
@@ -64,8 +65,8 @@ function build() {
   for (let s = 0; s < stairSteps; s++) {
     const y = (stairSteps - 1 - s) * stairRise + stairRise / 2;
     const x = 10.0 + s * stairRun + stairRun / 2;
-    createPart('StairStep_' + s, boxGeo(stairRun + 0.04, stairRise, 6.2), stonePaver, {
-      position: [x, y, 0],
+    createPart('StairStep_' + s, boxGeo(stairRun + (s === 0 ? 0.02 : 0.04), stairRise, 6.2), stonePaver, {
+      position: [x + (s === 0 ? 0.01 : 0), y, 0],
       parent: podiumGroup
     });
   }

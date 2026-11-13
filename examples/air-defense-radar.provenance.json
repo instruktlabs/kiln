@@ -1,5 +1,5 @@
 {
-  "sourceHash": "05fe2ee0c75f0c2e0124b3c75e4ea88f85165e7836e41156c1572daad19cde97",
+  "sourceHash": "b33bb6032519e60654322aa3bacf5279d768541c357b884fd374258d3e794ecd",
   "model": "Claude Opus 5",
   "harness": "Claude Code",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 7 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "05fe2ee0c75f0c2e0124b3c75e4ea88f85165e7836e41156c1572daad19cde97",
+        "sourceHash": "b33bb6032519e60654322aa3bacf5279d768541c357b884fd374258d3e794ecd",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). OutriggerXX_FootPad (4 pads): raised 2 mm so its bottom no longer shares the y=0 plane with the wheel tyre bottoms; HingeBeam: length 3.10 -> 3.104 so its end faces clear the hinge boss; MarkerLampL/R: box 0.08x0.10 -> 0.076x0.096 so x and y faces sit 2 mm inside the windshield head; PanelRamPinL/R: raised 2 mm in y so its top clears the cross rib top; Guard*_Flap (4): bottom raised 4 mm (height 0.42 -> 0.416, top fixed) off the outrigger beam bottom plane; OutriggerXX_HousingCap (4): radius 0.17 -> 0.166 so it stands 4 mm inside the beam side face; TrunkElbow: raised 2 mm in y off the generator shell bottom plane"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

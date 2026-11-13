@@ -1,5 +1,5 @@
 {
-  "sourceHash": "17553756d649fbd5d49b67cfa8a2d3b1918d1d331fd58b6783b6ea4e06f58006",
+  "sourceHash": "4ea0426688b5ebf7bd0e25f4948013afb2823b5bdc06d4152ae3cfe4c5c6f942",
   "model": "Claude Opus 5",
   "harness": "Claude Code",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Not recorded",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "Not recorded",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "17553756d649fbd5d49b67cfa8a2d3b1918d1d331fd58b6783b6ea4e06f58006",
+        "sourceHash": "4ea0426688b5ebf7bd0e25f4948013afb2823b5bdc06d4152ae3cfe4c5c6f942",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). Fin_8: width 0.235 -> 0.231 (last cooling fin only) so its rounded corner no longer shares a plane with the barrel corner"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

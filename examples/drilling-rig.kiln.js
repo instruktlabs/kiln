@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -254,7 +255,7 @@ function build() {
     parent: root,
   });
   createPart('DogWindowGlass1', boxGeo(0.72, 0.62, 0.02), galvSteel, {
-    position: [dogX - 0.45, dogBaseY + 1.25, dogZ + dogW / 2 + 0.03],
+    position: [dogX - 0.45, dogBaseY + 1.25, dogZ + dogW / 2 + 0.032],
     parent: root,
   });
   createPart('DogWindowFrame2', boxGeo(0.8, 0.7, 0.04), darkSteel, {
@@ -262,7 +263,7 @@ function build() {
     parent: root,
   });
   createPart('DogWindowGlass2', boxGeo(0.72, 0.62, 0.02), galvSteel, {
-    position: [dogX + 0.45, dogBaseY + 1.25, dogZ + dogW / 2 + 0.03],
+    position: [dogX + 0.45, dogBaseY + 1.25, dogZ + dogW / 2 + 0.032],
     parent: root,
   });
   // Roof A/C unit
@@ -651,7 +652,7 @@ function build() {
   // =========================================================================
   createStairs('FloorStairs', galvSteel, {
     steps: 12,
-    totalRise: floorY + 0.18,
+    totalRise: floorY + 0.178,
     totalRun: 3.2,
     width: 0.85,
     axis: 'x',

@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = { name: 'Bench Refractor Comparator', category: 'prop', role: 'prop' };
 // Curation of supplied source 'Articulated Observatory Instrument' from Muse's
 // earlier clean-room workflow test (provided-instrument.kiln.js). That plain
@@ -55,7 +56,7 @@ async function build() {
   });
   beamBetween('OutriggerArm', [-0.18, 0.05, -0.02], [-0.27, 0.05, -0.04], 0.022, enamel, { parent: base });
   createPart('VialBase', boxGeo(0.09, 0.012, 0.03), brass, { position: [0.12, 0.091, 0.09], parent: base });
-  createPart('VialGlass', cylinderZGeo(0.011, 0.011, 0.07, 12), lensGlass, { position: [0.12, 0.103, 0.09], parent: base });
+  createPart('VialGlass', cylinderZGeo(0.011, 0.011, 0.074, 12), lensGlass, { position: [0.12, 0.103, 0.09], parent: base });
   createPart('VialCapA', cylinderZGeo(0.013, 0.013, 0.008, 10), brass, { position: [0.12, 0.103, 0.129], parent: base });
   createPart('VialCapB', cylinderZGeo(0.013, 0.013, 0.008, 10), brass, { position: [0.12, 0.103, 0.051], parent: base });
 
@@ -131,7 +132,7 @@ async function build() {
   ], { cap: false });
   createPart('BellShroud', bellGeo, enamel, { position: [0, 0.22, 0], parent: tilt });
   createPart('BoreFloor', cylinderGeo(0.095, 0.095, 0.008, 24), ironDark, { position: [0, 0.281, 0], parent: tilt });
-  createPart('ObjectiveLens', cylinderGeo(0.068, 0.068, 0.006, 28), lensGlass, { position: [0, 0.288, 0], parent: tilt });
+  createPart('ObjectiveLens', cylinderGeo(0.068, 0.068, 0.006, 28), lensGlass, { position: [0, 0.286, 0], parent: tilt });
   createPart('ApertureStop', torusGeo(0.068, 0.005, 8, 28), brass, { position: [0, 0.291, 0], rotation: [90, 0, 0], parent: tilt });
   createPart('BaffleA', torusGeo(0.082, 0.005, 8, 28), ironDark, { position: [0, 0.315, 0], rotation: [90, 0, 0], parent: tilt });
   createPart('BaffleB', torusGeo(0.090, 0.005, 8, 28), ironDark, { position: [0, 0.345, 0], rotation: [90, 0, 0], parent: tilt });
@@ -156,7 +157,7 @@ async function build() {
 
   // ---- Finder scope (side-mounted, bracketed, attached) ----
   createPart('FinderTube', cylinderGeo(0.018, 0.018, 0.22, 14), ironDark, { position: [-0.092, 0.10, 0], parent: tilt });
-  createPart('FinderLens', cylinderGeo(0.016, 0.016, 0.004, 14), lensGlass, { position: [-0.092, 0.212, 0], parent: tilt });
+  createPart('FinderLens', cylinderGeo(0.016, 0.016, 0.004, 14), lensGlass, { position: [-0.092, 0.210, 0], parent: tilt });
   createPart('FinderCup', cylinderGeo(0.020, 0.022, 0.03, 14), rubber, { position: [-0.092, -0.015, 0], parent: tilt });
   createPart('FinderBracketA', boxGeo(0.032, 0.03, 0.03), steel, { position: [-0.074, 0.03, 0], parent: tilt });
   createPart('FinderBracketB', boxGeo(0.032, 0.03, 0.03), steel, { position: [-0.074, 0.18, 0], parent: tilt });

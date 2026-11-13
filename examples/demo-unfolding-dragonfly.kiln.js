@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {
   name: 'Mechanical Dragonfly with Unfolding Copper Wings',
   category: 'character',
@@ -148,7 +149,7 @@ function build() {
 
   // Secondary Reduction Gear (copper, meshing with main gear)
   const gearPivotSec = createPivot('Gear_Sec', [thoraxCenter[0] - 0.020, thoraxCenter[1] + 0.028, 0], root);
-  const secGearMesh = gearGeo({ teeth: 10, rootRadius: 0.014, tipRadius: 0.019, boreRadius: 0.005, height: 0.010 });
+  const secGearMesh = gearGeo({ teeth: 10, rootRadius: 0.014, tipRadius: 0.019, boreRadius: 0.005, height: 0.008 });
   createPart('Gear_Sec_Mesh', secGearMesh, matCopper, {
     rotation: [90, 0, 0],
     parent: gearPivotSec
@@ -171,7 +172,7 @@ function build() {
     parent: root
   });
   createPart('PressureGauge_Face', cylinderGeo(0.009, 0.009, 0.007, 12), matGlowAmber, {
-    position: [thoraxCenter[0] + 0.010, thoraxCenter[1] + 0.015, 0.047],
+    position: [thoraxCenter[0] + 0.010, thoraxCenter[1] + 0.015, 0.048],
     rotation: [90, 0, 0],
     parent: root
   });

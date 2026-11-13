@@ -1,5 +1,5 @@
 {
-  "sourceHash": "eefd46ab244dff7ab3d9f2b1acae42265afed0ef3059130c32589804ccb20c98",
+  "sourceHash": "c76e35fa4677d6dfbc266fb07aeceab284de652baa6d5a1d898113d0f8e267ca",
   "model": "Claude Opus 5",
   "harness": "Claude Code",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Not recorded",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "Not recorded",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "eefd46ab244dff7ab3d9f2b1acae42265afed0ef3059130c32589804ccb20c98",
+        "sourceHash": "c76e35fa4677d6dfbc266fb07aeceab284de652baa6d5a1d898113d0f8e267ca",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). WestFront: west body box made 2 mm shallower in x (west face at x=15.998), so the 2 mm-proud tower faces and the PortalGable stand clear of it (pairs WestFront/PortalGable, WestFront/Tower_N, WestFront/Tower_S); Parapet_*pc / Parapet_*nc (east and west walls of each tower parapet, 4 slabs): each shrunk 4 mm in width, height and length (2 mm per side) so their outer faces, ends and tops no longer share planes with the north and south parapet walls (8 pairs)"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

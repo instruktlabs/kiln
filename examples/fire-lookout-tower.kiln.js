@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: meituan/longcat-2.0:free, via hermes.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -135,7 +136,7 @@ function build() {
   createPart('FrameFrontR', boxGeo(wallThk, cabWallH, 0.4), steel, { position: [cabHalf, cabY + 0.1 + cabWallH / 2, frontFrameZ], parent: root });
   createPart('FrameFrontTop', boxGeo(wallThk, 0.25, cabSize), steel, { position: [cabHalf, cabY + 0.1 + cabWallH - 0.125, 0], parent: root });
   createPart('FrameFrontBot', boxGeo(wallThk, 0.15, cabSize), steel, { position: [cabHalf, cabY + 0.1 + 0.075, 0], parent: root });
-  createPart('GlassFront', boxGeo(0.02, cabWallH - 0.5, cabSize - 0.8), glass, { position: [cabHalf + 0.02, cabY + 0.1 + cabWallH / 2, 0], parent: root });
+  createPart('GlassFront', boxGeo(0.02, cabWallH - 0.5, cabSize - 0.792), glass, { position: [cabHalf + 0.02, cabY + 0.1 + cabWallH / 2, 0], parent: root });
   createPart('MullionFrontV', boxGeo(wallThk + 0.01, cabWallH - 0.5, 0.04), steel, { position: [cabHalf, cabY + 0.1 + cabWallH / 2, 0], parent: root });
 
   // Back wall (-X) — full glass with mullions
@@ -143,7 +144,7 @@ function build() {
   createPart('FrameBackR', boxGeo(wallThk, cabWallH, 0.4), steel, { position: [-cabHalf, cabY + 0.1 + cabWallH / 2, frontFrameZ], parent: root });
   createPart('FrameBackTop', boxGeo(wallThk, 0.25, cabSize), steel, { position: [-cabHalf, cabY + 0.1 + cabWallH - 0.125, 0], parent: root });
   createPart('FrameBackBot', boxGeo(wallThk, 0.15, cabSize), steel, { position: [-cabHalf, cabY + 0.1 + 0.075, 0], parent: root });
-  createPart('GlassBack', boxGeo(0.02, cabWallH - 0.5, cabSize - 0.8), glass, { position: [-cabHalf - 0.02, cabY + 0.1 + cabWallH / 2, 0], parent: root });
+  createPart('GlassBack', boxGeo(0.02, cabWallH - 0.5, cabSize - 0.792), glass, { position: [-cabHalf - 0.02, cabY + 0.1 + cabWallH / 2, 0], parent: root });
   createPart('MullionBackV', boxGeo(wallThk + 0.01, cabWallH - 0.5, 0.04), steel, { position: [-cabHalf, cabY + 0.1 + cabWallH / 2, 0], parent: root });
 
   // Left wall (-Z) — full glass with mullions
@@ -151,7 +152,7 @@ function build() {
   createPart('FrameLeftB', boxGeo(0.4, cabWallH, wallThk), steel, { position: [frontFrameZ, cabY + 0.1 + cabWallH / 2, -cabHalf], parent: root });
   createPart('FrameLeftTop', boxGeo(cabSize, 0.25, wallThk), steel, { position: [0, cabY + 0.1 + cabWallH - 0.125, -cabHalf], parent: root });
   createPart('FrameLeftBot', boxGeo(cabSize, 0.15, wallThk), steel, { position: [0, cabY + 0.1 + 0.075, -cabHalf], parent: root });
-  createPart('GlassLeft', boxGeo(cabSize - 0.8, cabWallH - 0.5, 0.02), glass, { position: [0, cabY + 0.1 + cabWallH / 2, -cabHalf - 0.02], parent: root });
+  createPart('GlassLeft', boxGeo(cabSize - 0.792, cabWallH - 0.5, 0.02), glass, { position: [0, cabY + 0.1 + cabWallH / 2, -cabHalf - 0.02], parent: root });
   createPart('MullionLeftV', boxGeo(0.04, cabWallH - 0.5, wallThk + 0.01), steel, { position: [0, cabY + 0.1 + cabWallH / 2, -cabHalf], parent: root });
 
   // Right wall (+Z) — full glass with mullions
@@ -159,7 +160,7 @@ function build() {
   createPart('FrameRightB', boxGeo(0.4, cabWallH, wallThk), steel, { position: [frontFrameZ, cabY + 0.1 + cabWallH / 2, cabHalf], parent: root });
   createPart('FrameRightTop', boxGeo(cabSize, 0.25, wallThk), steel, { position: [0, cabY + 0.1 + cabWallH - 0.125, cabHalf], parent: root });
   createPart('FrameRightBot', boxGeo(cabSize, 0.15, wallThk), steel, { position: [0, cabY + 0.1 + 0.075, cabHalf], parent: root });
-  createPart('GlassRight', boxGeo(cabSize - 0.8, cabWallH - 0.5, 0.02), glass, { position: [0, cabY + 0.1 + cabWallH / 2, cabHalf + 0.02], parent: root });
+  createPart('GlassRight', boxGeo(cabSize - 0.792, cabWallH - 0.5, 0.02), glass, { position: [0, cabY + 0.1 + cabWallH / 2, cabHalf + 0.02], parent: root });
   createPart('MullionRightV', boxGeo(0.04, cabWallH - 0.5, wallThk + 0.01), steel, { position: [0, cabY + 0.1 + cabWallH / 2, cabHalf], parent: root });
 
   // Hipped roof (pyramid)

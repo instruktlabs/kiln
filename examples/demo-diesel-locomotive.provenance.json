@@ -1,16 +1,23 @@
 {
-  "sourceHash": "483aef3d91f13d831e9c964dcd059957ee26b4c230b92cf2feb26d684e548378",
+  "sourceHash": "c5752f9c59a7e9fbb1d08eb17eabf59d71a9b81e9514949b2db040731c2e936d",
   "model": "GPT-6 Astra",
   "harness": "ChatGPT Work",
   "authoredDate": "2026-09-09",
   "provenance": {
     "attribution": "Recorded demo session; model credit supplied only where the retained run identifies it.",
     "sourceAccess": "See retained demo run; no stronger isolation claim is made.",
-    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte.",
+    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 2 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Authoring feedback and shaded demo previews where available. Not a destination-runtime acceptance claim.",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
     "evaluationGlbHash": "a7b0358ed65288a49b6cd010f4d4a5155cb2b38453637fb9eb1f645f83d28641",
-    "posterReceipt": {
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "483aef3d91f13d831e9c964dcd059957ee26b4c230b92cf2feb26d684e548378",
+        "sourceHash": "c5752f9c59a7e9fbb1d08eb17eabf59d71a9b81e9514949b2db040731c2e936d",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). Cream_hood_band_+-1: depth .028 -> .024 at z 1.079 so its inner face (1.067) no longer lies on the Radiator_recess inner plane (1.063); outer face stays at 1.091; Cab_door_seam_+-1: depth .02 -> .024 at z 1.452 so its outer face stands 4 mm proud of the Cab_cream_waist outer plane"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

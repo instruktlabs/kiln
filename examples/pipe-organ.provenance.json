@@ -1,5 +1,5 @@
 {
-  "sourceHash": "4e4ed8e01e007891a84f3c13117c1367264570311f233c711206f2c18629db41",
+  "sourceHash": "645fb0db412359254261f7217ecce88bd2f352136be813a1fde190b262c9cc2b",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "provenance": {
@@ -7,10 +7,17 @@
     "sourceAccess": "Source header declares no repository implementation or finished examples supplied",
     "inheritedContext": "Not independently recorded; source-header declarations only",
     "startingExample": "None supplied, according to source header",
-    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded",
+    "humanIntervention": "Header declares no hand-authored source; other intervention not recorded Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 5 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Six-view review declared; renderer fidelity not recorded",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
-    "posterReceipt": {
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "4e4ed8e01e007891a84f3c13117c1367264570311f233c711206f2c18629db41",
+        "sourceHash": "645fb0db412359254261f7217ecce88bd2f352136be813a1fde190b262c9cc2b",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). ConsolePedestalL/R: height 0.68->0.664 (y 0.44->0.452) and width 0.68->0.664 (x 0.01->0.002) so bottom and +x faces sit 8 mm inside the cabinet; DadoBaseRail: height 0.08->0.084 (y 0.21->0.208), width 0.92->0.924 (x -0.09->-0.092) so bottom and -x faces stand 4 mm proud of CaseDadoBody; DadoMidRail: width 0.92->0.924 (x -0.09->-0.092) so -x face stands 4 mm proud of CaseDadoBody; DaisTrimFront/Left/Right: height 0.04->0.048 so top stands 4 mm above ConsoleDais top and bottom 4 mm below; BenchStretcher: width 0.06->0.068 so its x faces stand 4 mm proud of the BenchLegArch cylinder ends"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 7 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: opus, via claude.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -161,12 +162,12 @@ function buildOutrigger(name, parent, x, z, side) {
   part(name + '_BeamCap', boxGeo(0.40, 0.30, 0.16), MAT.dark, g, [0, 0.12, 0]);
   part(name + '_Gusset', boxGeo(0.30, 0.16, 0.60), MAT.body, g, [0, -0.02, -side * 0.42]);
   part(name + '_Housing', cylY(0.15, 0.62, 14), MAT.dark, g, [0, -0.18, 0]);
-  part(name + '_HousingCap', cylY(0.17, 0.08, 14), MAT.steel, g, [0, 0.14, 0]);
+  part(name + '_HousingCap', cylY(0.166, 0.08, 14), MAT.steel, g, [0, 0.14, 0]);
   part(name + '_Ram', cylY(0.095, 0.62, 12), MAT.chrome, g, [0, -0.55, 0]);
   part(name + '_Swivel', cylY(0.13, 0.16, 12), MAT.dark, g, [0, -0.85, 0]);
   part(name + '_Foot', cylY(0.32, 0.13, 18), MAT.dark, g, [0, -0.94, 0]);
   part(name + '_FootRib', boxGeo(0.56, 0.06, 0.10), MAT.dark, g, [0, -0.90, 0]);
-  part(name + '_FootPad', cylY(0.34, 0.05, 18), MAT.rubberDark, g, [0, -1.025, 0]);
+  part(name + '_FootPad', cylY(0.34, 0.05, 18), MAT.rubberDark, g, [0, -1.023, 0]);
   // feed hoses
   part(name + '_Hose', cylY(0.035, 0.55, 8), MAT.rubberDark, g, [0.16, -0.15, side * 0.06]);
   part(name + '_HoseElbow', cylX(0.035, 0.22, 8), MAT.rubberDark, g, [0.06, 0.10, side * 0.06]);
@@ -301,8 +302,8 @@ async function build() {
       part(tag + '_LipR', boxGeo(0.34, 0.06, 0.72), MAT.body, running,
         [cx - gl * 0.5 - 0.13, 1.45, s * 1.32], [0, 0, -0.45]);
       part(tag + '_Brace', boxGeo(0.08, 0.30, 0.60), MAT.dark, running, [cx, 1.38, s * 1.02]);
-      part(tag + '_Flap', boxGeo(0.04, 0.42, 0.66), MAT.rubberDark, running,
-        [cx - gl * 0.5 - 0.26, 1.26, s * 1.32]);
+      part(tag + '_Flap', boxGeo(0.04, 0.416, 0.66), MAT.rubberDark, running,
+        [cx - gl * 0.5 - 0.26, 1.262, s * 1.32]);
     }
   }
 
@@ -342,7 +343,7 @@ async function build() {
     part('GrabRail' + t, cylY(0.035, 0.90, 8), MAT.steel, cab, [0.62, 2.10, s * 1.25]);
     part('Headlight' + t, cylX(0.15, 0.14, 14), MAT.glass, cab, [1.25, 1.62, s * 0.86]);
     part('HeadlightRim' + t, cylX(0.18, 0.10, 14), MAT.dark, cab, [1.22, 1.62, s * 0.86]);
-    part('MarkerLamp' + t, boxGeo(0.08, 0.10, 0.16), MAT.amber, cab, [1.20, 3.02, s * 1.00]);
+    part('MarkerLamp' + t, boxGeo(0.076, 0.096, 0.16), MAT.amber, cab, [1.20, 3.02, s * 1.00]);
     part('ConvoyLamp' + t, cylX(0.07, 0.10, 10), MAT.amber, cab, [1.24, 1.30, s * 0.42]);
   }
   part('CabFrontPlate', await rbox(0.10, 0.60, 2.36, 0.03), MAT.body, cab, [1.20, 1.72, 0]);
@@ -404,7 +405,7 @@ async function build() {
   part('TrunkRun', cylX(0.11, 2.30, 12), MAT.rubberDark, trunk, [0.02, 1.42, -1.05]);
   part('TrunkRunB', cylX(0.07, 2.30, 10), MAT.rubberDark, trunk, [0.02, 1.42, -0.86]);
   part('TrunkRiser', cylY(0.11, 0.45, 12), MAT.rubberDark, trunk, [1.16, 1.62, -1.05]);
-  part('TrunkElbow', cylZ(0.11, 0.24, 12), MAT.rubberDark, trunk, [1.16, 1.42, -1.05]);
+  part('TrunkElbow', cylZ(0.11, 0.24, 12), MAT.rubberDark, trunk, [1.16, 1.422, -1.05]);
   part('TrunkGland', cylY(0.14, 0.12, 12), MAT.steel, trunk, [1.16, 1.84, -1.05]);
   for (let i = 0; i < 5; i++) {
     part('TrunkClamp' + i, boxGeo(0.09, 0.34, 0.14), MAT.dark, trunk, [-0.95 + i * 0.52, 1.34, -1.05]);
@@ -486,7 +487,7 @@ async function build() {
   const HX = -0.40;
   const HY = 1.60;
   const hinge = pivot('ArrayHinge', [HX, HY, 0], root);
-  part('HingeBeam', boxGeo(0.34, 0.30, 3.10), MAT.dark, hinge, [0, -0.12, 0]);
+  part('HingeBeam', boxGeo(0.34, 0.30, 3.104), MAT.dark, hinge, [0, -0.12, 0]);
   part('HingePin', cylZ(0.11, 3.40, 14), MAT.steel, hinge, [0, 0, 0]);
   for (let i = 0; i < 4; i++) {
     const z = [-1.42, -0.62, 0.62, 1.42][i];
@@ -548,7 +549,7 @@ async function build() {
   // ram attach lugs
   for (let s = -1; s <= 1; s += 2) {
     part('PanelRamLug' + (s < 0 ? 'L' : 'R'), boxGeo(0.36, 0.44, 0.20), MAT.dark, panel, [1.80, 0.30, s * 1.20]);
-    part('PanelRamPin' + (s < 0 ? 'L' : 'R'), cylZ(0.06, 0.32, 10), MAT.steel, panel, [1.80, 0.34, s * 1.20]);
+    part('PanelRamPin' + (s < 0 ? 'L' : 'R'), cylZ(0.06, 0.32, 10), MAT.steel, panel, [1.80, 0.342, s * 1.20]);
   }
 
   // ---- lattice border standing proud of the face

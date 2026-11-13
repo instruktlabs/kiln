@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 4 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: opencode-go/omen-alpha, via opencode.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -100,7 +101,7 @@ async function build() {
   // ================= HOUSE =================
   createPart('Deck', await roundedBoxGeo(3.6, 0.08, 2.12, 0.02), yellow, { position: [-0.12, 1.13, 0], parent: slew });
   createPart('DeckWalkway', boxGeo(0.85, 0.02, 1.9), black, { position: [1.28, 1.18, 0], parent: slew });
-  for (const zz of [-0.93, 0.93]) createPart('WalkwayEdge' + zz, boxGeo(0.85, 0.03, 0.04), steelDark, { position: [1.28, 1.185, zz], parent: slew });
+  for (const zz of [-0.93, 0.93]) createPart('WalkwayEdge' + zz, boxGeo(0.85, 0.028, 0.04), steelDark, { position: [1.28, 1.186, zz * (0.932 / 0.93)], parent: slew });
   createPart('Counterweight', await roundedBoxGeo(1.15, 1.3, 2.34, 0.14), yellow, { position: [-1.8, 1.79, 0], parent: slew });
   createPart('CwStrip', boxGeo(0.02, 0.42, 2.0), black, { position: [-2.38, 1.55, 0], parent: slew });
   for (const yy of [1.3, 2.2]) for (const zz of [-0.75, -0.25, 0.25, 0.75]) {
@@ -123,7 +124,7 @@ async function build() {
   createPart('AirCleaner', cylinderGeo(0.09, 0.09, 0.3, 10), steelDark, { position: [-0.15, 2.37, -0.72], parent: slew });
   createPart('AirCleanerCap', cylinderGeo(0.11, 0.11, 0.03, 10), black, { position: [-0.15, 2.53, -0.72], parent: slew });
   createPart('Exhaust', cylinderGeo(0.06, 0.06, 0.42, 12), steelDark, { position: [-0.7, 2.41, -0.5], parent: slew });
-  createPart('ExhaustFlange', cylinderGeo(0.085, 0.085, 0.04, 12), black, { position: [-0.7, 2.22, -0.5], parent: slew });
+  createPart('ExhaustFlange', cylinderGeo(0.085, 0.085, 0.04, 12), black, { position: [-0.7, 2.222, -0.5], parent: slew });
   createPart('ExhaustCap', coneGeo(0.09, 0.1, 12), steelDark, { position: [-0.7, 2.67, -0.5], parent: slew });
 
   // tanks under the deck overhang
@@ -141,7 +142,7 @@ async function build() {
   createPart('CabRear', boxGeo(0.06, 0.95, 0.96), yellow, { position: [0.80, 1.9, 0.65], parent: slew });
   for (const zz of [0.2, 1.1]) createPart('CabPillar' + zz, boxGeo(0.07, 0.95, 0.07), yellow, { position: [1.84, 1.9, zz], parent: slew });
   createPart('CabGlassFront', boxGeo(0.025, 0.92, 0.88), glass, { position: [1.86, 1.9, 0.65], parent: slew });
-  createPart('CabGlassRight', boxGeo(1.0, 0.92, 0.025), glass, { position: [1.33, 1.9, 1.12], parent: slew });
+  createPart('CabGlassRight', boxGeo(0.996, 0.92, 0.025), glass, { position: [1.332, 1.9, 1.12], parent: slew });
   createPart('CabGlassRear', boxGeo(0.025, 0.9, 0.9), glass, { position: [0.79, 1.89, 0.65], parent: slew });
   createPart('CabGlassLeft', boxGeo(0.45, 0.92, 0.025), glass, { position: [1.6, 1.9, 0.19], parent: slew });
   createPart('CabDoor', boxGeo(0.52, 0.9, 0.03), yellow, { position: [1.12, 1.91, 0.19], parent: slew });
@@ -194,7 +195,7 @@ async function build() {
     createPart('BoomHose' + hz, pipeAlongPath([[0.044, 0.283, hz], [0.704, 0.883, hz], [1.364, 1.483, hz]], 0.024, { bendRadius: 0.06, radialSegments: 6 }), black, { parent: boomJ });
   }
   createPart('BoomFootBoss', cylinderZGeo(0.1, 0.1, 0.8, 12), steelDark, { position: [0, 0, 0], parent: boomJ });
-  createPart('BoomTipBoss', cylinderZGeo(0.09, 0.09, 0.7, 12), steelDark, { position: boomV, parent: boomJ });
+  createPart('BoomTipBoss', cylinderZGeo(0.09, 0.09, 0.74, 12), steelDark, { position: boomV, parent: boomJ });
 
   // --- dipper (parented to dipJ: coords are world - BOOM_TIP) ---
   const dp = minus(midOf(BOOM_TIP, BUCKET_PIN, 0.5), BOOM_TIP);

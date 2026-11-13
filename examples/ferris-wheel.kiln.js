@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -588,7 +589,7 @@ function build() {
     parent: platform,
   });
   createPart('EntranceSignFascia', boxGeo(0.05, 0.10, 0.82), steelCrimson, {
-    position: [archX + 0.015, archTopY + 0.08, 0],
+    position: [archX + 0.013, archTopY + 0.08, 0],
     parent: platform,
   });
   // Glowing Entrance Lanterns on posts

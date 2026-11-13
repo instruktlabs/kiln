@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 3 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: opencode-go/glm-5.3-flash, via opencode.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -151,16 +152,16 @@ async function build() {
     position: [0.26, 0.09, 0],
     parent: root,
   });
-  createPart('DripTrayRimFront', boxGeo(0.015, 0.082, 0.88), chromeMat, {
-    position: [0.352, 0.091, 0],
+  createPart('DripTrayRimFront', boxGeo(0.015, 0.080, 0.88), chromeMat, {
+    position: [0.352, 0.093, 0],
     parent: root,
   });
-  createPart('DripTrayRimLeft', boxGeo(0.185, 0.082, 0.015), chromeMat, {
-    position: [0.262, 0.091, -0.435],
+  createPart('DripTrayRimLeft', boxGeo(0.185, 0.080, 0.015), chromeMat, {
+    position: [0.262, 0.093, -0.435],
     parent: root,
   });
-  createPart('DripTrayRimRight', boxGeo(0.185, 0.082, 0.015), chromeMat, {
-    position: [0.262, 0.091, 0.435],
+  createPart('DripTrayRimRight', boxGeo(0.185, 0.080, 0.015), chromeMat, {
+    position: [0.262, 0.093, 0.435],
     parent: root,
   });
 
@@ -232,8 +233,8 @@ async function build() {
     }
   }
 
-  createPart('BackMirrorPanel', boxGeo(0.015, 0.36, 0.88), chromeMat, {
-    position: [-0.215, 0.29, 0],
+  createPart('BackMirrorPanel', boxGeo(0.015, 0.356, 0.88), chromeMat, {
+    position: [-0.215, 0.288, 0],
     parent: root,
   });
   for (let v = 0; v < 8; v++) {
@@ -617,8 +618,8 @@ async function build() {
       rotation: [0, 90, 0],
       parent: root,
     });
-    createPart(`${g.name}_Body`, cylinderXGeo(0.032, 0.032, 0.012, 18), chromeMat, {
-      position: [0.175, g.y, 0.380],
+    createPart(`${g.name}_Body`, cylinderXGeo(0.032, 0.032, 0.010, 18), chromeMat, {
+      position: [0.1745, g.y, 0.380],
       parent: root,
     });
     createPart(`${g.name}_Dial`, cylinderXGeo(0.028, 0.028, 0.002, 16), ceramicMat, {

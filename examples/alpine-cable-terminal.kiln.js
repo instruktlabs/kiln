@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 const meta = {
   name: 'Alpine Cable-Car Terminal',
   category: 'architecture',
@@ -227,11 +228,11 @@ async function build() {
   const gantryBeam2 = boxGeo(3.2, 0.22, 0.12);
   createPart('GantryBeam_Right', gantryBeam2, matSteelGantry, { position: [1.4, 3.5, 0.65], parent: root });
 
-  const crossGantry1 = boxGeo(0.18, 0.24, 2.6);
+  const crossGantry1 = boxGeo(0.174, 0.24, 2.6);
   createPart('GantryCross_Rear', crossGantry1, matSteelGantry, { position: [0.4, 3.52, 0], parent: root });
   const crossGantry2 = boxGeo(0.22, 0.26, 2.6);
   createPart('GantryCross_Center', crossGantry2, matSteelGantry, { position: [1.2, 3.52, 0], parent: root });
-  const crossGantry3 = boxGeo(0.18, 0.24, 2.6);
+  const crossGantry3 = boxGeo(0.174, 0.24, 2.6);
   createPart('GantryCross_Front', crossGantry3, matSteelGantry, { position: [2.4, 3.52, 0], parent: root });
 
   const spindleMount = boxGeo(0.48, 0.32, 0.48);

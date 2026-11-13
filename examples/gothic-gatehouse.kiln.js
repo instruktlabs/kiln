@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -456,12 +457,12 @@ function build() {
         parent: root
       });
       createPart('LoopV1_' + side + '_' + lIdx, boxGeo(0.14, 1.25, 0.09), stoneDark, {
-        position: [lx + 0.01 * cosA, ly, lz + 0.01 * sinA],
+        position: [lx + 0.012 * cosA, ly, lz + 0.012 * sinA],
         rotation: [0, rotY, 0],
         parent: root
       });
       createPart('LoopH1_' + side + '_' + lIdx, boxGeo(0.14, 0.09, 0.32), stoneDark, {
-        position: [lx + 0.01 * cosA, ly + 0.2, lz + 0.01 * sinA],
+        position: [lx + 0.012 * cosA, ly + 0.2, lz + 0.012 * sinA],
         rotation: [0, rotY, 0],
         parent: root
       });
@@ -484,12 +485,12 @@ function build() {
         parent: root
       });
       createPart('LoopV2_' + side + '_' + lIdx, boxGeo(0.14, 1.25, 0.09), stoneDark, {
-        position: [lx + 0.01 * cosA, ly, lz + 0.01 * sinA],
+        position: [lx + 0.012 * cosA, ly, lz + 0.012 * sinA],
         rotation: [0, rotY, 0],
         parent: root
       });
       createPart('LoopH2_' + side + '_' + lIdx, boxGeo(0.14, 0.09, 0.32), stoneDark, {
-        position: [lx + 0.01 * cosA, ly + 0.2, lz + 0.01 * sinA],
+        position: [lx + 0.012 * cosA, ly + 0.2, lz + 0.012 * sinA],
         rotation: [0, rotY, 0],
         parent: root
       });

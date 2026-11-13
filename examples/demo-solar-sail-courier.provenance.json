@@ -1,16 +1,23 @@
 {
-  "sourceHash": "aeb05750d6b48e52dc56f9e068c41cb897bcaa5159380b60e52748ca22bd6e66",
+  "sourceHash": "7912f206b1a87082c6bccd142d35967741f39383ce5720f6ec410ecf7e5c333a",
   "model": "Gemini 3.8 Flash",
   "harness": "Antigravity CLI",
   "authoredDate": "2026-09-09",
   "provenance": {
     "attribution": "Recorded demo session; model credit supplied only where the retained run identifies it.",
     "sourceAccess": "See retained demo run; no stronger isolation claim is made.",
-    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte.",
+    "humanIntervention": "Owner supplied direction; model-authored exported source preserved byte-for-byte. Later maintainer revision (2026-11-12): flush-face fix by Claude Sonnet 5.5 via Claude Code, 1 part edit that separates coplanar faces; materials, names, hierarchy and animation are unchanged, and the source is no longer byte-identical to the model's export.",
     "reviewFidelity": "Authoring feedback and shaded demo previews where available. Not a destination-runtime acceptance claim.",
-    "poster": "Gallery GPU render of this exact source. Source, artifact, image hashes and camera settings are recorded alongside the poster; the artifact hash names the GLB bytes the image was rendered from, which the downloadable rebuild reproduces byte for byte only on the platform that recorded it.",
+    "poster": "Archival GPU poster from the source before the 2026-11-12 flush-face fix. The original receipt is retained as historicalPosterReceipt; this image is not an exact-source render of the current program.",
     "evaluationGlbHash": "247553ffcd8898d00f51bacf298bc3965bfbc8c90a9bca89f72ab8a1af920273",
-    "posterReceipt": {
+    "maintainerRevisions": [
+      {
+        "previousSourceHash": "aeb05750d6b48e52dc56f9e068c41cb897bcaa5159380b60e52748ca22bd6e66",
+        "sourceHash": "7912f206b1a87082c6bccd142d35967741f39383ce5720f6ec410ecf7e5c333a",
+        "description": "Flush-face fix by Claude Sonnet 5.5 via Claude Code (2026-11-12). SensorHousing: length 0.08 -> 0.084, x 1.08 -> 1.082: front face 4 mm proud of the NoseCap front plane, rear face unchanged"
+      }
+    ],
+    "historicalPosterReceipt": {
       "captureIdentity": [
         "kiln.capture-producer.v1",
         "sha256:10f346ec6287c8d635dabe4668d72925080e6fe3d059dd7a9252f2694ce595c2",

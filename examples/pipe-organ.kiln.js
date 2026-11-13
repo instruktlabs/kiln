@@ -1,3 +1,4 @@
+// Maintainer revision: flush-face fix (2026-11-12, Claude Sonnet 5.5 via Claude Code): 5 part edits that separate coplanar faces; materials, names, hierarchy and animation are unchanged.
 // Authored by: gemini-3.8-flash-high, via agy.
 //
 // Written by the model itself through the Kiln MCP tools: it wrote the
@@ -46,15 +47,15 @@ function build() {
     parent: platform
   });
   // Stepped bevel trim along dais edges
-  createPart('DaisTrimFront', boxGeo(0.06, 0.04, 2.14), woodDark, {
+  createPart('DaisTrimFront', boxGeo(0.06, 0.048, 2.14), woodDark, {
     position: [2.65, 0.02, 0],
     parent: platform
   });
-  createPart('DaisTrimLeft', boxGeo(2.1, 0.04, 0.06), woodDark, {
+  createPart('DaisTrimLeft', boxGeo(2.1, 0.048, 0.06), woodDark, {
     position: [1.6, 0.02, -1.07],
     parent: platform
   });
-  createPart('DaisTrimRight', boxGeo(2.1, 0.04, 0.06), woodDark, {
+  createPart('DaisTrimRight', boxGeo(2.1, 0.048, 0.06), woodDark, {
     position: [1.6, 0.02, 1.07],
     parent: platform
   });
@@ -93,12 +94,12 @@ function build() {
   });
 
   // Dado base rail and mid rail
-  createPart('DadoBaseRail', boxGeo(0.92, 0.08, 4.06), woodDark, {
-    position: [-0.09, 0.21, 0],
+  createPart('DadoBaseRail', boxGeo(0.924, 0.084, 4.06), woodDark, {
+    position: [-0.092, 0.208, 0],
     parent: caseGroup
   });
-  createPart('DadoMidRail', boxGeo(0.92, 0.06, 4.06), woodDark, {
-    position: [-0.09, 1.44, 0],
+  createPart('DadoMidRail', boxGeo(0.924, 0.06, 4.06), woodDark, {
+    position: [-0.092, 1.44, 0],
     parent: caseGroup
   });
 
@@ -497,12 +498,12 @@ function build() {
   });
 
   // Knee well / leg opening for the organist in the center
-  createPart('ConsolePedestalL', boxGeo(0.68, 0.68, 0.26), woodDark, {
-    position: [0.01, 0.44, -0.56],
+  createPart('ConsolePedestalL', boxGeo(0.664, 0.664, 0.26), woodDark, {
+    position: [0.002, 0.452, -0.56],
     parent: consoleGroup
   });
-  createPart('ConsolePedestalR', boxGeo(0.68, 0.68, 0.26), woodDark, {
-    position: [0.01, 0.44, 0.56],
+  createPart('ConsolePedestalR', boxGeo(0.664, 0.664, 0.26), woodDark, {
+    position: [0.002, 0.452, 0.56],
     parent: consoleGroup
   });
   createPart('KneeWellBack', boxGeo(0.04, 0.66, 0.88), woodDark, {
@@ -827,7 +828,7 @@ function build() {
   });
 
   // Central Stretcher rail connecting the two legs
-  createPart('BenchStretcher', boxGeo(0.06, 0.09, 1.02), woodMedium, {
+  createPart('BenchStretcher', boxGeo(0.068, 0.09, 1.02), woodMedium, {
     position: [0, 0.24, 0],
     parent: benchGroup
   });

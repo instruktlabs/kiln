@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "currentSourceHash": "f0c0ec0dee84e5b8714744a16f8e66399ad66f35a415ad974c409efed4b7bf73",
+  "currentSourceHash": "fac347da468b54899bdca9d34ea2b029acf62d7b853f1e1459eea9c3e002946a",
   "brief": {
     "kind": "summary",
     "text": "Create a collectible Art Deco radio with a rounded walnut cabinet, brass trim, a geometric speaker grille, an inset tuning dial and animated controls."
@@ -35,6 +35,12 @@
       "description": "Codex maintainer agent resized the three rear panels to stay inside the flat cabinet faces, matched their walnut material, and repositioned the louvers and power grommet. Actual front and rear GPU views inspected. Original dial and control animation retained.",
       "file": "current.kiln.js",
       "sourceHash": "f0c0ec0dee84e5b8714744a16f8e66399ad66f35a415ad974c409efed4b7bf73"
+    },
+    {
+      "title": "Flush faces fixed",
+      "description": "Maintainer revision by Claude Sonnet 5.5 via Claude Code (2026-11-12): 3 part edits that separate faces lying on one plane, which flickered in any renderer. Materials, names, hierarchy and animation are unchanged.",
+      "file": "flush-fix.kiln.js",
+      "sourceHash": "fac347da468b54899bdca9d34ea2b029acf62d7b853f1e1459eea9c3e002946a"
     }
   ]
 }
