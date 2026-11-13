@@ -65,6 +65,17 @@ test('explicit public staging exposes the approved selection without changing re
  for(const profile of ['scene','editable']){const download=published.downloads.find((d:{profile:string})=>d.profile===profile),archive=verifyArchive(await readFile(join(target,download.url)));expect(Buffer.from(archive.files['README.txt']).toString()).not.toMatch(/owner approval|approval pending|owner release approval/i);}
  await expect(stageCabinWoods({...f,publication:'typo'})).rejects.toThrow('publication');
 });
+test('a rig poster of the selected revision\'s parent stays as an earlier-revision poster until its own is rendered',async()=>{
+ const f=await fixture();
+ const record={path:'media/rig/review-neutral-v1/cabin-woods-psx-horror/earlier/fixture.png',width:1024,height:1024,assetId:aid,revisionId:parent,glb:{bytes:7,sha256:'0'.repeat(64)}};
+ await f.put(join(f.site,'src/data/rig-posters.json'),JSON.stringify({posters:{'cabin-woods-psx-horror:fixture':record}}));
+ const published=await stageCabinWoods({...f,publication:'public'});
+ expect(published.assets[0].revisionId).toBe(rid);
+ expect(published.assets[0].poster).toMatchObject({inputPath:record.path,sourceRevisionId:parent,exactRevision:false});
+ expect(published.assets[0].poster).not.toHaveProperty('revisionQualification');
+ await f.put(join(f.site,'src/data/rig-posters.json'),JSON.stringify({posters:{'cabin-woods-psx-horror:fixture':{...record,revisionId:'r_'+'d'.repeat(32)}}}));
+ await expect(stageCabinWoods({...f,publication:'public'})).rejects.toThrow('render its poster again');
+});
 test('selected-only full Kiln bundles retain all exact editing files and parent identity, deterministic archives',async()=>{
   const f=await fixture();const staged=await stageCabinWoods(f);expect(staged.assets).toHaveLength(1);const asset=staged.assets[0];
   const target=join(f.site,'public');const editable=await readFile(join(target,asset.editableDownload.url));const decoded=decodeAssetBundle(editable);expect(decoded[0].manifest.parentRevision).toBe(parent);expect(Buffer.from(decoded[0].files['source.kiln.js']).equals(source)).toBe(true);expect(Buffer.from(decoded[0].files['preview.png']).equals(png)).toBe(true);expect(decoded[0].files['asset.glb']).toBeDefined();

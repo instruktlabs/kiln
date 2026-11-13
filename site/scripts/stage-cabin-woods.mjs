@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 import { isDeepStrictEqual } from 'node:util';
 import { buildDeliveryArchive, deterministicZip, isSavedMaterialDependency, revisionBundle } from './asset-delivery.mjs';
 import { assetPath, hashBytes, verifyBytes } from './mirror-core.mjs';
-import { applyRigPosters } from './rig-posters-core.mjs';
+import { applyRigPosters, rigPosterImage, rigPosterKey } from './rig-posters-core.mjs';
 
 const ID = 'cabin-woods-psx-horror', BASE = `/asset-demos/${ID}/`;
 const MAX_FILE = 64 * 1024 * 1024, MAX_TOTAL = 512 * 1024 * 1024;
@@ -266,7 +266,14 @@ export async function stageCabinWoods({ workspace, scene, source, selection = re
   let recorded;
   try { recorded = json(await readFile(resolve(site, 'src/data/rig-posters.json'))); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
-  const galleryAssets = applyRigPosters(assets, ID, recorded, { required: published });
+  // A revision saved as a child of the one a poster was rendered from keeps that poster, marked as an earlier
+  // revision's, until rig-posters.mjs renders its own; any other mismatch is still refused.
+  const parents = new Map(inventory.map(e => [e.slug, e.parentRevision]));
+  const galleryAssets = assets.map(asset => {
+    const record = recorded?.posters?.[rigPosterKey(ID, asset.slug)];
+    if (record && record.revisionId !== asset.revisionId && record.assetId === asset.assetId && record.revisionId === parents.get(asset.slug)) return { ...asset, poster: { ...rigPosterImage(record, asset.description), exactRevision: false } };
+    return applyRigPosters([asset], ID, recorded, { required: published })[0];
+  });
   const catalog = { ...existing, id: ID, name: 'Cabin in the Woods: PSX Horror', base: BASE, release, available: published, status: published ? 'Available' : 'Owner review pending', assetCount: assets.length, assets: galleryAssets, textureResources, downloads, runtime: { file: 'web/game.html', sha256: hashBytes(output.get('web/game.html')) } };
   const pack = { schemaVersion: 1, id: ID, name: catalog.name, release, available: published, status: catalog.status, models, files: [...output].map(([path, b]) => ({ path, bytes: b.length, sha256: hashBytes(b) })), source: { selectionSha256: hashBytes(selectionBytes), sourceManifestSha256: hashBytes(sourceSealBytes), historyScope: 'selected-only', assets: inventory } };
   // Existing lightweight records are immutable. Detect conflicts before writing any delivery.
