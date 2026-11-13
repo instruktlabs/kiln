@@ -15,6 +15,7 @@ import { HOLODECK_ASSETS, HOLODECK_PACKS, HOLODECK_RELEASE, holodeckSlug } from 
  *
  *   node scripts/select-holodeck.mjs --courtyard WORLD --holodeck REPO --ref main --crescent-ref COMMIT \
  *     --store island-trial=DIR --store holodeck-assets=DIR --store courtyard-plaza=DIR --store tropical-island=DIR
+ *   node scripts/select-holodeck.mjs --repin-revisions MAP.json --holodeck REPO --ref COMMIT --store NAME=DIR ...
  */
 
 const json = (bytes) => JSON.parse(bytes.toString('utf8'));
@@ -259,20 +260,98 @@ export async function repointHolodeckExample({ selection, holodeck, ref, example
   return result;
 }
 
+/** One pack's placements as its scene source names them at `commit`, and the source record that names that commit. */
+function rereadPack({ spec, previous, slugs, show, ref, commit }) {
+  const source = previous.source ?? {};
+  if (source.kind === 'holodeck-modules') {
+    const ids = slugs.map(slug => slug.replace(/^cove-/, ''));
+    const placed = ids.map(module => ({ id: module, ...json(show(`assets/cove/modules/${module}/provenance.json`)), placed: show(`public/assets/cove-modules/${module}.glb`) }));
+    return { placed, source: { ...source, ref, commit } };
+  }
+  // An authoring world is read as Holodeck's committed example of the same world revision; a pin change that would
+  // need a new authoring-world revision has to be made through Holodeck first.
+  const path = source.kind === 'holodeck-example' ? source.path : `examples/${spec.scene}`;
+  if (source.kind !== 'holodeck-example' && source.kind !== 'holodeck-world') throw new Error(`${spec.id}: cannot re-read a ${source.kind ?? 'missing'} source`);
+  const worldBytes = show(`${path}/world/world.json`), manifest = json(show(`${path}/example.json`));
+  if (manifest.id !== spec.scene || !Number.isSafeInteger(manifest.sourceRevision)) throw new Error(`${spec.id}: invalid example identity or source revision`);
+  if (source.kind === 'holodeck-world' && manifest.sourceRevision !== source.revision) throw new Error(`${spec.id}: the committed example is world revision ${manifest.sourceRevision}, not ${source.revision}; moving its pins needs a new authoring-world revision made through Holodeck`);
+  if (source.kind === 'holodeck-example' && manifest.sourceRevision < source.sourceRevision) throw new Error(`${spec.id}: source revision cannot go backward from ${source.sourceRevision}`);
+  const list = json(worldBytes).scene?.assets ?? [];
+  for (const asset of list) if (!/^assets\/imports\/[a-zA-Z0-9_-]+\.glb$/.test(asset.file ?? '')) throw new Error(`${spec.id}/${asset.id}: unsafe example GLB path`);
+  const placed = list.map(asset => ({ id: asset.id, ...asset.provenance, placed: show(`${path}/${asset.file}`) }));
+  return { placed, source: { kind: 'holodeck-example', ref, commit, path, sourceRevision: manifest.sourceRevision, worldSha256: hashBytes(worldBytes) } };
+}
+
+/**
+ * Move named selected revisions to saved descendants in every pack that lists them, in one reviewed update. `revisions`
+ * maps each slug to `{ from, to }`; `from` must be the selected revision, so a stale map is refused. Every pack that
+ * lists a mapped slug is re-read at one Holodeck commit and must place exactly the resulting selection: the same
+ * inventory, every pin equal to its record (shared records are one record, so equal everywhere) and every placed GLB
+ * the record's canonical bytes. A pin the map does not name may not change. Tidemark and the Cove modules stay at one
+ * commit. Unmapped records keep their frozen seals and stores; only the children's stores are read.
+ */
+export async function repinHolodeckRevisions({ selection, holodeck, ref, revisions, stores, release = HOLODECK_RELEASE, packs = HOLODECK_PACKS, presentations = HOLODECK_ASSETS }) {
+  if (!selection || selection.schemaVersion !== 1 || selection.licence !== 'CC0-1.0' || selection.versions !== 'final-only' || !selection.packs || !selection.assets) throw new Error('A frozen Holodeck selection is required');
+  if (!/^holodeck-[a-z0-9-]+$/.test(release ?? '') || release === selection.release) throw new Error('Repinning revisions requires a new release ID');
+  if (!holodeck || !ref || !stores) throw new Error('An explicit Holodeck repository, ref and stores are required');
+  if (!revisions || !Object.keys(revisions).length) throw new Error('An explicit map of slug to { from, to } revisions is required');
+  const git = (...args) => execFileSync('git', ['-C', holodeck, ...args], { maxBuffer: 256 * 1024 * 1024 });
+  const commit = git('rev-parse', '--verify', '--end-of-options', `${ref}^{commit}`).toString('utf8').trim();
+  const show = file => git('show', `${commit}:${file}`);
+  const result = structuredClone(selection), affected = new Set();
+  for (const [slug, { from, to } = {}] of Object.entries(revisions)) {
+    const record = result.assets[slug];
+    if (!record) throw new Error(`${slug} is not selected`);
+    if (!/^r_[a-f0-9]{32}$/.test(to ?? '') || to === from) throw new Error(`${slug}: invalid new revision ${to}`);
+    if (record.revisionId !== from) throw new Error(`${slug}: stale map, the selection holds ${record.revisionId}, not ${from}`);
+    const next = await revisionRecord(stores, record.assetId, to);
+    if (!(await descendsFrom(stores, next, from))) throw new Error(`${slug}: ${to} does not descend from the selected ${from}`);
+    result.assets[slug] = { ...next, placements: record.placements };
+    for (const placement of record.placements) affected.add(placement.pack);
+  }
+  for (const spec of packs.filter(pack => affected.has(pack.id))) {
+    const previous = result.packs[spec.id];
+    if (!previous) throw new Error(`${spec.id} lists a mapped slug but is not selected`);
+    if (previous.sceneStillPlacesEarlier) throw new Error(`${spec.id} places earlier revisions; re-select it in full`);
+    const { placed, source } = rereadPack({ spec, previous, slugs: previous.assets, show, ref, commit });
+    if (placed.length !== spec.expectedAssets || placed.length !== previous.assets.length) throw new Error(`${spec.id}: expected ${spec.expectedAssets} placed assets, found ${placed.length}`);
+    for (const [index, placement] of placed.entries()) {
+      const slug = holodeckSlug(spec.id, placement.id), record = result.assets[slug];
+      if (slug !== previous.assets[index] || !Object.hasOwn(presentations, slug)) throw new Error(`${spec.id}: places ${slug} where the selection lists ${previous.assets[index]}; repin changes revisions only`);
+      if (placement.collection !== record.collection || placement.assetId !== record.assetId || placement.revisionId !== record.revisionId) {
+        throw new Error(`${spec.id}/${placement.id} places ${placement.assetId}/${placement.revisionId}, but the repinned selection holds ${record.revisionId}${Object.hasOwn(revisions, slug) ? '' : ` and the map does not name ${slug}`}`);
+      }
+      verifyBytes(placement.placed, record.canonical, `${spec.id}/${placement.id} canonical GLB`);
+    }
+    result.packs[spec.id] = { ...previous, source };
+  }
+  const commitOf = id => result.packs[id]?.source?.commit;
+  if (result.packs['holodeck-tidemark'] && result.packs['holodeck-cove'] && commitOf('holodeck-tidemark') !== commitOf('holodeck-cove')) throw new Error('Tidemark and the Cove modules must be read at one Holodeck commit');
+  const identities = new Map();
+  for (const record of Object.values(result.assets)) {
+    const key = `${record.collection}/${record.assetId}`;
+    if (identities.has(key) && identities.get(key) !== record.revisionId) throw new Error(`${key} has two selected revisions`);
+    identities.set(key, record.revisionId);
+  }
+  result.release = release;
+  return result;
+}
+
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
   const args = process.argv.slice(2), options = { stores: {} };
   for (let i = 0; i < args.length; i += 2) {
     const [flag, value] = [args[i], args[i + 1]];
     if (!value || value.startsWith('--')) throw new Error(`Missing value for ${flag}`);
     if (flag === '--store') { const [name, dir] = value.split(/=(.*)/s); options.stores[name] = await realpath(dir); }
-    else if (['--courtyard', '--holodeck', '--ref', '--crescent-ref', '--out', '--append-example', '--repoint-example', '--selection'].includes(flag)) options[flag.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = value;
+    else if (['--courtyard', '--holodeck', '--ref', '--crescent-ref', '--out', '--append-example', '--repoint-example', '--repin-revisions', '--selection'].includes(flag)) options[flag.slice(2).replace(/-([a-z])/g, (_, c) => c.toUpperCase())] = value;
     else throw new Error(`Unknown option ${flag}`);
   }
-  if (options.appendExample && options.repointExample) throw new Error('Choose one of --append-example and --repoint-example');
-  if (options.selection && !options.appendExample && !options.repointExample) throw new Error('--selection requires --append-example or --repoint-example');
+  if ([options.appendExample, options.repointExample, options.repinRevisions].filter(Boolean).length > 1) throw new Error('Choose one of --append-example, --repoint-example and --repin-revisions');
+  if (options.selection && !options.appendExample && !options.repointExample && !options.repinRevisions) throw new Error('--selection requires --append-example, --repoint-example or --repin-revisions');
   const frozen = async () => json(await readFile(resolve(options.selection ?? resolve(import.meta.dirname, '../../packs/holodeck/selection.json'))));
   const selection = options.appendExample ? await appendHolodeckExample({ ...options, example: options.appendExample, selection: await frozen() })
     : options.repointExample ? await repointHolodeckExample({ ...options, example: options.repointExample, selection: await frozen() })
+    : options.repinRevisions ? await repinHolodeckRevisions({ ...options, revisions: json(await readFile(resolve(options.repinRevisions))), selection: await frozen() })
     : await selectHolodeck(options);
   const out = resolve(options.out ?? resolve(import.meta.dirname, '../../packs/holodeck/selection.json'));
   await writeFile(out, JSON.stringify(selection, null, 2) + '\n');

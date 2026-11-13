@@ -344,6 +344,17 @@ async function stageSelection({ kiln, mirror, stores, selectionFile = join(PACKS
     });
   }
 
+  // Posters come from the record before anything is written. A poster recorded for an earlier revision of a card is kept
+  // in the record but not shown: the new revision has no poster until scripts/rig-posters.mjs renders it from the staged
+  // model, and the upload list waits for it. A poster recorded for this revision must still match its model.
+  let recorded;
+  try { recorded = await readJson(join(site, 'src/data/rig-posters.json')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
+  const current = recorded && { ...recorded, posters: Object.fromEntries(Object.entries(recorded.posters ?? {}).filter(([key, poster]) => {
+    const [pack, slug] = key.split(/:(.*)/s);
+    return pack !== HOLODECK_ID || !staged[slug] || poster.revisionId === staged[slug].asset.revisionId;
+  })) };
+  const assets = applyRigPosters(Object.values(staged).map((member) => member.asset), HOLODECK_ID, current);
+
   // Lightweight records are immutable once kept; check them all before writing anything.
   for (const [path, bytes] of lightweight) {
     try { if (!(await readFile(join(packsRoot, path))).equals(bytes)) throw new Error(`Existing source record conflict: ${path}`); }
@@ -363,9 +374,6 @@ async function stageSelection({ kiln, mirror, stores, selectionFile = join(PACKS
   const viewerModels = Object.values(staged).map((member) => member.asset.runtimeModelDownload.path);
   await writeJson(planFile, { ...plan, viewerModels: [...(plan.viewerModels ?? []).filter((path) => !path.startsWith(`packs/${HOLODECK_ID}/`)), ...viewerModels] });
 
-  let recorded;
-  try { recorded = await readJson(join(site, 'src/data/rig-posters.json')); } catch (error) { if (error.code !== 'ENOENT') throw error; }
-  const assets = applyRigPosters(Object.values(staged).map((member) => member.asset), HOLODECK_ID, recorded);
   const catalog = {
     schemaVersion: 1, id: HOLODECK_ID, release, base: ASSET_BASE,
     licence: { spdx: 'CC0-1.0', note: 'Dedicated to the public domain by the owner, subject to final release approval. Kiln and Holodeck software keep their own licences.' },
