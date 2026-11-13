@@ -15,7 +15,7 @@ import { exportAssetGlb } from '../asset-export';
 import { mountDashboard } from './dashboard';
 import { mountPerformanceControl } from './performance-control';
 import type { ProjectRevision } from '../projects';
-import { assetIdentity, entriesForProject } from './library-state';
+import { assetIdentity, entriesForProject, entriesMatching } from './library-state';
 import { mountMembership } from './membership-panel';
 import { materialViewerHref } from './material-preview';
 import { mountParamsPanel, type BuiltVariant } from './params-panel';
@@ -195,10 +195,8 @@ function renderCards() {
   for (const url of thumbUrls.splice(0)) URL.revokeObjectURL(url);
   const cards = el('cards');
   cards.replaceChildren();
-  const query = el<HTMLInputElement>('search').value.toLowerCase();
-  const shown = latestEntries().filter((e) =>
-    `${e.manifest.name} ${e.manifest.tags.join(' ')}`.toLowerCase().includes(query),
-  );
+  const query = el<HTMLInputElement>('search').value;
+  const shown = entriesMatching(latestEntries(), query);
   el('count').textContent = `${shown.length} asset${shown.length === 1 ? '' : 's'}`;
   el<HTMLButtonElement>('export-selection').disabled = !selected.size;
   if (!shown.length) {

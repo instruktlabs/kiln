@@ -34,8 +34,9 @@ export function exampleProvenance(source) {
       : 'Not recorded',
     inheritedContext: 'Not independently recorded; source-header declarations only',
     startingExample: noExamples ? 'None supplied, according to source header' : 'Not recorded',
+    // The header line itself is in the source the page prints; the credit only says it is there.
     humanIntervention: /^\/\/ Maintainer revision:/m.test(source)
-      ? source.match(/^\/\/ Maintainer revision: (.+)$/m)[1]
+      ? 'Maintainer revision, noted in the source header'
       : /reviewer feedback/i.test(source)
         ? 'Reviewer feedback; revisions by the credited model'
         : /Not a line of it is hand-authored/i.test(source)
@@ -49,6 +50,23 @@ export function exampleProvenance(source) {
     poster:
       'Archival gallery render. Its exact source revision and renderer settings were not recorded with the image.',
   };
+}
+
+/**
+ * What an archive page prints from a credit. A record keeps every detail of a later maintainer
+ * revision for a reader of the data (`maintainerRevisions`, `historicalPosterReceipt`, the
+ * source header); the page prints the original statement and one short line about the picture.
+ */
+export function pageProvenance(provenance) {
+  if (!provenance) return provenance;
+  const page = { ...provenance };
+  if (typeof page.humanIntervention === 'string') {
+    const later = page.humanIntervention.search(/\s*Later maintainer revision \(/);
+    if (later >= 0) page.humanIntervention = page.humanIntervention.slice(0, later) || 'Not recorded';
+  }
+  if (page.historicalPosterReceipt && !page.posterReceipt)
+    page.poster = 'Picture rendered from an earlier revision of this source.';
+  return page;
 }
 
 /**
