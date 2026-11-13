@@ -3555,6 +3555,16 @@ export async function buildSavedRevisionVariant(
 }
 
 /**
+ * The last carried export per program store. `kiln_export` answers with two links and a host
+ * reads both, so without this one export would build the source three times over. One entry,
+ * replaced by the next carried export and released with its store; callers never mutate it.
+ */
+const carriedExports = new WeakMap<
+  object,
+  { key: string; output: Promise<import('../asset-export').AssetGlbExport> }
+>();
+
+/**
  * The runtime export of a saved revision that carries its sizes, as `kiln export --carry-shapes`
  * writes it: the revision's source is built at other values under this host's engine, the way
  * `buildSavedRevisionVariant` builds one. `kiln_export`, its resources and `kiln_export_to` share it.
@@ -3572,14 +3582,32 @@ export async function carriedShapesRuntimeExport(
     throw new Error(
       'This revision is binary-only: it has no source to rebuild its sizes from. Omit carryShapes for the runtime export without carried sizes.',
     );
-  if (!context.programStore) throw new Error('Carrying sizes requires a program store.');
-  const code = new TextDecoder('utf-8', { fatal: true }).decode(source);
-  const programRef = await retainProgram(context.programStore, code);
-  return (await import('../asset-export')).exportAssetGlb(record, {
-    profile: 'runtime',
-    ...options,
-    paramBuilds: async (values) => (await buildProgramGlb(programRef, context, { values })).glb,
+  const store = context.programStore;
+  if (!store) throw new Error('Carrying sizes requires a program store.');
+  // A revision is immutable, so its ids and the two options decide the bytes.
+  const key = JSON.stringify([
+    record.manifest.assetId,
+    record.manifest.revisionId,
+    options.metadataFileName ?? null,
+    options.textures ?? null,
+  ]);
+  const held = carriedExports.get(store);
+  if (held?.key === key) return held.output;
+  const output = (async () => {
+    const code = new TextDecoder('utf-8', { fatal: true }).decode(source);
+    const programRef = await retainProgram(store, code);
+    return (await import('../asset-export')).exportAssetGlb(record, {
+      profile: 'runtime',
+      ...options,
+      paramBuilds: async (values) => (await buildProgramGlb(programRef, context, { values })).glb,
+    });
+  })();
+  carriedExports.set(store, { key, output });
+  // A failed build is not kept: the next call builds again and reports its own error.
+  output.catch(() => {
+    if (carriedExports.get(store)?.output === output) carriedExports.delete(store);
   });
+  return output;
 }
 
 /** Build one current-policy revision for ordinary save or explicit migration. */

@@ -115,7 +115,7 @@ metadata sidecar; do not guess names from the source.
   three.js r187 does not switch variants itself: each mesh keeps its mappings in
   `userData.gltfExtensions.KHR_materials_variants`, and
   `parser.getDependency('material', index)` loads the mapped material.
-- **Size** (`params.shapes`, exported with `--carry-shapes`): the clip `kiln.param.<name>`
+- **Size** (`params.shapes`, exported with `carryShapes: true` or `--carry-shapes`): the clip `kiln.param.<name>`
   runs from the minimum at time 0 to the maximum at time 1. Clamp the action and set the
   mixer to time (value - min) / (max - min); `keys` lists each built value with its time.
   Never loop it and never start it with the

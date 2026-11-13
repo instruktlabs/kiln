@@ -157,6 +157,47 @@ describe('kiln_export carryShapes', () => {
     expect(shapesOf(await read(plainMetadata.uri))).toBeUndefined();
   }, 120_000);
 
+  test('one host builds the carried export once for the call and both link reads', async () => {
+    // A revision no earlier test exported, so nothing is held for it yet.
+    const save = createKilnProgramToolRegistry({ assetLibrary: library, programStore }).find(
+      (def) => def.name === 'kiln_save',
+    )!;
+    const other = (
+      (await save.run({
+        programRef: await programStore.put(SHELF.replace("'Shelf'", "'Shelf two'")),
+        name: 'Shelf two',
+        collection: 'project',
+      })) as { asset: { assetId: string; revisionId: string } }
+    ).asset;
+    const one = host();
+    // Each build of a carried export retains the revision's source once.
+    const put = programStore.put.bind(programStore);
+    let retained = 0;
+    programStore.put = async (code: string) => {
+      retained++;
+      return put(code);
+    };
+    try {
+      const result = (await one.defs
+        .find((def) => def.name === 'kiln_export')!
+        .run({ collection: 'project', ...other, profile: 'runtime', carryShapes: true })) as {
+        resources: { name: string; uri: string; size: number }[];
+      };
+      for (const link of result.resources) {
+        const contents = (await one.readResource(link.uri)) as { blob?: string; text?: string };
+        const bytes =
+          contents.blob !== undefined
+            ? Buffer.from(contents.blob, 'base64').byteLength
+            : new TextEncoder().encode(contents.text!).byteLength;
+        expect(bytes).toBe(link.size);
+      }
+      expect(result.resources).toHaveLength(2);
+      expect(retained).toBe(1);
+    } finally {
+      programStore.put = put;
+    }
+  }, 120_000);
+
   test('refuses what the CLI refuses, naming the next step', async () => {
     await expect(run({ ...saved, carryShapes: true })).rejects.toThrow(
       'carryShapes requires profile runtime',

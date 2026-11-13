@@ -110,8 +110,9 @@ These resources are derived from the pinned revision on demand, without persisti
 a new revision. With `carryShapes: true` the runtime export also carries the revision's
 sizes, as `kiln export --carry-shapes` does ([sizes](programs.md#sizes-a-glb-carries)): the
 revision needs its saved source, `params` is refused, and the two URIs end in
-`?carryShapes=true`. Each read of those rebuilds the source several times per size, under
-this host's engine. The local viewer host also serves the plain resource filenames through
+`?carryShapes=true`. The export builds the source several times per size, under this
+host's engine; the host keeps its last carried export, so the call and the reads of its
+two resources share one build. The local viewer host also serves the plain resource filenames through
 its existing `/files/` endpoint. The local viewer offers **Original GLB** and
 **Runtime GLB**, plus a separate **Runtime metadata** download when that export is
 ready. Keep the metadata's filename unchanged next to `runtime.glb`. Opened editable

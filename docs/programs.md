@@ -251,8 +251,8 @@ kiln export <id> <revision> --format glb --profile runtime --carry-shapes --out 
 
 The library form is `exportAssetGlb(record, { profile: 'runtime', paramBuilds })`, where
 `paramBuilds(values)` returns a build of the source at those values. Over MCP it is
-`carryShapes: true` with `profile: 'runtime'` on `kiln_export` (resources that rebuild the
-source on each read) or on `kiln_export_to` (files under the export root), for a saved
+`carryShapes: true` with `profile: 'runtime'` on `kiln_export` (two resources to read) or
+on `kiln_export_to` (files under the export root), for a saved
 revision with its source; both write the bytes the CLI writes for that revision.
 
 - **How it is decided.** By building, never by reading source. For each `range` and `int`

@@ -1143,7 +1143,7 @@ define(
       'Host values are declared build inputs: they are part of the build-cache key, and a program that declares parameters stays eligible for build reuse.',
       'What an exported GLB carries is decided by building, and kiln_render with params: { sweep: true } reports it: each color as factor or rebuild, each toggle and choice as visibility or rebuild, each range and int as morph or rebuild, with the reason for a rebuild.',
       'To have a color carried, give it its own named material and pass the parameter to it unchanged, with surface detail in neutral greys. To have a toggle or choice carried, always build its part and set part.visible from the parameter, one node per parameter. A preset that only sets carried colours is carried as a material variant.',
-      'A range or int is carried only when the export asks (kiln export --profile runtime --carry-shapes) and every value keeps the same parts and vertex counts and moves them in straight lines. A seed, a count that adds parts and every other value is another build from source.',
+      'A range or int is carried only when the export asks (kiln_export or kiln_export_to with profile runtime and carryShapes: true; kiln export --profile runtime --carry-shapes) and every value keeps the same parts and vertex counts and moves them in straight lines. A seed, a count that adds parts and every other value is another build from source.',
     ],
     cost: 'Metadata only.',
   },

@@ -13,7 +13,8 @@ does not publish a package.
   and a saved revision with its source; it is refused with a `programRef`, with `params`, and
   on `kiln_export_to` with `target`. Both return the bytes the CLI writes for the same
   revision. `kiln_export` returns the usual two resources with `?carryShapes=true` on their
-  URIs; each read rebuilds the source, up to four builds per size. No other input changes.
+  URIs. The export builds the source up to four times per size; a host builds it once for
+  the call and the reads of its two resources. No other input changes.
 - **A `DATA_CHANGED` parameter says what changed.** When a colour, option or size needs a
   rebuild because its binary data differs, the `detail` in the sweep, `kiln_save` and the
   runtime export sidecar keeps its general sentence and now adds the first data that
