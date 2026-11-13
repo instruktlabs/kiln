@@ -7,6 +7,9 @@ does not publish a package.
 
 ## Unreleased
 
+- **The `kiln_export` description no longer says runtime only moves review clips.** It now
+  also says the runtime GLB marks the parameters it carries and lists them in the sidecar,
+  as `docs/export-profiles.md` describes.
 - **`kiln_assets` finds a hyphenated name from a spaced query.** The `catalog` and `list`
   searches were a single literal substring test, so `trail sign` found nothing for an asset
   named `trail-sign`. A query is now split on spaces, hyphens and underscores, and an asset
