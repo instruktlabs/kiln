@@ -3,17 +3,19 @@
   "files": [
     {
       "id": "farm",
-      "release": "r36-local-review",
-      "path": "scene-inputs/v09-review3/farm.zip",
-      "bytes": 3647482,
-      "sha256": "0dce1d2cc48860968fe756ef36312ab6a77e51ffa057c627ff0e859a6adda956"
+      "release": "r36-flush1",
+      "path": "scene-inputs/flush-fix-20261113/farm.zip",
+      "bytes": 3647436,
+      "sha256": "87b909fd9875488e626f5ee22608913751426f3935006978c5e7881d032d0b56",
+      "packJsonSha256": "f97c8ee73d388e12d03784c605341f2f5fcb6d1c05672a161072c99abd235c8a"
     },
     {
       "id": "golden-gate",
-      "release": "g9-code6",
-      "path": "scene-inputs/text-cleanup-20261005/golden-gate.zip",
-      "bytes": 8329691,
-      "sha256": "a2c5425ea357d1ef55237a89a05d364db3d891188d3a2453e6189941da14238f"
+      "release": "g9-flush1",
+      "path": "scene-inputs/flush-fix-20261113/golden-gate.zip",
+      "bytes": 8317135,
+      "sha256": "7ae3bc966705f2b272cda4511251af2cea7120f3f39360bd80254a45cbfceb70",
+      "packJsonSha256": "8171b87c257c693be482b7006429c29414939c640dcb9acc3aec50d82c51ca4b"
     },
     {
       "id": "foundry-floor",

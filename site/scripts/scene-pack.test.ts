@@ -277,12 +277,13 @@ describe('scene pack catalog record', () => {
     expect(compareRuntimeRecord(undefined, recorded)).toEqual(['the record has no runtime for this standalone build']);
   });
 
-  test('the Farm record serves the r36 local review with repaired clothing and retained walking controls', () => {
+  test('the Farm record serves the r36 local review with the flush-face fix farmer and retained walking controls', () => {
     const record = scenePacks.farm;
-    expect(record.release).toBe('r36-local-review');
+    expect(record.release).toBe('r36-flush1');
     expect(record.base).toBe(`/scene-packs/farm/${record.release}/`);
     expect(record.source).toBe('.cache/site-inputs/farm/standalone');
-    expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_133_727, packJsonSha256: '5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48' });
+    // r36-local-review with its farmer swapped for the flush-face fix child (scripts/scene-pack-swap.mjs).
+    expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_133_763, packJsonSha256: 'f97c8ee73d388e12d03784c605341f2f5fcb6d1c05672a161072c99abd235c8a' });
     // The sealed asset pack keeps its original producer version when current runtime code advances.
     expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
@@ -290,25 +291,26 @@ describe('scene pack catalog record', () => {
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
     expect(farmScene.assetBase).toBe(record.base);
     expect(farmScene.pack).toBe(record);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r36-local-review'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r36-flush1'));
     expect(() => stagedPackDirectory({ base: '/../escape/' }, '/site')).toThrow('Unexpected');
   });
 
-  test('the Golden Gate code6 delivery repairs terrain text and retains its runtime inside the ceiling', () => {
+  test('the Golden Gate flush1 delivery carries the flush-face fix children and retains its runtime inside the ceiling', () => {
     const record = scenePacks['golden-gate'];
-    expect(record.release).toBe('g9-code6');
-    expect(record.base).toBe('/scene-packs/golden-gate/g9-code6/');
-    // Six plus/minus signs and one squared sign add seven UTF-8 bytes; models and runtime remain unchanged.
-    expect(record).toMatchObject({ sealedFiles: 103, sealedBytes: 12_186_334, packJsonSha256: '68233d46076cbf86d57502ce612f09d63e8cc125f0b521f19f9eacbec419deb7', sha256sumsSha256: '615c3c3cd059cdffc00a84e29c43296c9a7e951150cdb0f887594450ce1debea' });
+    expect(record.release).toBe('g9-flush1');
+    expect(record.base).toBe('/scene-packs/golden-gate/g9-flush1/');
+    // The code6 pack with the web and far bridge tiers, sedan, SUV and box truck swapped for their flush-face fix
+    // children (scripts/scene-pack-swap.mjs), and its code rebuilt against it: 103 sealed files.
+    expect(record).toMatchObject({ sealedFiles: 103, sealedBytes: 12_243_600, packJsonSha256: '8171b87c257c693be482b7006429c29414939c640dcb9acc3aec50d82c51ca4b', sha256sumsSha256: '742626d8a7a4f3b5060e26910e0cb274076ddc07e4b0073923471da1aff925b4' });
     expect(record.source).toBe('.cache/site-inputs/golden-gate/standalone');
     expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-DhpWxFro.js', bytes: 1_708_928, gzipBytes: 512_680, sha256: '1a01a81a912157936f05a2060f1df377c418607a83567753e4db2b0257bdb556' });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-DWkSpllN.js', bytes: 1_650_982, gzipBytes: 494_423, sha256: '662f332c5cc38a7c700777f4cd1147d2f0e47fd0c6567c21195d37dcfb7d7861' });
     expect(checkCeiling('golden-gate', record.runtime).within).toBe(true);
     expect(record.runtime.bytes).toBeLessThanOrEqual(CEILINGS['golden-gate'].bytes);
     expect(goldenGateScene.assetBase).toBe(record.base);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g9-code6'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g9-flush1'));
   });
 
   test('the Foundry Floor flush2 delivery carries the flush-face fix children with a verified initial closure inside its ceiling', () => {

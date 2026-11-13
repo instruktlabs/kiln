@@ -18,7 +18,7 @@
 // writes DIR/scene-inputs/LABEL/<id>.zip and prints its scene-inputs.json record.
 import { existsSync } from 'node:fs';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
-import { dirname, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { deterministicZip } from './asset-delivery.mjs';
 import { assetPath, hashBytes } from './mirror-core.mjs';
@@ -33,15 +33,35 @@ const SHA = /^[0-9a-f]{64}$/;
 const RELEASE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const TEXT = /\.(?:json|txt|md|js|mjs|css|html)$|(?:^|\/)SHA256SUMS$/;
 
-/** Named derivations a swap may apply to its file before swapping (the result is what `sha256` pins). */
+/**
+ * Named derivations a swap may apply to its file before swapping (the result is what `sha256` pins). Each receives the
+ * saved bytes and { entry, manifest, directory } (the saved revision directory beside `file`); it returns the new bytes,
+ * or { glb, runtimeMetadata } when the form has a sidecar, which the swap carries for the scene adapter to place.
+ */
 export const DERIVATIONS = {
   /** The vehicle runtime form: optional MSFT_lod wheel culling added to the saved GLB's JSON (site/scripts/vehicle-glb.mjs). */
   'vehicle-wheel-lod': async (bytes) => (await import('./vehicle-glb.mjs')).ensureVehicleWheelLod(bytes),
+  /**
+   * The Kiln runtime profile of the saved revision, as `kiln export <asset> <revision> --profile runtime --out <name>.glb`
+   * writes it: the saved GLB's binary chunk, its JSON plus a kilnProvenanceV1 naming the sidecar `<name>.kiln-metadata.json`
+   * (`runtimeMetadata` on the entry, by default the member's own name). Every file the manifest lists is read and checked.
+   */
+  'kiln-runtime': async (bytes, { entry, manifest, directory }) => {
+    if (!manifest) fail(`${entry.member}: kiln-runtime needs the saved revision manifest`);
+    const files = {};
+    for (const name of Object.keys(manifest.files ?? {})) files[name] = name === 'asset.glb' ? bytes : await readFile(join(directory, assetPath(name)));
+    const name = entry.runtimeMetadata ?? `${basename(entry.member, '.glb')}.kiln-metadata.json`;
+    const { exportAssetGlb } = await import('../../src/asset-export');
+    const output = await exportAssetGlb({ manifest, files }, { profile: 'runtime', metadataFileName: name });
+    return { glb: output.glb, runtimeMetadata: { name: output.metadata.name, bytes: Buffer.from(output.metadata.bytes) } };
+  },
 };
 
 /** Scene adapters: each regenerates the members of its own pack that name the swapped models. */
 export const ADAPTERS = {
   'foundry-floor': () => import(pathToFileURL(resolve(SITE, '../scenes/packages/foundry-floor/scripts/pack-swap-adapter.ts')).href),
+  farm: () => import(pathToFileURL(resolve(SITE, '../scenes/packages/farm/scripts/pack-swap-adapter.ts')).href),
+  'golden-gate': () => import(pathToFileURL(resolve(SITE, '../scenes/packages/golden-gate/scripts/pack-swap-adapter.ts')).href),
 };
 
 const fail = (message) => { throw new Error(message); };
@@ -74,9 +94,11 @@ export async function parseSwapList(list, { inputs }) {
       if (manifest.revisionId !== entry.revision || (entry.parentRevision !== undefined && manifest.parentRevision !== entry.parentRevision)) fail(`${label}: the manifest names revision ${manifest.revisionId} (parent ${manifest.parentRevision})`);
       if (!pin || pin.sha256.replace(/^sha256:/, '') !== hashBytes(saved) || pin.bytes !== saved.length) fail(`${label}: the saved GLB differs from its manifest`);
     }
-    const bytes = Buffer.from(entry.derive ? await DERIVATIONS[entry.derive](saved) : saved);
+    const derived = entry.derive ? await DERIVATIONS[entry.derive](saved, { entry, manifest, directory: dirname(join(inputs, entry.file)) }) : saved;
+    const { glb, runtimeMetadata } = derived instanceof Uint8Array ? { glb: derived } : derived;
+    const bytes = Buffer.from(glb);
     if (hashBytes(bytes) !== entry.sha256 || bytes.length !== entry.bytes) fail(`${label}: the new bytes (${bytes.length} B, ${hashBytes(bytes)}) are not the declared SHA-256 and size`);
-    swaps.push({ ...entry, bytes, saved, manifest });
+    swaps.push({ ...entry, bytes, saved, manifest, ...(runtimeMetadata ? { runtimeMetadata } : {}) });
   }
   return { ...list, swaps };
 }
@@ -132,7 +154,7 @@ export function swapPack({ files, swaps, release, usedReleases = [], regenerate 
     regenerated.push({ path, before: { bytes: before.length, sha256: hashBytes(before) }, after: { bytes: bytes.length, sha256: hashBytes(bytes) } });
   }
   const history = Object.entries(adapted.history ?? {}).map(([path, reason]) => {
-    if (!sealed.has(path) || typeof reason !== 'string' || !reason) fail(`${path}: history needs a sealed member and a reason`);
+    if ((!sealed.has(path) && path !== 'pack.json') || typeof reason !== 'string' || !reason) fail(`${path}: history needs a sealed member or pack.json, and a reason`);
     return { path, reason };
   });
   const rewritten = structuredClone(adapted.packJson ? adapted.packJson(structuredClone(manifest)) : manifest);
