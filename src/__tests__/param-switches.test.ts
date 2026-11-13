@@ -14,6 +14,7 @@ import {
   type ParamBindingsV1,
 } from '../param-bindings';
 import type { ParamsDeclarationV1 } from '../params';
+import { renderGLBInProcess } from '../render';
 
 function glb(json: unknown, bin: Uint8Array = new Uint8Array([1, 2, 3, 4])): Uint8Array {
   const text = new TextEncoder().encode(JSON.stringify(json));
@@ -99,6 +100,49 @@ describe('classifySwitchBinding', () => {
         { value: false, glb: glb(scene(PARTS, ['Arms']), new Uint8Array([9, 9, 9, 9])) },
       ]),
     ).toMatchObject({ mode: 'rebuild', reason: 'DATA_CHANGED' });
+  });
+
+  describe('changed data names the first data that differs when the files line up', () => {
+    // `tall` reshapes the back with the same vertices; `cushion` builds its part only when on.
+    const code = `const meta = { name: 'Bench' };
+const P = defineParams({
+  tall: { type: 'toggle', default: false },
+  cushion: { type: 'toggle', default: false },
+});
+function build() {
+  const root = createRoot('Bench');
+  const wood = gameMaterial(0x8a5a33);
+  createPart('Seat', boxGeo(0.5, 0.06, 1.6), wood, { parent: root, position: [0, 0.45, 0] });
+  createPart('Back', boxGeo(0.05, P.tall ? 0.9 : 0.5, 1.6), wood, { parent: root, position: [-0.25, 0.75, 0] });
+  if (P.cushion) createPart('Cushion', boxGeo(0.45, 0.05, 1.5), wood, { parent: root, position: [0, 0.51, 0] });
+  return root;
+}`;
+    const build = async (values: Record<string, boolean>) =>
+      (await renderGLBInProcess(code, { params: { values } })).glb;
+
+    test('a reshaped part names its positions', async () => {
+      const binding = classifySwitchBinding([
+        { value: false, glb: await build({}) },
+        { value: true, glb: await build({ tall: true }) },
+      ]);
+      expect(binding).toMatchObject({ mode: 'rebuild', reason: 'DATA_CHANGED' });
+      const detail = (binding as { detail: string }).detail;
+      expect(detail).toStartWith('The option adds, removes or reshapes geometry.');
+      expect(detail).toContain('First difference: positions (POSITION) of Mesh_Back.');
+      expect(detail.length).toBeLessThanOrEqual(320);
+    }, 60_000);
+
+    test('a part built only when on keeps the general detail', async () => {
+      const binding = classifySwitchBinding([
+        { value: false, glb: await build({}) },
+        { value: true, glb: await build({ cushion: true }) },
+      ]);
+      expect(binding).toMatchObject({ mode: 'rebuild', reason: 'DATA_CHANGED' });
+      const detail = (binding as { detail: string }).detail;
+      expect(detail).toStartWith('The option adds, removes or reshapes geometry.');
+      expect(detail).toContain('always build the part and set its `visible`');
+      expect(detail).not.toContain('First difference');
+    }, 60_000);
   });
 
   test('a node added or removed, or any other changed value, needs a rebuild', () => {

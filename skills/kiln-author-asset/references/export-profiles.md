@@ -164,7 +164,11 @@ its existing `/files/` endpoint. Existing viewer download buttons retain editabl
 source at those values and returns that variant's GLB as a
 `kiln://programs/.../asset.glb?params=...` resource, saving nothing. For a saved revision
 it reports `defaultBuildMatchesSaved`. The runtime profile and `kiln_export_to` deliver the
-saved default build only, and neither MCP tool takes the carried-sizes option.
+saved default build.
+
+To carry sizes, add `carryShapes: true` to a runtime `kiln_export` or to `kiln_export_to`
+without `target`. It is the MCP form of `--carry-shapes`: the same bytes, a saved revision
+with its source, and no `params` in the same call.
 
 Runtime results do not reuse configured canonical download URLs: those would deliver
 the wrong GLB. Client support for saving MCP resources varies. No binary data is put
@@ -250,7 +254,7 @@ Before saving, `kiln_render` with `params: { sweep: true }` reports the same dec
 | `color` reported `factor` | `extras.kilnParamV1: { name, type: "color" }` on each material | `params.colors` | Set the tagged material's base colour |
 | `toggle` or `choice` reported `visibility` | `extras.kilnParamV1: { name, type, visibleWhen }` on each node; one hidden at the defaults also has `KHR_node_visibility` | `params.switches` | Show a tagged node when `visibleWhen` includes the value, hide it otherwise |
 | Preset that only sets carried colours | One `KHR_materials_variants` entry named after the preset | `params.presets` | Select the variant |
-| `range` or `int` reported `morph`, only with `--carry-shapes` | Morph targets `<name>=<value>` and one clip `kiln.param.<name>` | `params.shapes`, with `keys` | Hold the clip at the time for the value |
+| `range` or `int` reported `morph`, only with `carryShapes: true` or `--carry-shapes` | Morph targets `<name>=<value>` and one clip `kiln.param.<name>` | `params.shapes`, with `keys` | Hold the clip at the time for the value |
 
 - Anything else is another build from source: a seed, a count that adds parts, a colour
   painted into pixels, an option built inside `if`. Deliver such a variant with
@@ -258,10 +262,14 @@ Before saving, `kiln_render` with `params: { sweep: true }` reports the same dec
 - A loader that ignores `KHR_node_visibility` draws an option that is hidden by default,
   so the application applies the tags at load as well as on change. three.js r187,
   Blender 5.2.0 and Unity glTFast 6.20.0 all ignore it.
-- A size clip is not motion. Time 0 is the minimum and time 1 the maximum; clamp it and
-  never loop it or play it with the asset's other clips. `--carry-shapes` works on the
+- A size clip is not motion. Time 0 is the minimum and time 1 the maximum, so a value
+  sits at time (value - min) / (max - min); clamp it and never loop it or play it with
+  the asset's other clips. The carried-sizes option works on the
   plain runtime profile only, rebuilds the saved source at each size's ends, and lists a
   size it cannot carry as `rebuild` with the reason.
+- Deliver the sidecar with the GLB. Its `params` block is what an application reads to
+  find each carried name, its values and, for a size, `keys`: the minimum, the default
+  and the maximum, each with its clip time.
 - A derived file names any parameter it lost in `params.dropped`. Read the sidecar's
   `params` block and report what the delivered file carries; do not infer it from source.
 

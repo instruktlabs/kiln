@@ -75,11 +75,18 @@ export function assetMime(name: string): string {
           : 'text/javascript';
 }
 
+/**
+ * Query of a runtime link whose export carries sizes. Its read rebuilds the saved source, so
+ * only a host with an engine serves it (`mcp-engine`), never `readAssetResource`.
+ */
+export const CARRY_SHAPES_QUERY = 'carryShapes=true';
+
 /** Derived resources are deterministic, read-only, and never replace a saved revision. */
 export async function runtimeAssetLinks(
   collection: string,
   record: AssetRecord,
   derived?: Extract<AssetGlbExport, { profile: 'runtime' }>,
+  options: { carryShapes?: boolean } = {},
 ): Promise<AssetLink[]> {
   const output = derived ?? (await exportAssetGlb(record, { profile: 'runtime' }));
   if (output.profile !== 'runtime') throw new Error('Expected runtime export');
@@ -89,7 +96,7 @@ export async function runtimeAssetLinks(
   ].map(({ name, bytes }) => ({
     type: 'resource_link',
     name,
-    uri: `kiln://assets/${collection}/${record.manifest.assetId}/${record.manifest.revisionId}/${name}`,
+    uri: `kiln://assets/${collection}/${record.manifest.assetId}/${record.manifest.revisionId}/${name}${options.carryShapes ? `?${CARRY_SHAPES_QUERY}` : ''}`,
     mimeType: assetMime(name),
     size: bytes.length,
     annotations: { audience: ['user'], priority: name.endsWith('.glb') ? 0.9 : 0.3 },

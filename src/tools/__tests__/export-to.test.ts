@@ -91,6 +91,7 @@ describe('kiln_export_to advertisement', () => {
     // A destination, not project membership.
     expect(Object.keys(exportTo.inputSchema['properties'] as object).sort()).toEqual([
       'assetId',
+      'carryShapes',
       'collection',
       'path',
       'profile',

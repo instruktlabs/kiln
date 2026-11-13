@@ -1815,7 +1815,7 @@ Present one exact saved revision. Supporting MCP App clients show an interactive
 
 ## kiln_export
 
-Export one saved revision, or the GLB a programRef builds. With programRef, nothing is saved: it returns a resource for the bytes kiln_save would persist, so a destination audit can read them before a save. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.
+Export one saved revision, or the GLB a programRef builds. With programRef, nothing is saved: it returns a resource for the bytes kiln_save would persist, so a destination audit can read them before a save. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar: it moves Kiln review clips out of GLB extras, keeps native animation and application metadata, and marks the parameters it carries, listing them in the sidecar. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -1860,6 +1860,10 @@ Export one saved revision, or the GLB a programRef builds. With programRef, noth
         "type": "string"
       },
       "additionalProperties": {}
+    },
+    "carryShapes": {
+      "description": "Runtime only, saved revision with source: rebuilds it to carry each size that moves in straight lines as morph targets, listed in the sidecar params.shapes.",
+      "type": "boolean"
     }
   }
 }
@@ -1920,6 +1924,10 @@ Write one saved revision's GLB to a path under the host's export root. Default r
       "enum": [
         "manifest"
       ]
+    },
+    "carryShapes": {
+      "description": "Runtime only, saved revision with source: rebuilds it to carry each size that moves in straight lines as morph targets, listed in the sidecar params.shapes.",
+      "type": "boolean"
     }
   },
   "required": [

@@ -218,7 +218,7 @@ and silhouette remain part of owner review.
 
 A runtime export can carry declared parameters: a colour as a tagged material, a `toggle`
 or `choice` as tagged nodes, a preset as a `KHR_materials_variants` entry and, when exported
-with `--carry-shapes`, a size as morph targets with one clip `kiln.param.<name>`. The export
+with `carryShapes: true` or `--carry-shapes`, a size as morph targets with one clip `kiln.param.<name>`. The export
 profile guide in the `kiln-author-asset` skill lists the tags and the sidecar's `params` block.
 
 A cabinet with a carried `width` (0.6 to 1.4 m, default 0.8 m), a `doors` toggle and a `blue`

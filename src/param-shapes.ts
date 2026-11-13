@@ -18,6 +18,7 @@ import type { Accessor, Document, Node as GltfNode, Primitive } from '@gltf-tran
 import * as THREE from 'three';
 import { createGltfIO } from './gltf-io';
 import { glbJson } from './param-bindings';
+import { type DataNameV1, nameAccessor, nameImage, namedDataDetail } from './param-data';
 import type { IntParamV1, ParamsDeclarationV1, ParamValue, RangeParamV1 } from './params';
 
 /** A carried parameter's clip is named this plus the parameter's name. */
@@ -146,26 +147,39 @@ function requireSameBut(base: Loaded, other: Loaded): void {
   if (structure(base.glb) !== structure(other.glb))
     throw new NotCarried(rebuild('STRUCTURE_CHANGED'));
   const morphable = new Set<Accessor>();
+  // A document read from a GLB lists accessors and textures (glTF images) in file order.
+  const mine = base.doc.getRoot().listAccessors();
   for (const primitive of base.primitives.flat()) {
     if (primitive.listTargets().length) throw new NotCarried(rebuild('HAS_MORPH_TARGETS'));
     for (const semantic of MORPHED) {
       const accessor = primitive.getAttribute(semantic);
       if (!accessor) continue;
-      if (!floats(accessor)) throw new NotCarried(rebuild('DATA_CHANGED'));
+      if (!floats(accessor))
+        throw new NotCarried(
+          dataChanged(
+            'Not float data, which a morph target needs: ',
+            nameAccessor(glbJson(base.glb), mine.indexOf(accessor)),
+          ),
+        );
       morphable.add(accessor);
     }
   }
-  const mine = base.doc.getRoot().listAccessors();
   const theirs = other.doc.getRoot().listAccessors();
   if (mine.length !== theirs.length) throw new NotCarried(rebuild('STRUCTURE_CHANGED'));
   for (const [index, accessor] of mine.entries())
     if (!morphable.has(accessor) && !sameArray(accessor.getArray(), theirs[index]!.getArray()))
-      throw new NotCarried(rebuild('DATA_CHANGED'));
+      throw new NotCarried(
+        dataChanged('First difference: ', nameAccessor(glbJson(base.glb), index)),
+      );
   const images = other.doc.getRoot().listTextures();
   for (const [index, texture] of base.doc.getRoot().listTextures().entries())
     if (!sameArray(texture.getImage(), images[index]?.getImage() ?? null))
-      throw new NotCarried(rebuild('DATA_CHANGED'));
+      throw new NotCarried(dataChanged('First difference: ', nameImage(glbJson(base.glb), index)));
 }
+
+/** `DATA_CHANGED`, its general detail followed by the data it names. */
+const dataChanged = (lead: string, name: DataNameV1): RebuildShapeV1 =>
+  rebuild('DATA_CHANGED', namedDataDetail(DETAIL.DATA_CHANGED, lead, name));
 
 type Trs = { t: number[]; r: number[]; s: number[] };
 const trs = (node: GltfNode): Trs => ({

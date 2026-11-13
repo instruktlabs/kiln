@@ -7,6 +7,23 @@ does not publish a package.
 
 ## Unreleased
 
+- **`kiln_export` and `kiln_export_to` can carry sizes.** Both take an optional
+  `carryShapes: true`, the MCP form of `kiln export --profile runtime --carry-shapes`, so a
+  host with only MCP can get a runtime GLB with carried sizes. It needs `profile: 'runtime'`
+  and a saved revision with its source; it is refused with a `programRef`, with `params`, and
+  on `kiln_export_to` with `target`. Both return the bytes the CLI writes for the same
+  revision. `kiln_export` returns the usual two resources with `?carryShapes=true` on their
+  URIs. The export builds the source up to four times per size; a host builds it once for
+  the call and the reads of its two resources. No other input changes.
+- **A `DATA_CHANGED` parameter says what changed.** When a colour, option or size needs a
+  rebuild because its binary data differs, the `detail` in the sweep, `kiln_save` and the
+  runtime export sidecar keeps its general sentence and now adds the first data that
+  differs, such as "First difference: texture coordinates (TEXCOORD_0) of Mesh_Board." When the
+  two builds do not line up well enough to name it, as for a part built only when an option
+  is on, the general sentence stays alone. Which parameters are carried is unchanged.
+- **The `kiln_export` description no longer says runtime only moves review clips.** It now
+  also says the runtime GLB marks the parameters it carries and lists them in the sidecar,
+  as `docs/export-profiles.md` describes.
 - **`kiln_assets` finds a hyphenated name from a spaced query.** The `catalog` and `list`
   searches were a single literal substring test, so `trail sign` found nothing for an asset
   named `trail-sign`. A query is now split on spaces, hyphens and underscores, and an asset
