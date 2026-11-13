@@ -14,7 +14,7 @@ import { FOUNDRY_FLOOR_ID, FOUNDRY_FLOOR_POSTER, FOUNDRY_FLOOR_SCENE_POSTER } fr
  * Re-render the poster of every asset of a pack under the review rig and record the result:
  *
  *   bun scripts/rig-posters.mjs farm   --service http://127.0.0.1:8123 --mirror C:/.../mirror [--only barn,cow] [--out DIR]
- *   bun scripts/rig-posters.mjs bridge --service ... --mirror ... --outputs DIR --cameras DIR [--out DIR]
+ *   bun scripts/rig-posters.mjs bridge --service ... --mirror ... --outputs DIR (--cameras DIR | --recorded-cameras) [--out DIR]
  *   bun scripts/rig-posters.mjs vehicles --service ... --mirror C:/.../mirror [--only sedan,suv] [--out DIR]
  *   bun scripts/rig-posters.mjs foundry-floor --service ... --mirror C:/.../mirror [--only foup,scene-poster] [--out DIR]
  *   bun scripts/rig-posters.mjs hero --service ... --mirror ... --outputs DIR [--out DIR]
@@ -99,6 +99,16 @@ export async function farmTargets({ mirror, data = DATA }) {
   const targets = [];
   for (const asset of farm.assets) {
     const download = asset.runtimeDownload;
+    if (!download.archive) {
+      // A model delivered as its own file (packs/farm/<release>/models/<slug>.glb) is pinned and posted under that release.
+      const release = /^packs\/farm\/([^/]+)\/models\/[^/]+\.glb$/.exec(download.path ?? '')?.[1];
+      if (!release) throw new Error(`${asset.slug}: a model outside a sealed archive must sit at packs/farm/<release>/models/`);
+      const pin = pins.get(download.path);
+      if (!pin) throw new Error(`No mirror pin for ${download.path}`);
+      const glb = verifyBytes(verifyBytes(await readFile(join(mirror, assetPath(download.path))), pin, download.path), download, asset.slug);
+      targets.push({ pack: 'farm', release, slug: asset.slug, name: asset.name, revisionId: asset.revisionId, assetId: asset.assetId, alt: asset.description, glb, glbPath: download.path, view: FARM_POSTER });
+      continue;
+    }
     if (!archives.has(download.archive)) {
       const pin = pins.get(download.archive);
       if (!pin) throw new Error(`No mirror pin for ${download.archive}`);
@@ -166,15 +176,23 @@ export async function recordFoundryFloorScenePoster({ posters, data = DATA }) {
 
 /**
  * The bridge's full-tier views: the author's export of the accepted revision, verified against the accepted
- * pins, seen through the author's own capture cameras (`<cameras>/<name>.json`).
+ * pins, seen through the author's own capture cameras (`<cameras>/<name>.json`). Without the capture files,
+ * `recorded` (rig-posters.json) supplies each view's camera exactly as an earlier render resolved it from that
+ * file, with the file's name and hash, and its size.
  */
-export async function bridgeTargets({ outputs, cameras, tiers }) {
+export async function bridgeTargets({ outputs, cameras, recorded, tiers }) {
   const full = tiers.tiers.find((tier) => tier.tier === 'full');
   if (!full) throw new Error('The accepted tiers list has no full tier');
   const glb = await readFile(join(outputs, full.glb.file));
   verifyBytes(glb, full.glb, full.glb.file);
   const targets = [];
   for (const capture of BRIDGE_CAPTURES) {
+    if (!cameras) {
+      const record = recorded?.posters?.[bridgeCaptureKey(capture)];
+      if (!record?.view?.camera || !record.view.source?.sha256) throw new Error(`The bridge view ${capture.name} has no recorded camera`);
+      targets.push({ pack: 'bridge', slug: BRIDGE_ID, capture: capture.name, key: bridgeCaptureKey(capture), revisionId: full.revision, assetId: tiers.assetId, alt: capture.alt, glb, glbPath: full.glb.file, path: bridgeCapturePath(full.revision, capture.name), camera: record.view.camera, cameraSource: record.view.source, view: { width: record.width, height: record.height } });
+      continue;
+    }
     const file = await readFile(join(cameras, `${capture.name}.json`));
     const { camera, size } = cameraFromCaptureFile(JSON.parse(file.toString('utf8')));
     targets.push({
@@ -365,8 +383,9 @@ async function main(argv = process.argv.slice(2), env = process.env) {
   if (pack === 'bridge') {
     const outputs = option('--outputs');
     const cameras = option('--cameras');
-    if (!outputs || !cameras) throw new Error('The bridge views need --outputs (the author export folder) and --cameras (the capture files folder)');
-    targets = (await bridgeTargets({ outputs: resolve(outputs), cameras: resolve(cameras), tiers: await readJson(join(DATA, 'standalone/golden-gate-tiers.json')) })).filter((target) => !only || only.includes(target.capture));
+    const fromRecord = argv.includes('--recorded-cameras');
+    if (!outputs || (!cameras && !fromRecord)) throw new Error('The bridge views need --outputs (the author export folder) and --cameras (the capture files folder) or --recorded-cameras');
+    targets = (await bridgeTargets({ outputs: resolve(outputs), ...(fromRecord ? { recorded: await readJson(join(DATA, 'rig-posters.json')) } : { cameras: resolve(cameras) }), tiers: await readJson(join(DATA, 'standalone/golden-gate-tiers.json')) })).filter((target) => !only || only.includes(target.capture));
   } else if (pack === HERO_PACK) {
     const outputs = option('--outputs');
     if (!outputs) throw new Error('The hero needs --outputs (the bridge author export folder)');

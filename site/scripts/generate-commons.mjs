@@ -108,12 +108,13 @@ const BRIDGE_DESCRIPTION = 'A metre-scale procedural suspension bridge with Art 
 const BRIDGE_REVIEW_ALT = 'Six saved review views of the Golden Gate Bridge: front, right, back, left, top and three-quarter.';
 // Owner decision S-1 (site-build/DECISIONS.md): the review-5 delivery is owner approved on its acceptance of
 // 30 September 2026 (the coordinator's COORDINATOR-REVIEW-5.md in the bridge-fix author folder; scenes D-38, D-39).
+// The delivered tiers are now the flush-face fix children of those revisions, which the owner approved on 13 November 2026.
 const BRIDGE_REVIEW = {
   status: 'accepted',
   ownerAccepted: true,
-  scope: 'The full and web tiers are the review-5 revisions; the far tier is the review-2 revision, unchanged since. The coordinator re-read the exported bytes and hashes, compared the web tier’s nodes with review 3’s (128 of 148 identical; the 20 that changed are all inside the two anchorages) and checked both changed tiers for coplanar faces, and the owner approved this delivery on 30 September 2026. Performance in a destination project is not qualified.',
-  recordedAt: '2026-09-30',
-  source: 'Owner decision S-1 (site decisions, 30 September 2026) on the review-5 acceptance recorded in COORDINATOR-REVIEW-5.md',
+  scope: 'The full and web tiers are the review-5 revisions; the far tier is the review-2 revision, unchanged since. The coordinator re-read the exported bytes and hashes, compared the web tier’s nodes with review 3’s (128 of 148 identical; the 20 that changed are all inside the two anchorages) and checked both changed tiers for coplanar faces, and the owner approved this delivery on 30 September 2026. Performance in a destination project is not qualified. Flush-face fix of an approved revision; approved by the owner on 2026-11-13.',
+  recordedAt: '2026-11-13',
+  source: 'Owner decision S-1 (site decisions, 30 September 2026) on the review-5 acceptance recorded in COORDINATOR-REVIEW-5.md; owner approval of the flush-face fix revisions, 2026-11-13',
 };
 const BRIDGE_LIMITS = [
   'Visual reconstruction, not an engineering survey.',

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "delivery": "review-5",
-  "source": "The pins in the Golden Gate scene release script (BRIDGE_PINS, BRIDGE_FULL, BRIDGE_LICENCE), which restate the accepted review-5 exports in the coordinator's review-5 record. The site verifies every file against them before it lists it.",
+  "delivery": "review-5-flush1",
+  "source": "The Kiln runtime exports (kiln export --profile runtime) of the flush-face fix children of the review-5 revisions, the files the Golden Gate scene release g9-flush1 carries for the web and far tiers; the same export of each parent reproduces its review-5 pin byte for byte. The site verifies every file against them before it lists it.",
   "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
   "licence": {
     "file": "ASSET-LICENSE.txt",
@@ -12,12 +12,12 @@
   "tiers": [
     {
       "tier": "full",
-      "revision": "r_76c7a4080e7844e185896b7e1b196e5a",
-      "parent": "r_8e986268599c44ff93d451e81520aaec",
+      "revision": "r_46c96e629405473097b57b922f7e6545",
+      "parent": "r_76c7a4080e7844e185896b7e1b196e5a",
       "glb": {
         "file": "golden-gate.glb",
-        "bytes": 12402960,
-        "sha256": "31306263a1c5f7410eab1ff65253765fb4084d9f0ec0d4c1b27e66f12a9f7f28",
+        "bytes": 12562124,
+        "sha256": "3b986d88cffb1041fb052f054709820153e249b14125f4f853f977adb774ca22",
         "triangles": 311826
       },
       "metadata": "golden-gate.kiln-metadata.json",
@@ -28,12 +28,12 @@
     },
     {
       "tier": "web",
-      "revision": "r_de88c9d5481d4642837b9d00c81cf0a9",
-      "parent": "r_2632afa018de4ac28bde9ffc7ed19e47",
+      "revision": "r_f0c5d702d8ca48dd8c4c16858a57ad53",
+      "parent": "r_de88c9d5481d4642837b9d00c81cf0a9",
       "glb": {
         "file": "golden-gate-web.glb",
-        "bytes": 3508476,
-        "sha256": "6effde24b2b9dfac04451244ee533bb755ba7d4c192a280caaec70ca31656a03",
+        "bytes": 3558104,
+        "sha256": "f0e82c77f2b19c1d17928bab3787a02b48c22166b11eaa55981c52dc80ad98ae",
         "triangles": 85822
       },
       "metadata": "golden-gate-web.kiln-metadata.json",
@@ -44,12 +44,12 @@
     },
     {
       "tier": "far",
-      "revision": "r_fcddc546fa134910b2221561353d97e2",
-      "parent": "r_d3f2f39ee4964708a0301d7e7082d12b",
+      "revision": "r_f0f9dc5506be4e0292c650efd318985e",
+      "parent": "r_fcddc546fa134910b2221561353d97e2",
       "glb": {
         "file": "golden-gate-far.glb",
-        "bytes": 490460,
-        "sha256": "5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4",
+        "bytes": 497416,
+        "sha256": "e6b5c60f0ba9424d9669c224c823f4ab9df8154019986f81fa495e602be4d16d",
         "triangles": 11480
       },
       "metadata": "golden-gate-far.kiln-metadata.json",

@@ -7,8 +7,8 @@
   "category": "Architecture",
   "description": "A metre-scale procedural suspension bridge with Art Deco towers, main cables, suspenders and a six-lane roadway, saved as full, web and far tiers from one Kiln source.",
   "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
-  "revisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
-  "parentRevision": "r_8e986268599c44ff93d451e81520aaec",
+  "revisionId": "r_46c96e629405473097b57b922f7e6545",
+  "parentRevision": "r_76c7a4080e7844e185896b7e1b196e5a",
   "metrics": {
     "triangles": 311826,
     "meshes": 173,
@@ -206,97 +206,97 @@
     ]
   },
   "poster": {
-    "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral.webp",
+    "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral.webp",
     "width": 1024,
     "height": 1024,
     "alt": "Golden Gate Bridge seen obliquely from above: both towers, the main cables and the suspended roadway on a neutral grey backdrop.",
-    "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-1024.webp 1024w",
-    "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-1024.avif 1024w",
-    "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral.png",
-    "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+    "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-1024.webp 1024w",
+    "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-1024.avif 1024w",
+    "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral.png",
+    "sourceRevisionId": "r_46c96e629405473097b57b922f7e6545",
     "exactRevision": true,
     "rig": "review-neutral-v1"
   },
   "reviewImage": {
-    "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral.webp",
+    "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral.webp",
     "width": 1168,
     "height": 780,
     "alt": "Six saved review views of the Golden Gate Bridge: front, right, back, left, top and three-quarter.",
-    "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-1024.webp 1024w",
-    "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-1024.avif 1024w",
-    "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral.png"
+    "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-1024.webp 1024w",
+    "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-1024.avif 1024w",
+    "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral.png"
   },
   "captures": [
     {
-      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral.webp",
+      "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral.webp",
       "width": 1024,
       "height": 1024,
       "alt": "Golden Gate Bridge from near water level, looking up at the south tower and the roadway.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral.png",
-      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral.png",
+      "sourceRevisionId": "r_46c96e629405473097b57b922f7e6545",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral.webp",
+      "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral.webp",
       "width": 1024,
       "height": 1024,
       "alt": "Golden Gate Bridge from the roadway, looking along the lanes toward the towers ahead.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral.png",
-      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral.png",
+      "sourceRevisionId": "r_46c96e629405473097b57b922f7e6545",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral.webp",
+      "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral.webp",
       "width": 1024,
       "height": 1024,
       "alt": "Golden Gate Bridge from beside the top of the south tower, with the main cables and the roadway below.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral.png",
-      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral.png",
+      "sourceRevisionId": "r_46c96e629405473097b57b922f7e6545",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral.webp",
+      "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral.webp",
       "width": 1024,
       "height": 1024,
       "alt": "Golden Gate Bridge in side elevation, the full span between both anchorages.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral.png",
-      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral.png",
+      "sourceRevisionId": "r_46c96e629405473097b57b922f7e6545",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     }
   ],
   "sourcePath": "/sources/golden-gate-bridge.kiln.js",
-  "sourceSha256": "2a739bea8197e718b6912930012c9ab36317965ff263d9fe05a9821ba7e138f2",
+  "sourceSha256": "b9fc15b38c056e3c969f51d85d3ef2b25194cfb3c2cad2a672737f85967b4d6f",
   "modelPath": "/models/standalone/golden-gate-bridge.glb",
   "runtimeDownload": {
-    "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb",
-    "bytes": 12402960,
-    "sha256": "31306263a1c5f7410eab1ff65253765fb4084d9f0ec0d4c1b27e66f12a9f7f28",
-    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb"
+    "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.glb",
+    "bytes": 12562124,
+    "sha256": "3b986d88cffb1041fb052f054709820153e249b14125f4f853f977adb774ca22",
+    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.glb"
   },
   "editableDownload": {
-    "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-editable.zip",
-    "bytes": 12510442,
-    "sha256": "3119d6da819b19993f08a20ce56a48c7fd79517d01d17dd6d3158db5e0041e09",
-    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-editable.zip"
+    "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-editable.zip",
+    "bytes": 12714657,
+    "sha256": "3ffbeacc25adf50ea2a529afd5a29532b624423dfdde41c5fd1091721927dd06",
+    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-editable.zip"
   },
-  "delivery": "review-5",
+  "delivery": "review-5-flush1",
   "tiers": [
     {
       "tier": "full",
-      "revisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
-      "parentRevision": "r_8e986268599c44ff93d451e81520aaec",
+      "revisionId": "r_46c96e629405473097b57b922f7e6545",
+      "parentRevision": "r_76c7a4080e7844e185896b7e1b196e5a",
       "licensed": {
         "revisionId": "r_cba97c6c2fc448ee9ca24741d772fa39",
         "parentRevision": "r_8b79b09984b14e15b9426f6db2df0140"
@@ -322,30 +322,30 @@
         ]
       },
       "runtime": {
-        "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb",
-        "bytes": 12402960,
-        "sha256": "31306263a1c5f7410eab1ff65253765fb4084d9f0ec0d4c1b27e66f12a9f7f28",
-        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb"
+        "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.glb",
+        "bytes": 12562124,
+        "sha256": "3b986d88cffb1041fb052f054709820153e249b14125f4f853f977adb774ca22",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.glb"
       },
       "metadata": {
-        "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.kiln-metadata.json",
+        "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.kiln-metadata.json",
         "bytes": 333,
-        "sha256": "e16dae93f9893f14efdcd4d1994d8957271785c86434653f89bce15accd51af0",
-        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.kiln-metadata.json"
+        "sha256": "1d7f5b6b49135bb3a364437f83e272d993574018cdedb5312db106f0a4f7042f",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.kiln-metadata.json"
       },
       "editable": {
-        "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-editable.zip",
-        "bytes": 12510442,
-        "sha256": "3119d6da819b19993f08a20ce56a48c7fd79517d01d17dd6d3158db5e0041e09",
-        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-editable.zip",
-        "sourceBytes": 45275,
-        "sourceSha256": "2a739bea8197e718b6912930012c9ab36317965ff263d9fe05a9821ba7e138f2"
+        "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-editable.zip",
+        "bytes": 12714657,
+        "sha256": "3ffbeacc25adf50ea2a529afd5a29532b624423dfdde41c5fd1091721927dd06",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-editable.zip",
+        "sourceBytes": 45272,
+        "sourceSha256": "b9fc15b38c056e3c969f51d85d3ef2b25194cfb3c2cad2a672737f85967b4d6f"
       }
     },
     {
       "tier": "web",
-      "revisionId": "r_de88c9d5481d4642837b9d00c81cf0a9",
-      "parentRevision": "r_2632afa018de4ac28bde9ffc7ed19e47",
+      "revisionId": "r_f0c5d702d8ca48dd8c4c16858a57ad53",
+      "parentRevision": "r_de88c9d5481d4642837b9d00c81cf0a9",
       "licensed": {
         "revisionId": "r_28ac511af71d4db69a2d7cff8b243a24",
         "parentRevision": "r_ba838a2a86e04f2493b5d55b493a766a"
@@ -371,30 +371,30 @@
         ]
       },
       "runtime": {
-        "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.glb",
-        "bytes": 3508476,
-        "sha256": "6effde24b2b9dfac04451244ee533bb755ba7d4c192a280caaec70ca31656a03",
-        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.glb"
+        "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-runtime.glb",
+        "bytes": 3558104,
+        "sha256": "f0e82c77f2b19c1d17928bab3787a02b48c22166b11eaa55981c52dc80ad98ae",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-runtime.glb"
       },
       "metadata": {
-        "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.kiln-metadata.json",
+        "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-runtime.kiln-metadata.json",
         "bytes": 333,
-        "sha256": "e842eaf6b54c182a2b054193ec012f6805af868486750c41742603317f63eae0",
-        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.kiln-metadata.json"
+        "sha256": "bdf8c7b841f35c0d46a8d695937968e85fc1d465f97cc262b11555f967a7a595",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-runtime.kiln-metadata.json"
       },
       "editable": {
-        "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-editable.zip",
-        "bytes": 3632285,
-        "sha256": "c4af7a2d0ec53e785d1ee6f97017a198f08de16a1d5132eb73db76caf3972733",
-        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-editable.zip",
-        "sourceBytes": 45274,
-        "sourceSha256": "ea47992e37dfa7cea97e306db74bd548edc2304466e6a9d79ac700c3c61c5065"
+        "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-editable.zip",
+        "bytes": 3707107,
+        "sha256": "6d764157865b3fe093f12706b528eeba6bc01033c23fe1fffc765959f9d1bcc0",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-editable.zip",
+        "sourceBytes": 45271,
+        "sourceSha256": "910dbb04eeb84fc280096a0f702e83e0dc23182e53572f6bc7e85596660139a4"
       }
     },
     {
       "tier": "far",
-      "revisionId": "r_fcddc546fa134910b2221561353d97e2",
-      "parentRevision": "r_d3f2f39ee4964708a0301d7e7082d12b",
+      "revisionId": "r_f0f9dc5506be4e0292c650efd318985e",
+      "parentRevision": "r_fcddc546fa134910b2221561353d97e2",
       "licensed": {
         "revisionId": "r_7fd11f06f23b4bfc93b9b47ab1b6ca04",
         "parentRevision": "r_0da2d1ae635c4f84a10e58e0e03936e7"
@@ -420,33 +420,33 @@
         ]
       },
       "runtime": {
-        "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-runtime.glb",
-        "bytes": 490460,
-        "sha256": "5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4",
-        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-runtime.glb"
+        "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-runtime.glb",
+        "bytes": 497416,
+        "sha256": "e6b5c60f0ba9424d9669c224c823f4ab9df8154019986f81fa495e602be4d16d",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-runtime.glb"
       },
       "metadata": {
-        "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-runtime.kiln-metadata.json",
+        "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-runtime.kiln-metadata.json",
         "bytes": 333,
-        "sha256": "a1b76bbc5bc079eeaf3213cb54d6c9ec288f2e5b3a62b6b934217ebb11250d58",
-        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-runtime.kiln-metadata.json"
+        "sha256": "d498d11a9f35bdf5766faf7a7411c7cb168d396ace1c4f617e3e2cade13cab85",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-runtime.kiln-metadata.json"
       },
       "editable": {
-        "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-editable.zip",
-        "bytes": 598873,
-        "sha256": "96f17e8247f6049ee2f11ece04986c9a6452736a312a1c2c9d05e750a94266bd",
-        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-editable.zip",
-        "sourceBytes": 40203,
-        "sourceSha256": "eee949861eebaa34af95b2398dc7b440915f81f676da72abc53dbf75b4482091"
+        "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-editable.zip",
+        "bytes": 619440,
+        "sha256": "c0bd8d97ea8118c755458cceb6d162dbec20225a95e493eddac37b994d01a71d",
+        "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-editable.zip",
+        "sourceBytes": 40200,
+        "sourceSha256": "f81497d877d250ddd8eecd8e5e07c4a2dd0f20edd4e056b08a088d1b0185b1c8"
       }
     }
   ],
   "licence": {
     "file": "ASSET-LICENSE.txt",
-    "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/ASSET-LICENSE.txt",
+    "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/ASSET-LICENSE.txt",
     "bytes": 2458,
     "sha256": "90fdb5eb334ce031ee8eb81d34dfbd701110b869707e63f7844e83fe10d10206",
-    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/ASSET-LICENSE.txt",
+    "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/ASSET-LICENSE.txt",
     "section": "Fix-up 1",
     "licensedRevisions": [
       {
@@ -711,6 +711,18 @@
         "confirmedEffort": null,
         "harness": "claude",
         "harnessVersion": "2.1.280"
+      },
+      {
+        "stage": "Flush-face fix",
+        "revisionId": "r_46c96e629405473097b57b922f7e6545",
+        "parentRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+        "request": "flush-face-fix",
+        "model": "Claude Sonnet 5.5",
+        "modelId": "claude-sonnet-5-5",
+        "requestedEffort": "not recorded",
+        "confirmedEffort": null,
+        "harness": "claude-code",
+        "harnessVersion": null
       }
     ],
     "tierHistory": {
@@ -810,6 +822,18 @@
           "confirmedEffort": null,
           "harness": "claude",
           "harnessVersion": "2.1.280"
+        },
+        {
+          "stage": "Flush-face fix",
+          "revisionId": "r_f0c5d702d8ca48dd8c4c16858a57ad53",
+          "parentRevisionId": "r_de88c9d5481d4642837b9d00c81cf0a9",
+          "request": "flush-face-fix",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null
         }
       ],
       "far": [
@@ -860,6 +884,18 @@
           "confirmedEffort": null,
           "harness": "claude",
           "harnessVersion": "2.1.280"
+        },
+        {
+          "stage": "Flush-face fix",
+          "revisionId": "r_f0f9dc5506be4e0292c650efd318985e",
+          "parentRevisionId": "r_fcddc546fa134910b2221561353d97e2",
+          "request": "flush-face-fix",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null
         }
       ]
     },
@@ -1063,6 +1099,27 @@
           "receiptSha256": "ab1b6479812e399062c7cffc9502d632e0d0eadf57de605e976c9fab01f15974",
           "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-5/invocation.json",
           "invocationSha256": "0b1f0d9079beb69a65ed7041b302137334b40f7cd29a5571cd4aa47e86d4827b"
+        }
+      },
+      {
+        "stage": "flush-face-fix",
+        "author": null,
+        "requestedModel": "claude-sonnet-5-5",
+        "requestedEffort": "not recorded",
+        "harness": "claude-code",
+        "harnessVersion": null,
+        "confirmedEffort": null,
+        "confirmation": "The saved manifests record the model and harness; the harness version, requested effort and saving run are not recorded.",
+        "modelReported": null,
+        "status": "not recorded",
+        "stop": null,
+        "startedAt": null,
+        "endedAt": null,
+        "source": {
+          "receipt": null,
+          "receiptSha256": null,
+          "invocation": null,
+          "invocationSha256": null
         }
       }
     ]
@@ -1307,14 +1364,26 @@
       "confirmedEffort": null,
       "harness": "claude",
       "harnessVersion": "2.1.280"
+    },
+    {
+      "stage": "Flush-face fix",
+      "revisionId": "r_46c96e629405473097b57b922f7e6545",
+      "parentRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "request": "flush-face-fix",
+      "model": "Claude Sonnet 5.5",
+      "modelId": "claude-sonnet-5-5",
+      "requestedEffort": "not recorded",
+      "confirmedEffort": null,
+      "harness": "claude-code",
+      "harnessVersion": null
     }
   ],
   "review": {
     "status": "accepted",
     "ownerAccepted": true,
-    "scope": "The full and web tiers are the review-5 revisions; the far tier is the review-2 revision, unchanged since. The coordinator re-read the exported bytes and hashes, compared the web tier’s nodes with review 3’s (128 of 148 identical; the 20 that changed are all inside the two anchorages) and checked both changed tiers for coplanar faces, and the owner approved this delivery on 30 September 2026. Performance in a destination project is not qualified.",
-    "recordedAt": "2026-09-30",
-    "source": "Owner decision S-1 (site decisions, 30 September 2026) on the review-5 acceptance recorded in COORDINATOR-REVIEW-5.md"
+    "scope": "The full and web tiers are the review-5 revisions; the far tier is the review-2 revision, unchanged since. The coordinator re-read the exported bytes and hashes, compared the web tier’s nodes with review 3’s (128 of 148 identical; the 20 that changed are all inside the two anchorages) and checked both changed tiers for coplanar faces, and the owner approved this delivery on 30 September 2026. Performance in a destination project is not qualified. Flush-face fix of an approved revision; approved by the owner on 2026-11-13.",
+    "recordedAt": "2026-11-13",
+    "source": "Owner decision S-1 (site decisions, 30 September 2026) on the review-5 acceptance recorded in COORDINATOR-REVIEW-5.md; owner approval of the flush-face fix revisions, 2026-11-13"
   },
   "license": "CC0-1.0",
   "licenseScope": "Original procedural geometry and embedded maps are CC0. Reference photographs are excluded; software retains its own licences.",

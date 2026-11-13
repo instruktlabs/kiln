@@ -82,6 +82,18 @@ describe('verifying the lineage against the library and the recorded runs', () =
     });
   });
 
+  test('says so, rather than claiming a window, for a run whose window is not recorded', async () => {
+    await withFixture(async (fixture) => {
+      const unrecorded = [{ ...fixture.requests[0], status: 'not recorded', startedAt: null, endedAt: null }];
+      const lines = await verifyLineage({ lineage: fixture.lineage, tiers: fixture.tiers, requests: unrecorded, library: fixture.library });
+      expect(lines[0]).toContain('run first records no window');
+      expect(lines.join('\n')).not.toContain('inside run');
+      // A run said to be recorded must still have its window.
+      const missing = [{ ...fixture.requests[0], startedAt: null }];
+      await expect(verifyLineage({ lineage: fixture.lineage, tiers: fixture.tiers, requests: missing, library: fixture.library })).rejects.toThrow(/run first has no recorded window/);
+    });
+  });
+
   test('refuses a chain that does not end at the pinned revision', async () => {
     await withFixture(async (fixture) => {
       const lineage = { ...fixture.lineage, full: fixture.lineage.full.slice(0, 1) };
