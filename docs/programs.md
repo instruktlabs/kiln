@@ -154,8 +154,9 @@ parameter that is exactly that factor can therefore be changed in the file, with
   base colour factors, and each one equals the parameter's colour, the colour is `factor` and
   names its materials. Otherwise it is `rebuild`, with a reason: `DATA_CHANGED` (baked into
   mesh, vertex-colour or texture data), `DERIVED_COLOR` (computed from the parameter),
-  `OTHER_VALUES_CHANGED`, `NO_MATERIAL` or `PROBE_FAILED`. The other parameters stay at their
-  defaults for this check.
+  `OTHER_VALUES_CHANGED`, `NO_MATERIAL` or `PROBE_FAILED`. A `DATA_CHANGED` detail also names
+  the first data that differs, such as the vertex colours of one part, when the two builds line
+  up well enough to tell. The other parameters stay at their defaults for this check.
 - **Where it is recorded.** The sweep reports `sweep.colors`. A saved manifest records
   `build.paramBindings` (`kiln.param-bindings.v1`). The saved GLB itself is still the plain
   default build, byte for byte.
@@ -201,7 +202,8 @@ A `toggle` or `choice` that only shows and hides parts can also be changed in th
   build. When nothing differs but which nodes are hidden, the parameter is `visibility` and
   lists each node with `visibleWhen`, the values that show it. Otherwise it is `rebuild` with a
   reason: `DATA_CHANGED`, `OTHER_VALUES_CHANGED`, `NO_NODE`, `SHARED_NODE`, `PROBE_FAILED` or
-  `NOT_CLASSIFIED`. A save spends at most 16 extra builds on classifying colours and options
+  `NOT_CLASSIFIED`. A `DATA_CHANGED` detail names the first data that differs when the builds
+  line up; a part built only when the option is on keeps the general advice. A save spends at most 16 extra builds on classifying colours and options
   and marks the rest `NOT_CLASSIFIED`; a sweep classifies all of them.
 - **Where it is recorded.** The sweep reports `sweep.switches`; the manifest records them in
   `build.paramBindings.switches`. The saved GLB is still the default build: a part hidden at
@@ -258,7 +260,8 @@ take the option.
   positions, normals, tangents and node transforms, and each halfway build lies on the
   straight line within 0.5 mm (a thousandth of the asset's size if that is smaller).
   Otherwise `params.shapes.<name>` in the sidecar is `rebuild` with a reason:
-  `STRUCTURE_CHANGED` (a count that adds parts, a vertex count that changes), `DATA_CHANGED`,
+  `STRUCTURE_CHANGED` (a count that adds parts, a vertex count that changes), `DATA_CHANGED`
+  (its detail names the first data that differs, such as the texture coordinates of one part),
   `HAS_MORPH_TARGETS` (the asset has its own), `NOT_LINEAR` (with the measured distance),
   `NO_CHANGE` or `PROBE_FAILED`.
 - **What is written.** The default build stays the base mesh. Each end is one morph target

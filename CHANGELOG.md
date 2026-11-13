@@ -7,6 +7,12 @@ does not publish a package.
 
 ## Unreleased
 
+- **A `DATA_CHANGED` parameter says what changed.** When a colour, option or size needs a
+  rebuild because its binary data differs, the `detail` in the sweep, `kiln_save` and the
+  runtime export sidecar keeps its general sentence and now adds the first data that
+  differs, such as "First difference: texture coordinates (TEXCOORD_0) of Mesh_Board." When the
+  two builds do not line up well enough to name it, as for a part built only when an option
+  is on, the general sentence stays alone. Which parameters are carried is unchanged.
 - **The `kiln_export` description no longer says runtime only moves review clips.** It now
   also says the runtime GLB marks the parameters it carries and lists them in the sidecar,
   as `docs/export-profiles.md` describes.

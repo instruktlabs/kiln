@@ -13,6 +13,7 @@ import {
   validateParamBindings,
   type ParamBindingsV1,
 } from '../param-bindings';
+import { renderGLBInProcess } from '../render';
 
 function glb(json: unknown, bin: Uint8Array = new Uint8Array([1, 2, 3, 4])): Uint8Array {
   const text = new TextEncoder().encode(JSON.stringify(json));
@@ -106,6 +107,43 @@ describe('classifyColorBinding', () => {
       ),
     ).toMatchObject({ mode: 'rebuild', reason: 'DATA_CHANGED' });
   });
+
+  test('changed data in files that do not line up keeps the general detail', () => {
+    const detail = (
+      classify(
+        asset([material('tile', GREY)]),
+        asset([material('tile', PROBE)]),
+        new Uint8Array([1, 2, 3, 4]),
+        new Uint8Array([1, 2, 3, 5]),
+      ) as { detail: string }
+    ).detail;
+    expect(detail).toStartWith('The colour is baked into mesh, vertex-colour or texture data.');
+    expect(detail).not.toContain('First difference');
+  });
+
+  test('a colour baked into vertex colours names them and their part', async () => {
+    // The tile's vertex colours are the parameter's colour; its material stays white.
+    const code = `const meta = { name: 'Tile' };
+const P = defineParams({ paint: { type: 'color', default: '${GREY}' } });
+function build() {
+  const root = createRoot('Tile');
+  const geo = boxGeo(0.4, 0.02, 0.4);
+  const colours = geo.getAttribute('normal').clone();
+  const channel = (at) => Number.parseInt(P.paint.slice(at, at + 2), 16) / 255;
+  for (let i = 0; i < colours.count; i++) colours.setXYZ(i, channel(1), channel(3), channel(5));
+  geo.setAttribute('color', colours);
+  createPart('Tile', geo, gameMaterial(0xffffff), { parent: root });
+  return root;
+}`;
+    const build = async (paint: string) =>
+      (await renderGLBInProcess(code, { params: { values: { paint } } })).glb;
+    const binding = classifyColorBinding(await build(GREY), await build(PROBE), GREY, PROBE);
+    expect(binding).toMatchObject({ mode: 'rebuild', reason: 'DATA_CHANGED' });
+    const detail = (binding as { detail: string }).detail;
+    expect(detail).toStartWith('The colour is baked into mesh, vertex-colour or texture data.');
+    expect(detail).toContain('First difference: vertex colours (COLOR_0) of Mesh_Tile.');
+    expect(detail.length).toBeLessThanOrEqual(320);
+  }, 60_000);
 
   test('any other changed value needs a rebuild', () => {
     expect(
