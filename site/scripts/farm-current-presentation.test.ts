@@ -16,10 +16,12 @@ test('current Farm pack instructions describe the review camera and download', a
 test('farmer child is owner accepted alongside the 22 retained approvals', () => {
   const farmer = farm.assets.find(asset => asset.id === 'farmer')!;
   expect(farm.revision).toBe('r36-local-review');
-  expect(farmer.revisionId).toBe('r_70907c7fd97249ce807e9948613882cd');
-  expect(farmer.parentRevision).toBe('r_654c203b0ed3438c93d19b6709bef9f6');
-  expect(farmer.review).toMatchObject({ ownerAccepted: true, status: 'accepted', recordedAt: '2026-10-01' });
-  expect(farmer.previousOwnerReview.ownerAccepted).toBe(true);
+  // The flush-face fix child of the approved back-repair revision carries its parent's acceptance, dated when the owner approved the fix.
+  expect(farmer.revisionId).toBe('r_be4c304cc47c42f3aba0bf6b24cc2a94');
+  expect(farmer.parentRevision).toBe('r_70907c7fd97249ce807e9948613882cd');
+  expect(farmer.review).toMatchObject({ ownerAccepted: true, status: 'accepted', recordedAt: '2026-11-13', scope: 'Flush-face fix of an approved revision; approved by the owner on 2026-11-13.' });
+  expect(farmer.previousOwnerReview).toMatchObject({ ownerAccepted: true, status: 'accepted', recordedAt: '2026-10-01' });
+  expect(farm.ownerReview.revisions.find(row => row.id === 'farmer')).toEqual({ id: 'farmer', revisionId: farmer.revisionId, ownerAccepted: true });
   expect(farm.assets.filter(asset => asset.id !== 'farmer').every(asset => asset.review.ownerAccepted)).toBe(true);
   expect(farm.ownerReview.revisions.filter(row => row.ownerAccepted)).toHaveLength(23);
   expect(farm.ownerReview.status).toBe('all-current-revisions-accepted');

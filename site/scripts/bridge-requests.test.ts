@@ -62,8 +62,21 @@ describe('a recorded bridge run', () => {
     }, { invocation: { [key]: 'something-else' } });
   });
 
+  test('records a session saved without a receipt as not recorded, inventing nothing and reading no file', async () => {
+    const commons = join(tmpdir(), 'kiln-bridge-requests-absent');
+    const request = await bridgeRequest(commons, { stage: 'flush-face-fix', unrecorded: { requestedModel: 'claude-sonnet-5-5', harness: 'claude-code' } });
+    expect(request).toEqual({
+      stage: 'flush-face-fix', author: null, requestedModel: 'claude-sonnet-5-5', requestedEffort: 'not recorded', harness: 'claude-code', harnessVersion: null, confirmedEffort: null,
+      confirmation: 'The saved manifests record the model and harness; the harness version, requested effort and saving run are not recorded.',
+      modelReported: null, status: 'not recorded', stop: null, startedAt: null, endedAt: null,
+      source: { receipt: null, receiptSha256: null, invocation: null, invocationSha256: null },
+    });
+  });
+
   test('lists the runs in the order they happened, each stage once', async () => {
-    expect(BRIDGE_RUNS.map((run) => run.stage)).toEqual(['first', 'review-1', 'review-2', 'fix-up-1', 'fix-review-1', 'fix-review-2', 'fix-review-3', 'fix-review-4', 'fix-review-5']);
+    expect(BRIDGE_RUNS.map((run) => run.stage)).toEqual(['first', 'review-1', 'review-2', 'fix-up-1', 'fix-review-1', 'fix-review-2', 'fix-review-3', 'fix-review-4', 'fix-review-5', 'flush-face-fix']);
+    // Only the flush-face fix session, which saved the delivered children, has no receipt.
+    expect(BRIDGE_RUNS.filter((run) => 'unrecorded' in run).map((run) => run.stage)).toEqual(['flush-face-fix']);
     // Only review 4, which stopped at its cap after saving the web tier, is accepted as a failed run.
     expect(BRIDGE_RUNS.filter((run) => run.statuses).map((run) => run.stage)).toEqual(['fix-review-4']);
     await withRuns(async (commons) => {
@@ -84,6 +97,11 @@ describe('the checked-in bridge requests', () => {
     for (const request of requests) {
       expect(request.confirmedEffort).toBeNull();
       expect(request.requestedEffort).toEqual(expect.any(String));
+      // Exception, flush-face fix only: that session has no receipt or invocation to pin.
+      if (request.stage === 'flush-face-fix') {
+        expect(request).toMatchObject({ status: 'not recorded', requestedEffort: 'not recorded', harnessVersion: null, source: { receiptSha256: null, invocationSha256: null } });
+        continue;
+      }
       expect(request.source.receiptSha256).toMatch(/^[0-9a-f]{64}$/);
       expect(request.source.invocationSha256).toMatch(/^[0-9a-f]{64}$/);
       expect(request.status).toBe(request.stage === 'fix-review-4' ? 'failed' : 'completed');

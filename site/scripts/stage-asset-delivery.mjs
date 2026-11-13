@@ -99,8 +99,13 @@ export async function deliveryGroups(site = SITE) {
   return groups;
 }
 
-/** Existing runtime links stay byte-for-byte unchanged; new archives are deterministic and sealed. */
-export async function stageAssetDelivery({ roots, mirror, runtimeRoots = [], fetchRuntime = false, output = join(SITE, 'src/data/asset-delivery.json'), sourceRoot = resolve(SITE, '../packs'), release = 'delivery-20261005-01', index, groups }) {
+/**
+ * Existing runtime links stay byte-for-byte unchanged; new archives are deterministic and sealed. With `previous` (an
+ * earlier asset-delivery record), an archive whose rebuilt bytes equal the earlier record's keeps that immutable key,
+ * so restaging a group moves only what changed. A runtime model the catalog places under this release's
+ * `packs/<group>/<release>/models/` is new too, and is written and listed for upload like Troy's.
+ */
+export async function stageAssetDelivery({ roots, mirror, runtimeRoots = [], fetchRuntime = false, output = join(SITE, 'src/data/asset-delivery.json'), sourceRoot = resolve(SITE, '../packs'), release = 'delivery-20261005-01', index, groups, previous }) {
   assetPath(release);
   index ??= await discoverRecords(roots);
   groups ??= await deliveryGroups();
@@ -113,7 +118,9 @@ export async function stageAssetDelivery({ roots, mirror, runtimeRoots = [], fet
     uploads.push(download);
     return download;
   };
+  const kept = (record, bytes) => (record?.sha256 === hashBytes(bytes) && record.bytes === bytes.length ? record : undefined);
   for (const group of groups) {
+    const earlier = previous?.groups?.[group.id];
     const assets = [], editableMembers = {}, runtimeMembers = {}, identities = new Set();
     const slugs = new Set();
     for (const asset of group.assets) {
@@ -146,7 +153,8 @@ export async function stageAssetDelivery({ roots, mirror, runtimeRoots = [], fet
       const entry = { slug: asset.slug, ...pin, includedRevisions: history.records.map(record => record.manifest.revisionId), missingParents: history.missingParents };
       memberFiles['README.txt'] = Buffer.from(`Editable assets\n\nSelected revision: ${identity}\nImport the ZIP for this revision in Kiln's Library. Other ZIPs contain included older revisions.\nEach revision ZIP contains its source, model, editing metadata and required saved materials.\nIncluded revisions: ${entry.includedRevisions.join(', ')}\nUnavailable parent records: ${entry.missingParents.join(', ') || 'none'}\nSoftware retains its own license. Authored content license: CC0-1.0.\n`);
       const editable = buildDeliveryArchive({ profile: 'editable', group: group.id, files: memberFiles, assets: [entry] });
-      entry.editableDownload = await writeDelivery(`packs/${group.id}/${release}/editable/${asset.slug}.zip`, editable);
+      const earlierAsset = earlier?.assets.find(item => item.slug === asset.slug && `${item.collection}/${item.assetId}/${item.revisionId}` === identity);
+      entry.editableDownload = kept(earlierAsset?.editableDownload, editable) ?? await writeDelivery(`packs/${group.id}/${release}/editable/${asset.slug}.zip`, editable);
       for (const [path, bytes] of Object.entries(memberFiles)) {
         if (path === 'README.txt') continue;
         if (editableMembers[path] && !editableMembers[path].equals(bytes)) throw new Error(`Conflicting shared revision ${path}`);
@@ -167,7 +175,8 @@ export async function stageAssetDelivery({ roots, mirror, runtimeRoots = [], fet
         runtimeBytes = verifyBytes(Buffer.from(await response.arrayBuffer()), entry.runtimeDownload);
       }
       if (!runtimeBytes) throw new Error(`${asset.slug}: runtime bytes unavailable in supplied mirror`);
-      if (group.id === 'troy') entry.runtimeDownload = await writeDelivery(`packs/${group.id}/${release}/models/${asset.slug}.glb`, runtimeBytes);
+      const releaseModel = `packs/${group.id}/${release}/models/${asset.slug}.glb`;
+      if (group.id === 'troy' || runtimePath === releaseModel) entry.runtimeDownload = await writeDelivery(releaseModel, runtimeBytes);
       runtimeMembers[`models/${asset.slug}.glb`] = runtimeBytes;
       assets.push(entry);
     }
@@ -175,7 +184,10 @@ export async function stageAssetDelivery({ roots, mirror, runtimeRoots = [], fet
     editableMembers['README.txt'] = Buffer.from('Editable assets\n\nImport selected or older revision ZIPs from revisions/ into Kiln Library. delivery.json lists the selected revisions, included history and unavailable parents. Each ZIP includes its required material maps. Authored content: CC0-1.0. Software retains its own license.\n');
     runtimeMembers['LICENSE.txt'] = Buffer.from('SPDX-License-Identifier: CC0-1.0\nAuthored asset content is CC0-1.0 to the extent of the owner\'s rights. Kiln and other software retain their own licenses.\n');
     const downloads = [];
-    for (const [profile, files] of [['runtime', runtimeMembers], ['editable', editableMembers]]) downloads.push({ profile, ...await writeDelivery(`packs/${group.id}/${release}/${group.id}-${profile}.zip`, buildDeliveryArchive({ profile, group: group.id, files, assets: inventory })) });
+    for (const [profile, files] of [['runtime', runtimeMembers], ['editable', editableMembers]]) {
+      const bytes = buildDeliveryArchive({ profile, group: group.id, files, assets: inventory });
+      downloads.push(kept(earlier?.downloads.find(item => item.profile === profile), bytes) ?? { profile, ...await writeDelivery(`packs/${group.id}/${release}/${group.id}-${profile}.zip`, bytes) });
+    }
     result.groups[group.id] = { standalone: Boolean(group.standalone), downloads, assets };
     await mkdir(dirname(output), { recursive: true });
     await writeFile(output, JSON.stringify(result, null, 2) + '\n');

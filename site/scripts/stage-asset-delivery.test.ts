@@ -40,6 +40,50 @@ test('Troy runtime downloads copy verified Pages bytes to the immutable R2 relea
   } finally { await rm(root, { recursive: true, force: true }); }
 });
 
+test('a restaged group keeps each earlier immutable key whose bytes are unchanged and gives a changed asset new keys', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'kiln-stage-keep-'));
+  try {
+    const saved = async (assetId: string, revisionId: string, parentRevision: string | undefined, glb: Buffer) => {
+      const source = Buffer.from(`return '${revisionId}';`);
+      const files = { 'asset.glb': glb, 'source.kiln.js': source };
+      const manifest = { assetId, revisionId, ...(parentRevision ? { parentRevision } : {}), editable: true,
+        files: Object.fromEntries(Object.entries(files).map(([name, bytes]) => [name, { bytes: bytes.length, sha256: `sha256:${hashBytes(bytes)}` }])) };
+      const dir = join(root, 'saved', assetId, revisionId); await mkdir(dir, { recursive: true });
+      for (const [name, bytes] of Object.entries(files)) await writeFile(join(dir, name), bytes);
+      return [`project/${assetId}/${revisionId}`, [{ dir, manifest, collection: 'project' }]] as const;
+    };
+    const barnGlb = Buffer.from('barn runtime'), oldFarmer = Buffer.from('farmer runtime'), newFarmer = Buffer.from('farmer runtime, fixed');
+    const index = { assets: new Map([await saved('barn', 'r_barn', undefined, barnGlb), await saved('farmer', 'r_old', undefined, oldFarmer), await saved('farmer', 'r_new', 'r_old', newFarmer)]), materials: new Map() };
+    const mirror = join(root, 'mirror'), runtime = join(root, 'runtime');
+    const pin = (path: string, bytes: Buffer) => ({ path, url: `https://assets.kilnstudio.tools/${path}`, bytes: bytes.length, sha256: hashBytes(bytes) });
+    const barn = { slug: 'barn', assetId: 'barn', revisionId: 'r_barn', runtimeDownload: pin('packs/farm/r36/models/barn.glb', barnGlb) };
+    const farmerOld = { slug: 'farmer', assetId: 'farmer', revisionId: 'r_old', runtimeDownload: pin('packs/farm/r36/models/farmer.glb', oldFarmer) };
+    const farmerNew = { slug: 'farmer', assetId: 'farmer', revisionId: 'r_new', runtimeDownload: pin('packs/farm/delivery-new/models/farmer.glb', newFarmer) };
+    for (const [path, bytes] of [[barn.runtimeDownload.path, barnGlb], [farmerOld.runtimeDownload.path, oldFarmer], [farmerNew.runtimeDownload.path, newFarmer]] as const) {
+      await mkdir(join(runtime, path, '..'), { recursive: true }); await writeFile(join(runtime, path), bytes);
+    }
+    const common = { index, mirror, runtimeRoots: [runtime], sourceRoot: join(root, 'source') };
+    const first = await stageAssetDelivery({ ...common, output: join(root, 'first.json'), release: 'delivery-old', groups: [{ id: 'farm', assets: [barn, farmerOld] }] });
+    const uploads = async (release: string) => JSON.parse(await readFile(join(mirror, `asset-delivery-${release}-uploads.json`), 'utf8')).map((item: any) => item.path);
+
+    // The same inputs restaged under another release keep every earlier key: nothing new to upload.
+    const same = await stageAssetDelivery({ ...common, output: join(root, 'same.json'), release: 'delivery-same', previous: first, groups: [{ id: 'farm', assets: [barn, farmerOld] }] });
+    expect(same.groups.farm).toEqual(first.groups.farm);
+    expect(await uploads('delivery-same')).toEqual([]);
+
+    // A changed farmer gets new keys for its editable archive, its runtime model and the group archives; the barn keeps its own.
+    const next = await stageAssetDelivery({ ...common, output: join(root, 'next.json'), release: 'delivery-new', previous: first, groups: [{ id: 'farm', assets: [barn, farmerNew] }] });
+    const [nextBarn, nextFarmer] = next.groups.farm.assets;
+    expect(nextBarn).toEqual(first.groups.farm.assets[0]);
+    expect(nextFarmer.editableDownload.path).toBe('packs/farm/delivery-new/editable/farmer.zip');
+    expect(nextFarmer.includedRevisions).toEqual(['r_new', 'r_old']);
+    expect(nextFarmer.runtimeDownload).toEqual({ path: 'packs/farm/delivery-new/models/farmer.glb', bytes: newFarmer.length, sha256: hashBytes(newFarmer), url: 'https://assets.kilnstudio.tools/packs/farm/delivery-new/models/farmer.glb' });
+    expect(Buffer.from(await readFile(join(mirror, nextFarmer.runtimeDownload.path))).equals(newFarmer)).toBe(true);
+    expect(next.groups.farm.downloads.map((download: any) => download.path)).toEqual(['packs/farm/delivery-new/farm-runtime.zip', 'packs/farm/delivery-new/farm-editable.zip']);
+    expect((await uploads('delivery-new')).sort()).toEqual(['packs/farm/delivery-new/editable/farmer.zip', 'packs/farm/delivery-new/farm-editable.zip', 'packs/farm/delivery-new/farm-runtime.zip', 'packs/farm/delivery-new/models/farmer.glb']);
+  } finally { await rm(root, { recursive: true, force: true }); }
+});
+
 test('saved material identity accepts reordered fields while preserving existing source serialization', async () => {
   const root = await mkdtemp(join(tmpdir(), 'kiln-stage-material-'));
   try {

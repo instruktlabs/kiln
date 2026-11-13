@@ -7,17 +7,17 @@
       "downloads": [
         {
           "profile": "runtime",
-          "path": "packs/farm/delivery-20261005-01/farm-runtime.zip",
-          "bytes": 3003309,
-          "sha256": "ce4bd6de97dcbaf7d772cdbf0cd4be19c870a95746a953183cf273a68cb4033d",
-          "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/farm-runtime.zip"
+          "path": "packs/farm/delivery-20261113-01/farm-runtime.zip",
+          "bytes": 3003356,
+          "sha256": "93428d85e4c11b5b738b9bdf658bca734e02e449eae442f22963e8855f732b44",
+          "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261113-01/farm-runtime.zip"
         },
         {
           "profile": "editable",
-          "path": "packs/farm/delivery-20261005-01/farm-editable.zip",
-          "bytes": 44652630,
-          "sha256": "2bc73eaf959c100fa0362d0e8a9ec6acf078024d6f7f792fbea25038bdbbcf5d",
-          "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/farm-editable.zip"
+          "path": "packs/farm/delivery-20261113-01/farm-editable.zip",
+          "bytes": 45370746,
+          "sha256": "e8bd81144e3a919186a705373abc830f06197d2485ec73c97467991520f3e566",
+          "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261113-01/farm-editable.zip"
         }
       ],
       "assets": [
@@ -304,8 +304,9 @@
           "slug": "farmer",
           "collection": "project",
           "assetId": "a_2ff8e7e260894a879fb49e63a8521915",
-          "revisionId": "r_70907c7fd97249ce807e9948613882cd",
+          "revisionId": "r_be4c304cc47c42f3aba0bf6b24cc2a94",
           "includedRevisions": [
+            "r_be4c304cc47c42f3aba0bf6b24cc2a94",
             "r_70907c7fd97249ce807e9948613882cd",
             "r_654c203b0ed3438c93d19b6709bef9f6",
             "r_d0e65e4d47aa4449a07ed288a78d461b",
@@ -313,18 +314,16 @@
           ],
           "missingParents": [],
           "editableDownload": {
-            "path": "packs/farm/delivery-20261005-01/editable/farmer.zip",
-            "bytes": 2754559,
-            "sha256": "bf3b50c3ee1d7a58b3570a404594e8f30e99a59de76eac3dd3f1082a1afee3ff",
-            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/farmer.zip"
+            "path": "packs/farm/delivery-20261113-01/editable/farmer.zip",
+            "bytes": 3472690,
+            "sha256": "e4d16c1d623853fb1a410a7d408e22d7cf43fd02f35f74f72310cb07e9dc808a",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261113-01/editable/farmer.zip"
           },
           "runtimeDownload": {
-            "path": "packs/farm/r36-local-review/models/farmer.glb",
-            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/farmer.glb",
-            "bytes": 817092,
-            "sha256": "b6c49161d0627c26e3cc7ea07e88f58c2726fe2c8b15773afcb621d3ab21b829",
-            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-            "member": "models/farmer.glb"
+            "path": "packs/farm/delivery-20261113-01/models/farmer.glb",
+            "bytes": 817128,
+            "sha256": "f0b5ef71ca0abb99d71b6ed036c2672e1ebfe2d3d90b243651ad3f2fa634f6d3",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261113-01/models/farmer.glb"
           }
         },
         {
@@ -2393,17 +2392,17 @@
       "downloads": [
         {
           "profile": "runtime",
-          "path": "packs/golden-gate-bridge/delivery-20261005-01/golden-gate-bridge-runtime.zip",
-          "bytes": 3731082,
-          "sha256": "a52b9a8cb2d45d6fa573fc42d2b33dd8e7a343d56c82c736525dec74c9b73c99",
-          "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261005-01/golden-gate-bridge-runtime.zip"
+          "path": "packs/golden-gate-bridge/delivery-20261113-01/golden-gate-bridge-runtime.zip",
+          "bytes": 3762145,
+          "sha256": "c345c6e682476e2e9206cf6ebc02a254dce336777cd4b1948ec7adf933d685dd",
+          "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261113-01/golden-gate-bridge-runtime.zip"
         },
         {
           "profile": "editable",
-          "path": "packs/golden-gate-bridge/delivery-20261005-01/golden-gate-bridge-editable.zip",
-          "bytes": 34790662,
-          "sha256": "ee082c0470fca14d30193571841ff199c702107ecd6f4330838b4172a5b5fd6f",
-          "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261005-01/golden-gate-bridge-editable.zip"
+          "path": "packs/golden-gate-bridge/delivery-20261113-01/golden-gate-bridge-editable.zip",
+          "bytes": 37465826,
+          "sha256": "9e83cc11a397e0d4587ca5a3af44b6ad678feb5887a92f2b6aad2cff93cc82e1",
+          "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261113-01/golden-gate-bridge-editable.zip"
         }
       ],
       "assets": [
@@ -2411,8 +2410,9 @@
           "slug": "golden-gate-bridge",
           "collection": "project",
           "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
-          "revisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+          "revisionId": "r_46c96e629405473097b57b922f7e6545",
           "includedRevisions": [
+            "r_46c96e629405473097b57b922f7e6545",
             "r_76c7a4080e7844e185896b7e1b196e5a",
             "r_8e986268599c44ff93d451e81520aaec",
             "r_0d1532b4a00b4663909f8edf2bd290aa",
@@ -2436,24 +2436,25 @@
           ],
           "missingParents": [],
           "editableDownload": {
-            "path": "packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge.zip",
-            "bytes": 28385461,
-            "sha256": "166932e00e4010c1e83c31ba79e6c1fd6b7766374844845c32b2cf8c5d1a55a5",
-            "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge.zip"
+            "path": "packs/golden-gate-bridge/delivery-20261113-01/editable/golden-gate-bridge.zip",
+            "bytes": 30090097,
+            "sha256": "e940f5a7274ffb0f8a8e08d51d63facb3f627e26dba278a5e3844f473245fe58",
+            "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261113-01/editable/golden-gate-bridge.zip"
           },
           "runtimeDownload": {
-            "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb",
-            "bytes": 12402960,
-            "sha256": "31306263a1c5f7410eab1ff65253765fb4084d9f0ec0d4c1b27e66f12a9f7f28",
-            "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb"
+            "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.glb",
+            "bytes": 12562124,
+            "sha256": "3b986d88cffb1041fb052f054709820153e249b14125f4f853f977adb774ca22",
+            "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.glb"
           }
         },
         {
           "slug": "golden-gate-bridge-web",
           "collection": "project",
           "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
-          "revisionId": "r_de88c9d5481d4642837b9d00c81cf0a9",
+          "revisionId": "r_f0c5d702d8ca48dd8c4c16858a57ad53",
           "includedRevisions": [
+            "r_f0c5d702d8ca48dd8c4c16858a57ad53",
             "r_de88c9d5481d4642837b9d00c81cf0a9",
             "r_2632afa018de4ac28bde9ffc7ed19e47",
             "r_c81f6d5fb70c492fb2c1d57e2d482437",
@@ -2479,24 +2480,25 @@
           ],
           "missingParents": [],
           "editableDownload": {
-            "path": "packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge-web.zip",
-            "bytes": 23920003,
-            "sha256": "8abac99e0000772318e50c8805bc64ba15a12a684d8905bb5b7563e3e609c99c",
-            "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge-web.zip"
+            "path": "packs/golden-gate-bridge/delivery-20261113-01/editable/golden-gate-bridge-web.zip",
+            "bytes": 24629370,
+            "sha256": "c1209287ccd11b069f0eb95c446eee1682c90477a3a1fd65005107f2fdeb2b17",
+            "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261113-01/editable/golden-gate-bridge-web.zip"
           },
           "runtimeDownload": {
-            "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.glb",
-            "bytes": 3508476,
-            "sha256": "6effde24b2b9dfac04451244ee533bb755ba7d4c192a280caaec70ca31656a03",
-            "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.glb"
+            "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-runtime.glb",
+            "bytes": 3558104,
+            "sha256": "f0e82c77f2b19c1d17928bab3787a02b48c22166b11eaa55981c52dc80ad98ae",
+            "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-runtime.glb"
           }
         },
         {
           "slug": "golden-gate-bridge-far",
           "collection": "project",
           "assetId": "a_9fafaa6e7f4c4868a372e8f3b0b84738",
-          "revisionId": "r_fcddc546fa134910b2221561353d97e2",
+          "revisionId": "r_f0f9dc5506be4e0292c650efd318985e",
           "includedRevisions": [
+            "r_f0f9dc5506be4e0292c650efd318985e",
             "r_fcddc546fa134910b2221561353d97e2",
             "r_d3f2f39ee4964708a0301d7e7082d12b",
             "r_7fd11f06f23b4bfc93b9b47ab1b6ca04",
@@ -2518,16 +2520,16 @@
           ],
           "missingParents": [],
           "editableDownload": {
-            "path": "packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge-far.zip",
-            "bytes": 19677563,
-            "sha256": "60cd26c3f178142fc332ba0ead549677805378bc02ed9f3363623f35fc013675",
-            "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261005-01/editable/golden-gate-bridge-far.zip"
+            "path": "packs/golden-gate-bridge/delivery-20261113-01/editable/golden-gate-bridge-far.zip",
+            "bytes": 19938782,
+            "sha256": "83046007c4f3e6c558ff15e1860cd17bcd2165bbf17ab453514031e30a48852d",
+            "url": "https://assets.kilnstudio.tools/packs/golden-gate-bridge/delivery-20261113-01/editable/golden-gate-bridge-far.zip"
           },
           "runtimeDownload": {
-            "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-runtime.glb",
-            "bytes": 490460,
-            "sha256": "5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4",
-            "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-runtime.glb"
+            "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-runtime.glb",
+            "bytes": 497416,
+            "sha256": "e6b5c60f0ba9424d9669c224c823f4ab9df8154019986f81fa495e602be4d16d",
+            "url": "https://assets.kilnstudio.tools/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-runtime.glb"
           }
         }
       ]
