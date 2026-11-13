@@ -9,8 +9,9 @@
 //   evidence/asset-replacements.json  each interior swap recorded with its parent in the lineage
 //   licenses/ASSET-LICENSE.txt and licenses/vehicles/<type>.ASSET-LICENSE.txt
 //   pack.json                    credits and source.models (the tool rewrites files and release)
-// A new revision is never given a review status: interior entities become `review-candidate` and every text says owner
-// review is pending. `--tracked` applies the same changes to the package's tracked data/assets.json, data/sim-config.json
+// A new revision takes its parent's review state, never a higher one (owner decision 2026-11-13): the child of an
+// `accepted` interior entity is `accepted` and its texts carry the owner's approval of the fixed revisions; every other
+// child is a `review-candidate` and its texts say owner review is pending. `--tracked` applies the same changes to the package's tracked data/assets.json, data/sim-config.json
 // and the replacement ledger, so tests and the code build read the swapped models.
 //   bun packages/foundry-floor/scripts/pack-swap-adapter.ts --tracked --swaps scripts/flush-fix-swaps.json --inputs DIR
 import { createHash } from 'node:crypto';
@@ -27,8 +28,21 @@ const sha256 = (b: Uint8Array) => createHash('sha256').update(b).digest('hex');
 const pin = (path: string, b: Uint8Array) => ({ path, bytes: b.length, sha256: sha256(b) });
 
 interface SavedManifest { assetId: string; revisionId: string; parentRevision: string; description?: string; attribution?: { model?: string; harness?: string }; files: Record<string, { bytes: number; sha256: string }> }
-export interface Swap { id: string; asset: string; member: string; revision: string; parentRevision?: string; sha256: string; bytes: Uint8Array; saved?: Uint8Array; manifest: SavedManifest | null; previous: { revision: string; bytes?: number; sha256: string } }
+export interface Swap { id: string; asset: string; member: string; revision: string; parentRevision?: string; sha256: string; bytes: Uint8Array; saved?: Uint8Array; manifest: SavedManifest | null; previous: { revision: string; bytes?: number; sha256: string }; parentAccepted?: boolean }
 type Json = Record<string, any>;
+
+/** The owner's approval of the flush-face fix children of approved revisions ("Yes, all fixed revisions", 2026-11-13). */
+export const OWNER_APPROVAL = 'Flush-face fix of an approved revision; approved by the owner on 2026-11-13.';
+/** Mark each swap with its parent's state, read from the asset map before the swap (models outside it are not accepted). */
+export function withParentStates(swaps: readonly Swap[], map: Json): Swap[] {
+  return swaps.map(s => ({ ...s, parentAccepted: map.entities?.[s.id]?.status === 'accepted' }));
+}
+const parentState = (s: Swap) => {
+  if (typeof s.parentAccepted !== 'boolean') throw new Error(`${s.member}: the parent review state was not read`);
+  return s.parentAccepted;
+};
+/** The child's asset map status: its parent's. */
+export const childStatus = (s: Swap) => (parentState(s) ? 'accepted' : 'review-candidate');
 
 /** The child's change as its saved description states it (the text after "Flush-face fix:"). */
 export function changeOf(m: SavedManifest): string {
@@ -37,30 +51,30 @@ export function changeOf(m: SavedManifest): string {
   return text;
 }
 /** The saving model and harness as the manifest records them; versions and effort are not recorded for these saves. */
-export function childAuthor(m: SavedManifest) {
+export function childAuthor(m: SavedManifest, s: Swap) {
   const model = m.attribution?.model, harness = m.attribution?.harness;
   if (!model || !harness) throw new Error(`${m.revisionId}: the saved manifest records no model and harness`);
   const name = modelName(model);
-  return { model, harness, line: `${name} · ${harness} (version not recorded)`, note: `Flush-face fix: ${changeOf(m)}. Saved with ${name} in ${harness}; harness version and requested effort not recorded. Owner review is pending.` };
+  return { model, harness, line: `${name} · ${harness} (version not recorded)`, note: `Flush-face fix: ${changeOf(m)}. Saved with ${name} in ${harness}; harness version and requested effort not recorded. ${parentState(s) ? OWNER_APPROVAL : 'Owner review is pending.'}` };
 }
 const effort = 'Requested effort: not recorded. Independently confirmed: not recorded.';
 const manifestOf = (s: Swap) => s.manifest ?? (() => { throw new Error(`${s.member}: the swap list names no saved manifest`); })();
 const vehicleType = (s: Swap) => /^models\/vehicles\/([a-z-]+)\.glb$/.exec(s.member)?.[1] ?? null;
 
-/** An asset map entity with the swapped model's pins, measured fields and source; status left for owner review. */
+/** An asset map entity with the swapped model's pins, measured fields and source; its status is its parent's. */
 export function swappedEntity(id: string, entity: Json, s: Swap, source: Json): Json {
   const curated = CURATED[id];
   if (!curated || entity.glb !== s.member) throw new Error(`${id}: not an asset map entity for ${s.member}`);
   const measured = measure(id, curated, parseGlb(new Uint8Array(s.bytes)));
-  return { ...entity, status: 'review-candidate', source, pins: { bytes: s.bytes.length, sha256: s.sha256 }, ...measured };
+  return { ...entity, status: childStatus(s), source, pins: { bytes: s.bytes.length, sha256: s.sha256 }, ...measured };
 }
 const packSource = (s: Swap) => {
-  const m = manifestOf(s), a = childAuthor(m);
+  const m = manifestOf(s), a = childAuthor(m, s);
   return { author: a.line, asset: m.assetId, file: basename(s.member), revision: s.revision, requestedEffort: null, confirmedEffort: null, stage: 'flush-face-fix',
-    review: `Kiln asset ${m.assetId}, revision ${s.revision}. ${a.line}. ${effort} Flush-face fix child; owner visual review pending.` };
+    review: `Kiln asset ${m.assetId}, revision ${s.revision}. ${a.line}. ${effort} ${parentState(s) ? OWNER_APPROVAL : 'Flush-face fix child; owner visual review pending.'}` };
 };
 const trackedSource = (s: Swap) => ({ author: 'flush-fix-children', file: `${s.asset}/${s.revision}/asset.glb`, revision: s.revision,
-  review: 'not reviewed: flush-face fix child; owner visual review pending', hashFrom: 'the saved child revision manifest and its asset.glb' });
+  review: parentState(s) ? OWNER_APPROVAL : 'not reviewed: flush-face fix child; owner visual review pending', hashFrom: 'the saved child revision manifest and its asset.glb' });
 
 /** Apply the swaps to an asset map (pack or package form). */
 export function swapAssetMap(map: Json, swaps: readonly Swap[], form: 'pack' | 'tracked'): Json {
@@ -71,10 +85,10 @@ export function swapAssetMap(map: Json, swaps: readonly Swap[], form: 'pack' | '
   }
   return out;
 }
-/** The humanoid mover note names its staged revision: name the child, without a review status. */
+/** The humanoid mover note names its staged revision: name the child with its parent's state. */
 export function swapSimConfigText(text: string, swaps: readonly Swap[]): string {
   let out = text;
-  for (const s of swaps) out = out.split(`accepted and staged (${s.previous.revision})`).join(`review candidate, staged (${s.revision})`);
+  for (const s of swaps) out = out.split(`accepted and staged (${s.previous.revision})`).join(`${parentState(s) ? 'accepted and staged' : 'review candidate, staged'} (${s.revision})`);
   return out;
 }
 /** Replacement records (the ledger or its public evidence): the parent joins the lineage, the child is next. */
@@ -92,7 +106,7 @@ export function swapReplacements(entries: Json[], swaps: readonly Swap[], models
       existing.lineage = [...(existing.lineage ?? []), { ...parentPin, model: parent.requestedModel ?? 'not recorded', harness: String(parent.author ?? '').split(' · ')[1] ?? 'not recorded', role: 'Flush-face fix parent' }];
       existing.next = next;
       existing.reason = `${existing.reason} ${why}`;
-    } else out.push({ id: s.id, path: s.member, previous: parentPin, next, reason: `${why} Owner visual review pending.` });
+    } else out.push({ id: s.id, path: s.member, previous: parentPin, next, reason: `${why} ${parentState(s) ? OWNER_APPROVAL : 'Owner visual review pending.'}` });
   }
   return out;
 }
@@ -111,7 +125,7 @@ export function swapLicenceText(text: string, swaps: readonly Swap[], release: s
     if (start < 0 || !lines[start]!.endsWith(`, revision ${s.previous.revision}  SHA-256 ${s.previous.sha256}`)) throw new Error(`ASSET-LICENSE.txt: no entry for ${s.member} at its previous pin`);
     let end = start + 1;
     while (lines[end]?.startsWith('    ')) end++;
-    const m = manifestOf(s), a = childAuthor(m);
+    const m = manifestOf(s), a = childAuthor(m, s);
     lines = [...lines.slice(0, start), `${s.member}  Kiln asset ${m.assetId}, revision ${s.revision}  SHA-256 ${s.sha256}`, `    ${a.line}. ${effort}`, `    ${a.note}`, ...lines.slice(end)];
   }
   return lines.join('\n');
@@ -125,12 +139,12 @@ export function swapVehicleLicence(text: string, s: Swap): string {
   out = replaceLine(out, 'Delivered GLB SHA-256: ', `Delivered GLB SHA-256: ${s.sha256}${delivered[1] ?? ''}`, file);
   out = replaceLine(out, 'Canonical saved GLB SHA-256: ', `Canonical saved GLB SHA-256: ${sha256(s.saved ?? s.bytes)}`, file);
   out = replaceLine(out, 'Immediate saved parent: ', `Immediate saved parent: ${m.parentRevision}`, file);
-  return `${out.replace(/\n*$/, '\n')}Flush-face fix: ${changeOf(m)}; owner review of this revision is pending.\n`;
+  return `${out.replace(/\n*$/, '\n')}Flush-face fix: ${changeOf(m)}; ${parentState(s) ? OWNER_APPROVAL : 'owner review of this revision is pending.'}\n`;
 }
 /** pack.json credits and source records of the swapped models, and the asset map hash. */
 export function swapPackJson(pack: Json, swaps: readonly Swap[], assetMapBytes: Uint8Array): Json {
   for (const s of swaps) {
-    const m = manifestOf(s), a = childAuthor(m), old = pack.source.models[s.id];
+    const m = manifestOf(s), a = childAuthor(m, s), old = pack.source.models[s.id];
     if (!old || old.revision !== s.previous.revision || old.sha256 !== s.previous.sha256) throw new Error(`pack.json: source.models.${s.id} is not the previous pin`);
     pack.source.models[s.id] = { ...old, asset: m.assetId, revision: s.revision, bytes: s.bytes.length, sha256: s.sha256, author: a.line, requestedEffort: null, confirmedEffort: null,
       stage: 'flush-face-fix', requestedModel: a.model, recordedModel: a.model, attributionNote: a.note };
@@ -155,12 +169,14 @@ export function verifyWarm(read: (path: string) => Uint8Array, receipt: Json): v
 
 const W = 'evidence/sim/ff3-warm-pins.json';
 /** The swap tool's adapter hook. */
-export function regenerate({ files, manifest, swaps, release }: { files: Map<string, Uint8Array>; manifest: Json; swaps: Swap[]; release: string }) {
+export function regenerate({ files, manifest, swaps: listed, release }: { files: Map<string, Uint8Array>; manifest: Json; swaps: Swap[]; release: string }) {
   const read = (path: string) => files.get(`assets/${path}`) ?? (() => { throw new Error(`pack member missing: ${path}`); })();
   const text = (path: string) => new TextDecoder().decode(read(path));
   const encode = (s: string) => Buffer.from(s);
   const members: Record<string, Uint8Array> = {};
-  const assetMap = encode(`${JSON.stringify(swapAssetMap(JSON.parse(text('data/assets.json')), swaps, 'pack'), null, 1)}\n`);
+  const sealedMap = JSON.parse(text('data/assets.json'));
+  const swaps = withParentStates(listed, sealedMap);
+  const assetMap = encode(`${JSON.stringify(swapAssetMap(sealedMap, swaps, 'pack'), null, 1)}\n`);
   members['data/assets.json'] = assetMap;
   const simConfig = encode(swapSimConfigText(text('data/sim-config.json'), swaps));
   members['data/sim-config.json'] = simConfig;
@@ -189,11 +205,12 @@ export function regenerate({ files, manifest, swaps, release }: { files: Map<str
 }
 
 /** Apply the same changes to the package's tracked files. */
-export function updateTracked(swaps: Swap[], root = PACKAGE_ROOT): string[] {
+export function updateTracked(listed: Swap[], root = PACKAGE_ROOT): string[] {
   const written: string[] = [];
   const write = (path: string, value: string) => { const full = resolve(root, path); if (readFileSync(full, 'utf8') !== value) { writeFileSync(full, value); written.push(path); } };
   const mapText = readFileSync(resolve(root, 'data/assets.json'), 'utf8'), map = JSON.parse(mapText);
   if (`${JSON.stringify(map, null, 1)}\n` !== mapText) throw new Error('data/assets.json is not in its generator form');
+  const swaps = withParentStates(listed, map);
   write('data/assets.json', `${JSON.stringify(swapAssetMap(map, swaps, 'tracked'), null, 1)}\n`);
   write('data/sim-config.json', swapSimConfigText(readFileSync(resolve(root, 'data/sim-config.json'), 'utf8'), swaps));
   const ledgerText = readFileSync(resolve(root, 'scripts/ff3-model-replacements.json'), 'utf8'), ledger = JSON.parse(ledgerText);

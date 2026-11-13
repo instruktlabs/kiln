@@ -17,11 +17,11 @@
     },
     {
       "id": "foundry-floor",
-      "release": "ff3-review2-flush1",
-      "path": "scene-inputs/flush-fix-20261113/foundry-floor.zip",
-      "bytes": 2849813,
-      "sha256": "d53a1f09dff290246bf7cfc1a1b9e79a5bf28b584b995eef414204c3e3f94da5",
-      "packJsonSha256": "99d949b5f5125b49ab2ef30cd07d29bd6998f010013020d96d721a14eb394255"
+      "release": "ff3-review2-flush2",
+      "path": "scene-inputs/flush-fix-20261113-02/foundry-floor.zip",
+      "bytes": 2849982,
+      "sha256": "9c1b13984a9c71f4398102f363469ff7dcedb92ae59c5457e33bd6c4615a18ff",
+      "packJsonSha256": "5cd13fdc406b7e842836a17bdf0709bc874de7bb4961cf0f313c08a3d412296d"
     },
     {
       "id": "cathedral-square",

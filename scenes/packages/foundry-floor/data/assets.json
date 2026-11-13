@@ -1349,7 +1349,7 @@
   },
   "signalTower": {
    "asset": "signal-tower",
-   "status": "review-candidate",
+   "status": "accepted",
    "class": "tower",
    "sim": "tool E10 state lamp: PRODUCTIVE green, STANDBY amber, ENGINEERING and SCHEDULED_DOWN blue, UNSCHEDULED_DOWN red, NON_SCHEDULED all off",
    "instances": {
@@ -1420,7 +1420,7 @@
     "author": "flush-fix-children",
     "file": "signal-tower/r_9d238ec1a53f4caaa39daaef9c27c840/asset.glb",
     "revision": "r_9d238ec1a53f4caaa39daaef9c27c840",
-    "review": "not reviewed: flush-face fix child; owner visual review pending",
+    "review": "Flush-face fix of an approved revision; approved by the owner on 2026-11-13.",
     "hashFrom": "the saved child revision manifest and its asset.glb"
    },
    "pins": {
@@ -12208,7 +12208,7 @@
   },
   "humanoidWorkRobot": {
    "asset": "humanoid-work-robot",
-   "status": "review-candidate",
+   "status": "accepted",
    "class": "people",
    "sim": "people (FF3): the repair and PM visits of the twin (sim/service.ts, the stub provider); the scene walks the robot in from the fab door along the aisle path, services the tool and walks it out (scene/people.ts), the technician keeping the qualifications (sim-config movers `visits`). Carry and Handoff are not played: the twin moves every FOUP by the overhead rail, so no floor move has a source",
    "instances": {
@@ -12417,7 +12417,7 @@
     "author": "flush-fix-children",
     "file": "humanoid-work-robot/r_87ffa104a0c04a408c928fa7260fd566/asset.glb",
     "revision": "r_87ffa104a0c04a408c928fa7260fd566",
-    "review": "not reviewed: flush-face fix child; owner visual review pending",
+    "review": "Flush-face fix of an approved revision; approved by the owner on 2026-11-13.",
     "hashFrom": "the saved child revision manifest and its asset.glb"
    },
    "pins": {

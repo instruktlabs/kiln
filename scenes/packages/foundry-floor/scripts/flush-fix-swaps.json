@@ -6,7 +6,7 @@
     "release": "ff3-review2-code5",
     "packJsonSha256": "822be1171621273dfdf857fe6ca320ed41d16e03c49fc49860c13e7092be4836"
   },
-  "release": "ff3-review2-flush1",
+  "release": "ff3-review2-flush2",
   "inputs": "The flush-fix children directory for foundry-floor: <asset>/child/{asset.glb,manifest.json} (not in the repository).",
   "swaps": [
     {
