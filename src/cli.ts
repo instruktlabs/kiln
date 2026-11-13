@@ -575,6 +575,7 @@ async function emitSweep(
       notSwept: string[];
       colors?: import('./param-bindings').ParamBindingsV1['colors'];
       switches?: import('./param-bindings').ParamBindingsV1['switches'];
+      shapes?: Record<string, import('./param-shapes').ShapeClassV1>;
     };
   };
   if (output.ok !== true || !output.sweep)
@@ -610,6 +611,12 @@ async function emitSweep(
               .map((node) => node.name ?? `node ${node.index}`)
               .join(', ')}`
           : `  switch ${name}  rebuild only (${binding.reason})  ${binding.detail}`,
+      );
+    for (const [name, shape] of Object.entries(output.sweep.shapes ?? {}))
+      console.log(
+        shape.mode === 'morph'
+          ? `  size ${name}  --carry-shapes would carry it as morph targets (${(shape.gap * 1000).toFixed(2)} mm off a straight line)`
+          : `  size ${name}  rebuild only (${shape.reason})  ${shape.detail}`,
       );
     console.log(`  ${output.sweep.built} built, ${output.sweep.failed} failed`);
   }

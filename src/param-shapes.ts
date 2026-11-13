@@ -327,6 +327,59 @@ const timeOf = (spec: RangeParamV1 | IntParamV1, value: number) =>
   (value - spec.min) / (spec.max - spec.min);
 
 /**
+ * Every `range` and `int` parameter of `declaration`, in declaration order: measured when a GLB
+ * can carry it, or the reason it cannot. Undefined when there is none to measure.
+ */
+async function measureSizes(
+  defaultGlb: Uint8Array,
+  declaration: ParamsDeclarationV1,
+  buildWith: (values: Record<string, ParamValue>) => Promise<Uint8Array>,
+): Promise<{ base: Loaded; sizes: [string, Measured | RebuildShapeV1][] } | undefined> {
+  const declared = Object.entries(declaration.params).filter(
+    (entry): entry is [string, RangeParamV1 | IntParamV1] =>
+      (entry[1].type === 'range' || entry[1].type === 'int') && entry[1].min < entry[1].max,
+  );
+  if (!declared.length) return undefined;
+  const base = await load(defaultGlb);
+  const tolerance = Math.min(SHAPE_GAP_METRES, assetSize(base) / 1000);
+  const sizes: [string, Measured | RebuildShapeV1][] = [];
+  for (const [name, spec] of declared) {
+    try {
+      sizes.push([name, await measure(name, spec, base, tolerance, buildWith)]);
+    } catch (error) {
+      if (!(error instanceof NotCarried)) throw error;
+      sizes.push([name, error.binding]);
+    }
+  }
+  return { base, sizes };
+}
+
+/** What `carryShapes` would decide for one size, before any file is written. */
+export type ShapeClassV1 =
+  | {
+      mode: 'morph';
+      /** The largest distance, in metres, between a halfway build and the straight line. */
+      gap: number;
+    }
+  | RebuildShapeV1;
+
+/**
+ * Which `range` and `int` parameters a GLB could carry, decided as `carryShapes` decides it and
+ * with the same builds, but writing nothing. Empty when the declaration has none.
+ */
+export async function classifyShapes(
+  defaultGlb: Uint8Array,
+  declaration: ParamsDeclarationV1,
+  buildWith: (values: Record<string, ParamValue>) => Promise<Uint8Array>,
+): Promise<Record<string, ShapeClassV1>> {
+  const measured = await measureSizes(defaultGlb, declaration, buildWith);
+  const classes: Record<string, ShapeClassV1> = {};
+  for (const [name, result] of measured?.sizes ?? [])
+    classes[name] = 'ends' in result ? { mode: 'morph', gap: result.gap } : result;
+  return classes;
+}
+
+/**
  * Write every carried size of `declaration` into a copy of `defaultGlb` (the default build, with
  * or without parameter tags) and report each `range` and `int` parameter. `buildWith` builds the
  * program at one parameter's value with the others at their defaults; it is called for each end
@@ -338,23 +391,14 @@ export async function carryShapes(
   declaration: ParamsDeclarationV1,
   buildWith: (values: Record<string, ParamValue>) => Promise<Uint8Array>,
 ): Promise<{ glb: Uint8Array; shapes: Record<string, ShapeBindingV1> }> {
-  const sizes = Object.entries(declaration.params).filter(
-    (entry): entry is [string, RangeParamV1 | IntParamV1] =>
-      (entry[1].type === 'range' || entry[1].type === 'int') && entry[1].min < entry[1].max,
-  );
   const shapes: Record<string, ShapeBindingV1> = {};
-  if (!sizes.length) return { glb: defaultGlb, shapes };
-  const base = await load(defaultGlb);
-  const size = assetSize(base);
-  const tolerance = Math.min(SHAPE_GAP_METRES, size / 1000);
+  const measured = await measureSizes(defaultGlb, declaration, buildWith);
+  if (!measured) return { glb: defaultGlb, shapes };
+  const base = measured.base;
   const carried: Measured[] = [];
-  for (const [name, spec] of sizes) {
-    try {
-      carried.push(await measure(name, spec, base, tolerance, buildWith));
-    } catch (error) {
-      if (!(error instanceof NotCarried)) throw error;
-      shapes[name] = error.binding;
-    }
+  for (const [name, result] of measured.sizes) {
+    if ('ends' in result) carried.push(result);
+    else shapes[name] = result;
   }
   if (!carried.length) return { glb: defaultGlb, shapes };
 

@@ -1338,6 +1338,11 @@ export interface KilnRenderViewsResult extends PartPreview {
     colors?: import('../param-bindings').ParamBindingsV1['colors'];
     /** Each toggle and choice: carried by the GLB as node visibility, or rebuild-only and why. */
     switches?: import('../param-bindings').ParamBindingsV1['switches'];
+    /**
+     * Each `range` and `int` parameter: a size `kiln export --carry-shapes` would write as morph
+     * targets, or rebuild-only and why. Costs up to two builds per parameter beyond the sweep's.
+     */
+    shapes?: Record<string, import('../param-shapes').ShapeClassV1>;
   };
   /** Exact vertex/index accessor payload before and after the export indexing pass. */
   indexBuffers?: import('../index-policy').IndexBufferReceipt;
@@ -1542,6 +1547,9 @@ async function refusedParams(
 
 const SWEEP_ERROR_CHARS = 240;
 
+/** One sweep build of a size, by its only changed value. */
+const sizeBuildKey = (values: Record<string, ParamValue>) => JSON.stringify(Object.entries(values));
+
 /** Build every sweep point and report each: structure and QA, never images. */
 async function runParamsSweep(
   code: string,
@@ -1553,6 +1561,8 @@ async function runParamsSweep(
   const { points, notSwept } = sweepPoints(declaration);
   const { pauseForEventLoop } = await import('../views/event-loop');
   const reported: ParamsSweepPointV1[] = [];
+  // The builds at each size's ends, kept so classifying the sizes does not build them again.
+  const sizeBuilds = new Map<string, Uint8Array>();
   for (const point of points) {
     const signal = context.evaluationControls?.().signal;
     signal?.throwIfAborted();
@@ -1561,6 +1571,9 @@ async function runParamsSweep(
         point.label === 'defaults'
           ? base
           : await evaluateGeneratedSource(code, context, 'off', point.input);
+      const swept = Object.entries(point.input.values ?? {});
+      if (!point.input.preset && swept.length === 1 && typeof swept[0]![1] === 'number')
+        sizeBuilds.set(sizeBuildKey(point.input.values!), rendered.glb);
       const report = rendered.meta.qaReport as
         | { acceptance?: unknown; dimensions?: unknown }
         | undefined;
@@ -1597,6 +1610,15 @@ async function runParamsSweep(
   }
   const failed = reported.filter((point) => !point.ok).length;
   const bindings = await classifyBuiltParams(code, context, base);
+  const { classifyShapes } = await import('../param-shapes');
+  const shapes = await classifyShapes(base.glb, declaration, async (values) => {
+    const kept = sizeBuilds.get(sizeBuildKey(values));
+    if (kept) return kept;
+    context.evaluationControls?.().signal?.throwIfAborted();
+    return (await evaluateGeneratedSource(code, context, 'off', { values })).glb;
+  });
+  // A cancelled build reads as a failed probe inside the classifier: stop here instead.
+  context.evaluationControls?.().signal?.throwIfAborted();
   return {
     ok: true,
     requirements: base.requirements,
@@ -1608,6 +1630,7 @@ async function runParamsSweep(
       notSwept,
       ...(bindings && Object.keys(bindings.colors).length ? { colors: bindings.colors } : {}),
       ...(bindings?.switches ? { switches: bindings.switches } : {}),
+      ...(Object.keys(shapes).length ? { shapes } : {}),
     },
     warnings: [],
   };
