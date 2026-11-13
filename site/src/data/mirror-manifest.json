@@ -7425,6 +7425,166 @@
       "path": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus.png",
       "bytes": 1427974,
       "sha256": "165135133db7ff96459fc9cfffdbe6ea0eb35c833531268bde9d119ee3c27b92"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/cove-structure.png",
+      "bytes": 1554156,
+      "sha256": "2c6a11d886f98cb3029300f213b644579b4cc5777cd0d3f13afe625a8b39900a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/cove-seating.png",
+      "bytes": 1309380,
+      "sha256": "05717cd85e804c06488918a4a349d40560c772788e8116ceb3836dc4840a72dc"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/island-hut-roof.png",
+      "bytes": 1465697,
+      "sha256": "1ebe3e5c40deeb2a7d172daecd152a71edbf3a9c5c5c129c6b47f634c551aa29"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/bench-park.png",
+      "bytes": 1638805,
+      "sha256": "5b02355fe7311efdadcd08e14cb3e6b0a0375c8506f09c27da779660ebb5a933"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/crescent-debris-shells.png",
+      "bytes": 1227955,
+      "sha256": "ea5a02dde08f9d11abd532c979af6e54c729690fd97c66ec5c2905c484cbf834"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/crescent-seagrass.png",
+      "bytes": 1372610,
+      "sha256": "8bf9c5e3a382aae4c5a6aa86402d5448702db4eccc68f23a297b35beb56c38f9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-sofa-wool.png",
+      "bytes": 1954696,
+      "sha256": "0e5b3a1535368e5da5e0a0b65141f84159f8b939dee25a748a407c2c250cf617"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-hearth-masonry.png",
+      "bytes": 1851470,
+      "sha256": "25916ac1a0f17d9f9d0c360e04e0f486f3108c2fb02358bcf7f36e34de2b4538"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-wall-facade.png",
+      "bytes": 1494736,
+      "sha256": "9a31000f1ff35e44d707a5a713e9cde9d35b57b68f0e92ebf8d9aae1f769c6c2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-deck-tile.png",
+      "bytes": 1571771,
+      "sha256": "8632fd24c246c88d82f55d3b3fb242deac5965b5d51faeb41fd324d33fbb00ef"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-door-entry.png",
+      "bytes": 1799640,
+      "sha256": "a3d881cc419f71c34938f2af42801e7dab1fa2c6bad8c5907149c4e093c3c92d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-stair-rail-interior.png",
+      "bytes": 1388916,
+      "sha256": "cf75fc0c4e08ef9869135b122f4c52f81a336ac9e4fae7512364f3df3424b47a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-armchair-oak.png",
+      "bytes": 1774167,
+      "sha256": "1cee4d71d79256b59d49fb1a1f16f56b22a5cc408cc8292152642ab1205a33d2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-wall-west.png",
+      "bytes": 1867623,
+      "sha256": "5622a50d4cc338bcf0643d89cb78ca7f534c645ca837ec1c33326299586b063a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-wall-east.png",
+      "bytes": 1875989,
+      "sha256": "8d015a5b3ee847e2cac29e3f0595161c2c3f6d7a38c30a5dd9bdd30c3a4e10ed"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-wall-rear.png",
+      "bytes": 1596198,
+      "sha256": "7df0a5fee0e5229acca6749f63813505f38d2fe2f194050d4b6a08816313dafa"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-rafter-frame.png",
+      "bytes": 1294931,
+      "sha256": "d00da75334ab7af181b3e18c4fba4747dd5b7c9d3baca666ed88401a5be66517"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-door-deck.png",
+      "bytes": 1736998,
+      "sha256": "37bbed2598b6138dfe8c270eb2ab926e5e6f52a9a273f3bb39dbac441639f7f5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-tread-timber.png",
+      "bytes": 1588402,
+      "sha256": "397bd4a9ae1c76c5c22f132f2fa7f7dbecb4f6cf27e075ddde07886ce55291aa"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-stair-rail-exterior.png",
+      "bytes": 1456600,
+      "sha256": "06f278deed2c963d39597e20a0da086e4c2d2cb782914562477930ab6ffe2a99"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-rail-span.png",
+      "bytes": 1551766,
+      "sha256": "d0899b19190160fff0a553fbbe2fddec6ddd7e251a25b072010864a52cc4021e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-living-rug-wool.png",
+      "bytes": 1377298,
+      "sha256": "c7cd86aaa63812f428e9ce1363e72b4d6451337ea68af4da43ee85141d742fd6"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-roof-east.png",
+      "bytes": 1599975,
+      "sha256": "50a99d6b7e0efb7d387a7e6c99b25da2b481918d842b2624f863b79f8eb0362b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-side-table.png",
+      "bytes": 1830565,
+      "sha256": "bb71a7430c94d2eb295dc38c0d1db29a615dbe73f6b8e6e806cd2e297fa98b82"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-dining-table.png",
+      "bytes": 1775753,
+      "sha256": "0da69c7bc9a58ca78f46766b43bf073087a90ef7c54bc6af11198c1ab310e292"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-dining-chair.png",
+      "bytes": 1604126,
+      "sha256": "a5931634dbf6460e7b84f97a19a3631a97298d8888b5985235c0c348ef0a3efc"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-kitchen-run.png",
+      "bytes": 1868817,
+      "sha256": "725c16d6322458b4c789da3fa1567c3e51bf1292b84869297fcad0ba3ff69428"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-loft-bed.png",
+      "bytes": 1862062,
+      "sha256": "e1aef6cdb00dc3d822999d611512b58e1aa42553a42ded1c9f46e862a35ad12e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-desk.png",
+      "bytes": 1707899,
+      "sha256": "0fc9173fb79143270758b5b169ae0be373def8b7f376932d712122170662d117"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-entry-bench.png",
+      "bytes": 1639436,
+      "sha256": "619b1572cc49522bb1faebfcee7c6b928a7b4430851c2d9721a08c609988e2c0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-small-props.png",
+      "bytes": 1676933,
+      "sha256": "8ae0fa3dfe76dfbc38d0065b7440802edef44a517f88c2201fbd574cdf629299"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261113-01/winter-wmc-trail-marker.png",
+      "bytes": 1548485,
+      "sha256": "e18763202e01709548394cf6741d0038976c7417ae682e9d23ad563edba3db4f"
     }
   ]
 }
