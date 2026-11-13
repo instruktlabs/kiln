@@ -311,20 +311,20 @@ describe('scene pack catalog record', () => {
     expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g9-code6'));
   });
 
-  test('the Foundry Floor flush1 delivery carries the flush-face fix children with a verified initial closure inside its ceiling', () => {
+  test('the Foundry Floor flush2 delivery carries the flush-face fix children with a verified initial closure inside its ceiling', () => {
     const record = scenePacks['foundry-floor'];
-    expect(record.release).toBe('ff3-review2-flush1');
-    expect(record.base).toBe('/scene-packs/foundry-floor/ff3-review2-flush1/');
+    expect(record.release).toBe('ff3-review2-flush2');
+    expect(record.base).toBe('/scene-packs/foundry-floor/ff3-review2-flush2/');
     expect(record.source).toBe('.cache/site-inputs/foundry-floor/standalone');
     expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
     // The review2 pack with twelve models swapped for their flush-face fix children (scripts/scene-pack-swap.mjs): 85 sealed files.
-    expect(record).toMatchObject({ sealedFiles: 85, sealedBytes: 11_492_328, packJsonSha256: '99d949b5f5125b49ab2ef30cd07d29bd6998f010013020d96d721a14eb394255' });
+    expect(record).toMatchObject({ sealedFiles: 85, sealedBytes: 11_492_559, packJsonSha256: '5cd13fdc406b7e842836a17bdf0709bc874de7bb4961cf0f313c08a3d412296d' });
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-BjaWlY0a.js', bytes: 1_642_303, gzipBytes: 499_153, initialLoad: { bytes: 1_464_543, gzipBytes: 427_959 } });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-B2WrEJ7f.js', bytes: 1_642_298, gzipBytes: 499_143, initialLoad: { bytes: 1_464_543, gzipBytes: 427_959 } });
     expect(checkCeiling('foundry-floor', record.runtime).within).toBe(true);
     expect(foundryFloorScene.assetBase).toBe(record.base);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2-flush1'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2-flush2'));
   });
 
   // Owner decision 2026-10-26 (Matthew): these home-linked scene pages are indexed, whatever their availability says.

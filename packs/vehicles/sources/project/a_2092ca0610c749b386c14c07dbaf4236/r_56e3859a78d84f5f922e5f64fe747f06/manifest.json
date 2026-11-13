@@ -1,0 +1,769 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_2092ca0610c749b386c14c07dbaf4236",
+  "revisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
+  "parentRevision": "r_538b8a19c46d4086b456e27b32ee7d33",
+  "name": "Generic box truck",
+  "tags": [
+    "vehicle",
+    "truck",
+    "box-truck",
+    "traffic",
+    "lod"
+  ],
+  "createdAt": "2026-11-13T00:23:21.891Z",
+  "description": "Generic box truck, child of r_538b8a19 with its model unchanged. Flush-face fix: rear door chrome bars (Chrome, 4 boxes at BX0): depth 0.012 to 0.016 centred 2 mm further out so the back face leaves the tail trim plane….",
+  "attribution": {
+    "model": "claude-sonnet-5-5",
+    "harness": "claude-code"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:568979622343e4aa4b378514f60199539557649a3e8c124c9f78a11c347e53fa",
+      "bytes": 169216
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:40ff1285f4c16b2ef31fb58f939d095ff02ca62ffab05a822802153ed2204871",
+      "bytes": 12137
+    },
+    "preview.png": {
+      "sha256": "sha256:b2e0b24fc9efc8741a6a20c68e0daf1775fb008997af76127c0e0d8d871499e0",
+      "bytes": 41717
+    }
+  },
+  "build": {
+    "engine": "sha256:ae628b3b5f18e33f8588e281f76c843c573d55647475b4312c5e61c62a0e5ae3",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "568979622343e4aa4b378514f60199539557649a3e8c124c9f78a11c347e53fa",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -4.150000095367432,
+          1.3113021835042815e-8,
+          -1.2519999742507935
+        ],
+        "max": [
+          3.450000047683716,
+          3.4000000953674316,
+          1.2519999742507935
+        ],
+        "size": [
+          7.6000001430511475,
+          3.40000008225441,
+          2.503999948501587
+        ],
+        "center": [
+          -0.3500000238418579,
+          1.7000000542402267,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": 1.3113021835042815e-8,
+        "offsetToGround": -1.3113021835042815e-8,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "Generic box truck"
+      },
+      "renderMetrics": {
+        "triangles": 3546,
+        "drawCalls": 19,
+        "uniqueGeometries": 16,
+        "uniqueMaterials": 11,
+        "textureCount": 0,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "levelsOfDetail": [
+        {
+          "path": "/Generic%20box%20truck[0]/BoxTruck[0]/LOD0[0]",
+          "screenCoverage": [
+            0.0105,
+            0.000606,
+            0.0000168
+          ],
+          "levels": [
+            {
+              "level": 0,
+              "name": "LOD0",
+              "path": "/Generic%20box%20truck[0]/BoxTruck[0]/LOD0[0]",
+              "triangles": 1050
+            },
+            {
+              "level": 1,
+              "name": "LOD1",
+              "path": "/Generic%20box%20truck[0]/BoxTruck[0]/LOD1[0]",
+              "triangles": 598
+            },
+            {
+              "level": 2,
+              "name": "LOD2",
+              "path": "/Generic%20box%20truck[0]/BoxTruck[0]/LOD2[0]",
+              "triangles": 90
+            }
+          ]
+        }
+      ],
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "Mesh \"Mesh_Trim_LOD0\" is one drawn part, but 3 of its 27 welded components are separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 0.028 m. Nearest detached: [2.18, 0.35, -0.78] to [2.32, 0.49, 0.78]. It is nearest to \"Mesh_Tyre_FL\" at [1.83, 0, -1.0525] to [2.67, 0.84, -0.8075]. This may be intentional. Box adjacency is not physical attachment evidence: a gap under 0.02 m reads as contact. 13 parts on LOD levels above 0 were not analyzed.",
+              "affected": {
+                "node": "Mesh_Trim_LOD0"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 0.0275,
+                "expected": 0.02,
+                "breakdown": {
+                  "weldedComponents": 27,
+                  "detachedComponents": 3,
+                  "lodExcludedParts": 13
+                }
+              },
+              "repairText": "Check whether the separation is intentional. One mesh moves and hides as one, so a component meant to attach needs its gap closed in the merged geometry; one meant to stand apart reads better as its own part."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "A group of 3 parts (\"Mesh_Trim_LOD0 (welded component 25 of 27)\", \"Mesh_Tyre_RL_inner\", \"Mesh_Tyre_RR_inner\") is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 0.060 m. This may be intentional. Box adjacency is not physical attachment evidence: a gap under 0.02 m reads as contact. 13 parts on LOD levels above 0 were not analyzed.",
+              "affected": {
+                "node": "Mesh_Trim_LOD0"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 0.06,
+                "expected": 0.02,
+                "breakdown": {
+                  "lodExcludedParts": 13
+                }
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "A group of 2 parts (\"Mesh_Tyre_RL_outer\", \"Mesh_Rim_RL_outer\") is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 0.060 m. This may be intentional. Box adjacency is not physical attachment evidence: a gap under 0.02 m reads as contact. 13 parts on LOD levels above 0 were not analyzed.",
+              "affected": {
+                "node": "Mesh_Tyre_RL_outer"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 0.06,
+                "expected": 0.02,
+                "breakdown": {
+                  "lodExcludedParts": 13
+                }
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_CONNECTIVITY",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.partConnectivity",
+              "message": "A group of 2 parts (\"Mesh_Tyre_RR_outer\", \"Mesh_Rim_RR_outer\") is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 0.060 m. This may be intentional. Box adjacency is not physical attachment evidence: a gap under 0.02 m reads as contact. 13 parts on LOD levels above 0 were not analyzed.",
+              "affected": {
+                "node": "Mesh_Tyre_RR_outer"
+              },
+              "measurement": {
+                "name": "gapToMainComponent",
+                "actual": 0.06,
+                "expected": 0.02,
+                "breakdown": {
+                  "lodExcludedParts": 13
+                }
+              },
+              "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Chrome_LOD0\" and \"Mesh_BrakeLight_LOD0\" occupy the same space: they share 0.0000144 m³, which is 8.6% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Chrome_LOD0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.085716311,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Chrome_LOD0\" and \"Mesh_Taillight_LOD0\" occupy the same space: they share 0.0000138 m³, which is 8.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Chrome_LOD0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.082144804,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Trim_LOD0\" and \"Mesh_Chrome_LOD0\" occupy the same space: they share 0.000256 m³, which is 6.1% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Trim_LOD0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.060725864,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Trim_LOD0\" and \"Mesh_Plate_LOD0\" occupy the same space: they share 0.00000504 m³, which is 1.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Trim_LOD0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.013460256,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Paint_LOD1\" and \"Mesh_Trim_LOD1\" occupy the same space: they share 0.00356 m³, which is 0.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Paint_LOD1"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.003004178,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_Paint_LOD0\" and \"Mesh_Trim_LOD0\" occupy the same space: they share 0.00356 m³, which is 0.3% of the smaller part.",
+              "affected": {
+                "node": "Mesh_Paint_LOD0"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.003003365,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "13 part-volume measurements were unavailable. 13 because a valid closed solid could not be measured (Not manifold): \"Mesh_Glass_LOD0\", \"Mesh_Glass_LOD1\", \"Mesh_Glass_LOD2\", \"Mesh_Tyre_FL\", \"Mesh_Rim_FL\" and 8 more. 46 overlapping part pairs include one of these parts and were not measured. These parts are not certified clear."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_Tyre_RL_inner\" reaches 0.3575 m inside solid \"Mesh_Trim_LOD2\": 128 of 192 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_Tyre_RL_inner"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.357500001,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 128,
+                  "sampledVertices": 192
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_Tyre_RR_inner\" reaches 0.3575 m inside solid \"Mesh_Trim_LOD2\": 128 of 192 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_Tyre_RR_inner"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.357500001,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 128,
+                  "sampledVertices": 192
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_Tyre_FL\" reaches 0.2725 m inside solid \"Mesh_Paint_LOD2\": 124 of 192 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_Tyre_FL"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.272500045,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 124,
+                  "sampledVertices": 192
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_Tyre_FR\" reaches 0.2725 m inside solid \"Mesh_Paint_LOD2\": 124 of 192 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_Tyre_FR"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.272500045,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 124,
+                  "sampledVertices": 192
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_Tyre_RL_outer\" reaches 0.0675 m inside solid \"Mesh_Trim_LOD2\": 64 of 192 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_Tyre_RL_outer"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.0674999872,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 64,
+                  "sampledVertices": 192
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_Tyre_RR_outer\" reaches 0.0675 m inside solid \"Mesh_Trim_LOD2\": 64 of 192 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_Tyre_RR_outer"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.0674999872,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 64,
+                  "sampledVertices": 192
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_Rim_FL\" reaches 0.0569 m inside solid \"Mesh_Paint_LOD2\": 83 of 96 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_Rim_FL"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.0569000465,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 83,
+                  "sampledVertices": 96
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_Rim_FR\" reaches 0.0569 m inside solid \"Mesh_Paint_LOD2\": 83 of 96 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_Rim_FR"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.0569000465,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 83,
+                  "sampledVertices": 96
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 32,
+            "partVolumeCandidatePairs": 71,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 25,
+            "partVolumeUnmeasurablePairs": 46,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 65,
+            "partVolumeSkipped": 13,
+            "openSurfaceCoverage": "complete-surface-pairs",
+            "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+            "openSurfaceContactTolerance": 0.005,
+            "openSurfaceOpenParts": 13,
+            "openSurfaceClosedParts": 19,
+            "openSurfaceCandidatePairs": 42,
+            "openSurfacePairsSampled": 42,
+            "openSurfacePairsNotReached": 0,
+            "openSurfaceVerticesUnresolved": 0,
+            "openSurfaceLodAlternatePairs": 12,
+            "openSurfaceSkipped": 0
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "D",
+            "instanceabilitySummary": "D (informational, not a QA verdict), set by 11 distinct materials (D at 7-12). Also: 16 geometries; 19 draw calls. Optional advice, not a requirement: merging Paint + Trim + Chrome + Glass and 7 more (differ in baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor) would leave 1 material (A at 0-1).",
+            "uniqueGeometries": 16,
+            "uniqueMaterials": 11,
+            "meshNodes": 19,
+            "meshInstances": 19,
+            "drawCalls": 19,
+            "textureCount": 0,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 3546,
+            "materialCount": 11,
+            "opaqueMaterials": 11,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 11,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 0,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 0,
+            "maxImageDimension": 0,
+            "decodedImageBytesRgba8": 0,
+            "estimatedGpuBytesWithMipmaps": 0,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "GEO_OPEN_SURFACE_PENETRATION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "inputGlbSha256": "sha256:568979622343e4aa4b378514f60199539557649a3e8c124c9f78a11c347e53fa",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

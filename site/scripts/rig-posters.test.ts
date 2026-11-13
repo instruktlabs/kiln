@@ -148,7 +148,7 @@ describe('the checked-in Farm posters', () => {
     for (const item of vehicles.assets) {
       const poster = recorded.posters[rigPosterKey('vehicles', item.slug)];
       expect(poster, item.slug).toBeDefined();
-      expect(vehicles.release).toBe('r4-local-review');
+      expect(vehicles.release).toBe('r5-flush-fix');
       expect(poster.path).toBe(rigPosterPath('vehicles', vehicles.release, item.slug));
       expect(poster.revisionId).toBe(item.revisionId);
       expect(poster.glb.sha256).toBe(item.runtimeDownload.sha256);

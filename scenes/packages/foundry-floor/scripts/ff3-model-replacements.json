@@ -828,7 +828,7 @@
         "author": "flush-fix-children",
         "file": "signal-tower/r_9d238ec1a53f4caaa39daaef9c27c840/asset.glb"
       },
-      "reason": "Flush-face fix child: lampXOff (4 tiers): LENS_INSET 0.4 mm to 2 mm so the unlit twin side wall no longer shares a plane with the l. Owner visual review pending."
+      "reason": "Flush-face fix child: lampXOff (4 tiers): LENS_INSET 0.4 mm to 2 mm so the unlit twin side wall no longer shares a plane with the l. Flush-face fix of an approved revision; approved by the owner on 2026-11-13."
     },
     {
       "id": "humanoidWorkRobot",
@@ -847,7 +847,7 @@
         "author": "flush-fix-children",
         "file": "humanoid-work-robot/r_87ffa104a0c04a408c928fa7260fd566/asset.glb"
       },
-      "reason": "Flush-face fix child: Mesh_visor: thickened 2 mm toward the head so its back face is 2.5 mm behind the facePlate back face. Owner visual review pending."
+      "reason": "Flush-face fix child: Mesh_visor: thickened 2 mm toward the head so its back face is 2.5 mm behind the facePlate back face. Flush-face fix of an approved revision; approved by the owner on 2026-11-13."
     }
   ]
 }

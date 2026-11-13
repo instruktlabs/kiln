@@ -5231,6 +5231,72 @@
       "srcsetWebp": "/media/scenes/cathedral-square/cs3-site2/interior-320.webp 320w, /media/scenes/cathedral-square/cs3-site2/interior-480.webp 480w, /media/scenes/cathedral-square/cs3-site2/interior-672.webp 672w, /media/scenes/cathedral-square/cs3-site2/interior-768.webp 768w, /media/scenes/cathedral-square/cs3-site2/interior-1024.webp 1024w, /media/scenes/cathedral-square/cs3-site2/interior-1440.webp 1440w",
       "srcsetAvif": "/media/scenes/cathedral-square/cs3-site2/interior-320.avif 320w, /media/scenes/cathedral-square/cs3-site2/interior-480.avif 480w, /media/scenes/cathedral-square/cs3-site2/interior-672.avif 672w, /media/scenes/cathedral-square/cs3-site2/interior-768.avif 768w, /media/scenes/cathedral-square/cs3-site2/interior-1024.avif 1024w, /media/scenes/cathedral-square/cs3-site2/interior-1440.avif 1440w",
       "inputPath": "media/scenes/cathedral-square/cs3-site2/interior.png"
+    },
+    {
+      "src": "/media/vehicles/r5-flush-fix/review/sedan.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Saved review views of Generic sedan.",
+      "srcsetWebp": "/media/vehicles/r5-flush-fix/review/sedan-320.webp 320w, /media/vehicles/r5-flush-fix/review/sedan-480.webp 480w, /media/vehicles/r5-flush-fix/review/sedan-672.webp 672w, /media/vehicles/r5-flush-fix/review/sedan-768.webp 768w, /media/vehicles/r5-flush-fix/review/sedan-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r5-flush-fix/review/sedan-320.avif 320w, /media/vehicles/r5-flush-fix/review/sedan-480.avif 480w, /media/vehicles/r5-flush-fix/review/sedan-672.avif 672w, /media/vehicles/r5-flush-fix/review/sedan-768.avif 768w, /media/vehicles/r5-flush-fix/review/sedan-1024.avif 1024w",
+      "inputPath": "media/vehicles/r5-flush-fix/review/sedan.png",
+      "sourceRevisionId": "r_35222363b36f4d2da720311bcad86215",
+      "exactRevision": true,
+      "fidelity": {
+        "version": "kiln.view-fidelity.v1",
+        "requested": "full-preferred",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true,
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "inputGlbSha256": "sha256:4aeb8e1c715e650fc7e596afd5afa87096b3eb40c3359bc3aae7b55688254c17",
+        "degraded": false,
+        "reasonCodes": []
+      }
+    },
+    {
+      "src": "/media/vehicles/r5-flush-fix/review/suv.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Saved review views of Generic SUV.",
+      "srcsetWebp": "/media/vehicles/r5-flush-fix/review/suv-320.webp 320w, /media/vehicles/r5-flush-fix/review/suv-480.webp 480w, /media/vehicles/r5-flush-fix/review/suv-672.webp 672w, /media/vehicles/r5-flush-fix/review/suv-768.webp 768w, /media/vehicles/r5-flush-fix/review/suv-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r5-flush-fix/review/suv-320.avif 320w, /media/vehicles/r5-flush-fix/review/suv-480.avif 480w, /media/vehicles/r5-flush-fix/review/suv-672.avif 672w, /media/vehicles/r5-flush-fix/review/suv-768.avif 768w, /media/vehicles/r5-flush-fix/review/suv-1024.avif 1024w",
+      "inputPath": "media/vehicles/r5-flush-fix/review/suv.png",
+      "sourceRevisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
+      "exactRevision": true,
+      "fidelity": {
+        "version": "kiln.view-fidelity.v1",
+        "requested": "full-preferred",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true,
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "inputGlbSha256": "sha256:ae5def029e090262cc442dfea8d5f9c2a9e396add6948312d1a3739694ac8d5c",
+        "degraded": false,
+        "reasonCodes": []
+      }
+    },
+    {
+      "src": "/media/vehicles/r5-flush-fix/review/box-truck.webp",
+      "width": 1168,
+      "height": 780,
+      "alt": "Saved review views of Generic box truck.",
+      "srcsetWebp": "/media/vehicles/r5-flush-fix/review/box-truck-320.webp 320w, /media/vehicles/r5-flush-fix/review/box-truck-480.webp 480w, /media/vehicles/r5-flush-fix/review/box-truck-672.webp 672w, /media/vehicles/r5-flush-fix/review/box-truck-768.webp 768w, /media/vehicles/r5-flush-fix/review/box-truck-1024.webp 1024w",
+      "srcsetAvif": "/media/vehicles/r5-flush-fix/review/box-truck-320.avif 320w, /media/vehicles/r5-flush-fix/review/box-truck-480.avif 480w, /media/vehicles/r5-flush-fix/review/box-truck-672.avif 672w, /media/vehicles/r5-flush-fix/review/box-truck-768.avif 768w, /media/vehicles/r5-flush-fix/review/box-truck-1024.avif 1024w",
+      "inputPath": "media/vehicles/r5-flush-fix/review/box-truck.png",
+      "sourceRevisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
+      "exactRevision": true,
+      "fidelity": {
+        "version": "kiln.view-fidelity.v1",
+        "requested": "full-preferred",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true,
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "inputGlbSha256": "sha256:568979622343e4aa4b378514f60199539557649a3e8c124c9f78a11c347e53fa",
+        "degraded": false,
+        "reasonCodes": []
+      }
     }
   ],
   "archives": [
@@ -5252,49 +5318,56 @@
     "packs/vehicles/r4-local-review/editable/pickup-editable.zip",
     "packs/vehicles/r4-local-review/editable/box-truck-editable.zip",
     "packs/vehicles/r4-local-review/editable/transit-bus-editable.zip",
-    "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
     "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
     "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
-    "packs/farm/r36-local-review/shapes-and-seasons-farm-scene.zip"
+    "packs/farm/r36-local-review/shapes-and-seasons-farm-scene.zip",
+    "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
+    "packs/vehicles/r5-flush-fix/editable/hatchback-editable.zip",
+    "packs/vehicles/r5-flush-fix/editable/sedan-editable.zip",
+    "packs/vehicles/r5-flush-fix/editable/suv-editable.zip",
+    "packs/vehicles/r5-flush-fix/editable/pickup-editable.zip",
+    "packs/vehicles/r5-flush-fix/editable/box-truck-editable.zip",
+    "packs/vehicles/r5-flush-fix/editable/transit-bus-editable.zip",
+    "packs/vehicles/r5-flush-fix/generic-road-vehicles-runtime.zip"
   ],
   "sources": [
     {
-      "archive": "packs/vehicles/r4-local-review/editable/hatchback-editable.zip",
+      "archive": "packs/vehicles/r5-flush-fix/editable/hatchback-editable.zip",
       "member": "generic-hatchback/r_74f393f06996497a9dce6c5ed50c2d62/source.kiln.js",
       "output": "sources/vehicles/hatchback.kiln.js",
       "bytes": 24691,
       "sha256": "c3cd99e30b697e7a1e120f5ec931e831b7b5f76a4e7cf6580d960cca8062ad97"
     },
     {
-      "archive": "packs/vehicles/r4-local-review/editable/sedan-editable.zip",
-      "member": "generic-sedan/r_92ee0ac3d5cf4b258cc97d20ec941461/source.kiln.js",
+      "archive": "packs/vehicles/r5-flush-fix/editable/sedan-editable.zip",
+      "member": "generic-sedan/r_35222363b36f4d2da720311bcad86215/source.kiln.js",
       "output": "sources/vehicles/sedan.kiln.js",
-      "bytes": 24461,
-      "sha256": "df38ba80d458a1e040e8d2646e4325ceb70ed440c5d36402787812c12a3196ef"
+      "bytes": 24908,
+      "sha256": "a40061f00547e3feb6ec3ee70bdc316603e0ac578468b1cf724a5846a8096d31"
     },
     {
-      "archive": "packs/vehicles/r4-local-review/editable/suv-editable.zip",
-      "member": "generic-suv/r_b4cc9048731b4c039de0b87ca6e75c17/source.kiln.js",
+      "archive": "packs/vehicles/r5-flush-fix/editable/suv-editable.zip",
+      "member": "generic-suv/r_0b3396ba73a6479a8d2fbf0f82e2463e/source.kiln.js",
       "output": "sources/vehicles/suv.kiln.js",
-      "bytes": 24701,
-      "sha256": "92be21e9c7b467e20a8bdbcb1f62e77e9a9cd7d2f3e76c73eb6d5225a3398198"
+      "bytes": 24720,
+      "sha256": "83770c33d631485ec6252f335f82fcddbdbb2be8df681e890010072be9c2dd72"
     },
     {
-      "archive": "packs/vehicles/r4-local-review/editable/pickup-editable.zip",
+      "archive": "packs/vehicles/r5-flush-fix/editable/pickup-editable.zip",
       "member": "a_557b9bd6c2c34340804e802081a9b983/r_218be4189a1b43e7b307c2263ba4f954/source.kiln.js",
       "output": "sources/vehicles/pickup.kiln.js",
       "bytes": 11583,
       "sha256": "ce88a54e3703e7a02c46cc8082e0dfa4176532a09fc171d0014b0677bae3a5a1"
     },
     {
-      "archive": "packs/vehicles/r4-local-review/editable/box-truck-editable.zip",
-      "member": "a_2092ca0610c749b386c14c07dbaf4236/r_538b8a19c46d4086b456e27b32ee7d33/source.kiln.js",
+      "archive": "packs/vehicles/r5-flush-fix/editable/box-truck-editable.zip",
+      "member": "a_2092ca0610c749b386c14c07dbaf4236/r_56e3859a78d84f5f922e5f64fe747f06/source.kiln.js",
       "output": "sources/vehicles/box-truck.kiln.js",
       "bytes": 12137,
-      "sha256": "aa5f5e777bfe2a0992ae6a9b97981ece095fe5f3ba9bd0bc412a4c44c4e94b8c"
+      "sha256": "40ff1285f4c16b2ef31fb58f939d095ff02ca62ffab05a822802153ed2204871"
     },
     {
-      "archive": "packs/vehicles/r4-local-review/editable/transit-bus-editable.zip",
+      "archive": "packs/vehicles/r5-flush-fix/editable/transit-bus-editable.zip",
       "member": "a_a8c030b2570f4ae5aa54eefbd3767f4c/r_85ff097a61384efab445c55372d3b6f5/source.kiln.js",
       "output": "sources/vehicles/transit-bus.kiln.js",
       "bytes": 13436,
@@ -5472,37 +5545,37 @@
   ],
   "models": [
     {
-      "path": "packs/vehicles/r4-local-review/models/hatchback.glb",
+      "path": "packs/vehicles/r5-flush-fix/models/hatchback.glb",
       "output": "models/vehicles/hatchback.glb",
       "bytes": 118752,
       "sha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0"
     },
     {
-      "path": "packs/vehicles/r4-local-review/models/sedan.glb",
+      "path": "packs/vehicles/r5-flush-fix/models/sedan.glb",
       "output": "models/vehicles/sedan.glb",
-      "bytes": 117780,
-      "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212"
+      "bytes": 117972,
+      "sha256": "f925ac655662e848fd3a42b91468767ca0c6273d2487c39a97ed04cb41f1a30a"
     },
     {
-      "path": "packs/vehicles/r4-local-review/models/suv.glb",
+      "path": "packs/vehicles/r5-flush-fix/models/suv.glb",
       "output": "models/vehicles/suv.glb",
-      "bytes": 120120,
-      "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2"
+      "bytes": 119940,
+      "sha256": "9d0fca47fa6d1a4187b2e27efa3bd008f79e9fd8c25f54b104e4cad2d54ed922"
     },
     {
-      "path": "packs/vehicles/r4-local-review/models/pickup.glb",
+      "path": "packs/vehicles/r5-flush-fix/models/pickup.glb",
       "output": "models/vehicles/pickup.glb",
       "bytes": 170184,
       "sha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f"
     },
     {
-      "path": "packs/vehicles/r4-local-review/models/box-truck.glb",
+      "path": "packs/vehicles/r5-flush-fix/models/box-truck.glb",
       "output": "models/vehicles/box-truck.glb",
-      "bytes": 169728,
-      "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420"
+      "bytes": 169724,
+      "sha256": "deed8053c8c9675a5687ecdd2ad5f1715177fce893607b74757b5b0f12503cc8"
     },
     {
-      "path": "packs/vehicles/r4-local-review/models/transit-bus.glb",
+      "path": "packs/vehicles/r5-flush-fix/models/transit-bus.glb",
       "output": "models/vehicles/transit-bus.glb",
       "bytes": 194148,
       "sha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067"

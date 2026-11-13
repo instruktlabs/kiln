@@ -5,8 +5,8 @@
 # When a scene pack moves to a new release, point its earlier rules at the new one and add one for the release retired.
 /scene-packs/golden-gate/g9/* /scene-packs/golden-gate/g9-code6/:splat 301
 /scene-packs/golden-gate/g9-code5/* /scene-packs/golden-gate/g9-code6/:splat 301
-/scene-packs/foundry-floor/ff3-review2/* /scene-packs/foundry-floor/ff3-review2-flush1/:splat 301
-/scene-packs/foundry-floor/ff3-review2-code5/* /scene-packs/foundry-floor/ff3-review2-flush1/:splat 301
+/scene-packs/foundry-floor/ff3-review2/* /scene-packs/foundry-floor/ff3-review2-flush2/:splat 301
+/scene-packs/foundry-floor/ff3-review2-code5/* /scene-packs/foundry-floor/ff3-review2-flush2/:splat 301
 /scene-packs/troy/troy-20261005-04/* /scene-packs/troy/troy-20261113-01/:splat 301
 /scene-packs/troy/troy-20261005-06/* /scene-packs/troy/troy-20261113-01/:splat 301
 /scene-packs/troy/troy-20261005-07/* /scene-packs/troy/troy-20261113-01/:splat 301
