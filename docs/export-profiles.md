@@ -205,8 +205,9 @@ The sidecar retains each source scene index and its original review object.
 The profile preserves glTF hierarchy, node names, sockets, transforms, mesh topology,
 materials, textures, skins, morph targets, native animation channels, and application
 extras. Every chunk after JSON, including the BIN chunk, is copied byte for byte.
-JSON values are preserved outside the named review field and the added provenance
-record. Existing metadata is **not** generally scrubbed, so user-authored extras can
+JSON values are preserved outside the named review field, the parameter marks and the
+added provenance record. Carrying sizes is the exception: it adds morph targets and
+writes the whole GLB again. Existing metadata is **not** generally scrubbed, so user-authored extras can
 still contain information the author put there. The new provenance fields introduce
 no local paths, source text, build paths or provider information.
 

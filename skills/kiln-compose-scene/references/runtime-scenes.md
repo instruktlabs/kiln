@@ -99,6 +99,33 @@ keyboard entry and Escape focus return, then use actual touch events to verify
 movement, release and no click-through. Desktop mouse success alone does not
 establish the touch contract or physical-device acceptance.
 
+### Parameters an asset carries
+
+An asset exported with the runtime profile can carry declared parameters, and the scene
+sets them instead of asking for another build. Read the `params` block of the asset's
+metadata sidecar; do not guess names from the source.
+
+- **Colour** (`params.colors`): set the base colour of each material whose
+  `userData.kilnParamV1.name` is the parameter. Instances that share a material change
+  together; copy the material for an instance that needs its own colour.
+- **Option** (`params.switches`): for each node tagged `kilnParamV1`, set `visible` to
+  whether `visibleWhen` includes the chosen value. Do this once at load too: three.js r187
+  does not read `KHR_node_visibility`, so an option that is off by default is drawn.
+- **Preset** (`params.presets`): select the `KHR_materials_variants` entry of that name.
+  three.js r187 does not switch variants itself: each mesh keeps its mappings in
+  `userData.gltfExtensions.KHR_materials_variants`, and
+  `parser.getDependency('material', index)` loads the mapped material.
+- **Size** (`params.shapes`, exported with `--carry-shapes`): the clip `kiln.param.<name>`
+  runs from the minimum at time 0 to the maximum at time 1. Clamp the action and set the
+  mixer to the time for the value, from `keys`. Never loop it and never start it with the
+  asset's motion clips: a controller that plays every clip scrubs the size.
+
+A size set this way moves vertices, so recompute the instance's bounds, collider and
+placement checks at the chosen value, and `invalidate` a cached shadow of a static caster.
+A parameter the sidecar lists under `params.dropped`, or does not list, needs a build at
+that value. Which values a scene offers is a scene decision; a standalone asset does not
+need carried parameters.
+
 ## Optimization and measurement
 
 Use instancing for compatible repeated geometry/materials, with useful spatial

@@ -42,6 +42,7 @@ Use the existing material payload and asset-bundle encoders for portable deliver
 | Authoring | `primitives`, `geometry`, `deform`, `sweep`, `architecture`, `assembly`, `character`, `vehicle`, `palette`, `delivery` |
 | Materials | `material-library`, `material-library/node`, `material-presets`, `material-recipes`, `material-resources`, `material-recipe-runtime`, `material-recipe-prompt`, `material-metrics`, `texture-resolver` |
 | Rendering and inspection | `render`, `views`, `views/port`, `validation`, `metrics`, `inspect`, `qa`, `asset-export`, `kit` |
+| Declared parameters | `params` (declaration types and `checkParamValues`), `param-bindings` (`recolorGlb`, `applyCarriedParams` and the binding types); see [declared parameters](programs.md#declared-parameters) |
 | Host contracts | `tools`, `tools/input`, `mcp`, `evaluator`, `discovery`, `discovery/portable`, `requirements`, `requirements/migration`, `contracts`, `prompt-api`, `profile` |
 | Records and storage | `assets`, `projects`, `project-bundle`, `workspace`, `live-review`, `programs`, `cache`, and each corresponding `/node` adapter |
 | Composition | `composer`, `world-runtime` |

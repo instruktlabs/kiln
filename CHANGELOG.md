@@ -26,6 +26,17 @@ does not publish a package.
   revision, so 46 receipts are kept as `historicalPosterReceipt`, as `field-gun` and
   `windmill` already were. Run `node scripts/example-archive.mjs --fetch` once after
   pulling.
+- **Skills, Discovery and the README describe what a GLB carries.** Discovery's
+  `defineParams` entry said a GLB carries no parameters; it now says what the sweep reports
+  (`factor`, `visibility`, `morph` or `rebuild`) and how to author each so it is carried,
+  and `shape:params` names the sweep's `colors`, `switches` and `shapes`. The skill export
+  guide gains "Parameters a runtime file carries" with `--carry-shapes`, the tags and the
+  sidecar's `params` block. The QA skill says to read a `FLUSH_FACES` warning and to sweep a
+  parametric asset, its handoff guide records what three.js r187 and Blender 5.2.0 do with a
+  carried size, option and preset, and the scene guide says how a scene sets each. The
+  refine skill's revision commands have headings, and its presentation step follows the
+  save. The README and SDK guide name declared parameters and the `params` and
+  `param-bindings` entrypoints. No tool input changed.
 - **The sweep says which sizes a GLB can carry.** `kiln_render` with `params: { sweep: true }`
   and `kiln render --sweep` report `sweep.shapes.<name>` for each `range` and `int`
   parameter: `morph` with the measured distance from a straight line when

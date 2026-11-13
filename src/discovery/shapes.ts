@@ -54,13 +54,14 @@ export const discoveryShapes: ShapeEntry[] = [
     'params',
     'kiln_render',
     'params',
-    'The record kiln_render params takes: { preset?, values? } builds the program at other values of the parameters it declares with defineParams, and { sweep: true } builds the defaults, each parameter at its extremes and every preset, reporting each build without images. A refused value is named with what its parameter allows; nothing is clamped.',
+    'The record kiln_render params takes: { preset?, values? } builds the program at other values of the parameters it declares with defineParams, and { sweep: true } builds the defaults, each parameter at its extremes and every preset, reporting each build without images. The sweep also reports what an exported GLB carries without a rebuild, as colors, switches and shapes. A refused value is named with what its parameter allows; nothing is clamped.',
     paramsInput,
     {
       aliases: ['parameter values', 'variant values', 'preset', 'parameter sweep', 'sliders'],
       intents: [
         'build an asset at another size, count or colour without editing source',
         'check that every declared parameter value builds a sound asset',
+        'find out which parameters an exported GLB carries without a rebuild',
       ],
       limitations: [
         'A variant is reviewed but not retained: kiln_save and kiln_finish keep the default build.',

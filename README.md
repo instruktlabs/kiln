@@ -139,6 +139,7 @@ availability, additional agents, repairs and plugin setup.
 | Task | Kiln provides |
 | --- | --- |
 | Author and refine | Geometry helpers, named parts, immutable source revisions and anchored edits |
+| Vary | Declared parameters: one source builds other sizes, counts, options and colours |
 | Inspect | Multi-view renders, measurements and image-independent structural QA |
 | Save and reuse | A local asset library, revision history and portable source/GLB exports |
 | Review together | A local dashboard with materials, optional projects and Live Review |
@@ -146,6 +147,16 @@ availability, additional agents, repairs and plugin setup.
 
 Projects are optional. A single asset needs no pack, project record or hosted account.
 Use [Discovery](docs/tools.md) to find helpers rather than guessing API names.
+
+A program can [declare parameters](docs/programs.md#declared-parameters) with
+`defineParams`. The saved GLB is the default build, and `kiln render asset.kiln.js --sweep`
+builds each parameter at its extremes and reports what an exported file can carry without
+a rebuild: a colour, an option that shows or hides parts, a preset of colours and, with
+`kiln export --profile runtime --carry-shapes`, a size that moves in straight lines.
+Every other value is another build from the same source.
+
+A build also warns when faces of two parts lie on one plane and would flicker
+(`FLUSH_FACES`), with the place and the direction to move one of them.
 
 CPU rendering works without a GPU and is useful for geometry review. Material-faithful
 views use the optional local render service; texture and metallic appearance must be
