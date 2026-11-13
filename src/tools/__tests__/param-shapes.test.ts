@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { exportAssetGlb } from '../../asset-export';
 import { FileAssetLibrary } from '../../assets-node';
-import { carryShapes, PARAM_CLIP_PREFIX } from '../../param-shapes';
+import { carryShapes, classifyShapes, PARAM_CLIP_PREFIX } from '../../param-shapes';
 import type { ParamsDeclarationV1, ParamValue } from '../../params';
 import { MemoryProgramStore } from '../../program-store';
 import { renderGLBInProcess } from '../../render';
@@ -172,6 +172,66 @@ describe('carryShapes', () => {
     expect(failing.shapes.width).toMatchObject({ mode: 'rebuild', reason: 'PROBE_FAILED' });
     expect(failing.shapes.bays).toMatchObject({ mode: 'rebuild', reason: 'STRUCTURE_CHANGED' });
   }, 120_000);
+});
+
+describe('classifyShapes', () => {
+  test('decides what carryShapes decides, in declaration order, without writing a file', async () => {
+    const classes = await classifyShapes(defaultGlb, declaration, buildWith);
+    expect(Object.keys(classes)).toEqual(['width', 'bays', 'bow']);
+    expect(classes.width).toEqual({
+      mode: 'morph',
+      gap: (carried.shapes.width as { gap: number }).gap,
+    });
+    expect(classes.bays).toEqual(carried.shapes.bays!);
+    expect(classes.bow).toEqual(carried.shapes.bow!);
+  }, 120_000);
+});
+
+describe('a sweep reports which sizes a GLB can carry', () => {
+  test('each range and int parameter is listed as carried or rebuild-only, with the reason', async () => {
+    const programStore = new MemoryProgramStore();
+    const ref = await programStore.put(CODE);
+    const render = createKilnProgramToolRegistry({ programStore }).find(
+      (def) => def.name === 'kiln_render',
+    )!;
+    const result = (await render.run({ programRef: ref, params: { sweep: true } })) as {
+      sweep: {
+        built: number;
+        failed: number;
+        shapes?: Record<string, { mode: string; gap?: number; reason?: string }>;
+      };
+    };
+    expect(result.sweep.failed).toBe(0);
+    expect(Object.keys(result.sweep.shapes ?? {})).toEqual(['width', 'bays', 'bow']);
+    expect(result.sweep.shapes?.width?.mode).toBe('morph');
+    expect(result.sweep.shapes?.width?.gap).toBeLessThan(1e-5);
+    expect(result.sweep.shapes?.bays).toMatchObject({
+      mode: 'rebuild',
+      reason: 'STRUCTURE_CHANGED',
+    });
+    expect(result.sweep.shapes?.bow).toMatchObject({ mode: 'rebuild', reason: 'NOT_LINEAR' });
+  }, 120_000);
+
+  test('a program with no size parameter reports no shapes', async () => {
+    const programStore = new MemoryProgramStore();
+    const ref = await programStore.put(
+      CODE.replace(
+        /defineParams\(\{[\s\S]*?\}\);/,
+        "defineParams({ lit: { type: 'toggle', default: true } });",
+      )
+        .replaceAll('P.width', '1')
+        .replaceAll('P.bays', '2')
+        .replaceAll('P.bow', '0'),
+    );
+    const render = createKilnProgramToolRegistry({ programStore }).find(
+      (def) => def.name === 'kiln_render',
+    )!;
+    const result = (await render.run({ programRef: ref, params: { sweep: true } })) as {
+      sweep: { built: number; shapes?: unknown };
+    };
+    expect(result.sweep.built).toBeGreaterThan(0);
+    expect(result.sweep.shapes).toBeUndefined();
+  }, 60_000);
 });
 
 describe('runtime export with carried shapes', () => {

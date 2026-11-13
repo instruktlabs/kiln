@@ -141,6 +141,10 @@ it('builds a variant, names a refused value and sweeps the range from the CLI', 
       'preset wide',
     ]);
     expect(swept.sweep).toMatchObject({ built: 7, failed: 1, notSwept: [] });
+    // Each size is listed as one the GLB could carry or one that needs a rebuild.
+    expect(Object.keys(swept.sweep.shapes)).toEqual(['width', 'count']);
+    for (const shape of Object.values(swept.sweep.shapes) as { mode: string }[])
+      expect(['morph', 'rebuild']).toContain(shape.mode);
     expect(swept.files).toEqual([]);
 
     const table = run(['render', 'source.js', '--sweep']);
@@ -148,6 +152,8 @@ it('builds a variant, names a refused value and sweeps the range from the CLI', 
     expect(table.text).toContain('count=3');
     expect(table.text).toContain('36 tris');
     expect(table.text).toContain('style=broken  failed');
+    expect(table.text).toMatch(/size width {2}(--carry-shapes would carry it|rebuild only)/);
+    expect(table.text).toMatch(/size count {2}(--carry-shapes would carry it|rebuild only)/);
     expect((await readdir(directory)).includes('out.glb')).toBe(false);
   } finally {
     await rm(directory, { recursive: true, force: true });

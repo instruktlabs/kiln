@@ -287,8 +287,12 @@ take the option.
   it, because a derivation would have to re-derive every target with its mesh. The GLB is
   re-serialized and grows by the targets (the test cabinet below: 11,108 to 19,344 bytes).
   Each parameter is judged with the others at their defaults; two carried sizes moved
-  together add their deltas, which is exact only where they do not interact. The sweep does
-  not report sizes yet.
+  together add their deltas, which is exact only where they do not interact.
+- **What the sweep says first.** `kiln_render` with `params: { sweep: true }` (CLI:
+  `kiln render <program> --sweep`) reports `sweep.shapes.<name>` for each `range` and `int`:
+  `morph` with the measured `gap` in metres when the export would carry it, or `rebuild` with
+  the same reasons. It decides the same way from the same builds and writes nothing. The
+  sweep already builds each end, so this costs up to two more builds per parameter.
 - **Tested importers (2026-11-12).** A cabinet with a carried `width` (0.6 to 1.4 m), a
   `doors` toggle and a `blue` preset was loaded by three.js r187's `GLTFLoader` and imported
   headless into Blender 5.2.0 LTS. Both read the clip, the named targets (shape keys in

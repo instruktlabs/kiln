@@ -16,6 +16,13 @@ does not publish a package.
   revision, so 46 receipts are kept as `historicalPosterReceipt`, as `field-gun` and
   `windmill` already were. Run `node scripts/example-archive.mjs --fetch` once after
   pulling.
+- **The sweep says which sizes a GLB can carry.** `kiln_render` with `params: { sweep: true }`
+  and `kiln render --sweep` report `sweep.shapes.<name>` for each `range` and `int`
+  parameter: `morph` with the measured distance from a straight line when
+  `kiln export --carry-shapes` would write it as morph targets, or `rebuild` with the reason.
+  It is decided the way the export decides it, from the same builds, and writes nothing. The
+  sweep already builds each end, so it costs up to two more builds per parameter. The tool's
+  input is unchanged.
 - **A GLB can carry a toggle, a choice and a colour preset.** A `toggle` or `choice` that
   only shows and hides nodes (`part.visible = P.arms`) is classified at save and by the sweep
   (`sweep.switches`, `build.paramBindings.switches`) and tagged by the runtime export as
@@ -40,8 +47,8 @@ does not publish a package.
   `--target` or `--draws`), re-serializes the GLB and leaves the saved revision unchanged.
   Clamp the clip rather than loop it: a looping action wraps time 1 to the minimum. Checked
   on 2026-11-12 with three.js r187 and Blender 5.2.0 LTS, which both read the clip, the
-  targets and a preset variant and matched rebuilds at four widths; `kiln_export` and the
-  sweep do not take or report it yet.
+  targets and a preset variant and matched rebuilds at four widths; `kiln_export` does not
+  take it yet.
 - **The refine skill fixes a small flush face it finds on a part it is editing.** When a
   `FLUSH_FACES` warning that was already in the parent names a part the edit touches and the
   remedy is the stated 2 mm move, the agent makes it and reports it as a separate change. In

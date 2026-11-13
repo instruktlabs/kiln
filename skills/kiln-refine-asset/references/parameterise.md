@@ -93,7 +93,8 @@ with the nodes it shows, or `rebuild`. To make an option `visibility`, always bu
 and set `part.visible` from the parameter. Check a combination you intend to offer as a
 preset, and declare it as one. A size is rebuild-only in the saved GLB;
 `kiln export --carry-shapes` writes it as morph targets when every value keeps the same parts
-and vertex counts and moves them in straight lines.
+and vertex counts and moves them in straight lines. For each `range` and `int` the sweep
+reports `shapes`: `morph` when that export would carry it, or `rebuild` with the reason.
 
 ## 6. Save the child
 
@@ -107,5 +108,5 @@ is never saved: deliver one with `kiln_export` and `params`.
 - A binary-only asset has no source to parameterise.
 - A matching hash proves the default is unchanged. It says nothing about whether other values
   look right; only the sweep and the views do.
-- A GLB carries only colours the sweep reports as `factor`. Any other value is another build
-  from source.
+- A GLB carries only what the sweep reports as `factor`, `visibility` or, when exported with
+  `--carry-shapes`, `morph`. Any other value is another build from source.
