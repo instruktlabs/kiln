@@ -60,6 +60,7 @@ export const DERIVATIONS = {
 /** Scene adapters: each regenerates the members of its own pack that name the swapped models. */
 export const ADAPTERS = {
   'foundry-floor': () => import(pathToFileURL(resolve(SITE, '../scenes/packages/foundry-floor/scripts/pack-swap-adapter.ts')).href),
+  farm: () => import(pathToFileURL(resolve(SITE, '../scenes/packages/farm/scripts/pack-swap-adapter.ts')).href),
   'golden-gate': () => import(pathToFileURL(resolve(SITE, '../scenes/packages/golden-gate/scripts/pack-swap-adapter.ts')).href),
 };
 

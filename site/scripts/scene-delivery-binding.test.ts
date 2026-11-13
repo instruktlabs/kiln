@@ -44,7 +44,7 @@ test.each([
 });
 test('Farm module mode binds the actual shell to its exact emitted entry and selected pack', () => {
   const runtime = { schema: 'kiln.scene-runtime/1', id: 'farm', kind: 'module', file: 'farm-current.js', url: '/scene-runtime/farm/farm-current.js' };
-  const record = { id: 'farm', base: '/scene-packs/farm/r36-local-review/' };
+  const record = { id: 'farm', base: '/scene-packs/farm/r36-flush1/' };
   const shellHtml = `<scene-shell data-scene="farm" data-kind="module" data-runtime-url="${runtime.url}" data-asset-base="${record.base}"></scene-shell>`;
   expect(verifySceneDeliveryBinding({ id: 'farm', record, runtime, shellHtml })).toMatchObject({ id: 'farm' });
   expect(() => verifySceneDeliveryBinding({ id: 'farm', record, runtime, shellHtml: shellHtml.replace('farm-current.js', 'farm-old.js') })).toThrow();

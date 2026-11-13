@@ -277,12 +277,13 @@ describe('scene pack catalog record', () => {
     expect(compareRuntimeRecord(undefined, recorded)).toEqual(['the record has no runtime for this standalone build']);
   });
 
-  test('the Farm record serves the r36 local review with repaired clothing and retained walking controls', () => {
+  test('the Farm record serves the r36 local review with the flush-face fix farmer and retained walking controls', () => {
     const record = scenePacks.farm;
-    expect(record.release).toBe('r36-local-review');
+    expect(record.release).toBe('r36-flush1');
     expect(record.base).toBe(`/scene-packs/farm/${record.release}/`);
     expect(record.source).toBe('.cache/site-inputs/farm/standalone');
-    expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_133_727, packJsonSha256: '5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48' });
+    // r36-local-review with its farmer swapped for the flush-face fix child (scripts/scene-pack-swap.mjs).
+    expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_133_763, packJsonSha256: 'f97c8ee73d388e12d03784c605341f2f5fcb6d1c05672a161072c99abd235c8a' });
     // The sealed asset pack keeps its original producer version when current runtime code advances.
     expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
@@ -290,7 +291,7 @@ describe('scene pack catalog record', () => {
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
     expect(farmScene.assetBase).toBe(record.base);
     expect(farmScene.pack).toBe(record);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r36-local-review'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r36-flush1'));
     expect(() => stagedPackDirectory({ base: '/../escape/' }, '/site')).toThrow('Unexpected');
   });
 

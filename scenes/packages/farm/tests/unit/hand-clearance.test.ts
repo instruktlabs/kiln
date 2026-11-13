@@ -44,14 +44,14 @@ for (const release of ['r34', 'r35-local-review']) test(`${release} saved farmer
 });
 
 
-test('exact r36 released farmer preserves relaxed shoulders on substep and normal rendered frames', async () => {
+test('exact released farmer (r36-flush1) preserves relaxed shoulders on substep and normal rendered frames', async () => {
   await import('three');
   const { createFarmSim } = await import('../../src/play/sim');
   const { buildFarmColliders } = await import('../../src/world/colliders');
   const { FARM_WALK } = await import('../../src/constants');
   const loader = new GLTFLoader();
   loader.register(() => ({ name: 'fit-material', loadMaterial: async () => new MeshBasicMaterial() }));
-  const expected = { farmer: 'b6c49161d0627c26e3cc7ea07e88f58c2726fe2c8b15773afcb621d3ab21b829', tractor: '8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117' };
+  const expected = { farmer: 'f0b5ef71ca0abb99d71b6ed036c2672e1ebfe2d3d90b243651ad3f2fa634f6d3', tractor: '8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117' };
   const instances: import('../../src/world/types').FarmInstance[] = [];
   for (const id of ['farmer', 'tractor'] as const) {
     const bytes = readFileSync(new URL(`../../../../.cache/site-inputs/farm/standalone/assets/models/${id}.glb`, import.meta.url));
@@ -130,6 +130,7 @@ test('exact r36 released farmer preserves relaxed shoulders on substep and norma
       const hip = componentBox(root, /Consolidated_Joint_(Left|Right)Hip/), leftHand = componentBox(root, /Consolidated_Joint_LeftElbow_0/), rightHand = componentBox(root, /Mesh_EmptyHandedRightArm/);
       minimum = Math.min(minimum, hip.min.z - leftHand.max.z, rightHand.min.z - hip.max.z);
     }
+    console.log('released farmer minimum hand-to-hip lateral clearance', minimum);
     expect(minimum).toBeGreaterThan(.01);
   } finally {
     sim.dispose(); colliders.dispose();
