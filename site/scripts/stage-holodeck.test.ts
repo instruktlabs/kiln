@@ -141,6 +141,32 @@ test('the upload list holds only objects the asset host has not verified', async
   expect((await recordHolodeckPublished({ receipt: join(f.root, 'receipt.json'), ledger })).added).toBe(0);
 });
 
+test('a poster recorded for an earlier revision is left off the new one until it is rendered, and blocks the upload list', async () => {
+  const f = await fixture();
+  const first = await stageWithPosters(f, 'holodeck-fixture-01', { 'holodeck-cove': ['shell', 'palm'] });
+  // A child revision of the palm: new canonical bytes, so a new runtime model under the same slug.
+  const palm = ids('palm'), revisionId = 'r_' + 'c'.repeat(32);
+  const canonical = triangleGlb('palm-child'), source = Buffer.from("const meta={name:'palm'};function build(){return createRoot('palm-child');}");
+  const files = { 'asset.glb': canonical, 'source.kiln.js': source, 'preview.png': png };
+  const manifest = Buffer.from(JSON.stringify({ version: 'kiln.asset.v1', assetId: palm.assetId, revisionId, parentRevision: palm.revisionId, name: 'palm', tags: [], createdAt: '2026-11-13T00:00:00.000Z', editable: true, files: Object.fromEntries(Object.entries(files).map(([name, bytes]) => [name, { bytes: bytes.length, sha256: 'sha256:' + hashBytes(bytes) }])) }));
+  const dir = join(f.store, palm.assetId, 'revisions', revisionId);
+  await put(join(dir, 'manifest.json'), manifest);
+  for (const [name, bytes] of Object.entries(files)) await put(join(dir, name), bytes);
+  const metadata = Buffer.from(JSON.stringify({ version: 'kiln.runtime-metadata.v1', source: { assetId: palm.assetId, revisionId, glbSha256: 'sha256:' + hashBytes(canonical), sourceSha256: 'sha256:' + hashBytes(source) } }));
+  const runtime = { glb: triangleGlb('palm-child', { kilnProvenanceV1: { version: 'kiln.provenance.v1', profile: 'runtime', metadata: { uri: 'palm.kiln-metadata.json', sha256: 'sha256:' + hashBytes(metadata) } } }), metadata };
+  (f.assets as any).palm = { ...(f.assets as any).palm, revisionId, parentRevision: palm.revisionId, manifest: seal(manifest), canonical: seal(canonical), source: seal(source) };
+  const exporter = async (input: { slug: string }) => input.slug === 'palm' ? runtime : f.exporter(input);
+  const { catalog } = await stageRelease(f, 'holodeck-fixture-02', { 'holodeck-cove': ['shell', 'palm'] }, { exporter });
+  expect(catalog.assets.find((asset: any) => asset.slug === 'palm')).toMatchObject({ revisionId, poster: null });
+  expect(catalog.assets.find((asset: any) => asset.slug === 'shell').poster).toEqual(first.assets.find((asset: any) => asset.slug === 'shell').poster);
+  await expect(holodeckUploadList({ mirror: f.mirror, site: f.site, ledger: join(f.packsRoot, 'published.json') })).rejects.toThrow('Render the Holodeck posters before listing uploads: palm');
+  // A poster recorded for this very revision but another model is still refused.
+  const recorded = JSON.parse(await readFile(join(f.site, 'src/data/rig-posters.json'), 'utf8'));
+  recorded.posters['holodeck:palm'] = { ...recorded.posters['holodeck:palm'], revisionId };
+  await put(join(f.site, 'src/data/rig-posters.json'), JSON.stringify(recorded));
+  await expect(stageRelease(f, 'holodeck-fixture-02', { 'holodeck-cove': ['shell', 'palm'] }, { exporter })).rejects.toThrow('render its poster again');
+});
+
 test('immutable keys refuse different bytes in the mirror, the ledger and the receipt', async () => {
   const f = await fixture();
   const ledger = join(f.packsRoot, 'published.json');
