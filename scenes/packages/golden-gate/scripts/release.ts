@@ -59,7 +59,7 @@ export interface BridgePin {
   licensed?: { revision: string; parent: string };
 }
 /**
- * g9-flush1 (2026-11-13): the flush-face fix children of g9's web and far revisions, each the Kiln runtime export of
+ * g9-flush2 (2026-11-13): the flush-face fix children of g9's web and far revisions, each the Kiln runtime export of
  * its saved revision (site/scripts/scene-pack-swap.mjs, scripts/flush-fix-swaps.json); staged by swapping them into
  * the sealed g9-code6 pack, not by this package's stage.ts. The g9 pins are kept below as BRIDGE_PINS_G9.
  */

@@ -23,7 +23,7 @@ async function load(type: VehicleType): Promise<GLTF> {
 }
 /**
  * Exact r4 child measurements; heavy source LOD conversion preserves geometry counts. Four wheels per vehicle.
- * g9-flush1: the SUV's flush-face fix shortened its LOD1 taillight patch, six body triangles fewer on LOD1 (738 in g9).
+ * g9-flush2: the SUV's flush-face fix shortened its LOD1 taillight patch, six body triangles fewer on LOD1 (738 in g9).
  */
 const BODY: Record<VehicleType, [number, number, number]> = {
   sedan: [2190, 706, 240], hatchback: [2184, 724, 252], suv: [2226, 732, 246],

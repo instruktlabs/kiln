@@ -17,25 +17,25 @@
   "golden-gate": {
     "schema": "kiln.scene-pack/1",
     "id": "golden-gate",
-    "release": "g9-flush1",
+    "release": "g9-flush2",
     "three": "0.186.0",
     "source": ".cache/site-inputs/golden-gate/standalone",
-    "base": "/scene-packs/golden-gate/g9-flush1/",
+    "base": "/scene-packs/golden-gate/g9-flush2/",
     "sealedFiles": 103,
     "sealedBytes": 12243600,
     "totalFiles": 106,
     "totalBytes": 12298203,
-    "packJsonSha256": "8171b87c257c693be482b7006429c29414939c640dcb9acc3aec50d82c51ca4b",
+    "packJsonSha256": "a3026f8bb3c040a69a1af2b2eaac2f949210ad962b62866950f6555d88cb73e0",
     "sha256sumsSha256": "742626d8a7a4f3b5060e26910e0cb274076ddc07e4b0073923471da1aff925b4",
-    "noticesSha256": "43e55757837f0664531185814bbfe91eda8f781c915a05de1f3ef499fdb1442e",
+    "noticesSha256": "1c27b112542ccdf247a592f918c7753cea14852a1e5234012bc06bd5ef9b859b",
     "runtime": {
       "kind": "frame",
-      "file": "index-DWkSpllN.js",
-      "bytes": 1650982,
-      "gzipBytes": 494423,
+      "file": "index-DhpWxFro.js",
+      "bytes": 1708928,
+      "gzipBytes": 512680,
       "gzipMethod": "bun-zlib",
-      "sha256": "662f332c5cc38a7c700777f4cd1147d2f0e47fd0c6567c21195d37dcfb7d7861",
-      "modulesSha256": "316a78ecf553ea20a84cc1acf09049f48676574679b3198c1a4bd87290548c60"
+      "sha256": "1a01a81a912157936f05a2060f1df377c418607a83567753e4db2b0257bdb556",
+      "modulesSha256": "ace29d2d8e9395d6887ca2b30ca68ce5ed596a781ec214ad68538902995553ae"
     }
   },
   "foundry-floor": {

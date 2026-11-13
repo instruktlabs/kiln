@@ -6,7 +6,7 @@
     "release": "g9-code6",
     "packJsonSha256": "68233d46076cbf86d57502ce612f09d63e8cc125f0b521f19f9eacbec419deb7"
   },
-  "release": "g9-flush1",
+  "release": "g9-flush2",
   "inputs": "The flush-fix children directory: golden-gate-bridge/<asset>-<tier>/child/ and foundry-floor/<asset>/child/, each with asset.glb, manifest.json and the files the manifest lists (not in the repository).",
   "swaps": [
     {
