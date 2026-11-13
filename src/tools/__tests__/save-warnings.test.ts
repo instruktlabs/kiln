@@ -32,9 +32,10 @@ describe('cutWarning', () => {
     expect(cut).toBe('alpha beta … (20 more characters; the saved manifest has the full line)');
   });
 
-  test('never cuts inside a word, even one longer than the limit', () => {
+  test('cuts at a whole word, and cuts a first word longer than the limit at the limit', () => {
+    // Nothing whole fits, so the start of the line is kept: it names the warning.
     expect(cutWarning('supercalifragilistic and more', 8)).toBe(
-      '… (29 more characters; the saved manifest has the full line)',
+      'supercal … (21 more characters; the saved manifest has the full line)',
     );
     // A cut that lands exactly at a word's end keeps that word.
     expect(cutWarning('alpha beta gamma', 10)).toBe(

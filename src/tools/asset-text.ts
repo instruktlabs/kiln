@@ -24,8 +24,9 @@ export const SAVE_WARNING_LIMIT = 700;
 
 /**
  * A warning within the limit whole; a longer one cut after its last whole word that fits, with
- * the count of characters left out and where the full line lives. Never cuts silently or inside
- * a word.
+ * the count of characters left out and where the full line lives. Never cuts silently. It cuts
+ * inside a word only when the first word alone is longer than the limit, so the start of the
+ * line, which names the warning, is always returned.
  */
 export function cutWarning(line: string, limit: number = SAVE_WARNING_LIMIT): string {
   if (line.length <= limit) return line;
@@ -34,7 +35,6 @@ export function cutWarning(line: string, limit: number = SAVE_WARNING_LIMIT): st
     // The cut falls inside a word: back up to the whitespace before it.
     while (end > 0 && !/\s/.test(line[end - 1]!)) end--;
   }
-  const kept = line.slice(0, end).trimEnd();
-  const notice = `(${line.length - kept.length} more characters; the saved manifest has the full line)`;
-  return kept ? `${kept} … ${notice}` : `… ${notice}`;
+  const kept = line.slice(0, end).trimEnd() || line.slice(0, limit);
+  return `${kept} … (${line.length - kept.length} more characters; the saved manifest has the full line)`;
 }
