@@ -4,7 +4,7 @@ import { randomUUID } from 'node:crypto';
 import { createHash } from 'node:crypto';
 import { assertCollectionRoot, localAssetLibrary, collectionConfigPath } from './assets-node';
 import { listAssetCatalog } from './asset-catalog';
-import { ASSET_LIMIT, assetIdSchema, decodeAssetBundle } from './assets';
+import { ASSET_LIMIT, type AssetRecord, assetIdSchema, decodeAssetBundle } from './assets';
 import { localProgramStore } from './program-store-node';
 import { programRefPattern, retainProgram } from './program-store';
 import { createKilnProgramToolRegistry, newestRevision } from './tools/registry';
@@ -12,6 +12,7 @@ import { writeExternalTextureExport, writeNewDestinationsAtomic } from './cli-ou
 import { createKtx2Encoder, exportAssetGlb } from './asset-export';
 import { inspectDrawDiagnostics } from './draw-diagnostics';
 import { createPackagedLocalToolContext } from './local-runtime';
+import type { ParamValue } from './params';
 import { buildRenderPort, resolveRenderMode } from './cli-render-mode';
 import { startAssetViewer } from './asset-viewer';
 import { FileWorkspace, localWorkspaceRoot } from './workspace-node';
@@ -67,6 +68,9 @@ ${SAVE_LINES}
        [--draws minimal]   runtime only: batch every repeated mesh and merge one-off parts
                           per material; the saved revision is unchanged, the sidecar reports it
        [--draw-cell M]   with --draws minimal: merge cell size in metres (default 15)
+       [--carry-shapes]   runtime only, without --target or --draws: rebuild the saved source
+                          at each range and int parameter's ends and write the sizes that move
+                          in straight lines as morph targets with one clip kiln.param.<name>
        [--textures manifest]   runtime only: the sidecar names each image's exact bytes
        [--textures external]   with --target three and --out x.gltf: x.gltf, x.bin and
                           shared textures/<sha256>.<ext> files that are never replaced
@@ -83,6 +87,9 @@ ${SAVE_LINES}
   kiln view [collection-directory|asset.glb|asset.zip] [--port 4318]
        [--collection project --asset <id> --revision <revision>]
        [--observe-workspace <directory>]   repeat to review other explicit workspaces
+       [--no-variants]   never rebuild from source. By default the viewer opens the saved
+       GLB without running its source, and rebuilds at other parameter values only when
+       you choose to in an asset's Parameters panel
 
 KILN_COLLECTIONS is an optional JSON map of collection names to absolute folders.
 On Windows these name a drive or share, such as C:/Users/you/kiln-assets; a Git Bash
@@ -155,6 +162,16 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     }
     if (arg === '--ktx2' && command === 'export') {
       flags.ktx2 = 'true';
+      continue;
+    }
+    if (arg === '--carry-shapes') {
+      if (command !== 'export') throw new Error('--carry-shapes is supported by export only.');
+      flags['carry-shapes'] = 'true';
+      continue;
+    }
+    if (arg === '--no-variants') {
+      if (command !== 'view') throw new Error('--no-variants is supported by view only.');
+      flags['no-variants'] = 'true';
       continue;
     }
     if (arg === '--restore' || arg === '--rebuild' || arg === '--no-project') {
@@ -452,6 +469,13 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
         throw new Error('--textures external requires --target three');
       if (flags.ktx2 && (target !== 'three' || profile !== 'runtime'))
         throw new Error('--ktx2 requires --target three with --profile runtime');
+      const carryShapes = flags['carry-shapes'] === 'true';
+      if (carryShapes && (profile !== 'runtime' || target !== undefined || draws !== undefined))
+        throw new Error('--carry-shapes requires --profile runtime without --target or --draws');
+      if (carryShapes && !record.files['source.kiln.js'])
+        throw new Error(
+          '--carry-shapes rebuilds the saved source, which this revision does not have',
+        );
       const gltfLayout = textures === 'external';
       const format =
         flags.format ?? (profile === 'runtime' ? (gltfLayout ? 'gltf' : 'glb') : 'bundle');
@@ -487,6 +511,9 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
           ...(textures ? { textures } : {}),
           ...(gltfLayout ? { gltfFileName: basename(destination) } : {}),
           ...(flags.ktx2 ? { ktx2Encoder: await createKtx2Encoder() } : {}),
+          ...(carryShapes
+            ? { paramBuilds: await savedRevisionBuilds(library, collection, record) }
+            : {}),
         });
         if (output.profile !== 'runtime') throw new Error('Expected runtime export');
         const metadataPath = resolve(dirname(destination), output.metadata.name);
@@ -678,9 +705,23 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
       const id = `w_${createHash('sha256').update(canonical).digest('hex').slice(0, 16)}`;
       reviewSources[id] = { label: basename(canonical), review: new FileLiveReview(canonical) };
     }
+    // A variant build runs a saved revision's source, so it has its own evaluator context,
+    // made on the first build. It writes nothing: no program store on disk, no Live Review.
+    const { createVariantBuilder } = await import('./variant-build');
+    const variants =
+      flags['no-variants'] === 'true'
+        ? undefined
+        : createVariantBuilder(target, async () => {
+            const { MemoryProgramStore } = await import('./program-store');
+            return createPackagedLocalToolContext(
+              { assetLibrary: target, programStore: new MemoryProgramStore() },
+              { ...process.env, KILN_LIVE_REVIEW: 'off' },
+            );
+          });
     const viewer = await startAssetViewer(target, {
       port,
       standalone,
+      variants,
       workspace: new FileWorkspace(root),
       liveReview: new FileLiveReview(root),
       reviewSources,
@@ -698,4 +739,33 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
     console.log('Kiln viewer · local files · Ctrl+C to stop');
   }
   return 0;
+}
+
+/**
+ * Builds of one saved revision's source at other parameter values, for `--carry-shapes`. It
+ * runs that source in this host's evaluator and writes nothing: no program store on disk, no
+ * Live Review.
+ */
+async function savedRevisionBuilds(
+  library: ReturnType<typeof localAssetLibrary>,
+  collection: string,
+  record: AssetRecord,
+): Promise<(values: Record<string, ParamValue>) => Promise<Uint8Array>> {
+  const { createVariantBuilder } = await import('./variant-build');
+  const build = createVariantBuilder(library, async () => {
+    const { MemoryProgramStore } = await import('./program-store');
+    return createPackagedLocalToolContext(
+      { assetLibrary: library, programStore: new MemoryProgramStore() },
+      { ...process.env, KILN_LIVE_REVIEW: 'off' },
+    );
+  });
+  return async (values) =>
+    (
+      await build({
+        collection,
+        assetId: record.manifest.assetId,
+        revisionId: record.manifest.revisionId,
+        params: { values },
+      })
+    ).glb;
 }

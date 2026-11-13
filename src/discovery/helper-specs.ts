@@ -306,6 +306,19 @@ const PRIMITIVES: HelperSpec[] = [
       'Only when the brief states a budget. Call once; tiers are LOD0, LOD1, ... matching defineLod levels. Material notes are not a budget: do not remove textures that carry the look to clear them.',
   },
   {
+    name: 'defineParams',
+    signature:
+      "defineParams(spec: { [name]: { type: 'range' | 'int', default, min, max, step?, snap?, unit? } | { type: 'toggle', default } | { type: 'color', default: '#rrggbb' } | { type: 'choice', default, options: string[] } | { type: 'seed', default } }, opts?: { presets?: { [name]: { [param]: value } } })",
+    returns: 'A frozen object of resolved values, one per declared parameter',
+    category: 'utility',
+    description:
+      'Declares the values a host may change without editing source, and returns the ones to build with: the defaults, then a named preset, then the values the host passed. With no host values the build is exactly the one the defaults give. Every parameter also takes an optional label and describe. A refused spec is a PARAMS_CONTRACT build error; a refused host value is PARAMS_VALUE.',
+    example:
+      "const P = defineParams({\n  length: { type: 'range', default: 1.6, min: 1.0, max: 2.4, step: 0.05, unit: 'm', describe: 'Seat length.' },\n  slats: { type: 'int', default: 5, min: 3, max: 8 },\n  arms: { type: 'toggle', default: true },\n  wood: { type: 'color', default: '#8a5a33' },\n}, { presets: { long: { length: 2.4, slats: 8 } } });\nfunction build() { const root = createRoot('Bench'); /* use P.length, P.slats, P.arms, P.wood */ return root; }",
+    promptNotes:
+      'Optional. Call once at top level, before build(), never inside it. Declare the few values a user would want to change, and make every value in each range build a sound asset. Read the values from the returned object; it cannot be changed.',
+  },
+  {
     name: 'definePalette',
     signature: 'definePalette(colors: string[], opts?: { threshold?: 10 }, target?: Object3D)',
     returns: '{ schemaVersion: 1, colors, threshold } (the normalised declaration)',

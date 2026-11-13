@@ -477,6 +477,9 @@ export function resultCharacters(result: unknown): number {
 }
 
 const LEAN_KEYS = [
+  'params',
+  'paramIssues',
+  'sweep',
   'tris',
   'meshes',
   'materials',

@@ -10,6 +10,20 @@ import {
   type AssetRecord,
 } from './assets';
 import type { MaterialManifest } from './material-library';
+import type { ShapeBindingV1 } from './param-shapes';
+import { type ParamsDeclarationV1, type ParamValue, validateParamsDeclaration } from './params';
+import {
+  addPresetVariants,
+  factorColorBindings,
+  switchBindings,
+  taggedColorMaterials,
+  taggedSwitchNodes,
+  tagGltfParams,
+  validateParamBindings,
+  type BoundMaterialV1,
+  type BoundNodeV1,
+  type ParamBindingsV1,
+} from './param-bindings';
 import type {
   RuntimeThreeDeliveryV1,
   RuntimeThreeKtx2EncoderIdentityV1,
@@ -59,6 +73,14 @@ export interface AssetGlbExportOptions extends RuntimeThreeOptionsV1 {
   draws?: 'minimal';
   /** `draws` only: metres per merge cell; a viewer can cull one cell at a time. */
   drawCellSize?: number;
+  /**
+   * Opt in to carrying sizes: builds the saved source at one parameter's value, the others at
+   * their defaults. With it, each `range` and `int` parameter that only moves vertices and
+   * nodes along straight lines is written as morph targets and one clip `kiln.param.<name>`,
+   * and reported under `params.shapes`. It runs the source several times per parameter and
+   * re-serializes the GLB, so the plain runtime profile only: no `target`, no `draws`.
+   */
+  paramBuilds?: (values: Record<string, ParamValue>) => Promise<Uint8Array>;
 }
 export type AssetGlbExport =
   | { profile: 'editable'; glb: Uint8Array }
@@ -99,6 +121,107 @@ export interface RuntimeMetadataV1 {
   textures?: RuntimeTextureManifestEntryV1[];
   /** Present when `draws: 'minimal'` derived this file: what the reduction did. */
   drawReduction?: DrawReductionV1;
+  /**
+   * Declared parameters this file carries. `colors` maps a colour parameter to the materials
+   * of this GLB whose base colour factor takes its value; `switches` maps a toggle or choice
+   * to the nodes it shows, each with the values that show it (`KHR_node_visibility` hides the
+   * rest). Each is also tagged in the GLB as `extras.kilnParamV1` on the material or node.
+   * `presets` maps each preset that only sets carried colours to its index in this file's
+   * `KHR_materials_variants`. `dropped` names parameters the saved revision carries that this
+   * derived file does not, because the derivation merged or removed what they were bound to.
+   */
+  params?: {
+    colors: Record<string, BoundMaterialV1[]>;
+    switches?: Record<string, BoundNodeV1[]>;
+    presets?: Record<string, number>;
+    /** Present when the export was asked to carry sizes: each `range` and `int` parameter. */
+    shapes?: Record<string, ShapeBindingV1>;
+    dropped?: string[];
+  };
+}
+
+/**
+ * Sizes ride as morph targets only when the caller supplies builds, and only in the plain
+ * runtime file: a derivation would have to re-derive every target with the mesh.
+ */
+async function withCarriedShapes(
+  record: AssetRecord,
+  glb: Uint8Array,
+  options: AssetGlbExportOptions,
+): Promise<{ glb: Uint8Array; shapes?: Record<string, ShapeBindingV1> }> {
+  if (!options.paramBuilds) return { glb };
+  if (options.target !== undefined || options.draws !== undefined)
+    throw new Error(
+      'Carried shapes need the plain runtime profile: export without a target and without a draw reduction.',
+    );
+  const declared = validateParamsDeclaration(record.manifest.build?.params);
+  if (!declared) return { glb };
+  const { carryShapes } = await import('./param-shapes');
+  const result = await carryShapes(glb, declared, options.paramBuilds);
+  if (result.glb.byteLength > ASSET_LIMIT) throw new Error('Runtime export exceeds 64 MiB');
+  return {
+    glb: result.glb,
+    ...(Object.keys(result.shapes).length ? { shapes: result.shapes } : {}),
+  };
+}
+
+/**
+ * What the delivered file carries of the declared parameters, read from its own tags, with
+ * each preset that only sets carried colours written into `json` as a material variant.
+ */
+function deliveredParams(
+  json: Record<string, unknown>,
+  declaration: ParamsDeclarationV1 | undefined,
+  bindings: ParamBindingsV1 | undefined,
+  shapes: Record<string, ShapeBindingV1> | undefined,
+): RuntimeMetadataV1['params'] {
+  const carriedColors = factorColorBindings(bindings);
+  const carriedSwitches = switchBindings(bindings);
+  const colors = taggedColorMaterials(json);
+  const switches = keptSwitches(json, carriedSwitches);
+  const dropped = [
+    ...Object.keys(carriedColors).filter((name) => !Object.hasOwn(colors, name)),
+    ...Object.keys(carriedSwitches).filter((name) => !Object.hasOwn(switches, name)),
+  ];
+  const presets =
+    declaration && Object.keys(colors).length
+      ? addPresetVariants(json, declaration, colors).presets
+      : {};
+  if (!Object.keys(colors).length && !Object.keys(switches).length && !dropped.length && !shapes)
+    return undefined;
+  return {
+    colors,
+    ...(Object.keys(switches).length ? { switches } : {}),
+    ...(Object.keys(presets).length ? { presets } : {}),
+    ...(shapes ? { shapes } : {}),
+    ...(dropped.length ? { dropped } : {}),
+  };
+}
+
+/**
+ * The switches of a derived file that kept every node they were bound to. A switch that lost
+ * a node cannot be set correctly, so its remaining tags are removed and it is not listed.
+ */
+function keptSwitches(
+  json: Record<string, unknown>,
+  carried: Record<string, BoundNodeV1[]>,
+): Record<string, BoundNodeV1[]> {
+  const tagged = taggedSwitchNodes(json);
+  const kept: Record<string, BoundNodeV1[]> = {};
+  const nodes = json.nodes as Record<string, unknown>[];
+  for (const [name, found] of Object.entries(tagged)) {
+    if (found.length === carried[name]?.length) {
+      kept[name] = found;
+      continue;
+    }
+    for (const { index } of found) {
+      const extras = { ...(nodes[index]!.extras as Record<string, unknown>) };
+      delete extras.kilnParamV1;
+      if (Object.keys(extras).length) nodes[index]!.extras = extras;
+      else delete nodes[index]!.extras;
+    }
+  }
+  return kept;
 }
 
 const encoder = new TextEncoder();
@@ -287,6 +410,21 @@ export async function exportAssetGlb(
       throw new Error(`Asset integrity mismatch: ${file}`);
   }
 
+  // Tag carried parameters on the saved file's own materials and nodes before anything
+  // re-derives them, so the tags follow each through draw reduction and the three target.
+  const bindings = validateParamBindings(record.manifest.build?.paramBindings);
+  const carriedColors = factorColorBindings(bindings);
+  const carriedSwitches = switchBindings(bindings);
+  if (Object.keys(carriedColors).length || Object.keys(carriedSwitches).length) {
+    const saved = readGlbJson(bytes);
+    tagGltfParams(saved.json, bindings);
+    bytes = writeGlbJson(bytes, saved.jsonEnd, saved.json);
+  }
+
+  const sized = await withCarriedShapes(record, bytes, options);
+  bytes = sized.glb;
+  const shapes = sized.shapes;
+
   let drawReduction: DrawReductionV1 | undefined;
   if (options.draws) {
     const { reduceGlbDrawCalls } = await import('./draw-reduction');
@@ -361,6 +499,10 @@ export async function exportAssetGlb(
     gltf = derived.gltf;
     ({ json: baseJson, jsonEnd: baseJsonEnd } = readGlbJson(base));
   }
+  const declaration = validateParamsDeclaration(record.manifest.build?.params);
+  const carriedParams = deliveredParams(baseJson, declaration, bindings, shapes);
+  if (carriedParams) metadata.params = carriedParams;
+  const presets = carriedParams?.presets ?? {};
   if (textures !== undefined)
     metadata.textures = await runtimeTextureManifest(baseJson, readGlbBinary(base, baseJsonEnd), {
       ...(imageSources ? { sources: imageSources } : {}),
@@ -368,6 +510,8 @@ export async function exportAssetGlb(
     });
   // Content addresses join the manifest before the sidecar is hashed into the provenance.
   const external = gltf ? await externalLayout(gltf, metadata.textures ?? []) : undefined;
+  if (external && declaration && Object.keys(presets).length)
+    addPresetVariants(external.json, declaration, taggedColorMaterials(external.json));
   const metadataBytes = encoder.encode(JSON.stringify(metadata));
   if (metadataBytes.length > ASSET_LIMIT) throw new Error('Runtime export exceeds 64 MiB');
   const provenance = {

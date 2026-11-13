@@ -99,11 +99,17 @@ export async function runtimeAssetLinks(
 export function programBuildLink(
   programRef: string,
   rendered: { glb: Uint8Array; artifactGlbSha256: string },
+  params?: { preset?: string; values?: Record<string, number | boolean | string> },
 ): AssetLink {
+  // A variant's values ride in the URI, so a read rebuilds the same variant; the hash still
+  // pins the bytes, so other values under this hash are refused rather than served.
+  const query = params
+    ? `?params=${Buffer.from(JSON.stringify(params)).toString('base64url')}`
+    : '';
   return {
     type: 'resource_link',
     name: 'asset.glb',
-    uri: `kiln://programs/${encodeURIComponent(programRef)}/${rendered.artifactGlbSha256.replace('sha256:', '')}/asset.glb`,
+    uri: `kiln://programs/${encodeURIComponent(programRef)}/${rendered.artifactGlbSha256.replace('sha256:', '')}/asset.glb${query}`,
     mimeType: 'model/gltf-binary',
     size: rendered.glb.byteLength,
     annotations: { audience: ['user'], priority: priorities['asset.glb']! },

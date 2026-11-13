@@ -37,6 +37,13 @@ import { bakeSurfaceAttributes } from './surface-bake';
 import { requireSolid } from './require-solid';
 import { definePalette, type PaletteDeclarationV1 } from './palette-check';
 import { type BudgetDeclarationV1, defineBudget } from './budget';
+import {
+  normalizeParamsSpec,
+  type ParamsInputV1,
+  type ParamsReportV1,
+  paramsReport,
+  resolveParams,
+} from './params';
 import { useCubicSpline } from './animation-cubic';
 import {
   CUBIC_INTERPOLATIONS,
@@ -2170,6 +2177,10 @@ export type DiagnosticConsole = Pick<Console, 'log' | 'info' | 'debug' | 'warn' 
 export interface SandboxDeclarations {
   budget?: BudgetDeclarationV1;
   palette?: PaletteDeclarationV1;
+  /** The declaration and the values this run resolved, set by `defineParams`. */
+  params?: ParamsReportV1;
+  /** Set once top-level code has run; a later `defineParams` call is refused. */
+  paramsSealed?: boolean;
 }
 /** Symbol-keyed, so it never becomes a sandbox global. */
 export const SANDBOX_DECLARATIONS: unique symbol = Symbol('kiln.sandbox.declarations');
@@ -2180,6 +2191,8 @@ export interface SandboxGlobalsOptions {
   textureResolver?: TextureResolver;
   /** Host-owned diagnostic sink; defaults to the ambient console for library callers. */
   console?: DiagnosticConsole;
+  /** Host values for this run's declared parameters; data, never a capability. */
+  params?: ParamsInputV1;
 }
 
 export function buildSandboxGlobals(
@@ -2322,6 +2335,14 @@ export function buildSandboxGlobals(
         return declaration;
       },
     ),
+    defineParams: wrap('defineParams', (spec: unknown, opts?: unknown) => {
+      if (declarations.params || declarations.paramsSealed)
+        throw new AuthoringDiagnosticError('PARAMS_CONTRACT');
+      const declaration = normalizeParamsSpec(spec, opts);
+      const values = resolveParams(declaration, options.params);
+      declarations.params = paramsReport(declaration, options.params, values);
+      return values;
+    }),
     definePalette: wrap(
       'definePalette',
       (

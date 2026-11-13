@@ -15,6 +15,7 @@ import type { AssetRequirementsQaReportV2 } from './qa/requirements-report';
 import { createRequirementsQaReport } from './qa/requirements-report';
 import { meshComponentBoxes, splitBudget } from './qa/mesh-components';
 import { inspectSkinIntegrity } from './qa/skin-integrity';
+import { analyzeFlushFaces, flushFaceWarnings } from './qa/flush-faces';
 import { AuthoringDiagnosticError, rethrowAuthoringError } from './evaluator/authoring-diagnostic';
 /**
  * Headless Kiln GLB Renderer
@@ -91,6 +92,7 @@ import {
   SANDBOX_DECLARATIONS,
   type SandboxDeclarations,
 } from './primitives';
+import { type ParamsInputV1, type ParamsReportV1, validateParamsInput } from './params';
 import {
   declaresMaterialLimits,
   evaluateBudget,
@@ -442,6 +444,8 @@ export interface ExecutedKilnCode {
    * Identical to meta.primitiveUsage once renderGLB merges it in.
    */
   primitiveUsage: Record<string, number>;
+  /** Present when the program called `defineParams`. */
+  params?: ParamsReportV1;
 }
 
 /**
@@ -463,6 +467,8 @@ export interface ExecuteKilnCodeOptions {
   textureResolver?: TextureResolver;
   /** Trusted diagnostic sink, never a global console mutation. */
   console?: DiagnosticConsole;
+  /** Host values for the parameters the program declares with `defineParams`. */
+  params?: ParamsInputV1;
 }
 
 export async function executeKilnCode(
@@ -486,6 +492,7 @@ export async function executeKilnCode(
     const globals = buildSandboxGlobals(primitiveUsage, {
       textureResolver: options.textureResolver ?? DEFAULT_TEXTURE_RESOLVER,
       console: options.console,
+      ...(options.params ? { params: validateParamsInput(options.params) } : {}),
     });
     const globalNames = Object.keys(globals);
     const globalValues = Object.values(globals);
@@ -516,6 +523,17 @@ export async function executeKilnCode(
       );
     }
 
+    // Parameters are declared by top-level code, so the declaration is complete here and
+    // build() cannot add one. Host values for a program that declares none are refused
+    // rather than ignored: the caller would otherwise receive the default build as a variant.
+    const declared = (globals as { [SANDBOX_DECLARATIONS]?: SandboxDeclarations })[
+      SANDBOX_DECLARATIONS
+    ];
+    if (declared) declared.paramsSealed = true;
+    const passed =
+      options.params?.preset !== undefined || Object.keys(options.params?.values ?? {}).length > 0;
+    if (passed && !declared?.params) throw new AuthoringDiagnosticError('PARAMS_VALUE');
+
     const root = await build();
     // Duck-typed check — the kiln sandbox uses `new Function(...)`, which under
     // bun creates an isolated module realm. `new THREE.X()` inside the sandbox
@@ -530,9 +548,6 @@ export async function executeKilnCode(
     }
 
     // Node-less declarations (defineBudget without a target) belong to the returned root.
-    const declared = (globals as { [SANDBOX_DECLARATIONS]?: SandboxDeclarations })[
-      SANDBOX_DECLARATIONS
-    ];
     if (declared?.budget && root.userData[KILN_BUDGET_KEY] === undefined)
       root.userData[KILN_BUDGET_KEY] = declared.budget;
     if (declared?.palette && root.userData[KILN_PALETTE_KEY] === undefined)
@@ -540,7 +555,13 @@ export async function executeKilnCode(
 
     const clips = animate ? ((await animate(root)) ?? []) : [];
 
-    return { meta: meta ?? {}, root, clips, primitiveUsage };
+    return {
+      meta: meta ?? {},
+      root,
+      clips,
+      primitiveUsage,
+      ...(declared?.params ? { params: declared.params } : {}),
+    };
   } catch (error) {
     rethrowAuthoringError(error);
   }
@@ -1309,6 +1330,8 @@ export interface RenderResult {
   /** Textures baked into the returned GLB, including bounded procedural lineage. */
   bakedTextures?: BakedTextureProvenanceV1[];
   integrationManifest: IntegrationManifestV1;
+  /** The declared parameters and the values this build used; absent without `defineParams`. */
+  params?: ParamsReportV1;
 }
 
 /**
@@ -1954,6 +1977,13 @@ export async function renderSceneToGLB(
       : {}),
   }))
     warnings.push(w);
+  // Faces on one plane flicker in every renderer the GLB reaches. Advisory: it names the parts
+  // and the fix, and never changes acceptance. A failure here must not fail the build.
+  try {
+    for (const w of flushFaceWarnings(analyzeFlushFaces(root))) warnings.push(w);
+  } catch {
+    /* The check is an observation; the build stands without it. */
+  }
 
   // T2.2 — encode in-memory textures to PNG BEFORE QA, so QA judges the file
   // that will actually be written. A procedural DataTexture used to reach the
@@ -2191,6 +2221,8 @@ export interface RenderGlbOptions {
   materialResources?: MaterialLibraryPayload;
   /** In-process host diagnostic sink; not serializable to evaluator workers. */
   diagnosticConsole?: DiagnosticConsole;
+  /** Values for the program's declared parameters, transported as data to evaluator workers. */
+  params?: ParamsInputV1;
 }
 
 /**
@@ -2227,9 +2259,10 @@ export async function renderGLBInProcess(
     materialLibraryDependencies = materialRecords.map((record) => structuredClone(record.manifest));
     textureResolver = await createMaterialLibraryTextureResolver(materialRecords, textureResolver);
   }
-  const { meta, root, clips, primitiveUsage } = await executeKilnCode(code, {
+  const { meta, root, clips, primitiveUsage, params } = await executeKilnCode(code, {
     textureResolver,
     console: opts.diagnosticConsole,
+    ...(opts.params ? { params: opts.params } : {}),
   });
   const scene = await renderSceneToGLB(root, {
     ...rebuildOptions,
@@ -2251,6 +2284,7 @@ export async function renderGLBInProcess(
   return {
     glb: Buffer.from(scene.bytes),
     rebuildOptions,
+    ...(params ? { params } : {}),
     ...(materialLibraryDependencies ? { materialLibraryDependencies } : {}),
     requirements: scene.requirements,
     artifactGlbSha256: scene.artifactGlbSha256,

@@ -41,7 +41,9 @@ export type AuthoringDiagnostic =
   | 'REQUIRE_SOLID'
   | 'BONE_CHAIN_ARGUMENT'
   | 'SKIN_BINDING_ARGUMENT'
-  | 'EXPORT_MATERIAL_SIDE_UNSUPPORTED';
+  | 'EXPORT_MATERIAL_SIDE_UNSUPPORTED'
+  | 'PARAMS_CONTRACT'
+  | 'PARAMS_VALUE';
 // Names no identifier on purpose. The identifier is only available from the
 // sandboxed exception message, and this module's contract is that no captured
 // identifier, path, message or stack crosses that boundary. Pointing at the
@@ -98,7 +100,13 @@ export const REQUIRE_SOLID_ADVICE =
  */
 export const EXECUTION_REJECTED_ADVICE =
   'No message, stack or identifier crosses the sandbox: a thrown Error, a source-policy denial and any other failure are each reported only as this sentence. kiln_validate (CLI: kiln validate <program.js|ref>) checks syntax and static source rules such as policy denials; it cannot see execution-time failures, such as geometry a helper rejects while build() runs. Reproduce those with kiln_render, simplifying or removing the failing part until the program renders. To read values, render the program and call kiln_inspect (listParts, measurements) instead of throwing. A TypeError, RangeError, unbound variable, build() mistake or profile solid failure is named when it is the cause.';
+export const PARAMS_CONTRACT_ADVICE =
+  'defineParams(spec, { presets? }) is called once, at the top level of the program and not inside build(). spec names 1 to 24 parameters; each is { type, default } with type range or int (min < max, optional step, snap and unit), toggle, color (#rrggbb), choice (options) or seed (0 to 4294967295), plus optional label and describe. Every default and preset value must be one its parameter allows. Call kiln_discover with ids ["defineParams"] for the full contract.';
+export const PARAMS_VALUE_ADVICE =
+  'A parameter value passed for this build was refused: an unknown parameter or preset name, a value of the wrong type, a number outside min to max or off a snapped step, a choice that is not an option, or values passed to a program that declares no parameters. Build without params and read params.declaration in the result for the names, types and allowed values.';
 export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | undefined): string {
+  if (diagnostic === 'PARAMS_CONTRACT') return PARAMS_CONTRACT_ADVICE;
+  if (diagnostic === 'PARAMS_VALUE') return PARAMS_VALUE_ADVICE;
   if (diagnostic === 'PORTABLE_MATERIAL_V3_CONTRACT')
     return 'compilePortableMaterialSpecV3 requires schemaVersion 3, model pbrMetallicRoughness, typed V3 procedural or injected resource references, and complete minFilter/magFilter/wrapS/wrapT samplers. Match texture usage to its slot and split work exceeding the material budget. Resource bindings need a host with verified-byte admission. V2 remains available unchanged. Shader code, paths, raw textures and V3 height derivation are unsupported. Read kiln_discover ids ["compilePortableMaterialSpecV3"] for the exact contract.';
   if (diagnostic === 'TEXTURE_ATLAS_CONTRACT')

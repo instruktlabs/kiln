@@ -21,6 +21,7 @@ import {
   validateMaterialManifestIdentityAny,
 } from '../material-library-node';
 import { canonicalMaterialJson, type MaterialLibraryPayload } from '../material-library';
+import { validateParamsInput, validateParamsReport } from '../params';
 import { rebuildOptionsSchema } from '../rebuild-options';
 import {
   solidFailureAdvice,
@@ -358,6 +359,7 @@ function parseOptions(
       'indexPolicy',
       'gltfExporter',
       'materialResources',
+      'params',
     ])
   ) {
     return fail('request');
@@ -365,6 +367,13 @@ function parseOptions(
   const options: Omit<RenderGlbOptions, 'textureResolver' | 'diagnosticConsole'> = {};
   if (value.materialResources !== undefined)
     options.materialResources = validateMaterialLibraryPayloadAny(value.materialResources);
+  if (value.params !== undefined) {
+    try {
+      options.params = validateParamsInput(value.params);
+    } catch {
+      return fail('request');
+    }
+  }
   if (value.gltfExporter !== undefined) {
     if (value.gltfExporter !== 'legacy' && value.gltfExporter !== 'three') fail('request');
     options.gltfExporter = value.gltfExporter;
@@ -549,7 +558,9 @@ export function decodeEvaluatorResultV2(
           value.error.diagnostic !== 'REQUIRE_SOLID' &&
           value.error.diagnostic !== 'EXPORT_MATERIAL_SIDE_UNSUPPORTED' &&
           value.error.diagnostic !== 'BONE_CHAIN_ARGUMENT' &&
-          value.error.diagnostic !== 'SKIN_BINDING_ARGUMENT'))
+          value.error.diagnostic !== 'SKIN_BINDING_ARGUMENT' &&
+          value.error.diagnostic !== 'PARAMS_CONTRACT' &&
+          value.error.diagnostic !== 'PARAMS_VALUE'))
     )
       return fail('result');
     if (
@@ -596,6 +607,7 @@ export function decodeEvaluatorResultV2(
     'integrationManifest',
     'requirements',
     'rebuildOptions',
+    'params',
   ] as const;
   if (
     !hasExactKeys(value.render, renderKeys) ||
@@ -609,6 +621,13 @@ export function decodeEvaluatorResultV2(
     fail('result');
   }
   let requirements: RequirementsContext;
+  if (value.render.params !== undefined) {
+    try {
+      validateParamsReport(value.render.params);
+    } catch {
+      return fail('result');
+    }
+  }
   if (
     value.render.rebuildOptions !== undefined &&
     !rebuildOptionsSchema.strict().safeParse(value.render.rebuildOptions).success

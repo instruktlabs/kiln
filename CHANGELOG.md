@@ -7,6 +7,92 @@ does not publish a package.
 
 ## Unreleased
 
+- **A GLB can carry a toggle, a choice and a colour preset.** A `toggle` or `choice` that
+  only shows and hides nodes (`part.visible = P.arms`) is classified at save and by the sweep
+  (`sweep.switches`, `build.paramBindings.switches`) and tagged by the runtime export as
+  `nodes[i].extras.kilnParamV1` with the values that show the node; hidden nodes use
+  `KHR_node_visibility`, as before. A preset that only sets carried colours is written by the
+  runtime export as one `KHR_materials_variants` entry. The sidecar lists `params.switches`,
+  `params.presets` and, for a derived file that lost a parameter, `params.dropped`. `kiln view`
+  sets carried options in the browser without a rebuild. `applyCarriedParams` in
+  `@instruktlabs/kiln/param-bindings` applies colours and options to a saved GLB. The saved GLB
+  is unchanged. A save spends at most 16 extra builds on classification; a draw reduction does
+  not batch a file with tagged nodes. Sizes and counts need a rebuild unless the export
+  carries them (next entry).
+- **A runtime GLB can carry a size, on request.** `kiln export --profile runtime
+  --carry-shapes` (library: `exportAssetGlb` with `paramBuilds`) builds the saved source at
+  each `range` and `int` parameter's ends and halfway points, up to four builds per
+  parameter. A size whose builds keep the same parts and vertices and move them in straight
+  lines (within 0.5 mm) is written as morph targets named `<name>=<value>` and one clip
+  `kiln.param.<name>`: time 0 is the minimum, time 1 the maximum. The sidecar lists every
+  size under `params.shapes`, with the clip's keys or the reason it needs a rebuild
+  (`STRUCTURE_CHANGED`, `DATA_CHANGED`, `HAS_MORPH_TARGETS`, `NOT_LINEAR`, `NO_CHANGE`,
+  `PROBE_FAILED`). It is off by default, works on the plain runtime profile only (not with
+  `--target` or `--draws`), re-serializes the GLB and leaves the saved revision unchanged.
+  Clamp the clip rather than loop it: a looping action wraps time 1 to the minimum. Checked
+  on 2026-11-12 with three.js r187 and Blender 5.2.0 LTS, which both read the clip, the
+  targets and a preset variant and matched rebuilds at four widths; `kiln_export` and the
+  sweep do not take or report it yet.
+- **The refine skill fixes a small flush face it finds on a part it is editing.** When a
+  `FLUSH_FACES` warning that was already in the parent names a part the edit touches and the
+  remedy is the stated 2 mm move, the agent makes it and reports it as a separate change. In
+  a dogfood on 2026-11-12, Claude Code (Sonnet 5.5) and Antigravity (Gemini 4 Hydrogen) both
+  left the warning and reported it under the old wording, and both fixed it under the new.
+- A program can declare parameters with the new `defineParams(spec, { presets? })` sandbox helper: `range`,
+  `int`, `toggle`, `color`, `choice` and `seed`, each with a default. It is called once at top level and returns
+  the values to build with. `renderGLB` and `renderGLBInProcess` take `params: { preset?, values? }`, and the
+  result reports `params` (`kiln.params.v1`) with the declaration and every value used. A build with no host
+  values is byte-identical to the same program with its defaults written as literals. Refused specs are
+  `PARAMS_CONTRACT` and refused host values `PARAMS_VALUE`; nothing is clamped. Host values cross the evaluator
+  boundary as validated data and are part of the build-cache key. A GLB does not carry its parameters
+  ([declared parameters](docs/programs.md#declared-parameters)).
+- `kiln_render` and `kiln_export` take `params: { preset?, values? }`, and `kiln render` takes `--param name=value`
+  and `--preset`. Results report the values used; a refused call builds nothing and names each value in
+  `paramIssues`. A variant is reviewed but never retained: `kiln_save` and `kiln_finish` keep the default build,
+  and the saved manifest records the declaration as `build.params`.
+  - `kiln_render` `params: { sweep: true }` and `kiln render --sweep` build the defaults, each parameter's extremes
+    and every preset (at most 32 builds) and report each without images; the CLI exits 1 when a point fails to build.
+  - `kiln_export` with `params` returns a variant GLB as a `kiln://programs/...asset.glb?params=...` resource pinned
+    to its bytes, from a `programRef` or from a saved revision's source. The runtime profile and `kiln_export_to`
+    still deliver the saved GLB only.
+  - The `kiln_render` schema gains `params` as an opaque record, described in the tool description and served by
+    Discovery as `shape:params`. To stay inside the 5,000-byte schema limit, the capture `backdrop` hint is stated
+    on the shots form only; both forms take the same three backdrops.
+- `kiln view` shows a Parameters panel for a saved revision that declares parameters: sliders and other
+  controls, preset buttons and a variant download. Opening a revision still loads the saved GLB and runs
+  nothing; the first rebuild of an asset needs an explicit choice, because it runs that revision's saved source
+  in the local evaluator. The viewer host gains `GET /api/variant` and a same-origin JSON `POST /api/variant`,
+  which build only when the host was given a builder, as `kiln view` is; `kiln view --no-variants` starts
+  without it. A rebuild took about 0.6 s on two small assets
+  ([parameters in the local viewer](docs/programs.md#parameters-in-the-local-viewer)).
+- A `color` parameter that is exactly one material value can now be changed without a rebuild. `kiln_save`
+  and the sweep classify each colour by one extra build at a test colour: `factor` with the materials that
+  carry it, or `rebuild` with a reason. The sweep reports `sweep.colors`, a saved manifest records
+  `build.paramBindings` (`kiln.param-bindings.v1`), and the saved GLB stays the untagged default build. The
+  runtime export marks carrying materials with `extras.kilnParamV1` and lists them as `params.colors` in the
+  sidecar. `kiln view` sets a carried colour in the browser, for any revision or opened file, with nothing
+  run. `@instruktlabs/kiln/param-bindings` exports the classifier and `recolorGlb`, whose result for a carried
+  colour is byte-identical to a rebuild. A save with colour parameters takes one more build per colour
+  ([colours a GLB carries](docs/programs.md#colours-a-glb-carries)).
+- `kiln-author-asset`'s program contract says when to declare parameters and how to check their range, and
+  `kiln-refine-asset` gains a reference for parameterising a saved asset: the child's default build must have the
+  same GLB hash as the current build of its parent, and every swept value must build. Trying it on the Foundry
+  Floor raised-floor module gave an identical hash and five sound sweep points; it also showed that the current
+  engine builds that saved source to 26,340 bytes where the saved GLB is 26,336, which is why the baseline is the
+  parent's current build and not its saved file. Installed workspaces keep their copied skills until upgraded.
+- Every build now measures its static meshes for flush faces: faces of two parts, or of one part, that lie
+  on one plane, face the same way and overlap, which flicker (z-fighting) in every renderer. When it finds
+  any it adds one `FLUSH_FACES` line to `warnings` with the number of pairs, the worst pair's parts, shared
+  area, position and normal, the next two pairs, and the fix. On the packs the line was at most 474
+  characters, inside the 1,000 a compact `kiln_render` result keeps; no schema, QA rule or verdict changes. Pairs with one plain
+  material are not reported, since the tie does not show; nor are faces that are buried, on the plane the
+  asset stands on or against a face of another part.
+  Instanced, skinned and morphing meshes are not measured, and it is not a visibility test. Of the 386
+  saved pack source revisions that build without project resources (253 assets), 103 revisions of 53
+  assets are reported, and 49 of the 86 examples. The check took a median of 16 ms and about a tenth of
+  build time, up to 2 s on 300,000-triangle assets
+  ([find faces that will flicker](docs/geometry.md#find-faces-that-will-flicker)).
+
 ## 1.7.0 (2026-11-08)
 
 - three.js and `@types/three` are now 0.187.0, up from 0.186.1, in the package, the render service, the

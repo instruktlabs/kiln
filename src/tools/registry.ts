@@ -15,6 +15,15 @@ import {
   type ProgramStore,
 } from '../program-store';
 import { assertSavedRequirementsAuthorized } from '../requirements-assets';
+import {
+  changedParamValues,
+  checkParamValues,
+  isParamsVariant,
+  type ParamIssue,
+  type ParamsInputV1,
+  type ParamValue,
+  sweepPoints,
+} from '../params';
 import { createKilnSourceDef, withProgramReferences } from './programs';
 import { ProgramArtifactStore, type NativeCompletion } from './program-artifacts';
 import { createKilnDiscoveryDef } from './discovery';
@@ -24,6 +33,7 @@ import { createKilnMaterialDef } from './materials';
 import { createKilnReviewDef, type ReviewStore } from './review';
 import { withWorkspaceContext } from './workspace';
 import { describeInputError } from './actions';
+import { paramsInput, paramsRecordInput, paramValuesInput } from './params-input';
 import { projectOperationDefs } from './operations';
 import type { KilnActionContract } from './operation-contract';
 import {
@@ -431,6 +441,7 @@ async function evaluateGeneratedSource(
   code: string,
   context: KilnToolContext,
   optimize: 'off' | 'auto' = 'off',
+  params?: ParamsInputV1,
 ): Promise<RenderResult> {
   const requirements = toolRequirements(context);
   return resolveEvaluatorPortV2(
@@ -446,6 +457,7 @@ async function evaluateGeneratedSource(
       ...(context.geometryPolicy ? { geometryPolicy: context.geometryPolicy } : {}),
       ...(context.indexPolicy ? { indexPolicy: context.indexPolicy } : {}),
       ...(requirements.binding ? { requirements: requirements.binding } : {}),
+      ...(params ? { params } : {}),
     },
     context.evaluationControls?.(),
   );
@@ -472,10 +484,12 @@ async function loadEvaluatedReviewScene(
   code: string,
   context: KilnToolContext,
   releases: Array<() => void>,
+  params?: ParamsInputV1,
 ) {
-  const rendered = await evaluateGeneratedSource(code, context);
+  const rendered = await evaluateGeneratedSource(code, context, 'off', params);
   try {
-    context.liveReview?.artifact(code, rendered);
+    // A variant is not the program's artifact: only the default build is observed as one.
+    if (!isParamsVariant(rendered.params)) context.liveReview?.artifact(code, rendered);
   } catch {
     /* Optional observation. */
   }
@@ -922,7 +936,13 @@ const renderInput = z.object({
   code: z.string().describe('Kiln source code to execute and render to an in-memory GLB.'),
 });
 
-const renderViewsInput = renderInput.extend({ capture: captureInput, detail: reviewDetailInput });
+const renderViewsInput = renderInput.extend({
+  capture: captureInput,
+  detail: reviewDetailInput,
+  params: paramsInput.optional(),
+});
+/** Advertised with `params` opaque (served as shape:params); the tool enforces `renderViewsInput`. */
+const renderViewsAdvertisedInput = renderViewsInput.extend({ params: paramsRecordInput });
 
 /** Where the complete report of this call goes when the host observes it: rule 7's retained report. */
 const reviewDetailOptions = (context: KilnToolContext): DetailOptions => ({
@@ -1288,7 +1308,37 @@ export function screenshotMedia(output: unknown): { png: Uint8Array; json: unkno
 // kiln_render (unified) — collapsed render + screenshot
 // =============================================================================
 
+/** One build of a parameter sweep. `values` are the ones that differ from the defaults. */
+export interface ParamsSweepPointV1 {
+  label: string;
+  values: Record<string, ParamValue>;
+  ok: boolean;
+  tris?: number;
+  draws?: number;
+  /** Bounding-box size in metres. */
+  size?: number[];
+  acceptance?: string;
+  blockers?: unknown[];
+  budget?: string;
+  error?: string;
+}
+
 export interface KilnRenderViewsResult extends PartPreview {
+  /** The parameter values this build used; absent when the program declares none. */
+  params?: { preset?: string; values: Record<string, ParamValue> };
+  /** Why `params` was refused, one entry per value, with what the parameter allows. */
+  paramIssues?: ParamIssue[];
+  /** `params.sweep`: one entry per build, and what was not built. */
+  sweep?: {
+    points: ParamsSweepPointV1[];
+    built: number;
+    failed: number;
+    notSwept: string[];
+    /** Each colour parameter: carried by the GLB as material values, or rebuild-only and why. */
+    colors?: import('../param-bindings').ParamBindingsV1['colors'];
+    /** Each toggle and choice: carried by the GLB as node visibility, or rebuild-only and why. */
+    switches?: import('../param-bindings').ParamBindingsV1['switches'];
+  };
   /** Exact vertex/index accessor payload before and after the export indexing pass. */
   indexBuffers?: import('../index-policy').IndexBufferReceipt;
   captureCache?: { hit: boolean; reused: number; total: number };
@@ -1427,6 +1477,169 @@ async function retainReviewedArtifact(
   return reviewed;
 }
 
+const NO_PARAMS_DECLARED =
+  'This program declares no parameters, so it takes no params. Declare them with defineParams at the top level of the program, or call again without params.';
+
+/** The evaluator's input, without the tool-only sweep flag; undefined when nothing was passed. */
+function hostParams(input: z.infer<typeof paramsInput> | undefined): ParamsInputV1 | undefined {
+  if (!input || (input.preset === undefined && input.values === undefined)) return undefined;
+  return {
+    ...(input.preset !== undefined ? { preset: input.preset } : {}),
+    ...(input.values !== undefined ? { values: input.values } : {}),
+  };
+}
+
+function paramsField(rendered: RenderResult): Pick<KilnRenderViewsResult, 'params'> {
+  const report = rendered.params;
+  if (!report) return {};
+  return {
+    params: {
+      ...(report.preset !== undefined ? { preset: report.preset } : {}),
+      values: report.values,
+    },
+  };
+}
+
+/**
+ * A refusal crosses the evaluator boundary as a closed code only. The declaration is data the
+ * default build reports, so a host reads it there and names each refused value itself.
+ * Returns undefined when `error` is not a parameter refusal or the default build fails too.
+ */
+export async function describeRefusedParams(
+  error: unknown,
+  params: ParamsInputV1 | undefined,
+  buildDefault: () => Promise<RenderResult>,
+): Promise<{ error: string; paramIssues?: ParamIssue[] } | undefined> {
+  if (!params || (error as { diagnostic?: unknown } | null)?.diagnostic !== 'PARAMS_VALUE')
+    return undefined;
+  let declared: RenderResult['params'];
+  try {
+    declared = (await buildDefault()).params;
+  } catch {
+    return undefined;
+  }
+  if (!declared) return { error: NO_PARAMS_DECLARED };
+  const paramIssues = checkParamValues(declared.declaration, params);
+  if (!paramIssues.length) return undefined;
+  return {
+    error: `Parameter values were refused and nothing was built. ${paramIssues
+      .map((issue) => issue.detail)
+      .join(' ')}`,
+    paramIssues,
+  };
+}
+
+async function refusedParams(
+  error: unknown,
+  input: z.infer<typeof renderViewsInput>,
+  context: KilnToolContext,
+): Promise<KilnRenderViewsResult | undefined> {
+  const refused = await describeRefusedParams(error, hostParams(input.params), () =>
+    evaluateGeneratedSource(input.code, context),
+  );
+  return refused ? { ok: false, ...refused, warnings: [] } : undefined;
+}
+
+const SWEEP_ERROR_CHARS = 240;
+
+/** Build every sweep point and report each: structure and QA, never images. */
+async function runParamsSweep(
+  code: string,
+  context: KilnToolContext,
+): Promise<KilnRenderViewsResult> {
+  const base = await evaluateGeneratedSource(code, context);
+  if (!base.params) return { ok: false, error: NO_PARAMS_DECLARED, warnings: [] };
+  const { declaration } = base.params;
+  const { points, notSwept } = sweepPoints(declaration);
+  const { pauseForEventLoop } = await import('../views/event-loop');
+  const reported: ParamsSweepPointV1[] = [];
+  for (const point of points) {
+    const signal = context.evaluationControls?.().signal;
+    signal?.throwIfAborted();
+    try {
+      const rendered =
+        point.label === 'defaults'
+          ? base
+          : await evaluateGeneratedSource(code, context, 'off', point.input);
+      const report = rendered.meta.qaReport as
+        | { acceptance?: unknown; dimensions?: unknown }
+        | undefined;
+      const led = compactReviewResult({ ok: true, qaReport: report }, 'lean') as {
+        blockers?: unknown[];
+      };
+      const manifest = rendered.integrationManifest;
+      reported.push({
+        label: point.label,
+        values: changedParamValues(declaration, rendered.params?.values ?? {}),
+        ok: true,
+        tris: rendered.tris,
+        draws: manifest.renderMetrics.drawCalls,
+        size: [...manifest.bounds.size],
+        ...(typeof report?.acceptance === 'string' ? { acceptance: report.acceptance } : {}),
+        ...(led.blockers?.length ? { blockers: led.blockers } : {}),
+        ...(manifest.budget ? { budget: manifest.budget.status } : {}),
+      });
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      const message = error instanceof Error ? error.message : String(error);
+      reported.push({
+        label: point.label,
+        values: changedParamValues(declaration, {
+          ...(point.input.preset ? declaration.presets?.[point.input.preset] : {}),
+          ...point.input.values,
+        }),
+        ok: false,
+        error:
+          message.length > SWEEP_ERROR_CHARS ? `${message.slice(0, SWEEP_ERROR_CHARS)}…` : message,
+      });
+    }
+    await pauseForEventLoop(signal);
+  }
+  const failed = reported.filter((point) => !point.ok).length;
+  const bindings = await classifyBuiltParams(code, context, base);
+  return {
+    ok: true,
+    requirements: base.requirements,
+    ...paramsField(base),
+    sweep: {
+      points: reported,
+      built: reported.length - failed,
+      failed,
+      notSwept,
+      ...(bindings && Object.keys(bindings.colors).length ? { colors: bindings.colors } : {}),
+      ...(bindings?.switches ? { switches: bindings.switches } : {}),
+    },
+    warnings: [],
+  };
+}
+
+/** Extra builds a save spends on classifying parameters; a sweep classifies them all. */
+const SAVE_CLASSIFY_BUILDS = 16;
+
+/**
+ * Which parameters of a built program its GLB carries: one probe build per colour and one per
+ * other value of a toggle or choice, each with the other parameters at their defaults.
+ * Undefined when it declares none of those.
+ */
+async function classifyBuiltParams(
+  code: string,
+  context: KilnToolContext,
+  base: RenderResult,
+  maxBuilds?: number,
+): Promise<import('../param-bindings').ParamBindingsV1 | undefined> {
+  if (!base.params) return undefined;
+  const { classifyParamBindings } = await import('../param-bindings');
+  return classifyParamBindings(
+    base.params.declaration,
+    base.glb,
+    async (values) => {
+      context.evaluationControls?.().signal?.throwIfAborted();
+      return (await evaluateGeneratedSource(code, context, 'off', { values })).glb;
+    },
+    maxBuilds === undefined ? {} : { maxBuilds },
+  );
+}
+
 async function runRenderViews(
   input: z.infer<typeof renderViewsInput>,
   context: KilnToolContext,
@@ -1445,13 +1658,22 @@ async function runRenderViews(
     const { renderGlbViewGrid, CPU_RASTER_RENDERER_ID, resolveGridCapture } = await import(
       '../views'
     );
+    if (input.params?.sweep) return await runParamsSweep(input.code, context);
+    const params = hostParams(input.params);
     const { root, rendered, reasonCodes } = await loadEvaluatedReviewScene(
       input.code,
       context,
       releases,
+      params,
     );
     onEvaluated?.(rendered);
-    context = { ...context, requirements: rendered.requirements.binding };
+    context = {
+      ...context,
+      requirements: rendered.requirements.binding,
+      // A variant is derived from a revision, never the revision: it is reviewed but not
+      // retained, so completion and save keep selecting the default build.
+      ...(isParamsVariant(rendered.params) ? { programArtifacts: undefined } : {}),
+    };
     const materialContractFailure = missingProceduralTextureResult(rendered, context);
     if (materialContractFailure) return materialContractFailure;
 
@@ -1492,6 +1714,7 @@ async function runRenderViews(
       context.evaluationControls?.().signal?.throwIfAborted();
       const reviewed: KilnRenderViewsResult = {
         ok: true,
+        ...paramsField(rendered),
         ...evaluationEvidence(rendered),
         ...(rendered.meta.indexBuffers ? { indexBuffers: rendered.meta.indexBuffers } : {}),
         ...(rendered.buildCache ? { buildCache: rendered.buildCache } : {}),
@@ -1654,6 +1877,7 @@ async function runRenderViews(
 
     const reviewed: KilnRenderViewsResult = {
       ok: true,
+      ...paramsField(rendered),
       requirements: rendered.requirements,
       ...(rendered.meta.indexBuffers ? { indexBuffers: rendered.meta.indexBuffers } : {}),
       ...(rendered.buildCache ? { buildCache: rendered.buildCache } : {}),
@@ -1693,6 +1917,8 @@ async function runRenderViews(
     };
     return await retainReviewedArtifact(input, rendered, reviewed, context);
   } catch (err) {
+    const refused = await refusedParams(err, input, context);
+    if (refused) return refused;
     return {
       ok: false,
       error: appendSourceCheck(err instanceof Error ? err.message : String(err), input.code),
@@ -1716,7 +1942,7 @@ export function createKilnRenderViewsDef(context: KilnToolContext = {}): KilnToo
     name: 'kiln_render',
     description: KILN_RENDER_VIEWS_DESCRIPTION,
     mediaMulti: screenshotAnimationMediaMulti,
-    inputSchema: renderViewsInput,
+    inputSchema: renderViewsAdvertisedInput,
     run: async (input) =>
       compactReviewResult(
         await guardCaptureBudget('kiln_render', input, statefulContext, () =>
@@ -3253,14 +3479,55 @@ async function savedComposition(
 export async function buildProgramGlb(
   programRef: string,
   context: KilnToolContext,
+  params?: ParamsInputV1,
 ): Promise<RenderResult> {
   if (!context.programStore) throw new Error('Building a programRef requires a program store.');
   const code = await context.programStore.get(programRef);
   await context.prepareBuildProvenance?.();
-  return evaluateGeneratedSource(code, {
-    ...context,
-    requirements: toolRequirements(context).binding,
-  });
+  const callContext = { ...context, requirements: toolRequirements(context).binding };
+  try {
+    return await evaluateGeneratedSource(code, callContext, 'off', params);
+  } catch (error) {
+    const refused = await describeRefusedParams(error, params, () =>
+      evaluateGeneratedSource(code, callContext),
+    );
+    throw refused ? new Error(refused.error) : error;
+  }
+}
+
+/**
+ * A variant of a saved revision, built from its source under this host's engine. Nothing is
+ * saved or retained as reviewed; the saved GLB stays the default build. `kiln_export` and the
+ * local viewer share this path.
+ */
+export async function buildSavedRevisionVariant(
+  record: import('../assets').AssetRecord,
+  context: KilnToolContext,
+  params: ParamsInputV1,
+): Promise<{
+  programRef: string;
+  rendered: RenderResult;
+  params?: { preset?: string; values: Record<string, ParamValue> };
+  /**
+   * False when this engine or its policy builds the source to other bytes than the saved
+   * ones; the variant then derives from that current build, not the saved GLB.
+   */
+  defaultBuildMatchesSaved: boolean;
+}> {
+  if (!context.programStore) throw new Error('Building a variant requires a program store.');
+  const source = record.files['source.kiln.js'];
+  if (!source)
+    throw new Error('This revision is binary-only: it has no source to build a variant from.');
+  const code = new TextDecoder('utf-8', { fatal: true }).decode(source);
+  const programRef = await retainProgram(context.programStore, code);
+  const rendered = await buildProgramGlb(programRef, context, params);
+  const base = await buildProgramGlb(programRef, context);
+  return {
+    programRef,
+    rendered,
+    ...paramsField(rendered),
+    defaultBuildMatchesSaved: base.artifactGlbSha256 === record.manifest.files['asset.glb']?.sha256,
+  };
 }
 
 /** Build one current-policy revision for ordinary save or explicit migration. */
@@ -3277,6 +3544,13 @@ export async function buildProgramAssetDraft(
     requirements: toolRequirements(context).binding,
   };
   const rendered = await evaluateGeneratedSource(code, callContext);
+  // Recorded beside the declaration; the saved GLB itself stays the untagged default build.
+  const paramBindings = await classifyBuiltParams(
+    code,
+    callContext,
+    rendered,
+    SAVE_CLASSIFY_BUILDS,
+  );
   let preview: Uint8Array | undefined;
   let previewInfo: import('../assets').AssetManifest['preview'];
   try {
@@ -3336,6 +3610,8 @@ export async function buildProgramAssetDraft(
       warnings: rendered.warnings,
       integration: rendered.integrationManifest,
       qa: rendered.meta.qaReport,
+      ...(rendered.params ? { params: rendered.params.declaration } : {}),
+      ...(paramBindings ? { paramBindings } : {}),
       dependencies,
       rebuild: dependencies.some((d) => d.delivery === 'runtime')
         ? 'external-dependencies-required'
@@ -3440,6 +3716,9 @@ export function createKilnAssetDefs(
       .describe(
         'editable preserves canonical source/GLB/build resources. runtime returns a standalone GLB and versioned review-metadata sidecar; no source bundle or geometry optimization.',
       ),
+    params: paramsRecordInput.describe(
+      'Values for the parameters the source declares with defineParams: { preset?, values? }. Builds that variant from source and returns its GLB; nothing is saved. Shape: kiln_discover ids ["shape:params"].',
+    ),
   });
   const exportToInput = exportInput.extend({
     path: z
@@ -3673,6 +3952,10 @@ export function createKilnAssetDefs(
       inputSchema: profileExportInput,
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
+        // Advertised opaque; one build takes values or a preset, never a sweep.
+        const params = hostParams(
+          input.params === undefined ? undefined : paramValuesInput.parse(input.params),
+        );
         if (input.programRef) {
           if (input.assetId || input.revisionId)
             throw new Error(
@@ -3682,17 +3965,22 @@ export function createKilnAssetDefs(
             throw new Error(
               'The runtime profile exports a saved revision. Call kiln_save with this programRef first, or omit profile for the built GLB.',
             );
-          const rendered = await buildProgramGlb(input.programRef, context);
+          const rendered = await buildProgramGlb(input.programRef, context, params);
           const { inspectDrawDiagnostics } = await import('../draw-diagnostics');
           return {
             ok: true,
             programRef: input.programRef,
             profile: input.profile,
+            ...paramsField(rendered),
             sha256: rendered.artifactGlbSha256,
             triangles: rendered.tris,
             drawDiagnostics: await inspectDrawDiagnostics(rendered.glb),
             resources: [
-              (await import('../assets-resources')).programBuildLink(input.programRef, rendered),
+              (await import('../assets-resources')).programBuildLink(
+                input.programRef,
+                rendered,
+                params,
+              ),
             ],
           };
         }
@@ -3708,6 +3996,35 @@ export function createKilnAssetDefs(
           listCall(input.collection),
         );
         const { inspectDrawDiagnostics } = await import('../draw-diagnostics');
+        if (params) {
+          // A variant is built from the revision's source under this host's engine; the saved
+          // GLB and its runtime derivative stay the default build.
+          if (input.profile === 'runtime')
+            throw new Error(
+              'params builds a variant from source, which the runtime profile does not do: it derives from the saved GLB. Omit profile for the variant GLB, or omit params for the runtime export.',
+            );
+          const { programRef, rendered, defaultBuildMatchesSaved } =
+            await buildSavedRevisionVariant(record, context, params);
+          return {
+            ok: true,
+            programRef,
+            profile: input.profile,
+            collection: input.collection,
+            asset: {
+              assetId: input.assetId,
+              revisionId: input.revisionId,
+              name: record.manifest.name,
+            },
+            ...paramsField(rendered),
+            defaultBuildMatchesSaved,
+            sha256: rendered.artifactGlbSha256,
+            triangles: rendered.tris,
+            drawDiagnostics: await inspectDrawDiagnostics(rendered.glb),
+            resources: [
+              (await import('../assets-resources')).programBuildLink(programRef, rendered, params),
+            ],
+          };
+        }
         if (input.profile === 'runtime') {
           const output = await (await import('../asset-export')).exportAssetGlb(record, {
             profile: 'runtime',

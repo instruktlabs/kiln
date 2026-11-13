@@ -27,7 +27,10 @@ Open the printed loopback URL; `localhost` on the same port also works. The view
 refuses other hostnames to prevent DNS rebinding. It shows one card per asset,
 supports search, tags, revision selection, animation playback, wireframe, lighting
 and downloads.
-It loads the saved GLB, never executes its JavaScript. Selecting a revision in the
+It loads the saved GLB and does not execute its JavaScript. The one exception is explicit:
+for a revision that declares parameters, choosing **Rebuild at other values** rebuilds its
+saved source at the values you set ([parameters in the local viewer](programs.md#parameters-in-the-local-viewer));
+`kiln view --no-variants` removes that. Selecting a revision in the
 browser remembers that choice in that browser; it does not update other clients.
 Multiple branch tips are identified on the asset card.
 

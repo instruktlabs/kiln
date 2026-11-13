@@ -1113,6 +1113,63 @@ define(
   },
 );
 define(
+  'defineParams',
+  {
+    units: 'Each range or int is in the unit its declaration names; none is assumed.',
+    axes: 'Not a placement operation.',
+    origin: 'Not a placement operation.',
+    ownership:
+      'Records one declaration for the program and returns a new frozen object of values. The values are plain numbers, booleans and strings.',
+    coordinates: 'Not a placement operation.',
+    parameters: [
+      'spec: 1 to 24 parameters. A name is a letter followed by up to 39 letters, digits or underscores.',
+      'range: finite default, min and max with min < max and the default inside them. step is a positive number and only a hint for a slider, unless snap is true: then a value must be min plus a whole number of steps, and the default must be too. unit is at most 12 characters.',
+      'int: as range, with safe integers for default, min, max and step.',
+      'toggle: default is true or false.',
+      'color: default is #rrggbb; values are returned lowercase.',
+      'choice: options is 2 to 32 distinct strings of at most 60 characters, and default is one of them.',
+      'seed: an integer from 0 to 4294967295, for seededRandom.',
+      'label (at most 60 characters) and describe (at most 240) are optional on every parameter.',
+      'opts.presets: 1 to 16 named value sets. Each names declared parameters only, with values those parameters allow.',
+    ],
+    topology: [noMesh],
+    preservation: ['Changes no geometry, material or node, and writes nothing to the GLB.'],
+    semantics: [
+      'Values resolve in order: each default, then the preset the host named, then the values the host passed.',
+      'A build with no host values returns the defaults, so it is the same build as the program with those defaults written as literals.',
+      'One call per program, made by top-level code. A second call, or a call from build() or animate(), is a PARAMS_CONTRACT build error, as is a spec that breaks a rule above.',
+      'A host value that names no declared parameter or preset, has the wrong type, is outside min to max, is off a snapped step or is not an option is a PARAMS_VALUE build error. So are host values for a program that declares no parameters. Nothing is clamped.',
+      'The render result reports params: { version: "kiln.params.v1", declaration, preset?, values } with every value the build used.',
+      'Host values are declared build inputs: they are part of the build-cache key, and a program that declares parameters stays eligible for build reuse.',
+    ],
+    cost: 'Metadata only.',
+  },
+  {
+    references: ['src/params.ts', 'docs/programs.md'],
+    tags: ['parameters', 'variants', 'presets', 'authoring'],
+    aliases: [
+      'parametric asset',
+      'sliders',
+      'knobs',
+      'asset options',
+      'variant values',
+      'colourway',
+    ],
+    intents: [
+      'let a host build the asset at other sizes, counts or colours without editing source',
+      'declare named presets of an asset',
+    ],
+    summary:
+      'Declares typed parameters and presets once at top level and returns the values to build with; host values are validated and refused, never clamped.',
+    limitations: [
+      'Does not check that every value in a range builds a sound asset; build the extremes to find out.',
+      'A GLB does not carry the parameters: another value needs another build.',
+      'No constraint between parameters can be declared; derive dependent values in the program.',
+    ],
+    related: [{ name: 'seededRandom', relation: 'companion' }],
+  },
+);
+define(
   'definePalette',
   {
     units: 'Colours are sRGB hex; threshold is a CIE 1976 delta E in CIELAB (D65).',

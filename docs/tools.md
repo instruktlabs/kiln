@@ -168,7 +168,7 @@ Check program syntax, sandbox rules and retired globals before building. Returns
 
 ## kiln_render
 
-Build and return metrics, part paths and images. If partsTruncated, use kiln_inspect listParts. Omit capture for six views, preset/cells for orbit grids, or kiln.capture.v1/v2 shots for exact orthographic/perspective cameras; v2 adds hide. Check viewFidelity before judging materials. Failed builds return errors without images. Supply code, programRef OR file (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
+Build and return metrics, part paths and images. If partsTruncated, use kiln_inspect listParts. Omit capture for six views, preset/cells for orbit grids, or kiln.capture.v1/v2 shots for exact orthographic/perspective cameras; v2 adds hide. Check viewFidelity before judging materials. Failed builds return errors without images. params { preset?, values? } builds other values of defineParams parameters and { sweep: true } checks their range without images: kiln_discover ids ["shape:params"]. Supply code, programRef OR file (kept in the program store across sessions and processes, never evicted). Invalid drafts keep a ref.
 
 <details>
 <summary>Input JSON Schema</summary>
@@ -466,7 +466,6 @@ Build and return metrics, part paths and images. If partsTruncated, use kiln_ins
               }
             },
             "backdrop": {
-              "description": "neutral (default); light for dark parts, dark for light parts.",
               "type": "string",
               "enum": [
                 "neutral",
@@ -487,6 +486,13 @@ Build and return metrics, part paths and images. If partsTruncated, use kiln_ins
         "compact",
         "full"
       ]
+    },
+    "params": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
     },
     "programRef": {
       "type": "string",
@@ -1846,6 +1852,14 @@ Export one saved revision, or the GLB a programRef builds. With programRef, noth
         "editable",
         "runtime"
       ]
+    },
+    "params": {
+      "description": "Values for the parameters the source declares with defineParams: { preset?, values? }. Builds that variant from source and returns its GLB; nothing is saved. Shape: kiln_discover ids [\"shape:params\"].",
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {}
     }
   }
 }
