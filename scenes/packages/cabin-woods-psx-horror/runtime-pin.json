@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "release": "cabin-20261012-01",
-  "selectionSha256": "1cedd25a9ebc757b28054c03ee87afc3f388bd72740f6ea8778afefc8278ede7",
+  "release": "cabin-20261113-01",
+  "selectionSha256": "d7e562f2e773f47276f6c2ffac5f5ca4b53d068c831ebd55f7a3f53389ac45b9",
   "maxArchiveBytes": 67108864,
   "files": [
     {
@@ -37,12 +37,12 @@
     {
       "path": "web/woodland/assets/bedroom-cabinet.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "7a06d413e473bb388149ef09781b286046491cabc8362a18f955072e895a3879"
+      "sha256": "abd504f1736f963f87dfe9ebd6719aa5faa595e1e74137555d2c828abd6b95a3"
     },
     {
-      "path": "web/woodland/assets/bedroomCabinet-f606cf2abf0d.glb",
+      "path": "web/woodland/assets/bedroomCabinet-df506d2e085c.glb",
       "bytes": 36036,
-      "sha256": "f606cf2abf0d1f83c8adf896bad55ed1a1956794ba5e9b27787cf47de794c49c"
+      "sha256": "df506d2e085c2fcdec74b7202f722476f1e99c9a15406b23cb6beb798eb57536"
     },
     {
       "path": "web/woodland/assets/bench-715fec5fea79.glb",
@@ -85,14 +85,14 @@
       "sha256": "c806ebb3d55147a9c3a4eb0296fc51cad27de1eb9cc02cd07de5a84e8ae04db4"
     },
     {
-      "path": "web/woodland/assets/cabin-5ffd9f429b0b.glb",
-      "bytes": 1892840,
-      "sha256": "5ffd9f429b0bba47425c9eab3c2a74dfe6d8643b2772ab8a12747634a19c8454"
+      "path": "web/woodland/assets/cabin-fe4ce056c59d.glb",
+      "bytes": 1892820,
+      "sha256": "fe4ce056c59dd8f7c8f6c24f9d485302207647b2b5b72654f7f9ac72622b1605"
     },
     {
       "path": "web/woodland/assets/cabin.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "2016c9937210ab861ca20f8004aa3b94631a5a2fb9297f4e0d6b8272baeb3a82"
+      "sha256": "78affdd8a448b8b305a894208453af50319e50c8310730d93f553f1887324502"
     },
     {
       "path": "web/woodland/assets/caretaker-ebf1d5d4bcde.glb",
@@ -142,7 +142,7 @@
     {
       "path": "web/woodland/assets/dining-table.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "e600f1950de3b92f12158184bd90d5e18f228d18b07ce23dd91b29f9697cb1de"
+      "sha256": "790726d79b8f8bb0552ba689a69f4d351c3ac542f665911014a37748f30cf59f"
     },
     {
       "path": "web/woodland/assets/diningChair-a89ef63f6446.glb",
@@ -150,9 +150,9 @@
       "sha256": "a89ef63f644604ebd23831a27b2619a9211e741e9a99fd8c30bb7b0c39271c08"
     },
     {
-      "path": "web/woodland/assets/diningTable-a685efb213de.glb",
+      "path": "web/woodland/assets/diningTable-127a7b0d815d.glb",
       "bytes": 18076,
-      "sha256": "a685efb213de8aa20b5925c5c379560cc252c615479ae3ca3bb771c9fbc4378a"
+      "sha256": "127a7b0d815d31ccf060d926b535e0b9a027197a88e54359a1db0fcf2a3cc076"
     },
     {
       "path": "web/woodland/assets/door-359e5cb0ad40.glb",
@@ -232,7 +232,7 @@
     {
       "path": "web/woodland/assets/kitchen-cupboard.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "a61f3a9b7546068bf980c90f386fdff0e300ad7aabe939b40169038f1767b30c"
+      "sha256": "f905b0e7d5c4007a836009f730fd23af6d3e3df71c8fcb0b9dc7a7a5f2f6ad6c"
     },
     {
       "path": "web/woodland/assets/kitchen-dressing.kiln-metadata.json",
@@ -242,12 +242,12 @@
     {
       "path": "web/woodland/assets/kitchen-worktop.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "b7d622c898755cc4b8bb2d3ab92f30cea21ddd528f6608c0cc683c16cde4ea75"
+      "sha256": "24878032fff577fccecc2edf6a1327620f6e61b0aec18264aaa438f696e4af94"
     },
     {
-      "path": "web/woodland/assets/kitchenCupboard-eee5e1c9e915.glb",
+      "path": "web/woodland/assets/kitchenCupboard-da2f116b0d3b.glb",
       "bytes": 36132,
-      "sha256": "eee5e1c9e91581a7dbc1e889fe43a4a4fd9e8c750828124daf01f8eae9d28e80"
+      "sha256": "da2f116b0d3bd99f95c20750adea16e68064e090dd28c0738c230aac4f8acc24"
     },
     {
       "path": "web/woodland/assets/kitchenDressing-d981f6dc2084.glb",
@@ -255,19 +255,19 @@
       "sha256": "d981f6dc2084c6084d1e1d0616fac8b5e98490e9d55b7e95aa07c4c0a5147fed"
     },
     {
-      "path": "web/woodland/assets/kitchenWorktop-c6632133ab49.glb",
+      "path": "web/woodland/assets/kitchenWorktop-9c6029f39a08.glb",
       "bytes": 18532,
-      "sha256": "c6632133ab49c07484c056ae9fd3d391446b5f25215255fffb74c0935c8bd70b"
+      "sha256": "9c6029f39a084e4c9abfc45daac7a41a4372a253b4256c106b9ddfbb01958886"
     },
     {
       "path": "web/woodland/assets/map-coat-hooks.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "1714346715231e4b947162bca274bc593bbe6a80e285a8b1a0ecdbe3e88ac433"
+      "sha256": "b3f020e6b01728585a1039ddce7ee6e60032b57d653fdd66e85bd26c751bfdf9"
     },
     {
-      "path": "web/woodland/assets/mapCoatHooks-1590c63a344f.glb",
-      "bytes": 18400,
-      "sha256": "1590c63a344f6d12d295f1990740109456f0d6d1c57eebdaec9196cde1645d4e"
+      "path": "web/woodland/assets/mapCoatHooks-c738dfa425c2.glb",
+      "bytes": 18392,
+      "sha256": "c738dfa425c27dc28785a4fec3bdbec323f31a275ec3df6f6c084fbef09e7d79"
     },
     {
       "path": "web/woodland/assets/path-baseColor-a20a1ce4777c.png",
@@ -397,12 +397,12 @@
     {
       "path": "web/woodland/assets/supply-chest.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "abea2a5112ec439af4a3ab6d6675dd1d5af887d2d52a738759a3bdb8468ab692"
+      "sha256": "ef6b8b51f703b0c50c78cca26c4786a768e199558e0639f2be7498975c91b07b"
     },
     {
-      "path": "web/woodland/assets/supplyChest-762db2707135.glb",
-      "bytes": 18764,
-      "sha256": "762db2707135ee71a120b94b12794cea0a17daa3fba6b9c119b4c8f5eca6c405"
+      "path": "web/woodland/assets/supplyChest-d499e4c09789.glb",
+      "bytes": 19840,
+      "sha256": "d499e4c09789407211718812500ec36e21ede3e0227b60bde8ecd43114608a51"
     },
     {
       "path": "web/woodland/assets/table-6696df1bd5d6.glb",
@@ -417,32 +417,32 @@
     {
       "path": "web/woodland/assets/tabletop-dressing.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "fac0dbf3764cc488eda5d425fd00b19241097088b99d18c1ae1575b72371b218"
+      "sha256": "cf5441305f72ad40df312dd5f0f00afe5f7814330752d06ebaeb73264d584eee"
     },
     {
-      "path": "web/woodland/assets/tabletopDressing-c82675c0d73b.glb",
+      "path": "web/woodland/assets/tabletopDressing-026a2919dafb.glb",
       "bytes": 32680,
-      "sha256": "c82675c0d73b0c50ab255d0253077d7fdce5d1970c2bef963e5721f9cbdd57e2"
+      "sha256": "026a2919dafb46c1477fbe6c92687017a4c04f8486742e5b8dffb59856a19552"
     },
     {
       "path": "web/woodland/assets/tall-cabinet.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "ce6b28acd771ceed3d07cb74da2ea5b441f13b7d6e5658fd29b611c89e42c845"
+      "sha256": "f178ae21010c098d2e73c4688e5366a84f4f130b6b825cdfa7dbcef02eb50a94"
     },
     {
-      "path": "web/woodland/assets/tallCabinet-a279be9904e4.glb",
+      "path": "web/woodland/assets/tallCabinet-eceb838e4245.glb",
       "bytes": 35664,
-      "sha256": "a279be9904e4fe5d0a9add371dabea62f21c400cacd57f76a317c6a59a6f9fdf"
+      "sha256": "eceb838e4245242f6b2fca70bd51eeebc902f09e66df984f228828b1217e1c85"
     },
     {
       "path": "web/woodland/assets/tool-rack.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "5cc88c8e5d184201bc113893532049acfec79ccc1852bea71c9b1ea4a6b6dbf8"
+      "sha256": "1396f70c9cb9ea799824bc53059d9ea99e0deeea60576e4b74d8a808c31c305d"
     },
     {
-      "path": "web/woodland/assets/toolRack-65f2152610a6.glb",
+      "path": "web/woodland/assets/toolRack-17b17b78fecc.glb",
       "bytes": 17660,
-      "sha256": "65f2152610a685a56cbc828d68698c4aab151ef860bdcc63e13921aa8815a45b"
+      "sha256": "17b17b78fecc699caf046c0a40c8e4904b0aaca7e1133cfff88242596f8bc3a6"
     },
     {
       "path": "web/woodland/assets/torch-bracket.kiln-metadata.json",
@@ -472,7 +472,7 @@
     {
       "path": "web/woodland/assets/wall-shelf.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "1c00b86f05139de56f7ef3d00b8ed32c324784187659b31525a0a4c5e50642fb"
+      "sha256": "b6e690a0b17f406a1ad9f6b2533a26d6fb4b0293bc28c67420b876d1bdca6adc"
     },
     {
       "path": "web/woodland/assets/wall-solid.kiln-metadata.json",
@@ -490,9 +490,9 @@
       "sha256": "2dca23a2c3fdf5fb90717320cf3a625d10cdebc1c31e160a17b77ffc26c8b1f9"
     },
     {
-      "path": "web/woodland/assets/wallShelf-94140194abe8.glb",
+      "path": "web/woodland/assets/wallShelf-6f73eca710a8.glb",
       "bytes": 13648,
-      "sha256": "94140194abe862e07fab705044d36ca5e2d6e7d6312d7f344fcad709c4d1784b"
+      "sha256": "6f73eca710a824915b68fc8ef3ee339fbe50a185bab05486fd6935e1b19827d0"
     },
     {
       "path": "web/woodland/assets/wallSolid-122f5a4e8517.glb",
@@ -547,7 +547,7 @@
     {
       "path": "web/woodland/collection.json",
       "bytes": 281182,
-      "sha256": "85dfcd2f188639562fee2ac5670eda2a725cad0acd22930508ed630ca1dc4469"
+      "sha256": "4ebd9def17aa7b935f38c58b00632b608196e5691bce07e62e56517fa7a82c46"
     }
   ]
 }

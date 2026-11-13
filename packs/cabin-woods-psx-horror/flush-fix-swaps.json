@@ -1,0 +1,222 @@
+{
+  "schema": "kiln.scene-pack-swap/1",
+  "scene": "cabin-woods-psx-horror",
+  "from": {
+    "release": "cabin-20261012-01",
+    "archiveSha256": "2b29e81da261d10e6fd169d8d96c931aa4b13c2f8ec8fadf74a9d9330724d686"
+  },
+  "change": "Flush-face fix: each model is the verified child revision of the scene's current revision, saved with its coincident faces moved apart. The six other fixed Cabin assets have no saved child and are unchanged.",
+  "release": "cabin-20261113-01",
+  "inputs": "The flush-fix scratch store for the Cabin: <asset>/revisions/<revision>/ with asset.glb, manifest.json, materials.kiln.json and the files the manifest lists (not in the repository).",
+  "swaps": [
+    {
+      "id": "cabin",
+      "asset": "a_e6f6a8a0c4eb465584fe448b8b17f103",
+      "member": "models/cabin.glb",
+      "file": "a_e6f6a8a0c4eb465584fe448b8b17f103/revisions/r_b57a8b63c96e4216bb51100e8707fcdd/asset.glb",
+      "manifest": "a_e6f6a8a0c4eb465584fe448b8b17f103/revisions/r_b57a8b63c96e4216bb51100e8707fcdd/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "cabin.kiln-metadata.json",
+      "revision": "r_b57a8b63c96e4216bb51100e8707fcdd",
+      "parentRevision": "r_c27b7f2836c14fd898a0d82f83b741a3",
+      "bytes": 1892820,
+      "sha256": "fe4ce056c59dd8f7c8f6c24f9d485302207647b2b5b72654f7f9ac72622b1605",
+      "previous": {
+        "revision": "r_c27b7f2836c14fd898a0d82f83b741a3",
+        "bytes": 1892840,
+        "sha256": "5ffd9f429b0bba47425c9eab3c2a74dfe6d8643b2772ab8a12747634a19c8454"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "dining-table",
+      "asset": "a_70c4aab7fc9c433489f1b5afe576ab42",
+      "member": "models/dining-table.glb",
+      "file": "a_70c4aab7fc9c433489f1b5afe576ab42/revisions/r_c1c7038cde834adebe4e12f471cca7f5/asset.glb",
+      "manifest": "a_70c4aab7fc9c433489f1b5afe576ab42/revisions/r_c1c7038cde834adebe4e12f471cca7f5/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "dining-table.kiln-metadata.json",
+      "revision": "r_c1c7038cde834adebe4e12f471cca7f5",
+      "parentRevision": "r_fa5a504db1e34fa49f529704e432e888",
+      "bytes": 18076,
+      "sha256": "127a7b0d815d31ccf060d926b535e0b9a027197a88e54359a1db0fcf2a3cc076",
+      "previous": {
+        "revision": "r_fa5a504db1e34fa49f529704e432e888",
+        "bytes": 18076,
+        "sha256": "a685efb213de8aa20b5925c5c379560cc252c615479ae3ca3bb771c9fbc4378a"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "kitchen-worktop",
+      "asset": "a_d1ee8bdc0e76439cb2431da23760c882",
+      "member": "models/kitchen-worktop.glb",
+      "file": "a_d1ee8bdc0e76439cb2431da23760c882/revisions/r_c1c3a1c15e30421c811eff1151af7671/asset.glb",
+      "manifest": "a_d1ee8bdc0e76439cb2431da23760c882/revisions/r_c1c3a1c15e30421c811eff1151af7671/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "kitchen-worktop.kiln-metadata.json",
+      "revision": "r_c1c3a1c15e30421c811eff1151af7671",
+      "parentRevision": "r_284c4d0549d543f18121eb51af3ec2a2",
+      "bytes": 18532,
+      "sha256": "9c6029f39a084e4c9abfc45daac7a41a4372a253b4256c106b9ddfbb01958886",
+      "previous": {
+        "revision": "r_284c4d0549d543f18121eb51af3ec2a2",
+        "bytes": 18532,
+        "sha256": "c6632133ab49c07484c056ae9fd3d391446b5f25215255fffb74c0935c8bd70b"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "bedroom-cabinet",
+      "asset": "a_e025c29a141f432f8ab7335893aeed2f",
+      "member": "models/bedroom-cabinet.glb",
+      "file": "a_e025c29a141f432f8ab7335893aeed2f/revisions/r_90aa98be57b74bd1bd21ca9eecd35203/asset.glb",
+      "manifest": "a_e025c29a141f432f8ab7335893aeed2f/revisions/r_90aa98be57b74bd1bd21ca9eecd35203/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "bedroom-cabinet.kiln-metadata.json",
+      "revision": "r_90aa98be57b74bd1bd21ca9eecd35203",
+      "parentRevision": "r_0b7a06e833124e00956a310c6220b6f3",
+      "bytes": 36036,
+      "sha256": "df506d2e085c2fcdec74b7202f722476f1e99c9a15406b23cb6beb798eb57536",
+      "previous": {
+        "revision": "r_0b7a06e833124e00956a310c6220b6f3",
+        "bytes": 36036,
+        "sha256": "f606cf2abf0d1f83c8adf896bad55ed1a1956794ba5e9b27787cf47de794c49c"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "kitchen-cupboard",
+      "asset": "a_c2d8d34f5d1c4082a74ce9037f440ab1",
+      "member": "models/kitchen-cupboard.glb",
+      "file": "a_c2d8d34f5d1c4082a74ce9037f440ab1/revisions/r_fd02fac328124eb294571d0e4e41aaac/asset.glb",
+      "manifest": "a_c2d8d34f5d1c4082a74ce9037f440ab1/revisions/r_fd02fac328124eb294571d0e4e41aaac/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "kitchen-cupboard.kiln-metadata.json",
+      "revision": "r_fd02fac328124eb294571d0e4e41aaac",
+      "parentRevision": "r_45706bb944e84158ab90b91946645121",
+      "bytes": 36132,
+      "sha256": "da2f116b0d3bd99f95c20750adea16e68064e090dd28c0738c230aac4f8acc24",
+      "previous": {
+        "revision": "r_45706bb944e84158ab90b91946645121",
+        "bytes": 36132,
+        "sha256": "eee5e1c9e91581a7dbc1e889fe43a4a4fd9e8c750828124daf01f8eae9d28e80"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "tall-cabinet",
+      "asset": "a_094f76a5e27b4b0c8d819c1452d319ce",
+      "member": "models/tall-cabinet.glb",
+      "file": "a_094f76a5e27b4b0c8d819c1452d319ce/revisions/r_306baac427334ae18c8709a618322dfb/asset.glb",
+      "manifest": "a_094f76a5e27b4b0c8d819c1452d319ce/revisions/r_306baac427334ae18c8709a618322dfb/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "tall-cabinet.kiln-metadata.json",
+      "revision": "r_306baac427334ae18c8709a618322dfb",
+      "parentRevision": "r_86fe790b72454c6dbc7062c33e1b0b87",
+      "bytes": 35664,
+      "sha256": "eceb838e4245242f6b2fca70bd51eeebc902f09e66df984f228828b1217e1c85",
+      "previous": {
+        "revision": "r_86fe790b72454c6dbc7062c33e1b0b87",
+        "bytes": 35664,
+        "sha256": "a279be9904e4fe5d0a9add371dabea62f21c400cacd57f76a317c6a59a6f9fdf"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "supply-chest",
+      "asset": "a_a0bb77e21a5445919caef21065f998a7",
+      "member": "models/supply-chest.glb",
+      "file": "a_a0bb77e21a5445919caef21065f998a7/revisions/r_0d5f8af203454c1497d4c0a36c87ba4e/asset.glb",
+      "manifest": "a_a0bb77e21a5445919caef21065f998a7/revisions/r_0d5f8af203454c1497d4c0a36c87ba4e/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "supply-chest.kiln-metadata.json",
+      "revision": "r_0d5f8af203454c1497d4c0a36c87ba4e",
+      "parentRevision": "r_8251fc93e84d4379aefb4ea761889b90",
+      "bytes": 19840,
+      "sha256": "d499e4c09789407211718812500ec36e21ede3e0227b60bde8ecd43114608a51",
+      "previous": {
+        "revision": "r_8251fc93e84d4379aefb4ea761889b90",
+        "bytes": 18764,
+        "sha256": "762db2707135ee71a120b94b12794cea0a17daa3fba6b9c119b4c8f5eca6c405"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "map-coat-hooks",
+      "asset": "a_ab32b36d2c3444b093c56514b69420ba",
+      "member": "models/map-coat-hooks.glb",
+      "file": "a_ab32b36d2c3444b093c56514b69420ba/revisions/r_5946056d94bb4f8592f20e4e136cc38a/asset.glb",
+      "manifest": "a_ab32b36d2c3444b093c56514b69420ba/revisions/r_5946056d94bb4f8592f20e4e136cc38a/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "map-coat-hooks.kiln-metadata.json",
+      "revision": "r_5946056d94bb4f8592f20e4e136cc38a",
+      "parentRevision": "r_052a68725d524ea6afd62254a5a0e676",
+      "bytes": 18392,
+      "sha256": "c738dfa425c27dc28785a4fec3bdbec323f31a275ec3df6f6c084fbef09e7d79",
+      "previous": {
+        "revision": "r_052a68725d524ea6afd62254a5a0e676",
+        "bytes": 18400,
+        "sha256": "1590c63a344f6d12d295f1990740109456f0d6d1c57eebdaec9196cde1645d4e"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "tool-rack",
+      "asset": "a_f022433862124870a14925d6ad32396b",
+      "member": "models/tool-rack.glb",
+      "file": "a_f022433862124870a14925d6ad32396b/revisions/r_3a31ae31b85f41cab93c6126ddf05603/asset.glb",
+      "manifest": "a_f022433862124870a14925d6ad32396b/revisions/r_3a31ae31b85f41cab93c6126ddf05603/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "tool-rack.kiln-metadata.json",
+      "revision": "r_3a31ae31b85f41cab93c6126ddf05603",
+      "parentRevision": "r_c23e526f1c874f89b37a32a7c04c4834",
+      "bytes": 17660,
+      "sha256": "17b17b78fecc699caf046c0a40c8e4904b0aaca7e1133cfff88242596f8bc3a6",
+      "previous": {
+        "revision": "r_c23e526f1c874f89b37a32a7c04c4834",
+        "bytes": 17660,
+        "sha256": "65f2152610a685a56cbc828d68698c4aab151ef860bdcc63e13921aa8815a45b"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "wall-shelf",
+      "asset": "a_b18f39bb707f45bf80cb42c81b77db4f",
+      "member": "models/wall-shelf.glb",
+      "file": "a_b18f39bb707f45bf80cb42c81b77db4f/revisions/r_ff9a87bc5cc84f1ebc8d91414c44c53c/asset.glb",
+      "manifest": "a_b18f39bb707f45bf80cb42c81b77db4f/revisions/r_ff9a87bc5cc84f1ebc8d91414c44c53c/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "wall-shelf.kiln-metadata.json",
+      "revision": "r_ff9a87bc5cc84f1ebc8d91414c44c53c",
+      "parentRevision": "r_dde877ffae644423ac3a1fc371443e57",
+      "bytes": 13648,
+      "sha256": "6f73eca710a824915b68fc8ef3ee339fbe50a185bab05486fd6935e1b19827d0",
+      "previous": {
+        "revision": "r_dde877ffae644423ac3a1fc371443e57",
+        "bytes": 13648,
+        "sha256": "94140194abe862e07fab705044d36ca5e2d6e7d6312d7f344fcad709c4d1784b"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "tabletop-dressing",
+      "asset": "a_b73b3fb4f25948509b941aa871157256",
+      "member": "models/tabletop-dressing.glb",
+      "file": "a_b73b3fb4f25948509b941aa871157256/revisions/r_3125d3a4babb439d9fb50b9f7b89aa29/asset.glb",
+      "manifest": "a_b73b3fb4f25948509b941aa871157256/revisions/r_3125d3a4babb439d9fb50b9f7b89aa29/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "tabletop-dressing.kiln-metadata.json",
+      "revision": "r_3125d3a4babb439d9fb50b9f7b89aa29",
+      "parentRevision": "r_2f39fecba5634b46805f472e7615d7fd",
+      "bytes": 32680,
+      "sha256": "026a2919dafb46c1477fbe6c92687017a4c04f8486742e5b8dffb59856a19552",
+      "previous": {
+        "revision": "r_2f39fecba5634b46805f472e7615d7fd",
+        "bytes": 32680,
+        "sha256": "c82675c0d73b0c50ab255d0253077d7fdce5d1970c2bef963e5721f9cbdd57e2"
+      },
+      "rule": "The scene and catalog model is the Kiln runtime profile of the saved revision with the sidecar <slug>.kiln-metadata.json: applied to the parent it reproduces the published model and sidecar byte for byte, and it is applied to the child."
+    }
+  ]
+}
