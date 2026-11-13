@@ -117,7 +117,8 @@ metadata sidecar; do not guess names from the source.
   `parser.getDependency('material', index)` loads the mapped material.
 - **Size** (`params.shapes`, exported with `--carry-shapes`): the clip `kiln.param.<name>`
   runs from the minimum at time 0 to the maximum at time 1. Clamp the action and set the
-  mixer to the time for the value, from `keys`. Never loop it and never start it with the
+  mixer to time (value - min) / (max - min); `keys` lists each built value with its time.
+  Never loop it and never start it with the
   asset's motion clips: a controller that plays every clip scrubs the size.
 
 A size set this way moves vertices, so recompute the instance's bounds, collider and

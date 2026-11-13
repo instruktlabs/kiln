@@ -203,8 +203,9 @@ A `toggle` or `choice` that only shows and hides parts can also be changed in th
   lists each node with `visibleWhen`, the values that show it. Otherwise it is `rebuild` with a
   reason: `DATA_CHANGED`, `OTHER_VALUES_CHANGED`, `NO_NODE`, `SHARED_NODE`, `PROBE_FAILED` or
   `NOT_CLASSIFIED`. A `DATA_CHANGED` detail names the first data that differs when the builds
-  line up; a part built only when the option is on keeps the general advice. A save spends at most 16 extra builds on classifying colours and options
-  and marks the rest `NOT_CLASSIFIED`; a sweep classifies all of them.
+  line up; a part built only when the option is on keeps the general advice. A save spends at
+  most 16 extra builds on classifying colours and options and marks the rest
+  `NOT_CLASSIFIED`; a sweep classifies all of them.
 - **Where it is recorded.** The sweep reports `sweep.switches`; the manifest records them in
   `build.paramBindings.switches`. The saved GLB is still the default build: a part hidden at
   the defaults is in it, hidden.

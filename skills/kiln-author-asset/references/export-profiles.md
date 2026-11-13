@@ -258,10 +258,14 @@ Before saving, `kiln_render` with `params: { sweep: true }` reports the same dec
 - A loader that ignores `KHR_node_visibility` draws an option that is hidden by default,
   so the application applies the tags at load as well as on change. three.js r187,
   Blender 5.2.0 and Unity glTFast 6.20.0 all ignore it.
-- A size clip is not motion. Time 0 is the minimum and time 1 the maximum; clamp it and
-  never loop it or play it with the asset's other clips. `--carry-shapes` works on the
+- A size clip is not motion. Time 0 is the minimum and time 1 the maximum, so a value
+  sits at time (value - min) / (max - min); clamp it and never loop it or play it with
+  the asset's other clips. `--carry-shapes` works on the
   plain runtime profile only, rebuilds the saved source at each size's ends, and lists a
   size it cannot carry as `rebuild` with the reason.
+- Deliver the sidecar with the GLB. Its `params` block is what an application reads to
+  find each carried name, its values and, for a size, `keys`: the minimum, the default
+  and the maximum, each with its clip time.
 - A derived file names any parameter it lost in `params.dropped`. Read the sidecar's
   `params` block and report what the delivered file carries; do not infer it from source.
 
