@@ -1,0 +1,446 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_a71359b812cd4b3fa22d129458e471db",
+  "revisionId": "r_08f2b4de9b8d4791b33252130e9aac95",
+  "parentRevision": "r_15e05145d9c649de9fe845dd4d4aba9d",
+  "name": "Winter mountainside / small-props",
+  "tags": [
+    "winter-cabin",
+    "m4b"
+  ],
+  "createdAt": "2026-11-13T00:19:58.622Z",
+  "description": "M4B exact R8 child: finished furnishings. Reviewed managed GPU room studies; destination appearance and traversal remain supervisor-owned. Flush-face fix: spine height h-2 mm and depth d-2 mm so its top/end faces leave the cover planes; spine shifted 2 mm outward in x (center x-w/2+.001) so its outer face no longer lies on the cover end faces.",
+  "attribution": {
+    "model": "claude-sonnet-5-5",
+    "harness": "claude-code"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:608f7061594639cf4e8ab42996844fd9dd0bc7b539bd4a64734add5ed0fca6fb",
+      "bytes": 359456
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:ff9d41eb3ad115cf61e5746c4d557d5f45d6fbb4f3bcc9b44d9ce162c56d4e48",
+      "bytes": 23338
+    },
+    "preview.png": {
+      "sha256": "sha256:2f08f5d0baec440302dcd8249dbc6ffab7bd2cdbf0c3a2fb1742ac835b9bcd23",
+      "bytes": 248078
+    }
+  },
+  "build": {
+    "engine": "sha256:ae628b3b5f18e33f8588e281f76c843c573d55647475b4312c5e61c62a0e5ae3",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "608f7061594639cf4e8ab42996844fd9dd0bc7b539bd4a64734add5ed0fca6fb",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.12999999523162842,
+          -2.1606683109354208e-10,
+          -0.17499999701976776
+        ],
+        "max": [
+          0.12999999523162842,
+          0.0827299952507019,
+          0.17499999701976776
+        ],
+        "size": [
+          0.25999999046325684,
+          0.08272999546676874,
+          0.3499999940395355
+        ],
+        "center": [
+          0,
+          0.04136499751731754,
+          0
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -2.1606683109354208e-10,
+        "offsetToGround": 2.1606683109354208e-10,
+        "grounded": true
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "wmc-small-props"
+      },
+      "renderMetrics": {
+        "triangles": 1280,
+        "drawCalls": 7,
+        "uniqueGeometries": 7,
+        "uniqueMaterials": 7,
+        "textureCount": 8,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "materialAdvice": [
+        {
+          "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+          "disposition": "advisory",
+          "reference": "web.portable.v1/standard",
+          "message": "8 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }).",
+          "measurement": {
+            "name": "imageCount",
+            "actual": 8,
+            "reference": 4,
+            "unit": "images"
+          },
+          "advice": "To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image."
+        }
+      ],
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "3 part-volume measurements were unavailable. 3 because a valid closed solid could not be measured (Not manifold): \"Mesh_warm\", \"Mesh_endgrain\", \"Mesh_ceramic\". 9 overlapping part pairs include one of these parts and were not measured. These parts are not certified clear."
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 7,
+            "partVolumeCandidatePairs": 10,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 1,
+            "partVolumeUnmeasurablePairs": 9,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 3,
+            "openSurfaceCoverage": "complete-surface-pairs",
+            "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+            "openSurfaceContactTolerance": 0.005,
+            "openSurfaceOpenParts": 3,
+            "openSurfaceClosedParts": 4,
+            "openSurfaceCandidatePairs": 6,
+            "openSurfacePairsSampled": 6,
+            "openSurfacePairsNotReached": 0,
+            "openSurfaceVerticesUnresolved": 0,
+            "openSurfaceLodAlternatePairs": 0,
+            "openSurfaceSkipped": 0
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [
+            {
+              "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+              "disposition": "observe",
+              "dimension": "runtimeCost",
+              "profile": "web.portable.v1/standard",
+              "message": "8 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }). To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+              "measurement": {
+                "name": "imageCount",
+                "actual": 8,
+                "expected": 4,
+                "unit": "images"
+              }
+            }
+          ],
+          "metrics": {
+            "instanceabilityGrade": "D",
+            "instanceabilitySummary": "D (informational, not a QA verdict), set by 7 distinct materials (D at 7-12). Also: 8 textures (over 4 lowers only A/B to C); 7 geometries; 7 draw calls. Optional advice, not a requirement: merging Mesh_iron material + Mesh_paper material (differ in baseColorFactor, metallicFactor, roughnessFactor) would leave 6 materials (C at 4-6).",
+            "uniqueGeometries": 7,
+            "uniqueMaterials": 7,
+            "meshNodes": 7,
+            "meshInstances": 7,
+            "drawCalls": 7,
+            "textureCount": 8,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 1280,
+            "materialCount": 7,
+            "opaqueMaterials": 7,
+            "maskedMaterials": 0,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 7,
+            "doubleSidedMaterials": 0,
+            "texturedMaterials": 5,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 8,
+            "maxImageDimension": 256,
+            "decodedImageBytesRgba8": 1114112,
+            "estimatedGpuBytesWithMipmaps": 1485488,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "GEO_OPEN_SURFACE_PENETRATION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [
+      {
+        "schemaVersion": 1,
+        "resourceId": "kiln.texture.oak-veneer-albedo.v1",
+        "contentHash": "68097838b07b4607ebf96a961aa08bb1fc0289c36299f4033a1d611ad5d4417f",
+        "hashAlgorithm": "sha256",
+        "usage": "albedo",
+        "colorSpace": "srgb",
+        "resourceVersion": 1,
+        "recipeVersion": 1,
+        "delivery": "embedded"
+      },
+      {
+        "schemaVersion": 1,
+        "resourceId": "kiln.texture.oak-veneer-normal.v1",
+        "contentHash": "ab98029fc908548b3a7fe3ba4ff64fd95a03fcafb6c589a932739aa4875903f8",
+        "hashAlgorithm": "sha256",
+        "usage": "normal",
+        "colorSpace": "linear",
+        "resourceVersion": 1,
+        "recipeVersion": 1,
+        "delivery": "embedded"
+      }
+    ],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "inputGlbSha256": "sha256:608f7061594639cf4e8ab42996844fd9dd0bc7b539bd4a64734add5ed0fca6fb",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

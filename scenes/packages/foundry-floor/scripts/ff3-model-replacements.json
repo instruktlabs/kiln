@@ -42,11 +42,11 @@
       },
       "next": {
         "asset": "oht-vehicle",
-        "revision": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
+        "revision": "r_f6f4e23a81ba486ab9def5f119af43c1",
         "bytes": 107472,
-        "sha256": "27dd159eeeaeb4ed0748159e550096dda1e8faac895bfd4a1d86ed8f808a3024",
-        "author": "codex-ff-lod-migration",
-        "file": "outputs/vehicle/asset.glb"
+        "sha256": "121c67e94c0a3f2afa2576aa2b8dd3cf271907fac7a164c3d074b37de7e06919",
+        "author": "flush-fix-children",
+        "file": "oht-vehicle/r_f6f4e23a81ba486ab9def5f119af43c1/asset.glb"
       },
       "lineage": [
         {
@@ -57,9 +57,18 @@
           "model": "claude-sonnet-5-5",
           "harness": "Claude Code",
           "role": "Original authored asset, scene-pinned export"
+        },
+        {
+          "asset": "oht-vehicle",
+          "revision": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
+          "bytes": 107472,
+          "sha256": "27dd159eeeaeb4ed0748159e550096dda1e8faac895bfd4a1d86ed8f808a3024",
+          "model": "not recorded",
+          "harness": "model and harness version not recorded",
+          "role": "Flush-face fix parent"
         }
       ],
-      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter re-tessellation is covered by bidirectional surface and current-source baseline proof. Owner visual review pending."
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter re-tessellation is covered by bidirectional surface and current-source baseline proof. Owner visual review pending. Flush-face fix child: lod1BandR and lod1BandL: band planes moved outward from 1.5 mm to 3.5 mm off the lod1 side slab face, 2 mm further."
     },
     {
       "id": "loadPort",
@@ -231,11 +240,11 @@
       },
       "next": {
         "asset": "oht-rail-switch",
-        "revision": "r_b7fcebf6547545eab077be69796ec893",
-        "bytes": 61820,
-        "sha256": "1190709b4b55201db020cbb375001eb1d3c535ac9e8f93fefae20a11207753f4",
-        "author": "codex-ff-lod-migration",
-        "file": "outputs/railSwitch/asset.glb"
+        "revision": "r_b863615819af4a838c84e92d928b1598",
+        "bytes": 61816,
+        "sha256": "8e218d405c44eb6110fe32e7e94f0f4b1bf2e14c612ce5bafb44dbe69a40fc12",
+        "author": "flush-fix-children",
+        "file": "oht-rail-switch/r_b863615819af4a838c84e92d928b1598/asset.glb"
       },
       "lineage": [
         {
@@ -246,9 +255,18 @@
           "model": "claude-sonnet-5-5",
           "harness": "Claude Code",
           "role": "Original authored asset, scene-pinned export"
+        },
+        {
+          "asset": "oht-rail-switch",
+          "revision": "r_b7fcebf6547545eab077be69796ec893",
+          "bytes": 61820,
+          "sha256": "1190709b4b55201db020cbb375001eb1d3c535ac9e8f93fefae20a11207753f4",
+          "model": "not recorded",
+          "harness": "model and harness version not recorded",
+          "role": "Flush-face fix parent"
         }
       ],
-      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending. Flush-face fix child: lod1BranchDiverge: top and bottom inset 2 mm deeper (4 mm) than lod1Main (2 mm); lod1BranchMerge: top and bottom inset 4 mm deeper (6 mm); lod1BranchDiverge: start 2 mm further along the arc so its start cap leaves the lod1Main start-cap plane; lod1BranchMerge: end 2 mm earlier along the arc, same reason at the main end."
     },
     {
       "id": "floorModule",
@@ -321,11 +339,11 @@
       },
       "next": {
         "asset": "etch-cluster-tool",
-        "revision": "r_6456090ae2cb42f09b3ff18670f55c3e",
-        "bytes": 452424,
-        "sha256": "24d3ebb6818f54e7e341f9b4081ea29231b64f165ab6ffc3f2af562dea915c30",
-        "author": "codex-ff-lod-migration",
-        "file": "outputs/tool-etch/asset.glb"
+        "revision": "r_7bc813bf9cfa48e18d1f9be8520a96a1",
+        "bytes": 452440,
+        "sha256": "da14255feeb6b30c316c316c50f9b156e94344d8c676f3b8cf21e750483b5f0b",
+        "author": "flush-fix-children",
+        "file": "etch-cluster-tool/r_7bc813bf9cfa48e18d1f9be8520a96a1/asset.glb"
       },
       "lineage": [
         {
@@ -336,9 +354,18 @@
           "model": "not recorded",
           "harness": "not recorded",
           "role": "Original authored asset, scene-pinned export"
+        },
+        {
+          "asset": "etch-cluster-tool",
+          "revision": "r_6456090ae2cb42f09b3ff18670f55c3e",
+          "bytes": 452424,
+          "sha256": "24d3ebb6818f54e7e341f9b4081ea29231b64f165ab6ffc3f2af562dea915c30",
+          "model": "not recorded",
+          "harness": "model and harness version not recorded",
+          "role": "Flush-face fix parent"
         }
       ],
-      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending."
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending. Flush-face fix child: serviceChamber_dark hinge brackets (2 boxes): top 1.50 to 1.502 and outer z face 1.60 to 1.602 so they leave the steel chamber's top an…; serviceLid_lid hinge pins (2 cylinders): length 0.12 to 0.124, centre 0.27 to 0.272 so pin end caps stand 4 mm proud of the dark h."
     },
     {
       "id": "tool:cvd-ald",
@@ -381,11 +408,11 @@
       },
       "next": {
         "asset": "pvd-cluster-tool",
-        "revision": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
-        "bytes": 416676,
-        "sha256": "e87669b3c87279389f7ef1035dc3994e81f74803c9b4ec2b81eec035da8998fb",
-        "author": "codex-ff-lod-migration",
-        "file": "outputs/tool-pvd/asset.glb"
+        "revision": "r_f5bb7ba48f7b4dc8b603e3a998f7da76",
+        "bytes": 416672,
+        "sha256": "2658814eed4adc37f4f3ba99190a8ccc0ef206c93259b008f50801c738a279cb",
+        "author": "flush-fix-children",
+        "file": "pvd-cluster-tool/r_f5bb7ba48f7b4dc8b603e3a998f7da76/asset.glb"
       },
       "lineage": [
         {
@@ -396,9 +423,18 @@
           "model": "claude-sonnet-5-5",
           "harness": "Claude Code",
           "role": "Original authored asset, scene-pinned export"
+        },
+        {
+          "asset": "pvd-cluster-tool",
+          "revision": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
+          "bytes": 416676,
+          "sha256": "e87669b3c87279389f7ef1035dc3994e81f74803c9b4ec2b81eec035da8998fb",
+          "model": "not recorded",
+          "harness": "model and harness version not recorded",
+          "role": "Flush-face fix parent"
         }
       ],
-      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending."
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending. Flush-face fix child: transferHub_dark slit-valve duct, upper block: bottom face raised 2 mm above the chamber slot top (SLOT_Y1); side pieces extended 2 mm t…; transferHub_dark slit-valve duct, lower block: top face lowered 2 mm below the chamber slot floor (SLOT_Y0); side pieces extended 2 mm d…; serviceLid_dark hinge ear box: bottom raised 2 mm off the lid plate bottom plane."
     },
     {
       "id": "tool:clean",
@@ -411,11 +447,11 @@
       },
       "next": {
         "asset": "single-wafer-clean-tool",
-        "revision": "r_c268a0f6f6174f7ba2b87e120c4344e8",
-        "bytes": 63304,
-        "sha256": "dcc8f518e828db258990e737db96aa87b440d7772122c735f67ab32c5174b429",
-        "author": "codex-ff-lod-migration",
-        "file": "outputs/tool-clean/asset.glb"
+        "revision": "r_40235531706e4818b24063e6c1df533c",
+        "bytes": 63308,
+        "sha256": "db226cd08b73371756ab9553b7150be10e66d0a3fd4105e2a14e16923d276335",
+        "author": "flush-fix-children",
+        "file": "single-wafer-clean-tool/r_40235531706e4818b24063e6c1df533c/asset.glb"
       },
       "lineage": [
         {
@@ -426,9 +462,18 @@
           "model": "claude-sonnet-5-5",
           "harness": "Claude Code",
           "role": "Original authored asset, scene-pinned export"
+        },
+        {
+          "asset": "single-wafer-clean-tool",
+          "revision": "r_c268a0f6f6174f7ba2b87e120c4344e8",
+          "bytes": 63304,
+          "sha256": "dcc8f518e828db258990e737db96aa87b440d7772122c735f67ab32c5174b429",
+          "model": "not recorded",
+          "harness": "model and harness version not recorded",
+          "role": "Flush-face fix parent"
         }
       ],
-      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending."
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Current exporter preserves authored emissive intensity; material settings are unchanged. Owner visual review pending. Flush-face fix child: efemPortPanel: bottom raised 2 mm off the EFEM body bottom plane."
     },
     {
       "id": "tool:cmp",
@@ -561,11 +606,11 @@
       },
       "next": {
         "asset": "wafer-prober-tester",
-        "revision": "r_7357b53066af464abb6556bdde7866d4",
-        "bytes": 125036,
-        "sha256": "4a53871b19898e53b7f057107eee9d2f40bbe3ba72948df3b190d21e910662af",
-        "author": "codex-ff-lod-migration",
-        "file": "outputs/tool-prober/asset.glb"
+        "revision": "r_92007aa1ae4244fc923befba0403e87f",
+        "bytes": 125044,
+        "sha256": "1c4dff379cb6248b9b24f09b24b1b46b93518454f7b1db760d96c08a5c290e34",
+        "author": "flush-fix-children",
+        "file": "wafer-prober-tester/r_92007aa1ae4244fc923befba0403e87f/asset.glb"
       },
       "lineage": [
         {
@@ -576,9 +621,18 @@
           "model": "claude-sonnet-5-5",
           "harness": "claude",
           "role": "Original authored asset, scene-pinned export"
+        },
+        {
+          "asset": "wafer-prober-tester",
+          "revision": "r_7357b53066af464abb6556bdde7866d4",
+          "bytes": 125036,
+          "sha256": "4a53871b19898e53b7f057107eee9d2f40bbe3ba72948df3b190d21e910662af",
+          "model": "not recorded",
+          "harness": "model and harness version not recorded",
+          "role": "Flush-face fix parent"
         }
       ],
-      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending."
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Owner visual review pending. Flush-face fix child: HeadRing: top sunk 2 mm into Roof; ChuckCollar: bottom sunk 2 mm into StageCarriage; ProbeCard: radius 0.30 to 0.302 so it overlaps HeadRing inner wall; PostBoss (front, rear): extended 2 mm past each post side."
     },
     {
       "id": "tool:track",
@@ -681,11 +735,11 @@
       },
       "next": {
         "asset": "amr-floor-robot-fit",
-        "revision": "r_a27481224b474e9cb1dd747c45a71e23",
+        "revision": "r_23d6cdf68cc748a7a0005aa4c3e0a58f",
         "bytes": 77144,
-        "sha256": "ceb4d9565c396bed03d9ffd704447caac5e38e665e61224e0c092ec6df05da32",
-        "author": "codex-ff-lod-migration",
-        "file": "outputs/amrFloorRobot/asset.glb"
+        "sha256": "6740d2d346c98e79a438b7cec9698f31aa5b3331c63bf96894dfafb77f701195",
+        "author": "flush-fix-children",
+        "file": "amr-floor-robot-fit/r_23d6cdf68cc748a7a0005aa4c3e0a58f/asset.glb"
       },
       "lineage": [
         {
@@ -705,9 +759,18 @@
           "model": "not recorded",
           "harness": "Codex",
           "role": "Physical fit repair"
+        },
+        {
+          "asset": "amr-floor-robot-fit",
+          "revision": "r_a27481224b474e9cb1dd747c45a71e23",
+          "bytes": 77144,
+          "sha256": "ceb4d9565c396bed03d9ffd704447caac5e38e665e61224e0c092ec6df05da32",
+          "model": "not recorded",
+          "harness": "model and harness version not recorded",
+          "role": "Flush-face fix parent"
         }
       ],
-      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Locating pins fitted to the saved FOUP V-grooves. Owner visual review pending. Owner visual review pending."
+      "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Locating pins fitted to the saved FOUP V-grooves. Owner visual review pending. Owner visual review pending. Flush-face fix child: lod1Chassis: LOD1 chassis outline inset g2 = g + 0.0025 instead of g + 0.0005, so its side faces sit 2."
     },
     {
       "id": "toolFrontRobotArm",
@@ -747,6 +810,44 @@
         }
       ],
       "reason": "Declared MSFT_lod preserves original named nodes and clips; lower tiers are excluded from the default scene. Gripper and transfer-path clearances qualified with the saved FOUP and load ports. Owner visual review pending. Owner visual review pending."
+    },
+    {
+      "id": "signalTower",
+      "path": "models/signal-tower.glb",
+      "previous": {
+        "asset": "signal-tower",
+        "revision": "r_0af702f0a7364dffbac3255c04a909ff",
+        "bytes": 13844,
+        "sha256": "82f69eb2a5471bc0ea242ef79aa3686a7e8025d8172437813484c5f58fe881b9"
+      },
+      "next": {
+        "asset": "signal-tower",
+        "revision": "r_9d238ec1a53f4caaa39daaef9c27c840",
+        "bytes": 13860,
+        "sha256": "65b0987c95c078495b31ff5769e44b9a2e7a276e0f557141c4463f6bef5d5aea",
+        "author": "flush-fix-children",
+        "file": "signal-tower/r_9d238ec1a53f4caaa39daaef9c27c840/asset.glb"
+      },
+      "reason": "Flush-face fix child: lampXOff (4 tiers): LENS_INSET 0.4 mm to 2 mm so the unlit twin side wall no longer shares a plane with the l. Flush-face fix of an approved revision; approved by the owner on 2026-11-13."
+    },
+    {
+      "id": "humanoidWorkRobot",
+      "path": "models/humanoid-work-robot.glb",
+      "previous": {
+        "asset": "humanoid-work-robot",
+        "revision": "r_9f717d17eec74f2dbd4c338612207ed5",
+        "bytes": 200656,
+        "sha256": "cd118485e113219ce8de9bb6d3b873634fb7dadebf81028142d0f6a644f88aa2"
+      },
+      "next": {
+        "asset": "humanoid-work-robot",
+        "revision": "r_87ffa104a0c04a408c928fa7260fd566",
+        "bytes": 163488,
+        "sha256": "44a3621ffb0347e477b7622315971cb5ec429cabb3494b9f0af56d81a49fb877",
+        "author": "flush-fix-children",
+        "file": "humanoid-work-robot/r_87ffa104a0c04a408c928fa7260fd566/asset.glb"
+      },
+      "reason": "Flush-face fix child: Mesh_visor: thickened 2 mm toward the head so its back face is 2.5 mm behind the facePlate back face. Flush-face fix of an approved revision; approved by the owner on 2026-11-13."
     }
   ]
 }

@@ -1,37 +1,37 @@
 {
   "version": "kiln.asset.v1",
   "assetId": "a_3a4fc574c2534f21977eeed0a3560f80",
-  "revisionId": "r_85c06c033d7c4f899a6f67c53069537a",
-  "parentRevision": "r_af557a9002e64290abe4c8e4cecabb29",
+  "revisionId": "r_67104831c85c4f879e889caf508527f2",
+  "parentRevision": "r_85c06c033d7c4f899a6f67c53069537a",
   "name": "Troy Citadel Temple Hall",
   "tags": [
     "troy",
     "temple",
     "material-pass"
   ],
-  "createdAt": "2026-10-02T15:32:47.296Z",
-  "description": "Revision 2 (material pass): coursed limestone platform, footings, column bases, hearth rim, furnishings and parapet, plastered mudbrick walls and roof slab (troy-limestone, troy-mudbrick) as textured resources mapped from world position; geometry, part names and the roof subtree are revision 1's. Owner-directed material pass, 2 October 2026.",
+  "createdAt": "2026-11-13T00:16:15.192Z",
+  "description": "Troy Citadel Temple Hall, child of r_85c06c03 with its model unchanged. Flush-face fix: HallPlaster (walls, antae, piers, header): hall walls and antae 4 mm taller (tops into the roof slab); doorway piers shifted 4 mm ou…; HallTimber: pier inner faces moved 4 mm behind the timber jambs; abaci 4 mm lower at the top and tran…; RoofTimber / LightwellCurb: north and south roof fascia 8 mm shorter and 4 mm lower in height; north and south lightw…; HallStone: side sloped footings end at z=3.6 where the porch footings begin (was overlapping 0.2 m);….",
   "attribution": {
-    "harness": "cli",
-    "author": "Claude Fable 5.1 (owner-directed)"
+    "model": "claude-sonnet-5-5",
+    "harness": "claude-code"
   },
   "editable": true,
   "files": {
     "asset.glb": {
-      "sha256": "sha256:6609d8e4f5be92b88f5a14facad3cb9cb39f43d257bc2bcec51adeaca66f41ee",
-      "bytes": 492876
+      "sha256": "sha256:c106a6ff0c751ff9e552416f02a0b076034457a2e15dd2f0a4d604acb1835cb5",
+      "bytes": 493168
     },
     "source.kiln.js": {
-      "sha256": "sha256:11c20ef46362d8ffa9fbc0d06a2f4ccd1e32d7d86ed538d1bc6899ba28bd12b6",
-      "bytes": 11511
+      "sha256": "sha256:2a8b1876947f14ecb65a4935c5b3d863ae09537f2c6a0792897d2f88e7c3b85c",
+      "bytes": 11551
     },
     "preview.png": {
-      "sha256": "sha256:fe4c132d99b0ee1f3592232073c59fb81f233a1e6893182901222cebee58be48",
-      "bytes": 249757
+      "sha256": "sha256:d9021ec8946adf89d357ae9b7b77e66e19890a67a3a60080e366c646ae9190ee",
+      "bytes": 247110
     }
   },
   "build": {
-    "engine": "sha256:efeef6a90e341b0c449b5c8a0227999448df227dee346c5181e08e5b596fabaf",
+    "engine": "sha256:ae628b3b5f18e33f8588e281f76c843c573d55647475b4312c5e61c62a0e5ae3",
     "options": {
       "gltfExporter": "legacy",
       "optimize": "off",
@@ -65,7 +65,7 @@
     "integration": {
       "schemaVersion": "kiln.integration-manifest.v1",
       "analyzerVersion": 1,
-      "artifactSha256": "6609d8e4f5be92b88f5a14facad3cb9cb39f43d257bc2bcec51adeaca66f41ee",
+      "artifactSha256": "c106a6ff0c751ff9e552416f02a0b076034457a2e15dd2f0a4d604acb1835cb5",
       "units": "m",
       "axes": {
         "forward": "+X",
@@ -123,6 +123,21 @@
         "transparentMaterials": 0,
         "skinned": false
       },
+      "materialAdvice": [
+        {
+          "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+          "disposition": "advisory",
+          "reference": "web.portable.v1/standard",
+          "message": "7 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }).",
+          "measurement": {
+            "name": "imageCount",
+            "actual": 7,
+            "reference": 4,
+            "unit": "images"
+          },
+          "advice": "To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image."
+        }
+      ],
       "structuralQa": {
         "hasDefaultScene": true,
         "finiteBounds": true,
@@ -138,7 +153,7 @@
       "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
       "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
       "acceptance": "accepted",
-      "disposition": "warn",
+      "disposition": "pass",
       "dimensions": {
         "exportIntegrity": {
           "status": "pass",
@@ -164,13 +179,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_RoofPlaster\" and \"Mesh_RoofTimber\" occupy the same space: they share 1.41 m³, which is 49.8% of the smaller part.",
+              "message": "Parts \"Mesh_RoofPlaster\" and \"Mesh_RoofTimber\" occupy the same space: they share 1.41 m³, which is 49.9% of the smaller part.",
               "affected": {
                 "node": "Mesh_RoofPlaster"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.497770432,
+                "actual": 0.499072979,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -180,13 +195,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_DoorwayHeader\" and \"Mesh_HallTimber\" occupy the same space: they share 0.468 m³, which is 27.3% of the smaller part.",
+              "message": "Parts \"Mesh_DoorwayHeader\" and \"Mesh_HallTimber\" occupy the same space: they share 0.463 m³, which is 27.0% of the smaller part.",
               "affected": {
                 "node": "Mesh_DoorwayHeader"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.272727225,
+                "actual": 0.270072816,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -202,7 +217,7 @@
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.177976177,
+                "actual": 0.177843735,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -218,7 +233,7 @@
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.177976177,
+                "actual": 0.177843735,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -228,13 +243,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_DoorwayLeftPier\" and \"Mesh_HallTimber\" occupy the same space: they share 0.487 m³, which is 5.9% of the smaller part.",
+              "message": "Parts \"Mesh_DoorwayLeftPier\" and \"Mesh_HallTimber\" occupy the same space: they share 0.478 m³, which is 5.8% of the smaller part.",
               "affected": {
                 "node": "Mesh_DoorwayLeftPier"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.059459077,
+                "actual": 0.05826874,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -244,13 +259,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_DoorwayRightPier\" and \"Mesh_HallTimber\" occupy the same space: they share 0.487 m³, which is 5.9% of the smaller part.",
+              "message": "Parts \"Mesh_DoorwayRightPier\" and \"Mesh_HallTimber\" occupy the same space: they share 0.478 m³, which is 5.8% of the smaller part.",
               "affected": {
                 "node": "Mesh_DoorwayRightPier"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.059459077,
+                "actual": 0.05826874,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -260,13 +275,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_HallStone\" and \"Mesh_DoorwayLeftPier\" occupy the same space: they share 0.417 m³, which is 5.1% of the smaller part.",
+              "message": "Parts \"Mesh_HallStone\" and \"Mesh_DoorwayLeftPier\" occupy the same space: they share 0.419 m³, which is 5.1% of the smaller part.",
               "affected": {
                 "node": "Mesh_HallStone"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.050952378,
+                "actual": 0.051088928,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -276,13 +291,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_HallStone\" and \"Mesh_DoorwayRightPier\" occupy the same space: they share 0.417 m³, which is 5.1% of the smaller part.",
+              "message": "Parts \"Mesh_HallStone\" and \"Mesh_DoorwayRightPier\" occupy the same space: they share 0.419 m³, which is 5.1% of the smaller part.",
               "affected": {
                 "node": "Mesh_HallStone"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.050952378,
+                "actual": 0.051088928,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -292,13 +307,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_HallPlaster\" and \"Mesh_HallTimber\" occupy the same space: they share 0.458 m³, which is 4.7% of the smaller part.",
+              "message": "Parts \"Mesh_HallPlaster\" and \"Mesh_HallTimber\" occupy the same space: they share 0.456 m³, which is 4.7% of the smaller part.",
               "affected": {
                 "node": "Mesh_HallPlaster"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.047482398,
+                "actual": 0.047408947,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -314,7 +329,7 @@
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.009211439,
+                "actual": 0.009218318,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -356,13 +371,13 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_HallTimber\" and \"Mesh_HallCrimson\" occupy the same space: they share 0.0239 m³, which is 0.4% of the smaller part.",
+              "message": "Parts \"Mesh_HallTimber\" and \"Mesh_HallCrimson\" occupy the same space: they share 0.0238 m³, which is 0.4% of the smaller part.",
               "affected": {
                 "node": "Mesh_HallTimber"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.003551549,
+                "actual": 0.003528738,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -372,51 +387,173 @@
               "disposition": "observe",
               "dimension": "visualQuality",
               "profile": "geometry.selfIntersection",
-              "message": "Parts \"Mesh_RoofTimber\" and \"Mesh_HallPlaster\" occupy the same space: they share 0.00605 m³, which is 0.2% of the smaller part.",
+              "message": "Parts \"Mesh_RoofPlaster\" and \"Mesh_HallPlaster\" occupy the same space: they share 0.0881 m³, which is 0.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_RoofPlaster"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.002234466,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_RoofTimber\" and \"Mesh_HallPlaster\" occupy the same space: they share 0.00618 m³, which is 0.2% of the smaller part.",
               "affected": {
                 "node": "Mesh_RoofTimber"
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.002130924,
+                "actual": 0.00218943,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_RoofPlaster\" and \"Mesh_DoorwayLeftPier\" occupy the same space: they share 0.0156 m³, which is 0.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_RoofPlaster"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.001901115,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_PART_SELF_INTERSECTION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "Parts \"Mesh_RoofPlaster\" and \"Mesh_DoorwayRightPier\" occupy the same space: they share 0.0156 m³, which is 0.2% of the smaller part.",
+              "affected": {
+                "node": "Mesh_RoofPlaster"
+              },
+              "measurement": {
+                "name": "intersectionVolumeFraction",
+                "actual": 0.001901115,
+                "expected": 0.001
+              },
+              "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_HallPlaster\" reaches 0.3250 m inside solid \"Mesh_DoorwayLeftPier\": 9 of 180 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_HallPlaster"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.324999809,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 9,
+                  "sampledVertices": 180
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_HallPlaster\" reaches 0.3250 m inside solid \"Mesh_DoorwayRightPier\": 9 of 180 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_HallPlaster"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.324999809,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 9,
+                  "sampledVertices": 180
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Open surface \"Mesh_RoofPlaster\" reaches 0.0250 m inside solid \"Mesh_RoofTimber\": 18 of 144 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+              "affected": {
+                "node": "Mesh_RoofPlaster"
+              },
+              "measurement": {
+                "name": "openSurfacePenetrationDepth",
+                "actual": 0.0250000954,
+                "expected": 0.005,
+                "unit": "m",
+                "breakdown": {
+                  "penetratingVertices": 18,
+                  "sampledVertices": 144
+                }
+              },
+              "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
             }
           ],
           "metrics": {
             "partVolumeCoverage": "complete-static-pairs",
             "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
             "partVolumeEligibleParts": 12,
-            "partVolumeCandidatePairs": 42,
+            "partVolumeCandidatePairs": 44,
             "partVolumeCandidatesLowerBound": false,
-            "partVolumePairsTested": 42,
+            "partVolumePairsTested": 44,
             "partVolumeUnmeasurablePairs": 0,
             "partVolumePairsNotReached": 0,
             "partVolumeLodAlternatePairs": 0,
-            "partVolumeSkipped": 0
+            "partVolumeSkipped": 0,
+            "openSurfaceCoverage": "complete-surface-pairs",
+            "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+            "openSurfaceContactTolerance": 0.005,
+            "openSurfaceOpenParts": 3,
+            "openSurfaceClosedParts": 9,
+            "openSurfaceCandidatePairs": 20,
+            "openSurfacePairsSampled": 20,
+            "openSurfacePairsNotReached": 0,
+            "openSurfaceVerticesUnresolved": 0,
+            "openSurfaceLodAlternatePairs": 0,
+            "openSurfaceSkipped": 0
           }
         },
         "runtimeCost": {
-          "status": "warn",
+          "status": "pass",
           "findings": [
             {
-              "code": "MATERIAL_IMAGE_COUNT_BUDGET",
-              "disposition": "warn",
+              "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+              "disposition": "observe",
               "dimension": "runtimeCost",
-              "profile": "web.portable.v1.standard",
-              "message": "7 images exceed the 4-image web.portable.v1/standard budget. Reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+              "profile": "web.portable.v1/standard",
+              "message": "7 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }). To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
               "measurement": {
                 "name": "imageCount",
                 "actual": 7,
-                "threshold": 4,
+                "expected": 4,
                 "unit": "images"
               }
             }
           ],
           "metrics": {
             "instanceabilityGrade": "C",
-            "instanceabilitySummary": "C (informational, not a QA verdict), set by 4 distinct materials (C at 4-6). Also: 7 textures (over 4 lowers only A/B to C); 12 geometries; 12 draw calls.",
+            "instanceabilitySummary": "C (informational, not a QA verdict), set by 4 distinct materials (C at 4-6). Also: 7 textures (over 4 lowers only A/B to C); 12 geometries; 12 draw calls. Optional advice, not a requirement: merging Troy timber + Troy crimson painted timber (differ in baseColorFactor) would leave 3 materials (B at 2-3; other factors give C).",
             "uniqueGeometries": 12,
             "uniqueMaterials": 4,
             "meshNodes": 12,
@@ -575,6 +712,11 @@
           "status": "evaluated"
         },
         {
+          "id": "GEO_OPEN_SURFACE_PENETRATION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
           "id": "REF_COMPARISON",
           "mode": "observe",
           "status": "notEvaluated",
@@ -584,6 +726,11 @@
           "id": "SWEEP_SELF_INTERSECTION",
           "mode": "observe",
           "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
         }
       ],
       "unevaluatedRequirements": []
@@ -1987,8 +2134,8 @@
       "delivered": "full-material",
       "materialFaithful": true,
       "exactArtifact": true,
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-      "inputGlbSha256": "sha256:6609d8e4f5be92b88f5a14facad3cb9cb39f43d257bc2bcec51adeaca66f41ee",
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "inputGlbSha256": "sha256:c106a6ff0c751ff9e552416f02a0b076034457a2e15dd2f0a4d604acb1835cb5",
       "degraded": false,
       "reasonCodes": []
     },

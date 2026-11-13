@@ -77,7 +77,7 @@ async function build() {
   // Footings are split at the opening: no continuous plinth across the entrance.
   footing(-3,-2.55,-2.05,2.05,0.12,0);
   footing(2.55,3,-2.05,2.05,0.12,0);
-  footing(-3,3,-2.5,-2.05,0.12,0.12);
+  footing(-3.004,3.004,-2.5,-2.05,0.12,0.12);
   footing(-3,-roughHalf,2.05,2.5,0,0.12);
   footing(roughHalf,3,2.05,2.5,0,0.12);
   const wallH=D.ceiling-D.stoneTop;
@@ -101,7 +101,7 @@ async function build() {
   createPart('DoorLintel',boxGeo(2.12,0.22,0.56),wood,
     {position:[0,lintelY+0.11,2.275],parent:root});
   // One room; the main 1.4 m entry lane remains clear to the back wall.
-  box('floor',[5.1,D.floor,4.1],[0,D.floor/2,0]);
+  box('floor',[5.1,D.floor,4.1],[0,D.floor/2,0.004]);
   // Closed wedge ramp joins exactly to the floor at z=2.05.
   const ramp=boxGeo(1.4,D.floor,1.4).clone();
   const rp=ramp.getAttribute('position');
@@ -116,21 +116,22 @@ async function build() {
   const cx=-1.45,cz=-0.45;
   for(let i=0;i<8;i++){
     const a=i*Math.PI/4;
-    box('stone',[0.44,0.16,0.22],[cx+0.58*Math.sin(a),D.floor+0.08,cz+0.58*Math.cos(a)],[0,i*45,0]);
+    const hh=i%2?0.156:0.16;
+    box('stone',[0.44,hh,0.22],[cx+0.58*Math.sin(a),D.floor+hh/2,cz+0.58*Math.cos(a)],[0,i*45,0]);
   }
   add('wood',cylinderGeo(0.065,0.065,0.65,6),[cx,D.floor+0.085,cz],[0,0,90]);
   add('wood',cylinderGeo(0.055,0.055,0.55,6),[cx,D.floor+0.10,cz],[90,20,0]);
   // Visible load-bearing ceiling timbers meet both side walls.
   for(let i=0;i<6;i++){
     const z=-1.75+i*0.7;
-    box('wood',[6.0,0.18,0.20],[0,D.ceiling-0.09,z]);
+    box('wood',[5.992,0.184,0.20],[0,D.ceiling-0.088,z]);
   }
   // Flat earthen roof and low rim. Roof is a separate named subtree for cutaway review.
   const roof=new THREE.Group();roof.name='Roof';root.add(roof);
   roof.userData={role:'roof',top:D.ceiling+D.roofThickness};
   box('roof',[6.12,D.roofThickness,5.12],[0,D.ceiling+D.roofThickness/2,0]);
-  box('roof',[6.0,0.22,0.18],[0,3.35,-2.4]);
-  box('roof',[6.0,0.22,0.18],[0,3.35,2.4]);
+  box('roof',[5.992,0.22,0.18],[0,3.348,-2.4]);
+  box('roof',[5.992,0.22,0.18],[0,3.348,2.4]);
   box('roof',[0.18,0.22,4.8],[-2.91,3.35,0]);
   // Right rim leaves a landing gap at the ladder.
   box('roof',[0.18,0.22,2.35],[2.91,3.35,-1.225]);
@@ -150,8 +151,8 @@ async function build() {
   });
   root.remove(ladder.root);
   // The handhold above the roof leans out; short cross ties meet the roof edge.
-  box('wood',[0.30,0.10,0.10],[3.01,3.19,0.19]);
-  box('wood',[0.30,0.10,0.10],[3.01,3.19,0.91]);
+  box('wood',[0.30,0.10,0.10],[3.01,3.188,0.19]);
+  box('wood',[0.30,0.10,0.10],[3.01,3.188,0.91]);
   flush('stone','StoneFootingsAndHearth',limestone,root,T.stone);
   flush('mud','MudbrickWalls',mudbrick,root,T.brick);
   flush('floor','FloorAndEntranceRamp',mudbrick,root,T.brick);

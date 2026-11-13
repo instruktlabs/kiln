@@ -3,7 +3,7 @@
 Updated 5 October 2026, against main `7ed880f`.
 
 Troy is published at `/scenes/troy/`, `/packs/troy/` and its normal gallery pages.
-The current runtime pin is `troy-20261005-07`. The maintained source is
+The current runtime pin is `troy-20261113-01`. The maintained source is
 [scenes/packages/troy](../../scenes/packages/troy/README.md), with an explicit
 runtime-data hydration step for a clean checkout. Development is local; the hub
 is reserved for isolated performance testing.

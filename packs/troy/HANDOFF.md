@@ -5,7 +5,7 @@ in this repository. Follow its clean-checkout installation, `hydrate` and `dev`
 instructions. Edit `web/` locally; the preview serves maintained source first and
 verified GLBs/banks from the ignored runtime-data cache. No private author workspace
 or Kiln server is needed for scene development. The current runtime pin is
-`troy-20261005-07`; a changed pin requires rehydration.
+`troy-20261113-01`; a changed pin requires rehydration.
 
 Asset authoring and rebaking are separate tasks. Use a live Kiln asset workspace
 and the exact saved source/material inputs supplied by the Editable downloads and

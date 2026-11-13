@@ -855,20 +855,20 @@ async function build() {
   footing('SlopedStoneFootings',[.8,.75,10.8],[-3.8,.825,-1.6]);
   footing('SlopedStoneFootings',[.8,.75,10.8],[3.8,.825,-1.6]);
   box('SlopedStoneFootings',stone,[6.8,.75,.8],[0,.825,-6.6]);
-  box('HallWalls',plaster,[.65,3.45,10.6],[-3.875,2.925,-1.7]);
-  box('HallWalls',plaster,[.65,3.45,10.6],[3.875,2.925,-1.7]);
-  box('HallWalls',plaster,[7.1,3.45,.65],[0,2.925,-6.675]);
+  box('HallWalls',plaster,[.65,3.454,10.6],[-3.875,2.927,-1.7]);
+  box('HallWalls',plaster,[.65,3.454,10.6],[3.875,2.927,-1.7]);
+  box('HallWalls',plaster,[7.1,3.454,.65],[0,2.927,-6.675]);
   // Front wall pieces expose exact finished doorway clearance for inspection.
   const jambW=(P.width-P.doorWidth)/2;
-  box('DoorwayLeftPier',plaster,[jambW,4.2,.65],[-(P.doorWidth+jambW)/2,2.55,P.hallFront]);
-  box('DoorwayRightPier',plaster,[jambW,4.2,.65],[(P.doorWidth+jambW)/2,2.55,P.hallFront]);
-  box('DoorwayHeader',plaster,[P.doorWidth,1.1,.65],[0,4.1,P.hallFront]);
+  box('DoorwayLeftPier',plaster,[jambW,4.208,.65],[-(P.doorWidth+jambW)/2-.004,2.554,P.hallFront]);
+  box('DoorwayRightPier',plaster,[jambW,4.208,.65],[(P.doorWidth+jambW)/2+.004,2.554,P.hallFront]);
+  box('DoorwayHeader',plaster,[P.doorWidth+.008,1.096,.65],[0,4.102,P.hallFront]);
   // Timber surround lies outside the clear 2.4 x 3.1 m portal.
   for(const s of [-1,1]) box('DoorwayTimber',timber,[.20,3.1,.82],[s*1.3,2,P.hallFront]);
   box('DoorwayLintel',timber,[3.02,.30,.90],[0,3.70,P.hallFront]);
   for(const s of [-1,1]) {
     footing('SlopedStoneFootings',[.8,.75,2.8],[s*3.8,.825,5]);
-    box('PorchAntae',plaster,[.65,3.45,2.8],[s*3.875,2.925,5]);
+    box('PorchAntae',plaster,[.65,3.454,2.8],[s*3.875,2.927,5]);
     box('PorchAntaeCaps',stone,[.86,.20,.72],[s*3.875,4.75,6.08]);
   }
   function column(name,x,z) {

@@ -1,40 +1,40 @@
 {
   "name": "Troy",
-  "base": "/scene-packs/troy/troy-20261005-07/",
-  "release": "troy-20261005-07",
+  "base": "/scene-packs/troy/troy-20261113-01/",
+  "release": "troy-20261113-01",
   "license": "CC0-1.0",
   "assetCount": 21,
   "description": "A Bronze Age coast, battlefield and city. Explore Troy or fight as Achilles or Hector.",
   "models": {
     "profile": "runtime",
-    "path": "packs/troy/delivery-20261005-01/troy-runtime.zip",
-    "bytes": 8029101,
-    "sha256": "7d62f94b7a2bf56d9afa330691f7196bc725b96f40d39d623ab3488a0f197dc4",
-    "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/troy-runtime.zip"
+    "path": "packs/troy/delivery-20261113-01/troy-runtime.zip",
+    "bytes": 8029924,
+    "sha256": "31dadf59ffb22a18369dc1b9dd672e22e4dbdee55bef6ab401917137a85f4ecd",
+    "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/troy-runtime.zip"
   },
   "scene": {
-    "release": "troy-20261005-07",
-    "path": "packs/troy/troy-20261005-07/troy-scene.zip",
-    "bytes": 51588709,
-    "sha256": "ae37a3114e4bfbff5f0650267e828c3c4068a2df9bc10a825058851cda543482",
+    "release": "troy-20261113-01",
+    "path": "packs/troy/troy-20261113-01/troy-scene.zip",
+    "bytes": 51590031,
+    "sha256": "2117079416e3a6a3ffd43fade9b65eeada95111e6eeacb2bee7a1dfb42b3641a",
     "sourceManifestSha256": "d3f153c4e3da8e3a2fee8db585ce7e7959bb6a7651db60f0c798e915e1fa21e4",
-    "url": "https://assets.kilnstudio.tools/packs/troy/troy-20261005-07/troy-scene.zip"
+    "url": "https://assets.kilnstudio.tools/packs/troy/troy-20261113-01/troy-scene.zip"
   },
   "posters": [
     {
-      "src": "/scene-packs/troy/troy-20261005-07/media/scene-coast.webp",
+      "src": "/scene-packs/troy/troy-20261113-01/media/scene-coast.webp",
       "width": 1440,
       "height": 900,
       "srcsetAvif": "",
-      "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/scene-coast.webp 1440w",
+      "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/scene-coast.webp 1440w",
       "alt": "Troy and its landed fleet, seen from above the sea"
     },
     {
-      "src": "/scene-packs/troy/troy-20261005-07/media/scene-city.webp",
+      "src": "/scene-packs/troy/troy-20261113-01/media/scene-city.webp",
       "width": 1440,
       "height": 900,
       "srcsetAvif": "",
-      "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/scene-city.webp 1440w",
+      "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/scene-city.webp 1440w",
       "alt": "Achilles and Hector fighting before Troy, with army formations and the city walls"
     }
   ],
@@ -87,15 +87,15 @@
       "runtimeDownload": {
         "bytes": 302776,
         "sha256": "d2e5c1a6885f509caeb9428980d74b2760bae735af81549ae08fdd825fadffa8",
-        "url": "/scene-packs/troy/troy-20261005-07/models/wall-section.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/wall-section.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/wall-section.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/wall-section.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Wall section",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/wall-section.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/wall-section.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -146,15 +146,15 @@
       "runtimeDownload": {
         "bytes": 391512,
         "sha256": "19322963f4704e5a9e4b31e242d7d1991126e0ffde750d57152a622089ac4f91",
-        "url": "/scene-packs/troy/troy-20261005-07/models/city-gate.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/city-gate.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/city-gate.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/city-gate.webp",
         "width": 1024,
         "height": 1024,
         "alt": "City gate",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/city-gate.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/city-gate.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -168,18 +168,18 @@
       "category": "Buildings",
       "description": "Trojan Walk-in House, from the Troy collection.",
       "assetId": "a_65b2d411e2a14b41b490a575fc14e98a",
-      "revisionId": "r_de6797d6511b47a2a6da3c49448741a9",
+      "revisionId": "r_c2fd70c01c754177bfa3df2dceb712f3",
       "metrics": {
         "triangles": 876,
         "meshes": 8,
         "materials": 3,
         "bounds": [
-          7.315868854522705,
+          7.319869041442871,
           3.962836265563965,
           6.069999933242798
         ],
         "boundsMin": [
-          -3.119999885559082,
+          -3.124000072479248,
           0,
           -2.619999885559082
         ],
@@ -201,17 +201,17 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 330524,
-        "sha256": "d69aaca4db3b1963a28ea62fd5a54c9a2dbe277a083086f3c31e3270fd300b5b",
-        "url": "/scene-packs/troy/troy-20261005-07/models/house.glb"
+        "bytes": 330640,
+        "sha256": "95d35ce49e5ad9a60ae62cdce99ef420a1223788f388073aa331f822c7b27347",
+        "url": "/scene-packs/troy/troy-20261113-01/models/house.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/house.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/house.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Trojan Walk-in House",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/house.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/house.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -225,7 +225,7 @@
       "category": "Buildings",
       "description": "Troy Citadel Temple Hall, from the Troy collection.",
       "assetId": "a_3a4fc574c2534f21977eeed0a3560f80",
-      "revisionId": "r_85c06c033d7c4f899a6f67c53069537a",
+      "revisionId": "r_67104831c85c4f879e889caf508527f2",
       "metrics": {
         "triangles": 2024,
         "meshes": 12,
@@ -262,17 +262,17 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 492876,
-        "sha256": "6609d8e4f5be92b88f5a14facad3cb9cb39f43d257bc2bcec51adeaca66f41ee",
-        "url": "/scene-packs/troy/troy-20261005-07/models/temple-hall.glb"
+        "bytes": 493168,
+        "sha256": "c106a6ff0c751ff9e552416f02a0b076034457a2e15dd2f0a4d604acb1835cb5",
+        "url": "/scene-packs/troy/troy-20261113-01/models/temple-hall.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/temple-hall.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/temple-hall.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Troy Citadel Temple Hall",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/temple-hall.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/temple-hall.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -317,15 +317,15 @@
       "runtimeDownload": {
         "bytes": 396772,
         "sha256": "c438f0275186e34ad724dade9f22426a4ad4dab412a17ea7b1d62d468c151f4f",
-        "url": "/scene-packs/troy/troy-20261005-07/models/war-galley.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/war-galley.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/war-galley.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/war-galley.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Greek War Galley",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/war-galley.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/war-galley.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -396,15 +396,15 @@
       "runtimeDownload": {
         "bytes": 373008,
         "sha256": "55361985e3353e4a87944f61c1007eb725732a128bf7a33d3a989f3b26f34af3",
-        "url": "/scene-packs/troy/troy-20261005-07/models/greek-soldier.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/greek-soldier.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/greek-soldier.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/greek-soldier.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Greek soldier",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/greek-soldier.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/greek-soldier.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -475,15 +475,15 @@
       "runtimeDownload": {
         "bytes": 352016,
         "sha256": "97f6fe97902df9af9037518dc28699524c843f0b94136ec3f9c9850d2b57df6f",
-        "url": "/scene-packs/troy/troy-20261005-07/models/trojan-soldier.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/trojan-soldier.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/trojan-soldier.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/trojan-soldier.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Trojan soldier",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/trojan-soldier.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/trojan-soldier.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -558,15 +558,15 @@
       "runtimeDownload": {
         "bytes": 547628,
         "sha256": "1bb8b9b44044365a172eb5015c12b8493b6c47e3087178a7fa89b18e768e645f",
-        "url": "/scene-packs/troy/troy-20261005-07/models/achilles.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/achilles.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/achilles.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/achilles.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Achilles",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/achilles.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/achilles.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -580,7 +580,7 @@
       "category": "Characters",
       "description": "Hector, from the Troy collection.",
       "assetId": "hector",
-      "revisionId": "r_90f525d443624ad58f5fadc3a7f52fb9",
+      "revisionId": "r_9f29a8b3f4204c5f892b6fca644b850b",
       "metrics": {
         "triangles": 2516,
         "meshes": 30,
@@ -638,17 +638,17 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 428112,
-        "sha256": "70b6e63f742413ef4d3348071b8f917507d521e9e80739fcf30aaff5de5e054a",
-        "url": "/scene-packs/troy/troy-20261005-07/models/hector.glb"
+        "bytes": 428240,
+        "sha256": "cd89d602f977cd5180a00de9121d0f2c60b41ca1e27f190df7becacb0352a022",
+        "url": "/scene-packs/troy/troy-20261113-01/models/hector.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/hector.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/hector.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Hector",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/hector.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/hector.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -693,15 +693,15 @@
       "runtimeDownload": {
         "bytes": 171340,
         "sha256": "5ca97cea350d7eb751bcfb214a89e0b83cc3e7bf3c317663ae4d5d51d6e32cd9",
-        "url": "/scene-packs/troy/troy-20261005-07/models/olive.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/olive.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/olive.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/olive.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Mature courtyard olive",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/olive.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/olive.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -744,15 +744,15 @@
       "runtimeDownload": {
         "bytes": 82436,
         "sha256": "0fbabf224cb33e55f3cc6480bfad8fd40175a15c0fa00f9072faa11e40e1ac89",
-        "url": "/scene-packs/troy/troy-20261005-07/models/cypress.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/cypress.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/cypress.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/cypress.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Mediterranean courtyard cypress",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/cypress.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/cypress.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -797,15 +797,15 @@
       "runtimeDownload": {
         "bytes": 147416,
         "sha256": "1769ec4b6d44f208af272b50056d4e01ceb7bf5a8605cbff49019595aef34fa3",
-        "url": "/scene-packs/troy/troy-20261005-07/models/fig.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/fig.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/fig.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/fig.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Spreading courtyard fig",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/fig.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/fig.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -849,15 +849,15 @@
       "runtimeDownload": {
         "bytes": 47456,
         "sha256": "4b2ad9c25c2035b02ebb72cc0336842c6c5a6441aada21cfe137d8749b3de51f",
-        "url": "/scene-packs/troy/troy-20261005-07/models/shrub.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/shrub.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/shrub.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/shrub.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Low courtyard shrub",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/shrub.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/shrub.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -957,15 +957,15 @@
       "runtimeDownload": {
         "bytes": 248068,
         "sha256": "03e257c29b54ad05f5f37381474fe6eba995f22d72fefba9e90e5d46bbe84b5c",
-        "url": "/scene-packs/troy/troy-20261005-07/models/horse.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/horse.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/horse.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/horse.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Horse",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/horse.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/horse.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -1050,15 +1050,15 @@
       "runtimeDownload": {
         "bytes": 333340,
         "sha256": "77c48aa6dbff40b212c5eacc4f340838358f71ee52ccc99966cd2bdc7f9b37e7",
-        "url": "/scene-packs/troy/troy-20261005-07/models/wall-breached.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/wall-breached.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/wall-breached.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/wall-breached.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Wall section",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/wall-breached.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/wall-breached.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -1117,15 +1117,15 @@
       "runtimeDownload": {
         "bytes": 614312,
         "sha256": "6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
-        "url": "/scene-packs/troy/troy-20261005-07/models/war-chariot.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/war-chariot.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/war-chariot.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/war-chariot.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Late Bronze Age war chariot",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/war-chariot.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/war-chariot.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -1170,15 +1170,15 @@
       "runtimeDownload": {
         "bytes": 137688,
         "sha256": "b15e157bf0e01fab0c421e232c08ab2572a7c42738d4454f994dfa275e99b4d9",
-        "url": "/scene-packs/troy/troy-20261005-07/models/sword.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/sword.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/sword.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/sword.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Bronze Age Sword",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/sword.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/sword.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -1229,15 +1229,15 @@
       "runtimeDownload": {
         "bytes": 182764,
         "sha256": "90a164bf7cbc9c98f7877bce029ed1ab016ab8043086f724ce70b92a0feff72a",
-        "url": "/scene-packs/troy/troy-20261005-07/models/shield.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/shield.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/shield.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/shield.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Round shield",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/shield.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/shield.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -1312,15 +1312,15 @@
       "runtimeDownload": {
         "bytes": 137780,
         "sha256": "861da8a5dad6265aa823c4b86f73142da14accfa48f486372241fba3e51ac366",
-        "url": "/scene-packs/troy/troy-20261005-07/models/bow-set.glb"
+        "url": "/scene-packs/troy/troy-20261113-01/models/bow-set.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/bow-set.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/bow-set.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Bow, arrows and quiver",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/bow-set.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/bow-set.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -1334,7 +1334,7 @@
       "category": "Buildings",
       "description": "Trojan Horse, from the Troy collection.",
       "assetId": "wooden-horse",
-      "revisionId": "r_c58f87877fbf40548aed5cc051166a72",
+      "revisionId": "r_235ebe9c60184eb38666f76703dc3b32",
       "metrics": {
         "triangles": 2060,
         "meshes": 14,
@@ -1376,17 +1376,17 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 279516,
-        "sha256": "aeb622fb0a37233a707030a81a3e9b991fff0b2ed17924956bd6ab61c53d9770",
-        "url": "/scene-packs/troy/troy-20261005-07/models/wooden-horse.glb"
+        "bytes": 279548,
+        "sha256": "d1b10019684539dc1ebbb5bd23429a4d529520983679e35583190d7741df8156",
+        "url": "/scene-packs/troy/troy-20261113-01/models/wooden-horse.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/wooden-horse.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/wooden-horse.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Trojan Horse",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/wooden-horse.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/wooden-horse.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,
@@ -1400,7 +1400,7 @@
       "category": "Compositions",
       "description": "Battle before the gate, from the Troy collection.",
       "assetId": "battle-scene",
-      "revisionId": "r_4573e90abb4848c3b3d4996de6834184",
+      "revisionId": "r_97f6523694eb4b29a852ffeedd8babea",
       "metrics": {
         "triangles": 208178,
         "meshes": 130,
@@ -1555,17 +1555,17 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 14464712,
-        "sha256": "d2ba5e05718c7889134d51bb89680a7dc05b5b24100c4f3e9d89b18034991dfb",
-        "url": "/scene-packs/troy/troy-20261005-07/models/battle-scene-reference.glb"
+        "bytes": 14464748,
+        "sha256": "8cba3af1b914dd2907a66bfc48f1be6beeaa15fbb9cc133c1a3ba7b3a390b8c7",
+        "url": "/scene-packs/troy/troy-20261113-01/models/battle-scene-reference.glb"
       },
       "poster": {
-        "src": "/scene-packs/troy/troy-20261005-07/media/battle-scene-reference.webp",
+        "src": "/scene-packs/troy/troy-20261113-01/media/battle-scene-reference.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Battle before the gate",
         "srcsetAvif": "",
-        "srcsetWebp": "/scene-packs/troy/troy-20261005-07/media/battle-scene-reference.webp 1024w"
+        "srcsetWebp": "/scene-packs/troy/troy-20261113-01/media/battle-scene-reference.webp 1024w"
       },
       "review": {
         "ownerAccepted": false,

@@ -410,7 +410,7 @@ async function build() {
   part('shield_grip','bronze',root.getObjectByName('socket_hand_left'),s=>s.add(cylinderGeo(GRIP.radius,GRIP.radius,GRIP.length,8)));
   part('shield_mount','bronze',shieldFrame,s=>s.add(boxGeo(.10,.045,.08),{p:[0,-.07,-.02]})).position.x=-.17;
   part('shield_emblem','crimson',shieldFrame,s=>{
-   for(const poly of [[[-.08,-.18],[.05,-.18],[.06,.10],[-.08,.15]],[[-.08,.15],[-.04,.23],[.10,.15],[.17,.05],[.08,.01],[-.04,.07]],[[-.07,.14],[-.075,.25],[-.025,.20]]])s.add(prism(poly,.03),{p:[0,0,.066],r:[0,90,0]});
+   for(const poly of [[[-.08,-.18],[.05,-.18],[.06,.10],[-.08,.15]],[[-.08,.15],[-.04,.23],[.10,.15],[.17,.05],[.08,.01],[-.04,.07]],[[-.07,.14],[-.075,.25],[-.025,.20]]])s.add(prism(poly,.03),{p:[0,0,.066+.002*[0,1,2][poly[0][1]===.14?2:(poly[0][1]===.15?1:0)]],r:[0,90,0]});
   });
 
 

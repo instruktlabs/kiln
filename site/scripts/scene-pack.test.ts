@@ -277,12 +277,13 @@ describe('scene pack catalog record', () => {
     expect(compareRuntimeRecord(undefined, recorded)).toEqual(['the record has no runtime for this standalone build']);
   });
 
-  test('the Farm record serves the r36 local review with repaired clothing and retained walking controls', () => {
+  test('the Farm record serves the r36 local review with the flush-face fix farmer and retained walking controls', () => {
     const record = scenePacks.farm;
-    expect(record.release).toBe('r36-local-review');
+    expect(record.release).toBe('r36-flush1');
     expect(record.base).toBe(`/scene-packs/farm/${record.release}/`);
     expect(record.source).toBe('.cache/site-inputs/farm/standalone');
-    expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_133_727, packJsonSha256: '5d046aa2c04637436d7e3918db690f4f25f6684a58ae7a78d333dec9df428f48' });
+    // r36-local-review with its farmer swapped for the flush-face fix child (scripts/scene-pack-swap.mjs).
+    expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_133_763, packJsonSha256: 'f97c8ee73d388e12d03784c605341f2f5fcb6d1c05672a161072c99abd235c8a' });
     // The sealed asset pack keeps its original producer version when current runtime code advances.
     expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
@@ -290,16 +291,20 @@ describe('scene pack catalog record', () => {
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
     expect(farmScene.assetBase).toBe(record.base);
     expect(farmScene.pack).toBe(record);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r36-local-review'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r36-flush1'));
     expect(() => stagedPackDirectory({ base: '/../escape/' }, '/site')).toThrow('Unexpected');
   });
 
-  test('the Golden Gate code6 delivery repairs terrain text and retains its runtime inside the ceiling', () => {
+  test('the Golden Gate flush2 delivery carries the flush-face fix children and keeps the published code6 runtime', () => {
     const record = scenePacks['golden-gate'];
-    expect(record.release).toBe('g9-code6');
-    expect(record.base).toBe('/scene-packs/golden-gate/g9-code6/');
-    // Six plus/minus signs and one squared sign add seven UTF-8 bytes; models and runtime remain unchanged.
-    expect(record).toMatchObject({ sealedFiles: 103, sealedBytes: 12_186_334, packJsonSha256: '68233d46076cbf86d57502ce612f09d63e8cc125f0b521f19f9eacbec419deb7', sha256sumsSha256: '615c3c3cd059cdffc00a84e29c43296c9a7e951150cdb0f887594450ce1debea' });
+    expect(record.release).toBe('g9-flush2');
+    expect(record.base).toBe('/scene-packs/golden-gate/g9-flush2/');
+    // The code6 pack with the web and far bridge tiers, sedan, SUV and box truck swapped for their flush-face fix
+    // children (scripts/scene-pack-swap.mjs): 103 sealed files. A model swap keeps the scene's code, so the runtime,
+    // its module inventory and the notices are code6's byte for byte.
+    expect(record).toMatchObject({ sealedFiles: 103, sealedBytes: 12_243_600, packJsonSha256: 'a3026f8bb3c040a69a1af2b2eaac2f949210ad962b62866950f6555d88cb73e0', sha256sumsSha256: '742626d8a7a4f3b5060e26910e0cb274076ddc07e4b0073923471da1aff925b4' });
+    expect(record.noticesSha256).toBe('1c27b112542ccdf247a592f918c7753cea14852a1e5234012bc06bd5ef9b859b');
+    expect(record.runtime.modulesSha256).toBe('ace29d2d8e9395d6887ca2b30ca68ce5ed596a781ec214ad68538902995553ae');
     expect(record.source).toBe('.cache/site-inputs/golden-gate/standalone');
     expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
@@ -308,23 +313,23 @@ describe('scene pack catalog record', () => {
     expect(checkCeiling('golden-gate', record.runtime).within).toBe(true);
     expect(record.runtime.bytes).toBeLessThanOrEqual(CEILINGS['golden-gate'].bytes);
     expect(goldenGateScene.assetBase).toBe(record.base);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g9-code6'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'golden-gate', 'g9-flush2'));
   });
 
-  test('the Foundry Floor code5 delivery retains the review2 payload with a verified initial closure inside its ceiling', () => {
+  test('the Foundry Floor flush2 delivery carries the flush-face fix children with a verified initial closure inside its ceiling', () => {
     const record = scenePacks['foundry-floor'];
-    expect(record.release).toBe('ff3-review2-code5');
-    expect(record.base).toBe('/scene-packs/foundry-floor/ff3-review2-code5/');
+    expect(record.release).toBe('ff3-review2-flush2');
+    expect(record.base).toBe('/scene-packs/foundry-floor/ff3-review2-flush2/');
     expect(record.source).toBe('.cache/site-inputs/foundry-floor/standalone');
     expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
-    // Final frozen FF3 intake verifies 85 sealed files and every initial/deferred chunk.
-    expect(record).toMatchObject({ sealedFiles: 85, sealedBytes: 11_519_818, packJsonSha256: '822be1171621273dfdf857fe6ca320ed41d16e03c49fc49860c13e7092be4836' });
+    // The review2 pack with twelve models swapped for their flush-face fix children (scripts/scene-pack-swap.mjs): 85 sealed files.
+    expect(record).toMatchObject({ sealedFiles: 85, sealedBytes: 11_492_559, packJsonSha256: '5cd13fdc406b7e842836a17bdf0709bc874de7bb4961cf0f313c08a3d412296d' });
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256, record.runtime.sha256, record.runtime.modulesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
-    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-BpDIz-38.js', bytes: 1_710_132, gzipBytes: 519_928, initialLoad: { bytes: 1_532_295, gzipBytes: 448_748 } });
+    expect(record.runtime).toMatchObject({ kind: 'frame', file: 'index-B2WrEJ7f.js', bytes: 1_642_298, gzipBytes: 499_143, initialLoad: { bytes: 1_464_543, gzipBytes: 427_959 } });
     expect(checkCeiling('foundry-floor', record.runtime).within).toBe(true);
     expect(foundryFloorScene.assetBase).toBe(record.base);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2-code5'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'foundry-floor', 'ff3-review2-flush2'));
   });
 
   // Owner decision 2026-10-26 (Matthew): these home-linked scene pages are indexed, whatever their availability says.

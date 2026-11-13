@@ -59,13 +59,24 @@ export const VEHICLE_PROVENANCE_G8: Record<VehicleType, VehicleProvenance> = {
   suv: { ...VEHICLE_PROVENANCE_G7.suv, parentRevision: VEHICLE_PROVENANCE_G7.suv.revision, revision: 'r_a9760325250e4aef858b823d1dc43b7e', refinedBy: 'codex-review2-asset-repairs', bytes: 117600, sha256: '0026d76e614bd232f7e2e1938236ec93d91d25389d8e1537e3f520f412812ce3' },
 };
 /** Final r4 local-review inputs: all six source-backed children; approval does not transfer from their parents. */
-export const VEHICLE_PROVENANCE: Record<VehicleType, VehicleProvenance> = {
+export const VEHICLE_PROVENANCE_G9: Record<VehicleType, VehicleProvenance> = {
   sedan: { ...VEHICLE_PROVENANCE_G7.sedan, parentRevision: 'r_7680f4bae18445b19dc11dd74b62d3e6', revision: 'r_92ee0ac3d5cf4b258cc97d20ec941461', refinedBy: 'codex-review2-asset-repairs', bytes: 117780, sha256: '1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212' },
   hatchback: { ...VEHICLE_PROVENANCE_G7.hatchback, parentRevision: 'r_0393505feabd4814907bc4b527194caf', revision: 'r_74f393f06996497a9dce6c5ed50c2d62', refinedBy: 'codex-review2-asset-repairs', bytes: 118752, sha256: '4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0' },
   suv: { ...VEHICLE_PROVENANCE_G7.suv, parentRevision: 'r_97a598c2b8b840dd88ff162264e85860', revision: 'r_b4cc9048731b4c039de0b87ca6e75c17', refinedBy: 'codex-review2-asset-repairs', bytes: 120120, sha256: '3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2' },
   pickup: { ...VEHICLE_PROVENANCE_G7.pickup, parentRevision: 'r_b74ac56a93a44c7484890f712df9c64c', revision: 'r_218be4189a1b43e7b307c2263ba4f954', refinedBy: 'codex-review2-asset-repairs', bytes: 170184, sha256: '584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f' },
   'box-truck': { ...VEHICLE_PROVENANCE_G7['box-truck'], parentRevision: 'r_d5e37b6d4e7347ac863220cdbd8e49a4', revision: 'r_538b8a19c46d4086b456e27b32ee7d33', refinedBy: 'codex-review2-asset-repairs', bytes: 169728, sha256: '4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420' },
   'transit-bus': { ...VEHICLE_PROVENANCE_G7['transit-bus'], parentRevision: 'r_6ab2ee53817449c59972502fcf008f1a', revision: 'r_85ff097a61384efab445c55372d3b6f5', refinedBy: 'codex-review2-asset-repairs', bytes: 194148, sha256: '14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067' },
+};
+/**
+ * g9-flush2: the sedan, SUV and box truck are the flush-face fix children of their g9 revisions (saved with
+ * claude-sonnet-5-5 in claude-code), delivered as vehicle-wheel-lod of the saved GLB, the bytes Foundry Floor
+ * ff3-review2-flush1 carries; owner review of these revisions is pending, as it was for their parents.
+ */
+export const VEHICLE_PROVENANCE: Record<VehicleType, VehicleProvenance> = {
+  ...VEHICLE_PROVENANCE_G9,
+  sedan: { ...VEHICLE_PROVENANCE_G9.sedan, parentRevision: VEHICLE_PROVENANCE_G9.sedan.revision, revision: 'r_35222363b36f4d2da720311bcad86215', refinedBy: 'flush-face-fix', bytes: 117972, sha256: 'f925ac655662e848fd3a42b91468767ca0c6273d2487c39a97ed04cb41f1a30a' },
+  suv: { ...VEHICLE_PROVENANCE_G9.suv, parentRevision: VEHICLE_PROVENANCE_G9.suv.revision, revision: 'r_0b3396ba73a6479a8d2fbf0f82e2463e', refinedBy: 'flush-face-fix', bytes: 119940, sha256: '9d0fca47fa6d1a4187b2e27efa3bd008f79e9fd8c25f54b104e4cad2d54ed922' },
+  'box-truck': { ...VEHICLE_PROVENANCE_G9['box-truck'], parentRevision: VEHICLE_PROVENANCE_G9['box-truck'].revision, revision: 'r_56e3859a78d84f5f922e5f64fe747f06', refinedBy: 'flush-face-fix', bytes: 169724, sha256: 'deed8053c8c9675a5687ecdd2ad5f1715177fce893607b74757b5b0f12503cc8' },
 };
 const REVIEW2_VEHICLES = resolve(COMMONS, 'engine-work/local-v09-review/revision2-20260930/vehicles-runtime-final');
 /** Exact local-review bytes: staging refuses unpinned exports; the historical API name is retained. */

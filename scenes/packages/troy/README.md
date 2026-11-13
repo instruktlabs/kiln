@@ -42,8 +42,9 @@ To use an already downloaded archive, run `node scripts/hydrate-runtime.mjs PATH
 Hydration is an explicit download of approximately 51.6 MB for the initial pin;
 the normal repository clone contains source, not these generated payloads.
 
-The current runtime pin is `troy-20261005-07`, a text correction of release 06
-with identical model and bank payloads. Update it to the newly sealed and
+The current runtime pin is `troy-20261113-01`: release 07's compiled scene and
+banks with the flush-face fix revisions of the house, temple hall and Hector, and
+of the battle scene and wooden horse downloads. Update it to the newly sealed and
 verified release when adopting changed model/bank inputs. A pin change requires
 rehydration; the preview refuses a cache selected for another release.
 

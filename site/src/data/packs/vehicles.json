@@ -3,7 +3,7 @@
   "id": "vehicles",
   "name": "Generic Road Vehicles",
   "description": "Six generic road vehicles made with Kiln: hatchback, sedan, SUV, pickup truck, box truck and transit bus. Each has three detail tiers, separate wheels, a near-white paint a scene can tint, its source and its revision history.",
-  "release": "r4-local-review",
+  "release": "r5-flush-fix",
   "assetCount": 6,
   "license": "CC0-1.0",
   "licenseScope": "CC0-1.0 covers authored asset content only, to the extent of the owner’s rights. Kiln and any software that opens these files retain their own licenses.",
@@ -31,12 +31,12 @@
     {
       "profile": "runtime",
       "archive": "generic-road-vehicles-runtime.zip",
-      "bytes": 920215,
-      "sha256": "8cb30b3b8612dc5bedf1ed0ae35c4f61c6368d36e0d51101a3ff80472b992168",
+      "bytes": 922307,
+      "sha256": "6db9d3abcc43f70abca0bbc05105c2844d11341eb36597941ad3dea638b2fd05",
       "files": 13,
       "assets": 6,
-      "path": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
-      "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+      "path": "packs/vehicles/r5-flush-fix/generic-road-vehicles-runtime.zip",
+      "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/generic-road-vehicles-runtime.zip",
       "contents": [
         "Six runtime GLBs with their three detail tiers linked by MSFT_lod",
         "One licence text per vehicle",
@@ -268,13 +268,13 @@
         "wheelsHiddenBeyondMetres": 250.3
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic five-door hatchback with a two-box roofline, a steep tailgate and taillight clusters at the rear corners. Its paint is a neutral near-white, so a scene can tint each instance.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/hatchback.png",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/hatchback.png",
         "sourceRevisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
         "exactRevision": true,
         "rig": "review-neutral-v1"
@@ -305,19 +305,19 @@
       "sourceSha256": "c3cd99e30b697e7a1e120f5ec931e831b7b5f76a4e7cf6580d960cca8062ad97",
       "modelPath": "/models/vehicles/hatchback.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r4-local-review/models/hatchback.glb",
+        "path": "packs/vehicles/r5-flush-fix/models/hatchback.glb",
         "bytes": 118752,
         "sha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/hatchback.glb",
-        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/models/hatchback.glb",
+        "archive": "packs/vehicles/r5-flush-fix/generic-road-vehicles-runtime.zip",
         "member": "models/hatchback.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r4-local-review/editable/hatchback-editable.zip",
+        "path": "packs/vehicles/r5-flush-fix/editable/hatchback-editable.zip",
         "bytes": 280404,
         "sha256": "02668b09f34d2de4e91bad707cef841258d189be8de6a6a8869cc672c0a707a8",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/hatchback-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/editable/hatchback-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
@@ -327,10 +327,10 @@
         "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r4-local-review/licenses/hatchback.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r5-flush-fix/licenses/hatchback.ASSET-LICENSE.txt",
         "bytes": 1132,
         "sha256": "565e262d82792d22258d4e7e1274e24dd1f41569d47dd8153b317428cfc78377",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/hatchback.ASSET-LICENSE.txt",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/licenses/hatchback.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesDeliveredGlbSha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0"
       },
@@ -625,8 +625,8 @@
       "category": "Cars",
       "description": "Generic four-door sedan with a low beltline, a notch-back deck and a full-width rear light bar. Authored as the drivable car of the Golden Gate scene, so its rear stays clean for a chase camera; the paint is a neutral near-white for scene tinting.",
       "assetId": "generic-sedan",
-      "revisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
-      "parentRevision": "r_7680f4bae18445b19dc11dd74b62d3e6",
+      "revisionId": "r_35222363b36f4d2da720311bcad86215",
+      "parentRevision": "r_92ee0ac3d5cf4b258cc97d20ec941461",
       "metrics": {
         "triangles": 3758,
         "meshes": 20,
@@ -786,26 +786,26 @@
         "wheelsHiddenBeyondMetres": 250
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic four-door sedan with a low beltline, a notch-back deck and a full-width rear light bar. Authored as the drivable car of the Golden Gate scene, so its rear stays clean for a chase camera; the paint is a neutral near-white for scene tinting.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.png",
-        "sourceRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/sedan.png",
+        "sourceRevisionId": "r_35222363b36f4d2da720311bcad86215",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/vehicles/r4-local-review/review/sedan.webp",
+        "src": "/media/vehicles/r5-flush-fix/review/sedan.webp",
         "width": 1168,
         "height": 780,
         "alt": "Saved review views of Generic sedan.",
-        "srcsetWebp": "/media/vehicles/r4-local-review/review/sedan-320.webp 320w, /media/vehicles/r4-local-review/review/sedan-480.webp 480w, /media/vehicles/r4-local-review/review/sedan-672.webp 672w, /media/vehicles/r4-local-review/review/sedan-768.webp 768w, /media/vehicles/r4-local-review/review/sedan-1024.webp 1024w",
-        "srcsetAvif": "/media/vehicles/r4-local-review/review/sedan-320.avif 320w, /media/vehicles/r4-local-review/review/sedan-480.avif 480w, /media/vehicles/r4-local-review/review/sedan-672.avif 672w, /media/vehicles/r4-local-review/review/sedan-768.avif 768w, /media/vehicles/r4-local-review/review/sedan-1024.avif 1024w",
-        "inputPath": "media/vehicles/r4-local-review/review/sedan.png",
-        "sourceRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+        "srcsetWebp": "/media/vehicles/r5-flush-fix/review/sedan-320.webp 320w, /media/vehicles/r5-flush-fix/review/sedan-480.webp 480w, /media/vehicles/r5-flush-fix/review/sedan-672.webp 672w, /media/vehicles/r5-flush-fix/review/sedan-768.webp 768w, /media/vehicles/r5-flush-fix/review/sedan-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r5-flush-fix/review/sedan-320.avif 320w, /media/vehicles/r5-flush-fix/review/sedan-480.avif 480w, /media/vehicles/r5-flush-fix/review/sedan-672.avif 672w, /media/vehicles/r5-flush-fix/review/sedan-768.avif 768w, /media/vehicles/r5-flush-fix/review/sedan-1024.avif 1024w",
+        "inputPath": "media/vehicles/r5-flush-fix/review/sedan.png",
+        "sourceRevisionId": "r_35222363b36f4d2da720311bcad86215",
         "exactRevision": true,
         "fidelity": {
           "version": "kiln.view-fidelity.v1",
@@ -813,29 +813,29 @@
           "delivered": "full-material",
           "materialFaithful": true,
           "exactArtifact": true,
-          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-          "inputGlbSha256": "sha256:f4e5c482b43b365920b2894170646f3586c44afb334366366df0123ce5ac89ed",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "inputGlbSha256": "sha256:4aeb8e1c715e650fc7e596afd5afa87096b3eb40c3359bc3aae7b55688254c17",
           "degraded": false,
           "reasonCodes": []
         }
       },
       "sourcePath": "/sources/vehicles/sedan.kiln.js",
-      "sourceSha256": "df38ba80d458a1e040e8d2646e4325ceb70ed440c5d36402787812c12a3196ef",
+      "sourceSha256": "a40061f00547e3feb6ec3ee70bdc316603e0ac578468b1cf724a5846a8096d31",
       "modelPath": "/models/vehicles/sedan.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r4-local-review/models/sedan.glb",
-        "bytes": 117780,
-        "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/sedan.glb",
-        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+        "path": "packs/vehicles/r5-flush-fix/models/sedan.glb",
+        "bytes": 117972,
+        "sha256": "f925ac655662e848fd3a42b91468767ca0c6273d2487c39a97ed04cb41f1a30a",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/models/sedan.glb",
+        "archive": "packs/vehicles/r5-flush-fix/generic-road-vehicles-runtime.zip",
         "member": "models/sedan.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r4-local-review/editable/sedan-editable.zip",
-        "bytes": 276866,
-        "sha256": "f3e9aed40b6edadea3e28518e39901489df1e30eaab7ea35fe8a2dbffe8f9bab",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/sedan-editable.zip",
+        "path": "packs/vehicles/r5-flush-fix/editable/sedan-editable.zip",
+        "bytes": 182581,
+        "sha256": "e40239b60fe451903613eedbdd3eabb37b5ec4b1434d755b374d6897d23b07d1",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/editable/sedan-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
@@ -845,17 +845,18 @@
         "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r4-local-review/licenses/sedan.ASSET-LICENSE.txt",
-        "bytes": 1120,
-        "sha256": "71900c60adf01d58926d0a4cc2afed2126c312c8af52d4b122a1eb92dd86ca1a",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/sedan.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r5-flush-fix/licenses/sedan.ASSET-LICENSE.txt",
+        "bytes": 1337,
+        "sha256": "348451da6c4e022324ff77054556cd3fff18896e60f99031926d753da24a38e9",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/licenses/sedan.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesDeliveredGlbSha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212"
+        "statesDeliveredGlbSha256": "f925ac655662e848fd3a42b91468767ca0c6273d2487c39a97ed04cb41f1a30a"
       },
       "provenance": {
         "originalModel": "Claude Sonnet 5.5",
         "refinementModels": [
-          "GPT-6 Astra"
+          "GPT-6 Astra",
+          "Claude Sonnet 5.5"
         ],
         "history": [
           {
@@ -959,6 +960,32 @@
               "endedAt": "2026-10-01T03:29:28.744Z",
               "receiptSha256": "6d77d7bc8249d2f6e84ce7e5befe0d83f2932084d5bbcc0aaca017482a8bb45a",
               "invocationSha256": "d40a5dd01e5c05dd6ce6d24ee8f354043184ff42e6f3150c79432ce0e72539b6"
+            }
+          },
+          {
+            "stage": "Flush-face fix",
+            "request": "flush-face-fix",
+            "revisionId": "r_35222363b36f4d2da720311bcad86215",
+            "parentRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+            "savedAt": "2026-11-13T00:23:39.280Z",
+            "brief": "Generic sedan, child of r_92ee0ac3 with its model unchanged. Flush-face fix: rearLampBuf (Taillight, LOD1 patch on a steep side-shoulder facet): lamp triangles lifted along facet normal by the amount needed to reach 1 mm perpendicular….",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "savedModelLabel": "claude-sonnet-5-5",
+            "requestedEffort": "not recorded",
+            "confirmedEffort": null,
+            "harness": "claude-code",
+            "harnessVersion": null,
+            "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+            "run": {
+              "stage": "flush-face-fix",
+              "label": "flush-face fix session",
+              "status": "not recorded",
+              "stop": null,
+              "startedAt": null,
+              "endedAt": null,
+              "receiptSha256": null,
+              "invocationSha256": null
             }
           }
         ]
@@ -1066,21 +1093,47 @@
             "receiptSha256": "6d77d7bc8249d2f6e84ce7e5befe0d83f2932084d5bbcc0aaca017482a8bb45a",
             "invocationSha256": "d40a5dd01e5c05dd6ce6d24ee8f354043184ff42e6f3150c79432ce0e72539b6"
           }
+        },
+        {
+          "stage": "Flush-face fix",
+          "request": "flush-face-fix",
+          "revisionId": "r_35222363b36f4d2da720311bcad86215",
+          "parentRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+          "savedAt": "2026-11-13T00:23:39.280Z",
+          "brief": "Generic sedan, child of r_92ee0ac3 with its model unchanged. Flush-face fix: rearLampBuf (Taillight, LOD1 patch on a steep side-shoulder facet): lamp triangles lifted along facet normal by the amount needed to reach 1 mm perpendicular….",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "savedModelLabel": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null,
+          "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+          "run": {
+            "stage": "flush-face-fix",
+            "label": "flush-face fix session",
+            "status": "not recorded",
+            "stop": null,
+            "startedAt": null,
+            "endedAt": null,
+            "receiptSha256": null,
+            "invocationSha256": null
+          }
         }
       ],
       "review": {
         "status": "awaiting-owner-review",
         "ownerAccepted": false,
-        "scope": "Front and rear lamp fit repaired, with simplified medium-detail headlight outlines. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
-        "correction": "Generic sedan: Front and rear lamp fit repaired, with simplified medium-detail headlight outlines; awaiting owner review.",
-        "recordedAt": "2026-10-01",
-        "source": "Local owner review 2 sealed author handoff and exact saved revision manifests"
+        "scope": "Flush-face fix: rearLampBuf (Taillight, LOD1 patch on a steep side-shoulder facet): lamp triangles lifted along facet normal by the amount needed to reach 1 mm perpendicular. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
+        "correction": "Generic sedan: Flush-face fix: rearLampBuf (Taillight, LOD1 patch on a steep side-shoulder facet): lamp triangles lifted along facet normal by the amount needed to reach 1 mm perpendicular; awaiting owner review.",
+        "recordedAt": "2026-11-13",
+        "source": "Flush-face fix child revision manifest and its saved files"
       },
       "license": "CC0-1.0",
       "sceneDeepLink": null,
       "canonicalGlb": {
-        "bytes": 117272,
-        "sha256": "f4e5c482b43b365920b2894170646f3586c44afb334366366df0123ce5ac89ed"
+        "bytes": 117464,
+        "sha256": "4aeb8e1c715e650fc7e596afd5afa87096b3eb40c3359bc3aae7b55688254c17"
       }
     },
     {
@@ -1091,8 +1144,8 @@
       "category": "Cars",
       "description": "Generic five-door SUV with a tall, square greenhouse, raised ground clearance, larger wheel arches and a steep liftgate. Its paint is a neutral near-white for scene tinting.",
       "assetId": "generic-suv",
-      "revisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
-      "parentRevision": "r_97a598c2b8b840dd88ff162264e85860",
+      "revisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
+      "parentRevision": "r_b4cc9048731b4c039de0b87ca6e75c17",
       "metrics": {
         "triangles": 3794,
         "meshes": 20,
@@ -1196,9 +1249,9 @@
         },
         {
           "tier": "LOD1",
-          "bodyTriangles": 738,
+          "bodyTriangles": 732,
           "wheelTriangles": 1568,
-          "triangles": 2306,
+          "triangles": 2300,
           "budget": 3000,
           "wheelsShown": true,
           "bounds": [
@@ -1252,26 +1305,26 @@
         "wheelsHiddenBeyondMetres": 249.9
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic five-door SUV with a tall, square greenhouse, raised ground clearance, larger wheel arches and a steep liftgate. Its paint is a neutral near-white for scene tinting.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/suv.png",
-        "sourceRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/suv.png",
+        "sourceRevisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/vehicles/r4-local-review/review/suv.webp",
+        "src": "/media/vehicles/r5-flush-fix/review/suv.webp",
         "width": 1168,
         "height": 780,
         "alt": "Saved review views of Generic SUV.",
-        "srcsetWebp": "/media/vehicles/r4-local-review/review/suv-320.webp 320w, /media/vehicles/r4-local-review/review/suv-480.webp 480w, /media/vehicles/r4-local-review/review/suv-672.webp 672w, /media/vehicles/r4-local-review/review/suv-768.webp 768w, /media/vehicles/r4-local-review/review/suv-1024.webp 1024w",
-        "srcsetAvif": "/media/vehicles/r4-local-review/review/suv-320.avif 320w, /media/vehicles/r4-local-review/review/suv-480.avif 480w, /media/vehicles/r4-local-review/review/suv-672.avif 672w, /media/vehicles/r4-local-review/review/suv-768.avif 768w, /media/vehicles/r4-local-review/review/suv-1024.avif 1024w",
-        "inputPath": "media/vehicles/r4-local-review/review/suv.png",
-        "sourceRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+        "srcsetWebp": "/media/vehicles/r5-flush-fix/review/suv-320.webp 320w, /media/vehicles/r5-flush-fix/review/suv-480.webp 480w, /media/vehicles/r5-flush-fix/review/suv-672.webp 672w, /media/vehicles/r5-flush-fix/review/suv-768.webp 768w, /media/vehicles/r5-flush-fix/review/suv-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r5-flush-fix/review/suv-320.avif 320w, /media/vehicles/r5-flush-fix/review/suv-480.avif 480w, /media/vehicles/r5-flush-fix/review/suv-672.avif 672w, /media/vehicles/r5-flush-fix/review/suv-768.avif 768w, /media/vehicles/r5-flush-fix/review/suv-1024.avif 1024w",
+        "inputPath": "media/vehicles/r5-flush-fix/review/suv.png",
+        "sourceRevisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
         "exactRevision": true,
         "fidelity": {
           "version": "kiln.view-fidelity.v1",
@@ -1279,29 +1332,29 @@
           "delivered": "full-material",
           "materialFaithful": true,
           "exactArtifact": true,
-          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-          "inputGlbSha256": "sha256:680b79d0943b829fa6898a3afa58e816a1ec903c1f4544ec62fca75730222b00",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "inputGlbSha256": "sha256:ae5def029e090262cc442dfea8d5f9c2a9e396add6948312d1a3739694ac8d5c",
           "degraded": false,
           "reasonCodes": []
         }
       },
       "sourcePath": "/sources/vehicles/suv.kiln.js",
-      "sourceSha256": "92be21e9c7b467e20a8bdbcb1f62e77e9a9cd7d2f3e76c73eb6d5225a3398198",
+      "sourceSha256": "83770c33d631485ec6252f335f82fcddbdbb2be8df681e890010072be9c2dd72",
       "modelPath": "/models/vehicles/suv.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r4-local-review/models/suv.glb",
-        "bytes": 120120,
-        "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/suv.glb",
-        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+        "path": "packs/vehicles/r5-flush-fix/models/suv.glb",
+        "bytes": 119940,
+        "sha256": "9d0fca47fa6d1a4187b2e27efa3bd008f79e9fd8c25f54b104e4cad2d54ed922",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/models/suv.glb",
+        "archive": "packs/vehicles/r5-flush-fix/generic-road-vehicles-runtime.zip",
         "member": "models/suv.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r4-local-review/editable/suv-editable.zip",
-        "bytes": 286061,
-        "sha256": "c7fadbd9c8857e94a1fbab78f98e8ca1a97e4ece6ec1ac91ebe1a2949ce0359f",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/suv-editable.zip",
+        "path": "packs/vehicles/r5-flush-fix/editable/suv-editable.zip",
+        "bytes": 189250,
+        "sha256": "bc671d0b8789bf0e5ee9f2f5688464973cfb39ec723fb29efb7af0e7ed29e22d",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/editable/suv-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
@@ -1311,17 +1364,18 @@
         "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r4-local-review/licenses/suv.ASSET-LICENSE.txt",
-        "bytes": 1114,
-        "sha256": "ab90d346640f2902b9b5eb98ba2f6d4dd5f65efff9df9785c61c2c18bee85dfc",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/suv.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r5-flush-fix/licenses/suv.ASSET-LICENSE.txt",
+        "bytes": 1282,
+        "sha256": "739524069fadc14e9757ba33980247bf87cd2b884dc101327e2f5463c55340fd",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/licenses/suv.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesDeliveredGlbSha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2"
+        "statesDeliveredGlbSha256": "9d0fca47fa6d1a4187b2e27efa3bd008f79e9fd8c25f54b104e4cad2d54ed922"
       },
       "provenance": {
         "originalModel": "Claude Sonnet 5.5",
         "refinementModels": [
-          "GPT-6 Astra"
+          "GPT-6 Astra",
+          "Claude Sonnet 5.5"
         ],
         "history": [
           {
@@ -1451,6 +1505,32 @@
               "endedAt": "2026-10-01T03:29:28.744Z",
               "receiptSha256": "6d77d7bc8249d2f6e84ce7e5befe0d83f2932084d5bbcc0aaca017482a8bb45a",
               "invocationSha256": "d40a5dd01e5c05dd6ce6d24ee8f354043184ff42e6f3150c79432ce0e72539b6"
+            }
+          },
+          {
+            "stage": "Flush-face fix",
+            "request": "flush-face-fix",
+            "revisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
+            "parentRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+            "savedAt": "2026-11-13T00:23:46.062Z",
+            "brief": "Generic SUV, child of r_b4cc9048 with its model unchanged. Flush-face fix: Mesh_Taillight_L1: LOD1 rear taillight patch upper z edge 0.90 -> 0.86 so it stops before the steep rear-cor….",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "savedModelLabel": "claude-sonnet-5-5",
+            "requestedEffort": "not recorded",
+            "confirmedEffort": null,
+            "harness": "claude-code",
+            "harnessVersion": null,
+            "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+            "run": {
+              "stage": "flush-face-fix",
+              "label": "flush-face fix session",
+              "status": "not recorded",
+              "stop": null,
+              "startedAt": null,
+              "endedAt": null,
+              "receiptSha256": null,
+              "invocationSha256": null
             }
           }
         ]
@@ -1584,21 +1664,47 @@
             "receiptSha256": "6d77d7bc8249d2f6e84ce7e5befe0d83f2932084d5bbcc0aaca017482a8bb45a",
             "invocationSha256": "d40a5dd01e5c05dd6ce6d24ee8f354043184ff42e6f3150c79432ce0e72539b6"
           }
+        },
+        {
+          "stage": "Flush-face fix",
+          "request": "flush-face-fix",
+          "revisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
+          "parentRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+          "savedAt": "2026-11-13T00:23:46.062Z",
+          "brief": "Generic SUV, child of r_b4cc9048 with its model unchanged. Flush-face fix: Mesh_Taillight_L1: LOD1 rear taillight patch upper z edge 0.90 -> 0.86 so it stops before the steep rear-cor….",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "savedModelLabel": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null,
+          "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+          "run": {
+            "stage": "flush-face-fix",
+            "label": "flush-face fix session",
+            "status": "not recorded",
+            "stop": null,
+            "startedAt": null,
+            "endedAt": null,
+            "receiptSha256": null,
+            "invocationSha256": null
+          }
         }
       ],
       "review": {
         "status": "awaiting-owner-review",
         "ownerAccepted": false,
-        "scope": "Front and rear lamp fit repaired, with simplified medium-detail headlight outlines. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
-        "correction": "Generic SUV: Front and rear lamp fit repaired, with simplified medium-detail headlight outlines; awaiting owner review.",
-        "recordedAt": "2026-10-01",
-        "source": "Local owner review 2 sealed author handoff and exact saved revision manifests"
+        "scope": "Flush-face fix: Mesh_Taillight_L1: LOD1 rear taillight patch upper z edge 0.90 -> 0.86 so it stops before the steep rear-cor. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
+        "correction": "Generic SUV: Flush-face fix: Mesh_Taillight_L1: LOD1 rear taillight patch upper z edge 0.90 -> 0.86 so it stops before the steep rear-cor; awaiting owner review.",
+        "recordedAt": "2026-11-13",
+        "source": "Flush-face fix child revision manifest and its saved files"
       },
       "license": "CC0-1.0",
       "sceneDeepLink": null,
       "canonicalGlb": {
-        "bytes": 119612,
-        "sha256": "680b79d0943b829fa6898a3afa58e816a1ec903c1f4544ec62fca75730222b00"
+        "bytes": 119432,
+        "sha256": "ae5def029e090262cc442dfea8d5f9c2a9e396add6948312d1a3739694ac8d5c"
       }
     },
     {
@@ -1763,13 +1869,13 @@
         "wheelsHiddenBeyondMetres": 249.9
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic crew-cab pickup truck with a short bed. Made for traffic seen from about 3 m to 1 km, it steps from a detailed cab down to a boxy silhouette across three tiers.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/pickup-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/pickup.png",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/pickup.png",
         "sourceRevisionId": "r_218be4189a1b43e7b307c2263ba4f954",
         "exactRevision": true,
         "rig": "review-neutral-v1"
@@ -1800,19 +1906,19 @@
       "sourceSha256": "ce88a54e3703e7a02c46cc8082e0dfa4176532a09fc171d0014b0677bae3a5a1",
       "modelPath": "/models/vehicles/pickup.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r4-local-review/models/pickup.glb",
+        "path": "packs/vehicles/r5-flush-fix/models/pickup.glb",
         "bytes": 170184,
         "sha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/pickup.glb",
-        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/models/pickup.glb",
+        "archive": "packs/vehicles/r5-flush-fix/generic-road-vehicles-runtime.zip",
         "member": "models/pickup.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r4-local-review/editable/pickup-editable.zip",
+        "path": "packs/vehicles/r5-flush-fix/editable/pickup-editable.zip",
         "bytes": 252950,
         "sha256": "f81685101c218a6cb1f82f21197ea7c895b3e97317c6e2afea32b5c7b0c03493",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/pickup-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/editable/pickup-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
@@ -1822,10 +1928,10 @@
         "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r4-local-review/licenses/pickup.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r5-flush-fix/licenses/pickup.ASSET-LICENSE.txt",
         "bytes": 1034,
         "sha256": "8ffadbd1d0ee1d15f83c7813b1e1250d221c173df3c57469ceaabb9244b4f679",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/pickup.ASSET-LICENSE.txt",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/licenses/pickup.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesDeliveredGlbSha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f"
       },
@@ -1964,8 +2070,8 @@
       "category": "Trucks",
       "description": "Generic class 6 cab-over box truck with dual rear wheels. The cab takes the paint tint; the cargo box has its own untinted near-white material.",
       "assetId": "a_2092ca0610c749b386c14c07dbaf4236",
-      "revisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
-      "parentRevision": "r_d5e37b6d4e7347ac863220cdbd8e49a4",
+      "revisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
+      "parentRevision": "r_538b8a19c46d4086b456e27b32ee7d33",
       "metrics": {
         "triangles": 3546,
         "meshes": 19,
@@ -2125,26 +2231,26 @@
         "wheelsHiddenBeyondMetres": 250
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic class 6 cab-over box truck with dual rear wheels. The cab takes the paint tint; the cargo box has its own untinted near-white material.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.png",
-        "sourceRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/box-truck.png",
+        "sourceRevisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/vehicles/r4-local-review/review/box-truck.webp",
+        "src": "/media/vehicles/r5-flush-fix/review/box-truck.webp",
         "width": 1168,
         "height": 780,
         "alt": "Saved review views of Generic box truck.",
-        "srcsetWebp": "/media/vehicles/r4-local-review/review/box-truck-320.webp 320w, /media/vehicles/r4-local-review/review/box-truck-480.webp 480w, /media/vehicles/r4-local-review/review/box-truck-672.webp 672w, /media/vehicles/r4-local-review/review/box-truck-768.webp 768w, /media/vehicles/r4-local-review/review/box-truck-1024.webp 1024w",
-        "srcsetAvif": "/media/vehicles/r4-local-review/review/box-truck-320.avif 320w, /media/vehicles/r4-local-review/review/box-truck-480.avif 480w, /media/vehicles/r4-local-review/review/box-truck-672.avif 672w, /media/vehicles/r4-local-review/review/box-truck-768.avif 768w, /media/vehicles/r4-local-review/review/box-truck-1024.avif 1024w",
-        "inputPath": "media/vehicles/r4-local-review/review/box-truck.png",
-        "sourceRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+        "srcsetWebp": "/media/vehicles/r5-flush-fix/review/box-truck-320.webp 320w, /media/vehicles/r5-flush-fix/review/box-truck-480.webp 480w, /media/vehicles/r5-flush-fix/review/box-truck-672.webp 672w, /media/vehicles/r5-flush-fix/review/box-truck-768.webp 768w, /media/vehicles/r5-flush-fix/review/box-truck-1024.webp 1024w",
+        "srcsetAvif": "/media/vehicles/r5-flush-fix/review/box-truck-320.avif 320w, /media/vehicles/r5-flush-fix/review/box-truck-480.avif 480w, /media/vehicles/r5-flush-fix/review/box-truck-672.avif 672w, /media/vehicles/r5-flush-fix/review/box-truck-768.avif 768w, /media/vehicles/r5-flush-fix/review/box-truck-1024.avif 1024w",
+        "inputPath": "media/vehicles/r5-flush-fix/review/box-truck.png",
+        "sourceRevisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
         "exactRevision": true,
         "fidelity": {
           "version": "kiln.view-fidelity.v1",
@@ -2152,29 +2258,29 @@
           "delivered": "full-material",
           "materialFaithful": true,
           "exactArtifact": true,
-          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-          "inputGlbSha256": "sha256:8fca32fc32c11eba0a6df137cd1ae6285d605a73b0c877f4fc40113eba341767",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "inputGlbSha256": "sha256:568979622343e4aa4b378514f60199539557649a3e8c124c9f78a11c347e53fa",
           "degraded": false,
           "reasonCodes": []
         }
       },
       "sourcePath": "/sources/vehicles/box-truck.kiln.js",
-      "sourceSha256": "aa5f5e777bfe2a0992ae6a9b97981ece095fe5f3ba9bd0bc412a4c44c4e94b8c",
+      "sourceSha256": "40ff1285f4c16b2ef31fb58f939d095ff02ca62ffab05a822802153ed2204871",
       "modelPath": "/models/vehicles/box-truck.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r4-local-review/models/box-truck.glb",
-        "bytes": 169728,
-        "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/box-truck.glb",
-        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+        "path": "packs/vehicles/r5-flush-fix/models/box-truck.glb",
+        "bytes": 169724,
+        "sha256": "deed8053c8c9675a5687ecdd2ad5f1715177fce893607b74757b5b0f12503cc8",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/models/box-truck.glb",
+        "archive": "packs/vehicles/r5-flush-fix/generic-road-vehicles-runtime.zip",
         "member": "models/box-truck.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r4-local-review/editable/box-truck-editable.zip",
-        "bytes": 240743,
-        "sha256": "5b4b3fd5d890d37ee4ca2c627403889d99d037dce3bd4d3aad2fc6f70c683185",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/box-truck-editable.zip",
+        "path": "packs/vehicles/r5-flush-fix/editable/box-truck-editable.zip",
+        "bytes": 74382,
+        "sha256": "f7ea4983dd06b9a37e48aceb2419c758bb6e02b4a99537eb14164a2475bcfc13",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/editable/box-truck-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
@@ -2184,17 +2290,18 @@
         "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r4-local-review/licenses/box-truck.ASSET-LICENSE.txt",
-        "bytes": 1034,
-        "sha256": "654256a91ce265d292dbe83ee822e76a6db741f0cdf8f6173b750b21ef1e3aa0",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/box-truck.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r5-flush-fix/licenses/box-truck.ASSET-LICENSE.txt",
+        "bytes": 1231,
+        "sha256": "2c831e75ae7553859012d29181b1b00a29f60ddd7d7e75b6e0983590628512b4",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/licenses/box-truck.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesDeliveredGlbSha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420"
+        "statesDeliveredGlbSha256": "deed8053c8c9675a5687ecdd2ad5f1715177fce893607b74757b5b0f12503cc8"
       },
       "provenance": {
         "originalModel": "Claude Sonnet 5.5",
         "refinementModels": [
-          "GPT-6 Astra"
+          "GPT-6 Astra",
+          "Claude Sonnet 5.5"
         ],
         "history": [
           {
@@ -2246,6 +2353,32 @@
               "endedAt": "2026-10-01T03:11:55.501Z",
               "receiptSha256": "44d5ce5810543c98f74046bd0698ae167cef7d7fcf9eebc61991a3cc14e32f55",
               "invocationSha256": "8371748f40e8b208c65558d4fe2e4c44b48846e1bf380c2bd6fc65e51e2e8ffb"
+            }
+          },
+          {
+            "stage": "Flush-face fix",
+            "request": "flush-face-fix",
+            "revisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
+            "parentRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+            "savedAt": "2026-11-13T00:23:21.891Z",
+            "brief": "Generic box truck, child of r_538b8a19 with its model unchanged. Flush-face fix: rear door chrome bars (Chrome, 4 boxes at BX0): depth 0.012 to 0.016 centred 2 mm further out so the back face leaves the tail trim plane….",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "savedModelLabel": "claude-sonnet-5-5",
+            "requestedEffort": "not recorded",
+            "confirmedEffort": null,
+            "harness": "claude-code",
+            "harnessVersion": null,
+            "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+            "run": {
+              "stage": "flush-face-fix",
+              "label": "flush-face fix session",
+              "status": "not recorded",
+              "stop": null,
+              "startedAt": null,
+              "endedAt": null,
+              "receiptSha256": null,
+              "invocationSha256": null
             }
           }
         ]
@@ -2301,21 +2434,47 @@
             "receiptSha256": "44d5ce5810543c98f74046bd0698ae167cef7d7fcf9eebc61991a3cc14e32f55",
             "invocationSha256": "8371748f40e8b208c65558d4fe2e4c44b48846e1bf380c2bd6fc65e51e2e8ffb"
           }
+        },
+        {
+          "stage": "Flush-face fix",
+          "request": "flush-face-fix",
+          "revisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
+          "parentRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+          "savedAt": "2026-11-13T00:23:21.891Z",
+          "brief": "Generic box truck, child of r_538b8a19 with its model unchanged. Flush-face fix: rear door chrome bars (Chrome, 4 boxes at BX0): depth 0.012 to 0.016 centred 2 mm further out so the back face leaves the tail trim plane….",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "savedModelLabel": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null,
+          "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+          "run": {
+            "stage": "flush-face-fix",
+            "label": "flush-face fix session",
+            "status": "not recorded",
+            "stop": null,
+            "startedAt": null,
+            "endedAt": null,
+            "receiptSha256": null,
+            "invocationSha256": null
+          }
         }
       ],
       "review": {
         "status": "awaiting-owner-review",
         "ownerAccepted": false,
-        "scope": "Standard LOD links authored in a preserved source revision with unchanged geometry, materials and wheel pivots. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
-        "correction": "Generic box truck: Standard LOD links authored in a preserved source revision with unchanged geometry, materials and wheel pivots; awaiting owner review.",
-        "recordedAt": "2026-10-01",
-        "source": "Local owner review 2 sealed author handoff and exact saved revision manifests"
+        "scope": "Flush-face fix: rear door chrome bars (Chrome, 4 boxes at BX0): depth 0.012 to 0.016 centred 2 mm further out so the back face leaves the tail trim plane. Preserved parent revisions retain their historical review records; acceptance of this revision is pending.",
+        "correction": "Generic box truck: Flush-face fix: rear door chrome bars (Chrome, 4 boxes at BX0): depth 0.012 to 0.016 centred 2 mm further out so the back face leaves the tail trim plane; awaiting owner review.",
+        "recordedAt": "2026-11-13",
+        "source": "Flush-face fix child revision manifest and its saved files"
       },
       "license": "CC0-1.0",
       "sceneDeepLink": null,
       "canonicalGlb": {
-        "bytes": 169220,
-        "sha256": "8fca32fc32c11eba0a6df137cd1ae6285d605a73b0c877f4fc40113eba341767"
+        "bytes": 169216,
+        "sha256": "568979622343e4aa4b378514f60199539557649a3e8c124c9f78a11c347e53fa"
       }
     },
     {
@@ -2483,13 +2642,13 @@
         "wheelsHiddenBeyondMetres": 250.3
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus.webp",
+        "src": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Generic 40 ft low-floor transit bus with two doors on the right, a two-tone body (paint above, trim below), dual rear wheels and a roof equipment pod. No operator livery, text or numbers.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus.png",
+        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/vehicles/r5-flush-fix/transit-bus.png",
         "sourceRevisionId": "r_85ff097a61384efab445c55372d3b6f5",
         "exactRevision": true,
         "rig": "review-neutral-v1"
@@ -2520,19 +2679,19 @@
       "sourceSha256": "7353294abb36e623839fb889c70bfbd626ee2ebda69b3b96e73aeed3e8afc2e1",
       "modelPath": "/models/vehicles/transit-bus.glb",
       "runtimeDownload": {
-        "path": "packs/vehicles/r4-local-review/models/transit-bus.glb",
+        "path": "packs/vehicles/r5-flush-fix/models/transit-bus.glb",
         "bytes": 194148,
         "sha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/models/transit-bus.glb",
-        "archive": "packs/vehicles/r4-local-review/generic-road-vehicles-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/models/transit-bus.glb",
+        "archive": "packs/vehicles/r5-flush-fix/generic-road-vehicles-runtime.zip",
         "member": "models/transit-bus.glb",
         "form": "MSFT_lod"
       },
       "editableDownload": {
-        "path": "packs/vehicles/r4-local-review/editable/transit-bus-editable.zip",
+        "path": "packs/vehicles/r5-flush-fix/editable/transit-bus-editable.zip",
         "bytes": 261499,
         "sha256": "75a177c053ec601ca475b7dad14aaa20431b31300663a7fd000cff85561eb2a2",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/editable/transit-bus-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/editable/transit-bus-editable.zip",
         "members": [
           "manifest.json",
           "asset.glb",
@@ -2542,10 +2701,10 @@
         "glbForm": "MSFT_lod"
       },
       "licence": {
-        "path": "packs/vehicles/r4-local-review/licenses/transit-bus.ASSET-LICENSE.txt",
+        "path": "packs/vehicles/r5-flush-fix/licenses/transit-bus.ASSET-LICENSE.txt",
         "bytes": 1038,
         "sha256": "e3b28dc837a737f8dff35192c1cb92fb0ae9ba15927958e70dcbc906676e44e1",
-        "url": "https://assets.kilnstudio.tools/packs/vehicles/r4-local-review/licenses/transit-bus.ASSET-LICENSE.txt",
+        "url": "https://assets.kilnstudio.tools/packs/vehicles/r5-flush-fix/licenses/transit-bus.ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesDeliveredGlbSha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067"
       },

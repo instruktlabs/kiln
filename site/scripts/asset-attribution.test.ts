@@ -9,7 +9,7 @@ test('saved candidate shorthand is spaced only in displayed prose, without chang
   const heavy = vehicles.assets.filter(asset => ['pickup', 'box-truck', 'transit-bus'].includes(asset.slug));
   expect(heavy).toHaveLength(3);
   for (const asset of heavy) {
-    const brief = asset.revisions.at(-1)!.brief!;
+    const brief = asset.revisions.filter(revision => revision.request === 'owner-review-2').at(-1)!.brief!;
     expect(brief).toContain('candidate2');
     expect(revisionBriefForDisplay(brief)).not.toContain('candidate2');
     expect(revisionBriefForDisplay(brief)).toContain('candidate 2');

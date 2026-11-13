@@ -70,36 +70,36 @@ async function build() {
   // Shallow approach steps leave a full-width path to the porch and doorway.
   box('FoundationAndFloor',stone,[4.7,.15,.55],[0,.075,7.975]);
   box('FoundationAndFloor',stone,[4.7,.30,.55],[0,.15,7.425]);
-  footing('SlopedStoneFootings',[.8,.75,10.8],[-3.8,.825,-1.6]);
-  footing('SlopedStoneFootings',[.8,.75,10.8],[3.8,.825,-1.6]);
-  box('SlopedStoneFootings',stone,[6.8,.75,.8],[0,.825,-6.6]);
-  box('HallWalls',plaster,[.65,3.45,10.6],[-3.875,2.925,-1.7]);
-  box('HallWalls',plaster,[.65,3.45,10.6],[3.875,2.925,-1.7]);
-  box('HallWalls',plaster,[7.1,3.45,.65],[0,2.925,-6.675]);
+  footing('SlopedStoneFootings',[.8,.75,10.6],[-3.8,.825,-1.7]);
+  footing('SlopedStoneFootings',[.8,.75,10.6],[3.8,.825,-1.7]);
+  box('SlopedStoneFootings',stone,[6.8,.75,.796],[0,.825,-6.598]);
+  box('HallWalls',plaster,[.65,3.454,10.6],[-3.875,2.927,-1.7]);
+  box('HallWalls',plaster,[.65,3.454,10.6],[3.875,2.927,-1.7]);
+  box('HallWalls',plaster,[7.1,3.454,.65],[0,2.927,-6.675]);
   // Front wall pieces expose exact finished doorway clearance for inspection.
   const jambW=(P.width-P.doorWidth)/2;
-  box('DoorwayLeftPier',plaster,[jambW,4.2,.65],[-(P.doorWidth+jambW)/2,2.55,P.hallFront]);
-  box('DoorwayRightPier',plaster,[jambW,4.2,.65],[(P.doorWidth+jambW)/2,2.55,P.hallFront]);
-  box('DoorwayHeader',plaster,[P.doorWidth,1.1,.65],[0,4.1,P.hallFront]);
+  box('DoorwayLeftPier',plaster,[jambW,4.208,.65],[-(P.doorWidth+jambW)/2-.004,2.554,P.hallFront]);
+  box('DoorwayRightPier',plaster,[jambW,4.208,.65],[(P.doorWidth+jambW)/2+.004,2.554,P.hallFront]);
+  box('DoorwayHeader',plaster,[P.doorWidth+.008,1.096,.65],[0,4.102,P.hallFront]);
   // Timber surround lies outside the clear 2.4 x 3.1 m portal.
   for(const s of [-1,1]) box('DoorwayTimber',timber,[.20,3.1,.82],[s*1.3,2,P.hallFront]);
   box('DoorwayLintel',timber,[3.02,.30,.90],[0,3.70,P.hallFront]);
   for(const s of [-1,1]) {
     footing('SlopedStoneFootings',[.8,.75,2.8],[s*3.8,.825,5]);
-    box('PorchAntae',plaster,[.65,3.45,2.8],[s*3.875,2.925,5]);
+    box('PorchAntae',plaster,[.65,3.454,2.8],[s*3.875,2.927,5]);
     box('PorchAntaeCaps',stone,[.86,.20,.72],[s*3.875,4.75,6.08]);
   }
   function column(name,x,z) {
     cyl('ColumnStoneBases',stone,.46,.5,.20,[x,.55,z]);
     cyl(name,crimson,.34,.29,3.55,[x,2.425,z]);
     cyl('ColumnCapitals',timber,.48,.36,.18,[x,4.29,z]);
-    box('ColumnAbaci',timber,[1.02,.27,.95],[x,4.515,z]);
+    box('ColumnAbaci',timber,[1.02,.266,.95],[x,4.513,z]);
   }
   for(const x of [-1.65,1.65]) column('PorchColumns',x,6.05);
   for(const x of [-1.85,1.85]) for(const z of [-2.85,.85]) column('HallColumns',x,z);
   box('PorchEntablature',timber,[8.55,.34,.52],[0,4.48,6.05]);
   for(const x of [-1.85,1.85]) box('HallRoofBeams',timber,[.42,.32,10.0],[x,4.49,-1.55]);
-  for(const z of [-2.85,.85]) box('HallRoofBeams',timber,[7.75,.32,.42],[0,4.49,z]);
+  for(const z of [-2.85,.85]) box('HallRoofBeams',timber,[7.75,.316,.42],[0,4.489,z]);
   // Hearth rim: solid annular prism, with an inset wood/ash bed and a clear walking ring.
   const hp=[],hu=[],ht=tileOf(stone);
   function quad(a,b,c,d){for(const v of [a,c,b,a,d,c]){hp.push(...v);hu.push(v[0]/ht,v[2]/ht);}}
@@ -133,11 +133,11 @@ async function build() {
   box('RoofSlab',plaster,[9.15,.32,roofMax-holeMax],[0,4.81,(roofMax+holeMax)/2],roof);
   for(const x of [-2.8375,2.8375]) box('RoofSlab',plaster,[3.475,.32,2.2],[x,4.81,-1],roof);
   for(const x of [-4.50,4.50]) box('RoofFascia',timber,[.20,.28,14.1],[x,4.72,-.35],roof);
-  for(const z of [-7.35,6.65]) box('RoofFascia',timber,[9.2,.28,.20],[0,4.72,z],roof);
+  for(const z of [-7.35,6.65]) box('RoofFascia',timber,[9.192,.276,.20],[0,4.72,z],roof);
   for(const x of [-4.32,4.32]) box('RoofParapet',stone,[.25,.32,13.80],[x,5.13,-.35],roof);
   for(const z of [-7.12,6.42]) box('RoofParapet',stone,[8.42,.32,.25],[0,5.13,z],roof);
   for(const x of [-1.2,1.2]) box('LightwellCurb',stone,[.20,.30,2.60],[x,5.12,-1],roof);
-  for(const z of [-2.2,.2]) box('LightwellCurb',stone,[2.2,.30,.20],[0,5.12,z],roof);
+  for(const z of [-2.2,.2]) box('LightwellCurb',stone,[2.2,.296,.20],[0,5.12,z],roof);
   // Exposed end-grain beam tails establish the timber roof construction in silhouette.
   for(const z of [-6,-4.5,-3,0,1.5,3,4.5]) for(const x of [-4.43,4.43]) box('RoofFascia',timber,[.48,.20,.24],[x,4.57,z],roof);
   // Consolidate each rigid material batch; retain the floor, hearth and doorway as useful inspection subjects.

@@ -558,7 +558,7 @@ ${extra}`;
 });
 
 describe('retired release directories in _redirects', () => {
-  const built = ['scene-packs/golden-gate/g9-code6/THIRD-PARTY-NOTICES.txt', 'scene-packs/golden-gate/g9-code6/licenses/FEDERAL-DATA.txt', 'scene-packs/troy/troy-20261005-07/web/index.html'];
+  const built = ['scene-packs/golden-gate/g9-flush2/THIRD-PARTY-NOTICES.txt', 'scene-packs/golden-gate/g9-flush2/licenses/FEDERAL-DATA.txt', 'scene-packs/troy/troy-20261005-07/web/index.html'];
   const rule = (from: string, to: string, status = '301') => `/scene-packs/${from}/* /scene-packs/${to}/:splat ${status}\n`;
 
   test('the published file parses and every rule is a permanent move', () => {
@@ -572,30 +572,30 @@ describe('retired release directories in _redirects', () => {
   });
 
   test('a splat move to a built directory passes', () => {
-    const text = `# comment\n\n${rule('golden-gate/g9', 'golden-gate/g9-code6')}${rule('troy/troy-20261005-04', 'troy/troy-20261005-07')}`;
+    const text = `# comment\n\n${rule('golden-gate/g9', 'golden-gate/g9-flush2')}${rule('troy/troy-20261005-04', 'troy/troy-20261005-07')}`;
     expect(redirectsErrors({ text, files: built })).toEqual([]);
   });
 
   test('the reduced build has no scene packs, so only its targets go unchecked', () => {
-    const text = rule('golden-gate/g9', 'golden-gate/g9-code6');
+    const text = rule('golden-gate/g9', 'golden-gate/g9-flush2');
     expect(redirectsErrors({ text, files: ['index.html'], targets: false })).toEqual([]);
-    expect(redirectsErrors({ text, files: ['index.html'] })).toEqual(['/scene-packs/golden-gate/g9-code6/:splat: no built file under /scene-packs/golden-gate/g9-code6/']);
-    expect(redirectsErrors({ text: rule('golden-gate/g9-code6', 'golden-gate/g10'), files: built, targets: false })).toEqual([
-      '/scene-packs/golden-gate/g9-code6/* covers 2 built files (first /scene-packs/golden-gate/g9-code6/THIRD-PARTY-NOTICES.txt)',
+    expect(redirectsErrors({ text, files: ['index.html'] })).toEqual(['/scene-packs/golden-gate/g9-flush2/:splat: no built file under /scene-packs/golden-gate/g9-flush2/']);
+    expect(redirectsErrors({ text: rule('golden-gate/g9-flush2', 'golden-gate/g10'), files: built, targets: false })).toEqual([
+      '/scene-packs/golden-gate/g9-flush2/* covers 2 built files (first /scene-packs/golden-gate/g9-flush2/THIRD-PARTY-NOTICES.txt)',
     ]);
   });
 
   test('a shadowed, empty, chained, temporary or malformed rule is reported', () => {
-    expect(redirectsErrors({ text: rule('golden-gate/g9-code6', 'golden-gate/g10'), files: built })).toEqual([
-      '/scene-packs/golden-gate/g9-code6/* covers 2 built files (first /scene-packs/golden-gate/g9-code6/THIRD-PARTY-NOTICES.txt)',
+    expect(redirectsErrors({ text: rule('golden-gate/g9-flush2', 'golden-gate/g10'), files: built })).toEqual([
+      '/scene-packs/golden-gate/g9-flush2/* covers 2 built files (first /scene-packs/golden-gate/g9-flush2/THIRD-PARTY-NOTICES.txt)',
       '/scene-packs/golden-gate/g10/:splat: no built file under /scene-packs/golden-gate/g10/',
     ]);
-    expect(redirectsErrors({ text: rule('golden-gate/g9', 'golden-gate/g9-code5') + rule('golden-gate/g9-code5', 'golden-gate/g9-code6'), files: built })).toEqual([
-      '/scene-packs/golden-gate/g9-code5/:splat is itself redirected; point /scene-packs/golden-gate/g9/* at the final directory',
-      '/scene-packs/golden-gate/g9-code5/:splat: no built file under /scene-packs/golden-gate/g9-code5/',
+    expect(redirectsErrors({ text: rule('golden-gate/g9', 'golden-gate/g9-code6') + rule('golden-gate/g9-code6', 'golden-gate/g9-flush2'), files: built })).toEqual([
+      '/scene-packs/golden-gate/g9-code6/:splat is itself redirected; point /scene-packs/golden-gate/g9/* at the final directory',
+      '/scene-packs/golden-gate/g9-code6/:splat: no built file under /scene-packs/golden-gate/g9-code6/',
     ]);
-    expect(redirectsErrors({ text: rule('golden-gate/g9', 'golden-gate/g9-code6', '302'), files: built })).toEqual(['/scene-packs/golden-gate/g9/*: status must be 301, got 302']);
-    expect(redirectsErrors({ text: rule('golden-gate/g9', 'golden-gate/g9-code6').repeat(2), files: built })).toEqual(['/scene-packs/golden-gate/g9/* is redirected twice']);
+    expect(redirectsErrors({ text: rule('golden-gate/g9', 'golden-gate/g9-flush2', '302'), files: built })).toEqual(['/scene-packs/golden-gate/g9/*: status must be 301, got 302']);
+    expect(redirectsErrors({ text: rule('golden-gate/g9', 'golden-gate/g9-flush2').repeat(2), files: built })).toEqual(['/scene-packs/golden-gate/g9/* is redirected twice']);
     expect(redirectsErrors({ text: '/old /new 301\n', files: built })).toEqual(['/old -> /new: expected "/dir/* /other-dir/:splat"']);
     expect(redirectsErrors({ text: '/a/* /b/:splat 301 extra\n', files: built })).toEqual(['_redirects: expected "FROM TO STATUS": /a/* /b/:splat 301 extra']);
   });

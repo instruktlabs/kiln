@@ -58,10 +58,20 @@ export interface BridgePin {
   /** The revision the licence names, with its parent, when the pinned revision descends from it. */
   licensed?: { revision: string; parent: string };
 }
+/**
+ * g9-flush2 (2026-11-13): the flush-face fix children of g9's web and far revisions, each the Kiln runtime export of
+ * its saved revision (site/scripts/scene-pack-swap.mjs, scripts/flush-fix-swaps.json); staged by swapping them into
+ * the sealed g9-code6 pack, not by this package's stage.ts. The g9 pins are kept below as BRIDGE_PINS_G9.
+ */
 export const BRIDGE_PINS = {
-  web: { file: 'golden-gate-web.glb', metadata: 'golden-gate-web.kiln-metadata.json', revision: 'r_de88c9d5481d4642837b9d00c81cf0a9', parent: 'r_2632afa018de4ac28bde9ffc7ed19e47', bytes: 3_508_476, sha256: '6effde24b2b9dfac04451244ee533bb755ba7d4c192a280caaec70ca31656a03', triangles: 85_822, licensed: { revision: 'r_28ac511af71d4db69a2d7cff8b243a24', parent: 'r_ba838a2a86e04f2493b5d55b493a766a' } },
-  far: { file: 'golden-gate-far.glb', metadata: 'golden-gate-far.kiln-metadata.json', revision: 'r_fcddc546fa134910b2221561353d97e2', parent: 'r_d3f2f39ee4964708a0301d7e7082d12b', bytes: 490_460, sha256: '5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4', triangles: 11_480, licensed: { revision: 'r_7fd11f06f23b4bfc93b9b47ab1b6ca04', parent: 'r_0da2d1ae635c4f84a10e58e0e03936e7' } },
+  web: { file: 'golden-gate-web.glb', metadata: 'golden-gate-web.kiln-metadata.json', revision: 'r_f0c5d702d8ca48dd8c4c16858a57ad53', parent: 'r_de88c9d5481d4642837b9d00c81cf0a9', bytes: 3_558_104, sha256: 'f0e82c77f2b19c1d17928bab3787a02b48c22166b11eaa55981c52dc80ad98ae', triangles: 85_822, licensed: { revision: 'r_28ac511af71d4db69a2d7cff8b243a24', parent: 'r_ba838a2a86e04f2493b5d55b493a766a' } },
+  far: { file: 'golden-gate-far.glb', metadata: 'golden-gate-far.kiln-metadata.json', revision: 'r_f0f9dc5506be4e0292c650efd318985e', parent: 'r_fcddc546fa134910b2221561353d97e2', bytes: 497_416, sha256: 'e6b5c60f0ba9424d9669c224c823f4ab9df8154019986f81fa495e602be4d16d', triangles: 11_480, licensed: { revision: 'r_7fd11f06f23b4bfc93b9b47ab1b6ca04', parent: 'r_0da2d1ae635c4f84a10e58e0e03936e7' } },
 } as const satisfies Record<string, BridgePin>;
+/** g9's bridge pins (g9 to g9-code6), kept for the record. */
+export const BRIDGE_PINS_G9 = {
+  web: { revision: 'r_de88c9d5481d4642837b9d00c81cf0a9', parent: 'r_2632afa018de4ac28bde9ffc7ed19e47', bytes: 3_508_476, sha256: '6effde24b2b9dfac04451244ee533bb755ba7d4c192a280caaec70ca31656a03', triangles: 85_822 },
+  far: { revision: 'r_fcddc546fa134910b2221561353d97e2', parent: 'r_d3f2f39ee4964708a0301d7e7082d12b', bytes: 490_460, sha256: '5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4', triangles: 11_480 },
+} as const;
 export const BRIDGE_FULL: BridgePin = { file: 'golden-gate.glb', metadata: 'golden-gate.kiln-metadata.json', revision: 'r_76c7a4080e7844e185896b7e1b196e5a', parent: 'r_8e986268599c44ff93d451e81520aaec', bytes: 12_402_960, sha256: '31306263a1c5f7410eab1ff65253765fb4084d9f0ec0d4c1b27e66f12a9f7f28', triangles: 311_826, licensed: { revision: 'r_cba97c6c2fc448ee9ca24741d772fa39', parent: 'r_8b79b09984b14e15b9426f6db2df0140' } };
 /** g4's bridge pins (the review-3 exports, g3's after the joint swap), kept for the record (far unchanged in g5). */
 export const BRIDGE_PINS_G4 = {

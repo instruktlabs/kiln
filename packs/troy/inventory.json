@@ -9,7 +9,7 @@
       "assetId": "a_784f8007d64b466ca453813913d73933",
       "revisionId": "r_29dcf94872e74d468d005c55bcbfc3e5",
       "createdAt": "2026-10-02T14:26:51.187Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/wall-section.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/wall-section.glb",
       "tags": [
         "troy",
         "wall",
@@ -19,7 +19,7 @@
       "category": "Buildings",
       "glbSha256": "d2e5c1a6885f509caeb9428980d74b2760bae735af81549ae08fdd825fadffa8",
       "glbBytes": 302776,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/wall-section.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/wall-section.webp",
       "metrics": {
         "triangles": 168,
         "meshes": 14,
@@ -59,7 +59,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_12fa73f24e3240c28c8bcd0d6d828a26",
       "source": "sources/project/a_784f8007d64b466ca453813913d73933/r_29dcf94872e74d468d005c55bcbfc3e5/source.kiln.js",
       "manifest": "sources/project/a_784f8007d64b466ca453813913d73933/r_29dcf94872e74d468d005c55bcbfc3e5/manifest.json",
       "includedRevisions": [
@@ -68,11 +67,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/wall-section.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/wall-section.zip",
         "bytes": 2740624,
         "sha256": "c120b50e6bbbf44377b7dffbd088ed6960594dfeb44644870ac47cf37ce6585f",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/wall-section.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/wall-section.zip"
+      },
+      "parentRevision": "r_12fa73f24e3240c28c8bcd0d6d828a26"
     },
     {
       "slug": "city-gate",
@@ -80,7 +80,7 @@
       "assetId": "city-gate",
       "revisionId": "r_932d7b9aa1714e3b8e2343b42506bc44",
       "createdAt": "2026-10-02T15:32:23.668Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/city-gate.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/city-gate.glb",
       "tags": [
         "troy",
         "gate",
@@ -90,7 +90,7 @@
       "category": "Buildings",
       "glbSha256": "19322963f4704e5a9e4b31e242d7d1991126e0ffde750d57152a622089ac4f91",
       "glbBytes": 391512,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/city-gate.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/city-gate.webp",
       "metrics": {
         "triangles": 516,
         "meshes": 7,
@@ -126,7 +126,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_bb47b8810cd54ddd860e616bbf3e6120",
       "source": "sources/project/city-gate/r_932d7b9aa1714e3b8e2343b42506bc44/source.kiln.js",
       "manifest": "sources/project/city-gate/r_932d7b9aa1714e3b8e2343b42506bc44/manifest.json",
       "includedRevisions": [
@@ -135,40 +134,41 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/city-gate.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/city-gate.zip",
         "bytes": 2919899,
         "sha256": "265e2354549ed776b76451db15d57cca754fc2057e384b8db1d7d7bba79814ea",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/city-gate.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/city-gate.zip"
+      },
+      "parentRevision": "r_bb47b8810cd54ddd860e616bbf3e6120"
     },
     {
       "slug": "house",
       "name": "Trojan Walk-in House",
       "assetId": "a_65b2d411e2a14b41b490a575fc14e98a",
-      "revisionId": "r_de6797d6511b47a2a6da3c49448741a9",
-      "createdAt": "2026-10-02T15:32:36.266Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/house.glb",
+      "revisionId": "r_c2fd70c01c754177bfa3df2dceb712f3",
+      "createdAt": "2026-11-13T00:21:27.701Z",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/house.glb",
       "tags": [
         "troy",
         "house",
         "material-pass"
       ],
-      "description": "Revision 2 (material pass): limestone footings and hearth, plastered mudbrick walls, floor, ramp and roof (troy-limestone, troy-mudbrick) mapped from world position in metres instead of one stretched tile per face; geometry, part names, the roof subtree and the ladder are revision 1's. Owner-directed material pass, 2 October 2026.",
+      "description": "Trojan Walk-in House, child of r_de6797d6 with its model unchanged. Flush-face fix: CeilingTimbersAndRoofLadder: ceiling timbers 8 mm shorter (ends inside the side walls) and 4 mm deeper upward (tops 4…; FlatRoofAndRim: north and south rim strips 8 mm shorter and 2 mm lower so tops, bottoms and ends differ f…; StoneFootingsAndHearth: rear footing 4 mm wider each side so its sloped outer face leaves the side footings' plan…; FloorAndEntranceRamp: floor shifted 4 mm toward the ramp (ends -2.046 and 2.054) so its end faces leave the foo….",
       "category": "Buildings",
-      "glbSha256": "d69aaca4db3b1963a28ea62fd5a54c9a2dbe277a083086f3c31e3270fd300b5b",
-      "glbBytes": 330524,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/house.webp",
+      "glbSha256": "95d35ce49e5ad9a60ae62cdce99ef420a1223788f388073aa331f822c7b27347",
+      "glbBytes": 330640,
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/house.webp",
       "metrics": {
         "triangles": 876,
         "meshes": 8,
         "materials": 3,
         "bounds": [
-          7.315868854522705,
+          7.319869041442871,
           3.962836265563965,
           6.069999933242798
         ],
         "boundsMin": [
-          -3.119999885559082,
+          -3.124000072479248,
           0,
           -2.619999885559082
         ],
@@ -191,38 +191,39 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_6a593b8e58af4befb3db8f3c256b9cc2",
-      "source": "sources/project/a_65b2d411e2a14b41b490a575fc14e98a/r_de6797d6511b47a2a6da3c49448741a9/source.kiln.js",
-      "manifest": "sources/project/a_65b2d411e2a14b41b490a575fc14e98a/r_de6797d6511b47a2a6da3c49448741a9/manifest.json",
+      "source": "sources/project/a_65b2d411e2a14b41b490a575fc14e98a/r_c2fd70c01c754177bfa3df2dceb712f3/source.kiln.js",
+      "manifest": "sources/project/a_65b2d411e2a14b41b490a575fc14e98a/r_c2fd70c01c754177bfa3df2dceb712f3/manifest.json",
       "includedRevisions": [
+        "r_c2fd70c01c754177bfa3df2dceb712f3",
         "r_de6797d6511b47a2a6da3c49448741a9",
         "r_6a593b8e58af4befb3db8f3c256b9cc2"
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/house.zip",
-        "bytes": 2143300,
-        "sha256": "6f1f8583bac31c6d76ce860abaec02b67bf35707d2afae505ec4ccc46f336760",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/house.zip"
-      }
+        "path": "packs/troy/delivery-20261113-01/editable/house.zip",
+        "bytes": 3540947,
+        "sha256": "e26e0920db25cb82b9e4bf36dfb15846e6f3c434454aefc3cb28c4cd973d1ec1",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/house.zip"
+      },
+      "parentRevision": "r_de6797d6511b47a2a6da3c49448741a9"
     },
     {
       "slug": "temple-hall",
       "name": "Troy Citadel Temple Hall",
       "assetId": "a_3a4fc574c2534f21977eeed0a3560f80",
-      "revisionId": "r_85c06c033d7c4f899a6f67c53069537a",
-      "createdAt": "2026-10-02T15:32:47.296Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/temple-hall.glb",
+      "revisionId": "r_67104831c85c4f879e889caf508527f2",
+      "createdAt": "2026-11-13T00:16:15.192Z",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/temple-hall.glb",
       "tags": [
         "troy",
         "temple",
         "material-pass"
       ],
-      "description": "Revision 2 (material pass): coursed limestone platform, footings, column bases, hearth rim, furnishings and parapet, plastered mudbrick walls and roof slab (troy-limestone, troy-mudbrick) as textured resources mapped from world position; geometry, part names and the roof subtree are revision 1's. Owner-directed material pass, 2 October 2026.",
+      "description": "Troy Citadel Temple Hall, child of r_85c06c03 with its model unchanged. Flush-face fix: HallPlaster (walls, antae, piers, header): hall walls and antae 4 mm taller (tops into the roof slab); doorway piers shifted 4 mm ou…; HallTimber: pier inner faces moved 4 mm behind the timber jambs; abaci 4 mm lower at the top and tran…; RoofTimber / LightwellCurb: north and south roof fascia 8 mm shorter and 4 mm lower in height; north and south lightw…; HallStone: side sloped footings end at z=3.6 where the porch footings begin (was overlapping 0.2 m);….",
       "category": "Buildings",
-      "glbSha256": "6609d8e4f5be92b88f5a14facad3cb9cb39f43d257bc2bcec51adeaca66f41ee",
-      "glbBytes": 492876,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/temple-hall.webp",
+      "glbSha256": "c106a6ff0c751ff9e552416f02a0b076034457a2e15dd2f0a4d604acb1835cb5",
+      "glbBytes": 493168,
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/temple-hall.webp",
       "metrics": {
         "triangles": 2024,
         "meshes": 12,
@@ -260,20 +261,21 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_af557a9002e64290abe4c8e4cecabb29",
-      "source": "sources/project/a_3a4fc574c2534f21977eeed0a3560f80/r_85c06c033d7c4f899a6f67c53069537a/source.kiln.js",
-      "manifest": "sources/project/a_3a4fc574c2534f21977eeed0a3560f80/r_85c06c033d7c4f899a6f67c53069537a/manifest.json",
+      "source": "sources/project/a_3a4fc574c2534f21977eeed0a3560f80/r_67104831c85c4f879e889caf508527f2/source.kiln.js",
+      "manifest": "sources/project/a_3a4fc574c2534f21977eeed0a3560f80/r_67104831c85c4f879e889caf508527f2/manifest.json",
       "includedRevisions": [
+        "r_67104831c85c4f879e889caf508527f2",
         "r_85c06c033d7c4f899a6f67c53069537a",
         "r_af557a9002e64290abe4c8e4cecabb29"
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/temple-hall.zip",
-        "bytes": 1931084,
-        "sha256": "263e533b8d403fe96b544abb9104f68282e0a18a178aed262ee7ae743a9afac6",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/temple-hall.zip"
-      }
+        "path": "packs/troy/delivery-20261113-01/editable/temple-hall.zip",
+        "bytes": 3197346,
+        "sha256": "28d0e350ed019d427a3cafc224cad1cc48a5100e320b52cdcfec079175f26edb",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/temple-hall.zip"
+      },
+      "parentRevision": "r_85c06c033d7c4f899a6f67c53069537a"
     },
     {
       "slug": "war-galley",
@@ -281,7 +283,7 @@
       "assetId": "a_582ae189884340d7ac23a1a23bd7bcc8",
       "revisionId": "r_89ac2dc4345d47d4b10a99d8e4bf34f7",
       "createdAt": "2026-10-02T04:39:42.201Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/war-galley.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/war-galley.glb",
       "tags": [
         "greek",
         "galley",
@@ -293,7 +295,7 @@
       "category": "Vehicles",
       "glbSha256": "c438f0275186e34ad724dade9f22426a4ad4dab412a17ea7b1d62d468c151f4f",
       "glbBytes": 396772,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/war-galley.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/war-galley.webp",
       "metrics": {
         "triangles": 6480,
         "meshes": 4,
@@ -330,10 +332,10 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/war-galley.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/war-galley.zip",
         "bytes": 930862,
         "sha256": "b0b6511b00a10dfde1e14495243cf00fd52010fc62ff31562eec9d2b41955a4a",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/war-galley.zip"
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/war-galley.zip"
       }
     },
     {
@@ -342,7 +344,7 @@
       "assetId": "greek-soldier",
       "revisionId": "r_51a1713f71ed45d486e7cc386aeeb0cc",
       "createdAt": "2026-10-05T17:37:47.358Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/greek-soldier.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/greek-soldier.glb",
       "tags": [
         "troy",
         "character",
@@ -362,7 +364,7 @@
       "category": "Characters",
       "glbSha256": "55361985e3353e4a87944f61c1007eb725732a128bf7a33d3a989f3b26f34af3",
       "glbBytes": 373008,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/greek-soldier.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/greek-soldier.webp",
       "metrics": {
         "triangles": 2140,
         "meshes": 27,
@@ -418,7 +420,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_318c395f73b6441592ac8aaff4289227",
       "source": "sources/project/greek-soldier/r_51a1713f71ed45d486e7cc386aeeb0cc/source.kiln.js",
       "manifest": "sources/project/greek-soldier/r_51a1713f71ed45d486e7cc386aeeb0cc/manifest.json",
       "includedRevisions": [
@@ -432,11 +433,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/greek-soldier.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/greek-soldier.zip",
         "bytes": 6213088,
         "sha256": "66ff7f849008ce3ba3da7f67cc463844af8442500ebae188ac4d30c8b23f6c61",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/greek-soldier.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/greek-soldier.zip"
+      },
+      "parentRevision": "r_318c395f73b6441592ac8aaff4289227"
     },
     {
       "slug": "trojan-soldier",
@@ -444,7 +446,7 @@
       "assetId": "trojan-soldier",
       "revisionId": "r_7ab3ae9706164e38bdee28178c110f65",
       "createdAt": "2026-10-05T17:37:57.599Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/trojan-soldier.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/trojan-soldier.glb",
       "tags": [
         "troy",
         "character",
@@ -464,7 +466,7 @@
       "category": "Characters",
       "glbSha256": "97f6fe97902df9af9037518dc28699524c843f0b94136ec3f9c9850d2b57df6f",
       "glbBytes": 352016,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/trojan-soldier.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/trojan-soldier.webp",
       "metrics": {
         "triangles": 2000,
         "meshes": 27,
@@ -520,7 +522,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_95d9a5fbf6d94435a84f24fa1938c6b1",
       "source": "sources/project/trojan-soldier/r_7ab3ae9706164e38bdee28178c110f65/source.kiln.js",
       "manifest": "sources/project/trojan-soldier/r_7ab3ae9706164e38bdee28178c110f65/manifest.json",
       "includedRevisions": [
@@ -534,11 +535,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/trojan-soldier.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/trojan-soldier.zip",
         "bytes": 6201240,
         "sha256": "911f71da3da0f68ea2ee7a74c971c70f32ae1e3335f596dae6168101726805cd",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/trojan-soldier.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/trojan-soldier.zip"
+      },
+      "parentRevision": "r_95d9a5fbf6d94435a84f24fa1938c6b1"
     },
     {
       "slug": "achilles",
@@ -546,7 +548,7 @@
       "assetId": "achilles",
       "revisionId": "r_4792c9467d47401f8d77367e3e5c9647",
       "createdAt": "2026-10-05T17:37:26.682Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/achilles.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/achilles.glb",
       "tags": [
         "troy",
         "hero",
@@ -559,7 +561,7 @@
       "category": "Characters",
       "glbSha256": "1bb8b9b44044365a172eb5015c12b8493b6c47e3087178a7fa89b18e768e645f",
       "glbBytes": 547628,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/achilles.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/achilles.webp",
       "metrics": {
         "triangles": 3468,
         "meshes": 31,
@@ -619,7 +621,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_b97ee8f3a3b04edbb13d7e0e1a84af75",
       "source": "sources/project/achilles/r_4792c9467d47401f8d77367e3e5c9647/source.kiln.js",
       "manifest": "sources/project/achilles/r_4792c9467d47401f8d77367e3e5c9647/manifest.json",
       "includedRevisions": [
@@ -634,19 +635,20 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/achilles.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/achilles.zip",
         "bytes": 7159262,
         "sha256": "a9b18eb05fa604ad6dab04e318819eec658878eabc125dcfa3b6e1711e999dc1",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/achilles.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/achilles.zip"
+      },
+      "parentRevision": "r_b97ee8f3a3b04edbb13d7e0e1a84af75"
     },
     {
       "slug": "hector",
       "name": "Hector",
       "assetId": "hector",
-      "revisionId": "r_90f525d443624ad58f5fadc3a7f52fb9",
-      "createdAt": "2026-10-05T17:37:37.126Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/hector.glb",
+      "revisionId": "r_9f29a8b3f4204c5f892b6fca644b850b",
+      "createdAt": "2026-11-13T00:22:57.592Z",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/hector.glb",
       "tags": [
         "troy",
         "hero",
@@ -655,11 +657,11 @@
         "candidate",
         "forearm-supported-shield"
       ],
-      "description": "Shield held in front with horizontal forearm spanning its inner face. Frame and rear bracket moved across the forearm while the original hand grip stays seated. All mesh geometry, exact materials and exported clips preserved from preceding horizontal child. Live guard/appearance/performance and owner acceptance remain separate.",
+      "description": "Hector, child of r_90f525d4 with its model unchanged. Flush-face fix: shield_emblem (second prism): raised 2 mm along the shield normal so its top and bottom faces clear the first prism; shield_emblem (third prism): raised 4 mm along the shield normal so its faces clear the other two prisms.",
       "category": "Characters",
-      "glbSha256": "70b6e63f742413ef4d3348071b8f917507d521e9e80739fcf30aaff5de5e054a",
-      "glbBytes": 428112,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/hector.webp",
+      "glbSha256": "cd89d602f977cd5180a00de9121d0f2c60b41ca1e27f190df7becacb0352a022",
+      "glbBytes": 428240,
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/hector.webp",
       "metrics": {
         "triangles": 2516,
         "meshes": 30,
@@ -718,10 +720,10 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_ce45b003b3704e248f180f408c66bea2",
-      "source": "sources/project/hector/r_90f525d443624ad58f5fadc3a7f52fb9/source.kiln.js",
-      "manifest": "sources/project/hector/r_90f525d443624ad58f5fadc3a7f52fb9/manifest.json",
+      "source": "sources/project/hector/r_9f29a8b3f4204c5f892b6fca644b850b/source.kiln.js",
+      "manifest": "sources/project/hector/r_9f29a8b3f4204c5f892b6fca644b850b/manifest.json",
       "includedRevisions": [
+        "r_9f29a8b3f4204c5f892b6fca644b850b",
         "r_90f525d443624ad58f5fadc3a7f52fb9",
         "r_ce45b003b3704e248f180f408c66bea2",
         "r_dca568006e1144399e080c9ea3e321b2",
@@ -733,11 +735,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/hector.zip",
-        "bytes": 7322554,
-        "sha256": "3b6173ed0e0f633dfe037ce3d80e14fa2ccdec6877b62d1a0874a1e04f52bf63",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/hector.zip"
-      }
+        "path": "packs/troy/delivery-20261113-01/editable/hector.zip",
+        "bytes": 8230108,
+        "sha256": "d5e1ac5575a4499a500842ea6274a22651d9703974a98d0ce8b4689e974665d8",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/hector.zip"
+      },
+      "parentRevision": "r_90f525d443624ad58f5fadc3a7f52fb9"
     },
     {
       "slug": "olive",
@@ -745,10 +748,10 @@
       "assetId": "a_3624be42cc4b43edadea1852c2535534",
       "revisionId": "r_37373fde43154f928653af8c34100186",
       "category": "Nature",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/olive.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/olive.glb",
       "glbSha256": "5ca97cea350d7eb751bcfb214a89e0b83cc3e7bf3c317663ae4d5d51d6e32cd9",
       "glbBytes": 171340,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/olive.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/olive.webp",
       "metrics": {
         "triangles": 4634,
         "meshes": 4,
@@ -778,7 +781,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_a49991404490475ab452fa200801193c",
       "createdAt": "2026-10-03T22:17:59.564Z",
       "tags": [
         "vegetation",
@@ -797,11 +799,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/olive.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/olive.zip",
         "bytes": 398406,
         "sha256": "a5350d3d63fbbe5071d03834f4a55555016047b79411d22a571f574d78cee47a",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/olive.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/olive.zip"
+      },
+      "parentRevision": "r_a49991404490475ab452fa200801193c"
     },
     {
       "slug": "cypress",
@@ -809,10 +812,10 @@
       "assetId": "a_2e4e54bb1bd04a1187f564bc4e24111a",
       "revisionId": "r_9e34ca5dc6bf41caafe35ffb8576a6ff",
       "category": "Nature",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/cypress.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/cypress.glb",
       "glbSha256": "0fbabf224cb33e55f3cc6480bfad8fd40175a15c0fa00f9072faa11e40e1ac89",
       "glbBytes": 82436,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/cypress.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/cypress.webp",
       "metrics": {
         "triangles": 2712,
         "meshes": 2,
@@ -840,7 +843,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_56ebe4a50238423b83b0e2e1a47b0e25",
       "createdAt": "2026-10-03T22:17:59.869Z",
       "tags": [
         "vegetation",
@@ -859,11 +861,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/cypress.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/cypress.zip",
         "bytes": 246482,
         "sha256": "0d100e228b4b233f86f934f91a9f656a0241fc435a4da628d11b845a32dd2c88",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/cypress.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/cypress.zip"
+      },
+      "parentRevision": "r_56ebe4a50238423b83b0e2e1a47b0e25"
     },
     {
       "slug": "fig",
@@ -871,10 +874,10 @@
       "assetId": "a_8c9f4cbf02014d448cc6f1ea64ce521e",
       "revisionId": "r_efdd6cc6417c46a18d263a4865bfdc02",
       "category": "Nature",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/fig.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/fig.glb",
       "glbSha256": "1769ec4b6d44f208af272b50056d4e01ceb7bf5a8605cbff49019595aef34fa3",
       "glbBytes": 147416,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/fig.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/fig.webp",
       "metrics": {
         "triangles": 4676,
         "meshes": 4,
@@ -904,7 +907,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_fce835b49e724fe5ad54339fdc8a4f00",
       "createdAt": "2026-10-03T22:18:00.149Z",
       "tags": [
         "vegetation",
@@ -923,11 +925,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/fig.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/fig.zip",
         "bytes": 367731,
         "sha256": "e435d6323091462f5dd31f69e231c25f901edad1fc04da064081a4c7eb148191",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/fig.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/fig.zip"
+      },
+      "parentRevision": "r_fce835b49e724fe5ad54339fdc8a4f00"
     },
     {
       "slug": "shrub",
@@ -935,10 +938,10 @@
       "assetId": "a_4a87639c6022456f876e8cc1f230c551",
       "revisionId": "r_07a93557a106492ab919f72955ad0924",
       "category": "Nature",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/shrub.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/shrub.glb",
       "glbSha256": "4b2ad9c25c2035b02ebb72cc0336842c6c5a6441aada21cfe137d8749b3de51f",
       "glbBytes": 47456,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/shrub.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/shrub.webp",
       "metrics": {
         "triangles": 1252,
         "meshes": 3,
@@ -967,7 +970,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_83ee23a609c54840ad317947807602af",
       "createdAt": "2026-10-03T22:18:00.477Z",
       "tags": [
         "vegetation",
@@ -986,11 +988,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/shrub.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/shrub.zip",
         "bytes": 158786,
         "sha256": "289e3c490a01ec433a1824b8c69423402424a795fdf660dd7b1b3c04b2ee2ff0",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/shrub.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/shrub.zip"
+      },
+      "parentRevision": "r_83ee23a609c54840ad317947807602af"
     },
     {
       "slug": "horse",
@@ -998,7 +1001,7 @@
       "assetId": "horse",
       "revisionId": "r_ae20cb280150492dbf58b89860f029d2",
       "createdAt": "2026-10-03T22:26:31.972Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/horse.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/horse.glb",
       "tags": [
         "troy",
         "horse",
@@ -1010,7 +1013,7 @@
       "category": "Animals",
       "glbSha256": "03e257c29b54ad05f5f37381474fe6eba995f22d72fefba9e90e5d46bbe84b5c",
       "glbBytes": 248068,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/horse.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/horse.webp",
       "metrics": {
         "triangles": 4804,
         "meshes": 54,
@@ -1095,7 +1098,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_f088964ec411466ab2c0d4afe8d20a31",
       "source": "sources/project/horse/r_ae20cb280150492dbf58b89860f029d2/source.kiln.js",
       "manifest": "sources/project/horse/r_ae20cb280150492dbf58b89860f029d2/manifest.json",
       "includedRevisions": [
@@ -1105,11 +1107,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/horse.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/horse.zip",
         "bytes": 3053704,
         "sha256": "f76aa1ac5bd25d22a1b065f8e1d757f39ff89ddb56b77fede155aee8401981f0",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/horse.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/horse.zip"
+      },
+      "parentRevision": "r_f088964ec411466ab2c0d4afe8d20a31"
     },
     {
       "slug": "wall-breached",
@@ -1117,7 +1120,7 @@
       "assetId": "a_784f8007d64b466ca453813913d73933",
       "revisionId": "r_98d0a72a5110475a9fef34721a9dad64",
       "createdAt": "2026-10-02T15:20:07.001Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/wall-breached.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/wall-breached.glb",
       "tags": [
         "troy",
         "wall",
@@ -1128,7 +1131,7 @@
       "category": "Buildings",
       "glbSha256": "77c48aa6dbff40b212c5eacc4f340838358f71ee52ccc99966cd2bdc7f9b37e7",
       "glbBytes": 333340,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/wall-breached.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/wall-breached.webp",
       "metrics": {
         "triangles": 528,
         "meshes": 44,
@@ -1198,7 +1201,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_99688a42a9fb46559fd563a2378dd55d",
       "source": "sources/project/a_784f8007d64b466ca453813913d73933/r_98d0a72a5110475a9fef34721a9dad64/source.kiln.js",
       "manifest": "sources/project/a_784f8007d64b466ca453813913d73933/r_98d0a72a5110475a9fef34721a9dad64/manifest.json",
       "includedRevisions": [
@@ -1208,11 +1210,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/wall-breached.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/wall-breached.zip",
         "bytes": 3916111,
         "sha256": "1a2b7583de875549d74829f01d9789a7d483e22b45295b7e70471dc13f87e768",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/wall-breached.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/wall-breached.zip"
+      },
+      "parentRevision": "r_99688a42a9fb46559fd563a2378dd55d"
     },
     {
       "slug": "war-chariot",
@@ -1220,7 +1223,7 @@
       "assetId": "a_6858bae420a940b5b8798e11666070a7",
       "revisionId": "r_b277a52b09ae48b39afd8471557ed41b",
       "createdAt": "2026-10-02T02:49:04.961Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/war-chariot.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/war-chariot.glb",
       "tags": [
         "Late Bronze Age",
         "Troy",
@@ -1231,7 +1234,7 @@
       "category": "Vehicles",
       "glbSha256": "6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
       "glbBytes": 614312,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/war-chariot.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/war-chariot.webp",
       "metrics": {
         "triangles": 4156,
         "meshes": 16,
@@ -1275,7 +1278,6 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_e3bcea17f1ff455b99b3deb51182f964",
       "source": "sources/project/a_6858bae420a940b5b8798e11666070a7/r_b277a52b09ae48b39afd8471557ed41b/source.kiln.js",
       "manifest": "sources/project/a_6858bae420a940b5b8798e11666070a7/r_b277a52b09ae48b39afd8471557ed41b/manifest.json",
       "includedRevisions": [
@@ -1284,11 +1286,12 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/war-chariot.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/war-chariot.zip",
         "bytes": 1873292,
         "sha256": "44f32c191d36bbd839dd5c45e8a1f51f77f6eaad20f242385c64370e1590da80",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/war-chariot.zip"
-      }
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/war-chariot.zip"
+      },
+      "parentRevision": "r_e3bcea17f1ff455b99b3deb51182f964"
     },
     {
       "slug": "sword",
@@ -1296,7 +1299,7 @@
       "assetId": "a_f71b18076a3d47f084dc86a40e038812",
       "revisionId": "r_6f63da6600ae46bbba5636e575ae1b9e",
       "createdAt": "2026-10-02T03:32:48.671Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/sword.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/sword.glb",
       "tags": [
         "sword",
         "bronze",
@@ -1306,7 +1309,7 @@
       "category": "Equipment",
       "glbSha256": "b15e157bf0e01fab0c421e232c08ab2572a7c42738d4454f994dfa275e99b4d9",
       "glbBytes": 137688,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/sword.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/sword.webp",
       "metrics": {
         "triangles": 208,
         "meshes": 4,
@@ -1343,10 +1346,10 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/sword.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/sword.zip",
         "bytes": 711215,
         "sha256": "0f050773a1f2310394f1b0ce73794f6e4cdf70c6f95900c3550b57ae1d10826b",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/sword.zip"
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/sword.zip"
       }
     },
     {
@@ -1355,13 +1358,13 @@
       "assetId": "a_0a67bce7656144c2b9e1c54aa7bea6eb",
       "revisionId": "r_b8159cce845f442181910880090d09fe",
       "createdAt": "2026-10-02T03:38:38.631Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/shield.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/shield.glb",
       "tags": [],
       "description": "Round shield 0.92m diameter: domed bronze face and rim with central boss, hide-covered board back, pack-size vertical hand grip (r 0.03, 0.11 long) centred at origin on bronze brackets plus a leather forearm loop on struts. 2 pack materials, 1272 triangles.",
       "category": "Equipment",
       "glbSha256": "90a164bf7cbc9c98f7877bce029ed1ab016ab8043086f724ce70b92a0feff72a",
       "glbBytes": 182764,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/shield.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/shield.webp",
       "metrics": {
         "triangles": 1272,
         "meshes": 10,
@@ -1404,10 +1407,10 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/shield.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/shield.zip",
         "bytes": 900626,
         "sha256": "f5f013f46fc2dc592fe5aa6b58af171366fc7180d2cee599d1bd0103ee93277b",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/shield.zip"
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/shield.zip"
       }
     },
     {
@@ -1416,13 +1419,13 @@
       "assetId": "bow-set",
       "revisionId": "r_356b134d3d5e471fba86cb875c829463",
       "createdAt": "2026-10-02T04:16:48.788Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/bow-set.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/bow-set.glb",
       "tags": [],
       "description": "Low-poly recurved composite bow with string, three fanned arrows with bronze points and vanes, and a wooden quiver with bronze reinforcement bands and shoulder strap. Hand grip 0.03 m radius, 0.11 m long.",
       "category": "Equipment",
       "glbSha256": "861da8a5dad6265aa823c4b86f73142da14accfa48f486372241fba3e51ac366",
       "glbBytes": 137780,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/bow-set.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/bow-set.webp",
       "metrics": {
         "triangles": 1404,
         "meshes": 34,
@@ -1489,19 +1492,19 @@
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/bow-set.zip",
+        "path": "packs/troy/delivery-20261113-01/editable/bow-set.zip",
         "bytes": 704441,
         "sha256": "acbb600746ce1f6cb47d84c9521dff73eabacd09952beeea0a159c8113133b97",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/bow-set.zip"
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/bow-set.zip"
       }
     },
     {
       "slug": "wooden-horse",
       "name": "Trojan Horse",
       "assetId": "wooden-horse",
-      "revisionId": "r_c58f87877fbf40548aed5cc051166a72",
-      "createdAt": "2026-10-05T22:25:12.325Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/wooden-horse.glb",
+      "revisionId": "r_235ebe9c60184eb38666f76703dc3b32",
+      "createdAt": "2026-11-13T00:23:13.340Z",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/wooden-horse.glb",
       "tags": [
         "troy",
         "wooden-horse",
@@ -1509,11 +1512,11 @@
         "hatch",
         "wheels"
       ],
-      "description": "Attach both ears to the rotated head crest with a small base overlap. Retain hollow torso, belly hatch, wheel pivots, clips and pinned materials.",
+      "description": "Trojan Horse, child of r_c58f8787 with its model unchanged. Flush-face fix: mane (every second of 7 boxes): box width 0.14 -> 0.144 so its x faces stand 2 mm outside its overlapping neighbours.",
       "category": "Buildings",
-      "glbSha256": "aeb622fb0a37233a707030a81a3e9b991fff0b2ed17924956bd6ab61c53d9770",
-      "glbBytes": 279516,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/wooden-horse.webp",
+      "glbSha256": "d1b10019684539dc1ebbb5bd23429a4d529520983679e35583190d7741df8156",
+      "glbBytes": 279548,
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/wooden-horse.webp",
       "metrics": {
         "triangles": 2060,
         "meshes": 14,
@@ -1556,38 +1559,39 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_7ee4d96189a4442bb0efdab61a46300f",
-      "source": "sources/project/wooden-horse/r_c58f87877fbf40548aed5cc051166a72/source.kiln.js",
-      "manifest": "sources/project/wooden-horse/r_c58f87877fbf40548aed5cc051166a72/manifest.json",
+      "source": "sources/project/wooden-horse/r_235ebe9c60184eb38666f76703dc3b32/source.kiln.js",
+      "manifest": "sources/project/wooden-horse/r_235ebe9c60184eb38666f76703dc3b32/manifest.json",
       "includedRevisions": [
+        "r_235ebe9c60184eb38666f76703dc3b32",
         "r_c58f87877fbf40548aed5cc051166a72",
         "r_7ee4d96189a4442bb0efdab61a46300f"
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/wooden-horse.zip",
-        "bytes": 1890930,
-        "sha256": "c371ef8b6f52913bb5d0631fcb70ca8a837c069a57322870efcd0c753348e4a5",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/wooden-horse.zip"
-      }
+        "path": "packs/troy/delivery-20261113-01/editable/wooden-horse.zip",
+        "bytes": 2830109,
+        "sha256": "7022ab27c80d6504753d5c1d4595676e376cf000093f8197097b10b51858816e",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/wooden-horse.zip"
+      },
+      "parentRevision": "r_c58f87877fbf40548aed5cc051166a72"
     },
     {
       "slug": "battle-scene-reference",
       "name": "Battle before the gate",
       "assetId": "battle-scene",
-      "revisionId": "r_4573e90abb4848c3b3d4996de6834184",
-      "createdAt": "2026-10-02T15:34:47.048Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/models/battle-scene-reference.glb",
+      "revisionId": "r_97f6523694eb4b29a852ffeedd8babea",
+      "createdAt": "2026-11-13T00:22:37.684Z",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/battle-scene-reference.glb",
       "tags": [
         "troy",
         "scene",
         "material-pass"
       ],
-      "description": "Revision 2: s50's composition recomposed from the material-pass revisions (wall revision 2, breached wall revision 3, gate, house, temple and horse revision 2) by review/troy-refine/scene/recompose.mjs; the scene helpers and the layout are revision 1's byte for byte. Owner-directed, 2 October 2026.",
+      "description": "Battle before the gate, child of r_4573e90a with its model unchanged. Flush-face fix: embedded ASSET_temple (TempleHall_m0 plaster): same plaster edits as the standalone Temple Hall: hall walls and porch antae 4 mm taller,….",
       "category": "Compositions",
-      "glbSha256": "d2ba5e05718c7889134d51bb89680a7dc05b5b24100c4f3e9d89b18034991dfb",
-      "glbBytes": 14464712,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261005-07/media/battle-scene-reference.webp",
+      "glbSha256": "8cba3af1b914dd2907a66bfc48f1be6beeaa15fbb9cc133c1a3ba7b3a390b8c7",
+      "glbBytes": 14464748,
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/battle-scene-reference.webp",
       "metrics": {
         "triangles": 208178,
         "meshes": 130,
@@ -1743,24 +1747,25 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "parentRevision": "r_150bbef8028442ae90ce5a957250f61b",
-      "source": "sources/project/battle-scene/r_4573e90abb4848c3b3d4996de6834184/source.kiln.js",
-      "manifest": "sources/project/battle-scene/r_4573e90abb4848c3b3d4996de6834184/manifest.json",
+      "source": "sources/project/battle-scene/r_97f6523694eb4b29a852ffeedd8babea/source.kiln.js",
+      "manifest": "sources/project/battle-scene/r_97f6523694eb4b29a852ffeedd8babea/manifest.json",
       "includedRevisions": [
+        "r_97f6523694eb4b29a852ffeedd8babea",
         "r_4573e90abb4848c3b3d4996de6834184",
         "r_150bbef8028442ae90ce5a957250f61b"
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261005-01/editable/battle-scene-reference.zip",
-        "bytes": 9323990,
-        "sha256": "cab93c4f6b627c164f7ae407c0ee2f3202504bdf04e7149f12605a698d78159d",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261005-01/editable/battle-scene-reference.zip"
-      }
+        "path": "packs/troy/delivery-20261113-01/editable/battle-scene-reference.zip",
+        "bytes": 14162785,
+        "sha256": "769c330baceedfa58896cb7291ca0a4dba64d2aee3879a5e6a3c1427c1979132",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/battle-scene-reference.zip"
+      },
+      "parentRevision": "r_4573e90abb4848c3b3d4996de6834184"
     }
   ],
   "license": "CC0-1.0",
   "release": "troy-20261005-02",
   "sourceRoot": "sources",
-  "sceneRelease": "troy-20261005-07"
+  "sceneRelease": "troy-20261113-01"
 }

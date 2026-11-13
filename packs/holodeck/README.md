@@ -7,7 +7,7 @@ addresses are configured in one place, [`site/src/data/holodeck-worlds.json`](..
 | Pack | Scene source | Assets |
 | --- | --- | --- |
 | `holodeck-tidemark` | Holodeck's bundled `examples/tidemark` (commit recorded in `selection.json`), the walkable Tidemark Island | 23 |
-| `holodeck-courtyard` | Courtyard world, revision 9 | 32 |
+| `holodeck-courtyard` | Holodeck's bundled `examples/courtyard` (commit recorded in `selection.json`), the Courtyard world at revision 9 | 32 |
 | `holodeck-cove` | Holodeck's Cove modules at the same commit, the Cove quality pass | 8 |
 | `holodeck-crescent-cove` | Holodeck's bundled `examples/crescent-cove` (commit recorded in `selection.json`), the tropical-island world at revision 17 | 49 |
 | `holodeck-meridian-sanctuary` | Holodeck's bundled `examples/meridian-sanctuary` (commit recorded in `selection.json`), the marble-sanctuary world at revision 27 | 53 |
@@ -175,7 +175,7 @@ and GLBs from the requested Git commit, verifies each new saved source/manifests
 and material-closure seal, and preserves earlier packs and source identities.
 Shared assets must have the exact revision and canonical bytes already selected.
 Their existing source need not be present locally just to append a scene. A changed
-shared revision is refused: use a separately reviewed full selection update for it.
+shared revision is refused: move it with [`--repin-revisions`](#repin-revisions-across-packs).
 Winter assets receive `winter-` gallery slugs; existing Cove modules keep their
 shared `cove-` slugs. The new pack cannot replace a previously selected pack.
 
@@ -228,6 +228,27 @@ and a different commit, refuses source-revision rollback, and still verifies tha
 changed assets descend from the selected revisions. Shared assets used by other
 packs cannot change through this path. This preserves the original authoring-world
 revision rather than inventing one for a repository maintenance change.
+
+### Repin revisions across packs
+
+When Holodeck moves assets to saved descendants, including a revision several packs share,
+move every pack that lists them in one update, from `site/`:
+
+```sh
+node scripts/select-holodeck.mjs --repin-revisions MAP.json \
+  --holodeck HOLODECK_REPO --ref COMMIT --store NAME=STORE ...
+```
+
+`MAP.json` maps each slug to `{ "from": SELECTED_REVISION, "to": NEW_REVISION }`; a map whose
+`from` is not the selected revision is refused. Each pack that lists a mapped slug is re-read at
+the one commit and must place exactly the result: the same inventory, every pin equal to its
+record and every placed GLB the canonical bytes. A pin the map does not name may not change, and
+Tidemark stays at the Cove modules' commit. A pack read from an authoring world is read from
+Holodeck's committed example of the same world revision; if that example is another revision,
+the repin is refused until Holodeck commits it. Only the new revisions' stores are read.
+
+Staging leaves a card whose poster was rendered for an earlier revision without a poster, and
+the upload list waits until `rig-posters.mjs holodeck --only SLUGS` renders it.
 
 ## Scene shots
 

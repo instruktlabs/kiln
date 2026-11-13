@@ -139,7 +139,7 @@ async function build() {
     const t = 0.15 + i * (nlen - 0.4) / 6;
     const zn = 0.6 - 0.2 * (t / nlen);
     const off = zn + 0.1;
-    createPart('mane', boxGeo(0.14, 0.3, 0.3), dark, {
+    createPart('mane', boxGeo(i % 2 ? 0.144 : 0.14, 0.3, 0.3), dark, {
       position: [0, nb[0] + t * Math.cos(nang) + off * Math.sin(nang), nb[1] + t * Math.sin(nang) - off * Math.cos(nang)],
       rotation: [nang * 180 / Math.PI, 0, 0], parent: root,
     });

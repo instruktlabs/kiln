@@ -197,7 +197,7 @@ describe('Commons catalog bindings', () => {
   });
   test('Vehicles pack lists six vehicles pinned to the delivered GLBs, licence texts and archives', () => {
     expect(vehicles.assets.map((asset) => asset.slug)).toEqual(allVehicleSlugs);
-    expect(vehicles.release).toBe('r4-local-review');
+    expect(vehicles.release).toBe('r5-flush-fix');
     expect(vehicles.assetCount).toBe(6);
     expect(vehicles.license).toBe('CC0-1.0');
     // Scope qualifier and the dependencies statement travel with the licence (D-35): authored content only.
@@ -317,6 +317,14 @@ describe('Commons catalog bindings', () => {
         expect(Date.parse(revision.savedAt)).toBeLessThanOrEqual(Date.parse(revision.run.endedAt));
         continue;
       }
+      if (revision.request === 'flush-face-fix') {
+        // A maintenance revision: the saved manifest names the model and harness, and no author window was sealed for it.
+        expect(['sedan', 'suv', 'box-truck']).toContain(asset.slug);
+        expect(revision.revisionId).toBe(asset.revisionId);
+        expect(revision).toMatchObject({ modelId: 'claude-sonnet-5-5', requestedEffort: 'not recorded', harness: 'claude-code', harnessVersion: null });
+        expect(revision.run).toMatchObject({ status: 'not recorded', receiptSha256: null, invocationSha256: null, startedAt: null, endedAt: null });
+        continue;
+      }
       expect(revision).toMatchObject({ modelId: 'claude-sonnet-5-5', requestedEffort: 'max', harness: 'claude', harnessVersion: '2.1.280' });
       // The revision names the run that saved it, and that run's receipt hash is the one the run record holds.
       const saved = vehicleRuns.find((run) => run.source.receiptSha256 === revision.run.receiptSha256);
@@ -332,7 +340,7 @@ describe('Commons catalog bindings', () => {
   test('Foundry Floor pack lists the 62 models of FF3, all placed, each pinned to its GLB and the licence text', () => {
     expect(foundryFloor.assetCount).toBe(62);
     expect(foundryFloor.assets).toHaveLength(62);
-    expect(foundryFloor.release).toBe('ff3-review2');
+    expect(foundryFloor.release).toBe('ff3-review2-flush2');
     expect(foundryFloor.status).toBe('in-production');
     expect(foundryFloor.placedInScene).toBe(62);
     expect(foundryFloor.assets.filter((asset) => asset.placedInScene)).toHaveLength(62);
@@ -351,7 +359,7 @@ describe('Commons catalog bindings', () => {
       expect(foundryFloor.groups.map((group) => group.id)).toContain(asset.group);
       expect(asset.revisionId).toMatch(/^r_[0-9a-f]{32}$/);
       expect(asset.author).toMatch(/^(Claude Sonnet 5\.5|Claude Opus 5\.5|GPT-6\.1 Sol|GPT-6 Astra|Codex) · /);
-      if (asset.group === 'vehicles') expect(asset.author).toBe('GPT-6 Astra · codex 0.159.2');
+      if (asset.group === 'vehicles') expect(asset.author).toBe(['sedan', 'suv', 'box-truck'].includes(asset.slug) ? 'Claude Sonnet 5.5 · claude-code (version not recorded)' : 'GPT-6 Astra · codex 0.159.2');
       expect(asset.author).not.toMatch(/sonnet-ff-|codex-ff-/);
       expect(pinned(asset.runtimeDownload.path)).toMatchObject({ bytes: asset.runtimeDownload.bytes, sha256: asset.runtimeDownload.sha256 });
       expect(asset.runtimeDownload.path).toBe(`packs/foundry-floor/${foundryFloor.release}/models/${asset.slug}.glb`);
@@ -378,7 +386,7 @@ describe('Commons catalog bindings', () => {
     // One full models archive with62 GLBs, all licence texts, sealed asset metadata, replacement lineage and delivery inventory.
     const [archive] = foundryFloor.downloads;
     expect(foundryFloor.downloads).toHaveLength(1);
-    expect(archive).toMatchObject({ profile: 'models', assets: 62, files: 73, bytes: 10_908_158, sha256: 'ca18282aee9361082a229e2d625aaaab4ebf2d262b7485dc22efa35ea913b547' });
+    expect(archive).toMatchObject({ profile: 'models', assets: 62, files: 73, bytes: 10_880_906, sha256: 'ae1fa21a9afa7e124d4bc137197cfe578672ad818a6d67795b04c49e027ffe4d' });
     expect(pinned(archive!.path)).toMatchObject({ bytes: archive!.bytes, sha256: archive!.sha256 });
     expect(build.archives).toContain(archive!.path);
   });

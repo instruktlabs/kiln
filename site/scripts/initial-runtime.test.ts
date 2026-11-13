@@ -25,7 +25,7 @@ test('the registered-floor review release keeps the same verified initial closur
  await expect(measureInitialLoad({receipt:next,chunks,code,packRelease:'ff3'})).rejects.toThrow(/release/);
  await expect(measureInitialLoad({receipt:{...next,release:'ff3-unreviewed'},chunks,code,packRelease:'ff3-unreviewed'})).rejects.toThrow(/receipt/);
 });
-test.each(['ff3-review2-code1','ff3-review2-code2','ff3-review2-code3','ff3-review2-code4','ff3-review2-code5'])('the explicit %s delivery label retains pack equality, hashes and initial closure checks', async release=>{
+test.each(['ff3-review2-code1','ff3-review2-code2','ff3-review2-code3','ff3-review2-code4','ff3-review2-code5','ff3-review2-flush2'])('the explicit %s delivery label retains pack equality, hashes and initial closure checks', async release=>{
  const next={...receipt(),release};
  const result=await measureInitialLoad({receipt:next,chunks,code,packRelease:next.release});
  expect(result.files).toEqual(['camera-part.js','exterior-part.js','index-root.js']);
