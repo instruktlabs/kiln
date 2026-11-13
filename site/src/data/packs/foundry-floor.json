@@ -255,17 +255,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The OHT vehicle model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle.png",
-        "sourceRevisionId": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle.png",
+        "sourceRevisionId": "r_f6f4e23a81ba486ab9def5f119af43c1",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -501,17 +500,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The signal tower model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower.png",
-        "sourceRevisionId": "r_0af702f0a7364dffbac3255c04a909ff",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower.png",
+        "sourceRevisionId": "r_9d238ec1a53f4caaa39daaef9c27c840",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -828,17 +826,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The OHT rail, switch model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch.png",
-        "sourceRevisionId": "r_b7fcebf6547545eab077be69796ec893",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch.png",
+        "sourceRevisionId": "r_b863615819af4a838c84e92d928b1598",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -1155,17 +1152,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The etch cluster tool model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool.png",
-        "sourceRevisionId": "r_6456090ae2cb42f09b3ff18670f55c3e",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool.png",
+        "sourceRevisionId": "r_7bc813bf9cfa48e18d1f9be8520a96a1",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -1326,17 +1322,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The PVD cluster tool model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool.png",
-        "sourceRevisionId": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool.png",
+        "sourceRevisionId": "r_f5bb7ba48f7b4dc8b603e3a998f7da76",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -1410,17 +1405,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The single-wafer clean tool model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool.png",
-        "sourceRevisionId": "r_c268a0f6f6174f7ba2b87e120c4344e8",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool.png",
+        "sourceRevisionId": "r_40235531706e4818b24063e6c1df533c",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -1833,17 +1827,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The wafer prober/tester model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester.png",
-        "sourceRevisionId": "r_7357b53066af464abb6556bdde7866d4",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester.png",
+        "sourceRevisionId": "r_92007aa1ae4244fc923befba0403e87f",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -2403,17 +2396,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The humanoid work robot model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot.png",
-        "sourceRevisionId": "r_9f717d17eec74f2dbd4c338612207ed5",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot.png",
+        "sourceRevisionId": "r_87ffa104a0c04a408c928fa7260fd566",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -2488,17 +2480,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The AMR floor robot model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot.png",
-        "sourceRevisionId": "r_a27481224b474e9cb1dd747c45a71e23",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot.png",
+        "sourceRevisionId": "r_23d6cdf68cc748a7a0005aa4c3e0a58f",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -3650,17 +3641,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The sedan model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.png",
-        "sourceRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan.png",
+        "sourceRevisionId": "r_35222363b36f4d2da720311bcad86215",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -3813,17 +3803,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The suv model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/suv.png",
-        "sourceRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv.png",
+        "sourceRevisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {
@@ -3976,17 +3965,16 @@
       },
       "license": "CC0-1.0",
       "poster": {
-        "src": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.webp",
+        "src": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The box truck model from the Foundry Floor pack, seen from the front right.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.webp 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.webp 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.webp 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.webp 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.png",
-        "sourceRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
-        "exactRevision": false,
-        "rig": "review-neutral-v1",
-        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
+        "srcsetWebp": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck-320.webp 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck-480.webp 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck-672.webp 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck-768.webp 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck.png",
+        "sourceRevisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
       }
     },
     {

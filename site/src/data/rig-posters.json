@@ -399,6 +399,42 @@
             "sha256:b37a3a228e102d2a8165cabc0b0ac8056080355b108e4d8614bd49b9dcd35ee3"
           ]
         }
+      },
+      {
+        "id": "foundry-floor-2026-11-13-efdc7b6c",
+        "pack": "foundry-floor",
+        "renderedOn": "2026-11-13",
+        "engine": {
+          "commit": "a77b2eb62324dd0eeff161d977e039f30a2e9771",
+          "subject": "Upload licence texts as text/plain and accept unsealed maintenance revisions of the three vehicles",
+          "dirty": false
+        },
+        "service": {
+          "url": "http://127.0.0.1:8031",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:a8592bba54f59fe62af19701a8769a90aba42605d15f22491d957cd11d8e4f98",
+          "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+          "dependencies": {
+            "three": "0.187.0",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:173155fc4d02e984f6951805eba7f333693aaf111fb5399fea4da4c58ce86a8c",
+            "98d3c488-52e0-4c89-9fba-bb9cb4dab25f",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
+          ]
+        }
       }
     ]
   },
@@ -1413,16 +1449,16 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
     },
     "foundry-floor:oht-vehicle": {
-      "path": "media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-vehicle.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1628167,
-      "sha256": "03aa3e05caeef9b00dd32b1b73e9db667f133b57b3e72147605ee3bc0d7ad837",
-      "revisionId": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
+      "bytes": 1626690,
+      "sha256": "b4e52ca1ef5096941390cf1bbea436091b41cd591529dd412cb56a842dc0dfeb",
+      "revisionId": "r_f6f4e23a81ba486ab9def5f119af43c1",
       "glb": {
-        "member": "packs/foundry-floor/ff3/models/oht-vehicle.glb",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/oht-vehicle.glb",
         "bytes": 107472,
-        "sha256": "27dd159eeeaeb4ed0748159e550096dda1e8faac895bfd4a1d86ed8f808a3024",
+        "sha256": "121c67e94c0a3f2afa2576aa2b8dd3cf271907fac7a164c3d074b37de7e06919",
         "triangles": 1746
       },
       "view": {
@@ -1435,7 +1471,8 @@
         "projection": "orthographic",
         "halfHeight": 0.9157853496716128
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:load-port": {
       "path": "media/rig/review-neutral-v1/foundry-floor/ff3/load-port.png",
@@ -1488,16 +1525,16 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
     },
     "foundry-floor:signal-tower": {
-      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/signal-tower.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1371117,
-      "sha256": "0349ab4c26d94307591846d70220a147ab63884c07dc6b7c54c5d0176827d243",
-      "revisionId": "r_0af702f0a7364dffbac3255c04a909ff",
+      "bytes": 1365679,
+      "sha256": "b928535b2701dd5ddf4a5cdd583199ff39f1ca6c0b6023b39ada13a88c70b331",
+      "revisionId": "r_9d238ec1a53f4caaa39daaef9c27c840",
       "glb": {
-        "member": "packs/foundry-floor/ff2/models/signal-tower.glb",
-        "bytes": 13844,
-        "sha256": "82f69eb2a5471bc0ea242ef79aa3686a7e8025d8172437813484c5f58fe881b9",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/signal-tower.glb",
+        "bytes": 13860,
+        "sha256": "65b0987c95c078495b31ff5769e44b9a2e7a276e0f557141c4463f6bef5d5aea",
         "triangles": 328
       },
       "view": {
@@ -1510,7 +1547,8 @@
         "projection": "orthographic",
         "halfHeight": 0.25620518949256155
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:under-track-storage": {
       "path": "media/rig/review-neutral-v1/foundry-floor/ff3/under-track-storage.png",
@@ -1588,16 +1626,16 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
     },
     "foundry-floor:oht-rail-switch": {
-      "path": "media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/oht-rail-switch.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1380020,
-      "sha256": "6c576446400474908110ac73429fb73b0d1d28f816e1362a530a121a3ac6bdd9",
-      "revisionId": "r_b7fcebf6547545eab077be69796ec893",
+      "bytes": 1387454,
+      "sha256": "e1da8066293800ca6b9f33740a7c9f28b8ec1be0ee8ac67c196180b443c5a28e",
+      "revisionId": "r_b863615819af4a838c84e92d928b1598",
       "glb": {
-        "member": "packs/foundry-floor/ff3/models/oht-rail-switch.glb",
-        "bytes": 61820,
-        "sha256": "1190709b4b55201db020cbb375001eb1d3c535ac9e8f93fefae20a11207753f4",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/oht-rail-switch.glb",
+        "bytes": 61816,
+        "sha256": "8e218d405c44eb6110fe32e7e94f0f4b1bf2e14c612ce5bafb44dbe69a40fc12",
         "triangles": 1168
       },
       "view": {
@@ -1610,7 +1648,8 @@
         "projection": "orthographic",
         "halfHeight": 1.6730146296343174
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:raised-floor-module": {
       "path": "media/rig/review-neutral-v1/foundry-floor/ff3/raised-floor-module.png",
@@ -1688,16 +1727,16 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
     },
     "foundry-floor:etch-cluster-tool": {
-      "path": "media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/etch-cluster-tool.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1734592,
-      "sha256": "afa3dadbf4086f5ab581407d632c362a1511b3389f5a68d514f080b75be229c3",
-      "revisionId": "r_6456090ae2cb42f09b3ff18670f55c3e",
+      "bytes": 1738483,
+      "sha256": "ff2b56bbf894d37de1999271a41a4a2148f71253340533cc821dc971ad5ac26a",
+      "revisionId": "r_7bc813bf9cfa48e18d1f9be8520a96a1",
       "glb": {
-        "member": "packs/foundry-floor/ff3/models/etch-cluster-tool.glb",
-        "bytes": 452424,
-        "sha256": "24d3ebb6818f54e7e341f9b4081ea29231b64f165ab6ffc3f2af562dea915c30",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/etch-cluster-tool.glb",
+        "bytes": 452440,
+        "sha256": "da14255feeb6b30c316c316c50f9b156e94344d8c676f3b8cf21e750483b5f0b",
         "triangles": 5274
       },
       "view": {
@@ -1710,7 +1749,8 @@
         "projection": "orthographic",
         "halfHeight": 3.382327358001535
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:cvd-ald-cluster-tool": {
       "path": "media/rig/review-neutral-v1/foundry-floor/ff3/cvd-ald-cluster-tool.png",
@@ -1738,16 +1778,16 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
     },
     "foundry-floor:pvd-cluster-tool": {
-      "path": "media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/pvd-cluster-tool.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1645963,
-      "sha256": "3df73c1cfc0a1d4fe286ceb03aab3c5a1f382843acf8b9244b5a7eb7a65029c5",
-      "revisionId": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
+      "bytes": 1648390,
+      "sha256": "0d3af15aa4dd03a690b8469275e8f725ba824e9d063870b490fdc40a088a816f",
+      "revisionId": "r_f5bb7ba48f7b4dc8b603e3a998f7da76",
       "glb": {
-        "member": "packs/foundry-floor/ff3/models/pvd-cluster-tool.glb",
-        "bytes": 416676,
-        "sha256": "e87669b3c87279389f7ef1035dc3994e81f74803c9b4ec2b81eec035da8998fb",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/pvd-cluster-tool.glb",
+        "bytes": 416672,
+        "sha256": "2658814eed4adc37f4f3ba99190a8ccc0ef206c93259b008f50801c738a279cb",
         "triangles": 4552
       },
       "view": {
@@ -1760,19 +1800,20 @@
         "projection": "orthographic",
         "halfHeight": 3.7948063136936883
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:single-wafer-clean-tool": {
-      "path": "media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/single-wafer-clean-tool.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1752778,
-      "sha256": "6a841eb23a6b3536fe284ce5c04c40b95a80dca3c98c553df675d18106bbbb69",
-      "revisionId": "r_c268a0f6f6174f7ba2b87e120c4344e8",
+      "bytes": 1747660,
+      "sha256": "f1e03b3f3ceb4a7e23154809c119aebaaa29a215ec30aca215f00995570dd8ca",
+      "revisionId": "r_40235531706e4818b24063e6c1df533c",
       "glb": {
-        "member": "packs/foundry-floor/ff3/models/single-wafer-clean-tool.glb",
-        "bytes": 63304,
-        "sha256": "dcc8f518e828db258990e737db96aa87b440d7772122c735f67ab32c5174b429",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/single-wafer-clean-tool.glb",
+        "bytes": 63308,
+        "sha256": "db226cd08b73371756ab9553b7150be10e66d0a3fd4105e2a14e16923d276335",
         "triangles": 3044
       },
       "view": {
@@ -1785,7 +1826,8 @@
         "projection": "orthographic",
         "halfHeight": 3.546081582114633
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:cmp-polisher": {
       "path": "media/rig/review-neutral-v1/foundry-floor/ff3/cmp-polisher.png",
@@ -1888,16 +1930,16 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
     },
     "foundry-floor:wafer-prober-tester": {
-      "path": "media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/wafer-prober-tester.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1768724,
-      "sha256": "d9b05a4940f02801d1cc3b4fa26e0da4aa94b38b90d05b81a5dafdc5e74555ab",
-      "revisionId": "r_7357b53066af464abb6556bdde7866d4",
+      "bytes": 1756957,
+      "sha256": "3851ce8f3850657932c3acfb7796237acc252c316c87caf33e48822f8e88ef8f",
+      "revisionId": "r_92007aa1ae4244fc923befba0403e87f",
       "glb": {
-        "member": "packs/foundry-floor/ff3/models/wafer-prober-tester.glb",
-        "bytes": 125036,
-        "sha256": "4a53871b19898e53b7f057107eee9d2f40bbe3ba72948df3b190d21e910662af",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/wafer-prober-tester.glb",
+        "bytes": 125044,
+        "sha256": "1c4dff379cb6248b9b24f09b24b1b46b93518454f7b1db760d96c08a5c290e34",
         "triangles": 3376
       },
       "view": {
@@ -1910,7 +1952,8 @@
         "projection": "orthographic",
         "halfHeight": 2.5689189360261415
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:coater-developer-track": {
       "path": "media/rig/review-neutral-v1/foundry-floor/ff3/coater-developer-track.png",
@@ -2063,16 +2106,16 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
     },
     "foundry-floor:humanoid-work-robot": {
-      "path": "media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/humanoid-work-robot.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1479172,
-      "sha256": "121f6f5be03aa1f0ce3ed64b6c8f63f4fb3e49499767895130392b3f42421db9",
-      "revisionId": "r_9f717d17eec74f2dbd4c338612207ed5",
+      "bytes": 1479743,
+      "sha256": "e53a660218f2a2838ea69f1eea5c99e63dea9f8a7b52d9a0207ca241ae599796",
+      "revisionId": "r_87ffa104a0c04a408c928fa7260fd566",
       "glb": {
-        "member": "packs/foundry-floor/ff2/models/humanoid-work-robot.glb",
-        "bytes": 200656,
-        "sha256": "cd118485e113219ce8de9bb6d3b873634fb7dadebf81028142d0f6a644f88aa2",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/humanoid-work-robot.glb",
+        "bytes": 163488,
+        "sha256": "44a3621ffb0347e477b7622315971cb5ec429cabb3494b9f0af56d81a49fb877",
         "triangles": 7468
       },
       "view": {
@@ -2085,19 +2128,20 @@
         "projection": "orthographic",
         "halfHeight": 1.0843282388853521
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:amr-floor-robot": {
-      "path": "media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/amr-floor-robot.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1654266,
-      "sha256": "30de51d0b35a9876b49f631a13a9a280d385db5e3a4d8dd82e8d79e7d016c666",
-      "revisionId": "r_a27481224b474e9cb1dd747c45a71e23",
+      "bytes": 1659285,
+      "sha256": "c8dec1f17c728f0d8b9c91e53ad7e4b74b980750d50f877ef6de981b208a66b7",
+      "revisionId": "r_23d6cdf68cc748a7a0005aa4c3e0a58f",
       "glb": {
-        "member": "packs/foundry-floor/ff3/models/amr-floor-robot.glb",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/amr-floor-robot.glb",
         "bytes": 77144,
-        "sha256": "ceb4d9565c396bed03d9ffd704447caac5e38e665e61224e0c092ec6df05da32",
+        "sha256": "6740d2d346c98e79a438b7cec9698f31aa5b3331c63bf96894dfafb77f701195",
         "triangles": 1948
       },
       "view": {
@@ -2110,7 +2154,8 @@
         "projection": "orthographic",
         "halfHeight": 0.9855900443702419
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:tool-front-robot-arm": {
       "path": "media/rig/review-neutral-v1/foundry-floor/ff3/tool-front-robot-arm.png",
@@ -2885,58 +2930,56 @@
       "reusedFrom": "vehicles:hatchback"
     },
     "foundry-floor:sedan": {
-      "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/sedan.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1554684,
-      "sha256": "8942008b658c3dd3fadf25492542661aa67ddfa76d50e62bcac23ee468c1a49a",
-      "assetId": "generic-sedan",
-      "revisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+      "bytes": 1603477,
+      "sha256": "cdc30a258e197360c92eba7d7711c64e81ec7ae4e1a4f4205ba658cf2cca8873",
+      "revisionId": "r_35222363b36f4d2da720311bcad86215",
       "glb": {
-        "member": "packs/vehicles/r4-local-review/models/sedan.glb",
-        "bytes": 117780,
-        "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/sedan.glb",
+        "bytes": 117972,
+        "sha256": "f925ac655662e848fd3a42b91468767ca0c6273d2487c39a97ed04cb41f1a30a",
         "triangles": 3758
       },
       "view": {
         "direction": [
-          0.6644630243886748,
-          0.3420201433256687,
-          0.6644630243886748
+          0.6123724356957946,
+          0.49999999999999994,
+          0.6123724356957946
         ],
         "padding": 1.05,
         "projection": "orthographic",
         "halfHeight": 2.7761483494651458
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-      "reusedFrom": "vehicles:sedan"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:suv": {
-      "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/suv.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/suv.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1630272,
-      "sha256": "2e78be010dc77763e9dfe7a0db4fab6c1fc4373cd195877fef5cb8c57d83e685",
-      "assetId": "generic-suv",
-      "revisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+      "bytes": 1676729,
+      "sha256": "5b2c1fea80d8cf10f32736671f6af49fa6ab5932458214f5f62f42dc6c6dbc9e",
+      "revisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
       "glb": {
-        "member": "packs/vehicles/r4-local-review/models/suv.glb",
-        "bytes": 120120,
-        "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/suv.glb",
+        "bytes": 119940,
+        "sha256": "9d0fca47fa6d1a4187b2e27efa3bd008f79e9fd8c25f54b104e4cad2d54ed922",
         "triangles": 3794
       },
       "view": {
         "direction": [
-          0.6644630243886748,
-          0.3420201433256687,
-          0.6644630243886748
+          0.6123724356957946,
+          0.49999999999999994,
+          0.6123724356957946
         ],
         "padding": 1.05,
         "projection": "orthographic",
         "halfHeight": 2.821521040491842
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-      "reusedFrom": "vehicles:suv"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:pickup": {
       "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/pickup.png",
@@ -2966,31 +3009,30 @@
       "reusedFrom": "vehicles:pickup"
     },
     "foundry-floor:box-truck": {
-      "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.png",
+      "path": "media/rig/review-neutral-v1/foundry-floor/ff3-review2-flush2/box-truck.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1555264,
-      "sha256": "83662d6b537924cad8ffefb9b45d050d2f2ffe4b4c615547881c5eacc537e9b7",
-      "assetId": "a_2092ca0610c749b386c14c07dbaf4236",
-      "revisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+      "bytes": 1568130,
+      "sha256": "2e2eed5f0eb77899de5a231db588679ee202ffa403ca2b2da5d31ab82ac092db",
+      "revisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
       "glb": {
-        "member": "packs/vehicles/r4-local-review/models/box-truck.glb",
-        "bytes": 169728,
-        "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420",
+        "member": "packs/foundry-floor/ff3-review2-flush2/models/box-truck.glb",
+        "bytes": 169724,
+        "sha256": "deed8053c8c9675a5687ecdd2ad5f1715177fce893607b74757b5b0f12503cc8",
         "triangles": 3546
       },
       "view": {
         "direction": [
-          0.6644630243886748,
-          0.3420201433256687,
-          0.6644630243886748
+          0.6123724356957946,
+          0.49999999999999994,
+          0.6123724356957946
         ],
         "padding": 1.05,
         "projection": "orthographic",
         "halfHeight": 4.167687406077087
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-      "reusedFrom": "vehicles:box-truck"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "foundry-floor-2026-11-13-efdc7b6c"
     },
     "foundry-floor:transit-bus": {
       "path": "media/rig/review-neutral-v1/vehicles/r4-local-review/transit-bus.png",
