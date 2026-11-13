@@ -2,37 +2,37 @@
   "schemaVersion": 1,
   "id": "foundry-floor",
   "name": "Foundry Floor",
-  "release": "ff3-review2",
+  "release": "ff3-review2-flush2",
   "status": "in-production",
   "assetCount": 62,
   "placedInScene": 62,
   "acceptance": {
-    "statement": "This 62-model pack combines the staged interior and campus deliveries. Its source pins, licence identities and downloaded bytes have been checked together. Those checks do not establish the owner\u2019s visual or simulation acceptance; the pack stays in production until that review.",
+    "statement": "This 62-model pack combines the staged interior and campus deliveries. Its source pins, licence identities and downloaded bytes have been checked together. Those checks do not establish the owner’s visual or simulation acceptance; the pack stays in production until that review.",
     "source": "Sealed pack.json source pins and credits, data/assets.json, data/campus-assets.json when present, and the licence text"
   },
   "license": "CC0-1.0",
-  "licenseScope": "CC0-1.0 covers authored asset content only, to the extent of the owner\u2019s rights. Kiln and any software that opens these files retain their own licenses.",
+  "licenseScope": "CC0-1.0 covers authored asset content only, to the extent of the owner’s rights. Kiln and any software that opens these files retain their own licenses.",
   "licenceNote": "The licence text comes from the sealed Foundry Floor scene pack. It names every model, its saved revision, author attribution and the SHA-256 of its GLB, and is published here unchanged.",
   "licence": {
-    "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-    "bytes": 22029,
-    "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-    "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+    "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+    "bytes": 25299,
+    "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+    "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
     "spdx": "CC0-1.0",
     "models": 62
   },
   "scenePack": {
-    "release": "ff3-review2-flush1",
-    "base": "/scene-packs/foundry-floor/ff3-review2-flush1/",
-    "packJsonSha256": "99d949b5f5125b49ab2ef30cd07d29bd6998f010013020d96d721a14eb394255",
-    "sha256sumsSha256": "b1232c480d83feded9457af9080358c2f8b24e0ccf5ec0e1e3fecc48e1910591",
-    "assetMapSha256": "2e39592619e7d2d7c07c9eb87812404bae6609bca495298ff0129dcee153b296"
+    "release": "ff3-review2-flush2",
+    "base": "/scene-packs/foundry-floor/ff3-review2-flush2/",
+    "packJsonSha256": "5cd13fdc406b7e842836a17bdf0709bc874de7bb4961cf0f313c08a3d412296d",
+    "sha256sumsSha256": "b7498a486ee55a777e9d9ba77812f3906f234f5017dc81e327ea9a2317b8c676",
+    "assetMapSha256": "3779d4ef1683dfe9b947bb83cca7dcaf7eaea8b0b911066e3d8f76fcbf2c8561"
   },
   "conventions": {
     "frame": "Metres. Interior assets use +X forward, +Y up and +Z right. Campus assets retain the coordinate frames of their source models.",
     "lod": "43 models declare optional MSFT_lod tiers. A loader that ignores this extension draws the default detailed form; an LOD-aware application can select the separate lower tiers.",
     "hidden": "Two models carry parts the scene hides when it loads them: the FOUP (waferStack) and the level section module (raisedFloor, ffuPlenum, cutFaceCaps_raisedFloor, cutFaceCaps_ffuWhite, cutFaceCaps_ffuHousing). They are part of the file, and a plain viewer draws them.",
-    "materials": "No model uses a texture; colours are material factors. The pack\u2019s accent colours are invented for readability and are not any maker\u2019s livery.",
+    "materials": "No model uses a texture; colours are material factors. The pack’s accent colours are invented for readability and are not any maker’s livery.",
     "clips": "Animation clips carry no loop flags; the scene decides what loops.",
     "source": "Interior conventions come from data/assets.json; every figure on this page was read from its sealed GLB. Campus assets retain their source conventions."
   },
@@ -73,16 +73,16 @@
   "downloads": [
     {
       "profile": "models",
-      "archive": "foundry-floor-ff3-review2-models.zip",
-      "bytes": 10908158,
-      "sha256": "ca18282aee9361082a229e2d625aaaab4ebf2d262b7485dc22efa35ea913b547",
+      "archive": "foundry-floor-ff3-review2-flush2-models.zip",
+      "bytes": 10880906,
+      "sha256": "ae1fa21a9afa7e124d4bc137197cfe578672ad818a6d67795b04c49e027ffe4d",
       "files": 73,
       "assets": 62,
-      "path": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
-      "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+      "path": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
+      "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
       "contents": [
         "The 62 model GLBs",
-        "The pack\u2019s licence text, naming every model, its revision and its SHA-256",
+        "The pack’s licence text, naming every model, its revision and its SHA-256",
         "Sealed asset metadata and replacement lineage where supplied",
         "A delivery.json inventory with member hashes"
       ],
@@ -105,9 +105,9 @@
       "description": "The FOUP model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_f639b02180994fdd978a427bffb4de15",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "foup",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -152,18 +152,18 @@
         "waferStack"
       ],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/foup.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/foup.glb",
         "bytes": 73760,
         "sha256": "a8ca511d996868d12c5b2ae3bdec5a58da5e7e008e34a56f60026ce92b610790",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/foup.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/foup.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/foup.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "a8ca511d996868d12c5b2ae3bdec5a58da5e7e008e34a56f60026ce92b610790"
       },
@@ -189,11 +189,11 @@
       "group": "transport",
       "class": "mover",
       "description": "The OHT vehicle model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
+      "revisionId": "r_f6f4e23a81ba486ab9def5f119af43c1",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "oht-vehicle",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -238,20 +238,20 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/oht-vehicle.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/oht-vehicle.glb",
         "bytes": 107472,
-        "sha256": "27dd159eeeaeb4ed0748159e550096dda1e8faac895bfd4a1d86ed8f808a3024",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/oht-vehicle.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "sha256": "121c67e94c0a3f2afa2576aa2b8dd3cf271907fac7a164c3d074b37de7e06919",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/oht-vehicle.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/oht-vehicle.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "27dd159eeeaeb4ed0748159e550096dda1e8faac895bfd4a1d86ed8f808a3024"
+        "statesGlbSha256": "121c67e94c0a3f2afa2576aa2b8dd3cf271907fac7a164c3d074b37de7e06919"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -263,8 +263,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/oht-vehicle.png",
         "sourceRevisionId": "r_a4fd2dfb3a3f4276b28464458cb0fbb9",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -277,9 +278,9 @@
       "description": "The load port model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_b45a5f436cd14d7294bc6866dcebb5f7",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "load-port",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -324,18 +325,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/load-port.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/load-port.glb",
         "bytes": 32652,
         "sha256": "500fa5d0a1e41879e2f20ebd18d8c064a13c0f86d49798830a0273aa08aa0ed2",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/load-port.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/load-port.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/load-port.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "500fa5d0a1e41879e2f20ebd18d8c064a13c0f86d49798830a0273aa08aa0ed2"
       },
@@ -363,9 +364,9 @@
       "description": "The stocker model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_2719dba3ca554c159e41daa769233182",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "stocker",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -407,18 +408,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/stocker.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/stocker.glb",
         "bytes": 299000,
         "sha256": "cd4e7bb6d5341a5a86b613d2657be919a106cde63d0d2d2b05d343fd597ebcf2",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/stocker.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/stocker.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/stocker.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "cd4e7bb6d5341a5a86b613d2657be919a106cde63d0d2d2b05d343fd597ebcf2"
       },
@@ -444,13 +445,13 @@
       "group": "transport",
       "class": "tower",
       "description": "The signal tower model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_0af702f0a7364dffbac3255c04a909ff",
+      "revisionId": "r_9d238ec1a53f4caaa39daaef9c27c840",
       "reviewStatus": "accepted",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "signal-tower",
-        "requestedEffort": "max",
+        "requestedEffort": null,
         "confirmedEffort": null
       },
       "placedInScene": true,
@@ -483,20 +484,20 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/signal-tower.glb",
-        "bytes": 13844,
-        "sha256": "82f69eb2a5471bc0ea242ef79aa3686a7e8025d8172437813484c5f58fe881b9",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/signal-tower.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/signal-tower.glb",
+        "bytes": 13860,
+        "sha256": "65b0987c95c078495b31ff5769e44b9a2e7a276e0f557141c4463f6bef5d5aea",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/signal-tower.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/signal-tower.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "82f69eb2a5471bc0ea242ef79aa3686a7e8025d8172437813484c5f58fe881b9"
+        "statesGlbSha256": "65b0987c95c078495b31ff5769e44b9a2e7a276e0f557141c4463f6bef5d5aea"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -508,8 +509,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/signal-tower.png",
         "sourceRevisionId": "r_0af702f0a7364dffbac3255c04a909ff",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -522,9 +524,9 @@
       "description": "The under-track storage model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_093ce3746e9c449585f6543f9db94f87",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "under-track-storage",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -564,18 +566,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/under-track-storage.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/under-track-storage.glb",
         "bytes": 32200,
         "sha256": "f5818ef0791c74470d2d034ba9022d9f0243fa36da4f3fe15ba4ea308b2de15e",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/under-track-storage.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/under-track-storage.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/under-track-storage.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "f5818ef0791c74470d2d034ba9022d9f0243fa36da4f3fe15ba4ea308b2de15e"
       },
@@ -603,9 +605,9 @@
       "description": "The OHT rail, straight model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_ed0c4b464c3f44419b6efed936349a64",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "oht-rail-straight",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -645,18 +647,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/oht-rail-straight.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/oht-rail-straight.glb",
         "bytes": 15968,
         "sha256": "7289d13da5a095aa5483c28864e0a96de71d0e353b4040836cc52774e05d856b",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/oht-rail-straight.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/oht-rail-straight.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/oht-rail-straight.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "7289d13da5a095aa5483c28864e0a96de71d0e353b4040836cc52774e05d856b"
       },
@@ -684,9 +686,9 @@
       "description": "The OHT rail, curve model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_a2af1537d2cc4396a4d94bce0c19598c",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "oht-rail-curve",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -726,18 +728,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/oht-rail-curve.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/oht-rail-curve.glb",
         "bytes": 33072,
         "sha256": "66f22a7b40bf28454611578047744e5ea2400a35dbce83b2006ac2b0f1155fa9",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/oht-rail-curve.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/oht-rail-curve.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/oht-rail-curve.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "66f22a7b40bf28454611578047744e5ea2400a35dbce83b2006ac2b0f1155fa9"
       },
@@ -763,11 +765,11 @@
       "group": "transport",
       "class": "rail",
       "description": "The OHT rail, switch model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_b7fcebf6547545eab077be69796ec893",
+      "revisionId": "r_b863615819af4a838c84e92d928b1598",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "oht-rail-switch",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -809,20 +811,20 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/oht-rail-switch.glb",
-        "bytes": 61820,
-        "sha256": "1190709b4b55201db020cbb375001eb1d3c535ac9e8f93fefae20a11207753f4",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/oht-rail-switch.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/oht-rail-switch.glb",
+        "bytes": 61816,
+        "sha256": "8e218d405c44eb6110fe32e7e94f0f4b1bf2e14c612ce5bafb44dbe69a40fc12",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/oht-rail-switch.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/oht-rail-switch.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "1190709b4b55201db020cbb375001eb1d3c535ac9e8f93fefae20a11207753f4"
+        "statesGlbSha256": "8e218d405c44eb6110fe32e7e94f0f4b1bf2e14c612ce5bafb44dbe69a40fc12"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -834,8 +836,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/oht-rail-switch.png",
         "sourceRevisionId": "r_b7fcebf6547545eab077be69796ec893",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -848,9 +851,9 @@
       "description": "The raised-floor module model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_f0104891f44a4c99a52739033e900757",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "raised-floor-module",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -890,18 +893,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/raised-floor-module.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/raised-floor-module.glb",
         "bytes": 26336,
         "sha256": "30b8cfddbfaccfd572f79c40a0483e9726b69fddc3b8bea36cd708b7612008fc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/raised-floor-module.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/raised-floor-module.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/raised-floor-module.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "30b8cfddbfaccfd572f79c40a0483e9726b69fddc3b8bea36cd708b7612008fc"
       },
@@ -929,9 +932,9 @@
       "description": "The FFU ceiling module model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_6d370c36023f401ea7ee526631bcf4df",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "ffu-ceiling-module",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -971,18 +974,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/ffu-ceiling-module.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/ffu-ceiling-module.glb",
         "bytes": 37112,
         "sha256": "db5aa12a0b890785664a300393484ee175f91e626cabbe5b9900cc4be2d86642",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/ffu-ceiling-module.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/ffu-ceiling-module.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/ffu-ceiling-module.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "db5aa12a0b890785664a300393484ee175f91e626cabbe5b9900cc4be2d86642"
       },
@@ -1010,9 +1013,9 @@
       "description": "The cleanroom wall kit model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_4e0249fdfb804779a0adb8c6cae9d2dd",
       "reviewStatus": "accepted",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "cleanroom-wall-kit",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -1050,18 +1053,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/cleanroom-wall-kit.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/cleanroom-wall-kit.glb",
         "bytes": 31156,
         "sha256": "d4d24890f74cffa60d6cf57b656b4ef6206cb829026aedf2ed34f7fbbd0cffde",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/cleanroom-wall-kit.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/cleanroom-wall-kit.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/cleanroom-wall-kit.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "d4d24890f74cffa60d6cf57b656b4ef6206cb829026aedf2ed34f7fbbd0cffde"
       },
@@ -1087,11 +1090,11 @@
       "group": "tools",
       "class": "tool",
       "description": "The etch cluster tool model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_6456090ae2cb42f09b3ff18670f55c3e",
+      "revisionId": "r_7bc813bf9cfa48e18d1f9be8520a96a1",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "etch-cluster-tool",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1135,20 +1138,20 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/etch-cluster-tool.glb",
-        "bytes": 452424,
-        "sha256": "24d3ebb6818f54e7e341f9b4081ea29231b64f165ab6ffc3f2af562dea915c30",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/etch-cluster-tool.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/etch-cluster-tool.glb",
+        "bytes": 452440,
+        "sha256": "da14255feeb6b30c316c316c50f9b156e94344d8c676f3b8cf21e750483b5f0b",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/etch-cluster-tool.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/etch-cluster-tool.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "24d3ebb6818f54e7e341f9b4081ea29231b64f165ab6ffc3f2af562dea915c30"
+        "statesGlbSha256": "da14255feeb6b30c316c316c50f9b156e94344d8c676f3b8cf21e750483b5f0b"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -1160,8 +1163,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/etch-cluster-tool.png",
         "sourceRevisionId": "r_6456090ae2cb42f09b3ff18670f55c3e",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -1174,9 +1178,9 @@
       "description": "The CVD/ALD cluster tool model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_5555be8ebedc496ba137ba5d47132e1b",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "cvd-ald-cluster-tool",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1220,18 +1224,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/cvd-ald-cluster-tool.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/cvd-ald-cluster-tool.glb",
         "bytes": 460756,
         "sha256": "6c097a2ddad1305ea349f37ab44757722204b71b07323bca157d8d8a21619649",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/cvd-ald-cluster-tool.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/cvd-ald-cluster-tool.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/cvd-ald-cluster-tool.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "6c097a2ddad1305ea349f37ab44757722204b71b07323bca157d8d8a21619649"
       },
@@ -1257,11 +1261,11 @@
       "group": "tools",
       "class": "tool",
       "description": "The PVD cluster tool model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
+      "revisionId": "r_f5bb7ba48f7b4dc8b603e3a998f7da76",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "pvd-cluster-tool",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1305,20 +1309,20 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/pvd-cluster-tool.glb",
-        "bytes": 416676,
-        "sha256": "e87669b3c87279389f7ef1035dc3994e81f74803c9b4ec2b81eec035da8998fb",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/pvd-cluster-tool.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/pvd-cluster-tool.glb",
+        "bytes": 416672,
+        "sha256": "2658814eed4adc37f4f3ba99190a8ccc0ef206c93259b008f50801c738a279cb",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/pvd-cluster-tool.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/pvd-cluster-tool.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "e87669b3c87279389f7ef1035dc3994e81f74803c9b4ec2b81eec035da8998fb"
+        "statesGlbSha256": "2658814eed4adc37f4f3ba99190a8ccc0ef206c93259b008f50801c738a279cb"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -1330,8 +1334,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/pvd-cluster-tool.png",
         "sourceRevisionId": "r_3ef2fa3a9e594f94b65dffe40253bd0c",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -1342,11 +1347,11 @@
       "group": "tools",
       "class": "tool",
       "description": "The single-wafer clean tool model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_c268a0f6f6174f7ba2b87e120c4344e8",
+      "revisionId": "r_40235531706e4818b24063e6c1df533c",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "single-wafer-clean-tool",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1388,20 +1393,20 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/single-wafer-clean-tool.glb",
-        "bytes": 63304,
-        "sha256": "dcc8f518e828db258990e737db96aa87b440d7772122c735f67ab32c5174b429",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/single-wafer-clean-tool.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/single-wafer-clean-tool.glb",
+        "bytes": 63308,
+        "sha256": "db226cd08b73371756ab9553b7150be10e66d0a3fd4105e2a14e16923d276335",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/single-wafer-clean-tool.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/single-wafer-clean-tool.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "dcc8f518e828db258990e737db96aa87b440d7772122c735f67ab32c5174b429"
+        "statesGlbSha256": "db226cd08b73371756ab9553b7150be10e66d0a3fd4105e2a14e16923d276335"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -1413,8 +1418,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/single-wafer-clean-tool.png",
         "sourceRevisionId": "r_c268a0f6f6174f7ba2b87e120c4344e8",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -1427,9 +1433,9 @@
       "description": "The CMP polisher model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_a8c4d8680a7f4aca96b240daa294bc4b",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "cmp-polisher",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1473,18 +1479,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/cmp-polisher.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/cmp-polisher.glb",
         "bytes": 127912,
         "sha256": "0e479e5ee9dfd2a4f389f18ccf82d1cd2fc39e628a18a577643503980b81b344",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/cmp-polisher.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/cmp-polisher.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/cmp-polisher.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "0e479e5ee9dfd2a4f389f18ccf82d1cd2fc39e628a18a577643503980b81b344"
       },
@@ -1512,9 +1518,9 @@
       "description": "The vertical furnace model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_72680f2e5830442f93afff6a94519629",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "vertical-furnace",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1557,18 +1563,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/vertical-furnace.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/vertical-furnace.glb",
         "bytes": 98668,
         "sha256": "8f92dbbe43e0ae51e7a36f955fe1edc8f4e4cbbdf020c1ae80b8ed84a6eb36b4",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/vertical-furnace.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/vertical-furnace.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vertical-furnace.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "8f92dbbe43e0ae51e7a36f955fe1edc8f4e4cbbdf020c1ae80b8ed84a6eb36b4"
       },
@@ -1596,9 +1602,9 @@
       "description": "The ion implanter model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_703483bb04b240bbaada2327534f7eef",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "ion-implanter",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1642,18 +1648,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/ion-implanter.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/ion-implanter.glb",
         "bytes": 138320,
         "sha256": "ad1a6f19be7894c0835e24cfaf4495819f25d7994ec0c5a8897aa01b4bb2af15",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/ion-implanter.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/ion-implanter.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/ion-implanter.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "ad1a6f19be7894c0835e24cfaf4495819f25d7994ec0c5a8897aa01b4bb2af15"
       },
@@ -1681,9 +1687,9 @@
       "description": "The metrology inspection tool model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_a8395c71bb304806b3093749f7ab4ed4",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "metrology-inspection-tool",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1725,18 +1731,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/metrology-inspection-tool.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/metrology-inspection-tool.glb",
         "bytes": 108984,
         "sha256": "16e618ba8266ff1a87d03975b1e1b91b5e7f619bbf13152695683705ccef7f58",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/metrology-inspection-tool.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/metrology-inspection-tool.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/metrology-inspection-tool.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "16e618ba8266ff1a87d03975b1e1b91b5e7f619bbf13152695683705ccef7f58"
       },
@@ -1762,11 +1768,11 @@
       "group": "tools",
       "class": "tool",
       "description": "The wafer prober/tester model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_7357b53066af464abb6556bdde7866d4",
+      "revisionId": "r_92007aa1ae4244fc923befba0403e87f",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "wafer-prober-tester",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1810,20 +1816,20 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/wafer-prober-tester.glb",
-        "bytes": 125036,
-        "sha256": "4a53871b19898e53b7f057107eee9d2f40bbe3ba72948df3b190d21e910662af",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/wafer-prober-tester.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/wafer-prober-tester.glb",
+        "bytes": 125044,
+        "sha256": "1c4dff379cb6248b9b24f09b24b1b46b93518454f7b1db760d96c08a5c290e34",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/wafer-prober-tester.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/wafer-prober-tester.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "4a53871b19898e53b7f057107eee9d2f40bbe3ba72948df3b190d21e910662af"
+        "statesGlbSha256": "1c4dff379cb6248b9b24f09b24b1b46b93518454f7b1db760d96c08a5c290e34"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -1835,8 +1841,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/wafer-prober-tester.png",
         "sourceRevisionId": "r_7357b53066af464abb6556bdde7866d4",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -1849,9 +1856,9 @@
       "description": "The coater/developer track model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_a2be2a40435341b9b196f678130109b4",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "coater-developer-track",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1893,18 +1900,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/coater-developer-track.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/coater-developer-track.glb",
         "bytes": 363352,
         "sha256": "5b3436743daecbbff7cfdda351e67f324950767cf6d475a967d26f3aca05a11a",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/coater-developer-track.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/coater-developer-track.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/coater-developer-track.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "5b3436743daecbbff7cfdda351e67f324950767cf6d475a967d26f3aca05a11a"
       },
@@ -1932,9 +1939,9 @@
       "description": "The EUV scanner model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_5fb445d57eec47fa9c7238b1a5ee4242",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "euv-scanner",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -1978,18 +1985,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/euv-scanner.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/euv-scanner.glb",
         "bytes": 591660,
         "sha256": "0da38997d744b40180edb9d114a4fda63b336b2356747bcb8277dfc152ca69eb",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/euv-scanner.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/euv-scanner.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/euv-scanner.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "0da38997d744b40180edb9d114a4fda63b336b2356747bcb8277dfc152ca69eb"
       },
@@ -2017,9 +2024,9 @@
       "description": "The DUV immersion scanner model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_21ec88e7bb5b4c2c9ceae59c8142d978",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "duv-immersion-scanner",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -2063,18 +2070,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/duv-immersion-scanner.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/duv-immersion-scanner.glb",
         "bytes": 408276,
         "sha256": "53e7026c98abb8e13b5b85b51b8bc5e58ee1baec74291c6971762ee6a2853efd",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/duv-immersion-scanner.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/duv-immersion-scanner.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/duv-immersion-scanner.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "53e7026c98abb8e13b5b85b51b8bc5e58ee1baec74291c6971762ee6a2853efd"
       },
@@ -2102,9 +2109,9 @@
       "description": "The subfab pump/abatement kit model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_d0ff94d7e74c487b9b822f61a1ccd171",
       "reviewStatus": "accepted",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "subfab-pump-abatement-kit",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2141,18 +2148,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/subfab-pump-abatement-kit.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/subfab-pump-abatement-kit.glb",
         "bytes": 64780,
         "sha256": "14b884d16dc0e56217ca8c07a0a1979b53b972750e8499ffb8eacf2ccd1d844d",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/subfab-pump-abatement-kit.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/subfab-pump-abatement-kit.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/subfab-pump-abatement-kit.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "14b884d16dc0e56217ca8c07a0a1979b53b972750e8499ffb8eacf2ccd1d844d"
       },
@@ -2180,9 +2187,9 @@
       "description": "The visitor gallery segment model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_cf68f8f819f34684ac183610c45596cc",
       "reviewStatus": "accepted",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "visitor-gallery-segment",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2217,18 +2224,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/visitor-gallery-segment.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/visitor-gallery-segment.glb",
         "bytes": 32104,
         "sha256": "0b0e16c3b0b6a71392e47b40a58fd36c64f20c594edcf69ac83f9f0a38326830",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/visitor-gallery-segment.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/visitor-gallery-segment.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/visitor-gallery-segment.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "0b0e16c3b0b6a71392e47b40a58fd36c64f20c594edcf69ac83f9f0a38326830"
       },
@@ -2256,9 +2263,9 @@
       "description": "The cleanroom technician model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_e1d7c6935493484d9586bcf0c21604de",
       "reviewStatus": "accepted",
-      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Opus 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Opus 5.5 · claude 2.1.280",
         "asset": "cleanroom-technician",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2297,18 +2304,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/cleanroom-technician.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/cleanroom-technician.glb",
         "bytes": 103868,
         "sha256": "d7eb534f128a6133e0c21feb0b371e0294e1b2aca551e596cba30e73590f9fbd",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/cleanroom-technician.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/cleanroom-technician.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/cleanroom-technician.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "d7eb534f128a6133e0c21feb0b371e0294e1b2aca551e596cba30e73590f9fbd"
       },
@@ -2334,13 +2341,13 @@
       "group": "people",
       "class": "people",
       "description": "The humanoid work robot model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_9f717d17eec74f2dbd4c338612207ed5",
+      "revisionId": "r_87ffa104a0c04a408c928fa7260fd566",
       "reviewStatus": "accepted",
-      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "humanoid-work-robot",
-        "requestedEffort": "high",
+        "requestedEffort": null,
         "confirmedEffort": null
       },
       "placedInScene": true,
@@ -2379,20 +2386,20 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/humanoid-work-robot.glb",
-        "bytes": 200656,
-        "sha256": "cd118485e113219ce8de9bb6d3b873634fb7dadebf81028142d0f6a644f88aa2",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/humanoid-work-robot.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/humanoid-work-robot.glb",
+        "bytes": 163488,
+        "sha256": "44a3621ffb0347e477b7622315971cb5ec429cabb3494b9f0af56d81a49fb877",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/humanoid-work-robot.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/humanoid-work-robot.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "cd118485e113219ce8de9bb6d3b873634fb7dadebf81028142d0f6a644f88aa2"
+        "statesGlbSha256": "44a3621ffb0347e477b7622315971cb5ec429cabb3494b9f0af56d81a49fb877"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -2404,8 +2411,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff2/humanoid-work-robot.png",
         "sourceRevisionId": "r_9f717d17eec74f2dbd4c338612207ed5",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -2416,11 +2424,11 @@
       "group": "people",
       "class": "robot",
       "description": "The AMR floor robot model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_a27481224b474e9cb1dd747c45a71e23",
+      "revisionId": "r_23d6cdf68cc748a7a0005aa4c3e0a58f",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "amr-floor-robot-fit",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -2463,20 +2471,20 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/amr-floor-robot.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/amr-floor-robot.glb",
         "bytes": 77144,
-        "sha256": "ceb4d9565c396bed03d9ffd704447caac5e38e665e61224e0c092ec6df05da32",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/amr-floor-robot.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "sha256": "6740d2d346c98e79a438b7cec9698f31aa5b3331c63bf96894dfafb77f701195",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/amr-floor-robot.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/amr-floor-robot.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "ceb4d9565c396bed03d9ffd704447caac5e38e665e61224e0c092ec6df05da32"
+        "statesGlbSha256": "6740d2d346c98e79a438b7cec9698f31aa5b3331c63bf96894dfafb77f701195"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -2488,8 +2496,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-320.avif 320w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-480.avif 480w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-672.avif 672w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-768.avif 768w, /media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/foundry-floor/ff3/amr-floor-robot.png",
         "sourceRevisionId": "r_a27481224b474e9cb1dd747c45a71e23",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -2502,9 +2511,9 @@
       "description": "The tool-front robot arm model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_14bc5f09d6064a6aa8c20234c34b5d78",
       "reviewStatus": "review-candidate",
-      "author": "Codex \u00b7 model and harness version not recorded",
+      "author": "Codex · model and harness version not recorded",
       "attribution": {
-        "author": "Codex \u00b7 model and harness version not recorded",
+        "author": "Codex · model and harness version not recorded",
         "asset": "tool-front-robot-arm-fit",
         "requestedEffort": null,
         "confirmedEffort": null
@@ -2549,18 +2558,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/tool-front-robot-arm.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/tool-front-robot-arm.glb",
         "bytes": 135444,
         "sha256": "3ae581fbee8b2e7a184b9ef22d5594c6a75f85dcc5e72b2da16bc1dec06e3010",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tool-front-robot-arm.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/tool-front-robot-arm.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/tool-front-robot-arm.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "3ae581fbee8b2e7a184b9ef22d5594c6a75f85dcc5e72b2da16bc1dec06e3010"
       },
@@ -2588,9 +2597,9 @@
       "description": "The level section module model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_3b3d090fa0494380bdcaafaf6f3a22f2",
       "reviewStatus": "accepted",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "level-section-module",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -2631,18 +2640,18 @@
         "cutFaceCaps_ffuHousing"
       ],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/level-section-module.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/level-section-module.glb",
         "bytes": 322096,
         "sha256": "20d5f55ea0f97f29d5adccc45e090bcb605fad99e05733163a89c15a29d4cd2c",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/level-section-module.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/level-section-module.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/level-section-module.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "20d5f55ea0f97f29d5adccc45e090bcb605fad99e05733163a89c15a29d4cd2c"
       },
@@ -2670,9 +2679,9 @@
       "description": "The s1 head w model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_c2d99522b58344b69dca0ad1ce41928a",
       "reviewStatus": "review-candidate",
-      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Opus 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Opus 5.5 · claude 2.1.280",
         "asset": "a_99c239a460b54a6db070df7d28338c63",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2707,18 +2716,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s1-head-w.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s1-head-w.glb",
         "bytes": 794948,
         "sha256": "12be5743a5e422416602ce42ad36b8143ad203e2672a2c00043e1410564e78cf",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s1-head-w.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s1-head-w.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s1-head-W.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "12be5743a5e422416602ce42ad36b8143ad203e2672a2c00043e1410564e78cf"
       },
@@ -2746,9 +2755,9 @@
       "description": "The s1 head e model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_df7dae73a55c46f1853280912ac1d593",
       "reviewStatus": "review-candidate",
-      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Opus 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Opus 5.5 · claude 2.1.280",
         "asset": "a_a56d232bf5674ad78607864566f2e4e0",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2783,18 +2792,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s1-head-e.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s1-head-e.glb",
         "bytes": 794948,
         "sha256": "694ef50d50de5f4f28be10a0b087b9493e19ad3d7083bc95c717c37a292114c0",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s1-head-e.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s1-head-e.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s1-head-E.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "694ef50d50de5f4f28be10a0b087b9493e19ad3d7083bc95c717c37a292114c0"
       },
@@ -2822,9 +2831,9 @@
       "description": "The s1 head w far model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_e8204a9885e14c2c9d09a22f755a80da",
       "reviewStatus": "review-candidate",
-      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Opus 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Opus 5.5 · claude 2.1.280",
         "asset": "a_eb6754b1b7fe4c7a8560895c763cb48c",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2859,18 +2868,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s1-head-w-far.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s1-head-w-far.glb",
         "bytes": 32280,
         "sha256": "0bcce2163fbbfaa787628efffc8362405ed3b42a7614d3161e6bb33e790f83ea",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s1-head-w-far.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s1-head-w-far.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s1-head-W-far.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "0bcce2163fbbfaa787628efffc8362405ed3b42a7614d3161e6bb33e790f83ea"
       },
@@ -2898,9 +2907,9 @@
       "description": "The s1 head e far model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_2e4899a609764cf6a993093253b75fd8",
       "reviewStatus": "review-candidate",
-      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Opus 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Opus 5.5 · claude 2.1.280",
         "asset": "a_7d13f66d7d7b45a98136055b3a759856",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -2935,18 +2944,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s1-head-e-far.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s1-head-e-far.glb",
         "bytes": 32280,
         "sha256": "6d5a620ef1a11c1964797663d0465ce48170049440e1b1df80b6eeb22374cdcb",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s1-head-e-far.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s1-head-e-far.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s1-head-E-far.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "6d5a620ef1a11c1964797663d0465ce48170049440e1b1df80b6eeb22374cdcb"
       },
@@ -2974,9 +2983,9 @@
       "description": "The s4 canopy model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_e6e9b7f634014bc6ab698dcbb0df91a5",
       "reviewStatus": "review-candidate",
-      "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Opus 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Opus 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Opus 5.5 · claude 2.1.280",
         "asset": "a_ac56fc354640463fabb09a9d9b1a3879",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3011,18 +3020,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s4-canopy.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s4-canopy.glb",
         "bytes": 40252,
         "sha256": "5a847c587b59fa62b4c6e4113a605eae1ec4a8f760d99d5817b8fd7c0b68f0c7",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s4-canopy.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s4-canopy.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s4-canopy.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "5a847c587b59fa62b4c6e4113a605eae1ec4a8f760d99d5817b8fd7c0b68f0c7"
       },
@@ -3050,9 +3059,9 @@
       "description": "The s2 hall w model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_360a18d9520a47ba8f74803411d880d7",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "a_700fda75271246d686ed6ecbd9c02520",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3087,18 +3096,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s2-hall-w.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s2-hall-w.glb",
         "bytes": 641092,
         "sha256": "7b0346a7c31c8f76cdf5689089ba2c130ebf160b5df74c78b0f6a49514c0a41b",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s2-hall-w.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s2-hall-w.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s2-hall-W.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "7b0346a7c31c8f76cdf5689089ba2c130ebf160b5df74c78b0f6a49514c0a41b"
       },
@@ -3126,9 +3135,9 @@
       "description": "The s2 hall e model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_9240eafbf13942e4a6263b1012889b2d",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "a_20881fa191c9400e8253ee566f285583",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3163,18 +3172,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s2-hall-e.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s2-hall-e.glb",
         "bytes": 641092,
         "sha256": "567561f70e74675a89185701468ef9ffa995cb3307b3661130ae2b6cd00b26c7",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s2-hall-e.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s2-hall-e.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s2-hall-E.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "567561f70e74675a89185701468ef9ffa995cb3307b3661130ae2b6cd00b26c7"
       },
@@ -3202,9 +3211,9 @@
       "description": "The s2 hall w far model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_47f890f3d7314130ade16990037c4519",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "a_c6f2f32770a741e88e2adbd699c717bb",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3239,18 +3248,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s2-hall-w-far.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s2-hall-w-far.glb",
         "bytes": 57480,
         "sha256": "7eef9f8b6ffbba459d96bd5f3e6c1efc05425ad4148d68717ab26c198cf2ad35",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s2-hall-w-far.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s2-hall-w-far.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s2-hall-W-far.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "7eef9f8b6ffbba459d96bd5f3e6c1efc05425ad4148d68717ab26c198cf2ad35"
       },
@@ -3278,9 +3287,9 @@
       "description": "The s2 hall e far model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_d946a31fc6c041a8b3d6ca0e6006fb36",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "a_3446d4140fb441929bafb1858ddfbc56",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3315,18 +3324,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s2-hall-e-far.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s2-hall-e-far.glb",
         "bytes": 57476,
         "sha256": "eeb5315c3d1806c3baf31fc7bb960dde0a0b3e13d8a17d123152ac73c5e8365f",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s2-hall-e-far.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s2-hall-e-far.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s2-hall-E-far.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "eeb5315c3d1806c3baf31fc7bb960dde0a0b3e13d8a17d123152ac73c5e8365f"
       },
@@ -3354,9 +3363,9 @@
       "description": "The s3 link model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_b2f1a7eab1cc48fb8d2561914e8888d3",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "a_f5fc41aa4c354116908f4b2cd26c4958",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3391,18 +3400,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s3-link.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s3-link.glb",
         "bytes": 72040,
         "sha256": "246bbf1956c794d55720ff0ba53bd817e6cac3962dad44a3c7973bd470382a3c",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s3-link.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s3-link.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s3-link.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "246bbf1956c794d55720ff0ba53bd817e6cac3962dad44a3c7973bd470382a3c"
       },
@@ -3430,9 +3439,9 @@
       "description": "The s5 split bridge model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_8bbd9104498f4aad974d4f3cb29e810e",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "s5-split-bridge",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3467,18 +3476,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s5-split-bridge.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s5-split-bridge.glb",
         "bytes": 356080,
         "sha256": "1086e13f6306afe7b19fe1c520360cd37e80eda61894602060ff3a29b56a7083",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s5-split-bridge.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s5-split-bridge.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s5-split-bridge.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "1086e13f6306afe7b19fe1c520360cd37e80eda61894602060ff3a29b56a7083"
       },
@@ -3506,9 +3515,9 @@
       "description": "The s5 split bridge far model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_51b50c962e754a098db9b438367ed1b1",
       "reviewStatus": "review-candidate",
-      "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+      "author": "Claude Sonnet 5.5 · claude 2.1.280",
       "attribution": {
-        "author": "Claude Sonnet 5.5 \u00b7 claude 2.1.280",
+        "author": "Claude Sonnet 5.5 · claude 2.1.280",
         "asset": "s5-split-bridge-far",
         "requestedEffort": "max",
         "confirmedEffort": null
@@ -3543,18 +3552,18 @@
       "lod": null,
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/s5-split-bridge-far.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/s5-split-bridge-far.glb",
         "bytes": 61004,
         "sha256": "380887f36e9cde62d202b24244162186f35f74f71e1f99be39e809191dc81e30",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/s5-split-bridge-far.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/s5-split-bridge-far.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/structures/s5-split-bridge-far.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "380887f36e9cde62d202b24244162186f35f74f71e1f99be39e809191dc81e30"
       },
@@ -3580,15 +3589,15 @@
       "group": "vehicles",
       "class": "vehicles",
       "description": "The sedan model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
+      "revisionId": "r_35222363b36f4d2da720311bcad86215",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "generic-sedan",
-        "requestedEffort": "ultra",
+        "requestedEffort": null,
         "confirmedEffort": null,
-        "note": "Original asset: Claude Sonnet 5.5. This preserved child was authored with GPT-6 Astra in Codex. Its exact revision names a separately sealed CLI author run; requested effort is recorded and effective backend effort is not independently confirmed. Owner review is pending."
+        "note": "Flush-face fix: rearLampBuf (Taillight, LOD1 patch on a steep side-shoulder facet): lamp triangles lifted along facet normal by the amount needed to reach 1 mm perpendicular. Saved with Claude Sonnet 5.5 in claude-code; harness version and requested effort not recorded. Owner review is pending."
       },
       "placedInScene": true,
       "metrics": {
@@ -3624,20 +3633,20 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/sedan.glb",
-        "bytes": 117780,
-        "sha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/sedan.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/sedan.glb",
+        "bytes": 117972,
+        "sha256": "f925ac655662e848fd3a42b91468767ca0c6273d2487c39a97ed04cb41f1a30a",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/sedan.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vehicles/sedan.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "1bad1074f0583dfb7c650cfe6e0cae7633b93fb1dc614f50d36ed834d469b212"
+        "statesGlbSha256": "f925ac655662e848fd3a42b91468767ca0c6273d2487c39a97ed04cb41f1a30a"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -3649,8 +3658,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/sedan-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/sedan.png",
         "sourceRevisionId": "r_92ee0ac3d5cf4b258cc97d20ec941461",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -3663,9 +3673,9 @@
       "description": "The hatchback model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_74f393f06996497a9dce6c5ed50c2d62",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+      "author": "GPT-6 Astra · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+        "author": "GPT-6 Astra · codex 0.159.2",
         "asset": "generic-hatchback",
         "requestedEffort": "ultra",
         "confirmedEffort": null,
@@ -3705,18 +3715,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/hatchback.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/hatchback.glb",
         "bytes": 118752,
         "sha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/hatchback.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/hatchback.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vehicles/hatchback.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "4030ac7f9c3a0ee141189b01615da4016353c6302f0805cf9d66dd756a32a0f0"
       },
@@ -3742,22 +3752,22 @@
       "group": "vehicles",
       "class": "vehicles",
       "description": "The suv model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
+      "revisionId": "r_0b3396ba73a6479a8d2fbf0f82e2463e",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "generic-suv",
-        "requestedEffort": "ultra",
+        "requestedEffort": null,
         "confirmedEffort": null,
-        "note": "Original asset: Claude Sonnet 5.5. This preserved child was authored with GPT-6 Astra in Codex. Its exact revision names a separately sealed CLI author run; requested effort is recorded and effective backend effort is not independently confirmed. Owner review is pending."
+        "note": "Flush-face fix: Mesh_Taillight_L1: LOD1 rear taillight patch upper z edge 0.90 -> 0.86 so it stops before the steep rear-cor. Saved with Claude Sonnet 5.5 in claude-code; harness version and requested effort not recorded. Owner review is pending."
       },
       "placedInScene": true,
       "metrics": {
         "triangles": 3794,
-        "trianglesAllTiers": 4778,
+        "trianglesAllTiers": 4772,
         "trianglesDetailed": 3794,
-        "trianglesLod1": 984,
+        "trianglesLod1": 978,
         "trianglesHidden": 0,
         "bounds": [
           4.9176,
@@ -3786,20 +3796,20 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/suv.glb",
-        "bytes": 120120,
-        "sha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/suv.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/suv.glb",
+        "bytes": 119940,
+        "sha256": "9d0fca47fa6d1a4187b2e27efa3bd008f79e9fd8c25f54b104e4cad2d54ed922",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/suv.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vehicles/suv.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "3193157586a99fe8710be2303fea754c0b0799557a6d5757528b5b7c83e612b2"
+        "statesGlbSha256": "9d0fca47fa6d1a4187b2e27efa3bd008f79e9fd8c25f54b104e4cad2d54ed922"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -3811,8 +3821,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/suv-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/suv-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/suv.png",
         "sourceRevisionId": "r_b4cc9048731b4c039de0b87ca6e75c17",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -3825,9 +3836,9 @@
       "description": "The pickup model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_218be4189a1b43e7b307c2263ba4f954",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+      "author": "GPT-6 Astra · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+        "author": "GPT-6 Astra · codex 0.159.2",
         "asset": "a_557b9bd6c2c34340804e802081a9b983",
         "requestedEffort": "ultra",
         "confirmedEffort": null,
@@ -3867,18 +3878,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/pickup.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/pickup.glb",
         "bytes": 170184,
         "sha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/pickup.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/pickup.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vehicles/pickup.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "584240cb33df27714545c6fafc2496f1459bdadad49b2b827be13a8e936b6d8f"
       },
@@ -3904,15 +3915,15 @@
       "group": "vehicles",
       "class": "vehicles",
       "description": "The box truck model from the Foundry Floor pack, seen from the front right.",
-      "revisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
+      "revisionId": "r_56e3859a78d84f5f922e5f64fe747f06",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+      "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
       "attribution": {
-        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+        "author": "Claude Sonnet 5.5 · claude-code (version not recorded)",
         "asset": "a_2092ca0610c749b386c14c07dbaf4236",
-        "requestedEffort": "ultra",
+        "requestedEffort": null,
         "confirmedEffort": null,
-        "note": "Original asset: Claude Sonnet 5.5. This preserved child was authored with GPT-6 Astra in Codex. Its exact revision names a separately sealed CLI author run; requested effort is recorded and effective backend effort is not independently confirmed. Owner review is pending."
+        "note": "Flush-face fix: rear door chrome bars (Chrome, 4 boxes at BX0): depth 0.012 to 0.016 centred 2 mm further out so the back face leaves the tail trim plane. Saved with Claude Sonnet 5.5 in claude-code; harness version and requested effort not recorded. Owner review is pending."
       },
       "placedInScene": true,
       "metrics": {
@@ -3948,20 +3959,20 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/box-truck.glb",
-        "bytes": 169728,
-        "sha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/box-truck.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/box-truck.glb",
+        "bytes": 169724,
+        "sha256": "deed8053c8c9675a5687ecdd2ad5f1715177fce893607b74757b5b0f12503cc8",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/box-truck.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vehicles/box-truck.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
-        "statesGlbSha256": "4cfccfdb2ddd15fc6ab9940e0406fe2b11bbef9d6098d783940cfeb572464420"
+        "statesGlbSha256": "deed8053c8c9675a5687ecdd2ad5f1715177fce893607b74757b5b0f12503cc8"
       },
       "license": "CC0-1.0",
       "poster": {
@@ -3973,8 +3984,9 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-320.avif 320w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-480.avif 480w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-672.avif 672w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-768.avif 768w, /media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/vehicles/r4-local-review/box-truck.png",
         "sourceRevisionId": "r_538b8a19c46d4086b456e27b32ee7d33",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
+        "exactRevision": false,
+        "rig": "review-neutral-v1",
+        "revisionQualification": "Earlier preserved revision; the current revision poster is pending."
       }
     },
     {
@@ -3987,9 +3999,9 @@
       "description": "The transit bus model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_85ff097a61384efab445c55372d3b6f5",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+      "author": "GPT-6 Astra · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6 Astra \u00b7 codex 0.159.2",
+        "author": "GPT-6 Astra · codex 0.159.2",
         "asset": "a_a8c030b2570f4ae5aa54eefbd3767f4c",
         "requestedEffort": "ultra",
         "confirmedEffort": null,
@@ -4029,18 +4041,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/transit-bus.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/transit-bus.glb",
         "bytes": 194148,
         "sha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/transit-bus.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/transit-bus.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vehicles/transit-bus.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067"
       },
@@ -4068,9 +4080,9 @@
       "description": "The tree broad l model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_9f23088183b1495a9d398603dae05ff5",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_b78c96bc78ba49f3ad8cea40aa50eb4c",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4109,18 +4121,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/tree-broad-l.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/tree-broad-l.glb",
         "bytes": 85516,
         "sha256": "0dbb15475c0fbbb8dd7bc625ba87fc3f195ab4ba3ea299323d586e88eb14163f",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-broad-l.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/tree-broad-l.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vegetation/tree-broad-l.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "0dbb15475c0fbbb8dd7bc625ba87fc3f195ab4ba3ea299323d586e88eb14163f"
       },
@@ -4148,9 +4160,9 @@
       "description": "The tree broad m model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_947dbc2b30b94fdf85804e19fb665b4d",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_af17477e70f74a5dacd28c8440fb857d",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4189,18 +4201,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/tree-broad-m.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/tree-broad-m.glb",
         "bytes": 85532,
         "sha256": "c62b5179f457c3ad4090d993c6b8b70322c9c5f908419c267dc12d82be9a1001",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-broad-m.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/tree-broad-m.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vegetation/tree-broad-m.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "c62b5179f457c3ad4090d993c6b8b70322c9c5f908419c267dc12d82be9a1001"
       },
@@ -4228,9 +4240,9 @@
       "description": "The tree broad s model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_aad434508024485a80b48effabe15185",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_57cf88474beb46d19832ce0f43e93b9c",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4269,18 +4281,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/tree-broad-s.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/tree-broad-s.glb",
         "bytes": 73420,
         "sha256": "7d6b786717862c2a75acec50a3dc401a4f40b529a9bb623c5a56063cc6964e21",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-broad-s.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/tree-broad-s.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vegetation/tree-broad-s.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "7d6b786717862c2a75acec50a3dc401a4f40b529a9bb623c5a56063cc6964e21"
       },
@@ -4308,9 +4320,9 @@
       "description": "The tree conifer l model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_b7d3879520f24b349d6a6ae6701ae2c3",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_2314a308a2074b0089a66cd18acac29e",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4349,18 +4361,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/tree-conifer-l.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/tree-conifer-l.glb",
         "bytes": 121056,
         "sha256": "d937b5048f3eb276aa007e8b668fe5e24053bb69e22e8f42c349e32190788a73",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-conifer-l.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/tree-conifer-l.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vegetation/tree-conifer-l.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "d937b5048f3eb276aa007e8b668fe5e24053bb69e22e8f42c349e32190788a73"
       },
@@ -4388,9 +4400,9 @@
       "description": "The tree conifer m model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_e551108244024278bd4ae74f4d30346e",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_9152a27cdfac4d47abfd3eeecba986f5",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4429,18 +4441,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/tree-conifer-m.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/tree-conifer-m.glb",
         "bytes": 104352,
         "sha256": "436fd076cafe8c7fa493076e66a726163870874adca35c56804ef9cb290210fb",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-conifer-m.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/tree-conifer-m.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vegetation/tree-conifer-m.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "436fd076cafe8c7fa493076e66a726163870874adca35c56804ef9cb290210fb"
       },
@@ -4468,9 +4480,9 @@
       "description": "The tree ornamental model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_6f6398c81f134c3fb7880fd2bc7537e4",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_d652aa1bc6594109ab5792a12847f75f",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4509,18 +4521,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/tree-ornamental.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/tree-ornamental.glb",
         "bytes": 105728,
         "sha256": "3d0e073b6bae2ec453c1920449684ed27b5e4c9023c5e82bf2d08b0057f3fd94",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/tree-ornamental.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/tree-ornamental.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vegetation/tree-ornamental.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "3d0e073b6bae2ec453c1920449684ed27b5e4c9023c5e82bf2d08b0057f3fd94"
       },
@@ -4548,9 +4560,9 @@
       "description": "The shrub mound model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_37b46919727c4c8a8bafe8884635a17b",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_04e07c6b49f94dce8bb469a89b253bab",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4589,18 +4601,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/shrub-mound.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/shrub-mound.glb",
         "bytes": 19248,
         "sha256": "4adab905c0337a72d6b426de941fbede75d27ad8deca7095435258758409db16",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/shrub-mound.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/shrub-mound.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vegetation/shrub-mound.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "4adab905c0337a72d6b426de941fbede75d27ad8deca7095435258758409db16"
       },
@@ -4628,9 +4640,9 @@
       "description": "The hedge 4m model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_7b34245c9ea04e96ad8e449006f1f806",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_4168e827aacb40aeb1847781e1c5d88d",
         "requestedEffort": "high",
         "confirmedEffort": null
@@ -4669,18 +4681,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/hedge-4m.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/hedge-4m.glb",
         "bytes": 6996,
         "sha256": "e52074d59c3f73e1cedf778d77546217c778043defd208abe359a96e7c8ef0b5",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/hedge-4m.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/hedge-4m.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/vegetation/hedge-4m.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "e52074d59c3f73e1cedf778d77546217c778043defd208abe359a96e7c8ef0b5"
       },
@@ -4708,9 +4720,9 @@
       "description": "The truck tractor model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_bbd6fc0083764d728aa0c796fb33ab91",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_94bce49c4e934f20a3c188bc1d7f51d5",
         "requestedEffort": "high",
         "confirmedEffort": null,
@@ -4750,18 +4762,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/truck-tractor.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/truck-tractor.glb",
         "bytes": 65744,
         "sha256": "180d2ccb1d3eadb5aa00198df031b813b2a1e288ed2d48c8e22c081663184093",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/truck-tractor.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/truck-tractor.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/freight/truck-tractor.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "180d2ccb1d3eadb5aa00198df031b813b2a1e288ed2d48c8e22c081663184093"
       },
@@ -4789,9 +4801,9 @@
       "description": "The trailer dryvan model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_900808c392da42e899ba67a161845870",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_33ef365199464573912c7c7a771b37c7",
         "requestedEffort": "high",
         "confirmedEffort": null,
@@ -4831,18 +4843,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/trailer-dryvan.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/trailer-dryvan.glb",
         "bytes": 44968,
         "sha256": "729aeda48969f322d7deb524c0ed502b53b98cd057cedfb2713fa35f67eb55ea",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/trailer-dryvan.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/trailer-dryvan.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/freight/trailer-dryvan.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "729aeda48969f322d7deb524c0ed502b53b98cd057cedfb2713fa35f67eb55ea"
       },
@@ -4870,9 +4882,9 @@
       "description": "The trailer flatbed model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_7e81c6c0166b4142abad776a6ebb68d1",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_1c0fdc7dfefd4b1593e587f5a964467f",
         "requestedEffort": "high",
         "confirmedEffort": null,
@@ -4912,18 +4924,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/trailer-flatbed.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/trailer-flatbed.glb",
         "bytes": 49420,
         "sha256": "e7949ebba01b3784183e9769361d98986494e26a91ecf2829d9383da609f5e1e",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/trailer-flatbed.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/trailer-flatbed.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/freight/trailer-flatbed.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "e7949ebba01b3784183e9769361d98986494e26a91ecf2829d9383da609f5e1e"
       },
@@ -4951,9 +4963,9 @@
       "description": "The trailer tanker model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_247bb2b5dbd048889d3efd6c95aa20e0",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_2f10f10f73ab474c9d624e25f363b469",
         "requestedEffort": "high",
         "confirmedEffort": null,
@@ -4993,18 +5005,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/trailer-tanker.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/trailer-tanker.glb",
         "bytes": 72368,
         "sha256": "77233b130ee9b8e62924cdaa568ef4cbabcb458a3c96864dee3de46f76de44fa",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/trailer-tanker.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/trailer-tanker.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/freight/trailer-tanker.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "77233b130ee9b8e62924cdaa568ef4cbabcb458a3c96864dee3de46f76de44fa"
       },
@@ -5032,9 +5044,9 @@
       "description": "The van delivery model from the Foundry Floor pack, seen from the front right.",
       "revisionId": "r_961acb32238d428192bdd939da41ae6c",
       "reviewStatus": "review-candidate",
-      "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+      "author": "GPT-6.1 Sol · codex 0.159.2",
       "attribution": {
-        "author": "GPT-6.1 Sol \u00b7 codex 0.159.2",
+        "author": "GPT-6.1 Sol · codex 0.159.2",
         "asset": "a_595dd1e9c1ce4f9d9e6e9d19daace9ac",
         "requestedEffort": "high",
         "confirmedEffort": null,
@@ -5074,18 +5086,18 @@
       },
       "hideByDefault": [],
       "runtimeDownload": {
-        "path": "packs/foundry-floor/ff3-review2/models/van-delivery.glb",
+        "path": "packs/foundry-floor/ff3-review2-flush2/models/van-delivery.glb",
         "bytes": 47228,
         "sha256": "c89bd841fa3d108e51970d57e7371b500a6afed5a299138e97a61a80f71fd11a",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/models/van-delivery.glb",
-        "archive": "packs/foundry-floor/ff3-review2/foundry-floor-ff3-review2-models.zip",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/models/van-delivery.glb",
+        "archive": "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
         "member": "models/freight/van-delivery.glb"
       },
       "licence": {
-        "path": "packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
-        "bytes": 22029,
-        "sha256": "7f0214cc3f497d0829913b6dfa23eebf44ef110288a59404f0551b69dc779abc",
-        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2/licenses/ASSET-LICENSE.txt",
+        "path": "packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
+        "bytes": 25299,
+        "sha256": "1981021a1cd0e2ade13908ed9d2f443c9946e77b6823855ad662beb5a4732047",
+        "url": "https://assets.kilnstudio.tools/packs/foundry-floor/ff3-review2-flush2/licenses/ASSET-LICENSE.txt",
         "spdx": "CC0-1.0",
         "statesGlbSha256": "c89bd841fa3d108e51970d57e7371b500a6afed5a299138e97a61a80f71fd11a"
       },
