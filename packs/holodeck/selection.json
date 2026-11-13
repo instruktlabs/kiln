@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "holodeck-20261028-02",
+  "release": "holodeck-20261113-01",
   "licence": "CC0-1.0",
   "versions": "final-only",
   "packs": {
@@ -8,11 +8,11 @@
       "scene": "tidemark",
       "source": {
         "kind": "holodeck-example",
-        "ref": "main",
-        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
         "path": "examples/tidemark",
         "sourceRevision": 8,
-        "worldSha256": "68564b749eb5e4defc07dc0d1a2d3fb8e0552f4368962b906130276e19ebfa2e"
+        "worldSha256": "f401eac231a60ae7f61227ae1df376116bf3a6c01df0e10e0aaab9ca0b039baf"
       },
       "assets": [
         "cove-structure",
@@ -43,9 +43,12 @@
     "holodeck-courtyard": {
       "scene": "courtyard",
       "source": {
-        "kind": "holodeck-world",
-        "revision": 9,
-        "worldSha256": "7f1069331680842f08c289661784adbfe718aafa56618aeb4a3900544b8cc9c4"
+        "kind": "holodeck-example",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "path": "examples/courtyard",
+        "sourceRevision": 9,
+        "worldSha256": "4f618caadcb19c22c56ff436b4728238f367bc9c16d06c5a731addecd58fabac"
       },
       "assets": [
         "cove-structure",
@@ -86,8 +89,8 @@
       "scene": "cove",
       "source": {
         "kind": "holodeck-modules",
-        "ref": "main",
-        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
         "files": "assets/cove/modules/*/provenance.json, public/assets/cove-modules/*.glb"
       },
       "assets": [
@@ -105,11 +108,11 @@
       "scene": "crescent-cove",
       "source": {
         "kind": "holodeck-example",
-        "ref": "main",
-        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
         "path": "examples/crescent-cove",
         "sourceRevision": 17,
-        "worldSha256": "5dc28372550010c247e31681c5270341da08b16e889c62bce16143dc3bc6f5b2"
+        "worldSha256": "6012774993f45dd4700c97331968187f412967a369000aa00c9fc4b9fbc3c850"
       },
       "assets": [
         "cove-structure",
@@ -167,11 +170,11 @@
       "scene": "winter-mountainside-cabin",
       "source": {
         "kind": "holodeck-example",
-        "ref": "2cfae32d1e2e86add2c8b94b5610b827761f93bb",
-        "commit": "2cfae32d1e2e86add2c8b94b5610b827761f93bb",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
         "path": "examples/winter-mountainside-cabin",
         "sourceRevision": 2,
-        "worldSha256": "0f9e7bd0e84240adb26170181fc965f54d808c418067f8a447fcf13c584831d3"
+        "worldSha256": "2d2c0b3685e002af23cb2c3c5b06c2260e49f055c094e1a15f34aa0c15b099fd"
       },
       "assets": [
         "cove-moodboard",
@@ -236,11 +239,11 @@
       "scene": "meridian-sanctuary",
       "source": {
         "kind": "holodeck-example",
-        "ref": "046b70ded7009fd5291b8a9d8949a61469a960e0",
-        "commit": "046b70ded7009fd5291b8a9d8949a61469a960e0",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
         "path": "examples/meridian-sanctuary",
         "sourceRevision": 27,
-        "worldSha256": "f1b53cdd6f9f4433eaf57abbb8d477333164d3f9db78c45afdf2c6d2f67dcb3f"
+        "worldSha256": "941829beb4a8ebc7784edcf442172fe0c11ab63405127f695e32c92fdefc037b"
       },
       "assets": [
         "cove-structure",
@@ -304,23 +307,23 @@
       "store": "holodeck-assets",
       "collection": "project",
       "assetId": "a_a6387eb5c9ba4b9b804eca10577e4868",
-      "revisionId": "r_2387ce274123402dbdafd818e6fb0043",
-      "parentRevision": "r_e96d8b9675f845d0b6cb20087815c302",
+      "revisionId": "r_1b8338546f534885a1529037bc207e94",
+      "parentRevision": "r_2387ce274123402dbdafd818e6fb0043",
       "manifest": {
-        "bytes": 16670,
-        "sha256": "93093822cdea74b8755d96773139809144420ceac498eab2559d66bdb3ce127a"
+        "bytes": 19623,
+        "sha256": "c852cea716ca208c951a0a67b18b85809703a317976ba9af2d077998aaf0c585"
       },
       "source": {
-        "bytes": 15819,
-        "sha256": "98b414a7f72a3c06ce3a5df84b43d23cc78c3e6dfc14ad4c2eab287feae270de"
+        "bytes": 15820,
+        "sha256": "c16671e104172c544f8663f9931786e0dd01219f365a073d1465e8952a1b6964"
       },
       "canonical": {
         "bytes": 1398268,
-        "sha256": "cf10e38925edffb8a14178de42874d09b9ae881e93e37f27fe3d2587c27c2ffd"
+        "sha256": "6ee4a843021c46d7e35ee42055d6124315b48626c23b071ad1ed0e9658487338"
       },
       "preview": {
-        "bytes": 273831,
-        "sha256": "3f5b3dd49640df669a247218a461ab1f2423b396861b0dc1cca35a2021589584"
+        "bytes": 275130,
+        "sha256": "5e848a7ef7eae5275e977dc64f6b3db4c1ae6d64466110e4214a75f62ad6c706"
       },
       "placements": [
         {
@@ -394,19 +397,19 @@
       "store": "holodeck-assets",
       "collection": "project",
       "assetId": "a_8054e921736c4dd2861a28cd63a9213f",
-      "revisionId": "r_e35c94ed7da74b32a49f2d9933babba8",
-      "parentRevision": "r_6602fd828a5341eeaa0877fc58289960",
+      "revisionId": "r_f73aa8b1c4b749dd8076bf152b29afe7",
+      "parentRevision": "r_e35c94ed7da74b32a49f2d9933babba8",
       "manifest": {
-        "bytes": 21020,
-        "sha256": "f7b27666caa13b600a7c3de5a29343f64355c0dd14aeb78537342c8ba83bb8a7"
+        "bytes": 23848,
+        "sha256": "d9588ec69ae8acb0e76addc9edb892735f58dbe4e286f8094dfbc26eed3aa4a8"
       },
       "source": {
         "bytes": 17880,
-        "sha256": "451abb23d98291784cefd05ba33d9c87388160dcf8fb71cc64a879a665f59689"
+        "sha256": "c15299dda5f2049af7ac18f3c1abb680ea67df6b0397db71878761634515a58d"
       },
       "canonical": {
         "bytes": 890340,
-        "sha256": "e5f0e8495f9bdc06646fe2d9910f873c268f55d0d34746e53e016e19e856324f"
+        "sha256": "3431cc9c084ebc748f00f954ee89b3c3de72fa690da02d8e49708e67272868cf"
       },
       "preview": {
         "bytes": 29954,
@@ -809,23 +812,23 @@
       "store": "island-trial",
       "collection": "project",
       "assetId": "a_b6de83703b59493bbbbc3d800132fd81",
-      "revisionId": "r_a534f55c922e48b19818dfc995437c5c",
-      "parentRevision": "r_35c463784a0548a8aa4bf8ee680dc8a3",
+      "revisionId": "r_05397fd09d1f4c26b04badef4d401911",
+      "parentRevision": "r_a534f55c922e48b19818dfc995437c5c",
       "manifest": {
-        "bytes": 10966,
-        "sha256": "23aaa0dbe907cc15dd6a349cc04202fa63ed6115dd065a1fab8a96e46b04e911"
+        "bytes": 12537,
+        "sha256": "bc7585271c626c8737d94214dc7bc236ea22e93c56d9cc98f88196d2fa3fd845"
       },
       "source": {
-        "bytes": 3504,
-        "sha256": "58a3f1edf8443391e7f873ffaafdc3e542cdb1ad83a9b89ba5359d4aebe29df9"
+        "bytes": 3541,
+        "sha256": "e9421b2e7701635b463e6d2071152d11083baa22763bf275296eaa70c4455d51"
       },
       "canonical": {
         "bytes": 376528,
-        "sha256": "ed18ca2f5dffd715014691ab6571872997f1118de78f838a68344780a53fcdcf"
+        "sha256": "4ce18ea477db993d0bf17f92ba6d207831d708d17132d4662b6c0b2e9bfcc4f9"
       },
       "preview": {
-        "bytes": 27628,
-        "sha256": "5e53b5bdaa0437a29f3f28e84a4a81b1a95b59e0296ff3a17a961d06a75c82b6"
+        "bytes": 27805,
+        "sha256": "86774ef4502ba613216922d50667cc58dcb8b640211f1499f64f987d8376c55e"
       },
       "placements": [
         {
@@ -1551,23 +1554,23 @@
       "store": "courtyard-plaza",
       "collection": "project",
       "assetId": "a_caace1bc7a0e44d289a8ad8f8055eda2",
-      "revisionId": "r_7930f6bf31f04c37b4ca531cd441c57f",
-      "parentRevision": "r_76475b42d21e4220b4db0ba7a793d8b9",
+      "revisionId": "r_fb5d97b7cd994309a8159bf5a66a2b81",
+      "parentRevision": "r_7930f6bf31f04c37b4ca531cd441c57f",
       "manifest": {
-        "bytes": 11819,
-        "sha256": "f3ab7ace49efe97a348c68ffa45b75b7061638c3974c4d74e4369013a076d6d7"
+        "bytes": 13086,
+        "sha256": "9ba62dd4d835c0843a594c1f40c3c8a55cce87d2410ad453bcf3bafb08e165b3"
       },
       "source": {
-        "bytes": 18908,
-        "sha256": "00c12dd7e27e17a8fb16e5cea0252b3542521cfd6ac7e4afcdb35d3ff6462e29"
+        "bytes": 18545,
+        "sha256": "2f05badf319bf37c2eebb8db1161dfa229d3c3ecfa7c79d67b0689b2e293f6d8"
       },
       "canonical": {
         "bytes": 235352,
-        "sha256": "f207e62c5261f1fd17b3ba3968e1e58c9fb39d8123e158e6d99682d7429408aa"
+        "sha256": "a1c745490510ea4632af792e4a48910db41a9657e29aa5498d91545314eb689a"
       },
       "preview": {
-        "bytes": 26988,
-        "sha256": "b41f4a460fa3b9c7dd02e3587629e241c331438dd67f58a67869cd115c9b3745"
+        "bytes": 27021,
+        "sha256": "a36539773bbaf6471638a703edfc12992ce9d7e544298b2c607b51846e2a1021"
       },
       "placements": [
         {
@@ -2017,22 +2020,23 @@
       "store": "tropical-island",
       "collection": "project",
       "assetId": "a_f618554ec7034438843ccfc6af2fbb4d",
-      "revisionId": "r_362b7d0ce6904b4cbe8a63acc3296e6b",
+      "revisionId": "r_c4b4feebb92e4b73bc24d016561b2fcf",
+      "parentRevision": "r_362b7d0ce6904b4cbe8a63acc3296e6b",
       "manifest": {
-        "bytes": 10725,
-        "sha256": "f986b2fae2c9d44522db108a17b1d4d39897c5a938b48d09f937a363a51c9643"
+        "bytes": 14077,
+        "sha256": "a3667f38acfc6c7348f306a29993000290c4c200b9070250535fbde91f01ddc0"
       },
       "source": {
-        "bytes": 29459,
-        "sha256": "d47ab9f9e36a8cce9b7561607b22edbd94ed6f74ae4883d5fda1f0e85274b7b7"
+        "bytes": 29489,
+        "sha256": "12462a9732c2033968dbcacccb8471a01f641e65c4c725d7b4e63e4718994828"
       },
       "canonical": {
         "bytes": 27664,
-        "sha256": "deafe78c73b46bda31d451d7fde1cae92a89a20ccf81f9dc2791c7515568da33"
+        "sha256": "8b4b28bbae7a795acec164f845bd7c905f6d7873c7bb8481df0a7579b16c0fdb"
       },
       "preview": {
-        "bytes": 53695,
-        "sha256": "6e8d433961e4283471f2580f6ddbba645c57664d28fa84f61c24dc1fbdd6a52c"
+        "bytes": 54520,
+        "sha256": "6f5d4a5f2c98d68654eeec8768ffd37a05acb4cbd7c90f01466b682e44f9384f"
       },
       "placements": [
         {
@@ -2975,23 +2979,23 @@
       "store": "tropical-island",
       "collection": "project",
       "assetId": "a_675613e1a07241bfac5e903469b306a4",
-      "revisionId": "r_cd79d419d444441a8299b6739e6435d7",
-      "parentRevision": "r_d357c10ed29c4afe81985485bd2f9b86",
+      "revisionId": "r_934ea81017634afc83591980f95dfadc",
+      "parentRevision": "r_cd79d419d444441a8299b6739e6435d7",
       "manifest": {
-        "bytes": 11275,
-        "sha256": "b07e68d74e389ad70c603d5b89ad2afbd2cda7a039878994b08c9e278cec62eb"
+        "bytes": 12302,
+        "sha256": "e1f13ecdea08ec89e2f514c73a569344376b1e945b8811bb765ed99602aaeebb"
       },
       "source": {
-        "bytes": 9039,
-        "sha256": "8af7c74a5d759237514795da22e9fd69faa0d784198c10cec9150b47b55c29c5"
+        "bytes": 9114,
+        "sha256": "559a2c6e43fbdce75ee6a63490c885af421e4d309f0f025acd6e689261c3c599"
       },
       "canonical": {
-        "bytes": 16592,
-        "sha256": "b35d2a2c6db3d358acb38e2b79fa370e16aef52f48406f008bb6bb6c026cacb4"
+        "bytes": 16596,
+        "sha256": "84b34fecbf23989e5a15e3c2c7e35a781562711ffdbb885aabd2d8de1c586d15"
       },
       "preview": {
-        "bytes": 305977,
-        "sha256": "49e07eeca36ebbe7dd064fe9f8356efc455ef8f5be55cd990817093bd9002a79"
+        "bytes": 307134,
+        "sha256": "d381e03057f07de4131e9738eeffafebdcd7f8ed19c2992dd11cf926f5cebab4"
       },
       "placements": [
         {
@@ -3322,23 +3326,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_5af9bd51de70444cb02f1cc5e926043f",
-      "revisionId": "r_900d94fea90f4b8486bc7aa81e84fec7",
-      "parentRevision": "r_34bc6f3532ef4896ab60d9477103f667",
+      "revisionId": "r_b2c8b849e6da44c3b56bed180f764e81",
+      "parentRevision": "r_900d94fea90f4b8486bc7aa81e84fec7",
       "manifest": {
-        "bytes": 12729,
-        "sha256": "13277b149d1317bf33aa616dd3d52241045fc3e757d5bc7111eda72cff4cf6c5"
+        "bytes": 15571,
+        "sha256": "f97c7ddaf27395461b94dd93a66f6ac88f94bc53a16b1dd7987a6f5fa8b52ada"
       },
       "source": {
-        "bytes": 29888,
-        "sha256": "718711e2fd4a0c35d6bc9d3979bc20d45416b38e768287c7073357cb1ed8fd7c"
+        "bytes": 29889,
+        "sha256": "19f2e06c2f34faa6e4909ebc72427cd7a8518a202b869d235033bfa08b20850f"
       },
       "canonical": {
-        "bytes": 3925956,
-        "sha256": "31208887ca28acce4b78d71814b2365922f79e0b9d5529e44955d4bc04659a44"
+        "bytes": 3925476,
+        "sha256": "b4506df0cdf89a501616e17bd07ff13f3f4625af12283b78a99cf722c3384c54"
       },
       "preview": {
-        "bytes": 355488,
-        "sha256": "c1edfe60bea7c73ab5cd556f7b04d359a48bd311331df9147c7fa909b8400bf5"
+        "bytes": 353179,
+        "sha256": "b3bb597051bf8568def861400028471c35c85ef2496fdf4bffb87ccb224f8eb1"
       },
       "placements": [
         {
@@ -3351,23 +3355,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_873885321d9441419a5e22f993bf833e",
-      "revisionId": "r_69a2424559ec43b4a6194d3bdaf984f2",
-      "parentRevision": "r_18802321b2224fa5b3c40ceb3eb710c1",
+      "revisionId": "r_751a6bbaccc341beb85ae33375b45d94",
+      "parentRevision": "r_69a2424559ec43b4a6194d3bdaf984f2",
       "manifest": {
-        "bytes": 14624,
-        "sha256": "3e3f05fcb56f3331dcec2c7bc5b81123a3372aacb86314b56c7ad9b04b397c78"
+        "bytes": 16826,
+        "sha256": "bbb9c6e6ecc42e583061ac09cb989364d887a559fa425c49460ef71867a914cd"
       },
       "source": {
-        "bytes": 26449,
-        "sha256": "c51942ec1bd585b8f57e653bafbab3f90d4ae8f739f87cb84efd6e73ba0a1313"
+        "bytes": 26452,
+        "sha256": "8fa3e0dc85bf35d9ea2bef95ebe206992fea1c3564008336da8065f3266013dc"
       },
       "canonical": {
-        "bytes": 470728,
-        "sha256": "6810ba00d23509597e452397d343d709b92c1ece80f854bb55e29ab1d42631c7"
+        "bytes": 470720,
+        "sha256": "c3d113a70df16f5d639ea32d5c88f22b817aafa58a766ed3186bcbf5dcdf7952"
       },
       "preview": {
-        "bytes": 452756,
-        "sha256": "3ff91eac86e16c3a163b21be9ebeb8d0085d5904a1cc6379b47bdf24c1063393"
+        "bytes": 459684,
+        "sha256": "072e1f1c88ffbd5edad2169a43f3e542e8c338507504c510c1582624b26e9ed1"
       },
       "placements": [
         {
@@ -3409,23 +3413,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_5b4f6100aa984ab993ed3f672bdb810e",
-      "revisionId": "r_6b70ff0e8baf45dd96f6a3dec221853c",
-      "parentRevision": "r_f81abc2f35854738a7c545292b139ca4",
+      "revisionId": "r_451733fc5b3c4c679edde72d5c5a476c",
+      "parentRevision": "r_6b70ff0e8baf45dd96f6a3dec221853c",
       "manifest": {
-        "bytes": 12049,
-        "sha256": "1dfc6b8e11aff9d591dd22fd66b2c97d2185c26cebc1ad9d7371ca42f9031567"
+        "bytes": 14022,
+        "sha256": "98fffeccbc1e51f47cf0e421be43b682a34fd88cb67e91315b9f5ac455f11239"
       },
       "source": {
-        "bytes": 26393,
-        "sha256": "aa9f11709039fdf3cfd44d838e1505eea92494aa0f0fc2b3b5a726917187d6f0"
+        "bytes": 26424,
+        "sha256": "536deb8dad5bfb84434847c6c6d0799780bc89fc034d9a4dff7688644a301b12"
       },
       "canonical": {
-        "bytes": 1281148,
-        "sha256": "b53e834f0d8ea900736cf277e30c926b8c171844a934c9ec0ce89332fc04c782"
+        "bytes": 1277668,
+        "sha256": "ab64de45dc6ed75aab72c6d9a7bcf6e07dc3110148ca7f5dffed5be374a63da5"
       },
       "preview": {
-        "bytes": 129530,
-        "sha256": "5ed3bb8b5cc3b6df3e391673a0b16b3c9df4c7e010d78ed1502d627b04a20eca"
+        "bytes": 125920,
+        "sha256": "042021562b73dea31c4b8da66f3d09665aec29c01705d3594de69e5a42b859f7"
       },
       "placements": [
         {
@@ -3438,22 +3442,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_bb7581d6dd994620b828cb48e0540571",
-      "revisionId": "r_24ad3a121ea949b3819e19192a07aecb",
+      "revisionId": "r_19b823f2d7b04c66bf6dfecad7b5da8a",
+      "parentRevision": "r_24ad3a121ea949b3819e19192a07aecb",
       "manifest": {
-        "bytes": 12089,
-        "sha256": "a45fbd159d2d7409dabd1e3a246f5864b019a37b976d3b3192891727bd77619f"
+        "bytes": 13235,
+        "sha256": "138100a6cfa8fa22800fab027b4cb9b6bb40e5ad734b9efb4f0b1ff9e17faed4"
       },
       "source": {
         "bytes": 24628,
-        "sha256": "0d9712bd129238d8dc731d2efba8260f61eeb24238b6aa691502c31037b34393"
+        "sha256": "dda6ad033deee945a8b98ce09ec79c530bd73fbde6a0e3e9d28039ab7d0b9a49"
       },
       "canonical": {
         "bytes": 187144,
-        "sha256": "4a13c23e6b7ced2213a3a7c48fff5d5ceaee8147ba771857a28239f3737a5026"
+        "sha256": "2f31770b3e04a79cb93d17156c41c4c4934ac127bbbcd96fddf24cbb3fadc0b4"
       },
       "preview": {
-        "bytes": 186117,
-        "sha256": "4ef0b004e72087dc6ee46d71dc451e8c7943db3e367931a5256d700e68893b33"
+        "bytes": 184901,
+        "sha256": "3147d4e41469c5b8b1ba16a7ed2b1b090624a55880251eb3a053fd764755d657"
       },
       "placements": [
         {
@@ -3466,22 +3471,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_d30677f997eb4f8f998e8c5c8687b801",
-      "revisionId": "r_81e404f1e10f4ee6a408880168ee7344",
+      "revisionId": "r_a9aa85c28abe4cdc91a1b9a9e0144c11",
+      "parentRevision": "r_81e404f1e10f4ee6a408880168ee7344",
       "manifest": {
-        "bytes": 14228,
-        "sha256": "9b1d12bfc40ff52ae06633743ef0c8656b3dbd373aec8718a8a6c54e65a4d2b7"
+        "bytes": 15448,
+        "sha256": "b04da299bebfcf661774ad46f2cfb0fe3d3bff3f322ce1940f2d6435450c8ffe"
       },
       "source": {
-        "bytes": 24601,
-        "sha256": "2ddfcaa7b8617dd028cefa036aa408c6f2bee2198dcef653accbe0ce3b899a5c"
+        "bytes": 24607,
+        "sha256": "53bca88354a7ff9fb0b842751a65f1598711234a1e038c24fe96fa344962bc72"
       },
       "canonical": {
         "bytes": 167796,
-        "sha256": "988bfcd1d0bfc15b4d743e123e9af12fea96b625e67d69fe67e364b44a403f43"
+        "sha256": "42c02b8c6d28f994ddc36688ea80784ffb26f0b28b6e23859233e913583fdae2"
       },
       "preview": {
-        "bytes": 229466,
-        "sha256": "946943991a2b3173c9aa8bf8734dc1c11204607b2288997390116f46cbffddff"
+        "bytes": 228507,
+        "sha256": "d43413efd63be0cdab91238cd7b4363345340c80b3afc80cb738894710c0106c"
       },
       "placements": [
         {
@@ -3494,23 +3500,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_160b654df5ff4658b92412c87af1a4ec",
-      "revisionId": "r_abff23385acf408694274758d8e525bb",
-      "parentRevision": "r_a68f1dc52096489c9190b6a07106b957",
+      "revisionId": "r_7d04e7b3de3e4a29859078955c46e40f",
+      "parentRevision": "r_abff23385acf408694274758d8e525bb",
       "manifest": {
-        "bytes": 12706,
-        "sha256": "e690b566a0d2a46c682394ff58b5074782e302bf51220d7cc95bc68685766a53"
+        "bytes": 13741,
+        "sha256": "f5daf12930de107682d7a36f9df89b6d057572f091dde906584374a332a821f0"
       },
       "source": {
-        "bytes": 25121,
-        "sha256": "d21b3f2fbe3f093bf7df1d9c6c208e5b228cc8c44f1b2c59c42c8354ae6f14e2"
+        "bytes": 25122,
+        "sha256": "64f96805ff13d4693413b806625f6c74f5422189d6e20b3cf74465c9c8506982"
       },
       "canonical": {
         "bytes": 136804,
-        "sha256": "cf7ddfb5dc84041f8b2ffa86140cd81e8c61d51f659ee67ff4ba62f81e4bdf12"
+        "sha256": "10c9af15d7f9c195971c4bde28e009d1a10dcd0823397fbc3c28befffbb85a47"
       },
       "preview": {
-        "bytes": 108477,
-        "sha256": "79266e86009f0277d0c6b8e4adf628c8191e4e283a9c6275bbd3e85a2552ba38"
+        "bytes": 109881,
+        "sha256": "d5755496d6e1a88927bc10ea7cfa0ddffc25a907c2e06bcf18fedc17039af460"
       },
       "placements": [
         {
@@ -3523,23 +3529,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_0cc64d69fec0441884617672724738c2",
-      "revisionId": "r_63ad6298f8c24d7fa220eeb8b4bfd300",
-      "parentRevision": "r_09f8f88ff7c9445b8221f6dd0de521dc",
+      "revisionId": "r_55f468f5d52942ffb54d0ae345f7735b",
+      "parentRevision": "r_63ad6298f8c24d7fa220eeb8b4bfd300",
       "manifest": {
-        "bytes": 12013,
-        "sha256": "d6c0fdb74afa274eb0181557adaf8600b0f491626a54748766e2a8f9116aedea"
+        "bytes": 15237,
+        "sha256": "b6b7b2c0bd4083fcce8bdffacd5612cf5b68e8ba1f8eeb09c35327293a0d421a"
       },
       "source": {
-        "bytes": 28943,
-        "sha256": "e08f77cd417155915e12d3950175086a621461b7c046b0250e767a90a1acd134"
+        "bytes": 28944,
+        "sha256": "b566828492b5900f70d870afc2c1eff8defacfd711043e21ef1c136751cda55d"
       },
       "canonical": {
-        "bytes": 1167696,
-        "sha256": "07b8b0cfce29ff68def0291f1b1f6230bf5124f7b2f4dabc6e2cc477ca8d502a"
+        "bytes": 1167216,
+        "sha256": "ed957ccea98705381ed9f29ef65918f4ffff293b398d757c087e0cfd7e35e868"
       },
       "preview": {
-        "bytes": 397019,
-        "sha256": "a148a9d904c14ba98e451864394f00152b86de84cdf958a8edaf77252f702def"
+        "bytes": 396688,
+        "sha256": "a4311409960a855ec1225d08459dcb103c40cd1d2ec3e07e583686ebafa119f8"
       },
       "placements": [
         {
@@ -3552,23 +3558,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_449715d72b4f4404922170fe5dd8680d",
-      "revisionId": "r_a06b37dfb34843d394c049e0b9913019",
-      "parentRevision": "r_58b172e36a7144ae8ca91a1fb24940f6",
+      "revisionId": "r_692a8f9dcb2e49fb803217953be953f1",
+      "parentRevision": "r_a06b37dfb34843d394c049e0b9913019",
       "manifest": {
-        "bytes": 11943,
-        "sha256": "8bdcdd88226e0e1e6db642b0318f6f2381709b51c1eb27218a36b98203182484"
+        "bytes": 13256,
+        "sha256": "8329190feca6f11a103277e7079bdf6c8f9e7e6e3b1bcf7db18f93a09e8fd8b3"
       },
       "source": {
-        "bytes": 26000,
-        "sha256": "cad6b75cf7f62359e996e829f3906078c9190b616a0bd440fbd5895f64520ca1"
+        "bytes": 26036,
+        "sha256": "3cf7a55a35ba194f34d58e1b03576b32f4879496ea7f54a1630f9540111ece5c"
       },
       "canonical": {
-        "bytes": 1002436,
-        "sha256": "7a5d2bc1993fb74d6778227fa039ca7ed9cd63eb4881bca2763175dc29aeba33"
+        "bytes": 1001032,
+        "sha256": "9395db73f9ea92db5306dd5524355a0852e7f1537564aa788faa5f43c46bf429"
       },
       "preview": {
-        "bytes": 127149,
-        "sha256": "c854a3ce5448f6060366628d986f15143b3c9c1dd7e0ca5ae33156841b94b421"
+        "bytes": 123657,
+        "sha256": "846fe9326564b7d586c33ef35cc3c252fe6954fa8e06c505972b62c234b7994b"
       },
       "placements": [
         {
@@ -3581,23 +3587,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_4c1cb01001994fb3be31dea1e484fcdb",
-      "revisionId": "r_c9a234d398ed4d78b1c7a94023ae2ab0",
-      "parentRevision": "r_9d0828a7595a4c6eb2a2bf1f85b5111f",
+      "revisionId": "r_9c45dbf488bc47cbaadf28308954185a",
+      "parentRevision": "r_c9a234d398ed4d78b1c7a94023ae2ab0",
       "manifest": {
-        "bytes": 12033,
-        "sha256": "c0d76adc8d363ae2994cf8a66102cbf7fe0c8499caae4c4bbe781b9202dfa591"
+        "bytes": 13990,
+        "sha256": "0f202c8ea9b29ac344f48087bb62ed01d45b79c0e993101af79680bbe84438d8"
       },
       "source": {
-        "bytes": 26151,
-        "sha256": "201201566b4d765093be2e92d8e2e7a3ac39872e89cc2020041417e97f5120e8"
+        "bytes": 26187,
+        "sha256": "97f21c78a1c684f7dbc008139c9d067851d3a26c85e20d8efe60b556a9605c76"
       },
       "canonical": {
-        "bytes": 1205672,
-        "sha256": "bec7b6538e0f61594607449088e44d847822a54b4afe06e740d35eb2a751a381"
+        "bytes": 1202084,
+        "sha256": "e490b3f1f814c0d9c5a30eebcab5fe3f128df8f1d45b54eda093e07f1b75460c"
       },
       "preview": {
-        "bytes": 162900,
-        "sha256": "612456aabd2d1637acc4ddf05c63c13250aa4d670db84ab43aeb349c3a3a7489"
+        "bytes": 160757,
+        "sha256": "ee7c3b63de0590a7401f92609dba9dd79c319d9b945283dbfc2a8ee12633b10c"
       },
       "placements": [
         {
@@ -3610,23 +3616,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_65cb0abafd7b4697b40285c7871a1040",
-      "revisionId": "r_6225dd8469d646c8a555c201713a5761",
-      "parentRevision": "r_bce157fc1c3f49859055c25812fe427d",
+      "revisionId": "r_374aff5ea5e144a1ad61b38cb10ac7a0",
+      "parentRevision": "r_6225dd8469d646c8a555c201713a5761",
       "manifest": {
-        "bytes": 11987,
-        "sha256": "f331b753581cdab45f51adc05c6d0aec2ec971e186c630601f17a0326cdb4cc6"
+        "bytes": 13286,
+        "sha256": "b3e9d5342e355934ff7efb0ae211e3edcf32d68cc62c2868b1fb394c10ab5b6e"
       },
       "source": {
-        "bytes": 25826,
-        "sha256": "c261ddc87f8c76b9ac1cb3c48a501d4cc4358b51d1f82dd3e9a0625152fdbff5"
+        "bytes": 25869,
+        "sha256": "64867f4d4cf0039f6274e7cdfc83b2105b6780e1abd4e279e8443dfdd5f4b8a7"
       },
       "canonical": {
-        "bytes": 827940,
-        "sha256": "cf8b764038bea4437e6e7a46f6d9d7839e4e0b3e87303bd76bd5ba822d35d654"
+        "bytes": 827960,
+        "sha256": "d262d1fcabb40f79fe373a23facb6d2444a238414a914609bfa366c694fa8d63"
       },
       "preview": {
-        "bytes": 183701,
-        "sha256": "8448b00f7b5d9c89f32e5bcfe53da21ba22671ae72fe549b146d3092620914c3"
+        "bytes": 175950,
+        "sha256": "c5922ce30f882c390ded3f35866e20e288cfc29383e87ecbfcbc92f8f6f216fd"
       },
       "placements": [
         {
@@ -3754,23 +3760,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_875448873b5e4f1b9693982de3cc2ee1",
-      "revisionId": "r_4d62127be4ea41e7a8387e812bf4a811",
-      "parentRevision": "r_765f898ee13c41598b4617befc897fbe",
+      "revisionId": "r_a9d4652f39e9426992e92f88a2f19993",
+      "parentRevision": "r_4d62127be4ea41e7a8387e812bf4a811",
       "manifest": {
-        "bytes": 12481,
-        "sha256": "3ebf9b2e8ba17257ec21f10b1c2c57026ab0b9973063c9b7dfe1ba6c4e012b66"
+        "bytes": 13606,
+        "sha256": "ada9a09b66cb2b32f627fe4bcf5dc61ebf7848366afa376c3e5c478ce85ccbaf"
       },
       "source": {
-        "bytes": 24621,
-        "sha256": "2c24c3a9e4c7f2b9831fb1e2b8e31e2b68cc89bfbebbac80ef3977bb44cb7e6e"
+        "bytes": 24633,
+        "sha256": "797951b62244a86b4e38be53062e746a9e6fdabf3ae7ba732da5c0f78cf565c1"
       },
       "canonical": {
         "bytes": 53964,
-        "sha256": "db443e084f6674c221d4940acbc44151d414f29b753f717d3786c255a00e0a0d"
+        "sha256": "0cd6feaf01908dd884c9174cd34221dd4634903b6b72084c313705250f654270"
       },
       "preview": {
-        "bytes": 68088,
-        "sha256": "5cc2ab1e4c2156cf7d3b3c12644449440aa84ada18e5bc6c91cc383cdae93069"
+        "bytes": 68123,
+        "sha256": "c900c858fc22476fd2ccb4585d4e2aa071094f96840b3185fde257dba8054686"
       },
       "placements": [
         {
@@ -3783,22 +3789,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_e90781181b414dc1b596ee7de369184f",
-      "revisionId": "r_2c207a3161084bfbbd9608cf261ba6c7",
+      "revisionId": "r_f602680f2fd445e591ca8397e95b6c1c",
+      "parentRevision": "r_2c207a3161084bfbbd9608cf261ba6c7",
       "manifest": {
-        "bytes": 14226,
-        "sha256": "db6f242bb3295762c036916a7353dce1ff0adaf7def07ccaaac64cc9a8eb7c9d"
+        "bytes": 15446,
+        "sha256": "96edac68a1ac1297be2de315cbdbc54fdd139d3bc835730a119d45ccef74d7d2"
       },
       "source": {
-        "bytes": 24600,
-        "sha256": "af48b1e795be0e9c32db47b40df653599df48ed90807246848c545d1eb152402"
+        "bytes": 24606,
+        "sha256": "2a6ac7a6fc43a0d88cdfd223b40eb75e66126a2b2dcd6630c3be84886dfd1252"
       },
       "canonical": {
-        "bytes": 169884,
-        "sha256": "4e5cb5a7287b2e825ae5658f44fc16ab08e0f0bb047beb10dc43c35c6666e837"
+        "bytes": 169524,
+        "sha256": "990571d86d0f955f6d725191afa1a90f8b24752e1c2aa0eac385241402e5ebd8"
       },
       "preview": {
-        "bytes": 228275,
-        "sha256": "874d98844aad7f2ae828af6403704bd99f7b93c14b32617c505932e534ad9d5a"
+        "bytes": 229529,
+        "sha256": "1707d844c4e114778c1c14dafd0f82220ee9df1c126fc474f11b8bc78d70957b"
       },
       "placements": [
         {
@@ -3811,22 +3818,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_0fa76a4fc9ca4d6aa7a7b2befbaf10c4",
-      "revisionId": "r_8b684e59f24b4408862ed20026389cce",
+      "revisionId": "r_a55c3e8e3d464cb09720488448ce54ee",
+      "parentRevision": "r_8b684e59f24b4408862ed20026389cce",
       "manifest": {
-        "bytes": 14180,
-        "sha256": "017f8619d9d544c73053117991cd1f0c7517b4143534c558394c47141ff99346"
+        "bytes": 15315,
+        "sha256": "6ccc5d87f5b6317c0dddd2e3089032f0791b23ab72e910a1f3c1248e733a397c"
       },
       "source": {
         "bytes": 24591,
-        "sha256": "b8881fa9fea7ab658a0a4881f353037af92259ddc95a8659bea32b3e2815e360"
+        "sha256": "c69a0010f172b694e5229bd7213d8974e88510bf6bb13fb09f50a24559540dae"
       },
       "canonical": {
         "bytes": 74468,
-        "sha256": "ed466a3865232ab707154674ab524220cfd0802ed010b4c575f01d73c2bf4c97"
+        "sha256": "e4777e1880bf9bae417e40113980f49cbe8ff469b0946e9e487f8c793005fb7e"
       },
       "preview": {
-        "bytes": 99491,
-        "sha256": "221af859f8a22ff714b671f75d8f11139d00cc854f01e853028560b3ec1675a2"
+        "bytes": 98591,
+        "sha256": "4a8badf5dda7528446afdf479d7c371920e0059c85b42f091c0b882ae79e2a38"
       },
       "placements": [
         {
@@ -3839,23 +3847,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_bdf0c3426f2648dd8874fc543ee42def",
-      "revisionId": "r_659dbb66e23b4b64ab989ed92e795da5",
-      "parentRevision": "r_f6918d074fad46d38c958fca40e4bf2a",
+      "revisionId": "r_cfb522c48edd495fac96906784f8c3b2",
+      "parentRevision": "r_659dbb66e23b4b64ab989ed92e795da5",
       "manifest": {
-        "bytes": 12703,
-        "sha256": "7df33eabd4f542aa89db6347b44cb0ca040b82b56760c865f0dcccffd2aea880"
+        "bytes": 13694,
+        "sha256": "476d391d14e95981382f28fd42a0959ca767fa01768b6aa30790a9d87e3cb7de"
       },
       "source": {
-        "bytes": 25119,
-        "sha256": "034ce01caf534c3f090cd7bb2d9e8088d9d112d1aa61d8c9b5c6e82887debfc9"
+        "bytes": 25120,
+        "sha256": "d2f581d3519d6d711b886bd9cc86c017be4a3640b7565556662f85b47c974adf"
       },
       "canonical": {
         "bytes": 115604,
-        "sha256": "78b9bd4d0c2613d8b4d708b9a3a884a24b345c2f0075555479c6d7d6aa25e2f0"
+        "sha256": "1920e271c19fad3a8b78f3d75c0878db3d9da1cb5513117ba8b09c68202657c4"
       },
       "preview": {
-        "bytes": 142659,
-        "sha256": "ec20887e8837554669181d53c9295093691c4c1fd40ad8573112ff895d6a9da1"
+        "bytes": 145577,
+        "sha256": "131d0cfdf0b73465b9e6cc54cc2ea482153f32d88d376e4e52ffe3da60c544f0"
       },
       "placements": [
         {
@@ -3868,22 +3876,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_2e2adb67c53c4839a0760672abfb69ae",
-      "revisionId": "r_9a172a5524904a298f8d475d722de2a1",
+      "revisionId": "r_a60f9cd124434aa2bdb79108e3f731ad",
+      "parentRevision": "r_9a172a5524904a298f8d475d722de2a1",
       "manifest": {
-        "bytes": 12526,
-        "sha256": "b8b5cdbaf52aa8d16acf128cb6cf20fc727725a190ecdf0f677127a31916ad7f"
+        "bytes": 13614,
+        "sha256": "326661e33e370611ea182eed4c2f532715622d03ec2b57bb1bb72b0163f23530"
       },
       "source": {
-        "bytes": 24584,
-        "sha256": "723a9c746e46da345672b77a18dfcf70fb072882f0d16ac3fe10ecab4bce0b5b"
+        "bytes": 24590,
+        "sha256": "99188c1ecfa47aa6640ac26c15279048e8b43a8456ab2c2be069fc823ec26bb9"
       },
       "canonical": {
-        "bytes": 73496,
-        "sha256": "610b49be8200c3259dc8e6ca66bee2ef53dccf52df46ac05c8bcfadd36386e3f"
+        "bytes": 73616,
+        "sha256": "089f272274709490218aaae6796d379fcf2427f5f92ef6e5db78483d988b63cc"
       },
       "preview": {
-        "bytes": 145962,
-        "sha256": "8ad11c5a09cb66f2c5aa756e773057765464533775a6b46158b65b89d6f54d8d"
+        "bytes": 145486,
+        "sha256": "5f3e97b193b2a8a9fb27a254192e31ccaf89e3aa1add484fd1a61d354d515a61"
       },
       "placements": [
         {
@@ -3954,23 +3963,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_81cee922309d48cf9799373f0d431b35",
-      "revisionId": "r_c9160d6fc18a4ee2baa2b7a367195e6a",
-      "parentRevision": "r_08dcb2a2b7f844bf89d3a0500b99fef9",
+      "revisionId": "r_7a815cc3780242259761e44692c655fa",
+      "parentRevision": "r_c9160d6fc18a4ee2baa2b7a367195e6a",
       "manifest": {
-        "bytes": 11219,
-        "sha256": "a35ea8b112f3e2b4782a91217365d1d7fa6b5541ca9f38b11a8bb98048a6ba25"
+        "bytes": 11937,
+        "sha256": "33a6733e22cb82e98ba1e56705932219977abaca2ae8fdba40e09d9b7bbbce07"
       },
       "source": {
-        "bytes": 24598,
-        "sha256": "f6f1f27322b77a3c827d76a9d87375e639511dfed50a9f0ab99d559517932270"
+        "bytes": 24605,
+        "sha256": "fad067a2113a899ecbf9560e61d66351e4eb810562af8f3a7fe3e57f074f3cf5"
       },
       "canonical": {
-        "bytes": 649692,
-        "sha256": "26b742b9b2ccc0fe25efc6c7f4ebefa79c49f1c9b39a9199a1dda0043ae3b8d9"
+        "bytes": 649932,
+        "sha256": "2a24ac226d76903289b16b0354ddc4281c29a4c3264c846c68c439907bb7c885"
       },
       "preview": {
-        "bytes": 30534,
-        "sha256": "d95dd0e6b29d3f48a9c4b896fc1c201b85682959b226692f0cc09ec6b30d6409"
+        "bytes": 30634,
+        "sha256": "527c07e42e99a4e18fa1e8b6c8f517bb1acf99dc1868dfe25e5fd8464602dd7d"
       },
       "placements": [
         {
@@ -4011,23 +4020,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_0811b67773b5487ba90d0b7cbeb8c80b",
-      "revisionId": "r_04edc17050114086831c5e5098b64436",
-      "parentRevision": "r_0731e0d0a4f84c2786ec572f8402a3ff",
+      "revisionId": "r_cd1fc2f930154744ad463ac4a3a36679",
+      "parentRevision": "r_04edc17050114086831c5e5098b64436",
       "manifest": {
-        "bytes": 13724,
-        "sha256": "e2f44890f33c2c86198ee0f1764ac6ba861c4bc8fe4682242f8075f5a4d4964f"
+        "bytes": 17917,
+        "sha256": "1b8831676d290fbfb81168f28014391e1a24b4ff1f9e5c2d78640830d9fc629c"
       },
       "source": {
         "bytes": 26039,
-        "sha256": "a4d73cce247f6a3fba397e4fe2f17473acd163e67fb1c7509c4af0e2bd691d10"
+        "sha256": "d1615d1ad34d5176a23ded06e3b54869f6cc5cbb3609e17606fc462980254939"
       },
       "canonical": {
         "bytes": 951996,
-        "sha256": "426760d4f8c963729d6ca10f9aac697345cafe804d47edd2da3ddb5e0241d066"
+        "sha256": "366e0a6b7e8ce935fba105d68f04ea35bc4979cbf590333ddc8a9cc06046469e"
       },
       "preview": {
-        "bytes": 190601,
-        "sha256": "ec23b7e160581e079723c77b62dcf66ba9d97610165e1742abe5148c030ff165"
+        "bytes": 201614,
+        "sha256": "6a98bd522cde8e7fab6ab23dedd07a06c1111683efaa18fd31898f1c61fa704f"
       },
       "placements": [
         {
@@ -4098,23 +4107,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_19edeafb0e3848718315f8c54bf89885",
-      "revisionId": "r_314b667491c24a52bbd681da663f69cd",
-      "parentRevision": "r_332d3c3d01c84d94b0c1e8e95fb5207e",
+      "revisionId": "r_985cc15f93f54b2586088a8ebc5fd4b0",
+      "parentRevision": "r_314b667491c24a52bbd681da663f69cd",
       "manifest": {
-        "bytes": 13816,
-        "sha256": "39c732b55c6a93f0ce7cdcf6c1acb56f36401a6d8c66dca31834b4ef5320a3db"
+        "bytes": 15928,
+        "sha256": "9660cf8b6f83bbad6f68a3848b8f348fefe34bb319385aac6fdfa93324e32610"
       },
       "source": {
-        "bytes": 23331,
-        "sha256": "5d3d3ae33e17481187f411b2ac6a716f2beda82c0185613ccec52ab37585143a"
+        "bytes": 23341,
+        "sha256": "ead00e4b31cfd8e5e3553daa9986e5f57d42f901f5613f6632d1e421a9438481"
       },
       "canonical": {
         "bytes": 184028,
-        "sha256": "b38e325dcfb767c16d840e3987d669b05cf606a46efe72731681f790c8ec0318"
+        "sha256": "a658a8dda3ff59294d79dd344682d1440b5e7ffd163aff7273034a4697cfd937"
       },
       "preview": {
-        "bytes": 308154,
-        "sha256": "802a283b1d145c9a260288d2a2e605a002bb41f621bd8d49e8a061ad111f44f0"
+        "bytes": 306705,
+        "sha256": "ce37a2578d20826bd190e93737cbc3ff7da9c85cedc50feca55d617835adbe1e"
       },
       "placements": [
         {
@@ -4127,23 +4136,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_26dd80ee80db4d85bc2a7b56475c3cbb",
-      "revisionId": "r_49df9f4d840241aab1426e6a6ab2c3e3",
-      "parentRevision": "r_dfed21faf6754fcfab7381a8f94e3254",
+      "revisionId": "r_f9fc7d0140d54a068f8b0b461f1068f8",
+      "parentRevision": "r_49df9f4d840241aab1426e6a6ab2c3e3",
       "manifest": {
-        "bytes": 12727,
-        "sha256": "87c56c1f6373a17e4f10f2bd844494e7755a56663496b9708d2aa56f86c9f167"
+        "bytes": 14803,
+        "sha256": "47364f2a7947f70e19066014b79ed075b4ef29b9bd6a9509b31710d182d0db6f"
       },
       "source": {
         "bytes": 23336,
-        "sha256": "33a68c3c9f485420de9b5fe63f4536ab6a3edccf33afcf39633999d823246d0f"
+        "sha256": "3b4501f0f122867db78ad1d25981b537fcb30e52d488d2af3302b4c3f684eef2"
       },
       "canonical": {
         "bytes": 390856,
-        "sha256": "594d6c40df27995d7bc949c0ad2ae80b915d2cd27e574ff29c7d1f48464880f2"
+        "sha256": "dc50da6b92963eb8a3a2cd7c1f08149f04277f1715b3ded571708a7122f130e4"
       },
       "preview": {
-        "bytes": 223700,
-        "sha256": "a8b020651cab1a7d5ab078df5a99344d57daf9fa45b85b7ce7037f6d3439b4e9"
+        "bytes": 222767,
+        "sha256": "870f8f884739acdc646916b738162e7572fc0fefc10191b8c9436febb44adfd5"
       },
       "placements": [
         {
@@ -4156,23 +4165,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_1686d36f753d4f9abe0f9991d8bfb36a",
-      "revisionId": "r_c513bc554a7f407eb0c7058055dcfc68",
-      "parentRevision": "r_aa1aee75f8dc454ba17369c33bb914b5",
+      "revisionId": "r_88c5f50fc5ef4be7a67fc8bdf95c8b99",
+      "parentRevision": "r_c513bc554a7f407eb0c7058055dcfc68",
       "manifest": {
-        "bytes": 12721,
-        "sha256": "2034060d34feb366d9a7f71bf14cc2fe39f76e6bdb3e11b28941716a9b73b51c"
+        "bytes": 17584,
+        "sha256": "f152406b43415c94ff7868da4f7e1e9ee71f805471189ea0b5b11cf1d931c998"
       },
       "source": {
         "bytes": 23336,
-        "sha256": "9d2c5c044305c07cd9b3fbea3f9cc21403132285601738388e782c429d378ec5"
+        "sha256": "14644c416efc7d399e73372cea4c1667d1241ebd2664938e26aec0952aca0b2a"
       },
       "canonical": {
         "bytes": 329496,
-        "sha256": "548033dfe41212ed713367d4f2cf071076b19ea65453b4e87e4264034e7d79d6"
+        "sha256": "3335c513833e22ec53a576da690cc048aaea815e50a4ee594c1892745a822a5d"
       },
       "preview": {
-        "bytes": 282873,
-        "sha256": "499acbe9c013f512e1714a2e9d29eb2e1503ce4628cd75f59fe60c99dacc5179"
+        "bytes": 282594,
+        "sha256": "8aed966c8677497cc64029152517edf09d3fb9284e62eda30fa838070fa04beb"
       },
       "placements": [
         {
@@ -4185,23 +4194,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_43a2c9a0565e4743b82e9d9b51d257c9",
-      "revisionId": "r_8c52171c556a4d9180583dd6a6bdc01d",
-      "parentRevision": "r_c88eaf3e668e4f0aac0ddf1946d98731",
+      "revisionId": "r_b3d8583356574aac889f248ed6b8c791",
+      "parentRevision": "r_8c52171c556a4d9180583dd6a6bdc01d",
       "manifest": {
-        "bytes": 13066,
-        "sha256": "c578da5436c7fb96a9cd24d7b27176abb1a65bf573c4cd51b9824d7590ec70ca"
+        "bytes": 17908,
+        "sha256": "72d89e4b3941472502806571aa4d5c73232989a43a142b153927ce6e18761092"
       },
       "source": {
-        "bytes": 23988,
-        "sha256": "51a6acf3993d81ef1494bee13bca6d9fb9a16ca4a969f4418cd1406aceaa7338"
+        "bytes": 23990,
+        "sha256": "a7e4bf5786a3171f53fed3fe8001de5103318d3d04b9a9905861aa97bc0dd012"
       },
       "canonical": {
-        "bytes": 837244,
-        "sha256": "9cc826394db01b32c1bc7d62a5053b657a53c1ed9305f46194e0baa081d9b288"
+        "bytes": 836988,
+        "sha256": "87acdc501b31417e6ef10baf268fb76c46b998999f7a15524a736688a0464980"
       },
       "preview": {
-        "bytes": 228518,
-        "sha256": "480278947521a6d7c1c2b842d7c49eb6b91f0b1dc94b6aad062efa1fc6309d72"
+        "bytes": 227010,
+        "sha256": "974d1233226f3a228585bfe96332e456227c179423bd506c9094ffafc2128b13"
       },
       "placements": [
         {
@@ -4214,23 +4223,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_64db2e9702e3427fa9188875a5980146",
-      "revisionId": "r_cd846321ce64474da24aec6c2381178e",
-      "parentRevision": "r_5864b2a030564b018e8f3e0e6404a7bf",
+      "revisionId": "r_5e4689104ea54d409f1314aaafeba599",
+      "parentRevision": "r_cd846321ce64474da24aec6c2381178e",
       "manifest": {
-        "bytes": 13927,
-        "sha256": "43b7ed23f325ff7aa7309e1a11f43001a954715793949390c52fbe4f2f771069"
+        "bytes": 16944,
+        "sha256": "cd1d17e58bd4e8bff59312a932733bdaa287e88a685d39e07a54de9d4478638d"
       },
       "source": {
-        "bytes": 28229,
-        "sha256": "85cf145a55bef624530cee43135cfdf49240181c54a5c9d259919d38d6898127"
+        "bytes": 28237,
+        "sha256": "b310c596569493cadc2da375a36674285053083476decb2c003af84b2b92792b"
       },
       "canonical": {
         "bytes": 3731352,
-        "sha256": "235c03dabaff62b16db447fc7d08ccaea5fb04e70b4b027a44a047582abd40c7"
+        "sha256": "c32c3b1aa1e523a6ca87bb10c873150decfb94267c6c1316c5ffabf45097e2c9"
       },
       "preview": {
-        "bytes": 259513,
-        "sha256": "845adb2eee5cd556247c23dc6075c1798154eb7f40f12312f9abf5170f78d7db"
+        "bytes": 268878,
+        "sha256": "86db483d0932454f4f47515a3142d89e59e4fb1b06f243a9c7ad0080f9f81dbd"
       },
       "placements": [
         {
@@ -4243,23 +4252,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_43fa2e2abfd94f308c0a32b127d21c32",
-      "revisionId": "r_d52ea05e031942dfa0fb1a34972226ae",
-      "parentRevision": "r_a880c47d3e444f3591f7b4be4352e648",
+      "revisionId": "r_ccda87bdd376416bae412a25c395d23f",
+      "parentRevision": "r_d52ea05e031942dfa0fb1a34972226ae",
       "manifest": {
-        "bytes": 11992,
-        "sha256": "69fbfe7d754488b6b29298e544bca088973be89224ca6751f58555d092d8df1e"
+        "bytes": 13096,
+        "sha256": "1ee6ccd8af5c2d0664b885cdf89e3af27c4994e22e83524f39dea3db56ce8ae8"
       },
       "source": {
         "bytes": 23318,
-        "sha256": "ab6eefff506ba56ddbd657742a3c84a6bf60d4ea394c54b9d70610634bdbc216"
+        "sha256": "3a091abe0565b4d48d6979edb9ef88550c66d0b848d560d55b720b8f597edf36"
       },
       "canonical": {
-        "bytes": 107496,
-        "sha256": "161c21bbc664b675b6f6f7a7c10335b6d15b3f5b55b15bdce718bc0ce92c94eb"
+        "bytes": 107492,
+        "sha256": "1b2cc02330f8ae223af51c79e2064cc945fa39792c8479d6cd5e5c3a4ce3e4d4"
       },
       "preview": {
-        "bytes": 190092,
-        "sha256": "d46ab60826e2e5a3d45655a44148c6886a40c13ba562d6ac365d4d64a6c96a1b"
+        "bytes": 189014,
+        "sha256": "a89af64240b8721fdb4d634d78d474a2ac25490176a324d70562e0dd5e7b5c4a"
       },
       "placements": [
         {
@@ -4272,23 +4281,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_d6fe54a2237c4a538f97cc9792e05ba4",
-      "revisionId": "r_78da00aa2eb04b7fbef7a33fab2826b6",
-      "parentRevision": "r_991716986d564f0abcaa740f36dccec4",
+      "revisionId": "r_e0e4b03b991440739e9224f2619af721",
+      "parentRevision": "r_78da00aa2eb04b7fbef7a33fab2826b6",
       "manifest": {
-        "bytes": 13672,
-        "sha256": "d748a3dead9391efc38d98baf3df5c498b4d2081a5a9d20355cab925ea7a3081"
+        "bytes": 16612,
+        "sha256": "71444587f6260d51d22cf9fffdee4d1d5d610113dad10a63d1973d8a039fa07b"
       },
       "source": {
         "bytes": 24222,
-        "sha256": "e2549a05fa349e2018ac789207c6169824b60f316c6c85b8549fbc90de3a4bfe"
+        "sha256": "b01504c570d70c8a9363392243c7baa2889c7fe3acd9b806bac9ef0f2989c5c3"
       },
       "canonical": {
-        "bytes": 1474736,
-        "sha256": "9edb1292dcd614d3bec97f122e76240022312ad61933539cbd98400aa26073d2"
+        "bytes": 1474732,
+        "sha256": "5f8a4d89430608f56fb5109cc2a7c3f44ad990dc2f0064446b92e738902d4973"
       },
       "preview": {
-        "bytes": 205738,
-        "sha256": "872dc960edcec03afee0e78321302ef531d04958fde762ee38c4cad170b3a73f"
+        "bytes": 207616,
+        "sha256": "0be782d9b4542f1049b6a84d477b8ed88fa7d721a8b3ee13e3f72aad17edc830"
       },
       "placements": [
         {
@@ -4330,23 +4339,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_a71359b812cd4b3fa22d129458e471db",
-      "revisionId": "r_15e05145d9c649de9fe845dd4d4aba9d",
-      "parentRevision": "r_c6bb100219a3447fa4a72de09bcf3f9f",
+      "revisionId": "r_08f2b4de9b8d4791b33252130e9aac95",
+      "parentRevision": "r_15e05145d9c649de9fe845dd4d4aba9d",
       "manifest": {
-        "bytes": 13853,
-        "sha256": "297ea3eb42696c612035da773b7bb7578793651fb77477873d92348ce6e73903"
+        "bytes": 15097,
+        "sha256": "a6a801a83466f48f54122120319d407b48aaf5cfd0614f2fe4b41b1ca9d39565"
       },
       "source": {
-        "bytes": 23328,
-        "sha256": "4c792f4c7d9a86e14a9d622a9a63d89284d2969b1826b8685beb2f9e4e8e3e57"
+        "bytes": 23338,
+        "sha256": "ff9d41eb3ad115cf61e5746c4d557d5f45d6fbb4f3bcc9b44d9ce162c56d4e48"
       },
       "canonical": {
-        "bytes": 359460,
-        "sha256": "36eb43ffd240300c10a2a7548681708576db54af903f05b94f564a5dacbc85f3"
+        "bytes": 359456,
+        "sha256": "608f7061594639cf4e8ab42996844fd9dd0bc7b539bd4a64734add5ed0fca6fb"
       },
       "preview": {
-        "bytes": 247358,
-        "sha256": "ee8817a0c2a9edfbf9dcff9e21f0ae796a2d17a9c961b9f7ecc362b4807b5ccc"
+        "bytes": 248078,
+        "sha256": "2f08f5d0baec440302dcd8249dbc6ffab7bd2cdbf0c3a2fb1742ac835b9bcd23"
       },
       "placements": [
         {
@@ -4561,22 +4570,23 @@
       "store": "winter-mountainside-cabin",
       "collection": "project",
       "assetId": "a_315c30d4f7674cb6a346c9b455efb999",
-      "revisionId": "r_b88bfaef911545fe9b4d9625978f5775",
+      "revisionId": "r_50146b48d13247ee8425293802b69500",
+      "parentRevision": "r_b88bfaef911545fe9b4d9625978f5775",
       "manifest": {
-        "bytes": 11250,
-        "sha256": "f04488b8a80b4294c0199efb5a5a0d7d5a3c3bd70f0210d78c4458b9f7aa81d4"
+        "bytes": 13844,
+        "sha256": "4565ec1c722022f727efed97f29065eda0afa4398657164a36489f38c018e884"
       },
       "source": {
-        "bytes": 11254,
-        "sha256": "3b026cc3eb5884ff78049b94d3d257bdca67bc0c9f49928df6ec264bde567c9d"
+        "bytes": 11255,
+        "sha256": "62755f897d58319d386abd26f8fad2a1d343b76bb0d7d43d327427eb02158b9b"
       },
       "canonical": {
         "bytes": 235424,
-        "sha256": "be9a3042b84c29260944d6fadb5608fe69876b05a8a05497ea4c216c73a994cd"
+        "sha256": "33e566e8d081d7c2537979c3110f1220059cb0461e5428a556bc84df5b5e51f8"
       },
       "preview": {
-        "bytes": 210493,
-        "sha256": "91b8a687a861a713a9f5b36a885cbf339417b04da6184efeb9a34e51421982ce"
+        "bytes": 208857,
+        "sha256": "54757d79a990e35e6dbf459ea5ce95b68257c620dabc09e28523d05e62d0c8aa"
       },
       "placements": [
         {

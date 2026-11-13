@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "id": "holodeck",
-  "release": "holodeck-20261028-02",
+  "release": "holodeck-20261113-01",
   "base": "https://assets.kilnstudio.tools/",
   "licence": {
     "spdx": "CC0-1.0",
     "note": "Dedicated to the public domain by the owner, subject to final release approval. Kiln and Holodeck software keep their own licences."
   },
-  "runtimeExporter": "@instruktlabs/kiln@1.4.0",
+  "runtimeExporter": "@instruktlabs/kiln@1.7.0",
   "packs": [
     {
       "id": "holodeck-tidemark",
@@ -19,11 +19,11 @@
       "assetCount": 23,
       "source": {
         "kind": "holodeck-example",
-        "ref": "main",
-        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
         "path": "examples/tidemark",
         "sourceRevision": 8,
-        "worldSha256": "68564b749eb5e4defc07dc0d1a2d3fb8e0552f4368962b906130276e19ebfa2e"
+        "worldSha256": "f401eac231a60ae7f61227ae1df376116bf3a6c01df0e10e0aaab9ca0b039baf"
       },
       "assets": [
         "cove-structure",
@@ -54,18 +54,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/3f44d881686e01f7b88c0a46857f71bffd74525ca0174d5706a827214a8e6fac/holodeck-tidemark-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3f44d881686e01f7b88c0a46857f71bffd74525ca0174d5706a827214a8e6fac/holodeck-tidemark-runtime.zip",
-          "bytes": 6148952,
-          "sha256": "3f44d881686e01f7b88c0a46857f71bffd74525ca0174d5706a827214a8e6fac"
+          "path": "packs/holodeck/objects/2596b7d66387b4b4a99a8d22734a09f2273079bae674edb728963ac51d92cdfd/holodeck-tidemark-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2596b7d66387b4b4a99a8d22734a09f2273079bae674edb728963ac51d92cdfd/holodeck-tidemark-runtime.zip",
+          "bytes": 6149046,
+          "sha256": "2596b7d66387b4b4a99a8d22734a09f2273079bae674edb728963ac51d92cdfd"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/ae3a1a294e51ff84d8b61912542bcc5b05d2bd64f8bb1245ed7fa82e465c91ff/holodeck-tidemark-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ae3a1a294e51ff84d8b61912542bcc5b05d2bd64f8bb1245ed7fa82e465c91ff/holodeck-tidemark-editable.zip",
-          "bytes": 9442153,
-          "sha256": "ae3a1a294e51ff84d8b61912542bcc5b05d2bd64f8bb1245ed7fa82e465c91ff"
+          "path": "packs/holodeck/objects/969b654e9ab7eba0a1cc4bc8ec5f9c93725101ea92af7fed5195fc59bc49a278/holodeck-tidemark-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/969b654e9ab7eba0a1cc4bc8ec5f9c93725101ea92af7fed5195fc59bc49a278/holodeck-tidemark-editable.zip",
+          "bytes": 9445212,
+          "sha256": "969b654e9ab7eba0a1cc4bc8ec5f9c93725101ea92af7fed5195fc59bc49a278"
         }
       ]
     },
@@ -78,9 +78,12 @@
       "status": "Available",
       "assetCount": 32,
       "source": {
-        "kind": "holodeck-world",
-        "revision": 9,
-        "worldSha256": "7f1069331680842f08c289661784adbfe718aafa56618aeb4a3900544b8cc9c4"
+        "kind": "holodeck-example",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "path": "examples/courtyard",
+        "sourceRevision": 9,
+        "worldSha256": "4f618caadcb19c22c56ff436b4728238f367bc9c16d06c5a731addecd58fabac"
       },
       "assets": [
         "cove-structure",
@@ -120,18 +123,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/7346c4e8cdd87f177c4d7d5a3dd11fcafe88a978a1c6b4259099b7a13a831819/holodeck-courtyard-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7346c4e8cdd87f177c4d7d5a3dd11fcafe88a978a1c6b4259099b7a13a831819/holodeck-courtyard-runtime.zip",
-          "bytes": 9837908,
-          "sha256": "7346c4e8cdd87f177c4d7d5a3dd11fcafe88a978a1c6b4259099b7a13a831819"
+          "path": "packs/holodeck/objects/a0ea69e21022c1da7be2f117cab7e13ce3dbb71f3b3d5f14ca6eea8d9ec67add/holodeck-courtyard-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a0ea69e21022c1da7be2f117cab7e13ce3dbb71f3b3d5f14ca6eea8d9ec67add/holodeck-courtyard-runtime.zip",
+          "bytes": 9837989,
+          "sha256": "a0ea69e21022c1da7be2f117cab7e13ce3dbb71f3b3d5f14ca6eea8d9ec67add"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/84950919e7d04f357e5ab8036efdb19e9647dabc92190f933e7007a139f30519/holodeck-courtyard-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/84950919e7d04f357e5ab8036efdb19e9647dabc92190f933e7007a139f30519/holodeck-courtyard-editable.zip",
-          "bytes": 12650820,
-          "sha256": "84950919e7d04f357e5ab8036efdb19e9647dabc92190f933e7007a139f30519"
+          "path": "packs/holodeck/objects/92b8f7027f93c0ef27bdfeb25029328a3942c1907907ef048abb037c3cc7a900/holodeck-courtyard-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/92b8f7027f93c0ef27bdfeb25029328a3942c1907907ef048abb037c3cc7a900/holodeck-courtyard-editable.zip",
+          "bytes": 12653779,
+          "sha256": "92b8f7027f93c0ef27bdfeb25029328a3942c1907907ef048abb037c3cc7a900"
         }
       ]
     },
@@ -145,8 +148,8 @@
       "assetCount": 8,
       "source": {
         "kind": "holodeck-modules",
-        "ref": "main",
-        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
         "files": "assets/cove/modules/*/provenance.json, public/assets/cove-modules/*.glb"
       },
       "assets": [
@@ -163,18 +166,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/1957dfce602e2890e27be659240f50cef460a0b5fc7349a06c55d0ab074c3e70/holodeck-cove-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1957dfce602e2890e27be659240f50cef460a0b5fc7349a06c55d0ab074c3e70/holodeck-cove-runtime.zip",
-          "bytes": 5209014,
-          "sha256": "1957dfce602e2890e27be659240f50cef460a0b5fc7349a06c55d0ab074c3e70"
+          "path": "packs/holodeck/objects/381e04538970d5bfbc82d3d39903e94e197831e14e9e4d671aacf6ea00db151b/holodeck-cove-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/381e04538970d5bfbc82d3d39903e94e197831e14e9e4d671aacf6ea00db151b/holodeck-cove-runtime.zip",
+          "bytes": 5209029,
+          "sha256": "381e04538970d5bfbc82d3d39903e94e197831e14e9e4d671aacf6ea00db151b"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/346f45d14ddaccadde48019c51228076fcaf8d579231aecff0f67806ef377a25/holodeck-cove-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/346f45d14ddaccadde48019c51228076fcaf8d579231aecff0f67806ef377a25/holodeck-cove-editable.zip",
-          "bytes": 6957665,
-          "sha256": "346f45d14ddaccadde48019c51228076fcaf8d579231aecff0f67806ef377a25"
+          "path": "packs/holodeck/objects/537619335c419a650404be6de3075eb0b9b93e4c42182974767d5c95f24dabf5/holodeck-cove-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/537619335c419a650404be6de3075eb0b9b93e4c42182974767d5c95f24dabf5/holodeck-cove-editable.zip",
+          "bytes": 6960113,
+          "sha256": "537619335c419a650404be6de3075eb0b9b93e4c42182974767d5c95f24dabf5"
         }
       ]
     },
@@ -188,11 +191,11 @@
       "assetCount": 49,
       "source": {
         "kind": "holodeck-example",
-        "ref": "main",
-        "commit": "5ccad52d3e816602d1c1802177c4aed7d3926d3b",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
         "path": "examples/crescent-cove",
         "sourceRevision": 17,
-        "worldSha256": "5dc28372550010c247e31681c5270341da08b16e889c62bce16143dc3bc6f5b2"
+        "worldSha256": "6012774993f45dd4700c97331968187f412967a369000aa00c9fc4b9fbc3c850"
       },
       "assets": [
         "cove-structure",
@@ -249,18 +252,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/1aa651a0a36114e555a3355f21e883f083d48d03245755afe01a0ae738cca6ae/holodeck-crescent-cove-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1aa651a0a36114e555a3355f21e883f083d48d03245755afe01a0ae738cca6ae/holodeck-crescent-cove-runtime.zip",
-          "bytes": 24777894,
-          "sha256": "1aa651a0a36114e555a3355f21e883f083d48d03245755afe01a0ae738cca6ae"
+          "path": "packs/holodeck/objects/4a687ffa8c31192cbf67893eb4602a1dff6df3b362683254c93a74b0e52eb24c/holodeck-crescent-cove-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4a687ffa8c31192cbf67893eb4602a1dff6df3b362683254c93a74b0e52eb24c/holodeck-crescent-cove-runtime.zip",
+          "bytes": 24779044,
+          "sha256": "4a687ffa8c31192cbf67893eb4602a1dff6df3b362683254c93a74b0e52eb24c"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/d284200f0102d8a8146543c2db17bb931e40d8c70f922a05afda6adcbdc0404c/holodeck-crescent-cove-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d284200f0102d8a8146543c2db17bb931e40d8c70f922a05afda6adcbdc0404c/holodeck-crescent-cove-editable.zip",
-          "bytes": 57058340,
-          "sha256": "d284200f0102d8a8146543c2db17bb931e40d8c70f922a05afda6adcbdc0404c"
+          "path": "packs/holodeck/objects/03659bd195560872add6082219b37a988c8d7347e96ba02da00690780e0c15c2/holodeck-crescent-cove-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/03659bd195560872add6082219b37a988c8d7347e96ba02da00690780e0c15c2/holodeck-crescent-cove-editable.zip",
+          "bytes": 57065389,
+          "sha256": "03659bd195560872add6082219b37a988c8d7347e96ba02da00690780e0c15c2"
         }
       ]
     },
@@ -274,11 +277,11 @@
       "assetCount": 56,
       "source": {
         "kind": "holodeck-example",
-        "ref": "2cfae32d1e2e86add2c8b94b5610b827761f93bb",
-        "commit": "2cfae32d1e2e86add2c8b94b5610b827761f93bb",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
         "path": "examples/winter-mountainside-cabin",
         "sourceRevision": 2,
-        "worldSha256": "0f9e7bd0e84240adb26170181fc965f54d808c418067f8a447fcf13c584831d3"
+        "worldSha256": "2d2c0b3685e002af23cb2c3c5b06c2260e49f055c094e1a15f34aa0c15b099fd"
       },
       "assets": [
         "cove-moodboard",
@@ -342,18 +345,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/5f8e465afb1e87dbb5e4725c31cdb5c0e8193352ed3e2f11b2f4e0d4359a0495/holodeck-winter-mountainside-cabin-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5f8e465afb1e87dbb5e4725c31cdb5c0e8193352ed3e2f11b2f4e0d4359a0495/holodeck-winter-mountainside-cabin-runtime.zip",
-          "bytes": 18564941,
-          "sha256": "5f8e465afb1e87dbb5e4725c31cdb5c0e8193352ed3e2f11b2f4e0d4359a0495"
+          "path": "packs/holodeck/objects/e02574c60d1ed628521028ca0dda21f4e7295d7af135265ea77f0d6ed2f9dc60/holodeck-winter-mountainside-cabin-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e02574c60d1ed628521028ca0dda21f4e7295d7af135265ea77f0d6ed2f9dc60/holodeck-winter-mountainside-cabin-runtime.zip",
+          "bytes": 18564653,
+          "sha256": "e02574c60d1ed628521028ca0dda21f4e7295d7af135265ea77f0d6ed2f9dc60"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/985f97466ba987fe12d2a10e241a8a139064c5c9acc44de27cf49ee48685a249/holodeck-winter-mountainside-cabin-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/985f97466ba987fe12d2a10e241a8a139064c5c9acc44de27cf49ee48685a249/holodeck-winter-mountainside-cabin-editable.zip",
-          "bytes": 31905909,
-          "sha256": "985f97466ba987fe12d2a10e241a8a139064c5c9acc44de27cf49ee48685a249"
+          "path": "packs/holodeck/objects/425e400b10a5fb01b37fa21076412f0b056ef2241ecca1b0e099d0d323f05911/holodeck-winter-mountainside-cabin-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/425e400b10a5fb01b37fa21076412f0b056ef2241ecca1b0e099d0d323f05911/holodeck-winter-mountainside-cabin-editable.zip",
+          "bytes": 31929424,
+          "sha256": "425e400b10a5fb01b37fa21076412f0b056ef2241ecca1b0e099d0d323f05911"
         }
       ]
     },
@@ -367,11 +370,11 @@
       "assetCount": 53,
       "source": {
         "kind": "holodeck-example",
-        "ref": "046b70ded7009fd5291b8a9d8949a61469a960e0",
-        "commit": "046b70ded7009fd5291b8a9d8949a61469a960e0",
+        "ref": "b6a7ac096becc53b400628afce5d26206fc1ca88",
+        "commit": "b6a7ac096becc53b400628afce5d26206fc1ca88",
         "path": "examples/meridian-sanctuary",
         "sourceRevision": 27,
-        "worldSha256": "f1b53cdd6f9f4433eaf57abbb8d477333164d3f9db78c45afdf2c6d2f67dcb3f"
+        "worldSha256": "941829beb4a8ebc7784edcf442172fe0c11ab63405127f695e32c92fdefc037b"
       },
       "assets": [
         "cove-structure",
@@ -432,18 +435,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/20981bae997b52c9692c1dca8bcf5e295f35afb1b1b9aad73e94502f79d12697/holodeck-meridian-sanctuary-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/20981bae997b52c9692c1dca8bcf5e295f35afb1b1b9aad73e94502f79d12697/holodeck-meridian-sanctuary-runtime.zip",
-          "bytes": 18007135,
-          "sha256": "20981bae997b52c9692c1dca8bcf5e295f35afb1b1b9aad73e94502f79d12697"
+          "path": "packs/holodeck/objects/5d9d933574b6bcca485b3df211f4d93a45bb9eded2bd2913072f53bb0a578e9c/holodeck-meridian-sanctuary-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5d9d933574b6bcca485b3df211f4d93a45bb9eded2bd2913072f53bb0a578e9c/holodeck-meridian-sanctuary-runtime.zip",
+          "bytes": 18007156,
+          "sha256": "5d9d933574b6bcca485b3df211f4d93a45bb9eded2bd2913072f53bb0a578e9c"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/e3eecaa67cd1a72e5b3d41a7d18a9dbfdf0ead69f7e8096140c60c6141bd6cdc/holodeck-meridian-sanctuary-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e3eecaa67cd1a72e5b3d41a7d18a9dbfdf0ead69f7e8096140c60c6141bd6cdc/holodeck-meridian-sanctuary-editable.zip",
-          "bytes": 28588439,
-          "sha256": "e3eecaa67cd1a72e5b3d41a7d18a9dbfdf0ead69f7e8096140c60c6141bd6cdc"
+          "path": "packs/holodeck/objects/01813671dc2880e109c728a572580cbd73c990d7b3168535b9662a732040db36/holodeck-meridian-sanctuary-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/01813671dc2880e109c728a572580cbd73c990d7b3168535b9662a732040db36/holodeck-meridian-sanctuary-editable.zip",
+          "bytes": 28590901,
+          "sha256": "01813671dc2880e109c728a572580cbd73c990d7b3168535b9662a732040db36"
         }
       ]
     }
@@ -487,40 +490,29 @@
       ],
       "collection": "project",
       "assetId": "a_a6387eb5c9ba4b9b804eca10577e4868",
-      "revisionId": "r_2387ce274123402dbdafd818e6fb0043",
-      "parentRevision": "r_e96d8b9675f845d0b6cb20087815c302",
-      "sourcePath": "packs/holodeck/sources/project/a_a6387eb5c9ba4b9b804eca10577e4868/r_2387ce274123402dbdafd818e6fb0043/source.kiln.js",
-      "sourceSha256": "98b414a7f72a3c06ce3a5df84b43d23cc78c3e6dfc14ad4c2eab287feae270de",
+      "revisionId": "r_1b8338546f534885a1529037bc207e94",
+      "parentRevision": "r_2387ce274123402dbdafd818e6fb0043",
+      "sourcePath": "packs/holodeck/sources/project/a_a6387eb5c9ba4b9b804eca10577e4868/r_1b8338546f534885a1529037bc207e94/source.kiln.js",
+      "sourceSha256": "c16671e104172c544f8663f9931786e0dd01219f365a073d1465e8952a1b6964",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/e24c494c4909393ec4d1f07a1285e3480376f379bd1ec66959d2c42984b4e22b/cove-structure.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e24c494c4909393ec4d1f07a1285e3480376f379bd1ec66959d2c42984b4e22b/cove-structure.glb",
+        "path": "packs/holodeck/objects/85cd72bce19068aa52834537f9c63f3b74f829a607c3aabbea9a92c958291b80/cove-structure.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/85cd72bce19068aa52834537f9c63f3b74f829a607c3aabbea9a92c958291b80/cove-structure.glb",
         "bytes": 1398488,
-        "sha256": "e24c494c4909393ec4d1f07a1285e3480376f379bd1ec66959d2c42984b4e22b"
+        "sha256": "85cd72bce19068aa52834537f9c63f3b74f829a607c3aabbea9a92c958291b80"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/dcbc9d2fd91ee39ff010857cd099e84ecd73b60550ecaa0f4f84675981b75772/cove-structure-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/dcbc9d2fd91ee39ff010857cd099e84ecd73b60550ecaa0f4f84675981b75772/cove-structure-runtime.zip",
-        "bytes": 1176734,
-        "sha256": "dcbc9d2fd91ee39ff010857cd099e84ecd73b60550ecaa0f4f84675981b75772"
+        "path": "packs/holodeck/objects/c41244155802434783817f109abca08bc12cdc7d4da7de460c6f8c27959eca72/cove-structure-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c41244155802434783817f109abca08bc12cdc7d4da7de460c6f8c27959eca72/cove-structure-runtime.zip",
+        "bytes": 1176750,
+        "sha256": "c41244155802434783817f109abca08bc12cdc7d4da7de460c6f8c27959eca72"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/d73538060cc465e0ee0dd78f26d55fc71ea0124aebb7ccac4ccfffd41d8fb0b6/cove-structure-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d73538060cc465e0ee0dd78f26d55fc71ea0124aebb7ccac4ccfffd41d8fb0b6/cove-structure-editable.zip",
-        "bytes": 1449452,
-        "sha256": "d73538060cc465e0ee0dd78f26d55fc71ea0124aebb7ccac4ccfffd41d8fb0b6"
+        "path": "packs/holodeck/objects/15691104cf36ad547dfac5348639663416c4b8b3bf0bff1f914e84621d1eed72/cove-structure-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/15691104cf36ad547dfac5348639663416c4b8b3bf0bff1f914e84621d1eed72/cove-structure-editable.zip",
+        "bytes": 1451459,
+        "sha256": "15691104cf36ad547dfac5348639663416c4b8b3bf0bff1f914e84621d1eed72"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "The circular platform and curved seating shell that hold the rest of the Cove. Quality-pass revision with procedural texture maps, derived normals and packed roughness.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/cove-structure.png",
-        "sourceRevisionId": "r_2387ce274123402dbdafd818e6fb0043",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 11280,
         "meshes": 9,
@@ -685,40 +677,29 @@
       ],
       "collection": "project",
       "assetId": "a_8054e921736c4dd2861a28cd63a9213f",
-      "revisionId": "r_e35c94ed7da74b32a49f2d9933babba8",
-      "parentRevision": "r_6602fd828a5341eeaa0877fc58289960",
-      "sourcePath": "packs/holodeck/sources/project/a_8054e921736c4dd2861a28cd63a9213f/r_e35c94ed7da74b32a49f2d9933babba8/source.kiln.js",
-      "sourceSha256": "451abb23d98291784cefd05ba33d9c87388160dcf8fb71cc64a879a665f59689",
+      "revisionId": "r_f73aa8b1c4b749dd8076bf152b29afe7",
+      "parentRevision": "r_e35c94ed7da74b32a49f2d9933babba8",
+      "sourcePath": "packs/holodeck/sources/project/a_8054e921736c4dd2861a28cd63a9213f/r_f73aa8b1c4b749dd8076bf152b29afe7/source.kiln.js",
+      "sourceSha256": "c15299dda5f2049af7ac18f3c1abb680ea67df6b0397db71878761634515a58d",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8/cove-seating.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8/cove-seating.glb",
-        "bytes": 890560,
-        "sha256": "f88be1cf02e1f5416c82a072e2e598a448fd49370d948f02f42b0c9c356d99c8"
+        "path": "packs/holodeck/objects/60835ffe619f244d628fc02654be839950babe2e40793191f46dabdd21438ab0/cove-seating.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/60835ffe619f244d628fc02654be839950babe2e40793191f46dabdd21438ab0/cove-seating.glb",
+        "bytes": 890556,
+        "sha256": "60835ffe619f244d628fc02654be839950babe2e40793191f46dabdd21438ab0"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/5f41b2ebce950e08c5bb9a43245f8393f5df9c1be324e1917feb76acefba1a4f/cove-seating-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5f41b2ebce950e08c5bb9a43245f8393f5df9c1be324e1917feb76acefba1a4f/cove-seating-runtime.zip",
-        "bytes": 712728,
-        "sha256": "5f41b2ebce950e08c5bb9a43245f8393f5df9c1be324e1917feb76acefba1a4f"
+        "path": "packs/holodeck/objects/d2050be144022a575330c08a2a102f04b99e98f437af50ed939a65a36f42b089/cove-seating-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d2050be144022a575330c08a2a102f04b99e98f437af50ed939a65a36f42b089/cove-seating-runtime.zip",
+        "bytes": 712721,
+        "sha256": "d2050be144022a575330c08a2a102f04b99e98f437af50ed939a65a36f42b089"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/eac4ab6ad8a9c6257e4ceabb1629f9dd4d5aaf39714590dca87374cf37c8f986/cove-seating-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/eac4ab6ad8a9c6257e4ceabb1629f9dd4d5aaf39714590dca87374cf37c8f986/cove-seating-editable.zip",
-        "bytes": 744126,
-        "sha256": "eac4ab6ad8a9c6257e4ceabb1629f9dd4d5aaf39714590dca87374cf37c8f986"
+        "path": "packs/holodeck/objects/920181d98ccc5c3a39ef07f97ea6de7232a7c71f1b3b5a21f67390022d97ade9/cove-seating-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/920181d98ccc5c3a39ef07f97ea6de7232a7c71f1b3b5a21f67390022d97ade9/cove-seating-editable.zip",
+        "bytes": 744787,
+        "sha256": "920181d98ccc5c3a39ef07f97ea6de7232a7c71f1b3b5a21f67390022d97ade9"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "Fitted cushions and upright throws for the curved seating shell. Quality-pass revision with procedural texture maps, derived normals and packed roughness.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261026-01/cove-seating.png",
-        "sourceRevisionId": "r_e35c94ed7da74b32a49f2d9933babba8",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 3324,
         "meshes": 18,
@@ -1657,40 +1638,29 @@
       ],
       "collection": "project",
       "assetId": "a_b6de83703b59493bbbbc3d800132fd81",
-      "revisionId": "r_a534f55c922e48b19818dfc995437c5c",
-      "parentRevision": "r_35c463784a0548a8aa4bf8ee680dc8a3",
-      "sourcePath": "packs/holodeck/sources/project/a_b6de83703b59493bbbbc3d800132fd81/r_a534f55c922e48b19818dfc995437c5c/source.kiln.js",
-      "sourceSha256": "58a3f1edf8443391e7f873ffaafdc3e542cdb1ad83a9b89ba5359d4aebe29df9",
+      "revisionId": "r_05397fd09d1f4c26b04badef4d401911",
+      "parentRevision": "r_a534f55c922e48b19818dfc995437c5c",
+      "sourcePath": "packs/holodeck/sources/project/a_b6de83703b59493bbbbc3d800132fd81/r_05397fd09d1f4c26b04badef4d401911/source.kiln.js",
+      "sourceSha256": "e9421b2e7701635b463e6d2071152d11083baa22763bf275296eaa70c4455d51",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/8f71a6185a7712542419464ebae17ae0c545b69c753b69d275dd46e1fa48f9a7/island-hut-roof.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8f71a6185a7712542419464ebae17ae0c545b69c753b69d275dd46e1fa48f9a7/island-hut-roof.glb",
+        "path": "packs/holodeck/objects/e2a155d809bf02a4551e0a7b2e95123ce858ce6c0b6bc2cdda6e0c21e0cf3151/island-hut-roof.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e2a155d809bf02a4551e0a7b2e95123ce858ce6c0b6bc2cdda6e0c21e0cf3151/island-hut-roof.glb",
         "bytes": 376748,
-        "sha256": "8f71a6185a7712542419464ebae17ae0c545b69c753b69d275dd46e1fa48f9a7"
+        "sha256": "e2a155d809bf02a4551e0a7b2e95123ce858ce6c0b6bc2cdda6e0c21e0cf3151"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/760beff9d0aae10d8df89454576050ad270c48a74ae2818ab63f22f4b5deeacc/island-hut-roof-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/760beff9d0aae10d8df89454576050ad270c48a74ae2818ab63f22f4b5deeacc/island-hut-roof-runtime.zip",
-        "bytes": 111389,
-        "sha256": "760beff9d0aae10d8df89454576050ad270c48a74ae2818ab63f22f4b5deeacc"
+        "path": "packs/holodeck/objects/700285aa808770796c1db4fa5d2df25b3d8f4ca13943f6e31532b335f70517cc/island-hut-roof-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/700285aa808770796c1db4fa5d2df25b3d8f4ca13943f6e31532b335f70517cc/island-hut-roof-runtime.zip",
+        "bytes": 111465,
+        "sha256": "700285aa808770796c1db4fa5d2df25b3d8f4ca13943f6e31532b335f70517cc"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/2565c5136e055122b6ae432099b45672a2a0944a81243461618ececb70b6b1a7/island-hut-roof-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2565c5136e055122b6ae432099b45672a2a0944a81243461618ececb70b6b1a7/island-hut-roof-editable.zip",
-        "bytes": 134694,
-        "sha256": "2565c5136e055122b6ae432099b45672a2a0944a81243461618ececb70b6b1a7"
+        "path": "packs/holodeck/objects/6986002956f90c13ce0a54dbcd5b0c06dc04a1ca0f19c943c54e8241803c2ea0/island-hut-roof-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6986002956f90c13ce0a54dbcd5b0c06dc04a1ca0f19c943c54e8241803c2ea0/island-hut-roof-editable.zip",
+        "bytes": 135356,
+        "sha256": "6986002956f90c13ce0a54dbcd5b0c06dc04a1ca0f19c943c54e8241803c2ea0"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "Layered thatch with solid thickness and ragged fibre eaves, sized for the shelter frame.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-hut-roof.png",
-        "sourceRevisionId": "r_a534f55c922e48b19818dfc995437c5c",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 6040,
         "meshes": 2,
@@ -3699,40 +3669,29 @@
       ],
       "collection": "project",
       "assetId": "a_caace1bc7a0e44d289a8ad8f8055eda2",
-      "revisionId": "r_7930f6bf31f04c37b4ca531cd441c57f",
-      "parentRevision": "r_76475b42d21e4220b4db0ba7a793d8b9",
-      "sourcePath": "packs/holodeck/sources/project/a_caace1bc7a0e44d289a8ad8f8055eda2/r_7930f6bf31f04c37b4ca531cd441c57f/source.kiln.js",
-      "sourceSha256": "00c12dd7e27e17a8fb16e5cea0252b3542521cfd6ac7e4afcdb35d3ff6462e29",
+      "revisionId": "r_fb5d97b7cd994309a8159bf5a66a2b81",
+      "parentRevision": "r_7930f6bf31f04c37b4ca531cd441c57f",
+      "sourcePath": "packs/holodeck/sources/project/a_caace1bc7a0e44d289a8ad8f8055eda2/r_fb5d97b7cd994309a8159bf5a66a2b81/source.kiln.js",
+      "sourceSha256": "2f05badf319bf37c2eebb8db1161dfa229d3c3ecfa7c79d67b0689b2e293f6d8",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/9a080375152bf2ac55e71c0235f3b52e67b3dd845eaba704e0e77eb2e9119819/bench-park.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9a080375152bf2ac55e71c0235f3b52e67b3dd845eaba704e0e77eb2e9119819/bench-park.glb",
+        "path": "packs/holodeck/objects/11c8c3f607cb05fd0531df85778e7099732d664b69a0ae1b381db438847d33ed/bench-park.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/11c8c3f607cb05fd0531df85778e7099732d664b69a0ae1b381db438847d33ed/bench-park.glb",
         "bytes": 235568,
-        "sha256": "9a080375152bf2ac55e71c0235f3b52e67b3dd845eaba704e0e77eb2e9119819"
+        "sha256": "11c8c3f607cb05fd0531df85778e7099732d664b69a0ae1b381db438847d33ed"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/fb8c3cbb6a21ca195d4128b52fb0ce28b17b2e9ce0094becee848f7e3c4d0c6c/bench-park-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/fb8c3cbb6a21ca195d4128b52fb0ce28b17b2e9ce0094becee848f7e3c4d0c6c/bench-park-runtime.zip",
-        "bytes": 134423,
-        "sha256": "fb8c3cbb6a21ca195d4128b52fb0ce28b17b2e9ce0094becee848f7e3c4d0c6c"
+        "path": "packs/holodeck/objects/4088f7cbf3d890194142250fda5de7e6b4686610f35f077dd4ae0d71c0a3e37a/bench-park-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4088f7cbf3d890194142250fda5de7e6b4686610f35f077dd4ae0d71c0a3e37a/bench-park-runtime.zip",
+        "bytes": 134486,
+        "sha256": "4088f7cbf3d890194142250fda5de7e6b4686610f35f077dd4ae0d71c0a3e37a"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/c4666fe5ea243a44375b2105054583ee6faa4d9612868046eaf524e395c797af/bench-park-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c4666fe5ea243a44375b2105054583ee6faa4d9612868046eaf524e395c797af/bench-park-editable.zip",
-        "bytes": 162325,
-        "sha256": "c4666fe5ea243a44375b2105054583ee6faa4d9612868046eaf524e395c797af"
+        "path": "packs/holodeck/objects/b22cba47164f2068c83747f39f4a5afd42b9eaa202e6d676e2a0a1a1da0fd7d9/bench-park-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b22cba47164f2068c83747f39f4a5afd42b9eaa202e6d676e2a0a1a1da0fd7d9/bench-park-editable.zip",
+        "bytes": 162807,
+        "sha256": "b22cba47164f2068c83747f39f4a5afd42b9eaa202e6d676e2a0a1a1da0fd7d9"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "An oak-slat bench with wrought-iron scroll-arm frames.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/bench-park.png",
-        "sourceRevisionId": "r_7930f6bf31f04c37b4ca531cd441c57f",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 3936,
         "meshes": 2,
@@ -4957,39 +4916,29 @@
       ],
       "collection": "project",
       "assetId": "a_f618554ec7034438843ccfc6af2fbb4d",
-      "revisionId": "r_362b7d0ce6904b4cbe8a63acc3296e6b",
-      "sourcePath": "packs/holodeck/sources/project/a_f618554ec7034438843ccfc6af2fbb4d/r_362b7d0ce6904b4cbe8a63acc3296e6b/source.kiln.js",
-      "sourceSha256": "d47ab9f9e36a8cce9b7561607b22edbd94ed6f74ae4883d5fda1f0e85274b7b7",
+      "revisionId": "r_c4b4feebb92e4b73bc24d016561b2fcf",
+      "parentRevision": "r_362b7d0ce6904b4cbe8a63acc3296e6b",
+      "sourcePath": "packs/holodeck/sources/project/a_f618554ec7034438843ccfc6af2fbb4d/r_c4b4feebb92e4b73bc24d016561b2fcf/source.kiln.js",
+      "sourceSha256": "12462a9732c2033968dbcacccb8471a01f641e65c4c725d7b4e63e4718994828",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/22487b5fd5c78c812740aacd3d3136134c500d9db04944ec505830618cd3760b/crescent-debris-shells.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/22487b5fd5c78c812740aacd3d3136134c500d9db04944ec505830618cd3760b/crescent-debris-shells.glb",
+        "path": "packs/holodeck/objects/f57a43c7ae24c47a0dba4cdc36603f7559cb1a7e4e0b3ba89279ca5c66be03db/crescent-debris-shells.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f57a43c7ae24c47a0dba4cdc36603f7559cb1a7e4e0b3ba89279ca5c66be03db/crescent-debris-shells.glb",
         "bytes": 27892,
-        "sha256": "22487b5fd5c78c812740aacd3d3136134c500d9db04944ec505830618cd3760b"
+        "sha256": "f57a43c7ae24c47a0dba4cdc36603f7559cb1a7e4e0b3ba89279ca5c66be03db"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/8ac28660b75457154795cf0d72d45e6fcbee5a9225e67ff71ce616d4c65ba5d2/crescent-debris-shells-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8ac28660b75457154795cf0d72d45e6fcbee5a9225e67ff71ce616d4c65ba5d2/crescent-debris-shells-runtime.zip",
-        "bytes": 20549,
-        "sha256": "8ac28660b75457154795cf0d72d45e6fcbee5a9225e67ff71ce616d4c65ba5d2"
+        "path": "packs/holodeck/objects/ddd30b6ed44e9e74c767569a8bf688ef9ea6dba94d80c078cb333f1cf0021018/crescent-debris-shells-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ddd30b6ed44e9e74c767569a8bf688ef9ea6dba94d80c078cb333f1cf0021018/crescent-debris-shells-runtime.zip",
+        "bytes": 21769,
+        "sha256": "ddd30b6ed44e9e74c767569a8bf688ef9ea6dba94d80c078cb333f1cf0021018"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/2b6214a521e7ab4c394eabb9d8ee9df82b8914054637c92cf72a8d387a8f333e/crescent-debris-shells-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2b6214a521e7ab4c394eabb9d8ee9df82b8914054637c92cf72a8d387a8f333e/crescent-debris-shells-editable.zip",
-        "bytes": 76053,
-        "sha256": "2b6214a521e7ab4c394eabb9d8ee9df82b8914054637c92cf72a8d387a8f333e"
+        "path": "packs/holodeck/objects/3f998a952d22b0dbf5d399f92d7de711e8976c5dd0bd63a49aba1b9e4c0cbe53/crescent-debris-shells-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3f998a952d22b0dbf5d399f92d7de711e8976c5dd0bd63a49aba1b9e4c0cbe53/crescent-debris-shells-editable.zip",
+        "bytes": 79258,
+        "sha256": "3f998a952d22b0dbf5d399f92d7de711e8976c5dd0bd63a49aba1b9e4c0cbe53"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A strand-line scatter of shells, coral rubble and seaweed wrack.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-debris-shells.png",
-        "sourceRevisionId": "r_362b7d0ce6904b4cbe8a63acc3296e6b",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 862,
         "meshes": 1,
@@ -7467,53 +7416,42 @@
       ],
       "collection": "project",
       "assetId": "a_675613e1a07241bfac5e903469b306a4",
-      "revisionId": "r_cd79d419d444441a8299b6739e6435d7",
-      "parentRevision": "r_d357c10ed29c4afe81985485bd2f9b86",
-      "sourcePath": "packs/holodeck/sources/project/a_675613e1a07241bfac5e903469b306a4/r_cd79d419d444441a8299b6739e6435d7/source.kiln.js",
-      "sourceSha256": "8af7c74a5d759237514795da22e9fd69faa0d784198c10cec9150b47b55c29c5",
+      "revisionId": "r_934ea81017634afc83591980f95dfadc",
+      "parentRevision": "r_cd79d419d444441a8299b6739e6435d7",
+      "sourcePath": "packs/holodeck/sources/project/a_675613e1a07241bfac5e903469b306a4/r_934ea81017634afc83591980f95dfadc/source.kiln.js",
+      "sourceSha256": "559a2c6e43fbdce75ee6a63490c885af421e4d309f0f025acd6e689261c3c599",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/72cd28b6a1f0ee9f63bc40af07770ed105676da26a3f3f958ee21cb91d0e3fd8/crescent-seagrass.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/72cd28b6a1f0ee9f63bc40af07770ed105676da26a3f3f958ee21cb91d0e3fd8/crescent-seagrass.glb",
-        "bytes": 16816,
-        "sha256": "72cd28b6a1f0ee9f63bc40af07770ed105676da26a3f3f958ee21cb91d0e3fd8"
+        "path": "packs/holodeck/objects/a4caf0535777a3a19edb04ba6469038944cd5ded5d30bbee660e9199ef90eba0/crescent-seagrass.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a4caf0535777a3a19edb04ba6469038944cd5ded5d30bbee660e9199ef90eba0/crescent-seagrass.glb",
+        "bytes": 16820,
+        "sha256": "a4caf0535777a3a19edb04ba6469038944cd5ded5d30bbee660e9199ef90eba0"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/9685c3400ad83e32d6325b6007f59d9c703fdde1264166617d3bc5f5c0a45cc8/crescent-seagrass-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9685c3400ad83e32d6325b6007f59d9c703fdde1264166617d3bc5f5c0a45cc8/crescent-seagrass-runtime.zip",
-        "bytes": 15283,
-        "sha256": "9685c3400ad83e32d6325b6007f59d9c703fdde1264166617d3bc5f5c0a45cc8"
+        "path": "packs/holodeck/objects/4a3062e1740407492ed02bd7e24cfc3a1753e06bd58e46018dfdc8d0f73dd5de/crescent-seagrass-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4a3062e1740407492ed02bd7e24cfc3a1753e06bd58e46018dfdc8d0f73dd5de/crescent-seagrass-runtime.zip",
+        "bytes": 15284,
+        "sha256": "4a3062e1740407492ed02bd7e24cfc3a1753e06bd58e46018dfdc8d0f73dd5de"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/8d2083eedb73dc090396f8776f2a8571a56c5708ab8d15de480e49308cb90c1e/crescent-seagrass-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8d2083eedb73dc090396f8776f2a8571a56c5708ab8d15de480e49308cb90c1e/crescent-seagrass-editable.zip",
-        "bytes": 320213,
-        "sha256": "8d2083eedb73dc090396f8776f2a8571a56c5708ab8d15de480e49308cb90c1e"
+        "path": "packs/holodeck/objects/11caa42484b8358325f318a3d438d70e286abfe108f007bb15c5a535f2a5c1ec/crescent-seagrass-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/11caa42484b8358325f318a3d438d70e286abfe108f007bb15c5a535f2a5c1ec/crescent-seagrass-editable.zip",
+        "bytes": 321450,
+        "sha256": "11caa42484b8358325f318a3d438d70e286abfe108f007bb15c5a535f2a5c1ec"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A clump of broad tape-grass blades for the lagoon’s seagrass meadows.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261023-01/crescent-seagrass.png",
-        "sourceRevisionId": "r_cd79d419d444441a8299b6739e6435d7",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 300,
         "meshes": 1,
         "materials": 1,
         "bounds": [
-          0.6986385583877563,
+          0.6982702910900116,
           0.44365982338786125,
-          0.8218787312507629
+          0.8248130679130554
         ],
         "boundsMin": [
-          -0.255584180355072,
+          -0.25521591305732727,
           -0.02297450229525566,
-          -0.4165458381175995
+          -0.41948017477989197
         ],
         "boundsMax": [
           0.4430543780326843,
@@ -8414,40 +8352,29 @@
       ],
       "collection": "project",
       "assetId": "a_5af9bd51de70444cb02f1cc5e926043f",
-      "revisionId": "r_900d94fea90f4b8486bc7aa81e84fec7",
-      "parentRevision": "r_34bc6f3532ef4896ab60d9477103f667",
-      "sourcePath": "packs/holodeck/sources/project/a_5af9bd51de70444cb02f1cc5e926043f/r_900d94fea90f4b8486bc7aa81e84fec7/source.kiln.js",
-      "sourceSha256": "718711e2fd4a0c35d6bc9d3979bc20d45416b38e768287c7073357cb1ed8fd7c",
+      "revisionId": "r_b2c8b849e6da44c3b56bed180f764e81",
+      "parentRevision": "r_900d94fea90f4b8486bc7aa81e84fec7",
+      "sourcePath": "packs/holodeck/sources/project/a_5af9bd51de70444cb02f1cc5e926043f/r_b2c8b849e6da44c3b56bed180f764e81/source.kiln.js",
+      "sourceSha256": "19f2e06c2f34faa6e4909ebc72427cd7a8518a202b869d235033bfa08b20850f",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/87fa6297d74ad87d00bba1ddd309a202ba6af8f89313a72a128bf1675f410fd4/winter-wmc-sofa-wool.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/87fa6297d74ad87d00bba1ddd309a202ba6af8f89313a72a128bf1675f410fd4/winter-wmc-sofa-wool.glb",
-        "bytes": 3926180,
-        "sha256": "87fa6297d74ad87d00bba1ddd309a202ba6af8f89313a72a128bf1675f410fd4"
+        "path": "packs/holodeck/objects/4c69322bbf37fd8edc4cdf42a63c288d57cea034fb7a13a4451d88ba1837c1ce/winter-wmc-sofa-wool.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4c69322bbf37fd8edc4cdf42a63c288d57cea034fb7a13a4451d88ba1837c1ce/winter-wmc-sofa-wool.glb",
+        "bytes": 3925704,
+        "sha256": "4c69322bbf37fd8edc4cdf42a63c288d57cea034fb7a13a4451d88ba1837c1ce"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/d104f8dda514d0ed69b6d18c0aff5b52a40d6439e77ea6a8ad391b6c56e6969f/winter-wmc-sofa-wool-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d104f8dda514d0ed69b6d18c0aff5b52a40d6439e77ea6a8ad391b6c56e6969f/winter-wmc-sofa-wool-runtime.zip",
-        "bytes": 1497057,
-        "sha256": "d104f8dda514d0ed69b6d18c0aff5b52a40d6439e77ea6a8ad391b6c56e6969f"
+        "path": "packs/holodeck/objects/3d264e7997f16b03164f268ec82d8a8a6d642e573e66d656d720a3010ff04bd5/winter-wmc-sofa-wool-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3d264e7997f16b03164f268ec82d8a8a6d642e573e66d656d720a3010ff04bd5/winter-wmc-sofa-wool-runtime.zip",
+        "bytes": 1497008,
+        "sha256": "3d264e7997f16b03164f268ec82d8a8a6d642e573e66d656d720a3010ff04bd5"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/6dfeb2f46de1959a7b2f7971b2cb1546803dfae7a210f17e27cc520ca2aa8bc3/winter-wmc-sofa-wool-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6dfeb2f46de1959a7b2f7971b2cb1546803dfae7a210f17e27cc520ca2aa8bc3/winter-wmc-sofa-wool-editable.zip",
-        "bytes": 1859453,
-        "sha256": "6dfeb2f46de1959a7b2f7971b2cb1546803dfae7a210f17e27cc520ca2aa8bc3"
+        "path": "packs/holodeck/objects/62acf7dffd70bc71c8f4403b25347f1c0306cd33d1f91b78399b6492aee9fa08/winter-wmc-sofa-wool-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/62acf7dffd70bc71c8f4403b25347f1c0306cd33d1f91b78399b6492aee9fa08/winter-wmc-sofa-wool-editable.zip",
+        "bytes": 1857916,
+        "sha256": "62acf7dffd70bc71c8f4403b25347f1c0306cd33d1f91b78399b6492aee9fa08"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A compact upholstered sofa on timber legs, with separate seat and back cushions, loose pillows and a fringed throw.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool-320.webp 320w, /media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool-480.webp 480w, /media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool-672.webp 672w, /media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool-768.webp 768w, /media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool-320.avif 320w, /media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool-480.avif 480w, /media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool-672.avif 672w, /media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool-768.avif 768w, /media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/gallery-20261026-01/winter-wmc-sofa-wool.png",
-        "sourceRevisionId": "r_900d94fea90f4b8486bc7aa81e84fec7",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 27520,
         "meshes": 3,
@@ -8493,40 +8420,29 @@
       ],
       "collection": "project",
       "assetId": "a_873885321d9441419a5e22f993bf833e",
-      "revisionId": "r_69a2424559ec43b4a6194d3bdaf984f2",
-      "parentRevision": "r_18802321b2224fa5b3c40ceb3eb710c1",
-      "sourcePath": "packs/holodeck/sources/project/a_873885321d9441419a5e22f993bf833e/r_69a2424559ec43b4a6194d3bdaf984f2/source.kiln.js",
-      "sourceSha256": "c51942ec1bd585b8f57e653bafbab3f90d4ae8f739f87cb84efd6e73ba0a1313",
+      "revisionId": "r_751a6bbaccc341beb85ae33375b45d94",
+      "parentRevision": "r_69a2424559ec43b4a6194d3bdaf984f2",
+      "sourcePath": "packs/holodeck/sources/project/a_873885321d9441419a5e22f993bf833e/r_751a6bbaccc341beb85ae33375b45d94/source.kiln.js",
+      "sourceSha256": "8fa3e0dc85bf35d9ea2bef95ebe206992fea1c3564008336da8065f3266013dc",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/10d3c8a9bde0a0a0fe61fc56bf7493039313b9fd7ed286623a5d9516e2231d60/winter-wmc-hearth-masonry.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/10d3c8a9bde0a0a0fe61fc56bf7493039313b9fd7ed286623a5d9516e2231d60/winter-wmc-hearth-masonry.glb",
-        "bytes": 470960,
-        "sha256": "10d3c8a9bde0a0a0fe61fc56bf7493039313b9fd7ed286623a5d9516e2231d60"
+        "path": "packs/holodeck/objects/a4458d69dcb6b5e93a3ca5251e46d63502a5a756d043a6976a4406037354c42e/winter-wmc-hearth-masonry.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a4458d69dcb6b5e93a3ca5251e46d63502a5a756d043a6976a4406037354c42e/winter-wmc-hearth-masonry.glb",
+        "bytes": 470952,
+        "sha256": "a4458d69dcb6b5e93a3ca5251e46d63502a5a756d043a6976a4406037354c42e"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/ceaf3dbe1121f1a4c96445d7c66235b5c63c155ff3658157b8205a4f12566eca/winter-wmc-hearth-masonry-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ceaf3dbe1121f1a4c96445d7c66235b5c63c155ff3658157b8205a4f12566eca/winter-wmc-hearth-masonry-runtime.zip",
-        "bytes": 225983,
-        "sha256": "ceaf3dbe1121f1a4c96445d7c66235b5c63c155ff3658157b8205a4f12566eca"
+        "path": "packs/holodeck/objects/6e969b7b34bf68d8d557064b72e0c715231554f4d3158e579c2b3d81e0441c6c/winter-wmc-hearth-masonry-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6e969b7b34bf68d8d557064b72e0c715231554f4d3158e579c2b3d81e0441c6c/winter-wmc-hearth-masonry-runtime.zip",
+        "bytes": 226000,
+        "sha256": "6e969b7b34bf68d8d557064b72e0c715231554f4d3158e579c2b3d81e0441c6c"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/5d212aababa54353726f231825cd0deb2a1757f4679a4478cde8b547cacd6e62/winter-wmc-hearth-masonry-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5d212aababa54353726f231825cd0deb2a1757f4679a4478cde8b547cacd6e62/winter-wmc-hearth-masonry-editable.zip",
-        "bytes": 683778,
-        "sha256": "5d212aababa54353726f231825cd0deb2a1757f4679a4478cde8b547cacd6e62"
+        "path": "packs/holodeck/objects/a4e6bca3c5547709198ddd7d758078c9c14bbe8f6839443b7e313dc8b1b59e8e/winter-wmc-hearth-masonry-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a4e6bca3c5547709198ddd7d758078c9c14bbe8f6839443b7e313dc8b1b59e8e/winter-wmc-hearth-masonry-editable.zip",
+        "bytes": 691530,
+        "sha256": "a4e6bca3c5547709198ddd7d758078c9c14bbe8f6839443b7e313dc8b1b59e8e"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A coursed stone hearth with a projecting mantel, recessed iron firebox, grate, logs and glowing coals.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-hearth-masonry.png",
-        "sourceRevisionId": "r_69a2424559ec43b4a6194d3bdaf984f2",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 2256,
         "meshes": 4,
@@ -8653,52 +8569,41 @@
       ],
       "collection": "project",
       "assetId": "a_5b4f6100aa984ab993ed3f672bdb810e",
-      "revisionId": "r_6b70ff0e8baf45dd96f6a3dec221853c",
-      "parentRevision": "r_f81abc2f35854738a7c545292b139ca4",
-      "sourcePath": "packs/holodeck/sources/project/a_5b4f6100aa984ab993ed3f672bdb810e/r_6b70ff0e8baf45dd96f6a3dec221853c/source.kiln.js",
-      "sourceSha256": "aa9f11709039fdf3cfd44d838e1505eea92494aa0f0fc2b3b5a726917187d6f0",
+      "revisionId": "r_451733fc5b3c4c679edde72d5c5a476c",
+      "parentRevision": "r_6b70ff0e8baf45dd96f6a3dec221853c",
+      "sourcePath": "packs/holodeck/sources/project/a_5b4f6100aa984ab993ed3f672bdb810e/r_451733fc5b3c4c679edde72d5c5a476c/source.kiln.js",
+      "sourceSha256": "536deb8dad5bfb84434847c6c6d0799780bc89fc034d9a4dff7688644a301b12",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/93fe9054e1f8cf0759d8c1ebdf3f1bce425e2be8c455a16ac9eafcd680284cbe/winter-wmc-wall-facade.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/93fe9054e1f8cf0759d8c1ebdf3f1bce425e2be8c455a16ac9eafcd680284cbe/winter-wmc-wall-facade.glb",
-        "bytes": 1281376,
-        "sha256": "93fe9054e1f8cf0759d8c1ebdf3f1bce425e2be8c455a16ac9eafcd680284cbe"
+        "path": "packs/holodeck/objects/5c322f2097c25bdaa5cdadef32b4e466335ecb8d0f3111571ea531ea3dca4648/winter-wmc-wall-facade.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5c322f2097c25bdaa5cdadef32b4e466335ecb8d0f3111571ea531ea3dca4648/winter-wmc-wall-facade.glb",
+        "bytes": 1277896,
+        "sha256": "5c322f2097c25bdaa5cdadef32b4e466335ecb8d0f3111571ea531ea3dca4648"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/76d631f408012c564e5029863ad1eb9d708d04c42de038bac4a8b60dd44ae8e7/winter-wmc-wall-facade-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/76d631f408012c564e5029863ad1eb9d708d04c42de038bac4a8b60dd44ae8e7/winter-wmc-wall-facade-runtime.zip",
-        "bytes": 337802,
-        "sha256": "76d631f408012c564e5029863ad1eb9d708d04c42de038bac4a8b60dd44ae8e7"
+        "path": "packs/holodeck/objects/7f7e4fa63eb0b38ac41f0d11bb0c46166f6e1a16909f28d639fb9d98a733119c/winter-wmc-wall-facade-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7f7e4fa63eb0b38ac41f0d11bb0c46166f6e1a16909f28d639fb9d98a733119c/winter-wmc-wall-facade-runtime.zip",
+        "bytes": 336796,
+        "sha256": "7f7e4fa63eb0b38ac41f0d11bb0c46166f6e1a16909f28d639fb9d98a733119c"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/daed2ccb2274e2ae1515493d74d4ed4e1ce6cd57af6203f9f9c960816ca88561/winter-wmc-wall-facade-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/daed2ccb2274e2ae1515493d74d4ed4e1ce6cd57af6203f9f9c960816ca88561/winter-wmc-wall-facade-editable.zip",
-        "bytes": 469090,
-        "sha256": "daed2ccb2274e2ae1515493d74d4ed4e1ce6cd57af6203f9f9c960816ca88561"
+        "path": "packs/holodeck/objects/0c67ce1c033504317e389cfcaf17f7ab755f070fe407d77e7ef5228527f2c33e/winter-wmc-wall-facade-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0c67ce1c033504317e389cfcaf17f7ab755f070fe407d77e7ef5228527f2c33e/winter-wmc-wall-facade-editable.zip",
+        "bytes": 465385,
+        "sha256": "0c67ce1c033504317e389cfcaf17f7ab755f070fe407d77e7ef5228527f2c33e"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A timber front wall with openings for tall glazing and a deck door, topped by a triangular gable frame.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-facade.png",
-        "sourceRevisionId": "r_6b70ff0e8baf45dd96f6a3dec221853c",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 7448,
         "meshes": 2,
         "materials": 2,
         "bounds": [
           7.309274196624756,
-          7.5864901602268215,
+          7.58849015343003,
           0.26499998569488525
         ],
         "boundsMin": [
           -3.654637098312378,
-          -5.960464122267695e-9,
+          -0.001999999163672328,
           -0.13249999284744263
         ],
         "boundsMax": [
@@ -8732,46 +8637,36 @@
       ],
       "collection": "project",
       "assetId": "a_bb7581d6dd994620b828cb48e0540571",
-      "revisionId": "r_24ad3a121ea949b3819e19192a07aecb",
-      "sourcePath": "packs/holodeck/sources/project/a_bb7581d6dd994620b828cb48e0540571/r_24ad3a121ea949b3819e19192a07aecb/source.kiln.js",
-      "sourceSha256": "0d9712bd129238d8dc731d2efba8260f61eeb24238b6aa691502c31037b34393",
+      "revisionId": "r_19b823f2d7b04c66bf6dfecad7b5da8a",
+      "parentRevision": "r_24ad3a121ea949b3819e19192a07aecb",
+      "sourcePath": "packs/holodeck/sources/project/a_bb7581d6dd994620b828cb48e0540571/r_19b823f2d7b04c66bf6dfecad7b5da8a/source.kiln.js",
+      "sourceSha256": "dda6ad033deee945a8b98ce09ec79c530bd73fbde6a0e3e9d28039ab7d0b9a49",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/c117970a67fc76e225435c7c123c0541c7d88f4962112044eea1e12896296b9b/winter-wmc-deck-tile.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c117970a67fc76e225435c7c123c0541c7d88f4962112044eea1e12896296b9b/winter-wmc-deck-tile.glb",
+        "path": "packs/holodeck/objects/129bbc113c3cc65cb9af488403e297d69e8bc7bf624a52db0b07ab41f6cd2eeb/winter-wmc-deck-tile.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/129bbc113c3cc65cb9af488403e297d69e8bc7bf624a52db0b07ab41f6cd2eeb/winter-wmc-deck-tile.glb",
         "bytes": 187372,
-        "sha256": "c117970a67fc76e225435c7c123c0541c7d88f4962112044eea1e12896296b9b"
+        "sha256": "129bbc113c3cc65cb9af488403e297d69e8bc7bf624a52db0b07ab41f6cd2eeb"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/0067d55bd04efe6252de61784ee2be8907ccfbab3e799bbc7915fde4c7556b5f/winter-wmc-deck-tile-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0067d55bd04efe6252de61784ee2be8907ccfbab3e799bbc7915fde4c7556b5f/winter-wmc-deck-tile-runtime.zip",
-        "bytes": 57577,
-        "sha256": "0067d55bd04efe6252de61784ee2be8907ccfbab3e799bbc7915fde4c7556b5f"
+        "path": "packs/holodeck/objects/f01cdca8b02627cf1f2456f852b654c3d8bb425935764cae104969878323f014/winter-wmc-deck-tile-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f01cdca8b02627cf1f2456f852b654c3d8bb425935764cae104969878323f014/winter-wmc-deck-tile-runtime.zip",
+        "bytes": 57708,
+        "sha256": "f01cdca8b02627cf1f2456f852b654c3d8bb425935764cae104969878323f014"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/e1ce62a5116fe6b15cb5d4fa26426a222a0008ed6256b0be4b2753188e2804aa/winter-wmc-deck-tile-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e1ce62a5116fe6b15cb5d4fa26426a222a0008ed6256b0be4b2753188e2804aa/winter-wmc-deck-tile-editable.zip",
-        "bytes": 243577,
-        "sha256": "e1ce62a5116fe6b15cb5d4fa26426a222a0008ed6256b0be4b2753188e2804aa"
+        "path": "packs/holodeck/objects/687926c9a3f6628e75ff2633bed06324efdad6eccc93096077c654863f73805c/winter-wmc-deck-tile-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/687926c9a3f6628e75ff2633bed06324efdad6eccc93096077c654863f73805c/winter-wmc-deck-tile-editable.zip",
+        "bytes": 243068,
+        "sha256": "687926c9a3f6628e75ff2633bed06324efdad6eccc93096077c654863f73805c"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A repeatable deck section with narrow boards, visible fasteners and two supporting rails for terraces and landings.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-deck-tile.png",
-        "sourceRevisionId": "r_24ad3a121ea949b3819e19192a07aecb",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 1768,
         "meshes": 2,
         "materials": 2,
         "bounds": [
           1.7970000505447388,
-          0.18000000715255737,
+          0.18060000240802765,
           1.2000000476837158
         ],
         "boundsMin": [
@@ -8781,7 +8676,7 @@
         ],
         "boundsMax": [
           0.8985000252723694,
-          0.09000000357627869,
+          0.09059999883174896,
           0.6000000238418579
         ],
         "clips": [],
@@ -8810,39 +8705,29 @@
       ],
       "collection": "project",
       "assetId": "a_d30677f997eb4f8f998e8c5c8687b801",
-      "revisionId": "r_81e404f1e10f4ee6a408880168ee7344",
-      "sourcePath": "packs/holodeck/sources/project/a_d30677f997eb4f8f998e8c5c8687b801/r_81e404f1e10f4ee6a408880168ee7344/source.kiln.js",
-      "sourceSha256": "2ddfcaa7b8617dd028cefa036aa408c6f2bee2198dcef653accbe0ce3b899a5c",
+      "revisionId": "r_a9aa85c28abe4cdc91a1b9a9e0144c11",
+      "parentRevision": "r_81e404f1e10f4ee6a408880168ee7344",
+      "sourcePath": "packs/holodeck/sources/project/a_d30677f997eb4f8f998e8c5c8687b801/r_a9aa85c28abe4cdc91a1b9a9e0144c11/source.kiln.js",
+      "sourceSha256": "53bca88354a7ff9fb0b842751a65f1598711234a1e038c24fe96fa344962bc72",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/911087f02a324d1c57d4b1b4c3dd14829e49cc0765d54ce576bc57258d93f87c/winter-wmc-door-entry.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/911087f02a324d1c57d4b1b4c3dd14829e49cc0765d54ce576bc57258d93f87c/winter-wmc-door-entry.glb",
+        "path": "packs/holodeck/objects/e923e64da11803370619c047ccc8c5bd6aaa2704ca32f6f98f32423d06cf80f2/winter-wmc-door-entry.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e923e64da11803370619c047ccc8c5bd6aaa2704ca32f6f98f32423d06cf80f2/winter-wmc-door-entry.glb",
         "bytes": 168024,
-        "sha256": "911087f02a324d1c57d4b1b4c3dd14829e49cc0765d54ce576bc57258d93f87c"
+        "sha256": "e923e64da11803370619c047ccc8c5bd6aaa2704ca32f6f98f32423d06cf80f2"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/0c6f07b7ce973518f04e79cad48c36418b946aefbbf9ca8df5ed10f7ae6129f5/winter-wmc-door-entry-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0c6f07b7ce973518f04e79cad48c36418b946aefbbf9ca8df5ed10f7ae6129f5/winter-wmc-door-entry-runtime.zip",
-        "bytes": 68687,
-        "sha256": "0c6f07b7ce973518f04e79cad48c36418b946aefbbf9ca8df5ed10f7ae6129f5"
+        "path": "packs/holodeck/objects/74c0959056b9c2475d912c189a434fc3c18cb92d2546cdc4c5c102a345dc4e76/winter-wmc-door-entry-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/74c0959056b9c2475d912c189a434fc3c18cb92d2546cdc4c5c102a345dc4e76/winter-wmc-door-entry-runtime.zip",
+        "bytes": 69027,
+        "sha256": "74c0959056b9c2475d912c189a434fc3c18cb92d2546cdc4c5c102a345dc4e76"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/c8aee3c6ba66385c4e34070c8497af2f1643eb46fb5687ec9223e2fbfe9b10fc/winter-wmc-door-entry-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c8aee3c6ba66385c4e34070c8497af2f1643eb46fb5687ec9223e2fbfe9b10fc/winter-wmc-door-entry-editable.zip",
-        "bytes": 297649,
-        "sha256": "c8aee3c6ba66385c4e34070c8497af2f1643eb46fb5687ec9223e2fbfe9b10fc"
+        "path": "packs/holodeck/objects/7eba0ccbf0c9f429a4d53ace358816c2e6c624baa31e3e296af5117c925fee9d/winter-wmc-door-entry-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7eba0ccbf0c9f429a4d53ace358816c2e6c624baa31e3e296af5117c925fee9d/winter-wmc-door-entry-editable.zip",
+        "bytes": 297109,
+        "sha256": "7eba0ccbf0c9f429a4d53ace358816c2e6c624baa31e3e296af5117c925fee9d"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A boarded timber door leaf with iron strap hinges and handles, oriented for the cabin’s side entrance.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-entry.png",
-        "sourceRevisionId": "r_81e404f1e10f4ee6a408880168ee7344",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 1100,
         "meshes": 3,
@@ -8888,40 +8773,29 @@
       ],
       "collection": "project",
       "assetId": "a_160b654df5ff4658b92412c87af1a4ec",
-      "revisionId": "r_abff23385acf408694274758d8e525bb",
-      "parentRevision": "r_a68f1dc52096489c9190b6a07106b957",
-      "sourcePath": "packs/holodeck/sources/project/a_160b654df5ff4658b92412c87af1a4ec/r_abff23385acf408694274758d8e525bb/source.kiln.js",
-      "sourceSha256": "d21b3f2fbe3f093bf7df1d9c6c208e5b228cc8c44f1b2c59c42c8354ae6f14e2",
+      "revisionId": "r_7d04e7b3de3e4a29859078955c46e40f",
+      "parentRevision": "r_abff23385acf408694274758d8e525bb",
+      "sourcePath": "packs/holodeck/sources/project/a_160b654df5ff4658b92412c87af1a4ec/r_7d04e7b3de3e4a29859078955c46e40f/source.kiln.js",
+      "sourceSha256": "64f96805ff13d4693413b806625f6c74f5422189d6e20b3cf74465c9c8506982",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/a009d8cec3d407fc2db527bfb42cf7a1a3a88dd23abed5be6d54b1dd7258013e/winter-wmc-stair-rail-interior.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a009d8cec3d407fc2db527bfb42cf7a1a3a88dd23abed5be6d54b1dd7258013e/winter-wmc-stair-rail-interior.glb",
+        "path": "packs/holodeck/objects/b7bdd21b6f14ab20b8d9237675b1101106be0502e88f348ee948461780c18924/winter-wmc-stair-rail-interior.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b7bdd21b6f14ab20b8d9237675b1101106be0502e88f348ee948461780c18924/winter-wmc-stair-rail-interior.glb",
         "bytes": 137044,
-        "sha256": "a009d8cec3d407fc2db527bfb42cf7a1a3a88dd23abed5be6d54b1dd7258013e"
+        "sha256": "b7bdd21b6f14ab20b8d9237675b1101106be0502e88f348ee948461780c18924"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/04f29204a066fd8a7f05b1f6a069e6efc482883ad4c813b0bc8e7d90bc9921bf/winter-wmc-stair-rail-interior-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/04f29204a066fd8a7f05b1f6a069e6efc482883ad4c813b0bc8e7d90bc9921bf/winter-wmc-stair-rail-interior-runtime.zip",
-        "bytes": 51103,
-        "sha256": "04f29204a066fd8a7f05b1f6a069e6efc482883ad4c813b0bc8e7d90bc9921bf"
+        "path": "packs/holodeck/objects/0987d19e6aadade49006198559a77ca0dd979d76a10ca8a1f247a70552fd1533/winter-wmc-stair-rail-interior-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0987d19e6aadade49006198559a77ca0dd979d76a10ca8a1f247a70552fd1533/winter-wmc-stair-rail-interior-runtime.zip",
+        "bytes": 51129,
+        "sha256": "0987d19e6aadade49006198559a77ca0dd979d76a10ca8a1f247a70552fd1533"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/7a23adbe91dae8ffce7ebe249ba2767c60bf091e1daf15612661b3fb299246ef/winter-wmc-stair-rail-interior-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7a23adbe91dae8ffce7ebe249ba2767c60bf091e1daf15612661b3fb299246ef/winter-wmc-stair-rail-interior-editable.zip",
-        "bytes": 161675,
-        "sha256": "7a23adbe91dae8ffce7ebe249ba2767c60bf091e1daf15612661b3fb299246ef"
+        "path": "packs/holodeck/objects/f38b645189ee32e1019d9e87bdc30987be7fc7e1586b53d657b94f524363a9c0/winter-wmc-stair-rail-interior-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f38b645189ee32e1019d9e87bdc30987be7fc7e1586b53d657b94f524363a9c0/winter-wmc-stair-rail-interior-editable.zip",
+        "bytes": 163381,
+        "sha256": "f38b645189ee32e1019d9e87bdc30987be7fc7e1586b53d657b94f524363a9c0"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A sloping timber handrail and lower beam with posts, iron rods and bolted upper joinery, shaped for the loft stair.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-interior.png",
-        "sourceRevisionId": "r_abff23385acf408694274758d8e525bb",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 1132,
         "meshes": 2,
@@ -8967,40 +8841,29 @@
       ],
       "collection": "project",
       "assetId": "a_0cc64d69fec0441884617672724738c2",
-      "revisionId": "r_63ad6298f8c24d7fa220eeb8b4bfd300",
-      "parentRevision": "r_09f8f88ff7c9445b8221f6dd0de521dc",
-      "sourcePath": "packs/holodeck/sources/project/a_0cc64d69fec0441884617672724738c2/r_63ad6298f8c24d7fa220eeb8b4bfd300/source.kiln.js",
-      "sourceSha256": "e08f77cd417155915e12d3950175086a621461b7c046b0250e767a90a1acd134",
+      "revisionId": "r_55f468f5d52942ffb54d0ae345f7735b",
+      "parentRevision": "r_63ad6298f8c24d7fa220eeb8b4bfd300",
+      "sourcePath": "packs/holodeck/sources/project/a_0cc64d69fec0441884617672724738c2/r_55f468f5d52942ffb54d0ae345f7735b/source.kiln.js",
+      "sourceSha256": "b566828492b5900f70d870afc2c1eff8defacfd711043e21ef1c136751cda55d",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/6933e22f940b1e8dbfc4c84c5e1acc7a1ec75884849f87674b3b748226863b79/winter-wmc-armchair-oak.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6933e22f940b1e8dbfc4c84c5e1acc7a1ec75884849f87674b3b748226863b79/winter-wmc-armchair-oak.glb",
-        "bytes": 1167928,
-        "sha256": "6933e22f940b1e8dbfc4c84c5e1acc7a1ec75884849f87674b3b748226863b79"
+        "path": "packs/holodeck/objects/1e7a9227101c933a83786806465d1bed924b5319c1a01b4fb3dd4b1322f48ed5/winter-wmc-armchair-oak.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1e7a9227101c933a83786806465d1bed924b5319c1a01b4fb3dd4b1322f48ed5/winter-wmc-armchair-oak.glb",
+        "bytes": 1167448,
+        "sha256": "1e7a9227101c933a83786806465d1bed924b5319c1a01b4fb3dd4b1322f48ed5"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/8b150eb9474bfe5803dd2aa6d1ea351f440c82998de29e9c93e702bb82d8b72d/winter-wmc-armchair-oak-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8b150eb9474bfe5803dd2aa6d1ea351f440c82998de29e9c93e702bb82d8b72d/winter-wmc-armchair-oak-runtime.zip",
-        "bytes": 495060,
-        "sha256": "8b150eb9474bfe5803dd2aa6d1ea351f440c82998de29e9c93e702bb82d8b72d"
+        "path": "packs/holodeck/objects/f67822d69124ad70aca710c8bdf6c23c1632ba9599e5c788c5415dbe3df5a950/winter-wmc-armchair-oak-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f67822d69124ad70aca710c8bdf6c23c1632ba9599e5c788c5415dbe3df5a950/winter-wmc-armchair-oak-runtime.zip",
+        "bytes": 495059,
+        "sha256": "f67822d69124ad70aca710c8bdf6c23c1632ba9599e5c788c5415dbe3df5a950"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/7b26f3138d1e4bf36c7bb56a33f5beb53f7ce97d2d6ebfbd6ffc7126abae7d79/winter-wmc-armchair-oak-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7b26f3138d1e4bf36c7bb56a33f5beb53f7ce97d2d6ebfbd6ffc7126abae7d79/winter-wmc-armchair-oak-editable.zip",
-        "bytes": 898227,
-        "sha256": "7b26f3138d1e4bf36c7bb56a33f5beb53f7ce97d2d6ebfbd6ffc7126abae7d79"
+        "path": "packs/holodeck/objects/1b6ffebf051290e6913ed8f16585fb9a8b9b0f8e8b601341fa669116ffbc2b9c/winter-wmc-armchair-oak-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1b6ffebf051290e6913ed8f16585fb9a8b9b0f8e8b601341fa669116ffbc2b9c/winter-wmc-armchair-oak-editable.zip",
+        "bytes": 898943,
+        "sha256": "1b6ffebf051290e6913ed8f16585fb9a8b9b0f8e8b601341fa669116ffbc2b9c"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "An open timber armchair with shaped legs, broad armrests and separate upholstered seat and back cushions.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-armchair-oak.png",
-        "sourceRevisionId": "r_63ad6298f8c24d7fa220eeb8b4bfd300",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 7336,
         "meshes": 2,
@@ -9046,57 +8909,46 @@
       ],
       "collection": "project",
       "assetId": "a_449715d72b4f4404922170fe5dd8680d",
-      "revisionId": "r_a06b37dfb34843d394c049e0b9913019",
-      "parentRevision": "r_58b172e36a7144ae8ca91a1fb24940f6",
-      "sourcePath": "packs/holodeck/sources/project/a_449715d72b4f4404922170fe5dd8680d/r_a06b37dfb34843d394c049e0b9913019/source.kiln.js",
-      "sourceSha256": "cad6b75cf7f62359e996e829f3906078c9190b616a0bd440fbd5895f64520ca1",
+      "revisionId": "r_692a8f9dcb2e49fb803217953be953f1",
+      "parentRevision": "r_a06b37dfb34843d394c049e0b9913019",
+      "sourcePath": "packs/holodeck/sources/project/a_449715d72b4f4404922170fe5dd8680d/r_692a8f9dcb2e49fb803217953be953f1/source.kiln.js",
+      "sourceSha256": "3cf7a55a35ba194f34d58e1b03576b32f4879496ea7f54a1630f9540111ece5c",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/26740329505d2097105418fb5184bf8c9336f2e6660fb2df50e6c341992dde01/winter-wmc-wall-west.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/26740329505d2097105418fb5184bf8c9336f2e6660fb2df50e6c341992dde01/winter-wmc-wall-west.glb",
-        "bytes": 1002664,
-        "sha256": "26740329505d2097105418fb5184bf8c9336f2e6660fb2df50e6c341992dde01"
+        "path": "packs/holodeck/objects/1b03817504836f4cb79ac0f63b1a97638fa82ba8d4c3b184b70156e008593a22/winter-wmc-wall-west.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1b03817504836f4cb79ac0f63b1a97638fa82ba8d4c3b184b70156e008593a22/winter-wmc-wall-west.glb",
+        "bytes": 1001256,
+        "sha256": "1b03817504836f4cb79ac0f63b1a97638fa82ba8d4c3b184b70156e008593a22"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/10e08265347b8c6b1bf8f6f0c7bd1638277a471f111b01fe82d7d2e6d5c171cc/winter-wmc-wall-west-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/10e08265347b8c6b1bf8f6f0c7bd1638277a471f111b01fe82d7d2e6d5c171cc/winter-wmc-wall-west-runtime.zip",
-        "bytes": 308311,
-        "sha256": "10e08265347b8c6b1bf8f6f0c7bd1638277a471f111b01fe82d7d2e6d5c171cc"
+        "path": "packs/holodeck/objects/08d12e5cc44a1905ce89575e33f9f95b6bba827eda0d989529369fcc73d476f8/winter-wmc-wall-west-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/08d12e5cc44a1905ce89575e33f9f95b6bba827eda0d989529369fcc73d476f8/winter-wmc-wall-west-runtime.zip",
+        "bytes": 307659,
+        "sha256": "08d12e5cc44a1905ce89575e33f9f95b6bba827eda0d989529369fcc73d476f8"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/0c2334e944becd2819b4f0850542949091b518decdac3429d0b7dd97e0d0d6e8/winter-wmc-wall-west-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0c2334e944becd2819b4f0850542949091b518decdac3429d0b7dd97e0d0d6e8/winter-wmc-wall-west-editable.zip",
-        "bytes": 435031,
-        "sha256": "0c2334e944becd2819b4f0850542949091b518decdac3429d0b7dd97e0d0d6e8"
+        "path": "packs/holodeck/objects/91cba2f6a31349e6a929f6da22715c30dc81d5ec5b590a8080bc27e1470a1153/winter-wmc-wall-west-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/91cba2f6a31349e6a929f6da22715c30dc81d5ec5b590a8080bc27e1470a1153/winter-wmc-wall-west-editable.zip",
+        "bytes": 431501,
+        "sha256": "91cba2f6a31349e6a929f6da22715c30dc81d5ec5b590a8080bc27e1470a1153"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A timber side wall with a doorway opening for the uphill entrance and separate surfaces facing indoors and out.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-west.png",
-        "sourceRevisionId": "r_a06b37dfb34843d394c049e0b9913019",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 5852,
         "meshes": 2,
         "materials": 2,
         "bounds": [
           0.2540000081062317,
-          4.5,
+          4.503999856067821,
           10.800000190734863
         ],
         "boundsMin": [
           -0.12700000405311584,
-          0,
+          -0.0020000010263174772,
           -5.400000095367432
         ],
         "boundsMax": [
           0.12700000405311584,
-          4.5,
+          4.501999855041504,
           5.400000095367432
         ],
         "clips": [],
@@ -9125,57 +8977,46 @@
       ],
       "collection": "project",
       "assetId": "a_4c1cb01001994fb3be31dea1e484fcdb",
-      "revisionId": "r_c9a234d398ed4d78b1c7a94023ae2ab0",
-      "parentRevision": "r_9d0828a7595a4c6eb2a2bf1f85b5111f",
-      "sourcePath": "packs/holodeck/sources/project/a_4c1cb01001994fb3be31dea1e484fcdb/r_c9a234d398ed4d78b1c7a94023ae2ab0/source.kiln.js",
-      "sourceSha256": "201201566b4d765093be2e92d8e2e7a3ac39872e89cc2020041417e97f5120e8",
+      "revisionId": "r_9c45dbf488bc47cbaadf28308954185a",
+      "parentRevision": "r_c9a234d398ed4d78b1c7a94023ae2ab0",
+      "sourcePath": "packs/holodeck/sources/project/a_4c1cb01001994fb3be31dea1e484fcdb/r_9c45dbf488bc47cbaadf28308954185a/source.kiln.js",
+      "sourceSha256": "97f21c78a1c684f7dbc008139c9d067851d3a26c85e20d8efe60b556a9605c76",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/b1bb58c6427a4cddb7fe2c2edbbbb56ad47a270f3e8a80b9f9ff6583b82e311e/winter-wmc-wall-east.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b1bb58c6427a4cddb7fe2c2edbbbb56ad47a270f3e8a80b9f9ff6583b82e311e/winter-wmc-wall-east.glb",
-        "bytes": 1205896,
-        "sha256": "b1bb58c6427a4cddb7fe2c2edbbbb56ad47a270f3e8a80b9f9ff6583b82e311e"
+        "path": "packs/holodeck/objects/df390f1ba2b58f9812af2df49186e6b84765a2532680831b8483fa5cd2801e33/winter-wmc-wall-east.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/df390f1ba2b58f9812af2df49186e6b84765a2532680831b8483fa5cd2801e33/winter-wmc-wall-east.glb",
+        "bytes": 1202312,
+        "sha256": "df390f1ba2b58f9812af2df49186e6b84765a2532680831b8483fa5cd2801e33"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/c29e7a56762b2ed96eabd505d6868d231f49ae6fc5bec4a33046cf6da87a630b/winter-wmc-wall-east-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c29e7a56762b2ed96eabd505d6868d231f49ae6fc5bec4a33046cf6da87a630b/winter-wmc-wall-east-runtime.zip",
-        "bytes": 336434,
-        "sha256": "c29e7a56762b2ed96eabd505d6868d231f49ae6fc5bec4a33046cf6da87a630b"
+        "path": "packs/holodeck/objects/548bb33a8e9ce08e4886da11a37fbf404d6836410c64eff230dca7a3e30963a2/winter-wmc-wall-east-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/548bb33a8e9ce08e4886da11a37fbf404d6836410c64eff230dca7a3e30963a2/winter-wmc-wall-east-runtime.zip",
+        "bytes": 335472,
+        "sha256": "548bb33a8e9ce08e4886da11a37fbf404d6836410c64eff230dca7a3e30963a2"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/23c93cc653a5b370cae73dbca360323e9b47056bfd02e06e103c7425d163f830/winter-wmc-wall-east-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/23c93cc653a5b370cae73dbca360323e9b47056bfd02e06e103c7425d163f830/winter-wmc-wall-east-editable.zip",
-        "bytes": 499440,
-        "sha256": "23c93cc653a5b370cae73dbca360323e9b47056bfd02e06e103c7425d163f830"
+        "path": "packs/holodeck/objects/e04856615a09e3debe64b5f2812eaf9a73566a62db6e1329168b5a068e8d1a41/winter-wmc-wall-east-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e04856615a09e3debe64b5f2812eaf9a73566a62db6e1329168b5a068e8d1a41/winter-wmc-wall-east-editable.zip",
+        "bytes": 496734,
+        "sha256": "e04856615a09e3debe64b5f2812eaf9a73566a62db6e1329168b5a068e8d1a41"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A timber side wall with a broad window opening, sill and lintel for the living-room side of the cabin.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-east.png",
-        "sourceRevisionId": "r_c9a234d398ed4d78b1c7a94023ae2ab0",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 7216,
         "meshes": 2,
         "materials": 2,
         "bounds": [
           0.2540000081062317,
-          4.500000011920929,
+          4.503999856067821,
           10.800000190734863
         ],
         "boundsMin": [
           -0.12700000405311584,
-          -1.1920929132713809e-8,
+          -0.0020000010263174772,
           -5.400000095367432
         ],
         "boundsMax": [
           0.12700000405311584,
-          4.5,
+          4.501999855041504,
           5.400000095367432
         ],
         "clips": [],
@@ -9204,52 +9045,41 @@
       ],
       "collection": "project",
       "assetId": "a_65cb0abafd7b4697b40285c7871a1040",
-      "revisionId": "r_6225dd8469d646c8a555c201713a5761",
-      "parentRevision": "r_bce157fc1c3f49859055c25812fe427d",
-      "sourcePath": "packs/holodeck/sources/project/a_65cb0abafd7b4697b40285c7871a1040/r_6225dd8469d646c8a555c201713a5761/source.kiln.js",
-      "sourceSha256": "c261ddc87f8c76b9ac1cb3c48a501d4cc4358b51d1f82dd3e9a0625152fdbff5",
+      "revisionId": "r_374aff5ea5e144a1ad61b38cb10ac7a0",
+      "parentRevision": "r_6225dd8469d646c8a555c201713a5761",
+      "sourcePath": "packs/holodeck/sources/project/a_65cb0abafd7b4697b40285c7871a1040/r_374aff5ea5e144a1ad61b38cb10ac7a0/source.kiln.js",
+      "sourceSha256": "64867f4d4cf0039f6274e7cdfc83b2105b6780e1abd4e279e8443dfdd5f4b8a7",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/6ef4279dbe30e467e3c319a0ea5b30ff35e139985c5f8c9621ed124db0a7c02e/winter-wmc-wall-rear.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6ef4279dbe30e467e3c319a0ea5b30ff35e139985c5f8c9621ed124db0a7c02e/winter-wmc-wall-rear.glb",
-        "bytes": 828168,
-        "sha256": "6ef4279dbe30e467e3c319a0ea5b30ff35e139985c5f8c9621ed124db0a7c02e"
+        "path": "packs/holodeck/objects/722e6cd3ea76ca0a1e44d820b89cdc8b172e3e893d655df2b22ed0029c6427ea/winter-wmc-wall-rear.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/722e6cd3ea76ca0a1e44d820b89cdc8b172e3e893d655df2b22ed0029c6427ea/winter-wmc-wall-rear.glb",
+        "bytes": 828188,
+        "sha256": "722e6cd3ea76ca0a1e44d820b89cdc8b172e3e893d655df2b22ed0029c6427ea"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/9f2b3a0fe34666ec524c2c360977cf2a0d08fbfe98c7be1fed4ec515020cba96/winter-wmc-wall-rear-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9f2b3a0fe34666ec524c2c360977cf2a0d08fbfe98c7be1fed4ec515020cba96/winter-wmc-wall-rear-runtime.zip",
-        "bytes": 280404,
-        "sha256": "9f2b3a0fe34666ec524c2c360977cf2a0d08fbfe98c7be1fed4ec515020cba96"
+        "path": "packs/holodeck/objects/2195709edbcd2ca15f3922f93348b57515bd86d34087c6f6257cadc730a0bb0b/winter-wmc-wall-rear-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2195709edbcd2ca15f3922f93348b57515bd86d34087c6f6257cadc730a0bb0b/winter-wmc-wall-rear-runtime.zip",
+        "bytes": 280448,
+        "sha256": "2195709edbcd2ca15f3922f93348b57515bd86d34087c6f6257cadc730a0bb0b"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/1f91eeab7bb32cf188e3c6e41414885e8d8ffeeffbfa8990a366d8f0b0fc99e6/winter-wmc-wall-rear-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1f91eeab7bb32cf188e3c6e41414885e8d8ffeeffbfa8990a366d8f0b0fc99e6/winter-wmc-wall-rear-editable.zip",
-        "bytes": 463515,
-        "sha256": "1f91eeab7bb32cf188e3c6e41414885e8d8ffeeffbfa8990a366d8f0b0fc99e6"
+        "path": "packs/holodeck/objects/b3aee58d5f2e094dcc5ba2286e9e1a7d6fbccb21faabc69dccfad84438313482/winter-wmc-wall-rear-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b3aee58d5f2e094dcc5ba2286e9e1a7d6fbccb21faabc69dccfad84438313482/winter-wmc-wall-rear-editable.zip",
+        "bytes": 456094,
+        "sha256": "b3aee58d5f2e094dcc5ba2286e9e1a7d6fbccb21faabc69dccfad84438313482"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A solid timber rear wall with a boarded triangular gable, closing the cabin beneath the pitched roof.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-wall-rear.png",
-        "sourceRevisionId": "r_6225dd8469d646c8a555c201713a5761",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 4444,
         "meshes": 2,
         "materials": 2,
         "bounds": [
           7.199999809265137,
-          7.5207600593566895,
+          7.522760058520362,
           0.2540000081062317
         ],
         "boundsMin": [
           -3.5999999046325684,
-          0,
+          -0.001999999163672328,
           -0.12700000405311584
         ],
         "boundsMax": [
@@ -9598,40 +9428,29 @@
       ],
       "collection": "project",
       "assetId": "a_875448873b5e4f1b9693982de3cc2ee1",
-      "revisionId": "r_4d62127be4ea41e7a8387e812bf4a811",
-      "parentRevision": "r_765f898ee13c41598b4617befc897fbe",
-      "sourcePath": "packs/holodeck/sources/project/a_875448873b5e4f1b9693982de3cc2ee1/r_4d62127be4ea41e7a8387e812bf4a811/source.kiln.js",
-      "sourceSha256": "2c24c3a9e4c7f2b9831fb1e2b8e31e2b68cc89bfbebbac80ef3977bb44cb7e6e",
+      "revisionId": "r_a9d4652f39e9426992e92f88a2f19993",
+      "parentRevision": "r_4d62127be4ea41e7a8387e812bf4a811",
+      "sourcePath": "packs/holodeck/sources/project/a_875448873b5e4f1b9693982de3cc2ee1/r_a9d4652f39e9426992e92f88a2f19993/source.kiln.js",
+      "sourceSha256": "797951b62244a86b4e38be53062e746a9e6fdabf3ae7ba732da5c0f78cf565c1",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/dc847edbd7a79ced54a5be9d1e41197a14004d6cdeba20f3f9f4c0f750fd3351/winter-wmc-rafter-frame.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/dc847edbd7a79ced54a5be9d1e41197a14004d6cdeba20f3f9f4c0f750fd3351/winter-wmc-rafter-frame.glb",
+        "path": "packs/holodeck/objects/ee42148413a2263fb1fbd28390ddcd7aef3d6e69a0d0f3a8059139a4eaf37d19/winter-wmc-rafter-frame.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ee42148413a2263fb1fbd28390ddcd7aef3d6e69a0d0f3a8059139a4eaf37d19/winter-wmc-rafter-frame.glb",
         "bytes": 54192,
-        "sha256": "dc847edbd7a79ced54a5be9d1e41197a14004d6cdeba20f3f9f4c0f750fd3351"
+        "sha256": "ee42148413a2263fb1fbd28390ddcd7aef3d6e69a0d0f3a8059139a4eaf37d19"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/951f27e8eb87416f49bd89eca473d97f2a807bb4444aa65c17db11e02a202d50/winter-wmc-rafter-frame-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/951f27e8eb87416f49bd89eca473d97f2a807bb4444aa65c17db11e02a202d50/winter-wmc-rafter-frame-runtime.zip",
-        "bytes": 36470,
-        "sha256": "951f27e8eb87416f49bd89eca473d97f2a807bb4444aa65c17db11e02a202d50"
+        "path": "packs/holodeck/objects/3aef3d4763154b24b78c1309975aff66b017568b94b72fcc84ab6154a7bd5a10/winter-wmc-rafter-frame-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3aef3d4763154b24b78c1309975aff66b017568b94b72fcc84ab6154a7bd5a10/winter-wmc-rafter-frame-runtime.zip",
+        "bytes": 36575,
+        "sha256": "3aef3d4763154b24b78c1309975aff66b017568b94b72fcc84ab6154a7bd5a10"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/f92d97eb3a90f85ce33aa4ad931559d54c4d91f3c979fb5cd606abcbae999d72/winter-wmc-rafter-frame-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f92d97eb3a90f85ce33aa4ad931559d54c4d91f3c979fb5cd606abcbae999d72/winter-wmc-rafter-frame-editable.zip",
-        "bytes": 105744,
-        "sha256": "f92d97eb3a90f85ce33aa4ad931559d54c4d91f3c979fb5cd606abcbae999d72"
+        "path": "packs/holodeck/objects/bb79de031f212967377215bbc3111d210f6f8fdd230c5bd35d62224fccd0106f/winter-wmc-rafter-frame-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/bb79de031f212967377215bbc3111d210f6f8fdd230c5bd35d62224fccd0106f/winter-wmc-rafter-frame-editable.zip",
+        "bytes": 106298,
+        "sha256": "bb79de031f212967377215bbc3111d210f6f8fdd230c5bd35d62224fccd0106f"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A pair of sloping timber rafters joined by a bolted iron ridge plate for the cabin roof frame.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rafter-frame.png",
-        "sourceRevisionId": "r_4d62127be4ea41e7a8387e812bf4a811",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 260,
         "meshes": 2,
@@ -9677,39 +9496,29 @@
       ],
       "collection": "project",
       "assetId": "a_e90781181b414dc1b596ee7de369184f",
-      "revisionId": "r_2c207a3161084bfbbd9608cf261ba6c7",
-      "sourcePath": "packs/holodeck/sources/project/a_e90781181b414dc1b596ee7de369184f/r_2c207a3161084bfbbd9608cf261ba6c7/source.kiln.js",
-      "sourceSha256": "af48b1e795be0e9c32db47b40df653599df48ed90807246848c545d1eb152402",
+      "revisionId": "r_f602680f2fd445e591ca8397e95b6c1c",
+      "parentRevision": "r_2c207a3161084bfbbd9608cf261ba6c7",
+      "sourcePath": "packs/holodeck/sources/project/a_e90781181b414dc1b596ee7de369184f/r_f602680f2fd445e591ca8397e95b6c1c/source.kiln.js",
+      "sourceSha256": "2a6ac7a6fc43a0d88cdfd223b40eb75e66126a2b2dcd6630c3be84886dfd1252",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/cf54d4e99998b135839c79a03d7c0557c8e8be6c05428d0461f207cd12285fc7/winter-wmc-door-deck.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/cf54d4e99998b135839c79a03d7c0557c8e8be6c05428d0461f207cd12285fc7/winter-wmc-door-deck.glb",
-        "bytes": 170112,
-        "sha256": "cf54d4e99998b135839c79a03d7c0557c8e8be6c05428d0461f207cd12285fc7"
+        "path": "packs/holodeck/objects/0bcaa73e3a21aeee018d80f9dd799cdbe18b7c4b4a193a5c3416af860dd2715c/winter-wmc-door-deck.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0bcaa73e3a21aeee018d80f9dd799cdbe18b7c4b4a193a5c3416af860dd2715c/winter-wmc-door-deck.glb",
+        "bytes": 169752,
+        "sha256": "0bcaa73e3a21aeee018d80f9dd799cdbe18b7c4b4a193a5c3416af860dd2715c"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/369170d70d539d04d3e4e6f4361f25cd049c3f3a33d1a81eba5a9be07c3fe449/winter-wmc-door-deck-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/369170d70d539d04d3e4e6f4361f25cd049c3f3a33d1a81eba5a9be07c3fe449/winter-wmc-door-deck-runtime.zip",
-        "bytes": 68143,
-        "sha256": "369170d70d539d04d3e4e6f4361f25cd049c3f3a33d1a81eba5a9be07c3fe449"
+        "path": "packs/holodeck/objects/addee6834f45fb6fb753215c97f05e45f9dd878c1e959d915f18a209eb635768/winter-wmc-door-deck-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/addee6834f45fb6fb753215c97f05e45f9dd878c1e959d915f18a209eb635768/winter-wmc-door-deck-runtime.zip",
+        "bytes": 68374,
+        "sha256": "addee6834f45fb6fb753215c97f05e45f9dd878c1e959d915f18a209eb635768"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/4a03b3db2dbd310b918283a56892c084142abc20b6773ca98eb6778d2c2fb72f/winter-wmc-door-deck-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4a03b3db2dbd310b918283a56892c084142abc20b6773ca98eb6778d2c2fb72f/winter-wmc-door-deck-editable.zip",
-        "bytes": 296205,
-        "sha256": "4a03b3db2dbd310b918283a56892c084142abc20b6773ca98eb6778d2c2fb72f"
+        "path": "packs/holodeck/objects/9f1999393384ac36354666f7d27787be612b86403631aa226045751823d055e9/winter-wmc-door-deck-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9f1999393384ac36354666f7d27787be612b86403631aa226045751823d055e9/winter-wmc-door-deck-editable.zip",
+        "bytes": 297700,
+        "sha256": "9f1999393384ac36354666f7d27787be612b86403631aa226045751823d055e9"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A boarded timber door leaf with iron strap hinges and handles, oriented for the front deck opening.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-door-deck.png",
-        "sourceRevisionId": "r_2c207a3161084bfbbd9608cf261ba6c7",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 1100,
         "meshes": 3,
@@ -9755,46 +9564,36 @@
       ],
       "collection": "project",
       "assetId": "a_0fa76a4fc9ca4d6aa7a7b2befbaf10c4",
-      "revisionId": "r_8b684e59f24b4408862ed20026389cce",
-      "sourcePath": "packs/holodeck/sources/project/a_0fa76a4fc9ca4d6aa7a7b2befbaf10c4/r_8b684e59f24b4408862ed20026389cce/source.kiln.js",
-      "sourceSha256": "b8881fa9fea7ab658a0a4881f353037af92259ddc95a8659bea32b3e2815e360",
+      "revisionId": "r_a55c3e8e3d464cb09720488448ce54ee",
+      "parentRevision": "r_8b684e59f24b4408862ed20026389cce",
+      "sourcePath": "packs/holodeck/sources/project/a_0fa76a4fc9ca4d6aa7a7b2befbaf10c4/r_a55c3e8e3d464cb09720488448ce54ee/source.kiln.js",
+      "sourceSha256": "c69a0010f172b694e5229bd7213d8974e88510bf6bb13fb09f50a24559540dae",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/5be3f6bd1fe632c6ae39b61d4fb738e96b2a55251248f48918cd6a93495b1f65/winter-wmc-tread-timber.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5be3f6bd1fe632c6ae39b61d4fb738e96b2a55251248f48918cd6a93495b1f65/winter-wmc-tread-timber.glb",
+        "path": "packs/holodeck/objects/ffdd29811b63daf43ef133aa271dba710f94b46e3eaca3e26e33c167b0b6856b/winter-wmc-tread-timber.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ffdd29811b63daf43ef133aa271dba710f94b46e3eaca3e26e33c167b0b6856b/winter-wmc-tread-timber.glb",
         "bytes": 74696,
-        "sha256": "5be3f6bd1fe632c6ae39b61d4fb738e96b2a55251248f48918cd6a93495b1f65"
+        "sha256": "ffdd29811b63daf43ef133aa271dba710f94b46e3eaca3e26e33c167b0b6856b"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/a0f129446abc05723d5d7425b955d7e98acfe75afedba14c270f5e721eadccfa/winter-wmc-tread-timber-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a0f129446abc05723d5d7425b955d7e98acfe75afedba14c270f5e721eadccfa/winter-wmc-tread-timber-runtime.zip",
-        "bytes": 53655,
-        "sha256": "a0f129446abc05723d5d7425b955d7e98acfe75afedba14c270f5e721eadccfa"
+        "path": "packs/holodeck/objects/a239f864920c1ca5b7ae6141a8ab7e81253a2a4389f653f23f728404788e0faa/winter-wmc-tread-timber-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a239f864920c1ca5b7ae6141a8ab7e81253a2a4389f653f23f728404788e0faa/winter-wmc-tread-timber-runtime.zip",
+        "bytes": 53793,
+        "sha256": "a239f864920c1ca5b7ae6141a8ab7e81253a2a4389f653f23f728404788e0faa"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/c122f52fd80f69ba327bcb9f9bebd2c4d4f0849b2a243c1d1233e23a9bcc83e1/winter-wmc-tread-timber-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c122f52fd80f69ba327bcb9f9bebd2c4d4f0849b2a243c1d1233e23a9bcc83e1/winter-wmc-tread-timber-editable.zip",
-        "bytes": 154727,
-        "sha256": "c122f52fd80f69ba327bcb9f9bebd2c4d4f0849b2a243c1d1233e23a9bcc83e1"
+        "path": "packs/holodeck/objects/bce3cbbd16cafd4b0e59fd1aa258e11b7c0e6364026bece47d9f4f660ce77c58/winter-wmc-tread-timber-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/bce3cbbd16cafd4b0e59fd1aa258e11b7c0e6364026bece47d9f4f660ce77c58/winter-wmc-tread-timber-editable.zip",
+        "bytes": 154323,
+        "sha256": "bce3cbbd16cafd4b0e59fd1aa258e11b7c0e6364026bece47d9f4f660ce77c58"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A single timber tread with softened edges, inset fasteners and narrow underside strips for repeating stair runs.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-tread-timber.png",
-        "sourceRevisionId": "r_8b684e59f24b4408862ed20026389cce",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 260,
         "meshes": 3,
         "materials": 3,
         "bounds": [
           1.2000000476837158,
-          0.11999999731779099,
+          0.12150000035762787,
           0.2800000011920929
         ],
         "boundsMin": [
@@ -9804,7 +9603,7 @@
         ],
         "boundsMax": [
           0.6000000238418579,
-          0.05999999865889549,
+          0.061500001698732376,
           0.14000000059604645
         ],
         "clips": [],
@@ -9833,40 +9632,29 @@
       ],
       "collection": "project",
       "assetId": "a_bdf0c3426f2648dd8874fc543ee42def",
-      "revisionId": "r_659dbb66e23b4b64ab989ed92e795da5",
-      "parentRevision": "r_f6918d074fad46d38c958fca40e4bf2a",
-      "sourcePath": "packs/holodeck/sources/project/a_bdf0c3426f2648dd8874fc543ee42def/r_659dbb66e23b4b64ab989ed92e795da5/source.kiln.js",
-      "sourceSha256": "034ce01caf534c3f090cd7bb2d9e8088d9d112d1aa61d8c9b5c6e82887debfc9",
+      "revisionId": "r_cfb522c48edd495fac96906784f8c3b2",
+      "parentRevision": "r_659dbb66e23b4b64ab989ed92e795da5",
+      "sourcePath": "packs/holodeck/sources/project/a_bdf0c3426f2648dd8874fc543ee42def/r_cfb522c48edd495fac96906784f8c3b2/source.kiln.js",
+      "sourceSha256": "d2f581d3519d6d711b886bd9cc86c017be4a3640b7565556662f85b47c974adf",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/98bd8625284359153d26c4f5c8beb9e3461a6d59266f2e7e8c2715c29e997990/winter-wmc-stair-rail-exterior.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/98bd8625284359153d26c4f5c8beb9e3461a6d59266f2e7e8c2715c29e997990/winter-wmc-stair-rail-exterior.glb",
+        "path": "packs/holodeck/objects/48f34c0f844744e432b13c812241aad9423f7e36e70123f3936a90c91c2bff5f/winter-wmc-stair-rail-exterior.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/48f34c0f844744e432b13c812241aad9423f7e36e70123f3936a90c91c2bff5f/winter-wmc-stair-rail-exterior.glb",
         "bytes": 115844,
-        "sha256": "98bd8625284359153d26c4f5c8beb9e3461a6d59266f2e7e8c2715c29e997990"
+        "sha256": "48f34c0f844744e432b13c812241aad9423f7e36e70123f3936a90c91c2bff5f"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/56d18d6de19b041004562a5f2a55fbb473be80b5e2342a17e670d275a165a622/winter-wmc-stair-rail-exterior-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/56d18d6de19b041004562a5f2a55fbb473be80b5e2342a17e670d275a165a622/winter-wmc-stair-rail-exterior-runtime.zip",
-        "bytes": 47615,
-        "sha256": "56d18d6de19b041004562a5f2a55fbb473be80b5e2342a17e670d275a165a622"
+        "path": "packs/holodeck/objects/367d1634cb82f0852c7daed7c11d24b350aa9d1d763f5cfc80ecf77389aa232b/winter-wmc-stair-rail-exterior-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/367d1634cb82f0852c7daed7c11d24b350aa9d1d763f5cfc80ecf77389aa232b/winter-wmc-stair-rail-exterior-runtime.zip",
+        "bytes": 47653,
+        "sha256": "367d1634cb82f0852c7daed7c11d24b350aa9d1d763f5cfc80ecf77389aa232b"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/ef6fddf11a7084e1460a5fb5d595c79de6a9a6053906c823d4e0a9b79f03a2db/winter-wmc-stair-rail-exterior-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ef6fddf11a7084e1460a5fb5d595c79de6a9a6053906c823d4e0a9b79f03a2db/winter-wmc-stair-rail-exterior-editable.zip",
-        "bytes": 192990,
-        "sha256": "ef6fddf11a7084e1460a5fb5d595c79de6a9a6053906c823d4e0a9b79f03a2db"
+        "path": "packs/holodeck/objects/0d81fad74a98c1a7485969f7cee539efd318d9336d89403d9479218d5422d593/winter-wmc-stair-rail-exterior-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0d81fad74a98c1a7485969f7cee539efd318d9336d89403d9479218d5422d593/winter-wmc-stair-rail-exterior-editable.zip",
+        "bytes": 195948,
+        "sha256": "0d81fad74a98c1a7485969f7cee539efd318d9336d89403d9479218d5422d593"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A shorter sloping timber railing with posts, iron rods and bolted upper joinery, shaped for the cabin’s exterior stair.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-stair-rail-exterior.png",
-        "sourceRevisionId": "r_659dbb66e23b4b64ab989ed92e795da5",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 916,
         "meshes": 2,
@@ -9912,39 +9700,29 @@
       ],
       "collection": "project",
       "assetId": "a_2e2adb67c53c4839a0760672abfb69ae",
-      "revisionId": "r_9a172a5524904a298f8d475d722de2a1",
-      "sourcePath": "packs/holodeck/sources/project/a_2e2adb67c53c4839a0760672abfb69ae/r_9a172a5524904a298f8d475d722de2a1/source.kiln.js",
-      "sourceSha256": "723a9c746e46da345672b77a18dfcf70fb072882f0d16ac3fe10ecab4bce0b5b",
+      "revisionId": "r_a60f9cd124434aa2bdb79108e3f731ad",
+      "parentRevision": "r_9a172a5524904a298f8d475d722de2a1",
+      "sourcePath": "packs/holodeck/sources/project/a_2e2adb67c53c4839a0760672abfb69ae/r_a60f9cd124434aa2bdb79108e3f731ad/source.kiln.js",
+      "sourceSha256": "99188c1ecfa47aa6640ac26c15279048e8b43a8456ab2c2be069fc823ec26bb9",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/140553ef2553b4df9627e79bb50ddfe3e1e198740cd001ac18408553384f9f60/winter-wmc-rail-span.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/140553ef2553b4df9627e79bb50ddfe3e1e198740cd001ac18408553384f9f60/winter-wmc-rail-span.glb",
-        "bytes": 73724,
-        "sha256": "140553ef2553b4df9627e79bb50ddfe3e1e198740cd001ac18408553384f9f60"
+        "path": "packs/holodeck/objects/a9afb10e0b7f9ec9484bbd06cbecbf953effa97fcdfd9713dc8b6b5da959d1b9/winter-wmc-rail-span.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a9afb10e0b7f9ec9484bbd06cbecbf953effa97fcdfd9713dc8b6b5da959d1b9/winter-wmc-rail-span.glb",
+        "bytes": 73844,
+        "sha256": "a9afb10e0b7f9ec9484bbd06cbecbf953effa97fcdfd9713dc8b6b5da959d1b9"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/10a629833ca655cbd279d9e3cc0ec9c234d35657f009fe524500cfa6af60f5b7/winter-wmc-rail-span-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/10a629833ca655cbd279d9e3cc0ec9c234d35657f009fe524500cfa6af60f5b7/winter-wmc-rail-span-runtime.zip",
-        "bytes": 39551,
-        "sha256": "10a629833ca655cbd279d9e3cc0ec9c234d35657f009fe524500cfa6af60f5b7"
+        "path": "packs/holodeck/objects/c4bfca870724f63b7bbb6ff18db28930727051066365e9fa11e04f4840a989ac/winter-wmc-rail-span-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c4bfca870724f63b7bbb6ff18db28930727051066365e9fa11e04f4840a989ac/winter-wmc-rail-span-runtime.zip",
+        "bytes": 39740,
+        "sha256": "c4bfca870724f63b7bbb6ff18db28930727051066365e9fa11e04f4840a989ac"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/9bd7247067b1d24a759b4129e195ec8c551d1ee7b413fcb867f75614b46d1aa7/winter-wmc-rail-span-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9bd7247067b1d24a759b4129e195ec8c551d1ee7b413fcb867f75614b46d1aa7/winter-wmc-rail-span-editable.zip",
-        "bytes": 186911,
-        "sha256": "9bd7247067b1d24a759b4129e195ec8c551d1ee7b413fcb867f75614b46d1aa7"
+        "path": "packs/holodeck/objects/7b847fc61a2e43cec8c8165ee4bde9903b821a9cace11c56af88889f3befc875/winter-wmc-rail-span-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7b847fc61a2e43cec8c8165ee4bde9903b821a9cace11c56af88889f3befc875/winter-wmc-rail-span-editable.zip",
+        "bytes": 186927,
+        "sha256": "7b847fc61a2e43cec8c8165ee4bde9903b821a9cace11c56af88889f3befc875"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A straight timber handrail between two posts, with three iron rods and base plates for deck and loft edges.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-rail-span.png",
-        "sourceRevisionId": "r_9a172a5524904a298f8d475d722de2a1",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 484,
         "meshes": 2,
@@ -10148,40 +9926,29 @@
       ],
       "collection": "project",
       "assetId": "a_81cee922309d48cf9799373f0d431b35",
-      "revisionId": "r_c9160d6fc18a4ee2baa2b7a367195e6a",
-      "parentRevision": "r_08dcb2a2b7f844bf89d3a0500b99fef9",
-      "sourcePath": "packs/holodeck/sources/project/a_81cee922309d48cf9799373f0d431b35/r_c9160d6fc18a4ee2baa2b7a367195e6a/source.kiln.js",
-      "sourceSha256": "f6f1f27322b77a3c827d76a9d87375e639511dfed50a9f0ab99d559517932270",
+      "revisionId": "r_7a815cc3780242259761e44692c655fa",
+      "parentRevision": "r_c9160d6fc18a4ee2baa2b7a367195e6a",
+      "sourcePath": "packs/holodeck/sources/project/a_81cee922309d48cf9799373f0d431b35/r_7a815cc3780242259761e44692c655fa/source.kiln.js",
+      "sourceSha256": "fad067a2113a899ecbf9560e61d66351e4eb810562af8f3a7fe3e57f074f3cf5",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/6c466c22cbe1cd3fd4aa40a6a8fcd79b4224ea0c3db35b9e06a2b83bfa8b1e2a/winter-wmc-living-rug-wool.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6c466c22cbe1cd3fd4aa40a6a8fcd79b4224ea0c3db35b9e06a2b83bfa8b1e2a/winter-wmc-living-rug-wool.glb",
-        "bytes": 649924,
-        "sha256": "6c466c22cbe1cd3fd4aa40a6a8fcd79b4224ea0c3db35b9e06a2b83bfa8b1e2a"
+        "path": "packs/holodeck/objects/ddd57b3debba60b5e0bd5ed635d2bce1a7207d4154e43f0fd4e7c8d35a141a6a/winter-wmc-living-rug-wool.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ddd57b3debba60b5e0bd5ed635d2bce1a7207d4154e43f0fd4e7c8d35a141a6a/winter-wmc-living-rug-wool.glb",
+        "bytes": 650164,
+        "sha256": "ddd57b3debba60b5e0bd5ed635d2bce1a7207d4154e43f0fd4e7c8d35a141a6a"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/c61d99c8101f08fe29b7dee711ad04060a70342f0609342fa29d123ecce52c2e/winter-wmc-living-rug-wool-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c61d99c8101f08fe29b7dee711ad04060a70342f0609342fa29d123ecce52c2e/winter-wmc-living-rug-wool-runtime.zip",
-        "bytes": 419495,
-        "sha256": "c61d99c8101f08fe29b7dee711ad04060a70342f0609342fa29d123ecce52c2e"
+        "path": "packs/holodeck/objects/75b526b0a0b42399072f7db0cb26ff29668e4acf7a113692ef0ba0d46f1444fb/winter-wmc-living-rug-wool-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/75b526b0a0b42399072f7db0cb26ff29668e4acf7a113692ef0ba0d46f1444fb/winter-wmc-living-rug-wool-runtime.zip",
+        "bytes": 419723,
+        "sha256": "75b526b0a0b42399072f7db0cb26ff29668e4acf7a113692ef0ba0d46f1444fb"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/1fd5d12dbb07e88452fd3c287543db3d3a79c6b132a31ab5e8b8584bfeb23402/winter-wmc-living-rug-wool-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1fd5d12dbb07e88452fd3c287543db3d3a79c6b132a31ab5e8b8584bfeb23402/winter-wmc-living-rug-wool-editable.zip",
-        "bytes": 450744,
-        "sha256": "1fd5d12dbb07e88452fd3c287543db3d3a79c6b132a31ab5e8b8584bfeb23402"
+        "path": "packs/holodeck/objects/0e6a4794c787418cf37196eed4eca4d9663f86d2185d4bb30ca2a042a8feb5db/winter-wmc-living-rug-wool-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0e6a4794c787418cf37196eed4eca4d9663f86d2185d4bb30ca2a042a8feb5db/winter-wmc-living-rug-wool-editable.zip",
+        "bytes": 451417,
+        "sha256": "0e6a4794c787418cf37196eed4eca4d9663f86d2185d4bb30ca2a042a8feb5db"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A rectangular woven rug with a contrasting border and fringe at both ends for the living-room seating area.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-living-rug-wool.png",
-        "sourceRevisionId": "r_c9160d6fc18a4ee2baa2b7a367195e6a",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 1804,
         "meshes": 2,
@@ -10305,40 +10072,29 @@
       ],
       "collection": "project",
       "assetId": "a_0811b67773b5487ba90d0b7cbeb8c80b",
-      "revisionId": "r_04edc17050114086831c5e5098b64436",
-      "parentRevision": "r_0731e0d0a4f84c2786ec572f8402a3ff",
-      "sourcePath": "packs/holodeck/sources/project/a_0811b67773b5487ba90d0b7cbeb8c80b/r_04edc17050114086831c5e5098b64436/source.kiln.js",
-      "sourceSha256": "a4d73cce247f6a3fba397e4fe2f17473acd163e67fb1c7509c4af0e2bd691d10",
+      "revisionId": "r_cd1fc2f930154744ad463ac4a3a36679",
+      "parentRevision": "r_04edc17050114086831c5e5098b64436",
+      "sourcePath": "packs/holodeck/sources/project/a_0811b67773b5487ba90d0b7cbeb8c80b/r_cd1fc2f930154744ad463ac4a3a36679/source.kiln.js",
+      "sourceSha256": "d1615d1ad34d5176a23ded06e3b54869f6cc5cbb3609e17606fc462980254939",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/5774ef4bcd089cfc6832437e6ffae33aa6a0e9e936c0ec81e1608a8041844a50/winter-wmc-roof-east.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5774ef4bcd089cfc6832437e6ffae33aa6a0e9e936c0ec81e1608a8041844a50/winter-wmc-roof-east.glb",
+        "path": "packs/holodeck/objects/30f1acefecc421b618983d3a8a99e40857a26fdb5db3836b05f55589bd56a635/winter-wmc-roof-east.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/30f1acefecc421b618983d3a8a99e40857a26fdb5db3836b05f55589bd56a635/winter-wmc-roof-east.glb",
         "bytes": 952224,
-        "sha256": "5774ef4bcd089cfc6832437e6ffae33aa6a0e9e936c0ec81e1608a8041844a50"
+        "sha256": "30f1acefecc421b618983d3a8a99e40857a26fdb5db3836b05f55589bd56a635"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/1a4b272c74b528045c939fc8725257953ffc177f38435016c147264307a42063/winter-wmc-roof-east-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1a4b272c74b528045c939fc8725257953ffc177f38435016c147264307a42063/winter-wmc-roof-east-runtime.zip",
-        "bytes": 352823,
-        "sha256": "1a4b272c74b528045c939fc8725257953ffc177f38435016c147264307a42063"
+        "path": "packs/holodeck/objects/b051a7fba868e8fae79a1a7bc191ae75d0ab9d5bbc02289831724047a3180b5b/winter-wmc-roof-east-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b051a7fba868e8fae79a1a7bc191ae75d0ab9d5bbc02289831724047a3180b5b/winter-wmc-roof-east-runtime.zip",
+        "bytes": 354213,
+        "sha256": "b051a7fba868e8fae79a1a7bc191ae75d0ab9d5bbc02289831724047a3180b5b"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/8ee78afdd66a5b51e3381ebc9b3b769dc6684173c2dc79bbdfeb9d75630f777a/winter-wmc-roof-east-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8ee78afdd66a5b51e3381ebc9b3b769dc6684173c2dc79bbdfeb9d75630f777a/winter-wmc-roof-east-editable.zip",
-        "bytes": 547971,
-        "sha256": "8ee78afdd66a5b51e3381ebc9b3b769dc6684173c2dc79bbdfeb9d75630f777a"
+        "path": "packs/holodeck/objects/ecc5e63973fd324b935b3c14e171836698ba0ea2547ea04bf4f60f3753a2c272/winter-wmc-roof-east-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ecc5e63973fd324b935b3c14e171836698ba0ea2547ea04bf4f60f3753a2c272/winter-wmc-roof-east-editable.zip",
+        "bytes": 561104,
+        "sha256": "ecc5e63973fd324b935b3c14e171836698ba0ea2547ea04bf4f60f3753a2c272"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "The matching pitched roof half, with a chimney opening, timber underside, raised metal seams and snow along the eaves.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-roof-east.png",
-        "sourceRevisionId": "r_04edc17050114086831c5e5098b64436",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 7988,
         "meshes": 4,
@@ -10542,40 +10298,29 @@
       ],
       "collection": "project",
       "assetId": "a_19edeafb0e3848718315f8c54bf89885",
-      "revisionId": "r_314b667491c24a52bbd681da663f69cd",
-      "parentRevision": "r_332d3c3d01c84d94b0c1e8e95fb5207e",
-      "sourcePath": "packs/holodeck/sources/project/a_19edeafb0e3848718315f8c54bf89885/r_314b667491c24a52bbd681da663f69cd/source.kiln.js",
-      "sourceSha256": "5d3d3ae33e17481187f411b2ac6a716f2beda82c0185613ccec52ab37585143a",
+      "revisionId": "r_985cc15f93f54b2586088a8ebc5fd4b0",
+      "parentRevision": "r_314b667491c24a52bbd681da663f69cd",
+      "sourcePath": "packs/holodeck/sources/project/a_19edeafb0e3848718315f8c54bf89885/r_985cc15f93f54b2586088a8ebc5fd4b0/source.kiln.js",
+      "sourceSha256": "ead00e4b31cfd8e5e3553daa9986e5f57d42f901f5613f6632d1e421a9438481",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/f79dd88e03c59c23242fe34758929532f5221925cd5d27bc13ffc0c323cc09ef/winter-wmc-side-table.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f79dd88e03c59c23242fe34758929532f5221925cd5d27bc13ffc0c323cc09ef/winter-wmc-side-table.glb",
+        "path": "packs/holodeck/objects/1c41be812bd393b8fdeb44c3d6f79e4807ccab7963da1e6cc0ca67abe782fe7c/winter-wmc-side-table.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1c41be812bd393b8fdeb44c3d6f79e4807ccab7963da1e6cc0ca67abe782fe7c/winter-wmc-side-table.glb",
         "bytes": 184256,
-        "sha256": "f79dd88e03c59c23242fe34758929532f5221925cd5d27bc13ffc0c323cc09ef"
+        "sha256": "1c41be812bd393b8fdeb44c3d6f79e4807ccab7963da1e6cc0ca67abe782fe7c"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/14da866dd31707cdde8c99fcf6872c5676cd5418c2d79bebb8a9d5ee9c3b9cee/winter-wmc-side-table-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/14da866dd31707cdde8c99fcf6872c5676cd5418c2d79bebb8a9d5ee9c3b9cee/winter-wmc-side-table-runtime.zip",
-        "bytes": 104131,
-        "sha256": "14da866dd31707cdde8c99fcf6872c5676cd5418c2d79bebb8a9d5ee9c3b9cee"
+        "path": "packs/holodeck/objects/f9b19d88894bbde7eed65fba4dbfbeb075aef0191551faaeae07b6abc0705fdc/winter-wmc-side-table-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f9b19d88894bbde7eed65fba4dbfbeb075aef0191551faaeae07b6abc0705fdc/winter-wmc-side-table-runtime.zip",
+        "bytes": 104130,
+        "sha256": "f9b19d88894bbde7eed65fba4dbfbeb075aef0191551faaeae07b6abc0705fdc"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/49727e819107125ac233a4c159cb4c74d5437eb4005be9519c9eba2bcd7cb547/winter-wmc-side-table-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/49727e819107125ac233a4c159cb4c74d5437eb4005be9519c9eba2bcd7cb547/winter-wmc-side-table-editable.zip",
-        "bytes": 414290,
-        "sha256": "49727e819107125ac233a4c159cb4c74d5437eb4005be9519c9eba2bcd7cb547"
+        "path": "packs/holodeck/objects/dd0795d49d0e81f594fb917afb53c59d2c817b2d16e5dba6bfecfede494cbe61/winter-wmc-side-table-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/dd0795d49d0e81f594fb917afb53c59d2c817b2d16e5dba6bfecfede494cbe61/winter-wmc-side-table-editable.zip",
+        "bytes": 413590,
+        "sha256": "dd0795d49d0e81f594fb917afb53c59d2c817b2d16e5dba6bfecfede494cbe61"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A small timber side table with a drawer front, iron pull and a lower shelf holding a book.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-side-table.png",
-        "sourceRevisionId": "r_314b667491c24a52bbd681da663f69cd",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 852,
         "meshes": 5,
@@ -10621,40 +10366,29 @@
       ],
       "collection": "project",
       "assetId": "a_26dd80ee80db4d85bc2a7b56475c3cbb",
-      "revisionId": "r_49df9f4d840241aab1426e6a6ab2c3e3",
-      "parentRevision": "r_dfed21faf6754fcfab7381a8f94e3254",
-      "sourcePath": "packs/holodeck/sources/project/a_26dd80ee80db4d85bc2a7b56475c3cbb/r_49df9f4d840241aab1426e6a6ab2c3e3/source.kiln.js",
-      "sourceSha256": "33a68c3c9f485420de9b5fe63f4536ab6a3edccf33afcf39633999d823246d0f",
+      "revisionId": "r_f9fc7d0140d54a068f8b0b461f1068f8",
+      "parentRevision": "r_49df9f4d840241aab1426e6a6ab2c3e3",
+      "sourcePath": "packs/holodeck/sources/project/a_26dd80ee80db4d85bc2a7b56475c3cbb/r_f9fc7d0140d54a068f8b0b461f1068f8/source.kiln.js",
+      "sourceSha256": "3b4501f0f122867db78ad1d25981b537fcb30e52d488d2af3302b4c3f684eef2",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/41d8ab0ffcecf2f0c8747e264f4c1db09ddb27456cf896e8a3af1e6e6924b669/winter-wmc-dining-table.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/41d8ab0ffcecf2f0c8747e264f4c1db09ddb27456cf896e8a3af1e6e6924b669/winter-wmc-dining-table.glb",
+        "path": "packs/holodeck/objects/e8b37696bbe20369bbee1fd705278808bb1eeff371dfc847fc58d6a185d66f21/winter-wmc-dining-table.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e8b37696bbe20369bbee1fd705278808bb1eeff371dfc847fc58d6a185d66f21/winter-wmc-dining-table.glb",
         "bytes": 391084,
-        "sha256": "41d8ab0ffcecf2f0c8747e264f4c1db09ddb27456cf896e8a3af1e6e6924b669"
+        "sha256": "e8b37696bbe20369bbee1fd705278808bb1eeff371dfc847fc58d6a185d66f21"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/cfcb3c7d4cffd4221944c4f9836a42b8986e33c8970d853e92b749d6c52e30a4/winter-wmc-dining-table-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/cfcb3c7d4cffd4221944c4f9836a42b8986e33c8970d853e92b749d6c52e30a4/winter-wmc-dining-table-runtime.zip",
-        "bytes": 275659,
-        "sha256": "cfcb3c7d4cffd4221944c4f9836a42b8986e33c8970d853e92b749d6c52e30a4"
+        "path": "packs/holodeck/objects/4b4e9493fe09c19c1a687ee0d2c43e7144ceeaba7ae1dbb13380229394bd7f06/winter-wmc-dining-table-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4b4e9493fe09c19c1a687ee0d2c43e7144ceeaba7ae1dbb13380229394bd7f06/winter-wmc-dining-table-runtime.zip",
+        "bytes": 275628,
+        "sha256": "4b4e9493fe09c19c1a687ee0d2c43e7144ceeaba7ae1dbb13380229394bd7f06"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/516687beda9fac3a5038132fce9eb7c7f33e18a2edb76a2fcf42735683586c6e/winter-wmc-dining-table-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/516687beda9fac3a5038132fce9eb7c7f33e18a2edb76a2fcf42735683586c6e/winter-wmc-dining-table-editable.zip",
-        "bytes": 502825,
-        "sha256": "516687beda9fac3a5038132fce9eb7c7f33e18a2edb76a2fcf42735683586c6e"
+        "path": "packs/holodeck/objects/6b4af76db3d3d5f99443de2be5adb102b02f7aea3c147fa9c7bb7a1ee7eaed56/winter-wmc-dining-table-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6b4af76db3d3d5f99443de2be5adb102b02f7aea3c147fa9c7bb7a1ee7eaed56/winter-wmc-dining-table-editable.zip",
+        "bytes": 502408,
+        "sha256": "6b4af76db3d3d5f99443de2be5adb102b02f7aea3c147fa9c7bb7a1ee7eaed56"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A compact plank-top timber table with pegged legs and two place settings of plates, cups and folded napkins.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-table.png",
-        "sourceRevisionId": "r_49df9f4d840241aab1426e6a6ab2c3e3",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 3096,
         "meshes": 4,
@@ -10700,40 +10434,29 @@
       ],
       "collection": "project",
       "assetId": "a_1686d36f753d4f9abe0f9991d8bfb36a",
-      "revisionId": "r_c513bc554a7f407eb0c7058055dcfc68",
-      "parentRevision": "r_aa1aee75f8dc454ba17369c33bb914b5",
-      "sourcePath": "packs/holodeck/sources/project/a_1686d36f753d4f9abe0f9991d8bfb36a/r_c513bc554a7f407eb0c7058055dcfc68/source.kiln.js",
-      "sourceSha256": "9d2c5c044305c07cd9b3fbea3f9cc21403132285601738388e782c429d378ec5",
+      "revisionId": "r_88c5f50fc5ef4be7a67fc8bdf95c8b99",
+      "parentRevision": "r_c513bc554a7f407eb0c7058055dcfc68",
+      "sourcePath": "packs/holodeck/sources/project/a_1686d36f753d4f9abe0f9991d8bfb36a/r_88c5f50fc5ef4be7a67fc8bdf95c8b99/source.kiln.js",
+      "sourceSha256": "14644c416efc7d399e73372cea4c1667d1241ebd2664938e26aec0952aca0b2a",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/9290083a055cecd8ba09c9f19ae1b3c512af9b002371da10a3d92345a7dfea2f/winter-wmc-dining-chair.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9290083a055cecd8ba09c9f19ae1b3c512af9b002371da10a3d92345a7dfea2f/winter-wmc-dining-chair.glb",
+        "path": "packs/holodeck/objects/b6454fafb12a3b5e5d8febf4b729cae1da86e3d6a5c04ded5200b9c745aa7807/winter-wmc-dining-chair.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b6454fafb12a3b5e5d8febf4b729cae1da86e3d6a5c04ded5200b9c745aa7807/winter-wmc-dining-chair.glb",
         "bytes": 329728,
-        "sha256": "9290083a055cecd8ba09c9f19ae1b3c512af9b002371da10a3d92345a7dfea2f"
+        "sha256": "b6454fafb12a3b5e5d8febf4b729cae1da86e3d6a5c04ded5200b9c745aa7807"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/077bc1b8bc9859251118635dc1fdea40ef40cf83793e0e3642823937ef04f21d/winter-wmc-dining-chair-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/077bc1b8bc9859251118635dc1fdea40ef40cf83793e0e3642823937ef04f21d/winter-wmc-dining-chair-runtime.zip",
-        "bytes": 241256,
-        "sha256": "077bc1b8bc9859251118635dc1fdea40ef40cf83793e0e3642823937ef04f21d"
+        "path": "packs/holodeck/objects/4469c2d37c71a38edc83a0fefd34376f74ad84014abe451124804f321d862fb4/winter-wmc-dining-chair-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4469c2d37c71a38edc83a0fefd34376f74ad84014abe451124804f321d862fb4/winter-wmc-dining-chair-runtime.zip",
+        "bytes": 241253,
+        "sha256": "4469c2d37c71a38edc83a0fefd34376f74ad84014abe451124804f321d862fb4"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/cb40cc94660ccd32a3a4f93ae0ad76548537f3d0ac988be9e4d87d6ea5a64f6c/winter-wmc-dining-chair-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/cb40cc94660ccd32a3a4f93ae0ad76548537f3d0ac988be9e4d87d6ea5a64f6c/winter-wmc-dining-chair-editable.zip",
-        "bytes": 527684,
-        "sha256": "cb40cc94660ccd32a3a4f93ae0ad76548537f3d0ac988be9e4d87d6ea5a64f6c"
+        "path": "packs/holodeck/objects/db13a2dc48c440bacfadec6628ce33701dd6282428ab10460ebd419e9804e64a/winter-wmc-dining-chair-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/db13a2dc48c440bacfadec6628ce33701dd6282428ab10460ebd419e9804e64a/winter-wmc-dining-chair-editable.zip",
+        "bytes": 528542,
+        "sha256": "db13a2dc48c440bacfadec6628ce33701dd6282428ab10460ebd419e9804e64a"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A timber chair with a woven seat cushion, two curved back slats, visible pegs and low side stretchers.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-dining-chair.png",
-        "sourceRevisionId": "r_c513bc554a7f407eb0c7058055dcfc68",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 1020,
         "meshes": 3,
@@ -10779,40 +10502,29 @@
       ],
       "collection": "project",
       "assetId": "a_43a2c9a0565e4743b82e9d9b51d257c9",
-      "revisionId": "r_8c52171c556a4d9180583dd6a6bdc01d",
-      "parentRevision": "r_c88eaf3e668e4f0aac0ddf1946d98731",
-      "sourcePath": "packs/holodeck/sources/project/a_43a2c9a0565e4743b82e9d9b51d257c9/r_8c52171c556a4d9180583dd6a6bdc01d/source.kiln.js",
-      "sourceSha256": "51a6acf3993d81ef1494bee13bca6d9fb9a16ca4a969f4418cd1406aceaa7338",
+      "revisionId": "r_b3d8583356574aac889f248ed6b8c791",
+      "parentRevision": "r_8c52171c556a4d9180583dd6a6bdc01d",
+      "sourcePath": "packs/holodeck/sources/project/a_43a2c9a0565e4743b82e9d9b51d257c9/r_b3d8583356574aac889f248ed6b8c791/source.kiln.js",
+      "sourceSha256": "a7e4bf5786a3171f53fed3fe8001de5103318d3d04b9a9905861aa97bc0dd012",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/d503b4478342889efb59f2528e9a3e3964b48283e135a5974a93db1f271faefa/winter-wmc-kitchen-run.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d503b4478342889efb59f2528e9a3e3964b48283e135a5974a93db1f271faefa/winter-wmc-kitchen-run.glb",
-        "bytes": 837476,
-        "sha256": "d503b4478342889efb59f2528e9a3e3964b48283e135a5974a93db1f271faefa"
+        "path": "packs/holodeck/objects/8f1a9157cb30a15b5d86862b6685f7160b7911f930dacd8576dbe0ab624e7a33/winter-wmc-kitchen-run.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8f1a9157cb30a15b5d86862b6685f7160b7911f930dacd8576dbe0ab624e7a33/winter-wmc-kitchen-run.glb",
+        "bytes": 837216,
+        "sha256": "8f1a9157cb30a15b5d86862b6685f7160b7911f930dacd8576dbe0ab624e7a33"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/fcad02fbed51701ba94457b9bde8d73883fc5f9dce23ea3da690c905e6a352f2/winter-wmc-kitchen-run-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/fcad02fbed51701ba94457b9bde8d73883fc5f9dce23ea3da690c905e6a352f2/winter-wmc-kitchen-run-runtime.zip",
-        "bytes": 433966,
-        "sha256": "fcad02fbed51701ba94457b9bde8d73883fc5f9dce23ea3da690c905e6a352f2"
+        "path": "packs/holodeck/objects/b13d28b030fcf29d2c3205d8a4cfedc0e4be90a19712b25533de307d45d64f5a/winter-wmc-kitchen-run-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b13d28b030fcf29d2c3205d8a4cfedc0e4be90a19712b25533de307d45d64f5a/winter-wmc-kitchen-run-runtime.zip",
+        "bytes": 434076,
+        "sha256": "b13d28b030fcf29d2c3205d8a4cfedc0e4be90a19712b25533de307d45d64f5a"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/508ec9f2f183a171e58127312d687bb198775af4d7036de22ef64544f6d2cfe3/winter-wmc-kitchen-run-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/508ec9f2f183a171e58127312d687bb198775af4d7036de22ef64544f6d2cfe3/winter-wmc-kitchen-run-editable.zip",
-        "bytes": 664577,
-        "sha256": "508ec9f2f183a171e58127312d687bb198775af4d7036de22ef64544f6d2cfe3"
+        "path": "packs/holodeck/objects/4bf8b9de442c32ac39c50ef2165cff0aebc42ce8eeccad4d764a6957021bec03/winter-wmc-kitchen-run-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/4bf8b9de442c32ac39c50ef2165cff0aebc42ce8eeccad4d764a6957021bec03/winter-wmc-kitchen-run-editable.zip",
+        "bytes": 664244,
+        "sha256": "4bf8b9de442c32ac39c50ef2165cff0aebc42ce8eeccad4d764a6957021bec03"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A timber kitchen unit with a recessed sink, curved tap, two-ring hob, wall shelf, kettle, dishes and a hanging towel.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-kitchen-run.png",
-        "sourceRevisionId": "r_8c52171c556a4d9180583dd6a6bdc01d",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 10476,
         "meshes": 8,
@@ -10858,57 +10570,46 @@
       ],
       "collection": "project",
       "assetId": "a_64db2e9702e3427fa9188875a5980146",
-      "revisionId": "r_cd846321ce64474da24aec6c2381178e",
-      "parentRevision": "r_5864b2a030564b018e8f3e0e6404a7bf",
-      "sourcePath": "packs/holodeck/sources/project/a_64db2e9702e3427fa9188875a5980146/r_cd846321ce64474da24aec6c2381178e/source.kiln.js",
-      "sourceSha256": "85cf145a55bef624530cee43135cfdf49240181c54a5c9d259919d38d6898127",
+      "revisionId": "r_5e4689104ea54d409f1314aaafeba599",
+      "parentRevision": "r_cd846321ce64474da24aec6c2381178e",
+      "sourcePath": "packs/holodeck/sources/project/a_64db2e9702e3427fa9188875a5980146/r_5e4689104ea54d409f1314aaafeba599/source.kiln.js",
+      "sourceSha256": "b310c596569493cadc2da375a36674285053083476decb2c003af84b2b92792b",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/a48671e20fd295ae0edbac0615b6979e4084cf62eb478d3a62c67363959032de/winter-wmc-loft-bed.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a48671e20fd295ae0edbac0615b6979e4084cf62eb478d3a62c67363959032de/winter-wmc-loft-bed.glb",
+        "path": "packs/holodeck/objects/5da9124c2983362855962bb68d092aec7115798c81376a1b5907a6935873b57d/winter-wmc-loft-bed.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5da9124c2983362855962bb68d092aec7115798c81376a1b5907a6935873b57d/winter-wmc-loft-bed.glb",
         "bytes": 3731580,
-        "sha256": "a48671e20fd295ae0edbac0615b6979e4084cf62eb478d3a62c67363959032de"
+        "sha256": "5da9124c2983362855962bb68d092aec7115798c81376a1b5907a6935873b57d"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/50d8ea591f7b4456a6c995edcf4fd4cd775244479fcdadac94710bdc9ae13efb/winter-wmc-loft-bed-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/50d8ea591f7b4456a6c995edcf4fd4cd775244479fcdadac94710bdc9ae13efb/winter-wmc-loft-bed-runtime.zip",
-        "bytes": 1457639,
-        "sha256": "50d8ea591f7b4456a6c995edcf4fd4cd775244479fcdadac94710bdc9ae13efb"
+        "path": "packs/holodeck/objects/a69424b971b94766a6a78bd9a2e8dd3671dc94351022236b4f023250a24f6bbd/winter-wmc-loft-bed-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a69424b971b94766a6a78bd9a2e8dd3671dc94351022236b4f023250a24f6bbd/winter-wmc-loft-bed-runtime.zip",
+        "bytes": 1457696,
+        "sha256": "a69424b971b94766a6a78bd9a2e8dd3671dc94351022236b4f023250a24f6bbd"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/edae79a0bca7aee2f58bec012676c3d068aecafa8ab88c0270bf267a4188f2d0/winter-wmc-loft-bed-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/edae79a0bca7aee2f58bec012676c3d068aecafa8ab88c0270bf267a4188f2d0/winter-wmc-loft-bed-editable.zip",
-        "bytes": 1723133,
-        "sha256": "edae79a0bca7aee2f58bec012676c3d068aecafa8ab88c0270bf267a4188f2d0"
+        "path": "packs/holodeck/objects/20ea686f938f24e9ccc789a8e2b6f91425e8aece775c973b6bab33f38c4580c2/winter-wmc-loft-bed-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/20ea686f938f24e9ccc789a8e2b6f91425e8aece775c973b6bab33f38c4580c2/winter-wmc-loft-bed-editable.zip",
+        "bytes": 1733420,
+        "sha256": "20ea686f938f24e9ccc789a8e2b6f91425e8aece775c973b6bab33f38c4580c2"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A timber double bed with slatted support, a shelf headboard, pillows, a duvet and a fringed throw.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-loft-bed.png",
-        "sourceRevisionId": "r_cd846321ce64474da24aec6c2381178e",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 24744,
         "meshes": 6,
         "materials": 6,
         "bounds": [
-          2.140000104904175,
-          1.0850000452995299,
+          2.1420000791549683,
+          1.0870000195503233,
           1.7400000095367432
         ],
         "boundsMin": [
-          -1.0700000524520874,
+          -1.0720000267028809,
           -7.1525572131747595e-9,
           -0.8700000047683716
         ],
         "boundsMax": [
           1.0700000524520874,
-          1.0850000381469727,
+          1.0870000123977661,
           0.8700000047683716
         ],
         "clips": [],
@@ -10937,40 +10638,29 @@
       ],
       "collection": "project",
       "assetId": "a_43fa2e2abfd94f308c0a32b127d21c32",
-      "revisionId": "r_d52ea05e031942dfa0fb1a34972226ae",
-      "parentRevision": "r_a880c47d3e444f3591f7b4be4352e648",
-      "sourcePath": "packs/holodeck/sources/project/a_43fa2e2abfd94f308c0a32b127d21c32/r_d52ea05e031942dfa0fb1a34972226ae/source.kiln.js",
-      "sourceSha256": "ab6eefff506ba56ddbd657742a3c84a6bf60d4ea394c54b9d70610634bdbc216",
+      "revisionId": "r_ccda87bdd376416bae412a25c395d23f",
+      "parentRevision": "r_d52ea05e031942dfa0fb1a34972226ae",
+      "sourcePath": "packs/holodeck/sources/project/a_43fa2e2abfd94f308c0a32b127d21c32/r_ccda87bdd376416bae412a25c395d23f/source.kiln.js",
+      "sourceSha256": "3a091abe0565b4d48d6979edb9ef88550c66d0b848d560d55b720b8f597edf36",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/426558bc6c8117a407d779c40b843443237f1db33bcb29a50d164989a3d19497/winter-wmc-desk.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/426558bc6c8117a407d779c40b843443237f1db33bcb29a50d164989a3d19497/winter-wmc-desk.glb",
-        "bytes": 107720,
-        "sha256": "426558bc6c8117a407d779c40b843443237f1db33bcb29a50d164989a3d19497"
+        "path": "packs/holodeck/objects/5b1008c7d51fc44f5b43d59ed92b6abc86c30ad968f97de7eb80df6e9bcd56e0/winter-wmc-desk.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5b1008c7d51fc44f5b43d59ed92b6abc86c30ad968f97de7eb80df6e9bcd56e0/winter-wmc-desk.glb",
+        "bytes": 107716,
+        "sha256": "5b1008c7d51fc44f5b43d59ed92b6abc86c30ad968f97de7eb80df6e9bcd56e0"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/63791aa67a1c7de61b67b52400846a11238e78052e9aee767645ff1dc7577b62/winter-wmc-desk-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/63791aa67a1c7de61b67b52400846a11238e78052e9aee767645ff1dc7577b62/winter-wmc-desk-runtime.zip",
-        "bytes": 59668,
-        "sha256": "63791aa67a1c7de61b67b52400846a11238e78052e9aee767645ff1dc7577b62"
+        "path": "packs/holodeck/objects/540cba939ea49507ceeabf232f5f7dc79892813bca85b5c60e79247e792af98f/winter-wmc-desk-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/540cba939ea49507ceeabf232f5f7dc79892813bca85b5c60e79247e792af98f/winter-wmc-desk-runtime.zip",
+        "bytes": 59674,
+        "sha256": "540cba939ea49507ceeabf232f5f7dc79892813bca85b5c60e79247e792af98f"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/f688ff2eb34fc6af9811cdcc27eaed1cb946e3d60e7dfe34aa41573f60686310/winter-wmc-desk-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f688ff2eb34fc6af9811cdcc27eaed1cb946e3d60e7dfe34aa41573f60686310/winter-wmc-desk-editable.zip",
-        "bytes": 251459,
-        "sha256": "f688ff2eb34fc6af9811cdcc27eaed1cb946e3d60e7dfe34aa41573f60686310"
+        "path": "packs/holodeck/objects/14e345b6a4a6d251e5fc796e70f9c2a5fe4161ad54497b0a70b4ced1bbc2b831/winter-wmc-desk-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/14e345b6a4a6d251e5fc796e70f9c2a5fe4161ad54497b0a70b4ced1bbc2b831/winter-wmc-desk-editable.zip",
+        "bytes": 250922,
+        "sha256": "14e345b6a4a6d251e5fc796e70f9c2a5fe4161ad54497b0a70b4ced1bbc2b831"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A compact timber desk with tapered legs, supporting side rails and a small drawer front with an iron pull.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-desk.png",
-        "sourceRevisionId": "r_d52ea05e031942dfa0fb1a34972226ae",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 552,
         "meshes": 3,
@@ -11016,40 +10706,29 @@
       ],
       "collection": "project",
       "assetId": "a_d6fe54a2237c4a538f97cc9792e05ba4",
-      "revisionId": "r_78da00aa2eb04b7fbef7a33fab2826b6",
-      "parentRevision": "r_991716986d564f0abcaa740f36dccec4",
-      "sourcePath": "packs/holodeck/sources/project/a_d6fe54a2237c4a538f97cc9792e05ba4/r_78da00aa2eb04b7fbef7a33fab2826b6/source.kiln.js",
-      "sourceSha256": "e2549a05fa349e2018ac789207c6169824b60f316c6c85b8549fbc90de3a4bfe",
+      "revisionId": "r_e0e4b03b991440739e9224f2619af721",
+      "parentRevision": "r_78da00aa2eb04b7fbef7a33fab2826b6",
+      "sourcePath": "packs/holodeck/sources/project/a_d6fe54a2237c4a538f97cc9792e05ba4/r_e0e4b03b991440739e9224f2619af721/source.kiln.js",
+      "sourceSha256": "b01504c570d70c8a9363392243c7baa2889c7fe3acd9b806bac9ef0f2989c5c3",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/0efeba44a2a16a8f6610b03be402798c18f28ab60af84a0e96b6fb0ac28e5922/winter-wmc-entry-bench.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0efeba44a2a16a8f6610b03be402798c18f28ab60af84a0e96b6fb0ac28e5922/winter-wmc-entry-bench.glb",
-        "bytes": 1474964,
-        "sha256": "0efeba44a2a16a8f6610b03be402798c18f28ab60af84a0e96b6fb0ac28e5922"
+        "path": "packs/holodeck/objects/c7bcea2c7347002ec22bf61208709c1e2e048bea8d05d80b7a562909bfbe82be/winter-wmc-entry-bench.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c7bcea2c7347002ec22bf61208709c1e2e048bea8d05d80b7a562909bfbe82be/winter-wmc-entry-bench.glb",
+        "bytes": 1474960,
+        "sha256": "c7bcea2c7347002ec22bf61208709c1e2e048bea8d05d80b7a562909bfbe82be"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/3f642ddfb13ce0060862cf8ec29c1139246125f7b8a7443d1975c5eaadb244da/winter-wmc-entry-bench-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3f642ddfb13ce0060862cf8ec29c1139246125f7b8a7443d1975c5eaadb244da/winter-wmc-entry-bench-runtime.zip",
-        "bytes": 729364,
-        "sha256": "3f642ddfb13ce0060862cf8ec29c1139246125f7b8a7443d1975c5eaadb244da"
+        "path": "packs/holodeck/objects/c520fd913314535c755012472981713c4bd339d417b874682e0ffb07ceb61c82/winter-wmc-entry-bench-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c520fd913314535c755012472981713c4bd339d417b874682e0ffb07ceb61c82/winter-wmc-entry-bench-runtime.zip",
+        "bytes": 729150,
+        "sha256": "c520fd913314535c755012472981713c4bd339d417b874682e0ffb07ceb61c82"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/7380695a993709d631b8ef4e3c74de1f64699c7b61716d4c466b4a6f71fdcd77/winter-wmc-entry-bench-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7380695a993709d631b8ef4e3c74de1f64699c7b61716d4c466b4a6f71fdcd77/winter-wmc-entry-bench-editable.zip",
-        "bytes": 938025,
-        "sha256": "7380695a993709d631b8ef4e3c74de1f64699c7b61716d4c466b4a6f71fdcd77"
+        "path": "packs/holodeck/objects/8b2c9207ef21df975911d16896bc5bf14652abafefc19a91f52ed8d6e15f3cd7/winter-wmc-entry-bench-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8b2c9207ef21df975911d16896bc5bf14652abafefc19a91f52ed8d6e15f3cd7/winter-wmc-entry-bench-editable.zip",
+        "bytes": 940163,
+        "sha256": "8b2c9207ef21df975911d16896bc5bf14652abafefc19a91f52ed8d6e15f3cd7"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A slatted timber bench with a lower shoe shelf, integrated coat hooks, a hanging coat and a pair of boots.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-entry-bench.png",
-        "sourceRevisionId": "r_78da00aa2eb04b7fbef7a33fab2826b6",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 8880,
         "meshes": 6,
@@ -11176,40 +10855,29 @@
       ],
       "collection": "project",
       "assetId": "a_a71359b812cd4b3fa22d129458e471db",
-      "revisionId": "r_15e05145d9c649de9fe845dd4d4aba9d",
-      "parentRevision": "r_c6bb100219a3447fa4a72de09bcf3f9f",
-      "sourcePath": "packs/holodeck/sources/project/a_a71359b812cd4b3fa22d129458e471db/r_15e05145d9c649de9fe845dd4d4aba9d/source.kiln.js",
-      "sourceSha256": "4c792f4c7d9a86e14a9d622a9a63d89284d2969b1826b8685beb2f9e4e8e3e57",
+      "revisionId": "r_08f2b4de9b8d4791b33252130e9aac95",
+      "parentRevision": "r_15e05145d9c649de9fe845dd4d4aba9d",
+      "sourcePath": "packs/holodeck/sources/project/a_a71359b812cd4b3fa22d129458e471db/r_08f2b4de9b8d4791b33252130e9aac95/source.kiln.js",
+      "sourceSha256": "ff9d41eb3ad115cf61e5746c4d557d5f45d6fbb4f3bcc9b44d9ce162c56d4e48",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/c77ee94b5ebf5e1617972e1a19bf6510b99f254c5227f49604d76124ae7f4f07/winter-wmc-small-props.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c77ee94b5ebf5e1617972e1a19bf6510b99f254c5227f49604d76124ae7f4f07/winter-wmc-small-props.glb",
-        "bytes": 359688,
-        "sha256": "c77ee94b5ebf5e1617972e1a19bf6510b99f254c5227f49604d76124ae7f4f07"
+        "path": "packs/holodeck/objects/be549083381e4025f00f0409b4038c2c4e683009f57808d60ef3da663afc5fe7/winter-wmc-small-props.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/be549083381e4025f00f0409b4038c2c4e683009f57808d60ef3da663afc5fe7/winter-wmc-small-props.glb",
+        "bytes": 359684,
+        "sha256": "be549083381e4025f00f0409b4038c2c4e683009f57808d60ef3da663afc5fe7"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/d03afe160e77514fe9461afd2b324fb63a21035ce400d06367f0e918092f1da2/winter-wmc-small-props-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d03afe160e77514fe9461afd2b324fb63a21035ce400d06367f0e918092f1da2/winter-wmc-small-props-runtime.zip",
-        "bytes": 296377,
-        "sha256": "d03afe160e77514fe9461afd2b324fb63a21035ce400d06367f0e918092f1da2"
+        "path": "packs/holodeck/objects/8a7dc1c247120f8a1e9d0f8ffeb1ceb465936cc2eab7cf2e8683b288782b569b/winter-wmc-small-props-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8a7dc1c247120f8a1e9d0f8ffeb1ceb465936cc2eab7cf2e8683b288782b569b/winter-wmc-small-props-runtime.zip",
+        "bytes": 296374,
+        "sha256": "8a7dc1c247120f8a1e9d0f8ffeb1ceb465936cc2eab7cf2e8683b288782b569b"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/83d212ecb044df42f92e1458dd4a3e38ba5198d1240401436341c5a527ce649d/winter-wmc-small-props-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/83d212ecb044df42f92e1458dd4a3e38ba5198d1240401436341c5a527ce649d/winter-wmc-small-props-editable.zip",
-        "bytes": 545334,
-        "sha256": "83d212ecb044df42f92e1458dd4a3e38ba5198d1240401436341c5a527ce649d"
+        "path": "packs/holodeck/objects/1b03ecc2a86daaf3a9d052a65a869428b631bbaa7ec8cb67871028ecf3c54855/winter-wmc-small-props-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1b03ecc2a86daaf3a9d052a65a869428b631bbaa7ec8cb67871028ecf3c54855/winter-wmc-small-props-editable.zip",
+        "bytes": 546401,
+        "sha256": "1b03ecc2a86daaf3a9d052a65a869428b631bbaa7ec8cb67871028ecf3c54855"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A small timber tray holding a book, cup and folded cloth for dressing a bedside or reading table.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-small-props.png",
-        "sourceRevisionId": "r_15e05145d9c649de9fe845dd4d4aba9d",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 1280,
         "meshes": 7,
@@ -11807,51 +11475,41 @@
       ],
       "collection": "project",
       "assetId": "a_315c30d4f7674cb6a346c9b455efb999",
-      "revisionId": "r_b88bfaef911545fe9b4d9625978f5775",
-      "sourcePath": "packs/holodeck/sources/project/a_315c30d4f7674cb6a346c9b455efb999/r_b88bfaef911545fe9b4d9625978f5775/source.kiln.js",
-      "sourceSha256": "3b026cc3eb5884ff78049b94d3d257bdca67bc0c9f49928df6ec264bde567c9d",
+      "revisionId": "r_50146b48d13247ee8425293802b69500",
+      "parentRevision": "r_b88bfaef911545fe9b4d9625978f5775",
+      "sourcePath": "packs/holodeck/sources/project/a_315c30d4f7674cb6a346c9b455efb999/r_50146b48d13247ee8425293802b69500/source.kiln.js",
+      "sourceSha256": "62755f897d58319d386abd26f8fad2a1d343b76bb0d7d43d327427eb02158b9b",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/5f7c64a38028be0e1415f255e01ec7fde2ef8133b7b5ec1752a950fe47fad6e1/winter-wmc-trail-marker.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5f7c64a38028be0e1415f255e01ec7fde2ef8133b7b5ec1752a950fe47fad6e1/winter-wmc-trail-marker.glb",
+        "path": "packs/holodeck/objects/386b27b688e885c71ac132ecd77d00e8ca26e19444fc84d6e5c63b1c1cd82f59/winter-wmc-trail-marker.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/386b27b688e885c71ac132ecd77d00e8ca26e19444fc84d6e5c63b1c1cd82f59/winter-wmc-trail-marker.glb",
         "bytes": 235652,
-        "sha256": "5f7c64a38028be0e1415f255e01ec7fde2ef8133b7b5ec1752a950fe47fad6e1"
+        "sha256": "386b27b688e885c71ac132ecd77d00e8ca26e19444fc84d6e5c63b1c1cd82f59"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/f88119496a54695b5937af510165465ef22d0f8d84e3eb42f81a89507ef12ba7/winter-wmc-trail-marker-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f88119496a54695b5937af510165465ef22d0f8d84e3eb42f81a89507ef12ba7/winter-wmc-trail-marker-runtime.zip",
-        "bytes": 217323,
-        "sha256": "f88119496a54695b5937af510165465ef22d0f8d84e3eb42f81a89507ef12ba7"
+        "path": "packs/holodeck/objects/cbee6322545d223a4bad00c543c8e462c1151a77cf56e65dc75f22abbd3a4c6d/winter-wmc-trail-marker-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/cbee6322545d223a4bad00c543c8e462c1151a77cf56e65dc75f22abbd3a4c6d/winter-wmc-trail-marker-runtime.zip",
+        "bytes": 217466,
+        "sha256": "cbee6322545d223a4bad00c543c8e462c1151a77cf56e65dc75f22abbd3a4c6d"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/b0308f09f99af538b50a31e9bed0439b78bda32915ec0b010b916bb227c145f2/winter-wmc-trail-marker-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b0308f09f99af538b50a31e9bed0439b78bda32915ec0b010b916bb227c145f2/winter-wmc-trail-marker-editable.zip",
-        "bytes": 423349,
-        "sha256": "b0308f09f99af538b50a31e9bed0439b78bda32915ec0b010b916bb227c145f2"
+        "path": "packs/holodeck/objects/0a7799122a7b98dc511cbcbc39d4bb1fb759e00e2a22188a85bbd4b100bb72af/winter-wmc-trail-marker-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0a7799122a7b98dc511cbcbc39d4bb1fb759e00e2a22188a85bbd4b100bb72af/winter-wmc-trail-marker-editable.zip",
+        "bytes": 422668,
+        "sha256": "0a7799122a7b98dc511cbcbc39d4bb1fb759e00e2a22188a85bbd4b100bb72af"
       },
-      "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker.webp",
-        "width": 1024,
-        "height": 1024,
-        "alt": "A short timber post with a recessed iron arrow and a small snow cap for marking the forest path.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261024-01/winter-wmc-trail-marker.png",
-        "sourceRevisionId": "r_b88bfaef911545fe9b4d9625978f5775",
-        "exactRevision": true,
-        "rig": "review-neutral-v1"
-      },
+      "poster": null,
       "metrics": {
         "triangles": 173,
         "meshes": 3,
         "materials": 3,
         "bounds": [
           0.3400000035762787,
-          0.8850000619888307,
+          0.8850000579357147,
           0.17100000381469727
         ],
         "boundsMin": [
           -0.17000000178813934,
-          -1.1920929132713809e-8,
+          -7.867813067718998e-9,
           -0.08500000089406967
         ],
         "boundsMax": [
