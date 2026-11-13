@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "viewerModels": [
-    "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.glb",
+    "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-runtime.glb",
     "text-to-3d/c4100fecfc3b94ea/mech.glb",
     "text-to-3d/d9920f71f33de794/cathedral.glb",
     "packs/holodeck/objects/85cd72bce19068aa52834537f9c63f3b74f829a607c3aabbea9a92c958291b80/cove-structure.glb",
@@ -288,71 +288,71 @@
       "inputPath": "media/scenes/golden-gate/g5/golden-gate-scene-drive.png"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral.webp",
+      "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral.webp",
       "width": 1024,
       "height": 1024,
       "alt": "Golden Gate Bridge seen obliquely from above: both towers, the main cables and the suspended roadway on a neutral grey backdrop.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral.png",
-      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral.png",
+      "sourceRevisionId": "r_46c96e629405473097b57b922f7e6545",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral.webp",
+      "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral.webp",
       "width": 1168,
       "height": 780,
       "alt": "Six saved review views of the Golden Gate Bridge: front, right, back, left, top and three-quarter.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral.png"
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral.png"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral.webp",
+      "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral.webp",
       "width": 1024,
       "height": 1024,
       "alt": "Golden Gate Bridge from near water level, looking up at the south tower and the roadway.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral.png",
-      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral.png",
+      "sourceRevisionId": "r_46c96e629405473097b57b922f7e6545",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral.webp",
+      "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral.webp",
       "width": 1024,
       "height": 1024,
       "alt": "Golden Gate Bridge from the roadway, looking along the lanes toward the towers ahead.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral.png",
-      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral.png",
+      "sourceRevisionId": "r_46c96e629405473097b57b922f7e6545",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral.webp",
+      "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral.webp",
       "width": 1024,
       "height": 1024,
       "alt": "Golden Gate Bridge from beside the top of the south tower, with the main cables and the roadway below.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral.png",
-      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral.png",
+      "sourceRevisionId": "r_46c96e629405473097b57b922f7e6545",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral.webp",
+      "src": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral.webp",
       "width": 1024,
       "height": 1024,
       "alt": "Golden Gate Bridge in side elevation, the full span between both anchorages.",
-      "srcsetWebp": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-1024.webp 1024w",
-      "srcsetAvif": "/standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral-1024.avif 1024w",
-      "inputPath": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral.png",
-      "sourceRevisionId": "r_76c7a4080e7844e185896b7e1b196e5a",
+      "srcsetWebp": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-320.webp 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-480.webp 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-672.webp 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-768.webp 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-1024.webp 1024w",
+      "srcsetAvif": "/standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-320.avif 320w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-480.avif 480w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-672.avif 672w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-768.avif 768w, /standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral-1024.avif 1024w",
+      "inputPath": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral.png",
+      "sourceRevisionId": "r_46c96e629405473097b57b922f7e6545",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
@@ -1406,14 +1406,14 @@
       "inputPath": "media/farm/r33/poster/hay-bale.webp"
     },
     {
-      "src": "/media/farm/r36-local-review/poster/farmer.webp",
+      "src": "/media/farm/delivery-20261113-01/poster/farmer.webp",
       "width": 1168,
       "height": 780,
       "alt": "Saved review views of the farmer back clothing repair.",
-      "srcsetWebp": "/media/farm/r36-local-review/poster/farmer-320.webp 320w, /media/farm/r36-local-review/poster/farmer-480.webp 480w, /media/farm/r36-local-review/poster/farmer-672.webp 672w, /media/farm/r36-local-review/poster/farmer-768.webp 768w, /media/farm/r36-local-review/poster/farmer-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r36-local-review/poster/farmer-320.avif 320w, /media/farm/r36-local-review/poster/farmer-480.avif 480w, /media/farm/r36-local-review/poster/farmer-672.avif 672w, /media/farm/r36-local-review/poster/farmer-768.avif 768w, /media/farm/r36-local-review/poster/farmer-1024.avif 1024w",
-      "inputPath": "media/farm/r36-local-review/poster/farmer.png",
-      "sourceRevisionId": "r_70907c7fd97249ce807e9948613882cd",
+      "srcsetWebp": "/media/farm/delivery-20261113-01/poster/farmer-320.webp 320w, /media/farm/delivery-20261113-01/poster/farmer-480.webp 480w, /media/farm/delivery-20261113-01/poster/farmer-672.webp 672w, /media/farm/delivery-20261113-01/poster/farmer-768.webp 768w, /media/farm/delivery-20261113-01/poster/farmer-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/delivery-20261113-01/poster/farmer-320.avif 320w, /media/farm/delivery-20261113-01/poster/farmer-480.avif 480w, /media/farm/delivery-20261113-01/poster/farmer-672.avif 672w, /media/farm/delivery-20261113-01/poster/farmer-768.avif 768w, /media/farm/delivery-20261113-01/poster/farmer-1024.avif 1024w",
+      "inputPath": "media/farm/delivery-20261113-01/poster/farmer.png",
+      "sourceRevisionId": "r_be4c304cc47c42f3aba0bf6b24cc2a94",
       "exactRevision": true
     },
     {
@@ -1666,14 +1666,14 @@
       "inputPath": "media/farm/revisions/farmhouse-floor-after.webp"
     },
     {
-      "src": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer.webp",
+      "src": "/media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer.webp",
       "width": 1024,
       "height": 1024,
       "alt": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer-320.webp 320w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-480.webp 480w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-672.webp 672w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-768.webp 768w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer-320.avif 320w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-480.avif 480w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-672.avif 672w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-768.avif 768w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/farm/r36-local-review/farmer.png",
-      "sourceRevisionId": "r_70907c7fd97249ce807e9948613882cd",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer.png",
+      "sourceRevisionId": "r_be4c304cc47c42f3aba0bf6b24cc2a94",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
@@ -5300,7 +5300,7 @@
     }
   ],
   "archives": [
-    "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-editable.zip",
+    "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-editable.zip",
     "packs/vehicles/r2/generic-road-vehicles-runtime.zip",
     "packs/vehicles/r2/editable/hatchback-editable.zip",
     "packs/vehicles/r2/editable/sedan-editable.zip",
@@ -5321,6 +5321,7 @@
     "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
     "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
     "packs/farm/r36-local-review/shapes-and-seasons-farm-scene.zip",
+    "packs/farm/delivery-20261113-01/editable/farmer-editable.zip",
     "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
     "packs/vehicles/r5-flush-fix/editable/hatchback-editable.zip",
     "packs/vehicles/r5-flush-fix/editable/sedan-editable.zip",
@@ -5374,12 +5375,12 @@
       "sha256": "7353294abb36e623839fb889c70bfbd626ee2ebda69b3b96e73aeed3e8afc2e1"
     },
     {
-      "archive": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-editable.zip",
+      "archive": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-editable.zip",
       "profile": "editable",
-      "member": "a_9fafaa6e7f4c4868a372e8f3b0b84738/r_76c7a4080e7844e185896b7e1b196e5a/source.kiln.js",
+      "member": "a_9fafaa6e7f4c4868a372e8f3b0b84738/r_46c96e629405473097b57b922f7e6545/source.kiln.js",
       "output": "sources/golden-gate-bridge.kiln.js",
-      "bytes": 45275,
-      "sha256": "2a739bea8197e718b6912930012c9ab36317965ff263d9fe05a9821ba7e138f2"
+      "bytes": 45272,
+      "sha256": "b9fc15b38c056e3c969f51d85d3ef2b25194cfb3c2cad2a672737f85967b4d6f"
     },
     {
       "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
@@ -5459,11 +5460,11 @@
       "sha256": "b5b108a698a79773644e2c78dc0e607c2a1bdae83e5055f231f2b6b6f74d1556"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
-      "member": "sources/farmer.kiln.js",
+      "archive": "packs/farm/delivery-20261113-01/editable/farmer-editable.zip",
+      "member": "a_2ff8e7e260894a879fb49e63a8521915/r_be4c304cc47c42f3aba0bf6b24cc2a94/source.kiln.js",
       "output": "sources/farmer.kiln.js",
       "bytes": 21071,
-      "sha256": "8c6c6e460d89c98b91d68315adfb85acd9cf6f6f88b1085b004c88ca090bccc8"
+      "sha256": "32ba177c5a30f38eb3b45db21a55ef6958e28770e1855a3cbfc70a9b0a88c08b"
     },
     {
       "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
@@ -5581,10 +5582,10 @@
       "sha256": "14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb",
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.glb",
       "output": "models/standalone/golden-gate-bridge.glb",
-      "bytes": 12402960,
-      "sha256": "31306263a1c5f7410eab1ff65253765fb4084d9f0ec0d4c1b27e66f12a9f7f28"
+      "bytes": 12562124,
+      "sha256": "3b986d88cffb1041fb052f054709820153e249b14125f4f853f977adb774ca22"
     },
     {
       "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
@@ -5664,11 +5665,10 @@
       "sha256": "1388fb610ef8ee3240f472ce45d89eb80fd78c2bdda46c7889563b653bd3fbd4"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-      "member": "models/farmer.glb",
+      "path": "packs/farm/delivery-20261113-01/models/farmer.glb",
       "output": "models/farm/farmer.glb",
-      "bytes": 817092,
-      "sha256": "b6c49161d0627c26e3cc7ea07e88f58c2726fe2c8b15773afcb621d3ab21b829"
+      "bytes": 817128,
+      "sha256": "f0b5ef71ca0abb99d71b6ed036c2672e1ebfe2d3d90b243651ad3f2fa634f6d3"
     },
     {
       "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",

@@ -114,6 +114,14 @@ describe('Commons catalog bindings', () => {
   });
   test('keeps requested effort distinct from independent confirmation', () => {
     for (const asset of farm.assets) for (const revision of asset.revisions) {
+      // Exception, flush-face fix only: the farmer's child was saved by a session with no sealed receipt, so its
+      // effort, harness version and run are recorded as not recorded, never invented.
+      if ('request' in revision && revision.request === 'flush-face-fix') {
+        expect([asset.id, revision.revisionId]).toEqual(['farmer', 'r_be4c304cc47c42f3aba0bf6b24cc2a94']);
+        expect(revision).toMatchObject({ modelId: 'claude-sonnet-5-5', harness: 'claude-code', requestedEffort: 'not recorded', confirmedEffort: null, harnessVersion: null });
+        expect(revision.run).toEqual({ stage: 'flush-face-fix', label: 'flush-face fix session', status: 'not recorded', stop: null, startedAt: null, endedAt: null, receiptSha256: null, invocationSha256: null });
+        continue;
+      }
       const farmerReviewRefinement = ['r_654c203b0ed3438c93d19b6709bef9f6', 'r_70907c7fd97249ce807e9948613882cd'].includes(revision.revisionId);
       expect(revision.requestedEffort).toBe(farmerReviewRefinement ? 'ultra' : 'high');
       if (farmerReviewRefinement) expect(revision.confirmedEffort).toBeNull();
@@ -122,9 +130,17 @@ describe('Commons catalog bindings', () => {
     }
   });
   test('Bridge requested effort is sourced without independent confirmation', () => {
-    // Nine runs: three Astra (ultra requested, codex 0.157.1) and six Sonnet (max requested, claude 2.1.280).
-    expect(bridge.provenance.requests.map((request) => request.stage)).toEqual(['first', 'review-1', 'review-2', 'fix-up-1', 'fix-review-1', 'fix-review-2', 'fix-review-3', 'fix-review-4', 'fix-review-5']);
+    // Nine recorded runs: three Astra (ultra requested, codex 0.157.1) and six Sonnet (max requested, claude 2.1.280);
+    // then the flush-face fix session.
+    expect(bridge.provenance.requests.map((request) => request.stage)).toEqual(['first', 'review-1', 'review-2', 'fix-up-1', 'fix-review-1', 'fix-review-2', 'fix-review-3', 'fix-review-4', 'fix-review-5', 'flush-face-fix']);
     for (const request of bridge.provenance.requests) {
+      // Exception, flush-face fix only: the session that saved the children has no sealed receipt, so nothing about its
+      // run is invented.
+      if (request.stage === 'flush-face-fix') {
+        expect(request).toMatchObject({ requestedModel: 'claude-sonnet-5-5', harness: 'claude-code', requestedEffort: 'not recorded', harnessVersion: null, confirmedEffort: null, status: 'not recorded', stop: null, startedAt: null, endedAt: null });
+        expect(request.source).toEqual({ receipt: null, receiptSha256: null, invocation: null, invocationSha256: null });
+        continue;
+      }
       const astra = request.requestedModel === 'gpt-6-astra';
       expect(request.requestedEffort).toBe(astra ? 'ultra' : 'max');
       expect(request.harness).toBe(astra ? 'codex' : 'claude');
@@ -132,26 +148,29 @@ describe('Commons catalog bindings', () => {
       expect(request.confirmedEffort).toBeNull();
       expect(request.source.receiptSha256).toMatch(/^[0-9a-f]{64}$/);
     }
-    expect(bridge.provenance.requests.filter((request) => request.requestedModel === 'claude-sonnet-5-5')).toHaveLength(6);
-    // Review 4 stopped at its spending cap after saving only the web tier; every other run completed.
-    expect(bridge.provenance.requests.filter((request) => request.status !== 'completed').map((request) => [request.stage, request.stop])).toEqual([['fix-review-4', 'error_max_budget_usd']]);
+    expect(bridge.provenance.requests.filter((request) => request.requestedModel === 'claude-sonnet-5-5' && request.stage !== 'flush-face-fix')).toHaveLength(6);
+    // Review 4 stopped at its spending cap after saving only the web tier; every other recorded run completed.
+    expect(bridge.provenance.requests.filter((request) => request.status !== 'completed' && request.stage !== 'flush-face-fix').map((request) => [request.stage, request.stop])).toEqual([['fix-review-4', 'error_max_budget_usd']]);
     expect(bridge.revisions.some((revision) => revision.request === 'fix-review-4')).toBe(false);
     expect(bridge.provenance.tierHistory.web.filter((revision) => revision.request === 'fix-review-4').map((revision) => revision.revisionId)).toEqual(['r_c81f6d5fb70c492fb2c1d57e2d482437']);
     expect(bridge.provenance.originalModel).toBe('GPT-6 Astra');
     expect(bridge.provenance.refinementModels).toEqual(['Claude Sonnet 5.5']);
     for (const revision of [...bridge.revisions, ...Object.values(bridge.provenance.tierHistory).flat()]) expect(revision.confirmedEffort).toBeNull();
   });
-  test('Bridge delivers review 5 (full and web) and review 2 (far) as three tiers pinned to the accepted bytes', () => {
+  test('Bridge delivers the flush-face fix children of review 5 (full and web) and review 2 (far) as three tiers pinned to the accepted bytes', () => {
     expect(bridge.delivery).toBe(tiers.delivery);
-    expect(bridge.delivery).toBe('review-5');
-    expect(bridge.revisionId).toBe('r_76c7a4080e7844e185896b7e1b196e5a');
-    expect(bridge.tiers.map((tier) => [tier.tier, tier.revisionId, tier.runtime.bytes, tier.metrics.triangles])).toEqual([
-      ['full', 'r_76c7a4080e7844e185896b7e1b196e5a', 12_402_960, 311_826],
-      ['web', 'r_de88c9d5481d4642837b9d00c81cf0a9', 3_508_476, 85_822],
-      ['far', 'r_fcddc546fa134910b2221561353d97e2', 490_460, 11_480],
+    expect(bridge.delivery).toBe('review-5-flush1');
+    expect(bridge.revisionId).toBe('r_46c96e629405473097b57b922f7e6545');
+    expect(bridge.tiers.map((tier) => [tier.tier, tier.revisionId, tier.parentRevision, tier.runtime.bytes, tier.metrics.triangles])).toEqual([
+      ['full', 'r_46c96e629405473097b57b922f7e6545', 'r_76c7a4080e7844e185896b7e1b196e5a', 12_562_124, 311_826],
+      ['web', 'r_f0c5d702d8ca48dd8c4c16858a57ad53', 'r_de88c9d5481d4642837b9d00c81cf0a9', 3_558_104, 85_822],
+      ['far', 'r_f0f9dc5506be4e0292c650efd318985e', 'r_fcddc546fa134910b2221561353d97e2', 497_416, 11_480],
     ]);
-    expect(bridge.provenance.tierHistory.web.at(-1)?.request).toBe('fix-review-5');
-    expect(bridge.provenance.tierHistory.far.at(-1)?.request).toBe('fix-review-2');
+    // The web and far tiers are the bytes the Golden Gate scene release g9-flush1 carries.
+    expect(bridge.tiers.slice(1).map((tier) => tier.runtime.sha256)).toEqual(['f0e82c77f2b19c1d17928bab3787a02b48c22166b11eaa55981c52dc80ad98ae', 'e6b5c60f0ba9424d9669c224c823f4ab9df8154019986f81fa495e602be4d16d']);
+    expect(bridge.provenance.tierHistory.web.at(-2)?.request).toBe('fix-review-5');
+    expect(bridge.provenance.tierHistory.far.at(-2)?.request).toBe('fix-review-2');
+    for (const history of [bridge.revisions, bridge.provenance.tierHistory.web, bridge.provenance.tierHistory.far]) expect(history.at(-1)?.request).toBe('flush-face-fix');
     expect(bridge.revisions.at(-1)?.revisionId).toBe(bridge.revisionId);
     expect(bridge.tiers.map((tier) => tier.tier)).toEqual(['full', 'web', 'far']);
     const pinned = (path: string) => manifest.files.find((file) => file.path === path);
@@ -186,6 +205,9 @@ describe('Commons catalog bindings', () => {
     // 2b-5: each tier's delivered review is stated, never "review N is the delivered revision of each tier".
     expect(bridge.review.scope).toContain('The full and web tiers are the review-5 revisions; the far tier is the review-2 revision, unchanged since.');
     expect(bridge.review.scope).not.toMatch(/delivered revision of each tier/);
+    // The delivered children of those approved revisions carry the approval the owner recorded for the fix.
+    expect(bridge.review.scope).toContain('Flush-face fix of an approved revision; approved by the owner on 2026-11-13.');
+    expect(bridge.review.recordedAt).toBe('2026-11-13');
     expect(bridge.poster.rig).toBe('review-neutral-v1');
     expect(bridge.poster.sourceRevisionId).toBe(bridge.revisionId);
     expect(bridge.poster.exactRevision).toBe(true);

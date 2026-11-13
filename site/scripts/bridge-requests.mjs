@@ -30,7 +30,28 @@ export const BRIDGE_RUNS = [
   { stage: 'fix-review-3', author: 'sonnet-gg-bridge-fix', dir: 'review-3' },
   { stage: 'fix-review-4', author: 'sonnet-gg-bridge-fix', dir: 'review-4', statuses: ['completed', 'failed'] },
   { stage: 'fix-review-5', author: 'sonnet-gg-bridge-fix', dir: 'review-5' },
+  // The maintenance session that saved the flush-face fix children (13 November 2026) left no receipt or invocation;
+  // only what the saved manifests record is known.
+  { stage: 'flush-face-fix', unrecorded: { requestedModel: 'claude-sonnet-5-5', harness: 'claude-code' } },
 ];
+
+/** A run with no receipt: the model and harness its saved manifests name, and nothing else. */
+const unrecordedRequest = (run) => ({
+  stage: run.stage,
+  author: null,
+  requestedModel: run.unrecorded.requestedModel,
+  requestedEffort: 'not recorded',
+  harness: run.unrecorded.harness,
+  harnessVersion: null,
+  confirmedEffort: null,
+  confirmation: 'The saved manifests record the model and harness; the harness version, requested effort and saving run are not recorded.',
+  modelReported: null,
+  status: 'not recorded',
+  stop: null,
+  startedAt: null,
+  endedAt: null,
+  source: { receipt: null, receiptSha256: null, invocation: null, invocationSha256: null },
+});
 
 /**
  * One run as the site records it. `statuses` are the receipt statuses the caller accepts (a run that saved its
@@ -74,7 +95,7 @@ export async function runRequest(commons, run, { statuses = ['completed'], outco
 }
 
 /** A bridge run always records how it ended: the page's history says which run stopped at its cap. */
-export const bridgeRequest = (commons, run) => runRequest(commons, run, { statuses: run.statuses ?? ['completed'], outcome: true });
+export const bridgeRequest = async (commons, run) => (run.unrecorded ? unrecordedRequest(run) : runRequest(commons, run, { statuses: run.statuses ?? ['completed'], outcome: true }));
 
 export async function bridgeRequests(commons, runs = BRIDGE_RUNS) {
   const requests = [];
@@ -87,7 +108,7 @@ async function main(argv = process.argv.slice(2)) {
   if (!commons) throw new Error('Usage: node scripts/bridge-requests.mjs --commons DIR');
   const requests = await bridgeRequests(resolve(commons));
   await writeJson(join(SITE, 'src/data/bridge-requests.json'), requests);
-  for (const request of requests) console.log(`${request.stage}: ${request.requestedModel} effort ${request.requestedEffort} via ${request.harness} ${request.harnessVersion}, confirmed ${request.confirmedEffort}, ${request.status} (${request.stop}), receipt ${request.source.receiptSha256.slice(0, 12)}`);
+  for (const request of requests) console.log(`${request.stage}: ${request.requestedModel} effort ${request.requestedEffort} via ${request.harness} ${request.harnessVersion}, confirmed ${request.confirmedEffort}, ${request.status} (${request.stop}), receipt ${request.source.receiptSha256?.slice(0, 12) ?? 'none'}`);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) await main();

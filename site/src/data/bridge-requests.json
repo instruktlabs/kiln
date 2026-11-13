@@ -199,5 +199,26 @@
       "invocation": "showcase/runs/sonnet-gg-bridge-fix/review-5/invocation.json",
       "invocationSha256": "0b1f0d9079beb69a65ed7041b302137334b40f7cd29a5571cd4aa47e86d4827b"
     }
+  },
+  {
+    "stage": "flush-face-fix",
+    "author": null,
+    "requestedModel": "claude-sonnet-5-5",
+    "requestedEffort": "not recorded",
+    "harness": "claude-code",
+    "harnessVersion": null,
+    "confirmedEffort": null,
+    "confirmation": "The saved manifests record the model and harness; the harness version, requested effort and saving run are not recorded.",
+    "modelReported": null,
+    "status": "not recorded",
+    "stop": null,
+    "startedAt": null,
+    "endedAt": null,
+    "source": {
+      "receipt": null,
+      "receiptSha256": null,
+      "invocation": null,
+      "invocationSha256": null
+    }
   }
 ]

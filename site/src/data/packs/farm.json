@@ -1877,8 +1877,8 @@
       "category": "Characters",
       "description": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
       "assetId": "a_2ff8e7e260894a879fb49e63a8521915",
-      "revisionId": "r_70907c7fd97249ce807e9948613882cd",
-      "parentRevision": "r_654c203b0ed3438c93d19b6709bef9f6",
+      "revisionId": "r_be4c304cc47c42f3aba0bf6b24cc2a94",
+      "parentRevision": "r_70907c7fd97249ce807e9948613882cd",
       "metrics": {
         "triangles": 10312,
         "meshes": 30,
@@ -1936,43 +1936,42 @@
         ]
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer.webp",
+        "src": "/media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Farmer in blue overalls and a brimmed hat, carrying a three-prong pitchfork.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer-320.webp 320w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-480.webp 480w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-672.webp 672w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-768.webp 768w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r36-local-review/farmer-320.avif 320w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-480.avif 480w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-672.avif 672w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-768.avif 768w, /media/rig/review-neutral-v1/farm/r36-local-review/farmer-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/farm/r36-local-review/farmer.png",
-        "sourceRevisionId": "r_70907c7fd97249ce807e9948613882cd",
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer.png",
+        "sourceRevisionId": "r_be4c304cc47c42f3aba0bf6b24cc2a94",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/farm/r36-local-review/poster/farmer.webp",
+        "src": "/media/farm/delivery-20261113-01/poster/farmer.webp",
         "width": 1168,
         "height": 780,
         "alt": "Saved review views of the farmer back clothing repair.",
-        "srcsetWebp": "/media/farm/r36-local-review/poster/farmer-320.webp 320w, /media/farm/r36-local-review/poster/farmer-480.webp 480w, /media/farm/r36-local-review/poster/farmer-672.webp 672w, /media/farm/r36-local-review/poster/farmer-768.webp 768w, /media/farm/r36-local-review/poster/farmer-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r36-local-review/poster/farmer-320.avif 320w, /media/farm/r36-local-review/poster/farmer-480.avif 480w, /media/farm/r36-local-review/poster/farmer-672.avif 672w, /media/farm/r36-local-review/poster/farmer-768.avif 768w, /media/farm/r36-local-review/poster/farmer-1024.avif 1024w",
-        "inputPath": "media/farm/r36-local-review/poster/farmer.png",
-        "sourceRevisionId": "r_70907c7fd97249ce807e9948613882cd",
+        "srcsetWebp": "/media/farm/delivery-20261113-01/poster/farmer-320.webp 320w, /media/farm/delivery-20261113-01/poster/farmer-480.webp 480w, /media/farm/delivery-20261113-01/poster/farmer-672.webp 672w, /media/farm/delivery-20261113-01/poster/farmer-768.webp 768w, /media/farm/delivery-20261113-01/poster/farmer-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/delivery-20261113-01/poster/farmer-320.avif 320w, /media/farm/delivery-20261113-01/poster/farmer-480.avif 480w, /media/farm/delivery-20261113-01/poster/farmer-672.avif 672w, /media/farm/delivery-20261113-01/poster/farmer-768.avif 768w, /media/farm/delivery-20261113-01/poster/farmer-1024.avif 1024w",
+        "inputPath": "media/farm/delivery-20261113-01/poster/farmer.png",
+        "sourceRevisionId": "r_be4c304cc47c42f3aba0bf6b24cc2a94",
         "exactRevision": true
       },
       "sourcePath": "/sources/farmer.kiln.js",
-      "sourceSha256": "8c6c6e460d89c98b91d68315adfb85acd9cf6f6f88b1085b004c88ca090bccc8",
+      "sourceSha256": "32ba177c5a30f38eb3b45db21a55ef6958e28770e1855a3cbfc70a9b0a88c08b",
       "modelPath": "/models/farm/farmer.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r36-local-review/models/farmer.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/farmer.glb",
-        "bytes": 817092,
-        "sha256": "b6c49161d0627c26e3cc7ea07e88f58c2726fe2c8b15773afcb621d3ab21b829",
-        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-        "member": "models/farmer.glb"
+        "path": "packs/farm/delivery-20261113-01/models/farmer.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261113-01/models/farmer.glb",
+        "bytes": 817128,
+        "sha256": "f0b5ef71ca0abb99d71b6ed036c2672e1ebfe2d3d90b243651ad3f2fa634f6d3"
       },
       "provenance": {
         "originalModel": "GPT-6 Astra",
         "refinementModels": [
-          "GPT-6 Astra"
+          "GPT-6 Astra",
+          "Claude Sonnet 5.5"
         ],
         "history": [
           {
@@ -2059,6 +2058,31 @@
               "model": "gpt-6-astra"
             },
             "change": "Rear bib facets conform to unchanged shirt; posterior shared-edge refinement remains closed; original lower tuck preserved through local y=.03 and blended to full correction at .05. No render/depth/material/shader workaround."
+          },
+          {
+            "stage": "Flush-face fix",
+            "request": "flush-face-fix",
+            "revisionId": "r_be4c304cc47c42f3aba0bf6b24cc2a94",
+            "parentRevisionId": "r_70907c7fd97249ce807e9948613882cd",
+            "savedAt": "2026-11-13T00:24:38.574Z",
+            "brief": "Rowan - refined hands and corrected overall back, child of r_70907c7f with its model unchanged. Flush-face fix: ShoulderStrapBridge (both z sides, merged into Mesh_Consolidated_Joint_Chest_1): box depth 0.047 -> 0.051 so its z faces stand 2 mm proud of the FrontStrap faces they lay….",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "not recorded",
+            "confirmedEffort": null,
+            "harness": "claude-code",
+            "harnessVersion": null,
+            "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+            "run": {
+              "stage": "flush-face-fix",
+              "label": "flush-face fix session",
+              "status": "not recorded",
+              "stop": null,
+              "startedAt": null,
+              "endedAt": null,
+              "receiptSha256": null,
+              "invocationSha256": null
+            }
           }
         ]
       },
@@ -2147,27 +2171,52 @@
             "model": "gpt-6-astra"
           },
           "change": "Rear bib facets conform to unchanged shirt; posterior shared-edge refinement remains closed; original lower tuck preserved through local y=.03 and blended to full correction at .05. No render/depth/material/shader workaround."
+        },
+        {
+          "stage": "Flush-face fix",
+          "request": "flush-face-fix",
+          "revisionId": "r_be4c304cc47c42f3aba0bf6b24cc2a94",
+          "parentRevisionId": "r_70907c7fd97249ce807e9948613882cd",
+          "savedAt": "2026-11-13T00:24:38.574Z",
+          "brief": "Rowan - refined hands and corrected overall back, child of r_70907c7f with its model unchanged. Flush-face fix: ShoulderStrapBridge (both z sides, merged into Mesh_Consolidated_Joint_Chest_1): box depth 0.047 -> 0.051 so its z faces stand 2 mm proud of the FrontStrap faces they lay….",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null,
+          "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+          "run": {
+            "stage": "flush-face-fix",
+            "label": "flush-face fix session",
+            "status": "not recorded",
+            "stop": null,
+            "startedAt": null,
+            "endedAt": null,
+            "receiptSha256": null,
+            "invocationSha256": null
+          }
         }
       ],
       "review": {
         "status": "accepted",
         "ownerAccepted": true,
-        "scope": "The owner accepted this back clothing repair revision. The revised hands and proportions are retained.",
-        "recordedAt": "2026-10-01",
-        "source": "Owner statement in the site design review of 1 October 2026: the farmer back-clothing repair revision is approved"
+        "scope": "Flush-face fix of an approved revision; approved by the owner on 2026-11-13.",
+        "recordedAt": "2026-11-13",
+        "source": "Owner approval of the flush-face fix revisions, 2026-11-13"
       },
       "license": "CC0-1.0",
       "sceneDeepLink": null,
       "previousOwnerReview": {
         "status": "accepted",
         "ownerAccepted": true,
-        "scope": "Exact delivered revision matches the current owner-accepted revision.",
-        "recordedAt": "2026-09-29",
-        "source": "site-build/FEEDBACK-site-review-1.md"
+        "scope": "The owner accepted this back clothing repair revision. The revised hands and proportions are retained.",
+        "recordedAt": "2026-10-01",
+        "source": "Owner statement in the site design review of 1 October 2026: the farmer back-clothing repair revision is approved"
       },
       "canonicalGlb": {
-        "bytes": 816872,
-        "sha256": "3989680783ff99f3c10c05f4bbfdcb7df1fa15fdc8914d095d973d4a21053740"
+        "bytes": 816908,
+        "sha256": "5d3d770c8617663f640c2f3f26ee5a1be95dc5f7cbe431dbaeb798d07debcca1"
       }
     },
     {
@@ -3913,7 +3962,7 @@
       },
       {
         "id": "farmer",
-        "revisionId": "r_70907c7fd97249ce807e9948613882cd",
+        "revisionId": "r_be4c304cc47c42f3aba0bf6b24cc2a94",
         "ownerAccepted": true
       },
       {

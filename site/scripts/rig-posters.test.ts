@@ -121,7 +121,8 @@ describe('the checked-in Farm posters', () => {
       expect(poster, item.slug).toBeDefined();
       expect(poster.revisionId).toBe(item.revisionId);
       expect(poster.glb.sha256).toBe(item.runtimeDownload.sha256);
-      expect(poster.glb.member).toBe(item.runtimeDownload.member);
+      // A model in a sealed archive is named by its member; one delivered as its own file, by its pinned path.
+      expect(poster.glb.member).toBe(item.runtimeDownload.member ?? item.runtimeDownload.path);
       expect(item.poster.inputPath).toBe(poster.path);
       expect(item.poster.rig).toBe(RIG_ID);
       expect(item.poster.exactRevision).toBe(true);

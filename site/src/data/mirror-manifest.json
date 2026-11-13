@@ -782,84 +782,84 @@
       "sha256": "871dc9f068e8509ee477c9873b62978b90e2960f3ae358ce01f7b6b2d41c095b"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/ASSET-LICENSE.txt",
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/ASSET-LICENSE.txt",
       "bytes": 2458,
       "sha256": "90fdb5eb334ce031ee8eb81d34dfbd701110b869707e63f7844e83fe10d10206"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/classic-neutral.png",
-      "bytes": 1319830,
-      "sha256": "15d696589e261ca9ad9e973777c024e8624b0d9c6a2a8cf2b7641b616dcc73c0"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/classic-neutral.png",
+      "bytes": 1321205,
+      "sha256": "5c49937248c77d3f25904ef940b5650d44d425372a5e8e0e13e0999d9ddd62c9"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/deck-neutral.png",
-      "bytes": 1567544,
-      "sha256": "8ebd63050a71932813da044eb91e0e19033906e5380bff9a40ce9f60bf9446f9"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/deck-neutral.png",
+      "bytes": 1570992,
+      "sha256": "9657b5984d8fbddf102cae4b6a7ab28c46ecdfed9ad8262795b0f8a07a952117"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/elevation-neutral.png",
-      "bytes": 1201957,
-      "sha256": "ddcaa4ba356ef170f077ab4ed502e1990c4d3491894068de843a9d02a40074b2"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/elevation-neutral.png",
+      "bytes": 1202211,
+      "sha256": "98218e9fd4caaae4693fa91f7fee3e6b5cccc22ed7fe62ebe61ee7a5b5b11264"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/review-sheet-neutral.png",
-      "bytes": 46370,
-      "sha256": "c74df996d088550126a3bafaa4b07ff92831feeaca6d38a13585e19edee22494"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/review-sheet-neutral.png",
+      "bytes": 45502,
+      "sha256": "59950cb6d466844daedfdbc8679a81dcbf1936f2aacb0e495eda04c072d2e988"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/tower-top-neutral.png",
-      "bytes": 1887282,
-      "sha256": "cbdee3837e92cc0fdfab10f37bf0d332e10b8c65a8f67ca0d38b443a71cb09f1"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/tower-top-neutral.png",
+      "bytes": 1886821,
+      "sha256": "4d6090b49b1999f3ce560688e225e4e5f43e16575ca5d691f147cd63b8dd1581"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/captures/water-level-neutral.png",
-      "bytes": 1868944,
-      "sha256": "f49124c8d591e8ca5a85317b73d4d75421e02ac4d05e7a864ca83a92d7cab477"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/captures/water-level-neutral.png",
+      "bytes": 1878498,
+      "sha256": "8c0cb74b2479b2fb5f31de06319bb65d6e3b75ff175e8e6eeb18894d9b6f5d7c"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-editable.zip",
-      "bytes": 12510442,
-      "sha256": "3119d6da819b19993f08a20ce56a48c7fd79517d01d17dd6d3158db5e0041e09"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-editable.zip",
+      "bytes": 12714657,
+      "sha256": "3ffbeacc25adf50ea2a529afd5a29532b624423dfdde41c5fd1091721927dd06"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-editable.zip",
-      "bytes": 598873,
-      "sha256": "96f17e8247f6049ee2f11ece04986c9a6452736a312a1c2c9d05e750a94266bd"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-editable.zip",
+      "bytes": 619440,
+      "sha256": "c0bd8d97ea8118c755458cceb6d162dbec20225a95e493eddac37b994d01a71d"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-runtime.glb",
-      "bytes": 490460,
-      "sha256": "5881f49df60bf3c05e8043de73b3b0ba68335896983097950ab2af6ff28c98a4"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-runtime.glb",
+      "bytes": 497416,
+      "sha256": "e6b5c60f0ba9424d9669c224c823f4ab9df8154019986f81fa495e602be4d16d"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-far-runtime.kiln-metadata.json",
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-far-runtime.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "a1b76bbc5bc079eeaf3213cb54d6c9ec288f2e5b3a62b6b934217ebb11250d58"
+      "sha256": "d498d11a9f35bdf5766faf7a7411c7cb168d396ace1c4f617e3e2cade13cab85"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.glb",
-      "bytes": 12402960,
-      "sha256": "31306263a1c5f7410eab1ff65253765fb4084d9f0ec0d4c1b27e66f12a9f7f28"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.glb",
+      "bytes": 12562124,
+      "sha256": "3b986d88cffb1041fb052f054709820153e249b14125f4f853f977adb774ca22"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-runtime.kiln-metadata.json",
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-runtime.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "e16dae93f9893f14efdcd4d1994d8957271785c86434653f89bce15accd51af0"
+      "sha256": "1d7f5b6b49135bb3a364437f83e272d993574018cdedb5312db106f0a4f7042f"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-editable.zip",
-      "bytes": 3632285,
-      "sha256": "c4af7a2d0ec53e785d1ee6f97017a198f08de16a1d5132eb73db76caf3972733"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-editable.zip",
+      "bytes": 3707107,
+      "sha256": "6d764157865b3fe093f12706b528eeba6bc01033c23fe1fffc765959f9d1bcc0"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.glb",
-      "bytes": 3508476,
-      "sha256": "6effde24b2b9dfac04451244ee533bb755ba7d4c192a280caaec70ca31656a03"
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-runtime.glb",
+      "bytes": 3558104,
+      "sha256": "f0e82c77f2b19c1d17928bab3787a02b48c22166b11eaa55981c52dc80ad98ae"
     },
     {
-      "path": "standalone/golden-gate-bridge/r_76c7a4080e7844e185896b7e1b196e5a/golden-gate-web-runtime.kiln-metadata.json",
+      "path": "standalone/golden-gate-bridge/r_46c96e629405473097b57b922f7e6545/golden-gate-web-runtime.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "e842eaf6b54c182a2b054193ec012f6805af868486750c41742603317f63eae0"
+      "sha256": "bdf8c7b841f35c0d46a8d695937968e85fc1d465f97cc262b11555f967a7a595"
     },
     {
       "path": "media/rig/review-neutral-v1/hero/r_de88c9d5481d4642837b9d00c81cf0a9/golden-gate-bridge.png",
@@ -7335,6 +7335,26 @@
       "path": "packs/vehicles/r5-flush-fix/generic-road-vehicles-runtime.zip",
       "bytes": 922307,
       "sha256": "6db9d3abcc43f70abca0bbc05105c2844d11341eb36597941ad3dea638b2fd05"
+    },
+    {
+      "path": "packs/farm/delivery-20261113-01/models/farmer.glb",
+      "bytes": 817128,
+      "sha256": "f0b5ef71ca0abb99d71b6ed036c2672e1ebfe2d3d90b243651ad3f2fa634f6d3"
+    },
+    {
+      "path": "media/farm/delivery-20261113-01/poster/farmer.png",
+      "bytes": 177741,
+      "sha256": "23cd4ccbdc94fe64680190ec5d0be7adbfc320a1a31338276700f8ed043c911f"
+    },
+    {
+      "path": "packs/farm/delivery-20261113-01/editable/farmer-editable.zip",
+      "bytes": 730682,
+      "sha256": "68013fb7885841682f878ff65cbe21247fba4f6dfbe4d93fc21f0a500a44943f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/delivery-20261113-01/farmer.png",
+      "bytes": 1499542,
+      "sha256": "855d98bb89f89660958dbd57b4927f574acf16d837c0ecf5aac1f554afef653c"
     }
   ]
 }
