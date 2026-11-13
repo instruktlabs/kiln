@@ -3554,6 +3554,62 @@ export async function buildSavedRevisionVariant(
   };
 }
 
+/**
+ * The last carried export per program store. `kiln_export` answers with two links and a host
+ * reads both, so without this one export would build the source three times over. One entry,
+ * replaced by the next carried export and released with its store; callers never mutate it.
+ */
+const carriedExports = new WeakMap<
+  object,
+  { key: string; output: Promise<import('../asset-export').AssetGlbExport> }
+>();
+
+/**
+ * The runtime export of a saved revision that carries its sizes, as `kiln export --carry-shapes`
+ * writes it: the revision's source is built at other values under this host's engine, the way
+ * `buildSavedRevisionVariant` builds one. `kiln_export`, its resources and `kiln_export_to` share it.
+ */
+export async function carriedShapesRuntimeExport(
+  record: import('../assets').AssetRecord,
+  context: KilnToolContext,
+  options: Pick<
+    import('../asset-export').AssetGlbExportOptions,
+    'metadataFileName' | 'textures'
+  > = {},
+): Promise<import('../asset-export').AssetGlbExport> {
+  const source = record.files['source.kiln.js'];
+  if (!source)
+    throw new Error(
+      'This revision is binary-only: it has no source to rebuild its sizes from. Omit carryShapes for the runtime export without carried sizes.',
+    );
+  const store = context.programStore;
+  if (!store) throw new Error('Carrying sizes requires a program store.');
+  // A revision is immutable, so its ids and the two options decide the bytes.
+  const key = JSON.stringify([
+    record.manifest.assetId,
+    record.manifest.revisionId,
+    options.metadataFileName ?? null,
+    options.textures ?? null,
+  ]);
+  const held = carriedExports.get(store);
+  if (held?.key === key) return held.output;
+  const output = (async () => {
+    const code = new TextDecoder('utf-8', { fatal: true }).decode(source);
+    const programRef = await retainProgram(store, code);
+    return (await import('../asset-export')).exportAssetGlb(record, {
+      profile: 'runtime',
+      ...options,
+      paramBuilds: async (values) => (await buildProgramGlb(programRef, context, { values })).glb,
+    });
+  })();
+  carriedExports.set(store, { key, output });
+  // A failed build is not kept: the next call builds again and reports its own error.
+  output.catch(() => {
+    if (carriedExports.get(store)?.output === output) carriedExports.delete(store);
+  });
+  return output;
+}
+
 /** Build one current-policy revision for ordinary save or explicit migration. */
 export async function buildProgramAssetDraft(
   code: string,
@@ -3724,6 +3780,12 @@ export function createKilnAssetDefs(
     limit: z.number().int().min(1).max(50).default(20),
   });
   const exportInput = z.object(selector);
+  const carryShapesInput = z
+    .boolean()
+    .optional()
+    .describe(
+      'Runtime only, saved revision with source: rebuilds it to carry each size that moves in straight lines as morph targets, listed in the sidecar params.shapes.',
+    );
   const profileExportInput = exportInput.extend({
     assetId: selector.assetId.optional(),
     revisionId: selector.revisionId.optional(),
@@ -3743,6 +3805,7 @@ export function createKilnAssetDefs(
     params: paramsRecordInput.describe(
       'Values for the parameters the source declares with defineParams: { preset?, values? }. Builds that variant from source and returns its GLB; nothing is saved. Shape: kiln_discover ids ["shape:params"].',
     ),
+    carryShapes: carryShapesInput,
   });
   const exportToInput = exportInput.extend({
     path: z
@@ -3765,6 +3828,7 @@ export function createKilnAssetDefs(
       .describe(
         'Runtime only: name each embedded image by sha256 in the sidecar, so a host can share images across assets. CLI --textures external writes them as separate files instead.',
       ),
+    carryShapes: carryShapesInput,
   });
   const importInput = z.object({
     ...selector,
@@ -3972,7 +4036,7 @@ export function createKilnAssetDefs(
     {
       name: 'kiln_export',
       description:
-        'Export one saved revision, or the GLB a programRef builds. With programRef, nothing is saved: it returns a resource for the bytes kiln_save would persist, so a destination audit can read them before a save. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar, moving only Kiln review clips out of GLB extras while preserving native animation and application metadata. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.',
+        'Export one saved revision, or the GLB a programRef builds. With programRef, nothing is saved: it returns a resource for the bytes kiln_save would persist, so a destination audit can read them before a save. Default editable returns exact GLB, source, preview, and manifest descriptors; configured hosts may include portable editable ZIP download URLs. Opt-in runtime returns a standalone GLB plus a versioned metadata sidecar: it moves Kiln review clips out of GLB extras, keeps native animation and application metadata, and marks the parameters it carries, listing them in the sidecar. Resource URIs remain readable through resources/read. Canonical revisions never change; no binary bytes are placed in tool text.',
       inputSchema: profileExportInput,
       run: async (raw) => {
         const input = profileExportInput.parse(raw);
@@ -3984,6 +4048,10 @@ export function createKilnAssetDefs(
           if (input.assetId || input.revisionId)
             throw new Error(
               'kiln_export takes programRef or assetId and revisionId, not both: programRef builds a program, the others select a saved revision.',
+            );
+          if (input.carryShapes)
+            throw new Error(
+              'carryShapes exports a saved revision. Call kiln_save with this programRef first, then export that revision with profile runtime and carryShapes.',
             );
           if (input.profile === 'runtime')
             throw new Error(
@@ -4020,6 +4088,35 @@ export function createKilnAssetDefs(
           listCall(input.collection),
         );
         const { inspectDrawDiagnostics } = await import('../draw-diagnostics');
+        if (input.carryShapes) {
+          if (input.profile !== 'runtime')
+            throw new Error(
+              'carryShapes requires profile runtime: the editable profile returns the saved files unchanged. Add profile runtime.',
+            );
+          if (params)
+            throw new Error(
+              'carryShapes carries every size of the saved revision; params builds one variant. Omit params to carry sizes, or omit carryShapes and profile for the variant GLB.',
+            );
+          const output = await carriedShapesRuntimeExport(record, context);
+          if (output.profile !== 'runtime') throw new Error('Expected runtime export');
+          return {
+            ok: true,
+            drawDiagnostics: await inspectDrawDiagnostics(output.glb),
+            profile: input.profile,
+            collection: input.collection,
+            asset: {
+              assetId: input.assetId,
+              revisionId: input.revisionId,
+              name: record.manifest.name,
+            },
+            resources: await (await import('../assets-resources')).runtimeAssetLinks(
+              input.collection,
+              record,
+              output,
+              { carryShapes: true },
+            ),
+          };
+        }
         if (params) {
           // A variant is built from the revision's source under this host's engine; the saved
           // GLB and its runtime derivative stay the default build.
@@ -4078,7 +4175,7 @@ export function createKilnAssetDefs(
       },
     },
     ...(context.exportRoot && context.assetLibrary
-      ? [createKilnExportToDef(context.exportRoot, exportToInput, library, listCall)]
+      ? [createKilnExportToDef(context.exportRoot, exportToInput, library, listCall, context)]
       : []),
     {
       name: 'kiln_import',
@@ -4113,9 +4210,11 @@ function createKilnExportToDef(
     profile: 'runtime' | 'editable';
     target?: 'three';
     textures?: 'manifest';
+    carryShapes?: boolean;
   }>,
   library: () => import('../assets').AssetLibrary,
   listCall: (collection: string) => string,
+  context: KilnToolContext,
 ): KilnToolDef {
   return {
     name: 'kiln_export_to',
@@ -4137,6 +4236,10 @@ function createKilnExportToDef(
       // accepting the option and silently dropping it.
       if (input.textures !== undefined && input.profile !== 'runtime')
         throw new Error('textures requires profile runtime');
+      if (input.carryShapes && (input.profile !== 'runtime' || input.target !== undefined))
+        throw new Error(
+          'carryShapes requires profile runtime without target: a derived file would need every size derived again. Omit target to carry sizes.',
+        );
       const { validateExportPath } = await import('../export-root');
       const destination = validateExportPath(input.path);
       const { exportAssetGlb, validateMetadataFileName } = await import('../asset-export');
@@ -4150,12 +4253,17 @@ function createKilnExportToDef(
       );
       const files: { kind: 'glb' | 'metadata'; path: string; data: Uint8Array }[] = [];
       if (input.profile === 'runtime') {
-        const output = await exportAssetGlb(record, {
-          profile: 'runtime',
+        const options = {
           metadataFileName: destination.metadataFileName,
-          ...(input.target ? { target: input.target } : {}),
           ...(input.textures ? { textures: input.textures } : {}),
-        });
+        };
+        const output = input.carryShapes
+          ? await carriedShapesRuntimeExport(record, context, options)
+          : await exportAssetGlb(record, {
+              profile: 'runtime',
+              ...options,
+              ...(input.target ? { target: input.target } : {}),
+            });
         if (output.profile !== 'runtime') throw new Error('Expected runtime export');
         files.push(
           { kind: 'glb', path: destination.path, data: output.glb },

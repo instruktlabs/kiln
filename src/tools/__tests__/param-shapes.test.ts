@@ -187,6 +187,56 @@ describe('classifyShapes', () => {
   }, 120_000);
 });
 
+describe('a size whose data follows it names the first data that differs', () => {
+  // `width` stretches the board and also scales its texture coordinates, which a morph target
+  // cannot carry. The scale is never 1, so the board's coordinates are never the side's and
+  // the exporter never shares one accessor between them at one width and not at another.
+  const FOLLOWING = `const meta = { name: 'Shelf' };
+const P = defineParams({
+  width: { type: 'range', default: 1.0, min: 0.6, max: 1.6, unit: 'm' },
+});
+function build() {
+  const root = createRoot('Shelf');
+  const geo = boxGeo(0.3, 0.04, P.width);
+  const uv = geo.getAttribute('uv');
+  for (let i = 0; i < uv.count; i++) uv.setX(i, uv.getX(i) * (P.width + 0.5));
+  createPart('Board', geo, gameMaterial(0x8a5a33), { parent: root });
+  createPart('Side', boxGeo(0.3, 0.5, 0.04), gameMaterial(0x8a5a33), { parent: root, position: [0, 0.25, -P.width / 2] });
+  return root;
+}`;
+  const widthOnly: ParamsDeclarationV1 = {
+    schemaVersion: 1,
+    params: { width: { type: 'range', default: 1.0, min: 0.6, max: 1.6, unit: 'm' } },
+  };
+  const build = async (code: string, values: Record<string, ParamValue>) =>
+    (await renderGLBInProcess(code, { params: { values } })).glb;
+
+  test('texture coordinates that follow the size are named with their part', async () => {
+    const classes = await classifyShapes(await build(FOLLOWING, {}), widthOnly, (values) =>
+      build(FOLLOWING, values),
+    );
+    const width = classes.width as { mode: string; reason: string; detail: string };
+    expect(width).toMatchObject({ mode: 'rebuild', reason: 'DATA_CHANGED' });
+    expect(width.detail).toStartWith('The parameter changes indices, texture coordinates');
+    expect(width.detail).toContain(
+      'First difference: texture coordinates (TEXCOORD_0) of Mesh_Board.',
+    );
+    expect(width.detail.length).toBeLessThanOrEqual(320);
+  }, 60_000);
+
+  test('a long part name is cut so the detail stays short', async () => {
+    const long = 'Board'.padEnd(400, 'x');
+    const code = FOLLOWING.replace("createPart('Board'", `createPart('${long}'`);
+    const classes = await classifyShapes(await build(code, {}), widthOnly, (values) =>
+      build(code, values),
+    );
+    const detail = (classes.width as { detail: string }).detail;
+    expect(detail).toContain('First difference: texture coordinates (TEXCOORD_0) of Mesh_Boardxxx');
+    expect(detail).toEndWith('....');
+    expect(detail.length).toBe(320);
+  }, 60_000);
+});
+
 describe('a sweep reports which sizes a GLB can carry', () => {
   test('each range and int parameter is listed as carried or rebuild-only, with the reason', async () => {
     const programStore = new MemoryProgramStore();

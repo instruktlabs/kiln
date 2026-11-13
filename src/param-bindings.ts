@@ -8,6 +8,7 @@
  * default build with builds at other values, and applies them: to a GLB's bytes for a viewer,
  * and as material and node tags for an export. Browser-safe; it reads GLB JSON and nothing else.
  */
+import { dataChangedDetail, sameBytes } from './param-data';
 import type { ParamsDeclarationV1, ParamValue } from './params';
 
 export interface BoundMaterialV1 {
@@ -221,12 +222,6 @@ const rebuild = (reason: ColorRebuildReason): RebuildColorBindingV1 => ({
   detail: DETAIL[reason],
 });
 
-function sameBytes(a: Uint8Array, b: Uint8Array): boolean {
-  if (a.length !== b.length) return false;
-  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
-  return true;
-}
-
 /**
  * Compare the default build with a build that changed one colour parameter to `probeColor`.
  * The colour is carried by the file only when nothing but base colour factors differ and each
@@ -241,7 +236,14 @@ export function classifyColorBinding(
   const a = splitGlb(defaultGlb);
   const b = splitGlb(probeGlb);
   if (!sameBytes(defaultGlb.subarray(a.jsonEnd), probeGlb.subarray(b.jsonEnd)))
-    return rebuild('DATA_CHANGED');
+    return {
+      ...rebuild('DATA_CHANGED'),
+      detail: dataChangedDetail(
+        DETAIL.DATA_CHANGED,
+        { ...a, glb: defaultGlb },
+        { ...b, glb: probeGlb },
+      ),
+    };
   if (withoutBaseColors(a.json) !== withoutBaseColors(b.json))
     return rebuild('OTHER_VALUES_CHANGED');
   const from = srgbHexToLinear(defaultColor);
@@ -319,7 +321,11 @@ export function classifySwitchBinding(
   const binary = first.glb.subarray(first.jsonEnd);
   const rest = withoutVisibility(first.json);
   for (const other of others) {
-    if (!sameBytes(binary, other.glb.subarray(other.jsonEnd))) return rebuildSwitch('DATA_CHANGED');
+    if (!sameBytes(binary, other.glb.subarray(other.jsonEnd)))
+      return {
+        ...rebuildSwitch('DATA_CHANGED'),
+        detail: dataChangedDetail(SWITCH_DETAIL.DATA_CHANGED, first, other),
+      };
     if (withoutVisibility(other.json) !== rest) return rebuildSwitch('OTHER_VALUES_CHANGED');
   }
   const all = [first, ...others].map((build) => ({

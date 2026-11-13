@@ -13,7 +13,7 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { fileURLToPath } from 'node:url';
 
 import { localAssetLibrary } from './assets-node';
-import { type AssetLink, readAssetResource } from './assets-resources';
+import { type AssetLink, CARRY_SHAPES_QUERY, readAssetResource } from './assets-resources';
 import { buildRenderPort, resolveRenderMode } from './cli-render-mode';
 import { exportRootWriterFromEnv } from './export-root-node';
 import { FileLiveReview } from './live-review-node';
@@ -35,6 +35,7 @@ import { validateRequirementsBinding } from './requirements-context';
 import { describeInputError, schemaFields } from './tools/actions';
 import {
   buildProgramGlb,
+  carriedShapesRuntimeExport,
   createKilnProgramToolRegistry,
   createKilnOperationToolRegistry,
   type KilnToolContext,
@@ -208,6 +209,30 @@ export function createKilnToolHost(
     async readResource(uri): Promise<KilnResourceContents> {
       if (uri.startsWith('kiln://assets/')) {
         if (!context.assetLibrary) throw new Error(`No asset library serves ${uri} here.`);
+        const query = uri.indexOf('?');
+        if (query >= 0) {
+          // Only a runtime link that carries sizes takes a query; its read rebuilds the source.
+          const match =
+            /^kiln:\/\/assets\/([a-z][a-z0-9_-]{0,79})\/([a-z][a-z0-9_-]{0,79})\/([a-z][a-z0-9_-]{0,79})\/(runtime\.glb|runtime\.kiln-metadata\.json)$/.exec(
+              uri.slice(0, query),
+            );
+          if (!match || uri.slice(query + 1) !== CARRY_SHAPES_QUERY)
+            throw new Error('Invalid asset resource URI');
+          const record = await context.assetLibrary.read(match[1]!, match[2]!, match[3]!);
+          const output = await carriedShapesRuntimeExport(record, requestContext);
+          if (output.profile !== 'runtime') throw new Error('Expected runtime export');
+          return match[4] === 'runtime.glb'
+            ? {
+                uri,
+                mimeType: 'model/gltf-binary',
+                blob: Buffer.from(output.glb).toString('base64'),
+              }
+            : {
+                uri,
+                mimeType: 'application/json',
+                text: resourceText(match[4]!, output.metadata.bytes),
+              };
+        }
         const file = await readAssetResource(context.assetLibrary, uri);
         return {
           uri,

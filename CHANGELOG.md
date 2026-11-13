@@ -7,6 +7,25 @@ does not publish a package.
 
 ## Unreleased
 
+## 1.8.0 (2026-11-13)
+
+- **`kiln_export` and `kiln_export_to` can carry sizes.** Both take an optional
+  `carryShapes: true`, the MCP form of `kiln export --profile runtime --carry-shapes`, so a
+  host with only MCP can get a runtime GLB with carried sizes. It needs `profile: 'runtime'`
+  and a saved revision with its source; it is refused with a `programRef`, with `params`, and
+  on `kiln_export_to` with `target`. Both return the bytes the CLI writes for the same
+  revision. `kiln_export` returns the usual two resources with `?carryShapes=true` on their
+  URIs. The export builds the source up to four times per size; a host builds it once for
+  the call and the reads of its two resources. No other input changes.
+- **A `DATA_CHANGED` parameter says what changed.** When a colour, option or size needs a
+  rebuild because its binary data differs, the `detail` in the sweep, `kiln_save` and the
+  runtime export sidecar keeps its general sentence and now adds the first data that
+  differs, such as "First difference: texture coordinates (TEXCOORD_0) of Mesh_Board." When the
+  two builds do not line up well enough to name it, as for a part built only when an option
+  is on, the general sentence stays alone. Which parameters are carried is unchanged.
+- **The `kiln_export` description no longer says runtime only moves review clips.** It now
+  also says the runtime GLB marks the parameters it carries and lists them in the sidecar,
+  as `docs/export-profiles.md` describes.
 - **`kiln_assets` finds a hyphenated name from a spaced query.** The `catalog` and `list`
   searches were a single literal substring test, so `trail sign` found nothing for an asset
   named `trail-sign`. A query is now split on spaces, hyphens and underscores, and an asset
@@ -68,8 +87,8 @@ does not publish a package.
   `--target` or `--draws`), re-serializes the GLB and leaves the saved revision unchanged.
   Clamp the clip rather than loop it: a looping action wraps time 1 to the minimum. Checked
   on 2026-11-12 with three.js r187 and Blender 5.2.0 LTS, which both read the clip, the
-  targets and a preset variant and matched rebuilds at four widths; `kiln_export` does not
-  take it yet.
+  targets and a preset variant and matched rebuilds at four widths. Over MCP it is
+  `carryShapes: true` on `kiln_export` and `kiln_export_to` (first entry).
 - **The refine skill fixes a small flush face it finds on a part it is editing.** When a
   `FLUSH_FACES` warning that was already in the parent names a part the edit touches and the
   remedy is the stated 2 mm move, the agent makes it and reports it as a separate change. In
@@ -81,7 +100,8 @@ does not publish a package.
   result reports `params` (`kiln.params.v1`) with the declaration and every value used. A build with no host
   values is byte-identical to the same program with its defaults written as literals. Refused specs are
   `PARAMS_CONTRACT` and refused host values `PARAMS_VALUE`; nothing is clamped. Host values cross the evaluator
-  boundary as validated data and are part of the build-cache key. A GLB does not carry its parameters
+  boundary as validated data and are part of the build-cache key. The saved GLB is the default build; the
+  entries above say which parameters a runtime export carries
   ([declared parameters](docs/programs.md#declared-parameters)).
 - `kiln_render` and `kiln_export` take `params: { preset?, values? }`, and `kiln render` takes `--param name=value`
   and `--preset`. Results report the values used; a refused call builds nothing and names each value in
@@ -91,7 +111,7 @@ does not publish a package.
     and every preset (at most 32 builds) and report each without images; the CLI exits 1 when a point fails to build.
   - `kiln_export` with `params` returns a variant GLB as a `kiln://programs/...asset.glb?params=...` resource pinned
     to its bytes, from a `programRef` or from a saved revision's source. The runtime profile and `kiln_export_to`
-    still deliver the saved GLB only.
+    deliver the saved default build, with the carried parameters the entries above describe.
   - The `kiln_render` schema gains `params` as an opaque record, described in the tool description and served by
     Discovery as `shape:params`. To stay inside the 5,000-byte schema limit, the capture `backdrop` hint is stated
     on the shots form only; both forms take the same three backdrops.
