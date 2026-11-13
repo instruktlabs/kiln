@@ -3,9 +3,9 @@
 # release, so a crawled or linked URL (licences, notices, pack files) moves permanently to the same file there.
 # validate-static checks every rule: no built file under a retired prefix, and files under each target prefix.
 # When a scene pack moves to a new release, point its earlier rules at the new one and add one for the release retired.
-/scene-packs/golden-gate/g9/* /scene-packs/golden-gate/g9-flush1/:splat 301
-/scene-packs/golden-gate/g9-code5/* /scene-packs/golden-gate/g9-flush1/:splat 301
-/scene-packs/golden-gate/g9-code6/* /scene-packs/golden-gate/g9-flush1/:splat 301
+/scene-packs/golden-gate/g9/* /scene-packs/golden-gate/g9-flush2/:splat 301
+/scene-packs/golden-gate/g9-code5/* /scene-packs/golden-gate/g9-flush2/:splat 301
+/scene-packs/golden-gate/g9-code6/* /scene-packs/golden-gate/g9-flush2/:splat 301
 /scene-packs/foundry-floor/ff3-review2/* /scene-packs/foundry-floor/ff3-review2-flush1/:splat 301
 /scene-packs/foundry-floor/ff3-review2-code5/* /scene-packs/foundry-floor/ff3-review2-flush1/:splat 301
 /scene-packs/troy/troy-20261005-04/* /scene-packs/troy/troy-20261005-07/:splat 301

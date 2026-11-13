@@ -21,7 +21,7 @@ test('g9 selects all six exact r4 saved revisions and paired runtime licences, p
   }
 });
 
-test('g9-flush1 replaces the sedan, SUV and box truck with children of their g9 revisions and keeps the other three', () => {
+test('g9-flush2 replaces the sedan, SUV and box truck with children of their g9 revisions and keeps the other three', () => {
   for (const type of VEHICLE_TYPES) {
     if (['sedan', 'suv', 'box-truck'].includes(type)) expect(VEHICLE_PROVENANCE[type].parentRevision).toBe(VEHICLE_PROVENANCE_G9[type].revision);
     else expect(VEHICLE_PROVENANCE[type]).toEqual(VEHICLE_PROVENANCE_G9[type]);

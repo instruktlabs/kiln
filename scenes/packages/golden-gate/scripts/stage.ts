@@ -68,7 +68,7 @@ export const VEHICLE_PROVENANCE_G9: Record<VehicleType, VehicleProvenance> = {
   'transit-bus': { ...VEHICLE_PROVENANCE_G7['transit-bus'], parentRevision: 'r_6ab2ee53817449c59972502fcf008f1a', revision: 'r_85ff097a61384efab445c55372d3b6f5', refinedBy: 'codex-review2-asset-repairs', bytes: 194148, sha256: '14713cb461f2ecb683ea9bace5cc7a79d595aa92d322f86d3831cda7bf647067' },
 };
 /**
- * g9-flush1: the sedan, SUV and box truck are the flush-face fix children of their g9 revisions (saved with
+ * g9-flush2: the sedan, SUV and box truck are the flush-face fix children of their g9 revisions (saved with
  * claude-sonnet-5-5 in claude-code), delivered as vehicle-wheel-lod of the saved GLB, the bytes Foundry Floor
  * ff3-review2-flush1 carries; owner review of these revisions is pending, as it was for their parents.
  */

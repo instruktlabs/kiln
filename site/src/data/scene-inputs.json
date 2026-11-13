@@ -11,11 +11,11 @@
     },
     {
       "id": "golden-gate",
-      "release": "g9-flush1",
-      "path": "scene-inputs/flush-fix-20261113/golden-gate.zip",
-      "bytes": 8317135,
-      "sha256": "7ae3bc966705f2b272cda4511251af2cea7120f3f39360bd80254a45cbfceb70",
-      "packJsonSha256": "8171b87c257c693be482b7006429c29414939c640dcb9acc3aec50d82c51ca4b"
+      "release": "g9-flush2",
+      "path": "scene-inputs/flush-fix-20261113-02/golden-gate.zip",
+      "bytes": 8335930,
+      "sha256": "bc05c346b24694f4860ae4bbf00a0339e68bfb46b030a51c0a39d377997eac27",
+      "packJsonSha256": "a3026f8bb3c040a69a1af2b2eaac2f949210ad962b62866950f6555d88cb73e0"
     },
     {
       "id": "foundry-floor",
