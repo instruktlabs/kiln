@@ -1,0 +1,15 @@
+{
+  "schema": "kiln.scene-pack/1",
+  "id": "seed-town",
+  "release": "st1",
+  "three": "0.187.0",
+  "source": "packages/seed-town/standalone/public",
+  "base": "/scene-packs/seed-town/st1/",
+  "sealedFiles": 10,
+  "sealedBytes": 2027438,
+  "totalFiles": 13,
+  "totalBytes": 2031247,
+  "packJsonSha256": "980195cb7cdbbdc36cd94943bc7d72f6d7e2e3dbcf71bdfd1a5fa3bdbaed4f59",
+  "sha256sumsSha256": "9f4fa57698ccbe26cf2eb3eda2741a5844a1be5a1b88eeb3a1ff269f693e1fb5",
+  "noticesSha256": "ae79478c783bd08c2028f27ef1cac0b0104e1f29b04feb528b9f58369164cb4b"
+}

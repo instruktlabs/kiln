@@ -277,12 +277,56 @@ export const cathedralSquareScene = {
   },
 } as const;
 
+const seedTownPack = scenePacks['seed-town'];
+const seedTownMedia = (sceneMedia as Record<string, { poster: CatalogImage } | undefined>)[
+  'seed-town'
+];
+
+/**
+ * Seed Town: nine kit models laid out from a seed in the browser. The seed and the hour live in the page
+ * address (src/scenes/seed-town-address.ts). Its links go to the static Seed Town pack page, as Cathedral Square's do.
+ */
+export const seedTownScene = {
+  id: 'seed-town',
+  available: false,
+  name: 'Seed Town',
+  href: '/scenes/seed-town/',
+  assetBase: seedTownPack.base,
+  pack: seedTownPack,
+  poster: seedTownMedia?.poster.src ?? '',
+  posterImage: seedTownMedia?.poster,
+  posterImages: seedTownMedia ? [seedTownMedia.poster] : [],
+  posterWidth: seedTownMedia?.poster.width ?? 0,
+  posterHeight: seedTownMedia?.poster.height ?? 0,
+  posterAlt: seedTownMedia?.poster.alt ?? '',
+  description:
+    'A small old town built in your browser from nine kit models: type a seed for a different town, then walk its streets by day or at dusk.',
+  links: [{ label: 'Credits and notices', path: 'THIRD-PARTY-NOTICES.txt' }] satisfies SceneLink[],
+  copy: {
+    available: 'Explore Seed Town in your browser.',
+    preview: 'Explore opens the Seed Town scene preview.',
+    unavailable: 'The browser scene is not included in this build. Explore opens its status.',
+    devices: 'Desktop and touch controls. Loads only when you choose Explore.',
+    unavailableTitle: 'Seed Town is not included in this build.',
+    unavailableBody: 'The pack page lists the town kits and what each one can be set to.',
+    errorText:
+      'The scene could not load. Check your connection and try Explore again. The Seed Town pack remains available.',
+  } satisfies SceneCopy,
+  fallback: { href: '/packs/seed-town/', label: 'View the Seed Town pack' },
+  preUpload: {
+    fallback: { href: '/packs/seed-town/', label: 'View the Seed Town pack' },
+    unavailableBody: 'The pack overview remains available.',
+    errorText: noDownloadsError,
+  },
+} as const;
+
 export const scenes = {
   farm: farmScene,
   'golden-gate': goldenGateScene,
   'foundry-floor': foundryFloorScene,
   'cabin-woods-psx-horror': cabinWoodsScene,
   'cathedral-square': cathedralSquareScene,
+  'seed-town': seedTownScene,
 } as const;
 export type SceneId = keyof typeof scenes;
 
@@ -292,8 +336,8 @@ export function sceneBrowseGroups(packsEnabled: boolean) {
     {
       id: 'current-kiln-scenes',
       label: 'Current Kiln scenes',
-      description: 'Explore Cathedral Square and the town around it.',
-      scenes: [cathedralSquareScene],
+      description: 'Build a town from a seed, or walk Cathedral Square.',
+      scenes: [seedTownScene, cathedralSquareScene],
     },
     {
       id: 'earlier-kiln-scenes',

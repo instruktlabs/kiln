@@ -22,6 +22,13 @@ describe('which pages carry a 3D view of a GLB', () => {
     expect(isAssetPageRoute(route + 'extra/')).toBe(false);
     expect(run({ [route]: { engineNotes: [] } }, { [route]: plain })).toEqual([`${route}: Asset page must carry exactly one engine note, found 0`]);
   });
+  test('Seed Town kits require an engine note and the gallery namespace is not an item', () => {
+    const route = '/gallery/seed-town/street-lamp/';
+    expect(isAssetPageRoute(route)).toBe(true);
+    expect(isAssetPageRoute('/gallery/seed-town/')).toBe(false);
+    expect(isAssetPageRoute(route + 'extra/')).toBe(false);
+    expect(run({ [route]: { engineNotes: [] } }, { [route]: plain })).toEqual([`${route}: Asset page must carry exactly one engine note, found 0`]);
+  });
   test('cabin and woodland items participate without treating the pack namespace as an asset', () => {
     expect(isAssetPageRoute('/gallery/cabin-woods-psx-horror/stone-golem/')).toBe(true);
     expect(isAssetPageRoute('/gallery/cabin-woods-psx-horror/')).toBe(false);

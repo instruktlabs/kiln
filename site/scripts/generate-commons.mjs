@@ -59,7 +59,8 @@ function instancePlaces(json, data, node) {
   return Array.from({ length: count }, (_, i) => new Matrix4().compose(new Vector3(...(moves?.[i] ?? [0, 0, 0])), new Quaternion(...(turns?.[i] ?? [0, 0, 0, 1])), new Vector3(...(sizes?.[i] ?? [1, 1, 1]))));
 }
 
-export function inspectGlb(bytes) {
+/** With visibleOnly, a node a file hides by default (KHR_node_visibility) is left out, and so is everything under it. */
+export function inspectGlb(bytes, { visibleOnly = false } = {}) {
   const data = Buffer.from(bytes);
   if (data.toString('ascii', 0, 4) !== 'glTF' || data.readUInt32LE(4) !== 2 || data.readUInt32LE(8) !== data.length) throw new Error('Invalid GLB header');
   const json = JSON.parse(data.toString('utf8', 20, 20 + data.readUInt32LE(12)).trim());
@@ -67,6 +68,7 @@ export function inspectGlb(bytes) {
   const parts = [];
   const visit = (index, parent, parentPath) => {
     const node = json.nodes[index];
+    if (visibleOnly && node.extensions?.KHR_node_visibility?.visible === false) return;
     const local = node.matrix ? new Matrix4().fromArray(node.matrix) : new Matrix4().compose(new Vector3(...(node.translation ?? [0, 0, 0])), new Quaternion(...(node.rotation ?? [0, 0, 0, 1])), new Vector3(...(node.scale ?? [1, 1, 1])));
     const world = parent.clone().multiply(local);
     const path = [...parentPath, node.name ?? `node_${index}`];

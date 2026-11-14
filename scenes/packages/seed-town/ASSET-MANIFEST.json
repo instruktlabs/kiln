@@ -1,0 +1,116 @@
+{
+  "schema": "kiln.seed-town-manifest/1",
+  "collectionId": "project",
+  "note": "Exact pins of the town kits. sha256 and bytes are those of the runtime file the saved revision exports with carried sizes; savedGlbSha256 is the saved revision itself. Collection project is workspace storage.",
+  "release": "st1",
+  "assets": [
+    {
+      "id": "facade-bay",
+      "name": "Facade bay",
+      "collectionId": "project",
+      "collectionQualifiedId": "project/a_3558cdf5c628436981d043613749306d",
+      "assetId": "a_3558cdf5c628436981d043613749306d",
+      "revisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
+      "savedGlbSha256": "2d61e31939097873090d394ba99a1a818532953fceee5e1899d46ada73c4f4f6",
+      "sourceSha256": "ce84728604d11718849dfbf0d907afde2b1310095f98a2cd06ffc950e862aaed",
+      "sha256": "ab43c8ebb4fa8ee7947d45245775b885e93324682c10a8ded3075fa5745865d2",
+      "bytes": 231864
+    },
+    {
+      "id": "ground-bay",
+      "name": "Ground-floor bay",
+      "collectionId": "project",
+      "collectionQualifiedId": "project/a_dad1cb7ee9e04d10bab7b024289b2ae8",
+      "assetId": "a_dad1cb7ee9e04d10bab7b024289b2ae8",
+      "revisionId": "r_34e8abdcbd584be0ac8a6cc19bcecad7",
+      "savedGlbSha256": "d4c08adbd2ffc86aacabb465fc9502cc925b8508a74393e6cd613f6f3e1094c6",
+      "sourceSha256": "6f6239ba31b53c1f2f1ae5b8267fdcd2c13e9cdc0e6fec70f67d736d71285eee",
+      "sha256": "c7447227b759a0051fbbd9736bbdb8a4d96d2c2edaeddea10d43ad39537f5ef8",
+      "bytes": 276928
+    },
+    {
+      "id": "roof",
+      "name": "Town roof",
+      "collectionId": "project",
+      "collectionQualifiedId": "project/a_352bcbee2b6d489fa912c2869751a114",
+      "assetId": "a_352bcbee2b6d489fa912c2869751a114",
+      "revisionId": "r_c6d3d33650f84eaeb9f9e6d9568e95dd",
+      "savedGlbSha256": "d88f113f1ef40e3ace07d51fdf1bf40403c1d3717bf5fdfa77d2f007260863b5",
+      "sourceSha256": "0eca9763ba9ea4218ac28c3c796e63c9e660eba84dd6063395258797d2e75b63",
+      "sha256": "46c386ff3a993465f29c664f915f3789adbdd23cc6816469a3e26d221b6ba870",
+      "bytes": 372408
+    },
+    {
+      "id": "paving",
+      "name": "Paving and kerb",
+      "collectionId": "project",
+      "collectionQualifiedId": "project/a_6410239814f34ec9abe5c1ad7d6fd90f",
+      "assetId": "a_6410239814f34ec9abe5c1ad7d6fd90f",
+      "revisionId": "r_4850d6eafe694f1e801e51083c6b1f6f",
+      "savedGlbSha256": "dc6cb9b97aa378ff7695bf1f6e7aa301ecd4d319ccb6f84cc9ed19c887659ee7",
+      "sourceSha256": "1a110d1fa528b436adf39ef027880827fcfd14962e7ea0df89c3d504536c81e3",
+      "sha256": "a5441bfff38db3c1b29deb91771419d118c564268e818347c190df85f5c81806",
+      "bytes": 170572
+    },
+    {
+      "id": "junction",
+      "name": "Lane junction",
+      "collectionId": "project",
+      "collectionQualifiedId": "project/a_30cc37322009482ebfdb5d99f314a13c",
+      "assetId": "a_30cc37322009482ebfdb5d99f314a13c",
+      "revisionId": "r_bb934288512b4eb2bde112042324aa8d",
+      "savedGlbSha256": "9ec06383d7a6236797f9441a267468cbf86f93150dd8bc919bc8f31e979b06a8",
+      "sourceSha256": "e8179830acb19555a7bf2c154dada81b2c173ef002ee81c8d0c31b3838f4d844",
+      "sha256": "01cfe57ae15d6683f54738430955044e701a95f101cc0b8a66d20f79112fa73f",
+      "bytes": 150624
+    },
+    {
+      "id": "street-lamp",
+      "name": "Street lamp",
+      "collectionId": "project",
+      "collectionQualifiedId": "project/a_71a13edfe6a54fb8b8b31f0e394dbfe3",
+      "assetId": "a_71a13edfe6a54fb8b8b31f0e394dbfe3",
+      "revisionId": "r_6be0816ec091489198228dc348a503c0",
+      "savedGlbSha256": "06188493b743a56cabd0a90ff207eb71ba119c4b8c65082466b626b7ebb6ece5",
+      "sourceSha256": "d545fe18adcce1ce8b93707736abf563547b684d1b0a6a840f479c481c5bf04a",
+      "sha256": "b4f521f88a25f933297484311234588dd0fd5862f89be36f6f90855de54c781e",
+      "bytes": 108788
+    },
+    {
+      "id": "signage",
+      "name": "Hanging sign",
+      "collectionId": "project",
+      "collectionQualifiedId": "project/a_d0c63e2592384bf784afe1fa2b5a7180",
+      "assetId": "a_d0c63e2592384bf784afe1fa2b5a7180",
+      "revisionId": "r_17b1eed4b79f41aaaf71771e47259890",
+      "savedGlbSha256": "cacc31ab120b42cdcc171e8bc51dcbb6c3e8249fb2e82b7916446f7dadc86795",
+      "sourceSha256": "1b95bdb603054573db003eb6d456434bfbf1abddf13c02ff0c482f97348d7038",
+      "sha256": "e7be02aeac9d8e4a4837825beafbe70dffd48425987d63b5a13c621e3e5d4c76",
+      "bytes": 97940
+    },
+    {
+      "id": "street-furniture",
+      "name": "Street furniture",
+      "collectionId": "project",
+      "collectionQualifiedId": "project/a_0d4254c8e60f43c9a2f3976c4c128bfd",
+      "assetId": "a_0d4254c8e60f43c9a2f3976c4c128bfd",
+      "revisionId": "r_8b73bd49f690462c979085d26534cf65",
+      "savedGlbSha256": "d8b2d1647e3cff9c15a115326400e7a6a38168463830eee5938d9af3d3030373",
+      "sourceSha256": "f332e07babcc6e966c8cbc6b4e3e012982b2806a8e444a9ecaa7d2b28e995677",
+      "sha256": "b2b3d3a0866c7350db55399153646d691d2d946f03b0237478d21643fbc11dec",
+      "bytes": 182404
+    },
+    {
+      "id": "tree",
+      "name": "Tree",
+      "collectionId": "project",
+      "collectionQualifiedId": "project/a_e3302002857e448ba2412aa702dbbdbd",
+      "assetId": "a_e3302002857e448ba2412aa702dbbdbd",
+      "revisionId": "r_1b200dcb65334845bf9fef7a7a4c0ce1",
+      "savedGlbSha256": "483457f3a1a9b579e0f4ece77d8631dcdf3cf4358d018e71918be4acc8c38689",
+      "sourceSha256": "06ee517bad6f64776693904389a77e541a714f3de5bd404946a7bc77aae59420",
+      "sha256": "fcdc029ed606f6fed6e3cde5ad22bfe6beb132dcf3b7605cbf67aee4b144b50c",
+      "bytes": 433236
+    }
+  ]
+}

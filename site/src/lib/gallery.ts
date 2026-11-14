@@ -13,6 +13,12 @@ import {
   cathedralGalleryAssets,
   cathedralSceneHref,
 } from './cathedral-gallery';
+import {
+  SEED_TOWN_ID,
+  seedTownAssetHref,
+  seedTownGalleryAssets,
+  seedTownSceneHref,
+} from './seed-town-gallery';
 
 export { foundry };
 export type FoundryAsset = (typeof foundry.assets)[number];
@@ -27,7 +33,8 @@ export interface GalleryCard {
   href: string;
   revisionId: string;
   runtimeDownload: { sha256: string };
-  poster: CatalogImage;
+  /** Null until a pack's rig posters are rendered (Seed Town before its poster run). */
+  poster: CatalogImage | null;
   metrics: { triangles: number };
   review: { ownerAccepted: boolean; status: string };
   /** Walkable scenes that place this asset, linked beside the card. */
@@ -91,6 +98,19 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
       runtimeDownload: asset.runtimeModelDownload,
       review: { ownerAccepted: false, status: 'awaiting-owner-review' },
       scenes: [{ label: 'Explore Cathedral Square', href: cathedralSceneHref }],
+    })),
+  );
+  cards.push(
+    ...seedTownGalleryAssets(packsEnabled).map((asset) => ({
+      ...asset,
+      poster: asset.poster ?? null,
+      pack: SEED_TOWN_ID,
+      packs: [SEED_TOWN_ID],
+      category: '',
+      href: seedTownAssetHref(asset.slug),
+      runtimeDownload: asset.runtimeModelDownload,
+      review: { ownerAccepted: false, status: 'awaiting-owner-review' },
+      scenes: [{ label: 'Explore Seed Town', href: seedTownSceneHref }],
     })),
   );
   return browseGallery(

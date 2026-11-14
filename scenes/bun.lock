@@ -146,6 +146,26 @@
         "three": "0.187.0",
       },
     },
+    "packages/seed-town": {
+      "name": "@kiln-scenes/seed-town",
+      "version": "0.1.0",
+      "dependencies": {
+        "@kiln-scenes/scene-kit": "workspace:*",
+      },
+      "devDependencies": {
+        "@react-three/fiber": "9.8.2",
+        "@types/three": "0.187.0",
+        "react": "19.3.1",
+        "react-dom": "19.3.1",
+        "three": "0.187.0",
+      },
+      "peerDependencies": {
+        "@react-three/fiber": "9.8.2",
+        "react": "19.3.1",
+        "react-dom": "19.3.1",
+        "three": "0.187.0",
+      },
+    },
     "packages/troy": {
       "name": "@kiln-scenes/troy",
       "version": "0.1.0",
@@ -174,6 +194,8 @@
     "@kiln-scenes/golden-gate": ["@kiln-scenes/golden-gate@workspace:packages/golden-gate"],
 
     "@kiln-scenes/scene-kit": ["@kiln-scenes/scene-kit@workspace:packages/scene-kit"],
+
+    "@kiln-scenes/seed-town": ["@kiln-scenes/seed-town@workspace:packages/seed-town"],
 
     "@kiln-scenes/troy": ["@kiln-scenes/troy@workspace:packages/troy"],
 

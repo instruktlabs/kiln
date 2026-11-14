@@ -1,0 +1,22 @@
+{
+  "name": "@kiln-scenes/seed-town",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "sideEffects": false,
+  "exports": { ".": "./src/index.ts" },
+  "dependencies": { "@kiln-scenes/scene-kit": "workspace:*" },
+  "peerDependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@react-three/fiber": "9.8.2",
+    "three": "0.187.0"
+  },
+  "devDependencies": {
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "@react-three/fiber": "9.8.2",
+    "three": "0.187.0",
+    "@types/three": "0.187.0"
+  }
+}

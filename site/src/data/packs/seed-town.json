@@ -1,0 +1,1080 @@
+{
+  "id": "seed-town",
+  "name": "Seed Town",
+  "release": "st1",
+  "assets": [
+    {
+      "slug": "facade-bay",
+      "name": "Facade bay",
+      "description": "One upper-storey bay of a town house front with a choice of wall finish, window and window head, an optional cornice, shutters, balcony and lit window, a settable bay width and storey height, and settable wall, trim and joinery colours.",
+      "collection": "project",
+      "assetId": "a_3558cdf5c628436981d043613749306d",
+      "revisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
+      "parentRevision": null,
+      "attribution": {
+        "model": "claude-fable-5-2",
+        "harness": "claude-code"
+      },
+      "metrics": {
+        "triangles": 154,
+        "materials": 4,
+        "bounds": [
+          0.39000001549720764,
+          3,
+          1.7999999523162842
+        ]
+      },
+      "savedModel": {
+        "sha256": "2d61e31939097873090d394ba99a1a818532953fceee5e1899d46ada73c4f4f6",
+        "bytes": 154280
+      },
+      "runtimeModelDownload": {
+        "member": "models/facade-bay.glb",
+        "bytes": 231864,
+        "sha256": "ab43c8ebb4fa8ee7947d45245775b885e93324682c10a8ded3075fa5745865d2"
+      },
+      "runtimeMetadata": {
+        "member": "models/facade-bay.kiln-metadata.json",
+        "bytes": 2968,
+        "sha256": "bb258a2a4164856389f42913b6f0bfe1a511b660de3dc49d96d93db4dbac37e5"
+      },
+      "parameters": {
+        "options": [
+          {
+            "name": "window",
+            "kind": "choice",
+            "values": [
+              "sash",
+              "casement",
+              "arched",
+              "blind"
+            ],
+            "default": "sash",
+            "describe": "Window in the opening."
+          },
+          {
+            "name": "finish",
+            "kind": "choice",
+            "values": [
+              "stucco",
+              "brick",
+              "timber"
+            ],
+            "default": "stucco",
+            "describe": "Wall finish."
+          },
+          {
+            "name": "head",
+            "kind": "choice",
+            "values": [
+              "keystone",
+              "pediment",
+              "plain"
+            ],
+            "default": "keystone",
+            "describe": "Trim over the window."
+          },
+          {
+            "name": "cornice",
+            "kind": "toggle",
+            "default": false,
+            "describe": "Projecting cornice with dentils at the top of the bay."
+          },
+          {
+            "name": "shutters",
+            "kind": "toggle",
+            "default": false,
+            "describe": "Louvred shutters folded open beside the window."
+          },
+          {
+            "name": "balcony",
+            "kind": "toggle",
+            "default": false,
+            "describe": "Iron window guard on a stone shelf."
+          },
+          {
+            "name": "lit",
+            "kind": "toggle",
+            "default": false,
+            "describe": "Window glows from inside."
+          }
+        ],
+        "sizes": [
+          {
+            "name": "bayWidth",
+            "min": 1.6,
+            "default": 1.8,
+            "max": 2,
+            "unit": "m",
+            "describe": "Width of the bay along the street."
+          },
+          {
+            "name": "storeyHeight",
+            "min": 2.7,
+            "default": 3,
+            "max": 3.3,
+            "unit": "m",
+            "describe": "Floor to floor height."
+          }
+        ],
+        "colours": [
+          {
+            "name": "wall",
+            "default": "#d9c7a3",
+            "describe": "Wall colour."
+          },
+          {
+            "name": "trim",
+            "default": "#efe8d8",
+            "describe": "Sill, lintel and string course colour."
+          },
+          {
+            "name": "joinery",
+            "default": "#3f5a4a",
+            "describe": "Window frame and shutter colour."
+          }
+        ],
+        "variants": []
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/seed-town/st1/facade-bay.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "One upper-storey bay of a town house front with a choice of wall finish, window and window head, an optional cornice, shutters, balcony and lit window, a settable bay width and storey height, and settable wall, trim and joinery colours.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/facade-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/facade-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/facade-bay.png",
+        "sourceRevisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "slug": "ground-bay",
+      "name": "Ground-floor bay",
+      "description": "One ground-floor bay of a street front as a shop window, shop door, passage, house door or house window, with an optional awning and lit interior, a settable bay width, storey height and awning depth, and settable wall, trim, joinery and accent colours.",
+      "collection": "project",
+      "assetId": "a_dad1cb7ee9e04d10bab7b024289b2ae8",
+      "revisionId": "r_34e8abdcbd584be0ac8a6cc19bcecad7",
+      "parentRevision": null,
+      "attribution": {
+        "model": "claude-fable-5-2",
+        "harness": "claude-code"
+      },
+      "metrics": {
+        "triangles": 198,
+        "materials": 4,
+        "bounds": [
+          0.26999999582767487,
+          3.4000000953674316,
+          1.7999999523162842
+        ]
+      },
+      "savedModel": {
+        "sha256": "d4c08adbd2ffc86aacabb465fc9502cc925b8508a74393e6cd613f6f3e1094c6",
+        "bytes": 140888
+      },
+      "runtimeModelDownload": {
+        "member": "models/ground-bay.glb",
+        "bytes": 276928,
+        "sha256": "c7447227b759a0051fbbd9736bbdb8a4d96d2c2edaeddea10d43ad39537f5ef8"
+      },
+      "runtimeMetadata": {
+        "member": "models/ground-bay.kiln-metadata.json",
+        "bytes": 4527,
+        "sha256": "1244e494d83417729e373a9423da584131f3e3447b2616ea19a1843fd25a79fc"
+      },
+      "parameters": {
+        "options": [
+          {
+            "name": "front",
+            "kind": "choice",
+            "values": [
+              "shopWindow",
+              "shopDoor",
+              "passage",
+              "houseDoor",
+              "houseWindow"
+            ],
+            "default": "shopWindow",
+            "describe": "What fills the bay."
+          },
+          {
+            "name": "awning",
+            "kind": "toggle",
+            "default": false,
+            "describe": "Canvas awning on iron arms."
+          },
+          {
+            "name": "lit",
+            "kind": "toggle",
+            "default": false,
+            "describe": "Windows glow from inside."
+          }
+        ],
+        "sizes": [
+          {
+            "name": "bayWidth",
+            "min": 1.6,
+            "default": 1.8,
+            "max": 2,
+            "unit": "m",
+            "describe": "Width of the bay along the street."
+          },
+          {
+            "name": "shopHeight",
+            "min": 3.2,
+            "default": 3.4,
+            "max": 3.8,
+            "unit": "m",
+            "describe": "Height of the ground storey."
+          },
+          {
+            "name": "awningDepth",
+            "min": 0.8,
+            "default": 1.1,
+            "max": 1.4,
+            "unit": "m",
+            "describe": "How far the awning reaches over the pavement."
+          }
+        ],
+        "colours": [
+          {
+            "name": "wall",
+            "default": "#d9c7a3",
+            "describe": "Wall colour of the house and passage fronts."
+          },
+          {
+            "name": "trim",
+            "default": "#efe8d8",
+            "describe": "Cornice, door case and arch colour."
+          },
+          {
+            "name": "joinery",
+            "default": "#3f5a4a",
+            "describe": "Shopfront, door and window frame colour."
+          },
+          {
+            "name": "accent",
+            "default": "#a33a2a",
+            "describe": "Awning colour."
+          }
+        ],
+        "variants": []
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/seed-town/st1/ground-bay.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "One ground-floor bay of a street front as a shop window, shop door, passage, house door or house window, with an optional awning and lit interior, a settable bay width, storey height and awning depth, and settable wall, trim, joinery and accent colours.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/ground-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/ground-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/ground-bay.png",
+        "sourceRevisionId": "r_34e8abdcbd584be0ac8a6cc19bcecad7",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "slug": "roof",
+      "name": "Town roof",
+      "description": "The roof of one building as a side gable, front gable, stepped gable or mansard in stucco or brick, with none, one or two dormers, an optional chimney and lit windows, a settable width, rise and side and back wall heights, and settable roof, wall, trim and joinery colours.",
+      "collection": "project",
+      "assetId": "a_352bcbee2b6d489fa912c2869751a114",
+      "revisionId": "r_c6d3d33650f84eaeb9f9e6d9568e95dd",
+      "parentRevision": null,
+      "attribution": {
+        "model": "claude-fable-5-2",
+        "harness": "claude-code"
+      },
+      "metrics": {
+        "triangles": 92,
+        "materials": 8,
+        "bounds": [
+          8.580000013113022,
+          4.350000098347664,
+          5.400000095367432
+        ]
+      },
+      "savedModel": {
+        "sha256": "d88f113f1ef40e3ace07d51fdf1bf40403c1d3717bf5fdfa77d2f007260863b5",
+        "bytes": 201688
+      },
+      "runtimeModelDownload": {
+        "member": "models/roof.glb",
+        "bytes": 372408,
+        "sha256": "46c386ff3a993465f29c664f915f3789adbdd23cc6816469a3e26d221b6ba870"
+      },
+      "runtimeMetadata": {
+        "member": "models/roof.kiln-metadata.json",
+        "bytes": 10572,
+        "sha256": "0ec69387b7b149841d57faeeb3365312c50d60f0595aa15a7169f450c70c3afb"
+      },
+      "parameters": {
+        "options": [
+          {
+            "name": "form",
+            "kind": "choice",
+            "values": [
+              "sideGable",
+              "frontGable",
+              "stepped",
+              "mansard"
+            ],
+            "default": "sideGable",
+            "describe": "Roof form."
+          },
+          {
+            "name": "finish",
+            "kind": "choice",
+            "values": [
+              "stucco",
+              "brick"
+            ],
+            "default": "stucco",
+            "describe": "Finish of the gable, side and back walls."
+          },
+          {
+            "name": "dormers",
+            "kind": "choice",
+            "values": [
+              "none",
+              "one",
+              "two"
+            ],
+            "default": "none",
+            "describe": "Dormer windows on the street side (side gable and mansard)."
+          },
+          {
+            "name": "chimney",
+            "kind": "toggle",
+            "default": true,
+            "describe": "Brick chimney stack beside the party wall."
+          },
+          {
+            "name": "lit",
+            "kind": "toggle",
+            "default": false,
+            "describe": "Attic and dormer windows glow from inside."
+          }
+        ],
+        "sizes": [
+          {
+            "name": "width",
+            "min": 3.2,
+            "default": 5.4,
+            "max": 10,
+            "unit": "m",
+            "describe": "Width of the building along the street."
+          },
+          {
+            "name": "rise",
+            "min": 2.2,
+            "default": 3,
+            "max": 3.8,
+            "unit": "m",
+            "describe": "Height of the ridge above the eaves."
+          },
+          {
+            "name": "skirtLeft",
+            "min": 0.2,
+            "default": 0.2,
+            "max": 16,
+            "unit": "m",
+            "describe": "How far the side wall at Z = 0 shows below the eaves."
+          },
+          {
+            "name": "skirtRight",
+            "min": 0.2,
+            "default": 0.2,
+            "max": 16,
+            "unit": "m",
+            "describe": "How far the side wall at Z = width shows below the eaves."
+          },
+          {
+            "name": "skirtBack",
+            "min": 0.2,
+            "default": 0.2,
+            "max": 16,
+            "unit": "m",
+            "describe": "How far the back wall shows below the eaves."
+          }
+        ],
+        "colours": [
+          {
+            "name": "roof",
+            "default": "#6b4a3a",
+            "describe": "Roof covering colour."
+          },
+          {
+            "name": "wall",
+            "default": "#d9c7a3",
+            "describe": "Gable, side and back wall colour."
+          },
+          {
+            "name": "trim",
+            "default": "#efe8d8",
+            "describe": "Eaves, bargeboard and coping colour."
+          },
+          {
+            "name": "joinery",
+            "default": "#3f5a4a",
+            "describe": "Attic and dormer window frame colour."
+          }
+        ],
+        "variants": []
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/seed-town/st1/roof.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The roof of one building as a side gable, front gable, stepped gable or mansard in stucco or brick, with none, one or two dormers, an optional chimney and lit windows, a settable width, rise and side and back wall heights, and settable roof, wall, trim and joinery colours.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/roof-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/roof-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/roof-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/roof-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/roof-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/roof-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/roof-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/roof-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/roof-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/roof-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/roof.png",
+        "sourceRevisionId": "r_c6d3d33650f84eaeb9f9e6d9568e95dd",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "slug": "paving",
+      "name": "Paving and kerb",
+      "description": "One bay of street paving as pavement with kerb, gutter and half a carriageway, as pavement alone or as setts for a square, with an optional drain, cellar grate or manhole cover, a settable bay width, pavement width, road width and kerb height, settable flag, kerb, sett and iron colours and a sandstone colour variant.",
+      "collection": "project",
+      "assetId": "a_6410239814f34ec9abe5c1ad7d6fd90f",
+      "revisionId": "r_4850d6eafe694f1e801e51083c6b1f6f",
+      "parentRevision": null,
+      "attribution": {
+        "model": "claude-fable-5-2",
+        "harness": "claude-code"
+      },
+      "metrics": {
+        "triangles": 70,
+        "materials": 4,
+        "bounds": [
+          6.25,
+          0.18000000715255737,
+          1.7999999523162842
+        ]
+      },
+      "savedModel": {
+        "sha256": "dc6cb9b97aa378ff7695bf1f6e7aa301ecd4d319ccb6f84cc9ed19c887659ee7",
+        "bytes": 106156
+      },
+      "runtimeModelDownload": {
+        "member": "models/paving.glb",
+        "bytes": 170572,
+        "sha256": "a5441bfff38db3c1b29deb91771419d118c564268e818347c190df85f5c81806"
+      },
+      "runtimeMetadata": {
+        "member": "models/paving.kiln-metadata.json",
+        "bytes": 3568,
+        "sha256": "7c6838eb1fda098a9df21e514974b5c229fa6f4cf1b69331a177e4698024fb62"
+      },
+      "parameters": {
+        "options": [
+          {
+            "name": "extent",
+            "kind": "choice",
+            "values": [
+              "street",
+              "pavement",
+              "plaza"
+            ],
+            "default": "street",
+            "describe": "Pavement, kerb, gutter and half the carriageway; the pavement and kerb alone (the apron that ends a street); or a field of setts at pavement level, as wide as the pavement (a square)."
+          },
+          {
+            "name": "feature",
+            "kind": "choice",
+            "values": [
+              "none",
+              "drain",
+              "cellarGrate",
+              "manhole"
+            ],
+            "default": "none",
+            "describe": "Ironwork set into the segment."
+          }
+        ],
+        "sizes": [
+          {
+            "name": "bayWidth",
+            "min": 1.4,
+            "default": 1.8,
+            "max": 2,
+            "unit": "m",
+            "describe": "Length of the segment along the street: one bay."
+          },
+          {
+            "name": "pavement",
+            "min": 2,
+            "default": 2.6,
+            "max": 3.2,
+            "unit": "m",
+            "describe": "Pavement width from the building line to the kerb."
+          },
+          {
+            "name": "road",
+            "min": 2.6,
+            "default": 3.2,
+            "max": 4,
+            "unit": "m",
+            "describe": "Half the carriageway: gutter to the centre line."
+          },
+          {
+            "name": "kerbHeight",
+            "min": 0.1,
+            "default": 0.14,
+            "max": 0.18,
+            "unit": "m",
+            "describe": "Kerb face height above the gutter."
+          }
+        ],
+        "colours": [
+          {
+            "name": "flag",
+            "default": "#b9b0a0",
+            "describe": "Pavement flagstones."
+          },
+          {
+            "name": "kerb",
+            "default": "#8e8a84",
+            "describe": "Kerb stones and gutter channel."
+          },
+          {
+            "name": "sett",
+            "default": "#6f6a66",
+            "describe": "Carriageway setts."
+          },
+          {
+            "name": "iron",
+            "default": "#1d1f22",
+            "describe": "Grates and covers."
+          }
+        ],
+        "variants": [
+          "sandstone"
+        ]
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/seed-town/st1/paving.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "One bay of street paving as pavement with kerb, gutter and half a carriageway, as pavement alone or as setts for a square, with an optional drain, cellar grate or manhole cover, a settable bay width, pavement width, road width and kerb height, settable flag, kerb, sett and iron colours and a sandstone colour variant.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/paving-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/paving-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/paving-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/paving-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/paving-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/paving-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/paving-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/paving-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/paving-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/paving-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/paving.png",
+        "sourceRevisionId": "r_4850d6eafe694f1e801e51083c6b1f6f",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "slug": "junction",
+      "name": "Lane junction",
+      "description": "The mouth of a side lane on one side of a street, with two corner pavements and kerbs and the lane carriageway falling to the street gutter, settable pavement, road, lane pavement and lane road widths and kerb height, settable flag, kerb and sett colours and a sandstone colour variant.",
+      "collection": "project",
+      "assetId": "a_30cc37322009482ebfdb5d99f314a13c",
+      "revisionId": "r_bb934288512b4eb2bde112042324aa8d",
+      "parentRevision": null,
+      "attribution": {
+        "model": "claude-fable-5-2",
+        "harness": "claude-code"
+      },
+      "metrics": {
+        "triangles": 184,
+        "materials": 4,
+        "bounds": [
+          6.25,
+          0.18000000715255737,
+          10.100000381469727
+        ]
+      },
+      "savedModel": {
+        "sha256": "9ec06383d7a6236797f9441a267468cbf86f93150dd8bc919bc8f31e979b06a8",
+        "bytes": 99524
+      },
+      "runtimeModelDownload": {
+        "member": "models/junction.glb",
+        "bytes": 150624,
+        "sha256": "01cfe57ae15d6683f54738430955044e701a95f101cc0b8a66d20f79112fa73f"
+      },
+      "runtimeMetadata": {
+        "member": "models/junction.kiln-metadata.json",
+        "bytes": 2398,
+        "sha256": "c7bbc1f7389567a2c1bef2ccef82c4c94b09e8039c30e83597023628d92dd8df"
+      },
+      "parameters": {
+        "options": [],
+        "sizes": [
+          {
+            "name": "pavement",
+            "min": 2,
+            "default": 2.6,
+            "max": 3.2,
+            "unit": "m",
+            "describe": "Pavement width of the street, building line to kerb."
+          },
+          {
+            "name": "road",
+            "min": 2.6,
+            "default": 3.2,
+            "max": 4,
+            "unit": "m",
+            "describe": "Half the carriageway of the street: gutter to centre line."
+          },
+          {
+            "name": "lanePavement",
+            "min": 2,
+            "default": 2,
+            "max": 3.2,
+            "unit": "m",
+            "describe": "Pavement width of the lane."
+          },
+          {
+            "name": "laneRoad",
+            "min": 2.6,
+            "default": 2.6,
+            "max": 4,
+            "unit": "m",
+            "describe": "Half the carriageway of the lane."
+          },
+          {
+            "name": "kerbHeight",
+            "min": 0.1,
+            "default": 0.14,
+            "max": 0.18,
+            "unit": "m",
+            "describe": "Kerb face height above the gutter."
+          }
+        ],
+        "colours": [
+          {
+            "name": "flag",
+            "default": "#b9b0a0",
+            "describe": "Pavement flagstones."
+          },
+          {
+            "name": "kerb",
+            "default": "#8e8a84",
+            "describe": "Kerb stones and gutter channels."
+          },
+          {
+            "name": "sett",
+            "default": "#6f6a66",
+            "describe": "Carriageway setts."
+          }
+        ],
+        "variants": [
+          "sandstone"
+        ]
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/seed-town/st1/junction.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "The mouth of a side lane on one side of a street, with two corner pavements and kerbs and the lane carriageway falling to the street gutter, settable pavement, road, lane pavement and lane road widths and kerb height, settable flag, kerb and sett colours and a sandstone colour variant.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/junction-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/junction-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/junction-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/junction-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/junction-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/junction-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/junction-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/junction-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/junction-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/junction-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/junction.png",
+        "sourceRevisionId": "r_bb934288512b4eb2bde112042324aa8d",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "slug": "street-lamp",
+      "name": "Street lamp",
+      "description": "A cast iron street lamp with one lantern on the post or twin lanterns on a cross arm, lit or unlit panes, a settable height and a settable iron colour.",
+      "collection": "project",
+      "assetId": "a_71a13edfe6a54fb8b8b31f0e394dbfe3",
+      "revisionId": "r_6be0816ec091489198228dc348a503c0",
+      "parentRevision": null,
+      "attribution": {
+        "model": "claude-fable-5-2",
+        "harness": "claude-code"
+      },
+      "metrics": {
+        "triangles": 336,
+        "materials": 2,
+        "bounds": [
+          0.38802939653396606,
+          4.539999961853027,
+          0.7319615483283997
+        ]
+      },
+      "savedModel": {
+        "sha256": "06188493b743a56cabd0a90ff207eb71ba119c4b8c65082466b626b7ebb6ece5",
+        "bytes": 55344
+      },
+      "runtimeModelDownload": {
+        "member": "models/street-lamp.glb",
+        "bytes": 108788,
+        "sha256": "b4f521f88a25f933297484311234588dd0fd5862f89be36f6f90855de54c781e"
+      },
+      "runtimeMetadata": {
+        "member": "models/street-lamp.kiln-metadata.json",
+        "bytes": 1567,
+        "sha256": "1e8e8783fd95e46e1904dafe5a0c3a605072073d7cfa084f068236d3cec06ad2"
+      },
+      "parameters": {
+        "options": [
+          {
+            "name": "arms",
+            "kind": "choice",
+            "values": [
+              "post",
+              "twin"
+            ],
+            "default": "post",
+            "describe": "One lantern on the post, or two on a cross arm."
+          },
+          {
+            "name": "lit",
+            "kind": "toggle",
+            "default": false,
+            "describe": "Lanterns glow."
+          }
+        ],
+        "sizes": [
+          {
+            "name": "height",
+            "min": 3.2,
+            "default": 3.8,
+            "max": 4.6,
+            "unit": "m",
+            "describe": "Height of the lantern base above the pavement."
+          }
+        ],
+        "colours": [
+          {
+            "name": "iron",
+            "default": "#1f2a26",
+            "describe": "Paint colour of the ironwork."
+          }
+        ],
+        "variants": []
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/seed-town/st1/street-lamp.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A cast iron street lamp with one lantern on the post or twin lanterns on a cross arm, lit or unlit panes, a settable height and a settable iron colour.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/street-lamp-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/street-lamp-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/street-lamp.png",
+        "sourceRevisionId": "r_6be0816ec091489198228dc348a503c0",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "slug": "signage",
+      "name": "Hanging sign",
+      "description": "A hanging trade sign on an iron bracket with an oval, rectangular or shield board and a key, boot, cup, book, shears or pretzel emblem, a settable bracket reach and settable accent, gilt and iron colours.",
+      "collection": "project",
+      "assetId": "a_d0c63e2592384bf784afe1fa2b5a7180",
+      "revisionId": "r_17b1eed4b79f41aaaf71771e47259890",
+      "parentRevision": null,
+      "attribution": {
+        "model": "claude-fable-5-2",
+        "harness": "claude-code"
+      },
+      "metrics": {
+        "triangles": 220,
+        "materials": 3,
+        "bounds": [
+          1.0099999904632568,
+          0.8350000157952309,
+          0.07000000029802322
+        ]
+      },
+      "savedModel": {
+        "sha256": "cacc31ab120b42cdcc171e8bc51dcbb6c3e8249fb2e82b7916446f7dadc86795",
+        "bytes": 53940
+      },
+      "runtimeModelDownload": {
+        "member": "models/signage.glb",
+        "bytes": 97940,
+        "sha256": "e7be02aeac9d8e4a4837825beafbe70dffd48425987d63b5a13c621e3e5d4c76"
+      },
+      "runtimeMetadata": {
+        "member": "models/signage.kiln-metadata.json",
+        "bytes": 1977,
+        "sha256": "687935018ed0a6dbf1b3d230d964052a9aa08c794a35ed543dfedc74b6228415"
+      },
+      "parameters": {
+        "options": [
+          {
+            "name": "board",
+            "kind": "choice",
+            "values": [
+              "oval",
+              "rect",
+              "shield"
+            ],
+            "default": "oval",
+            "describe": "Shape of the board."
+          },
+          {
+            "name": "emblem",
+            "kind": "choice",
+            "values": [
+              "key",
+              "boot",
+              "cup",
+              "book",
+              "shears",
+              "pretzel"
+            ],
+            "default": "key",
+            "describe": "Trade emblem on both faces."
+          }
+        ],
+        "sizes": [
+          {
+            "name": "reach",
+            "min": 0.7,
+            "default": 0.9,
+            "max": 1.1,
+            "unit": "m",
+            "describe": "How far the bracket reaches from the wall."
+          }
+        ],
+        "colours": [
+          {
+            "name": "accent",
+            "default": "#27405a",
+            "describe": "Board colour."
+          },
+          {
+            "name": "gilt",
+            "default": "#d7b45a",
+            "describe": "Emblem and rim colour."
+          },
+          {
+            "name": "iron",
+            "default": "#1d1f22",
+            "describe": "Bracket colour."
+          }
+        ],
+        "variants": []
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/seed-town/st1/signage.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A hanging trade sign on an iron bracket with an oval, rectangular or shield board and a key, boot, cup, book, shears or pretzel emblem, a settable bracket reach and settable accent, gilt and iron colours.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/signage-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/signage-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/signage-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/signage-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/signage-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/signage-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/signage-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/signage-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/signage-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/signage-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/signage.png",
+        "sourceRevisionId": "r_17b1eed4b79f41aaaf71771e47259890",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "slug": "street-furniture",
+      "name": "Street furniture",
+      "description": "One piece of street furniture chosen from a bench, planter, bollard, café table, barrel, fountain and market stall, with a settable bench length and settable timber, iron and accent colours.",
+      "collection": "project",
+      "assetId": "a_0d4254c8e60f43c9a2f3976c4c128bfd",
+      "revisionId": "r_8b73bd49f690462c979085d26534cf65",
+      "parentRevision": null,
+      "attribution": {
+        "model": "claude-fable-5-2",
+        "harness": "claude-code"
+      },
+      "metrics": {
+        "triangles": 236,
+        "materials": 2,
+        "bounds": [
+          0.510000005364418,
+          0.8600000143051147,
+          1.8799999952316284
+        ]
+      },
+      "savedModel": {
+        "sha256": "d8b2d1647e3cff9c15a115326400e7a6a38168463830eee5938d9af3d3030373",
+        "bytes": 168304
+      },
+      "runtimeModelDownload": {
+        "member": "models/street-furniture.glb",
+        "bytes": 182404,
+        "sha256": "b2b3d3a0866c7350db55399153646d691d2d946f03b0237478d21643fbc11dec"
+      },
+      "runtimeMetadata": {
+        "member": "models/street-furniture.kiln-metadata.json",
+        "bytes": 1221,
+        "sha256": "961f6ff2011f32f54294ad906ccf2ef25116a9f284bc342e8cbcc1aa06d8bebe"
+      },
+      "parameters": {
+        "options": [
+          {
+            "name": "piece",
+            "kind": "choice",
+            "values": [
+              "bench",
+              "planter",
+              "bollard",
+              "cafe",
+              "barrel",
+              "fountain",
+              "stall"
+            ],
+            "default": "bench",
+            "describe": "Which piece."
+          }
+        ],
+        "sizes": [
+          {
+            "name": "length",
+            "min": 1.4,
+            "default": 1.8,
+            "max": 2.2,
+            "unit": "m",
+            "describe": "Length of the bench."
+          }
+        ],
+        "colours": [
+          {
+            "name": "timber",
+            "default": "#6e4a2c",
+            "describe": "Wood colour: bench slats, planter, table top, barrel staves."
+          },
+          {
+            "name": "iron",
+            "default": "#1f2a26",
+            "describe": "Ironwork colour."
+          },
+          {
+            "name": "accent",
+            "default": "#b23b4a",
+            "describe": "Flower colour in the planter; canvas colour of the stall."
+          }
+        ],
+        "variants": []
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/seed-town/st1/street-furniture.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "One piece of street furniture chosen from a bench, planter, bollard, café table, barrel, fountain and market stall, with a settable bench length and settable timber, iron and accent colours.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/street-furniture-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/street-furniture-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/street-furniture.png",
+        "sourceRevisionId": "r_8b73bd49f690462c979085d26534cf65",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    },
+    {
+      "slug": "tree",
+      "name": "Autumn tree",
+      "description": "A country tree as a broad crown, a narrow column, an open crown on a pale stem, a conifer in tiers or a low shrub, with a settable height and spread and settable leaf, turning-leaf and bark colours.",
+      "collection": "project",
+      "assetId": "a_e3302002857e448ba2412aa702dbbdbd",
+      "revisionId": "r_1b200dcb65334845bf9fef7a7a4c0ce1",
+      "parentRevision": "r_428084e92dca44c7ba4e413faabd3474",
+      "attribution": {
+        "model": "claude-fable-5-2",
+        "harness": "claude-code"
+      },
+      "metrics": {
+        "triangles": 1007,
+        "materials": 3,
+        "bounds": [
+          6.1468212604522705,
+          8.976087644696236,
+          5.826516628265381
+        ]
+      },
+      "savedModel": {
+        "sha256": "483457f3a1a9b579e0f4ece77d8631dcdf3cf4358d018e71918be4acc8c38689",
+        "bytes": 173932
+      },
+      "runtimeModelDownload": {
+        "member": "models/tree.glb",
+        "bytes": 433236,
+        "sha256": "fcdc029ed606f6fed6e3cde5ad22bfe6beb132dcf3b7605cbf67aee4b144b50c"
+      },
+      "runtimeMetadata": {
+        "member": "models/tree.kiln-metadata.json",
+        "bytes": 2810,
+        "sha256": "057d510515eaf1987aedc30ce6a4ccc77cff97e6eb98bb7b1b1325ca9cb20f31"
+      },
+      "parameters": {
+        "options": [
+          {
+            "name": "form",
+            "kind": "choice",
+            "values": [
+              "broad",
+              "column",
+              "open",
+              "conifer",
+              "shrub"
+            ],
+            "default": "broad",
+            "describe": "A broad round crown, a tall narrow column, an open crown on a slender pale trunk, a conifer in tiers, or a low shrub."
+          }
+        ],
+        "sizes": [
+          {
+            "name": "height",
+            "min": 1.5,
+            "default": 9,
+            "max": 16,
+            "unit": "m",
+            "describe": "Height from the ground to the top of the crown."
+          },
+          {
+            "name": "spread",
+            "min": 1.5,
+            "default": 5,
+            "max": 9,
+            "unit": "m",
+            "describe": "Width of the crown at its widest. The column form is about half of it."
+          }
+        ],
+        "colours": [
+          {
+            "name": "leaf",
+            "default": "#cf8a2a",
+            "describe": "Colour of most of the crown."
+          },
+          {
+            "name": "leafAccent",
+            "default": "#e0a63c",
+            "describe": "Second leaf colour, on the upper and outer sprays. Keep it in the family of the first: green with green, or gold, orange and red together."
+          },
+          {
+            "name": "bark",
+            "default": "#6a5644",
+            "describe": "Colour of the trunk and limbs."
+          }
+        ],
+        "variants": []
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/seed-town/st1/tree.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A country tree as a broad crown, a narrow column, an open crown on a pale stem, a conifer in tiers or a low shrub, with a settable height and spread and settable leaf, turning-leaf and bark colours.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/tree-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/tree-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/tree-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/tree-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/tree-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/tree-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/tree-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/tree-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/tree-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/tree-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/tree.png",
+        "sourceRevisionId": "r_1b200dcb65334845bf9fef7a7a4c0ce1",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      }
+    }
+  ],
+  "license": {
+    "spdx": "CC0-1.0",
+    "url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "scope": "Authored model and editable source content of the listed revisions, to the extent of the owner's rights. Third-party resources keep their own terms."
+  }
+}

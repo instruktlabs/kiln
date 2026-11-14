@@ -14,6 +14,8 @@ test('the portable gate selects script contracts without selecting historical au
     expect(command).toContain('./packages/scene-kit/tests/ui/browser-launch.test.ts');
     expect(command).toContain('./packages/cathedral-square/tests/interior-ao.test.ts');
     expect(command).toContain('./packages/cathedral-square/tests/candles.test.ts');
+    expect(command).toContain('./packages/seed-town/tests/kit-spec.test.ts');
+    expect(command).toContain('./packages/seed-town/tests/plan.test.ts');
     expect(command).not.toContain('./packages/foundry-floor/tests/unit/ff3-pack.test.ts');
     expect(command).not.toContain('./packages/farm/tests/unit/hand-clearance.test.ts');
     expect(command).not.toContain('./packages/foundry-floor/tests/unit/glb-world.test.ts');

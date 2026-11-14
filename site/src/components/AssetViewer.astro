@@ -4,11 +4,12 @@ import type { SavedView } from "./viewer-framing";
 interface Props {
   name: string;
   modelUrl: string;
-  poster: string;
+  /** Omitted until the asset's poster is rendered: the frame then invites opening the 3D view. */
+  poster?: string;
   posterAlt?: string;
   /** The poster file's own pixel size, as the build recorded it: there is no default. */
-  posterWidth: number;
-  posterHeight: number;
+  posterWidth?: number;
+  posterHeight?: number;
   srcsetWebp?: string;
   srcsetAvif?: string;
   /** The frame behind the poster: the site backdrop, or a poster's own baked background colour (archive renders). */
@@ -46,6 +47,7 @@ const sizes = srcsetWebp || srcsetAvif ? "(max-width: 768px) 100vw, 70vw" : unde
   class:list={["block border border-rule", frameClass]}
 >
   <div data-poster>
+    {poster ? (
     <picture>
       {srcsetAvif && (
         <source
@@ -65,6 +67,11 @@ const sizes = srcsetWebp || srcsetAvif ? "(max-width: 768px) 100vw, 70vw" : unde
         fetchpriority="high"
       />
     </picture>
+    ) : (
+      <p class="flex aspect-video max-h-viewer w-full items-center justify-center p-6 text-center text-dim">
+        Open the 3D view to inspect {name}.
+      </p>
+    )}
   </div>
   <div class="flex flex-wrap items-center gap-4 border-t border-rule bg-sheet p-4">
     <button type="button" data-open hidden class="btn">

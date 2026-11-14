@@ -1,0 +1,41 @@
+{
+  "description": "Public name and one-sentence description of each Seed Town kit, keyed by the kit id in scenes/packages/seed-town/ASSET-MANIFEST.json.",
+  "kits": {
+    "facade-bay": {
+      "name": "Facade bay",
+      "description": "One upper-storey bay of a town house front with a choice of wall finish, window and window head, an optional cornice, shutters, balcony and lit window, a settable bay width and storey height, and settable wall, trim and joinery colours."
+    },
+    "ground-bay": {
+      "name": "Ground-floor bay",
+      "description": "One ground-floor bay of a street front as a shop window, shop door, passage, house door or house window, with an optional awning and lit interior, a settable bay width, storey height and awning depth, and settable wall, trim, joinery and accent colours."
+    },
+    "roof": {
+      "name": "Town roof",
+      "description": "The roof of one building as a side gable, front gable, stepped gable or mansard in stucco or brick, with none, one or two dormers, an optional chimney and lit windows, a settable width, rise and side and back wall heights, and settable roof, wall, trim and joinery colours."
+    },
+    "paving": {
+      "name": "Paving and kerb",
+      "description": "One bay of street paving as pavement with kerb, gutter and half a carriageway, as pavement alone or as setts for a square, with an optional drain, cellar grate or manhole cover, a settable bay width, pavement width, road width and kerb height, settable flag, kerb, sett and iron colours and a sandstone colour variant."
+    },
+    "junction": {
+      "name": "Lane junction",
+      "description": "The mouth of a side lane on one side of a street, with two corner pavements and kerbs and the lane carriageway falling to the street gutter, settable pavement, road, lane pavement and lane road widths and kerb height, settable flag, kerb and sett colours and a sandstone colour variant."
+    },
+    "street-lamp": {
+      "name": "Street lamp",
+      "description": "A cast iron street lamp with one lantern on the post or twin lanterns on a cross arm, lit or unlit panes, a settable height and a settable iron colour."
+    },
+    "signage": {
+      "name": "Hanging sign",
+      "description": "A hanging trade sign on an iron bracket with an oval, rectangular or shield board and a key, boot, cup, book, shears or pretzel emblem, a settable bracket reach and settable accent, gilt and iron colours."
+    },
+    "street-furniture": {
+      "name": "Street furniture",
+      "description": "One piece of street furniture chosen from a bench, planter, bollard, café table, barrel, fountain and market stall, with a settable bench length and settable timber, iron and accent colours."
+    },
+    "tree": {
+      "name": "Autumn tree",
+      "description": "A country tree as a broad crown, a narrow column, an open crown on a pale stem, a conifer in tiers or a low shrub, with a settable height and spread and settable leaf, turning-leaf and bark colours."
+    }
+  }
+}

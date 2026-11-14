@@ -28,12 +28,15 @@ export const CEILINGS = {
   'foundry-floor': { bytes: 1_750_625, gzipBytes: 490_730 },
   // First passing site module build, 2026-11-09: 1,470,199 B / 427,745 B Bun gzip, plus 10 percent (D-15).
   'cathedral-square': { bytes: 1_617_219, gzipBytes: 470_520 },
+  // First passing site module build, 2026-11-13: 1,468,997 B / 427,815 B Bun gzip, plus 10 percent (D-15).
+  'seed-town': { bytes: 1_615_897, gzipBytes: 470_597 },
 };
 
 /** Scene runtimes the site builds itself from scene source. Others are staged from a standalone build. */
 export const BUILT_RUNTIMES = {
   farm: { entry: 'src/scenes/runtime/farm.ts', packages: SCENE_PACKAGES },
   'cathedral-square': { entry: 'src/scenes/runtime/cathedral-square.ts', packages: ['cathedral-square', 'scene-kit'] },
+  'seed-town': { entry: 'src/scenes/runtime/seed-town.ts', packages: ['seed-town', 'scene-kit'] },
 };
 
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');

@@ -1,0 +1,11 @@
+Seed Town software and asset notices
+
+The Seed Town scene code is MIT, the same licence as the Kiln scene package that hosts it.
+
+The town kit models and their editable sources are released under CC0 1.0 Universal.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The saved asset and revision IDs are in ASSET-MANIFEST.json. The kits' surface textures are drawn by the kits' own source programs; the pack contains no third-party images.
+
+three 0.187.0 and three-mesh-bvh 0.9.18 are MIT.
+React and React Three Fiber follow their own MIT licences.

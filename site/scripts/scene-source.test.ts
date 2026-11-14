@@ -128,7 +128,7 @@ describe('staged scenes', () => {
     expect(both['golden-gate']).toBeNull();
     expect(stagedScenes(await site(join(root, 'runtime-only'), { farmRuntime: true, farmPack: false })).farm).toBeNull();
     expect(stagedScenes(await site(join(root, 'pack-only'), { farmRuntime: false, farmPack: true })).farm).toBeNull();
-    expect(stagedScenes(join(root, 'empty'))).toEqual({ farm: null, 'golden-gate': null, 'foundry-floor': null, 'cathedral-square': null });
+    expect(stagedScenes(join(root, 'empty'))).toEqual({ farm: null, 'golden-gate': null, 'foundry-floor': null, 'cathedral-square': null, 'seed-town': null });
   });
 
   test('a frame-kind scene is served through its frame page', async () => {
@@ -161,7 +161,7 @@ describe('staged scenes', () => {
     expect(id).toBe(`\0${SCENE_FLAG_MODULE}`);
     expect(flag.resolveId('other')).toBeUndefined();
     const source = flag.load(id) as string;
-    expect(JSON.parse(source.replace('export const sceneRuntimes = ', '').replace(/;$/, ''))).toEqual({ farm: config.scenes.farm, 'golden-gate': null, 'foundry-floor': null, 'cathedral-square': null });
+    expect(JSON.parse(source.replace('export const sceneRuntimes = ', '').replace(/;$/, ''))).toEqual({ farm: config.scenes.farm, 'golden-gate': null, 'foundry-floor': null, 'cathedral-square': null, 'seed-town': null });
     expect(flag.load('other')).toBeUndefined();
   });
 

@@ -1,0 +1,23 @@
+{
+  "schema": "kiln.seed-town-site-build/1",
+  "scene": "seed-town",
+  "release": "st1",
+  "packJsonSha256": "980195cb7cdbbdc36cd94943bc7d72f6d7e2e3dbcf71bdfd1a5fa3bdbaed4f59",
+  "firstPassingBuild": {
+    "file": "seed-town-CWseRIUV.js",
+    "bytes": 1468997,
+    "gzipBytes": 427815,
+    "gzipMethod": "bun-zlib",
+    "sha256": "bdf433cc83f447aca635415f18e0d954325870c05d839fb93ed74e0dc638a881"
+  },
+  "ceiling": {
+    "decision": "D-15",
+    "basis": "First passing site module build plus 10 percent, rounded up",
+    "bytes": 1615897,
+    "gzipBytes": 470597
+  },
+  "dependencies": { "three": "0.187.0", "react": "19.3.1", "react-dom": "19.3.1", "@react-three/fiber": "9.8.2" },
+  "singleCopyGuard": true,
+  "threeFacade": true,
+  "qualification": "Build and typecheck evidence only. Browser and device qualification are separate."
+}

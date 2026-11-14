@@ -1,12 +1,9 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
-import { isAbsolute, join, relative, resolve } from 'node:path';
+import { readFile } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { buildDeliveryArchive, revisionBundle } from './asset-delivery.mjs';
 import { discoverRecords, readSavedRevision } from './stage-asset-delivery.mjs';
-import { ASSET_BASE, assetPath, hashBytes, verifyBytes } from './mirror-core.mjs';
-import { syncGroup, writeJson, writeMirrorFile } from './media-pins.mjs';
 import { verifyPack } from './scene-pack.mjs';
-import { describeFinding, scanFiles } from './private-data.mjs';
+import { reviewDirectory, stagePackGallery } from './stage-pack-gallery.mjs';
 
 const SITE = fileURLToPath(new URL('../', import.meta.url));
 const PKG = resolve(SITE, '../scenes/packages/cathedral-square');
@@ -89,11 +86,7 @@ export async function stageCathedralGallery({
   reviewOut = join(SITE, '.cache/cathedral-square-delivery'),
   catalogOut = join(SITE, 'src/data/packs/cathedral-square.json'),
 } = {}) {
-  const reviewPath = resolve(reviewOut);
-  const rel = relative(join(SITE, '.cache'), reviewPath);
-  if (!rel || isAbsolute(rel) || rel === '..' || rel.startsWith('../') || rel.startsWith('..\\')) {
-    throw new Error('The delivery review directory must be inside site/.cache');
-  }
+  const reviewPath = reviewDirectory(SITE, reviewOut);
   if (!workspaceRoot) throw new Error('Specify the directory containing the three cathedral authoring workspaces');
   const manifest = await json(join(PKG, 'ASSET-MANIFEST.json'));
   const assetsDir = join(source, 'assets');
@@ -133,94 +126,8 @@ export async function stageCathedralGallery({
   });
   catalog.license = { spdx: license.spdx, url: license.url, scope: license.scope };
 
-  const deliveryFile = join(SITE, 'src/data/asset-delivery.json');
-  const delivery = await json(deliveryFile);
-  const previousDownloads = new Map((delivery.groups[ID]?.assets ?? []).map((asset) => [asset.slug, asset]));
-  const releaseDir = join(reviewPath, catalog.release);
-  const mirrorPrefix = `packs/${ID}/${catalog.release}`;
-  const runtime = {}, editable = {};
-  const receipt = { release: catalog.release, scope: 'local-release-candidate', license: catalog.license, assets: [], packs: [] };
-  const modelLicense = Buffer.from(`SPDX-License-Identifier: ${license.spdx}\n${license.scope}\n${license.url}\n`);
-  const archiveNotices = { 'LICENSE.txt': modelLicense, 'THIRD-PARTY-NOTICES.txt': notices };
-  const uploadPins = [];
-  const write = async (path, bytes) => {
-    const file = join(releaseDir, path);
-    await mkdir(resolve(file, '..'), { recursive: true });
-    await writeFile(file, bytes);
-    return { path, bytes: bytes.length, sha256: hashBytes(bytes) };
-  };
-  const writeDownload = async (path, bytes, previous) => {
-    const sha256 = hashBytes(bytes);
-    const reused = previous?.sha256 === sha256 && previous.bytes === bytes.length &&
-      previous.path.startsWith(`packs/${ID}/`) && previous.path.endsWith(`/${path}`);
-    const key = reused ? assetPath(previous.path) : `${mirrorPrefix}/${path}`;
-    const pin = { path: key, bytes: bytes.length, sha256 };
-    try {
-      verifyBytes(await readFile(join(mirror, key)), pin);
-    } catch (error) {
-      if (error.code !== 'ENOENT') throw error;
-      await writeMirrorFile(mirror, key, bytes);
-    }
-    uploadPins.push(pin);
-    return { ...pin, url: new URL(pin.path, ASSET_BASE).href };
-  };
-  for (const asset of catalog.assets) {
-    const model = asset.runtimeModelDownload;
-    const glb = verifyBytes(await readFile(join(assetsDir, model.member)), model, asset.slug);
-    const record = records.get(asset.slug);
-    const bundle = revisionBundle(record);
-    const sourceEntry = `revisions/${asset.collection}/${asset.assetId}/${asset.revisionId}.zip`;
-    runtime[model.member] = glb;
-    editable[sourceEntry] = bundle;
-    await write(sourceEntry, bundle);
-    const scan = await scanFiles(releaseDir, { files: [sourceEntry] });
-    if (scan.findings.length) throw new Error(scan.findings.slice(0, 5).map(describeFinding).join('\n'));
-    const { slug, collection, assetId, revisionId, parentRevision } = asset;
-    const pin = { slug, collection, assetId, revisionId, includedRevisions: [revisionId], missingParents: [], omittedParents: parentRevision ? [parentRevision] : [] };
-    const readme = Buffer.from(`Selected revision: ${collection}/${assetId}/${revisionId}\nImport the nested revision ZIP into Kiln Library.\n`);
-    const archive = buildDeliveryArchive({
-      profile: 'editable', group: ID, assets: [pin],
-      files: { ...archiveNotices, 'README.txt': readme, [sourceEntry]: bundle },
-    });
-    receipt.assets.push({
-      ...pin, runtimeDownload: await writeDownload(model.member, glb, previousDownloads.get(slug)?.runtimeDownload),
-      editableDownload: await writeDownload(`editable/${slug}.zip`, archive, previousDownloads.get(slug)?.editableDownload),
-      dependencies: record.manifest.build?.dependencies ?? [],
-    });
-  }
-  const inventory = receipt.assets.map(({ runtimeDownload, editableDownload, dependencies, ...pin }) => pin);
-  for (const [profile, files] of [['runtime', runtime], ['editable', editable]]) {
-    const archive = buildDeliveryArchive({ profile, group: ID, files: { ...files, ...archiveNotices }, assets: inventory });
-    receipt.packs.push({ profile, ...await writeDownload(`${ID}-${profile}.zip`, archive) });
-  }
-  await write('review-delivery.json', Buffer.from(JSON.stringify(receipt, null, 2) + '\n'));
-  await write('upload-pins.json', Buffer.from(JSON.stringify(uploadPins, null, 2) + '\n'));
-
-  // Poster metadata belongs to the rig pipeline. A rerun keeps only exact matching pins.
-  const previous = await json(catalogOut).catch((error) => {
-    if (error.code !== 'ENOENT') throw error;
-    return { assets: [] };
-  });
-  const priorAssets = new Map(previous.assets.map((asset) => [asset.slug, asset]));
-  for (const asset of catalog.assets) {
-    const prior = priorAssets.get(asset.slug);
-    if (prior?.revisionId === asset.revisionId && prior.runtimeModelDownload?.sha256 === asset.runtimeModelDownload.sha256 && prior.poster) {
-      asset.poster = prior.poster;
-    }
-  }
-  await writeJson(catalogOut, catalog);
-
-  delivery.groups[ID] = { standalone: false, downloads: receipt.packs, assets: receipt.assets.map(({ dependencies, ...asset }) => asset) };
-  await writeJson(deliveryFile, delivery);
-  const mirrorFile = join(SITE, 'src/data/mirror-manifest.json');
-  const mirrorData = await json(mirrorFile);
-  await writeJson(mirrorFile, {
-    ...mirrorData, files: syncGroup(mirrorData.files, 'path', `${mirrorPrefix}/`, uploadPins),
-  });
-  console.log(`Staged ${catalog.assets.length} Cathedral Square revision pairs in ${mirror}`);
-  return { catalog, receipt };
+  return stagePackGallery({ site: SITE, id: ID, catalog, records, license, notices, assetsDir, mirror, reviewPath, catalogOut });
 }
-
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const argv = process.argv.slice(2);

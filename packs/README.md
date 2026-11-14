@@ -1,6 +1,6 @@
 # Asset sources and downloads
 
-Farm, Vehicles, Golden Gate Bridge, Foundry Floor, Troy and Cathedral Square use two download choices.
+Farm, Vehicles, Golden Gate Bridge, Foundry Floor, Troy, Cathedral Square and Seed Town use two download choices.
 
 - **Runtime assets:** models ready for scenes and applications, with embedded resources
   and the existing animation, part-name and detail-tier contracts.

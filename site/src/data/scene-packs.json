@@ -127,5 +127,20 @@
     "packJsonSha256": "7f32c63073d6c059258647c1db59d89081107b7c6678b71f35678c6057126ec5",
     "sha256sumsSha256": "d85d5346d05aaa6eee383a1a00db3acda02dd8b7702258a241d4e91a5df12137",
     "noticesSha256": "b46e4de452a81a32a667d959729686249941c7fc7a2a806bf0e257c5b00bcdec"
+  },
+  "seed-town": {
+    "source": ".cache/site-inputs/seed-town/standalone",
+    "schema": "kiln.scene-pack/1",
+    "id": "seed-town",
+    "release": "st1",
+    "three": "0.187.0",
+    "base": "/scene-packs/seed-town/st1/",
+    "sealedFiles": 10,
+    "sealedBytes": 2027438,
+    "totalFiles": 13,
+    "totalBytes": 2031247,
+    "packJsonSha256": "980195cb7cdbbdc36cd94943bc7d72f6d7e2e3dbcf71bdfd1a5fa3bdbaed4f59",
+    "sha256sumsSha256": "9f4fa57698ccbe26cf2eb3eda2741a5844a1be5a1b88eeb3a1ff269f693e1fb5",
+    "noticesSha256": "ae79478c783bd08c2028f27ef1cac0b0104e1f29b04feb528b9f58369164cb4b"
   }
 }

@@ -40,6 +40,20 @@ declare module '@kiln-scenes/cathedral-square' {
   export function mountCathedralSquare(element: HTMLElement, props: FarmSceneProps): SceneHandle;
 }
 
+declare module '@kiln-scenes/seed-town' {
+  import type { FarmSceneProps, SceneHandle } from '@kiln-scenes/farm';
+  export interface TownState {
+    seed: string;
+    dusk: boolean;
+  }
+  export interface SeedTownSceneProps extends FarmSceneProps {
+    seed?: string;
+    dusk?: boolean;
+    onTown?: (state: TownState) => void;
+  }
+  export function mountSeedTown(element: HTMLElement, props: SeedTownSceneProps): SceneHandle;
+}
+
 /** Build-time module: which scene runtimes are staged (scripts/scene-source.mjs). */
 declare module 'virtual:kiln-scenes' {
   export const sceneRuntimes: Record<

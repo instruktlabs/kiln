@@ -454,5 +454,31 @@
         }
       }
     }
+  },
+  "seed-town": {
+    "poster": {
+      "src": "/media/scenes/seed-town/st1/seed-town-scene-town.webp",
+      "width": 2560,
+      "height": 1440,
+      "alt": "A small old town of brick and plaster houses round a market square, seen from above, with autumn trees and paved roads leading out across open country.",
+      "srcsetWebp": "/media/scenes/seed-town/st1/seed-town-scene-town-320.webp 320w, /media/scenes/seed-town/st1/seed-town-scene-town-480.webp 480w, /media/scenes/seed-town/st1/seed-town-scene-town-672.webp 672w, /media/scenes/seed-town/st1/seed-town-scene-town-768.webp 768w, /media/scenes/seed-town/st1/seed-town-scene-town-1024.webp 1024w, /media/scenes/seed-town/st1/seed-town-scene-town-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/seed-town/st1/seed-town-scene-town-320.avif 320w, /media/scenes/seed-town/st1/seed-town-scene-town-480.avif 480w, /media/scenes/seed-town/st1/seed-town-scene-town-672.avif 672w, /media/scenes/seed-town/st1/seed-town-scene-town-768.avif 768w, /media/scenes/seed-town/st1/seed-town-scene-town-1024.avif 1024w, /media/scenes/seed-town/st1/seed-town-scene-town-1440.avif 1440w",
+      "inputPath": "media/scenes/seed-town/st1/seed-town-scene-town.png"
+    },
+    "capture": {
+      "tool": "scenes/packages/seed-town/scripts/capture.mjs",
+      "view": "town",
+      "seed": "2026",
+      "hour": "day",
+      "release": "st1",
+      "size": [
+        2560,
+        1440
+      ],
+      "source": "The scene's canvas read back at 3840 by 2160 pixels and scaled down; nothing composited or retouched.",
+      "packJsonSha256": "980195cb7cdbbdc36cd94943bc7d72f6d7e2e3dbcf71bdfd1a5fa3bdbaed4f59",
+      "pngBytes": 6852313,
+      "pngSha256": "618109e1add38433a63161f6675658ee8d4a7387d984678b0f589aa90bf057a5"
+    }
   }
 }

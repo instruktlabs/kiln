@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SceneShell from '../../components/SceneShell.astro';
+import { seedTownScene } from '../../data/scenes';
+import { PACKS_ENABLED } from '../../lib/config';
+---
+<BaseLayout title="Seed Town scene · Kiln" description={seedTownScene.description} breadcrumbs={[{ label: 'Scenes', href: '/scenes/' }, { label: 'Seed Town scene', href: seedTownScene.href }]} card="scenes">
+  <div class="container pb-12 pt-8">
+    <SceneShell scene="seed-town">
+      <div class="grid gap-8 md:grid-cols-2">
+        <div>
+          <h2 class="text-subheading">Every seed is a different town.</h2>
+          <p class="mt-3">Nine kit models carry their own sizes, options and colours. The page lays out streets, lanes and a market square from the seed, with the roads and autumn trees outside, and dresses every building and tree from those kits, so a new town needs no download.</p>
+          {PACKS_ENABLED && <a class="text-link mt-4" href="/packs/seed-town/">View the Seed Town assets</a>}
+        </div>
+        <div>
+          <h2 class="text-subheading">Scene preview.</h2>
+          <p class="mt-3">Type a seed and choose Build, or choose New town. Walk the town starts on the road south of the town, and Day and Dusk change the light. Follow the controls in the scene. Exit scene returns here and releases the scene.</p>
+        </div>
+      </div>
+    </SceneShell>
+  </div>
+</BaseLayout>

@@ -15,11 +15,11 @@ const requireEqual = (actual, expected, message) => { if (actual !== expected) t
  * Payload hashes, producer evidence and budgets remain separate verification steps.
  */
 export function verifySceneDeliveryBinding({ id, record, runtime, shellHtml, frameHtml }) {
-  if (!['farm', 'golden-gate', 'foundry-floor', 'cathedral-square'].includes(id)) throw new Error(`Unknown scene binding: ${id}`);
+  if (!['farm', 'golden-gate', 'foundry-floor', 'cathedral-square', 'seed-town'].includes(id)) throw new Error(`Unknown scene binding: ${id}`);
   requireEqual(record?.id, id, 'Catalog scene id');
   requireEqual(runtime?.schema, 'kiln.scene-runtime/1', 'Runtime schema');
   requireEqual(runtime?.id, id, 'Runtime scene id');
-  const kind = ['farm', 'cathedral-square'].includes(id) ? 'module' : 'frame';
+  const kind = ['farm', 'cathedral-square', 'seed-town'].includes(id) ? 'module' : 'frame';
   requireEqual(runtime.kind, kind, 'Runtime kind');
   if (!/^[A-Za-z0-9_-]+\.js$/.test(runtime.file)) throw new Error('Invalid runtime entry file');
   if (kind === 'frame') {

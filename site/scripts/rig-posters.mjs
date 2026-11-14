@@ -20,6 +20,7 @@ import { FOUNDRY_FLOOR_ID, FOUNDRY_FLOOR_POSTER, FOUNDRY_FLOOR_SCENE_POSTER } fr
  *   bun scripts/rig-posters.mjs hero --service ... --mirror ... --outputs DIR [--out DIR]
  *   bun scripts/rig-posters.mjs cabin-woods-psx-horror --service ... --mirror ... [--out DIR]
  *   bun scripts/rig-posters.mjs holodeck --service ... --mirror .localdata/holodeck-delivery [--only a,b] [--out DIR]
+ *   bun scripts/rig-posters.mjs seed-town --service ... --mirror .localdata/seed-town-release [--out DIR]
  *
  * Each GLB is read from its sealed source (a delivery archive in the mirror, or the bridge author's export) and
  * verified against the catalog's SHA-256 before it is sent to the renderer. An image is the engine's own view of
@@ -52,6 +53,24 @@ export async function cathedralSquareTargets({ assetsDir = resolve(SITE, '../sce
       ground: [0.75, 1.25, 0.7],
     }[asset.slug] ?? FARM_POSTER.direction;
     return { pack: CATHEDRAL_SQUARE_ID, release: catalog.release, slug: asset.slug, name: asset.name, revisionId: asset.revisionId, assetId: asset.assetId, alt: asset.description, glb, glbPath: member, view: { ...FARM_POSTER, direction } };
+  }));
+}
+
+export const SEED_TOWN_ID = 'seed-town';
+
+/**
+ * The carried runtime GLBs from the verified Seed Town scene pack, each checked against the catalog. A carried GLB opens
+ * at its saved defaults, so the poster shows the kit as the saved revision builds it; the camera is fitted to that
+ * default, not to the options the file keeps hidden.
+ */
+export async function seedTownTargets({ assetsDir = resolve(SITE, '../scenes/packages/seed-town/standalone/public/assets'), data = DATA } = {}) {
+  const catalog = await readJson(join(data, `packs/${SEED_TOWN_ID}.json`));
+  return Promise.all(catalog.assets.map(async (asset) => {
+    const model = asset.runtimeModelDownload;
+    const member = assetPath(model.member);
+    if (member !== `models/${asset.slug}.glb`) throw new Error(`Unexpected Seed Town model path: ${member}`);
+    const glb = verifyBytes(await readFile(join(assetsDir, member)), model, asset.slug);
+    return { pack: SEED_TOWN_ID, release: catalog.release, slug: asset.slug, name: asset.name, revisionId: asset.revisionId, assetId: asset.assetId, alt: asset.description, glb, glbPath: member, view: FARM_POSTER, visibleOnly: true };
   }));
 }
 
@@ -248,10 +267,11 @@ export async function heroTargets({ outputs, tiers, recorded }) {
 /** Render one target under the rig; the receipt names everything the image depends on. */
 export async function renderTarget(rig, target) {
   const bounds = inspectGlb(target.glb);
+  const shown = target.visibleOnly ? inspectGlb(target.glb, { visibleOnly: true }) : bounds;
   const { width, height } = target.view;
   const camera = target.camera
     ? rig.engine.camera.validateResolvedAssetCamera(target.camera)
-    : fitCamera(rig.engine, { min: bounds.boundsMin, max: bounds.boundsMax }, target.view.direction, { aspect: width / height, padding: target.view.padding });
+    : fitCamera(rig.engine, { min: shown.boundsMin, max: shown.boundsMax }, target.view.direction, { aspect: width / height, padding: target.view.padding });
   const { pngs, receipt } = await rig.capture({ glb: target.glb, cameras: [camera], width, height });
   const png = pngs[0];
   const meta = await sharp(png).metadata();
@@ -359,7 +379,7 @@ export async function refreshCatalog({ file, pack, data = DATA }) {
   const recorded = await readJson(join(data, 'rig-posters.json'));
   const catalog = await readJson(file);
   if (Array.isArray(catalog.assets)) {
-    const required = [CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID].includes(pack);
+    const required = [CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID, SEED_TOWN_ID].includes(pack);
     if (required) catalog.assets = catalog.assets.map((asset) => ({ ...asset, poster: null }));
     catalog.assets = applyRigPosters(catalog.assets, pack, recorded, { required });
   }
@@ -371,7 +391,7 @@ async function main(argv = process.argv.slice(2), env = process.env) {
   const option = (flag, fallback) => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : fallback);
   const pack = argv[0];
   const mirror = option('--mirror', env.KILN_ASSET_MIRROR);
-  if (!['farm', 'bridge', 'vehicles', FOUNDRY_FLOOR_ID, HERO_PACK, CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID].includes(pack) || !mirror) throw new Error('Usage: bun scripts/rig-posters.mjs farm|bridge|vehicles|foundry-floor|hero|cabin-woods-psx-horror|holodeck|cathedral-square --mirror DIR [--service URL] [--engine DIR] [--only a,b] [--out DIR] [--dry]  (bridge also needs --outputs DIR --cameras DIR; hero needs --outputs DIR)');
+  if (!['farm', 'bridge', 'vehicles', FOUNDRY_FLOOR_ID, HERO_PACK, CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID, SEED_TOWN_ID].includes(pack) || !mirror) throw new Error('Usage: bun scripts/rig-posters.mjs farm|bridge|vehicles|foundry-floor|hero|cabin-woods-psx-horror|holodeck|cathedral-square|seed-town --mirror DIR [--service URL] [--engine DIR] [--only a,b] [--out DIR] [--dry]  (bridge also needs --outputs DIR --cameras DIR; hero needs --outputs DIR)');
   const only = option('--only')?.split(',');
   const rig = await connectRig({ url: option('--service', env.KILN_RENDER_SERVICE_URL), engineDir: option('--engine') });
   const provenance = rig.engine.provenance;
@@ -396,6 +416,8 @@ async function main(argv = process.argv.slice(2), env = process.env) {
     targets = (await holodeckTargets({ mirror })).filter((target) => !only || only.includes(target.slug));
   } else if (pack === CATHEDRAL_SQUARE_ID) {
     targets = (await cathedralSquareTargets({ assetsDir: option('--assets') })).filter((target) => !only || only.includes(target.slug));
+  } else if (pack === SEED_TOWN_ID) {
+    targets = (await seedTownTargets({ assetsDir: option('--assets') })).filter((target) => !only || only.includes(target.slug));
   } else if (pack === 'vehicles') {
     targets = (await vehicleTargets({ mirror })).filter((target) => !only || only.includes(target.slug));
   } else if (pack === FOUNDRY_FLOOR_ID) {
@@ -423,7 +445,7 @@ async function main(argv = process.argv.slice(2), env = process.env) {
     await refreshCatalog({ file: join(DATA, [CABIN_WOODS_ID, HOLODECK_POSTER_PACK].includes(pack) ? `${pack}.json` : `packs/${pack}.json`), pack });
     if (pack === FOUNDRY_FLOOR_ID && (await recordFoundryFloorScenePoster({ posters }))) console.log('Recorded the scene page poster in scene-media.json.');
     // Cabin's saved sheets were direct delivery URLs and Holodeck had no earlier posters, so nothing needs pruning.
-    if (![CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID].includes(pack)) {
+    if (![CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID, SEED_TOWN_ID].includes(pack)) {
       const dropped = await pruneImagePlan();
       if (dropped.length) console.log(`Dropped ${dropped.length} replaced images from the build plan (their mirror pins stay).`);
     }
