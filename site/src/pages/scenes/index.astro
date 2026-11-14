@@ -3,7 +3,7 @@ import HolodeckShowcase from "../../components/HolodeckShowcase.astro";
 import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { sceneRuntimes } from "virtual:kiln-scenes";
-import { cabinWoodsScene, cathedralSquareScene, farmScene, foundryFloorScene, goldenGateScene, sceneBrowseGroups } from "../../data/scenes";
+import { cabinWoodsScene, cathedralSquareScene, farmScene, foundryFloorScene, goldenGateScene, sceneBrowseGroups, seedTownScene } from "../../data/scenes";
 import SceneSelector from '../../components/SceneSelector.astro';
 import { PACKS_ENABLED } from "../../lib/config";
 import troy from "../../data/troy.json";
@@ -11,6 +11,12 @@ import ScenePoster from "../../components/ScenePoster.astro";
 
 // Runtime availability controls each card's action; browsing groups describe when the scenes were made.
 const cards = [
+  {
+    scene: seedTownScene,
+    alt: seedTownScene.posterAlt,
+    staged: 'Type a seed for a different town, then walk it by day or at dusk. The scene loads only when you choose Explore.',
+    unstaged: 'The browser scene is not included in this build.',
+  },
   {
     scene: cathedralSquareScene,
     alt: cathedralSquareScene.posterAlt,
@@ -52,7 +58,7 @@ const cards = [
 
 <BaseLayout
   title="Scenes · Kiln"
-  description="Explore Cathedral Square, worlds on Holodeck, and earlier Kiln scenes including Troy, Farm and Golden Gate."
+  description="Walk Cathedral Square and Seed Town in your browser, visit worlds on Holodeck, and explore earlier Kiln scenes including Troy, Farm and Golden Gate."
   breadcrumbs={[{ label: "Scenes", href: "/scenes/" }]}
   card="scenes"
 >

@@ -7,7 +7,7 @@ import { SCENE_DEDUPE, SCENE_PACKAGES, posix, resolveScenesDir } from './scene-s
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 /** The runtime entries the site builds from scene source; each is type-checked with the scene it imports. */
-export const RUNTIME_ENTRIES = ['src/scenes/runtime/farm.ts', 'src/scenes/runtime/cathedral-square.ts'];
+export const RUNTIME_ENTRIES = ['src/scenes/runtime/farm.ts', 'src/scenes/runtime/cathedral-square.ts', 'src/scenes/runtime/seed-town.ts'];
 
 /**
  * One path mapping per `exports` entry of a workspace package, the same entries the runtime build
@@ -15,7 +15,7 @@ export const RUNTIME_ENTRIES = ['src/scenes/runtime/farm.ts', 'src/scenes/runtim
  */
 export function packagePaths(scenesDir) {
   const paths = {};
-  for (const name of [...SCENE_PACKAGES, 'cathedral-square']) {
+  for (const name of [...SCENE_PACKAGES, 'cathedral-square', 'seed-town']) {
     const directory = resolve(scenesDir, 'packages', name);
     const manifest = JSON.parse(readFileSync(resolve(directory, 'package.json'), 'utf8'));
     for (const [key, value] of Object.entries(manifest.exports ?? {})) {

@@ -5,10 +5,11 @@ import PageHeader from "../../components/PageHeader.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ResponsiveImage from "../../components/ResponsiveImage.astro";
 import ScenePoster from "../../components/ScenePoster.astro";
-import { cabinWoodsScene } from "../../data/scenes";
+import { cabinWoodsScene, seedTownScene } from "../../data/scenes";
 import { farm, vehicles } from "../../lib/catalog";
 import { PACKS_ENABLED } from "../../lib/config";
 import { cathedralPack, cathedralPackHref } from "../../lib/cathedral-gallery";
+import { seedTownPack, seedTownPackHref } from "../../lib/seed-town-gallery";
 const cathedralPoster = cathedralPack.assets.find((asset) => asset.slug === "cathedral")!.poster;
 import foundryFloor from "../../data/foundry-floor.json";
 import foundryFloorPack from "../../data/packs/foundry-floor.json";
@@ -157,6 +158,20 @@ const featured = ["s1-head-w", "s2-hall-w", "euv-scanner", "etch-cluster-tool", 
         <div>
           <h2 class="text-subheading">{cathedralPack.name}</h2>
           <p class="mt-4">{cathedralPack.assets.length} models, including the Gothic cathedral, townhouse kit, trees and furnishings.</p>
+          <span class="text-link mt-4">Browse the pack</span>
+        </div>
+      </a>
+    )}
+    {PACKS_ENABLED && (
+      <a href={seedTownPackHref} aria-label={seedTownPack.name} class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
+        {seedTownScene.posterImage && (
+          <div class="lg:col-span-2">
+            <ResponsiveImage image={{ ...seedTownScene.posterImage, alt: "" }} sizes="(max-width: 1024px) 100vw, 65vw" />
+          </div>
+        )}
+        <div>
+          <h2 class="text-subheading">{seedTownPack.name}</h2>
+          <p class="mt-4">{seedTownPack.assets.length} kit models with their own options, sizes and colours: house fronts, roofs, paving, lamps, signs, street furniture and autumn trees.</p>
           <span class="text-link mt-4">Browse the pack</span>
         </div>
       </a>

@@ -615,6 +615,78 @@
             "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
           ]
         }
+      },
+      {
+        "id": "seed-town-2026-11-14-9de15238",
+        "pack": "seed-town",
+        "renderedOn": "2026-11-14",
+        "engine": {
+          "commit": "0167db7e9baa0d057740660709a4cf32dd2a163a",
+          "subject": "Move the Cabin catalog and scene to the flush-face fix revisions (#396)",
+          "dirty": true
+        },
+        "service": {
+          "url": "http://127.0.0.1:8031",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:a8592bba54f59fe62af19701a8769a90aba42605d15f22491d957cd11d8e4f98",
+          "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+          "dependencies": {
+            "three": "0.187.0",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:173155fc4d02e984f6951805eba7f333693aaf111fb5399fea4da4c58ce86a8c",
+            "b5d72fcd-38a7-4dfc-b287-28f2936f536c",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
+          ]
+        }
+      },
+      {
+        "id": "seed-town-2026-11-14-894875cf",
+        "pack": "seed-town",
+        "renderedOn": "2026-11-14",
+        "engine": {
+          "commit": "0167db7e9baa0d057740660709a4cf32dd2a163a",
+          "subject": "Move the Cabin catalog and scene to the flush-face fix revisions (#396)",
+          "dirty": true
+        },
+        "service": {
+          "url": "http://127.0.0.1:8031",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:a8592bba54f59fe62af19701a8769a90aba42605d15f22491d957cd11d8e4f98",
+          "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+          "dependencies": {
+            "three": "0.187.0",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:173155fc4d02e984f6951805eba7f333693aaf111fb5399fea4da4c58ce86a8c",
+            "1618fe6c-3f48-4a0c-ba31-782e43cbe4e8",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
+          ]
+        }
       }
     ]
   },
@@ -10157,6 +10229,249 @@
       },
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
       "run": "cathedral-square-2026-11-10-044ca1e8"
+    },
+    "seed-town:facade-bay": {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/facade-bay.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1708946,
+      "sha256": "e2fee9801831ffc0c1f690d7ad485cc43dde4cde31d3e16e466ed883d73f4f83",
+      "assetId": "a_3558cdf5c628436981d043613749306d",
+      "revisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
+      "glb": {
+        "member": "models/facade-bay.glb",
+        "bytes": 231864,
+        "sha256": "ab43c8ebb4fa8ee7947d45245775b885e93324682c10a8ded3075fa5745865d2",
+        "triangles": 917
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.969315066488987
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "seed-town-2026-11-14-894875cf"
+    },
+    "seed-town:ground-bay": {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/ground-bay.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1509225,
+      "sha256": "d84489215c48ab800190c9d1ea6495e66d93a1c5b5760fc6afbedcf7c4e658d8",
+      "assetId": "a_dad1cb7ee9e04d10bab7b024289b2ae8",
+      "revisionId": "r_34e8abdcbd584be0ac8a6cc19bcecad7",
+      "glb": {
+        "member": "models/ground-bay.glb",
+        "bytes": 276928,
+        "sha256": "c7447227b759a0051fbbd9736bbdb8a4d96d2c2edaeddea10d43ad39537f5ef8",
+        "triangles": 1058
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.1552749871313606
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "seed-town-2026-11-14-894875cf"
+    },
+    "seed-town:roof": {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/roof.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1755340,
+      "sha256": "a346a6b6814efba8f6d52b3aebe1e0bdeaeee4923468b2e27d2f353ae3741a62",
+      "assetId": "a_352bcbee2b6d489fa912c2869751a114",
+      "revisionId": "r_c6d3d33650f84eaeb9f9e6d9568e95dd",
+      "glb": {
+        "member": "models/roof.glb",
+        "bytes": 372408,
+        "sha256": "46c386ff3a993465f29c664f915f3789adbdd23cc6816469a3e26d221b6ba870",
+        "triangles": 1058
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.766455845322199
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "seed-town-2026-11-14-894875cf"
+    },
+    "seed-town:paving": {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/paving.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1461422,
+      "sha256": "a4e4d9cd6906cfc3993ca2f44b6ea8e84952052c151cf76e4fb4f13db3efc775",
+      "assetId": "a_6410239814f34ec9abe5c1ad7d6fd90f",
+      "revisionId": "r_4850d6eafe694f1e801e51083c6b1f6f",
+      "glb": {
+        "member": "models/paving.glb",
+        "bytes": 170572,
+        "sha256": "a5441bfff38db3c1b29deb91771419d118c564268e818347c190df85f5c81806",
+        "triangles": 222
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.3204555736533
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "seed-town-2026-11-14-894875cf"
+    },
+    "seed-town:junction": {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/junction.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1532768,
+      "sha256": "2bbc4f467d1f8186642ba7a81e31ca3bdcaa249f477b2f161529f91e5e642491",
+      "assetId": "a_30cc37322009482ebfdb5d99f314a13c",
+      "revisionId": "r_bb934288512b4eb2bde112042324aa8d",
+      "glb": {
+        "member": "models/junction.glb",
+        "bytes": 150624,
+        "sha256": "01cfe57ae15d6683f54738430955044e701a95f101cc0b8a66d20f79112fa73f",
+        "triangles": 184
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 6.744031082914931
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "seed-town-2026-11-14-894875cf"
+    },
+    "seed-town:street-lamp": {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/street-lamp.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1239531,
+      "sha256": "aa631fb121b09c51f254be2fcfff1be51cc789f20c3e01cc373dd0d66bd727c0",
+      "assetId": "a_71a13edfe6a54fb8b8b31f0e394dbfe3",
+      "revisionId": "r_6be0816ec091489198228dc348a503c0",
+      "glb": {
+        "member": "models/street-lamp.glb",
+        "bytes": 108788,
+        "sha256": "b4f521f88a25f933297484311234588dd0fd5862f89be36f6f90855de54c781e",
+        "triangles": 672
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.5721952823136114
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "seed-town-2026-11-14-894875cf"
+    },
+    "seed-town:signage": {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/signage.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1386167,
+      "sha256": "e667c19e11e6cb77455483801956a5bd80a81ff6b926376701a226448a97ab65",
+      "assetId": "a_d0c63e2592384bf784afe1fa2b5a7180",
+      "revisionId": "r_17b1eed4b79f41aaaf71771e47259890",
+      "glb": {
+        "member": "models/signage.glb",
+        "bytes": 97940,
+        "sha256": "e7be02aeac9d8e4a4837825beafbe70dffd48425987d63b5a13c621e3e5d4c76",
+        "triangles": 564
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.6356108580377434
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "seed-town-2026-11-14-894875cf"
+    },
+    "seed-town:street-furniture": {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/street-furniture.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1516982,
+      "sha256": "edfb8cb07d26452b8515824e7c94399f3ad454600447f43a9463f3c984eee02f",
+      "assetId": "a_0d4254c8e60f43c9a2f3976c4c128bfd",
+      "revisionId": "r_8b73bd49f690462c979085d26534cf65",
+      "glb": {
+        "member": "models/street-furniture.glb",
+        "bytes": 182404,
+        "sha256": "b2b3d3a0866c7350db55399153646d691d2d946f03b0237478d21643fbc11dec",
+        "triangles": 2036
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.9858247043501015
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "seed-town-2026-11-14-894875cf"
+    },
+    "seed-town:tree": {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/tree.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1570320,
+      "sha256": "c4883a3d2db5cc3cdff74547e384f10e63e383d5d3c397d5921f9f0b545d0b21",
+      "assetId": "a_e3302002857e448ba2412aa702dbbdbd",
+      "revisionId": "r_1b200dcb65334845bf9fef7a7a4c0ce1",
+      "glb": {
+        "member": "models/tree.glb",
+        "bytes": 433236,
+        "sha256": "fcdc029ed606f6fed6e3cde5ad22bfe6beb132dcf3b7605cbf67aee4b144b50c",
+        "triangles": 2686
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 6.900298385800214
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "seed-town-2026-11-14-894875cf"
     }
   }
 }

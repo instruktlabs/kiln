@@ -7660,6 +7660,201 @@
       "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261113-01/tabletop-dressing.png",
       "bytes": 1465511,
       "sha256": "899b058c4205d66cac38e50f23f0afccdfb44fbf987b882a3b66695e38ae0f36"
+    },
+    {
+      "path": "packs/seed-town/st1/models/facade-bay.glb",
+      "bytes": 231864,
+      "sha256": "ab43c8ebb4fa8ee7947d45245775b885e93324682c10a8ded3075fa5745865d2"
+    },
+    {
+      "path": "packs/seed-town/st1/models/facade-bay.kiln-metadata.json",
+      "bytes": 2968,
+      "sha256": "bb258a2a4164856389f42913b6f0bfe1a511b660de3dc49d96d93db4dbac37e5"
+    },
+    {
+      "path": "packs/seed-town/st1/editable/facade-bay.zip",
+      "bytes": 221267,
+      "sha256": "fa534ae55c4a25743eb8e245230a66b9ba6a52737e458b6147b3b5b984a525e6"
+    },
+    {
+      "path": "packs/seed-town/st1/models/ground-bay.glb",
+      "bytes": 276928,
+      "sha256": "c7447227b759a0051fbbd9736bbdb8a4d96d2c2edaeddea10d43ad39537f5ef8"
+    },
+    {
+      "path": "packs/seed-town/st1/models/ground-bay.kiln-metadata.json",
+      "bytes": 4527,
+      "sha256": "1244e494d83417729e373a9423da584131f3e3447b2616ea19a1843fd25a79fc"
+    },
+    {
+      "path": "packs/seed-town/st1/editable/ground-bay.zip",
+      "bytes": 82317,
+      "sha256": "bb3656839a36b3e81bc5789e40abf5895de5f79a4228b355f5ce33d308b87c0b"
+    },
+    {
+      "path": "packs/seed-town/st1/models/roof.glb",
+      "bytes": 372408,
+      "sha256": "46c386ff3a993465f29c664f915f3789adbdd23cc6816469a3e26d221b6ba870"
+    },
+    {
+      "path": "packs/seed-town/st1/models/roof.kiln-metadata.json",
+      "bytes": 10572,
+      "sha256": "0ec69387b7b149841d57faeeb3365312c50d60f0595aa15a7169f450c70c3afb"
+    },
+    {
+      "path": "packs/seed-town/st1/editable/roof.zip",
+      "bytes": 474454,
+      "sha256": "da57288d156c0ef404954050b52acca7ca6437bf75dd97776386af12d65a6ba2"
+    },
+    {
+      "path": "packs/seed-town/st1/models/paving.glb",
+      "bytes": 170572,
+      "sha256": "a5441bfff38db3c1b29deb91771419d118c564268e818347c190df85f5c81806"
+    },
+    {
+      "path": "packs/seed-town/st1/models/paving.kiln-metadata.json",
+      "bytes": 3568,
+      "sha256": "7c6838eb1fda098a9df21e514974b5c229fa6f4cf1b69331a177e4698024fb62"
+    },
+    {
+      "path": "packs/seed-town/st1/editable/paving.zip",
+      "bytes": 184879,
+      "sha256": "29d4422170de955a14ad59f77de76f432fe19721e619003c3c42a6add251b408"
+    },
+    {
+      "path": "packs/seed-town/st1/models/junction.glb",
+      "bytes": 150624,
+      "sha256": "01cfe57ae15d6683f54738430955044e701a95f101cc0b8a66d20f79112fa73f"
+    },
+    {
+      "path": "packs/seed-town/st1/models/junction.kiln-metadata.json",
+      "bytes": 2398,
+      "sha256": "c7bbc1f7389567a2c1bef2ccef82c4c94b09e8039c30e83597023628d92dd8df"
+    },
+    {
+      "path": "packs/seed-town/st1/editable/junction.zip",
+      "bytes": 250782,
+      "sha256": "6ae3237899f4d9d4ba996c36488102d93eda02212cad70a47c15ac6b288f20e5"
+    },
+    {
+      "path": "packs/seed-town/st1/models/street-lamp.glb",
+      "bytes": 108788,
+      "sha256": "b4f521f88a25f933297484311234588dd0fd5862f89be36f6f90855de54c781e"
+    },
+    {
+      "path": "packs/seed-town/st1/models/street-lamp.kiln-metadata.json",
+      "bytes": 1567,
+      "sha256": "1e8e8783fd95e46e1904dafe5a0c3a605072073d7cfa084f068236d3cec06ad2"
+    },
+    {
+      "path": "packs/seed-town/st1/editable/street-lamp.zip",
+      "bytes": 36956,
+      "sha256": "a29f653dad82943485f90dcd0b3139c9a1e1971c960791f1856744676b862b13"
+    },
+    {
+      "path": "packs/seed-town/st1/models/signage.glb",
+      "bytes": 97940,
+      "sha256": "e7be02aeac9d8e4a4837825beafbe70dffd48425987d63b5a13c621e3e5d4c76"
+    },
+    {
+      "path": "packs/seed-town/st1/models/signage.kiln-metadata.json",
+      "bytes": 1977,
+      "sha256": "687935018ed0a6dbf1b3d230d964052a9aa08c794a35ed543dfedc74b6228415"
+    },
+    {
+      "path": "packs/seed-town/st1/editable/signage.zip",
+      "bytes": 31939,
+      "sha256": "1e43a49d827b645c5291a67f760ebbd75f43961d7c6876e10ab5d464be2c3c1f"
+    },
+    {
+      "path": "packs/seed-town/st1/models/street-furniture.glb",
+      "bytes": 182404,
+      "sha256": "b2b3d3a0866c7350db55399153646d691d2d946f03b0237478d21643fbc11dec"
+    },
+    {
+      "path": "packs/seed-town/st1/models/street-furniture.kiln-metadata.json",
+      "bytes": 1221,
+      "sha256": "961f6ff2011f32f54294ad906ccf2ef25116a9f284bc342e8cbcc1aa06d8bebe"
+    },
+    {
+      "path": "packs/seed-town/st1/editable/street-furniture.zip",
+      "bytes": 49453,
+      "sha256": "f1636ae4011b3709033b337fccbee013711c9eda3882f29d9d8b1b0eeb0eb59f"
+    },
+    {
+      "path": "packs/seed-town/st1/seed-town-runtime.zip",
+      "bytes": 727864,
+      "sha256": "8bb1dbed985abc5d3184ff54e2eedef6bc09ae297a1e921db212b1ea34a17ed8"
+    },
+    {
+      "path": "packs/seed-town/st1/seed-town-editable.zip",
+      "bytes": 1999445,
+      "sha256": "b2a04230a80d810842f12bea69dd673b6133389748c7574f2395d6a11eada12b"
+    },
+    {
+      "path": "packs/seed-town/st1/models/tree.glb",
+      "bytes": 433236,
+      "sha256": "fcdc029ed606f6fed6e3cde5ad22bfe6beb132dcf3b7605cbf67aee4b144b50c"
+    },
+    {
+      "path": "packs/seed-town/st1/models/tree.kiln-metadata.json",
+      "bytes": 2810,
+      "sha256": "057d510515eaf1987aedc30ce6a4ccc77cff97e6eb98bb7b1b1325ca9cb20f31"
+    },
+    {
+      "path": "packs/seed-town/st1/editable/tree.zip",
+      "bytes": 679557,
+      "sha256": "1be9eda1e1ae862e1311b7a11b0d170888f15405620ace6224d2a15fd4dfbe63"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/facade-bay.png",
+      "bytes": 1708946,
+      "sha256": "e2fee9801831ffc0c1f690d7ad485cc43dde4cde31d3e16e466ed883d73f4f83"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/ground-bay.png",
+      "bytes": 1509225,
+      "sha256": "d84489215c48ab800190c9d1ea6495e66d93a1c5b5760fc6afbedcf7c4e658d8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/roof.png",
+      "bytes": 1755340,
+      "sha256": "a346a6b6814efba8f6d52b3aebe1e0bdeaeee4923468b2e27d2f353ae3741a62"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/paving.png",
+      "bytes": 1461422,
+      "sha256": "a4e4d9cd6906cfc3993ca2f44b6ea8e84952052c151cf76e4fb4f13db3efc775"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/junction.png",
+      "bytes": 1532768,
+      "sha256": "2bbc4f467d1f8186642ba7a81e31ca3bdcaa249f477b2f161529f91e5e642491"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/street-lamp.png",
+      "bytes": 1239531,
+      "sha256": "aa631fb121b09c51f254be2fcfff1be51cc789f20c3e01cc373dd0d66bd727c0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/signage.png",
+      "bytes": 1386167,
+      "sha256": "e667c19e11e6cb77455483801956a5bd80a81ff6b926376701a226448a97ab65"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/street-furniture.png",
+      "bytes": 1516982,
+      "sha256": "edfb8cb07d26452b8515824e7c94399f3ad454600447f43a9463f3c984eee02f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st1/tree.png",
+      "bytes": 1570320,
+      "sha256": "c4883a3d2db5cc3cdff74547e384f10e63e383d5d3c397d5921f9f0b545d0b21"
+    },
+    {
+      "path": "media/scenes/seed-town/st1/seed-town-scene-town.png",
+      "bytes": 6852313,
+      "sha256": "618109e1add38433a63161f6675658ee8d4a7387d984678b0f589aa90bf057a5"
     }
   ]
 }

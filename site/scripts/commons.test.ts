@@ -77,6 +77,14 @@ describe('Commons catalog bindings', () => {
     expect(result.clips).toEqual(['Open', 'ArticulationProbe']);
     expect(result.partPaths).toEqual(['root/first', 'root/second']);
   });
+  test('can measure only what a file shows by default, leaving out options it hides', () => {
+    const data = glb({ scene: 0, scenes: [{ nodes: [0] }], nodes: [{ name: 'root', children: [1, 2] }, { name: 'shown', mesh: 0 }, { name: 'hidden', translation: [20, 0, 0], extensions: { KHR_node_visibility: { visible: false } }, children: [3] }, { name: 'under-hidden', mesh: 0 }], meshes: [{ primitives: [{ attributes: { POSITION: 0 }, indices: 1 }] }], accessors: [{ min: [0, 0, 0], max: [1, 1, 1], count: 3 }, { count: 3 }], materials: [{}] });
+    expect(inspectGlb(data).bounds).toEqual([21, 1, 1]);
+    const shown = inspectGlb(data, { visibleOnly: true });
+    expect(shown.bounds).toEqual([1, 1, 1]);
+    expect(shown.triangles).toBe(1);
+    expect(shown.partPaths).toEqual(['root/shown']);
+  });
   test('selected r36 retains the accepted floor and all 23 approvals without inheriting r34 acceptance', () => {
     const house = farm.assets.find((asset) => asset.id === 'farmhouse');
     expect(farm.revision).toBe('r36-local-review');

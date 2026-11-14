@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import { assertPackPath, validateManifest } from '../packages/scene-kit/src/assets/manifest';
 import { verifyStaged } from '../packages/scene-kit/src/staging';
 
-export const RELEASE_SCENES = ['farm', 'golden-gate', 'foundry-floor', 'cathedral-square'] as const;
+export const RELEASE_SCENES = ['farm', 'golden-gate', 'foundry-floor', 'cathedral-square', 'seed-town'] as const;
 type Scene = typeof RELEASE_SCENES[number];
 export type ReleasePins = Record<Scene, { id: string; release: string; three: string; packJsonSha256: string; sha256sumsSha256: string }>;
 const ROOT = resolve(import.meta.dir, '..');

@@ -1,0 +1,39 @@
+---
+import AssetCard from "../../components/AssetCard.astro";
+import AssetDownloads from "../../components/AssetDownloads.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { galleryCards } from "../../lib/gallery";
+import { galleryCategories } from "../../lib/gallery-browse";
+import { PACKS_ENABLED } from "../../lib/config";
+import { packDelivery } from "../../lib/delivery";
+import { SEED_TOWN_ID, seedTownPack, seedTownPackHref, seedTownSceneHref } from "../../lib/seed-town-gallery";
+const assets = galleryCards.filter((asset) => asset.packs.includes(SEED_TOWN_ID));
+const downloads = PACKS_ENABLED ? packDelivery(SEED_TOWN_ID) : null;
+const categories = galleryCategories.filter((category) => assets.some((asset) => asset.category === category));
+---
+<BaseLayout title="Seed Town asset pack · Kiln"
+  description="The house fronts, roofs, paving, street lamps, signs, street furniture and autumn trees that the Seed Town scene builds its towns from, each with its own options, sizes and colours."
+  breadcrumbs={[{ label: "Packs", href: "/packs/" }, { label: "Seed Town", href: seedTownPackHref }]}
+  card="packs">
+  <div class="container pb-12">
+    <PageHeader class="py-8">Seed Town asset pack</PageHeader>
+    <p class="lead max-w-prose">The kit the Seed Town scene builds its towns from: house fronts and roofs, paving and lane junctions, street lamps, hanging signs, street furniture and the autumn trees round it. Each model carries its own options, sizes and colours.</p>
+    <a class="btn btn-secondary mt-6" href={seedTownSceneHref}>Explore the scene</a>
+    {downloads && (
+      <>
+        <p class="mt-8 max-w-reading">The pack includes all {seedTownPack.assets.length} models used by the scene. Each runtime GLB stores its options as switchable nodes, its sizes as morph targets and its colours as named materials, and comes with a metadata file that maps each setting to them. Each gallery page lists what you can set.</p>
+        <AssetDownloads runtime={downloads.runtime} editable={downloads.editable} />
+        <p class="mt-4 max-w-reading">The owner designated the authored assets and Kiln source <a class="text-link" href={seedTownPack.license.url}>{seedTownPack.license.spdx}</a> to the extent of the owner's rights. The archives include the scene's notices.</p>
+        {categories.map((category) => (
+          <section class="mt-12">
+            <h2 class="text-subheading">{category}</h2>
+            <div class="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+              {assets.filter((asset) => asset.category === category).map((asset) => <AssetCard asset={asset} />)}
+            </div>
+          </section>
+        ))}
+      </>
+    )}
+  </div>
+</BaseLayout>

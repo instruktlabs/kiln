@@ -8,7 +8,7 @@ import {decodeUtf8} from './public-text.mjs';
 import {isPublicTextFile} from './validate-public-text.mjs';
 
 const SITE = resolve(import.meta.dirname, '..');
-export const SCENE_INPUT_IDS = ['farm', 'golden-gate', 'foundry-floor', 'cathedral-square'];
+export const SCENE_INPUT_IDS = ['farm', 'golden-gate', 'foundry-floor', 'cathedral-square', 'seed-town'];
 
 export function checkedSceneArchive(bytes, record) {
   verifyBytes(bytes, record);

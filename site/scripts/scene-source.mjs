@@ -120,7 +120,7 @@ function servedPack(packFile) {
  */
 export function stagedScenes(site = SITE) {
   const scenes = {};
-  for (const id of ['farm', 'golden-gate', 'foundry-floor', 'cathedral-square']) {
+  for (const id of ['farm', 'golden-gate', 'foundry-floor', 'cathedral-square', 'seed-town']) {
     const runtime = stagedRuntime(id, site);
     const pack = scenePackRecord(id, site);
     const packFile = pack?.base ? resolve(site, 'public', pack.base.replace(/^\/+/, ''), 'pack.json') : null;

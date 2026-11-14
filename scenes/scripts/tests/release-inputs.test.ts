@@ -25,6 +25,7 @@ function fixture() {
 
 test('released inputs require every scene and the exact externally pinned pack, sums and members', () => {
   expect(RELEASE_SCENES).toContain('cathedral-square');
+  expect(RELEASE_SCENES).toContain('seed-town');
   const { root, pins } = fixture();
   expect(verifyReleasedSceneInputs({ root, pins }).map(r => [r.scene, r.release, r.models, r.files])).toEqual(RELEASE_SCENES.map(s => [s, 'test-release', 1, 1]));
   const assets = releasedAssetRoot(root, 'foundry-floor'), model = resolve(assets, 'models/example.glb');

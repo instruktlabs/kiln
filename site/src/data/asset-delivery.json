@@ -3599,6 +3599,290 @@
           }
         }
       ]
+    },
+    "seed-town": {
+      "standalone": false,
+      "downloads": [
+        {
+          "profile": "runtime",
+          "path": "packs/seed-town/st1/seed-town-runtime.zip",
+          "bytes": 727864,
+          "sha256": "8bb1dbed985abc5d3184ff54e2eedef6bc09ae297a1e921db212b1ea34a17ed8",
+          "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/seed-town-runtime.zip"
+        },
+        {
+          "profile": "editable",
+          "path": "packs/seed-town/st1/seed-town-editable.zip",
+          "bytes": 1999445,
+          "sha256": "b2a04230a80d810842f12bea69dd673b6133389748c7574f2395d6a11eada12b",
+          "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/seed-town-editable.zip"
+        }
+      ],
+      "assets": [
+        {
+          "slug": "facade-bay",
+          "collection": "project",
+          "assetId": "a_3558cdf5c628436981d043613749306d",
+          "revisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
+          "includedRevisions": [
+            "r_0f8da88093fc4d498cb45c7b9b704214"
+          ],
+          "missingParents": [],
+          "omittedParents": [],
+          "runtimeDownload": {
+            "path": "packs/seed-town/st1/models/facade-bay.glb",
+            "bytes": 231864,
+            "sha256": "ab43c8ebb4fa8ee7947d45245775b885e93324682c10a8ded3075fa5745865d2",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/facade-bay.glb"
+          },
+          "runtimeMetadataDownload": {
+            "path": "packs/seed-town/st1/models/facade-bay.kiln-metadata.json",
+            "bytes": 2968,
+            "sha256": "bb258a2a4164856389f42913b6f0bfe1a511b660de3dc49d96d93db4dbac37e5",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/facade-bay.kiln-metadata.json"
+          },
+          "editableDownload": {
+            "path": "packs/seed-town/st1/editable/facade-bay.zip",
+            "bytes": 221267,
+            "sha256": "fa534ae55c4a25743eb8e245230a66b9ba6a52737e458b6147b3b5b984a525e6",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/editable/facade-bay.zip"
+          }
+        },
+        {
+          "slug": "ground-bay",
+          "collection": "project",
+          "assetId": "a_dad1cb7ee9e04d10bab7b024289b2ae8",
+          "revisionId": "r_34e8abdcbd584be0ac8a6cc19bcecad7",
+          "includedRevisions": [
+            "r_34e8abdcbd584be0ac8a6cc19bcecad7"
+          ],
+          "missingParents": [],
+          "omittedParents": [],
+          "runtimeDownload": {
+            "path": "packs/seed-town/st1/models/ground-bay.glb",
+            "bytes": 276928,
+            "sha256": "c7447227b759a0051fbbd9736bbdb8a4d96d2c2edaeddea10d43ad39537f5ef8",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/ground-bay.glb"
+          },
+          "runtimeMetadataDownload": {
+            "path": "packs/seed-town/st1/models/ground-bay.kiln-metadata.json",
+            "bytes": 4527,
+            "sha256": "1244e494d83417729e373a9423da584131f3e3447b2616ea19a1843fd25a79fc",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/ground-bay.kiln-metadata.json"
+          },
+          "editableDownload": {
+            "path": "packs/seed-town/st1/editable/ground-bay.zip",
+            "bytes": 82317,
+            "sha256": "bb3656839a36b3e81bc5789e40abf5895de5f79a4228b355f5ce33d308b87c0b",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/editable/ground-bay.zip"
+          }
+        },
+        {
+          "slug": "roof",
+          "collection": "project",
+          "assetId": "a_352bcbee2b6d489fa912c2869751a114",
+          "revisionId": "r_c6d3d33650f84eaeb9f9e6d9568e95dd",
+          "includedRevisions": [
+            "r_c6d3d33650f84eaeb9f9e6d9568e95dd"
+          ],
+          "missingParents": [],
+          "omittedParents": [],
+          "runtimeDownload": {
+            "path": "packs/seed-town/st1/models/roof.glb",
+            "bytes": 372408,
+            "sha256": "46c386ff3a993465f29c664f915f3789adbdd23cc6816469a3e26d221b6ba870",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/roof.glb"
+          },
+          "runtimeMetadataDownload": {
+            "path": "packs/seed-town/st1/models/roof.kiln-metadata.json",
+            "bytes": 10572,
+            "sha256": "0ec69387b7b149841d57faeeb3365312c50d60f0595aa15a7169f450c70c3afb",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/roof.kiln-metadata.json"
+          },
+          "editableDownload": {
+            "path": "packs/seed-town/st1/editable/roof.zip",
+            "bytes": 474454,
+            "sha256": "da57288d156c0ef404954050b52acca7ca6437bf75dd97776386af12d65a6ba2",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/editable/roof.zip"
+          }
+        },
+        {
+          "slug": "paving",
+          "collection": "project",
+          "assetId": "a_6410239814f34ec9abe5c1ad7d6fd90f",
+          "revisionId": "r_4850d6eafe694f1e801e51083c6b1f6f",
+          "includedRevisions": [
+            "r_4850d6eafe694f1e801e51083c6b1f6f"
+          ],
+          "missingParents": [],
+          "omittedParents": [],
+          "runtimeDownload": {
+            "path": "packs/seed-town/st1/models/paving.glb",
+            "bytes": 170572,
+            "sha256": "a5441bfff38db3c1b29deb91771419d118c564268e818347c190df85f5c81806",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/paving.glb"
+          },
+          "runtimeMetadataDownload": {
+            "path": "packs/seed-town/st1/models/paving.kiln-metadata.json",
+            "bytes": 3568,
+            "sha256": "7c6838eb1fda098a9df21e514974b5c229fa6f4cf1b69331a177e4698024fb62",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/paving.kiln-metadata.json"
+          },
+          "editableDownload": {
+            "path": "packs/seed-town/st1/editable/paving.zip",
+            "bytes": 184879,
+            "sha256": "29d4422170de955a14ad59f77de76f432fe19721e619003c3c42a6add251b408",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/editable/paving.zip"
+          }
+        },
+        {
+          "slug": "junction",
+          "collection": "project",
+          "assetId": "a_30cc37322009482ebfdb5d99f314a13c",
+          "revisionId": "r_bb934288512b4eb2bde112042324aa8d",
+          "includedRevisions": [
+            "r_bb934288512b4eb2bde112042324aa8d"
+          ],
+          "missingParents": [],
+          "omittedParents": [],
+          "runtimeDownload": {
+            "path": "packs/seed-town/st1/models/junction.glb",
+            "bytes": 150624,
+            "sha256": "01cfe57ae15d6683f54738430955044e701a95f101cc0b8a66d20f79112fa73f",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/junction.glb"
+          },
+          "runtimeMetadataDownload": {
+            "path": "packs/seed-town/st1/models/junction.kiln-metadata.json",
+            "bytes": 2398,
+            "sha256": "c7bbc1f7389567a2c1bef2ccef82c4c94b09e8039c30e83597023628d92dd8df",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/junction.kiln-metadata.json"
+          },
+          "editableDownload": {
+            "path": "packs/seed-town/st1/editable/junction.zip",
+            "bytes": 250782,
+            "sha256": "6ae3237899f4d9d4ba996c36488102d93eda02212cad70a47c15ac6b288f20e5",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/editable/junction.zip"
+          }
+        },
+        {
+          "slug": "street-lamp",
+          "collection": "project",
+          "assetId": "a_71a13edfe6a54fb8b8b31f0e394dbfe3",
+          "revisionId": "r_6be0816ec091489198228dc348a503c0",
+          "includedRevisions": [
+            "r_6be0816ec091489198228dc348a503c0"
+          ],
+          "missingParents": [],
+          "omittedParents": [],
+          "runtimeDownload": {
+            "path": "packs/seed-town/st1/models/street-lamp.glb",
+            "bytes": 108788,
+            "sha256": "b4f521f88a25f933297484311234588dd0fd5862f89be36f6f90855de54c781e",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/street-lamp.glb"
+          },
+          "runtimeMetadataDownload": {
+            "path": "packs/seed-town/st1/models/street-lamp.kiln-metadata.json",
+            "bytes": 1567,
+            "sha256": "1e8e8783fd95e46e1904dafe5a0c3a605072073d7cfa084f068236d3cec06ad2",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/street-lamp.kiln-metadata.json"
+          },
+          "editableDownload": {
+            "path": "packs/seed-town/st1/editable/street-lamp.zip",
+            "bytes": 36956,
+            "sha256": "a29f653dad82943485f90dcd0b3139c9a1e1971c960791f1856744676b862b13",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/editable/street-lamp.zip"
+          }
+        },
+        {
+          "slug": "signage",
+          "collection": "project",
+          "assetId": "a_d0c63e2592384bf784afe1fa2b5a7180",
+          "revisionId": "r_17b1eed4b79f41aaaf71771e47259890",
+          "includedRevisions": [
+            "r_17b1eed4b79f41aaaf71771e47259890"
+          ],
+          "missingParents": [],
+          "omittedParents": [],
+          "runtimeDownload": {
+            "path": "packs/seed-town/st1/models/signage.glb",
+            "bytes": 97940,
+            "sha256": "e7be02aeac9d8e4a4837825beafbe70dffd48425987d63b5a13c621e3e5d4c76",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/signage.glb"
+          },
+          "runtimeMetadataDownload": {
+            "path": "packs/seed-town/st1/models/signage.kiln-metadata.json",
+            "bytes": 1977,
+            "sha256": "687935018ed0a6dbf1b3d230d964052a9aa08c794a35ed543dfedc74b6228415",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/signage.kiln-metadata.json"
+          },
+          "editableDownload": {
+            "path": "packs/seed-town/st1/editable/signage.zip",
+            "bytes": 31939,
+            "sha256": "1e43a49d827b645c5291a67f760ebbd75f43961d7c6876e10ab5d464be2c3c1f",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/editable/signage.zip"
+          }
+        },
+        {
+          "slug": "street-furniture",
+          "collection": "project",
+          "assetId": "a_0d4254c8e60f43c9a2f3976c4c128bfd",
+          "revisionId": "r_8b73bd49f690462c979085d26534cf65",
+          "includedRevisions": [
+            "r_8b73bd49f690462c979085d26534cf65"
+          ],
+          "missingParents": [],
+          "omittedParents": [],
+          "runtimeDownload": {
+            "path": "packs/seed-town/st1/models/street-furniture.glb",
+            "bytes": 182404,
+            "sha256": "b2b3d3a0866c7350db55399153646d691d2d946f03b0237478d21643fbc11dec",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/street-furniture.glb"
+          },
+          "runtimeMetadataDownload": {
+            "path": "packs/seed-town/st1/models/street-furniture.kiln-metadata.json",
+            "bytes": 1221,
+            "sha256": "961f6ff2011f32f54294ad906ccf2ef25116a9f284bc342e8cbcc1aa06d8bebe",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/street-furniture.kiln-metadata.json"
+          },
+          "editableDownload": {
+            "path": "packs/seed-town/st1/editable/street-furniture.zip",
+            "bytes": 49453,
+            "sha256": "f1636ae4011b3709033b337fccbee013711c9eda3882f29d9d8b1b0eeb0eb59f",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/editable/street-furniture.zip"
+          }
+        },
+        {
+          "slug": "tree",
+          "collection": "project",
+          "assetId": "a_e3302002857e448ba2412aa702dbbdbd",
+          "revisionId": "r_1b200dcb65334845bf9fef7a7a4c0ce1",
+          "includedRevisions": [
+            "r_1b200dcb65334845bf9fef7a7a4c0ce1"
+          ],
+          "missingParents": [],
+          "omittedParents": [
+            "r_428084e92dca44c7ba4e413faabd3474"
+          ],
+          "runtimeDownload": {
+            "path": "packs/seed-town/st1/models/tree.glb",
+            "bytes": 433236,
+            "sha256": "fcdc029ed606f6fed6e3cde5ad22bfe6beb132dcf3b7605cbf67aee4b144b50c",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/tree.glb"
+          },
+          "runtimeMetadataDownload": {
+            "path": "packs/seed-town/st1/models/tree.kiln-metadata.json",
+            "bytes": 2810,
+            "sha256": "057d510515eaf1987aedc30ce6a4ccc77cff97e6eb98bb7b1b1325ca9cb20f31",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/tree.kiln-metadata.json"
+          },
+          "editableDownload": {
+            "path": "packs/seed-town/st1/editable/tree.zip",
+            "bytes": 679557,
+            "sha256": "1be9eda1e1ae862e1311b7a11b0d170888f15405620ace6224d2a15fd4dfbe63",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/editable/tree.zip"
+          }
+        }
+      ]
     }
   }
 }

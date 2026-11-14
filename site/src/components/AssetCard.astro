@@ -22,13 +22,15 @@ const Heading = headingLevel;
   class="group min-w-0 border-t border-rule"
 >
   <a href={asset.href ?? `/gallery/${asset.slug}/`} class="block text-ink no-underline" aria-label={asset.name}>
-    <div class="bg-stage transition-colors group-hover:bg-sheet">
-      <ResponsiveImage
-        image={{ ...asset.poster, alt: "" }}
-        sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
-        class="aspect-square w-full object-contain"
-      />
-    </div>
+    {asset.poster && (
+      <div class="bg-stage transition-colors group-hover:bg-sheet">
+        <ResponsiveImage
+          image={{ ...asset.poster, alt: "" }}
+          sizes="(max-width: 639px) 50vw, (max-width: 1023px) 33vw, 25vw"
+          class="aspect-square w-full object-contain"
+        />
+      </div>
+    )}
     <div class="flex flex-wrap items-baseline justify-between gap-2 pt-4">
       <Heading class="text-lg font-semibold tracking-tight md:text-title">
         {asset.name}
@@ -40,7 +42,7 @@ const Heading = headingLevel;
   <p class="mt-1 font-mono text-code text-dim">
     <span class="card-stat">{number(asset.metrics.triangles)} triangles</span><span class="meta-follow">{asset.category}</span>
   </p>
-  {imageQualification(asset.poster) && (
+  {asset.poster && imageQualification(asset.poster) && (
     <p class="mt-2 text-caption text-dim">Exterior view from the parent revision.</p>
   )}
   </a>

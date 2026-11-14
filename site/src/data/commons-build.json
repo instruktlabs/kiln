@@ -5225,6 +5225,123 @@
       "sourceRevisionId": "r_3125d3a4babb439d9fb50b9f7b89aa29",
       "exactRevision": true,
       "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st1/facade-bay.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "One upper-storey bay of a town house front with a choice of wall finish, window and window head, an optional cornice, shutters, balcony and lit window, a settable bay width and storey height, and settable wall, trim and joinery colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/facade-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/facade-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st1/facade-bay.png",
+      "sourceRevisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st1/ground-bay.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "One ground-floor bay of a street front as a shop window, shop door, passage, house door or house window, with an optional awning and lit interior, a settable bay width, storey height and awning depth, and settable wall, trim, joinery and accent colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/ground-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/ground-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st1/ground-bay.png",
+      "sourceRevisionId": "r_34e8abdcbd584be0ac8a6cc19bcecad7",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st1/roof.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The roof of one building as a side gable, front gable, stepped gable or mansard in stucco or brick, with none, one or two dormers, an optional chimney and lit windows, a settable width, rise and side and back wall heights, and settable roof, wall, trim and joinery colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/roof-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/roof-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/roof-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/roof-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/roof-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/roof-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/roof-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/roof-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/roof-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/roof-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st1/roof.png",
+      "sourceRevisionId": "r_c6d3d33650f84eaeb9f9e6d9568e95dd",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st1/paving.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "One bay of street paving as pavement with kerb, gutter and half a carriageway, as pavement alone or as setts for a square, with an optional drain, cellar grate or manhole cover, a settable bay width, pavement width, road width and kerb height, settable flag, kerb, sett and iron colours and a sandstone colour variant.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/paving-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/paving-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/paving-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/paving-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/paving-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/paving-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/paving-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/paving-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/paving-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/paving-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st1/paving.png",
+      "sourceRevisionId": "r_4850d6eafe694f1e801e51083c6b1f6f",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st1/junction.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The mouth of a side lane on one side of a street, with two corner pavements and kerbs and the lane carriageway falling to the street gutter, settable pavement, road, lane pavement and lane road widths and kerb height, settable flag, kerb and sett colours and a sandstone colour variant.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/junction-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/junction-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/junction-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/junction-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/junction-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/junction-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/junction-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/junction-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/junction-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/junction-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st1/junction.png",
+      "sourceRevisionId": "r_bb934288512b4eb2bde112042324aa8d",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st1/street-lamp.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A cast iron street lamp with one lantern on the post or twin lanterns on a cross arm, lit or unlit panes, a settable height and a settable iron colour.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/street-lamp-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/street-lamp-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/street-lamp-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st1/street-lamp.png",
+      "sourceRevisionId": "r_6be0816ec091489198228dc348a503c0",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st1/signage.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A hanging trade sign on an iron bracket with an oval, rectangular or shield board and a key, boot, cup, book, shears or pretzel emblem, a settable bracket reach and settable accent, gilt and iron colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/signage-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/signage-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/signage-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/signage-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/signage-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/signage-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/signage-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/signage-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/signage-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/signage-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st1/signage.png",
+      "sourceRevisionId": "r_17b1eed4b79f41aaaf71771e47259890",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st1/street-furniture.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "One piece of street furniture chosen from a bench, planter, bollard, café table, barrel, fountain and market stall, with a settable bench length and settable timber, iron and accent colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/street-furniture-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/street-furniture-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st1/street-furniture.png",
+      "sourceRevisionId": "r_8b73bd49f690462c979085d26534cf65",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st1/tree.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A country tree as a broad crown, a narrow column, an open crown on a pale stem, a conifer in tiers or a low shrub, with a settable height and spread and settable leaf, turning-leaf and bark colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/tree-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/tree-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/tree-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/tree-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/tree-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/tree-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/tree-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/tree-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/tree-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/tree-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st1/tree.png",
+      "sourceRevisionId": "r_1b200dcb65334845bf9fef7a7a4c0ce1",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/scenes/seed-town/st1/seed-town-scene-town.webp",
+      "width": 2560,
+      "height": 1440,
+      "alt": "A small old town of brick and plaster houses round a market square, seen from above, with autumn trees and paved roads leading out across open country.",
+      "srcsetWebp": "/media/scenes/seed-town/st1/seed-town-scene-town-320.webp 320w, /media/scenes/seed-town/st1/seed-town-scene-town-480.webp 480w, /media/scenes/seed-town/st1/seed-town-scene-town-672.webp 672w, /media/scenes/seed-town/st1/seed-town-scene-town-768.webp 768w, /media/scenes/seed-town/st1/seed-town-scene-town-1024.webp 1024w, /media/scenes/seed-town/st1/seed-town-scene-town-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/seed-town/st1/seed-town-scene-town-320.avif 320w, /media/scenes/seed-town/st1/seed-town-scene-town-480.avif 480w, /media/scenes/seed-town/st1/seed-town-scene-town-672.avif 672w, /media/scenes/seed-town/st1/seed-town-scene-town-768.avif 768w, /media/scenes/seed-town/st1/seed-town-scene-town-1024.avif 1024w, /media/scenes/seed-town/st1/seed-town-scene-town-1440.avif 1440w",
+      "inputPath": "media/scenes/seed-town/st1/seed-town-scene-town.png"
     }
   ],
   "archives": [

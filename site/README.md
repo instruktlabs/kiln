@@ -53,7 +53,8 @@ node scripts/scene-runtime.mjs --scene cathedral-square
 node scripts/typecheck-scenes.mjs
 ```
 
-`scripts/stage-cathedral-site-inputs.mjs` prepares that portable input from an
+`scripts/stage-cathedral-site-inputs.mjs` (the Cathedral Square entry to the
+shared `scripts/stage-scene-site-inputs.mjs`) prepares that portable input from an
 already staged standalone pack. It includes only verified assets, seals and
 notices, scans for private data, writes a deterministic ZIP, and updates the
 input/catalog pins. It does not upload or publish. The first passing module build
@@ -65,6 +66,25 @@ build). Astro dev refuses dynamic imports from generated `public/scene-runtime/`
 files. The standalone review build remains available through
 `bun scripts/build-scene.ts --scene cathedral-square --mode public --label review`
 from `../scenes/`, using the same restored input.
+
+### Seed Town local integration
+
+Seed Town is wired the same way at `/scenes/seed-town/` (module runtime
+`src/scenes/runtime/seed-town.ts`). The page address carries the town:
+`?seed=<text>&hour=dusk`, read and rewritten by `src/scenes/seed-town-address.ts`.
+Its local release mirror is `.localdata/seed-town-release`. After restaging the
+pack in `../scenes/` (`bun packages/seed-town/scripts/stage-pack.mjs`), re-pin it
+and rebuild:
+
+```sh
+node scripts/stage-scene-site-inputs.mjs --scene seed-town
+KILN_ASSET_MIRROR=.localdata/seed-town-release node scripts/scene-inputs.mjs --scene seed-town
+node scripts/scene-pack.mjs --scene seed-town
+node scripts/scene-runtime.mjs --scene seed-town
+```
+
+The first passing module build and D-15 ceiling are recorded in
+`../scenes/packages/seed-town/site-runtime.json`.
 
 ## Where changes belong
 

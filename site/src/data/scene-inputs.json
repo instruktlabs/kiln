@@ -32,6 +32,14 @@
       "bytes": 14174342,
       "sha256": "b4fcfd310ba2e021d0cc96d4a7f6c06cb0df4d29342d1ae10b079a7f4038e972",
       "packJsonSha256": "7f32c63073d6c059258647c1db59d89081107b7c6678b71f35678c6057126ec5"
+    },
+    {
+      "id": "seed-town",
+      "release": "st1",
+      "path": "scene-inputs/seed-town/st1/seed-town.zip",
+      "bytes": 718968,
+      "sha256": "cf18cd22d21fdad1f3e8cc1cf0bba9bbe31bc6eac8c4156f8ea76768d6968b22",
+      "packJsonSha256": "980195cb7cdbbdc36cd94943bc7d72f6d7e2e3dbcf71bdfd1a5fa3bdbaed4f59"
     }
   ]
 }

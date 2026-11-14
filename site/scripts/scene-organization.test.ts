@@ -5,7 +5,7 @@ import * as sceneData from '../src/data/scenes';
 test('scene browsing separates current Cathedral from earlier Kiln scenes without treating Troy as a module', () => {
   const groups = sceneData.sceneBrowseGroups?.(true);
   expect(groups?.map(group => [group.label, group.scenes.map(scene => scene.id)])).toEqual([
-    ['Current Kiln scenes', ['cathedral-square']],
+    ['Current Kiln scenes', ['seed-town', 'cathedral-square']],
     ['Earlier Kiln scenes', ['troy', 'farm', 'golden-gate', 'foundry-floor', 'cabin-woods-psx-horror']],
   ]);
   expect('troy' in sceneData.scenes).toBe(false);

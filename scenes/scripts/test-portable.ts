@@ -25,7 +25,7 @@ function walk(directory: string) {
   }
 }
 for (const directory of ['packages/scene-kit/tests', 'packages/farm/tests/unit',
-  'packages/golden-gate/tests/unit', 'packages/foundry-floor/tests/unit', 'packages/cathedral-square/tests', 'scripts/tests']) walk(directory);
+  'packages/golden-gate/tests/unit', 'packages/foundry-floor/tests/unit', 'packages/cathedral-square/tests', 'packages/seed-town/tests', 'scripts/tests']) walk(directory);
 console.log(`Portable source contracts: ${files.length} files; ${authoredInputs.size} input-dependent suites remain in test:integration (current fixtures: test:release-inputs).`);
 const run = Bun.spawnSync([process.execPath, 'test', ...files.sort(), '--timeout', '20000'], { cwd: root, stdout: 'inherit', stderr: 'inherit' });
 process.exitCode = run.exitCode;

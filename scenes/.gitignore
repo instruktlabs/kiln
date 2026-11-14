@@ -6,6 +6,8 @@ coverage/
 .cache/
 evidence/
 packages/cathedral-square/standalone/public/
+packages/seed-town/standalone/public/
+packages/seed-town/review/
 # Local owner captures, authoring receipts and one-off inspection scripts.
 packages/cathedral-square/review/
 packages/cathedral-square/tests/_debug.ts
