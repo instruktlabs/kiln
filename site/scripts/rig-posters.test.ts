@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { RIG_ID, resolveRigEngine, fitCamera, orbitDirection } from './rig-render.mjs';
 import { applyRigPoster, applyRigPosters, rigPosterImage, rigPosterKey, rigPosterPath } from './rig-posters-core.mjs';
-import { SEED_TOWN_ID, VEHICLE_POSTER, bridgeTargets, farmTargets, holodeckPosterView, pruneImagePlan, recordPosters, seedTownTargets, vehicleTargets } from './rig-posters.mjs';
+import { H7_ID, SEED_TOWN_ID, VEHICLE_POSTER, bridgeTargets, farmTargets, h7Targets, holodeckPosterView, pruneImagePlan, recordPosters, seedTownTargets, vehicleTargets } from './rig-posters.mjs';
 import { BRIDGE_CAPTURES, bridgeCaptureKey, bridgeCapturePath } from './bridge-captures.mjs';
 import { hashBytes } from './mirror-core.mjs';
 
@@ -322,6 +322,35 @@ describe('Seed Town kit posters', () => {
       }
       await writeFile(join(root, 'assets', assets[0].runtimeModelDownload.member), 'tampered');
       await expect(seedTownTargets({ assetsDir: join(root, 'assets'), data: join(root, 'data') })).rejects.toThrow(/verification failed/);
+    } finally { await rm(root, { recursive: true, force: true }); }
+  });
+});
+
+describe('H-7 posters', () => {
+  test('target every catalog model from the staged mirror, and refuse changed bytes', async () => {
+    const catalog = await json('packs/h-7.json');
+    const root = await mkdtemp(join(tmpdir(), 'h7-posters-'));
+    try {
+      const models = join(root, 'mirror/packs', H7_ID, catalog.release, 'models');
+      await mkdir(join(root, 'data/packs'), { recursive: true });
+      await mkdir(models, { recursive: true });
+      // The staged mirror is not in the repository: stand in a model for each asset and seal the catalog copy to it.
+      const assets = [];
+      for (const asset of catalog.assets) {
+        const bytes = Buffer.from(`saved ${asset.slug}`);
+        await writeFile(join(models, `${asset.slug}.glb`), bytes);
+        assets.push({ ...asset, runtimeModelDownload: { ...asset.runtimeModelDownload, bytes: bytes.length, sha256: hashBytes(bytes) } });
+      }
+      await writeFile(join(root, 'data/packs/h-7.json'), JSON.stringify({ ...catalog, assets }));
+      const targets = await h7Targets({ mirror: join(root, 'mirror'), data: join(root, 'data') });
+      expect(targets.map((target: { slug: string }) => target.slug)).toEqual(catalog.assets.map((asset: { slug: string }) => asset.slug));
+      for (const target of targets) {
+        const asset = assets.find((candidate) => candidate.slug === target.slug);
+        expect(target).toMatchObject({ pack: H7_ID, release: catalog.release, revisionId: asset.revisionId, assetId: asset.assetId, glbPath: `models/${asset.slug}.glb`, alt: asset.description });
+        expect(hashBytes(target.glb)).toBe(asset.runtimeModelDownload.sha256);
+      }
+      await writeFile(join(models, `${assets[0].slug}.glb`), 'tampered');
+      await expect(h7Targets({ mirror: join(root, 'mirror'), data: join(root, 'data') })).rejects.toThrow(/verification failed/);
     } finally { await rm(root, { recursive: true, force: true }); }
   });
 });

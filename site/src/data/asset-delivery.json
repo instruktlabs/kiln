@@ -3883,6 +3883,200 @@
           }
         }
       ]
+    },
+    "h-7": {
+      "standalone": false,
+      "downloads": [
+        {
+          "profile": "runtime",
+          "path": "packs/h-7/h7-1/h-7-runtime.zip",
+          "bytes": 3951272,
+          "sha256": "7103bf21ea56909dc1ea96935774a761f04b20d17d7943f0b568ffb214af1e56",
+          "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/h-7-runtime.zip"
+        },
+        {
+          "profile": "editable",
+          "path": "packs/h-7/h7-1/h-7-editable.zip",
+          "bytes": 5471085,
+          "sha256": "130d38bc028a2b2bc3a39ce4db5da27658954d1492990fea7e344f4c9dd7f86f",
+          "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/h-7-editable.zip"
+        }
+      ],
+      "assets": [
+        {
+          "slug": "skitterer",
+          "collection": "project",
+          "assetId": "a_35de3d83dc7848daade91840eb07b6b9",
+          "revisionId": "r_9fd1737c06b84b85875b0d54e3f66d09",
+          "includedRevisions": [
+            "r_9fd1737c06b84b85875b0d54e3f66d09"
+          ],
+          "missingParents": [],
+          "omittedParents": [
+            "r_c086bde285ba459aa6ee978939be1a5e"
+          ],
+          "runtimeDownload": {
+            "path": "packs/h-7/h7-1/models/skitterer.glb",
+            "bytes": 208372,
+            "sha256": "7085b61f702faf4863b8e71796b8ffd27be0f884304fb3eca7ade48552ec4dc1",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/models/skitterer.glb"
+          },
+          "editableDownload": {
+            "path": "packs/h-7/h7-1/editable/skitterer.zip",
+            "bytes": 306951,
+            "sha256": "fecd116094bf4cabc9c29b7ea843f81fe779a83d57270e2f901b174cca72a725",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/editable/skitterer.zip"
+          }
+        },
+        {
+          "slug": "skitterer-low",
+          "collection": "project",
+          "assetId": "a_5fa717890d2f4c7e9fa38ce20fcf4aed",
+          "revisionId": "r_20f9aa15bbe94c039fbb691d95c5bf72",
+          "includedRevisions": [
+            "r_20f9aa15bbe94c039fbb691d95c5bf72"
+          ],
+          "missingParents": [],
+          "omittedParents": [
+            "r_356dd2b1e74d41b3b9da3890802bbfc0"
+          ],
+          "runtimeDownload": {
+            "path": "packs/h-7/h7-1/models/skitterer-low.glb",
+            "bytes": 188224,
+            "sha256": "143b69d23309aa89a0f54785fc1f2fa09e39366861071590c2d8420c52a064a3",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/models/skitterer-low.glb"
+          },
+          "editableDownload": {
+            "path": "packs/h-7/h7-1/editable/skitterer-low.zip",
+            "bytes": 143720,
+            "sha256": "d8f4b09b8040aa1f7f88f578424c5b27ceee6cafbce501e42a3ec6fc5a7fe5c8",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/editable/skitterer-low.zip"
+          }
+        },
+        {
+          "slug": "skitterer-corpse",
+          "collection": "project",
+          "assetId": "a_5bb8c75933404d7d9ef172d1c372a6c9",
+          "revisionId": "r_9070ae16db1d4d4d878291fdf606365b",
+          "includedRevisions": [
+            "r_9070ae16db1d4d4d878291fdf606365b"
+          ],
+          "missingParents": [],
+          "omittedParents": [],
+          "runtimeDownload": {
+            "path": "packs/h-7/h7-1/models/skitterer-corpse.glb",
+            "bytes": 15048,
+            "sha256": "04909b77fe56c760bd749fa2fa37d89dd791f6bddc2bb661bbeff03fb1c2efbd",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/models/skitterer-corpse.glb"
+          },
+          "editableDownload": {
+            "path": "packs/h-7/h7-1/editable/skitterer-corpse.zip",
+            "bytes": 101304,
+            "sha256": "66c1c64d175ec8bd5a882822c9e80b55273df53baa31f73fd9776549b07ecc97",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/editable/skitterer-corpse.zip"
+          }
+        },
+        {
+          "slug": "hive-fissure",
+          "collection": "project",
+          "assetId": "a_a37fe402559f4013bbb22ff6480ac788",
+          "revisionId": "r_1e6e2cef4c9242e3af84c5287338df18",
+          "includedRevisions": [
+            "r_1e6e2cef4c9242e3af84c5287338df18"
+          ],
+          "missingParents": [],
+          "omittedParents": [
+            "r_a6fa5e24328f4292925d87e7c8712106"
+          ],
+          "runtimeDownload": {
+            "path": "packs/h-7/h7-1/models/hive-fissure.glb",
+            "bytes": 594528,
+            "sha256": "59f099b93f44712c6c8938f7cb749e41f89010915461e52734b5af0eabb99b3d",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/models/hive-fissure.glb"
+          },
+          "editableDownload": {
+            "path": "packs/h-7/h7-1/editable/hive-fissure.zip",
+            "bytes": 586931,
+            "sha256": "d235ae84077ea1a8f7ec3ea8d4ff5f9f8e3d56df05420805c215cce83d9f7392",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/editable/hive-fissure.zip"
+          }
+        },
+        {
+          "slug": "terrain-kit",
+          "collection": "project",
+          "assetId": "a_b667cab8022f42d29b98edd4228c1544",
+          "revisionId": "r_5a202e999cb94234b6ac78e296f69cec",
+          "includedRevisions": [
+            "r_5a202e999cb94234b6ac78e296f69cec"
+          ],
+          "missingParents": [],
+          "omittedParents": [
+            "r_660c539b711b4682b09062afbaa031f4"
+          ],
+          "runtimeDownload": {
+            "path": "packs/h-7/h7-1/models/terrain-kit.glb",
+            "bytes": 1964768,
+            "sha256": "244fdb6309230f75f3097798d98e518bb2ccf4f24b4b2b500b4296beaa2ce214",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/models/terrain-kit.glb"
+          },
+          "editableDownload": {
+            "path": "packs/h-7/h7-1/editable/terrain-kit.zip",
+            "bytes": 1701900,
+            "sha256": "f161b4d99d322e825b90b1003af4d881a647ebf197e3179d52ea60e196381bd1",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/editable/terrain-kit.zip"
+          }
+        },
+        {
+          "slug": "outpost-kit",
+          "collection": "project",
+          "assetId": "a_eeacb83b44a44a98973b65e0c88bdb3b",
+          "revisionId": "r_7edff4fd55b246a888d6559cad35378b",
+          "includedRevisions": [
+            "r_7edff4fd55b246a888d6559cad35378b"
+          ],
+          "missingParents": [],
+          "omittedParents": [
+            "r_d06fbb232dd74a6eb89e0efc8cc315e0"
+          ],
+          "runtimeDownload": {
+            "path": "packs/h-7/h7-1/models/outpost-kit.glb",
+            "bytes": 436608,
+            "sha256": "042aa564ecc09162c6d69300d0096f1ea8a199a6ff60f112c192898b53dd20a2",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/models/outpost-kit.glb"
+          },
+          "editableDownload": {
+            "path": "packs/h-7/h7-1/editable/outpost-kit.zip",
+            "bytes": 500886,
+            "sha256": "b57bfb08cd6da8f77157373e8c58e2f253ba7941ddaaf5b3e7dc122d1c4864e4",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/editable/outpost-kit.zip"
+          }
+        },
+        {
+          "slug": "mech-cockpit",
+          "collection": "project",
+          "assetId": "a_8859265660134a13a0295080de7c54fa",
+          "revisionId": "r_771f5b1384eb46dfa3d20698bbfa9248",
+          "includedRevisions": [
+            "r_771f5b1384eb46dfa3d20698bbfa9248"
+          ],
+          "missingParents": [],
+          "omittedParents": [
+            "r_1de0f7c3bc794cf68f8db5a9f8f2d7ee"
+          ],
+          "runtimeDownload": {
+            "path": "packs/h-7/h7-1/models/mech-cockpit.glb",
+            "bytes": 6355620,
+            "sha256": "019818674d99d9ed888b2091b1f5a1b55581a9856b24a427f09429d4a38c7d04",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/models/mech-cockpit.glb"
+          },
+          "editableDownload": {
+            "path": "packs/h-7/h7-1/editable/mech-cockpit.zip",
+            "bytes": 2138129,
+            "sha256": "9bd1735d5894ab5d7db65360f1df4f91d18c87ee8fae49995af392b5f393e894",
+            "url": "https://assets.kilnstudio.tools/packs/h-7/h7-1/editable/mech-cockpit.zip"
+          }
+        }
+      ]
     }
   }
 }

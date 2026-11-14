@@ -1,0 +1,74 @@
+{
+  "description": "The saved Kiln revisions published as the H-7 collection. partOf names the card an extra model ships with.",
+  "id": "h-7",
+  "name": "H-7",
+  "release": "h7-1",
+  "collectionId": "project",
+  "assets": [
+    {
+      "id": "skitterer",
+      "workspace": "skitterer",
+      "assetId": "a_35de3d83dc7848daade91840eb07b6b9",
+      "revisionId": "r_9fd1737c06b84b85875b0d54e3f66d09",
+      "sha256": "7085b61f702faf4863b8e71796b8ffd27be0f884304fb3eca7ade48552ec4dc1",
+      "bytes": 208372,
+      "sourceSha256": "fc4ed6417f36305c1f9b235527ecb64453d14cae1fc41fcd6dc191ac5adc2028"
+    },
+    {
+      "id": "skitterer-low",
+      "workspace": "skitterer",
+      "assetId": "a_5fa717890d2f4c7e9fa38ce20fcf4aed",
+      "revisionId": "r_20f9aa15bbe94c039fbb691d95c5bf72",
+      "sha256": "143b69d23309aa89a0f54785fc1f2fa09e39366861071590c2d8420c52a064a3",
+      "bytes": 188224,
+      "sourceSha256": "c18d614e20b33bd40630c6dbee756eb4866d39c3ebee61541f89cbacf26fe976",
+      "partOf": "skitterer"
+    },
+    {
+      "id": "skitterer-corpse",
+      "workspace": "skitterer",
+      "assetId": "a_5bb8c75933404d7d9ef172d1c372a6c9",
+      "revisionId": "r_9070ae16db1d4d4d878291fdf606365b",
+      "sha256": "04909b77fe56c760bd749fa2fa37d89dd791f6bddc2bb661bbeff03fb1c2efbd",
+      "bytes": 15048,
+      "sourceSha256": "fc5e0eb5182b5f96322e9ff90e9e6630aa5aeddec2b9fccc468b7c68cef742a8",
+      "partOf": "skitterer"
+    },
+    {
+      "id": "hive-fissure",
+      "workspace": "hive-fissure",
+      "assetId": "a_a37fe402559f4013bbb22ff6480ac788",
+      "revisionId": "r_1e6e2cef4c9242e3af84c5287338df18",
+      "sha256": "59f099b93f44712c6c8938f7cb749e41f89010915461e52734b5af0eabb99b3d",
+      "bytes": 594528,
+      "sourceSha256": "85fafb0533cbf12d0b43014c5def7c3c6535ff217a3e8796fad92e9f0cf1471f"
+    },
+    {
+      "id": "terrain-kit",
+      "workspace": "terrain-kit",
+      "assetId": "a_b667cab8022f42d29b98edd4228c1544",
+      "revisionId": "r_5a202e999cb94234b6ac78e296f69cec",
+      "sha256": "244fdb6309230f75f3097798d98e518bb2ccf4f24b4b2b500b4296beaa2ce214",
+      "bytes": 1964768,
+      "sourceSha256": "817d89927fe311e9c5b8f0f0c9ef849c4115f499482505a351afbaab282f7299"
+    },
+    {
+      "id": "outpost-kit",
+      "workspace": "outpost-kit",
+      "assetId": "a_eeacb83b44a44a98973b65e0c88bdb3b",
+      "revisionId": "r_7edff4fd55b246a888d6559cad35378b",
+      "sha256": "042aa564ecc09162c6d69300d0096f1ea8a199a6ff60f112c192898b53dd20a2",
+      "bytes": 436608,
+      "sourceSha256": "47abc29f6da6ae75886737a65e3a2761d7db1f8632c6e10fc51206b7e4a29ca9"
+    },
+    {
+      "id": "mech-cockpit",
+      "workspace": "mech-fork",
+      "assetId": "a_8859265660134a13a0295080de7c54fa",
+      "revisionId": "r_771f5b1384eb46dfa3d20698bbfa9248",
+      "sha256": "019818674d99d9ed888b2091b1f5a1b55581a9856b24a427f09429d4a38c7d04",
+      "bytes": 6355620,
+      "sourceSha256": "9b57b779e82f44ff7ad2f0b1a902abbe4bea67c612198a332a885201af9174ef"
+    }
+  ]
+}

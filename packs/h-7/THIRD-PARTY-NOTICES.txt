@@ -1,0 +1,8 @@
+H-7 asset notices
+
+The H-7 collection's models and their editable Kiln sources are released under CC0 1.0 Universal.
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The saved asset and revision IDs are in selection.json. Each model's textures are drawn by its own source program; the collection contains no third-party images.
+
+The H-7 game, its code and its name are not part of this collection and are not covered by this licence.

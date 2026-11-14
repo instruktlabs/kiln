@@ -687,6 +687,78 @@
             "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
           ]
         }
+      },
+      {
+        "id": "h-7-2026-11-14-0cf0acd4",
+        "pack": "h-7",
+        "renderedOn": "2026-11-14",
+        "engine": {
+          "commit": "9387d4e41c1b277d335e3cadd211bc651ddaf0ac",
+          "subject": "Open the gallery in a curated order (#399)",
+          "dirty": true
+        },
+        "service": {
+          "url": "http://127.0.0.1:8031",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:a8592bba54f59fe62af19701a8769a90aba42605d15f22491d957cd11d8e4f98",
+          "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+          "dependencies": {
+            "three": "0.187.0",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:173155fc4d02e984f6951805eba7f333693aaf111fb5399fea4da4c58ce86a8c",
+            "001cd7d9-f09a-4d47-95cc-177b896d7509",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
+          ]
+        }
+      },
+      {
+        "id": "h-7-2026-11-14-f123c501",
+        "pack": "h-7",
+        "renderedOn": "2026-11-14",
+        "engine": {
+          "commit": "9387d4e41c1b277d335e3cadd211bc651ddaf0ac",
+          "subject": "Open the gallery in a curated order (#399)",
+          "dirty": true
+        },
+        "service": {
+          "url": "http://127.0.0.1:8031",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:a8592bba54f59fe62af19701a8769a90aba42605d15f22491d957cd11d8e4f98",
+          "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+          "dependencies": {
+            "three": "0.187.0",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:173155fc4d02e984f6951805eba7f333693aaf111fb5399fea4da4c58ce86a8c",
+            "f1d9ba6a-a22a-49b1-bfa0-c4c05946b237",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
+          ]
+        }
       }
     ]
   },
@@ -10472,6 +10544,195 @@
       },
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
       "run": "seed-town-2026-11-14-894875cf"
+    },
+    "h-7:skitterer": {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/skitterer.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1381408,
+      "sha256": "ca2ca34f41cda4f3b2d7d1dbe40fee66db8cc4cd3a4af98ee4a2d395dde4c403",
+      "assetId": "a_35de3d83dc7848daade91840eb07b6b9",
+      "revisionId": "r_9fd1737c06b84b85875b0d54e3f66d09",
+      "glb": {
+        "member": "models/skitterer.glb",
+        "bytes": 208372,
+        "sha256": "7085b61f702faf4863b8e71796b8ffd27be0f884304fb3eca7ade48552ec4dc1",
+        "triangles": 2822
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.8578937177191127
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "h-7-2026-11-14-0cf0acd4"
+    },
+    "h-7:skitterer-low": {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/skitterer-low.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1324300,
+      "sha256": "7ec0cbb686cad69ef72f27d26ae0d9bd2cb0e1602974fbbf69b91b84c76f438f",
+      "assetId": "a_5fa717890d2f4c7e9fa38ce20fcf4aed",
+      "revisionId": "r_20f9aa15bbe94c039fbb691d95c5bf72",
+      "glb": {
+        "member": "models/skitterer-low.glb",
+        "bytes": 188224,
+        "sha256": "143b69d23309aa89a0f54785fc1f2fa09e39366861071590c2d8420c52a064a3",
+        "triangles": 370
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.8503182949661974
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "h-7-2026-11-14-0cf0acd4"
+    },
+    "h-7:skitterer-corpse": {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1389906,
+      "sha256": "9c8b33dd8fdea16e3dda4ee41deffb94aa0727efbcebe490489fec70724bd03b",
+      "assetId": "a_5bb8c75933404d7d9ef172d1c372a6c9",
+      "revisionId": "r_9070ae16db1d4d4d878291fdf606365b",
+      "glb": {
+        "member": "models/skitterer-corpse.glb",
+        "bytes": 15048,
+        "sha256": "04909b77fe56c760bd749fa2fa37d89dd791f6bddc2bb661bbeff03fb1c2efbd",
+        "triangles": 155
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.609402705075154
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "h-7-2026-11-14-0cf0acd4"
+    },
+    "h-7:hive-fissure": {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/hive-fissure.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1440197,
+      "sha256": "cb6ea694f133c40fdd1fec96022cf53348cb3051f29ebed3acbac2ea74a9e8f3",
+      "assetId": "a_a37fe402559f4013bbb22ff6480ac788",
+      "revisionId": "r_1e6e2cef4c9242e3af84c5287338df18",
+      "glb": {
+        "member": "models/hive-fissure.glb",
+        "bytes": 594528,
+        "sha256": "59f099b93f44712c6c8938f7cb749e41f89010915461e52734b5af0eabb99b3d",
+        "triangles": 18973
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 24.766210272907916
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "h-7-2026-11-14-0cf0acd4"
+    },
+    "h-7:terrain-kit": {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/terrain-kit.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1313657,
+      "sha256": "be5e8af9f0ae7883e00777bd684ef5d0101d308d694beeeb93f434c02bbda67b",
+      "assetId": "a_b667cab8022f42d29b98edd4228c1544",
+      "revisionId": "r_5a202e999cb94234b6ac78e296f69cec",
+      "glb": {
+        "member": "models/terrain-kit.glb",
+        "bytes": 1964768,
+        "sha256": "244fdb6309230f75f3097798d98e518bb2ccf4f24b4b2b500b4296beaa2ce214",
+        "triangles": 22034
+      },
+      "view": {
+        "direction": [
+          0.25,
+          0.3,
+          1
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 362.291480479612
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "h-7-2026-11-14-f123c501"
+    },
+    "h-7:outpost-kit": {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/outpost-kit.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1572480,
+      "sha256": "97d752ad78748501965915938a3aa622c2bc0cc1d82346f5c736a42487c7a4bc",
+      "assetId": "a_eeacb83b44a44a98973b65e0c88bdb3b",
+      "revisionId": "r_7edff4fd55b246a888d6559cad35378b",
+      "glb": {
+        "member": "models/outpost-kit.glb",
+        "bytes": 436608,
+        "sha256": "042aa564ecc09162c6d69300d0096f1ea8a199a6ff60f112c192898b53dd20a2",
+        "triangles": 3500
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 14.564808039112926
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "h-7-2026-11-14-0cf0acd4"
+    },
+    "h-7:mech-cockpit": {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1748228,
+      "sha256": "70d8f4d53a6d0d291d3677119421fe9e61902b1f092a1949f7f77b96444fab7e",
+      "assetId": "a_8859265660134a13a0295080de7c54fa",
+      "revisionId": "r_771f5b1384eb46dfa3d20698bbfa9248",
+      "glb": {
+        "member": "models/mech-cockpit.glb",
+        "bytes": 6355620,
+        "sha256": "019818674d99d9ed888b2091b1f5a1b55581a9856b24a427f09429d4a38c7d04",
+        "triangles": 90587
+      },
+      "view": {
+        "direction": [
+          0.8,
+          0.3,
+          0.6
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.490632240863724
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "h-7-2026-11-14-f123c501"
     }
   }
 }

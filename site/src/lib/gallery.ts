@@ -13,6 +13,7 @@ import {
   cathedralGalleryAssets,
   cathedralSceneHref,
 } from './cathedral-gallery';
+import { H7_ID, h7AssetHref, h7GalleryAssets } from './h7-gallery';
 import {
   SEED_TOWN_ID,
   seedTownAssetHref,
@@ -108,6 +109,16 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
       packs: [TEXT_TO_3D_PACK],
       category: '',
       href: textTo3dAssetHref(asset.slug),
+      review: { ownerAccepted: false, status: 'awaiting-owner-review' },
+    })),
+    ...h7GalleryAssets(packsEnabled).map((asset) => ({
+      ...asset,
+      poster: asset.poster ?? null,
+      pack: H7_ID,
+      packs: [H7_ID],
+      category: '',
+      href: h7AssetHref(asset.slug),
+      runtimeDownload: asset.runtimeModelDownload,
       review: { ownerAccepted: false, status: 'awaiting-owner-review' },
     })),
     ...seedTownGalleryAssets(packsEnabled).map((asset) => ({

@@ -1,6 +1,6 @@
 # Asset sources and downloads
 
-Farm, Vehicles, Golden Gate Bridge, Foundry Floor, Troy, Cathedral Square and Seed Town use two download choices.
+Farm, Vehicles, Golden Gate Bridge, Foundry Floor, Troy, Cathedral Square, Seed Town and H-7 use two download choices.
 
 - **Runtime assets:** models ready for scenes and applications, with embedded resources
   and the existing animation, part-name and detail-tier contracts.
@@ -43,7 +43,7 @@ From `site/`, hydrate only the requested group into that workspace:
 node scripts/hydrate-asset-sources.mjs --group vehicles --output /path/to/my-assets
 ```
 
-The group can be `farm`, `vehicles`, `golden-gate-bridge`, `foundry-floor`, `troy` or `cathedral-square`.
+The group can be `farm`, `vehicles`, `golden-gate-bridge`, `foundry-floor`, `troy`, `cathedral-square`, `seed-town` or `h-7`.
 For the local Cathedral Square candidate, use the [staged mirror](cathedral-square/README.md).
 The script verifies the sealed downloads and complete included revision inventory before
 writing records. Logical collection `project` is workspace storage at `assets/kiln/`,

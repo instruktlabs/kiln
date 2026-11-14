@@ -1,0 +1,39 @@
+---
+import AssetCard from "../../components/AssetCard.astro";
+import AssetDownloads from "../../components/AssetDownloads.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { galleryCards } from "../../lib/gallery";
+import { galleryCategories } from "../../lib/gallery-browse";
+import { PACKS_ENABLED } from "../../lib/config";
+import { packDelivery } from "../../lib/delivery";
+import { H7_ID, h7DemoHref, h7Pack, h7PackHref } from "../../lib/h7-gallery";
+const assets = galleryCards.filter((asset) => asset.packs.includes(H7_ID));
+const downloads = PACKS_ENABLED ? packDelivery(H7_ID) : null;
+const categories = galleryCategories.filter((category) => assets.some((asset) => asset.category === category));
+---
+<BaseLayout title="H-7 asset pack · Kiln"
+  description="The models made in Kiln for the H-7 game demo: the Skitterer bug, the Heavy Walker Mech with its cockpit, a hive fissure and two environment kits."
+  breadcrumbs={[{ label: "Packs", href: "/packs/" }, { label: "H-7", href: h7PackHref }]}
+  card="packs">
+  <div class="container pb-12">
+    <PageHeader class="py-8">H-7 asset pack</PageHeader>
+    <p class="lead max-w-prose">The models made in Kiln for the H-7 game demo: an animated alien bug, the Heavy Walker Mech with a cockpit you can sit in, a hive that breaks through the ground, and kits for a salt desert and a fortified outpost.</p>
+    <a class="btn btn-secondary mt-6" href={h7DemoHref}>See them in the H-7 demo</a>
+    {downloads && (
+      <>
+        <p class="mt-8 max-w-reading">The pack includes all {h7Pack.assets.length} models. The Skitterer's low-detail model and corpse are listed on its page.</p>
+        <AssetDownloads runtime={downloads.runtime} editable={downloads.editable} />
+        <p class="mt-4 max-w-reading">The models and their Kiln source are <a class="text-link" href={h7Pack.license.url}>{h7Pack.license.spdx}</a> to the extent of the owner's rights. The H-7 game and its code are not part of this pack.</p>
+        {categories.map((category) => (
+          <section class="mt-12">
+            <h2 class="text-subheading">{category}</h2>
+            <div class="mt-6 grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 lg:grid-cols-4">
+              {assets.filter((asset) => asset.category === category).map((asset) => <AssetCard asset={asset} />)}
+            </div>
+          </section>
+        ))}
+      </>
+    )}
+  </div>
+</BaseLayout>

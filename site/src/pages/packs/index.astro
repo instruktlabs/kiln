@@ -10,6 +10,8 @@ import { farm, vehicles } from "../../lib/catalog";
 import { PACKS_ENABLED } from "../../lib/config";
 import { cathedralPack, cathedralPackHref } from "../../lib/cathedral-gallery";
 import { seedTownPack, seedTownPackHref } from "../../lib/seed-town-gallery";
+import { h7GalleryAssets, h7Pack, h7PackHref } from "../../lib/h7-gallery";
+const h7Poster = h7Pack.assets.find((asset) => asset.slug === "mech-cockpit")?.poster;
 const cathedralPoster = cathedralPack.assets.find((asset) => asset.slug === "cathedral")!.poster;
 import foundryFloor from "../../data/foundry-floor.json";
 import foundryFloorPack from "../../data/packs/foundry-floor.json";
@@ -172,6 +174,20 @@ const featured = ["s1-head-w", "s2-hall-w", "euv-scanner", "etch-cluster-tool", 
         <div>
           <h2 class="text-subheading">{seedTownPack.name}</h2>
           <p class="mt-4">{seedTownPack.assets.length} kit models with their own options, sizes and colours: house fronts, roofs, paving, lamps, signs, street furniture and autumn trees.</p>
+          <span class="text-link mt-4">Browse the pack</span>
+        </div>
+      </a>
+    )}
+    {PACKS_ENABLED && (
+      <a href={h7PackHref} aria-label={h7Pack.name} class="mt-12 grid items-center gap-8 border-b border-rule pb-8 lg:grid-cols-3">
+        {h7Poster && (
+          <div class="lg:col-span-2">
+            <ResponsiveImage image={{ ...h7Poster, alt: "" }} sizes="(max-width: 1024px) 100vw, 65vw" />
+          </div>
+        )}
+        <div>
+          <h2 class="text-subheading">{h7Pack.name}</h2>
+          <p class="mt-4">{h7GalleryAssets(true).length} assets from the H-7 game demo: an animated alien bug, the Heavy Walker Mech with its cockpit, a hive fissure, and salt desert and outpost kits.</p>
           <span class="text-link mt-4">Browse the pack</span>
         </div>
       </a>
