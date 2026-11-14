@@ -13,6 +13,7 @@ import {
   cathedralGalleryAssets,
   cathedralSceneHref,
 } from './cathedral-gallery';
+import { TEXT_TO_3D_PACK, textTo3dAssetHref, textTo3dGalleryAssets } from './text-to-3d-gallery';
 
 export { foundry };
 export type FoundryAsset = (typeof foundry.assets)[number];
@@ -91,6 +92,16 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
       runtimeDownload: asset.runtimeModelDownload,
       review: { ownerAccepted: false, status: 'awaiting-owner-review' },
       scenes: [{ label: 'Explore Cathedral Square', href: cathedralSceneHref }],
+    })),
+  );
+  cards.push(
+    ...textTo3dGalleryAssets(packsEnabled).map((asset) => ({
+      ...asset,
+      pack: TEXT_TO_3D_PACK,
+      packs: [TEXT_TO_3D_PACK],
+      category: '',
+      href: textTo3dAssetHref(asset.slug),
+      review: { ownerAccepted: false, status: 'awaiting-owner-review' },
     })),
   );
   return browseGallery(

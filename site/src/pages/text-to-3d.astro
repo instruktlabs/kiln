@@ -6,7 +6,7 @@ import PageHeader from "../components/PageHeader.astro";
 import CodeBlock from "../components/CodeBlock.astro";
 import ResponsiveImage from "../components/ResponsiveImage.astro";
 import TextTo3dRun from "../components/TextTo3dRun.astro";
-import { HARNESSES, INSTALL_COMMAND, REPO, SITE, VERSION, VERSION_SHORT } from "../lib/config";
+import { HARNESSES, INSTALL_COMMAND, PACKS_ENABLED, REPO, SITE, VERSION, VERSION_SHORT } from "../lib/config";
 import { harnessWithVersion, modelName } from "../lib/attribution";
 import { number } from "../lib/catalog";
 import { holodeckWorldUrl } from "../lib/holodeck";
@@ -140,6 +140,7 @@ const questions = [
       Pilot a version of this walker in a desktop browser mech defense demo.
       <a href="/play/h-7/" class="text-link">Play H-7 pre-alpha <span aria-hidden="true">→</span></a>
     </p>
+    {PACKS_ENABLED && <p slot="related" class="mt-4"><a href="/gallery/text-to-3d/mech/" class="text-link">The mech's gallery page <span aria-hidden="true">→</span></a></p>}
   </TextTo3dRun>
 
   <TextTo3dRun
