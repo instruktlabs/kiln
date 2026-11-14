@@ -5342,6 +5342,90 @@
       "srcsetWebp": "/media/scenes/seed-town/st1/seed-town-scene-town-320.webp 320w, /media/scenes/seed-town/st1/seed-town-scene-town-480.webp 480w, /media/scenes/seed-town/st1/seed-town-scene-town-672.webp 672w, /media/scenes/seed-town/st1/seed-town-scene-town-768.webp 768w, /media/scenes/seed-town/st1/seed-town-scene-town-1024.webp 1024w, /media/scenes/seed-town/st1/seed-town-scene-town-1440.webp 1440w",
       "srcsetAvif": "/media/scenes/seed-town/st1/seed-town-scene-town-320.avif 320w, /media/scenes/seed-town/st1/seed-town-scene-town-480.avif 480w, /media/scenes/seed-town/st1/seed-town-scene-town-672.avif 672w, /media/scenes/seed-town/st1/seed-town-scene-town-768.avif 768w, /media/scenes/seed-town/st1/seed-town-scene-town-1024.avif 1024w, /media/scenes/seed-town/st1/seed-town-scene-town-1440.avif 1440w",
       "inputPath": "media/scenes/seed-town/st1/seed-town-scene-town.png"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/h-7/h7-1/skitterer.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A six-legged alien bug with mandibles and glowing acid sacs, built from 21 rigid parts on named joints. It has Walk, Run, Climb, Crest, Attack, Death, Idle, Fall and Corpse clips, and comes with a low-detail model and a corpse.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/h-7/h7-1/skitterer-320.webp 320w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-480.webp 480w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-672.webp 672w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-768.webp 768w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/h-7/h7-1/skitterer-320.avif 320w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-480.avif 480w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-672.avif 672w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-768.avif 768w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/h-7/h7-1/skitterer.png",
+      "sourceRevisionId": "r_9fd1737c06b84b85875b0d54e3f66d09",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/h-7/h7-1/skitterer-low.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The same bug at 310 triangles, with the same joints and clips, for crowds and distance.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/h-7/h7-1/skitterer-low-320.webp 320w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-low-480.webp 480w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-low-672.webp 672w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-low-768.webp 768w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-low-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/h-7/h7-1/skitterer-low-320.avif 320w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-low-480.avif 480w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-low-672.avif 672w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-low-768.avif 768w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-low-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/h-7/h7-1/skitterer-low.png",
+      "sourceRevisionId": "r_20f9aa15bbe94c039fbb691d95c5bf72",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The bug in its final pose as one 155-triangle mesh with no joints.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse-320.webp 320w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse-480.webp 480w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse-672.webp 672w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse-768.webp 768w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse-320.avif 320w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse-480.avif 480w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse-672.avif 672w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse-768.avif 768w, /media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse.png",
+      "sourceRevisionId": "r_9070ae16db1d4d4d878291fdf606365b",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/h-7/h7-1/hive-fissure.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A hive breaking through a salt crust, in three growth stages as named groups: a fresh fissure, a wider breach and a mature mound with glowing vents.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/h-7/h7-1/hive-fissure-320.webp 320w, /media/rig/review-neutral-v1/h-7/h7-1/hive-fissure-480.webp 480w, /media/rig/review-neutral-v1/h-7/h7-1/hive-fissure-672.webp 672w, /media/rig/review-neutral-v1/h-7/h7-1/hive-fissure-768.webp 768w, /media/rig/review-neutral-v1/h-7/h7-1/hive-fissure-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/h-7/h7-1/hive-fissure-320.avif 320w, /media/rig/review-neutral-v1/h-7/h7-1/hive-fissure-480.avif 480w, /media/rig/review-neutral-v1/h-7/h7-1/hive-fissure-672.avif 672w, /media/rig/review-neutral-v1/h-7/h7-1/hive-fissure-768.avif 768w, /media/rig/review-neutral-v1/h-7/h7-1/hive-fissure-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/h-7/h7-1/hive-fissure.png",
+      "sourceRevisionId": "r_1e6e2cef4c9242e3af84c5287338df18",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/h-7/h7-1/terrain-kit.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Terrain pieces for a salt desert as named groups: two boulders, two crystal clusters, two pressure ridges, two outcrops, a crawler vehicle, and four distant mesas and buttes on one 1024 texture set.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/h-7/h7-1/terrain-kit-320.webp 320w, /media/rig/review-neutral-v1/h-7/h7-1/terrain-kit-480.webp 480w, /media/rig/review-neutral-v1/h-7/h7-1/terrain-kit-672.webp 672w, /media/rig/review-neutral-v1/h-7/h7-1/terrain-kit-768.webp 768w, /media/rig/review-neutral-v1/h-7/h7-1/terrain-kit-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/h-7/h7-1/terrain-kit-320.avif 320w, /media/rig/review-neutral-v1/h-7/h7-1/terrain-kit-480.avif 480w, /media/rig/review-neutral-v1/h-7/h7-1/terrain-kit-672.avif 672w, /media/rig/review-neutral-v1/h-7/h7-1/terrain-kit-768.avif 768w, /media/rig/review-neutral-v1/h-7/h7-1/terrain-kit-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/h-7/h7-1/terrain-kit.png",
+      "sourceRevisionId": "r_5a202e999cb94234b6ac78e296f69cec",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/h-7/h7-1/outpost-kit.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Seven modular pieces for a fortified outpost on one shared texture atlas: wall section, corner, gate, floodlight mast, cargo container, refinery tank and pad tile.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/h-7/h7-1/outpost-kit-320.webp 320w, /media/rig/review-neutral-v1/h-7/h7-1/outpost-kit-480.webp 480w, /media/rig/review-neutral-v1/h-7/h7-1/outpost-kit-672.webp 672w, /media/rig/review-neutral-v1/h-7/h7-1/outpost-kit-768.webp 768w, /media/rig/review-neutral-v1/h-7/h7-1/outpost-kit-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/h-7/h7-1/outpost-kit-320.avif 320w, /media/rig/review-neutral-v1/h-7/h7-1/outpost-kit-480.avif 480w, /media/rig/review-neutral-v1/h-7/h7-1/outpost-kit-672.avif 672w, /media/rig/review-neutral-v1/h-7/h7-1/outpost-kit-768.avif 768w, /media/rig/review-neutral-v1/h-7/h7-1/outpost-kit-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/h-7/h7-1/outpost-kit.png",
+      "sourceRevisionId": "r_7edff4fd55b246a888d6559cad35378b",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The Heavy Walker Mech reworked for a first-person game: a cockpit with five screens, pilot arms and an eye point, heel spurs, longer piston strokes and a Brace clip. Its parts are rigid meshes on named joints.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit-320.webp 320w, /media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit-480.webp 480w, /media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit-672.webp 672w, /media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit-768.webp 768w, /media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit-320.avif 320w, /media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit-480.avif 480w, /media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit-672.avif 672w, /media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit-768.avif 768w, /media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit.png",
+      "sourceRevisionId": "r_771f5b1384eb46dfa3d20698bbfa9248",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     }
   ],
   "archives": [

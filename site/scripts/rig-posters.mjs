@@ -21,6 +21,7 @@ import { FOUNDRY_FLOOR_ID, FOUNDRY_FLOOR_POSTER, FOUNDRY_FLOOR_SCENE_POSTER } fr
  *   bun scripts/rig-posters.mjs cabin-woods-psx-horror --service ... --mirror ... [--out DIR]
  *   bun scripts/rig-posters.mjs holodeck --service ... --mirror .localdata/holodeck-delivery [--only a,b] [--out DIR]
  *   bun scripts/rig-posters.mjs seed-town --service ... --mirror .localdata/seed-town-release [--out DIR]
+ *   bun scripts/rig-posters.mjs h-7 --service ... --mirror .localdata/h-7-release [--only a,b] [--out DIR]
  *
  * Each GLB is read from its sealed source (a delivery archive in the mirror, or the bridge author's export) and
  * verified against the catalog's SHA-256 before it is sent to the renderer. An image is the engine's own view of
@@ -71,6 +72,27 @@ export async function seedTownTargets({ assetsDir = resolve(SITE, '../scenes/pac
     if (member !== `models/${asset.slug}.glb`) throw new Error(`Unexpected Seed Town model path: ${member}`);
     const glb = verifyBytes(await readFile(join(assetsDir, member)), model, asset.slug);
     return { pack: SEED_TOWN_ID, release: catalog.release, slug: asset.slug, name: asset.name, revisionId: asset.revisionId, assetId: asset.assetId, alt: asset.description, glb, glbPath: member, view: FARM_POSTER, visibleOnly: true };
+  }));
+}
+
+export const H7_ID = 'h-7';
+/** Where each H-7 poster looks from, where the standard three-quarter view hides what the model is. */
+export const H7_POSTER_VIEWS = {
+  // The cockpit glass and both arm guns read from a lower front quarter.
+  'mech-cockpit': { direction: [0.8, 0.3, 0.6] },
+  // The kit is laid out in a row 558 m long: look across the row, not along it.
+  'terrain-kit': { direction: [0.25, 0.3, 1] },
+};
+
+/** The H-7 collection has no scene pack: each model is read from the staged mirror and checked against the catalog. */
+export async function h7Targets({ mirror, data = DATA } = {}) {
+  const catalog = await readJson(join(data, `packs/${H7_ID}.json`));
+  return Promise.all(catalog.assets.map(async (asset) => {
+    const model = asset.runtimeModelDownload;
+    const member = assetPath(model.member);
+    if (member !== `models/${asset.slug}.glb`) throw new Error(`Unexpected H-7 model path: ${member}`);
+    const glb = verifyBytes(await readFile(join(mirror, 'packs', H7_ID, catalog.release, member)), model, asset.slug);
+    return { pack: H7_ID, release: catalog.release, slug: asset.slug, name: asset.name, revisionId: asset.revisionId, assetId: asset.assetId, alt: asset.description, glb, glbPath: member, view: { ...FARM_POSTER, ...H7_POSTER_VIEWS[asset.slug] }, visibleOnly: true };
   }));
 }
 
@@ -379,7 +401,7 @@ export async function refreshCatalog({ file, pack, data = DATA }) {
   const recorded = await readJson(join(data, 'rig-posters.json'));
   const catalog = await readJson(file);
   if (Array.isArray(catalog.assets)) {
-    const required = [CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID, SEED_TOWN_ID].includes(pack);
+    const required = [CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID, SEED_TOWN_ID, H7_ID].includes(pack);
     if (required) catalog.assets = catalog.assets.map((asset) => ({ ...asset, poster: null }));
     catalog.assets = applyRigPosters(catalog.assets, pack, recorded, { required });
   }
@@ -391,7 +413,7 @@ async function main(argv = process.argv.slice(2), env = process.env) {
   const option = (flag, fallback) => (argv.includes(flag) ? argv[argv.indexOf(flag) + 1] : fallback);
   const pack = argv[0];
   const mirror = option('--mirror', env.KILN_ASSET_MIRROR);
-  if (!['farm', 'bridge', 'vehicles', FOUNDRY_FLOOR_ID, HERO_PACK, CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID, SEED_TOWN_ID].includes(pack) || !mirror) throw new Error('Usage: bun scripts/rig-posters.mjs farm|bridge|vehicles|foundry-floor|hero|cabin-woods-psx-horror|holodeck|cathedral-square|seed-town --mirror DIR [--service URL] [--engine DIR] [--only a,b] [--out DIR] [--dry]  (bridge also needs --outputs DIR --cameras DIR; hero needs --outputs DIR)');
+  if (!['farm', 'bridge', 'vehicles', FOUNDRY_FLOOR_ID, HERO_PACK, CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID, SEED_TOWN_ID, H7_ID].includes(pack) || !mirror) throw new Error('Usage: bun scripts/rig-posters.mjs farm|bridge|vehicles|foundry-floor|hero|cabin-woods-psx-horror|holodeck|cathedral-square|seed-town --mirror DIR [--service URL] [--engine DIR] [--only a,b] [--out DIR] [--dry]  (bridge also needs --outputs DIR --cameras DIR; hero needs --outputs DIR)');
   const only = option('--only')?.split(',');
   const rig = await connectRig({ url: option('--service', env.KILN_RENDER_SERVICE_URL), engineDir: option('--engine') });
   const provenance = rig.engine.provenance;
@@ -418,6 +440,8 @@ async function main(argv = process.argv.slice(2), env = process.env) {
     targets = (await cathedralSquareTargets({ assetsDir: option('--assets') })).filter((target) => !only || only.includes(target.slug));
   } else if (pack === SEED_TOWN_ID) {
     targets = (await seedTownTargets({ assetsDir: option('--assets') })).filter((target) => !only || only.includes(target.slug));
+  } else if (pack === H7_ID) {
+    targets = (await h7Targets({ mirror: resolve(mirror) })).filter((target) => !only || only.includes(target.slug));
   } else if (pack === 'vehicles') {
     targets = (await vehicleTargets({ mirror })).filter((target) => !only || only.includes(target.slug));
   } else if (pack === FOUNDRY_FLOOR_ID) {
@@ -445,7 +469,7 @@ async function main(argv = process.argv.slice(2), env = process.env) {
     await refreshCatalog({ file: join(DATA, [CABIN_WOODS_ID, HOLODECK_POSTER_PACK].includes(pack) ? `${pack}.json` : `packs/${pack}.json`), pack });
     if (pack === FOUNDRY_FLOOR_ID && (await recordFoundryFloorScenePoster({ posters }))) console.log('Recorded the scene page poster in scene-media.json.');
     // Cabin's saved sheets were direct delivery URLs and Holodeck had no earlier posters, so nothing needs pruning.
-    if (![CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID, SEED_TOWN_ID].includes(pack)) {
+    if (![CABIN_WOODS_ID, HOLODECK_POSTER_PACK, CATHEDRAL_SQUARE_ID, SEED_TOWN_ID, H7_ID].includes(pack)) {
       const dropped = await pruneImagePlan();
       if (dropped.length) console.log(`Dropped ${dropped.length} replaced images from the build plan (their mirror pins stay).`);
     }

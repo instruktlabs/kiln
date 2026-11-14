@@ -7855,6 +7855,121 @@
       "path": "media/scenes/seed-town/st1/seed-town-scene-town.png",
       "bytes": 6852313,
       "sha256": "618109e1add38433a63161f6675658ee8d4a7387d984678b0f589aa90bf057a5"
+    },
+    {
+      "path": "packs/h-7/h7-1/models/skitterer.glb",
+      "bytes": 208372,
+      "sha256": "7085b61f702faf4863b8e71796b8ffd27be0f884304fb3eca7ade48552ec4dc1"
+    },
+    {
+      "path": "packs/h-7/h7-1/editable/skitterer.zip",
+      "bytes": 306951,
+      "sha256": "fecd116094bf4cabc9c29b7ea843f81fe779a83d57270e2f901b174cca72a725"
+    },
+    {
+      "path": "packs/h-7/h7-1/models/skitterer-low.glb",
+      "bytes": 188224,
+      "sha256": "143b69d23309aa89a0f54785fc1f2fa09e39366861071590c2d8420c52a064a3"
+    },
+    {
+      "path": "packs/h-7/h7-1/editable/skitterer-low.zip",
+      "bytes": 143720,
+      "sha256": "d8f4b09b8040aa1f7f88f578424c5b27ceee6cafbce501e42a3ec6fc5a7fe5c8"
+    },
+    {
+      "path": "packs/h-7/h7-1/models/skitterer-corpse.glb",
+      "bytes": 15048,
+      "sha256": "04909b77fe56c760bd749fa2fa37d89dd791f6bddc2bb661bbeff03fb1c2efbd"
+    },
+    {
+      "path": "packs/h-7/h7-1/editable/skitterer-corpse.zip",
+      "bytes": 101304,
+      "sha256": "66c1c64d175ec8bd5a882822c9e80b55273df53baa31f73fd9776549b07ecc97"
+    },
+    {
+      "path": "packs/h-7/h7-1/models/hive-fissure.glb",
+      "bytes": 594528,
+      "sha256": "59f099b93f44712c6c8938f7cb749e41f89010915461e52734b5af0eabb99b3d"
+    },
+    {
+      "path": "packs/h-7/h7-1/editable/hive-fissure.zip",
+      "bytes": 586931,
+      "sha256": "d235ae84077ea1a8f7ec3ea8d4ff5f9f8e3d56df05420805c215cce83d9f7392"
+    },
+    {
+      "path": "packs/h-7/h7-1/models/terrain-kit.glb",
+      "bytes": 1964768,
+      "sha256": "244fdb6309230f75f3097798d98e518bb2ccf4f24b4b2b500b4296beaa2ce214"
+    },
+    {
+      "path": "packs/h-7/h7-1/editable/terrain-kit.zip",
+      "bytes": 1701900,
+      "sha256": "f161b4d99d322e825b90b1003af4d881a647ebf197e3179d52ea60e196381bd1"
+    },
+    {
+      "path": "packs/h-7/h7-1/models/outpost-kit.glb",
+      "bytes": 436608,
+      "sha256": "042aa564ecc09162c6d69300d0096f1ea8a199a6ff60f112c192898b53dd20a2"
+    },
+    {
+      "path": "packs/h-7/h7-1/editable/outpost-kit.zip",
+      "bytes": 500886,
+      "sha256": "b57bfb08cd6da8f77157373e8c58e2f253ba7941ddaaf5b3e7dc122d1c4864e4"
+    },
+    {
+      "path": "packs/h-7/h7-1/models/mech-cockpit.glb",
+      "bytes": 6355620,
+      "sha256": "019818674d99d9ed888b2091b1f5a1b55581a9856b24a427f09429d4a38c7d04"
+    },
+    {
+      "path": "packs/h-7/h7-1/editable/mech-cockpit.zip",
+      "bytes": 2138129,
+      "sha256": "9bd1735d5894ab5d7db65360f1df4f91d18c87ee8fae49995af392b5f393e894"
+    },
+    {
+      "path": "packs/h-7/h7-1/h-7-runtime.zip",
+      "bytes": 3951272,
+      "sha256": "7103bf21ea56909dc1ea96935774a761f04b20d17d7943f0b568ffb214af1e56"
+    },
+    {
+      "path": "packs/h-7/h7-1/h-7-editable.zip",
+      "bytes": 5471085,
+      "sha256": "130d38bc028a2b2bc3a39ce4db5da27658954d1492990fea7e344f4c9dd7f86f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/skitterer.png",
+      "bytes": 1381408,
+      "sha256": "ca2ca34f41cda4f3b2d7d1dbe40fee66db8cc4cd3a4af98ee4a2d395dde4c403"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/skitterer-low.png",
+      "bytes": 1324300,
+      "sha256": "7ec0cbb686cad69ef72f27d26ae0d9bd2cb0e1602974fbbf69b91b84c76f438f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/skitterer-corpse.png",
+      "bytes": 1389906,
+      "sha256": "9c8b33dd8fdea16e3dda4ee41deffb94aa0727efbcebe490489fec70724bd03b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/hive-fissure.png",
+      "bytes": 1440197,
+      "sha256": "cb6ea694f133c40fdd1fec96022cf53348cb3051f29ebed3acbac2ea74a9e8f3"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/terrain-kit.png",
+      "bytes": 1313657,
+      "sha256": "be5e8af9f0ae7883e00777bd684ef5d0101d308d694beeeb93f434c02bbda67b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/outpost-kit.png",
+      "bytes": 1572480,
+      "sha256": "97d752ad78748501965915938a3aa622c2bc0cc1d82346f5c736a42487c7a4bc"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit.png",
+      "bytes": 1748228,
+      "sha256": "70d8f4d53a6d0d291d3677119421fe9e61902b1f092a1949f7f77b96444fab7e"
     }
   ]
 }

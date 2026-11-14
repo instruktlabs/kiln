@@ -1,0 +1,33 @@
+{
+  "description": "Public names and descriptions of the H-7 collection, keyed by the ids in selection.json.",
+  "assets": {
+    "skitterer": {
+      "name": "Skitterer",
+      "description": "A six-legged alien bug with mandibles and glowing acid sacs, built from 21 rigid parts on named joints. It has Walk, Run, Climb, Crest, Attack, Death, Idle, Fall and Corpse clips, and comes with a low-detail model and a corpse."
+    },
+    "skitterer-low": {
+      "name": "Skitterer, low detail",
+      "description": "The same bug at 310 triangles, with the same joints and clips, for crowds and distance."
+    },
+    "skitterer-corpse": {
+      "name": "Skitterer corpse",
+      "description": "The bug in its final pose as one 155-triangle mesh with no joints."
+    },
+    "hive-fissure": {
+      "name": "Hive fissure",
+      "description": "A hive breaking through a salt crust, in three growth stages as named groups: a fresh fissure, a wider breach and a mature mound with glowing vents."
+    },
+    "terrain-kit": {
+      "name": "Salt pan terrain kit",
+      "description": "Terrain pieces for a salt desert as named groups: two boulders, two crystal clusters, two pressure ridges, two outcrops, a crawler vehicle, and four distant mesas and buttes on one 1024 texture set."
+    },
+    "outpost-kit": {
+      "name": "Outpost kit",
+      "description": "Seven modular pieces for a fortified outpost on one shared texture atlas: wall section, corner, gate, floodlight mast, cargo container, refinery tank and pad tile."
+    },
+    "mech-cockpit": {
+      "name": "Heavy Walker Mech with cockpit",
+      "description": "The Heavy Walker Mech reworked for a first-person game: a cockpit with five screens, pilot arms and an eye point, heel spurs, longer piston strokes and a Brace clip. Its parts are rigid meshes on named joints."
+    }
+  }
+}
