@@ -5,6 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { buildGallery } from '../src/lib/gallery';
 import { browseGallery } from '../src/lib/gallery-browse';
+import { featuredAssetHrefs } from '../src/lib/site-curation';
 import { TEXT_TO_3D_PACK, textTo3dAssetHref, textTo3dGalleryAssets } from '../src/lib/text-to-3d-gallery';
 import { inspectGlb } from './generate-commons.mjs';
 
@@ -43,9 +44,13 @@ test('the listing adds nothing the record already holds, and the gallery has no 
   expect(buildGallery(false)).toEqual([]);
 });
 
-test('the mech is among the first ten assets the gallery shows', () => {
-  const first = browseGallery(buildGallery(true)).slice(0, 10).map((card) => card.href);
-  expect(first).toContain(MECH);
+test('the mech is among the first ten assets the gallery shows, and stays there when newer assets arrive', () => {
+  const cards = buildGallery(true);
+  expect(browseGallery(cards).slice(0, 10).map((card) => card.href)).toContain(MECH);
+  // Its place is curated, not an accident of its date: a later pack must not push it down the page.
+  const newer = Array.from({ length: 12 }, (_, index) => ({ ...cards[0]!, href: `/gallery/later/${index}/`, name: `A later asset ${index}`, addedOn: '2099-01-01' }));
+  expect(browseGallery([...cards, ...newer]).slice(0, 10).map((card) => card.href)).toContain(MECH);
+  expect(featuredAssetHrefs).toHaveLength(8);
 });
 
 test.skipIf(!localMech)('the listed facts are the hosted file\'s own', async () => {
