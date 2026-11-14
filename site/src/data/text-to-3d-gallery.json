@@ -1,0 +1,15 @@
+{
+  "description": "Text-to-3D subjects that also have a gallery page. Names, pictures, files and programs come from text-to-3d.json; this holds only what that record does not.",
+  "assets": [
+    {
+      "subject": "mech",
+      "slug": "mech",
+      "summary": "A 6 m walking mech with named joints, pistons that follow them and a Walk clip whose feet don't slide.",
+      "revisionId": "r_369d7b0f63074203bdbda37064270049",
+      "sha256": "c4100fecfc3b94ea2f4de76f34b11b191abcddee22b1fdc714f06de624df221b",
+      "materials": 9,
+      "bounds": [5.44, 6, 4.08],
+      "clips": ["Walk"]
+    }
+  ]
+}
