@@ -93,7 +93,8 @@ The first passing module build and D-15 ceiling are recorded in
 | Installation and API guides | `../docs/`; `src/lib/docs-navigation.ts` selects published pages |
 | npm release identity and install command | `../.github/published-candidate.json` and `src/lib/config.ts` |
 | Homepage | `src/pages/index.astro` |
-| Featured worlds and individual assets | `src/data/site-curation.json`; shared by homepage, scenes, packs and gallery |
+| Featured worlds and the homepage's featured assets | `src/data/site-curation.json`; shared by homepage, scenes and packs |
+| The order the gallery opens in | `src/data/gallery-order.json`; assets not listed follow, newest first |
 | Gallery categories, tags and introduction dates | `src/data/gallery-taxonomy.json`, keyed by canonical asset page |
 | Asset, modular kit and scene sequence | `src/components/AssetToScene.astro`, `src/data/asset-to-scene.json` and pinned files under `public/workflow/` |
 | Gallery, packs and download records | `src/data/packs/`, `src/data/standalone/` and sealed delivery manifests |
@@ -122,6 +123,11 @@ worlds. Earlier scenes and packs remain available below them. Change the explici
 selections in `site-curation.json` to promote work; catalog import order is not
 presentation order. `src/lib/site-curation.ts` selects the cover from each world's
 recorded captures, and share cards use the same lead world.
+
+The gallery opens in the order listed in `gallery-order.json`, a ranking of about
+the first hundred assets by how well they read and how ready they are for a game.
+Assets not listed follow it, newest first, so a new asset appears after the ranked
+set until it is given a place. Filters and search keep that order among their matches.
 
 Gallery categories describe the asset across packs. Keep scene-specific groups
 in their source catalogs, and maintain shared categories and search tags in
