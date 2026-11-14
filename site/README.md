@@ -77,6 +77,7 @@ from `../scenes/`, using the same restored input.
 | Gallery categories, tags and introduction dates | `src/data/gallery-taxonomy.json`, keyed by canonical asset page |
 | Asset, modular kit and scene sequence | `src/components/AssetToScene.astro`, `src/data/asset-to-scene.json` and pinned files under `public/workflow/` |
 | Gallery, packs and download records | `src/data/packs/`, `src/data/standalone/` and sealed delivery manifests |
+| Text-to-3D subjects with a gallery page | `src/data/text-to-3d-gallery.json`; name, picture, file and program come from `src/data/text-to-3d.json` |
 | Historical gallery programs and credits | Pinned Git history restored to `../.cache/example-archive/` by `../scripts/example-archive.mjs` |
 | Maintained scene source | `../scenes/packages/` |
 | Scene archives and media | `src/data/scene-packs.json`, `scene-inputs.json` and `troy-delivery.json` |

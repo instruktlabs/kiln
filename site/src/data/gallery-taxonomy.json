@@ -1,6 +1,7 @@
 {
   "description": "Editorial browsing metadata keyed by canonical asset page. addedOn is first inclusion in the committed catalog, not a claim about authoring or public release date.",
   "assets": {
+    "/gallery/text-to-3d/mech/": {"category":"Vehicles","tags":["mech","walker","sci-fi","rigged","animated"],"addedOn":"2026-11-13"},
     "/gallery/cathedral-square/cathedral/": {"category":"Architecture & Buildings","tags":["cathedral square","building","gothic","church"],"addedOn":"2026-11-09"},
     "/gallery/cathedral-square/house-timber-gable-door/": {"category":"Architecture & Buildings","tags":["cathedral square","building","old town"],"addedOn":"2026-11-09"},
     "/gallery/cathedral-square/house-timber-gable-narrow/": {"category":"Architecture & Buildings","tags":["cathedral square","building","old town"],"addedOn":"2026-11-09"},
