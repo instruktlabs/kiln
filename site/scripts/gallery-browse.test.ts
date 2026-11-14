@@ -2,6 +2,7 @@ import { expect, test } from 'bun:test';
 import { buildGallery } from '../src/lib/gallery';
 import { browseGallery, galleryCategories } from '../src/lib/gallery-browse';
 import taxonomy from '../src/data/gallery-taxonomy.json';
+import galleryOrder from '../src/data/gallery-order.json';
 import { curatedWorlds, featuredAssetHrefs, worldCover } from '../src/lib/site-curation';
 import { holodeckPacks } from '../src/lib/holodeck';
 
@@ -35,14 +36,41 @@ test('curated world and asset selections resolve without dropping any current pa
   for (const href of featuredAssetHrefs) expect(card(href)).toBeDefined();
 });
 
-test('default selection promotes a varied curated set without losing older assets', () => {
+test('the gallery opens in the curated order, and unlisted assets follow newest first without loss', () => {
+  const order = galleryOrder.order;
+  expect(new Set(order).size).toBe(order.length);
+  for (const href of order) expect(card(href)).toBeDefined();
   const result = browseGallery(cards);
-  expect(result[0]?.href).toBe('/gallery/holodeck/crescent-shelter/');
-  expect(featuredAssetHrefs).not.toContain('/gallery/holodeck/crescent-rock-cliff-a/');
-  expect(result.some((asset) => asset.href === '/gallery/holodeck/crescent-rock-cliff-a/')).toBe(true);
-  expect(new Set(result.slice(0, 8).map((asset) => asset.category)).size).toBeGreaterThanOrEqual(4);
+  expect(result.slice(0, order.length).map((asset) => asset.href)).toEqual(order);
+  expect(order[0]).toBe('/gallery/cathedral-square/cathedral/');
+  expect(order[1]).toBe('/gallery/text-to-3d/mech/');
+  expect(order[9]).toBe('/gallery/cathedral-square/crucifix/');
+  const rest = result.slice(order.length);
+  for (let i = 1; i < rest.length; i++) {
+    const previous = rest[i - 1]!, current = rest[i]!;
+    expect(previous.addedOn >= current.addedOn).toBe(true);
+    if (previous.addedOn === current.addedOn) expect(previous.name.localeCompare(current.name, 'en')).toBeLessThanOrEqual(0);
+  }
   expect(new Set(result.map((asset) => asset.href))).toEqual(new Set(cards.map((asset) => asset.href)));
+  expect(browseGallery([...cards].reverse())).toEqual(result);
   expect(browseGallery([])).toEqual([]);
+});
+
+test('a new asset that is not in the order lands right after it, never ahead of it', () => {
+  const order = galleryOrder.order;
+  const added = { ...card(order[0]!), href: '/gallery/not-ranked-yet/', name: 'Not ranked yet', addedOn: '2099-01-01' };
+  const result = browseGallery([added, ...cards]);
+  expect(result.slice(0, order.length).map((asset) => asset.href)).toEqual(order);
+  expect(result[order.length]?.href).toBe('/gallery/not-ranked-yet/');
+});
+
+test('filters keep the curated order among the assets they leave', () => {
+  const order = galleryOrder.order;
+  const hrefs = browseGallery(cards, { pack: 'cathedral-square' }).map((asset) => asset.href);
+  const listed = hrefs.filter((href) => order.includes(href));
+  expect(listed.length).toBeGreaterThan(1);
+  expect(hrefs.slice(0, listed.length)).toEqual(order.filter((href) => listed.includes(href)));
+  expect(browseGallery(cards, { sort: 'newest' })[0]?.addedOn).toBe(cards.map((asset) => asset.addedOn).sort().at(-1));
 });
 
 test('search combines words across names and tags with category and shared pack membership', () => {

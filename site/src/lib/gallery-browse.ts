@@ -1,4 +1,4 @@
-import curation from '../data/site-curation.json';
+import galleryOrder from '../data/gallery-order.json';
 
 export const galleryCategories = [
   'Vegetation',
@@ -31,7 +31,8 @@ const normalize = (text: string) =>
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
-const featured = new Map(curation.featuredAssets.map((href, index) => [href, index]));
+// The gallery's own order. The homepage's eight featured assets are a separate list in site-curation.json.
+const featured = new Map(galleryOrder.order.map((href, index) => [href, index]));
 const alphabetical = (a: BrowseAsset, b: BrowseAsset) =>
   a.name.localeCompare(b.name, 'en') || a.href.localeCompare(b.href, 'en');
 
