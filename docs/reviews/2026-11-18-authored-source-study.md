@@ -96,7 +96,7 @@ boilerplate section adds a stratified sample of 24 sources for a per-file view.
 ## Method
 
 The counting scripts are throwaway and live in `tmp/source-study/` (git-ignored, not committed).
-They are not needed to read this review. Follow-up draft 8 proposes a maintained corpus rebuild
+They are not needed to read this review. Follow-up [#417](https://github.com/instruktlabs/kiln/issues/417) proposes a maintained corpus rebuild
 script instead of keeping any of them.
 
 - `extract_traces.py` normalises the four transcript formats (Claude Code stream JSON, Codex
@@ -693,18 +693,18 @@ None of this was run for this study.
   orphan-part warning that fires on a saved asset is either a real bug or a false positive).
 - **P6.** No build change. `bun run check:skills` and the generated workspace copies.
 
-## Follow-up drafts
+## Follow-up issues
 
-Drafted, not filed:
+Filed 2026-11-18:
 
-1. Fill door and window openings from `wallWithOpening`
-2. Add `fenceRun` for posts and rails along a path
-3. Let assembly helpers merge their parts by material
-4. Share kit code between the assets of a pack
-5. Warn when `createPart` builds a part that never joins the asset
-6. Classify the remaining opaque rejections and name the commonest engine-owned causes
-7. Move the UV0 note to the materials section and state box axes in the frame paragraph
-8. A corpus gate that rebuilds every saved pack source and compares GLB hashes
+1. Fill door and window openings from `wallWithOpening` ([#410](https://github.com/instruktlabs/kiln/issues/410))
+2. Add `fenceRun` for posts and rails along a path ([#411](https://github.com/instruktlabs/kiln/issues/411))
+3. Let assembly helpers merge their parts by material ([#412](https://github.com/instruktlabs/kiln/issues/412))
+4. Share kit code between the assets of a pack ([#413](https://github.com/instruktlabs/kiln/issues/413))
+5. Warn when `createPart` builds a part that never joins the asset ([#414](https://github.com/instruktlabs/kiln/issues/414))
+6. Classify the remaining opaque rejections and name the commonest engine-owned causes ([#415](https://github.com/instruktlabs/kiln/issues/415))
+7. Move the UV0 note to the materials section and state box axes in the frame paragraph ([#416](https://github.com/instruktlabs/kiln/issues/416))
+8. A corpus gate that rebuilds every saved pack source and compares GLB hashes ([#417](https://github.com/instruktlabs/kiln/issues/417))
 
 ## Limits
 
