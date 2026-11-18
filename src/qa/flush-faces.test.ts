@@ -568,3 +568,245 @@ describe("what is worth an author's attention", () => {
     expect(large.pairs).toHaveLength(1);
   });
 });
+
+describe('an estimate of which reported pairs other parts hide', () => {
+  type Side = '+x' | '-x' | '+y' | '-y' | '+z' | '-z';
+  /** A quad through four corners in order, wound so it faces `facing`. */
+  const face = (corners: number[][], facing: number[]): number[] => {
+    const [a, b, c, d] = corners as [number[], number[], number[], number[]];
+    const u = [b[0]! - a[0]!, b[1]! - a[1]!, b[2]! - a[2]!];
+    const v = [c[0]! - a[0]!, c[1]! - a[1]!, c[2]! - a[2]!];
+    const n = [
+      u[1]! * v[2]! - u[2]! * v[1]!,
+      u[2]! * v[0]! - u[0]! * v[2]!,
+      u[0]! * v[1]! - u[1]! * v[0]!,
+    ];
+    const out = n[0]! * facing[0]! + n[1]! * facing[1]! + n[2]! * facing[2]! > 0;
+    return (out ? [a, b, c, a, c, d] : [a, c, b, a, d, c]).flat();
+  };
+  /** A box from `lo` to `hi`, faces pointing out (or in), leaving out the sides in `open`. */
+  const box = (lo: number[], hi: number[], open: Side[] = [], inward = false): number[] => {
+    const [x0, y0, z0] = lo as [number, number, number];
+    const [x1, y1, z1] = hi as [number, number, number];
+    const s = inward ? -1 : 1;
+    const sides: [Side, number[][], number[]][] = [
+      [
+        '+x',
+        [
+          [x1, y0, z0],
+          [x1, y1, z0],
+          [x1, y1, z1],
+          [x1, y0, z1],
+        ],
+        [s, 0, 0],
+      ],
+      [
+        '-x',
+        [
+          [x0, y0, z0],
+          [x0, y1, z0],
+          [x0, y1, z1],
+          [x0, y0, z1],
+        ],
+        [-s, 0, 0],
+      ],
+      [
+        '+y',
+        [
+          [x0, y1, z0],
+          [x1, y1, z0],
+          [x1, y1, z1],
+          [x0, y1, z1],
+        ],
+        [0, s, 0],
+      ],
+      [
+        '-y',
+        [
+          [x0, y0, z0],
+          [x1, y0, z0],
+          [x1, y0, z1],
+          [x0, y0, z1],
+        ],
+        [0, -s, 0],
+      ],
+      [
+        '+z',
+        [
+          [x0, y0, z1],
+          [x1, y0, z1],
+          [x1, y1, z1],
+          [x0, y1, z1],
+        ],
+        [0, 0, s],
+      ],
+      [
+        '-z',
+        [
+          [x0, y0, z0],
+          [x1, y0, z0],
+          [x1, y1, z0],
+          [x0, y1, z0],
+        ],
+        [0, 0, -s],
+      ],
+    ];
+    return sides.filter(([side]) => !open.includes(side)).flatMap(([, c, n]) => face(c, n));
+  };
+  const plaque = part('Plaque', quad(0.5, 0.25, 1.5, 0.75));
+  // A closed housing over the plaque, its floor below the floor's plane so nothing lies against it.
+  const housing = (open: Side[] = [], more: Partial<FlushPart> = {}, inward = false) =>
+    part('Housing', box([0.4, -0.1, 0.15], [1.6, 0.3, 0.85], open, inward), more);
+
+  test('a pair inside a closed housing is estimated hidden, and is still reported', () => {
+    const plain = findFlushFaces([floor, plaque]);
+    expect(plain.pairs[0]!.occlusion).toBe('visible');
+    expect(plain.occlusion).toMatchObject({ visible: 1, occluded: 0, notEstimated: 0 });
+
+    const report = findFlushFaces([floor, plaque, housing()]);
+    expect(report.candidates).toBe(1);
+    expect(report.pairs[0]).toMatchObject({ parts: ['Floor', 'Plaque'], occlusion: 'occluded' });
+    expect(report.pairs[0]!.sharedArea).toBeCloseTo(0.5, 6);
+    expect(report.occlusion).toMatchObject({ visible: 0, occluded: 1, notEstimated: 0 });
+    expect(report.occlusion!.rays).toBeGreaterThan(0);
+    expect(report.occlusion!.rays).toBeLessThanOrEqual(report.occlusion!.maxRays);
+  });
+
+  test('a gap in the housing, faces turned away, or glass leave the pair in view', () => {
+    expect(findFlushFaces([floor, plaque, housing(['+y'])]).pairs[0]!.occlusion).toBe('visible');
+    // Faces pointing in are culled from outside, so a camera sees through them.
+    expect(findFlushFaces([floor, plaque, housing([], {}, true)]).pairs[0]!.occlusion).toBe(
+      'visible',
+    );
+    // Drawn on both sides, the same faces hide it.
+    expect(
+      findFlushFaces([floor, plaque, housing([], { doubleSided: true }, true)]).pairs[0]!.occlusion,
+    ).toBe('occluded');
+    expect(
+      findFlushFaces([floor, plaque, housing([], { seeThrough: true })]).pairs[0]!.occlusion,
+    ).toBe('visible');
+    // A closed far level of a cover whose near level is open: up close the pair shows.
+    const near = part('CoverNear', box([0.4, -0.1, 0.15], [1.6, 0.3, 0.85], ['+y']), {
+      alternate: { chain: 'cover', level: 0 },
+    });
+    const far = housing([], { alternate: { chain: 'cover', level: 1 } });
+    expect(findFlushFaces([floor, plaque, near, far]).pairs[0]!.occlusion).toBe('visible');
+    // The nearest level of a chain hides like any other part.
+    expect(findFlushFaces([floor, plaque, far]).pairs[0]!.occlusion).toBe('occluded');
+  });
+
+  test('a small region in view outweighs larger hidden regions of the same pair', () => {
+    // The plaque shares a large patch with the floor under the housing and a small one in the
+    // open, on another plane: a raised step of the floor.
+    const step = part('Floor', [...quad(0, 0, 2, 1), ...quad(2, 0, 3, 1, 0.5)]);
+    // The hidden patch in eight strips, so it alone holds more regions than are sampled.
+    const strips = [...Array(8).keys()].flatMap((k) =>
+      quad(0.5 + k * 0.125, 0.25, 0.625 + k * 0.125, 0.75),
+    );
+    const plaqueWithTab = part('Plaque', [...strips, ...quad(2.3, 0.3, 2.5, 0.5, 0.5)]);
+    const report = findFlushFaces([step, plaqueWithTab, housing()]);
+    expect(report.pairs).toHaveLength(1);
+    expect(report.pairs[0]!.occlusion).toBe('visible');
+  });
+
+  test('changes no count, area or order of the reported pairs, and can be turned off', () => {
+    const parts = [floor, plaque, housing(), part('Tag', quad(1.7, 0.1, 1.9, 0.9))];
+    const estimated = findFlushFaces(parts);
+    const off = findFlushFaces(parts, { maxOcclusionRays: 0 });
+    expect(off.occlusion).toBeUndefined();
+    expect(off.pairs.every((pair) => !('occlusion' in pair))).toBe(true);
+    const { occlusion: _summary, ...rest } = estimated;
+    expect({
+      ...rest,
+      pairs: rest.pairs.map(({ occlusion: _o, ...pair }) => pair),
+    }).toEqual(off);
+    expect(estimated.pairs.map((pair) => [pair.parts[1], pair.occlusion])).toEqual([
+      ['Plaque', 'occluded'],
+      ['Tag', 'visible'],
+    ]);
+    // No pairs, no estimate.
+    expect('occlusion' in findFlushFaces([floor])).toBe(false);
+  });
+
+  test('stops at its ray budget and says which pairs it did not estimate', () => {
+    const second = part('Badge', quad(2.5, 0.25, 3.3, 0.75));
+    const cover = part('Cover', box([2.4, -0.1, 0.15], [3.4, 0.3, 0.85]));
+    const parts = [part('Floor', quad(0, 0, 4, 1)), plaque, housing(), second, cover];
+    const full = findFlushFaces(parts);
+    expect(full.occlusion).toMatchObject({ visible: 0, occluded: 2, notEstimated: 0 });
+    const first = findFlushFaces([parts[0]!, plaque, housing()]).occlusion!.rays;
+    const capped = findFlushFaces(parts, { maxOcclusionRays: full.occlusion!.rays - 1 });
+    expect(capped.occlusion).toMatchObject({ occluded: 1, notEstimated: 1, rays: first });
+    expect(capped.pairs.map((pair) => pair.occlusion)).toEqual(['occluded', undefined]);
+    const exact = findFlushFaces(parts, { maxOcclusionRays: full.occlusion!.rays });
+    expect(exact.occlusion).toMatchObject({ occluded: 2, notEstimated: 0 });
+  });
+
+  test('gives the same split on every run and for any order of the triangles', () => {
+    const parts = [floor, plaque, housing(), part('Tag', quad(1.7, 0.1, 1.9, 0.9))];
+    const once = findFlushFaces(parts);
+    expect(findFlushFaces(parts)).toEqual(once);
+    const backwards = parts.map((p) => {
+      const out: number[] = [];
+      const positions = p.positions as number[];
+      for (let offset = positions.length - 9; offset >= 0; offset -= 9)
+        out.push(...positions.slice(offset, offset + 9));
+      return { ...p, positions: out };
+    });
+    expect(findFlushFaces(backwards).pairs.map((pair) => pair.occlusion)).toEqual(
+      once.pairs.map((pair) => pair.occlusion),
+    );
+  });
+
+  test('the warning names pairs in view first and says the split is an estimate', () => {
+    const root = new THREE.Group();
+    const material = (color: number) => new THREE.MeshStandardMaterial({ color });
+    const floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(4, 1), material(0x202020));
+    floorMesh.name = 'Mesh_Floor';
+    floorMesh.rotation.x = -Math.PI / 2;
+    const tile = (name: string, width: number, x: number, color: number) => {
+      const mesh = new THREE.Mesh(new THREE.PlaneGeometry(width, 0.5), material(color));
+      mesh.name = name;
+      mesh.rotation.x = -Math.PI / 2;
+      mesh.position.x = x;
+      return mesh;
+    };
+    const shown = tile('Mesh_TileA', 0.4, -1.4, 0x404040);
+    const covered = tile('Mesh_TileB', 1, 1, 0x606060);
+    // A closed box over the second tile, its bottom below the floor.
+    const box = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.4, 0.8), material(0x808080));
+    box.name = 'Mesh_Housing';
+    box.position.set(1, 0.1, 0);
+    root.add(floorMesh, shown, covered, box);
+    const report = analyzeFlushFaces(root);
+    expect(report.pairs.map((pair) => [pair.parts[1], pair.occlusion])).toEqual([
+      ['Mesh_TileB', 'occluded'],
+      ['Mesh_TileA', 'visible'],
+    ]);
+    const shownPair = report.pairs[1]!;
+    expect(flushFaceWarnings(report)).toEqual([
+      'FLUSH_FACES: 2 pairs of parts have faces on one plane that will flicker (z-fighting) in any renderer. ' +
+        'By a ray estimate, not a render: 1 in view, 1 hidden behind other parts. ' +
+        `Worst in view: Mesh_Floor and Mesh_TileA, on one plane, sharing 0.2 m² near [${shownPair.at.join(', ')}], normal (0, 1, 0). ` +
+        'Also: Mesh_Floor and Mesh_TileB (0.5 m², hidden). ' +
+        'For each pair, move the smaller face at least 2 mm along the shared normal, remove the covered face, or cut the opening it sits in.',
+    ]);
+
+    // One pair, hidden.
+    root.remove(shown);
+    const single = analyzeFlushFaces(root);
+    expect(flushFaceWarnings(single)[0]).toStartWith(
+      'FLUSH_FACES: 1 pair of parts has faces on one plane that will flicker (z-fighting) in any renderer. ' +
+        'A ray estimate, not a render, finds it hidden behind other parts. It is Mesh_Floor and Mesh_TileB, on one plane,',
+    );
+
+    // Glass over the tile leaves it in view, and the warning is today's.
+    (box.material as THREE.MeshStandardMaterial).transparent = true;
+    (box.material as THREE.MeshStandardMaterial).opacity = 0.4;
+    const glass = analyzeFlushFaces(root);
+    expect(glass.pairs[0]!.occlusion).toBe('visible');
+    expect(flushFaceWarnings(glass)[0]).toStartWith(
+      'FLUSH_FACES: 1 pair of parts has faces on one plane that will flicker (z-fighting) in any renderer. It is Mesh_Floor and Mesh_TileB,',
+    );
+  });
+});
