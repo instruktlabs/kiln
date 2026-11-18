@@ -446,7 +446,7 @@ the same promise for each mesh they create, not for the assembly, whose parts
 overlap by design. `planeGeo`, `foliageCardGeo`, `crossedQuadsGeo` and
 `octaGridPlane` are open, one-sided surfaces and `requireSolid` fails them.
 `scripts/audit-primitives.test.ts` measures the contract, and the measured table
-is in the [primitives audit](reviews/2026-11-18-primitives-audit.md). One known
+is in the [primitives audit](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-11-18-primitives-audit.md). One known
 gap: `torusGeo` with `tube >= radius` intersects itself while still reading as
 closed and outward (#406).
 
