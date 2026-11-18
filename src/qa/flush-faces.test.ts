@@ -79,6 +79,37 @@ describe('findFlushFaces', () => {
     expect(report.pairs[0]!.sharedArea).toBeCloseTo(0.5, 6);
   });
 
+  test('triangles that share corners are still measured when they overlap', () => {
+    // A fan around the origin: neighbours share an edge or a corner and no area.
+    const fan: number[] = [];
+    for (let k = 0; k < 6; k++) {
+      const a = (k * Math.PI) / 3;
+      const b = ((k + 1) * Math.PI) / 3;
+      fan.push(0, 0, 0, Math.cos(a), 0, -Math.sin(a), Math.cos(b), 0, -Math.sin(b));
+    }
+    expect(findFlushFaces([part('Fan', fan)]).pairs).toEqual([]);
+
+    // A triangle folded back over its neighbour across their shared edge.
+    const folded = [...fan, 0, 0, 0, 1, 0, 0, 0.5, 0, -0.5];
+    const overEdge = findFlushFaces([part('Fan', folded)]);
+    expect(overEdge.pairs).toHaveLength(1);
+    expect(overEdge.pairs[0]!.parts).toEqual(['Fan', 'Fan']);
+    expect(overEdge.pairs[0]!.sharedArea).toBeCloseTo(0.25, 6);
+
+    // A triangle that shares only the centre, laid across two of the fan's triangles.
+    const across = [...fan, 0, 0, 0, 0.9, 0, -0.2, 0.2, 0, -0.9];
+    const overCorner = findFlushFaces([part('Fan', across)]);
+    expect(overCorner.pairs).toHaveLength(1);
+    expect(overCorner.pairs[0]!.trianglePairs).toBe(2);
+
+    // The same across two parts, and with the new triangle turned the other way and drawn on
+    // both sides.
+    const turned = [0, 0, 0, 0.2, 0, -0.9, 0.9, 0, -0.2];
+    const other = findFlushFaces([part('Fan', fan), part('Leaf', turned, { doubleSided: true })]);
+    expect(other.pairs).toHaveLength(1);
+    expect(other.pairs[0]).toMatchObject({ parts: ['Fan', 'Leaf'], facing: 'opposite' });
+  });
+
   test('crossing and perpendicular faces are not flush', () => {
     const tilted = quad(0.5, 0.25, 1.5, 0.75).map((value, index) =>
       index % 3 === 1 ? value + (index % 9 < 3 ? 0.03 : -0.01) : value,
@@ -126,6 +157,28 @@ describe('findFlushFaces', () => {
     expect(findFlushFaces(parts, { maxWork: 1 }).truncated).toBe(true);
     const capped = findFlushFaces(parts, { maxTriangles: 2 });
     expect(capped).toMatchObject({ truncated: true, triangles: 4, examined: 2 });
+  });
+
+  test('the work budget counts every box comparison, to the last one', () => {
+    // Four triangles in one leaf: one comparison of the leaf with itself, then six pairs.
+    const parts = [floor, part('Plaque', quad(0.5, 0.25, 1.5, 0.75))];
+    const full = findFlushFaces(parts, { maxWork: 7 });
+    expect(full).toMatchObject({ truncated: false, candidates: 1 });
+    expect(findFlushFaces(parts, { maxWork: 6 })).toMatchObject({ truncated: true });
+
+    // Sixteen triangles in a tree of leaves: the pass needs exactly 124 box comparisons, the
+    // count from before box comparisons were counted a leaf pair at a time.
+    const tiles = part('Tiles', [
+      ...quad(0, 0, 0.5, 1),
+      ...quad(0.5, 0, 1, 1),
+      ...quad(1, 0, 1.5, 1),
+    ]);
+    const strip = [...Array(5).keys()].flatMap((k) => quad(k * 0.4, 0.1, k * 0.4 + 0.3, 0.9));
+    const many = [tiles, part('Strip', strip)];
+    const unbounded = findFlushFaces(many);
+    expect(unbounded.truncated).toBe(false);
+    expect(findFlushFaces(many, { maxWork: 124 })).toEqual(unbounded);
+    expect(findFlushFaces(many, { maxWork: 123 }).truncated).toBe(true);
   });
 
   test('ignores degenerate triangles and empty parts', () => {
@@ -203,6 +256,45 @@ describe('analyzeFlushFaces', () => {
     const many = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), undefined, 2);
     instanced.add(plane('Mesh_Floor', 2, 1), many);
     expect(analyzeFlushFaces(instanced)).toMatchObject({ unexaminedParts: 1, candidates: 0 });
+  });
+
+  test('reads corners the same from plain, indexed, interleaved and normalized attributes', () => {
+    const build = (store: (geometry: THREE.BufferGeometry) => void) => {
+      const root = new THREE.Group();
+      const plaque = plane('Mesh_Plaque', 1, 0.5);
+      plaque.position.set(0.25, 0.0002, 0.1);
+      plaque.scale.set(1, 1, 1.5);
+      store(plaque.geometry);
+      root.add(plane('Mesh_Floor', 2, 1), plaque);
+      return analyzeFlushFaces(root);
+    };
+    const plain = build(() => {});
+    expect(plain.pairs).toHaveLength(1);
+    // Without an index, the corners listed in order.
+    expect(build((geometry) => geometry.copy(geometry.toNonIndexed()))).toEqual(plain);
+    // Corners in an interleaved buffer, with a spare value after each.
+    expect(
+      build((geometry) => {
+        const source = geometry.getAttribute('position');
+        const data = new Float32Array(source.count * 4);
+        for (let k = 0; k < source.count; k++)
+          data.set([source.getX(k), source.getY(k), source.getZ(k), 7], k * 4);
+        const buffer = new THREE.InterleavedBuffer(data, 4);
+        geometry.setAttribute('position', new THREE.InterleavedBufferAttribute(buffer, 3, 0));
+      }),
+    ).toEqual(plain);
+    // Corners stored as normalized integers: -0.5 and 0.5 are -16384 / 32767 off by a little,
+    // so this compares with the same corners read through the attribute.
+    const quantized = (geometry: THREE.BufferGeometry) => {
+      const source = geometry.getAttribute('position');
+      const data = new Int16Array(source.count * 3);
+      for (let k = 0; k < source.count * 3; k++)
+        data[k] = Math.round((source.array as Float32Array)[k]! * 32767);
+      geometry.setAttribute('position', new THREE.BufferAttribute(data, 3, true));
+    };
+    const normalized = build(quantized);
+    expect(normalized.pairs).toHaveLength(1);
+    expect(normalized.pairs[0]!.sharedArea).toBeCloseTo(plain.pairs[0]!.sharedArea, 4);
   });
 
   test('a face drawn on both sides fights the face it lies against', () => {
