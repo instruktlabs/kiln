@@ -8,6 +8,7 @@ does not publish a package.
 ## Unreleased
 
 - **`torusGeo` rejects a tube at least as thick as the ring radius.** `torusGeo(0.2, 0.5)` now throws, naming the tube and the radius, instead of building a surface that crosses the ring axis and intersects itself while the solid check read it as closed. Valid tori build byte-identically; no saved source in the repository used such values. (#406)
+- **A build warns about parts that never join the asset.** `PART_NOT_IN_ASSET` names each part built with `createPart` that is not under the root when `build()` returns (it was left out of the GLB with no report), and `NAME_PREFIX_DOUBLED` flags a `createPivot` or `createPart` name that already starts with the `Joint_` or `Mesh_` the helper adds. Both are advisory and never change the GLB. A part built with a `parent` and removed later, or handed to another helper such as a Boolean, is left alone. Over the saved sources and archived examples that build, `PART_NOT_IN_ASSET` fires nowhere and `NAME_PREFIX_DOUBLED` fires in one example. (#414)
 - **The author skill reads lighter.** `kiln-author-asset/SKILL.md` goes from 15,998 to
   12,842 bytes: the CLI file commands, animation sampling, part listing and saved-preview notes
   move to its camera references, and the export profile guide is read only when the user asks
