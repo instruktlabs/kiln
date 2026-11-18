@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { FileAssetLibrary } from '../../assets-node';
 import { MemoryProgramStore } from '../../program-store';
+import { flushFaceWarnings } from '../../qa/flush-faces';
 import { SAVE_WARNING_LIMIT, cutWarning } from '../asset-text';
 import { createKilnProgramToolRegistry } from '../registry';
 
@@ -30,6 +31,40 @@ describe('cutWarning', () => {
     const line = 'alpha beta gamma delta epsilon';
     const cut = cutWarning(line, 14);
     expect(cut).toBe('alpha beta … (20 more characters; the saved manifest has the full line)');
+  });
+
+  test('fits the longest realistic flush-face line whole, with the occlusion split', () => {
+    // Three named pairs with 24-character part names, a readable gap, a face drawn on both
+    // sides, all three estimate labels and the budget note.
+    const name = (k: number) => `Mesh_Part_Name_Long_${String(k).padStart(4, '0')}`;
+    const pair = (k: number, occlusion?: 'visible' | 'occluded') => ({
+      parts: [name(k), name(k + 1)] as [string, string],
+      sharedArea: 0.012345,
+      maxGap: 0.00042,
+      trianglePairs: 3,
+      facing: 'opposite' as const,
+      normal: [-0.6247, 0.7809, 0] as [number, number, number],
+      at: [-12.34567, 10.23456, -3.45678] as [number, number, number],
+      ...(occlusion ? { occlusion } : {}),
+    });
+    const line = flushFaceWarnings({
+      version: 'kiln.flush-faces.v1',
+      triangles: 1,
+      examined: 1,
+      pairTests: 1,
+      truncated: true,
+      gap: 0.0005,
+      minArea: 0.001,
+      candidates: 123,
+      matching: 0,
+      hidden: 0,
+      omitted: 115,
+      unexaminedParts: 0,
+      pairs: [pair(1, 'occluded'), pair(3), pair(5, 'visible')],
+      occlusion: { visible: 40, occluded: 43, notEstimated: 40, rays: 10_000, maxRays: 10_000 },
+    })[0]!;
+    expect(line).toContain('By a ray estimate, not a render');
+    expect(line.length).toBeLessThanOrEqual(SAVE_WARNING_LIMIT);
   });
 
   test('cuts at a whole word, and cuts a first word longer than the limit at the limit', () => {

@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "about": "Fixed asset set for scripts/profile-engine.ts (issue #372). Each source is the latest saved revision of its asset, or a published site input; all build without hydrated material maps. Triangle counts were measured when the set was chosen on 2026-11-18.",
+  "assets": [
+    {
+      "id": "pumpkin-plant",
+      "tier": "small",
+      "source": "packs/farm/sources/project/a_6cd60125b1274f1481ee2a5f37accb3f/r_38897e8a2b944c38a4f4428ab39f4a2b/source.kiln.js",
+      "triangles": 1566
+    },
+    {
+      "id": "van-delivery",
+      "tier": "small",
+      "source": "packs/foundry-floor/sources/project/a_595dd1e9c1ce4f9d9e6e9d19daace9ac/r_961acb32238d428192bdd939da41ae6c/source.kiln.js",
+      "triangles": 1820
+    },
+    {
+      "id": "planter-long",
+      "tier": "small",
+      "source": "packs/holodeck/sources/project/a_0dc7ceda00b941029cf89bef1ea4b433/r_df7f82a951694294b7a6bf91aa6a8111/source.kiln.js",
+      "triangles": 2112,
+      "note": "Few triangles, slow build: a 65 KB program."
+    },
+    {
+      "id": "tool-front-robot-arm",
+      "tier": "small",
+      "source": "packs/foundry-floor/sources/project/tool-front-robot-arm-fit/r_14bc5f09d6064a6aa8c20234c34b5d78/source.kiln.js",
+      "triangles": 2436
+    },
+    {
+      "id": "golden-gate-bridge",
+      "tier": "medium",
+      "source": "packs/golden-gate-bridge/sources/project/a_9fafaa6e7f4c4868a372e8f3b0b84738/r_f0f9dc5506be4e0292c650efd318985e/source.kiln.js",
+      "triangles": 11480
+    },
+    {
+      "id": "statue-figure",
+      "tier": "medium",
+      "source": "packs/holodeck/sources/project/a_2fdcbd42ab4740469b82e2c357f96413/r_c3c6c0cd796b43c88dabbb09061e3ef3/source.kiln.js",
+      "triangles": 34224
+    },
+    {
+      "id": "plaza-fountain",
+      "tier": "medium",
+      "source": "packs/holodeck/sources/project/a_f7a502493cbe49728c9bba8c27914b19/r_5a5c5ed84a9d4668a05016e109861d1e/source.kiln.js",
+      "triangles": 57402
+    },
+    {
+      "id": "mech-3",
+      "tier": "medium",
+      "source": "site/public/text-to-3d/49aa486695cbf82b/mech-3.kiln.js",
+      "triangles": 68604
+    },
+    {
+      "id": "gateway",
+      "tier": "large",
+      "source": "packs/holodeck/sources/project/a_3d189b692e934646bccc63f3088eafd1/r_c33d46440935478180576e38ffa20662/source.kiln.js",
+      "triangles": 132164,
+      "note": "The largest saved pack source that builds without hydrated material maps."
+    },
+    {
+      "id": "cathedral-1",
+      "tier": "large",
+      "source": "site/public/text-to-3d/49aa486695cbf82b/cathedral-1.kiln.js",
+      "triangles": 2913434,
+      "note": "First cathedral revision on the text-to-3D page."
+    },
+    {
+      "id": "cathedral-9",
+      "tier": "large",
+      "source": "site/public/text-to-3d/49aa486695cbf82b/cathedral-9.kiln.js",
+      "triangles": 3979168,
+      "note": "Final cathedral revision on the text-to-3D page; the largest program in the repository."
+    }
+  ]
+}
