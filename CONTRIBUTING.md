@@ -32,6 +32,14 @@ separate npm project with its own lockfile and a native dependency.
 `bun run test:render-service` does, after `npm --prefix render-service ci
 --ignore-scripts` once. This suite needs no GPU or Dawn build; CI requires it.
 
+`bun run test` and `bun run test:coverage` run through `scripts/gate-load.mjs`, which prints
+host CPU before the run, samples it during the run and prints start, peak, mean and end after
+it. Above 90% at the start it warns that timeouts in CLI-spawning tests are expected;
+`KILN_GATE_REQUIRE_QUIET=1` makes that a refusal. A failure at high load is read as load only
+when the file passes rerun alone; never raise a limit for it. Bun runs test files one at a
+time, so those tests do not compete with each other and there is no serial lane. When the
+host is busy, run the gate on a quiet second host instead.
+
 The archive preparation restores pinned historical programs into ignored
 `.cache/example-archive/` for the regression corpus and website archive. It makes
 no model calls, changes no working files and verifies the original Git blob bytes.

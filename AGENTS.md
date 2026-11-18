@@ -187,14 +187,6 @@ Tests use `--timeout 20000` for cold Windows startup; a larger budget needs an e
 coverage ratchet cannot vary with the runner's GPU; coverage is measured over `src/` alone, and
 tests under `scripts/` still run.
 
-`bun run test` and `bun run test:coverage` run through `scripts/gate-load.mjs`, which prints
-host CPU before the run, samples it during the run and prints start, peak, mean and end after
-it. Above 90% at the start it warns that timeouts in CLI-spawning tests are expected;
-`KILN_GATE_REQUIRE_QUIET=1` makes that a refusal. A failure at high load is read as load only
-when the file passes rerun alone; never raise a limit for it. Bun runs test files one at a
-time, so those tests do not compete with each other and there is no serial lane. When the
-host is busy, run the gate on a quiet second host instead.
-
 Use strict test-driven development for behavior changes: add a focused failing test, observe
 the expected failure, implement the smallest fix, and rerun both the focused and full gates.
 Preserve determinism: no `Date.now()` or `Math.random()` in render/rasterizer compute paths.
