@@ -122,46 +122,75 @@ const clean = (value: number, digits: number): number => {
   return rounded === 0 ? 0 : rounded;
 };
 
-/** Area of the convex polygon left when `subject` is clipped to the counter-clockwise `clip`. */
-function clippedArea(subject: number[], clip: number[], centre: [number, number]): number {
-  let points = subject;
-  for (let edge = 0; edge < clip.length && points.length; edge += 2) {
+/**
+ * Scratch for one clip: two triangles flattened into a plane, and the polygon between steps.
+ * A triangle clipped by three edges keeps six corners; rounding can make a step keep each
+ * corner and add a crossing after it, so the bound is 3, 4, 6, then 9 corners. The pass is
+ * synchronous, so one set serves every call.
+ */
+const flatI = new Float64Array(6);
+const flatJ = new Float64Array(6);
+const polygonA = new Float64Array(24);
+const polygonB = new Float64Array(24);
+const sides = new Float64Array(12);
+const planeCentre: [number, number] = [0, 0];
+
+/**
+ * Area of the convex polygon left when the triangle `subject` is clipped to the
+ * counter-clockwise triangle `clip`, both six numbers.
+ */
+function clippedArea(subject: Float64Array, clip: Float64Array, centre: [number, number]): number {
+  let points = polygonA;
+  let next = polygonB;
+  for (let k = 0; k < 6; k++) points[k] = subject[k]!;
+  let length = 6;
+  for (let edge = 0; edge < 6 && length; edge += 2) {
     const ax = clip[edge]!;
     const ay = clip[edge + 1]!;
-    const bx = clip[(edge + 2) % clip.length]!;
-    const by = clip[(edge + 3) % clip.length]!;
-    const side = (x: number, y: number) => (bx - ax) * (y - ay) - (by - ay) * (x - ax);
-    const next: number[] = [];
-    for (let i = 0; i < points.length; i += 2) {
+    const bx = clip[(edge + 2) % 6]!;
+    const by = clip[(edge + 3) % 6]!;
+    for (let i = 0; i < length; i += 2)
+      sides[i >> 1] = (bx - ax) * (points[i + 1]! - ay) - (by - ay) * (points[i]! - ax);
+    let kept = 0;
+    for (let i = 0; i < length; i += 2) {
       const px = points[i]!;
       const py = points[i + 1]!;
-      const qx = points[(i + 2) % points.length]!;
-      const qy = points[(i + 3) % points.length]!;
-      const p = side(px, py);
-      const q = side(qx, qy);
-      if (p >= 0) next.push(px, py);
+      const following = (i + 2) % length;
+      const qx = points[following]!;
+      const qy = points[following + 1]!;
+      const p = sides[i >> 1]!;
+      const q = sides[following >> 1]!;
+      if (p >= 0) {
+        next[kept++] = px;
+        next[kept++] = py;
+      }
       if ((p > 0 && q < 0) || (p < 0 && q > 0)) {
         const t = p / (p - q);
-        next.push(px + (qx - px) * t, py + (qy - py) * t);
+        next[kept++] = px + (qx - px) * t;
+        next[kept++] = py + (qy - py) * t;
       }
     }
+    const swap = points;
     points = next;
+    next = swap;
+    length = kept;
   }
-  if (points.length < 6) return 0;
+  if (length < 6) return 0;
   let doubled = 0;
   let cx = 0;
   let cy = 0;
-  for (let i = 0; i < points.length; i += 2) {
+  for (let i = 0; i < length; i += 2) {
     const x = points[i]!;
     const y = points[i + 1]!;
-    const nx = points[(i + 2) % points.length]!;
-    const ny = points[(i + 3) % points.length]!;
+    const following = (i + 2) % length;
+    const nx = points[following]!;
+    const ny = points[following + 1]!;
     doubled += x * ny - nx * y;
     cx += x;
     cy += y;
   }
-  centre[0] = cx / (points.length / 2);
-  centre[1] = cy / (points.length / 2);
+  centre[0] = cx / (length / 2);
+  centre[1] = cy / (length / 2);
   return Math.abs(doubled) / 2;
 }
 
@@ -274,23 +303,27 @@ interface BoxTree {
   end: Int32Array;
 }
 
-/** Rearranges `items[from, to)` so that `items[k]` is the one a sort by `key` would put there. */
+/**
+ * Rearranges `items[from, to)` so that `items[k]` is the one a sort by `key[item * 3 + axis]`
+ * would put there.
+ */
 function select(
   items: Int32Array,
   from: number,
   to: number,
   k: number,
-  key: (item: number) => number,
+  key: Float64Array,
+  axis: number,
 ): void {
   let low = from;
   let high = to - 1;
   while (low < high) {
-    const pivot = key(items[(low + high) >> 1]!);
+    const pivot = key[items[(low + high) >> 1]! * 3 + axis]!;
     let i = low;
     let j = high;
     while (i <= j) {
-      while (key(items[i]!) < pivot) i++;
-      while (key(items[j]!) > pivot) j--;
+      while (key[items[i]! * 3 + axis]! < pivot) i++;
+      while (key[items[j]! * 3 + axis]! > pivot) j--;
       if (i <= j) {
         const swap = items[i]!;
         items[i] = items[j]!;
@@ -318,40 +351,46 @@ function buildBoxTree(soup: Soup): BoxTree {
     start: new Int32Array(capacity),
     end: new Int32Array(capacity),
   };
-  for (let triangle = 0; triangle < count; triangle++) tree.items[triangle] = triangle;
+  const { items } = tree;
+  const { low, high } = soup;
+  // Twice each box centre, the key the split sorts by.
+  const centre = new Float64Array(count * 3);
+  for (let at = 0; at < count * 3; at++) centre[at] = low[at]! + high[at]!;
+  for (let triangle = 0; triangle < count; triangle++) items[triangle] = triangle;
   let nodes = 0;
   const grow = (from: number, to: number): number => {
     const node = nodes++;
-    const centreLow = [Infinity, Infinity, Infinity];
-    const centreHigh = [-Infinity, -Infinity, -Infinity];
-    for (let axis = 0; axis < 3; axis++) {
+    // The widest spread of centres; the first axis wins a tie.
+    let axis = 0;
+    let widest = -Infinity;
+    for (let along = 0; along < 3; along++) {
       let min = Infinity;
       let max = -Infinity;
+      let centreLow = Infinity;
+      let centreHigh = -Infinity;
       for (let at = from; at < to; at++) {
-        const triangle = tree.items[at]!;
-        const a = soup.low[triangle * 3 + axis]!;
-        const b = soup.high[triangle * 3 + axis]!;
+        const index = items[at]! * 3 + along;
+        const a = low[index]!;
+        const b = high[index]!;
+        const c = centre[index]!;
         if (a < min) min = a;
         if (b > max) max = b;
-        if (a + b < centreLow[axis]!) centreLow[axis] = a + b;
-        if (a + b > centreHigh[axis]!) centreHigh[axis] = a + b;
+        if (c < centreLow) centreLow = c;
+        if (c > centreHigh) centreHigh = c;
       }
-      tree.low[node * 3 + axis] = min;
-      tree.high[node * 3 + axis] = max;
+      tree.low[node * 3 + along] = min;
+      tree.high[node * 3 + along] = max;
+      const spread = centreHigh - centreLow;
+      if (spread > widest) {
+        widest = spread;
+        axis = along;
+      }
     }
     tree.start[node] = from;
     tree.end[node] = to;
     if (to - from > LEAF_TRIANGLES) {
-      const spread = centreHigh.map((value, axis) => value - centreLow[axis]!);
-      const axis = spread.indexOf(Math.max(...spread));
       const middle = (from + to) >> 1;
-      select(
-        tree.items,
-        from,
-        to,
-        middle,
-        (triangle) => soup.low[triangle * 3 + axis]! + soup.high[triangle * 3 + axis]!,
-      );
+      select(items, from, to, middle, centre, axis);
       tree.left[node] = grow(from, middle);
       tree.right[node] = grow(middle, to);
     }
@@ -439,13 +478,6 @@ function insideTriangle(soup: Soup, k: number, point: readonly [number, number, 
   return true;
 }
 
-/** Levels of one LOD chain are drawn one at a time, so they never fight each other. */
-const alternates = (a: FlushPart, b: FlushPart): boolean =>
-  !!a.alternate &&
-  !!b.alternate &&
-  a.alternate.chain === b.alternate.chain &&
-  a.alternate.level !== b.alternate.level;
-
 function boxesApart(soup: Soup, i: number, j: number, gap: number) {
   for (let axis = 0; axis < 3; axis++)
     if (
@@ -519,22 +551,32 @@ function sharedArea(soup: Soup, i: number, j: number, at: [number, number, numbe
   const ox = corner[i * 9]!;
   const oy = corner[i * 9 + 1]!;
   const oz = corner[i * 9 + 2]!;
-  const flat = (triangle: number): number[] => {
-    const out: number[] = [];
+  const flat = (triangle: number, out: Float64Array): void => {
     for (let k = 0; k < 3; k++) {
       const x = corner[triangle * 9 + k * 3]! - ox;
       const y = corner[triangle * 9 + k * 3 + 1]! - oy;
       const z = corner[triangle * 9 + k * 3 + 2]! - oz;
-      out.push(x * ux + y * uy + z * uz, x * vx + y * vy + z * vz);
+      out[k * 2] = x * ux + y * uy + z * uz;
+      out[k * 2 + 1] = x * vx + y * vy + z * vz;
     }
-    return out;
   };
-  let clip = flat(j);
+  const clip = flatJ;
+  flat(j, clip);
   const turn =
     (clip[2]! - clip[0]!) * (clip[5]! - clip[1]!) - (clip[4]! - clip[0]!) * (clip[3]! - clip[1]!);
-  if (turn < 0) clip = [clip[0]!, clip[1]!, clip[4]!, clip[5]!, clip[2]!, clip[3]!];
-  const centre: [number, number] = [0, 0];
-  const shared = clippedArea(flat(i), clip, centre);
+  if (turn < 0) {
+    const x = clip[2]!;
+    const y = clip[3]!;
+    clip[2] = clip[4]!;
+    clip[3] = clip[5]!;
+    clip[4] = x;
+    clip[5] = y;
+  }
+  flat(i, flatI);
+  const centre = planeCentre;
+  centre[0] = 0;
+  centre[1] = 0;
+  const shared = clippedArea(flatI, clip, centre);
   at[0] = ox + ux * centre[0] + vx * centre[1];
   at[1] = oy + uy * centre[0] + vy * centre[1];
   at[2] = oz + uz * centre[0] + vz * centre[1];
@@ -567,12 +609,32 @@ export function findFlushFaces(
   let pairTests = 0;
   let work = 0;
 
+  // Per part: drawn on both sides, and its level-of-detail chain (-1 for none) and level.
+  const twoSided = new Uint8Array(parts.length);
+  const chainOf = new Int32Array(parts.length).fill(-1);
+  const levelOf = new Float64Array(parts.length);
+  const chainIds = new Map<string, number>();
+  for (let index = 0; index < parts.length; index++) {
+    const part = parts[index]!;
+    if (part.doubleSided) twoSided[index] = 1;
+    if (!part.alternate) continue;
+    let id = chainIds.get(part.alternate.chain);
+    if (id === undefined) {
+      id = chainIds.size;
+      chainIds.set(part.alternate.chain, id);
+    }
+    chainOf[index] = id;
+    levelOf[index] = part.alternate.level;
+  }
+
   /** Measures one pair of triangles whose boxes touch. False once the pair budget is spent. */
   const measure = (i: number, j: number): boolean => {
-    const partI = parts[owner[i]!]!;
-    const partJ = parts[owner[j]!]!;
-    if (alternates(partI, partJ)) return true;
-    const facing = facingOf(soup, i, j, !!(partI.doubleSided || partJ.doubleSided));
+    const ownerI = owner[i]!;
+    const ownerJ = owner[j]!;
+    // Levels of one LOD chain are drawn one at a time, so they never fight each other.
+    const chain = chainOf[ownerI]!;
+    if (chain >= 0 && chain === chainOf[ownerJ] && levelOf[ownerI] !== levelOf[ownerJ]) return true;
+    const facing = facingOf(soup, i, j, twoSided[ownerI] === 1 || twoSided[ownerJ] === 1);
     if (!facing) return true;
     if (++pairTests > maxPairTests) {
       pairTests = maxPairTests;
