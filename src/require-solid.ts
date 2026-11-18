@@ -9,7 +9,7 @@
  */
 import type * as THREE from 'three';
 import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
-import { geometryDiagnostics } from './geometry';
+import { geometryDiagnostics, type GeometryDiagnostics } from './geometry';
 import {
   RequiredSolidError,
   MAX_SOLID_FAILURE_MESHES,
@@ -29,6 +29,25 @@ export function requireSolid<T extends THREE.Object3D>(part: T): T {
     );
   part.userData[REQUIRE_SOLID_KEY] = { schemaVersion: 1 };
   return part;
+}
+
+/**
+ * The failing solid facts of one measured mesh, in the words `REQUIRE_SOLID` and the print
+ * export both use; empty for a closed, manifold, outward solid.
+ */
+export function solidFailureReasons(report: GeometryDiagnostics): string[] {
+  const { solid } = report;
+  const reasons: string[] = [];
+  if (!solid.closed) reasons.push(`not closed (${report.boundaryEdges} boundary edges)`);
+  if (!solid.manifold)
+    reasons.push(`not manifold (${report.nonManifoldEdges} edges shared by 3+ faces)`);
+  if (solid.orientation !== 'outward')
+    reasons.push(
+      solid.orientation === 'mixed'
+        ? `winding is mixed (${report.orientationConflicts} conflicting edges)`
+        : `faces point inward (signed volume ${solid.signedVolume.toPrecision(4)})`,
+    );
+  return reasons;
 }
 
 const marked = (node: THREE.Object3D): boolean => {
@@ -51,16 +70,7 @@ export function assertRequiredSolids(root: THREE.Object3D): void {
     if (mesh.isMesh && marked(mesh) && mesh.geometry?.getAttribute('position')) {
       const report = geometryDiagnostics(mesh.geometry);
       const { solid } = report;
-      const reasons: string[] = [];
-      if (!solid.closed) reasons.push(`not closed (${report.boundaryEdges} boundary edges)`);
-      if (!solid.manifold)
-        reasons.push(`not manifold (${report.nonManifoldEdges} edges shared by 3+ faces)`);
-      if (solid.orientation !== 'outward')
-        reasons.push(
-          solid.orientation === 'mixed'
-            ? `winding is mixed (${report.orientationConflicts} conflicting edges)`
-            : `faces point inward (signed volume ${solid.signedVolume.toPrecision(4)})`,
-        );
+      const reasons = solidFailureReasons(report);
       if (reasons.length) {
         total++;
         if (meshes.length < MAX_SOLID_FAILURE_MESHES) {
