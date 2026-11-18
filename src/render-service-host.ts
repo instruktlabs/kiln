@@ -193,6 +193,8 @@ export async function terminateRenderService(
   }
   return false;
 }
+/** How long the port must stay empty after our child exits before startup has failed. */
+const EXITED_CHILD_GRACE_MS = 2_000;
 function nodeBinary(env: Readonly<NodeJS.ProcessEnv> = process.env): string {
   return env['KILN_RENDER_SERVICE_NODE'] || (process.versions.bun ? 'node' : process.execPath);
 }
@@ -248,6 +250,7 @@ export async function startLocalRenderService(
     stderr = `${stderr}${chunk.toString()}`.slice(-2_000);
   });
   const deadline = Date.now() + budget;
+  let emptySince: number | undefined;
   try {
     while (Date.now() < deadline) {
       const exitedBeforeProbe = windowsLaunch
@@ -261,7 +264,19 @@ export async function startLocalRenderService(
       // its bind. An unknown listener gets the same startup deadline as our child;
       // only verified health permits joining. A refusal observed before exit can
       // already be stale, so require a probe begun after observing the child exit.
-      if (spawnError || (exitedBeforeProbe && fresh.kind === 'absent'))
+      //
+      // A child that loses the bind exits with EADDRINUSE while the winner can still be
+      // between its bind and its listen, so one refused probe is not proof that nobody
+      // holds the port (issue 429). After an exit the port must stay empty for a short
+      // grace before startup is reported as failed; a real crash costs that much longer.
+      if (!spawnError && exitedBeforeProbe && fresh.kind === 'absent' && emptySince === undefined)
+        emptySince = Date.now();
+      if (
+        spawnError ||
+        (exitedBeforeProbe &&
+          fresh.kind === 'absent' &&
+          Date.now() - (emptySince ?? 0) >= EXITED_CHILD_GRACE_MS)
+      )
         throw new Error(
           `render service exited during startup${spawnError ? `: ${spawnError.message}` : ''}${stderr.trim() ? `: ${stderr.trim()}` : windowsLaunch ? '; launch the renderer manually to inspect native-driver errors' : ''}`,
         );

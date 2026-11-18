@@ -1,7 +1,8 @@
-import type { ChildProcess } from 'node:child_process';
+import { type ChildProcess, spawn } from 'node:child_process';
 import { createServer, type Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { afterEach, expect, test } from 'bun:test';
 import {
@@ -298,6 +299,43 @@ test('a renderer that exits before health is reported as startup failure', async
     if (oldBudget === undefined) delete process.env.KILN_RENDER_SERVICE_STARTUP_MS;
     else process.env.KILN_RENDER_SERVICE_STARTUP_MS = oldBudget;
   }
+});
+
+// Issue 429. Two hosts cold-starting together: the child that loses the bind exits
+// with EADDRINUSE while the winner sits between bind and listen, so one probe is
+// refused although a healthy service answers a moment later. The loser must join.
+test('a child that loses the port to a competitor joins the competitor once it answers', async () => {
+  const { dir, port, url } = await installation();
+  const winner = join(dir, 'src/winner.mjs');
+  await writeFile(winner, await readFile(join(dir, 'src/server.mjs'), 'utf8'));
+  await writeFile(
+    join(dir, 'src/server.mjs'),
+    `import { writeFileSync } from 'node:fs';
+     console.error('Error: listen EADDRINUSE: address already in use 127.0.0.1:${port}');
+     writeFileSync(${JSON.stringify(join(dir, 'lost-bind'))}, '');
+     process.exit(1);`,
+  );
+  const starting = startLocalRenderService(dir);
+  // Start the competitor only once the loser has exited and its host has had time to
+  // see the exit and a refused probe: the moment the old code gave up.
+  const lost = join(dir, 'lost-bind');
+  const deadline = Date.now() + 15_000;
+  while (!existsSync(lost) && Date.now() < deadline)
+    await new Promise((done) => setTimeout(done, 20));
+  await new Promise((done) => setTimeout(done, 600));
+  const competitor = spawn('node', [winner], {
+    cwd: dir,
+    env: {
+      ...process.env,
+      PORT: String(port),
+      HOST: '127.0.0.1',
+      RENDER_SERVICE_MODE: 'managed',
+      RENDER_SERVICE_OWNER_PID: String(process.pid),
+    },
+    stdio: 'ignore',
+  });
+  children.push(competitor);
+  expect(await starting).toBe(url);
 });
 
 test('startup failure retains the child error instead of only its stack footer', async () => {
