@@ -1,6 +1,6 @@
 # Choose geometry by the shape you need
 
-Search `kiln_discover` for the shape or operation you need, then fetch exact `ids` for unfamiliar helpers. An overview supplies current `family` and `tags` labels when a filter is useful; `{ kind: "recipe" }` browses optional construction recipes. Each example below lives in `build()` with a named root and suitable material. Adapt or combine recipes freely, including with custom equations and topology.
+Search `kiln_discover` for the shape or operation you need, then fetch exact `ids` for unfamiliar helpers. An overview supplies current `family` labels and `{ family }` lists that family's `tags` when a filter is useful; `{ kind: "recipe" }` browses optional construction recipes. Each example below lives in `build()` with a named root and suitable material. Adapt or combine recipes freely, including with custom equations and topology.
 
 Parts use the asset frame: metres, +X forward, +Y up, +Z right. Forward is the direction the object faces; a bench's sitter faces +X. Part `rotation` is in degrees and follows the right-hand rule in this frame: `[0, 90, 0]` turns forward (+X) toward -Z, the object's left; `[0, 0, 90]` tips +X up to +Y; `[90, 0, 0]` rolls +Y toward +Z.
 

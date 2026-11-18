@@ -55,6 +55,31 @@ const MAX_TEXT_CHARS = 16 * 1024;
 /** Rule 7: a detail page of exact contracts stays inside MAX_TEXT_CHARS with room for its notice. */
 const DETAIL_RESULT_BUDGET = 15_000;
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+/** Lower-case letters and digits only, so `Box`, `box-geo` and `ｂｏｘ` compare as names. */
+const compact = (text: string) =>
+  text
+    .normalize('NFKC')
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}]/gu, '');
+/** Search hits keep prose short; the exact contract is one ids call away. */
+const HIT_SUMMARY_CHARS = 160;
+const HIT_LIMITS_CHARS = 120;
+/**
+ * The leading whole sentences that fit, else a word-boundary cut. Either way a shortened
+ * text ends with an ellipsis, so the reader knows the contract holds more.
+ */
+function brief(text: string, max: number): string {
+  if (text.length <= max) return text;
+  // A sentence ends at . ! or ? followed by a space: `kiln.material.bark.v1` is one word.
+  let end = -1;
+  for (const boundary of text.matchAll(/[.!?](?=\s)/g)) {
+    if (boundary.index + 1 > max - 2) break;
+    end = boundary.index + 1;
+  }
+  if (end > 0) return `${text.slice(0, end)} …`;
+  const cut = text.slice(0, max - 1);
+  return `${cut.slice(0, Math.max(cut.lastIndexOf(' '), max / 2)).trimEnd()}…`;
+}
 
 export function createDiscoveryService(
   source: unknown,
@@ -247,12 +272,27 @@ export function createDiscoveryService(
     if (input.query) {
       const exact = select(input.query);
       const ordered = await ranked(input.query);
+      // A helper named like the query comes first, then helpers whose names start with
+      // it, then the lexical order: `box` lists boxGeo before helpers that mention boxes.
+      const wanted = compact(input.query);
+      const tierOf = (entry: DiscoveryEntry) => {
+        if (entry.kind !== 'operation' && entry.kind !== 'assembly') return 2;
+        const name = compact(entry.name);
+        if (name === wanted || name === `${wanted}geo`) return 0;
+        return wanted.length >= 3 && name.startsWith(wanted) ? 1 : 2;
+      };
+      const rest = ordered.filter(({ entry }) => entry.id !== exact?.id);
+      const listed = new Set(rest.map(({ entry }) => entry.id));
+      for (const entry of entries)
+        if (entry !== exact && tierOf(entry) < 2 && !listed.has(entry.id))
+          rest.push({ entry, evidence: undefined });
+      rest.sort((a, b) => tierOf(a.entry) - tierOf(b.entry));
       const candidates = exact
         ? [
             { entry: exact, evidence: ordered.find((row) => row.entry.id === exact.id)?.evidence },
-            ...ordered.filter(({ entry }) => entry.id !== exact.id),
+            ...rest,
           ]
-        : ordered;
+        : rest;
       matches = candidates
         .filter(({ entry }) => matchFilter(entry))
         .map(({ entry, evidence }) =>
@@ -299,12 +339,14 @@ export function createDiscoveryService(
           ? [
               ...orientation.start.map((entry) => `${entry.signature} -> ${entry.returns}`),
               ...guidance,
-              `Families: ${orientation.families.join(', ')}. Tags: ${orientation.tags.join(', ')}.`,
+              `Families: ${orientation.families.join(', ')}.`,
+              input.family
+                ? `Tags in ${input.family}: ${[...new Set(entries.filter((entry) => entry.family === input.family).flatMap((entry) => entry.tags))].sort(compare).join(', ')}.`
+                : `${orientation.tags.length} tags; browse one family to list its tags.`,
             ]
           : []),
-        ...page.map(
-          (entry) =>
-            `${entry.id} [${entry.stability}]${entry.execution ? ` (${entry.execution === 'async' ? 'async; await the result' : 'sync'})` : ''}: ${entry.summary}${entry.limitations.length ? ` Limits: ${entry.limitations.join(' ')}` : ''}${formatMatch(entry.match)}`,
+        ...page.map((entry) =>
+          formatHit(entry, input.query ? contractOf(byId.get(entry.id)!) : undefined),
         ),
         ...(input.query && !page.length
           ? [
@@ -315,6 +357,30 @@ export function createDiscoveryService(
       ].join('\n\n'),
     });
   };
+}
+
+/**
+ * One listed entry. A search hit leads with the signature, then a shortened summary.
+ * Limits stay whole on experimental and deprecated entries, whose caveats are the point.
+ */
+function formatHit(entry: Summary, contract?: { signature: string; returns: string }): string {
+  const execution = entry.execution
+    ? ` (${entry.execution === 'async' ? 'async; await the result' : 'sync'})`
+    : '';
+  const limits = entry.limitations.join(' ');
+  return (
+    `${entry.id} [${entry.stability}]${execution}: ` +
+    (contract ? `${contract.signature} -> ${contract.returns}. ` : '') +
+    brief(entry.summary, HIT_SUMMARY_CHARS) +
+    (limits
+      ? ` Limits: ${entry.stability === 'stable' ? brief(limits, HIT_LIMITS_CHARS) : limits}`
+      : '') +
+    formatMatch(entry.match)
+  );
+}
+
+function contractOf(entry: DiscoveryEntry): { signature: string; returns: string } | undefined {
+  return entry.kind === 'operation' || entry.kind === 'assembly' ? entry.contract : undefined;
 }
 
 function formatMatch(match: Summary['match']): string {
