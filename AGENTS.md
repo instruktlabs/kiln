@@ -48,8 +48,8 @@ infer it from project, model name or source equality. Explicit observation works
 separate sources. Build and check viewer changes through the installed package and the
 actual Library/Projects/Live Review flow, not only a separate comparison page.
 
-Gallery assets are unvetted historical showcases, not golden outputs; regression comparisons
-do not establish their quality.
+Gallery assets not marked verified (`docs/gallery-verified.md`) are unvetted showcases. None
+are golden outputs; regression comparisons do not establish quality.
 
 ## The tool registry is the single source of truth
 

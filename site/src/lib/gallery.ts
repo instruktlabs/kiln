@@ -7,6 +7,7 @@ import { cabinWoodsAssets, cabinWoodsHref } from './cabin-woods';
 import { holodeckAssetHref, holodeckAssets, holodeckScenes } from './holodeck';
 import taxonomy from '../data/gallery-taxonomy.json';
 import { browseGallery } from './gallery-browse';
+import { type VerifiedReview, verifiedReviewFor, verifiedReviews } from './gallery-verified';
 import {
   CATHEDRAL_SQUARE_ID,
   cathedralAssetHref,
@@ -34,7 +35,12 @@ export interface GalleryCard {
   addedOn: string;
   href: string;
   revisionId: string;
+  assetId?: string;
   runtimeDownload: { sha256: string };
+  /** The served GLB when the runtime download is an archive. */
+  runtimeModelDownload?: { sha256: string };
+  /** Present only when an owner review marks this exact revision and GLB (docs/gallery-verified.md). */
+  verified?: { date: string };
   /** Null until a pack's rig posters are rendered (Seed Town before its poster run). */
   poster: CatalogImage | null;
   metrics: { triangles: number };
@@ -43,7 +49,10 @@ export interface GalleryCard {
   scenes?: { label: string; href: string }[];
 }
 
-export function buildGallery(packsEnabled: boolean): GalleryCard[] {
+export function buildGallery(
+  packsEnabled: boolean,
+  reviews: readonly VerifiedReview[] = verifiedReviews,
+): GalleryCard[] {
   if (!packsEnabled) return [];
   const cards: Omit<GalleryCard, 'tags' | 'addedOn'>[] = catalogAssets(true).map((asset) => ({
     ...asset,
@@ -139,7 +148,8 @@ export function buildGallery(packsEnabled: boolean): GalleryCard[] {
         taxonomy.assets as Record<string, { category: string; tags: string[]; addedOn: string }>
       )[card.href];
       if (!editorial) throw new Error(`Missing gallery taxonomy for ${card.href}`);
-      return { ...card, ...editorial };
+      const review = verifiedReviewFor(card, reviews);
+      return { ...card, ...editorial, ...(review ? { verified: { date: review.date } } : {}) };
     }),
   );
 }
