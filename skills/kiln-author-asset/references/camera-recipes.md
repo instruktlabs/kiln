@@ -71,3 +71,15 @@ Inspect returned resolved cameras and fidelity/fallback receipts. A correct-look
 With `framing: 'bounds'`, target may be omitted and defaults to the selected world-bounds center. The camera fits the selected geometry; omit `halfHeight` because fitting computes it. `padding` is accepted only for bounds fitting. Perspective bounds fitting uses a conservative bounding sphere at the selected FOV.
 
 `targetOffset` uses the selected frame's axes. It moves the target in explicit framing; bounds framing moves eye and target together. Inspect returned camera receipts when composing these controls. The host can impose smaller shot, pixel, or byte budgets than the schema maximum; follow the returned limit instead of retrying the same oversized request.
+
+## Animation and interiors
+
+Animation needs intermediate-pose review and interiors may need cutaway views. Use `kiln_screenshot_animation` for clip sampling (the CLI route is in the camera commands reference); phases are fractions of clip duration, such as `0, 0.017, 0.31, 0.68, 1`, and sample the exported animation without editing posed copies into source. Check `poseBounds` against requested ground clearance and dimensions at those poses, including tread and other protrusions; choose phases inside a geometric repeat, since quarter turns of 16 repeated lugs all show the same alignment. Sampled bounds do not prove continuous contact or collision safety.
+
+## Find part paths
+
+The render response lists the first 24 part paths (every path that fits only with `detail: "full"`) and `partsTruncated` when there are more; then use `kiln_inspect({ programRef, image: false, listParts: { query: "part name" } })`, which searches nested names and paths, and follow `partListing.nextOffset` with the same reference and query. Omit the query to list everything; add `placement: true` for world position, rotation, scale and bounds per part. A missing preview entry does not mean the part failed to export.
+
+## What a saved preview keeps
+
+The saved `preview.png` is the default six-view sheet drawn on the same route as `kiln_render` (`preview.fidelity` says which). Capture shots are not saved with it, so keep the capture JSON that reproduces them; a Live Review `save` keeps its reviewed capture instead.

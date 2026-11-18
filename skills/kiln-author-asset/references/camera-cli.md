@@ -1,4 +1,17 @@
-# Camera export through the CLI
+# Files and camera views through the CLI
+
+## Files without collection tools
+
+```sh
+node kiln.mjs source RETURNED_REF --out asset-v1.kiln.js
+node kiln.mjs render RETURNED_REF --out asset-v1.glb --views asset-v1.png
+```
+
+Keep `.kiln/programs`, including its mappings, while using saved references. Pass `--out`
+whenever you want a GLB: `render` with neither `--out` nor `--views` writes `out.glb` in the
+current directory. Use `render --json` for the source reference, requirements, paths,
+fidelity and compact review (`--detail full` only for a closer look). Do not copy image
+base64 into shell commands.
 
 ## Save chosen views to PNG
 
@@ -44,3 +57,9 @@ After an edit, export from the final reference or exact saved revision. Any sour
 GLB and ZIP you hand over must describe that same revision. Regenerate a bundle
 when its contents changed, or clearly identify it as an older revision rather than
 listing it as the latest delivery.
+
+## Animation and the render service
+
+Sample a clip in a CLI workspace with `node kiln.mjs animation RETURNED_REF --clip CLIP_NAME --phases 0,0.017,0.31,0.68,1 --views motion.png --render gpu --json` (`--render cpu` for geometry only) and read the PNG.
+
+In auto mode the first view that needs PBR shading starts a compatible local render service on demand, so `node kiln.mjs service status` showing no listener before that view is expected.

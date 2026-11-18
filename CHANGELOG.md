@@ -7,6 +7,13 @@ does not publish a package.
 
 ## Unreleased
 
+- **The author skill reads lighter.** `kiln-author-asset/SKILL.md` goes from 15,998 to
+  12,842 bytes: the CLI file commands, animation sampling, part listing and saved-preview notes
+  move to its camera references, and the export profile guide is read only when the user asks
+  for delivery files. Measured over six dogfood runs in `docs/reviews/2026-11-18-wave3-dogfood.md`.
+  Existing workspaces report the skill as changed; run `kiln-init <workspace> --check`, then
+  `--upgrade`. (#370)
+
 ## 1.8.0 (2026-11-13)
 
 - **`kiln_export` and `kiln_export_to` can carry sizes.** Both take an optional
