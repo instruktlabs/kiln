@@ -254,7 +254,7 @@ async function main() {
   mkdirSync(opts.outDir, { recursive: true });
   // The child works in a clean room and writes there; the result is copied out
   // afterwards. Nothing the agent produces lands in the repository directly.
-  const sandbox = makeSandbox(opts.name);
+  const sandbox = await makeSandbox(opts.name, { harness: opts.harness });
   const sandboxFile = join(sandbox, `${opts.name}.kiln.js`);
   const file = join(opts.outDir, `${opts.name}.kiln.js`);
   const briefPath = join(sandbox, `${opts.name}.prompt.txt`);
@@ -280,7 +280,7 @@ async function main() {
       process.stdout.write(`[${opts.name}] ${opts.harness} / ${model} ... `);
       const started = Date.now();
       result = await run(
-        harness.bin,
+        harness.runBin ?? harness.bin,
         harness.argv({ model, prompt, timeout: opts.timeout, logFile, sandbox }),
         {
           logFile,
