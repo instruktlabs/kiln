@@ -227,6 +227,12 @@ interface Soup {
   size: number;
   /** The lowest point of any triangle. */
   floor: number;
+  /**
+   * Per triangle, once it is first measured: the basis of its plane (u, then v) and its own
+   * corners in that basis, twelve numbers; `framed` marks the triangles done.
+   */
+  frame: Float64Array;
+  framed: Uint8Array;
 }
 
 function readTriangles(parts: readonly FlushPart[], capacity: number): Soup {
@@ -283,7 +289,20 @@ function readTriangles(parts: readonly FlushPart[], capacity: number): Soup {
   const size = count
     ? Math.hypot(bounds[3]! - bounds[0]!, bounds[4]! - bounds[1]!, bounds[5]! - bounds[2]!)
     : 0;
-  return { count, truncated, corner, normal, low, high, area, owner, size, floor: bounds[1]! };
+  return {
+    count,
+    truncated,
+    corner,
+    normal,
+    low,
+    high,
+    area,
+    owner,
+    size,
+    floor: bounds[1]!,
+    frame: new Float64Array(count * 12),
+    framed: new Uint8Array(count),
+  };
 }
 
 const LEAF_TRIANGLES = 8;
@@ -360,32 +379,60 @@ function buildBoxTree(soup: Soup): BoxTree {
   let nodes = 0;
   const grow = (from: number, to: number): number => {
     const node = nodes++;
-    // The widest spread of centres; the first axis wins a tie.
-    let axis = 0;
-    let widest = -Infinity;
-    for (let along = 0; along < 3; along++) {
-      let min = Infinity;
-      let max = -Infinity;
-      let centreLow = Infinity;
-      let centreHigh = -Infinity;
-      for (let at = from; at < to; at++) {
-        const index = items[at]! * 3 + along;
-        const a = low[index]!;
-        const b = high[index]!;
-        const c = centre[index]!;
-        if (a < min) min = a;
-        if (b > max) max = b;
-        if (c < centreLow) centreLow = c;
-        if (c > centreHigh) centreHigh = c;
-      }
-      tree.low[node * 3 + along] = min;
-      tree.high[node * 3 + along] = max;
-      const spread = centreHigh - centreLow;
-      if (spread > widest) {
-        widest = spread;
-        axis = along;
-      }
+    // The node's box, and the range of box centres along each axis, in one pass.
+    let lx = Infinity;
+    let ly = Infinity;
+    let lz = Infinity;
+    let hx = -Infinity;
+    let hy = -Infinity;
+    let hz = -Infinity;
+    let cxLow = Infinity;
+    let cyLow = Infinity;
+    let czLow = Infinity;
+    let cxHigh = -Infinity;
+    let cyHigh = -Infinity;
+    let czHigh = -Infinity;
+    for (let at = from; at < to; at++) {
+      const index = items[at]! * 3;
+      const ax = low[index]!;
+      const ay = low[index + 1]!;
+      const az = low[index + 2]!;
+      const bx = high[index]!;
+      const by = high[index + 1]!;
+      const bz = high[index + 2]!;
+      const cx = centre[index]!;
+      const cy = centre[index + 1]!;
+      const cz = centre[index + 2]!;
+      if (ax < lx) lx = ax;
+      if (ay < ly) ly = ay;
+      if (az < lz) lz = az;
+      if (bx > hx) hx = bx;
+      if (by > hy) hy = by;
+      if (bz > hz) hz = bz;
+      if (cx < cxLow) cxLow = cx;
+      if (cy < cyLow) cyLow = cy;
+      if (cz < czLow) czLow = cz;
+      if (cx > cxHigh) cxHigh = cx;
+      if (cy > cyHigh) cyHigh = cy;
+      if (cz > czHigh) czHigh = cz;
     }
+    tree.low[node * 3] = lx;
+    tree.low[node * 3 + 1] = ly;
+    tree.low[node * 3 + 2] = lz;
+    tree.high[node * 3] = hx;
+    tree.high[node * 3 + 1] = hy;
+    tree.high[node * 3 + 2] = hz;
+    // Split along the widest spread of centres; the first axis wins a tie.
+    const spreadX = cxHigh - cxLow;
+    const spreadY = cyHigh - cyLow;
+    const spreadZ = czHigh - czLow;
+    let axis = 0;
+    let widest = spreadX;
+    if (spreadY > widest) {
+      widest = spreadY;
+      axis = 1;
+    }
+    if (spreadZ > widest) axis = 2;
     tree.start[node] = from;
     tree.end[node] = to;
     if (to - from > LEAF_TRIANGLES) {
@@ -488,20 +535,11 @@ function boxesApart(soup: Soup, i: number, j: number, gap: number) {
   return false;
 }
 
-/** How two triangles face each other when they could fight, else undefined. */
-function facingOf(
-  soup: Soup,
-  i: number,
-  j: number,
-  eitherDoubleSided: boolean,
-): 'same' | 'opposite' | undefined {
-  const dot =
-    soup.normal[i * 3]! * soup.normal[j * 3]! +
-    soup.normal[i * 3 + 1]! * soup.normal[j * 3 + 1]! +
-    soup.normal[i * 3 + 2]! * soup.normal[j * 3 + 2]!;
-  if (dot >= SAME_FACING) return 'same';
-  return dot <= -SAME_FACING && eitherDoubleSided ? 'opposite' : undefined;
-}
+/** The cosine between the normals of two triangles; the same whichever is given first. */
+const facingDot = (soup: Soup, i: number, j: number): number =>
+  soup.normal[i * 3]! * soup.normal[j * 3]! +
+  soup.normal[i * 3 + 1]! * soup.normal[j * 3 + 1]! +
+  soup.normal[i * 3 + 2]! * soup.normal[j * 3 + 2]!;
 
 /** The furthest any corner of either triangle lies from the other's plane; stops once past `gap`. */
 function planeGap(soup: Soup, i: number, j: number, gap: number): number {
@@ -519,12 +557,10 @@ function planeGap(soup: Soup, i: number, j: number, gap: number): number {
   return distance;
 }
 
-/**
- * The area two triangles share, measured in the plane of triangle `i`. Writes the centre of
- * the shared region to `at`.
- */
-function sharedArea(soup: Soup, i: number, j: number, at: [number, number, number]): number {
-  const { corner, normal } = soup;
+/** Fills in the plane basis of triangle `i` and its corners in it, the first time it is needed. */
+function frameOf(soup: Soup, i: number): void {
+  const { normal, frame } = soup;
+  soup.framed[i] = 1;
   const nx = normal[i * 3]!;
   const ny = normal[i * 3 + 1]!;
   const nz = normal[i * 3 + 2]!;
@@ -548,20 +584,77 @@ function sharedArea(soup: Soup, i: number, j: number, at: [number, number, numbe
   const vx = ny * uz - nz * uy;
   const vy = nz * ux - nx * uz;
   const vz = nx * uy - ny * ux;
+  const f = i * 12;
+  frame[f] = ux;
+  frame[f + 1] = uy;
+  frame[f + 2] = uz;
+  frame[f + 3] = vx;
+  frame[f + 4] = vy;
+  frame[f + 5] = vz;
+  flatten(soup, i, i, frame, f + 6);
+}
+
+/** Writes the corners of `triangle` in the plane basis of triangle `i` to `out` from `offset`. */
+function flatten(soup: Soup, i: number, triangle: number, out: Float64Array, offset: number) {
+  const { corner, frame } = soup;
+  const f = i * 12;
+  const ux = frame[f]!;
+  const uy = frame[f + 1]!;
+  const uz = frame[f + 2]!;
+  const vx = frame[f + 3]!;
+  const vy = frame[f + 4]!;
+  const vz = frame[f + 5]!;
   const ox = corner[i * 9]!;
   const oy = corner[i * 9 + 1]!;
   const oz = corner[i * 9 + 2]!;
-  const flat = (triangle: number, out: Float64Array): void => {
-    for (let k = 0; k < 3; k++) {
-      const x = corner[triangle * 9 + k * 3]! - ox;
-      const y = corner[triangle * 9 + k * 3 + 1]! - oy;
-      const z = corner[triangle * 9 + k * 3 + 2]! - oz;
-      out[k * 2] = x * ux + y * uy + z * uz;
-      out[k * 2 + 1] = x * vx + y * vy + z * vz;
+  for (let k = 0; k < 3; k++) {
+    const x = corner[triangle * 9 + k * 3]! - ox;
+    const y = corner[triangle * 9 + k * 3 + 1]! - oy;
+    const z = corner[triangle * 9 + k * 3 + 2]! - oz;
+    out[offset + k * 2] = x * ux + y * uy + z * uz;
+    out[offset + k * 2 + 1] = x * vx + y * vy + z * vz;
+  }
+}
+
+/**
+ * True when a line along an edge of triangle `a` (six numbers from `ao`) has the rest of `a`
+ * on one side and every corner of `b` (from `bo`) on the other side or on the line, so the two
+ * share no area. Two triangles that share none always have such an edge.
+ */
+function separatedBy(a: Float64Array, ao: number, b: Float64Array, bo: number): boolean {
+  for (let edge = 0; edge < 3; edge++) {
+    const p = ao + edge * 2;
+    const q = ao + ((edge + 1) % 3) * 2;
+    const r = ao + ((edge + 2) % 3) * 2;
+    const px = a[p]!;
+    const py = a[p + 1]!;
+    const ex = a[q]! - px;
+    const ey = a[q + 1]! - py;
+    const inside = ex * (a[r + 1]! - py) - ey * (a[r]! - px);
+    if (inside === 0) continue;
+    let apart = true;
+    for (let k = 0; k < 3 && apart; k++) {
+      const side = ex * (b[bo + k * 2 + 1]! - py) - ey * (b[bo + k * 2]! - px);
+      if (inside > 0 ? side > 0 : side < 0) apart = false;
     }
-  };
+    if (apart) return true;
+  }
+  return false;
+}
+
+/**
+ * The area two triangles share, measured in the plane of triangle `i`. Writes the centre of
+ * the shared region to `at` when there is one.
+ */
+function sharedArea(soup: Soup, i: number, j: number, at: [number, number, number]): number {
+  const { corner, frame } = soup;
+  if (soup.framed[i] === 0) frameOf(soup, i);
+  const f = i * 12;
   const clip = flatJ;
-  flat(j, clip);
+  flatten(soup, i, j, clip, 0);
+  // Neighbours in a mesh, and faces that only touch, end here: an edge of one has the other
+  // wholly outside it.
+  if (separatedBy(frame, f + 6, clip, 0) || separatedBy(clip, 0, frame, f + 6)) return 0;
   const turn =
     (clip[2]! - clip[0]!) * (clip[5]! - clip[1]!) - (clip[4]! - clip[0]!) * (clip[3]! - clip[1]!);
   if (turn < 0) {
@@ -572,14 +665,14 @@ function sharedArea(soup: Soup, i: number, j: number, at: [number, number, numbe
     clip[4] = x;
     clip[5] = y;
   }
-  flat(i, flatI);
+  for (let k = 0; k < 6; k++) flatI[k] = frame[f + 6 + k]!;
   const centre = planeCentre;
   centre[0] = 0;
   centre[1] = 0;
   const shared = clippedArea(flatI, clip, centre);
-  at[0] = ox + ux * centre[0] + vx * centre[1];
-  at[1] = oy + uy * centre[0] + vy * centre[1];
-  at[2] = oz + uz * centre[0] + vz * centre[1];
+  at[0] = corner[i * 9]! + frame[f]! * centre[0] + frame[f + 3]! * centre[1];
+  at[1] = corner[i * 9 + 1]! + frame[f + 1]! * centre[0] + frame[f + 4]! * centre[1];
+  at[2] = corner[i * 9 + 2]! + frame[f + 2]! * centre[0] + frame[f + 5]! * centre[1];
   return shared;
 }
 
@@ -627,23 +720,34 @@ export function findFlushFaces(
     levelOf[index] = part.alternate.level;
   }
 
-  /** Measures one pair of triangles whose boxes touch. False once the pair budget is spent. */
-  const measure = (i: number, j: number): boolean => {
+  /**
+   * Measures one pair of triangles whose boxes touch and whose normals, `dot` the cosine
+   * between them, are within a degree of one line. False once the pair budget is spent.
+   */
+  const measure = (i: number, j: number, dot: number): boolean => {
     const ownerI = owner[i]!;
     const ownerJ = owner[j]!;
     // Levels of one LOD chain are drawn one at a time, so they never fight each other.
     const chain = chainOf[ownerI]!;
     if (chain >= 0 && chain === chainOf[ownerJ] && levelOf[ownerI] !== levelOf[ownerJ]) return true;
-    const facing = facingOf(soup, i, j, twoSided[ownerI] === 1 || twoSided[ownerJ] === 1);
+    // Faces that face each other are contact unless one of them is drawn on both sides.
+    const facing =
+      dot >= SAME_FACING
+        ? 'same'
+        : twoSided[ownerI] === 1 || twoSided[ownerJ] === 1
+          ? 'opposite'
+          : undefined;
     if (!facing) return true;
     if (++pairTests > maxPairTests) {
       pairTests = maxPairTests;
       return false;
     }
-    const distance = planeGap(soup, i, j, gap);
-    if (distance > gap) return true;
+    // Most pairs here are neighbours on one plane that share no area, and the area test finds
+    // that sooner than the plane test, so it comes first.
     const shared = sharedArea(soup, i, j, at);
     if (shared <= Math.max(1e-14, Math.min(soup.area[i]!, soup.area[j]!) * 1e-6)) return true;
+    const distance = planeGap(soup, i, j, gap);
+    if (distance > gap) return true;
     const first = Math.min(owner[i]!, owner[j]!);
     const second = Math.max(owner[i]!, owner[j]!);
     const key = `${first}:${second}:${facing}`;
@@ -683,16 +787,89 @@ export function findFlushFaces(
     return true;
   };
 
+  // Triangle boxes and normals in tree order, so the pairs of two leaves are read from two short
+  // runs: the box minimum, the maximum widened by the gap, and the normal.
+  const { items } = tree;
+  const boxLow = new Float64Array(count * 3);
+  const boxReach = new Float64Array(count * 3);
+  const boxNormal = new Float64Array(count * 3);
+  for (let x = 0; x < count; x++) {
+    const triangle = items[x]!;
+    for (let axis = 0; axis < 3; axis++) {
+      boxLow[x * 3 + axis] = soup.low[triangle * 3 + axis]!;
+      boxReach[x * 3 + axis] = soup.high[triangle * 3 + axis]! + gap;
+      boxNormal[x * 3 + axis] = soup.normal[triangle * 3 + axis]!;
+    }
+  }
+
   /** Every pair of triangles across two leaves, or within one. False once a budget is spent. */
   const meet = (a: number, b: number): boolean => {
+    const startA = tree.start[a]!;
+    const endA = tree.end[a]!;
+    const startB = tree.start[b]!;
+    const endB = tree.end[b]!;
+    const pairs =
+      a === b ? ((endA - startA) * (endA - startA - 1)) / 2 : (endA - startA) * (endB - startB);
+    // The budget can stop the pass inside these leaves: count pair by pair, as below.
+    if (work + pairs > maxWork) return meetCounting(a, b);
+    work += pairs;
+    // The box of leaf `b`: a triangle apart from it is apart from each triangle in it.
+    const bLowX = tree.low[b * 3]!;
+    const bLowY = tree.low[b * 3 + 1]!;
+    const bLowZ = tree.low[b * 3 + 2]!;
+    const bReachX = tree.high[b * 3]! + gap;
+    const bReachY = tree.high[b * 3 + 1]! + gap;
+    const bReachZ = tree.high[b * 3 + 2]! + gap;
+    for (let x = startA; x < endA; x++) {
+      const i = items[x]!;
+      const lx = boxLow[x * 3]!;
+      const ly = boxLow[x * 3 + 1]!;
+      const lz = boxLow[x * 3 + 2]!;
+      const rx = boxReach[x * 3]!;
+      const ry = boxReach[x * 3 + 1]!;
+      const rz = boxReach[x * 3 + 2]!;
+      if (
+        a !== b &&
+        (bLowX > rx || lx > bReachX || bLowY > ry || ly > bReachY || bLowZ > rz || lz > bReachZ)
+      )
+        continue;
+      const nx = boxNormal[x * 3]!;
+      const ny = boxNormal[x * 3 + 1]!;
+      const nz = boxNormal[x * 3 + 2]!;
+      for (let y = a === b ? x + 1 : startB; y < endB; y++) {
+        if (
+          boxLow[y * 3]! > rx ||
+          lx > boxReach[y * 3]! ||
+          boxLow[y * 3 + 1]! > ry ||
+          ly > boxReach[y * 3 + 1]! ||
+          boxLow[y * 3 + 2]! > rz ||
+          lz > boxReach[y * 3 + 2]!
+        )
+          continue;
+        // Normals more than a degree off one line: neither the same facing nor opposite.
+        const dot =
+          nx * boxNormal[y * 3]! + ny * boxNormal[y * 3 + 1]! + nz * boxNormal[y * 3 + 2]!;
+        if (!(dot >= SAME_FACING || dot <= -SAME_FACING)) continue;
+        const j = items[y]!;
+        // Lower index first, so a pair is measured the same way whatever the tree's shape.
+        if (!(i < j ? measure(i, j, dot) : measure(j, i, dot))) return false;
+      }
+    }
+    return true;
+  };
+
+  /** `meet`, counting each pair of triangles against the budget as it goes. */
+  const meetCounting = (a: number, b: number): boolean => {
     for (let x = tree.start[a]!; x < tree.end[a]!; x++) {
       const i = tree.items[x]!;
       for (let y = a === b ? x + 1 : tree.start[b]!; y < tree.end[b]!; y++) {
         const j = tree.items[y]!;
         if (++work > maxWork) return false;
         if (boxesApart(soup, i, j, gap)) continue;
+        const dot = facingDot(soup, i, j);
+        if (!(dot >= SAME_FACING || dot <= -SAME_FACING)) continue;
         // Lower index first, so a pair is measured the same way whatever the tree's shape.
-        if (!(i < j ? measure(i, j) : measure(j, i))) return false;
+        if (!(i < j ? measure(i, j, dot) : measure(j, i, dot))) return false;
       }
     }
     return true;
@@ -797,6 +974,28 @@ function plainSurface(mesh: THREE.Mesh): string | undefined {
   return values.sort().join(';');
 }
 
+/**
+ * The array behind an attribute whose values are read as stored: not interleaved, not
+ * normalized and not half floats. Undefined otherwise, and the attribute's getters are used.
+ */
+function plainArray(
+  attribute: THREE.BufferAttribute | THREE.InterleavedBufferAttribute,
+): ArrayLike<number> | undefined {
+  if ((attribute as THREE.InterleavedBufferAttribute).isInterleavedBufferAttribute)
+    return undefined;
+  if (attribute.normalized) return undefined;
+  if ((attribute as { isFloat16BufferAttribute?: boolean }).isFloat16BufferAttribute)
+    return undefined;
+  const { array } = attribute as THREE.BufferAttribute;
+  return array instanceof Float32Array ||
+    array instanceof Float64Array ||
+    array instanceof Uint32Array ||
+    array instanceof Uint16Array ||
+    array instanceof Uint8Array
+    ? array
+    : undefined;
+}
+
 export interface SceneFlushFacesReport extends FlushFacesReport {
   /** Meshes not measured: instanced, skinned, morphed or drawn from part of their buffer. */
   unexaminedParts: number;
@@ -842,13 +1041,30 @@ export function analyzeFlushFaces(
     }
     collected += triangles;
     const positions = new Float64Array(triangles * 9);
-    for (let corner = 0; corner < triangles * 3; corner++) {
-      const vertex = geometry.index ? geometry.index.getX(corner) : corner;
-      point.fromBufferAttribute(position, vertex).applyMatrix4(mesh.matrixWorld);
-      positions[corner * 3] = point.x;
-      positions[corner * 3 + 1] = point.y;
-      positions[corner * 3 + 2] = point.z;
-    }
+    const values = plainArray(position);
+    const order = geometry.index ? plainArray(geometry.index) : undefined;
+    if (values && (order || !geometry.index)) {
+      // The arithmetic of Vector3.applyMatrix4, read straight from the arrays.
+      const e = mesh.matrixWorld.elements;
+      const stride = position.itemSize;
+      for (let corner = 0; corner < triangles * 3; corner++) {
+        const at = (order ? order[corner]! : corner) * stride;
+        const x = values[at]!;
+        const y = values[at + 1]!;
+        const z = values[at + 2]!;
+        const w = 1 / (e[3]! * x + e[7]! * y + e[11]! * z + e[15]!);
+        positions[corner * 3] = (e[0]! * x + e[4]! * y + e[8]! * z + e[12]!) * w;
+        positions[corner * 3 + 1] = (e[1]! * x + e[5]! * y + e[9]! * z + e[13]!) * w;
+        positions[corner * 3 + 2] = (e[2]! * x + e[6]! * y + e[10]! * z + e[14]!) * w;
+      }
+    } else
+      for (let corner = 0; corner < triangles * 3; corner++) {
+        const vertex = geometry.index ? geometry.index.getX(corner) : corner;
+        point.fromBufferAttribute(position, vertex).applyMatrix4(mesh.matrixWorld);
+        positions[corner * 3] = point.x;
+        positions[corner * 3 + 1] = point.y;
+        positions[corner * 3 + 2] = point.z;
+      }
     const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
     const surface = plainSurface(mesh);
     const membership = lodMembership(mesh);
