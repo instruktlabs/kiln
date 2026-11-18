@@ -7,6 +7,20 @@ does not publish a package.
 
 ## Unreleased
 
+- **`kiln mcp` starts the stdio MCP server from the default executable, and the repository carries
+  the official MCP registry manifest.** `npx @instruktlabs/kiln` runs `kiln`, not `kiln-mcp`, so the
+  registry entry needs a subcommand; `kiln mcp` runs the packaged `mcp-server.mjs` beside the CLI and
+  takes no arguments. `package.json` gains `"mcpName": "io.github.instruktlabs/kiln"` and the
+  repository gains `server.json` (not in the npm archive), kept in step with the package version by a
+  test. Publishing the entry is a manual step in `docs/releasing.md`. (#424)
+- **How Kiln isolates evaluated code, and the upgrade path from 1.6.** `docs/isolation.md` states where a
+  program runs in each evaluator mode, what the static check and the closed globals do, the isolated
+  Linux launch and its limits. `docs/sdk.md` now documents `renderGLBViaSubprocess`,
+  `encodeRenderResultV2`, `decodeEvaluatorResultV2`, `sanitizedEvaluatorEnv`, `createKilnToolHost` and
+  `buildSandboxGlobals` as the embedding names, and `docs/migration.md` lists the changes between 1.6
+  and 1.9. No export was removed since 1.6.0. (#428)
+- **Registry scans.** `docs/releasing.md` records why the HOL scan reports a missing lockfile and how
+  npm provenance is already attested; no release safeguard changed. (#425)
 - **The author skill reads lighter.** `kiln-author-asset/SKILL.md` goes from 15,998 to
   12,842 bytes: the CLI file commands, animation sampling, part listing and saved-preview notes
   move to its camera references, and the export profile guide is read only when the user asks
