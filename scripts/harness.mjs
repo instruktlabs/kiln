@@ -14,6 +14,7 @@
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
+import { realpath } from 'node:fs/promises';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -596,9 +597,12 @@ export function run(
 // dispatched with one `--name` no longer clear each other's run. It needs a
 // current `bun run build:runtime`.
 export async function makeSandbox(name, { harness = 'claude' } = {}) {
-  const sandbox = join(tmpdir(), 'kiln-dispatch', `${harness}-${name}`);
-  rmSync(sandbox, { recursive: true, force: true });
-  mkdirSync(sandbox, { recursive: true });
+  const requested = join(tmpdir(), 'kiln-dispatch', `${harness}-${name}`);
+  rmSync(requested, { recursive: true, force: true });
+  mkdirSync(requested, { recursive: true });
+  // The real path, as the workspace records it: a Windows temp directory can come back
+  // as an 8.3 short name (RUNNER~1) that the generated MCP configuration never uses.
+  const sandbox = await realpath(requested);
   const { createWorkspace } = await import('./create-workspace.mjs');
   await createWorkspace(sandbox, harness, { installation: REPO });
 
