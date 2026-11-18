@@ -1,9 +1,18 @@
 import { expect, test } from 'bun:test';
 import { spawnSync } from 'node:child_process';
-import { copyFileSync, mkdirSync, mkdtempSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
-import { HARNESSES, resolveBin, run } from './harness.mjs';
+import { basename, join, resolve } from 'node:path';
+import { foreignKilnServers, HARNESSES, makeSandbox, REPO, resolveBin, run } from './harness.mjs';
 
 test('OpenCode uses the caller working directory without removed V1 flags', () => {
   const args = HARNESSES.opencode.argv({
@@ -95,3 +104,66 @@ test.skipIf(process.platform !== 'win32')(
     }
   },
 );
+
+// A dispatch sandbox is a real Kiln workspace wired to this checkout's build. With
+// only a copy of the skills, a child reached Kiln through whatever its user-level
+// configuration named: under Claude Code 2.1.322 nothing (it answered in 17 s
+// without a tool call), under Codex 0.170.0 a `kiln` server running another
+// checkout's source. Both runs then measured the wrong engine.
+test('makeSandbox builds a per-harness workspace served by this checkout', async () => {
+  const name = `harness-test-${process.pid}`;
+  const sandbox = await makeSandbox(name, { harness: 'claude' });
+  const other = await makeSandbox(name, { harness: 'codex' });
+  try {
+    expect(sandbox).not.toBe(other);
+    expect(basename(sandbox)).toBe(`claude-${name}`);
+    expect(existsSync(join(sandbox, '.kiln', 'workspace.json'))).toBe(true);
+    const server = JSON.parse(readFileSync(join(sandbox, '.mcp.json'), 'utf8')).mcpServers
+      .kiln_workspace;
+    expect(server.args).toEqual([join(REPO, 'dist', 'mcp-server.mjs')]);
+    expect(server.env.KILN_WORKSPACE).toBe(sandbox);
+    expect(existsSync(join(other, 'codex.mjs'))).toBe(true);
+  } finally {
+    rmSync(sandbox, { recursive: true, force: true });
+    rmSync(other, { recursive: true, force: true });
+  }
+}, 60_000);
+
+test('Claude reads only the sandbox MCP configuration', () => {
+  const sandbox = join(tmpdir(), 'kiln-dispatch', 'claude-x');
+  const args = HARNESSES.claude.argv({ model: 'sonnet', prompt: 'p', sandbox });
+  const at = args.indexOf('--mcp-config');
+  expect(at).toBeGreaterThan(-1);
+  expect(args[at + 1]).toBe(join(sandbox, '.mcp.json'));
+  expect(args).toContain('--strict-mcp-config');
+});
+
+test('Codex runs through the workspace launcher with other Kiln servers disabled', () => {
+  const sandbox = join(tmpdir(), 'kiln-dispatch', 'codex-x');
+  const harness = HARNESSES.codex;
+  expect(harness.runBin).toBe('node');
+  const args = harness.argv({ model: 'm', prompt: 'p', sandbox, otherServers: ['kiln'] });
+  expect(args[0]).toBe(join(sandbox, 'codex.mjs'));
+  expect(args).toContain('--approve-for-me');
+  expect(args.join(' ')).toContain('-c mcp_servers.kiln.enabled=false');
+  expect(args.at(-1)).toBe('p');
+});
+
+test('foreignKilnServers names enabled Kiln servers other than the workspace one', () => {
+  const list = [
+    {
+      name: 'kiln',
+      enabled: true,
+      transport: { command: 'bun', args: ['run', 'x/src/mcp-server.ts'] },
+    },
+    {
+      name: 'my-engine',
+      enabled: true,
+      transport: { command: 'node', args: ['y/dist/mcp-server.mjs'] },
+    },
+    { name: 'kiln_workspace', enabled: true, transport: { command: 'node', args: ['z'] } },
+    { name: 'kiln_old', enabled: false, transport: { command: 'node', args: [] } },
+    { name: 'docs', enabled: true, transport: { url: 'https://example.test' } },
+  ];
+  expect(foreignKilnServers(list)).toEqual(['kiln', 'my-engine']);
+});

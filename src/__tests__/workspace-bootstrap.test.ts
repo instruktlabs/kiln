@@ -515,6 +515,11 @@ it('runs the Windows npm Codex shim through Node and preserves initial and resum
       expect(actual.args).toContain(
         `mcp_servers.kiln_workspace.env.KILN_WORKSPACE=${JSON.stringify(task)}`,
       );
+      // `codex exec` pins approval to `never`, which refuses every MCP call (Codex
+      // 0.170.0); `exec resume` has no `--approve-for-me` flag.
+      expect(actual.args.filter((arg: string) => arg === '--approve-for-me')).toHaveLength(
+        input.includes('resume') ? 0 : 1,
+      );
       if (input.includes('resume')) {
         const resume = actual.args.indexOf('resume');
         expect(actual.args.indexOf('--cd')).toBeLessThan(resume);
@@ -522,6 +527,18 @@ it('runs the Windows npm Codex shim through Node and preserves initial and resum
         expect(actual.args.indexOf('-c')).toBeGreaterThan(resume);
         expect(actual.args.slice(-2)).toEqual(['session-id', prompt]);
       }
+    }
+    for (const choice of [['--approve-for-me'], ['--sandbox', 'read-only'], ['-s', 'read-only']]) {
+      const launched = spawnSync(
+        node,
+        ['--import', pathToFileURL(preload).href, join(task, 'codex.mjs'), ...choice, prompt],
+        { cwd: root, env, encoding: 'utf8' },
+      );
+      expect(launched.status, launched.stderr).toBe(0);
+      const { args } = JSON.parse(launched.stdout);
+      expect(args.filter((arg: string) => arg === '--approve-for-me')).toHaveLength(
+        choice[0] === '--approve-for-me' ? 1 : 0,
+      );
     }
   } finally {
     await rm(root, { recursive: true, force: true });
