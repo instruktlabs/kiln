@@ -8,7 +8,7 @@ Run commands from the asset workspace created by `kiln-init`, using `node kiln.m
 
 Projects are optional. Standalone assets, experiments and environments can use materials, Live Review, saving and export without creating one. The collection named `project` is a save destination; it does not imply membership in a project record. Use a project when a shared brief, inventory or art direction helps the task.
 
-`KILN_WORKSPACE` chooses the workspace root. Its `.kiln` directory holds projects, material records, source snapshots and disposable observation history. When explicitly set, `KILN_PROGRAM_STORE` changes only the source-store directory. Without `KILN_WORKSPACE`, its grandparent remains the workspace root for existing setups. With neither setting, the current directory is the root. Explicitly injected embedding stores keep their own locations.
+`KILN_WORKSPACE` chooses the workspace root. Its `.kiln` directory holds projects, material records, source snapshots and disposable observation history. When explicitly set, `KILN_PROGRAM_STORE` changes only the source-store directory. Without `KILN_WORKSPACE`, its grandparent remains the workspace root for existing setups. With neither setting, the current directory is the root. Explicitly injected embedding stores keep their own locations. The MCP `file` input reads programs below the same root, by a relative path or an absolute path inside it; `kiln_discover` capabilities report it as `source.file.workspaceRoot` with the setting that chose it (`selectedBy`).
 
 ```sh
 node kiln.mjs project create --id pilot --name "Pilot pack"

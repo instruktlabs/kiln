@@ -13,6 +13,15 @@ does not publish a package.
   for delivery files. Measured over six dogfood runs in `docs/reviews/2026-11-18-wave3-dogfood.md`.
   Existing workspaces report the skill as changed; run `kiln-init <workspace> --check`, then
   `--upgrade`. (#370)
+- **`file` works when the agent writes outside the server's folder.** The `file` input
+  accepts an absolute path that resolves inside the workspace root, as well as a relative
+  one; `..`, another drive and, newly, a link that resolves outside the root are refused.
+  Every `file` error names the workspace root and the setting that chose it
+  (`KILN_WORKSPACE`, `KILN_PROGRAM_STORE`, or the server's working directory), and the MCP
+  host keeps that one path in the error. `kiln_discover` capabilities add
+  `source.file: { workspaceRoot, selectedBy, paths }` (null where a host has no `file`).
+  A benchmark agent whose working folder was not the workspace had fallen back to the CLI
+  and skipped collections. No tool input schema changes. (#423)
 
 ## 1.8.0 (2026-11-13)
 

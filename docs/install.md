@@ -483,6 +483,15 @@ The table above names each client's native configuration location; their JSON/TO
 shapes differ. Prefer generated configuration. Without an explicit store, the server
 uses `.kiln/programs` beneath its process working directory.
 
+The folder above that `.kiln` is the server's workspace root: the `file` input reads
+programs below it (a relative path, or an absolute path inside it) and the `project`
+collection saves to its `assets/kiln`. A client may start the server in a folder other
+than the one the agent writes in, so point `KILN_PROGRAM_STORE` at the agent's folder
+(`KILN_WORKSPACE` is for a `kiln-init` workspace, which the server checks is current).
+`kiln_discover` with `capabilities: true` reports the root as
+`source.file.workspaceRoot` and the setting that chose it as `selectedBy`
+(`KILN_WORKSPACE`, `KILN_PROGRAM_STORE` or `cwd`); a refused `file` names both.
+
 To let the agent write exported files without a shell call, add `"KILN_EXPORT_ROOT"`
 to `env`: an existing absolute directory (on Windows a drive or UNC path, not Git Bash
 `/c/...`) outside every collection and the workspace `.kiln/`. The server then also
