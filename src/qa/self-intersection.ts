@@ -388,10 +388,11 @@ export async function analyzePartPenetration(
   // real overlap, a grazing contact the least. Ties keep traversal pair order.
   candidates.sort((x, y) => y.overlap - x.overlap || x.a - y.a || x.b - y.b);
 
-  const Module = await import('manifold-3d');
-  const wasm = await Module.default();
-  wasm.setup();
-  const { Manifold, Mesh } = wasm;
+  // The engine's one shared manifold instance: compiling a fresh WebAssembly module
+  // here cost about 8 ms per check (issue 372's profile). Every solid made below is
+  // freed in a finally, so nothing outlives the check in the shared heap.
+  const { getManifoldModule } = await import('../solids');
+  const { Manifold, Mesh } = await getManifoldModule();
 
   // Each part is built once. `null` records a part that cannot be a closed solid, so
   // every later pair with it is unmeasurable without spending the boolean budget.
