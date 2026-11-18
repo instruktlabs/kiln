@@ -165,8 +165,8 @@ export const FLUSH_MAX_FINDINGS = 8;
  * `FLUSH_OCCLUSION_POINTS` × `FLUSH_OCCLUSION_DIRECTIONS.length` rays (twice that when both
  * parts are drawn on both sides), 240 by default; a visible pair stops at its first unblocked
  * ray. Once the rays left cannot cover the next pair, that pair and every one after it are not
- * estimated. On a 400,000-triangle asset a ray cost 10 to 30 microseconds (2026-11-18), so the
- * cap holds the estimate to about a third of a second there.
+ * estimated. On a 400,000-triangle asset a ray cost 3 to 17 microseconds (2026-11-18), so the
+ * cap holds the estimate to about a fifth of a second there.
  */
 export const FLUSH_MAX_OCCLUSION_RAYS = 10_000;
 /**
