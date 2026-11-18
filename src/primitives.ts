@@ -654,7 +654,8 @@ export interface FoliageCardOptions {
 }
 
 /**
- * Double-sided quad for foliage / vegetation cards. Y-up facing +Z by default.
+ * One-sided quad (two triangles facing +Z) for foliage / vegetation cards; the material
+ * decides whether its back draws. Y-up facing +Z by default.
  * The pivot is placed at `yPivot * height` below the quad center — set 0 to
  * have the card root on the ground plane.
  *
