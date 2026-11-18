@@ -588,6 +588,12 @@ export function torusGeo(
   assertDimension('torusGeo radius', radius);
   assertDimension('torusGeo tube', tube);
   assertDimension('torusGeo outer radius', radius + tube);
+  // A tube this thick crosses the ring axis: the surface intersects itself, and the closed-solid
+  // check cannot see that.
+  if (tube >= radius)
+    throw new RangeError(
+      `torusGeo: tube ${tube} must be less than radius ${radius}; a tube at least as thick as the ring radius crosses the ring axis and the surface intersects itself. Reduce the tube or increase the radius.`,
+    );
   assertPrimitiveSegments('torusGeo radialSegments', radialSegments, 3);
   assertPrimitiveSegments('torusGeo tubularSegments', tubularSegments, 3);
   assertPrimitiveGrid('torusGeo', radialSegments, tubularSegments);

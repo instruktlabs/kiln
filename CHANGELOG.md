@@ -7,6 +7,7 @@ does not publish a package.
 
 ## Unreleased
 
+- **`torusGeo` rejects a tube at least as thick as the ring radius.** `torusGeo(0.2, 0.5)` now throws, naming the tube and the radius, instead of building a surface that crosses the ring axis and intersects itself while the solid check read it as closed. Valid tori build byte-identically; no saved source in the repository used such values. (#406)
 - **The author skill reads lighter.** `kiln-author-asset/SKILL.md` goes from 15,998 to
   12,842 bytes: the CLI file commands, animation sampling, part listing and saved-preview notes
   move to its camera references, and the export profile guide is read only when the user asks
