@@ -17,10 +17,11 @@ export function matchesAssetQuery(text: string, query: string): boolean {
 
 /**
  * Longest build warning a save result returns whole. The longest realistic FLUSH_FACES line
- * (three named pairs with 24-character part names and the budget note) is 659 characters, and
- * the 550-character "Floating parts" line fits with room to spare.
+ * (three named pairs with 24-character part names, the occlusion estimate's split and labels,
+ * and the budget note) is 767 characters, and the 550-character "Floating parts" line fits with
+ * room to spare.
  */
-export const SAVE_WARNING_LIMIT = 700;
+export const SAVE_WARNING_LIMIT = 800;
 
 /**
  * A warning within the limit whole; a longer one cut after its last whole word that fits, with
