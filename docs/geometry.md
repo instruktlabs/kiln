@@ -435,6 +435,21 @@ A marked mesh that is open, non-manifold or not outward fails the build with
 `REQUIRE_SOLID`, naming the part and the failing facts. The check measures; it
 repairs nothing, and it does not detect general self-intersection.
 
+The solid primitives are closed solids by contract: `boxGeo`, `sphereGeo`, the
+`cylinder*`, `cone*` and `capsule*` families, `cylinderOnAxis`, `taperConeGeo`,
+`torusGeo`, `decalBox` and `wingGeo` each return a closed, manifold, outward mesh
+for every input they accept, so `requireSolid` passes on them. "Closed" is measured
+after welding vertices that share a position, as `geometryDiagnostics` does; the
+glTF primitive itself may stay split at UV seams. Scene builders (`createLadder`,
+`wallWithOpening`, `room`, `createStairs`, `createWingPair`, `beamBetween`) make
+the same promise for each mesh they create, not for the assembly, whose parts
+overlap by design. `planeGeo`, `foliageCardGeo`, `crossedQuadsGeo` and
+`octaGridPlane` are open, one-sided surfaces and `requireSolid` fails them.
+`scripts/audit-primitives.test.ts` measures the contract, and the measured table
+is in the [primitives audit](reviews/2026-11-18-primitives-audit.md). One known
+gap: `torusGeo` with `tube >= radius` intersects itself while still reading as
+closed and outward (#406).
+
 ## Bake edge and cavity attributes
 
 `bakeSurfaceAttributes(target, { edge?, cavity? })` writes two float vertex

@@ -107,7 +107,7 @@ Each defect below has a failing case or a measurement. None is fixed in this cha
 
 With one plain material the same 8 pairs are counted as `matching` and not reported, so a plain build shows no `FLUSH_FACES` line. Descending flights (`totalRise: -2, totalRun: -3`) report 0 pairs: there the riser stands on the tread instead of passing through it. `riser: false` reports 0.
 
-**Decision: fix.** In an ascending flight, stop each riser under its tread: rise minus `treadThickness`. Handle a step rise at or below `treadThickness`. Every source that uses `createStairs` with risers changes bytes, so list it in the fix.
+**Decision: fix.** Tracked in #403. In an ascending flight, stop each riser under its tread: rise minus `treadThickness`. Handle a step rise at or below `treadThickness`. Every source that uses `createStairs` with risers changes bytes, so list it in the fix.
 
 ### D2. `room`: wall corners overlap at the inside and leave a notch at the outside
 
@@ -118,7 +118,7 @@ With one plain material the same 8 pairs are counted as `matching` and not repor
 - the two walls overlap in a t/2 × t/2 square. Its top faces are flush: 4 pairs of 0.005625 m² each with a textured material (`Mesh_R_WallFront_L / Mesh_R_WallLeft` first). With one plain material they are counted as `matching`;
 - the outer t/2 × t/2 square is empty for the full wall height. The probe finds 0 wall meshes covering a point in each outer corner square, and 2 in each inner overlap square. At defaults that is a 7.5 cm square notch, 2.8 m tall, on every outside corner.
 
-**Decision: fix.** Make one pair of walls run past the corners by the wall thickness, for example front and back at `width + wallThickness`, and butt the other pair between them, left and right at `depth - wallThickness`. The interior size is unchanged. Every `room()` source changes bytes. Check side-wall openings near the ends against the shorter walls.
+**Decision: fix.** Tracked in #404. Make one pair of walls run past the corners by the wall thickness, for example front and back at `width + wallThickness`, and butt the other pair between them, left and right at `depth - wallThickness`. The interior size is unchanged. Every `room()` source changes bytes. Check side-wall openings near the ends against the shorter walls.
 
 ### D3. `wingGeo` and `createWingPair`: flat faces share corner normals
 
@@ -128,7 +128,7 @@ With one plain material the same 8 pairs are counted as `matching` and not repor
 
 Kiln's own views hide this when the material has `flatShading: true` (the `gameMaterial` default). glTF has no flat-shading flag, so any other renderer shades the edges and caps as if they faced up or down.
 
-**Decision: fix.** Give each face its own vertices (24 vertices, face normals), as `boxGeo` does. The solid facts do not change, but bytes change for every wing source. Adding UVs is a separate choice, not part of the fix.
+**Decision: fix.** Tracked in #405. Give each face its own vertices (24 vertices, face normals), as `boxGeo` does. The solid facts do not change, but bytes change for every wing source. Adding UVs is a separate choice, not part of the fix.
 
 ### D4. `torusGeo` accepts a tube at least as thick as the ring radius
 
@@ -136,7 +136,7 @@ Kiln's own views hide this when the material has `flatShading: true` (the `gameM
 
 **Measured:** the tube crosses the ring axis. 39 of 117 vertices lie past the axis from their own ring centre, and 72 of 192 triangles have stored normals against their winding (up to 157 degrees). The solid check still reads closed, manifold and outward (V = 0.8485), and a build that marks the part with `requireSolid` succeeds with no warning. The surface intersects itself, which the check does not detect, as `docs/geometry.md` states.
 
-**Decision: fix.** Reject `tube >= radius` with a message naming both values. Before changing behaviour, count saved sources that call `torusGeo` with such values. If any exist, document the limit and warn instead.
+**Decision: fix.** Tracked in #406. Reject `tube >= radius` with a message naming both values. Before changing behaviour, count saved sources that call `torusGeo` with such values. If any exist, document the limit and warn instead.
 
 ### D5. Capsules carry zero-area triangles
 
@@ -144,7 +144,7 @@ Kiln's own views hide this when the material has `flatShading: true` (the `gameM
 
 **Measured:** three.js `CapsuleGeometry` emits two zero-area triangles per radial segment at the poles: 12 of 60 triangles at defaults (20%), 6 of 30 at 3 segments, 32 of 160 at 16. With a zero straight length (`capsuleGeo(0.5, 0)`) there are 24 of 60. The GLB keeps them (60 triangles), and `countTriangles` and the build's `tris` count them. `sphereGeo` and `coneGeo` drop their pole triangles and have none. The solid facts are unaffected, because the check leaves collapsed triangles out of the edge counts.
 
-**Decision: fix, low priority.** Drop zero-area triangles from the capsule index after construction. This is a byte change for capsule sources, and it lowers their triangle counts. If the maintainer prefers byte stability, document the count in Discovery instead.
+**Decision: fix, low priority.** Tracked in #407. Drop zero-area triangles from the capsule index after construction. This is a byte change for capsule sources, and it lowers their triangle counts. If the maintainer prefers byte stability, document the count in Discovery instead.
 
 ### D6. `foliageCardGeo` comment says "double-sided"
 
@@ -152,7 +152,7 @@ Kiln's own views hide this when the material has `flatShading: true` (the `gameM
 
 **Measured:** 2 triangles, all normals (0, 0, 1). `gameMaterial` draws the front side only. The source comment calls it a "Double-sided quad"; Discovery correctly says "Single-quad".
 
-**Decision: document.** Correct the source comment: the material decides whether both sides draw.
+**Decision: document.** Correct the source comment: the material decides whether both sides draw. Done in this change.
 
 ### Reported on 2026-09-21, now measured as fixed
 
@@ -168,6 +168,8 @@ Kiln's own views hide this when the material has `flatShading: true` (the `gameM
 ## Closed-solid contract
 
 **Recommendation: adopt it for the solid geometry builders, and as a per-mesh contract for the scene builders. The maintainer decides.**
+
+**Decision (2026-11-18): adopted** for the solid geometry builders and, per mesh, for the scene builders. `docs/geometry.md` ("Require a closed solid") states the contract, `scripts/audit-primitives.test.ts` measures it, and the five fixes are tracked in #403 to #407.
 
 1. **Solid geometry builders** (rows 4 to 20, 22, 26). Every measured case already meets the contract: closed, manifold and outward, with exact volumes where they are known. A guarantee therefore costs no bytes for any source in the valid domain. Two things would have to change first:
    - define the valid domain where the surface could intersect itself, so `torusGeo` rejects `tube >= radius` (D4);
