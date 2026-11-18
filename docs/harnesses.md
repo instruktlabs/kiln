@@ -109,7 +109,7 @@ Verified against the versions in the footer. The traps are not stylistic -- each
 | harness | non-interactive | prompt position | unattended tool grant | working directory |
 | --- | --- | --- | --- | --- |
 | agy | `--print=TEXT` | **attached to the flag** | print mode | `--add-dir` |
-| claude | `-p` then `TEXT` | positional; `-p` selects print mode | `--permission-mode acceptEdits` + `--allowedTools` | `--add-dir` |
+| claude | `-p` then `TEXT` | positional; `-p` selects print mode | `--permission-mode acceptEdits` + `--allowedTools`; `--mcp-config` + `--strict-mcp-config` | `--add-dir` |
 | codex | `exec TEXT` | positional after `exec` | `--approve-for-me` | `--cd` |
 | opencode | `run --standalone TEXT` | positional | `--auto` | `PWD`, then process CWD |
 | copilot | `-p TEXT` | flag value | `--allow-all-tools` | `-C` and `--add-dir` |
@@ -128,7 +128,19 @@ The ones that cost real time:
   it a `-p` run has no terminal to prompt on and stops at the first tool.
 - **`codex exec` pins the approval policy to `never`,** under which an MCP call is not asked
   about, it is refused. `--approve-for-me` is the flag that both selects a workspace-write
-  sandbox and moves approval to `on-request`.
+  sandbox and moves approval to `on-request`. The workspace's `codex.mjs` adds it to a new run
+  unless you pass `--sandbox`; `exec resume` has no such flag. Codex 0.170.0 also appends piped
+  stdin to the prompt, so close stdin for a headless run.
+- **Claude Code `-p` ignores an untrusted directory's `.mcp.json` and `.claude/settings.json`.**
+  A dispatch sandbox or fresh workspace is untrusted, so the server and the tool grant both go
+  on the command line. Without `--strict-mcp-config` a user-level Kiln registration can serve a
+  different checkout; with no Kiln server at all, 2.1.322 answered a dispatch in 17 s without a
+  tool call.
+- **Disable other Kiln servers for Codex.** A user-level `kiln` in `codex mcp list` runs the
+  checkout it names, beside the workspace's `kiln_workspace`. `-c mcp_servers.NAME.enabled=false`
+  turns it off for one run; `scripts/harness.mjs` does that for every enabled Kiln server it finds.
+  A dispatch sandbox is a `create-workspace.mjs` workspace for its harness, served by this
+  checkout's `dist/`, so run `bun run build:runtime` first.
 - **OpenCode 2.2 reads `PWD` before the process working directory.** `opencode run` uses
   `process.env.PWD ?? process.cwd()`, and POSIX shells and Git Bash export `PWD`. A launcher
   that sets only `cwd` sends OpenCode to the caller's directory: it skips the workspace's
@@ -407,3 +419,6 @@ operator configuration, and a harness that rejects an unentitled id fails before
 
 agy 1.2.2 · claude 2.1.269 · codex 0.154.0 · copilot 1.0.83 · cursor-agent 2026.09.10-fd3934a
 · hermes 0.21.2 · opencode 1.18.30 · node 22.23.2 · bun 1.4.2 · npm 12.0.2
+
+18 November 2026, Windows 11, for the Claude Code and Codex headless notes and dispatch
+sandboxes: claude 2.1.322 · codex 0.170.0. The other harnesses were not rerun.

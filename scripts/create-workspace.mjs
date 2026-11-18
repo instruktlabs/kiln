@@ -263,6 +263,9 @@ const args = process.argv.slice(2);
 if (args[0] === 'exec') args.shift();
 const resume = args[0] === 'resume';
 if (resume) args.shift();
+// exec pins approval to never, which refuses every MCP call; resume has no such flag.
+const chosen = ['--approve-for-me', '-s', '--sandbox', '--dangerously-bypass-approvals-and-sandbox'];
+if (!resume && !args.some(arg => chosen.some(name => arg === name || arg.startsWith(name + '=')))) args.unshift('--approve-for-me');
 // --cd belongs to exec; resume must receive its own config and non-git workspace flag.
 const invocation = ['exec', '--cd', root, ...(resume ? ['resume'] : []), ...overrides, '--skip-git-repo-check', ...args];
 try {

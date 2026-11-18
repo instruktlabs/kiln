@@ -62,6 +62,33 @@ cd /tmp/dogfood-opencode
 opencode run --standalone --auto -m PROVIDER/MODEL "Generate a weathered dockside crane asset."
 ```
 
+Claude Code and Codex, headless, from their own workspaces (verified 2026-11-18 on Claude
+Code 2.1.322 and Codex 0.170.0):
+
+```bash
+cd /tmp/dogfood-claude   # create-workspace.mjs ... --harness claude
+claude -p "Generate a weathered dockside crane asset." --model MODEL \
+  --mcp-config .mcp.json --strict-mcp-config --permission-mode acceptEdits \
+  --allowedTools "mcp__kiln_workspace Read Write Edit Glob Grep" \
+  --output-format stream-json --verbose < /dev/null
+
+cd /tmp/dogfood-codex    # create-workspace.mjs ... --harness codex
+node codex.mjs -m MODEL --json -c mcp_servers.kiln.enabled=false \
+  "Generate a weathered dockside crane asset." < /dev/null
+```
+
+- **Claude Code `-p` does not load an untrusted directory's `.mcp.json` or
+  `.claude/settings.json`.** A fresh workspace is untrusted, so pass `--mcp-config` and
+  `--allowedTools` on the command line. `--strict-mcp-config` keeps a user-level Kiln server
+  from serving another checkout.
+- **Turn off every other Kiln server for Codex.** `codex mcp list` shows the user-level
+  servers. A `kiln` registered there runs whatever checkout it names, beside the workspace's
+  `kiln_workspace`; `-c mcp_servers.NAME.enabled=false` switches it off for one run.
+  `codex.mjs` adds `--approve-for-me` unless you pass `--sandbox`, and a Sol 6.2 route needs
+  Codex 0.170.0 or later.
+- **Close stdin.** Codex 0.170.0 `exec` appends piped stdin to the prompt, so a run started
+  from a pipe that stays open waits on it.
+
 The workspace already registers the skills and the MCP server and writes an AGENTS.md that
 points at them, so the agent discovers `kiln-author-asset` and invokes it itself. That
 discovery is part of what is being tested. Four rules, each of which came from a run that
