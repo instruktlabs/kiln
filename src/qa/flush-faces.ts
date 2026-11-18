@@ -24,6 +24,7 @@
  *   against a face of the asset pointing the other way, such as two undersides on one deck.
  *   Pairs that share less than the least area outside those places are counted as `hidden`
  *   and not reported. This is not a visibility test: a face behind other parts still counts.
+ *   The occlusion estimate below marks such pairs without leaving them out.
  *
  * - **A visible difference.** Two faces drawn with one plain material (no texture, no vertex
  *   colours, the same values) put the same colour on a pixel whichever wins, so the tie does
@@ -38,6 +39,19 @@
  * not the square of the count. The pass stops at `maxTriangles`, `maxWork` (box comparisons) and
  * `maxPairTests` (plane and area measurements) and reports `truncated` rather than claiming a
  * complete check. Order of traversal and fixed rounding make the report the same on every run.
+ *
+ * ## An occlusion estimate
+ *
+ * Advisory, after the pairs are found: it never changes which pairs are reported, their order,
+ * any count or any verdict. From sixteen points spread over each pair's shared area by area, rays
+ * go in fixed directions over the side its faces are seen from, starting just off the plane so the
+ * pair's own faces cannot block them, and walk the same box tree. A ray is blocked by a face a
+ * camera at its far end would see drawn; see-through parts and levels never drawn with the pair
+ * do not block. One unblocked ray makes the pair `visible`; when every ray is blocked it is
+ * `occluded`. Pairs are taken largest first within `maxOcclusionRays`; the first pair the rays
+ * left cannot cover, and every pair after it, is not estimated. Rays are not a render: a pair
+ * seen only through a gap narrower than the spacing of the rays, or only on a patch holding less
+ * than a sixteenth of its shared area, can be marked occluded.
  */
 import * as THREE from 'three';
 import { lodMembership } from './lod';
@@ -56,6 +70,11 @@ export interface FlushPart {
    * with the same value cannot show a depth tie, so their pairs are counted, not reported.
    */
   surface?: string;
+  /**
+   * True when something can be seen through the part (blended, cut out, transmissive or not
+   * drawn), so it does not hide what lies behind it from the occlusion estimate.
+   */
+  seeThrough?: boolean;
 }
 
 export interface FlushFacePair {
@@ -73,6 +92,29 @@ export interface FlushFacePair {
   normal: [number, number, number];
   /** A point on the largest shared region, for framing a close view. */
   at: [number, number, number];
+  /**
+   * The occlusion estimate for this pair: `visible` when a ray from the shared area leaves the
+   * asset unblocked, `occluded` when every ray is blocked by other parts. Absent when the pair was
+   * not estimated. An estimate from a few rays, not a render.
+   */
+  occlusion?: 'visible' | 'occluded';
+}
+
+/**
+ * How the occlusion estimate went over every reported pair (the counted `candidates`, not only
+ * the listed `pairs`). Advisory: it never changes which pairs are reported.
+ */
+export interface FlushOcclusionEstimate {
+  /** Pairs from which some ray leaves the asset unblocked. */
+  visible: number;
+  /** Pairs from which every ray was blocked by other parts. */
+  occluded: number;
+  /** Pairs left when the ray budget could not cover the next one. */
+  notEstimated: number;
+  /** Rays cast. */
+  rays: number;
+  /** The budget of rays for one build. */
+  maxRays: number;
 }
 
 export interface FlushFacesReport {
@@ -98,6 +140,8 @@ export interface FlushFacesReport {
   omitted: number;
   /** The pairs sharing the most area, largest first. */
   pairs: FlushFacePair[];
+  /** The occlusion estimate, when it ran and there were pairs to estimate. */
+  occlusion?: FlushOcclusionEstimate;
 }
 
 export interface FlushFacesOptions {
@@ -106,6 +150,8 @@ export interface FlushFacesOptions {
   maxWork?: number;
   maxPairTests?: number;
   maxFindings?: number;
+  /** Rays the occlusion estimate may cast for one build; 0 turns the estimate off. */
+  maxOcclusionRays?: number;
 }
 
 export const FLUSH_GAP_METRES = 0.0005;
@@ -114,6 +160,49 @@ export const FLUSH_MAX_TRIANGLES = 400_000;
 export const FLUSH_MAX_WORK = 40_000_000;
 export const FLUSH_MAX_PAIR_TESTS = 4_000_000;
 export const FLUSH_MAX_FINDINGS = 8;
+/**
+ * Rays the occlusion estimate may cast in one build. A pair needs at most
+ * `FLUSH_OCCLUSION_POINTS` × `FLUSH_OCCLUSION_DIRECTIONS.length` rays (twice that when both
+ * parts are drawn on both sides), 240 by default; a visible pair stops at its first unblocked
+ * ray. Once the rays left cannot cover the next pair, that pair and every one after it are not
+ * estimated. On a 400,000-triangle asset a ray cost 3 to 17 microseconds (2026-11-18), so the
+ * cap holds the estimate to about a fifth of a second there.
+ */
+export const FLUSH_MAX_OCCLUSION_RAYS = 10_000;
+/**
+ * Points per pair, spread over its shared area in proportion to area, in the order the regions
+ * were measured: the tree's order, so neighbouring regions are neighbours in the list and the
+ * points cover the area in strata. Any run of regions holding a sixteenth of the area gets one.
+ */
+export const FLUSH_OCCLUSION_POINTS = 16;
+/**
+ * Shared regions kept per pair for sampling. Past this, every other one is dropped and only
+ * every second region after it is kept, and so on: the kept ones stay spread over the area.
+ */
+const OCCLUSION_REGIONS = 1024;
+/** How far towards a corner of its region each further point in the region goes. */
+const OCCLUSION_PULLS = [0.8, 0.45, 0.65, 0.25];
+/**
+ * Directions over the hemisphere a face is seen from, in its plane basis (u, v, normal): the
+ * normal, six at 40 degrees from it and eight at 75 degrees.
+ */
+export const FLUSH_OCCLUSION_DIRECTIONS: readonly (readonly [number, number, number])[] = (() => {
+  const out: [number, number, number][] = [[0, 0, 1]];
+  const ring = (polar: number, count: number, turn: number) => {
+    const tilt = (polar * Math.PI) / 180;
+    for (let k = 0; k < count; k++) {
+      const azimuth = ((turn + (k * 360) / count) * Math.PI) / 180;
+      out.push([
+        Math.sin(tilt) * Math.cos(azimuth),
+        Math.sin(tilt) * Math.sin(azimuth),
+        Math.cos(tilt),
+      ]);
+    }
+  };
+  ring(40, 6, 0);
+  ring(75, 8, 22.5);
+  return out;
+})();
 /** cos(1°): normals closer than this face the same way. */
 const SAME_FACING = 0.9998476951563913;
 
@@ -134,6 +223,9 @@ const polygonA = new Float64Array(24);
 const polygonB = new Float64Array(24);
 const sides = new Float64Array(12);
 const planeCentre: [number, number] = [0, 0];
+/** The polygon the last clip with area left, and its length in numbers. */
+let clipped = polygonA;
+let clippedLength = 0;
 
 /**
  * Area of the convex polygon left when the triangle `subject` is clipped to the
@@ -191,6 +283,8 @@ function clippedArea(subject: Float64Array, clip: Float64Array, centre: [number,
   }
   centre[0] = cx / (length / 2);
   centre[1] = cy / (length / 2);
+  clipped = points;
+  clippedLength = length;
   return Math.abs(doubled) / 2;
 }
 
@@ -206,6 +300,14 @@ interface Candidate {
   hiddenArea: number;
   normal: [number, number, number];
   at: [number, number, number];
+  /**
+   * Shared regions that are not buried, in the order they were measured, `OCCLUSION_REGIONS` at
+   * most: area, then the two triangles, per region. One in `stride` of them is kept.
+   */
+  regions: number[];
+  stride: number;
+  /** Regions met so far, kept or not. */
+  met: number;
 }
 
 /** Every measurable triangle, in flat arrays indexed by triangle. */
@@ -676,6 +778,262 @@ function sharedArea(soup: Soup, i: number, j: number, at: [number, number, numbe
   return shared;
 }
 
+/** Scratch for one ray: its start, direction and the inverse of the direction. */
+const ray = new Float64Array(9);
+
+/**
+ * True when the ray in `ray` meets a triangle that a camera at its far end would see drawn: one
+ * facing along the ray (towards that camera), or one drawn on both sides, of a part `blocks`
+ * accepts. Any such hit ends the search, so the order of the walk does not change the answer.
+ */
+function rayBlocked(
+  tree: BoxTree,
+  soup: Soup,
+  twoSided: Uint8Array,
+  blocks: (part: number) => boolean,
+  stack: Int32Array,
+): boolean {
+  const { corner, normal, owner, area } = soup;
+  const ox = ray[0]!;
+  const oy = ray[1]!;
+  const oz = ray[2]!;
+  const dx = ray[3]!;
+  const dy = ray[4]!;
+  const dz = ray[5]!;
+  let depth = 0;
+  stack[depth++] = 0;
+  while (depth) {
+    const node = stack[--depth]!;
+    // The slab test: where the ray is inside the node's box along each axis.
+    let near = 0;
+    let far = Infinity;
+    for (let axis = 0; axis < 3 && near <= far; axis++) {
+      const o = ray[axis]!;
+      const lo = tree.low[node * 3 + axis]!;
+      const hi = tree.high[node * 3 + axis]!;
+      if (ray[3 + axis] === 0) {
+        if (o < lo || o > hi) far = -1;
+        continue;
+      }
+      const inverse = ray[6 + axis]!;
+      let a = (lo - o) * inverse;
+      let b = (hi - o) * inverse;
+      if (a > b) {
+        const swap = a;
+        a = b;
+        b = swap;
+      }
+      if (a > near) near = a;
+      if (b < far) far = b;
+    }
+    if (near > far) continue;
+    if (tree.left[node]! >= 0) {
+      stack[depth++] = tree.right[node]!;
+      stack[depth++] = tree.left[node]!;
+      continue;
+    }
+    for (let at = tree.start[node]!; at < tree.end[node]!; at++) {
+      const k = tree.items[at]!;
+      const part = owner[k]!;
+      // Seen from behind, a face drawn on one side is culled and hides nothing.
+      if (
+        twoSided[part] !== 1 &&
+        normal[k * 3]! * dx + normal[k * 3 + 1]! * dy + normal[k * 3 + 2]! * dz <= 0
+      )
+        continue;
+      if (!blocks(part)) continue;
+      // Möller-Trumbore, with a small allowance on the edges so a ray cannot slip between two
+      // triangles of one mesh.
+      const c = k * 9;
+      const ax = corner[c]!;
+      const ay = corner[c + 1]!;
+      const az = corner[c + 2]!;
+      const e1x = corner[c + 3]! - ax;
+      const e1y = corner[c + 4]! - ay;
+      const e1z = corner[c + 5]! - az;
+      const e2x = corner[c + 6]! - ax;
+      const e2y = corner[c + 7]! - ay;
+      const e2z = corner[c + 8]! - az;
+      const px = dy * e2z - dz * e2y;
+      const py = dz * e2x - dx * e2z;
+      const pz = dx * e2y - dy * e2x;
+      const det = e1x * px + e1y * py + e1z * pz;
+      if (Math.abs(det) <= area[k]! * 1e-9) continue;
+      const inverse = 1 / det;
+      const sx = ox - ax;
+      const sy = oy - ay;
+      const sz = oz - az;
+      const u = (sx * px + sy * py + sz * pz) * inverse;
+      if (u < -1e-7 || u > 1 + 1e-7) continue;
+      const qx = sy * e1z - sz * e1y;
+      const qy = sz * e1x - sx * e1z;
+      const qz = sx * e1y - sy * e1x;
+      const v = (dx * qx + dy * qy + dz * qz) * inverse;
+      if (v < -1e-7 || u + v > 1 + 1e-7) continue;
+      if ((e2x * qx + e2y * qy + e2z * qz) * inverse > 0) return true;
+    }
+  }
+  return false;
+}
+
+interface OcclusionContext {
+  parts: readonly FlushPart[];
+  soup: Soup;
+  tree: BoxTree;
+  gap: number;
+  twoSided: Uint8Array;
+  chainOf: Int32Array;
+  levelOf: Float64Array;
+}
+
+/**
+ * Estimates, for each candidate in order, whether other parts hide its shared area: rays leave
+ * points spread over its shared area in fixed directions over the hemisphere its faces
+ * are seen from, starting just off the plane so the pair's own faces cannot block them. One ray
+ * that leaves the asset unblocked makes the pair `visible`; when every ray is blocked it is
+ * `occluded`. A pair is estimated only when the rays left cover every ray it could need; the
+ * first that does not fit ends the estimate. No clock and no random numbers: the same triangles
+ * give the same split.
+ */
+function estimateOcclusion(
+  context: OcclusionContext,
+  candidates: readonly Candidate[],
+  maxRays: number,
+): { split: ('visible' | 'occluded' | undefined)[]; estimate: FlushOcclusionEstimate } {
+  const { parts, soup, tree, gap, twoSided, chainOf, levelOf } = context;
+  const { corner, frame, normal } = soup;
+  // The level of each chain drawn nearest: what stands in front at close range.
+  const nearest = new Map<number, number>();
+  for (let part = 0; part < parts.length; part++) {
+    const chain = chainOf[part]!;
+    if (chain < 0) continue;
+    const known = nearest.get(chain);
+    if (known === undefined || levelOf[part]! < known) nearest.set(chain, levelOf[part]!);
+  }
+  const stack = new Int32Array(Math.max(64, tree.left.length + 1));
+  const offset = 2 * gap;
+  const at: [number, number, number] = [0, 0, 0];
+  const points: number[] = [];
+  const split: ('visible' | 'occluded' | undefined)[] = [];
+  const estimate: FlushOcclusionEstimate = {
+    visible: 0,
+    occluded: 0,
+    notEstimated: 0,
+    rays: 0,
+    maxRays,
+  };
+  let spent = false;
+  for (const candidate of candidates) {
+    const { first, second, regions } = candidate;
+    if (spent || !regions.length) {
+      spent = true;
+      split.push(undefined);
+      estimate.notEstimated++;
+      continue;
+    }
+    // A part hides the pair when it is drawn with it: not see-through, and of a chain of levels
+    // either the level drawn with the pair or, for another chain, its nearest level.
+    const blocks = (part: number): boolean => {
+      if (parts[part]!.seeThrough) return false;
+      const chain = chainOf[part]!;
+      if (chain < 0) return true;
+      if (chain === chainOf[first]) return levelOf[part] === levelOf[first];
+      if (chain === chainOf[second]) return levelOf[part] === levelOf[second];
+      return levelOf[part] === nearest.get(chain);
+    };
+    // The side the shared area is seen from is the one a face drawn on one side shows; both
+    // sides when both parts are drawn on both.
+    const both = twoSided[first] === 1 && twoSided[second] === 1;
+    // Points: `FLUSH_OCCLUSION_POINTS` of them at even steps of the shared area, taken over the
+    // regions in the order they were measured. The first point in a region is its centre; more
+    // go out towards its corners, four fifths of the way, then less.
+    let total = 0;
+    for (let r = 0; r < regions.length; r += 3) total += regions[r]!;
+    points.length = 0;
+    let region = 0;
+    let before = 0;
+    let hits = 0;
+    for (let k = 0; k < FLUSH_OCCLUSION_POINTS; k++) {
+      const target = ((k + 0.5) / FLUSH_OCCLUSION_POINTS) * total;
+      while (region + 3 < regions.length && before + regions[region]! < target) {
+        before += regions[region]!;
+        region += 3;
+        hits = 0;
+      }
+      const i = regions[region + 1]!;
+      const j = regions[region + 2]!;
+      // Facing each other, the face drawn on one side shows: the other triangle's side.
+      const sign =
+        candidate.facing === 'opposite' &&
+        twoSided[soup.owner[i]!] === 1 &&
+        twoSided[soup.owner[j]!] !== 1
+          ? -1
+          : 1;
+      sharedArea(soup, i, j, at);
+      const corners = clippedLength >> 1;
+      let x = planeCentre[0];
+      let y = planeCentre[1];
+      const hit = hits++;
+      if (hit > 0 && corners) {
+        const c = (hit - 1) % corners;
+        const pull = OCCLUSION_PULLS[Math.floor((hit - 1) / corners) % OCCLUSION_PULLS.length]!;
+        x += pull * (clipped[c * 2]! - x);
+        y += pull * (clipped[c * 2 + 1]! - y);
+      }
+      const f = i * 12;
+      points.push(
+        corner[i * 9]! + frame[f]! * x + frame[f + 3]! * y,
+        corner[i * 9 + 1]! + frame[f + 1]! * x + frame[f + 4]! * y,
+        corner[i * 9 + 2]! + frame[f + 2]! * x + frame[f + 5]! * y,
+        i,
+        sign,
+      );
+    }
+    const sides = both ? 2 : 1;
+    const needed = (points.length / 5) * FLUSH_OCCLUSION_DIRECTIONS.length * sides;
+    if (estimate.rays + needed > maxRays) {
+      spent = true;
+      split.push(undefined);
+      estimate.notEstimated++;
+      continue;
+    }
+    let seen = false;
+    for (let p = 0; p < points.length && !seen; p += 5) {
+      const i = points[p + 3]!;
+      const f = i * 12;
+      for (let side = 0; side < sides && !seen; side++) {
+        const sign = side === 0 ? points[p + 4]! : -points[p + 4]!;
+        const hx = normal[i * 3]! * sign;
+        const hy = normal[i * 3 + 1]! * sign;
+        const hz = normal[i * 3 + 2]! * sign;
+        for (const [lu, lv, ln] of FLUSH_OCCLUSION_DIRECTIONS) {
+          const dx = frame[f]! * lu + frame[f + 3]! * lv + hx * ln;
+          const dy = frame[f + 1]! * lu + frame[f + 4]! * lv + hy * ln;
+          const dz = frame[f + 2]! * lu + frame[f + 5]! * lv + hz * ln;
+          ray[0] = points[p]! + hx * offset;
+          ray[1] = points[p + 1]! + hy * offset;
+          ray[2] = points[p + 2]! + hz * offset;
+          ray[3] = dx;
+          ray[4] = dy;
+          ray[5] = dz;
+          ray[6] = 1 / dx;
+          ray[7] = 1 / dy;
+          ray[8] = 1 / dz;
+          estimate.rays++;
+          if (!rayBlocked(tree, soup, twoSided, blocks, stack)) {
+            seen = true;
+            break;
+          }
+        }
+      }
+    }
+    split.push(seen ? 'visible' : 'occluded');
+    if (seen) estimate.visible++;
+    else estimate.occluded++;
+  }
+  return { split, estimate };
+}
+
 /**
  * Finds parts whose faces lie on one plane, face the same way and overlap, which no depth
  * buffer can order. Budgets bound the pass; a report that stopped early says so.
@@ -764,6 +1122,9 @@ export function findFlushFaces(
         hiddenArea: 0,
         normal: [0, 0, 0],
         at: [0, 0, 0],
+        regions: [],
+        stride: 1,
+        met: 0,
       };
       found.set(key, candidate);
     }
@@ -779,6 +1140,21 @@ export function findFlushFaces(
     candidate.sharedArea += shared;
     candidate.maxGap = Math.max(candidate.maxGap, distance);
     candidate.trianglePairs++;
+    // Keep the region for the occlusion estimate; when the list is full, halve it.
+    if (candidate.met++ % candidate.stride === 0) {
+      const { regions } = candidate;
+      regions.push(shared, i, j);
+      if (regions.length === OCCLUSION_REGIONS * 3) {
+        let kept = 0;
+        for (let r = 0; r < regions.length; r += 6) {
+          regions[kept++] = regions[r]!;
+          regions[kept++] = regions[r + 1]!;
+          regions[kept++] = regions[r + 2]!;
+        }
+        regions.length = kept;
+        candidate.stride *= 2;
+      }
+    }
     if (shared > candidate.largest) {
       candidate.largest = shared;
       candidate.normal = [soup.normal[i * 3]!, soup.normal[i * 3 + 1]!, soup.normal[i * 3 + 2]!];
@@ -923,6 +1299,15 @@ export function findFlushFaces(
         a.second - b.second ||
         a.facing.localeCompare(b.facing),
     );
+  const maxOcclusionRays = options.maxOcclusionRays ?? FLUSH_MAX_OCCLUSION_RAYS;
+  const occlusion =
+    maxOcclusionRays > 0 && candidates.length
+      ? estimateOcclusion(
+          { parts, soup, tree, gap, twoSided, chainOf, levelOf },
+          candidates,
+          maxOcclusionRays,
+        )
+      : undefined;
   return {
     version: 'kiln.flush-faces.v1',
     triangles: given,
@@ -935,7 +1320,7 @@ export function findFlushFaces(
     matching: sharing.length - showing.length,
     hidden: showing.length - candidates.length,
     omitted: Math.max(0, candidates.length - maxFindings),
-    pairs: candidates.slice(0, maxFindings).map((candidate) => ({
+    pairs: candidates.slice(0, maxFindings).map((candidate, index) => ({
       parts: [parts[candidate.first]!.ref, parts[candidate.second]!.ref],
       sharedArea: clean(candidate.sharedArea, 8),
       maxGap: clean(candidate.maxGap, 7),
@@ -947,7 +1332,9 @@ export function findFlushFaces(
         clean(candidate.normal[2], 4),
       ],
       at: [clean(candidate.at[0], 5), clean(candidate.at[1], 5), clean(candidate.at[2], 5)],
+      ...(occlusion?.split[index] ? { occlusion: occlusion.split[index] } : {}),
     })),
+    ...(occlusion ? { occlusion: occlusion.estimate } : {}),
   };
 }
 
@@ -1067,6 +1454,22 @@ export function analyzeFlushFaces(
       }
     const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
     const surface = plainSurface(mesh);
+    // Blended, cut out, transmissive or not drawn: what lies behind can be seen through it.
+    const seeThrough = materials.some((material) => {
+      if (!material) return false;
+      const look = material as THREE.Material & {
+        alphaMap?: unknown;
+        transmission?: number;
+      };
+      return (
+        !look.visible ||
+        look.transparent ||
+        look.opacity < 1 ||
+        look.alphaTest > 0 ||
+        !!look.alphaMap ||
+        (look.transmission ?? 0) > 0
+      );
+    });
     const membership = lodMembership(mesh);
     let alternate: FlushPart['alternate'];
     if (membership) {
@@ -1084,6 +1487,7 @@ export function analyzeFlushFaces(
         : {}),
       ...(alternate ? { alternate } : {}),
       ...(surface === undefined ? {} : { surface }),
+      ...(seeThrough ? { seeThrough } : {}),
     });
   });
   const report = findFlushFaces(parts, options);
@@ -1104,9 +1508,23 @@ const named = (pair: FlushFacePair) =>
  * The report as one build warning for the author: the worst pair in full, the next ones by
  * name, a count of the rest, and what to do. One line, so it cannot crowd other warnings out
  * of a result that keeps only a few. Empty when there is nothing to say.
+ *
+ * When the occlusion estimate finds a pair hidden behind other parts, the line says so as an
+ * estimate, gives the split, and names the pairs in view first, then those not estimated, then
+ * the hidden ones, each in order of area. Otherwise the line is the same as without an estimate.
  */
 export function flushFaceWarnings(report: SceneFlushFacesReport): string[] {
-  const [worst, ...others] = report.pairs.slice(0, FLUSH_WARNING_PAIRS);
+  const estimate = report.occlusion;
+  const split = estimate !== undefined && estimate.occluded > 0;
+  const rank = (pair: FlushFacePair) =>
+    pair.occlusion === 'visible' ? 0 : pair.occlusion === undefined ? 1 : 2;
+  const ordered = split
+    ? report.pairs
+        .map((pair, index) => ({ pair, index }))
+        .sort((a, b) => rank(a.pair) - rank(b.pair) || a.index - b.index)
+        .map(({ pair }) => pair)
+    : report.pairs;
+  const [worst, ...others] = ordered.slice(0, FLUSH_WARNING_PAIRS);
   if (!worst)
     return report.truncated
       ? [
@@ -1120,11 +1538,25 @@ export function flushFaceWarnings(report: SceneFlushFacesReport): string[] {
     clean(worst.maxGap * 1000, 2) === 0
       ? 'on one plane'
       : `${millimetres(worst.maxGap)} apart, too close to order`;
+  const status = (pair: FlushFacePair) =>
+    !split || pair.occlusion === 'visible'
+      ? ''
+      : pair.occlusion === 'occluded'
+        ? ', hidden'
+        : ', not estimated';
+  const estimated = !split
+    ? ''
+    : count === 1
+      ? 'A ray estimate, not a render, finds it hidden behind other parts. '
+      : `By a ray estimate, not a render: ${estimate.visible} in view, ${estimate.occluded} hidden behind other parts${estimate.notEstimated ? `, ${estimate.notEstimated} not estimated` : ''}. `;
+  const lead =
+    count === 1 ? 'It is' : split && worst.occlusion === 'visible' ? 'Worst in view:' : 'Worst:';
   return [
     `FLUSH_FACES: ${count} pair${count === 1 ? '' : 's'} of parts ${count === 1 ? 'has' : 'have'} faces on one plane that will flicker (z-fighting) in any renderer. ` +
-      `${count === 1 ? 'It is' : 'Worst:'} ${named(worst)}, ${plane}, sharing ${squareMetres(worst.sharedArea)} near [${worst.at.join(', ')}], normal (${worst.normal.join(', ')})${worst.facing === 'opposite' ? ', one drawn on both sides' : ''}. ` +
+      estimated +
+      `${lead} ${named(worst)}, ${plane}, sharing ${squareMetres(worst.sharedArea)} near [${worst.at.join(', ')}], normal (${worst.normal.join(', ')})${worst.facing === 'opposite' ? ', one drawn on both sides' : ''}${count === 1 ? '' : status(worst)}. ` +
       (others.length
-        ? `Also: ${others.map((pair) => `${named(pair)} (${squareMetres(pair.sharedArea)})`).join('; ')}${rest > 0 ? `; and ${rest} more` : ''}. `
+        ? `Also: ${others.map((pair) => `${named(pair)} (${squareMetres(pair.sharedArea)}${status(pair)})`).join('; ')}${rest > 0 ? `; and ${rest} more` : ''}. `
         : '') +
       `${count === 1 ? 'Move the smaller face at least 2 mm along that normal' : 'For each pair, move the smaller face at least 2 mm along the shared normal'}, remove the covered face, or cut the opening it sits in${report.truncated ? '. The check stopped at its budget, so more may remain' : ''}.`,
   ];
