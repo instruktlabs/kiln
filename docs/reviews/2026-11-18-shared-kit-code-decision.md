@@ -1,6 +1,6 @@
 # Decision record: shared kit code between the assets of a pack (#413)
 
-Status: **proposed, for the owner to decide**. Written on 2026-11-18. Nothing is built.
+Status: **decided 2026-11-18: C now, B on the trigger below.** Nothing is built.
 
 ## The problem
 
@@ -113,4 +113,11 @@ functions that are never called.
 
 ## Decision
 
-To be filled in by the owner: A, B, C, or C now with B on the measured trigger above.
+The owner chose **C now, with B on the trigger** (2026-11-18):
+
+- No shared-code mechanism is built now.
+- #410, #411 and #412 land as helpers and options.
+- B is built only if a new pack still has more than about 40% of its lines in shared
+  pack-specific code. That is measured with the study's verbatim-line method, after classifying
+  holodeck's and cabin-woods' shared lines.
+- A is not pursued.
