@@ -37,7 +37,7 @@ test('a deprecated entry is identified without silently removing it', async () =
     entry.name === 'arrayRadial' ? { ...entry, stability: 'deprecated' as const } : entry,
   );
   const run = createDiscoveryService(catalog, index, async () => ({}));
-  const result = await run({ query: 'repeat', limit: 1 });
+  const result = await run({ query: 'radial array', limit: 1 });
   expect(result.text).toContain('operation:arrayRadial [deprecated]');
   expect(result.entries[0]?.stability).toBe('deprecated');
 });
@@ -99,7 +99,7 @@ test('unknown exact names are reported beside the known entries, never substitut
 
 test('ranked search filters then paginates and never exposes numeric confidence', async () => {
   const run = make();
-  const result = await run({ query: 'repeat', kind: 'operation', limit: 1 });
+  const result = await run({ query: 'radial array', kind: 'operation', limit: 1 });
   expect(result.entries[0]?.name).toBe('arrayRadial');
   expect(result.nextOffset).toBe(1);
   expect(result.entries[0]).not.toHaveProperty('score');

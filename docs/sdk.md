@@ -195,7 +195,9 @@ geometry previews do not establish texture or PBR material fidelity. Experimenta
 labels do not waive installation, export-resolution or resource-bound checks.
 
 Discovery search and overview text include each entry's `stable`, `experimental`
-or `deprecated` label alongside its limitations. The CLI, SDK and MCP use the same
+or `deprecated` label alongside its limitations. A search hit leads with the signature
+and shortens a stable entry's summary and limitations, ending them with an ellipsis;
+experimental and deprecated limitations are shown whole, and `ids` returns everything. The CLI, SDK and MCP use the same
 catalog. A recipe's experimental label applies to that recipe; it does not change
 the stability of the helpers it uses. Exact details retain the same structured
 `stability` field. Implicit modeling remains available without a new opt-in switch;
