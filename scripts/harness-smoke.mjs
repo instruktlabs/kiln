@@ -77,14 +77,14 @@ function installed(bin) {
 async function smoke(name, harness, opts) {
   // May be null: a harness with no default uses whatever its own config says.
   const model = opts.model ?? harness.defaultModel;
-  const sandbox = makeSandbox(`smoke-${name}`);
+  const sandbox = await makeSandbox(`smoke-${name}`, { harness: name });
   const file = join(sandbox, 'smoke.kiln.js');
   const logFile = join(sandbox, 'agent.log');
   const prompt = BRIEF(file);
 
   const started = Date.now();
   const r = await run(
-    harness.bin,
+    harness.runBin ?? harness.bin,
     harness.argv({ model, prompt, timeout: opts.timeout, logFile, sandbox }),
     {
       cwd: sandbox,

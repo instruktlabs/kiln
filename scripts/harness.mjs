@@ -12,7 +12,7 @@
 // duplicate of that record is a duplicate that goes stale, and the half that
 // goes stale is the half nobody was reading when it mattered.
 import { spawn, spawnSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -119,6 +119,13 @@ export const HARNESSES = {
       'mcp__kiln_workspace mcp__plugin_kiln_kiln mcp__kiln Read Write Edit Glob Grep',
       '--add-dir',
       sandbox,
+      // Only the sandbox's own server. An untrusted directory's `.mcp.json` is not
+      // loaded in `-p` mode, and a user-level Kiln registration would serve some
+      // other checkout: Claude Code 2.1.322 answered a dispatch in 17 s with no
+      // tool call because neither reached it.
+      '--mcp-config',
+      join(sandbox, '.mcp.json'),
+      '--strict-mcp-config',
     ],
     fallbackModels: [],
   },
@@ -157,13 +164,19 @@ export const HARNESSES = {
     // `--auto` and of the Claude allow-list above, and like both of those it
     // governs one throwaway temp directory holding a brief and a copy of the
     // skills.
-    argv: ({ model, prompt, sandbox }) => [
-      'exec',
+    //
+    // The run goes through the workspace's generated `codex.mjs`, which adds
+    // `exec --cd <sandbox>`, `--skip-git-repo-check` and the `kiln_workspace`
+    // server as `-c` overrides, so it works without a trust entry. Any other
+    // enabled Kiln server in the user's config is switched off for this run:
+    // Codex 0.170.0 otherwise also offered a user-level `kiln` that ran another
+    // checkout's source. `probe` still calls `codex` itself.
+    runBin: 'node',
+    argv: ({ model, prompt, sandbox, otherServers = userCodexKilnServers() }) => [
+      join(sandbox, 'codex.mjs'),
       ...modelFlag(model),
       '--approve-for-me',
-      '--skip-git-repo-check',
-      '--cd',
-      sandbox,
+      ...otherServers.flatMap((name) => ['-c', `mcp_servers.${name}.enabled=false`]),
       prompt,
     ],
     fallbackModels: [],
@@ -318,6 +331,40 @@ export const HARNESSES = {
     fallbackModels: [],
   },
 };
+
+/**
+ * Enabled MCP servers in a `codex mcp list --json` listing that serve Kiln but are
+ * not the workspace's own `kiln_workspace`: named for Kiln, or running an
+ * `mcp-server` entry.
+ */
+export function foreignKilnServers(list) {
+  return list
+    .filter((server) => server.enabled !== false && server.name !== 'kiln_workspace')
+    .filter(
+      (server) =>
+        /kiln/i.test(server.name) ||
+        (server.transport?.args ?? []).some((arg) => /mcp-server.(?:mjs|ts)$/.test(arg)),
+    )
+    .map((server) => server.name);
+}
+
+let codexServers;
+function userCodexKilnServers() {
+  if (codexServers) return codexServers;
+  const { cmd, shell } = resolveBin('codex');
+  const options = { encoding: 'utf8', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] };
+  // A command shim needs a shell; one fixed command string avoids Node's DEP0190
+  // warning about unescaped argument arrays.
+  const r = shell
+    ? spawnSync(`"${cmd}" mcp list --json`, { ...options, shell: true })
+    : spawnSync(cmd, ['mcp', 'list', '--json'], options);
+  try {
+    codexServers = r.status === 0 ? foreignKilnServers(JSON.parse(r.stdout)) : [];
+  } catch {
+    codexServers = [];
+  }
+  return codexServers;
+}
 
 // Windows: resolve in PATH order and use a shell only for command shims.
 // Native executables receive argv directly; shim arguments need quoteArg below.
@@ -539,18 +586,21 @@ export function run(
 // prevent. OpenCode additionally hung during bootstrap on such a directory --
 // three concurrent runs reached `init` and never started -- so the honest fix
 // and the working fix turned out to be the same one.
-export function makeSandbox(name) {
-  const sandbox = join(tmpdir(), 'kiln-dispatch', name);
+//
+// The sandbox is a Kiln workspace made by `create-workspace.mjs` for the harness
+// that will run in it, served by this checkout's `dist/mcp-server.mjs`: the
+// skills, AGENTS.md and that harness's own MCP wiring, exactly what a user's
+// workspace holds. A copy of the skills alone left the child to find Kiln through
+// its user-level configuration, which served nothing (Claude Code 2.1.322) or
+// another checkout (Codex 0.170.0). It is named per harness, so two harnesses
+// dispatched with one `--name` no longer clear each other's run. It needs a
+// current `bun run build:runtime`.
+export async function makeSandbox(name, { harness = 'claude' } = {}) {
+  const sandbox = join(tmpdir(), 'kiln-dispatch', `${harness}-${name}`);
   rmSync(sandbox, { recursive: true, force: true });
   mkdirSync(sandbox, { recursive: true });
-  const skillsSrc = join(REPO, 'skills');
-  if (existsSync(skillsSrc)) {
-    cpSync(skillsSrc, join(sandbox, '.claude', 'skills'), { recursive: true });
-    writeFileSync(
-      join(sandbox, 'opencode.json'),
-      `${JSON.stringify({ $schema: 'https://opencode.ai/config.json', skills: { paths: [join(sandbox, '.claude', 'skills')] } }, null, 2)}\n`,
-    );
-  }
+  const { createWorkspace } = await import('./create-workspace.mjs');
+  await createWorkspace(sandbox, harness, { installation: REPO });
 
   // Pre-approve the tools the brief asks the child to use.
   //
