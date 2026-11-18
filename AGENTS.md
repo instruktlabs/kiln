@@ -192,8 +192,8 @@ host CPU before the run, samples it during the run and prints start, peak, mean 
 it. Above 90% at the start it warns that timeouts in CLI-spawning tests are expected;
 `KILN_GATE_REQUIRE_QUIET=1` makes that a refusal. A failure at high load is read as load only
 when the file passes rerun alone; never raise a limit for it. Bun runs test files one at a
-time, so those tests do not compete with each other and there is no serial lane. When this PC
-is busy, run the gate on the hub (`ssh direct`) in a worktree.
+time, so those tests do not compete with each other and there is no serial lane. When the
+host is busy, run the gate on a quiet second host instead.
 
 Use strict test-driven development for behavior changes: add a focused failing test, observe
 the expected failure, implement the smallest fix, and rerun both the focused and full gates.
