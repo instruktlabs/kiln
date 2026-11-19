@@ -23,6 +23,9 @@ is available: a runtime sidecar is **not** a replacement for it.
 - **Need additional glTF feature preservation:** separately compare the experimental
   Three.js converter described in the [engine handoff guide](engine-handoff.md).
   Preserve the baseline and check the result in the destination importer.
+- **Print the asset:** export `--format stl` or `--format 3mf` (see
+  [print export](#print-export-stl-and-3mf)). Every visible mesh must be a closed
+  solid; the file is in millimetres.
 
 ### Converter and delivery profile are separate settings
 
@@ -617,6 +620,86 @@ Export again from the canonical saved revision. An already-runtime GLB can still
 copied with the editable/default byte-preserving profile, but that does not restore
 source or missing review metadata. Unknown versions of the owned review field fail
 explicitly rather than being stripped.
+
+## Print export: STL and 3MF
+
+`--format stl` and `--format 3mf` write a file for a 3D printer from the saved GLB of
+one revision. They use the editable profile (the default) and refuse `--profile runtime`
+and its options.
+
+```sh
+node kiln.mjs export ASSET_ID REVISION_ID --format stl --out bracket.stl
+node kiln.mjs export ASSET_ID REVISION_ID --format 3mf --out bracket.3mf --json
+```
+
+The output must end in `.stl` or `.3mf`, and, as with every export, an existing file is
+never replaced.
+
+- **Units.** Scene units are metres, so both formats are written in **millimetres**:
+  every coordinate is multiplied by 1000. STL has no unit field, so the 80-byte header
+  says so in text. A slicer that asks which unit an STL uses should be told
+  millimetres. 3MF declares `unit="millimeter"`.
+- **Axes.** glTF is Y-up and printers build along Z, so a point `(x, y, z)` is written
+  as `(x, -z, y)`. This is a rotation: sizes, volume and winding are unchanged, and
+  the asset's up direction becomes the build direction. Positions are not moved to the
+  build plate; the slicer places the object.
+- **What is exported.** The default scene as a viewer draws it at full detail. World
+  transforms are applied. Hidden nodes (`visible = false`, written as
+  `KHR_node_visibility`) and the lower levels of a `defineLod` set are left out.
+  `EXT_mesh_gpu_instancing` placements are expanded into one body each. A mirrored
+  placement keeps its faces pointing outward.
+- **Solids only.** Every visible mesh must be closed, manifold and outward, measured
+  with `geometryDiagnostics(geometry).solid` as `requireSolid` measures it (see
+  [Require a closed solid](geometry.md#require-a-closed-solid)). Otherwise the export
+  fails, names each failing part with its inspection path and the failing facts (for
+  example `Mesh_Floor (/Bracket[0]/Bracket[0]/Mesh_Floor[0]): not closed (4 boundary edges)`), and writes
+  nothing. Points, lines, skinned meshes and posed morph targets are refused in the
+  same way. Nothing is repaired. Marking parts with `requireSolid` catches the same
+  problems at build time.
+- **Watertight output.** "Closed" is measured after welding vertices that share a
+  position, as the diagnostic does, and the file holds that welded mesh: in each body
+  every edge is shared by exactly two triangles, even when the GLB is split at UV
+  seams.
+- **Self-intersection is not checked.** A mesh that passes through itself, such as a
+  `torusGeo` whose tube is at least its radius, still reads as closed and outward.
+  Separate parts may also overlap, as assembled parts usually do; merging them is left
+  to the slicer.
+- **Colour.** 3MF carries each material's base colour factor as a `basematerials`
+  entry (`displaycolor` in sRGB, `#RRGGBBAA`), and each triangle points at its
+  material. Textures, vertex colours, metalness, roughness and emission are dropped.
+  STL carries no colour.
+- **Layout.** STL is one binary triangle list holding every body. 3MF holds one mesh
+  object per body, named after its node, and one build item: an object whose
+  components are those bodies, so a slicer loads the asset as one object of several
+  parts.
+- **Determinism.** The same GLB gives the same bytes: the STL header is fixed text,
+  and the 3MF zip has fixed entry order, fixed timestamps (1980-01-01) and fixed
+  compression.
+
+`--json` adds a `print` record to the receipt: `unit`, `up`, the `bounds` of the
+written vertices in millimetres, the total `triangles`, `volumeMm3`, each body's name,
+path, triangles and volume, and for 3MF the colours written.
+
+From TypeScript, `exportAssetPrint(record, { format })` in
+`@instruktlabs/kiln/asset-export` returns `{ bytes, ... }` with the same summary and
+writes nothing; it throws a `PrintExportError` (`code: 'PRINT_NOT_SOLID'`) whose
+`parts` list each failing mesh. MCP has no print option yet; `kiln_export` and
+`kiln_export_to` are unchanged.
+
+### Checking a file in a slicer
+
+The export's own tests read the files back and check the triangle count, that every
+edge is shared by exactly two triangles, the bounds and the volume. To check a file
+in a slicer as well, use PrusaSlicer (record the exact version, for example 2.9.2):
+
+1. Save the asset with `requireSolid` parts, export it with `--format stl --json`
+   and with `--format 3mf`, and note `print.bounds` and `print.volumeMm3`.
+2. Run `prusa-slicer --info bracket.stl` and `prusa-slicer --info bracket.3mf`. Each
+   should report `manifold = yes`, a size equal to `max - min` of `print.bounds`, and
+   a volume within 0.1% of `print.volumeMm3`.
+3. Open the 3MF in the PrusaSlicer window: it should load as one object whose parts
+   carry the asset's names and colours, sized in millimetres without a unit prompt,
+   with no "errors detected" warning in Object info.
 
 ## Boundaries
 

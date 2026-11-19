@@ -9,7 +9,12 @@ import { localProgramStore } from './program-store-node';
 import { programRefPattern, retainProgram } from './program-store';
 import { createKilnProgramToolRegistry, newestRevision } from './tools/registry';
 import { writeExternalTextureExport, writeNewDestinationsAtomic } from './cli-output';
-import { createKtx2Encoder, exportAssetGlb } from './asset-export';
+import {
+  createKtx2Encoder,
+  exportAssetGlb,
+  exportAssetPrint,
+  type PrintExportResult,
+} from './asset-export';
 import { inspectDrawDiagnostics } from './draw-diagnostics';
 import { createPackagedLocalToolContext } from './local-runtime';
 import type { ParamValue } from './params';
@@ -54,6 +59,12 @@ ${SAVE_LINES}
   kiln asset <id> [<revision>] [--collection project] [--restore]   newest revision by default
   kiln asset <id> [<revision>] --rebuild --out rebuilt.glb [--requirements file]
   kiln export <id> <revision> --out asset.zip [--format bundle|glb|source]
+       [--format stl|3mf --out part.stl|part.3mf]   print file from the saved GLB, in
+                          MILLIMETRES (scene metres x1000), Z up (glTF y becomes z). Every
+                          visible mesh must be a closed, manifold, outward solid, or export
+                          names each failing part and writes nothing. Hidden parts and lower
+                          LODs are left out. 3MF carries base colours; textures are dropped;
+                          STL has no colour or unit field. Self-intersection is not checked
        [--profile editable|runtime]   runtime writes GLB + sibling metadata JSON
        [--target three]   runtime only: meshopt + quantization, repeatInstances GPU
                           instancing; sidecar states node scales; KTX2 skipped unless --ktx2
@@ -466,8 +477,16 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
       const gltfLayout = textures === 'external';
       const format =
         flags.format ?? (profile === 'runtime' ? (gltfLayout ? 'gltf' : 'glb') : 'bundle');
-      if (!['bundle', 'glb', 'source', 'gltf'].includes(format))
-        throw new Error('Unknown export format');
+      if (!['bundle', 'glb', 'source', 'gltf', 'stl', '3mf'].includes(format))
+        throw new Error('Unknown export format; use bundle, glb, source, stl or 3mf');
+      const printFormat = format === 'stl' || format === '3mf' ? format : undefined;
+      if (printFormat && profile !== 'editable')
+        throw new Error(
+          `--format ${printFormat} reads the saved GLB with the editable profile; drop --profile runtime and its options`,
+        );
+      if (printFormat && !resolve(flags.out).toLowerCase().endsWith(`.${printFormat}`))
+        throw new Error(`--format ${printFormat} output must end in .${printFormat}`);
+      let printSummary: Omit<PrintExportResult, 'bytes' | 'format'> | undefined;
       if (format === 'gltf' && !gltfLayout)
         throw new Error('gltf format requires --textures external');
       const written: { kind: string; path: string; data: Uint8Array; reused?: boolean }[] = [];
@@ -543,6 +562,18 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
             { kind: 'metadata', path: metadataPath, data: output.metadata.bytes },
           );
         }
+      } else if (printFormat) {
+        const {
+          bytes,
+          format: _format,
+          ...summary
+        } = await exportAssetPrint(record, {
+          format: printFormat,
+        });
+        const destination = resolve(flags.out);
+        await writeNewDestinationsAtomic([{ path: destination, data: bytes }]);
+        written.push({ kind: printFormat, path: destination, data: bytes });
+        printSummary = summary;
       } else {
         const bytes =
           format === 'bundle'
@@ -574,7 +605,8 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
               ...(drawCellSize !== undefined ? { drawCellSize } : {}),
               format,
               ...(ktx2Receipt ? { ktx2: ktx2Receipt } : {}),
-              ...(format !== 'source'
+              ...(printSummary ? { print: printSummary } : {}),
+              ...(format !== 'source' && !printFormat
                 ? {
                     drawDiagnostics: await inspectDrawDiagnostics(
                       drawGlb ??
