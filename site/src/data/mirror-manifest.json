@@ -8165,6 +8165,31 @@
       "path": "packs/farm/delivery-20261119-01/editable/trailer-editable.zip",
       "bytes": 690117,
       "sha256": "2e0504d9aa90151c24820d05959697e5a4d04312cba81a511c4255762cfd1e10"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse.png",
+      "bytes": 1855290,
+      "sha256": "61b2e8506f98503ae201c7d4dfb0acd7a6fe7d41cfe0a739d2cbdde19953e092"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill.png",
+      "bytes": 1466661,
+      "sha256": "6df497d760710873da303d9467895b0501308fa893681228ac2af793b493ef28"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill.png",
+      "bytes": 2034056,
+      "sha256": "ee8828614beab785aa6ec287502410d59e151f11d365668c2066120015c67ea9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor.png",
+      "bytes": 1670628,
+      "sha256": "e319c989fe082720e48b6cd2fb94672a71345ddbc1dd651cdf7d615c1133bdcd"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer.png",
+      "bytes": 1542636,
+      "sha256": "e974002c4efeed4648ad119e730fd584a7425102ec9f6d067b1ea09e48c46443"
     }
   ]
 }

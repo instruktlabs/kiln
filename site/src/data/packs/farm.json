@@ -235,15 +235,15 @@
         ]
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/farm/r34/farmhouse.webp",
+        "src": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/farm/r34/farmhouse.png",
-        "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse.png",
+        "sourceRevisionId": "r_10b63bdd371e4a78ae90faf92a8568ed",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
@@ -614,15 +614,15 @@
         ]
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/farm/r34/windmill.webp",
+        "src": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/windmill-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/windmill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/farm/r34/windmill.png",
-        "sourceRevisionId": "r_ef9045311dd040258e0143345c171d6f",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill.png",
+        "sourceRevisionId": "r_be71af41cdd34106b2a81e84e44a529f",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
@@ -846,15 +846,15 @@
         ]
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/farm/r34/watermill.webp",
+        "src": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/watermill-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/watermill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/farm/r34/watermill.png",
-        "sourceRevisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill.png",
+        "sourceRevisionId": "r_437647e09af4431da99fb2dd0906288a",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
@@ -1495,15 +1495,15 @@
         ]
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/farm/r34/tractor.webp",
+        "src": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/tractor-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/tractor-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/farm/r34/tractor.png",
-        "sourceRevisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor.png",
+        "sourceRevisionId": "r_e89c34e3ad4e45d7abc75e779daae0cc",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
@@ -1758,15 +1758,15 @@
         ]
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/farm/r34/trailer.webp",
+        "src": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Four-wheel timber farm trailer with low side boards and a drawbar.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/trailer-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/trailer-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/farm/r34/trailer.png",
-        "sourceRevisionId": "r_c72e516ce16949cfbddedbc9155efa06",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer.png",
+        "sourceRevisionId": "r_50136ad30e7a43d688d32e1d1a60a9c8",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
