@@ -47,6 +47,7 @@ import {
   readValidatedAtlasDelivery,
   type AtlasReferenceV1,
 } from './atlas-provenance';
+import { hasTranslucentTexel } from './texture-alpha';
 import type { EncodedTextureData, KilnTextureMetadata, TextureUsage } from './textures';
 
 export interface BakedTextureBindingV1 {
@@ -203,11 +204,7 @@ async function encodePngFromRaw(raw: RawPixels): Promise<Uint8Array> {
 }
 
 function hasTranslucentPixel(raw: RawPixels): boolean {
-  if (raw.channels !== 4) return false;
-  for (let i = 3; i < raw.data.length; i += 4) {
-    if ((raw.data[i] ?? 255) < 255) return true;
-  }
-  return false;
+  return raw.channels === 4 && hasTranslucentTexel(raw.data);
 }
 
 function isTexture(value: unknown): value is THREE.Texture {

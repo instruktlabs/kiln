@@ -135,6 +135,32 @@ test('document refs bind final bytes and sampler per material slot, even with a 
   await expect(validateAtlasDocumentProvenance(doc)).rejects.toThrow();
 });
 
+test('validation reuses a refresh hash only for the exact bytes it hashed', async () => {
+  const { root, texture } = await fixture(),
+    collection = collectAtlasProvenance(root),
+    doc = new Document();
+  doc
+    .getRoot()
+    .setDefaultScene(doc.createScene().setExtras({ kilnAtlasProvenance: collection.table! }));
+  const image = doc
+    .createTexture()
+    .setImage(new Uint8Array([1, 2, 3]))
+    .setMimeType('image/png');
+  doc
+    .createMaterial()
+    .setBaseColorTexture(image)
+    .getBaseColorTextureInfo()!
+    .setExtras({ kilnAtlasReference: collection.texture(texture)! });
+  const hashes = await refreshAtlasDocumentProvenance(doc);
+  expect([...hashes.values()].map(({ hash }) => hash)).toEqual([
+    'sha256:039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81',
+  ]);
+  await validateAtlasDocumentProvenance(doc, hashes);
+  // Replaced bytes are hashed again even when a refresh hash is offered.
+  image.setImage(new Uint8Array([9]));
+  await expect(validateAtlasDocumentProvenance(doc, hashes)).rejects.toThrow();
+});
+
 test('repeated source identity cannot bypass scene binding admission or attach a prior mesh atlas', async () => {
   const { texture, geometry, root } = await fixture();
   for (let i = 0; i < 1024; i++)
