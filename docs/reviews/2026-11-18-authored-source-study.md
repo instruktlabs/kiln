@@ -702,7 +702,7 @@ Filed 2026-11-18:
 3. Let assembly helpers merge their parts by material ([#412](https://github.com/instruktlabs/kiln/issues/412))
 4. Share kit code between the assets of a pack ([#413](https://github.com/instruktlabs/kiln/issues/413))
 5. Warn when `createPart` builds a part that never joins the asset ([#414](https://github.com/instruktlabs/kiln/issues/414))
-6. Classify the remaining opaque rejections and name the commonest engine-owned causes ([#415](https://github.com/instruktlabs/kiln/issues/415))
+6. Classify the remaining opaque rejections and name the commonest engine-owned causes ([#415](https://github.com/instruktlabs/kiln/issues/415); reproduced and classified in [the follow-up](2026-11-18-opaque-rejections.md))
 7. Move the UV0 note to the materials section and state box axes in the frame paragraph ([#416](https://github.com/instruktlabs/kiln/issues/416))
 8. A corpus gate that rebuilds every saved pack source and compares GLB hashes ([#417](https://github.com/instruktlabs/kiln/issues/417))
 

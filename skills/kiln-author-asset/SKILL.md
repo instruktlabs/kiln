@@ -13,15 +13,15 @@ Match the user's scope. A standalone asset needs no project, inventory or design
 
 Live Review observes without controlling the agent. When `kiln_review` is available, its `save` action keeps the exact completed operation with the displayed `expectedRevision`; pinning does not pause execution, and annotations are not QA acceptance. Do not assume optional host capabilities.
 
-Read the [program contract](references/program-contract.md) when writing source. `kiln_discover({})` gives a compact orientation: current families (browse one for its tags), the starting `createRoot`/`createPart` signatures and six entry summaries. Search with `kiln_discover({ query })` in ordinary modeling language (`curved hollow tube`, `slats along a line`, `braced legs`, `cast iron`): the catalog indexes operations, assemblies, recipes and materials rather than object classes, so name the parts and materials. Fetch complete contracts and examples with `{ ids: ["loftProfiles", "createPart", "createClip"] }`, up to six exact, case-sensitive IDs or executable names; copy recipe IDs from results (`recipe:material-wood-v1` or `material-wood-v1`), and a material recipe's summary names the `materialRecipe("kiln.material.wood.v1")` call to use. Narrow with `family`, `kind: "operation" | "assembly" | "recipe"` or `tags`, and follow `nextOffset` with `offset`. Request `{ capabilities: true }` separately for the runtime, source, export and camera contract. Read the contract before treating a search match as support; a match in explanatory text can concern a limitation. Recipes are optional guidance.
+Read the [program contract](references/program-contract.md) when writing source. `kiln_discover({})` gives a compact orientation: current families (browse one for its tags), the starting `createRoot`/`createPart` signatures and six entry summaries. Search with `kiln_discover({ query })` in ordinary modeling language (`curved hollow tube`, `slats along a line`, `braced legs`, `cast iron`): the catalog indexes operations, assemblies, recipes and materials rather than object classes, so name the parts and materials. Fetch complete contracts and examples with `{ ids: ["loftProfiles", "createPart", "createClip"] }`, up to six exact, case-sensitive IDs or executable names; copy recipe IDs from results (`recipe:material-wood-v1` or `material-wood-v1`), and a material recipe's summary names the `materialRecipe("kiln.material.wood.v1")` call to use. Narrow with `family`, `kind: "operation" | "assembly" | "recipe"` or `tags`, and follow `nextOffset` with `offset`. Request `{ capabilities: true }` for the runtime, source, export and camera contract. Read the contract before treating a search match as support; a match may describe a limitation.
 
 ## Make the asset
 
-Take subject, scale, style and destination constraints from the request, not examples or recipes. Build a recognizable silhouette and meaningful construction details. Name parts by their role. Use metres, +X forward, +Y up, +Z right; ground contact normally sits at Y=0. Forward is the direction the object faces: a bench's sitter faces +X, so its backrest sits toward -X. Part `rotation` is in degrees and follows the right-hand rule in this frame: `[0, 90, 0]` turns forward (+X) toward -Z, the object's left; `[0, 0, 90]` tips +X up to +Y; `[90, 0, 0]` rolls +Y toward +Z.
+Take subject, scale, style and destination constraints from the request, not examples or recipes. Build a recognizable silhouette and meaningful construction details. Name parts by their role. Use metres, +X forward, +Y up, +Z right; ground contact normally sits at Y=0. Forward is the direction the object faces: a bench's sitter faces +X, so its backrest sits toward -X. Part `rotation` is in degrees and follows the right-hand rule in this frame: `[0, 90, 0]` turns forward (+X) toward -Z, the object's left; `[0, 0, 90]` tips +X up to +Y; `[90, 0, 0]` rolls +Y toward +Z. `boxGeo(x, y, z)` takes its extents along local X, Y, Z, so its first argument is the forward length.
 
 Unless exact reconstruction is requested, use reference images to align silhouette,
 materials and art direction alongside the written brief, not as a requirement to
-copy every detail. Resolve functional dimensions explicitly. For usable openings,
+copy every detail. Resolve functional dimensions. For usable openings,
 seats and articulated joins, use the interface guidance in
 [geometry recipes](references/geometry-recipes.md#interfaces-that-must-fit-or-move).
 
@@ -33,8 +33,8 @@ For connected assemblies, derive mating points from shared dimensions in the sam
 local frame. Identify the intended neighbor at each end of a support, and separate
 those joints from nearby parts that need clearance. `beamBetween` uses the endpoints
 you supply; it does not find the frame (Discovery's joined-frame recipe shows the
-pattern). A centerline wheel uses `side: 'center'`; wheel side describes placement
-identity, not single- or double-sided fork design.
+pattern). A centerline wheel uses `side: 'center'`; wheel side is placement
+identity, not fork design.
 
 Submit `code` once to `kiln_render` or `kiln_validate`, then retain its `programRef`, including on a failed build; in a generated asset workspace, `node kiln.mjs source asset.kiln.js` imports a file directly. Copy the returned reference exactly for later views and edits: built-in stores return short handles such as `p_7c94a132b8e0`, and full SHA-256 references also work. Do not construct a handle or retransmit the program. A rejected build names its cause when Kiln can tell it and adds `Source check:` with the codes and lines `kiln_validate` finds (`TEMPORAL_DEAD_ZONE`, `MATERIAL_RECIPE_OVERRIDE`, `UNSAFE_GLOBAL_ACCESS` and others); fix those lines first.
 

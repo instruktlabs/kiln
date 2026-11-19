@@ -43,7 +43,11 @@ export type AuthoringDiagnostic =
   | 'SKIN_BINDING_ARGUMENT'
   | 'EXPORT_MATERIAL_SIDE_UNSUPPORTED'
   | 'PARAMS_CONTRACT'
-  | 'PARAMS_VALUE';
+  | 'PARAMS_VALUE'
+  | 'UV_PROJECTION_OPTIONS'
+  | 'TAPERED_TUBE_ARGUMENT'
+  | 'SWEEP_PROFILE_ARGUMENT'
+  | 'CSG_OPERAND_MESH';
 // Names no identifier on purpose. The identifier is only available from the
 // sandboxed exception message, and this module's contract is that no captured
 // identifier, path, message or stack crosses that boundary. Pointing at the
@@ -104,9 +108,21 @@ export const PARAMS_CONTRACT_ADVICE =
   'defineParams(spec, { presets? }) is called once, at the top level of the program and not inside build(). spec names 1 to 24 parameters; each is { type, default } with type range or int (min < max, optional step, snap and unit), toggle, color (#rrggbb), choice (options) or seed (0 to 4294967295), plus optional label and describe. Every default and preset value must be one its parameter allows. Call kiln_discover with ids ["defineParams"] for the full contract.';
 export const PARAMS_VALUE_ADVICE =
   'A parameter value passed for this build was refused: an unknown parameter or preset name, a value of the wrong type, a number outside min to max or off a snapped step, a choice that is not an option, or values passed to a program that declares no parameters. Build without params and read params.declaration in the result for the names, types and allowed values.';
+export const UV_PROJECTION_OPTIONS_ADVICE =
+  'projectUV(geometry, options): options must name a projection, "planar", "box" or "cylindrical", for example projectUV(geo, { projection: "box", metersPerUnit: 1 }). Only projection, frame, seamDegrees, angularRange, caps and metersPerUnit are accepted; seamDegrees, angularRange and caps apply to "cylindrical" only, and metersPerUnit must be a positive finite length. Use triangle geometry without morph targets and with finite positions. Call kiln_discover with ids ["projectUV"].';
+export const TAPERED_TUBE_ARGUMENT_ADVICE =
+  'taperedTube(path, radii, options?): path needs at least two points (three when closed), radii needs one radius per path point, each positive and finite, and a sectionScale option needs one [side, depth] pair per path point. Build radii from the path, for example path.map((_, i) => 0.05 - i * 0.005), so the two cannot drift apart. Call kiln_discover with ids ["taperedTube"].';
+export const SWEEP_PROFILE_ARGUMENT_ADVICE =
+  'sweepProfile(profile, path, options?) and loftProfiles(sections, path, options?): the path needs at least two distinct finite points (three when closed, without a repeated endpoint) and must not reverse on itself; scale is one [scaleX, scaleY] pair per path station, each positive and finite, for example path.map((_, i) => [1 - i * 0.1, 1 - i * 0.1]); twist is finite degrees, a multiple of 360 on a closed path; creaseAngle is 0 to 180 degrees; cap is true, false, "start" or "end", and "start" or "end" needs an open path; up must be finite and not parallel to the first path tangent; loft sections share one point count and progress along the path. Call kiln_discover with ids ["sweepProfile", "loftProfiles"].';
+export const CSG_OPERAND_MESH_ADVICE =
+  'A boolean or hull operand is not a usable triangle mesh: every operand needs finite positions with three components and a whole number of triangles (a vertex or index count divisible by 3, so a bare point cloud or a strip is not an operand), UVs with two components per vertex, valid material groups, and at least one triangle. Skinned meshes, instanced meshes and meshes with active morph influences must be baked to static triangles first, and an empty Group or a part never added to its parent contributes nothing. Call kiln_discover with ids ["boolUnion", "boolDiff", "hull"].';
 export function authoringDiagnosticAdvice(diagnostic: AuthoringDiagnostic | undefined): string {
   if (diagnostic === 'PARAMS_CONTRACT') return PARAMS_CONTRACT_ADVICE;
   if (diagnostic === 'PARAMS_VALUE') return PARAMS_VALUE_ADVICE;
+  if (diagnostic === 'UV_PROJECTION_OPTIONS') return UV_PROJECTION_OPTIONS_ADVICE;
+  if (diagnostic === 'TAPERED_TUBE_ARGUMENT') return TAPERED_TUBE_ARGUMENT_ADVICE;
+  if (diagnostic === 'SWEEP_PROFILE_ARGUMENT') return SWEEP_PROFILE_ARGUMENT_ADVICE;
+  if (diagnostic === 'CSG_OPERAND_MESH') return CSG_OPERAND_MESH_ADVICE;
   if (diagnostic === 'PORTABLE_MATERIAL_V3_CONTRACT')
     return 'compilePortableMaterialSpecV3 requires schemaVersion 3, model pbrMetallicRoughness, typed V3 procedural or injected resource references, and complete minFilter/magFilter/wrapS/wrapT samplers. Match texture usage to its slot and split work exceeding the material budget. Resource bindings need a host with verified-byte admission. V2 remains available unchanged. Shader code, paths, raw textures and V3 height derivation are unsupported. Read kiln_discover ids ["compilePortableMaterialSpecV3"] for the exact contract.';
   if (diagnostic === 'TEXTURE_ATLAS_CONTRACT')
