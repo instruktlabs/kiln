@@ -7,6 +7,13 @@ does not publish a package.
 
 ## Unreleased
 
+- **Four more rejection causes are named.** A `projectUV` options error, a `taperedTube`
+  radii or path error, a `sweepProfile` or `loftProfiles` path, scale, twist or cap error, and a
+  Boolean or `hull` operand that is not a whole-triangle mesh now carry a closed cause
+  (`UV_PROJECTION_OPTIONS`, `TAPERED_TUBE_ARGUMENT`, `SWEEP_PROFILE_ARGUMENT`,
+  `CSG_OPERAND_MESH`) and engine-written advice, instead of the generic sentence. No argument
+  value, name or path crosses the sandbox, and no GLB changes. Reproduction table in
+  `docs/reviews/2026-11-18-opaque-rejections.md`. (#415)
 - **The author skill reads lighter.** `kiln-author-asset/SKILL.md` goes from 15,998 to
   12,842 bytes: the CLI file commands, animation sampling, part listing and saved-preview notes
   move to its camera references, and the export profile guide is read only when the user asks

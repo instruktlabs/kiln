@@ -1,6 +1,7 @@
 /** Higher-level organic authoring helpers built on sweeps, SDFs and mesh ops. */
 import * as THREE from 'three';
 import type { Point3 } from './geometry';
+import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
 import { creaseNormals } from './geometry';
 import { implicitSurface, type ImplicitSurfaceOptions } from './implicit';
 import { circleProfile } from './profile';
@@ -118,12 +119,21 @@ export function taperedTube(
   const closed = options.closed ?? false;
   const stations = path;
   if (stations.length < (closed ? 3 : 2))
-    throw new Error('taperedTube needs at least two open or three closed path points');
+    throw new AuthoringDiagnosticError(
+      'TAPERED_TUBE_ARGUMENT',
+      'taperedTube needs at least two open or three closed path points',
+    );
   if (radii.length !== stations.length)
-    throw new Error('taperedTube radii must have one entry per path point');
+    throw new AuthoringDiagnosticError(
+      'TAPERED_TUBE_ARGUMENT',
+      'taperedTube radii must have one entry per path point',
+    );
   for (const r of radii) {
     if (!Number.isFinite(r) || r <= 0)
-      throw new Error('taperedTube radii must be positive and finite');
+      throw new AuthoringDiagnosticError(
+        'TAPERED_TUBE_ARGUMENT',
+        'taperedTube radii must be positive and finite',
+      );
   }
   const radialSegments = options.radialSegments ?? 20;
   const profile = circleProfile(1, radialSegments).map(([x, y]) => [x, y] as [number, number]);
@@ -132,7 +142,10 @@ export function taperedTube(
     return [r * side, r * depth] as [number, number];
   });
   if (options.sectionScale && options.sectionScale.length !== stations.length)
-    throw new Error('taperedTube sectionScale needs one [side, depth] pair per path point');
+    throw new AuthoringDiagnosticError(
+      'TAPERED_TUBE_ARGUMENT',
+      'taperedTube sectionScale needs one [side, depth] pair per path point',
+    );
   const geo = sweepProfile(profile, [...stations], {
     cap: options.cap ?? true,
     closed,

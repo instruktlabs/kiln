@@ -89,7 +89,8 @@ turns it into engine-written advice. Causes include a binding read before its
 declaration ran, a `build()` that is missing or returns no Object3D, a `materialRecipe`
 override the recipe does not allow, a procedural texture usage that is unknown or does not
 match its slot, an `extrudeProfile` or `revolveProfile` outline that cannot become a solid
-(`PROFILE_SOLID_FAILED`), and a TypeError or RangeError. The host still has
+(`PROFILE_SOLID_FAILED`), a `projectUV`, `taperedTube`, `sweepProfile`, `loftProfiles` or
+Boolean operand argument error, and a TypeError or RangeError. The host still has
 the source it sent. `kiln_render`, `kiln_inspect`, `kiln_view_interior`,
 `kiln_screenshot_animation` and the CLI parse that source and append `Source check:`
 with up to three codes and lines that `kiln_validate` reports for it. Examples are

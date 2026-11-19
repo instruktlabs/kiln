@@ -1,6 +1,7 @@
 /** Explicit UV0 projection in a rigid geometry-local frame. No preservation fallback. */
 import * as THREE from 'three';
 import { geometryFrameMatrix, type GeometryFrame } from './deform';
+import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
 
 export interface ProjectUVOptions {
   projection: 'planar' | 'box' | 'cylindrical';
@@ -43,7 +44,8 @@ export function projectUV(
         ),
     )
   )
-    throw new Error(
+    throw new AuthoringDiagnosticError(
+      'UV_PROJECTION_OPTIONS',
       'projectUV: select an explicit planar, box or cylindrical projection with documented options.',
     );
   const cylinder = options.projection === 'cylindrical';
@@ -51,14 +53,18 @@ export function projectUV(
     !cylinder &&
     [options.seamDegrees, options.angularRange, options.caps].some((value) => value !== undefined)
   )
-    throw new Error(
+    throw new AuthoringDiagnosticError(
+      'UV_PROJECTION_OPTIONS',
       'projectUV: seamDegrees, angularRange and caps apply only to cylindrical projection.',
     );
   if (
     options.seamDegrees !== undefined &&
     (!Number.isFinite(options.seamDegrees) || options.angularRange !== undefined)
   )
-    throw new Error('projectUV: seamDegrees must be finite and cannot accompany angularRange.');
+    throw new AuthoringDiagnosticError(
+      'UV_PROJECTION_OPTIONS',
+      'projectUV: seamDegrees must be finite and cannot accompany angularRange.',
+    );
   if (
     options.angularRange !== undefined &&
     (!Array.isArray(options.angularRange) ||
@@ -67,27 +73,41 @@ export function projectUV(
       options.angularRange[1] <= 0 ||
       options.angularRange[1] > 360)
   )
-    throw new Error(
+    throw new AuthoringDiagnosticError(
+      'UV_PROJECTION_OPTIONS',
       'projectUV: angularRange must be [finite start degrees, positive sweep <=360].',
     );
   if (options.caps !== undefined && options.caps !== 'planar' && options.caps !== 'side')
-    throw new Error('projectUV: caps must be planar or side.');
+    throw new AuthoringDiagnosticError(
+      'UV_PROJECTION_OPTIONS',
+      'projectUV: caps must be planar or side.',
+    );
   const metric = options.metersPerUnit;
   if (
     metric !== undefined &&
     !(typeof metric === 'number' && Number.isFinite(metric) && metric > 0)
   )
-    throw new Error('projectUV: metersPerUnit must be a positive finite length.');
+    throw new AuthoringDiagnosticError(
+      'UV_PROJECTION_OPTIONS',
+      'projectUV: metersPerUnit must be a positive finite length.',
+    );
   const inverse = geometryFrameMatrix(options.frame).invert();
   const positions = geometry.getAttribute('position');
   if (positions?.itemSize !== 3 || positions.count < 1 || positions.count > MAX_CORNERS)
-    throw new Error(`projectUV: position requires 1..${MAX_CORNERS} xyz samples.`);
+    throw new AuthoringDiagnosticError(
+      'UV_PROJECTION_OPTIONS',
+      `projectUV: position requires 1..${MAX_CORNERS} xyz samples.`,
+    );
   if (Object.keys(geometry.morphAttributes).length)
-    throw new Error('projectUV: morph targets need a separate mapping contract.');
+    throw new AuthoringDiagnosticError(
+      'UV_PROJECTION_OPTIONS',
+      'projectUV: morph targets need a separate mapping contract.',
+    );
   const index = geometry.index;
   const corners = index?.count ?? positions.count;
   if (!Number.isSafeInteger(corners) || corners < 3 || corners % 3 !== 0 || corners > MAX_CORNERS)
-    throw new Error(
+    throw new AuthoringDiagnosticError(
+      'UV_PROJECTION_OPTIONS',
       `projectUV: triangle corner count must be divisible by three and <=${MAX_CORNERS}.`,
     );
   let bytes = corners * 8;
@@ -99,25 +119,35 @@ export function projectUV(
       attribute.itemSize > 16 ||
       (attribute as THREE.InstancedBufferAttribute).isInstancedBufferAttribute
     )
-      throw new Error(
+      throw new AuthoringDiagnosticError(
+        'UV_PROJECTION_OPTIONS',
         `projectUV: ${name} must be a matching per-vertex attribute of 1..16 components.`,
       );
     bytes += corners * attribute.itemSize * attribute.array.BYTES_PER_ELEMENT;
   }
   if (bytes > MAX_ATTRIBUTE_BYTES)
-    throw new Error('projectUV: expanded attributes exceed 128 MiB.');
+    throw new AuthoringDiagnosticError(
+      'UV_PROJECTION_OPTIONS',
+      'projectUV: expanded attributes exceed 128 MiB.',
+    );
   if (index)
     for (let i = 0; i < corners; i++) {
       const value = index.getX(i);
       if (!Number.isSafeInteger(value) || value < 0 || value >= positions.count)
-        throw new Error('projectUV: index contains an invalid vertex reference.');
+        throw new AuthoringDiagnosticError(
+          'UV_PROJECTION_OPTIONS',
+          'projectUV: index contains an invalid vertex reference.',
+        );
     }
   const points: THREE.Vector3[] = [];
   const bounds = new THREE.Box3();
   for (let i = 0; i < positions.count; i++) {
     const point = new THREE.Vector3().fromBufferAttribute(positions, i).applyMatrix4(inverse);
     if (![point.x, point.y, point.z].every(Number.isFinite))
-      throw new Error('projectUV: frame-local positions must be finite.');
+      throw new AuthoringDiagnosticError(
+        'UV_PROJECTION_OPTIONS',
+        'projectUV: frame-local positions must be finite.',
+      );
     points.push(point);
     bounds.expandByPoint(point);
   }
@@ -173,7 +203,8 @@ export function projectUV(
         // Float32 positions and frame rebasing introduce angular boundary roundoff.
         if (angle > 2 * Math.PI - 1e-6) angle = 0;
         if (!fullWrap && angle > sweep + 1e-6)
-          throw new Error(
+          throw new AuthoringDiagnosticError(
+            'UV_PROJECTION_OPTIONS',
             'projectUV: side vertex lies outside angularRange; choose a range covering the profile.',
           );
         return (fullWrap ? angle : Math.min(angle, sweep)) / sweep;
@@ -185,7 +216,8 @@ export function projectUV(
           : 0;
       if (fullWrap && span() > 0.5) for (const j of sided) if (angles[j]! < 0.5) angles[j]! += 1;
       if (fullWrap && span() > 0.5 + 1e-6)
-        throw new Error(
+        throw new AuthoringDiagnosticError(
+          'UV_PROJECTION_OPTIONS',
           'projectUV: side triangle spans more than half a revolution; add profile segments to resolve the mapping.',
         );
       // A triangle lying entirely on the axis is degenerate: every corner takes U 0.
@@ -212,7 +244,10 @@ export function projectUV(
     for (let j = 0; j < 3; j++) {
       const pair = pairs[j]!;
       if (!pair.every((value) => Number.isFinite(Math.fround(value))))
-        throw new Error('projectUV: projected UVs must fit finite Float32.');
+        throw new AuthoringDiagnosticError(
+          'UV_PROJECTION_OPTIONS',
+          'projectUV: projected UVs must fit finite Float32.',
+        );
       outputUVs[(i + j) * 2] = pair[0];
       outputUVs[(i + j) * 2 + 1] = pair[1];
     }
