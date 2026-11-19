@@ -11,8 +11,10 @@ Every item is checked on the pinned GLB, not on a rebuild of its source.
 
 1. **No flush faces.** `FLUSH_FACES` reports no pair and was not truncated. The record counts
    the parts it could not measure (skinned, morphed or instanced).
-2. **QA findings settled.** Every finding the QA rules report is either fixed in this revision
-   or accepted with a written note saying why it stays.
+2. **QA findings settled.** A finding is every error and warning in the QA report of the pinned
+   GLB; informational notes need no resolution. Each finding is accepted with a written note
+   saying why it stays, matched by its code and what it names. A finding the report still
+   carries is not fixed; `fixed` records one an earlier revision had.
 3. **A visual review recorded.** The record names the views looked at (at least the default
    six-view sheet), the backdrop (`neutral`, `dark` or `light`), the renderer, and the
    `viewFidelity` of those views. The views are material-faithful (`materialFaithful: true`)
@@ -24,9 +26,11 @@ Every item is checked on the pinned GLB, not on a rebuild of its source.
 ## Where records live
 
 `site/src/data/gallery-verified.json` holds one record per reviewed revision and GLB,
-including rejected ones. The site checks each record when it builds: a record that claims
-`verified` without meeting every item above is refused. A card is marked only when a
-`verified` record names its revision and GLB SHA-256. Marked cards lead the gallery's default
-order with a label that links here.
+including rejected ones. Each record names the QA report its review used, a file in
+`site/src/data/gallery-verified/qa/`, and that file's SHA-256. The site checks each record when
+it builds. It refuses a record whose QA report is missing, has another hash, is for other bytes
+or found another flush result, and a `verified` record that does not meet every item above. A
+card is marked only when a `verified` record names its revision and GLB SHA-256. Marked cards
+lead the gallery's default order with a label that links here.
 
 The mark does not rank assets by taste.
