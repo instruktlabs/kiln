@@ -25,6 +25,24 @@ import {
   roleSuffix,
   type AssemblyMergeMode,
 } from './assembly-merge';
+import {
+  emitWallFills,
+  planWallFills,
+  type OpeningFill,
+  type WallFillMaterials,
+} from './wall-fills';
+export type {
+  OpeningBarsFill,
+  OpeningFaceFill,
+  OpeningFill,
+  OpeningFrameFill,
+  OpeningGlazingFill,
+  OpeningHandleFill,
+  OpeningLeafFill,
+  OpeningShuttersFill,
+  WallFillMaterials,
+  WallFillRole,
+} from './wall-fills';
 import { createBoneChain, createJointChain, createSkinnedPart } from './character';
 import { describeAssembly, replicateAssembly } from './assembly';
 import { defineLod } from './lod';
@@ -1272,6 +1290,12 @@ export interface WallOpening {
   height?: number;
   /** Window sill height above the wall base (ignored for doors). */
   sill?: number;
+  /** What fills the opening: frame, glazing, bars, sill, lintel, shutters, leaf. */
+  fill?: OpeningFill;
+  /** Part-name prefix for the fills. Default <wall>_<Door|Window><n>. */
+  name?: string;
+  /** Exact part names by piece (FrameStart, Leaf, ...), replacing the default names. */
+  names?: Record<string, string>;
 }
 
 export interface WallWithOpeningOptions {
@@ -1288,6 +1312,11 @@ export interface WallWithOpeningOptions {
   /** Multiple rectangular cuts, including vertically stacked windows.
    * Cuts may touch but must not overlap and must fit inside the wall sides/top. */
   openings?: readonly WallOpening[];
+  /** Which side is outside: 1 (default) is +X for axis z and +Z for axis x.
+   * Fill depths count inward from that face. */
+  outward?: 1 | -1;
+  /** Fill materials by role; each falls back to frame, then the wall material. */
+  materials?: WallFillMaterials;
   /** One part per material instead of one part per piece (see docs/geometry.md). */
   merge?: AssemblyMergeMode;
   parent?: THREE.Object3D;
@@ -1299,11 +1328,44 @@ function buildWall(
   material: THREE.Material,
   options: WallWithOpeningOptions,
   roles: Map<THREE.Mesh, string>,
+  pivotPrefixes: Map<THREE.Object3D, string>,
 ): THREE.Object3D {
-  const { length, height, thickness, axis = 'z', opening, openings } = options;
+  const { length, height, thickness, axis = 'z', opening, openings, outward = 1 } = options;
   if (opening && openings)
     throw new TypeError('wallWithOpening: use opening or openings, not both.');
-  const built = buildWallPanels(length, height, thickness, openings ?? (opening ? [opening] : []));
+  const requested = openings ?? (opening ? [opening] : []);
+  const built = buildWallPanels(length, height, thickness, requested);
+  if (outward !== 1 && outward !== -1)
+    throw new RangeError('wallWithOpening: outward must be 1 or -1.');
+  // Fills are planned, and refused, before the first part is made.
+  const fills = {
+    name,
+    axis,
+    outward,
+    length,
+    height,
+    thickness,
+    material,
+    materials: options.materials,
+  };
+  const filling = requested.some((o) => o.fill !== undefined || o.names !== undefined);
+  const plan =
+    filling || options.materials !== undefined
+      ? planWallFills(
+          fills,
+          built.openings.map((o, i) => ({
+            kind: o.kind,
+            left: o.left,
+            right: o.right,
+            sill: o.sill,
+            top: o.top,
+            fill: requested[i]!.fill,
+            name: requested[i]!.name,
+            names: requested[i]!.names,
+          })),
+          built.panels.map((panel) => `${name}${panel.suffix}`),
+        )
+      : undefined;
   const group = new THREE.Object3D();
   group.name = name;
 
@@ -1330,8 +1392,19 @@ function buildWall(
   for (const segment of built.panels) {
     panel(segment.suffix, segment.left, segment.right, segment.bottom, segment.top);
   }
+  if (plan) emitWallFills(fills, plan, group, roles, pivotPrefixes);
   return group;
 }
+
+/** Merged part names: the wall material takes the call's name; under a pivot, the opening's. */
+const wallPartName =
+  (name: string, pivotPrefixes: Map<THREE.Object3D, string>) =>
+  (role: string, group: THREE.Object3D): string =>
+    pivotPrefixes.has(group)
+      ? `${pivotPrefixes.get(group)}_${roleSuffix(role)}`
+      : role === 'wall'
+        ? name
+        : `${name}_${roleSuffix(role)}`;
 
 /**
  * A wall with rectangular door/window cuts, composed from solid box segments.
@@ -1346,11 +1419,10 @@ export function wallWithOpening(
 ): THREE.Object3D {
   assertAssemblyMerge('wallWithOpening', options.merge);
   const roles = new Map<THREE.Mesh, string>();
-  const group = buildWall(name, material, options, roles);
+  const pivots = new Map<THREE.Object3D, string>();
+  const group = buildWall(name, material, options, roles, pivots);
   if (options.merge === 'byMaterial')
-    mergePiecesByMaterial(group, roles, (role) =>
-      role === 'wall' ? name : `${name}_${roleSuffix(role)}`,
-    );
+    mergePiecesByMaterial(group, roles, wallPartName(name, pivots));
   if (options.parent) options.parent.add(group);
   return group;
 }
@@ -1374,6 +1446,8 @@ export interface RoomOptions {
   /** Per-wall openings. Defaults to a centered door on the front wall, so the
    *  room is ENTERABLE by default. */
   openings?: RoomOpening[];
+  /** Fill materials by role for every wall; each wall's outer face is outside the room. */
+  materials?: WallFillMaterials;
   /** One part per material for the whole room; wall frames stay as anchors. */
   merge?: AssemblyMergeMode;
   parent?: THREE.Object3D;
@@ -1413,6 +1487,7 @@ export function room(
   const root = new THREE.Object3D();
   root.name = name;
   const roles = new Map<THREE.Mesh, string>();
+  const pivots = new Map<THREE.Object3D, string>();
 
   const wall = (
     suffix: string,
@@ -1432,8 +1507,12 @@ export function room(
           thickness: wallThickness,
           axis,
           openings: openings.filter((op) => op.wall === which),
+          // Each wall's outside faces away from the room's centre.
+          outward: which === 'front' || which === 'right' ? 1 : -1,
+          materials: options.materials,
         },
         roles,
+        pivots,
       );
     } catch (error) {
       if (!(error instanceof RangeError)) throw error;
@@ -1465,9 +1544,7 @@ export function room(
     roles.set(floorObj as THREE.Mesh, 'wall');
   }
   if (options.merge === 'byMaterial') {
-    const { holder } = mergePiecesByMaterial(root, roles, (role) =>
-      role === 'wall' ? name : `${name}_${roleSuffix(role)}`,
-    );
+    const { holder } = mergePiecesByMaterial(root, roles, wallPartName(name, pivots));
     if (floorObj) floorObj = holder.get(floorObj as THREE.Mesh) ?? floorObj;
   }
 

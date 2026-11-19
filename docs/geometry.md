@@ -160,6 +160,42 @@ placement on each sector root. Rows, rise, radius and angular coverage are edita
 no house layout, roof or asset category is required. These are optional construction
 examples, not completed buildings, navigation certificates or finished materials.
 
+## Fill wall openings
+
+`wallWithOpening` cuts each opening and, with `fill`, makes what fills it: `frame`,
+`glazing`, `bars`, `sill` (windows), `lintel`, `shutters`, and a `leaf` under a `Joint_`
+hinge pivot. Every piece is placed from its opening and the wall, so moving or widening an
+opening moves its fills. Depths are metres inward from the outer face: `outward: 1` (the
+default) puts it on the +X side of a wall along `z` and the +Z side of one along `x`, and
+`-1` on the other side. Negative depths stand proud of the wall. Materials
+come by role in `materials` (`frame`, `glazing`, `bars`, `sill`, `lintel`, `shutter`, `leaf`,
+`hardware`); each falls back to `frame`, then the wall material, except `glazing`, which must
+be given. Parts are named `<wall>_<Door|Window><n>_<Piece>`; an opening's `name` replaces the
+prefix and its `names` maps a piece to the exact part name an existing contract needs.
+
+```js
+wallWithOpening('FrontWall', masonry, {
+  length: 7.4, height: 3.2, thickness: 0.3,
+  materials: { frame: trim, glazing: glass, sill: stone, shutter: olive },
+  openings: [
+    { kind: 'door', width: 1, height: 2.15,
+      fill: { frame: true, leaf: { pivot: 'FrontDoor', handle: true } } },
+    { kind: 'window', offset: 2, width: 1.1, height: 1.3, sill: 0.75,
+      fill: { frame: true, glazing: true, bars: { vertical: [0.5], horizontal: [0.58] },
+              sill: true, lintel: true, shutters: true } },
+  ],
+  parent: root,
+});
+```
+
+Pieces in the opening (frame, glazing, bars, leaf) stay inside it; sill, lintel and shutters
+stand against the outer face. Fills meet the wall and each other face to face or with a gap,
+none passes through another, and glazing stands 1 mm clear of the frame, bars and reveal so a
+double-sided pane cannot z-fight. Every piece is a closed box with UV0. A fill that does not
+fit, such as a frame wider than its opening, shutters over a neighbouring opening or glazing
+without a material, throws before anything is built. `room` passes `fill`, `name`, `names`
+and `materials` to its walls, with each wall's outer face outside the room.
+
 ## Merge an assembly by material
 
 `wallWithOpening` and `room` take `merge: 'byMaterial'`. The helper builds its pieces as it
@@ -168,9 +204,10 @@ in the same places, so triangle count and bounds do not change. A part is named 
 of its first piece: the wall takes the call's name, the rest `<name>_<Role>`. Frames that are
 not meshes stay where they were, so a room's wall frames still serve as anchors, and the
 pieces under a `Joint_` pivot merge only with each other, under the pivot, so a door leaf
-still swings. Geometry is concatenated,
-not unioned: two pieces that share an edge make that edge non-manifold, so `requireSolid`
-fails a merged part where its pieces touch. Without `merge`, output is unchanged.
+still swings; they are named for their opening, such as `<wall>_Door1_Leaf`. Geometry is
+concatenated, not unioned: two pieces that share an edge make that edge non-manifold, so
+`requireSolid` fails a merged part where its pieces touch. Without `merge`, output is
+unchanged.
 
 ## Compose moving assemblies
 

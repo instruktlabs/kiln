@@ -749,6 +749,48 @@ const wallCases = [
       ],
     }),
   ),
+  scene('wallWithOpening filled window and door (default fills)', (m) =>
+    P.wallWithOpening('W', m, {
+      length: 6,
+      height: 3,
+      thickness: 0.2,
+      materials: { glazing: m },
+      openings: [
+        {
+          kind: 'window',
+          offset: -1.5,
+          fill: { frame: true, glazing: true, sill: true, lintel: true },
+        },
+        { kind: 'door', offset: 1, fill: { frame: true, leaf: { handle: true } } },
+      ],
+    }),
+  ),
+  scene("wallWithOpening bars, shutters, proud frame, axis 'x', outward -1", (m) =>
+    P.wallWithOpening('W', m, {
+      length: 6,
+      height: 3,
+      thickness: 0.3,
+      axis: 'x',
+      outward: -1,
+      materials: { glazing: m },
+      openings: [
+        {
+          kind: 'window',
+          width: 1.2,
+          height: 1.4,
+          sill: 1,
+          fill: {
+            frame: { width: 0.07, depth: [-0.02, 0.32] },
+            glazing: true,
+            bars: { vertical: [0.5], horizontal: [0.58] },
+            sill: true,
+            lintel: true,
+            shutters: true,
+          },
+        },
+      ],
+    }),
+  ),
 ];
 const roomCases = [
   scene('room() defaults', (m) => P.room('R', m).root),

@@ -1403,6 +1403,7 @@ define(
     parameters: [
       'Default width/depth/height describe a small room; dimensions are not an overall building/storey limit.',
       'Per-wall rectangular openings are explicit; floor may be disabled. An opening offset is measured from its wall centre and the opening must fit inside that wall: front/back walls are width + wallThickness long, left/right walls depth - wallThickness. wallThickness must be less than depth.',
+      "Openings take the wallWithOpening fill, name and names; materials applies to every wall, and each wall's outer face is outside the room.",
       "merge: 'byMaterial' returns one part per material instead of one per piece: the same triangles and bounds, named for the call (the wall material takes the call's name, other roles <name>_<Role>); frames and Joint_ pivots stay, and pivot pieces merge only under their pivot. Merged pieces that share an edge make it non-manifold. Without merge, output is unchanged.",
     ],
     topology: [
@@ -1432,10 +1433,15 @@ define(
     parameters: [
       'Positive finite length/height/thickness; opening or openings, never both.',
       'Rectangular apertures must not overlap or extend outside the wall; touching edges are allowed.',
+      'fill places each piece from its opening: frame members line the reveal (face width 0.06, default depth [0, thickness]); glazing stands 1 mm clear of frame, bars and reveal; sill (windows only), lintel and shutters stand on the outer face; a leaf hangs under Joint_<pivot> at its hinge edge (default <wall>_<Door|Window><n>_Hinge). Depths count inward from the outer face: outward 1 (default) puts it on +X for axis z and +Z for axis x, -1 on the other side; negative depths stand proud.',
+      'materials by role (frame, glazing, bars, sill, lintel, shutter, leaf, hardware); each falls back to frame, then the wall material. glazing has no fallback and must be given when glazing is asked for.',
+      'Fill parts are named <wall>_<Door|Window><n>_<Piece>: FrameStart, FrameEnd, FrameHead, FrameBottom, Glass or Glass<n>, BarV<i>, BarH<j> or BarH<j>_<k>, Sill, Lintel, ShutterStart, ShutterEnd, Leaf, Handle. opening.name replaces the prefix; opening.names maps a piece to an exact part name.',
+      'A fill that does not fit (no clear opening left, glazing outside the frame depth, a face piece past the wall or over another opening, a leaf with glazing, an unknown key) throws before any part is made.',
       "merge: 'byMaterial' returns one part per material instead of one per piece: the same triangles and bounds, named for the call (the wall material takes the call's name, other roles <name>_<Role>); frames and Joint_ pivots stay, and pivot pieces merge only under their pivot. Merged pieces that share an edge make it non-manifold. Without merge, output is unchanged.",
     ],
     topology: [
       'Actual aperture gaps are composed from box segments; no solid boolean or wall-assembly union.',
+      'Fill pieces are closed boxes with UV0 that meet the wall and each other face to face or with a gap; none passes through another.',
     ],
     cost: 'Segmentation grows with aperture boundary coordinates; no generic architectural complexity cap.',
   },

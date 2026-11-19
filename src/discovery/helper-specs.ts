@@ -387,7 +387,7 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'room',
     signature:
-      "room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThickness?, openings?: [{ wall: 'front'|'back'|'left'|'right', kind?: 'door'|'window', offset?, width?, height?, sill? }], merge?: 'byMaterial', parent? })",
+      "room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThickness?, openings?: [{ wall: 'front'|'back'|'left'|'right', kind?: 'door'|'window', offset?, width?, height?, sill?, name?, names?, fill? }], materials?, merge?: 'byMaterial', parent? })",
     returns: '{ root: Object3D, walls: { front, back, left, right }, floor: Object3D | null }',
     category: 'structure',
     description:
@@ -400,13 +400,13 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'wallWithOpening',
     signature:
-      "wallWithOpening(name, material, { length, height, thickness, axis?: 'x'|'z', opening?: { kind?: 'door'|'window', offset?, width?, height?, sill? }, openings?: [{ kind?: 'door'|'window', offset?, width?, height?, sill? }], merge?: 'byMaterial', parent? })",
+      "wallWithOpening(name, material, { length, height, thickness, axis?: 'x'|'z', outward?: 1|-1, opening?: Opening, openings?: Opening[], materials?: { frame?, glazing?, bars?, sill?, lintel?, shutter?, leaf?, hardware? }, merge?: 'byMaterial', parent? }), Opening = { kind?: 'door'|'window', offset?, width?, height?, sill?, name?, names?: { [piece]: partName }, fill?: { frame?: true|{ width?, depth?: [from, to] }, glazing?: true|{ thickness?, depth? }, bars?: { vertical?: fractions, horizontal?: fractions, width?, depth? }, sill?: true|{ overhang?, projection?, height? }, lintel?: true|{ overhang?, projection?, height? }, shutters?: true|{ width?, thickness?, gap? }, leaf?: true|{ thickness?, clearance?, depth?, hinge?: 'start'|'end', pivot?, handle?: true|{ height?, inset?, size? } } } }",
     returns: 'THREE.Object3D (wall container)',
     category: 'structure',
     description:
-      'A wall panel with real rectangular door/window gaps, composed from solid box segments. Supply opening or openings, never both. Multiple or vertically stacked apertures must not overlap or extend outside the wall. Base at local Y=0, centered on the run axis. Use to compose custom layouts and interior dividing walls.',
+      'A wall panel with real rectangular door/window gaps, composed from solid box segments. Supply opening or openings, never both; apertures must not overlap or leave the wall. Base at local Y=0, centered on the run axis. fill adds what fills an opening, placed from it: frame, glazing, bars, window sill, lintel, shutters, and a leaf under a Joint_ hinge pivot. Fill depths are metres inward from the outer face that outward picks.',
     example:
-      "wallWithOpening('Partition', plaster, { length: 4, height: 2.8, thickness: 0.12, axis: 'x', opening: { kind: 'door', offset: 0.5 }, parent: root });",
+      "wallWithOpening('Front', plaster, { length: 5, height: 2.8, thickness: 0.2, materials: { frame: trim, glazing: glass }, openings: [{ kind: 'window', offset: -1.2, fill: { frame: true, glazing: true, bars: { vertical: [0.5] }, sill: true, lintel: true } }, { kind: 'door', offset: 1, fill: { frame: true, leaf: { pivot: 'FrontDoor', handle: true } } }], parent: root });",
   },
   {
     name: 'createRoofPlanes',
