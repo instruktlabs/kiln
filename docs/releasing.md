@@ -17,7 +17,7 @@ does not authorize a package release or public service deployment.
 ## Qualify the candidate
 
 1. Complete the release contract, consumer documentation, notices and changelog.
-   Align `package.json`, engine metadata and the `engineVersion` pin in
+   Align `package.json`, `server.json`, engine metadata and the `engineVersion` pin in
    `plugins/kiln-engine.release.json`, then rebuild the runtime. The local plugin's
    own `version` changes when its manifest, executable or guidance changes; it can
    advance independently while retaining the same published engine. Generate and
@@ -124,6 +124,109 @@ npm stage approve STAGE_ID
 
 The workflow never approves stages. npm makes this an owner action, and staged
 tags cannot be changed in place. Source: [npm stage CLI](https://docs.npmjs.com/cli/v12/commands/npm-stage/).
+
+## Publish to the official MCP registry
+
+The repository root holds `server.json` and `package.json` carries `mcpName`
+(`io.github.instruktlabs/kiln`). A test keeps both names and both versions equal to the
+package version, so the version bump in step 1 of qualification includes `server.json`
+(its top-level `version` and `packages[0].version`). `server.json` is deliberately not
+in the npm archive: `mcp-publisher` reads the repository copy, and the registry checks
+the published package's `mcpName`, so adding it would change the qualified archive for no
+benefit. The listing starts the server with `npx @instruktlabs/kiln mcp`; the unscoped
+package name selects the `kiln` executable, which is why `kiln mcp` exists.
+
+This is a manual owner step, after `npm stage approve` has made the version public on
+npm and its publication is verified, because the registry fetches the package from npm:
+
+```sh
+mcp-publisher validate
+mcp-publisher login github
+mcp-publisher publish
+curl "https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.instruktlabs/kiln"
+```
+
+`login github` is GitHub's device flow in the owner's browser; it needs the owner to be
+an owner of the `instruktlabs` organization to claim `io.github.instruktlabs/*`. Install
+`mcp-publisher` from a release of
+[modelcontextprotocol/registry](https://github.com/modelcontextprotocol/registry/releases)
+and verify its Sigstore bundle as the
+[registry's workflow guide](https://modelcontextprotocol.io/registry/github-actions.md) shows.
+Re-publish after every npm release. The registry is in preview and may reset data.
+Automation is not added: the guide's OIDC path (`login github-oidc`) needs no stored
+secret, but it would have to run after the owner approves the staged package, so it would be
+a separate manually dispatched workflow, and it is left until the manual path has worked once.
+
+## Directory submissions
+
+Maintainer checklist for listings; each step is a form or an account action the owner
+takes. Confirmed means read from the directory's own current documentation on 2026-11-18.
+
+- **Claude Code plugin directory (confirmed).** Open the developer portal at
+  `claude.ai/directory/manage`, **Submit new**, **Plugin bundle**. One submission per
+  plugin folder: use repository `instruktlabs/kiln` and plugin path `plugins/kiln-engine`.
+  Run `claude plugin validate ./plugins/kiln-engine` first and read the
+  [pre-submission checklist](https://claude.com/docs/plugins/pre-submission-checklist.md).
+  The portal needs the owner's GitHub account connected on claude.ai with push access, then
+  Validate, listing details, data-handling answers, compliance acknowledgements and
+  **Submit for review**. A reviewer publishes the first passing version. Raise
+  `plugin.json` `version` with each release. `kiln-hosted` is invite-only; submit it only if
+  that is intended. Docs: [Submit your plugin](https://claude.com/docs/plugins/submit.md).
+  The issue names `claude.ai/settings/plugins/submit`; that route is not in the current docs.
+- **Codex plugin directory (confirmed, with a mismatch).** The current process is on
+  [developers.openai.com/codex/submit-plugins](https://developers.openai.com/codex/submit-plugins):
+  an OpenAI organization owner uploads a plugin ZIP at `platform.openai.com/plugins` under a
+  verified publisher identity, fixes automated checks, connects a **remote** MCP server over a
+  public HTTPS endpoint, and supplies five positive and three negative test cases plus a video.
+  Local or desktop-only plugins follow a separate process
+  (`developers.openai.com/plugins/deploy/desktop-only`), which was not read. Kiln's local
+  plugin has no remote server, so confirm that route before preparing a ZIP. ZIPs with
+  lifecycle hooks or app references cannot be submitted.
+- **Glama (not confirmed from official docs).** Glama's pages were not readable. Public
+  pull requests on other servers describe a `glama.json` at the repository root naming
+  maintainer GitHub usernames, then the claim started from the listing while signed in.
+  Check Glama's support page before relying on that.
+- **Smithery (not confirmed from official docs).** `smithery.ai/docs/build/publish` returned
+  404. Secondary reports say local stdio servers are published as an MCPB bundle
+  (`smithery mcp publish ./server.mcpb -n org/name`) and that `smithery.yaml` is no longer
+  read. Kiln has no MCPB bundle; decide whether to build one before submitting.
+- **mcp.so (not confirmed).** `mcp.so/submit` refused automated fetches. Submit by hand with
+  the GitHub URL.
+- **PulseMCP.** It takes no direct submissions and reads the official registry, so check it
+  after the registry entry appears.
+- **Stale listings.** Four third-party entries still name `matthew-kissinger/kiln`; they
+  belong to those sites' owners or need a request to them.
+
+## Registry scans and provenance
+
+**npm provenance is already attested.** `release.yml` stages with `npm stage publish
+--provenance` in a job with `id-token: write`, `package.json` sets `publishConfig.provenance`
+and `prepare-npm-release.mjs` asserts that setting. Version 1.8.0's registry metadata links
+a SLSA provenance attestation naming this repository, `refs/heads/main` and
+`.github/workflows/release.yml`. No workflow change is needed, and none was made.
+
+**HOL registry scan (read 2026-11-18, commit 9dfba816).** The scan page lists one
+medium finding and six informational ones. The medium one is `DEPENDENCY_LOCKFILE_MISSING`
+(operational-security), reported twice with the page giving no file path: "package.json is
+present without a corresponding lockfile or pinned dependency snapshot." The informational
+ones are the five `PLUGIN_JSON_INTERFACE_ASSET_*` manifest checks (privacyPolicyURL,
+termsOfServiceURL, composerIcon, logo, screenshots: "must use HTTPS or point to a safe
+in-repo asset") and `CODEXIGNORE_MISSING`. Provenance scores 80; its listed factors are
+plugin root `.`, source repository, source commit, publisher and owner verified, and
+"Agent Plugins 1.0: Not detected".
+
+The local scanner with the same rule (`plugin-scanner` 3.0.123 and 3.59.0, `checks/operational_security.py`)
+only looks for a lockfile beside a `package.json` at the scanned root and accepts
+`package-lock.json`, `pnpm-lock.yaml`, `yarn.lock`, `bun.lock` or `bun.lockb`. The repository
+root has `package.json` and `bun.lock`, and `.github/workflows/plugin-security.yml` scans `.`,
+so the repository itself should pass. The finding therefore most likely comes from how HOL's
+registry reads the repository, whose file inventory lists `package.json` and no lockfile. This
+could not be reproduced locally and the cause is unconfirmed. Adding a second root
+`package-lock.json` would give two lockfiles that drift from `bun.lock`, so none was added. The
+local plugin installs `@instruktlabs/kiln@<exact version>` with `--save-exact` and
+`--ignore-scripts` into a runtime store and records the SHA-256 of the `package-lock.json`
+that install writes (`kiln-runtime.json`), so its install is already pinned. After the next
+release, re-read the HOL page; if the finding persists, ask HOL which file it scanned.
 
 ## Verify publication and recover
 

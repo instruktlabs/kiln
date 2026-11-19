@@ -58,6 +58,7 @@ USAGE
   kiln animation <program.js|ref> [options]  review sampled motion of an exported clip
   kiln inspect <program.js|ref> [options]    close-up views and surface/anchor measurements
   kiln service status|start|stop|reprobe  the shared GPU render service (see below)
+  kiln mcp                              start the stdio MCP server (same as kiln-mcp)
   kiln --version                        print the installed Kiln version
 
 OPTIONS
@@ -927,6 +928,7 @@ async function runMain(argv: readonly string[]): Promise<number> {
   if (argv[0] === 'inspect') return (await import('./inspect-cli')).inspectMain(argv.slice(1));
   if (argv[0] === 'discover') return (await import('./discovery-cli')).discoveryMain(argv.slice(1));
   if (argv[0] === 'service') return (await import('./service-cli')).serviceMain(argv.slice(1));
+  if (argv[0] === 'mcp') return (await import('./mcp-cli')).mcpMain(argv.slice(1));
   if (argv[0] === 'review') {
     try {
       return await (await import('./review-cli')).reviewMain(argv.slice(1));

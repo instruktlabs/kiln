@@ -50,7 +50,10 @@ npm puts global commands directly in its prefix on Windows and in `PREFIX/bin` o
 macOS/Linux. If the shell cannot find `kiln`, run `npm prefix -g`, ensure that
 executable directory is on PATH, and open a new terminal. See
 [npm's executable locations](https://docs.npmjs.com/cli/v12/configuring-npm/folders/#executables).
-`kiln-init` and `kiln-mcp` are available the same way.
+`kiln-init` and `kiln-mcp` are available the same way. `kiln mcp` starts the same stdio
+server from the default executable, which is what `npx @instruktlabs/kiln mcp` and the
+[official MCP registry](https://github.com/instruktlabs/kiln/blob/main/docs/releasing.md#publish-to-the-official-mcp-registry)
+entry use.
 
 For a project-local installation, run from the project that contains the dependency:
 

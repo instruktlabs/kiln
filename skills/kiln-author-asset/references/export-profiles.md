@@ -27,6 +27,8 @@ is available: a runtime sidecar is **not** a replacement for it.
   Three.js converter described in the engine handoff guide (`references/engine-handoff.md`
   in the `kiln-qa-asset` skill).
   Preserve the baseline and check the result in the destination importer.
+- **Print the asset:** export `--format stl` or `--format 3mf` (see
+  [print files](#print-files-stl-and-3mf)).
 
 ### Converter and delivery profile are separate settings
 
@@ -327,6 +329,20 @@ Export again from the canonical saved revision. An already-runtime GLB can still
 copied with the editable/default byte-preserving profile, but that does not restore
 source or missing review metadata. Unknown versions of the owned review field fail
 explicitly rather than being stripped.
+
+## Print files: STL and 3MF
+
+`node kiln.mjs export ASSET_ID REVISION_ID --format stl --out part.stl` (or `--format 3mf
+--out part.3mf`) writes a printer file from the saved GLB, editable profile only. Units are
+**millimetres** (scene metres x1000; STL has no unit field, 3MF declares `millimeter`), and
+the file is Z-up: glTF `(x, y, z)` becomes `(x, -z, y)`. Hidden nodes and lower LOD levels
+are left out, world transforms applied and GPU instances expanded. Every visible mesh must
+be closed, manifold and outward, as `requireSolid` measures; otherwise the export names each
+failing part and the failing fact and writes nothing, so mark printable parts with
+`requireSolid` while authoring. The file holds the welded mesh, so it is watertight.
+Self-intersection is not checked. 3MF carries each material's base colour; textures and
+other material properties are dropped; STL has no colour. `--json` reports the bounds in
+millimetres and the volume.
 
 ## Boundaries
 
