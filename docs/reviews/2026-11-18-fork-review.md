@@ -1,7 +1,14 @@
 # Fork review: FaberVi hard-surface work and the Vercel remote MCP adapter
 
 Issue: [#426](https://github.com/instruktlabs/kiln/issues/426). Reviewed 2026-11-18 against
-`origin/main` at `444bbad1`. This is a review, not an acceptance or a decision to merge. Nothing
+`origin/main` at `444bbad1`. This is a review, not an acceptance or a decision to merge.
+
+**Owner decision (2026-11-18):** nothing more is taken from these forks. FaberVi proposed his organic
+work upstream, and it shipped with credit. He did not propose the hard-surface work, so it is
+neither copied nor reimplemented from his branches. If he opens a PR, it is reviewed then. Anything
+adopted from a contributor keeps the organic precedent: the `Co-authored-by` trailer, a
+`CHANGELOG.md` credit, and an adoption record like
+`docs/reviews/2026-10-16-organic-adoption.md`. Nothing
 was posted to or sent to any fork, and no fork code was merged or cherry-picked.
 
 ## Summary
@@ -9,17 +16,17 @@ was posted to or sent to any fork, and no fork code was merged or cherry-picked.
 | Piece | Fork | License | Overlap with main | Recommendation |
 | --- | --- | --- | --- | --- |
 | Organic helpers (metaballs, tubes, paths, smoothing) | FaberVi | MIT | Already integrated in 1.3.0 (#141, #172) | Nothing to do; rock helpers stay deferred |
-| `segmentsFromRadius` | FaberVi | MIT | None; main has fixed primitive defaults and a facet-error note | Take the idea (reimplement) |
-| Assembly-aware part-overlap threshold | FaberVi | MIT | Main reports every pair above 0.1% volume, no assembly tier | Take the idea, not the label-driven threshold |
+| `segmentsFromRadius` | FaberVi | MIT | None; main has fixed primitive defaults and a facet-error note | Not proposed upstream; no action |
+| Assembly-aware part-overlap threshold | FaberVi | MIT | Main reports every pair above 0.1% volume, no assembly tier | Not proposed upstream; no action |
 | Orientation-conflict observation, CSG smooth-crease note | FaberVi | MIT | `requireSolid` and the solid diagnostic already report orientation | Skip |
 | `geometryMinFeatureAdvisory` | FaberVi | MIT | None | Skip as written; revisit with a measured case |
 | `subdividePathByCurvature` | FaberVi | MIT | `catmullRomPath`, `bezierCurve` shipped | Skip (adds collinear stations only) |
-| UV texel helpers (`analyzeUvStretch`, `normalizeAtlasTexelScale`) | FaberVi | MIT | No stretch or texel-density analysis on main | Take the idea (reimplement); best candidate |
-| Optimize gate (rigid-merge size gate) | FaberVi | MIT | `optimize: 'full'` merges unconditionally | Take the idea after measuring |
+| UV texel helpers (`analyzeUvStretch`, `normalizeAtlasTexelScale`) | FaberVi | MIT | No stretch or texel-density analysis on main | Not proposed upstream; no action |
+| Optimize gate (rigid-merge size gate) | FaberVi | MIT | `optimize: 'full'` merges unconditionally | Not proposed upstream; no action |
 | Post-render GLB compression (meshopt, Draco) | FaberVi | MIT | Runtime profile already ships meshopt and KTX2 | Skip; do not relax render-service admission |
 | Skill edits (`kiln-author-asset`, `kiln-qa-asset`) | FaberVi | MIT | Skills have moved a lot | Skip; carry only wording tied to a shipped helper |
 | External PBR acquire skill, GLB comparison harness | FaberVi (Cursor branch) | MIT | Not in the issue; depends on a third-party MCP | Skip |
-| Vercel remote MCP adapter | TomasThrawat (first commit by hyouka56) | MIT (repo level) | Hosted Kiln is private; the SDK already exposes the seams | Skip the code; take two ideas |
+| Vercel remote MCP adapter | TomasThrawat (first commit by hyouka56) | MIT (repo level) | Hosted Kiln is private; the SDK already exposes the seams | Skip; not proposed upstream |
 
 ## How the fork was read
 
@@ -90,10 +97,7 @@ the facet-midpoint error `r * cos(pi / n)`. The helper is small and deterministi
 touch registry, QA or schemas. Its default chord is a unit assumption (meters) that main does not
 make elsewhere; a reimplementation should take the chord as a required or documented-unit option.
 
-Recommendation: take the idea. It would be a new Discovery helper (`src/discovery/helper-contracts.ts`,
-catalog entry, sandbox export, a focused test written first) plus one line in the recipes. It
-changes the generated API snapshot and `docs/tools.md` only if it touches tool schemas, which it
-does not.
+Recommendation: none. The author did not propose this upstream (see the owner decision above).
 
 ### Assembly-aware overlap QA
 
@@ -120,9 +124,7 @@ Against main:
 - It stays image-free and deterministic (no render buffers, no clock), so it does not conflict with
   the QA rules on those points.
 
-Recommendation: take the idea only if a measured corpus shows joint noise. The reimplementation
-should summarize small embedded overlaps in one observation and take the tolerance from an
-explicit author or requirement declaration (not labels), with a regression test for stable order.
+Recommendation: none. The author did not propose this upstream (see the owner decision above).
 
 ### Orientation-conflict observation and CSG smooth-crease note
 
@@ -169,9 +171,7 @@ determinism rules. Concerns: the fork's file keeps module-level scratch vectors 
 single-threaded evaluator, but not re-entrant), and the normalizer mutates UVs, which needs a
 contract about which attributes and charts it touches and how it interacts with `preserveUV`.
 
-Recommendation: take the idea. Reimplement `analyzeUvStretch` first as a read-only helper with a
-Discovery contract and a finding in the existing atlas or UV QA; treat `normalizeAtlasTexelScale`
-as a separate, later decision.
+Recommendation: none. The author did not propose this upstream (see the owner decision above).
 
 ### Optimize gate
 
@@ -182,9 +182,7 @@ merging" with no size gate (`docs/runtime.md`, `src/render.ts`, `src/rigid-merge
 reproduce the growth on main. The idea is plausible, but the 400 and 4 thresholds come from one
 example and AGENTS.md asks for measured ratchets.
 
-Recommendation: take the idea after measuring byte growth across the example corpus on current
-main. If it holds, a gate that reports its decision in the optimize summary is small. Do not copy
-the constants.
+Recommendation: none. The author did not propose this upstream (see the owner decision above).
 
 ### Optional GLB compression and loader changes
 
@@ -277,17 +275,11 @@ authentication requirement and the content-hash pattern, and say the Vercel adap
 community example without endorsing it. Contact `hyouka56` and `TomasThrawat` only on the
 maintainer's say-so. The two authors should be asked who wrote it before any text is quoted.
 
-## Suggested follow-ups
+## Follow-ups
 
-Ordered by value, each a separate decision for the maintainer; none is started:
-
-1. Reimplement a read-only UV stretch and texel-density measurement (FaberVi idea, `src/uv-texel.ts`).
-2. Reimplement `segmentsFromRadius` with an explicit unit in its contract.
-3. Measure `optimize: 'full'` size growth on small assets before deciding on a gate.
-4. Measure small-overlap noise in part-overlap QA on the dogfood corpus before adding a tolerance.
-5. Decide whether to invite FaberVi to open upstream PRs for UV measurement against current main.
-   If invited, ask them to rebase on current main without `dist/`, run the full gate, and say who
-   authored what.
+None from the FaberVi hard-surface branches, per the owner decision above. If FaberVi opens an
+upstream PR for any of this work, review it against current main (without `dist/`) and credit it
+as the organic work was credited.
 
 ## Not read or not done
 
