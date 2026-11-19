@@ -11,6 +11,12 @@ export const VERIFIED_BAR_HREF =
 export const QA_EVIDENCE_KIND = 'kiln.gallery-verified-qa';
 /** Stored QA reports live here, relative to `site/src/data`. */
 export const QA_REPORT_DIR = 'gallery-verified/qa/';
+/**
+ * The finding a verified record accepts, with the owner's written note, to keep parts the flush-face
+ * check could not measure (skinned, morphed or instanced). The stored QA report's flush measurement
+ * counts them; no QA rule reports them.
+ */
+export const FLUSH_UNMEASURED_CODE = 'FLUSH_FACES_UNMEASURED';
 
 const BACKDROPS = ['neutral', 'dark', 'light'];
 const RESOLUTIONS = ['fixed', 'accepted'];
@@ -43,7 +49,10 @@ export interface VerifiedReview {
   date: string;
   /** A role, such as owner, never a personal detail. */
   reviewer: string;
-  /** Skinned, morphed and instanced meshes are not measured; the count says how many. */
+  /**
+   * Skinned, morphed and instanced meshes are not measured; the count says how many. A verified
+   * record keeps them only with an accepted `FLUSH_FACES_UNMEASURED` finding: the owner's note.
+   */
   flushFaces: { pairs: number; truncated: boolean; unexaminedParts: number };
   /** The QA report the review used, a file under `site/src/data`, and that file's SHA-256. */
   qaReport: { path: string; sha256: string };
@@ -225,11 +234,28 @@ function checkFindingsSettled(
     ),
   );
   for (const [key, { item }] of accepted) {
-    if (reported.has(key)) continue;
+    if (reported.has(key) || item.code === FLUSH_UNMEASURED_CODE) continue;
     fail(
       `accepts ${findingLabel(item)}, which the QA report does not carry${notes.has(key) ? ' as an error or warning: informational notes need no resolution' : ''}`,
     );
   }
+}
+
+/** Parts the flush-face check could not measure stay in a verified record only with the owner's note. */
+function checkUnmeasuredParts(review: VerifiedReview, fail: (message: string) => never): void {
+  const parts = review.flushFaces.unexaminedParts;
+  const notes = review.findings.filter((finding) => finding.code === FLUSH_UNMEASURED_CODE);
+  if (parts === 0) {
+    if (notes.some((finding) => finding.resolution === 'accepted'))
+      fail(`accepts ${FLUSH_UNMEASURED_CODE}, but the flush-face check measured every part`);
+    return;
+  }
+  if (notes.some((finding) => finding.resolution === 'fixed'))
+    fail(`${FLUSH_UNMEASURED_CODE} is still reported, so it is not fixed; accept it with a note`);
+  if (!notes.some((finding) => finding.resolution === 'accepted'))
+    fail(
+      `verified needs every part measured: ${parts === 1 ? '1 part' : `${parts} parts`} the flush-face check could not measure ${parts === 1 ? 'needs' : 'need'} the owner's written note accepting them, as an accepted ${FLUSH_UNMEASURED_CODE} finding`,
+    );
 }
 
 function validateReview(value: unknown, at: string, readQaFile: ReadQaFile): VerifiedReview {
@@ -278,6 +304,7 @@ function validateReview(value: unknown, at: string, readQaFile: ReadQaFile): Ver
   if (review.verdict === 'verified') {
     if (flush.pairs !== 0 || flush.truncated)
       fail('verified needs a complete flush-face check with no pair');
+    checkUnmeasuredParts(review, fail);
     if (!views.materialFaithful) fail('verified needs material-faithful views');
     if (!views.exactArtifact) fail('verified needs views drawn from the exact pinned bytes');
     checkFindingsSettled(review, report, fail);

@@ -9,8 +9,10 @@ assets have not been reviewed and are unvetted.
 
 Every item is checked on the pinned GLB, not on a rebuild of its source.
 
-1. **No flush faces.** `FLUSH_FACES` reports no pair and was not truncated. The record counts
-   the parts it could not measure (skinned, morphed or instanced).
+1. **No flush faces.** `FLUSH_FACES` reports no pair, was not truncated and measured every part.
+   The record counts the parts it could not measure (skinned, morphed or instanced). A verified
+   record keeps such parts only with the owner's written note accepting them, recorded as an
+   accepted `FLUSH_FACES_UNMEASURED` finding.
 2. **QA findings settled.** A finding is every error and warning in the QA report of the pinned
    GLB; informational notes need no resolution. Each finding is accepted with a written note
    saying why it stays, matched by its code and what it names. A finding the report still
@@ -40,4 +42,5 @@ The mark does not rank assets by taste.
 `site/scripts/gallery-verified-review.mjs` measures candidates on the GLB each card serves. It
 writes to the ignored `tmp/gallery-verified-review/` a pending record for each, with a proposed
 verdict and notes, the QA report the record names and one review page with the views. Its
-`--promote` option records the owner's decisions after checking them against the bar.
+`--promote` option records the owner's decisions after checking them against the bar;
+`--accept-unmeasured` adds the owner's note for parts the flush-face check could not measure.

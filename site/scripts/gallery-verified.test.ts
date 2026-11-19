@@ -14,6 +14,7 @@ import {
   validateVerifiedReviews,
   verifiedReviewFor,
   verifiedReviews,
+  type VerifiedFinding,
   type VerifiedReview,
 } from '../src/lib/gallery-verified';
 
@@ -209,6 +210,29 @@ test('a verified review is refused unless every error and warning in its QA repo
   // An accepted note must answer a finding the report carries.
   refused({ findings: [...review().findings, { code: 'UNIVERSAL_DUPLICATE_NODE_NAME', resolution: 'accepted', note: 'n' }] }, /accepts UNIVERSAL_DUPLICATE_NODE_NAME, which the QA report does not carry/);
   refused({ findings: [...review().findings, { code: 'GEO_PART_SELF_INTERSECTION_UNMEASURED', resolution: 'accepted', note: 'n' }] }, /informational notes need no resolution/);
+});
+
+test('a verified review keeps parts the flush check could not measure only with the owner’s written note', () => {
+  const skinned = (findings: VerifiedFinding[], verdict: 'verified' | 'rejected' = 'verified') =>
+    review({
+      verdict,
+      flushFaces: { pairs: 0, truncated: false, unexaminedParts: 9 },
+      qaReport: store(evidence(spouts, { flushFaces: { pairs: 0, truncated: false, unexaminedParts: 9, triangles: 0, examined: 0 } })),
+      findings: [...review().findings, ...findings],
+    });
+  const owner: VerifiedFinding = {
+    code: 'FLUSH_FACES_UNMEASURED',
+    resolution: 'accepted',
+    note: 'Owner accepted: the served GLB is skinned, so the flush check measured none of its triangles.',
+  };
+  expect(() => validate([skinned([])])).toThrow(/9 parts the flush-face check could not measure need the owner's written note/);
+  expect(validate([skinned([owner])])).toHaveLength(1);
+  expect(() => validate([skinned([{ ...owner, note: ' ' }])])).toThrow(/a written note is required/);
+  // The note answers only a check that left parts unmeasured, and those parts are not fixed.
+  refused({ findings: [...review().findings, owner] }, /accepts FLUSH_FACES_UNMEASURED, but the flush-face check measured every part/);
+  expect(() => validate([skinned([{ ...owner, resolution: 'fixed' }])])).toThrow(/FLUSH_FACES_UNMEASURED is still reported, so it is not fixed/);
+  // A rejected review needs no such note.
+  expect(validate([skinned([], 'rejected')])).toHaveLength(1);
 });
 
 test('a pending record from the review script is refused until the owner decides it', () => {

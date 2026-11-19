@@ -15,6 +15,7 @@ import { assetDelivery } from '../src/lib/delivery.ts';
 import { buildGallery } from '../src/lib/gallery.ts';
 import {
   QA_EVIDENCE_KIND,
+  FLUSH_UNMEASURED_CODE,
   QA_REPORT_DIR,
   VERIFIED_BAR_HREF,
   VERIFIED_BAR_VERSION,
@@ -66,6 +67,10 @@ import { ASSET_BASE, assetPath, hashBytes } from './mirror-core.mjs';
  *
  *   bun scripts/gallery-verified-review.mjs --promote ../tmp/gallery-verified-review
  *     --verified HREF_OR_REVISION,... --rejected HREF_OR_REVISION,... [--date YYYY-MM-DD]
+ *     [--accept-unmeasured HREF_OR_REVISION=NOTE]...
+ *
+ * A verified record keeps parts the flush-face check could not measure only with the owner's
+ * written note; --accept-unmeasured records it as an accepted FLUSH_FACES_UNMEASURED finding.
  */
 
 const SITE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -533,7 +538,7 @@ export function proposal({ flush, viewFidelity, findings, assetId, collection, s
   if (!assetId) fails.push('the asset ID is unknown: name the saved collection with --library');
   if (flush.unexaminedParts > 0)
     judgment.push(
-      `${plural(flush.unexaminedParts, 'part')} skinned, morphed or instanced, so FLUSH_FACES did not measure ${flush.examined === 0 ? 'anything' : 'them'}`,
+      `${plural(flush.unexaminedParts, 'part')} skinned, morphed or instanced, so FLUSH_FACES did not measure ${flush.examined === 0 ? 'anything' : 'them'}; verified needs the owner’s written note accepting them`,
     );
   if (savedFlush && savedFlush.pairs > 0)
     judgment.push(
@@ -544,7 +549,9 @@ export function proposal({ flush, viewFidelity, findings, assetId, collection, s
       `${findings.length} QA ${findings.length === 1 ? 'error or warning' : 'errors or warnings'} to settle: ${[...new Set(findings.map((finding) => finding.code))].join(', ')}`,
     );
   if (!collection) judgment.push('the card names no collection; the record says project');
-  const verdict = fails.length || (savedFlush && savedFlush.pairs > 0) ? 'rejected' : 'verified';
+  // Unmeasured parts need the owner's written note, which no proposal can supply.
+  const verdict =
+    fails.length || flush.unexaminedParts > 0 || (savedFlush && savedFlush.pairs > 0) ? 'rejected' : 'verified';
   return {
     verdict,
     standing: fails.length ? 'fails the bar' : judgment.length ? 'needs the owner’s judgment' : 'likely to pass',
@@ -765,8 +772,10 @@ const decided = (record, cards, ids) =>
  * Record the owner's decisions: each named pending record gets its verdict and date, loses its
  * status, and joins the record file with its QA report. The whole file is checked against the bar
  * before anything is written, so a record that does not meet it is never kept as verified.
+ * `unmeasuredNotes` ({ id, note }) carries the owner's written note accepting parts the flush-face
+ * check could not measure, for a record decided in the same call.
  */
-export async function promote(reviewDir, { verified = [], rejected = [], date, data = DATA, cards = buildGallery(true) } = {}) {
+export async function promote(reviewDir, { verified = [], rejected = [], unmeasuredNotes = [], date, data = DATA, cards = buildGallery(true) } = {}) {
   const pending = JSON.parse(await readFile(join(reviewDir, 'pending.json'), 'utf8'));
   const both = verified.filter((id) => rejected.includes(id));
   if (both.length) throw new Error(`Decided both ways: ${both.join(', ')}`);
@@ -782,6 +791,16 @@ export async function promote(reviewDir, { verified = [], rejected = [], date, d
     (id) => !pending.reviews.some((record) => decided(record, cards, [id])),
   );
   if (unmatched.length) throw new Error(`No pending record for ${unmatched.join(', ')}`);
+  for (const { id, note } of unmeasuredNotes) {
+    const record = chosen.find((candidate) => decided(candidate, cards, [id]));
+    if (!record) throw new Error(`No decided record for ${id}: decide it with --verified or --rejected`);
+    if (!record.flushFaces.unexaminedParts)
+      throw new Error(`${id}: the flush-face check measured every part, so there is nothing to accept`);
+    record.findings = [
+      ...record.findings.filter((finding) => finding.code !== FLUSH_UNMEASURED_CODE),
+      { code: FLUSH_UNMEASURED_CODE, resolution: 'accepted', note },
+    ];
+  }
   const recordsPath = join(data, 'gallery-verified.json');
   const current = JSON.parse(await readFile(recordsPath, 'utf8'));
   const key = (record) => `${record.revisionId}:${record.glbSha256}`;
@@ -803,7 +822,7 @@ export async function promote(reviewDir, { verified = [], rejected = [], date, d
 }
 
 function parseArgs(argv) {
-  const options = { hrefs: [], mirrors: [], libraries: [], verified: [], rejected: [] };
+  const options = { hrefs: [], mirrors: [], libraries: [], verified: [], rejected: [], unmeasuredNotes: [] };
   for (let index = 0; index < argv.length; index++) {
     const arg = argv[index];
     const value = () => {
@@ -823,6 +842,13 @@ function parseArgs(argv) {
     else if (arg === '--promote') options.promote = resolve(value());
     else if (arg === '--verified') options.verified.push(...value().split(',').filter(Boolean));
     else if (arg === '--rejected') options.rejected.push(...value().split(',').filter(Boolean));
+    else if (arg === '--accept-unmeasured') {
+      const given = value();
+      const at = given.indexOf('=');
+      const note = at < 0 ? '' : given.slice(at + 1).trim();
+      if (at < 1 || !note) throw new Error('--accept-unmeasured needs HREF_OR_REVISION=NOTE with a written note');
+      options.unmeasuredNotes.push({ id: given.slice(0, at), note });
+    }
     else if (arg.startsWith('--')) throw new Error(`Unknown option ${arg}`);
     else options.hrefs.push(arg);
   }
@@ -845,7 +871,7 @@ async function main(argv = process.argv.slice(2), env = process.env) {
   if ((process.platform === 'win32' ? here.toLowerCase() !== SITE.toLowerCase() : here !== SITE))
     throw new Error(`Run this from ${SITE}`);
   if (options.promote) {
-    const chosen = await promote(options.promote, { verified: options.verified, rejected: options.rejected, date: options.date ?? today() });
+    const chosen = await promote(options.promote, { verified: options.verified, rejected: options.rejected, unmeasuredNotes: options.unmeasuredNotes, date: options.date ?? today() });
     for (const record of chosen) console.log(`${record.verdict}  ${record.revisionId}  ${record.glbSha256}`);
     console.log(`Recorded ${plural(chosen.length, 'decision')} in src/data/gallery-verified.json.`);
     return;

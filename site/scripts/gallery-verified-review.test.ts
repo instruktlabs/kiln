@@ -226,10 +226,15 @@ test('proposals follow the bar, and notes come from facts in the bytes where the
     verdict: 'rejected',
     standing: 'needs the owner’s judgment',
     reasons: [
-      '9 parts skinned, morphed or instanced, so FLUSH_FACES did not measure anything',
+      '9 parts skinned, morphed or instanced, so FLUSH_FACES did not measure anything; verified needs the owner’s written note accepting them',
       'the saved asset.glb of this revision, which the check can measure, has 32 flush-face pairs',
       'the card names no collection; the record says project',
     ],
+  });
+  // Without that note the bar refuses verified, so the proposal is rejected even with nothing else against it.
+  expect(proposal({ flush: flush(0, { unexaminedParts: 2 }), viewFidelity: faithful, findings: [], assetId: 'a_x', collection: 'project' })).toMatchObject({
+    verdict: 'rejected',
+    standing: 'needs the owner’s judgment',
   });
   // The skinned-mesh warning is harmless when every parent transform is identity, which the bytes show.
   const { Document } = await import('@gltf-transform/core');
@@ -326,4 +331,19 @@ test('promoting decisions writes only records that meet the bar, with their QA r
   await expect(promote(dir, { verified: [card.revisionId], data, cards })).rejects.toThrow(/complete flush-face check with no pair/);
   expect(await readFile(join(data, 'gallery-verified.json'), 'utf8')).toBe(empty);
   expect((await promote(dir, { rejected: [card.revisionId], data, cards }))[0]).toMatchObject({ verdict: 'rejected' });
+  // Parts the flush check could not measure stay in a verified record only with the owner's written note.
+  const skinned = { ...evidence(0), flushFaces: { pairs: 0, truncated: false, unexaminedParts: 9 } };
+  const unmeasured = pendingRecord({ card, served, evidence: skinned, qaReport: await write('skinned.json', skinned), views, proposed: { verdict: 'rejected' }, date: '2026-11-18' });
+  await writeFile(join(dir, 'pending.json'), JSON.stringify({ bar: 1, reviews: [unmeasured] }));
+  await writeFile(join(data, 'gallery-verified.json'), empty);
+  await expect(promote(dir, { verified: [card.href], data, cards })).rejects.toThrow(/owner's written note/);
+  expect(await readFile(join(data, 'gallery-verified.json'), 'utf8')).toBe(empty);
+  await expect(promote(dir, { verified: [card.href], unmeasuredNotes: [{ id: '/gallery/nothing/', note: 'n' }], data, cards })).rejects.toThrow(/No decided record for \/gallery\/nothing\//);
+  const note = 'Owner accepted 2026-11-18: the served GLB is skinned, so the flush check measured none of its triangles.';
+  const [kept] = await promote(dir, { verified: [card.href], unmeasuredNotes: [{ id: card.href, note }], data, cards });
+  expect(kept.findings).toEqual([{ code: 'FLUSH_FACES_UNMEASURED', resolution: 'accepted', note }]);
+  expect(JSON.parse(await readFile(join(data, 'gallery-verified.json'), 'utf8')).reviews).toEqual([kept]);
+  // A note answers only a check that left parts unmeasured.
+  await writeFile(join(dir, 'pending.json'), JSON.stringify({ bar: 1, reviews: [clean] }));
+  await expect(promote(dir, { rejected: [card.href], unmeasuredNotes: [{ id: card.href, note }], data, cards })).rejects.toThrow(/measured every part/);
 });
