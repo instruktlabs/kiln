@@ -232,9 +232,14 @@ const LOCAL_PATH =
  * Rule 9 of the v1 contract: a diagnostic names the cause and the next call
  * and carries no absolute local path. Raw filesystem errors do carry one, so
  * the loading diagnostics pass through here before they reach a tool result.
+ *
+ * `keep` is the one exception: the workspace root in a `file` error, which the
+ * agent needs to put its program where Kiln reads and which Discovery
+ * capabilities already report (#423). Text around it is still cleaned.
  */
-export function withoutLocalPaths(text: string): string {
-  return text.replace(LOCAL_PATH, '<local path>');
+export function withoutLocalPaths(text: string, keep?: string): string {
+  const clean = (part: string) => part.replace(LOCAL_PATH, '<local path>');
+  return keep ? text.split(keep).map(clean).join(keep) : clean(text);
 }
 
 export function errorMessage(error: unknown): string {
