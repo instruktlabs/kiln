@@ -15,15 +15,21 @@ import { createCachedEvaluatorPort, MemoryBuildCache } from './build-cache';
 import { resolveGltfExporter } from './community-exporter';
 import { FileBuildCache } from './build-cache-node';
 import { installedRuntimeIdentity } from './runtime-identity';
-import { readFile, stat } from 'node:fs/promises';
+import { readFile, realpath, stat } from 'node:fs/promises';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Console } from 'node:console';
 import { MAX_PROGRAM_BYTES } from './program-store';
 import { ApprovedTextureResourceCache, approvedTextureCatalogV1 } from './material-resources';
-import { FileWorkspace, localWorkspaceRoot } from './workspace-node';
+import { FileWorkspace } from './workspace-node';
 import { FileLiveReview } from './live-review-node';
-import { localProgramStoreDirectory } from './workspace-location';
+import {
+  localProgramStoreDirectory,
+  localWorkspaceLocation,
+  pathInsideRoot,
+  WorkspaceFileError,
+  type WorkspaceLocation,
+} from './workspace-location';
 import { exportWorkspaceProjectBundle } from './project-bundle-node';
 
 export interface LocalExecution {
@@ -45,36 +51,67 @@ export interface LocalExecution {
 
 let scope = 0;
 
+/** How the workspace root was chosen, worded for an agent that has to act on it. */
+const ROOT_CHOSEN_BY: Record<WorkspaceLocation['selectedBy'], string> = {
+  KILN_WORKSPACE: 'set by KILN_WORKSPACE',
+  KILN_PROGRAM_STORE: 'the folder above the .kiln of KILN_PROGRAM_STORE',
+  cwd: "the server's working directory; KILN_WORKSPACE is not set",
+};
+
 /**
- * Reads a program file named relative to the workspace root, so a code-mode harness can
- * hand Kiln a path instead of quoting a program into an argument. Absolute paths and `..`
- * are refused with the rule rather than the root (no local path leaves in an error), and
- * the size bound is the program store's.
+ * Reads a program file inside the workspace, so a code-mode harness can hand Kiln a path
+ * instead of quoting a program into an argument. The path is relative to the root or
+ * absolute below it; `..`, another drive and a link that resolves outside the root are
+ * refused. Every refusal names the root and the setting that chose it, so an agent working
+ * in another folder can correct itself in one turn (#423); the MCP host keeps this one
+ * local path in the error. The size bound is the program store's.
  */
-function workspaceSourceReader(root: string): (file: string) => Promise<string> {
+function workspaceSourceReader(location: WorkspaceLocation): (file: string) => Promise<string> {
+  const { root } = location;
+  const where = `${root} (${ROOT_CHOSEN_BY[location.selectedBy]})`;
+  const fix =
+    location.selectedBy === 'cwd'
+      ? ' To read from another folder, start the agent there or set KILN_WORKSPACE to a folder prepared by kiln-init, then restart the MCP session.'
+      : '';
+  const outside = (file: string, how = 'is') =>
+    new WorkspaceFileError(
+      `file ${file} ${how} outside the workspace ${where}. Write the program below that folder and name it relative to it, or pass code or programRef.${fix}`,
+      root,
+    );
   return async (file) => {
     const segments = file.split(/[\\/]/u);
+    const absolute = isAbsolute(file);
     if (
       !file ||
-      isAbsolute(file) ||
-      /^[A-Za-z]:/u.test(file) ||
+      // A drive-relative path (C:name) or, off Windows, any drive path: neither names a
+      // place below this root.
+      (!absolute && /^[A-Za-z]:/u.test(file)) ||
       segments.includes('..') ||
-      segments.includes('')
+      (!absolute && segments.includes(''))
     )
-      throw new Error(
-        'file must name a program inside the workspace, relative to its root: no absolute path and no "..". Use a path such as assets/asset.kiln.js, or pass code or programRef.',
+      throw new WorkspaceFileError(
+        `file ${file} must name a program inside the workspace ${where}: a path relative to that folder, such as assets/asset.kiln.js, or an absolute path inside it, with no "..". Or pass code or programRef.${fix}`,
+        root,
       );
-    const path = resolve(root, file);
+    // The root may itself be reached through a link (macOS /var, a Windows junction).
+    const realRoot = await realpath(root).catch(() => root);
+    if (absolute && !pathInsideRoot(root, file) && !pathInsideRoot(realRoot, file))
+      throw outside(file);
+    const path = absolute ? resolve(file) : resolve(root, file);
     const info = await stat(path).catch(() => undefined);
     if (!info?.isFile())
-      throw new Error(
-        `file ${file} was not found inside the workspace. Check the relative path, or pass code or programRef.`,
+      throw new WorkspaceFileError(
+        `file ${file} was not found in the workspace ${where}. Name it relative to that folder or as an absolute path inside it, or pass code or programRef.${fix}`,
+        root,
       );
+    // Links are followed, so the file actually read must stay below the root too.
+    const real = await realpath(path);
+    if (!pathInsideRoot(realRoot, real)) throw outside(file, 'resolves through a link');
     if (info.size > MAX_PROGRAM_BYTES)
       throw new Error(
         `file ${file} exceeds the ${MAX_PROGRAM_BYTES / (1024 * 1024)} MiB source limit.`,
       );
-    return readFile(path, 'utf8');
+    return readFile(real, 'utf8');
   };
 }
 
@@ -107,11 +144,14 @@ export function createLocalToolContext(
   base: KilnToolContext = {},
   env: Record<string, string | undefined> = process.env,
 ): KilnToolContext & { localExecution: LocalExecution } {
-  const workspaceRoot = env.KILN_WORKSPACE
-    ? resolve(env.KILN_WORKSPACE)
-    : base.programStore instanceof FileProgramStore
-      ? dirname(dirname(base.programStore.directory))
-      : localWorkspaceRoot(env);
+  const location: WorkspaceLocation =
+    !env.KILN_WORKSPACE && base.programStore instanceof FileProgramStore
+      ? {
+          root: dirname(dirname(base.programStore.directory)),
+          selectedBy: 'KILN_PROGRAM_STORE',
+        }
+      : localWorkspaceLocation(env);
+  const workspaceRoot = location.root;
   const workspace = base.workspace ?? new FileWorkspace(workspaceRoot, env.KILN_PROJECT);
   const projectStore =
     base.projectStore ?? (workspace instanceof FileWorkspace ? workspace.projects : undefined);
@@ -242,7 +282,9 @@ export function createLocalToolContext(
     geometryPolicy: geometryPolicy as 'warn' | 'strict',
     indexPolicy,
     programStore: base.programStore ?? new FileProgramStore(localProgramStoreDirectory(env)),
-    readSourceFile: base.readSourceFile ?? workspaceSourceReader(workspaceRoot),
+    ...(base.readSourceFile
+      ? { readSourceFile: base.readSourceFile }
+      : { readSourceFile: workspaceSourceReader(location), sourceWorkspace: location }),
     evaluatorPort,
     assetBuildOptions: {
       gltfExporter,

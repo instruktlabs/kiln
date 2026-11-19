@@ -172,6 +172,27 @@ The `qa` entry exports `evaluateValidationProfileGlb` to run the same evaluation
 on GLB bytes a host already holds. See the
 [host validation profile](migration.md#host-validation-profile).
 
+### Embedding the subprocess evaluator
+
+A host that runs authored programs in its own worker process uses these names. All are
+stable parts of their entrypoints under the rules above; they were exported unchanged from
+1.6.0 to 1.8.0.
+
+| Entrypoint | Name | Contract |
+| --- | --- | --- |
+| `evaluator` | `renderGLBViaSubprocess(code, options?, controls?)` | Builds the program in a separate Node process and resolves with the `RenderResult`. `controls` take `deadlineMs`, `maxGlbBytes`, `maxResponseBytes`, an `AbortSignal` and, on Node, `maxHeapMb` (64-4096). Failures throw `EvaluatorSubprocessError` with a closed `code`. |
+| `evaluator` | `encodeRenderResultV2(requestId, render)` | Turns a `RenderResult` into the version 2 wire result a worker writes. |
+| `evaluator` | `decodeEvaluatorResultV2(json, maxGlbBytes, expectedRequestId?)` | Validates a wire result on the host side and returns the typed result or throws. |
+| `evaluator` | `sanitizedEvaluatorEnv()` | The environment the packaged worker receives: `NODE_ENV`, `NO_COLOR` and only `PATH`, `Path`, `SystemRoot`, `SYSTEMROOT`, `TEMP`, `TMP` and `TZ` from the host. |
+| `mcp` | `createKilnToolHost(context)` | Builds the host that serves the shared tool registry in process, with an injected `KilnToolContext`. |
+| `primitives` | `buildSandboxGlobals()` | Returns the object whose keys are the names a program can use without declaring them. A host that checks source against helper names can take the function-valued keys and drop `console`. |
+
+Run the worker and the host from one installed version. The wire result gained a closed
+`limit` field in 1.7.0 for the evaluator output budget, so a newer worker needs a host that
+knows it. [How Kiln isolates evaluated code](isolation.md) states what the subprocess
+does and does not contain, and [Updating an existing Kiln integration](migration.md#changes-between-16-and-19)
+lists the changes since 1.6.0.
+
 `renderGLB` defaults to trusted in-process execution. A hosted service accepting
 untrusted programs must inject or select the qualified isolated evaluator described
 in the runtime contract. A subprocess provides a worker boundary; it does not alone

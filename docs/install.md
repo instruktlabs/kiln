@@ -50,7 +50,10 @@ npm puts global commands directly in its prefix on Windows and in `PREFIX/bin` o
 macOS/Linux. If the shell cannot find `kiln`, run `npm prefix -g`, ensure that
 executable directory is on PATH, and open a new terminal. See
 [npm's executable locations](https://docs.npmjs.com/cli/v12/configuring-npm/folders/#executables).
-`kiln-init` and `kiln-mcp` are available the same way.
+`kiln-init` and `kiln-mcp` are available the same way. `kiln mcp` starts the same stdio
+server from the default executable, which is what `npx @instruktlabs/kiln mcp` and the
+[official MCP registry](https://github.com/instruktlabs/kiln/blob/main/docs/releasing.md#publish-to-the-official-mcp-registry)
+entry use.
 
 For a project-local installation, run from the project that contains the dependency:
 
@@ -482,6 +485,15 @@ an explicit store shared with your CLI:
 The table above names each client's native configuration location; their JSON/TOML
 shapes differ. Prefer generated configuration. Without an explicit store, the server
 uses `.kiln/programs` beneath its process working directory.
+
+The folder above that `.kiln` is the server's workspace root: the `file` input reads
+programs below it (a relative path, or an absolute path inside it) and the `project`
+collection saves to its `assets/kiln`. A client may start the server in a folder other
+than the one the agent writes in, so point `KILN_PROGRAM_STORE` at the agent's folder
+(`KILN_WORKSPACE` is for a `kiln-init` workspace, which the server checks is current).
+`kiln_discover` with `capabilities: true` reports the root as
+`source.file.workspaceRoot` and the setting that chose it as `selectedBy`
+(`KILN_WORKSPACE`, `KILN_PROGRAM_STORE` or `cwd`); a refused `file` names both.
 
 To let the agent write exported files without a shell call, add `"KILN_EXPORT_ROOT"`
 to `env`: an existing absolute directory (on Windows a drive or UNC path, not Git Bash

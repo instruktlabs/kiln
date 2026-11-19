@@ -6,6 +6,7 @@ import {
 /** Shared definitions for the program-reference MCP and native authoring workflows. */
 
 import { z } from 'zod';
+import type { WorkspaceLocation } from '../workspace-location';
 import { assetManifestSchema } from '../assets';
 import {
   MemoryProgramStore,
@@ -237,8 +238,14 @@ export interface KilnToolContext {
   viewRenderRequired?: boolean;
   /** Optional shared source store for the reference-based tool surface. */
   programStore?: ProgramStore;
-  /** Reads a program file named relative to the workspace root; advertised as `file` when present. */
+  /** Reads a program file inside the workspace root; advertised as `file` when present. */
   readSourceFile?: (file: string) => Promise<string>;
+  /**
+   * The root `readSourceFile` reads below and the setting that chose it. Discovery
+   * reports it and the MCP host keeps it in file errors, so an agent working in another
+   * folder can correct itself (#423). Only a local host whose user owns the folder sets it.
+   */
+  sourceWorkspace?: WorkspaceLocation;
   /** Private evaluated revisions for native completion; never accepted as tool input. */
   programArtifacts?: ProgramArtifactStore;
   /** The review detail a result takes when the call names none; the packaged host reads KILN_RESULT_DETAIL. */

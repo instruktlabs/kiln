@@ -2,6 +2,13 @@ import { GEOMETRY_ALLOCATION_LIMITS } from './geometry-budget';
 /** Owned custom meshes, surface sampling, and explicit topology diagnostics. */
 import * as THREE from 'three';
 import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
+import {
+  boundsScale,
+  diagnosticWeld,
+  positionFrame,
+  positionKey,
+  positionTolerance,
+} from './geometry-frame';
 
 export type Point3 = readonly [number, number, number];
 export interface MeshGeoData {
@@ -102,46 +109,6 @@ export interface GeometrySolidDiagnostics {
   signedVolume: number;
 }
 
-function boundsScale(bounds: THREE.Box3) {
-  const size = bounds.getSize(new THREE.Vector3());
-  const scale = Math.hypot(size.x, size.y, size.z);
-  if (!Number.isFinite(scale)) throw new Error('Geometry position extent must be finite');
-  return scale;
-}
-
-/** Finite bounds only: malformed vertices are reported separately by the diagnostic caller. */
-function positionFrame(position: THREE.BufferAttribute | THREE.InterleavedBufferAttribute) {
-  const bounds = new THREE.Box3();
-  const point = new THREE.Vector3();
-  for (let i = 0; i < position.count; i++) {
-    point.fromBufferAttribute(position, i);
-    if ([point.x, point.y, point.z].every(Number.isFinite)) bounds.expandByPoint(point);
-  }
-  return {
-    origin: bounds.isEmpty() ? new THREE.Vector3() : bounds.min,
-    scale: boundsScale(bounds),
-  };
-}
-
-function positionTolerance(scale: number, supplied: number | undefined, relative: number) {
-  if (supplied === undefined) return scale * relative;
-  if (!Number.isFinite(supplied) || supplied <= 0)
-    throw new Error('Geometry tolerance must be positive and finite');
-  if (scale / supplied > Number.MAX_SAFE_INTEGER)
-    throw new Error('Geometry tolerance is too small to resolve the position extent safely');
-  return supplied;
-}
-
-function positionKey(point: THREE.Vector3, origin: THREE.Vector3, tolerance: number) {
-  if (tolerance === 0) return point.toArray().join(',');
-  return point
-    .clone()
-    .sub(origin)
-    .toArray()
-    .map((x) => Math.round(x / tolerance))
-    .join(',');
-}
-
 /** Quantized topology counts, not a solid-validity certificate. Default tolerance scales with extent. */
 export function geometryDiagnostics(
   geometry: THREE.BufferGeometry,
@@ -149,8 +116,9 @@ export function geometryDiagnostics(
 ): GeometryDiagnostics {
   const p = geometry.getAttribute('position');
   if (p?.itemSize !== 3) throw new Error('geometryDiagnostics requires xyz positions');
-  const frame = positionFrame(p);
-  const distance = positionTolerance(frame.scale, tolerance, 1e-6);
+  const weld = diagnosticWeld(p, tolerance);
+  const frame = { scale: weld.scale };
+  const distance = weld.tolerance;
   const result: GeometryDiagnostics = {
     tolerance: distance,
     toleranceMode: tolerance === undefined ? 'relative' : 'absolute',
@@ -170,18 +138,8 @@ export function geometryDiagnostics(
   const pa = new THREE.Vector3(),
     pb = new THREE.Vector3(),
     pc = new THREE.Vector3();
-  const ids: number[] = [];
-  const points = new Map<string, number>();
-  const finite: boolean[] = [];
-  const point = new THREE.Vector3();
-  for (let i = 0; i < p.count; i++) {
-    point.fromBufferAttribute(p, i);
-    finite[i] = [point.x, point.y, point.z].every(Number.isFinite);
-    if (!finite[i]) result.nonFiniteVertices++;
-    const key = finite[i] ? positionKey(point, frame.origin, distance) : `invalid:${i}`;
-    if (!points.has(key)) points.set(key, points.size);
-    ids.push(points.get(key)!);
-  }
+  const { ids, finite } = weld;
+  for (let i = 0; i < p.count; i++) if (!finite[i]) result.nonFiniteVertices++;
   const indices = geometry.index
     ? Array.from(geometry.index.array)
     : Array.from({ length: p.count }, (_, i) => i);

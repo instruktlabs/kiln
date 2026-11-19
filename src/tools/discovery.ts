@@ -149,6 +149,16 @@ async function currentCapabilities(
       immutableRevisions: true,
       boundedRead: true,
       atomicEdit: true,
+      // Where `file` reads from, so an agent working in another folder can see where
+      // its programs must go (#423). A host that reads files without naming its root
+      // reports null fields; a host without `file` reports null.
+      file: context.readSourceFile
+        ? {
+            workspaceRoot: context.sourceWorkspace?.root ?? null,
+            selectedBy: context.sourceWorkspace?.selectedBy ?? null,
+            paths: 'relative to workspaceRoot, or absolute inside it; no ".."',
+          }
+        : null,
     },
     assets: {
       available: Boolean(context.assetLibrary),

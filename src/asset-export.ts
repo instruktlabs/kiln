@@ -10,6 +10,7 @@ import {
   type AssetRecord,
 } from './assets';
 import type { MaterialManifest } from './material-library';
+import type { PrintExportOptions, PrintExportResult } from './print-export';
 import type { ShapeBindingV1 } from './param-shapes';
 import { type ParamsDeclarationV1, type ParamValue, validateParamsDeclaration } from './params';
 import {
@@ -48,6 +49,13 @@ export type {
   RuntimeThreeOptionsV1,
 } from './runtime-three';
 export type { RuntimeTextureManifestEntryV1 } from './runtime-textures';
+export type {
+  PrintBodyV1,
+  PrintExportFailure,
+  PrintExportOptions,
+  PrintExportResult,
+  PrintFormat,
+} from './print-export';
 export { textureSharingReport } from './texture-sharing';
 export type { TextureSharingImageV1, TextureSharingReportV1 } from './texture-sharing';
 export type AssetExportProfile = 'editable' | 'runtime';
@@ -360,6 +368,22 @@ async function deriveThree(
   const result = await deliverRuntimeThreeGlb(glb, MeshoptEncoder, options, layout);
   if (result.glb.byteLength > ASSET_LIMIT) throw new Error('Runtime export exceeds 64 MiB');
   return result;
+}
+
+/**
+ * Write a saved revision's visible solids as binary STL or 3MF for a printer, in millimetres
+ * (scene metres x1000) and Z-up. Every visible mesh must be a closed, manifold, outward
+ * solid, as `requireSolid` measures; otherwise a `PrintExportError` names each failing part.
+ * 3MF carries base colours; textures are dropped. Self-intersection is not checked. See
+ * docs/export-profiles.md#print-export-stl-and-3mf.
+ */
+export async function exportAssetPrint(
+  record: AssetRecord,
+  options: PrintExportOptions,
+): Promise<PrintExportResult> {
+  validateRecordShape(record);
+  const { exportPrintGlb } = await import('./print-export');
+  return exportPrintGlb(record.files['asset.glb']!, options);
 }
 
 /**
