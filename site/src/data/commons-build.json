@@ -954,26 +954,14 @@
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/media/rig/review-neutral-v1/farm/r34/farmhouse.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/farm/r34/farmhouse.png",
-      "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/farm/r34/poster/farmhouse.webp",
+      "src": "/media/farm/delivery-20261119-01/poster/farmhouse.webp",
       "width": 1168,
       "height": 780,
       "alt": "Six saved review views of Farmhouse.",
-      "srcsetWebp": "/media/farm/r34/poster/farmhouse-320.webp 320w, /media/farm/r34/poster/farmhouse-480.webp 480w, /media/farm/r34/poster/farmhouse-672.webp 672w, /media/farm/r34/poster/farmhouse-768.webp 768w, /media/farm/r34/poster/farmhouse-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r34/poster/farmhouse-320.avif 320w, /media/farm/r34/poster/farmhouse-480.avif 480w, /media/farm/r34/poster/farmhouse-672.avif 672w, /media/farm/r34/poster/farmhouse-768.avif 768w, /media/farm/r34/poster/farmhouse-1024.avif 1024w",
-      "inputPath": "media/farm/r34/poster/farmhouse.png",
-      "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+      "srcsetWebp": "/media/farm/delivery-20261119-01/poster/farmhouse-320.webp 320w, /media/farm/delivery-20261119-01/poster/farmhouse-480.webp 480w, /media/farm/delivery-20261119-01/poster/farmhouse-672.webp 672w, /media/farm/delivery-20261119-01/poster/farmhouse-768.webp 768w, /media/farm/delivery-20261119-01/poster/farmhouse-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/delivery-20261119-01/poster/farmhouse-320.avif 320w, /media/farm/delivery-20261119-01/poster/farmhouse-480.avif 480w, /media/farm/delivery-20261119-01/poster/farmhouse-672.avif 672w, /media/farm/delivery-20261119-01/poster/farmhouse-768.avif 768w, /media/farm/delivery-20261119-01/poster/farmhouse-1024.avif 1024w",
+      "inputPath": "media/farm/delivery-20261119-01/poster/farmhouse.png",
+      "sourceRevisionId": "r_10b63bdd371e4a78ae90faf92a8568ed",
       "exactRevision": true
     },
     {
@@ -998,46 +986,26 @@
       "inputPath": "media/farm/r33/poster/barn.webp"
     },
     {
-      "src": "/media/rig/review-neutral-v1/farm/r34/windmill.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/windmill-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/windmill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/farm/r34/windmill.png",
-      "sourceRevisionId": "r_ef9045311dd040258e0143345c171d6f",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/farm/r33/poster/windmill.webp",
+      "src": "/media/farm/delivery-20261119-01/poster/windmill.webp",
       "width": 1168,
       "height": 780,
-      "alt": "Six rendered review views of Windmill.",
-      "srcsetWebp": "/media/farm/r33/poster/windmill-320.webp 320w, /media/farm/r33/poster/windmill-480.webp 480w, /media/farm/r33/poster/windmill-672.webp 672w, /media/farm/r33/poster/windmill-768.webp 768w, /media/farm/r33/poster/windmill-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/poster/windmill-320.avif 320w, /media/farm/r33/poster/windmill-480.avif 480w, /media/farm/r33/poster/windmill-672.avif 672w, /media/farm/r33/poster/windmill-768.avif 768w, /media/farm/r33/poster/windmill-1024.avif 1024w",
-      "inputPath": "media/farm/r33/poster/windmill.webp"
+      "alt": "Six saved review views of Windmill.",
+      "srcsetWebp": "/media/farm/delivery-20261119-01/poster/windmill-320.webp 320w, /media/farm/delivery-20261119-01/poster/windmill-480.webp 480w, /media/farm/delivery-20261119-01/poster/windmill-672.webp 672w, /media/farm/delivery-20261119-01/poster/windmill-768.webp 768w, /media/farm/delivery-20261119-01/poster/windmill-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/delivery-20261119-01/poster/windmill-320.avif 320w, /media/farm/delivery-20261119-01/poster/windmill-480.avif 480w, /media/farm/delivery-20261119-01/poster/windmill-672.avif 672w, /media/farm/delivery-20261119-01/poster/windmill-768.avif 768w, /media/farm/delivery-20261119-01/poster/windmill-1024.avif 1024w",
+      "inputPath": "media/farm/delivery-20261119-01/poster/windmill.png",
+      "sourceRevisionId": "r_be71af41cdd34106b2a81e84e44a529f",
+      "exactRevision": true
     },
     {
-      "src": "/media/rig/review-neutral-v1/farm/r34/watermill.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/watermill-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/watermill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/farm/r34/watermill.png",
-      "sourceRevisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/farm/r33/poster/watermill.webp",
+      "src": "/media/farm/delivery-20261119-01/poster/watermill.webp",
       "width": 1168,
       "height": 780,
-      "alt": "Six rendered review views of Watermill.",
-      "srcsetWebp": "/media/farm/r33/poster/watermill-320.webp 320w, /media/farm/r33/poster/watermill-480.webp 480w, /media/farm/r33/poster/watermill-672.webp 672w, /media/farm/r33/poster/watermill-768.webp 768w, /media/farm/r33/poster/watermill-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/poster/watermill-320.avif 320w, /media/farm/r33/poster/watermill-480.avif 480w, /media/farm/r33/poster/watermill-672.avif 672w, /media/farm/r33/poster/watermill-768.avif 768w, /media/farm/r33/poster/watermill-1024.avif 1024w",
-      "inputPath": "media/farm/r33/poster/watermill.webp"
+      "alt": "Six saved review views of Watermill.",
+      "srcsetWebp": "/media/farm/delivery-20261119-01/poster/watermill-320.webp 320w, /media/farm/delivery-20261119-01/poster/watermill-480.webp 480w, /media/farm/delivery-20261119-01/poster/watermill-672.webp 672w, /media/farm/delivery-20261119-01/poster/watermill-768.webp 768w, /media/farm/delivery-20261119-01/poster/watermill-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/delivery-20261119-01/poster/watermill-320.avif 320w, /media/farm/delivery-20261119-01/poster/watermill-480.avif 480w, /media/farm/delivery-20261119-01/poster/watermill-672.avif 672w, /media/farm/delivery-20261119-01/poster/watermill-768.avif 768w, /media/farm/delivery-20261119-01/poster/watermill-1024.avif 1024w",
+      "inputPath": "media/farm/delivery-20261119-01/poster/watermill.png",
+      "sourceRevisionId": "r_437647e09af4431da99fb2dd0906288a",
+      "exactRevision": true
     },
     {
       "src": "/media/rig/review-neutral-v1/farm/r34/fence-straight.webp",
@@ -1103,46 +1071,26 @@
       "inputPath": "media/farm/r33/poster/fence-gate.webp"
     },
     {
-      "src": "/media/rig/review-neutral-v1/farm/r34/tractor.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/tractor-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/tractor-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/farm/r34/tractor.png",
-      "sourceRevisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/farm/r33/poster/tractor.webp",
+      "src": "/media/farm/delivery-20261119-01/poster/tractor.webp",
       "width": 1168,
       "height": 780,
-      "alt": "Six rendered review views of Vintage tractor (review 2, motion, UV-exact merge).",
-      "srcsetWebp": "/media/farm/r33/poster/tractor-320.webp 320w, /media/farm/r33/poster/tractor-480.webp 480w, /media/farm/r33/poster/tractor-672.webp 672w, /media/farm/r33/poster/tractor-768.webp 768w, /media/farm/r33/poster/tractor-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/poster/tractor-320.avif 320w, /media/farm/r33/poster/tractor-480.avif 480w, /media/farm/r33/poster/tractor-672.avif 672w, /media/farm/r33/poster/tractor-768.avif 768w, /media/farm/r33/poster/tractor-1024.avif 1024w",
-      "inputPath": "media/farm/r33/poster/tractor.webp"
+      "alt": "Six saved review views of Vintage tractor (review 2, motion, UV-exact merge).",
+      "srcsetWebp": "/media/farm/delivery-20261119-01/poster/tractor-320.webp 320w, /media/farm/delivery-20261119-01/poster/tractor-480.webp 480w, /media/farm/delivery-20261119-01/poster/tractor-672.webp 672w, /media/farm/delivery-20261119-01/poster/tractor-768.webp 768w, /media/farm/delivery-20261119-01/poster/tractor-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/delivery-20261119-01/poster/tractor-320.avif 320w, /media/farm/delivery-20261119-01/poster/tractor-480.avif 480w, /media/farm/delivery-20261119-01/poster/tractor-672.avif 672w, /media/farm/delivery-20261119-01/poster/tractor-768.avif 768w, /media/farm/delivery-20261119-01/poster/tractor-1024.avif 1024w",
+      "inputPath": "media/farm/delivery-20261119-01/poster/tractor.png",
+      "sourceRevisionId": "r_e89c34e3ad4e45d7abc75e779daae0cc",
+      "exactRevision": true
     },
     {
-      "src": "/media/rig/review-neutral-v1/farm/r34/trailer.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Four-wheel timber farm trailer with low side boards and a drawbar.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/farm/r34/trailer-320.webp 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.webp 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.webp 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.webp 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/trailer-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/farm/r34/trailer.png",
-      "sourceRevisionId": "r_c72e516ce16949cfbddedbc9155efa06",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/farm/r33/poster/trailer.webp",
+      "src": "/media/farm/delivery-20261119-01/poster/trailer.webp",
       "width": 1168,
       "height": 780,
-      "alt": "Six rendered review views of Trailer (Shapes & Seasons Farm Pack).",
-      "srcsetWebp": "/media/farm/r33/poster/trailer-320.webp 320w, /media/farm/r33/poster/trailer-480.webp 480w, /media/farm/r33/poster/trailer-672.webp 672w, /media/farm/r33/poster/trailer-768.webp 768w, /media/farm/r33/poster/trailer-1024.webp 1024w",
-      "srcsetAvif": "/media/farm/r33/poster/trailer-320.avif 320w, /media/farm/r33/poster/trailer-480.avif 480w, /media/farm/r33/poster/trailer-672.avif 672w, /media/farm/r33/poster/trailer-768.avif 768w, /media/farm/r33/poster/trailer-1024.avif 1024w",
-      "inputPath": "media/farm/r33/poster/trailer.webp"
+      "alt": "Six saved review views of Trailer (Shapes & Seasons Farm Pack).",
+      "srcsetWebp": "/media/farm/delivery-20261119-01/poster/trailer-320.webp 320w, /media/farm/delivery-20261119-01/poster/trailer-480.webp 480w, /media/farm/delivery-20261119-01/poster/trailer-672.webp 672w, /media/farm/delivery-20261119-01/poster/trailer-768.webp 768w, /media/farm/delivery-20261119-01/poster/trailer-1024.webp 1024w",
+      "srcsetAvif": "/media/farm/delivery-20261119-01/poster/trailer-320.avif 320w, /media/farm/delivery-20261119-01/poster/trailer-480.avif 480w, /media/farm/delivery-20261119-01/poster/trailer-672.avif 672w, /media/farm/delivery-20261119-01/poster/trailer-768.avif 768w, /media/farm/delivery-20261119-01/poster/trailer-1024.avif 1024w",
+      "inputPath": "media/farm/delivery-20261119-01/poster/trailer.png",
+      "sourceRevisionId": "r_50136ad30e7a43d688d32e1d1a60a9c8",
+      "exactRevision": true
     },
     {
       "src": "/media/rig/review-neutral-v1/farm/r34/barrel.webp",
@@ -1567,18 +1515,6 @@
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Rebuilt modular cabin with an open living and dining area, bedroom, supplies, open kitchen, porch and side work exit.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/cabin.png",
-      "sourceRevisionId": "r_c27b7f2836c14fd898a0d82f83b741a3",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
       "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/door.webp",
       "width": 1024,
       "height": 1024,
@@ -1939,30 +1875,6 @@
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-table.png",
-      "sourceRevisionId": "r_fa5a504db1e34fa49f529704e432e888",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-worktop.png",
-      "sourceRevisionId": "r_284c4d0549d543f18121eb51af3ec2a2",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
       "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-chair.webp",
       "width": 1024,
       "height": 1024,
@@ -1971,54 +1883,6 @@
       "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-chair-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-chair-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-chair-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-chair-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-chair-1024.avif 1024w",
       "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/dining-chair.png",
       "sourceRevisionId": "r_cd1b6ae304504f849e9a370a9ca2ad20",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bedroom-cabinet.png",
-      "sourceRevisionId": "r_0b7a06e833124e00956a310c6220b6f3",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/kitchen-cupboard.png",
-      "sourceRevisionId": "r_45706bb944e84158ab90b91946645121",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tall-cabinet.png",
-      "sourceRevisionId": "r_86fe790b72454c6dbc7062c33e1b0b87",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/supply-chest.png",
-      "sourceRevisionId": "r_8251fc93e84d4379aefb4ea761889b90",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
@@ -2047,42 +1911,6 @@
       "rig": "review-neutral-v1"
     },
     {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/map-coat-hooks.png",
-      "sourceRevisionId": "r_052a68725d524ea6afd62254a5a0e676",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tool-rack.png",
-      "sourceRevisionId": "r_c23e526f1c874f89b37a32a7c04c4834",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/wall-shelf.png",
-      "sourceRevisionId": "r_dde877ffae644423ac3a1fc371443e57",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
       "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/clock.webp",
       "width": 1024,
       "height": 1024,
@@ -2103,18 +1931,6 @@
       "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/torch-bracket-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/torch-bracket-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/torch-bracket-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/torch-bracket-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/torch-bracket-1024.avif 1024w",
       "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/torch-bracket.png",
       "sourceRevisionId": "r_8280eccca75c4532b0f9934436708156",
-      "exactRevision": true,
-      "rig": "review-neutral-v1"
-    },
-    {
-      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing.webp",
-      "width": 1024,
-      "height": 1024,
-      "alt": "Original fitted PSX cabin furnishing with procedural pixel textures.",
-      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-1024.webp 1024w",
-      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing-1024.avif 1024w",
-      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/tabletop-dressing.png",
-      "sourceRevisionId": "r_2f39fecba5634b46805f472e7615d7fd",
       "exactRevision": true,
       "rig": "review-neutral-v1"
     },
@@ -5426,6 +5242,270 @@
       "sourceRevisionId": "r_771f5b1384eb46dfa3d20698bbfa9248",
       "exactRevision": true,
       "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261119-01/farmhouse.png",
+      "sourceRevisionId": "r_10b63bdd371e4a78ae90faf92a8568ed",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261119-01/windmill.png",
+      "sourceRevisionId": "r_be71af41cdd34106b2a81e84e44a529f",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261119-01/watermill.png",
+      "sourceRevisionId": "r_437647e09af4431da99fb2dd0906288a",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261119-01/tractor.png",
+      "sourceRevisionId": "r_e89c34e3ad4e45d7abc75e779daae0cc",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Four-wheel timber farm trailer with low side boards and a drawbar.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-320.webp 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-480.webp 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-672.webp 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-768.webp 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-320.avif 320w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-480.avif 480w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-672.avif 672w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-768.avif 768w, /media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer.png",
+      "sourceRevisionId": "r_50136ad30e7a43d688d32e1d1a60a9c8",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Original modular cabin collection. 172 triangles; named assembly and interaction interfaces.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth.png",
+      "sourceRevisionId": "r_a25b5e4614404750bac373b2855ca302",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Layered cutout boughs, tapered bark trunk and matched stump cut.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine.png",
+      "sourceRevisionId": "r_323545268bc847748d208ba64fad11cf",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Reusable felled crown with matched trunk cut.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut.png",
+      "sourceRevisionId": "r_e66e7ffe12d74acc93567b79d7e148ce",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Original modular cabin collection. 336 triangles; named assembly and interaction interfaces.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table.png",
+      "sourceRevisionId": "r_8a50e31344d0463288cd3f7cb5bccf43",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Original modular cabin collection. 336 triangles; named assembly and interaction interfaces.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench.png",
+      "sourceRevisionId": "r_b2684ddd7dca42238455e541fae06bc3",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Original pair of AA cells with procedural pixel labels, raised positive caps and a paper band.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries.png",
+      "sourceRevisionId": "r_b21eb3d376a54e8c9cca34c83a6e2384",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/cathedral.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A Gothic cathedral with a vaulted nave, carved west portals, stained glass and an articulated roofline.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/cathedral.png",
+      "sourceRevisionId": "r_ef41a151abca4234af6223789f01c547",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A timber-framed house with a street-facing gable and a ground-floor doorway.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door.png",
+      "sourceRevisionId": "r_885007ae3c654f9d886e1fb243ca3a0d",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A tall, narrow timber-framed house with a street-facing gable.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow.png",
+      "sourceRevisionId": "r_297ec254fb034f8bafc8fcac2794fdfa",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A timber-framed house with a gabled roof and a street-level shopfront.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop.png",
+      "sourceRevisionId": "r_68d2665595d34e1fbffe08800a1ceb19",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A masonry house with a street-facing gable and a shopfront.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop.png",
+      "sourceRevisionId": "r_29d5208f2cf040baa2e378b87fd7adb6",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A tall masonry townhouse with a street-facing gable.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall.png",
+      "sourceRevisionId": "r_4c7455b9c4894d80a15579b13a3ced34",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A masonry townhouse with a ground-floor arcade and dormers on the street-facing roof slope.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade.png",
+      "sourceRevisionId": "r_5e882cadafab460aa21884ca8e9723a7",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A plaster townhouse with a ground-floor arcade and dormers on the tiled roof.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade.png",
+      "sourceRevisionId": "r_b8c4e3c9dd5b4dff9c672736895540cb",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A plaster townhouse with a street-level shopfront and a pair of dormers.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop.png",
+      "sourceRevisionId": "r_f50482d5b68144d4b40311b8e7458536",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-red.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A market stall with a red striped canopy.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/stall-red.png",
+      "sourceRevisionId": "r_3d0a6939f7934702b6485f1df4d27a4d",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-green.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "A market stall with a green striped canopy.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/stall-green.png",
+      "sourceRevisionId": "r_f10e2cb5ce1b48d6bd189b7fa1a37d92",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     }
   ],
   "archives": [
@@ -5451,6 +5531,11 @@
     "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
     "packs/farm/r36-local-review/shapes-and-seasons-farm-scene.zip",
     "packs/farm/delivery-20261113-01/editable/farmer-editable.zip",
+    "packs/farm/delivery-20261119-01/editable/farmhouse-editable.zip",
+    "packs/farm/delivery-20261119-01/editable/windmill-editable.zip",
+    "packs/farm/delivery-20261119-01/editable/watermill-editable.zip",
+    "packs/farm/delivery-20261119-01/editable/tractor-editable.zip",
+    "packs/farm/delivery-20261119-01/editable/trailer-editable.zip",
     "packs/foundry-floor/ff3-review2-flush2/foundry-floor-ff3-review2-flush2-models.zip",
     "packs/vehicles/r5-flush-fix/editable/hatchback-editable.zip",
     "packs/vehicles/r5-flush-fix/editable/sedan-editable.zip",
@@ -5512,11 +5597,11 @@
       "sha256": "b9fc15b38c056e3c969f51d85d3ef2b25194cfb3c2cad2a672737f85967b4d6f"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
-      "member": "sources/farmhouse.kiln.js",
+      "archive": "packs/farm/delivery-20261119-01/editable/farmhouse-editable.zip",
+      "member": "a_793e1ebd4c32465ab937d93215ec2a50/r_10b63bdd371e4a78ae90faf92a8568ed/source.kiln.js",
       "output": "sources/farmhouse.kiln.js",
-      "bytes": 23633,
-      "sha256": "74fda08c6343b2a257c0da185f1486a0ca23392d6574fc8f55eeb37c74fd9fde"
+      "bytes": 23672,
+      "sha256": "cd127b4ff06213896f006151789e45d86dc31c634e9f5f570c10e38cd5efc5b3"
     },
     {
       "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
@@ -5526,18 +5611,18 @@
       "sha256": "f2a9f05c744355354d4ec34f841a69bae2ee9f4e42bbc94df653f4bea4c6064a"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
-      "member": "sources/windmill.kiln.js",
+      "archive": "packs/farm/delivery-20261119-01/editable/windmill-editable.zip",
+      "member": "windmill/r_be71af41cdd34106b2a81e84e44a529f/source.kiln.js",
       "output": "sources/windmill.kiln.js",
-      "bytes": 28218,
-      "sha256": "fbbeb5d8db9b925f48194c533e0b6130681bf7f86b05d8b19ce898b049e0f5e6"
+      "bytes": 28413,
+      "sha256": "79caaffed41ef6252c729f54f0672323cbceaf7bde38c761c11c0df039055023"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
-      "member": "sources/watermill.kiln.js",
+      "archive": "packs/farm/delivery-20261119-01/editable/watermill-editable.zip",
+      "member": "watermill/r_437647e09af4431da99fb2dd0906288a/source.kiln.js",
       "output": "sources/watermill.kiln.js",
-      "bytes": 33643,
-      "sha256": "1f4ce4eecbd06a160a249760ec97c29cb85a26182bc92a390d520c9027607809"
+      "bytes": 33681,
+      "sha256": "b816210fdf6ef77d109ce9e45dcad5f7f645eac63540fe65508c706c98acc088"
     },
     {
       "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
@@ -5561,18 +5646,18 @@
       "sha256": "a6a2b7f79388bf5b9a9df88d141c0fab50f292cd5ef5281d5101e6af39cde440"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
-      "member": "sources/tractor.kiln.js",
+      "archive": "packs/farm/delivery-20261119-01/editable/tractor-editable.zip",
+      "member": "tractor/r_e89c34e3ad4e45d7abc75e779daae0cc/source.kiln.js",
       "output": "sources/tractor.kiln.js",
-      "bytes": 15253,
-      "sha256": "f88bff51dc25a2f55b87022b7fba5cf262697a4db6142a804b463f73bcc9bfb8"
+      "bytes": 15254,
+      "sha256": "8f4f73f65a3f2e5ceffb69ae5a0300eabd3c6e02f6af459eeb13858664347fda"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
-      "member": "sources/trailer.kiln.js",
+      "archive": "packs/farm/delivery-20261119-01/editable/trailer-editable.zip",
+      "member": "trailer/r_50136ad30e7a43d688d32e1d1a60a9c8/source.kiln.js",
       "output": "sources/trailer.kiln.js",
-      "bytes": 13910,
-      "sha256": "a96ad2121938bd0bb19227b6c09bc795c2826c8917ff13db27e6a78bb5ef0e25"
+      "bytes": 13925,
+      "sha256": "6b092c18489908cda38df09ab77d14d54a3b7bf46434f3c0ca2eec76e9dca674"
     },
     {
       "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-editable.zip",
@@ -5717,11 +5802,10 @@
       "sha256": "3b986d88cffb1041fb052f054709820153e249b14125f4f853f977adb774ca22"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-      "member": "models/farmhouse.glb",
+      "path": "packs/farm/delivery-20261119-01/models/farmhouse.glb",
       "output": "models/farm/farmhouse.glb",
-      "bytes": 549584,
-      "sha256": "1b02596b30e3417e3f8336893694f2614002e28154408803b145154097de8512"
+      "bytes": 549616,
+      "sha256": "7478f660811eeb93011b0baf22857e3efa3b102b45b2c9cdd9079e330960f646"
     },
     {
       "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
@@ -5731,18 +5815,16 @@
       "sha256": "eae958ffee9be52c2f61c86859f138a1e999be3d3056dab9cb76df6286ea0041"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-      "member": "models/windmill.glb",
+      "path": "packs/farm/delivery-20261119-01/models/windmill.glb",
       "output": "models/farm/windmill.glb",
-      "bytes": 454760,
-      "sha256": "089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f"
+      "bytes": 454012,
+      "sha256": "f3ae9e54dbd8f42ffb219ffa48092eaf96e44b4f5e452b23219d3d553e75d806"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-      "member": "models/watermill.glb",
+      "path": "packs/farm/delivery-20261119-01/models/watermill.glb",
       "output": "models/farm/watermill.glb",
-      "bytes": 580264,
-      "sha256": "b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0"
+      "bytes": 580300,
+      "sha256": "126251b82f4ab9557552a198172ca1f8b35a4c60b9355292e6f950c95e5da2b0"
     },
     {
       "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
@@ -5766,18 +5848,16 @@
       "sha256": "e3e01d01c48333f7af74b2c8907eb42a2b4cfe66816570c7e4d49203a63b0366"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-      "member": "models/tractor.glb",
+      "path": "packs/farm/delivery-20261119-01/models/tractor.glb",
       "output": "models/farm/tractor.glb",
-      "bytes": 409684,
-      "sha256": "8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117"
+      "bytes": 304576,
+      "sha256": "144ed8fa0bded0355bb292d1534671e0bf84024ff6988e13df3b777419eab87f"
     },
     {
-      "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-      "member": "models/trailer.glb",
+      "path": "packs/farm/delivery-20261119-01/models/trailer.glb",
       "output": "models/farm/trailer.glb",
-      "bytes": 183252,
-      "sha256": "6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de"
+      "bytes": 183276,
+      "sha256": "30628167973ce5cb9f5e7b47988c2b3b50f86359188601891823eb31aaa6aaca"
     },
     {
       "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",

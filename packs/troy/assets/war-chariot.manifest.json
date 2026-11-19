@@ -1,8 +1,8 @@
 {
   "version": "kiln.asset.v1",
   "assetId": "a_6858bae420a940b5b8798e11666070a7",
-  "revisionId": "r_b277a52b09ae48b39afd8471557ed41b",
-  "parentRevision": "r_e3bcea17f1ff455b99b3deb51182f964",
+  "revisionId": "r_0270a26bb4474f89b1dc967c5af4a672",
+  "parentRevision": "r_b277a52b09ae48b39afd8471557ed41b",
   "name": "Late Bronze Age war chariot",
   "tags": [
     "Late Bronze Age",
@@ -10,30 +10,29 @@
     "chariot",
     "vehicle"
   ],
-  "createdAt": "2026-10-02T02:49:04.961Z",
-  "description": "Child revision adds a hollow brown quiver with five bronze-tipped javelins on +X, the right side of the +Z-facing car, mounted by two bronze brackets. Both rims increase radial thickness from 0.08 to 0.12 m and width from 0.09 to 0.15 m, preserving 1.2 m wheel diameter. GPU overall/detail views reviewed; mount contacts verified at both ends, quiver-wheel rest surface clearance 0.0383 m. Exact exported comparison preserves all other pre-existing meshes, rest transforms, materials and both wheel_spin channels. Wheel motion sampled at phases 0, 0.073, 0.31, 0.68, 1. 4156 triangles, 16 draw calls, 4 tints of 3 pinned pack materials. QA accepted with inherited 9-image budget warning; destination scene performance untested.",
-  "brief": "A light Late Bronze Age two-wheeled war chariot, an open car for a driver and warrior, with a pole and two-horse yoke. No horses or crew. Add a quiver of javelins on the right side of the car and thicken the wheel rims.",
+  "createdAt": "2026-11-19T20:01:44.462Z",
+  "description": "Child revision adds a hollow brown quiver with five bronze-tipped javelins on +X, the right side of the +Z-facing car, mounted by two bronze brackets. Both rims increase radial thickness from 0.08 to 0.12 m and width from 0.09 to 0.15 m, preserving 1.2 m wheel diameter. GPU overall/detail views reviewed; mount contacts verified at both ends, quiver-wheel rest surface clearance 0.0383 m. Exact exported comparison preserves all other pre-existing meshes, rest transforms, materials and both wheel_spin channels. Wheel motion sampled at phases 0, 0.073, 0.31, 0.68, 1. 4156 triangles, 16 draw calls, 4 tints of 3 pinned pack materials. QA accepted with inherited 9-image budget warning; destination scene performance untested. Flush-face fix: two longitudinal sills 4 mm shorter at the rear (z -0.496 instead of -0.5) so their end faces leave the floor-plank end plane; closed-bottom plug radius 0.105 to 0.101 (inside the tube wall) and 2 mm lower so its side and bottom faces leave the tube's outer surface and end ring.",
   "attribution": {
-    "model": "GPT-6",
-    "harness": "codex"
+    "model": "claude-sonnet-5-5",
+    "harness": "claude-code"
   },
   "editable": true,
   "files": {
     "asset.glb": {
-      "sha256": "sha256:6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
-      "bytes": 614312
+      "sha256": "sha256:ea9e450d766a71a1ffed471495bd136160a47d32dd1b0d522444c15bc6af1d42",
+      "bytes": 614344
     },
     "source.kiln.js": {
-      "sha256": "sha256:a2d3a9c74da5683d14e875389019271871cfe637a5971bd570c8fd796b66a9f8",
-      "bytes": 11078
+      "sha256": "sha256:250920b77d9dbf72b9c64a963ec34888072e766e011f88972a3e270e4a11b5f5",
+      "bytes": 11079
     },
     "preview.png": {
-      "sha256": "sha256:1e9ce585413e1603ccf720f50dd39e3a61d90c132148fd5aad63403e917d80f8",
-      "bytes": 200882
+      "sha256": "sha256:b160f82346e630d9b3b46fb49a86a00e0378485f46ce4dcf4782563610fa024e",
+      "bytes": 198468
     }
   },
   "build": {
-    "engine": "sha256:1232355396af456deeb780db8f68c3bf37f85fb02a1a364707d7b773d0eea899",
+    "engine": "sha256:a9c17eda922fb26a38ad7d0b7f05ef76af53d75ec5ba48ff8dc092c9a1fde052",
     "options": {
       "gltfExporter": "legacy",
       "optimize": "off",
@@ -63,11 +62,13 @@
         "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
       }
     },
-    "warnings": [],
+    "warnings": [
+      "PART_NOT_IN_ASSET: 67 parts built with createPart never join the asset, so the GLB leaves them out: \"floor_plank_0\", \"floor_plank_1\", \"floor_plank_2\", \"floor_plank_3\", \"floor_plank_4\", and 62 more. createPart attaches a part only when its options carry { parent }; pass { parent: root } (or the group it belongs to), or call parent.add(part)."
+    ],
     "integration": {
       "schemaVersion": "kiln.integration-manifest.v1",
       "analyzerVersion": 1,
-      "artifactSha256": "6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
+      "artifactSha256": "ea9e450d766a71a1ffed471495bd136160a47d32dd1b0d522444c15bc6af1d42",
       "units": "m",
       "axes": {
         "forward": "+X",
@@ -125,6 +126,21 @@
         "transparentMaterials": 0,
         "skinned": false
       },
+      "materialAdvice": [
+        {
+          "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+          "disposition": "advisory",
+          "reference": "web.portable.v1/standard",
+          "message": "9 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }).",
+          "measurement": {
+            "name": "imageCount",
+            "actual": 9,
+            "reference": 4,
+            "unit": "images"
+          },
+          "advice": "To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image."
+        }
+      ],
       "structuralQa": {
         "hasDefaultScene": true,
         "finiteBounds": true,
@@ -140,7 +156,7 @@
       "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
       "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
       "acceptance": "accepted",
-      "disposition": "warn",
+      "disposition": "pass",
       "dimensions": {
         "exportIntegrity": {
           "status": "pass",
@@ -364,7 +380,7 @@
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.080890531,
+                "actual": 0.080890424,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -508,7 +524,7 @@
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.008270951,
+                "actual": 0.008270932,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -556,7 +572,7 @@
               },
               "measurement": {
                 "name": "intersectionVolumeFraction",
-                "actual": 0.002679624,
+                "actual": 0.002679625,
                 "expected": 0.001
               },
               "repairText": "Check whether this overlap is intentional, such as a joined beam or embedded detail. For unintended solid overlap, move a part or use boolDiff to cut clearance. This observation does not test intersections within a single mesh, open surfaces, empty passage space or motion."
@@ -572,29 +588,40 @@
             "partVolumeUnmeasurablePairs": 0,
             "partVolumePairsNotReached": 0,
             "partVolumeLodAlternatePairs": 0,
-            "partVolumeSkipped": 0
+            "partVolumeSkipped": 0,
+            "openSurfaceCoverage": "complete-surface-pairs",
+            "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+            "openSurfaceContactTolerance": 0.005,
+            "openSurfaceOpenParts": 0,
+            "openSurfaceClosedParts": 16,
+            "openSurfaceCandidatePairs": 0,
+            "openSurfacePairsSampled": 0,
+            "openSurfacePairsNotReached": 0,
+            "openSurfaceVerticesUnresolved": 0,
+            "openSurfaceLodAlternatePairs": 0,
+            "openSurfaceSkipped": 0
           }
         },
         "runtimeCost": {
-          "status": "warn",
+          "status": "pass",
           "findings": [
             {
-              "code": "MATERIAL_IMAGE_COUNT_BUDGET",
-              "disposition": "warn",
+              "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+              "disposition": "observe",
               "dimension": "runtimeCost",
-              "profile": "web.portable.v1.standard",
-              "message": "9 images exceed the 4-image web.portable.v1/standard budget. Reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+              "profile": "web.portable.v1/standard",
+              "message": "9 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }). To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
               "measurement": {
                 "name": "imageCount",
                 "actual": 9,
-                "threshold": 4,
+                "expected": 4,
                 "unit": "images"
               }
             }
           ],
           "metrics": {
             "instanceabilityGrade": "C",
-            "instanceabilitySummary": "C (informational, not a QA verdict), set by 4 distinct materials (C at 4-6). Also: 9 textures (over 4 lowers only A/B to C); 15 geometries; 16 draw calls.",
+            "instanceabilitySummary": "C (informational, not a QA verdict), set by 4 distinct materials (C at 4-6). Also: 9 textures (over 4 lowers only A/B to C); 15 geometries; 16 draw calls. Optional advice, not a requirement: merging Troy crimson woven screen + Troy leather-coloured quiver (differ in baseColorFactor) would leave 3 materials (B at 2-3; other factors give C).",
             "uniqueGeometries": 15,
             "uniqueMaterials": 4,
             "meshNodes": 16,
@@ -753,6 +780,11 @@
           "status": "evaluated"
         },
         {
+          "id": "GEO_OPEN_SURFACE_PENETRATION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
           "id": "REF_COMPARISON",
           "mode": "observe",
           "status": "notEvaluated",
@@ -762,6 +794,11 @@
           "id": "SWEEP_SELF_INTERSECTION",
           "mode": "observe",
           "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
         }
       ],
       "unevaluatedRequirements": []
@@ -1861,8 +1898,8 @@
       "delivered": "full-material",
       "materialFaithful": true,
       "exactArtifact": true,
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1074",
-      "inputGlbSha256": "sha256:6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "inputGlbSha256": "sha256:ea9e450d766a71a1ffed471495bd136160a47d32dd1b0d522444c15bc6af1d42",
       "degraded": false,
       "reasonCodes": []
     },

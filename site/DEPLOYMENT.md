@@ -44,7 +44,7 @@ inventory in the ignored mirror. `--fetch-runtime` explicitly permits fetching
 existing pinned runtime bytes instead of supplying a runtime mirror. Never reuse
 an immutable release key for changed bytes.
 
-Troy's current sealed release is `troy-20261113-01`. Normal builds consume its
+Troy's current sealed release is `troy-20261119-01`. Normal builds consume its
 published archive; **do not regenerate that release**. For a future release, use an
 explicit previous pin and a fresh release ID:
 
@@ -58,8 +58,8 @@ pins, preserves approved scene media, builds compressed runtime transport and
 seals the scene archive. Selected revisions that differ from those the scene names
 in `web/inputs.json` replace its `web/assets` copies, and their input entries are
 measured from the new bytes. `--keep-web` keeps the previous release's compiled
-browser files and source manifest and replaces only models; `troy-20261113-01` was
-built that way, because rebuilding would move the scene's bundle to the
+browser files and source manifest and replaces only models; `troy-20261113-01` and
+`troy-20261119-01` were built that way, because rebuilding would move the scene's bundle to the
 repository's newer three.js without the release's vendored copy. It updates `troy-delivery.json`, `troy.json` and the scene's
 `runtime-pin.json`. Run `node scripts/troy-inventory.mjs` afterward to align the
 pack source inventory's selected revisions, canonical paths and public URLs.
@@ -199,8 +199,9 @@ staged the same way by `scripts/stage-cabin-site.mjs`, from the sealed archive p
 in `src/data/cabin-woods-site.json`; a new Cabin release seals its staged folder with
 `node scripts/stage-cabin-site.mjs --pack DIR --mirror DIR --release ID` and uploads
 that one archive. A release that only swaps models for saved child revisions is
-rebuilt from the published archive with `bun scripts/cabin-site-swap.mjs` (the swap list
-is `packs/cabin-woods-psx-horror/flush-fix-swaps.json`), which keeps the scene's code
+rebuilt from the published archive with `bun scripts/cabin-site-swap.mjs` (one swap list
+per release: `packs/cabin-woods-psx-horror/flush-fix-swaps.json` for `cabin-20261113-01`,
+`flush-fix-swaps-20261119.json` for `cabin-20261119-01`), which keeps the scene's code
 byte for byte and seals the result the same way.
 
 `KILN_SITE_PACKS=0` is the reduced CI build; never use it for the production rollout.

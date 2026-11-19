@@ -3,11 +3,11 @@
   "files": [
     {
       "id": "farm",
-      "release": "r36-flush1",
-      "path": "scene-inputs/flush-fix-20261113/farm.zip",
-      "bytes": 3647436,
-      "sha256": "87b909fd9875488e626f5ee22608913751426f3935006978c5e7881d032d0b56",
-      "packJsonSha256": "f97c8ee73d388e12d03784c605341f2f5fcb6d1c05672a161072c99abd235c8a"
+      "release": "r36-flush2",
+      "path": "scene-inputs/flush-fix-20261119/farm.zip",
+      "bytes": 3646714,
+      "sha256": "16fdef3478ebad6d8cfd3c3a0bfd1b8013fa65f93241e50784059646bc93bd43",
+      "packJsonSha256": "cc6f2c6d326257daa4c32dc161f9f402a7e8423c1487357ab205981c3dbc8034"
     },
     {
       "id": "golden-gate",
@@ -26,20 +26,20 @@
       "packJsonSha256": "5cd13fdc406b7e842836a17bdf0709bc874de7bb4961cf0f313c08a3d412296d"
     },
     {
-      "id": "cathedral-square",
-      "release": "cs3",
-      "path": "scene-inputs/cathedral-square/cs3/cathedral-square.zip",
-      "bytes": 14174342,
-      "sha256": "b4fcfd310ba2e021d0cc96d4a7f6c06cb0df4d29342d1ae10b079a7f4038e972",
-      "packJsonSha256": "7f32c63073d6c059258647c1db59d89081107b7c6678b71f35678c6057126ec5"
-    },
-    {
       "id": "seed-town",
       "release": "st1",
       "path": "scene-inputs/seed-town/st1/seed-town.zip",
       "bytes": 718968,
       "sha256": "cf18cd22d21fdad1f3e8cc1cf0bba9bbe31bc6eac8c4156f8ea76768d6968b22",
       "packJsonSha256": "980195cb7cdbbdc36cd94943bc7d72f6d7e2e3dbcf71bdfd1a5fa3bdbaed4f59"
+    },
+    {
+      "id": "cathedral-square",
+      "release": "cs4",
+      "path": "scene-inputs/cathedral-square/cs4/cathedral-square.zip",
+      "bytes": 14190276,
+      "sha256": "a4e05111a691b7358f40b9f1b287fab1ce00c9969ec5020c2df9506a7cfb2cef",
+      "packJsonSha256": "f6300e14559de4a317681c0904064dedab1a3436d5f5c01432bb9632e1308bd3"
     }
   ]
 }

@@ -491,56 +491,56 @@
       "pack": "cabin-woods-psx-horror",
       "collection": "project",
       "assetId": "a_550bb6b7e076447b9c7e89d90064fb55",
-      "revisionId": "r_26816096582049a1ba68fd23998f72b4",
-      "sourceRef": "p_a3475bab0f33",
+      "revisionId": "r_a25b5e4614404750bac373b2855ca302",
+      "sourceRef": "p_1a90b2395450",
       "modelPath": "/asset-demos/cabin-woods-psx-horror/models/hearth.glb",
-      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_550bb6b7e076447b9c7e89d90064fb55/r_26816096582049a1ba68fd23998f72b4/source.kiln.js",
-      "sourceSha256": "a3475bab0f33ef623786588219381d9a4073898d8f50bc7ff9784b75ecd30894",
+      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_550bb6b7e076447b9c7e89d90064fb55/r_a25b5e4614404750bac373b2855ca302/source.kiln.js",
+      "sourceSha256": "1a90b239545089b1203a6a58d18e529433669ec02ee51a050eb3fcb851a0d3a9",
       "manifestDownload": {
         "path": "metadata/hearth/manifest.json",
         "url": "/asset-demos/cabin-woods-psx-horror/metadata/hearth/manifest.json",
-        "bytes": 150832,
-        "sha256": "a5451110b3bd51d86a092137c55a78e4fde810a24401c269893d4193ed879786"
+        "bytes": 150666,
+        "sha256": "8f986284f7d2c9793f7ec8e9d56ad07903ec9e9d3b8dba3ad237e1e8b192470e"
       },
       "canonicalDownload": {
         "path": "canonical/hearth.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/canonical/hearth.glb",
-        "bytes": 14976,
-        "sha256": "13e6ad5e010d744e97f450a6d94241ce7fcb30e0975c1fdf81276c93559bb483"
+        "bytes": 15012,
+        "sha256": "43b8db09b79ac54fa792fb249878a5ac9f115908636a71b3c6ff7f4a4b2da202"
       },
       "runtimeModelDownload": {
         "path": "models/hearth.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/models/hearth.glb",
-        "bytes": 15192,
-        "sha256": "69c86541bc5b463e39ee036c6d77e699cb1026f0ec53eb5e819c03e911428bd5"
+        "bytes": 15224,
+        "sha256": "6034232c6ec16b175786f84a09c33967831c2629ba122f23457b82005c589696"
       },
       "metadataDownload": {
         "path": "models/hearth.kiln-metadata.json",
         "url": "/asset-demos/cabin-woods-psx-horror/models/hearth.kiln-metadata.json",
         "bytes": 333,
-        "sha256": "de23095d05d22a6f584de0dfba2722d169dffbbbe52ae9e9b80f99acc3ca38fe"
+        "sha256": "0c6216b16b5cd830a622b6db314798fce88768faf775969d51fb922247db68a5"
       },
       "runtimeDownload": {
         "path": "downloads/runtime/hearth.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/runtime/hearth.zip",
-        "bytes": 6440,
-        "sha256": "825b3c482f4df681f1b9d9e44e71bacf8cedce0473229804f7cb25b3317d0393"
+        "bytes": 6462,
+        "sha256": "58ee20e52e70f4b813eaea4d07c16b0e67b71b92d32146ddac631192df3e6e9b"
       },
       "editableDownload": {
         "path": "downloads/editable/hearth.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/editable/hearth.zip",
-        "bytes": 59601,
-        "sha256": "e933f59142a85aeade2a4eac3673a92e8a7acbe08315c33e6d48e55df5dbfffc"
+        "bytes": 60237,
+        "sha256": "85d5c36deab50f5f261911081405214580f47dcb1e826c2588f19ec7280a2ff7"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original modular cabin collection. 172 triangles; named assembly and interaction interfaces.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth.png",
-        "sourceRevisionId": "r_26816096582049a1ba68fd23998f72b4",
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth.png",
+        "sourceRevisionId": "r_a25b5e4614404750bac373b2855ca302",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -936,56 +936,56 @@
       "pack": "cabin-woods-psx-horror",
       "collection": "project",
       "assetId": "a_24330aa1ba4b46cdb552f3d33519c547",
-      "revisionId": "r_f270364f29ff4feeaea7050c634a02ea",
-      "sourceRef": "p_e88007dd462f",
+      "revisionId": "r_323545268bc847748d208ba64fad11cf",
+      "sourceRef": "p_06b2d37595c6",
       "modelPath": "/asset-demos/cabin-woods-psx-horror/models/pine.glb",
-      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_24330aa1ba4b46cdb552f3d33519c547/r_f270364f29ff4feeaea7050c634a02ea/source.kiln.js",
-      "sourceSha256": "e88007dd462fa6e8cf161af960cd188798d6e439a5eb643c0d79c883082c0c18",
+      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_24330aa1ba4b46cdb552f3d33519c547/r_323545268bc847748d208ba64fad11cf/source.kiln.js",
+      "sourceSha256": "06b2d37595c660322653cd21b6a41cf5623677f58b6a900fcf8b081860c2a6f2",
       "manifestDownload": {
         "path": "metadata/pine/manifest.json",
         "url": "/asset-demos/cabin-woods-psx-horror/metadata/pine/manifest.json",
-        "bytes": 125512,
-        "sha256": "a9b399a04f87285b6307d087d7f0e0003ee151b0000b7916f4aea462a3be1257"
+        "bytes": 126837,
+        "sha256": "7924bda4d7d86c26ea5ec99546b9ddf4a5838ce39a3beba4eb24fbd0a531feb2"
       },
       "canonicalDownload": {
         "path": "canonical/pine.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/canonical/pine.glb",
-        "bytes": 163544,
-        "sha256": "30950dac9c69d30a72bb12abb414450060040e17d27beb191198a52eceee35f7"
+        "bytes": 163548,
+        "sha256": "4bf81b5968bfb4510996990cf8f1d6e409d0c6fd5be98c435f7c48ec3e90d7e5"
       },
       "runtimeModelDownload": {
         "path": "models/pine.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/models/pine.glb",
-        "bytes": 163756,
-        "sha256": "ed852ad05f58a8b2d297210d226f2e4459755100469a0791c1b83528ff7ff398"
+        "bytes": 163760,
+        "sha256": "4f0d2c8b6317ec20d22c0ba974a1056b4cac187a55773f7ce25f9b6634d9bf99"
       },
       "metadataDownload": {
         "path": "models/pine.kiln-metadata.json",
         "url": "/asset-demos/cabin-woods-psx-horror/models/pine.kiln-metadata.json",
         "bytes": 333,
-        "sha256": "831b0f89f89db117634ee65d971aec0fa62f6ef2aedba0ce2926968cb987159e"
+        "sha256": "0c5bef4544f969edfd91bffd7b434882ea868e24881c940430afd30216c7f91e"
       },
       "runtimeDownload": {
         "path": "downloads/runtime/pine.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/runtime/pine.zip",
-        "bytes": 53560,
-        "sha256": "20d671294226152120019c31a7442dcafe5cacb5f536e07c14818f404333039d"
+        "bytes": 54152,
+        "sha256": "7f39a674ab0f67ec1dc917847d583d0569ffaebd128ec0aa1cb7949d4f30ef84"
       },
       "editableDownload": {
         "path": "downloads/editable/pine.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/editable/pine.zip",
-        "bytes": 386340,
-        "sha256": "5fe54a18927d6aff8053e13b040f64d99be667fb34ea5d5c1b527d65e8db95ae"
+        "bytes": 388871,
+        "sha256": "810be3071ab41168c034c239cb0ae5938f59096cedbf8cb3bd593cf1a7cd22c5"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Layered cutout boughs, tapered bark trunk and matched stump cut.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine.png",
-        "sourceRevisionId": "r_f270364f29ff4feeaea7050c634a02ea",
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine.png",
+        "sourceRevisionId": "r_323545268bc847748d208ba64fad11cf",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -1025,56 +1025,56 @@
       "pack": "cabin-woods-psx-horror",
       "collection": "project",
       "assetId": "a_88ebf7b1e6c3422082e10b49b6469708",
-      "revisionId": "r_5d6a078e18974eb29db197cf441d80fe",
-      "sourceRef": "p_5b4e5cfc3cc9",
+      "revisionId": "r_e66e7ffe12d74acc93567b79d7e148ce",
+      "sourceRef": "p_d174a4c96c3a",
       "modelPath": "/asset-demos/cabin-woods-psx-horror/models/pine-cut.glb",
-      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_88ebf7b1e6c3422082e10b49b6469708/r_5d6a078e18974eb29db197cf441d80fe/source.kiln.js",
-      "sourceSha256": "5b4e5cfc3cc924e862df79923aa507bc04fc6cba70317e90615417050b080571",
+      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_88ebf7b1e6c3422082e10b49b6469708/r_e66e7ffe12d74acc93567b79d7e148ce/source.kiln.js",
+      "sourceSha256": "d174a4c96c3aac0b479138751e16bbbc759b02a7fb8fed25ccee98f269e0231c",
       "manifestDownload": {
         "path": "metadata/pine-cut/manifest.json",
         "url": "/asset-demos/cabin-woods-psx-horror/metadata/pine-cut/manifest.json",
-        "bytes": 125574,
-        "sha256": "ebb7157ff55910e9dcf1ec38ced4aec4ace946ed2b853f55b68f527e07cf55bd"
+        "bytes": 126899,
+        "sha256": "313501a21c96e0a96437d46f6c068af19604ae89236eff94750e3d0ce879c021"
       },
       "canonicalDownload": {
         "path": "canonical/pine-cut.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/canonical/pine-cut.glb",
-        "bytes": 164280,
-        "sha256": "67a510f0aaae0ee12349f422fb0d0421b15aba351db8a4b857586120ee433df1"
+        "bytes": 164284,
+        "sha256": "4796054ad76632f0accb8970d894713c4678b556c1372a958f143ee4f6e86742"
       },
       "runtimeModelDownload": {
         "path": "models/pine-cut.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/models/pine-cut.glb",
-        "bytes": 164496,
-        "sha256": "d08b0903708d6acca8ed7fb69f006a199ae30aad85212a1c98ad16e07eeb1eef"
+        "bytes": 164500,
+        "sha256": "a8bac96e98393f38fb147017ace418cfbf98345841dfddbeecad4a48beaf9a16"
       },
       "metadataDownload": {
         "path": "models/pine-cut.kiln-metadata.json",
         "url": "/asset-demos/cabin-woods-psx-horror/models/pine-cut.kiln-metadata.json",
         "bytes": 333,
-        "sha256": "ea61b91bd1eca61c5ff05e8b24e09c5d73cd49b70beed30c8bd9dd4009bd2a14"
+        "sha256": "c9bbe8c0b25a743dafb3da174734b6e52c356ee7c5c3c73f30f708401d813ca6"
       },
       "runtimeDownload": {
         "path": "downloads/runtime/pine-cut.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/runtime/pine-cut.zip",
-        "bytes": 54076,
-        "sha256": "cfd104fa4c816df94a4efcc31733ba269ff26477eba3ddb1c1a671a27f9930d4"
+        "bytes": 54688,
+        "sha256": "163b0f455c669582d6dc014a9d10442ef9d24425476aeab7eec8249b4061a2e8"
       },
       "editableDownload": {
         "path": "downloads/editable/pine-cut.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/editable/pine-cut.zip",
-        "bytes": 408202,
-        "sha256": "be421cfee1975443f2dcd25894b8b1e2a977df52d984f128a15b6562d262a700"
+        "bytes": 410400,
+        "sha256": "49704387845ff6c636bc54e154593bb90b52e6b1bd55f528f481e35fc159fd39"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Reusable felled crown with matched trunk cut.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut.png",
-        "sourceRevisionId": "r_5d6a078e18974eb29db197cf441d80fe",
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut.png",
+        "sourceRevisionId": "r_e66e7ffe12d74acc93567b79d7e148ce",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -2006,56 +2006,56 @@
       "pack": "cabin-woods-psx-horror",
       "collection": "project",
       "assetId": "a_270f6d2ae38c42419fe4dab4f234c132",
-      "revisionId": "r_f210cfe0853a4f36aa4a7be1eff80d86",
-      "sourceRef": "p_6e3a507a6d8e",
+      "revisionId": "r_8a50e31344d0463288cd3f7cb5bccf43",
+      "sourceRef": "p_b49e88338bab",
       "modelPath": "/asset-demos/cabin-woods-psx-horror/models/table.glb",
-      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_270f6d2ae38c42419fe4dab4f234c132/r_f210cfe0853a4f36aa4a7be1eff80d86/source.kiln.js",
-      "sourceSha256": "6e3a507a6d8efbf70e68d1de302695ac49194ac0baee08f63a9aa1684f3488f8",
+      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_270f6d2ae38c42419fe4dab4f234c132/r_8a50e31344d0463288cd3f7cb5bccf43/source.kiln.js",
+      "sourceSha256": "b49e88338babebfcafe03b966211e7ae7fa2ebc995ef5bdcf39141b2b939c046",
       "manifestDownload": {
         "path": "metadata/table/manifest.json",
         "url": "/asset-demos/cabin-woods-psx-horror/metadata/table/manifest.json",
-        "bytes": 140914,
-        "sha256": "bd7225cc1bd59c7b4f5323ef3fde3ee0d3b051b89edcf82a74e085e8bb8a75af"
+        "bytes": 142255,
+        "sha256": "61c3b108d9740e37008166cc7f490b214be5fe7360edd76a402c1b0b66f5c837"
       },
       "canonicalDownload": {
         "path": "canonical/table.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/canonical/table.glb",
-        "bytes": 17824,
-        "sha256": "a0e9d873f910fdc58322b7da40853b1edcd2b9de70c786bf2f96c346ae1977c3"
+        "bytes": 18484,
+        "sha256": "22202f7922fd009f211d075249a4cd6322e23629e58fb82e2d5e11abc3b1f1ba"
       },
       "runtimeModelDownload": {
         "path": "models/table.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/models/table.glb",
-        "bytes": 18036,
-        "sha256": "6696df1bd5d6959a9487de85aa73e2242c7bb49fba5af4f8dca139a24587b707"
+        "bytes": 18696,
+        "sha256": "89476f57a5fdf6d0b1217d214b284782b698ba777edb71d4152b66ab30534b89"
       },
       "metadataDownload": {
         "path": "models/table.kiln-metadata.json",
         "url": "/asset-demos/cabin-woods-psx-horror/models/table.kiln-metadata.json",
         "bytes": 333,
-        "sha256": "82994f8eba2f69488cc77277a1093621e272bc1dc0df48978004829384d13936"
+        "sha256": "2f9b9f74de56709acdaffd6adc01ac0708d35645bc8b2fa8fbb247bba794ef71"
       },
       "runtimeDownload": {
         "path": "downloads/runtime/table.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/runtime/table.zip",
-        "bytes": 5838,
-        "sha256": "5df659b8a5fdc612711d87250a5c17124e683b0a096b07f53d2f10e16b0422d9"
+        "bytes": 5915,
+        "sha256": "006f7ebc43727ccdd2a57a308ff16fdb214d5b5e792787c2e013d0ed95c1b28b"
       },
       "editableDownload": {
         "path": "downloads/editable/table.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/editable/table.zip",
-        "bytes": 54663,
-        "sha256": "973076f97c81d9378cf357b4d3f34a6075aca2ec498c071ae0ca10fdcb5d04df"
+        "bytes": 54761,
+        "sha256": "1fd44c7b74ce191b400e28715c699517ce49ecc0ba869703d0b663b416f758ea"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original modular cabin collection. 336 triangles; named assembly and interaction interfaces.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table.png",
-        "sourceRevisionId": "r_f210cfe0853a4f36aa4a7be1eff80d86",
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table.png",
+        "sourceRevisionId": "r_8a50e31344d0463288cd3f7cb5bccf43",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -2095,56 +2095,56 @@
       "pack": "cabin-woods-psx-horror",
       "collection": "project",
       "assetId": "a_f71ef069c1a84493a3445a7879dbb6a1",
-      "revisionId": "r_e1dc1368d60845b0880a252dc60717c2",
-      "sourceRef": "p_cbea21bd9b36",
+      "revisionId": "r_b2684ddd7dca42238455e541fae06bc3",
+      "sourceRef": "p_eb9bcfb02c05",
       "modelPath": "/asset-demos/cabin-woods-psx-horror/models/bench.glb",
-      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_f71ef069c1a84493a3445a7879dbb6a1/r_e1dc1368d60845b0880a252dc60717c2/source.kiln.js",
-      "sourceSha256": "cbea21bd9b3671b13c6df1c4d3a0a903186d25d3b1cab0b3555cb27fb33b3357",
+      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_f71ef069c1a84493a3445a7879dbb6a1/r_b2684ddd7dca42238455e541fae06bc3/source.kiln.js",
+      "sourceSha256": "eb9bcfb02c0562a3493fe136a36d7c253f612169b9417e2435cc5565ba525630",
       "manifestDownload": {
         "path": "metadata/bench/manifest.json",
         "url": "/asset-demos/cabin-woods-psx-horror/metadata/bench/manifest.json",
-        "bytes": 144664,
-        "sha256": "0d0792bf9041f4db2523d089bd2ede53b8ce28d60567280ce999d5f17766c0eb"
+        "bytes": 146065,
+        "sha256": "5612a3ad2b5d9ece948246419148ae331b36930ccf0ec530276af1388318fbb3"
       },
       "canonicalDownload": {
         "path": "canonical/bench.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/canonical/bench.glb",
-        "bytes": 19544,
-        "sha256": "6c8ea120c4c7288ca3eedf40da694a3efba6cf7b3dc7b04d22f700f66ad710b6"
+        "bytes": 20204,
+        "sha256": "c5f0299ca268ba9f4283b91d00c8d626b1ffed10723f82b0ccb700d1660e3937"
       },
       "runtimeModelDownload": {
         "path": "models/bench.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/models/bench.glb",
-        "bytes": 19756,
-        "sha256": "715fec5fea794851968f6ffe595408cdd66935bb0b64fa53217a8a082607acab"
+        "bytes": 20416,
+        "sha256": "37431c050a4730107b14c39d274fe379f27d1daf62715519d55eb66567d05256"
       },
       "metadataDownload": {
         "path": "models/bench.kiln-metadata.json",
         "url": "/asset-demos/cabin-woods-psx-horror/models/bench.kiln-metadata.json",
         "bytes": 333,
-        "sha256": "0d3466b9f2f2421b9de9ea440671d6ea95f7aa92a88e9f756ace3b412e10bd12"
+        "sha256": "70f588c3e6511955aefcb8cedf28718bdd97ae8bcf1af764a9ecd06b7184fe33"
       },
       "runtimeDownload": {
         "path": "downloads/runtime/bench.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/runtime/bench.zip",
-        "bytes": 6589,
-        "sha256": "c5c386658aec4547855c43974ebc6210bc8ae9465ab914a5102c4c0ffde97aa5"
+        "bytes": 6727,
+        "sha256": "c266dbd88efbf701179b37df14288f18d0a7793c5c67a78bd0c050240b5fc473"
       },
       "editableDownload": {
         "path": "downloads/editable/bench.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/editable/bench.zip",
-        "bytes": 59698,
-        "sha256": "f7e9a872d3c8d85b3cbb519f89807bbe101e1eaaac1c569daf80135bf860f24e"
+        "bytes": 59568,
+        "sha256": "74684ec2d0e0b8594215490c0de1c3c9620ac372ab4b2c6c7661a76b0dd1991e"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original modular cabin collection. 336 triangles; named assembly and interaction interfaces.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench.png",
-        "sourceRevisionId": "r_e1dc1368d60845b0880a252dc60717c2",
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench.png",
+        "sourceRevisionId": "r_b2684ddd7dca42238455e541fae06bc3",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -4707,56 +4707,56 @@
       "pack": "cabin-woods-psx-horror",
       "collection": "project",
       "assetId": "a_5c156f53c97e40d691a837d7b79d69cb",
-      "revisionId": "r_13cfa449003d45fcaa97199bba3f5b10",
-      "sourceRef": "p_2b8038b1db1d",
+      "revisionId": "r_b21eb3d376a54e8c9cca34c83a6e2384",
+      "sourceRef": "p_e04e98a9c027",
       "modelPath": "/asset-demos/cabin-woods-psx-horror/models/batteries.glb",
-      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_5c156f53c97e40d691a837d7b79d69cb/r_13cfa449003d45fcaa97199bba3f5b10/source.kiln.js",
-      "sourceSha256": "2b8038b1db1d5c952852d2d33e0356f3eb2746c535a159228bb2102ae743a67b",
+      "sourcePath": "/asset-demos/cabin-woods-psx-horror/source/project/a_5c156f53c97e40d691a837d7b79d69cb/r_b21eb3d376a54e8c9cca34c83a6e2384/source.kiln.js",
+      "sourceSha256": "e04e98a9c02756252431843ee01cdc57ad9f9eac5bd8703b2315990eb5048a33",
       "manifestDownload": {
         "path": "metadata/batteries/manifest.json",
         "url": "/asset-demos/cabin-woods-psx-horror/metadata/batteries/manifest.json",
-        "bytes": 102857,
-        "sha256": "7b70e6f58327a68d8bac957362aa1cd0391ac78805f7b919aa93428ee3872ff4"
+        "bytes": 104346,
+        "sha256": "055f2a1971817b42685c67af0d74037321376eeb62c7f49e3552cd8435acd547"
       },
       "canonicalDownload": {
         "path": "canonical/batteries.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/canonical/batteries.glb",
         "bytes": 17556,
-        "sha256": "9e2ec9e02861187693a9bdd9790ae4b61564ab394434bd93e681e3269708f4b3"
+        "sha256": "3fe96e47ee539c0631fa45302b378808025e167c09af70ce9156cca8f0ae0e52"
       },
       "runtimeModelDownload": {
         "path": "models/batteries.glb",
         "url": "/asset-demos/cabin-woods-psx-horror/models/batteries.glb",
         "bytes": 17772,
-        "sha256": "3089b67cd9f2300350d74aacdd0994a6c22c5e7a80caf0fffcda74a6b09a2b0f"
+        "sha256": "baebd3f4d7674a4d190f057751a0367436826251b7b5652701192b8dc0f4131e"
       },
       "metadataDownload": {
         "path": "models/batteries.kiln-metadata.json",
         "url": "/asset-demos/cabin-woods-psx-horror/models/batteries.kiln-metadata.json",
         "bytes": 333,
-        "sha256": "87776ec9d0fc36bee06c344c180fca37e75b66cc98036d98c40532ee19576c07"
+        "sha256": "bd619d1174464c567f53064538a602e534caffc1d1d88362fadcd87fc6da0d60"
       },
       "runtimeDownload": {
         "path": "downloads/runtime/batteries.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/runtime/batteries.zip",
-        "bytes": 6375,
-        "sha256": "409f7b31e37bdf6e320b62c135513a9f8e92e686b58ffc5cf2d7e98ff1dd7495"
+        "bytes": 6414,
+        "sha256": "216401bf3ccfda492acebeedbaa24e6b7434ef9c8e4adb0064f0562b63f4a549"
       },
       "editableDownload": {
         "path": "downloads/editable/batteries.zip",
         "url": "/asset-demos/cabin-woods-psx-horror/downloads/editable/batteries.zip",
-        "bytes": 62105,
-        "sha256": "2067f96329fe322482bc941c388aaf2f2d43b307af599018b15aa2662c0c1c28"
+        "bytes": 61622,
+        "sha256": "c6ef575e73aa357ff680fb8aabfa59ac61df2b47ae32ac6aa873e032835150e5"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries.webp",
+        "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries.webp",
         "width": 1024,
         "height": 1024,
         "alt": "Original pair of AA cells with procedural pixel labels, raised positive caps and a paper band.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries.png",
-        "sourceRevisionId": "r_13cfa449003d45fcaa97199bba3f5b10",
+        "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries.png",
+        "sourceRevisionId": "r_b21eb3d376a54e8c9cca34c83a6e2384",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
@@ -4767,17 +4767,17 @@
         "bounds": [
           0.014000000432133675,
           0.05000000074505806,
-          0.029200000688433647
+          0.029600000008940697
         ],
         "boundsMin": [
           -0.007000000216066837,
           0,
-          -0.014600000344216824
+          -0.014800000004470348
         ],
         "boundsMax": [
           0.007000000216066837,
           0.05000000074505806,
-          0.014600000344216824
+          0.014800000004470348
         ],
         "clips": [],
         "extensions": []
@@ -4795,27 +4795,27 @@
       "label": "Runtime assets",
       "path": "downloads/cabin-woods-psx-horror-runtime.zip",
       "url": "/asset-demos/cabin-woods-psx-horror/downloads/cabin-woods-psx-horror-runtime.zip",
-      "bytes": 1272786,
-      "sha256": "172e4e9fe4a30d823b29c668d02ec30f1a9970dcd4fde38639570263bf7341c9"
+      "bytes": 1274251,
+      "sha256": "b5dfd4ef3790e9eea11ed542e5ba49de36806b84566e2a3565ad3e138dad0bf4"
     },
     {
       "profile": "editable",
       "label": "Full Kiln assets (remixable)",
       "path": "downloads/cabin-woods-psx-horror-editable.zip",
       "url": "/asset-demos/cabin-woods-psx-horror/downloads/cabin-woods-psx-horror-editable.zip",
-      "bytes": 5492069,
-      "sha256": "247ca3d5c18519f907783b934dad9778a5ca165a63d2e21074be3664c362e437"
+      "bytes": 5496956,
+      "sha256": "9df213e2b0a2e0f879b44a9f3ba2696cb263878887e87ea544f2f602af8fda9f"
     },
     {
       "profile": "scene",
       "label": "Runnable scene and source",
       "path": "downloads/cabin-woods-psx-horror-scene.zip",
       "url": "/asset-demos/cabin-woods-psx-horror/downloads/cabin-woods-psx-horror-scene.zip",
-      "bytes": 2268743,
-      "sha256": "24a45c2426cc6d781b3a05e9445414542b5cb47e0288503b0bc6db349f48a69d"
+      "bytes": 2270200,
+      "sha256": "57e7dbf5904b350d54f4ef2ffa722b5d1eee6043f114d628626fea0a6d379617"
     }
   ],
-  "release": "cabin-20261113-01",
+  "release": "cabin-20261119-01",
   "textureResources": [
     {
       "slug": "grass",
