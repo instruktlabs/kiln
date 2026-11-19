@@ -22,7 +22,7 @@ import {
 } from '../evaluator';
 import { loadGlbReviewScene } from './glb';
 import { encodePng } from './png';
-import { rasterizeView, type ViewSpec } from './raster';
+import { collectTriangleBuffers, rasterizeCollected, type ViewSpec } from './raster';
 import { cloneReviewScene } from './scene-copy';
 
 const DEG = Math.PI / 180;
@@ -123,8 +123,9 @@ export async function rasterizeComposedScene(
     grid[i * 3 + 2] = PAD_COLOR[2];
   }
 
+  const collected = collectTriangleBuffers(group);
   for (let vi = 0; vi < views.length; vi++) {
-    const cell = rasterizeView(group, views[vi]!.dir, { size });
+    const cell = rasterizeCollected(collected, views[vi]!.dir, { size });
     const col = vi % cols;
     const row = Math.floor(vi / cols);
     const x0 = PAD + col * (size + PAD);
