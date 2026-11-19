@@ -8190,6 +8190,36 @@
       "path": "media/rig/review-neutral-v1/farm/delivery-20261119-01/trailer.png",
       "bytes": 1542636,
       "sha256": "e974002c4efeed4648ad119e730fd584a7425102ec9f6d067b1ea09e48c46443"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth.png",
+      "bytes": 1611408,
+      "sha256": "f3eead6ceafcd0fd97b7d2dfe213fc85b30d2afe17226be656f64a72313d2843"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine.png",
+      "bytes": 1443686,
+      "sha256": "b948b6be643b64e549550abefabafcbc5ba75a8f6d7b673eff50b74419823f11"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut.png",
+      "bytes": 1462432,
+      "sha256": "21af2d73b250075914cb874ec2969b7be398f967d6bc0a3079c3ee27e6088869"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table.png",
+      "bytes": 1569142,
+      "sha256": "bc2c109db9ebfc753a5a8d81f5cc5cda85d850c9395b39c12d899e35143bbfa4"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench.png",
+      "bytes": 1607963,
+      "sha256": "f6cbf93d58cbc5b23403e93e666d56a96732671f96db26da7389c06f41de8cbd"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries.png",
+      "bytes": 1638664,
+      "sha256": "3c248cb836459477c1ceab4644fe9c0483cc46f1ca31836ae3751dbac291d092"
     }
   ]
 }

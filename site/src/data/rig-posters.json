@@ -795,6 +795,42 @@
             "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
           ]
         }
+      },
+      {
+        "id": "cabin-woods-psx-horror-2026-11-19-72374a2d",
+        "pack": "cabin-woods-psx-horror",
+        "renderedOn": "2026-11-19",
+        "engine": {
+          "commit": "ebdb1fb6a166d428aec233f6696ad9f6dd7c1cf0",
+          "subject": "Render the Farm rig posters of the five #402 flush-face fix children",
+          "dirty": false
+        },
+        "service": {
+          "url": "http://127.0.0.1:8031",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:a8592bba54f59fe62af19701a8769a90aba42605d15f22491d957cd11d8e4f98",
+          "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+          "dependencies": {
+            "three": "0.187.0",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:2680b3c2136ecb94189bfd93cf2872b25a160666f60f123132c8a19f08f74843",
+            "de84066f-6aac-4677-a069-7ce3dd807500",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
+          ]
+        }
       }
     ]
   },
@@ -3570,17 +3606,17 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
     },
     "cabin-woods-psx-horror:hearth": {
-      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/hearth.png",
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1605611,
-      "sha256": "f53b90e5e258e3cd17b8b3de3b6886a98c7467e597240b6832c2612057724d2e",
+      "bytes": 1611408,
+      "sha256": "f3eead6ceafcd0fd97b7d2dfe213fc85b30d2afe17226be656f64a72313d2843",
       "assetId": "a_550bb6b7e076447b9c7e89d90064fb55",
-      "revisionId": "r_26816096582049a1ba68fd23998f72b4",
+      "revisionId": "r_a25b5e4614404750bac373b2855ca302",
       "glb": {
         "member": "/asset-demos/cabin-woods-psx-horror/models/hearth.glb",
-        "bytes": 15192,
-        "sha256": "69c86541bc5b463e39ee036c6d77e699cb1026f0ec53eb5e819c03e911428bd5",
+        "bytes": 15224,
+        "sha256": "6034232c6ec16b175786f84a09c33967831c2629ba122f23457b82005c589696",
         "triangles": 172
       },
       "view": {
@@ -3593,7 +3629,8 @@
         "projection": "orthographic",
         "halfHeight": 1.7175254214269042
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cabin-woods-psx-horror-2026-11-19-72374a2d"
     },
     "cabin-woods-psx-horror:web": {
       "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/web.png",
@@ -3700,17 +3737,17 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
     },
     "cabin-woods-psx-horror:pine": {
-      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine.png",
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1442516,
-      "sha256": "3d3f8414c220dbdab0f6ce653f3b8950061654cd27aedf9b6641276c1e31acbf",
+      "bytes": 1443686,
+      "sha256": "b948b6be643b64e549550abefabafcbc5ba75a8f6d7b673eff50b74419823f11",
       "assetId": "a_24330aa1ba4b46cdb552f3d33519c547",
-      "revisionId": "r_f270364f29ff4feeaea7050c634a02ea",
+      "revisionId": "r_323545268bc847748d208ba64fad11cf",
       "glb": {
         "member": "/asset-demos/cabin-woods-psx-horror/models/pine.glb",
-        "bytes": 163756,
-        "sha256": "ed852ad05f58a8b2d297210d226f2e4459755100469a0791c1b83528ff7ff398",
+        "bytes": 163760,
+        "sha256": "4f0d2c8b6317ec20d22c0ba974a1056b4cac187a55773f7ce25f9b6634d9bf99",
         "triangles": 1142
       },
       "view": {
@@ -3723,20 +3760,21 @@
         "projection": "orthographic",
         "halfHeight": 4.817686027017445
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cabin-woods-psx-horror-2026-11-19-72374a2d"
     },
     "cabin-woods-psx-horror:pine-cut": {
-      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/pine-cut.png",
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1460902,
-      "sha256": "ee413bf44ddece193ad2dd02ff443dcabb8bf967e2613293f0f4fba6129288c8",
+      "bytes": 1462432,
+      "sha256": "21af2d73b250075914cb874ec2969b7be398f967d6bc0a3079c3ee27e6088869",
       "assetId": "a_88ebf7b1e6c3422082e10b49b6469708",
-      "revisionId": "r_5d6a078e18974eb29db197cf441d80fe",
+      "revisionId": "r_e66e7ffe12d74acc93567b79d7e148ce",
       "glb": {
         "member": "/asset-demos/cabin-woods-psx-horror/models/pine-cut.glb",
-        "bytes": 164496,
-        "sha256": "d08b0903708d6acca8ed7fb69f006a199ae30aad85212a1c98ad16e07eeb1eef",
+        "bytes": 164500,
+        "sha256": "a8bac96e98393f38fb147017ace418cfbf98345841dfddbeecad4a48beaf9a16",
         "triangles": 1142
       },
       "view": {
@@ -3749,7 +3787,8 @@
         "projection": "orthographic",
         "halfHeight": 4.58650070788128
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cabin-woods-psx-horror-2026-11-19-72374a2d"
     },
     "cabin-woods-psx-horror:deer-mount": {
       "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/deer-mount.png",
@@ -4012,17 +4051,17 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
     },
     "cabin-woods-psx-horror:table": {
-      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/table.png",
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1584094,
-      "sha256": "c3082e4112e3b07f874719102696f342fbd20f03802d66c34b7a567c298fd11f",
+      "bytes": 1569142,
+      "sha256": "bc2c109db9ebfc753a5a8d81f5cc5cda85d850c9395b39c12d899e35143bbfa4",
       "assetId": "a_270f6d2ae38c42419fe4dab4f234c132",
-      "revisionId": "r_f210cfe0853a4f36aa4a7be1eff80d86",
+      "revisionId": "r_8a50e31344d0463288cd3f7cb5bccf43",
       "glb": {
         "member": "/asset-demos/cabin-woods-psx-horror/models/table.glb",
-        "bytes": 18036,
-        "sha256": "6696df1bd5d6959a9487de85aa73e2242c7bb49fba5af4f8dca139a24587b707",
+        "bytes": 18696,
+        "sha256": "89476f57a5fdf6d0b1217d214b284782b698ba777edb71d4152b66ab30534b89",
         "triangles": 336
       },
       "view": {
@@ -4035,20 +4074,21 @@
         "projection": "orthographic",
         "halfHeight": 0.7308223190370058
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cabin-woods-psx-horror-2026-11-19-72374a2d"
     },
     "cabin-woods-psx-horror:bench": {
-      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/bench.png",
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1623908,
-      "sha256": "ac7aae73ff800a178e040a46bf371eff04a887d520ff42de53ed3378c46e927e",
+      "bytes": 1607963,
+      "sha256": "f6cbf93d58cbc5b23403e93e666d56a96732671f96db26da7389c06f41de8cbd",
       "assetId": "a_f71ef069c1a84493a3445a7879dbb6a1",
-      "revisionId": "r_e1dc1368d60845b0880a252dc60717c2",
+      "revisionId": "r_b2684ddd7dca42238455e541fae06bc3",
       "glb": {
         "member": "/asset-demos/cabin-woods-psx-horror/models/bench.glb",
-        "bytes": 19756,
-        "sha256": "715fec5fea794851968f6ffe595408cdd66935bb0b64fa53217a8a082607acab",
+        "bytes": 20416,
+        "sha256": "37431c050a4730107b14c39d274fe379f27d1daf62715519d55eb66567d05256",
         "triangles": 336
       },
       "view": {
@@ -4061,7 +4101,8 @@
         "projection": "orthographic",
         "halfHeight": 0.7403992432178745
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cabin-woods-psx-horror-2026-11-19-72374a2d"
     },
     "cabin-woods-psx-horror:fps-arms": {
       "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/fps-arms.png",
@@ -4802,17 +4843,17 @@
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
     },
     "cabin-woods-psx-horror:batteries": {
-      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261012-01/batteries.png",
+      "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1617464,
-      "sha256": "08fc42724f083abe6c84c5582874d2c971b0627d14ec0bae4d099d9bd22e7413",
+      "bytes": 1638664,
+      "sha256": "3c248cb836459477c1ceab4644fe9c0483cc46f1ca31836ae3751dbac291d092",
       "assetId": "a_5c156f53c97e40d691a837d7b79d69cb",
-      "revisionId": "r_13cfa449003d45fcaa97199bba3f5b10",
+      "revisionId": "r_b21eb3d376a54e8c9cca34c83a6e2384",
       "glb": {
         "member": "/asset-demos/cabin-woods-psx-horror/models/batteries.glb",
         "bytes": 17772,
-        "sha256": "3089b67cd9f2300350d74aacdd0994a6c22c5e7a80caf0fffcda74a6b09a2b0f",
+        "sha256": "baebd3f4d7674a4d190f057751a0367436826251b7b5652701192b8dc0f4131e",
         "triangles": 184
       },
       "view": {
@@ -4823,9 +4864,10 @@
         ],
         "padding": 1.05,
         "projection": "orthographic",
-        "halfHeight": 0.034067849631007466
+        "halfHeight": 0.03414223345450643
       },
-      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742"
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "cabin-woods-psx-horror-2026-11-19-72374a2d"
     },
     "holodeck:island-palm": {
       "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261022-01/island-palm.png",

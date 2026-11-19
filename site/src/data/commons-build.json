@@ -5302,6 +5302,78 @@
       "sourceRevisionId": "r_50136ad30e7a43d688d32e1d1a60a9c8",
       "exactRevision": true,
       "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Original modular cabin collection. 172 triangles; named assembly and interaction interfaces.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/hearth.png",
+      "sourceRevisionId": "r_a25b5e4614404750bac373b2855ca302",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Layered cutout boughs, tapered bark trunk and matched stump cut.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine.png",
+      "sourceRevisionId": "r_323545268bc847748d208ba64fad11cf",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Reusable felled crown with matched trunk cut.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/pine-cut.png",
+      "sourceRevisionId": "r_e66e7ffe12d74acc93567b79d7e148ce",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Original modular cabin collection. 336 triangles; named assembly and interaction interfaces.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/table.png",
+      "sourceRevisionId": "r_8a50e31344d0463288cd3f7cb5bccf43",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Original modular cabin collection. 336 triangles; named assembly and interaction interfaces.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/bench.png",
+      "sourceRevisionId": "r_b2684ddd7dca42238455e541fae06bc3",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "Original pair of AA cells with procedural pixel labels, raised positive caps and a paper band.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-320.webp 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-480.webp 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-672.webp 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-768.webp 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-320.avif 320w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-480.avif 480w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-672.avif 672w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-768.avif 768w, /media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries.png",
+      "sourceRevisionId": "r_b21eb3d376a54e8c9cca34c83a6e2384",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     }
   ],
   "archives": [
