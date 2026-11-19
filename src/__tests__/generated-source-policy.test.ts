@@ -214,6 +214,37 @@ describe('H6.5 generated-source policy', () => {
     }
   });
 
+  test('a local named like a host global is still refused, with a message to rename it', () => {
+    // A dogfood author declared `const window` for a gatehouse window and read
+    // "cannot access ambient capability `window`" on each line that used it.
+    for (const [name, body] of [
+      [
+        'window',
+        "const window = createPart('Window', boxGeo(1, 1, 0.1), gameMaterial(0x888888), { parent: root });\n  window.position.y = 1;",
+      ],
+      ['document', 'root.userData.pages = ((document) => document.length)([1, 2]);'],
+      ['location', 'for (const [location] of [[0, 0, 0]]) root.userData.at = location;'],
+      ['self', 'const { a: self = 1 } = {}; root.userData.self = self;'],
+    ] as const) {
+      const result = validate(wrap(body));
+      expect(result.valid, name).toBe(false);
+      const issues = result.issues.filter((issue) => issue.code === 'UNSAFE_GLOBAL_ACCESS');
+      expect(issues.length, name).toBeGreaterThan(0);
+      for (const issue of issues) {
+        expect(issue.message, name).toBe(
+          `Generated code cannot use the name \`${name}\`, even for its own variable: rename it, for example \`${name}Part\`.`,
+        );
+      }
+    }
+  });
+
+  test('an undeclared host global keeps the ambient-capability message', () => {
+    const issues = validate(wrap('root.userData.width = window.innerWidth;')).issues;
+    expect(issues.map((issue) => issue.message)).toEqual([
+      'Generated code cannot access ambient capability `window`.',
+    ]);
+  });
+
   test('does not scan comments, strings, or benign object keys as capabilities', () => {
     const source = wrap(`
       // fetch(globalThis.process) and new THREE.DataTexture() are forbidden examples only.

@@ -619,6 +619,18 @@ function analyzeGeneratedSourceSafety(ast: acorn.Program): ValidationIssue[] {
       fixHint: 'Use only the documented sandbox globals and approved resource helpers.',
       line,
     });
+  // The denylist refuses these names even for the program's own variables. When an
+  // identifier is such a variable (`const window = ...`), say so: "ambient capability"
+  // would describe a host global the program never touched.
+  let bindings: ReturnType<typeof sourceBindings> | undefined;
+  const localName = (name: string, line?: number): void =>
+    add({
+      code: 'UNSAFE_GLOBAL_ACCESS',
+      message: `Generated code cannot use the name \`${name}\`, even for its own variable: rename it, for example \`${name}Part\`.`,
+      fixHint:
+        'Host-global names such as window, document and self are refused everywhere in generated code; give the variable another name.',
+      line,
+    });
   const dynamicCode = (line?: number): void =>
     add({
       code: 'DYNAMIC_CODE_ACCESS',
@@ -675,7 +687,9 @@ function analyzeGeneratedSourceSafety(ast: acorn.Program): ValidationIssue[] {
       const parent = ancestors.at(-2);
       if (identifierIsNonReferenceKey(node, parent)) return;
       if (FORBIDDEN_AMBIENT_IDENTIFIERS.has(node.name)) {
-        ambient(node.name, node.loc?.start.line);
+        bindings ??= sourceBindings(ast);
+        if (bindings.has(node.name, ancestors)) localName(node.name, node.loc?.start.line);
+        else ambient(node.name, node.loc?.start.line);
       }
     },
     ThisExpression(node, _state, ancestors) {

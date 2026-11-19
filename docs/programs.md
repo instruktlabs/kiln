@@ -66,6 +66,8 @@ Host capabilities are refused before the program runs: `import`, `export` and dy
 `process`, `require`, `module`, `Reflect`, `fetch`, `XMLHttpRequest`, `WebSocket`, the
 browser globals (`window`, `self`, `document`, `navigator`, `location`), `Bun` and
 `Deno`, and `this` outside a method. This is a safety net, not process isolation.
+The names are refused wherever they appear, so a variable of the program's own called
+`window` or `location` must be renamed; the message for one says so.
 `kiln validate` reports the first refused use with its line.
 
 ## Declared parameters
