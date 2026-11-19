@@ -91,6 +91,8 @@ export const READBACK =
 const json = (value) => `${JSON.stringify(value, null, 2)}\n`;
 const message = (error) => (error instanceof Error ? error.message : String(error));
 const plural = (count, word) => `${count} ${word}${count === 1 ? '' : 's'}`;
+/** A count as the page writes it: 3,193,943. */
+const digits = (count) => count.toLocaleString('en-US');
 /** A count and the verb that agrees with it: `1 needs`, `2 need`. */
 const agree = (count, one, many) => `${count} ${count === 1 ? one : many}`;
 
@@ -505,14 +507,25 @@ export function proposeNote(finding, { doc, clips = [] } = {}) {
   return `${finding.message} Accepted after the visual review: the views do not show a problem from it.`;
 }
 
+/**
+ * The GLB's triangle count, from the runtime cost the QA rules read off the bytes. FLUSH_FACES counts
+ * only the parts it collected, so a check stopped by its budget cannot say how much it left out.
+ */
+export function glbTriangles(evidence) {
+  const triangles = evidence?.qa?.dimensions?.runtimeCost?.metrics?.triangles;
+  return Number.isInteger(triangles) && triangles >= 0 ? triangles : undefined;
+}
+
 /** What the record should say and why: the automated bar items, and what needs the owner's eye. */
-export function proposal({ flush, viewFidelity, findings, assetId, collection, savedFlush }) {
+export function proposal({ flush, viewFidelity, findings, assetId, collection, savedFlush, modelTriangles }) {
   const fails = [];
   const judgment = [];
   if (flush.pairs > 0) fails.push(`FLUSH_FACES reports ${plural(flush.pairs, 'pair')}`);
   if (flush.truncated)
     fails.push(
-      `the flush-face check stopped at its budget after ${flush.examined.toLocaleString('en-US')} of ${flush.triangles.toLocaleString('en-US')} triangles`,
+      modelTriangles === undefined
+        ? `the flush-face check stopped at its budget after measuring ${digits(flush.examined)} triangles; the parts past it were not measured`
+        : `the flush-face check stopped at its budget after measuring ${digits(flush.examined)} of the ${digits(modelTriangles)} triangles in the GLB`,
     );
   if (!viewFidelity.materialFaithful)
     fails.push(`no material-faithful views: ${viewFidelity.degradeReason ?? viewFidelity.delivered}`);
@@ -596,6 +609,7 @@ export function reviewPage({ generated, engine, renderer, candidates }) {
   const section = (candidate) => {
     const { card, served, record, proposed, evidence, viewFidelity, source, savedFlush } = candidate;
     const flush = evidence.flushFaces;
+    const modelTriangles = glbTriangles(evidence);
     const notes = Object.values(evidence.qa.dimensions).flatMap((dimension) =>
       dimension.findings.filter((finding) => finding.disposition === 'observe'),
     );
@@ -624,7 +638,7 @@ ${image}
 <dl>
 <dt>Served GLB</dt><dd>${escapeHtml(served.url)}<br>SHA-256 ${escapeHtml(served.sha256)}, ${served.bytes.toLocaleString('en-US')} bytes, read from ${escapeHtml(source)}</dd>
 <dt>Views</dt><dd>${escapeHtml(record.views.shots)}; ${escapeHtml(record.views.backdrop)} backdrop; ${escapeHtml(viewFidelity.rendererId)}; delivered ${escapeHtml(viewFidelity.delivered)}, materialFaithful ${viewFidelity.materialFaithful}, exactArtifact ${viewFidelity.exactArtifact}</dd>
-<dt>FLUSH_FACES</dt><dd>${plural(flush.pairs, 'pair')}${flush.truncated ? ', truncated' : ''}; ${flush.examined.toLocaleString('en-US')} of ${flush.triangles.toLocaleString('en-US')} triangles measured; ${flush.unexaminedParts} unexamined parts; ${flush.matching} matching and ${flush.hidden} hidden pairs not reported${flush.warning ? `<br>${escapeHtml(flush.warning)}` : ''}${pairs}${savedFlush ? `<br>The saved asset.glb of this revision: ${plural(savedFlush.pairs, 'pair')}${savedFlush.truncated ? ', truncated' : ''}, ${savedFlush.examined.toLocaleString('en-US')} triangles measured.` : ''}</dd>
+<dt>FLUSH_FACES</dt><dd>${plural(flush.pairs, 'pair')}${flush.truncated ? ', truncated' : ''}; ${modelTriangles === undefined ? `${digits(flush.examined)} triangles` : `${digits(flush.examined)} of the ${digits(modelTriangles)} triangles in the GLB`} measured; ${flush.unexaminedParts} unexamined parts; ${flush.matching} matching and ${flush.hidden} hidden pairs not reported${flush.warning ? `<br>${escapeHtml(flush.warning)}` : ''}${pairs}${savedFlush ? `<br>The saved asset.glb of this revision: ${plural(savedFlush.pairs, 'pair')}${savedFlush.truncated ? ', truncated' : ''}, ${savedFlush.examined.toLocaleString('en-US')} triangles measured.` : ''}</dd>
 <dt>QA</dt><dd>${escapeHtml(evidence.qa.disposition)} (${escapeHtml(evidence.qa.acceptance)}); requirements: ${escapeHtml(evidence.requirements)}</dd>
 </dl>
 <h3>QA errors and warnings</h3>
@@ -687,6 +701,7 @@ export async function review(cards, { engine, port, renderer, out = DEFAULT_OUT,
       assetId: card.assetId ?? saved?.assetId,
       collection: card.collection,
       savedFlush,
+      modelTriangles: glbTriangles(evidence),
     });
     const record = pendingRecord({
       card,

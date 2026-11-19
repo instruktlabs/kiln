@@ -211,6 +211,14 @@ test('proposals follow the bar, and notes come from facts in the bytes where the
   const flush = (pairs: number, extra = {}) => ({ pairs, truncated: false, unexaminedParts: 0, triangles: 10, examined: 10, ...extra });
   expect(proposal({ flush: flush(0), viewFidelity: faithful, findings: [], assetId: 'a_x', collection: 'project' })).toEqual({ verdict: 'verified', standing: 'likely to pass', reasons: [] });
   expect(proposal({ flush: flush(3), viewFidelity: faithful, findings: [], assetId: 'a_x', collection: 'project' })).toMatchObject({ verdict: 'rejected', standing: 'fails the bar', reasons: ['FLUSH_FACES reports 3 pairs'] });
+  // A truncated check says how much of the GLB it measured: parts past the budget are not in its own count.
+  const truncated = flush(0, { truncated: true, triangles: 400_000, examined: 400_000 });
+  expect(proposal({ flush: truncated, modelTriangles: 3_193_943, viewFidelity: faithful, findings: [], assetId: 'a_x', collection: 'project' }).reasons).toEqual([
+    'the flush-face check stopped at its budget after measuring 400,000 of the 3,193,943 triangles in the GLB',
+  ]);
+  expect(proposal({ flush: truncated, viewFidelity: faithful, findings: [], assetId: 'a_x', collection: 'project' }).reasons).toEqual([
+    'the flush-face check stopped at its budget after measuring 400,000 triangles; the parts past it were not measured',
+  ]);
   // A skinned GLB the check cannot measure is the owner's call, and its saved GLB informs it.
   expect(
     proposal({ flush: flush(0, { unexaminedParts: 9, examined: 0, triangles: 0 }), viewFidelity: faithful, findings: [], assetId: 'a_x', savedFlush: flush(32) }),
@@ -266,7 +274,7 @@ test('the review page shows each sheet, flush result and proposed note, with eve
   const evidence = {
     flushFaces: { pairs: 1, truncated: false, unexaminedParts: 0, triangles: 12, examined: 12, matching: 0, hidden: 0, omitted: 0, listed: [{ parts: ['Lid', 'Box'], sharedArea: 0.25, at: [0, 1, 0] }], warning: 'FLUSH_FACES: 1 pair.' },
     requirements: 'default: no saved manifest found',
-    qa: { kind: 'kiln.asset-qa-report', schemaVersion: 2, disposition: 'warn', acceptance: 'accepted', dimensions: { visualQuality: { findings: [{ code: 'X_WARN', disposition: 'warn', message: 'Bad <b>thing</b>', affected: { node: 'Lid' } }, { code: 'Y_NOTE', disposition: 'observe', message: 'Fine.' }] } } },
+    qa: { kind: 'kiln.asset-qa-report', schemaVersion: 2, disposition: 'warn', acceptance: 'accepted', dimensions: { visualQuality: { findings: [{ code: 'X_WARN', disposition: 'warn', message: 'Bad <b>thing</b>', affected: { node: 'Lid' } }, { code: 'Y_NOTE', disposition: 'observe', message: 'Fine.' }] }, runtimeCost: { findings: [], metrics: { triangles: 40 } } } },
   };
   const record = { revisionId: 'r_1', assetId: 'a_1', collection: 'project', glbSha256: 'f'.repeat(64), qaReport: { path: 'gallery-verified/qa/r_1.json', sha256: 'e'.repeat(64) }, findings: [{ code: 'X_WARN', subject: 'Lid', resolution: 'accepted', note: 'Kept <on purpose>.' }], views: { shots: 'default six-view sheet', backdrop: 'neutral', materialFaithful: true } };
   const page = reviewPage({
@@ -281,6 +289,7 @@ test('the review page shows each sheet, flush result and proposed note, with eve
   expect(page).toContain('Bad &lt;b&gt;thing&lt;/b&gt;');
   expect(page).toContain('Kept &lt;on purpose&gt;.');
   expect(page).toContain('Lid and Box: 0.25 m');
+  expect(page).toContain('12 of the 40 triangles in the GLB measured');
   expect(page).toContain('1 candidate: 0 likely to pass, 0 need the owner&rsquo;s judgment, 1 fails the bar');
   expect(page).toContain('1 informational note');
 });
