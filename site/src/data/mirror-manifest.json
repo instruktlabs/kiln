@@ -7970,6 +7970,81 @@
       "path": "media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit.png",
       "bytes": 1748228,
       "sha256": "70d8f4d53a6d0d291d3677119421fe9e61902b1f092a1949f7f77b96444fab7e"
+    },
+    {
+      "path": "packs/farm/delivery-20261119-01/models/farmhouse.glb",
+      "bytes": 549616,
+      "sha256": "7478f660811eeb93011b0baf22857e3efa3b102b45b2c9cdd9079e330960f646"
+    },
+    {
+      "path": "media/farm/delivery-20261119-01/poster/farmhouse.png",
+      "bytes": 328174,
+      "sha256": "3b2abd413a45360a3159bffff70dd27ac23e66e83691d04d204a5ea117926aeb"
+    },
+    {
+      "path": "packs/farm/delivery-20261119-01/editable/farmhouse-editable.zip",
+      "bytes": 873209,
+      "sha256": "153275d5af6c874aa180fc2fb2d0d5980bcc969f222f5d45af54ac73ff4c7077"
+    },
+    {
+      "path": "packs/farm/delivery-20261119-01/models/windmill.glb",
+      "bytes": 454012,
+      "sha256": "f3ae9e54dbd8f42ffb219ffa48092eaf96e44b4f5e452b23219d3d553e75d806"
+    },
+    {
+      "path": "media/farm/delivery-20261119-01/poster/windmill.png",
+      "bytes": 196501,
+      "sha256": "d1cbcdf81e90386eede3d391c80bb6a21a678a836165f6027913dcd8d6dbc13c"
+    },
+    {
+      "path": "packs/farm/delivery-20261119-01/editable/windmill-editable.zip",
+      "bytes": 869294,
+      "sha256": "774e1665ad04afaacaf064d6b756b25120f005996280dff75e9c839aa956e876"
+    },
+    {
+      "path": "packs/farm/delivery-20261119-01/models/watermill.glb",
+      "bytes": 580300,
+      "sha256": "126251b82f4ab9557552a198172ca1f8b35a4c60b9355292e6f950c95e5da2b0"
+    },
+    {
+      "path": "media/farm/delivery-20261119-01/poster/watermill.png",
+      "bytes": 388604,
+      "sha256": "d28a8617c22f461a21c726a2bd177a429100c7e56c0ebd9394d0dcc351446f0b"
+    },
+    {
+      "path": "packs/farm/delivery-20261119-01/editable/watermill-editable.zip",
+      "bytes": 1133608,
+      "sha256": "66262ce3635428328da791be3219dca5732dbf79903d172c12cc2eaf549ddcff"
+    },
+    {
+      "path": "packs/farm/delivery-20261119-01/models/tractor.glb",
+      "bytes": 304576,
+      "sha256": "144ed8fa0bded0355bb292d1534671e0bf84024ff6988e13df3b777419eab87f"
+    },
+    {
+      "path": "media/farm/delivery-20261119-01/poster/tractor.png",
+      "bytes": 75584,
+      "sha256": "cd85482f0ca4e251eb5f29f3facc1170f226439f5c5063bc0e1ca79d51fa5389"
+    },
+    {
+      "path": "packs/farm/delivery-20261119-01/editable/tractor-editable.zip",
+      "bytes": 654805,
+      "sha256": "bb620f2e5eb808382819eb894bdb3c68846ef5ddb856e83903b4b3f41f4d14d3"
+    },
+    {
+      "path": "packs/farm/delivery-20261119-01/models/trailer.glb",
+      "bytes": 183276,
+      "sha256": "30628167973ce5cb9f5e7b47988c2b3b50f86359188601891823eb31aaa6aaca"
+    },
+    {
+      "path": "media/farm/delivery-20261119-01/poster/trailer.png",
+      "bytes": 112705,
+      "sha256": "7780d5bf524ee8fdea67377ac4ed9d5d769605a071bcb703243647e6a0306f15"
+    },
+    {
+      "path": "packs/farm/delivery-20261119-01/editable/trailer-editable.zip",
+      "bytes": 690117,
+      "sha256": "2e0504d9aa90151c24820d05959697e5a4d04312cba81a511c4255762cfd1e10"
     }
   ]
 }

@@ -193,8 +193,8 @@
       "category": "Buildings",
       "description": "Cream masonry house with a charcoal gabled roof, olive shutters and a timber porch.",
       "assetId": "a_793e1ebd4c32465ab937d93215ec2a50",
-      "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
-      "parentRevision": "r_37f835d35a1040fc9f64d6f3b271eac5",
+      "revisionId": "r_10b63bdd371e4a78ae90faf92a8568ed",
+      "parentRevision": "r_01f97f5e943e4c2693b6db8596f3e353",
       "metrics": {
         "triangles": 4080,
         "meshes": 16,
@@ -243,36 +243,35 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/farmhouse-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/farmhouse-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/farmhouse-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/farmhouse-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/farmhouse-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/farm/r34/farmhouse.png",
         "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
-        "exactRevision": true,
+        "exactRevision": false,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/farm/r34/poster/farmhouse.webp",
+        "src": "/media/farm/delivery-20261119-01/poster/farmhouse.webp",
         "width": 1168,
         "height": 780,
         "alt": "Six saved review views of Farmhouse.",
-        "srcsetWebp": "/media/farm/r34/poster/farmhouse-320.webp 320w, /media/farm/r34/poster/farmhouse-480.webp 480w, /media/farm/r34/poster/farmhouse-672.webp 672w, /media/farm/r34/poster/farmhouse-768.webp 768w, /media/farm/r34/poster/farmhouse-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r34/poster/farmhouse-320.avif 320w, /media/farm/r34/poster/farmhouse-480.avif 480w, /media/farm/r34/poster/farmhouse-672.avif 672w, /media/farm/r34/poster/farmhouse-768.avif 768w, /media/farm/r34/poster/farmhouse-1024.avif 1024w",
-        "inputPath": "media/farm/r34/poster/farmhouse.png",
-        "sourceRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+        "srcsetWebp": "/media/farm/delivery-20261119-01/poster/farmhouse-320.webp 320w, /media/farm/delivery-20261119-01/poster/farmhouse-480.webp 480w, /media/farm/delivery-20261119-01/poster/farmhouse-672.webp 672w, /media/farm/delivery-20261119-01/poster/farmhouse-768.webp 768w, /media/farm/delivery-20261119-01/poster/farmhouse-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/delivery-20261119-01/poster/farmhouse-320.avif 320w, /media/farm/delivery-20261119-01/poster/farmhouse-480.avif 480w, /media/farm/delivery-20261119-01/poster/farmhouse-672.avif 672w, /media/farm/delivery-20261119-01/poster/farmhouse-768.avif 768w, /media/farm/delivery-20261119-01/poster/farmhouse-1024.avif 1024w",
+        "inputPath": "media/farm/delivery-20261119-01/poster/farmhouse.png",
+        "sourceRevisionId": "r_10b63bdd371e4a78ae90faf92a8568ed",
         "exactRevision": true
       },
       "sourcePath": "/sources/farmhouse.kiln.js",
-      "sourceSha256": "74fda08c6343b2a257c0da185f1486a0ca23392d6574fc8f55eeb37c74fd9fde",
+      "sourceSha256": "cd127b4ff06213896f006151789e45d86dc31c634e9f5f570c10e38cd5efc5b3",
       "modelPath": "/models/farm/farmhouse.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r36-local-review/models/farmhouse.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/farmhouse.glb",
-        "bytes": 549584,
-        "sha256": "1b02596b30e3417e3f8336893694f2614002e28154408803b145154097de8512",
-        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-        "member": "models/farmhouse.glb"
+        "path": "packs/farm/delivery-20261119-01/models/farmhouse.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/models/farmhouse.glb",
+        "bytes": 549616,
+        "sha256": "7478f660811eeb93011b0baf22857e3efa3b102b45b2c9cdd9079e330960f646"
       },
       "provenance": {
         "originalModel": "Claude Opus 5.5",
         "refinementModels": [
           "Claude Opus 5.5",
-          "Gemini 3.8 Flash High"
+          "Gemini 3.8 Flash High",
+          "Claude Sonnet 5.5"
         ],
         "history": [
           {
@@ -322,6 +321,31 @@
             "harness": "agy",
             "harnessVersion": "1.2.12",
             "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "Flush-face fix",
+            "request": "flush-face-fix",
+            "revisionId": "r_10b63bdd371e4a78ae90faf92a8568ed",
+            "parentRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+            "savedAt": "2026-11-19T20:02:12.272Z",
+            "brief": "Refinement: replaced stone foundation top in main room with honey-wood plank floor (farm honey wood subdued grain derivative, 18 planks spanning interior along Z with 4mm shadow seams and subfloor base at floor height 0.40m). Perimeter stone foundation under walls preserved exterior plinth, wall seating, door threshold, door pivot, steps and porch unchanged. Original author Claude Opus 5.5; floor refinement by Gemini 3.8 Flash High via agy harness. High effort requested, not independently confirmed. Candidate awaiting owner review. Flush-face fix: soffit half-width PZ -> PZ - 0.04 so its sloped underside no longer shares a plane with the two 4 cm end fascia boards; beam z extent -PZ..PZ shortened to -PZ+0.004..PZ-0.004 so its end faces no longer lie on the fascia outer faces; ledger z extent -PZ..PZ shortened to -PZ+0.004..PZ-0.004 for the same reason.",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "not recorded",
+            "confirmedEffort": null,
+            "harness": "claude-code",
+            "harnessVersion": null,
+            "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+            "run": {
+              "stage": "flush-face-fix",
+              "label": "flush-face fix session",
+              "status": "not recorded",
+              "stop": null,
+              "startedAt": null,
+              "endedAt": null,
+              "receiptSha256": null,
+              "invocationSha256": null
+            }
           }
         ]
       },
@@ -373,17 +397,49 @@
           "harness": "agy",
           "harnessVersion": "1.2.12",
           "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "Flush-face fix",
+          "request": "flush-face-fix",
+          "revisionId": "r_10b63bdd371e4a78ae90faf92a8568ed",
+          "parentRevisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+          "savedAt": "2026-11-19T20:02:12.272Z",
+          "brief": "Refinement: replaced stone foundation top in main room with honey-wood plank floor (farm honey wood subdued grain derivative, 18 planks spanning interior along Z with 4mm shadow seams and subfloor base at floor height 0.40m). Perimeter stone foundation under walls preserved exterior plinth, wall seating, door threshold, door pivot, steps and porch unchanged. Original author Claude Opus 5.5; floor refinement by Gemini 3.8 Flash High via agy harness. High effort requested, not independently confirmed. Candidate awaiting owner review. Flush-face fix: soffit half-width PZ -> PZ - 0.04 so its sloped underside no longer shares a plane with the two 4 cm end fascia boards; beam z extent -PZ..PZ shortened to -PZ+0.004..PZ-0.004 so its end faces no longer lie on the fascia outer faces; ledger z extent -PZ..PZ shortened to -PZ+0.004..PZ-0.004 for the same reason.",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null,
+          "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+          "run": {
+            "stage": "flush-face-fix",
+            "label": "flush-face fix session",
+            "status": "not recorded",
+            "stop": null,
+            "startedAt": null,
+            "endedAt": null,
+            "receiptSha256": null,
+            "invocationSha256": null
+          }
         }
       ],
       "review": {
         "status": "accepted",
         "ownerAccepted": true,
+        "scope": "Flush-face fix of an approved revision; approved by the owner on 2026-11-19.",
+        "recordedAt": "2026-11-19",
+        "source": "Owner approval of the flush-face fix revisions, 2026-11-19"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null,
+      "previousOwnerReview": {
+        "status": "accepted",
+        "ownerAccepted": true,
         "scope": "Exact delivered revision matches the current owner-accepted revision.",
         "recordedAt": "2026-09-29",
         "source": "site-build/FEEDBACK-site-review-1.md"
-      },
-      "license": "CC0-1.0",
-      "sceneDeepLink": null
+      }
     },
     {
       "id": "barn",
@@ -526,10 +582,10 @@
       "category": "Buildings",
       "description": "Open timber wind pump with a metal rotor, tail vane and four braced legs.",
       "assetId": "windmill",
-      "revisionId": "r_ef9045311dd040258e0143345c171d6f",
-      "parentRevision": "r_3836995ebcad486b88d50b05464a390d",
+      "revisionId": "r_be71af41cdd34106b2a81e84e44a529f",
+      "parentRevision": "r_ef9045311dd040258e0143345c171d6f",
       "metrics": {
-        "triangles": 4328,
+        "triangles": 4200,
         "meshes": 4,
         "materials": 2,
         "bounds": [
@@ -566,33 +622,34 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/windmill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/windmill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/windmill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/windmill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/windmill-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/farm/r34/windmill.png",
         "sourceRevisionId": "r_ef9045311dd040258e0143345c171d6f",
-        "exactRevision": true,
+        "exactRevision": false,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/farm/r33/poster/windmill.webp",
+        "src": "/media/farm/delivery-20261119-01/poster/windmill.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six rendered review views of Windmill.",
-        "srcsetWebp": "/media/farm/r33/poster/windmill-320.webp 320w, /media/farm/r33/poster/windmill-480.webp 480w, /media/farm/r33/poster/windmill-672.webp 672w, /media/farm/r33/poster/windmill-768.webp 768w, /media/farm/r33/poster/windmill-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/poster/windmill-320.avif 320w, /media/farm/r33/poster/windmill-480.avif 480w, /media/farm/r33/poster/windmill-672.avif 672w, /media/farm/r33/poster/windmill-768.avif 768w, /media/farm/r33/poster/windmill-1024.avif 1024w",
-        "inputPath": "media/farm/r33/poster/windmill.webp"
+        "alt": "Six saved review views of Windmill.",
+        "srcsetWebp": "/media/farm/delivery-20261119-01/poster/windmill-320.webp 320w, /media/farm/delivery-20261119-01/poster/windmill-480.webp 480w, /media/farm/delivery-20261119-01/poster/windmill-672.webp 672w, /media/farm/delivery-20261119-01/poster/windmill-768.webp 768w, /media/farm/delivery-20261119-01/poster/windmill-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/delivery-20261119-01/poster/windmill-320.avif 320w, /media/farm/delivery-20261119-01/poster/windmill-480.avif 480w, /media/farm/delivery-20261119-01/poster/windmill-672.avif 672w, /media/farm/delivery-20261119-01/poster/windmill-768.avif 768w, /media/farm/delivery-20261119-01/poster/windmill-1024.avif 1024w",
+        "inputPath": "media/farm/delivery-20261119-01/poster/windmill.png",
+        "sourceRevisionId": "r_be71af41cdd34106b2a81e84e44a529f",
+        "exactRevision": true
       },
       "sourcePath": "/sources/windmill.kiln.js",
-      "sourceSha256": "fbbeb5d8db9b925f48194c533e0b6130681bf7f86b05d8b19ce898b049e0f5e6",
+      "sourceSha256": "79caaffed41ef6252c729f54f0672323cbceaf7bde38c761c11c0df039055023",
       "modelPath": "/models/farm/windmill.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r36-local-review/models/windmill.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/windmill.glb",
-        "bytes": 454760,
-        "sha256": "089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f",
-        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-        "member": "models/windmill.glb"
+        "path": "packs/farm/delivery-20261119-01/models/windmill.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/models/windmill.glb",
+        "bytes": 454012,
+        "sha256": "f3ae9e54dbd8f42ffb219ffa48092eaf96e44b4f5e452b23219d3d553e75d806"
       },
       "provenance": {
         "originalModel": "Gemini 3.8 Flash High",
         "refinementModels": [
-          "Gemini 3.8 Flash High"
+          "Gemini 3.8 Flash High",
+          "Claude Sonnet 5.5"
         ],
         "history": [
           {
@@ -630,6 +687,31 @@
             "harness": "agy",
             "harnessVersion": "1.2.9",
             "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "Flush-face fix",
+            "request": "flush-face-fix",
+            "revisionId": "r_be71af41cdd34106b2a81e84e44a529f",
+            "parentRevisionId": "r_ef9045311dd040258e0143345c171d6f",
+            "savedAt": "2026-11-19T20:02:43.265Z",
+            "brief": "Review 2 repair: removed base anchor struts and floating foot pads, suspended ladder at Y=0.25 above grade with bottom rung at Y=0.40 supported by tier girt standoff brackets and platform grab anchors. Flush-face fix: removed the duplicate reversed back-face triangles of each blade (the brushed metal is already double-sided, so the copy only z-fought the front face); x-direction tie beams 4 mm lower in height so their top/bottom no longer share a plane with the z-direction beams at the corners; crossing X-brace pairs: one brace 4 mm thinner in the face normal direction; deck rims: base raised 2 mm into the deck (front/rear rims also 4 mm lower in height) and rim ends lengthened 2 mm past the deck edge so rim bottoms, tops and ends no longer share planes with the deck or each other; ladder: rail extension, elbow and drop thinner by 4/8/4 mm, standoff struts 31 mm square starting inside the mounting plate, rungs 4 mm shorter at each end, mounting plates and deck flanges sunk 2 mm into the beam and deck, drop beam ends inside the flange; foot clamp plate bottom 2 mm below the pedestal top, turntable bottom 2 mm into the mast block, gear cover bottom 2 mm into the gearbox, tail strut 4 mm thinner in z, rear vane rib 4 mm thinner in z; spokes 4 mm thinner along the rotor axis so they no longer share planes with the two rings.",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "not recorded",
+            "confirmedEffort": null,
+            "harness": "claude-code",
+            "harnessVersion": null,
+            "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+            "run": {
+              "stage": "flush-face-fix",
+              "label": "flush-face fix session",
+              "status": "not recorded",
+              "stop": null,
+              "startedAt": null,
+              "endedAt": null,
+              "receiptSha256": null,
+              "invocationSha256": null
+            }
           }
         ]
       },
@@ -669,17 +751,49 @@
           "harness": "agy",
           "harnessVersion": "1.2.9",
           "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "Flush-face fix",
+          "request": "flush-face-fix",
+          "revisionId": "r_be71af41cdd34106b2a81e84e44a529f",
+          "parentRevisionId": "r_ef9045311dd040258e0143345c171d6f",
+          "savedAt": "2026-11-19T20:02:43.265Z",
+          "brief": "Review 2 repair: removed base anchor struts and floating foot pads, suspended ladder at Y=0.25 above grade with bottom rung at Y=0.40 supported by tier girt standoff brackets and platform grab anchors. Flush-face fix: removed the duplicate reversed back-face triangles of each blade (the brushed metal is already double-sided, so the copy only z-fought the front face); x-direction tie beams 4 mm lower in height so their top/bottom no longer share a plane with the z-direction beams at the corners; crossing X-brace pairs: one brace 4 mm thinner in the face normal direction; deck rims: base raised 2 mm into the deck (front/rear rims also 4 mm lower in height) and rim ends lengthened 2 mm past the deck edge so rim bottoms, tops and ends no longer share planes with the deck or each other; ladder: rail extension, elbow and drop thinner by 4/8/4 mm, standoff struts 31 mm square starting inside the mounting plate, rungs 4 mm shorter at each end, mounting plates and deck flanges sunk 2 mm into the beam and deck, drop beam ends inside the flange; foot clamp plate bottom 2 mm below the pedestal top, turntable bottom 2 mm into the mast block, gear cover bottom 2 mm into the gearbox, tail strut 4 mm thinner in z, rear vane rib 4 mm thinner in z; spokes 4 mm thinner along the rotor axis so they no longer share planes with the two rings.",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null,
+          "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+          "run": {
+            "stage": "flush-face-fix",
+            "label": "flush-face fix session",
+            "status": "not recorded",
+            "stop": null,
+            "startedAt": null,
+            "endedAt": null,
+            "receiptSha256": null,
+            "invocationSha256": null
+          }
         }
       ],
       "review": {
         "status": "accepted",
         "ownerAccepted": true,
+        "scope": "Flush-face fix of an approved revision; approved by the owner on 2026-11-19.",
+        "recordedAt": "2026-11-19",
+        "source": "Owner approval of the flush-face fix revisions, 2026-11-19"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null,
+      "previousOwnerReview": {
+        "status": "accepted",
+        "ownerAccepted": true,
         "scope": "Exact delivered revision matches the current owner-accepted revision.",
         "recordedAt": "2026-09-29",
         "source": "site-build/FEEDBACK-site-review-1.md"
-      },
-      "license": "CC0-1.0",
-      "sceneDeepLink": null
+      }
     },
     {
       "id": "watermill",
@@ -689,19 +803,19 @@
       "category": "Buildings",
       "description": "Pale masonry mill house with a gabled roof and an exposed timber waterwheel.",
       "assetId": "watermill",
-      "revisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
-      "parentRevision": "r_81d32327d04846c0b18842a28c66bb64",
+      "revisionId": "r_437647e09af4431da99fb2dd0906288a",
+      "parentRevision": "r_f8ab38b03b5a4fb691b860d9fb076200",
       "metrics": {
         "triangles": 4052,
         "meshes": 14,
         "materials": 5,
         "bounds": [
-          5.860000133514404,
+          5.861999988555908,
           4.940000081062317,
           5.304852724075317
         ],
         "boundsMin": [
-          -2.9200000762939453,
+          -2.921999931335449,
           -2.3841858265427618e-8,
           -2.7248528003692627
         ],
@@ -740,34 +854,35 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/watermill-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/watermill-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/watermill-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/watermill-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/watermill-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/farm/r34/watermill.png",
         "sourceRevisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
-        "exactRevision": true,
+        "exactRevision": false,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/farm/r33/poster/watermill.webp",
+        "src": "/media/farm/delivery-20261119-01/poster/watermill.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six rendered review views of Watermill.",
-        "srcsetWebp": "/media/farm/r33/poster/watermill-320.webp 320w, /media/farm/r33/poster/watermill-480.webp 480w, /media/farm/r33/poster/watermill-672.webp 672w, /media/farm/r33/poster/watermill-768.webp 768w, /media/farm/r33/poster/watermill-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/poster/watermill-320.avif 320w, /media/farm/r33/poster/watermill-480.avif 480w, /media/farm/r33/poster/watermill-672.avif 672w, /media/farm/r33/poster/watermill-768.avif 768w, /media/farm/r33/poster/watermill-1024.avif 1024w",
-        "inputPath": "media/farm/r33/poster/watermill.webp"
+        "alt": "Six saved review views of Watermill.",
+        "srcsetWebp": "/media/farm/delivery-20261119-01/poster/watermill-320.webp 320w, /media/farm/delivery-20261119-01/poster/watermill-480.webp 480w, /media/farm/delivery-20261119-01/poster/watermill-672.webp 672w, /media/farm/delivery-20261119-01/poster/watermill-768.webp 768w, /media/farm/delivery-20261119-01/poster/watermill-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/delivery-20261119-01/poster/watermill-320.avif 320w, /media/farm/delivery-20261119-01/poster/watermill-480.avif 480w, /media/farm/delivery-20261119-01/poster/watermill-672.avif 672w, /media/farm/delivery-20261119-01/poster/watermill-768.avif 768w, /media/farm/delivery-20261119-01/poster/watermill-1024.avif 1024w",
+        "inputPath": "media/farm/delivery-20261119-01/poster/watermill.png",
+        "sourceRevisionId": "r_437647e09af4431da99fb2dd0906288a",
+        "exactRevision": true
       },
       "sourcePath": "/sources/watermill.kiln.js",
-      "sourceSha256": "1f4ce4eecbd06a160a249760ec97c29cb85a26182bc92a390d520c9027607809",
+      "sourceSha256": "b816210fdf6ef77d109ce9e45dcad5f7f645eac63540fe65508c706c98acc088",
       "modelPath": "/models/farm/watermill.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r36-local-review/models/watermill.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/watermill.glb",
-        "bytes": 580264,
-        "sha256": "b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0",
-        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-        "member": "models/watermill.glb"
+        "path": "packs/farm/delivery-20261119-01/models/watermill.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/models/watermill.glb",
+        "bytes": 580300,
+        "sha256": "126251b82f4ab9557552a198172ca1f8b35a4c60b9355292e6f950c95e5da2b0"
       },
       "provenance": {
         "originalModel": "Gemini 3.8 Flash High",
         "refinementModels": [
           "Gemini 3.8 Flash High",
-          "GPT-6 Astra"
+          "GPT-6 Astra",
+          "Claude Sonnet 5.5"
         ],
         "history": [
           {
@@ -841,6 +956,31 @@
             "harness": "codex",
             "harnessVersion": "0.157.1",
             "confirmation": "native-turn-context"
+          },
+          {
+            "stage": "Flush-face fix",
+            "request": "flush-face-fix",
+            "revisionId": "r_437647e09af4431da99fb2dd0906288a",
+            "parentRevisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+            "savedAt": "2026-11-19T20:02:33.642Z",
+            "brief": "Original asset and Review-3 repairs authored by Gemini 3.8 Flash High (agy); original author encountered service quota twice. This immutable child is the doorway refinement by gpt-6-astra using codex. Split front plinth/cap around Z[-1.30,-0.30]; solid Y0.12 threshold links existing step and unchanged Y0.08 floor. Frame clear width0.99m, headroom2.04m; local header/keystone/frame and leaf adjusted. DoorPivot inset locally to[2.37,1.05,-1.29], closed rest; added one-shot DoorOpen to-95deg. Original Spin, roof/gables/eaves/ceiling, windows, wheel/gantry, root, sockets, materials and resource pins preserved. Exported triangle checks certify continuous door sweep and empty capsule-sized prism. 14 draws. GPU outside/inside and animation review complete. Scene capsule controller acceptance remains coordinator-owned; no performance measurements. Flush-face fix: spine thickness 0.04 -> 0.044 (2 mm proud of the paddle faces); socketR 0.40 -> 0.402 so the strap inner faces leave the spoke inner end planes; two 2.10 m sections shortened to 2.06 m (centres 1.45 -> 1.43) so they stop at the front and back wall faces instead of overlapping them by 4 cm; the two x-running caps 0.05 -> 0.054 high; the two z-running caps on the door side lengthened 2 mm into the doorway (z ends -1.298 and -0.302); width 0.32 -> 0.324 at x 2.618 (inner face 2 mm proud of the lintel wall); window rails 0.06 -> 0.064 tall and 0.16 -> 0.164 deep; horizontal mullions 0.12 -> 0.124 deep; doorway lintel 0.30 -> 0.304 deep; right-slope bargeboards 0.08 -> 0.084 wide; king post 0.10 -> 0.104; length 5.84 -> 5.836 so its end faces leave the bargeboard outer faces; ground sill ties 0.16 -> 0.156 high; outer ground beam 0.24 -> 0.244 deep; axle 1.30 -> 1.304 long (centre 1.898); depth 0.14 -> 0.144.",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "not recorded",
+            "confirmedEffort": null,
+            "harness": "claude-code",
+            "harnessVersion": null,
+            "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+            "run": {
+              "stage": "flush-face-fix",
+              "label": "flush-face fix session",
+              "status": "not recorded",
+              "stop": null,
+              "startedAt": null,
+              "endedAt": null,
+              "receiptSha256": null,
+              "invocationSha256": null
+            }
           }
         ]
       },
@@ -916,17 +1056,49 @@
           "harness": "codex",
           "harnessVersion": "0.157.1",
           "confirmation": "native-turn-context"
+        },
+        {
+          "stage": "Flush-face fix",
+          "request": "flush-face-fix",
+          "revisionId": "r_437647e09af4431da99fb2dd0906288a",
+          "parentRevisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+          "savedAt": "2026-11-19T20:02:33.642Z",
+          "brief": "Original asset and Review-3 repairs authored by Gemini 3.8 Flash High (agy); original author encountered service quota twice. This immutable child is the doorway refinement by gpt-6-astra using codex. Split front plinth/cap around Z[-1.30,-0.30]; solid Y0.12 threshold links existing step and unchanged Y0.08 floor. Frame clear width0.99m, headroom2.04m; local header/keystone/frame and leaf adjusted. DoorPivot inset locally to[2.37,1.05,-1.29], closed rest; added one-shot DoorOpen to-95deg. Original Spin, roof/gables/eaves/ceiling, windows, wheel/gantry, root, sockets, materials and resource pins preserved. Exported triangle checks certify continuous door sweep and empty capsule-sized prism. 14 draws. GPU outside/inside and animation review complete. Scene capsule controller acceptance remains coordinator-owned; no performance measurements. Flush-face fix: spine thickness 0.04 -> 0.044 (2 mm proud of the paddle faces); socketR 0.40 -> 0.402 so the strap inner faces leave the spoke inner end planes; two 2.10 m sections shortened to 2.06 m (centres 1.45 -> 1.43) so they stop at the front and back wall faces instead of overlapping them by 4 cm; the two x-running caps 0.05 -> 0.054 high; the two z-running caps on the door side lengthened 2 mm into the doorway (z ends -1.298 and -0.302); width 0.32 -> 0.324 at x 2.618 (inner face 2 mm proud of the lintel wall); window rails 0.06 -> 0.064 tall and 0.16 -> 0.164 deep; horizontal mullions 0.12 -> 0.124 deep; doorway lintel 0.30 -> 0.304 deep; right-slope bargeboards 0.08 -> 0.084 wide; king post 0.10 -> 0.104; length 5.84 -> 5.836 so its end faces leave the bargeboard outer faces; ground sill ties 0.16 -> 0.156 high; outer ground beam 0.24 -> 0.244 deep; axle 1.30 -> 1.304 long (centre 1.898); depth 0.14 -> 0.144.",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null,
+          "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+          "run": {
+            "stage": "flush-face-fix",
+            "label": "flush-face fix session",
+            "status": "not recorded",
+            "stop": null,
+            "startedAt": null,
+            "endedAt": null,
+            "receiptSha256": null,
+            "invocationSha256": null
+          }
         }
       ],
       "review": {
         "status": "accepted",
         "ownerAccepted": true,
+        "scope": "Flush-face fix of an approved revision; approved by the owner on 2026-11-19.",
+        "recordedAt": "2026-11-19",
+        "source": "Owner approval of the flush-face fix revisions, 2026-11-19"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null,
+      "previousOwnerReview": {
+        "status": "accepted",
+        "ownerAccepted": true,
         "scope": "Exact delivered revision matches the current owner-accepted revision.",
         "recordedAt": "2026-09-29",
         "source": "site-build/FEEDBACK-site-review-1.md"
-      },
-      "license": "CC0-1.0",
-      "sceneDeepLink": null
+      }
     },
     {
       "id": "fence-straight",
@@ -1272,8 +1444,8 @@
       "category": "Vehicles",
       "description": "Orange open-seat tractor with rear wheel guards, treaded tyres and a front grille.",
       "assetId": "tractor",
-      "revisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
-      "parentRevision": "r_da190ce15ed94159b61d4633efbc12ef",
+      "revisionId": "r_e89c34e3ad4e45d7abc75e779daae0cc",
+      "parentRevision": "r_ebeeb57adda343dd98d575e97ca24f92",
       "metrics": {
         "triangles": 7196,
         "meshes": 21,
@@ -1331,33 +1503,34 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/tractor-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/tractor-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/tractor-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/tractor-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/tractor-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/farm/r34/tractor.png",
         "sourceRevisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
-        "exactRevision": true,
+        "exactRevision": false,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/farm/r33/poster/tractor.webp",
+        "src": "/media/farm/delivery-20261119-01/poster/tractor.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six rendered review views of Vintage tractor (review 2, motion, UV-exact merge).",
-        "srcsetWebp": "/media/farm/r33/poster/tractor-320.webp 320w, /media/farm/r33/poster/tractor-480.webp 480w, /media/farm/r33/poster/tractor-672.webp 672w, /media/farm/r33/poster/tractor-768.webp 768w, /media/farm/r33/poster/tractor-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/poster/tractor-320.avif 320w, /media/farm/r33/poster/tractor-480.avif 480w, /media/farm/r33/poster/tractor-672.avif 672w, /media/farm/r33/poster/tractor-768.avif 768w, /media/farm/r33/poster/tractor-1024.avif 1024w",
-        "inputPath": "media/farm/r33/poster/tractor.webp"
+        "alt": "Six saved review views of Vintage tractor (review 2, motion, UV-exact merge).",
+        "srcsetWebp": "/media/farm/delivery-20261119-01/poster/tractor-320.webp 320w, /media/farm/delivery-20261119-01/poster/tractor-480.webp 480w, /media/farm/delivery-20261119-01/poster/tractor-672.webp 672w, /media/farm/delivery-20261119-01/poster/tractor-768.webp 768w, /media/farm/delivery-20261119-01/poster/tractor-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/delivery-20261119-01/poster/tractor-320.avif 320w, /media/farm/delivery-20261119-01/poster/tractor-480.avif 480w, /media/farm/delivery-20261119-01/poster/tractor-672.avif 672w, /media/farm/delivery-20261119-01/poster/tractor-768.avif 768w, /media/farm/delivery-20261119-01/poster/tractor-1024.avif 1024w",
+        "inputPath": "media/farm/delivery-20261119-01/poster/tractor.png",
+        "sourceRevisionId": "r_e89c34e3ad4e45d7abc75e779daae0cc",
+        "exactRevision": true
       },
       "sourcePath": "/sources/tractor.kiln.js",
-      "sourceSha256": "f88bff51dc25a2f55b87022b7fba5cf262697a4db6142a804b463f73bcc9bfb8",
+      "sourceSha256": "8f4f73f65a3f2e5ceffb69ae5a0300eabd3c6e02f6af459eeb13858664347fda",
       "modelPath": "/models/farm/tractor.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r36-local-review/models/tractor.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/tractor.glb",
-        "bytes": 409684,
-        "sha256": "8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117",
-        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-        "member": "models/tractor.glb"
+        "path": "packs/farm/delivery-20261119-01/models/tractor.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/models/tractor.glb",
+        "bytes": 304576,
+        "sha256": "144ed8fa0bded0355bb292d1534671e0bf84024ff6988e13df3b777419eab87f"
       },
       "provenance": {
         "originalModel": "Claude Opus 5.5",
         "refinementModels": [
-          "Claude Opus 5.5"
+          "Claude Opus 5.5",
+          "Claude Sonnet 5.5"
         ],
         "history": [
           {
@@ -1407,6 +1580,31 @@
             "harness": "claude",
             "harnessVersion": "2.1.280",
             "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+          },
+          {
+            "stage": "Flush-face fix",
+            "request": "flush-face-fix",
+            "revisionId": "r_e89c34e3ad4e45d7abc75e779daae0cc",
+            "parentRevisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+            "savedAt": "2026-11-19T20:02:03.468Z",
+            "brief": "Child of r_da190ce1 fixing its only non-intended difference: merged buckets now split by UV presence so chamfer-box parts keep no UV set (no invented 0,0 UVs). 21 mesh instances / 16+ unique meshes. All parent triangles except the drawbar match within 7.6e-8 m with identical winding, normals, UVs and materials. Clips: ArticulationProbe (4 s, unchanged), Wheels (8 s; rear 5 / front 9 rev = 22.62 m forward, 2.827 m/s), Steer (4 s sine, +/-25 deg). Drawbar top Y .48 + bracket; pin unchanged. Flush-face fix: bar depth 0.04 to 0.038 with centre 1.535 to 1.536: front face unchanged at x=1.555, back face moves from 1.515 to 1.517 so it leaves the recess back plane.",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "not recorded",
+            "confirmedEffort": null,
+            "harness": "claude-code",
+            "harnessVersion": null,
+            "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+            "run": {
+              "stage": "flush-face-fix",
+              "label": "flush-face fix session",
+              "status": "not recorded",
+              "stop": null,
+              "startedAt": null,
+              "endedAt": null,
+              "receiptSha256": null,
+              "invocationSha256": null
+            }
           }
         ]
       },
@@ -1458,17 +1656,49 @@
           "harness": "claude",
           "harnessVersion": "2.1.280",
           "confirmation": "native-stream-model; high requested, effective effort not separately exposed"
+        },
+        {
+          "stage": "Flush-face fix",
+          "request": "flush-face-fix",
+          "revisionId": "r_e89c34e3ad4e45d7abc75e779daae0cc",
+          "parentRevisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+          "savedAt": "2026-11-19T20:02:03.468Z",
+          "brief": "Child of r_da190ce1 fixing its only non-intended difference: merged buckets now split by UV presence so chamfer-box parts keep no UV set (no invented 0,0 UVs). 21 mesh instances / 16+ unique meshes. All parent triangles except the drawbar match within 7.6e-8 m with identical winding, normals, UVs and materials. Clips: ArticulationProbe (4 s, unchanged), Wheels (8 s; rear 5 / front 9 rev = 22.62 m forward, 2.827 m/s), Steer (4 s sine, +/-25 deg). Drawbar top Y .48 + bracket; pin unchanged. Flush-face fix: bar depth 0.04 to 0.038 with centre 1.535 to 1.536: front face unchanged at x=1.555, back face moves from 1.515 to 1.517 so it leaves the recess back plane.",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null,
+          "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+          "run": {
+            "stage": "flush-face-fix",
+            "label": "flush-face fix session",
+            "status": "not recorded",
+            "stop": null,
+            "startedAt": null,
+            "endedAt": null,
+            "receiptSha256": null,
+            "invocationSha256": null
+          }
         }
       ],
       "review": {
         "status": "accepted",
         "ownerAccepted": true,
+        "scope": "Flush-face fix of an approved revision; approved by the owner on 2026-11-19.",
+        "recordedAt": "2026-11-19",
+        "source": "Owner approval of the flush-face fix revisions, 2026-11-19"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null,
+      "previousOwnerReview": {
+        "status": "accepted",
+        "ownerAccepted": true,
         "scope": "Exact delivered revision matches the current owner-accepted revision.",
         "recordedAt": "2026-09-29",
         "source": "site-build/FEEDBACK-site-review-1.md"
-      },
-      "license": "CC0-1.0",
-      "sceneDeepLink": null
+      }
     },
     {
       "id": "trailer",
@@ -1478,8 +1708,8 @@
       "category": "Vehicles",
       "description": "Four-wheel timber farm trailer with low side boards and a drawbar.",
       "assetId": "trailer",
-      "revisionId": "r_c72e516ce16949cfbddedbc9155efa06",
-      "parentRevision": "r_840702d1024946fbbc21e95ac5f00672",
+      "revisionId": "r_50136ad30e7a43d688d32e1d1a60a9c8",
+      "parentRevision": "r_c72e516ce16949cfbddedbc9155efa06",
       "metrics": {
         "triangles": 3944,
         "meshes": 21,
@@ -1536,33 +1766,34 @@
         "srcsetAvif": "/media/rig/review-neutral-v1/farm/r34/trailer-320.avif 320w, /media/rig/review-neutral-v1/farm/r34/trailer-480.avif 480w, /media/rig/review-neutral-v1/farm/r34/trailer-672.avif 672w, /media/rig/review-neutral-v1/farm/r34/trailer-768.avif 768w, /media/rig/review-neutral-v1/farm/r34/trailer-1024.avif 1024w",
         "inputPath": "media/rig/review-neutral-v1/farm/r34/trailer.png",
         "sourceRevisionId": "r_c72e516ce16949cfbddedbc9155efa06",
-        "exactRevision": true,
+        "exactRevision": false,
         "rig": "review-neutral-v1"
       },
       "reviewImage": {
-        "src": "/media/farm/r33/poster/trailer.webp",
+        "src": "/media/farm/delivery-20261119-01/poster/trailer.webp",
         "width": 1168,
         "height": 780,
-        "alt": "Six rendered review views of Trailer (Shapes & Seasons Farm Pack).",
-        "srcsetWebp": "/media/farm/r33/poster/trailer-320.webp 320w, /media/farm/r33/poster/trailer-480.webp 480w, /media/farm/r33/poster/trailer-672.webp 672w, /media/farm/r33/poster/trailer-768.webp 768w, /media/farm/r33/poster/trailer-1024.webp 1024w",
-        "srcsetAvif": "/media/farm/r33/poster/trailer-320.avif 320w, /media/farm/r33/poster/trailer-480.avif 480w, /media/farm/r33/poster/trailer-672.avif 672w, /media/farm/r33/poster/trailer-768.avif 768w, /media/farm/r33/poster/trailer-1024.avif 1024w",
-        "inputPath": "media/farm/r33/poster/trailer.webp"
+        "alt": "Six saved review views of Trailer (Shapes & Seasons Farm Pack).",
+        "srcsetWebp": "/media/farm/delivery-20261119-01/poster/trailer-320.webp 320w, /media/farm/delivery-20261119-01/poster/trailer-480.webp 480w, /media/farm/delivery-20261119-01/poster/trailer-672.webp 672w, /media/farm/delivery-20261119-01/poster/trailer-768.webp 768w, /media/farm/delivery-20261119-01/poster/trailer-1024.webp 1024w",
+        "srcsetAvif": "/media/farm/delivery-20261119-01/poster/trailer-320.avif 320w, /media/farm/delivery-20261119-01/poster/trailer-480.avif 480w, /media/farm/delivery-20261119-01/poster/trailer-672.avif 672w, /media/farm/delivery-20261119-01/poster/trailer-768.avif 768w, /media/farm/delivery-20261119-01/poster/trailer-1024.avif 1024w",
+        "inputPath": "media/farm/delivery-20261119-01/poster/trailer.png",
+        "sourceRevisionId": "r_50136ad30e7a43d688d32e1d1a60a9c8",
+        "exactRevision": true
       },
       "sourcePath": "/sources/trailer.kiln.js",
-      "sourceSha256": "a96ad2121938bd0bb19227b6c09bc795c2826c8917ff13db27e6a78bb5ef0e25",
+      "sourceSha256": "6b092c18489908cda38df09ab77d14d54a3b7bf46434f3c0ca2eec76e9dca674",
       "modelPath": "/models/farm/trailer.glb",
       "runtimeDownload": {
-        "path": "packs/farm/r36-local-review/models/trailer.glb",
-        "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/trailer.glb",
-        "bytes": 183252,
-        "sha256": "6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de",
-        "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-        "member": "models/trailer.glb"
+        "path": "packs/farm/delivery-20261119-01/models/trailer.glb",
+        "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/models/trailer.glb",
+        "bytes": 183276,
+        "sha256": "30628167973ce5cb9f5e7b47988c2b3b50f86359188601891823eb31aaa6aaca"
       },
       "provenance": {
         "originalModel": "Gemini 3.8 Flash High",
         "refinementModels": [
-          "Gemini 3.8 Flash High"
+          "Gemini 3.8 Flash High",
+          "Claude Sonnet 5.5"
         ],
         "history": [
           {
@@ -1600,6 +1831,31 @@
             "harness": "agy",
             "harnessVersion": "1.2.9",
             "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+          },
+          {
+            "stage": "Flush-face fix",
+            "request": "flush-face-fix",
+            "revisionId": "r_50136ad30e7a43d688d32e1d1a60a9c8",
+            "parentRevisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+            "savedAt": "2026-11-19T20:02:22.235Z",
+            "brief": "Shapes & Seasons Farm pack four-wheeled farm trailer with coherent 2.00m front and rear wheel tracks, lengthened 1.74m axle beams and 0.18m spindles, verified 5.13+ cm positive clearance under simultaneous dense Wheels + Steer motion, 21 draw calls (13 glTF meshes), hitch pin hole clear to 40mm radius (8.0 cm diameter) at [2.45, 0.50, 0]. Flush-face fix: moved 2 mm inboard (z +-0.75 -> +-0.748) so their outer faces leave the bed floor edge plane; length 0.90 -> 0.894 so the ends sit inside the longitudinal rails instead of on their outer faces; radius 0.22 -> 0.224 so its side faces leave those of the steer-frame plate; posts lowered 2 mm at the bottom (height 0.52 -> 0.522, 0.50 -> 0.502, tops unchanged) so their bottom faces leave the floor underside plane.",
+            "model": "Claude Sonnet 5.5",
+            "modelId": "claude-sonnet-5-5",
+            "requestedEffort": "not recorded",
+            "confirmedEffort": null,
+            "harness": "claude-code",
+            "harnessVersion": null,
+            "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+            "run": {
+              "stage": "flush-face-fix",
+              "label": "flush-face fix session",
+              "status": "not recorded",
+              "stop": null,
+              "startedAt": null,
+              "endedAt": null,
+              "receiptSha256": null,
+              "invocationSha256": null
+            }
           }
         ]
       },
@@ -1639,17 +1895,49 @@
           "harness": "agy",
           "harnessVersion": "1.2.9",
           "confirmation": "native-init model confirmed; High encoded in model ID and explicitly requested, effective effort not independently exposed"
+        },
+        {
+          "stage": "Flush-face fix",
+          "request": "flush-face-fix",
+          "revisionId": "r_50136ad30e7a43d688d32e1d1a60a9c8",
+          "parentRevisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+          "savedAt": "2026-11-19T20:02:22.235Z",
+          "brief": "Shapes & Seasons Farm pack four-wheeled farm trailer with coherent 2.00m front and rear wheel tracks, lengthened 1.74m axle beams and 0.18m spindles, verified 5.13+ cm positive clearance under simultaneous dense Wheels + Steer motion, 21 draw calls (13 glTF meshes), hitch pin hole clear to 40mm radius (8.0 cm diameter) at [2.45, 0.50, 0]. Flush-face fix: moved 2 mm inboard (z +-0.75 -> +-0.748) so their outer faces leave the bed floor edge plane; length 0.90 -> 0.894 so the ends sit inside the longitudinal rails instead of on their outer faces; radius 0.22 -> 0.224 so its side faces leave those of the steer-frame plate; posts lowered 2 mm at the bottom (height 0.52 -> 0.522, 0.50 -> 0.502, tops unchanged) so their bottom faces leave the floor underside plane.",
+          "model": "Claude Sonnet 5.5",
+          "modelId": "claude-sonnet-5-5",
+          "requestedEffort": "not recorded",
+          "confirmedEffort": null,
+          "harness": "claude-code",
+          "harnessVersion": null,
+          "confirmation": "The saved manifest records the model and harness; the harness version, requested effort and saving run are not recorded.",
+          "run": {
+            "stage": "flush-face-fix",
+            "label": "flush-face fix session",
+            "status": "not recorded",
+            "stop": null,
+            "startedAt": null,
+            "endedAt": null,
+            "receiptSha256": null,
+            "invocationSha256": null
+          }
         }
       ],
       "review": {
         "status": "accepted",
         "ownerAccepted": true,
+        "scope": "Flush-face fix of an approved revision; approved by the owner on 2026-11-19.",
+        "recordedAt": "2026-11-19",
+        "source": "Owner approval of the flush-face fix revisions, 2026-11-19"
+      },
+      "license": "CC0-1.0",
+      "sceneDeepLink": null,
+      "previousOwnerReview": {
+        "status": "accepted",
+        "ownerAccepted": true,
         "scope": "Exact delivered revision matches the current owner-accepted revision.",
         "recordedAt": "2026-09-29",
         "source": "site-build/FEEDBACK-site-review-1.md"
-      },
-      "license": "CC0-1.0",
-      "sceneDeepLink": null
+      }
     },
     {
       "id": "barrel",
@@ -3907,7 +4195,7 @@
     "revisions": [
       {
         "id": "farmhouse",
-        "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+        "revisionId": "r_10b63bdd371e4a78ae90faf92a8568ed",
         "ownerAccepted": true
       },
       {
@@ -3917,12 +4205,12 @@
       },
       {
         "id": "windmill",
-        "revisionId": "r_ef9045311dd040258e0143345c171d6f",
+        "revisionId": "r_be71af41cdd34106b2a81e84e44a529f",
         "ownerAccepted": true
       },
       {
         "id": "watermill",
-        "revisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+        "revisionId": "r_437647e09af4431da99fb2dd0906288a",
         "ownerAccepted": true
       },
       {
@@ -3942,12 +4230,12 @@
       },
       {
         "id": "tractor",
-        "revisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+        "revisionId": "r_e89c34e3ad4e45d7abc75e779daae0cc",
         "ownerAccepted": true
       },
       {
         "id": "trailer",
-        "revisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+        "revisionId": "r_50136ad30e7a43d688d32e1d1a60a9c8",
         "ownerAccepted": true
       },
       {

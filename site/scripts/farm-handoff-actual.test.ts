@@ -19,7 +19,8 @@ test('actual handoff schema resolves evidence pins from source root and qualifie
   try {
     const dataDir = join(temp, 'data'), sourceRoot = join(temp, 'source'), cache = join(temp, 'cache'), prefix = 'delivery/farm-r34-documented-downloads/';
     const baseline = structuredClone(current); baseline.revision = 'r33'; baseline.fullPackAccepted = false; baseline.ownerApprovedAssets = 0; baseline.deliveryReview = { ...baseline.deliveryReview, revision: 'r33', fullPackAccepted: false, acceptedAssets: 0, total: 1 }; baseline.assets = baseline.assets.filter((asset) => asset.id === 'farmhouse'); const house = baseline.assets[0]!; house.revisionId = baseline.floorRevision.parentRevision;
-    baseline.ownerReview.revisions = baseline.ownerReview.revisions.filter((asset) => asset.id === 'farmhouse');
+    // The r34 intake's owner acceptance names the floor revision, whichever descendant the catalog selects now.
+    baseline.ownerReview.revisions = baseline.ownerReview.revisions.filter((asset) => asset.id === 'farmhouse').map((row) => ({ ...row, revisionId: baseline.floorRevision.asset.revisionId }));
     await json(join(dataDir, 'packs/farm.json'), baseline); await json(join(dataDir, 'owner-review.json'), { assetId: 'farmhouse', revisionId: baseline.floorRevision.asset.revisionId, ownerAccepted: true, date: '2026-09-29', statement: 'Accepted', source: 'owner.md' });
     await json(join(dataDir, 'mirror-manifest.json'), { base: 'https://assets.kilnstudio.tools/', files: [] }); await json(join(dataDir, 'commons-build.json'), { images: [], archives: [], models: [], sources: [{ output: 'sources/other.kiln.js', archive: 'other.zip' }] });
     const glb = glbFixture(), source = strToU8('const meta = {name:"Farmhouse"};'), preview = await sharp({ create: { width: 2, height: 2, channels: 4, background: '#eee9df' } }).png().toBuffer();
