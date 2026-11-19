@@ -661,17 +661,19 @@ never replaced.
   every edge is shared by exactly two triangles, even when the GLB is split at UV
   seams.
 - **Self-intersection is not checked.** A mesh that passes through itself, such as a
-  `torusGeo` whose tube is at least its radius, still reads as closed and outward.
+  tube swept along a path that crosses itself, still reads as closed and outward.
   Separate parts may also overlap, as assembled parts usually do; merging them is left
   to the slicer.
 - **Colour.** 3MF carries each material's base colour factor as a `basematerials`
   entry (`displaycolor` in sRGB, `#RRGGBBAA`), and each triangle points at its
   material. Textures, vertex colours, metalness, roughness and emission are dropped.
   STL carries no colour.
-- **Layout.** STL is one binary triangle list holding every body. 3MF holds one mesh
-  object per body, named after its node, and one build item: an object whose
-  components are those bodies, so a slicer loads the asset as one object of several
-  parts.
+- **Layout.** STL is one binary triangle list holding every body, so a slicer loads it
+  as one object. 3MF holds one mesh object per body, named after its node, and one
+  build item: an object whose components are those bodies, placed as in the asset.
+  Slicers read that assembly differently. PrusaSlicer 2.9.7 loads each body as its own
+  object; to print the asset in one piece there, assemble those objects into one object
+  of several parts, or print the STL.
 - **Determinism.** The same GLB gives the same bytes: the STL header is fixed text,
   and the 3MF zip has fixed entry order, fixed timestamps (1980-01-01) and fixed
   compression.
@@ -690,16 +692,19 @@ writes nothing; it throws a `PrintExportError` (`code: 'PRINT_NOT_SOLID'`) whose
 
 The export's own tests read the files back and check the triangle count, that every
 edge is shared by exactly two triangles, the bounds and the volume. To check a file
-in a slicer as well, use PrusaSlicer (record the exact version, for example 2.9.2):
+in a slicer as well, use PrusaSlicer (record the exact version; 2.9.7 was the last one
+checked):
 
 1. Save the asset with `requireSolid` parts, export it with `--format stl --json`
-   and with `--format 3mf`, and note `print.bounds` and `print.volumeMm3`.
-2. Run `prusa-slicer --info bracket.stl` and `prusa-slicer --info bracket.3mf`. Each
-   should report `manifold = yes`, a size equal to `max - min` of `print.bounds`, and
-   a volume within 0.1% of `print.volumeMm3`.
-3. Open the 3MF in the PrusaSlicer window: it should load as one object whose parts
-   carry the asset's names and colours, sized in millimetres without a unit prompt,
-   with no "errors detected" warning in Object info.
+   and with `--format 3mf --json`, and note `print.bounds` and `print.volumeMm3`.
+2. Run `prusa-slicer --info bracket.stl`. It should report one object with
+   `manifold = yes`, a size equal to `max - min` of `print.bounds`, and a volume
+   within 0.1% of `print.volumeMm3`.
+3. Run `prusa-slicer --info bracket.3mf`. It lists one object per body, each with
+   `manifold = yes`; their volumes add up to within 0.1% of `print.volumeMm3`.
+4. Open the 3MF in the PrusaSlicer window: its objects carry the asset's node names
+   and are sized in millimetres without a unit prompt, with no "errors detected"
+   warning in Object info.
 
 ## Boundaries
 
