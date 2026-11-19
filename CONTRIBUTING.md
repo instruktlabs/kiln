@@ -81,9 +81,11 @@ count read off the output is a floor.
 A change to primitives, helpers or export can alter assets people already saved. The corpus
 gate rebuilds every saved pack revision (`packs/*/sources/` and flat pack snapshots such as
 `packs/troy/assets/`) and the pinned example archive, then compares the GLB bytes with a
-baseline made **on the same machine**: GLB bytes differ between Linux and Windows
-(`scripts/glb-chunk-hashes.mjs`), so neither a baseline from another platform nor a
-manifest's recorded hash is a portable reference. It is a manual or nightly maintainer
+baseline made **on the same machine and Node**. GLB bytes depend on the Node that evaluates
+the program: three.js converts every material colour to linear with `Math.pow`, which gives
+different results on Node 22 and Node 24, and `Math.log` differs between Windows and Linux even
+on one Node. So neither a baseline from another platform or Node nor a manifest's recorded hash
+is a portable reference. It is a manual or nightly maintainer
 check, not part of `bun run test`; `scripts/corpus-gate.test.ts` covers its logic.
 
 ```sh
@@ -104,7 +106,9 @@ worker in a child process of its own (deadline 120 s, 4 GiB heap; `--deadline-ms
 map PNGs, so each map is regenerated from its saved procedural or atlas recipe and must
 reproduce its recorded sha256; otherwise that revision fails as `MATERIALS_UNAVAILABLE`.
 Archive programs have no saved options and build with the CLI defaults. The gate refuses a
-stale `dist/`, since the worker is what it measures.
+stale `dist/`, since the worker is what it measures. The worker runs the `node` on `PATH`, or
+`KILN_CORPUS_GATE_NODE` when set; a build on another Node than `toolchain.json` pins says so,
+and runs on the pin compare across maintainers' machines of one platform.
 
 The run file is JSON Lines under ignored `tmp/`: a header with platform, toolchain, engine
 commit and build identity, then one line per entry with its sha256, JSON-section and BIN
@@ -117,11 +121,11 @@ finish: `--resume` continues an interrupted run with the same engine build, and 
 same code and message. Changes are listed by pack with the JSON sections or BIN parts that
 moved, triangle counts and bounds. State intended changes with `--expect PREFIX` or
 `--expect-file` (one key prefix per line, `#` comments); anything else exits 1, and a
-platform mismatch exits 2. A baseline is never committed: it belongs to one machine and one
+platform, architecture or Node mismatch exits 2. A baseline is never committed: it belongs to one machine and one
 engine commit. Make a fresh one from `main` before measuring a change.
 
 Runtime: the 836 entries (646 pack, 190 archive) took 17 minutes with `--jobs 2` on an
-8-core Windows desktop already at 76–100% CPU from other work (34 minutes of summed entry
+8-core Windows desktop running Node 24.20.0, already at 76–100% CPU from other work (34 minutes of summed entry
 time). The largest worker peaked at 560 MB resident (a 208,000-triangle battle scene) and the
 gate process at 400 MB. A second run on the same build matched it exactly (15 minutes,
 40–100% CPU). Revisions saved by recent engines reproduce their manifest hash;

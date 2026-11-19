@@ -637,7 +637,12 @@ export interface Change {
   errors?: [EntryResult['error'], EntryResult['error']];
 }
 export interface Comparison {
-  platformMismatch: boolean;
+  /**
+   * Run environment that differs, such as `node v22.23.4 vs v24.20.0`. Bytes are comparable only
+   * when this is empty: the platform, the architecture and the evaluator's Node each move GLB
+   * bytes on their own (three.js converts every material colour with `Math.pow`).
+   */
+  mismatch: string[];
   compared: number;
   identical: number;
   identicalFailures: number;
@@ -726,9 +731,9 @@ export function compareRuns(
   }
   const added = [...candidate.results.keys()].filter((key) => !baseline.results.has(key)).sort();
   return {
-    platformMismatch:
-      baseline.header.platform !== candidate.header.platform ||
-      baseline.header.arch !== candidate.header.arch,
+    mismatch: (['platform', 'arch', 'node'] as const)
+      .filter((field) => baseline.header[field] !== candidate.header[field])
+      .map((field) => `${field} ${baseline.header[field]} vs ${candidate.header[field]}`),
     compared: identical + identicalFailures + changes.length,
     identical,
     identicalFailures,
@@ -767,8 +772,10 @@ function describe(change: Change): string {
 
 export function formatComparison(comparison: Comparison): string {
   const lines: string[] = [];
-  if (comparison.platformMismatch)
-    lines.push('Baseline and candidate come from different platforms: bytes are not comparable.');
+  if (comparison.mismatch.length)
+    lines.push(
+      `Baseline and candidate ran in different environments (${comparison.mismatch.join(', ')}): bytes are not comparable.`,
+    );
   lines.push(
     `${comparison.compared} compared: ${comparison.identical} identical, ${comparison.identicalFailures} identical failures, ${comparison.changes.length} changed (${comparison.unexpected} unexpected).`,
   );
@@ -819,6 +826,15 @@ export function summarizeRun(results: Iterable<EntryResult>) {
 
 function git(...args: string[]) {
   return execFileSync('git', args, { cwd: REPO, encoding: 'utf8', windowsHide: true }).trim();
+}
+
+/**
+ * A build on another Node than `toolchain.json` pins still measures a change, but only against
+ * runs on that same Node; say so, so a baseline is not shared by mistake.
+ */
+export function nodePinNote(evaluatorNode: string, pinnedNode: string): string | undefined {
+  if (evaluatorNode === `v${pinnedNode}`) return undefined;
+  return `The evaluator runs Node ${evaluatorNode}, not the toolchain pin ${pinnedNode}: this run compares only with runs on Node ${evaluatorNode}. Set KILN_CORPUS_GATE_NODE to a Node ${pinnedNode} executable to match other maintainers' runs.`;
 }
 
 async function header(selection: Selection, controls: BuildControls): Promise<RunHeader> {
@@ -921,7 +937,7 @@ async function runCompare(baselinePath: string, candidatePath: string, args: Arg
   console.log(formatComparison(comparison));
   const json = one(args, '--json');
   if (json) await writeFile(json, `${JSON.stringify(comparison, null, 2)}\n`);
-  if (comparison.platformMismatch) return 2;
+  if (comparison.mismatch.length) return 2;
   return comparison.unexpected ? 1 : 0;
 }
 
@@ -935,6 +951,9 @@ async function runBuild(args: Args): Promise<number> {
   };
   const jobs = integerFlag(args, '--jobs', 1, 1, 32);
   const head = await header(selection, controls);
+  const pinned = JSON.parse(await readFile(join(REPO, 'toolchain.json'), 'utf8')).node as string;
+  const note = nodePinNote(head.node, pinned);
+  if (note) console.warn(note);
   const archive = archiveRoot();
   if (selection.archive !== false && !archive)
     console.warn(

@@ -20,6 +20,7 @@ import {
   formatComparison,
   indexPackMaterials,
   listCorpus,
+  nodePinNote,
   parseExpectFile,
   type RunHeader,
   summarizeGlb,
@@ -190,7 +191,7 @@ test('comparison is exact, explains each change and honours stated expectations'
   ]);
   const comparison = compareRuns(baseline, candidate, ['farm/project/a/r2', 'farm/project/a/r1']);
   expect(comparison).toMatchObject({
-    platformMismatch: false,
+    mismatch: [],
     compared: 7,
     identical: 1,
     identicalFailures: 1,
@@ -232,7 +233,14 @@ test('comparison is exact, explains each change and honours stated expectations'
     }),
   );
   expect(scoped).toMatchObject({ compared: 2, identical: 2, unexpected: 0 });
-  expect(compareRuns(baseline, run([], { platform: 'linux' })).platformMismatch).toBe(true);
+  expect(compareRuns(baseline, run([], { platform: 'linux' })).mismatch).toEqual([
+    'platform win32 vs linux',
+  ]);
+  // The evaluator's Node moves bytes on its own: Math.pow differs between Node 22 and 24, and
+  // three.js uses it to convert every material colour to linear.
+  const otherNode = compareRuns(baseline, run([], { node: 'v24.20.0' }));
+  expect(otherNode.mismatch).toEqual(['node v22.23.4 vs v24.20.0']);
+  expect(formatComparison(otherNode)).toContain('node v22.23.4 vs v24.20.0');
   expect(parseExpectFile('farm/  # helper rename\n\n# note\ntroy/project/b/r1\n')).toEqual([
     'farm/',
     'troy/project/b/r1',
@@ -423,3 +431,11 @@ test('a saved revision rebuilds through the worker with its saved options and re
   }
   // Two Node worker launches plus a material bake: 10.6 s measured on a Windows host at 100% CPU.
 }, 60000);
+
+test('a build on another Node than the toolchain pin says which Node it compares with', () => {
+  expect(nodePinNote('v22.23.4', '22.23.4')).toBeUndefined();
+  const note = nodePinNote('v24.20.0', '22.23.4');
+  expect(note).toContain('v24.20.0');
+  expect(note).toContain('22.23.4');
+  expect(note).toContain('KILN_CORPUS_GATE_NODE');
+});
