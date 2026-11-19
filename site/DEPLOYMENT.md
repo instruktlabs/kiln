@@ -199,8 +199,9 @@ staged the same way by `scripts/stage-cabin-site.mjs`, from the sealed archive p
 in `src/data/cabin-woods-site.json`; a new Cabin release seals its staged folder with
 `node scripts/stage-cabin-site.mjs --pack DIR --mirror DIR --release ID` and uploads
 that one archive. A release that only swaps models for saved child revisions is
-rebuilt from the published archive with `bun scripts/cabin-site-swap.mjs` (the swap list
-is `packs/cabin-woods-psx-horror/flush-fix-swaps.json`), which keeps the scene's code
+rebuilt from the published archive with `bun scripts/cabin-site-swap.mjs` (one swap list
+per release: `packs/cabin-woods-psx-horror/flush-fix-swaps.json` for `cabin-20261113-01`,
+`flush-fix-swaps-20261119.json` for `cabin-20261119-01`), which keeps the scene's code
 byte for byte and seals the result the same way.
 
 `KILN_SITE_PACKS=0` is the reduced CI build; never use it for the production rollout.

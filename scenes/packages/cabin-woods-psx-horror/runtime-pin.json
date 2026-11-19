@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "release": "cabin-20261113-01",
-  "selectionSha256": "d7e562f2e773f47276f6c2ffac5f5ca4b53d068c831ebd55f7a3f53389ac45b9",
+  "release": "cabin-20261119-01",
+  "selectionSha256": "4396ee8ffae98ac670798fb8ac3e1b874a044eae3c3b1f5d19bee6a56a5031f1",
   "maxArchiveBytes": 67108864,
   "files": [
     {
@@ -15,14 +15,14 @@
       "sha256": "bbb74006432710d66219ad3f87434fc1ee08f77cafc4d1e0bb856c4973d55534"
     },
     {
-      "path": "web/woodland/assets/batteries-3089b67cd9f2.glb",
+      "path": "web/woodland/assets/batteries-baebd3f4d767.glb",
       "bytes": 17772,
-      "sha256": "3089b67cd9f2300350d74aacdd0994a6c22c5e7a80caf0fffcda74a6b09a2b0f"
+      "sha256": "baebd3f4d7674a4d190f057751a0367436826251b7b5652701192b8dc0f4131e"
     },
     {
       "path": "web/woodland/assets/batteries.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "87776ec9d0fc36bee06c344c180fca37e75b66cc98036d98c40532ee19576c07"
+      "sha256": "bd619d1174464c567f53064538a602e534caffc1d1d88362fadcd87fc6da0d60"
     },
     {
       "path": "web/woodland/assets/bed-e3d43d7e92cd.glb",
@@ -45,14 +45,14 @@
       "sha256": "df506d2e085c2fcdec74b7202f722476f1e99c9a15406b23cb6beb798eb57536"
     },
     {
-      "path": "web/woodland/assets/bench-715fec5fea79.glb",
-      "bytes": 19756,
-      "sha256": "715fec5fea794851968f6ffe595408cdd66935bb0b64fa53217a8a082607acab"
+      "path": "web/woodland/assets/bench-37431c050a47.glb",
+      "bytes": 20416,
+      "sha256": "37431c050a4730107b14c39d274fe379f27d1daf62715519d55eb66567d05256"
     },
     {
       "path": "web/woodland/assets/bench.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "0d3466b9f2f2421b9de9ea440671d6ea95f7aa92a88e9f756ace3b412e10bd12"
+      "sha256": "70f588c3e6511955aefcb8cedf28718bdd97ae8bcf1af764a9ecd06b7184fe33"
     },
     {
       "path": "web/woodland/assets/birch-fc0fccdb83e5.glb",
@@ -200,14 +200,14 @@
       "sha256": "f7277bc91bb4f10b28ec9ae07005a497c3e041af08b2a597f99c5e7ae1d1e19c"
     },
     {
-      "path": "web/woodland/assets/hearth-69c86541bc5b.glb",
-      "bytes": 15192,
-      "sha256": "69c86541bc5b463e39ee036c6d77e699cb1026f0ec53eb5e819c03e911428bd5"
+      "path": "web/woodland/assets/hearth-6034232c6ec1.glb",
+      "bytes": 15224,
+      "sha256": "6034232c6ec16b175786f84a09c33967831c2629ba122f23457b82005c589696"
     },
     {
       "path": "web/woodland/assets/hearth.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "de23095d05d22a6f584de0dfba2722d169dffbbbe52ae9e9b80f99acc3ca38fe"
+      "sha256": "0c6216b16b5cd830a622b6db314798fce88768faf775969d51fb922247db68a5"
     },
     {
       "path": "web/woodland/assets/incoming-log-pile.kiln-metadata.json",
@@ -285,24 +285,24 @@
       "sha256": "fd5cea1fc42949e8c733f996afd74f3260ddf37fcc27e4086bc002e0bc7ae2ce"
     },
     {
-      "path": "web/woodland/assets/pine-cut.kiln-metadata.json",
-      "bytes": 333,
-      "sha256": "ea61b91bd1eca61c5ff05e8b24e09c5d73cd49b70beed30c8bd9dd4009bd2a14"
+      "path": "web/woodland/assets/pine-4f0d2c8b6317.glb",
+      "bytes": 163760,
+      "sha256": "4f0d2c8b6317ec20d22c0ba974a1056b4cac187a55773f7ce25f9b6634d9bf99"
     },
     {
-      "path": "web/woodland/assets/pine-ed852ad05f58.glb",
-      "bytes": 163756,
-      "sha256": "ed852ad05f58a8b2d297210d226f2e4459755100469a0791c1b83528ff7ff398"
+      "path": "web/woodland/assets/pine-cut.kiln-metadata.json",
+      "bytes": 333,
+      "sha256": "c9bbe8c0b25a743dafb3da174734b6e52c356ee7c5c3c73f30f708401d813ca6"
     },
     {
       "path": "web/woodland/assets/pine.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "831b0f89f89db117634ee65d971aec0fa62f6ef2aedba0ce2926968cb987159e"
+      "sha256": "0c5bef4544f969edfd91bffd7b434882ea868e24881c940430afd30216c7f91e"
     },
     {
-      "path": "web/woodland/assets/pineCut-d08b0903708d.glb",
-      "bytes": 164496,
-      "sha256": "d08b0903708d6acca8ed7fb69f006a199ae30aad85212a1c98ad16e07eeb1eef"
+      "path": "web/woodland/assets/pineCut-a8bac96e9839.glb",
+      "bytes": 164500,
+      "sha256": "a8bac96e98393f38fb147017ace418cfbf98345841dfddbeecad4a48beaf9a16"
     },
     {
       "path": "web/woodland/assets/plank-0eec829c582c.glb",
@@ -405,14 +405,14 @@
       "sha256": "d499e4c09789407211718812500ec36e21ede3e0227b60bde8ecd43114608a51"
     },
     {
-      "path": "web/woodland/assets/table-6696df1bd5d6.glb",
-      "bytes": 18036,
-      "sha256": "6696df1bd5d6959a9487de85aa73e2242c7bb49fba5af4f8dca139a24587b707"
+      "path": "web/woodland/assets/table-89476f57a5fd.glb",
+      "bytes": 18696,
+      "sha256": "89476f57a5fdf6d0b1217d214b284782b698ba777edb71d4152b66ab30534b89"
     },
     {
       "path": "web/woodland/assets/table.kiln-metadata.json",
       "bytes": 333,
-      "sha256": "82994f8eba2f69488cc77277a1093621e272bc1dc0df48978004829384d13936"
+      "sha256": "2f9b9f74de56709acdaffd6adc01ac0708d35645bc8b2fa8fbb247bba794ef71"
     },
     {
       "path": "web/woodland/assets/tabletop-dressing.kiln-metadata.json",
@@ -547,7 +547,7 @@
     {
       "path": "web/woodland/collection.json",
       "bytes": 281182,
-      "sha256": "4ebd9def17aa7b935f38c58b00632b608196e5691bce07e62e56517fa7a82c46"
+      "sha256": "bd1619ea046c39b849d3ad4f59b94003196883afdb0ed8f5a0cf145bb4beb268"
     }
   ]
 }
