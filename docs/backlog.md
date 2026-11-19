@@ -1,8 +1,8 @@
 # Kiln current backlog
 
-Current release status (13 November 2026): npm 1.8.0 and
-[GitHub v1.8.0](https://github.com/instruktlabs/kiln/releases/tag/v1.8.0) are published;
-the public site follows the 1.8.0 publication record. 1.8.0 adds declared parameters with `defineParams`, runtime GLBs that carry colours, options, presets and sizes an application sets without a rebuild, and a `FLUSH_FACES` build warning for faces that will flicker.
+Current release status (19 November 2026): npm 1.9.0 and
+[GitHub v1.9.0](https://github.com/instruktlabs/kiln/releases/tag/v1.9.0) are published;
+the public site follows the 1.9.0 publication record. 1.9.0 adds `fenceRun`, filled openings and merge by material to the assembly helpers. It gives clearer messages for common authoring mistakes, accepts `file` paths inside the workspace root from any folder, exports saved revisions to STL and 3MF, speeds up review on large assets and fixes four primitives.
 Open work is listed under [Cycle handoff](#cycle-handoff-17-october).
 Scene performance evidence retains its original candidate scope; Cabin carries
 its own review report.
