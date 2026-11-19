@@ -129,7 +129,10 @@ function buildLoft(
     lengths.push(lengths[i - 1]! + centers[i]!.distanceTo(centers[i - 1]!));
   const total = lengths[lengths.length - 1]!;
   if (!(total > 0) || !Number.isFinite(total))
-    throw new Error('loft section centers must progress along a finite nonzero path');
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'loft section centers must progress along a finite nonzero path',
+    );
   // Side panels that meet at more than creaseAngle, across a profile corner
   // (column) or a path station (ring), get their own vertex copies so the
   // shading edge stays hard. Without an angle every edge is shared and smooth.
@@ -293,9 +296,15 @@ function sweepCapEnds(cap: SweepOptions['cap'] | null, closed: boolean): CapEnds
   if (cap === undefined || cap === null || cap === true) return { start: true, end: true };
   if (cap === false) return { start: false, end: false };
   if (cap !== 'start' && cap !== 'end')
-    throw new Error("sweepProfile cap must be true, false, 'start' or 'end'");
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      "sweepProfile cap must be true, false, 'start' or 'end'",
+    );
   if (closed)
-    throw new Error(`sweepProfile cap '${cap}' needs an open path; a closed sweep has no ends`);
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      `sweepProfile cap '${cap}' needs an open path; a closed sweep has no ends`,
+    );
   return { start: cap === 'start', end: cap === 'end' };
 }
 
@@ -305,13 +314,20 @@ export function loftProfiles(
   options: LoftOptions = {},
 ): THREE.BufferGeometry {
   rejectHoles(options, 'loftProfiles');
-  if (sections.length < 2) throw new Error('loftProfiles needs at least two sections');
+  if (sections.length < 2)
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'loftProfiles needs at least two sections',
+    );
   const profiles = sections.map((section, i) => {
     rejectHoles(section, `loftProfiles section ${i}`);
     return profilePoints(section.profile);
   });
   if (profiles.some((p) => p.length !== profiles[0]!.length))
-    throw new Error('loftProfiles sections must have the same point count and correspondence');
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'loftProfiles sections must have the same point count and correspondence',
+    );
   const frames = sections.map((section) => geometryFrameMatrix(section.frame));
   const rings = profiles.map((profile, i) =>
     profile.map((p) => new THREE.Vector3(p.x, 0, p.y).applyMatrix4(frames[i]!)),
@@ -345,30 +361,52 @@ export function sweepProfile(
   const points = profilePoints(profile),
     closed = options.closed ?? false,
     twist = options.twist ?? 0;
-  if (!Number.isFinite(twist)) throw new Error('sweepProfile twist must be finite degrees');
+  if (!Number.isFinite(twist))
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'sweepProfile twist must be finite degrees',
+    );
   if (closed && Math.abs(twist / 360 - Math.round(twist / 360)) > 1e-8)
-    throw new Error('closed sweep twist must be a multiple of 360 degrees');
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'closed sweep twist must be a multiple of 360 degrees',
+    );
   const creaseAngle = options.creaseAngle ?? 60;
   if (!Number.isFinite(creaseAngle) || creaseAngle < 0 || creaseAngle > 180)
-    throw new Error('sweepProfile creaseAngle must be between 0 and 180 degrees');
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'sweepProfile creaseAngle must be between 0 and 180 degrees',
+    );
   const cap = sweepCapEnds(options.cap, closed);
   if (
     path.length < (closed ? 3 : 2) ||
     path.some((p) => p.length !== 3 || !p.every(Number.isFinite))
   )
-    throw new Error('sweepProfile requires finite path points (two open or three closed)');
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'sweepProfile requires finite path points (two open or three closed)',
+    );
   const stations = path.map((p) => new THREE.Vector3(...p));
   const pathExtent = new THREE.Box3().setFromPoints(stations).getSize(new THREE.Vector3()).length();
   if (!(pathExtent > 0) || !Number.isFinite(pathExtent))
-    throw new Error('sweepProfile path stations must be distinct with finite extent');
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'sweepProfile path stations must be distinct with finite extent',
+    );
   const pathTolerance = pathExtent * 1e-10;
   if (closed && stations[0]!.distanceTo(stations[stations.length - 1]!) < pathTolerance)
-    throw new Error('closed sweep path should omit its repeated endpoint');
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'closed sweep path should omit its repeated endpoint',
+    );
   const segments: THREE.Vector3[] = [];
   for (let i = 0; i < stations.length - (closed ? 0 : 1); i++) {
     const direction = stations[(i + 1) % stations.length]!.clone().sub(stations[i]!);
     if (direction.length() < pathTolerance)
-      throw new Error('sweepProfile path stations must be distinct');
+      throw new AuthoringDiagnosticError(
+        'SWEEP_PROFILE_ARGUMENT',
+        'sweepProfile path stations must be distinct',
+      );
     segments.push(direction.normalize());
   }
   const warnings: { code: string; message: string }[] = [];
@@ -378,18 +416,27 @@ export function sweepProfile(
         ? [options.scale, options.scale]
         : (options.scale?.[i] ?? [1, 1]);
     if (scale.length !== 2 || !scale.every((n) => Number.isFinite(n) && n > 0))
-      throw new Error('sweepProfile scale requires positive finite pairs');
+      throw new AuthoringDiagnosticError(
+        'SWEEP_PROFILE_ARGUMENT',
+        'sweepProfile scale requires positive finite pairs',
+      );
     return scale as readonly [number, number];
   });
   if (Array.isArray(options.scale) && options.scale.length !== stations.length)
-    throw new Error('sweepProfile scale needs one pair per path station');
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'sweepProfile scale needs one pair per path station',
+    );
   const tangents = stations.map((_, i) => {
     if (!closed && i === 0) return segments[0]!.clone();
     if (!closed && i === stations.length - 1) return segments[segments.length - 1]!.clone();
     const incoming = segments[(i - 1 + segments.length) % segments.length]!,
       outgoing = segments[i]!;
     if (incoming.dot(outgoing) < -0.9999)
-      throw new Error('sweepProfile path has a reversal; split it into separate sweeps');
+      throw new AuthoringDiagnosticError(
+        'SWEEP_PROFILE_ARGUMENT',
+        'sweepProfile path has a reversal; split it into separate sweeps',
+      );
     const angle = incoming.angleTo(outgoing);
     const distance = Math.min(
       stations[i]!.distanceTo(stations[(i - 1 + stations.length) % stations.length]!),
@@ -414,11 +461,17 @@ export function sweepProfile(
       : new THREE.Vector3(1, 0, 0);
   const upLength = Math.hypot(up.x, up.y, up.z);
   if (!(upLength > 0) || !Number.isFinite(upLength))
-    throw new Error('sweepProfile up must be a finite nonzero vector');
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'sweepProfile up must be a finite nonzero vector',
+    );
   up.divideScalar(upLength);
   let z = up.clone().addScaledVector(tangents[0]!, -up.dot(tangents[0]!));
   if (z.lengthSq() < 1e-12)
-    throw new Error('sweepProfile up must not be parallel to the first path tangent');
+    throw new AuthoringDiagnosticError(
+      'SWEEP_PROFILE_ARGUMENT',
+      'sweepProfile up must not be parallel to the first path tangent',
+    );
   z.normalize();
   const normals = [z.clone()];
   if (closed) {
