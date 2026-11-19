@@ -44,6 +44,20 @@ does not publish a package.
   A benchmark agent whose working folder was not the workspace had fallen back to the CLI
   and skipped collections. No tool input schema changes. (#423)
 
+- **Review sheets, procedural textures and QA run faster on large assets, with identical
+  output.** The engine profile's TypeScript hot spots are fixed:
+  - the review raster collects triangles once and hashes its GLB once, which makes
+    cathedral-scale sheets about 60% faster;
+  - procedural texture compilers stop allocating per texel and compile each recipe once
+    per build;
+  - texture alpha scans read 32 bits at a time, and each atlas image is hashed once per
+    export;
+  - surface-area metrics read each accessor once;
+  - the QA rules scan arrays in place, and the shared geometry weld keys by number;
+  - the part self-intersection check reuses the engine's manifold module.
+
+  GLB bytes, review images, print exports and QA reports are unchanged. (#431)
+
 ## 1.8.0 (2026-11-13)
 
 - **`kiln_export` and `kiln_export_to` can carry sizes.** Both take an optional
