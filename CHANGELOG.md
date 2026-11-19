@@ -7,6 +7,38 @@ does not publish a package.
 
 ## Unreleased
 
+- **`fenceRun` builds posts and rails along a path.** `fenceRun(name, { path, post, rails,
+  material })` puts a post at each path point and rails between neighbouring posts. Rails follow a
+  sloping path and stop inside each post, so no rail end shows and no rail face lies on a post face.
+  Posts take a section, height, chamfer, cap and pegs; `rails.merge` makes the rails one part,
+  `closed` joins the last post to the first, and `merge: 'byMaterial'` merges the run. Posts too
+  close together, a rail meeting a post across its edge or two rails crossing outside a corner post
+  throw before anything is built. The farm's straight bay, rebuilt with one call, matches its saved
+  revision in parts, triangles, bounds and post anchors. (#411)
+- **`wallWithOpening` and `room` fill their openings.** An opening takes a `fill`: a frame,
+  glazing, glazing bars, a sill, a lintel, open shutters, or a door or casement leaf hung under a
+  `Joint_` hinge pivot with an optional handle. Each piece is placed from its opening, so moving or
+  widening the opening moves it. `outward` picks the wall's outer face, `materials` maps fill roles
+  to materials, and an opening's `name` and `names` keep an existing part-name contract. Every fill
+  is checked before the first part is made. Without `fill`, `names` or `materials` a wall is
+  unchanged. (#410)
+- **`wallWithOpening` and `room` can merge their parts by material.** `merge: 'byMaterial'` builds
+  the same pieces, then replaces them with one part per material: the same triangles and bounds,
+  named for the call. Frames and `Joint_` pivots stay, and pieces under a pivot merge only under it,
+  so a hinged leaf still moves. Merging concatenates rather than unions, so merged pieces that share
+  an edge make it non-manifold. Without the option the output is unchanged. The geometry recipes
+  mention the new options and `fenceRun`, so existing workspaces report the author skill as
+  changed; run `kiln-init <workspace> --check`, then `--upgrade`. (#412)
+- **Four more rejection causes are named.** A `projectUV` options error, a `taperedTube`
+  radii, path or `sectionScale` error, a `sweepProfile` or `loftProfiles` path, scale, twist or
+  cap error, and a Boolean or `hull` operand that is not a whole-triangle mesh now carry a
+  closed cause (`UV_PROJECTION_OPTIONS`, `TAPERED_TUBE_ARGUMENT`, `SWEEP_PROFILE_ARGUMENT`,
+  `CSG_OPERAND_MESH`) and engine-written advice, instead of the generic sentence. No argument
+  value, name or path crosses the sandbox, and no GLB changes. Reproduction table in
+  `docs/reviews/2026-11-18-opaque-rejections.md`. (#415)
+- **`torusGeo` rejects a tube at least as thick as the ring radius.** `torusGeo(0.2, 0.5)` now throws, naming the tube and the radius, instead of building a surface that crosses the ring axis and intersects itself while the solid check read it as closed. Valid tori build byte-identically; no saved source in the repository used such values. (#406)
+- **A build warns about parts that never join the asset.** `PART_NOT_IN_ASSET` names each part built with `createPart` that is not under the root when `build()` returns (it was left out of the GLB with no report), and `NAME_PREFIX_DOUBLED` flags a `createPivot` name, or a `createPart` name with `pivot: true`, that already starts with the `Joint_` the helper adds. Both are advisory and never change the GLB. A part built with a `parent` and removed later, or handed to another helper such as a Boolean, is left alone. Over the saved sources and archived examples that build, `PART_NOT_IN_ASSET` fires nowhere and `NAME_PREFIX_DOUBLED` fires in none. (#414)
+- **The author skill states `boxGeo` axes in its frame paragraph and keeps the no-UV0 note with the materials guidance.** The geometry recipes now place the `extrudeProfile`, `revolveProfile` and `roundedBoxGeo` no-UV0 note, and the projection and unwrap paragraphs around it, under "Materials and directional UVs". `SKILL.md` stays at 12,841 bytes (from 12,842). Existing workspaces report the skill as changed; run `kiln-init <workspace> --check`, then `--upgrade`. (#416)
 - **`kiln mcp` starts the stdio MCP server from the default executable, and the repository carries
   the official MCP registry manifest.** `npx @instruktlabs/kiln` runs `kiln`, not `kiln-mcp`, so the
   registry entry needs a subcommand; `kiln mcp` runs the packaged `mcp-server.mjs` beside the CLI and
@@ -43,6 +75,57 @@ does not publish a package.
   `source.file: { workspaceRoot, selectedBy, paths }` (null where a host has no `file`).
   A benchmark agent whose working folder was not the workspace had fallen back to the CLI
   and skipped collections. No tool input schema changes. (#423)
+
+- **Review sheets, procedural textures and QA run faster on large assets, with identical
+  output.** The engine profile's TypeScript hot spots are fixed:
+  - the review raster collects triangles once and hashes its GLB once, which makes
+    cathedral-scale sheets about 60% faster;
+  - procedural texture compilers stop allocating per texel and compile each recipe once
+    per build;
+  - texture alpha scans read 32 bits at a time, and each atlas image is hashed once per
+    export;
+  - surface-area metrics read each accessor once;
+  - the QA rules scan arrays in place, and the shared geometry weld keys by number;
+  - the part self-intersection check reuses the engine's manifold module.
+
+  GLB bytes, review images, print exports and QA reports are unchanged. (#431)
+### Output that changes
+
+Primitive fixes from the primitives audit (`docs/reviews/2026-11-18-primitives-audit.md`).
+A build that calls one of these helpers makes a different GLB; a source that calls none of
+them builds byte-identically, measured over the saved packs and the example archive with
+the corpus gate.
+
+- **`createStairs` risers stop under their treads.** In an ascending flight each riser ran
+  the full step rise, so its top `treadThickness` sat inside the tread and four of its faces
+  lay on the tread's faces: a textured flight of 8 steps reported 8 `FLUSH_FACES` pairs. The
+  riser now ends at the tread's underside, and a step rise at or below `treadThickness` gets
+  no riser (12 fewer triangles per step). Bounds are unchanged; descending flights and
+  `riser: false` build as before. (#403)
+- **`room` walls meet at the corners.** All four walls ran only the footprint length, so at
+  each corner two walls overlapped in a `wallThickness / 2` square with flush tops (4
+  `FLUSH_FACES` pairs with a textured material) and the outer square stood empty: a 7.5 cm
+  notch the full wall height at defaults. The front and back walls now run
+  `width + wallThickness` and the left and right walls `depth - wallThickness` between them.
+  The outer footprint, interior, wall volume and triangle count are unchanged; the front,
+  back and side panels change length. A side-wall opening must now fit the shorter wall,
+  and the error names the wall and its length; `wallThickness` must be less than `depth`.
+  (#404)
+- **`wingGeo` and `createWingPair` shade their edges and caps flat.** The six flat faces
+  shared 8 vertices, so each vertex normal averaged faces about 90 degrees apart: the
+  leading edge faced +X but its normals pointed near ±Y, and one swept case had a
+  triangle whose normals opposed its winding. Kiln's views hid it under `flatShading`;
+  glTF has no such flag. Each face now has its own vertices (24, or 18 with `tipChord: 0`)
+  and carries its face normal (measured 0.0 degrees off, was up to 93.4). Triangles,
+  bounds and volume are unchanged; each wing has 16 more vertices (10 with `tipChord: 0`).
+  (#405)
+- **Capsules drop their zero-area pole triangles.** three.js `CapsuleGeometry` emits two
+  collapsed triangles per radial segment at the poles, 12 of 60 at defaults, and with a
+  zero straight length the whole straight section collapses too (24 of 60). The capsule
+  family (`capsuleGeo`, `capsuleXGeo`, `capsuleYGeo`, `capsuleZGeo`) now drops them from the
+  index, as spheres and cones already do: `capsuleGeo(0.5, 1)` has 48 triangles and
+  `countTriangles` and the build's `tris` count 48. Vertices, normals, UVs, bounds, volume
+  and the closed-solid facts are unchanged. (#407)
 
 ## 1.8.0 (2026-11-13)
 

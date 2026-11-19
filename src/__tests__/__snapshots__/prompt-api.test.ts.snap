@@ -145,7 +145,7 @@ createWingPair(name, material, { rootZ, span, rootChord, tipChord, sweep?, thick
   // wings and helicopter stub wings.
   // e.g. createWingPair('MainWing', olive, { rootX: 0, rootY: 1.0, rootZ: 0.42, span: 2.4,
   // rootChord: 0.9, tipChord: 0.35, sweep: 0.25, dihedral: 0.08, parent: root });
-room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThickness?, openings?: [{ wall: 'front'|'back'|'left'|'right', kind?: 'door'|'window', offset?, width?, height?, sill? }], parent? })
+room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThickness?, openings?: [{ wall: 'front'|'back'|'left'|'right', kind?: 'door'|'window', offset?, width?, height?, sill?, name?, names?, fill? }], materials?, merge?: 'byMaterial', parent? })
   // Builds a HOLLOW, enterable room: four thin walls + a floor, human-scaled (defaults: 2.8m
   // ceiling, a centered 1.1x2.1m front door so it is enterable by default). \`front\` faces +X;
   // the floor sits on the ground. The keystone of an architecture asset — add a roof with
@@ -155,13 +155,17 @@ room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThi
   // side doors.
   // e.g. const { root: hut } = room('Hut', wood, { width: 5, depth: 4, height: 2.8, openings:
   // [{ wall: 'front', kind: 'door' }, { wall: 'right', kind: 'window' }], parent: root });
-wallWithOpening(name, material, { length, height, thickness, axis?: 'x'|'z', opening?: { kind?: 'door'|'window', offset?, width?, height?, sill? }, openings?: [{ kind?: 'door'|'window', offset?, width?, height?, sill? }], parent? })
+wallWithOpening(name, material, { length, height, thickness, axis?: 'x'|'z', outward?: 1|-1, opening?: Opening, openings?: Opening[], materials?: { frame?, glazing?, bars?, sill?, lintel?, shutter?, leaf?, hardware? }, merge?: 'byMaterial', parent? }), Opening = { kind?: 'door'|'window', offset?, width?, height?, sill?, name?, names?: { [piece]: partName }, fill?: { frame?: true|{ width?, depth?: [from, to] }, glazing?: true|{ thickness?, depth? }, bars?: { vertical?: fractions, horizontal?: fractions, width?, depth? }, sill?: true|{ overhang?, projection?, height? }, lintel?: true|{ overhang?, projection?, height? }, shutters?: true|{ width?, thickness?, gap? }, leaf?: true|{ thickness?, clearance?, depth?, hinge?: 'start'|'end', pivot?, handle?: true|{ height?, inset?, size? } } } }
   // A wall panel with real rectangular door/window gaps, composed from solid box segments.
-  // Supply opening or openings, never both. Multiple or vertically stacked apertures must not
-  // overlap or extend outside the wall. Base at local Y=0, centered on the run axis. Use to
-  // compose custom layouts and interior dividing walls.
-  // e.g. wallWithOpening('Partition', plaster, { length: 4, height: 2.8, thickness: 0.12, axis:
-  // 'x', opening: { kind: 'door', offset: 0.5 }, parent: root });
+  // Supply opening or openings, never both; apertures must not overlap or leave the wall. Base
+  // at local Y=0, centered on the run axis. fill adds what fills an opening, placed from it:
+  // frame, glazing, bars, window sill, lintel, shutters, and a leaf under a Joint_ hinge pivot.
+  // Fill depths are metres inward from the outer face that outward picks.
+  // e.g. wallWithOpening('Front', plaster, { length: 5, height: 2.8, thickness: 0.2, materials:
+  // { frame: trim, glazing: glass }, openings: [{ kind: 'window', offset: -1.2, fill: { frame:
+  // true, glazing: true, bars: { vertical: [0.5] }, sill: true, lintel: true } }, { kind:
+  // 'door', offset: 1, fill: { frame: true, leaf: { pivot: 'FrontDoor', handle: true } } }],
+  // parent: root });
 createRoofPlanes(name, material, { width, depth, height, overhang?, ridgeAxis?: 'x'|'z', thickness?, parent? })
   // A pitched roof: two thin slopes meeting at one ridge and falling DOWN-AND-OUTWARD (opposite
   // tilts — never mirrored the same way), footprint-matched with an eave overhang. Outer top
@@ -207,6 +211,15 @@ createStairs(name, material, { steps?, totalRise, totalRun, width, axis?: 'x'|'z
   // a multi-storey building.
   // e.g. createStairs('Porch', stone, { steps: 4, totalRise: 0.6, totalRun: 1.0, width: 1.4,
   // axis: 'x', parent: root });
+fenceRun(name, { path: [x, y, z][], closed?, post?: { section?: size|[along, across], height?, chamfer?, cap?: { rise, inset }, pegs?: { radius, length, offsets, sides?, embed? }, groups?, names? }, rails?: false|{ heights?, section?: [thickness, height], chamfer?, embed?, merge?: partName }, material, materials?: { post?, rail? }, uv?: { seed? }, merge?: 'byMaterial', parent? })
+  // A fence along a path: a post at each point and rails between neighbouring posts, stopped
+  // inside the post faces so no rail end shows. Each post sits in its own named frame turned to
+  // the run, a snap anchor; posts take a chamfer, a weathering cap and pegs. Rails follow
+  // slopes; closed joins the last post to the first. UVs are metres with the grain along each
+  // member. Use instead of hand-placed posts and rails.
+  // e.g. fenceRun('Fence', { path: [[-1, 0, 0], [1, 0, 0], [1, 0, 2]], post: { section: 0.12,
+  // height: 1.1, chamfer: 0.015, cap: { rise: 0.05, inset: 0.03 } }, rails: { heights: [0.4,
+  // 0.85], section: [0.05, 0.1], merge: 'Fence_Rails' }, material: wood, parent: root });
 
 // Geometry (returns BufferGeometry)
 meshGeo({ positions: number[], indices?: number[], normals?: number[], uvs?: number[], tangents?: number[] })
@@ -304,7 +317,8 @@ taperConeGeo(radiusBottom: number, radiusTop: number, height: number, axis?: 'x'
   // anything tapered that does not come to a point. axis selects orientation (default Y).
   // e.g. const cap = taperConeGeo(0.3, 0.18, 0.4); // frustum
 torusGeo(radius: number, tube: number, radialSegments?: 8, tubularSegments?: 12)
-  // Donut shape. For rings, tyres, barrel ribs.
+  // Donut shape. For rings, tyres, barrel ribs. tube must be less than radius, or the call
+  // throws.
   // e.g. const geo = torusGeo(0.4, 0.04, 8, 16);
 planeGeo(width: number, height: number, widthSegments?: 1, heightSegments?: 1)
   // Flat quad for TEXTURED surfaces (ground, signs, walls with albedo maps). For solid-color

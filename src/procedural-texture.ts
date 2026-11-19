@@ -38,6 +38,7 @@
  */
 
 import * as THREE from 'three';
+import type { ProceduralCompileOptions } from './procedural-texture-cache';
 import { compileProceduralTextureSpecV2 } from './procedural-texture-v2-compiler';
 import { compileProceduralTextureSpecV3 } from './procedural-texture-v3';
 import type { ProceduralTextureSpecV3 } from './procedural-texture-v3';
@@ -111,9 +112,16 @@ export function proceduralTextureSchemaVersion(input: unknown): 1 | 2 | 3 {
 export { compileProceduralTextureSpecV2 } from './procedural-texture-v2-compiler';
 export type { CompiledProceduralTextureV2 } from './procedural-texture-v2-compiler';
 
-export function proceduralTexture(spec: ProceduralTextureSpec): THREE.DataTexture {
+/**
+ * Build a texture from a procedural recipe. `options.cache` is the build's pixel cache: a
+ * recipe compiled earlier in the same build is copied, not recompiled.
+ */
+export function proceduralTexture(
+  spec: ProceduralTextureSpec,
+  options: ProceduralCompileOptions = {},
+): THREE.DataTexture {
   if (proceduralTextureSchemaVersion(spec) === 3) {
-    const compiled = compileProceduralTextureSpecV3(spec);
+    const compiled = compileProceduralTextureSpecV3(spec, options);
     const { width, height, usage, name } = compiled.spec;
     const tex = new THREE.DataTexture(
       compiled.pixels,
@@ -139,7 +147,7 @@ export function proceduralTexture(spec: ProceduralTextureSpec): THREE.DataTextur
     };
     return tex;
   }
-  const compiled = compileProceduralTextureSpecV2(spec);
+  const compiled = compileProceduralTextureSpecV2(spec, options);
   const { size, usage, name, layers } = compiled.spec;
 
   const tex = new THREE.DataTexture(

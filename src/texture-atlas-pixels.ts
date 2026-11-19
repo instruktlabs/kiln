@@ -1,4 +1,5 @@
 /** Deterministic fixed-scale composition. Resource loading is a trusted host capability. */
+import type { ProceduralPixelCache } from './procedural-texture-cache';
 import { compileProceduralTextureSpecV3 } from './procedural-texture-v3';
 import {
   admitProceduralTextureSpecV3,
@@ -34,6 +35,8 @@ type Hash = `sha256:${string}`;
 export interface TextureAtlasCompileOptionsV1 {
   resources?: PinnedMaterialMapPortV1;
   signal?: AbortSignal;
+  /** The build's procedural pixel cache: a source recipe compiled earlier is copied. */
+  proceduralCache?: ProceduralPixelCache;
 }
 export interface TextureAtlasBudgetV1 {
   sourceTexels: number;
@@ -342,7 +345,9 @@ export async function compileTextureAtlasSpecV1(
     cancelled(options.signal);
     let pixels: Uint8Array, manifest: TextureAtlasSourceManifestV1;
     if (prepared.source.kind === 'procedural') {
-      pixels = compileProceduralTextureSpecV3(prepared.source.spec).pixels;
+      pixels = compileProceduralTextureSpecV3(prepared.source.spec, {
+        cache: options.proceduralCache,
+      }).pixels;
       manifest = {
         id: prepared.id,
         kind: 'procedural',

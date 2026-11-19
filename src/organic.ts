@@ -1,6 +1,7 @@
 /** Higher-level organic authoring helpers built on sweeps, SDFs and mesh ops. */
 import * as THREE from 'three';
 import type { Point3 } from './geometry';
+import { AuthoringDiagnosticError } from './evaluator/authoring-diagnostic';
 import { creaseNormals } from './geometry';
 import { implicitSurface, type ImplicitSurfaceOptions } from './implicit';
 import { circleProfile } from './profile';
@@ -11,6 +12,11 @@ import { smoothUnionSpheres } from './sdf';
 function assertSafePathCount(name: string, count: number): void {
   if (!Number.isSafeInteger(count))
     throw new Error(`${name} derived sample count must be a safe integer; reduce sample counts.`);
+}
+
+/** Whether array destructuring can read `value`, as it can an array, a typed array or a Vector2. */
+function isIterable(value: unknown): boolean {
+  return value != null && typeof (value as Iterable<unknown>)[Symbol.iterator] === 'function';
 }
 
 export interface MetaballSphere {
@@ -118,21 +124,39 @@ export function taperedTube(
   const closed = options.closed ?? false;
   const stations = path;
   if (stations.length < (closed ? 3 : 2))
-    throw new Error('taperedTube needs at least two open or three closed path points');
+    throw new AuthoringDiagnosticError(
+      'TAPERED_TUBE_ARGUMENT',
+      'taperedTube needs at least two open or three closed path points',
+    );
   if (radii.length !== stations.length)
-    throw new Error('taperedTube radii must have one entry per path point');
+    throw new AuthoringDiagnosticError(
+      'TAPERED_TUBE_ARGUMENT',
+      'taperedTube radii must have one entry per path point',
+    );
   for (const r of radii) {
     if (!Number.isFinite(r) || r <= 0)
-      throw new Error('taperedTube radii must be positive and finite');
+      throw new AuthoringDiagnosticError(
+        'TAPERED_TUBE_ARGUMENT',
+        'taperedTube radii must be positive and finite',
+      );
   }
+  const { sectionScale } = options;
+  const sectionScaleError = () =>
+    new AuthoringDiagnosticError(
+      'TAPERED_TUBE_ARGUMENT',
+      'taperedTube sectionScale needs one [side, depth] pair per path point',
+    );
+  // Check the shape before reading it: one bare [side, depth] pair for the whole tube
+  // would otherwise be read as one number per station and throw an unnamed TypeError.
+  if (sectionScale && sectionScale.length !== stations.length) throw sectionScaleError();
   const radialSegments = options.radialSegments ?? 20;
   const profile = circleProfile(1, radialSegments).map(([x, y]) => [x, y] as [number, number]);
   const scale = radii.map((r, i) => {
-    const [side, depth] = options.sectionScale?.[i] ?? [1, 1];
+    const pair = sectionScale?.[i] ?? ([1, 1] as const);
+    if (!isIterable(pair)) throw sectionScaleError();
+    const [side, depth] = pair;
     return [r * side, r * depth] as [number, number];
   });
-  if (options.sectionScale && options.sectionScale.length !== stations.length)
-    throw new Error('taperedTube sectionScale needs one [side, depth] pair per path point');
   const geo = sweepProfile(profile, [...stations], {
     cap: options.cap ?? true,
     closed,

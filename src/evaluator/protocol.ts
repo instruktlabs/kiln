@@ -560,6 +560,10 @@ export function decodeEvaluatorResultV2(
           value.error.diagnostic !== 'BONE_CHAIN_ARGUMENT' &&
           value.error.diagnostic !== 'SKIN_BINDING_ARGUMENT' &&
           value.error.diagnostic !== 'PARAMS_CONTRACT' &&
+          value.error.diagnostic !== 'UV_PROJECTION_OPTIONS' &&
+          value.error.diagnostic !== 'TAPERED_TUBE_ARGUMENT' &&
+          value.error.diagnostic !== 'SWEEP_PROFILE_ARGUMENT' &&
+          value.error.diagnostic !== 'CSG_OPERAND_MESH' &&
           value.error.diagnostic !== 'PARAMS_VALUE'))
     )
       return fail('result');

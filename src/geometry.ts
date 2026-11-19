@@ -140,24 +140,45 @@ export function geometryDiagnostics(
     pc = new THREE.Vector3();
   const { ids, finite } = weld;
   for (let i = 0; i < p.count; i++) if (!finite[i]) result.nonFiniteVertices++;
-  const indices = geometry.index
-    ? Array.from(geometry.index.array)
-    : Array.from({ length: p.count }, (_, i) => i);
-  const edges = new Map<string, { count: number; direction: number }>();
+  const index = geometry.index?.array;
+  const slots = index ? index.length : p.count;
+  // An edge joins two weld ids; its key is a number while id pairs fit exactly in a double.
+  const idCount = weld.count;
+  const numericEdges = idCount <= 94_906_265; // floor(sqrt(2^53))
+  const edgeSlots = new Map<number | string, number>();
+  const edgeCounts: number[] = [];
+  const edgeDirections: number[] = [];
+  const visitEdge = (u: number, v: number) => {
+    const low = Math.min(u, v);
+    const high = Math.max(u, v);
+    const key = numericEdges ? low * idCount + high : `${low}:${high}`;
+    let slot = edgeSlots.get(key);
+    if (slot === undefined) {
+      slot = edgeCounts.length;
+      edgeSlots.set(key, slot);
+      edgeCounts.push(0);
+      edgeDirections.push(0);
+    }
+    edgeCounts[slot]!++;
+    edgeDirections[slot]! += u < v ? 1 : -1;
+  };
+  const validVertex = (n: number) => Number.isInteger(n) && n >= 0 && n < p.count;
   const a = new THREE.Vector3(),
     b = new THREE.Vector3(),
     c = new THREE.Vector3();
-  for (let i = 0; i < indices.length; i += 3) {
+  for (let i = 0; i < slots; i += 3) {
     result.triangles++;
-    const triangle = indices.slice(i, i + 3);
-    if (
-      triangle.length !== 3 ||
-      triangle.some((n) => !Number.isInteger(n) || n < 0 || n >= p.count)
-    ) {
+    if (i + 3 > slots) {
       result.invalidIndices++;
       continue;
     }
-    const [ia, ib, ic] = triangle as [number, number, number];
+    const ia = index ? index[i]! : i;
+    const ib = index ? index[i + 1]! : i + 1;
+    const ic = index ? index[i + 2]! : i + 2;
+    if (!validVertex(ia) || !validVertex(ib) || !validVertex(ic)) {
+      result.invalidIndices++;
+      continue;
+    }
     if (!finite[ia] || !finite[ib] || !finite[ic]) continue;
     pa.fromBufferAttribute(p, ia);
     pb.fromBufferAttribute(p, ib);
@@ -176,28 +197,19 @@ export function geometryDiagnostics(
       result.collapsedByToleranceTriangles++;
       continue;
     }
-    for (const [start, end] of [
-      [ia, ib],
-      [ib, ic],
-      [ic, ia],
-    ]) {
-      const u = ids[start!]!,
-        v = ids[end!]!;
-      const key = u < v ? `${u}:${v}` : `${v}:${u}`;
-      const edge = edges.get(key) ?? { count: 0, direction: 0 };
-      edge.count++;
-      edge.direction += u < v ? 1 : -1;
-      edges.set(key, edge);
-    }
+    visitEdge(ids[ia]!, ids[ib]!);
+    visitEdge(ids[ib]!, ids[ic]!);
+    visitEdge(ids[ic]!, ids[ia]!);
   }
-  for (const edge of edges.values()) {
-    if (edge.count === 1) result.boundaryEdges++;
-    else if (edge.count > 2) result.nonManifoldEdges++;
-    else if (edge.direction !== 0) result.orientationConflicts++;
+  for (let slot = 0; slot < edgeCounts.length; slot++) {
+    const count = edgeCounts[slot]!;
+    if (count === 1) result.boundaryEdges++;
+    else if (count > 2) result.nonManifoldEdges++;
+    else if (edgeDirections[slot] !== 0) result.orientationConflicts++;
   }
   const volumeFloor = (frame.scale || 1) ** 3 * 1e-12;
   result.solid = {
-    closed: result.boundaryEdges === 0 && edges.size > 0,
+    closed: result.boundaryEdges === 0 && edgeCounts.length > 0,
     manifold: result.nonManifoldEdges === 0,
     orientation:
       result.orientationConflicts > 0 || Math.abs(signedVolume) <= volumeFloor

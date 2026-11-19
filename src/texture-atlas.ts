@@ -15,6 +15,7 @@ import {
   TEXTURE_ATLAS_LIMITS_V1_2,
 } from './texture-atlas-contract';
 import { sha256Hex } from './procedural-material-v2';
+import { hasTranslucentTexel } from './texture-alpha';
 import { remapUV } from './uv-shapes';
 /** SDK/host API. Sandbox integration closes over options and exposes exactly one argument. */
 export async function textureAtlas(
@@ -43,7 +44,7 @@ export async function textureAtlas(
       compiled.spec.usage === 'albedo' || compiled.spec.usage === 'emissive' ? 'srgb' : 'linear',
     width: compiled.spec.width,
     height: compiled.spec.height,
-    hasAlpha: compiled.pixels.some((v, i) => i % 4 === 3 && v < 255),
+    hasAlpha: hasTranslucentTexel(compiled.pixels),
   };
   return texture;
 }

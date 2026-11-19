@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 
+import { hasTranslucentTexel } from '../texture-alpha';
 import type { KilnTextureMetadata } from '../textures';
 import { conformancePromotionAuthorization, KILN_ENGINE_QA_OWNER, type QaRule } from './registry';
 import type { QaContext, QaFinding } from './types';
@@ -42,6 +43,7 @@ function textureHasAlpha(texture: THREE.Texture): boolean {
     | undefined;
   const data = image?.data;
   if (!data || data.length < 4) return false;
+  if (data instanceof Uint8Array) return hasTranslucentTexel(data);
   for (let i = 3; i < data.length; i += 4) {
     if ((data[i] ?? 255) < 255) return true;
   }

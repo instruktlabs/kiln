@@ -34,9 +34,12 @@ export * from './camera-capture';
  */
 
 import {
+  collectTriangleBuffers,
+  rasterizeCollected,
   rasterizeView,
   measureBounds,
   measurePartBounds,
+  type CollectedTriangles,
   hideNodeInScene,
   type RasterOptions,
   type ViewSpec,
@@ -387,6 +390,13 @@ export async function renderViewGrid(
   const cache = opts.snapPalette?.length ? undefined : opts.captureCache;
   let reused = 0;
   const cells: Uint8Array[] = [];
+  // The scene does not change between cells: collect its triangles once, on the first cell
+  // that rasterizes (a fully cached sheet never does).
+  let collected: CollectedTriangles | undefined;
+  const rasterizeCell = (dir: [number, number, number], options: RasterOptions) => {
+    collected ??= collectTriangleBuffers(root);
+    return rasterizeCollected(collected, dir, options);
+  };
   for (let vi = 0; vi < views.length; vi++) {
     const zoom = resolved.zooms[vi];
     const rasterOptions = {
@@ -416,7 +426,7 @@ export async function renderViewGrid(
           backdrop,
         },
         async () => ({
-          png: encodePng(rasterizeView(root, views[vi]!.dir, rasterOptions), size, size),
+          png: encodePng(rasterizeCell(views[vi]!.dir, rasterOptions), size, size),
           width: size,
           height: size,
           inputGlbSha256: opts.artifactGlbSha256!,
@@ -427,7 +437,7 @@ export async function renderViewGrid(
       );
       if (result.captureCache?.hit) reused++;
       cell = decodePngShared(result.png).rgb;
-    } else cell = rasterizeView(root, views[vi]!.dir, rasterOptions);
+    } else cell = rasterizeCell(views[vi]!.dir, rasterOptions);
     // H-30: view name + axis gnomon, via the annotator the GPU port shares.
     annotateViewCell(cell, size, views[vi]!);
     cells.push(cell);
@@ -457,9 +467,9 @@ export interface GlbViewGridResult extends ViewGridResult {
   instanceCount: number;
 }
 
-async function hashGlbViewInput(bytes: Uint8Array): Promise<`sha256:${string}`> {
-  const copy = Uint8Array.from(bytes);
-  const digest = new Uint8Array(await globalThis.crypto.subtle.digest('SHA-256', copy));
+/** Callers pass their own immutable snapshot of the bytes, so it is hashed in place. */
+async function hashGlbViewInput(bytes: Uint8Array<ArrayBuffer>): Promise<`sha256:${string}`> {
+  const digest = new Uint8Array(await globalThis.crypto.subtle.digest('SHA-256', bytes));
   return `sha256:${[...digest].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
 }
 
@@ -527,11 +537,12 @@ export async function renderGlbViewGrid(
     options.capture?.version || options.capture?.shots
       ? await loadGlbReviewScene(exactBytes)
       : await loadGlbGeometryFlatScene(exactBytes);
+  // One hash names both the capture-cache input and the reported identity.
   const artifactGlbSha256 = await hashGlbViewInput(exactBytes);
   const grid = await renderViewGrid(loaded.root, { ...options, artifactGlbSha256 });
   return {
     ...grid,
-    inputGlbSha256: await hashGlbViewInput(exactBytes),
+    inputGlbSha256: artifactGlbSha256,
     reasonCodes: loaded.reasonCodes,
     meshCount: loaded.meshCount,
     instanceCount: loaded.instanceCount,

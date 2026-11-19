@@ -413,8 +413,7 @@ async function encodeKtx2(
     const { refreshAtlasDocumentProvenance, validateAtlasDocumentProvenance } = await import(
       './atlas-provenance'
     );
-    await refreshAtlasDocumentProvenance(doc);
-    await validateAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc, await refreshAtlasDocumentProvenance(doc));
   }
   return {
     status: 'encoded',
