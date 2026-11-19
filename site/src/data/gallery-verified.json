@@ -1,0 +1,5 @@
+{
+  "description": "Owner review records against the verified bar in docs/gallery-verified.md. One record per exact revision and served GLB; a card is marked only when a verified record names its revision and GLB sha256. Rejected records are kept.",
+  "bar": 1,
+  "reviews": []
+}

@@ -18,6 +18,8 @@ export interface BrowseAsset {
   tags: readonly string[];
   packs: readonly string[];
   addedOn: string;
+  /** Set only on cards an owner review marks; they lead the default order. */
+  verified?: unknown;
 }
 export interface GalleryFilters {
   query?: string;
@@ -57,6 +59,8 @@ export function browseGallery<T extends BrowseAsset>(
     .sort((a, b) => {
       if (filters.sort === 'az') return alphabetical(a, b);
       if (!filters.sort || filters.sort === 'featured') {
+        const marked = Number(Boolean(b.verified)) - Number(Boolean(a.verified));
+        if (marked) return marked;
         const rank = (featured.get(a.href) ?? Infinity) - (featured.get(b.href) ?? Infinity);
         if (rank && !Number.isNaN(rank)) return rank;
       }
