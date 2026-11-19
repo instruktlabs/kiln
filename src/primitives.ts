@@ -1348,6 +1348,10 @@ export function room(
     parent,
   } = options;
   const openings = options.openings ?? [{ wall: 'front', kind: 'door' }];
+  if (depth > 0 && wallThickness >= depth)
+    throw new RangeError(
+      `room("${name}"): wallThickness must be less than depth (got ${wallThickness} and ${depth}).`,
+    );
   const root = new THREE.Object3D();
   root.name = name;
 
@@ -1358,23 +1362,34 @@ export function room(
     pos: [number, number, number],
     which: RoomOpening['wall'],
   ): THREE.Object3D => {
-    const w = wallWithOpening(`${name}_Wall${suffix}`, material, {
-      length: len,
-      height,
-      thickness: wallThickness,
-      axis,
-      openings: openings.filter((op) => op.wall === which),
-      parent: root,
-    });
+    let w: THREE.Object3D;
+    try {
+      w = wallWithOpening(`${name}_Wall${suffix}`, material, {
+        length: len,
+        height,
+        thickness: wallThickness,
+        axis,
+        openings: openings.filter((op) => op.wall === which),
+        parent: root,
+      });
+    } catch (error) {
+      if (!(error instanceof RangeError)) throw error;
+      throw new RangeError(
+        `room("${name}"): ${which} wall (length ${+len.toFixed(6)}, offsets from its centre): ${error.message}`,
+      );
+    }
     w.position.set(...pos);
     return w;
   };
 
+  // Walls are centred on the footprint edges. Front and back run past the corners by the
+  // wall thickness and left and right fit between them, so the corners neither overlap nor
+  // leave a notch; the outer footprint and the interior are unchanged.
   const walls = {
-    front: wall('Front', width, 'z', [depth / 2, 0, 0], 'front'),
-    back: wall('Back', width, 'z', [-depth / 2, 0, 0], 'back'),
-    left: wall('Left', depth, 'x', [0, 0, -width / 2], 'left'),
-    right: wall('Right', depth, 'x', [0, 0, width / 2], 'right'),
+    front: wall('Front', width + wallThickness, 'z', [depth / 2, 0, 0], 'front'),
+    back: wall('Back', width + wallThickness, 'z', [-depth / 2, 0, 0], 'back'),
+    left: wall('Left', depth - wallThickness, 'x', [0, 0, -width / 2], 'left'),
+    right: wall('Right', depth - wallThickness, 'x', [0, 0, width / 2], 'right'),
   };
 
   let floorObj: THREE.Object3D | null = null;

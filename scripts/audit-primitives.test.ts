@@ -3,13 +3,12 @@
  *
  * - the audit lists every top-level export of src/primitives.ts, so it cannot fall behind;
  * - every case of a builder designed closed that builds measures closed, manifold and outward
- *   with `geometryDiagnostics`, and matches its exact polyhedral volume where one is known.
- *
+ *   with `geometryDiagnostics`, and matches its exact polyhedral volume where one is known;
  * - fixed defects stay fixed: the composition builders listed below share no faces even with
- *   a textured material (#403).
+ *   a textured material (#403, #404).
  *
- * Open defects (room corners, wing normals, self-intersecting torus, capsule zero-area
- * triangles) are deliberately not asserted here; their fixes go through their own changes.
+ * Open defects (wing normals, self-intersecting torus, capsule zero-area triangles) are
+ * deliberately not asserted here; their fixes go through their own changes.
  */
 import { expect, test } from 'bun:test';
 import { runAudit } from './audit-primitives';
@@ -43,7 +42,7 @@ test('closed-by-design builders measure closed, manifold and outward, with exact
 test('composition builders share no faces between their parts, even with a texture', () => {
   const failures: string[] = [];
   for (const row of audit.rows) {
-    if (!['createStairs'].includes(row.name)) continue;
+    if (!['createStairs', 'room'].includes(row.name)) continue;
     for (const c of row.cases) {
       if (c.error || !c.flushTextured) continue;
       if (c.flushPlain!.candidates + c.flushPlain!.matching + c.flushTextured.candidates > 0)

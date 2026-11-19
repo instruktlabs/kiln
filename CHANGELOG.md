@@ -57,6 +57,15 @@ the corpus gate.
   riser now ends at the tread's underside, and a step rise at or below `treadThickness` gets
   no riser (12 fewer triangles per step). Bounds are unchanged; descending flights and
   `riser: false` build as before. (#403)
+- **`room` walls meet at the corners.** All four walls ran only the footprint length, so at
+  each corner two walls overlapped in a `wallThickness / 2` square with flush tops (4
+  `FLUSH_FACES` pairs with a textured material) and the outer square stood empty: a 7.5 cm
+  notch the full wall height at defaults. The front and back walls now run
+  `width + wallThickness` and the left and right walls `depth - wallThickness` between them.
+  The outer footprint, interior, wall volume and triangle count are unchanged; the front,
+  back and side panels change length. A side-wall opening must now fit the shorter wall,
+  and the error names the wall and its length; `wallThickness` must be less than `depth`.
+  (#404)
 
 ## 1.8.0 (2026-11-13)
 

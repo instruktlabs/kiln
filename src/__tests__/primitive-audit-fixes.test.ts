@@ -5,7 +5,7 @@
  */
 import { describe, expect, test } from 'bun:test';
 import * as THREE from 'three';
-import { createStairs } from '../primitives';
+import { createStairs, room } from '../primitives';
 import { analyzeFlushFaces } from '../qa/flush-faces';
 
 /** A material with a texture: the flush-face check reports every depth tie between its faces. */
@@ -96,5 +96,69 @@ describe('createStairs risers stop under their treads (#403)', () => {
       riser: false,
     }).root;
     expect(meshes(plain)).toHaveLength(8);
+  });
+});
+
+describe('room walls meet at the corners without overlap or notch (#404)', () => {
+  const wallBoxes = (root: THREE.Object3D): THREE.Box3[] => {
+    root.updateMatrixWorld(true);
+    return meshes(root)
+      .filter((mesh) => mesh.name.includes('_Wall'))
+      .map((mesh) => new THREE.Box3().setFromObject(mesh));
+  };
+  const cover = (boxes: THREE.Box3[], x: number, y: number, z: number) =>
+    boxes.filter((box) => box.containsPoint(new THREE.Vector3(x, y, z))).length;
+
+  test('a textured room at defaults reports no flush pair', () => {
+    const { root } = room('R', textured());
+    expect(analyzeFlushFaces(root).pairs.map((pair) => pair.parts.join(' / '))).toEqual([]);
+  });
+
+  test('a thick-walled room with a side window reports no flush pair', () => {
+    const { root } = room('R', textured(), {
+      width: 6,
+      depth: 3,
+      wallThickness: 0.4,
+      openings: [
+        { wall: 'front', kind: 'door' },
+        { wall: 'left', kind: 'window', width: 1, height: 1, sill: 1 },
+      ],
+    });
+    expect(analyzeFlushFaces(root).pairs.map((pair) => pair.parts.join(' / '))).toEqual([]);
+  });
+
+  test('every corner is covered once for the full height, and the footprint stays put', () => {
+    const t = 0.15;
+    const { root } = room('R', textured(), { floor: false, openings: [] });
+    const boxes = wallBoxes(root);
+    for (const [sx, sz] of [
+      [1, 1],
+      [1, -1],
+      [-1, 1],
+      [-1, -1],
+    ] as const) {
+      for (const y of [0.01, 1.4, 2.79]) {
+        // Outer corner square (was a notch) and inner overlap square (was covered twice).
+        expect(cover(boxes, sx * (2 + t / 4), y, sz * (2 + t / 4))).toBe(1);
+        expect(cover(boxes, sx * (2 - t / 4), y, sz * (2 - t / 4))).toBe(1);
+      }
+    }
+    // Outer footprint (depth + t) x (width + t); interior depth - t by width - t.
+    expect(bounds(root)).toEqual([-2.075, 0, -2.075, 2.075, 2.8, 2.075]);
+    const { walls } = room('R', textured(), { width: 5, depth: 4, openings: [] });
+    expect(bounds(walls.front)).toEqual([1.925, 0, -2.575, 2.075, 2.8, 2.575]);
+    expect(bounds(walls.left)).toEqual([-1.925, 0, -2.575, 1.925, 2.8, -2.425]);
+  });
+
+  test('side-wall openings are checked against the shorter side walls', () => {
+    const near = (offset: number) => () =>
+      room('R', textured(), {
+        openings: [{ wall: 'left', kind: 'window', offset, width: 1 }],
+      });
+    // The left wall now runs 3.85 between the front and back walls: its ends are at +/-1.925.
+    expect(near(1.4)).not.toThrow();
+    expect(near(1.45)).toThrow(/left wall.*3\.85/);
+    expect(near(-1.45)).toThrow(/left wall.*3\.85/);
+    expect(() => room('R', textured(), { depth: 0.15 })).toThrow(/wallThickness.*less than depth/);
   });
 });

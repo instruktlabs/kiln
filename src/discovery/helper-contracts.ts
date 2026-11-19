@@ -1396,10 +1396,11 @@ define(
     origin: 'Wall base and floor top are local Y=0; floor extends downward.',
     parameters: [
       'Default width/depth/height describe a small room; dimensions are not an overall building/storey limit.',
-      'Per-wall rectangular openings are explicit; floor may be disabled.',
+      'Per-wall rectangular openings are explicit; floor may be disabled. An opening offset is measured from its wall centre and the opening must fit inside that wall: front/back walls are width + wallThickness long, left/right walls depth - wallThickness. wallThickness must be less than depth.',
     ],
     topology: [
       'Four box-segment walls with real apertures; optional floor. No roof or automatic whole-building watertightness.',
+      'Walls are centred on the width x depth footprint edges, so the outer footprint is (depth + wallThickness) x (width + wallThickness) and the interior (depth - wallThickness) x (width - wallThickness). Front/back walls run past the corners and left/right walls butt between them: corners neither overlap nor leave a notch, and no wall faces are flush.',
     ],
     cost: 'Mesh count grows with aperture segmentation, plus optional floor.',
   },
