@@ -442,7 +442,10 @@ The solid primitives are closed solids by contract: `boxGeo`, `sphereGeo`, the
 `torusGeo`, `decalBox` and `wingGeo` each return a closed, manifold, outward mesh
 for every input they accept, so `requireSolid` passes on them. "Closed" is measured
 after welding vertices that share a position, as `geometryDiagnostics` does; the
-glTF primitive itself may stay split at UV seams. Scene builders (`createLadder`,
+glTF primitive itself may stay split at UV seams, and at hard edges: each flat face
+of `boxGeo`, `decalBox` and `wingGeo` has its own vertices, so its vertex normals are
+its face normal in any renderer, with or without `flatShading`.
+Scene builders (`createLadder`,
 `wallWithOpening`, `room`, `createStairs`, `createWingPair`, `beamBetween`) make
 the same promise for each mesh they create, not for the assembly, whose parts
 overlap by design. Their parts still share no faces, so a textured build reports no

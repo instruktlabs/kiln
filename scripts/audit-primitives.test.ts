@@ -5,10 +5,10 @@
  * - every case of a builder designed closed that builds measures closed, manifold and outward
  *   with `geometryDiagnostics`, and matches its exact polyhedral volume where one is known;
  * - fixed defects stay fixed: the composition builders listed below share no faces even with
- *   a textured material (#403, #404).
+ *   a textured material (#403, #404), and wing vertex normals are their face normals (#405).
  *
- * Open defects (wing normals, self-intersecting torus, capsule zero-area triangles) are
- * deliberately not asserted here; their fixes go through their own changes.
+ * Open defects (self-intersecting torus, capsule zero-area triangles) are deliberately not
+ * asserted here; their fixes go through their own changes.
  */
 import { expect, test } from 'bun:test';
 import { runAudit } from './audit-primitives';
@@ -48,6 +48,18 @@ test('composition builders share no faces between their parts, even with a textu
       if (c.flushPlain!.candidates + c.flushPlain!.matching + c.flushTextured.candidates > 0)
         failures.push(`${row.name} ${c.label}: ${c.flushTextured.worst ?? 'matching pairs'}`);
     }
+  }
+  expect(failures).toEqual([]);
+});
+
+test('wing faces carry their own normals in every measured case', () => {
+  const failures: string[] = [];
+  for (const row of audit.rows) {
+    if (!['wingGeo', 'createWingPair'].includes(row.name)) continue;
+    for (const c of row.cases)
+      for (const mesh of c.meshes)
+        if (mesh.normalsOpposed > 0 || mesh.maxNormalDeviationDeg >= 1)
+          failures.push(`${row.name} ${c.label} ${mesh.name}: ${mesh.maxNormalDeviationDeg} deg`);
   }
   expect(failures).toEqual([]);
 });

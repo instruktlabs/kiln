@@ -332,7 +332,10 @@ define(
     parameters: [
       'Positive finite span/rootChord/thickness; tipChord may be zero for a pointed wing. Signed sweep and dihedral are finite length displacements; generated coordinates must fit Float32.',
     ],
-    cost: 'Fixed trapezoid or triangular prism tessellation.',
+    topology: [
+      'Closed, manifold, outward prism. Each flat face has its own vertices, so every vertex normal is its face normal and the edges shade flat in any glTF viewer.',
+    ],
+    cost: 'Fixed trapezoid or triangular prism tessellation: 12 triangles on 24 vertices, or 8 on 18 with tipChord 0.',
   },
   {
     ...primitiveMetadata,
@@ -1377,7 +1380,7 @@ define(
     origin: 'Roots at ±rootZ with optional rootX/rootY offsets.',
     parameters: ['Uses wingGeo dimensions and explicit mirrored placement.'],
     preservation: [
-      'Creates separately owned mirrored geometry with corrected reflected triangle winding; material remains shared.',
+      'Creates separately owned mirrored geometry with corrected reflected triangle winding and per-face normals; material remains shared.',
     ],
     cost: 'Two fixed-complexity wing meshes.',
   },

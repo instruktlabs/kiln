@@ -879,53 +879,46 @@ export function wingGeo(options: WingGeometryOptions = {}): THREE.BufferGeometry
   if (!vertices.every(Number.isFinite))
     throw new RangeError('wingGeo dimensions and offsets produce nonfinite Float32 vertices.');
 
-  const indices = [
-    0,
-    3,
-    2,
-    0,
-    1,
-    3, // top
-    4,
-    6,
-    7,
-    4,
-    7,
-    5, // bottom
-    0,
-    2,
-    6,
-    0,
-    6,
-    4, // leading edge
-    1,
-    5,
-    7,
-    1,
-    7,
-    3, // trailing edge
-    0,
-    4,
-    5,
-    0,
-    5,
-    1, // root cap
-    2,
-    3,
-    7,
-    2,
-    7,
-    6, // tip cap
-  ];
+  // Each flat face lists its triangles over the eight corners above. A zero tip chord is a
+  // triangular wing: its top and bottom are one triangle each and the tip cap is omitted.
+  const faces: number[][] =
+    tipChord === 0
+      ? [
+          [0, 1, 3], // top
+          [4, 7, 5], // bottom
+          [0, 2, 6, 0, 6, 4], // leading edge
+          [1, 5, 7, 1, 7, 3], // trailing edge
+          [0, 4, 5, 0, 5, 1], // root cap
+        ]
+      : [
+          [0, 3, 2, 0, 1, 3], // top
+          [4, 6, 7, 4, 7, 5], // bottom
+          [0, 2, 6, 0, 6, 4], // leading edge
+          [1, 5, 7, 1, 7, 3], // trailing edge
+          [0, 4, 5, 0, 5, 1], // root cap
+          [2, 3, 7, 2, 7, 6], // tip cap
+        ];
+
+  // Every face is planar and gets its own vertices, as boxGeo does, so each vertex normal is
+  // its face normal instead of an average across faces about 90 degrees apart.
+  const positions: number[] = [];
+  const index: number[] = [];
+  for (const face of faces) {
+    const local = new Map<number, number>();
+    for (const corner of face) {
+      let vertex = local.get(corner);
+      if (vertex === undefined) {
+        vertex = positions.length / 3;
+        local.set(corner, vertex);
+        positions.push(vertices[corner * 3]!, vertices[corner * 3 + 1]!, vertices[corner * 3 + 2]!);
+      }
+      index.push(vertex);
+    }
+  }
 
   const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-  // A zero tip chord is a triangular wing: omit collapsed faces at the tip.
-  geo.setIndex(
-    tipChord === 0
-      ? [0, 1, 3, 4, 7, 5, 0, 2, 6, 0, 6, 4, 1, 5, 7, 1, 7, 3, 0, 4, 5, 0, 5, 1]
-      : indices,
-  );
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setIndex(index);
   geo.computeVertexNormals();
   return geo;
 }

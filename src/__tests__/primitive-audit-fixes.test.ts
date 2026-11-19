@@ -5,7 +5,14 @@
  */
 import { describe, expect, test } from 'bun:test';
 import * as THREE from 'three';
-import { createStairs, room } from '../primitives';
+import {
+  createStairs,
+  createWingPair,
+  room,
+  wingGeo,
+  type WingGeometryOptions,
+} from '../primitives';
+import { geometryDiagnostics } from '../geometry';
 import { analyzeFlushFaces } from '../qa/flush-faces';
 
 /** A material with a texture: the flush-face check reports every depth tie between its faces. */
@@ -160,5 +167,70 @@ describe('room walls meet at the corners without overlap or notch (#404)', () =>
     expect(near(1.45)).toThrow(/left wall.*3\.85/);
     expect(near(-1.45)).toThrow(/left wall.*3\.85/);
     expect(() => room('R', textured(), { depth: 0.15 })).toThrow(/wallThickness.*less than depth/);
+  });
+});
+
+describe('wing flat faces keep their own vertices and normals (#405)', () => {
+  /** Largest angle between a stored vertex normal and its triangle's winding normal. */
+  function normalFacts(geometry: THREE.BufferGeometry) {
+    const position = geometry.getAttribute('position');
+    const normal = geometry.getAttribute('normal');
+    const index = geometry.getIndex()!;
+    const [a, b, c, face, n] = [0, 0, 0, 0, 0].map(() => new THREE.Vector3());
+    let maxDeg = 0;
+    let opposed = 0;
+    for (let i = 0; i < index.count; i += 3) {
+      const corners = [index.getX(i), index.getX(i + 1), index.getX(i + 2)];
+      a!.fromBufferAttribute(position, corners[0]!);
+      b!.fromBufferAttribute(position, corners[1]!);
+      c!.fromBufferAttribute(position, corners[2]!);
+      face!.subVectors(b!, a!).cross(c!.sub(a!)).normalize();
+      for (const corner of corners) {
+        n!.fromBufferAttribute(normal, corner).normalize();
+        maxDeg = Math.max(maxDeg, THREE.MathUtils.radToDeg(n!.angleTo(face!)));
+        if (n!.dot(face!) < 0) opposed++;
+      }
+    }
+    return { maxDeg, opposed };
+  }
+
+  const variants: Array<[string, WingGeometryOptions, number, number]> = [
+    ['defaults', {}, 24, 0.018],
+    ['triangular (tipChord 0)', { tipChord: 0 }, 18, 0.012],
+    [
+      'span 4, sweep 1, dihedral 0.2, thickness 0.08',
+      { span: 4, sweep: 1, dihedral: 0.2, thickness: 0.08 },
+      24,
+      0.144,
+    ],
+    ['forward sweep, wide tip', { sweep: -0.5, tipChord: 1.2 }, 24, 0.036],
+  ];
+
+  for (const [label, options, vertices, volume] of variants) {
+    test(`wingGeo ${label}: face normals within 1 degree, still a closed outward solid`, () => {
+      const geometry = wingGeo(options);
+      expect(geometry.getAttribute('position').count).toBe(vertices);
+      const facts = normalFacts(geometry);
+      expect(facts.opposed).toBe(0);
+      expect(facts.maxDeg).toBeLessThan(1);
+      const { solid } = geometryDiagnostics(geometry);
+      expect(solid.closed).toBe(true);
+      expect(solid.manifold).toBe(true);
+      expect(solid.orientation).toBe('outward');
+      expect(solid.signedVolume).toBeCloseTo(volume, 6);
+    });
+  }
+
+  test('createWingPair: both wings carry face normals', () => {
+    for (const options of [{}, { tipChord: 0, sweep: 0.4 }]) {
+      const pair = createWingPair('W', textured(), { rootZ: 0.3, ...options });
+      for (const wing of [pair.left, pair.right]) {
+        const geometry = (wing as THREE.Mesh).geometry;
+        const facts = normalFacts(geometry);
+        expect(facts.opposed).toBe(0);
+        expect(facts.maxDeg).toBeLessThan(1);
+        expect(geometryDiagnostics(geometry).solid.orientation).toBe('outward');
+      }
+    }
   });
 });

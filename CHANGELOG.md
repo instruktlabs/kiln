@@ -66,6 +66,14 @@ the corpus gate.
   back and side panels change length. A side-wall opening must now fit the shorter wall,
   and the error names the wall and its length; `wallThickness` must be less than `depth`.
   (#404)
+- **`wingGeo` and `createWingPair` shade their edges and caps flat.** The six flat faces
+  shared 8 vertices, so each vertex normal averaged faces about 90 degrees apart: the
+  leading edge faced +X but its normals pointed near ±Y, and one swept case had a
+  triangle whose normals opposed its winding. Kiln's views hid it under `flatShading`;
+  glTF has no such flag. Each face now has its own vertices (24, or 18 with `tipChord: 0`)
+  and carries its face normal (measured 0.0 degrees off, was up to 93.4). Triangles,
+  bounds and volume are unchanged; each wing has 16 more vertices (10 with `tipChord: 0`).
+  (#405)
 
 ## 1.8.0 (2026-11-13)
 
