@@ -117,7 +117,7 @@ pose can still put tread, feet or another protrusion below the ground during mot
 
 ## Local defaults
 
-The packaged Node CLI and MCP server evaluate programs in a subprocess. Each request has a 60-second deadline, a 512 MiB V8 old-space heap limit, a 16 MiB GLB limit and a 32 MiB evaluator-response limit. The heap cap does not bound native allocations or total process memory. A process is terminable; it is not a complete security sandbox. MCP cancellation reaches the worker, and cancelling one request does not cancel another request's build.
+The packaged Node CLI and MCP server evaluate programs in a subprocess. Each request has a 60-second deadline, a 512 MiB V8 old-space heap limit, a 16 MiB GLB limit and a 32 MiB evaluator-response limit. The heap cap does not bound native allocations or total process memory. A process is terminable; it is not a complete security sandbox ([how Kiln isolates evaluated code](isolation.md)). MCP cancellation reaches the worker, and cancelling one request does not cancel another request's build.
 
 Use `kiln_discover({ capabilities: true })` or `node kiln.mjs discover --capabilities --json` to inspect the actual host. Send capabilities alone; search filters belong to separate Discovery calls. The library's default trusted evaluator runs in process and cannot interrupt synchronous code. Host-injected evaluators can have different limits; absent host metadata is reported as unspecified.
 

@@ -4,6 +4,30 @@ Existing inline-code transport and the legacy capture format remain supported. T
 Discovery and authoring-helper changes below require explicit migration; retired
 names have no callable compatibility aliases.
 
+## Changes between 1.6 and 1.9
+
+No export path, evaluator or MCP embedding name was removed between 1.6.0 and 1.8.0: the
+export map only gained `params` and `param-bindings`, and `@instruktlabs/kiln/evaluator`
+and `@instruktlabs/kiln/mcp` export the same names. Hosts that pinned 1.6.0 can move to the
+current release by changing the version, then checking these points. Details are in the
+[changelog](https://github.com/instruktlabs/kiln/blob/main/CHANGELOG.md).
+
+- **three.js is 0.187.0** (was 0.186.1) from 1.7.0. CPU views and GLBs are unchanged apart
+  from a lathe-built part's normals in the last bit. GPU views change slightly because
+  three prefilters environment maps differently, and a colour string with a negative hue or
+  decimal percentages, such as `hsl(-30, 60%, 50%)`, now parses where it was read as white.
+- **The evaluator wire result has a `limit` field** from 1.7.0 for an output-budget failure.
+  Run the worker and the host from the same installed version. `KILN_EVALUATOR_TIMEOUT_MS`
+  now works above 60,000, and `KILN_EVALUATOR_MAX_GLB_BYTES` raises the GLB limit to 64 MiB.
+- **A saved record from a newer engine can be refused by an older one.** Project inventory
+  `placement`, a material revision's `parentRevision` and a material's `generated` map
+  source (all 1.7.0) are rejected by an engine that predates them. Upgrade every engine that reads the
+  same store.
+- **The GPU render service has a new build identity**, so a service still running the
+  three.js 0.186.1 build is reported as incompatible; `kiln service stop` ends it.
+- **From a source checkout, `dist/` is built and not tracked.** Run `bun run build:runtime`
+  after a clone or pull. The npm package is unchanged.
+
 ## Changes in 1.2
 
 Version 1.2.0 adds an opt-in named-operation presentation derived from the shared
