@@ -303,3 +303,38 @@ timing runs, so profiler overhead is not in any table above.
   the numbers.
 - **GPU views.** Out of scope: `KILN_RENDER=cpu` throughout.
 - **The "other" remainder** was not broken into its parts.
+
+## Follow-up: the TypeScript fixes of #431 (2026-11-19 UTC)
+
+Five changes on branch `perf/engine-hot-spots`, after the shared manifold module of #434. They
+were written and timed on `a721e54c`, then rebased onto `945a5ce2`, where #438 had moved the
+diagnostic weld into `src/geometry-frame.ts` for the print export; the numeric weld of the last
+fix is now that one weld, shared by `geometryDiagnostics` (and so `REQUIRE_SOLID`) and the print
+export. Measured on a different machine from the profile above: a shared Windows 11 PC
+(AMD Ryzen 7 3700X, 16 logical CPUs, 32 GiB), Bun 1.4.2, `KILN_RENDER=cpu`. Other sessions kept
+it at 15 to 100% CPU, so every pair ran before and after back to back with its load recorded,
+and the numbers are indicative. Medians of 5 runs (2 or 3 for the cathedrals), milliseconds.
+
+**Output is byte-identical after every fix.** For all eleven assets: the pipeline GLB sha256, the
+review sheet PNG sha256, the derivative GLB, the render result (less the validator's
+`validatedAt` clock), the scene and final QA reports, all compared with `a721e54c` after each
+commit: 11 of 11 on every field each time. After the rebase the same check against `945a5ce2`,
+with each GLB's STL and 3MF print export added (four assets export, seven are refused as not
+solid, and both outcomes are hashed), is again 11 of 11 on every field after each commit.
+
+| fix | phase | before → after | load (CPU) |
+|---|---|---|---|
+| raster: collect triangles once per sheet, flat arrays, one GLB hash | raster | gateway 1,209 → 422; mech-3 687 → 448; cathedral-1 11,928 → 4,130; cathedral-9 16,228 → 6,884 | 50 to 99% |
+| procedural textures: no per-texel tuples, per-build recipe cache | build | planter-long 1,409 → 685; gateway 2,414 → 1,559; cathedral-1 2,514 → 1,486; cathedral-9 17,554 → 13,776 | 45 to 100% |
+| alpha scan by 32-bit words; atlas images hashed once per export | export | planter-long 557 → 398; mech-3 178 → 124; gateway 658 → 569; cathedral-1 842 → 846 | 19 to 75% |
+| surface area: read each accessor once, no `Number()` per coordinate | final | gateway 67 → 40; cathedral-1 900 → 354; cathedral-9 1,462 → 503 | 12 to 28% |
+| QA arrays scanned in place; numeric weld keys | rules | mech-3 445 → 302; cathedral-1 1,855 → 1,051; cathedral-9 2,550 → 1,466 | 27 to 58% |
+
+Small assets move by less than the load does; an interleaved microbenchmark of the review sheet
+puts `van-delivery` and `pumpkin-plant` 10 to 25% faster. Two findings for the next round: on
+Bun's JavaScriptCore the per-vertex tuples in the material metrics were not the cost (a rewrite
+into a scratch buffer was twice as slow and was dropped); the `Number()` call per coordinate
+was. And on this machine neither `hasTranslucentPixel` nor texture hashing reached the top of the
+export profile: export is mostly sharp's PNG encode and, on `gateway`, `JSON.stringify` (40% of
+export self time), which is the next TypeScript lead before any kernel. `cathedral-9` now draws
+3,979,132 triangles, 36 fewer than the table above records.

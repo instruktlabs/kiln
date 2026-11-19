@@ -15,6 +15,7 @@ import type { AssetRequirementsQaReportV2 } from './qa/requirements-report';
 import { createRequirementsQaReport } from './qa/requirements-report';
 import { meshComponentBoxes, splitBudget } from './qa/mesh-components';
 import { inspectSkinIntegrity } from './qa/skin-integrity';
+import { buildWarnings, type BuildTracker } from './build-warnings';
 import { analyzeFlushFaces, flushFaceWarnings } from './qa/flush-faces';
 import { AuthoringDiagnosticError, rethrowAuthoringError } from './evaluator/authoring-diagnostic';
 /**
@@ -89,6 +90,7 @@ import {
   buildSandboxGlobals,
   countTriangles,
   type DiagnosticConsole,
+  SANDBOX_BUILD_TRACKER,
   SANDBOX_DECLARATIONS,
   type SandboxDeclarations,
 } from './primitives';
@@ -446,6 +448,8 @@ export interface ExecutedKilnCode {
   primitiveUsage: Record<string, number>;
   /** Present when the program called `defineParams`. */
   params?: ParamsReportV1;
+  /** Advisory warnings from how the program built: parts that never joined the asset, doubled prefixes. */
+  buildWarnings: string[];
 }
 
 /**
@@ -554,12 +558,14 @@ export async function executeKilnCode(
       root.userData[KILN_PALETTE_KEY] = declared.palette;
 
     const clips = animate ? ((await animate(root)) ?? []) : [];
+    const tracker = (globals as { [SANDBOX_BUILD_TRACKER]?: BuildTracker })[SANDBOX_BUILD_TRACKER];
 
     return {
       meta: meta ?? {},
       root,
       clips,
       primitiveUsage,
+      buildWarnings: tracker ? buildWarnings(tracker, root) : [],
       ...(declared?.params ? { params: declared.params } : {}),
     };
   } catch (error) {
@@ -2061,8 +2067,7 @@ export async function renderSceneToGLB(
 
   const io = engineIO();
   ensureDefaultScene(doc);
-  await refreshAtlasDocumentProvenance(doc);
-  await validateAtlasDocumentProvenance(doc);
+  await validateAtlasDocumentProvenance(doc, await refreshAtlasDocumentProvenance(doc));
   const bytes = await io.writeBinary(doc);
   const artifactGlbSha256 = `sha256:${await sha256Hex(bytes)}` as const;
   const boundBakedTextures = bakedTextures.map((entry) => ({
@@ -2191,8 +2196,7 @@ export async function renderReviewDerivativeGlb(
     },
   );
   ensureDefaultScene(doc);
-  await refreshAtlasDocumentProvenance(doc);
-  await validateAtlasDocumentProvenance(doc);
+  await validateAtlasDocumentProvenance(doc, await refreshAtlasDocumentProvenance(doc));
   return engineIO().writeBinary(doc);
 }
 
@@ -2259,7 +2263,14 @@ export async function renderGLBInProcess(
     materialLibraryDependencies = materialRecords.map((record) => structuredClone(record.manifest));
     textureResolver = await createMaterialLibraryTextureResolver(materialRecords, textureResolver);
   }
-  const { meta, root, clips, primitiveUsage, params } = await executeKilnCode(code, {
+  const {
+    meta,
+    root,
+    clips,
+    primitiveUsage,
+    params,
+    buildWarnings: buildNotes,
+  } = await executeKilnCode(code, {
     textureResolver,
     console: opts.diagnosticConsole,
     ...(opts.params ? { params: opts.params } : {}),
@@ -2304,7 +2315,7 @@ export async function renderGLBInProcess(
       gltfValidation: scene.gltfValidation,
       qaReport: scene.qaReport,
     },
-    warnings: scene.warnings,
+    warnings: [...buildNotes, ...scene.warnings],
     ...(scene.diagnosticViews ? { diagnosticViews: scene.diagnosticViews } : {}),
     ...(scene.materialMetrics ? { materialMetrics: scene.materialMetrics } : {}),
     ...(scene.materialRecipeApplications
@@ -2435,8 +2446,7 @@ export async function optimizeGlbBytes(
     if (mode) summary = await consolidateMaterials(doc, mode);
     if (!summary && !instancing) return undefined;
     ensureDefaultScene(doc);
-    await refreshAtlasDocumentProvenance(doc);
-    await validateAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc, await refreshAtlasDocumentProvenance(doc));
     const outBytes = await io.writeBinary(doc);
     const gltfValidation = await assertFinalGlbValid(outBytes);
     let report: InstanceabilityReport | undefined;
@@ -2597,8 +2607,7 @@ export async function snapGlbToPalette(
       drawsAfter: after.drawCalls,
     };
     ensureDefaultScene(doc);
-    await refreshAtlasDocumentProvenance(doc);
-    await validateAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc, await refreshAtlasDocumentProvenance(doc));
     const outBytes = await io.writeBinary(doc);
     const gltfValidation = await assertFinalGlbValid(outBytes);
     let report: InstanceabilityReport | undefined;
@@ -2787,8 +2796,7 @@ export async function composeSceneGLB(
 
   const metrics = collectGlbMetrics(master);
   ensureDefaultScene(master);
-  await refreshAtlasDocumentProvenance(master);
-  await validateAtlasDocumentProvenance(master);
+  await validateAtlasDocumentProvenance(master, await refreshAtlasDocumentProvenance(master));
   const bytes = await io.writeBinary(master);
   const gltfValidation = await assertFinalGlbValid(bytes, 'scene.glb');
   for (const issue of gltfValidation.issues.messages) {

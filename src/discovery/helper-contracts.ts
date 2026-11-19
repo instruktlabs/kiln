@@ -157,7 +157,10 @@ for (const [axis, names] of [
         'height/length is the nonnegative straight middle section; zero is supported. Radius is positive; total outer length is height/length + 2 × radius.',
         'Cap subdivision is fixed at 2; radial segments default to 6.',
       ],
-      cost: 'Linear in radial segments with fixed cap subdivision.',
+      topology: [
+        'Closed, manifold, outward after welding the UV seam and pole duplicates. Zero-area pole triangles (and the empty straight section at zero height/length) are dropped from the index; vertices, normals and UVs are kept.',
+      ],
+      cost: 'Linear in radial segments with fixed cap subdivision: 8 triangles per radial segment (48 at the default 6), 6 at zero height/length.',
     },
     {
       ...primitiveMetadata,
@@ -332,7 +335,10 @@ define(
     parameters: [
       'Positive finite span/rootChord/thickness; tipChord may be zero for a pointed wing. Signed sweep and dihedral are finite length displacements; generated coordinates must fit Float32.',
     ],
-    cost: 'Fixed trapezoid or triangular prism tessellation.',
+    topology: [
+      'Closed, manifold, outward prism. Each flat face has its own vertices, so every vertex normal is its face normal and the edges shade flat in any glTF viewer.',
+    ],
+    cost: 'Fixed trapezoid or triangular prism tessellation: 12 triangles on 24 vertices, or 8 on 18 with tipChord 0.',
   },
   {
     ...primitiveMetadata,
@@ -1377,7 +1383,7 @@ define(
     origin: 'Roots at ±rootZ with optional rootX/rootY offsets.',
     parameters: ['Uses wingGeo dimensions and explicit mirrored placement.'],
     preservation: [
-      'Creates separately owned mirrored geometry with corrected reflected triangle winding; material remains shared.',
+      'Creates separately owned mirrored geometry with corrected reflected triangle winding and per-face normals; material remains shared.',
     ],
     cost: 'Two fixed-complexity wing meshes.',
   },
@@ -1396,10 +1402,13 @@ define(
     origin: 'Wall base and floor top are local Y=0; floor extends downward.',
     parameters: [
       'Default width/depth/height describe a small room; dimensions are not an overall building/storey limit.',
-      'Per-wall rectangular openings are explicit; floor may be disabled.',
+      'Per-wall rectangular openings are explicit; floor may be disabled. An opening offset is measured from its wall centre and the opening must fit inside that wall: front/back walls are width + wallThickness long, left/right walls depth - wallThickness. wallThickness must be less than depth.',
+      "Openings take the wallWithOpening fill, name and names; materials applies to every wall, and each wall's outer face is outside the room.",
+      "merge: 'byMaterial' returns one part per material instead of one per piece: the same triangles and bounds, named for the call (the wall material takes the call's name, other roles <name>_<Role>); frames and Joint_ pivots stay, and pivot pieces merge only under their pivot. Merged pieces that share an edge make it non-manifold. Without merge, output is unchanged.",
     ],
     topology: [
       'Four box-segment walls with real apertures; optional floor. No roof or automatic whole-building watertightness.',
+      'Walls are centred on the width x depth footprint edges, so the outer footprint is (depth + wallThickness) x (width + wallThickness) and the interior (depth - wallThickness) x (width - wallThickness). Front/back walls run past the corners and left/right walls butt between them: corners neither overlap nor leave a notch, and no wall faces are flush.',
     ],
     cost: 'Mesh count grows with aperture segmentation, plus optional floor.',
   },
@@ -1424,9 +1433,15 @@ define(
     parameters: [
       'Positive finite length/height/thickness; opening or openings, never both.',
       'Rectangular apertures must not overlap or extend outside the wall; touching edges are allowed.',
+      'fill places each piece from its opening: frame members line the reveal (face width 0.06, default depth [0, thickness]); glazing stands 1 mm clear of frame, bars and reveal; sill (windows only), lintel and shutters stand on the outer face; a leaf hangs under Joint_<pivot> at its hinge edge (default <wall>_<Door|Window><n>_Hinge). Depths count inward from the outer face: outward 1 (default) puts it on +X for axis z and +Z for axis x, -1 on the other side; negative depths stand proud.',
+      'materials by role (frame, glazing, bars, sill, lintel, shutter, leaf, hardware); each falls back to frame, then the wall material. glazing has no fallback and must be given when glazing is asked for.',
+      'Fill parts are named <wall>_<Door|Window><n>_<Piece>: FrameStart, FrameEnd, FrameHead, FrameBottom, Glass or Glass<n>, BarV<i>, BarH<j> or BarH<j>_<k>, Sill, Lintel, ShutterStart, ShutterEnd, Leaf, Handle. opening.name replaces the prefix; opening.names maps a piece to an exact part name.',
+      'A fill that does not fit (no clear opening left, glazing outside the frame depth, a face piece past the wall or over another opening, a leaf with glazing, an unknown key) throws before any part is made.',
+      "merge: 'byMaterial' returns one part per material instead of one per piece: the same triangles and bounds, named for the call (the wall material takes the call's name, other roles <name>_<Role>); frames and Joint_ pivots stay, and pivot pieces merge only under their pivot. Merged pieces that share an edge make it non-manifold. Without merge, output is unchanged.",
     ],
     topology: [
       'Actual aperture gaps are composed from box segments; no solid boolean or wall-assembly union.',
+      'Fill pieces are closed boxes with UV0 that meet the wall and each other face to face or with a gap; none passes through another.',
     ],
     cost: 'Segmentation grows with aperture boundary coordinates; no generic architectural complexity cap.',
   },
@@ -1568,13 +1583,45 @@ define(
       'steps must be an integer from 1 to 10000; finite rise/run magnitudes below 1e-4 are rejected.',
       'Width and treadThickness are positive finite. Negative rise/run preserve descending/reversed placement with positive solid dimensions.',
     ],
-    cost: 'steps treads plus optional steps risers.',
+    topology: [
+      ...assemblyFacts.topology!,
+      'Each tread and riser is a closed box. Ascending, a riser stops under its tread, so they share no faces; a step rise at or below treadThickness gets no riser. Descending, a riser stands on its tread.',
+    ],
+    cost: 'steps treads plus up to steps risers.',
   },
   {
     ...assemblyMetadata,
     aliases: ['stair flight', 'steps'],
     intents: ['connect elevations with straight stairs'],
     limitations: ['No curved staircase, landing sockets or navigability certificate.'],
+  },
+);
+define(
+  'fenceRun',
+  {
+    ...assemblyFacts,
+    axes: "Each post frame's local +X follows the run and +Y is up; rails run between post centres.",
+    origin:
+      'Path points are post centres at the post base, in parent coordinates; the root has no offset.',
+    parameters: [
+      'path lists two or more finite [x, y, z] post centres (three or more when closed). Defaults: post section 0.1, height 1, no chamfer; rails at 35% and 75% of the post height, section [0.04, 0.08], embed 0.02.',
+      'A post bisects a turn of up to 45 degrees; at a sharper turn it bisects what is left after the nearest right angle, so a right-angle corner post is square to both rails and no rail meets a face more than 22.5 degrees off square.',
+      'Rails stop rails.embed inside each post face and follow the slope between post bases. pegs stand on both side faces (local Z) at every rail height, at offsets along the run.',
+      'Parts: Mesh_<name>_Post<i> in frames <name>_Post<i> (post.names and post.groups rename them), rails Mesh_<name>_Rail<segment>_<height>, or one part named rails.merge.',
+      'A run that does not fit throws before anything is built: posts too close, a rail outside the shaft or showing its end, a rail meeting a post across its edge, rails crossing outside a post at a sharp turn, or pegs where a rail enters a side face.',
+      "merge: 'byMaterial' merges posts into one part named for the call and rails into <name>_Rails (one part when they share a material); the post frames stay as empty anchors.",
+    ],
+    topology: [
+      'Every post (with its pegs) and rail is a closed, outward, flat-shaded solid with UV0 in metres, grain along V; rail ends pass into the posts and no rail face lies on a post face.',
+    ],
+    cost: 'One post part per path point and one rail part per segment and height, unless merged.',
+  },
+  {
+    ...assemblyMetadata,
+    references: ['src/fence-run.ts'],
+    aliases: ['fence', 'railing', 'post and rail fence', 'paddock fence', 'pen'],
+    intents: ['run a post-and-rail fence along a path'],
+    limitations: ['No gates, hinges, pickets or curved rails.'],
   },
 );
 define(

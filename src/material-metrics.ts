@@ -1,6 +1,6 @@
 /** Deterministic material/texture metrics and reference profile tiers for advice. */
 
-import type { Accessor, Document, Material, Node, Primitive, Texture } from '@gltf-transform/core';
+import type { Document, Material, Node, Primitive, Texture } from '@gltf-transform/core';
 import type { MaterialAdviceV1 } from './contracts/integration';
 
 export type { MaterialAdviceV1 };
@@ -136,21 +136,21 @@ const transformPoint = (
   ];
 };
 
+/**
+ * One corner in world space; the caller reads the accessor array and element size once.
+ * Typed-array elements are already numbers: a Number() call per coordinate was most of this
+ * loop's time on JavaScriptCore, and dropping it changes no value (a missing element is
+ * still NaN in every product).
+ */
 const accessorPoint = (
-  accessor: Accessor,
+  array: ArrayLike<number> | null,
+  size: number,
   index: number,
   matrix: readonly number[],
 ): [number, number, number] => {
-  const array = accessor.getArray();
   if (!array) return [0, 0, 0];
-  const size = accessor.getElementSize();
   const offset = index * size;
-  return transformPoint(
-    matrix,
-    Number(array[offset]),
-    Number(array[offset + 1]),
-    Number(array[offset + 2]),
-  );
+  return transformPoint(matrix, array[offset]!, array[offset + 1]!, array[offset + 2]!);
 };
 
 const triangleArea = (a: readonly number[], b: readonly number[], c: readonly number[]): number => {
@@ -174,15 +174,17 @@ function primitiveSurfaceArea(primitive: Primitive, node: Node): number {
   const indices = primitive.getIndices()?.getArray();
   const count = indices?.length ?? position.getCount();
   const matrix = node.getWorldMatrix();
+  const array = position.getArray();
+  const size = position.getElementSize();
   let area = 0;
   for (let offset = 0; offset + 2 < count; offset += 3) {
-    const aIndex = indices ? Number(indices[offset]) : offset;
-    const bIndex = indices ? Number(indices[offset + 1]) : offset + 1;
-    const cIndex = indices ? Number(indices[offset + 2]) : offset + 2;
+    const aIndex = indices ? indices[offset]! : offset;
+    const bIndex = indices ? indices[offset + 1]! : offset + 1;
+    const cIndex = indices ? indices[offset + 2]! : offset + 2;
     area += triangleArea(
-      accessorPoint(position, aIndex, matrix),
-      accessorPoint(position, bIndex, matrix),
-      accessorPoint(position, cIndex, matrix),
+      accessorPoint(array, size, aIndex, matrix),
+      accessorPoint(array, size, bIndex, matrix),
+      accessorPoint(array, size, cIndex, matrix),
     );
   }
   return area;

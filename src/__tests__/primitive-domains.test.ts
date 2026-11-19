@@ -77,3 +77,13 @@ test('invalid sandbox inputs fail before cached construction', () => {
   expect(() => globals.boxGeo(null as unknown as number, 1, 1)).toThrow(/boxGeo/);
   expect(globals.boxGeo(1, 1, 1).getAttribute('position').count).toBe(24);
 });
+
+test('torusGeo rejects a tube at least as thick as the ring radius, naming both values', () => {
+  // The tube would cross the ring axis and the surface would intersect itself.
+  expect(() => torusGeo(0.2, 0.5)).toThrow(/torusGeo.*tube 0\.5.*radius 0\.2/s);
+  expect(() => torusGeo(0.3, 0.3)).toThrow(/tube 0\.3.*radius 0\.3/s);
+  // A thick but valid ring still builds, and its geometry is untouched.
+  const thick = torusGeo(0.5, 0.49, 8, 12);
+  expect(thick.getAttribute('position').count).toBe(117);
+  expect(torusGeo(0.4, 0.04, 8, 16).getAttribute('position').count).toBe(153);
+});

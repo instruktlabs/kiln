@@ -74,7 +74,8 @@ function computationFrame(parts: THREE.Object3D[]): ComputationFrame {
             ? 'a mesh with active morph influences'
             : undefined;
       if (unsupported)
-        throw new Error(
+        throw new AuthoringDiagnosticError(
+          'CSG_OPERAND_MESH',
           `CSG: "${mesh.name || '(unnamed)'}" is ${unsupported}; bake the intended instances or pose into static triangle meshes before the Boolean. Base geometry alone does not represent this operand.`,
         );
       if (mesh.geometry.getAttribute('position')?.count) meshes.push(mesh);
@@ -99,13 +100,20 @@ function computationFrame(parts: THREE.Object3D[]): ComputationFrame {
     for (let i = 0; i < position.count; i++) {
       point.fromBufferAttribute(position, i).applyMatrix4(matrix);
       if (![point.x, point.y, point.z].every(Number.isFinite))
-        throw new Error('CSG: operand positions and transforms must be finite');
+        throw new AuthoringDiagnosticError(
+          'CSG_OPERAND_MESH',
+          'CSG: operand positions and transforms must be finite',
+        );
       bounds.expandByPoint(point);
     }
   }
   const size = bounds.getSize(new THREE.Vector3());
   const scale = Math.hypot(size.x, size.y, size.z);
-  if (!Number.isFinite(scale)) throw new Error('CSG: combined operand extent must be finite');
+  if (!Number.isFinite(scale))
+    throw new AuthoringDiagnosticError(
+      'CSG_OPERAND_MESH',
+      'CSG: combined operand extent must be finite',
+    );
   return { origin, center: bounds.getCenter(new THREE.Vector3()), scale: scale || 1, matrices };
 }
 
@@ -196,14 +204,21 @@ function threeToManifold(
     const index = geometry.index,
       count = index?.count ?? position.count;
     if (count % 3 !== 0)
-      throw new Error(
+      throw new AuthoringDiagnosticError(
+        'CSG_OPERAND_MESH',
         `CSG ${label}: mesh "${mesh.name || '(unnamed)'}" has ${count} ${index ? 'indices' : 'vertices'}, which is not a whole number of triangles. Every CSG input must be a triangle mesh.`,
       );
     if (position.itemSize !== 3)
-      throw new Error(`CSG ${label}: positions must have three components`);
+      throw new AuthoringDiagnosticError(
+        'CSG_OPERAND_MESH',
+        `CSG ${label}: positions must have three components`,
+      );
     const uv = geometry.getAttribute('uv');
     if (context.preserve && uv && (uv.itemSize !== 2 || uv.count !== position.count))
-      throw new Error(`CSG ${label}: uv must have two components per vertex`);
+      throw new AuthoringDiagnosticError(
+        'CSG_OPERAND_MESH',
+        `CSG ${label}: uv must have two components per vertex`,
+      );
     if (context.preserve) {
       if (uv) context.anyUV = true;
       else context.missingUV.add(mesh.name || label);
@@ -216,13 +231,19 @@ function threeToManifold(
         .sub(context.frame.center)
         .divideScalar(context.frame.scale);
       if (![point.x, point.y, point.z].every((n) => Number.isFinite(Math.fround(n))))
-        throw new Error(`CSG ${label}: transformed positions must be finite Float32 coordinates`);
+        throw new AuthoringDiagnosticError(
+          'CSG_OPERAND_MESH',
+          `CSG ${label}: transformed positions must be finite Float32 coordinates`,
+        );
       properties.push(point.x, point.y, point.z);
       if (context.preserve) {
         const u = uv?.getX(i) ?? 0,
           v = uv?.getY(i) ?? 0;
         if (!Number.isFinite(u) || !Number.isFinite(v))
-          throw new Error(`CSG ${label}: UVs must be finite`);
+          throw new AuthoringDiagnosticError(
+            'CSG_OPERAND_MESH',
+            `CSG ${label}: UVs must be finite`,
+          );
         properties.push(u, v);
       }
     }
@@ -240,7 +261,8 @@ function threeToManifold(
         span.start + span.count > count ||
         !materials[span.materialIndex]
       )
-        throw new Error(
+        throw new AuthoringDiagnosticError(
+          'CSG_OPERAND_MESH',
           `CSG ${label}: material/source groups must cover triangles exactly once with valid materials`,
         );
       const id = mod.Manifold.reserveIDs(1);
@@ -254,7 +276,10 @@ function threeToManifold(
           index?.getX(i + 2) ?? i + 2,
         ];
         if (triangle.some((j) => !Number.isInteger(j) || j < 0 || j >= position.count))
-          throw new Error(`CSG ${label}: index outside positions`);
+          throw new AuthoringDiagnosticError(
+            'CSG_OPERAND_MESH',
+            `CSG ${label}: index outside positions`,
+          );
         // A reflected world transform reverses winding; retain the operand's outward solid orientation.
         if (mesh.matrixWorld.determinant() < 0)
           [triangle[1], triangle[2]] = [triangle[2]!, triangle[1]!];
@@ -265,11 +290,15 @@ function threeToManifold(
       covered += span.count;
     }
     if (covered !== count)
-      throw new Error(`CSG ${label}: material/source groups do not cover every triangle`);
+      throw new AuthoringDiagnosticError(
+        'CSG_OPERAND_MESH',
+        `CSG ${label}: material/source groups do not cover every triangle`,
+      );
     vertexOffset += position.count;
   });
   if (!indices.length)
-    throw new Error(
+    throw new AuthoringDiagnosticError(
+      'CSG_OPERAND_MESH',
       `CSG ${label}: contributes no triangles${meshCount === 0 ? ' (nothing in it is a mesh — an empty Group, or a part that was never added to it)' : ' (its meshes have no geometry)'}. Every CSG operand must be a solid with triangles.`,
     );
   runs.push(indices.length);

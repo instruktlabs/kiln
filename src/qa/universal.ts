@@ -137,11 +137,20 @@ function finiteComponents(value: VectorLike | QuaternionLike | undefined): boole
   return values.every(Number.isFinite);
 }
 
-function iterableValues(value: ArrayLike<number> | undefined): number[] {
-  if (!value) return [];
-  const out: number[] = [];
-  for (let i = 0; i < value.length; i++) out.push(value[i]!);
-  return out;
+/** First position holding a non-finite value, read in place (never copied); -1 if none. */
+function firstNonFinite(values: ArrayLike<number> | undefined): number {
+  if (!values) return -1;
+  for (let i = 0; i < values.length; i++) if (!Number.isFinite(values[i])) return i;
+  return -1;
+}
+
+/** First position that is not a whole vertex index below the vertex count; -1 if none. */
+function firstInvalidIndex(values: ArrayLike<number>, vertexCount: number): number {
+  for (let i = 0; i < values.length; i++) {
+    const value = values[i]!;
+    if (!Number.isInteger(value) || value < 0 || value >= vertexCount) return i;
+  }
+  return -1;
 }
 
 function emptyOutputFindings(context: UniversalQaInput): QaFinding[] {
@@ -167,7 +176,7 @@ function finiteDataFindings(context: UniversalQaInput): QaFinding[] {
       !finiteComponents(node.position) ||
       !finiteComponents(node.quaternion) ||
       !finiteComponents(node.scale) ||
-      iterableValues(node.matrix?.elements).some((value) => !Number.isFinite(value));
+      firstNonFinite(node.matrix?.elements) >= 0;
     if (badTransform) {
       findings.push({
         code: 'UNIVERSAL_NONFINITE_TRANSFORM',
@@ -181,8 +190,7 @@ function finiteDataFindings(context: UniversalQaInput): QaFinding[] {
     }
 
     for (const [attributeName, attribute] of Object.entries(node.geometry?.attributes ?? {})) {
-      const values = iterableValues(attribute.array);
-      const badIndex = values.findIndex((value) => !Number.isFinite(value));
+      const badIndex = firstNonFinite(attribute.array);
       if (badIndex >= 0) {
         findings.push({
           code: 'UNIVERSAL_NONFINITE_ATTRIBUTE',
@@ -206,10 +214,7 @@ function invalidIndexFindings(context: UniversalQaInput): QaFinding[] {
     const index = node.geometry?.index;
     if (!index?.array) continue;
     const vertexCount = node.geometry?.attributes?.position?.count ?? 0;
-    const values = iterableValues(index.array);
-    const badPosition = values.findIndex(
-      (value) => !Number.isInteger(value) || value < 0 || value >= vertexCount,
-    );
+    const badPosition = firstInvalidIndex(index.array, vertexCount);
     if (badPosition >= 0) {
       findings.push({
         code: 'UNIVERSAL_INVALID_INDEX',
@@ -220,7 +225,7 @@ function invalidIndexFindings(context: UniversalQaInput): QaFinding[] {
         affected: affectedNode(node, { attribute: 'index' }),
         measurement: {
           name: 'indexValue',
-          actual: values[badPosition] ?? null,
+          actual: index.array[badPosition] ?? null,
           threshold: vertexCount - 1,
         },
         repairText: 'Rebuild the index so every value is an integer within the POSITION accessor.',

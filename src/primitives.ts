@@ -19,6 +19,38 @@ import {
   GEOMETRY_ALLOCATION_LIMITS,
 } from './geometry-budget';
 import { buildWallPanels } from './wall-panels';
+import {
+  assertAssemblyMerge,
+  mergePiecesByMaterial,
+  roleSuffix,
+  type AssemblyMergeMode,
+} from './assembly-merge';
+import {
+  emitWallFills,
+  planWallFills,
+  type OpeningFill,
+  type WallFillMaterials,
+} from './wall-fills';
+export type {
+  OpeningBarsFill,
+  OpeningFaceFill,
+  OpeningFill,
+  OpeningFrameFill,
+  OpeningGlazingFill,
+  OpeningHandleFill,
+  OpeningLeafFill,
+  OpeningShuttersFill,
+  WallFillMaterials,
+  WallFillRole,
+} from './wall-fills';
+import { buildFenceRun, type FenceRunOptions, type FenceRunResult } from './fence-run';
+export type {
+  FencePegOptions,
+  FencePostOptions,
+  FenceRailOptions,
+  FenceRunOptions,
+  FenceRunResult,
+} from './fence-run';
 import { createBoneChain, createJointChain, createSkinnedPart } from './character';
 import { describeAssembly, replicateAssembly } from './assembly';
 import { defineLod } from './lod';
@@ -81,6 +113,7 @@ export * from './geometry';
 import * as profile from './profile';
 import * as solids from './solids';
 import * as proceduralTextures from './procedural-texture';
+import { ProceduralPixelCache } from './procedural-texture-cache';
 import { seededRandom } from './seeded-random';
 import * as textures from './textures';
 import { textureAtlas, remapUVToAtlas } from './texture-atlas';
@@ -95,6 +128,7 @@ import {
   type SemanticMetadataV1,
   type SemanticMetadataV1Input,
 } from './contracts';
+import { createBuildTracker, noteDoubledPrefix, noteOperands } from './build-warnings';
 import * as uv from './uv';
 import * as uvShapes from './uv-shapes';
 import { projectUV } from './uv-project';
@@ -412,7 +446,35 @@ export function capsuleGeo(radius: number, height: number, segments = 6): THREE.
   assertDimension('capsuleGeo height (straight middle length)', height, true);
   assertDimension('capsuleGeo outer half-length', height / 2 + radius);
   assertPrimitiveSegments('capsuleGeo segments', segments, 3);
-  return new THREE.CapsuleGeometry(radius, height, 2, segments);
+  const geometry = new THREE.CapsuleGeometry(radius, height, 2, segments);
+  dropCollapsedTriangles(geometry, radius);
+  return geometry;
+}
+
+/**
+ * three.js CapsuleGeometry emits two zero-area triangles per radial segment at the poles
+ * (and the whole straight section when its length is 0). Drop them from the index, as
+ * SphereGeometry does by construction; vertices, normals and UVs are kept. Real triangles
+ * have at least about radius^2 / (4 * segments) of area, far above the cut.
+ */
+function dropCollapsedTriangles(geometry: THREE.BufferGeometry, radius: number): void {
+  const index = geometry.getIndex()!;
+  const position = geometry.getAttribute('position');
+  const cut = 1e-12 * radius * radius;
+  const kept: number[] = [];
+  const a = new THREE.Vector3();
+  const b = new THREE.Vector3();
+  const c = new THREE.Vector3();
+  for (let i = 0; i < index.count; i += 3) {
+    const ia = index.getX(i);
+    const ib = index.getX(i + 1);
+    const ic = index.getX(i + 2);
+    a.fromBufferAttribute(position, ia);
+    b.fromBufferAttribute(position, ib).sub(a);
+    c.fromBufferAttribute(position, ic).sub(a);
+    if (b.cross(c).length() > cut) kept.push(ia, ib, ic);
+  }
+  geometry.setIndex(kept);
 }
 
 export function capsuleXGeo(radius: number, length: number, segments = 6): THREE.CapsuleGeometry {
@@ -588,6 +650,12 @@ export function torusGeo(
   assertDimension('torusGeo radius', radius);
   assertDimension('torusGeo tube', tube);
   assertDimension('torusGeo outer radius', radius + tube);
+  // A tube this thick crosses the ring axis: the surface intersects itself, and the closed-solid
+  // check cannot see that.
+  if (tube >= radius)
+    throw new RangeError(
+      `torusGeo: tube ${tube} must be less than radius ${radius}; a tube at least as thick as the ring radius crosses the ring axis and the surface intersects itself. Reduce the tube or increase the radius.`,
+    );
   assertPrimitiveSegments('torusGeo radialSegments', radialSegments, 3);
   assertPrimitiveSegments('torusGeo tubularSegments', tubularSegments, 3);
   assertPrimitiveGrid('torusGeo', radialSegments, tubularSegments);
@@ -879,53 +947,46 @@ export function wingGeo(options: WingGeometryOptions = {}): THREE.BufferGeometry
   if (!vertices.every(Number.isFinite))
     throw new RangeError('wingGeo dimensions and offsets produce nonfinite Float32 vertices.');
 
-  const indices = [
-    0,
-    3,
-    2,
-    0,
-    1,
-    3, // top
-    4,
-    6,
-    7,
-    4,
-    7,
-    5, // bottom
-    0,
-    2,
-    6,
-    0,
-    6,
-    4, // leading edge
-    1,
-    5,
-    7,
-    1,
-    7,
-    3, // trailing edge
-    0,
-    4,
-    5,
-    0,
-    5,
-    1, // root cap
-    2,
-    3,
-    7,
-    2,
-    7,
-    6, // tip cap
-  ];
+  // Each flat face lists its triangles over the eight corners above. A zero tip chord is a
+  // triangular wing: its top and bottom are one triangle each and the tip cap is omitted.
+  const faces: number[][] =
+    tipChord === 0
+      ? [
+          [0, 1, 3], // top
+          [4, 7, 5], // bottom
+          [0, 2, 6, 0, 6, 4], // leading edge
+          [1, 5, 7, 1, 7, 3], // trailing edge
+          [0, 4, 5, 0, 5, 1], // root cap
+        ]
+      : [
+          [0, 3, 2, 0, 1, 3], // top
+          [4, 6, 7, 4, 7, 5], // bottom
+          [0, 2, 6, 0, 6, 4], // leading edge
+          [1, 5, 7, 1, 7, 3], // trailing edge
+          [0, 4, 5, 0, 5, 1], // root cap
+          [2, 3, 7, 2, 7, 6], // tip cap
+        ];
+
+  // Every face is planar and gets its own vertices, as boxGeo does, so each vertex normal is
+  // its face normal instead of an average across faces about 90 degrees apart.
+  const positions: number[] = [];
+  const index: number[] = [];
+  for (const face of faces) {
+    const local = new Map<number, number>();
+    for (const corner of face) {
+      let vertex = local.get(corner);
+      if (vertex === undefined) {
+        vertex = positions.length / 3;
+        local.set(corner, vertex);
+        positions.push(vertices[corner * 3]!, vertices[corner * 3 + 1]!, vertices[corner * 3 + 2]!);
+      }
+      index.push(vertex);
+    }
+  }
 
   const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-  // A zero tip chord is a triangular wing: omit collapsed faces at the tip.
-  geo.setIndex(
-    tipChord === 0
-      ? [0, 1, 3, 4, 7, 5, 0, 2, 6, 0, 6, 4, 1, 5, 7, 1, 7, 3, 0, 4, 5, 0, 5, 1]
-      : indices,
-  );
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setIndex(index);
   geo.computeVertexNormals();
   return geo;
 }
@@ -1238,6 +1299,12 @@ export interface WallOpening {
   height?: number;
   /** Window sill height above the wall base (ignored for doors). */
   sill?: number;
+  /** What fills the opening: frame, glazing, bars, sill, lintel, shutters, leaf. */
+  fill?: OpeningFill;
+  /** Part-name prefix for the fills. Default <wall>_<Door|Window><n>. */
+  name?: string;
+  /** Exact part names by piece (FrameStart, Leaf, ...), replacing the default names. */
+  names?: Record<string, string>;
 }
 
 export interface WallWithOpeningOptions {
@@ -1254,24 +1321,60 @@ export interface WallWithOpeningOptions {
   /** Multiple rectangular cuts, including vertically stacked windows.
    * Cuts may touch but must not overlap and must fit inside the wall sides/top. */
   openings?: readonly WallOpening[];
+  /** Which side is outside: 1 (default) is +X for axis z and +Z for axis x.
+   * Fill depths count inward from that face. */
+  outward?: 1 | -1;
+  /** Fill materials by role; each falls back to frame, then the wall material. */
+  materials?: WallFillMaterials;
+  /** One part per material instead of one part per piece (see docs/geometry.md). */
+  merge?: AssemblyMergeMode;
   parent?: THREE.Object3D;
 }
 
-/**
- * A wall with rectangular door/window cuts, composed from solid box segments.
- * Invalid, overlapping or out-of-bound cuts throw; they are never clipped.
- * Runs along `axis`, base at local Y=0, centered on the
- * length axis. Returns the wall container so the caller can position it.
- */
-export function wallWithOpening(
+/** Build the wall's pieces under a new container, recording each piece's role. */
+function buildWall(
   name: string,
   material: THREE.Material,
   options: WallWithOpeningOptions,
+  roles: Map<THREE.Mesh, string>,
+  pivotPrefixes: Map<THREE.Object3D, string>,
 ): THREE.Object3D {
-  const { length, height, thickness, axis = 'z', opening, openings, parent } = options;
+  const { length, height, thickness, axis = 'z', opening, openings, outward = 1 } = options;
   if (opening && openings)
     throw new TypeError('wallWithOpening: use opening or openings, not both.');
-  const built = buildWallPanels(length, height, thickness, openings ?? (opening ? [opening] : []));
+  const requested = openings ?? (opening ? [opening] : []);
+  const built = buildWallPanels(length, height, thickness, requested);
+  if (outward !== 1 && outward !== -1)
+    throw new RangeError('wallWithOpening: outward must be 1 or -1.');
+  // Fills are planned, and refused, before the first part is made.
+  const fills = {
+    name,
+    axis,
+    outward,
+    length,
+    height,
+    thickness,
+    material,
+    materials: options.materials,
+  };
+  const filling = requested.some((o) => o.fill !== undefined || o.names !== undefined);
+  const plan =
+    filling || options.materials !== undefined
+      ? planWallFills(
+          fills,
+          built.openings.map((o, i) => ({
+            kind: o.kind,
+            left: o.left,
+            right: o.right,
+            sill: o.sill,
+            top: o.top,
+            fill: requested[i]!.fill,
+            name: requested[i]!.name,
+            names: requested[i]!.names,
+          })),
+          built.panels.map((panel) => `${name}${panel.suffix}`),
+        )
+      : undefined;
   const group = new THREE.Object3D();
   group.name = name;
 
@@ -1289,14 +1392,47 @@ export function wallWithOpening(
     const yC = (yLo + yHi) / 2;
     const geo = axis === 'z' ? boxGeo(thickness, segH, segLen) : boxGeo(segLen, segH, thickness);
     const pos: [number, number, number] = axis === 'z' ? [0, yC, lenC] : [lenC, yC, 0];
-    createPart(`${name}${suffix}`, geo, material, { position: pos, parent: group });
+    roles.set(
+      createPart(`${name}${suffix}`, geo, material, { position: pos, parent: group }) as THREE.Mesh,
+      'wall',
+    );
   };
 
   for (const segment of built.panels) {
     panel(segment.suffix, segment.left, segment.right, segment.bottom, segment.top);
   }
+  if (plan) emitWallFills(fills, plan, group, roles, pivotPrefixes);
+  return group;
+}
 
-  if (parent) parent.add(group);
+/** Merged part names: the wall material takes the call's name; under a pivot, the opening's. */
+const wallPartName =
+  (name: string, pivotPrefixes: Map<THREE.Object3D, string>) =>
+  (role: string, group: THREE.Object3D): string =>
+    pivotPrefixes.has(group)
+      ? `${pivotPrefixes.get(group)}_${roleSuffix(role)}`
+      : role === 'wall'
+        ? name
+        : `${name}_${roleSuffix(role)}`;
+
+/**
+ * A wall with rectangular door/window cuts, composed from solid box segments.
+ * Invalid, overlapping or out-of-bound cuts throw; they are never clipped.
+ * Runs along `axis`, base at local Y=0, centered on the
+ * length axis. Returns the wall container so the caller can position it.
+ */
+export function wallWithOpening(
+  name: string,
+  material: THREE.Material,
+  options: WallWithOpeningOptions,
+): THREE.Object3D {
+  assertAssemblyMerge('wallWithOpening', options.merge);
+  const roles = new Map<THREE.Mesh, string>();
+  const pivots = new Map<THREE.Object3D, string>();
+  const group = buildWall(name, material, options, roles, pivots);
+  if (options.merge === 'byMaterial')
+    mergePiecesByMaterial(group, roles, wallPartName(name, pivots));
+  if (options.parent) options.parent.add(group);
   return group;
 }
 
@@ -1319,6 +1455,10 @@ export interface RoomOptions {
   /** Per-wall openings. Defaults to a centered door on the front wall, so the
    *  room is ENTERABLE by default. */
   openings?: RoomOpening[];
+  /** Fill materials by role for every wall; each wall's outer face is outside the room. */
+  materials?: WallFillMaterials;
+  /** One part per material for the whole room; wall frames stay as anchors. */
+  merge?: AssemblyMergeMode;
   parent?: THREE.Object3D;
 }
 
@@ -1347,9 +1487,16 @@ export function room(
     floorThickness = 0.1,
     parent,
   } = options;
+  assertAssemblyMerge('room', options.merge);
   const openings = options.openings ?? [{ wall: 'front', kind: 'door' }];
+  if (depth > 0 && wallThickness >= depth)
+    throw new RangeError(
+      `room("${name}"): wallThickness must be less than depth (got ${wallThickness} and ${depth}).`,
+    );
   const root = new THREE.Object3D();
   root.name = name;
+  const roles = new Map<THREE.Mesh, string>();
+  const pivots = new Map<THREE.Object3D, string>();
 
   const wall = (
     suffix: string,
@@ -1358,23 +1505,43 @@ export function room(
     pos: [number, number, number],
     which: RoomOpening['wall'],
   ): THREE.Object3D => {
-    const w = wallWithOpening(`${name}_Wall${suffix}`, material, {
-      length: len,
-      height,
-      thickness: wallThickness,
-      axis,
-      openings: openings.filter((op) => op.wall === which),
-      parent: root,
-    });
+    let w: THREE.Object3D;
+    try {
+      w = buildWall(
+        `${name}_Wall${suffix}`,
+        material,
+        {
+          length: len,
+          height,
+          thickness: wallThickness,
+          axis,
+          openings: openings.filter((op) => op.wall === which),
+          // Each wall's outside faces away from the room's centre.
+          outward: which === 'front' || which === 'right' ? 1 : -1,
+          materials: options.materials,
+        },
+        roles,
+        pivots,
+      );
+    } catch (error) {
+      if (!(error instanceof RangeError)) throw error;
+      throw new RangeError(
+        `room("${name}"): ${which} wall (length ${+len.toFixed(6)}, offsets from its centre): ${error.message}`,
+      );
+    }
+    root.add(w);
     w.position.set(...pos);
     return w;
   };
 
+  // Walls are centred on the footprint edges. Front and back run past the corners by the
+  // wall thickness and left and right fit between them, so the corners neither overlap nor
+  // leave a notch; the outer footprint and the interior are unchanged.
   const walls = {
-    front: wall('Front', width, 'z', [depth / 2, 0, 0], 'front'),
-    back: wall('Back', width, 'z', [-depth / 2, 0, 0], 'back'),
-    left: wall('Left', depth, 'x', [0, 0, -width / 2], 'left'),
-    right: wall('Right', depth, 'x', [0, 0, width / 2], 'right'),
+    front: wall('Front', width + wallThickness, 'z', [depth / 2, 0, 0], 'front'),
+    back: wall('Back', width + wallThickness, 'z', [-depth / 2, 0, 0], 'back'),
+    left: wall('Left', depth - wallThickness, 'x', [0, 0, -width / 2], 'left'),
+    right: wall('Right', depth - wallThickness, 'x', [0, 0, width / 2], 'right'),
   };
 
   let floorObj: THREE.Object3D | null = null;
@@ -1383,6 +1550,11 @@ export function room(
       position: [0, -floorThickness / 2, 0],
       parent: root,
     });
+    roles.set(floorObj as THREE.Mesh, 'wall');
+  }
+  if (options.merge === 'byMaterial') {
+    const { holder } = mergePiecesByMaterial(root, roles, wallPartName(name, pivots));
+    if (floorObj) floorObj = holder.get(floorObj as THREE.Mesh) ?? floorObj;
   }
 
   if (parent) parent.add(root);
@@ -1467,22 +1639,39 @@ export function createStairs(
       createPart(`${name}Step${i + 1}`, treadGeo, material, { position: treadPos, parent: root }),
     );
 
-    if (riser) {
+    // Ascending, the tread already fills the top treadThickness of the step, so the riser
+    // stops under it (no shared faces); a step rise at or below treadThickness needs no
+    // riser (a rise within a millionth of treadThickness counts, so rounding leaves no
+    // sliver). Descending, the riser stands on the tread and spans the whole step.
+    const ascending = stepRise > 0;
+    const riserHeight = ascending ? stepRise - treadThickness : -stepRise;
+    if (riser && riserHeight > (ascending ? treadThickness * 1e-6 : 0)) {
       const front = i * stepRun;
+      const riserY = ascending ? topY - treadThickness - riserHeight / 2 : topY - stepRise / 2;
       const riserGeo =
         axis === 'x'
-          ? boxGeo(treadThickness, Math.abs(stepRise), width)
-          : boxGeo(width, Math.abs(stepRise), treadThickness);
+          ? boxGeo(treadThickness, riserHeight, width)
+          : boxGeo(width, riserHeight, treadThickness);
       const riserPos: [number, number, number] =
         axis === 'x'
-          ? [front + (Math.sign(stepRun) * treadThickness) / 2, topY - stepRise / 2, 0]
-          : [0, topY - stepRise / 2, front + (Math.sign(stepRun) * treadThickness) / 2];
+          ? [front + (Math.sign(stepRun) * treadThickness) / 2, riserY, 0]
+          : [0, riserY, front + (Math.sign(stepRun) * treadThickness) / 2];
       createPart(`${name}Riser${i + 1}`, riserGeo, material, { position: riserPos, parent: root });
     }
   }
 
   if (parent) parent.add(root);
   return { root, steps: stepList };
+}
+
+/**
+ * A fence along a path: a post at each point, in its own named frame (a snap anchor) turned to
+ * the run, and rails between neighbouring posts that stop inside the post faces. Posts may be
+ * chamfered, capped and pegged; rails may merge into one named part. Invalid or ill-fitting runs
+ * throw before anything is built. See docs/geometry.md.
+ */
+export function fenceRun(name: string, options: FenceRunOptions): FenceRunResult {
+  return buildFenceRun(name, options);
 }
 
 // =============================================================================
@@ -2185,6 +2374,8 @@ export interface SandboxDeclarations {
 }
 /** Symbol-keyed, so it never becomes a sandbox global. */
 export const SANDBOX_DECLARATIONS: unique symbol = Symbol('kiln.sandbox.declarations');
+/** What this sandbox saw `createPart` and `createPivot` do; executeKilnCode turns it into warnings. */
+export const SANDBOX_BUILD_TRACKER: unique symbol = Symbol('kiln.sandbox.buildTracker');
 
 export interface SandboxGlobalsOptions {
   /** Host-owned closed resolver. Generated code receives only the bound
@@ -2231,6 +2422,9 @@ export function buildSandboxGlobals(
   // future click-to-edit interaction in the gallery viewer — can map a
   // clicked triangle back to the primitive call that produced it.
   const geoCache = new Map<string, THREE.BufferGeometry>();
+  // Procedural pixels compiled in this build, by full recipe identity (per sandbox, like the
+  // mesh cache). Every caller gets its own copy; see ProceduralPixelCache.
+  const proceduralPixels = new ProceduralPixelCache();
   let _kilnCallSeq = 0;
   const stampKilnRange = (name: string, geo: THREE.BufferGeometry) => {
     const idx = geo.getIndex();
@@ -2305,18 +2499,27 @@ export function buildSandboxGlobals(
   };
 
   const declarations: SandboxDeclarations = {};
+  const tracker = createBuildTracker();
   const globals: Record<string, unknown> = {
     createRoot: wrap('createRoot', createRoot),
     describeAssembly: wrap('describeAssembly', describeAssembly),
     replicateAssembly: wrap('replicateAssembly', replicateAssembly),
-    createPivot: wrap('createPivot', createPivot),
+    createPivot: wrap('createPivot', (...args: Parameters<typeof createPivot>) => {
+      noteDoubledPrefix(tracker, 'createPivot', args[0], 'Joint_');
+      return createPivot(...args);
+    }),
     createJointChain: wrap('createJointChain', createJointChain),
     createBoneChain: wrap('createBoneChain', createBoneChain),
     createSkinnedPart: wrap('createSkinnedPart', createSkinnedPart),
     createVehicleFrame: wrap('createVehicleFrame', createVehicleFrame),
     createWheelGeometrySet: wrap('createWheelGeometrySet', createWheelGeometrySet),
     createWheelAssembly: wrap('createWheelAssembly', createWheelAssembly),
-    createPart: wrap('createPart', createPart),
+    createPart: wrap('createPart', (...args: Parameters<typeof createPart>) => {
+      if (args[3]?.pivot) noteDoubledPrefix(tracker, 'createPart', args[0], 'Joint_');
+      const node = createPart(...args);
+      tracker.parts.push({ name: args[0], node, hadParent: args[3]?.parent !== undefined });
+      return node;
+    }),
     defineLod: wrap('defineLod', defineLod),
     markOpenShell: wrap('markOpenShell', markOpenShell),
     colliderBox: wrap('colliderBox', colliderBox),
@@ -2391,6 +2594,7 @@ export function buildSandboxGlobals(
     createGableShell: wrap('createGableShell', createGableShell),
     createRoofSurfaceLayout: wrap('createRoofSurfaceLayout', createRoofSurfaceLayout),
     createStairs: wrap('createStairs', createStairs),
+    fenceRun: wrap('fenceRun', fenceRun),
     gameMaterial: wrap('gameMaterial', gameMaterial),
     materialRecipe: wrap('materialRecipe', sandboxMaterialRecipe),
     compilePortableMaterialSpecV2: wrap('compilePortableMaterialSpecV2', (...args: unknown[]) => {
@@ -2477,11 +2681,16 @@ export function buildSandboxGlobals(
     // objects are intentionally not accepted by this one-argument closure.
     loadApprovedTexture: wrap('loadApprovedTexture', loadApprovedTexture),
     // Procedural textures (sync — no I/O, so no await)
-    proceduralTexture: wrap('proceduralTexture', proceduralTextures.proceduralTexture),
+    proceduralTexture: wrap('proceduralTexture', (spec: proceduralTextures.ProceduralTextureSpec) =>
+      proceduralTextures.proceduralTexture(spec, { cache: proceduralPixels }),
+    ),
     textureAtlas: wrap('textureAtlas', (...args: unknown[]) => {
       if (args.length !== 1)
         return Promise.reject(new TypeError('textureAtlas accepts exactly one atlas spec'));
-      return textureAtlas(args[0], { resources: options.textureResolver?.pinnedMaterialMaps });
+      return textureAtlas(args[0], {
+        resources: options.textureResolver?.pinnedMaterialMaps,
+        proceduralCache: proceduralPixels,
+      });
     }),
     normalMapFromHeight: wrap('normalMapFromHeight', proceduralTextures.normalMapFromHeight),
     pbrMaterial: wrap('pbrMaterial', textures.pbrMaterial),
@@ -2497,6 +2706,15 @@ export function buildSandboxGlobals(
     Math,
     console: options.console ?? console,
   };
+  // A part handed to another helper (a Boolean operand, a merge input) may be consumed by it.
+  for (const [name, value] of Object.entries(globals)) {
+    if (typeof value !== 'function' || name === 'createPart' || name === 'createPivot') continue;
+    globals[name] = (...args: unknown[]) => {
+      noteOperands(tracker, args);
+      return (value as (...a: unknown[]) => unknown)(...args);
+    };
+  }
   Object.defineProperty(globals, SANDBOX_DECLARATIONS, { value: declarations });
+  Object.defineProperty(globals, SANDBOX_BUILD_TRACKER, { value: tracker });
   return globals;
 }

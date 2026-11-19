@@ -333,6 +333,33 @@ material groups. For repeating grass or directional wood, preserve or project
 UVs and tile a standalone texture instead of forcing every surface into an atlas.
 Neither atlas remapping nor `autoUnwrap` creates painted detail.
 
+For textures, preserve valid primitive UVs. Use `copyGeometry` before independent
+buffer edits, `remapUV` to scale/offset UVs, and `projectUV` for explicit planar,
+box or cylindrical mapping in a geometry-local frame. Fetch its exact Discovery
+contract for rotated frames, partial angular ranges, caps and seam sampling.
+`extrudeProfile`, `revolveProfile` and `roundedBoxGeo` output no UV0, so a
+texture-backed material on them is blocked until `projectUV` or `autoUnwrap` adds it.
+`autoUnwrap` is the separate atlas operation. Removed shape unwrap names do not
+select a preservation or projection fallback.
+
+For a packed baked texture, `await autoUnwrap(geometry, options)` returns new
+buffers and leaves the source unchanged. It duplicates seam vertices and remaps
+vertex colors, skin indices/weights, extra UVs, custom per-vertex attributes
+(1..4 components), and position/normal/color morphs. It retains triangle groups,
+draw range and JSON metadata. It replaces UV0 and drops stale tangents; recompute
+tangents after the final UV layout. Skin bindings and animation remain on the
+mesh/skeleton, so verify an exported posed mesh before relying on deformation.
+
+Default unwrapping recomputes normals. Use `useNormals: true` to preserve authored
+normals and when normal morphs need their original reference frame. The installed
+xatlas adapter supports at most 65,536 vertices both before and after seam
+splitting; split larger geometry. Instanced data and unsupported morph semantics
+fail explicitly. Read the returned `userData.atlas.width/height`; requested
+`resolution` is a target and the packed image can be rectangular. Unwrapping
+cannot preserve the appearance of a texture painted for the old UV0: rebake it.
+For directional wood grain or a tiled wall, prefer existing primitive UVs or
+`projectUV` rather than an arbitrarily rotated atlas.
+
 When UV0 carries a per-vertex gradient as well as a texture coordinate, the
 default remap replaces it and the asset still validates and renders. The known
 case is foliage wind: a runtime may read V as the sway weight, 0 at the anchored
@@ -590,6 +617,11 @@ alone can leave the roof cutting through the room. Repeated canopies, stalls and
 trim must use each instance's frame and the actual neighbouring supports. Check
 the first, last and mirrored instances, not only the central example.
 
+For doors and windows, give `wallWithOpening` openings a `fill` (frame, glazing, bars,
+sill, lintel, shutters, a leaf on a hinge pivot) instead of hand-placing jambs and boxes:
+each piece is derived from its opening, so moving or widening it moves its fills. For a fence
+along a path, `fenceRun` places the posts and the rails between them instead of a placing loop.
+
 ## Organic curves and blended volumes
 
 When the intended shape follows a smooth curve with a round, varying cross-section,
@@ -632,31 +664,3 @@ Metaballs use the existing implicit-surface grid and callback limits, including
 explicit `maxCells` and `maxEvaluations` overrides. The callback count does not
 include individual sphere evaluations, so additional spheres increase work.
 Use the host evaluator's process/time boundary for execution deadlines.
-
-
-For textures, preserve valid primitive UVs. Use `copyGeometry` before independent
-buffer edits, `remapUV` to scale/offset UVs, and `projectUV` for explicit planar,
-box or cylindrical mapping in a geometry-local frame. Fetch its exact Discovery
-contract for rotated frames, partial angular ranges, caps and seam sampling.
-`extrudeProfile`, `revolveProfile` and `roundedBoxGeo` output no UV0, so a
-texture-backed material on them is blocked until `projectUV` or `autoUnwrap` adds it.
-`autoUnwrap` is the separate atlas operation. Removed shape unwrap names do not
-select a preservation or projection fallback.
-
-For a packed baked texture, `await autoUnwrap(geometry, options)` returns new
-buffers and leaves the source unchanged. It duplicates seam vertices and remaps
-vertex colors, skin indices/weights, extra UVs, custom per-vertex attributes
-(1..4 components), and position/normal/color morphs. It retains triangle groups,
-draw range and JSON metadata. It replaces UV0 and drops stale tangents; recompute
-tangents after the final UV layout. Skin bindings and animation remain on the
-mesh/skeleton, so verify an exported posed mesh before relying on deformation.
-
-Default unwrapping recomputes normals. Use `useNormals: true` to preserve authored
-normals and when normal morphs need their original reference frame. The installed
-xatlas adapter supports at most 65,536 vertices both before and after seam
-splitting; split larger geometry. Instanced data and unsupported morph semantics
-fail explicitly. Read the returned `userData.atlas.width/height`; requested
-`resolution` is a target and the packed image can be rectangular. Unwrapping
-cannot preserve the appearance of a texture painted for the old UV0: rebake it.
-For directional wood grain or a tiled wall, prefer existing primitive UVs or
-`projectUV` rather than an arbitrarily rotated atlas.

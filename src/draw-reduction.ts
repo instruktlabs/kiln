@@ -130,8 +130,7 @@ export async function reduceGlbDrawCalls(
   const doc = await io.readBinary(bytes);
   await validateAtlasDocumentProvenance(doc);
   const summary = await reduceDrawCalls(doc, options);
-  await refreshAtlasDocumentProvenance(doc);
-  await validateAtlasDocumentProvenance(doc);
+  await validateAtlasDocumentProvenance(doc, await refreshAtlasDocumentProvenance(doc));
   const glb = await io.writeBinary(doc);
   await assertFinalGlbValid(glb);
   return { glb, summary };
