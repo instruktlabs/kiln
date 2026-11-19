@@ -28,7 +28,7 @@ export function noteDoubledPrefix(
   tracker: BuildTracker,
   helper: 'createPivot' | 'createPart',
   name: unknown,
-  prefix: 'Joint_' | 'Mesh_',
+  prefix: 'Joint_',
 ): void {
   if (typeof name !== 'string' || !name.startsWith(prefix)) return;
   const key = `${helper}:${prefix}`;

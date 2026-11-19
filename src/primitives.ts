@@ -2330,7 +2330,6 @@ export function buildSandboxGlobals(
     createWheelGeometrySet: wrap('createWheelGeometrySet', createWheelGeometrySet),
     createWheelAssembly: wrap('createWheelAssembly', createWheelAssembly),
     createPart: wrap('createPart', (...args: Parameters<typeof createPart>) => {
-      noteDoubledPrefix(tracker, 'createPart', args[0], 'Mesh_');
       if (args[3]?.pivot) noteDoubledPrefix(tracker, 'createPart', args[0], 'Joint_');
       const node = createPart(...args);
       tracker.parts.push({ name: args[0], node, hadParent: args[3]?.parent !== undefined });

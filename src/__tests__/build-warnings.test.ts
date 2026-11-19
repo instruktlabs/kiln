@@ -103,7 +103,7 @@ describe('a name that already starts with the prefix the helper adds', () => {
     expect(warning).toContain('"Arm"');
   });
 
-  test('createPart warns on Mesh_, and on Joint_ only when pivot is set', async () => {
+  test('createPart warns on Joint_ only when pivot is set, and never on a Mesh_ name', async () => {
     const r = await renderGLB(
       wrapBuild(`
   createPart('Mesh_Wheel', boxGeo(1, 1, 1), mat, { parent: root });
@@ -112,18 +112,20 @@ describe('a name that already starts with the prefix the helper adds', () => {
 `),
     );
     const warnings = prefixWarnings(r.warnings);
-    expect(warnings).toHaveLength(2);
-    expect(warnings[0]).toContain('createPart adds the Mesh_ prefix itself');
-    expect(warnings[0]).toContain('"Mesh_Mesh_Wheel"');
-    expect(warnings[1]).toContain('createPart adds the Joint_ prefix itself');
-    expect(warnings[1]).toContain('"Joint_Joint_Door"');
-    expect(warnings[1]).not.toContain('Joint_Plain');
+    // Mesh_-prefixed part names are a common authoring convention (694 in one archived
+    // example); the doubled mesh name is cosmetic, so only the Joint_ case is reported.
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toContain('createPart adds the Joint_ prefix itself');
+    expect(warnings[0]).toContain('"Joint_Joint_Door"');
+    expect(warnings[0]).not.toContain('Joint_Plain');
+    expect(warnings[0]).not.toContain('Mesh_Wheel');
   });
 
   test('many names make one warning that counts the rest', async () => {
     const r = await renderGLB(
       wrapBuild(`
-  for (let i = 0; i < 8; i++) createPart('Mesh_Rib' + i, boxGeo(1, 1, 1), mat, { parent: root });
+  for (let i = 0; i < 8; i++) createPivot('Joint_Rib' + i, [0, 0, 0], root);
+  createPart('Hub', boxGeo(1, 1, 1), mat, { parent: root });
 `),
     );
     const warnings = prefixWarnings(r.warnings);
