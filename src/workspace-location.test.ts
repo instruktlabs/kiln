@@ -1,7 +1,8 @@
 import { afterEach, expect, test } from 'bun:test';
 import { mkdtemp, rm, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { join, posix, resolve, win32 } from 'node:path';
+import { localWorkspaceLocation, pathInsideRoot } from './workspace-location';
 import { localAssetLibrary, collectionConfigPath, FileAssetLibrary } from './assets-node';
 import { localProjectStore, FileProjectStore } from './projects-node';
 import { localProgramStore, FileProgramStore } from './program-store-node';
@@ -78,6 +79,42 @@ test('explicit source-store override preserves the selected workspace and legacy
     join(root, 'external', 'assets', 'kiln'),
   );
   expect(localWorkspaceRoot({})).toBe(resolve('.'));
+});
+
+test('the workspace location says which setting chose it (#423)', () => {
+  const store = join(tmpdir(), 'legacy', '.kiln', 'programs');
+  expect(localWorkspaceLocation({ KILN_WORKSPACE: 'w', KILN_PROGRAM_STORE: store })).toEqual({
+    root: resolve('w'),
+    selectedBy: 'KILN_WORKSPACE',
+  });
+  expect(localWorkspaceLocation({ KILN_PROGRAM_STORE: store })).toEqual({
+    root: join(tmpdir(), 'legacy'),
+    selectedBy: 'KILN_PROGRAM_STORE',
+  });
+  expect(localWorkspaceLocation({})).toEqual({ root: resolve('.'), selectedBy: 'cwd' });
+});
+
+test('a path is inside the workspace only below its root, by each platform rule (#423)', () => {
+  // Windows compares drive letters and names without case; POSIX does not.
+  expect(pathInsideRoot('C:\\Users\\X\\ws', 'c:\\users\\x\\WS\\a.kiln.js', win32)).toBe(
+    'a.kiln.js',
+  );
+  expect(pathInsideRoot('C:\\ws', 'C:/ws/sub/a.kiln.js', win32)).toBe('sub\\a.kiln.js');
+  expect(pathInsideRoot('\\\\host\\share\\ws', '\\\\host\\share\\ws\\a.js', win32)).toBe('a.js');
+  for (const outside of [
+    'D:\\ws\\a.js',
+    'C:\\ws2\\a.js',
+    'C:\\ws\\..\\a.js',
+    'C:\\ws',
+    'C:\\',
+    '\\\\host\\share\\a.js',
+  ])
+    expect(pathInsideRoot('C:\\ws', outside, win32), outside).toBeUndefined();
+  expect(pathInsideRoot('/a/ws', '/a/ws/sub/x.js', posix)).toBe('sub/x.js');
+  for (const outside of ['/a/WS/x.js', '/a/ws2/x.js', '/a/ws/../x.js', '/a/ws', '/'])
+    expect(pathInsideRoot('/a/ws', outside, posix), outside).toBeUndefined();
+  // A name that merely starts with two dots is still inside.
+  expect(pathInsideRoot('/a/ws', '/a/ws/..notes.kiln.js', posix)).toBe('..notes.kiln.js');
 });
 
 test('local defaults never replace explicitly injected host stores', async () => {

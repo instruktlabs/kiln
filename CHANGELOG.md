@@ -20,6 +20,15 @@ does not publish a package.
   units and base colours; textures are dropped; self-intersection is not checked. The same GLB
   gives the same bytes. The library form is `exportAssetPrint` in
   `@instruktlabs/kiln/asset-export`. No MCP tool schema changes. (#378)
+- **`file` errors name the workspace root, and absolute paths inside it work.** The `file` input
+  accepts an absolute path that resolves inside the workspace root, as well as a relative
+  one; `..`, another drive and, newly, a link that resolves outside the root are refused.
+  Every `file` error names the workspace root and the setting that chose it
+  (`KILN_WORKSPACE`, `KILN_PROGRAM_STORE`, or the server's working directory), and the MCP
+  host keeps that one path in the error. `kiln_discover` capabilities add
+  `source.file: { workspaceRoot, selectedBy, paths }` (null where a host has no `file`).
+  A benchmark agent whose working folder was not the workspace had fallen back to the CLI
+  and skipped collections. No tool input schema changes. (#423)
 
 ## 1.8.0 (2026-11-13)
 

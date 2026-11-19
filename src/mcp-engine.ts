@@ -42,6 +42,7 @@ import {
   type KilnToolDef,
 } from './tools/registry';
 import { localWorkspaceRoot } from './workspace-node';
+import { WorkspaceFileError } from './workspace-location';
 
 export type { KilnToolResult } from './mcp-core';
 
@@ -191,7 +192,8 @@ export function createKilnToolHost(
       } catch (err) {
         // A tool error is a result, not a transport failure: the calling agent
         // should see the message and correct its program rather than lose the
-        // session. Rule 9: readable, naming the next step, with no local path.
+        // session. Rule 9: readable, naming the next step, with no local path
+        // except the workspace root a `file` error names (#423).
         return {
           isError: true,
           content: [
@@ -200,6 +202,7 @@ export function createKilnToolHost(
               text: withoutLocalPaths(
                 describeInputError(name, err, { fields: schemaFields(def.inputSchema) }) ??
                   errorMessage(err),
+                err instanceof WorkspaceFileError ? err.workspaceRoot : undefined,
               ),
             },
           ],
