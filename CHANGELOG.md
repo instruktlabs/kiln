@@ -13,7 +13,7 @@ does not publish a package.
   for delivery files. Measured over six dogfood runs in `docs/reviews/2026-11-18-wave3-dogfood.md`.
   Existing workspaces report the skill as changed; run `kiln-init <workspace> --check`, then
   `--upgrade`. (#370)
-- **`file` works when the agent writes outside the server's folder.** The `file` input
+- **`file` errors name the workspace root, and absolute paths inside it work.** The `file` input
   accepts an absolute path that resolves inside the workspace root, as well as a relative
   one; `..`, another drive and, newly, a link that resolves outside the root are refused.
   Every `file` error names the workspace root and the setting that chose it
