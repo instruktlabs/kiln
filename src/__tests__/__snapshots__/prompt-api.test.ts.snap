@@ -145,7 +145,7 @@ createWingPair(name, material, { rootZ, span, rootChord, tipChord, sweep?, thick
   // wings and helicopter stub wings.
   // e.g. createWingPair('MainWing', olive, { rootX: 0, rootY: 1.0, rootZ: 0.42, span: 2.4,
   // rootChord: 0.9, tipChord: 0.35, sweep: 0.25, dihedral: 0.08, parent: root });
-room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThickness?, openings?: [{ wall: 'front'|'back'|'left'|'right', kind?: 'door'|'window', offset?, width?, height?, sill? }], parent? })
+room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThickness?, openings?: [{ wall: 'front'|'back'|'left'|'right', kind?: 'door'|'window', offset?, width?, height?, sill? }], merge?: 'byMaterial', parent? })
   // Builds a HOLLOW, enterable room: four thin walls + a floor, human-scaled (defaults: 2.8m
   // ceiling, a centered 1.1x2.1m front door so it is enterable by default). \`front\` faces +X;
   // the floor sits on the ground. The keystone of an architecture asset — add a roof with
@@ -155,7 +155,7 @@ room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThi
   // side doors.
   // e.g. const { root: hut } = room('Hut', wood, { width: 5, depth: 4, height: 2.8, openings:
   // [{ wall: 'front', kind: 'door' }, { wall: 'right', kind: 'window' }], parent: root });
-wallWithOpening(name, material, { length, height, thickness, axis?: 'x'|'z', opening?: { kind?: 'door'|'window', offset?, width?, height?, sill? }, openings?: [{ kind?: 'door'|'window', offset?, width?, height?, sill? }], parent? })
+wallWithOpening(name, material, { length, height, thickness, axis?: 'x'|'z', opening?: { kind?: 'door'|'window', offset?, width?, height?, sill? }, openings?: [{ kind?: 'door'|'window', offset?, width?, height?, sill? }], merge?: 'byMaterial', parent? })
   // A wall panel with real rectangular door/window gaps, composed from solid box segments.
   // Supply opening or openings, never both. Multiple or vertically stacked apertures must not
   // overlap or extend outside the wall. Base at local Y=0, centered on the run axis. Use to

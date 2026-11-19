@@ -1403,6 +1403,7 @@ define(
     parameters: [
       'Default width/depth/height describe a small room; dimensions are not an overall building/storey limit.',
       'Per-wall rectangular openings are explicit; floor may be disabled. An opening offset is measured from its wall centre and the opening must fit inside that wall: front/back walls are width + wallThickness long, left/right walls depth - wallThickness. wallThickness must be less than depth.',
+      "merge: 'byMaterial' returns one part per material instead of one per piece: the same triangles and bounds, named for the call (the wall material takes the call's name, other roles <name>_<Role>); frames and Joint_ pivots stay, and pivot pieces merge only under their pivot. Merged pieces that share an edge make it non-manifold. Without merge, output is unchanged.",
     ],
     topology: [
       'Four box-segment walls with real apertures; optional floor. No roof or automatic whole-building watertightness.',
@@ -1431,6 +1432,7 @@ define(
     parameters: [
       'Positive finite length/height/thickness; opening or openings, never both.',
       'Rectangular apertures must not overlap or extend outside the wall; touching edges are allowed.',
+      "merge: 'byMaterial' returns one part per material instead of one per piece: the same triangles and bounds, named for the call (the wall material takes the call's name, other roles <name>_<Role>); frames and Joint_ pivots stay, and pivot pieces merge only under their pivot. Merged pieces that share an edge make it non-manifold. Without merge, output is unchanged.",
     ],
     topology: [
       'Actual aperture gaps are composed from box segments; no solid boolean or wall-assembly union.',

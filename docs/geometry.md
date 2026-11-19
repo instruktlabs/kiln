@@ -160,6 +160,18 @@ placement on each sector root. Rows, rise, radius and angular coverage are edita
 no house layout, roof or asset category is required. These are optional construction
 examples, not completed buildings, navigation certificates or finished materials.
 
+## Merge an assembly by material
+
+`wallWithOpening` and `room` take `merge: 'byMaterial'`. The helper builds its pieces as it
+would without the option, then replaces them with one part per material: the same triangles
+in the same places, so triangle count and bounds do not change. A part is named for the role
+of its first piece: the wall takes the call's name, the rest `<name>_<Role>`. Frames that are
+not meshes stay where they were, so a room's wall frames still serve as anchors, and the
+pieces under a `Joint_` pivot merge only with each other, under the pivot, so a door leaf
+still swings. Geometry is concatenated,
+not unioned: two pieces that share an edge make that edge non-manifold, so `requireSolid`
+fails a merged part where its pieces touch. Without `merge`, output is unchanged.
+
 ## Compose moving assemblies
 
 Discovery's `recipe:joined-frame-v1` derives brace endpoints from the same post

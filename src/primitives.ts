@@ -19,6 +19,12 @@ import {
   GEOMETRY_ALLOCATION_LIMITS,
 } from './geometry-budget';
 import { buildWallPanels } from './wall-panels';
+import {
+  assertAssemblyMerge,
+  mergePiecesByMaterial,
+  roleSuffix,
+  type AssemblyMergeMode,
+} from './assembly-merge';
 import { createBoneChain, createJointChain, createSkinnedPart } from './character';
 import { describeAssembly, replicateAssembly } from './assembly';
 import { defineLod } from './lod';
@@ -1282,21 +1288,19 @@ export interface WallWithOpeningOptions {
   /** Multiple rectangular cuts, including vertically stacked windows.
    * Cuts may touch but must not overlap and must fit inside the wall sides/top. */
   openings?: readonly WallOpening[];
+  /** One part per material instead of one part per piece (see docs/geometry.md). */
+  merge?: AssemblyMergeMode;
   parent?: THREE.Object3D;
 }
 
-/**
- * A wall with rectangular door/window cuts, composed from solid box segments.
- * Invalid, overlapping or out-of-bound cuts throw; they are never clipped.
- * Runs along `axis`, base at local Y=0, centered on the
- * length axis. Returns the wall container so the caller can position it.
- */
-export function wallWithOpening(
+/** Build the wall's pieces under a new container, recording each piece's role. */
+function buildWall(
   name: string,
   material: THREE.Material,
   options: WallWithOpeningOptions,
+  roles: Map<THREE.Mesh, string>,
 ): THREE.Object3D {
-  const { length, height, thickness, axis = 'z', opening, openings, parent } = options;
+  const { length, height, thickness, axis = 'z', opening, openings } = options;
   if (opening && openings)
     throw new TypeError('wallWithOpening: use opening or openings, not both.');
   const built = buildWallPanels(length, height, thickness, openings ?? (opening ? [opening] : []));
@@ -1317,14 +1321,37 @@ export function wallWithOpening(
     const yC = (yLo + yHi) / 2;
     const geo = axis === 'z' ? boxGeo(thickness, segH, segLen) : boxGeo(segLen, segH, thickness);
     const pos: [number, number, number] = axis === 'z' ? [0, yC, lenC] : [lenC, yC, 0];
-    createPart(`${name}${suffix}`, geo, material, { position: pos, parent: group });
+    roles.set(
+      createPart(`${name}${suffix}`, geo, material, { position: pos, parent: group }) as THREE.Mesh,
+      'wall',
+    );
   };
 
   for (const segment of built.panels) {
     panel(segment.suffix, segment.left, segment.right, segment.bottom, segment.top);
   }
+  return group;
+}
 
-  if (parent) parent.add(group);
+/**
+ * A wall with rectangular door/window cuts, composed from solid box segments.
+ * Invalid, overlapping or out-of-bound cuts throw; they are never clipped.
+ * Runs along `axis`, base at local Y=0, centered on the
+ * length axis. Returns the wall container so the caller can position it.
+ */
+export function wallWithOpening(
+  name: string,
+  material: THREE.Material,
+  options: WallWithOpeningOptions,
+): THREE.Object3D {
+  assertAssemblyMerge('wallWithOpening', options.merge);
+  const roles = new Map<THREE.Mesh, string>();
+  const group = buildWall(name, material, options, roles);
+  if (options.merge === 'byMaterial')
+    mergePiecesByMaterial(group, roles, (role) =>
+      role === 'wall' ? name : `${name}_${roleSuffix(role)}`,
+    );
+  if (options.parent) options.parent.add(group);
   return group;
 }
 
@@ -1347,6 +1374,8 @@ export interface RoomOptions {
   /** Per-wall openings. Defaults to a centered door on the front wall, so the
    *  room is ENTERABLE by default. */
   openings?: RoomOpening[];
+  /** One part per material for the whole room; wall frames stay as anchors. */
+  merge?: AssemblyMergeMode;
   parent?: THREE.Object3D;
 }
 
@@ -1375,6 +1404,7 @@ export function room(
     floorThickness = 0.1,
     parent,
   } = options;
+  assertAssemblyMerge('room', options.merge);
   const openings = options.openings ?? [{ wall: 'front', kind: 'door' }];
   if (depth > 0 && wallThickness >= depth)
     throw new RangeError(
@@ -1382,6 +1412,7 @@ export function room(
     );
   const root = new THREE.Object3D();
   root.name = name;
+  const roles = new Map<THREE.Mesh, string>();
 
   const wall = (
     suffix: string,
@@ -1392,20 +1423,25 @@ export function room(
   ): THREE.Object3D => {
     let w: THREE.Object3D;
     try {
-      w = wallWithOpening(`${name}_Wall${suffix}`, material, {
-        length: len,
-        height,
-        thickness: wallThickness,
-        axis,
-        openings: openings.filter((op) => op.wall === which),
-        parent: root,
-      });
+      w = buildWall(
+        `${name}_Wall${suffix}`,
+        material,
+        {
+          length: len,
+          height,
+          thickness: wallThickness,
+          axis,
+          openings: openings.filter((op) => op.wall === which),
+        },
+        roles,
+      );
     } catch (error) {
       if (!(error instanceof RangeError)) throw error;
       throw new RangeError(
         `room("${name}"): ${which} wall (length ${+len.toFixed(6)}, offsets from its centre): ${error.message}`,
       );
     }
+    root.add(w);
     w.position.set(...pos);
     return w;
   };
@@ -1426,6 +1462,13 @@ export function room(
       position: [0, -floorThickness / 2, 0],
       parent: root,
     });
+    roles.set(floorObj as THREE.Mesh, 'wall');
+  }
+  if (options.merge === 'byMaterial') {
+    const { holder } = mergePiecesByMaterial(root, roles, (role) =>
+      role === 'wall' ? name : `${name}_${roleSuffix(role)}`,
+    );
+    if (floorObj) floorObj = holder.get(floorObj as THREE.Mesh) ?? floorObj;
   }
 
   if (parent) parent.add(root);

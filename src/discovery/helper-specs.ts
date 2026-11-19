@@ -387,7 +387,7 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'room',
     signature:
-      "room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThickness?, openings?: [{ wall: 'front'|'back'|'left'|'right', kind?: 'door'|'window', offset?, width?, height?, sill? }], parent? })",
+      "room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThickness?, openings?: [{ wall: 'front'|'back'|'left'|'right', kind?: 'door'|'window', offset?, width?, height?, sill? }], merge?: 'byMaterial', parent? })",
     returns: '{ root: Object3D, walls: { front, back, left, right }, floor: Object3D | null }',
     category: 'structure',
     description:
@@ -400,7 +400,7 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'wallWithOpening',
     signature:
-      "wallWithOpening(name, material, { length, height, thickness, axis?: 'x'|'z', opening?: { kind?: 'door'|'window', offset?, width?, height?, sill? }, openings?: [{ kind?: 'door'|'window', offset?, width?, height?, sill? }], parent? })",
+      "wallWithOpening(name, material, { length, height, thickness, axis?: 'x'|'z', opening?: { kind?: 'door'|'window', offset?, width?, height?, sill? }, openings?: [{ kind?: 'door'|'window', offset?, width?, height?, sill? }], merge?: 'byMaterial', parent? })",
     returns: 'THREE.Object3D (wall container)',
     category: 'structure',
     description:
