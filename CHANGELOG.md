@@ -7,6 +7,9 @@ does not publish a package.
 
 ## Unreleased
 
+- **`torusGeo` rejects a tube at least as thick as the ring radius.** `torusGeo(0.2, 0.5)` now throws, naming the tube and the radius, instead of building a surface that crosses the ring axis and intersects itself while the solid check read it as closed. Valid tori build byte-identically; no saved source in the repository used such values. (#406)
+- **A build warns about parts that never join the asset.** `PART_NOT_IN_ASSET` names each part built with `createPart` that is not under the root when `build()` returns (it was left out of the GLB with no report), and `NAME_PREFIX_DOUBLED` flags a `createPivot` name, or a `createPart` name with `pivot: true`, that already starts with the `Joint_` the helper adds. Both are advisory and never change the GLB. A part built with a `parent` and removed later, or handed to another helper such as a Boolean, is left alone. Over the saved sources and archived examples that build, `PART_NOT_IN_ASSET` fires nowhere and `NAME_PREFIX_DOUBLED` fires in none. (#414)
+- **The author skill states `boxGeo` axes in its frame paragraph and keeps the no-UV0 note with the materials guidance.** The geometry recipes now place the `extrudeProfile`, `revolveProfile` and `roundedBoxGeo` no-UV0 note, and the projection and unwrap paragraphs around it, under "Materials and directional UVs". `SKILL.md` stays at 12,841 bytes (from 12,842). Existing workspaces report the skill as changed; run `kiln-init <workspace> --check`, then `--upgrade`. (#416)
 - **`kiln mcp` starts the stdio MCP server from the default executable, and the repository carries
   the official MCP registry manifest.** `npx @instruktlabs/kiln` runs `kiln`, not `kiln-mcp`, so the
   registry entry needs a subcommand; `kiln mcp` runs the packaged `mcp-server.mjs` beside the CLI and
