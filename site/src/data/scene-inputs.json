@@ -3,11 +3,11 @@
   "files": [
     {
       "id": "farm",
-      "release": "r36-flush1",
-      "path": "scene-inputs/flush-fix-20261113/farm.zip",
-      "bytes": 3647436,
-      "sha256": "87b909fd9875488e626f5ee22608913751426f3935006978c5e7881d032d0b56",
-      "packJsonSha256": "f97c8ee73d388e12d03784c605341f2f5fcb6d1c05672a161072c99abd235c8a"
+      "release": "r36-flush2",
+      "path": "scene-inputs/flush-fix-20261119/farm.zip",
+      "bytes": 3646714,
+      "sha256": "16fdef3478ebad6d8cfd3c3a0bfd1b8013fa65f93241e50784059646bc93bd43",
+      "packJsonSha256": "cc6f2c6d326257daa4c32dc161f9f402a7e8423c1487357ab205981c3dbc8034"
     },
     {
       "id": "golden-gate",

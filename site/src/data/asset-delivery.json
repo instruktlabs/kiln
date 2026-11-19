@@ -7,17 +7,17 @@
       "downloads": [
         {
           "profile": "runtime",
-          "path": "packs/farm/delivery-20261113-01/farm-runtime.zip",
-          "bytes": 3003356,
-          "sha256": "93428d85e4c11b5b738b9bdf658bca734e02e449eae442f22963e8855f732b44",
-          "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261113-01/farm-runtime.zip"
+          "path": "packs/farm/delivery-20261119-01/farm-runtime.zip",
+          "bytes": 3001029,
+          "sha256": "ae7bb3b44a6023f94cd560c919b3f9aedeb80651740843cb307a902b3d088185",
+          "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/farm-runtime.zip"
         },
         {
           "profile": "editable",
-          "path": "packs/farm/delivery-20261113-01/farm-editable.zip",
-          "bytes": 45370746,
-          "sha256": "e8bd81144e3a919186a705373abc830f06197d2485ec73c97467991520f3e566",
-          "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261113-01/farm-editable.zip"
+          "path": "packs/farm/delivery-20261119-01/farm-editable.zip",
+          "bytes": 49542728,
+          "sha256": "4109fa155cd2657bdb69ed96aa2c8009d494e4714e20e7ca8d973fe3b1e8b9a8",
+          "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/farm-editable.zip"
         }
       ],
       "assets": [
@@ -25,8 +25,9 @@
           "slug": "farmhouse",
           "collection": "project",
           "assetId": "a_793e1ebd4c32465ab937d93215ec2a50",
-          "revisionId": "r_01f97f5e943e4c2693b6db8596f3e353",
+          "revisionId": "r_10b63bdd371e4a78ae90faf92a8568ed",
           "includedRevisions": [
+            "r_10b63bdd371e4a78ae90faf92a8568ed",
             "r_01f97f5e943e4c2693b6db8596f3e353",
             "r_37f835d35a1040fc9f64d6f3b271eac5",
             "r_1cf8330fa49e41c1b19e691ee80d0aad",
@@ -34,18 +35,16 @@
           ],
           "missingParents": [],
           "editableDownload": {
-            "path": "packs/farm/delivery-20261005-01/editable/farmhouse.zip",
-            "bytes": 3615481,
-            "sha256": "d61cd6f2a79fa8cc0d9e2bc5f8bd078d756ce09a73571aa982297360e7774ff1",
-            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/farmhouse.zip"
+            "path": "packs/farm/delivery-20261119-01/editable/farmhouse.zip",
+            "bytes": 4481246,
+            "sha256": "4a7daf41587d2dc97fcc07eabe21d9a4eb2236fb8fd52cd21605a00ad0f3fc06",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/editable/farmhouse.zip"
           },
           "runtimeDownload": {
-            "path": "packs/farm/r36-local-review/models/farmhouse.glb",
-            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/farmhouse.glb",
-            "bytes": 549584,
-            "sha256": "1b02596b30e3417e3f8336893694f2614002e28154408803b145154097de8512",
-            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-            "member": "models/farmhouse.glb"
+            "path": "packs/farm/delivery-20261119-01/models/farmhouse.glb",
+            "bytes": 549616,
+            "sha256": "7478f660811eeb93011b0baf22857e3efa3b102b45b2c9cdd9079e330960f646",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/models/farmhouse.glb"
           }
         },
         {
@@ -76,34 +75,34 @@
           "slug": "windmill",
           "collection": "project",
           "assetId": "windmill",
-          "revisionId": "r_ef9045311dd040258e0143345c171d6f",
+          "revisionId": "r_be71af41cdd34106b2a81e84e44a529f",
           "includedRevisions": [
+            "r_be71af41cdd34106b2a81e84e44a529f",
             "r_ef9045311dd040258e0143345c171d6f",
             "r_3836995ebcad486b88d50b05464a390d",
             "r_085711a1e21046feb9d11fd9c9e2046e"
           ],
           "missingParents": [],
           "editableDownload": {
-            "path": "packs/farm/delivery-20261005-01/editable/windmill.zip",
-            "bytes": 2535679,
-            "sha256": "8694278d686c830f5f094f351a9e871d5bc92d58c0e830c18f6a35900940d454",
-            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/windmill.zip"
+            "path": "packs/farm/delivery-20261119-01/editable/windmill.zip",
+            "bytes": 3390716,
+            "sha256": "62703deed127900aa94c9f44d84fce9aa2879b7ec26aac7c3b711dea9369a701",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/editable/windmill.zip"
           },
           "runtimeDownload": {
-            "path": "packs/farm/r36-local-review/models/windmill.glb",
-            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/windmill.glb",
-            "bytes": 454760,
-            "sha256": "089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f",
-            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-            "member": "models/windmill.glb"
+            "path": "packs/farm/delivery-20261119-01/models/windmill.glb",
+            "bytes": 454012,
+            "sha256": "f3ae9e54dbd8f42ffb219ffa48092eaf96e44b4f5e452b23219d3d553e75d806",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/models/windmill.glb"
           }
         },
         {
           "slug": "watermill",
           "collection": "project",
           "assetId": "watermill",
-          "revisionId": "r_f8ab38b03b5a4fb691b860d9fb076200",
+          "revisionId": "r_437647e09af4431da99fb2dd0906288a",
           "includedRevisions": [
+            "r_437647e09af4431da99fb2dd0906288a",
             "r_f8ab38b03b5a4fb691b860d9fb076200",
             "r_81d32327d04846c0b18842a28c66bb64",
             "r_be6949c5595246a891c8a0a0e96ef0a5",
@@ -113,18 +112,16 @@
           ],
           "missingParents": [],
           "editableDownload": {
-            "path": "packs/farm/delivery-20261005-01/editable/watermill.zip",
-            "bytes": 6493709,
-            "sha256": "0e858a257d8956b3f0fb755639a49e6092515e804992612e3c1881932a4adaf8",
-            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/watermill.zip"
+            "path": "packs/farm/delivery-20261119-01/editable/watermill.zip",
+            "bytes": 7614854,
+            "sha256": "1319c7769869cc70b717cfdd36dbe8d97a2f7292886172238160091e85f545bd",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/editable/watermill.zip"
           },
           "runtimeDownload": {
-            "path": "packs/farm/r36-local-review/models/watermill.glb",
-            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/watermill.glb",
-            "bytes": 580264,
-            "sha256": "b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0",
-            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-            "member": "models/watermill.glb"
+            "path": "packs/farm/delivery-20261119-01/models/watermill.glb",
+            "bytes": 580300,
+            "sha256": "126251b82f4ab9557552a198172ca1f8b35a4c60b9355292e6f950c95e5da2b0",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/models/watermill.glb"
           }
         },
         {
@@ -203,8 +200,9 @@
           "slug": "tractor",
           "collection": "project",
           "assetId": "tractor",
-          "revisionId": "r_ebeeb57adda343dd98d575e97ca24f92",
+          "revisionId": "r_e89c34e3ad4e45d7abc75e779daae0cc",
           "includedRevisions": [
+            "r_e89c34e3ad4e45d7abc75e779daae0cc",
             "r_ebeeb57adda343dd98d575e97ca24f92",
             "r_da190ce15ed94159b61d4633efbc12ef",
             "r_d7cde4de08714737bf76449e58ddcb56",
@@ -212,44 +210,41 @@
           ],
           "missingParents": [],
           "editableDownload": {
-            "path": "packs/farm/delivery-20261005-01/editable/tractor.zip",
-            "bytes": 1958921,
-            "sha256": "6a2fe2fcf94dd4e6da678a746e8900df86479e99769115201b0f3efffdfd7cfb",
-            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/tractor.zip"
+            "path": "packs/farm/delivery-20261119-01/editable/tractor.zip",
+            "bytes": 2601386,
+            "sha256": "93ef44239cdb44b017fae77e7842ba0ebfd4495e5501a58181a381e36658dd65",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/editable/tractor.zip"
           },
           "runtimeDownload": {
-            "path": "packs/farm/r36-local-review/models/tractor.glb",
-            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/tractor.glb",
-            "bytes": 409684,
-            "sha256": "8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117",
-            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-            "member": "models/tractor.glb"
+            "path": "packs/farm/delivery-20261119-01/models/tractor.glb",
+            "bytes": 304576,
+            "sha256": "144ed8fa0bded0355bb292d1534671e0bf84024ff6988e13df3b777419eab87f",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/models/tractor.glb"
           }
         },
         {
           "slug": "trailer",
           "collection": "project",
           "assetId": "trailer",
-          "revisionId": "r_c72e516ce16949cfbddedbc9155efa06",
+          "revisionId": "r_50136ad30e7a43d688d32e1d1a60a9c8",
           "includedRevisions": [
+            "r_50136ad30e7a43d688d32e1d1a60a9c8",
             "r_c72e516ce16949cfbddedbc9155efa06",
             "r_840702d1024946fbbc21e95ac5f00672",
             "r_5d3ac9b353a84acfa1b350136b37015d"
           ],
           "missingParents": [],
           "editableDownload": {
-            "path": "packs/farm/delivery-20261005-01/editable/trailer.zip",
-            "bytes": 2062415,
-            "sha256": "f194dff18130da1bf7edf6a90cd1be33b75524765ef3ecac816598c6abcdf964",
-            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261005-01/editable/trailer.zip"
+            "path": "packs/farm/delivery-20261119-01/editable/trailer.zip",
+            "bytes": 2750065,
+            "sha256": "a48da2c3d8c7cf8279f6a25ac0e9fe3a59f98d6cb277a9af6b5482993431cd09",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/editable/trailer.zip"
           },
           "runtimeDownload": {
-            "path": "packs/farm/r36-local-review/models/trailer.glb",
-            "url": "https://assets.kilnstudio.tools/packs/farm/r36-local-review/models/trailer.glb",
-            "bytes": 183252,
-            "sha256": "6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de",
-            "archive": "packs/farm/r36-local-review/shapes-and-seasons-farm-runtime.zip",
-            "member": "models/trailer.glb"
+            "path": "packs/farm/delivery-20261119-01/models/trailer.glb",
+            "bytes": 183276,
+            "sha256": "30628167973ce5cb9f5e7b47988c2b3b50f86359188601891823eb31aaa6aaca",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261119-01/models/trailer.glb"
           }
         },
         {
@@ -321,9 +316,9 @@
           },
           "runtimeDownload": {
             "path": "packs/farm/delivery-20261113-01/models/farmer.glb",
+            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261113-01/models/farmer.glb",
             "bytes": 817128,
-            "sha256": "f0b5ef71ca0abb99d71b6ed036c2672e1ebfe2d3d90b243651ad3f2fa634f6d3",
-            "url": "https://assets.kilnstudio.tools/packs/farm/delivery-20261113-01/models/farmer.glb"
+            "sha256": "f0b5ef71ca0abb99d71b6ed036c2672e1ebfe2d3d90b243651ad3f2fa634f6d3"
           }
         },
         {

@@ -88,7 +88,9 @@ describe('Commons catalog bindings', () => {
   test('selected r36 retains the accepted floor and all 23 approvals without inheriting r34 acceptance', () => {
     const house = farm.assets.find((asset) => asset.id === 'farmhouse');
     expect(farm.revision).toBe('r36-local-review');
-    expect(house?.revisionId).toBe(farm.floorRevision.asset.revisionId);
+    // The selected farmhouse is the flush-face fix child of the accepted floor revision, which stays the floor record.
+    expect(house?.parentRevision).toBe(farm.floorRevision.asset.revisionId);
+    expect(house?.revisionId).toBe('r_10b63bdd371e4a78ae90faf92a8568ed');
     expect(house?.revisionId).not.toBe(farm.floorRevision.parentRevision);
     expect(house?.metrics.triangles).toBe(4080);
     expect(house?.review.ownerAccepted).toBe(true);
@@ -122,10 +124,18 @@ describe('Commons catalog bindings', () => {
   });
   test('keeps requested effort distinct from independent confirmation', () => {
     for (const asset of farm.assets) for (const revision of asset.revisions) {
-      // Exception, flush-face fix only: the farmer's child was saved by a session with no sealed receipt, so its
-      // effort, harness version and run are recorded as not recorded, never invented.
+      // Exception, flush-face fix only: the farmer's child (2026-11-13) and the five children saved once their
+      // project records were restored (2026-11-19) were saved by sessions with no sealed receipt, so their effort,
+      // harness version and run are recorded as not recorded, never invented.
       if ('request' in revision && revision.request === 'flush-face-fix') {
-        expect([asset.id, revision.revisionId]).toEqual(['farmer', 'r_be4c304cc47c42f3aba0bf6b24cc2a94']);
+        expect([
+          ['farmer', 'r_be4c304cc47c42f3aba0bf6b24cc2a94'],
+          ['farmhouse', 'r_10b63bdd371e4a78ae90faf92a8568ed'],
+          ['windmill', 'r_be71af41cdd34106b2a81e84e44a529f'],
+          ['watermill', 'r_437647e09af4431da99fb2dd0906288a'],
+          ['tractor', 'r_e89c34e3ad4e45d7abc75e779daae0cc'],
+          ['trailer', 'r_50136ad30e7a43d688d32e1d1a60a9c8'],
+        ]).toContainEqual([asset.id, revision.revisionId]);
         expect(revision).toMatchObject({ modelId: 'claude-sonnet-5-5', harness: 'claude-code', requestedEffort: 'not recorded', confirmedEffort: null, harnessVersion: null });
         expect(revision.run).toEqual({ stage: 'flush-face-fix', label: 'flush-face fix session', status: 'not recorded', stop: null, startedAt: null, endedAt: null, receiptSha256: null, invocationSha256: null });
         continue;
