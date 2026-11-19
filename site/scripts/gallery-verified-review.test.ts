@@ -83,7 +83,7 @@ test('the first cards of the curated order are reviewed on the GLB their pages l
   expect(cathedralServed.url).toBe(cathedralModelUrl(cathedral));
   expect(cathedralServed.paths).toEqual([
     cathedralModelUrl(cathedral).split('?')[0]!.slice(1),
-    'packs/cathedral-square/cs2/models/cathedral.glb',
+    'packs/cathedral-square/cs4/models/cathedral.glb',
   ]);
   const cockpit = h7GalleryAssets(true).find((asset) => asset.slug === 'mech-cockpit')!;
   expect(servedModel(href('/gallery/h-7/mech-cockpit/')).url).toBe(h7ModelUrl(cockpit));

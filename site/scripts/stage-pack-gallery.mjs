@@ -102,7 +102,9 @@ export async function stagePackGallery({
   await write('review-delivery.json', Buffer.from(JSON.stringify(receipt, null, 2) + '\n'));
   await write('upload-pins.json', Buffer.from(JSON.stringify(uploadPins, null, 2) + '\n'));
 
-  // Poster metadata belongs to the rig pipeline. A rerun keeps only exact matching pins.
+  // Poster metadata belongs to the rig pipeline. A rerun keeps only exact matching pins, except that a revision
+  // saved as a child of the one a poster was rendered from keeps that poster, marked as an earlier revision's,
+  // until rig-posters.mjs renders its own.
   const previous = await json(catalogOut).catch((error) => {
     if (error.code !== 'ENOENT') throw error;
     return { assets: [] };
@@ -112,6 +114,9 @@ export async function stagePackGallery({
     const prior = priorAssets.get(asset.slug);
     if (prior?.revisionId === asset.revisionId && prior.runtimeModelDownload?.sha256 === asset.runtimeModelDownload.sha256 && prior.poster) {
       asset.poster = prior.poster;
+    } else if (prior?.poster && prior.assetId === asset.assetId && asset.parentRevision &&
+      prior.revisionId === asset.parentRevision && prior.poster.sourceRevisionId === asset.parentRevision) {
+      asset.poster = { ...prior.poster, exactRevision: false };
     }
   }
   await writeJson(catalogOut, catalog);
