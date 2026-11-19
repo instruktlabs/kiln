@@ -172,3 +172,24 @@ test('local hosts append the source check to an opaque rejection once', async ()
     await rm(root, { recursive: true, force: true });
   }
 }, 30000);
+
+test('kiln_render tells an author to rename a local named like a host global', async () => {
+  // The pre-1.9.0 dogfood's gatehouse declared `const window`; the source check refused it
+  // as ambient access on every line that used it.
+  const source = `const meta = { name: 'Gatehouse' };
+function build() {
+  const root = createRoot('Gatehouse');
+  const window = createPart('Window', boxGeo(1, 1, 0.1), gameMaterial(0x888888), { parent: root });
+  window.position.y = 1;
+  return root;
+}`;
+  const render = createKilnProgramToolRegistry({
+    evaluatorPort: { render: renderGLBViaSubprocess },
+  }).find((d) => d.name === 'kiln_render')!;
+  const out = (await render.run({ code: source })) as { ok: boolean; error: string };
+  expect(out.ok).toBe(false);
+  expect(out.error).toContain(
+    'Source check: UNSAFE_GLOBAL_ACCESS at line 5: Generated code cannot use the name `window`, even for its own variable: rename it, for example `windowPart`.',
+  );
+  expect(out.error).not.toContain('ambient capability');
+}, 30000);

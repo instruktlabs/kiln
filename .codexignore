@@ -1,0 +1,28 @@
+# Secrets, local state and generated site output that a Codex plugin or session never needs.
+# dist/, lib/ and node_modules/ stay visible: the plugin's MCP server runs dist/mcp-server.mjs.
+
+# Secrets
+.env
+.env.*
+!.env.example
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+# Local state
+.kiln/
+.cache/
+tmp/
+coverage/
+.dogfood/
+.wrangler/
+.cloudflare/
+.localdata/
+.claude/worktrees/
+.poster-cache/
+.posters/
+
+# Generated site output
+site/dist/
+site/public/assets/
+site/public/thumbs/

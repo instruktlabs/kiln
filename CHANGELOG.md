@@ -7,6 +7,8 @@ does not publish a package.
 
 ## Unreleased
 
+## 1.9.0 (2026-11-18)
+
 - **`fenceRun` builds posts and rails along a path.** `fenceRun(name, { path, post, rails,
   material })` puts a post at each path point and rails between neighbouring posts. Rails follow a
   sloping path and stop inside each post, so no rail end shows and no rail face lies on a post face.
@@ -29,6 +31,13 @@ does not publish a package.
   an edge make it non-manifold. Without the option the output is unchanged. The geometry recipes
   mention the new options and `fenceRun`, so existing workspaces report the author skill as
   changed; run `kiln-init <workspace> --check`, then `--upgrade`. (#412)
+- **A variable named like a host global is refused with a message to rename it.** The source
+  check refuses names such as `window`, `document`, `location` and `self` everywhere, even
+  for the program's own variables. When the refused name is the program's own variable,
+  `UNSAFE_GLOBAL_ACCESS` now says to rename it, for example `windowPart`, instead of calling
+  it access to an ambient capability; a real host-global use keeps the old message. What is
+  refused is unchanged. A Codex author in the pre-1.9.0 dogfood named a gatehouse window
+  `window`.
 - **Four more rejection causes are named.** A `projectUV` options error, a `taperedTube`
   radii, path or `sectionScale` error, a `sweepProfile` or `loftProfiles` path, scale, twist or
   cap error, and a Boolean or `hull` operand that is not a whole-triangle mesh now carry a
@@ -39,6 +48,11 @@ does not publish a package.
 - **`torusGeo` rejects a tube at least as thick as the ring radius.** `torusGeo(0.2, 0.5)` now throws, naming the tube and the radius, instead of building a surface that crosses the ring axis and intersects itself while the solid check read it as closed. Valid tori build byte-identically; no saved source in the repository used such values. (#406)
 - **A build warns about parts that never join the asset.** `PART_NOT_IN_ASSET` names each part built with `createPart` that is not under the root when `build()` returns (it was left out of the GLB with no report), and `NAME_PREFIX_DOUBLED` flags a `createPivot` name, or a `createPart` name with `pivot: true`, that already starts with the `Joint_` the helper adds. Both are advisory and never change the GLB. A part built with a `parent` and removed later, or handed to another helper such as a Boolean, is left alone. Over the saved sources and archived examples that build, `PART_NOT_IN_ASSET` fires nowhere and `NAME_PREFIX_DOUBLED` fires in none. (#414)
 - **The author skill states `boxGeo` axes in its frame paragraph and keeps the no-UV0 note with the materials guidance.** The geometry recipes now place the `extrudeProfile`, `revolveProfile` and `roundedBoxGeo` no-UV0 note, and the projection and unwrap paragraphs around it, under "Materials and directional UVs". `SKILL.md` stays at 12,841 bytes (from 12,842). Existing workspaces report the skill as changed; run `kiln-init <workspace> --check`, then `--upgrade`. (#416)
+- **A discovery search containing the word "constructor" works.** The word read
+  `Object.prototype.constructor` out of the inflection table, so the response held a function,
+  failed to clone, and the `kiln_discover` call failed with "function Object() { [native code] }
+  could not be cloned." The table is now a `Map`. Found by a Codex author in the pre-1.9.0
+  dogfood.
 - **`kiln mcp` starts the stdio MCP server from the default executable, and the repository carries
   the official MCP registry manifest.** `npx @instruktlabs/kiln` runs `kiln`, not `kiln-mcp`, so the
   registry entry needs a subcommand; `kiln mcp` runs the packaged `mcp-server.mjs` beside the CLI and
@@ -74,7 +88,44 @@ does not publish a package.
   host keeps that one path in the error. `kiln_discover` capabilities add
   `source.file: { workspaceRoot, selectedBy, paths }` (null where a host has no `file`).
   A benchmark agent whose working folder was not the workspace had fallen back to the CLI
-  and skipped collections. No tool input schema changes. (#423)
+  and skipped collections. No tool input schema changes. The setup skill now tells agents to
+  check `source.file.workspaceRoot` and `selectedBy`, so existing workspaces report it as
+  changed; run `kiln-init <workspace> --check`, then `--upgrade`. (#423)
+- **Discovery ranks helpers named like the query first, and each hit leads with its
+  signature.**
+  - A helper whose name matches the query, or the query plus `Geo`, ranks first. Names
+    that start with the query come next.
+  - Each hit shows `signature -> returns`, then a summary cut at a sentence.
+  - The overview with no arguments lists families and says to browse a family for its
+    tags; it went from 4,363 to 2,362 bytes.
+  - On the 61-query fixture, the expected helper now ranks first in 61 cases, up from 54.
+  (#371)
+- **The flush-face check runs about 1.85 times faster.** It dismisses pairs that cannot
+  share area before clipping them. Reports, budgets and truncation are unchanged across the
+  225 GLBs measured. (#368)
+- **`FLUSH_FACES` estimates which pairs other parts hide.**
+  - Each reported pair gets an advisory `occlusion` estimate from ray samples. It is
+    deterministic and capped at 10,000 rays per build (`maxOcclusionRays`; 0 turns it off).
+  - The warning text changes only when some pair is estimated hidden: it then says it is a
+    ray estimate, not a render, and names the pairs in view first.
+  - Save warnings now keep up to 800 characters.
+  (#367)
+- **The primitives' closed-solid contract is written down.**
+  - `docs/geometry.md` says which primitives are closed, manifold and outward for every
+    input they accept, and that scene builders promise this for each mesh they make, not
+    for the whole assembly. It also names the open, one-sided surfaces.
+  - `docs/reviews/2026-11-18-primitives-audit.md` records the measured audit behind it.
+  (#374)
+- **A render service that loses the port race joins the winner.** When two sessions start
+  a managed service at once, the losing host waits up to two seconds for the other service
+  to answer before reporting a failed start. (#429)
+- **The root Codex plugin manifest is complete.** It carries the privacy policy and terms
+  URLs, and its `composerIcon` and `logo` point at the kiln-engine icon. A `.codexignore`
+  lists secrets, local state and generated site output. (#425)
+- **Saved GLB bytes reproduce on the Node version that saved them, on any OS.** On Node
+  22.23.4, Windows and Linux gave identical bytes for all 817 corpus programs that build; Node
+  24 differs from Node 22 in 493 of them, mostly in material colours, because three.js converts
+  colours with `Math.pow`. `docs/collections.md` and CONTRIBUTING say so. (#444)
 
 - **Review sheets, procedural textures and QA run faster on large assets, with identical
   output.** The engine profile's TypeScript hot spots are fixed:

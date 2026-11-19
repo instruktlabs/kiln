@@ -189,6 +189,11 @@ instead of producing a misleading rebuild claim. Older ZIPs can lack these resou
 The GLB itself remains self-contained. After importing the editable asset, use
 `node kiln.mjs asset ASSET_ID REVISION --rebuild --out rebuilt.glb` to build with its
 saved material revisions and exporter settings; it reports whether the GLB hash matches.
+Expect the hash to match on the Node version that saved the revision. three.js converts
+material colours with `Math.pow`, whose results changed between Node 22 and Node 24, so a
+rebuild on the other version can differ in material colours and, less often, in geometry. On
+one Node version, Windows and Linux build the same bytes. The manifest does not record which
+Node saved a revision.
 CPU preview fidelity is recorded; use the interactive material rendering to inspect
 appearance, and the structural report for geometry checks. GPU pixels are not QA evidence.
 `preview.fidelity` describes the saved preview. A preview drawn from the saved

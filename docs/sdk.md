@@ -176,7 +176,7 @@ on GLB bytes a host already holds. See the
 
 A host that runs authored programs in its own worker process uses these names. All are
 stable parts of their entrypoints under the rules above; they were exported unchanged from
-1.6.0 to 1.8.0.
+1.6.0 to 1.9.0.
 
 | Entrypoint | Name | Contract |
 | --- | --- | --- |

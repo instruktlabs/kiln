@@ -8,13 +8,13 @@
     "source": "github"
   },
   "websiteUrl": "https://github.com/instruktlabs/kiln",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@instruktlabs/kiln",
-      "version": "1.8.0",
+      "version": "1.9.0",
       "runtimeHint": "npx",
       "transport": {
         "type": "stdio"
