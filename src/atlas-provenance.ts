@@ -371,10 +371,19 @@ export function atlasMaterialUses(doc: Document): { texture: GltfTexture; info: 
       }
   return uses;
 }
-async function imageHash(texture: GltfTexture): Promise<string> {
+/**
+ * Final-image hashes from {@link refreshAtlasDocumentProvenance}, each with the exact byte array
+ * it hashed. Validation right after a refresh reuses a hash only while the texture still holds
+ * that same array, so each image is hashed once per export.
+ */
+export type AtlasImageHashes = ReadonlyMap<GltfTexture, { bytes: Uint8Array; hash: string }>;
+
+async function imageHash(texture: GltfTexture, known?: AtlasImageHashes): Promise<string> {
   const bytes = texture.getImage();
   if (!bytes || bytes.byteLength > ATLAS_PROVENANCE_LIMITS.encodedBytes)
     fail('encoded image missing or over budget.');
+  const previous = known?.get(texture);
+  if (previous && previous.bytes === bytes) return previous.hash;
   const result = await crypto.subtle.digest('SHA-256', bytes as Uint8Array<ArrayBuffer>);
   return `sha256:${[...new Uint8Array(result)].map((v) => v.toString(16).padStart(2, '0')).join('')}`;
 }
@@ -416,10 +425,11 @@ function admitEncodedImages(uses: readonly { texture: GltfTexture; info: Texture
   }
 }
 /** Export/optimization only: bind source identity to the final encoded bytes and actual per-use sampler. */
-export async function refreshAtlasDocumentProvenance(doc: Document): Promise<void> {
+export async function refreshAtlasDocumentProvenance(doc: Document): Promise<AtlasImageHashes> {
+  const hashed = new Map<GltfTexture, { bytes: Uint8Array; hash: string }>();
   const table = atlasDocumentTable(doc),
     uses = atlasMaterialUses(doc);
-  if (!uses.length) return;
+  if (!uses.length) return hashed;
   if (!table) fail('atlas table missing.');
   admitEncodedImages(uses);
   const hashes = new Map<GltfTexture, string>();
@@ -429,6 +439,7 @@ export async function refreshAtlasDocumentProvenance(doc: Document): Promise<voi
     if (!hash) {
       hash = await imageHash(texture);
       hashes.set(texture, hash);
+      hashed.set(texture, { bytes: texture.getImage()!, hash });
     }
     info.setExtras({
       ...info.getExtras(),
@@ -441,9 +452,16 @@ export async function refreshAtlasDocumentProvenance(doc: Document): Promise<voi
       },
     });
   }
+  return hashed;
 }
-/** Import is validation, never a repair or identity refresh. */
-export async function validateAtlasDocumentProvenance(doc: Document): Promise<void> {
+/**
+ * Import is validation, never a repair or identity refresh. Known hashes come only from a
+ * refresh of this same document just before; an import never passes them.
+ */
+export async function validateAtlasDocumentProvenance(
+  doc: Document,
+  known?: AtlasImageHashes,
+): Promise<void> {
   const table = atlasDocumentTable(doc),
     uses = atlasMaterialUses(doc);
   if (uses.length && !table) fail('atlas table missing.');
@@ -460,7 +478,7 @@ export async function validateAtlasDocumentProvenance(doc: Document): Promise<vo
     const r = reference(field(info.getExtras(), 'kilnAtlasReference'), table);
     let hash = hashes.get(texture);
     if (!hash) {
-      hash = await imageHash(texture);
+      hash = await imageHash(texture, known);
       hashes.set(texture, hash);
     }
     if (

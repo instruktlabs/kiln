@@ -2061,8 +2061,7 @@ export async function renderSceneToGLB(
 
   const io = engineIO();
   ensureDefaultScene(doc);
-  await refreshAtlasDocumentProvenance(doc);
-  await validateAtlasDocumentProvenance(doc);
+  await validateAtlasDocumentProvenance(doc, await refreshAtlasDocumentProvenance(doc));
   const bytes = await io.writeBinary(doc);
   const artifactGlbSha256 = `sha256:${await sha256Hex(bytes)}` as const;
   const boundBakedTextures = bakedTextures.map((entry) => ({
@@ -2191,8 +2190,7 @@ export async function renderReviewDerivativeGlb(
     },
   );
   ensureDefaultScene(doc);
-  await refreshAtlasDocumentProvenance(doc);
-  await validateAtlasDocumentProvenance(doc);
+  await validateAtlasDocumentProvenance(doc, await refreshAtlasDocumentProvenance(doc));
   return engineIO().writeBinary(doc);
 }
 
@@ -2435,8 +2433,7 @@ export async function optimizeGlbBytes(
     if (mode) summary = await consolidateMaterials(doc, mode);
     if (!summary && !instancing) return undefined;
     ensureDefaultScene(doc);
-    await refreshAtlasDocumentProvenance(doc);
-    await validateAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc, await refreshAtlasDocumentProvenance(doc));
     const outBytes = await io.writeBinary(doc);
     const gltfValidation = await assertFinalGlbValid(outBytes);
     let report: InstanceabilityReport | undefined;
@@ -2597,8 +2594,7 @@ export async function snapGlbToPalette(
       drawsAfter: after.drawCalls,
     };
     ensureDefaultScene(doc);
-    await refreshAtlasDocumentProvenance(doc);
-    await validateAtlasDocumentProvenance(doc);
+    await validateAtlasDocumentProvenance(doc, await refreshAtlasDocumentProvenance(doc));
     const outBytes = await io.writeBinary(doc);
     const gltfValidation = await assertFinalGlbValid(outBytes);
     let report: InstanceabilityReport | undefined;
@@ -2787,8 +2783,7 @@ export async function composeSceneGLB(
 
   const metrics = collectGlbMetrics(master);
   ensureDefaultScene(master);
-  await refreshAtlasDocumentProvenance(master);
-  await validateAtlasDocumentProvenance(master);
+  await validateAtlasDocumentProvenance(master, await refreshAtlasDocumentProvenance(master));
   const bytes = await io.writeBinary(master);
   const gltfValidation = await assertFinalGlbValid(bytes, 'scene.glb');
   for (const issue of gltfValidation.issues.messages) {
