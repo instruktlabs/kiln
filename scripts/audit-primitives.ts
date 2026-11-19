@@ -845,6 +845,7 @@ const sourceOrder = [
   none('getJointNames', 'utility', 'Lists Joint_ names. No geometry.'),
   none('materialBudgetAdvisory', 'utility', 'Material count advisory. No geometry.'),
   none('SANDBOX_DECLARATIONS', 'sandbox', 'Symbol key. Not a builder.'),
+  none('SANDBOX_BUILD_TRACKER', 'sandbox', 'Symbol key. Not a builder.'),
   none('buildSandboxGlobals', 'sandbox', 'Sandbox surface. Not a builder.'),
 ];
 

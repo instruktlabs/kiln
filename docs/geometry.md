@@ -460,9 +460,9 @@ side-wall openings must fit the shorter walls.
 `planeGeo`, `foliageCardGeo`, `crossedQuadsGeo` and
 `octaGridPlane` are open, one-sided surfaces and `requireSolid` fails them.
 `scripts/audit-primitives.test.ts` measures the contract, and the measured table
-is in the [primitives audit](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-11-18-primitives-audit.md). One known
-gap: `torusGeo` with `tube >= radius` intersects itself while still reading as
-closed and outward (#406).
+is in the [primitives audit](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-11-18-primitives-audit.md).
+`torusGeo` rejects `tube >= radius`, which would cross the ring axis and intersect itself while
+still reading as closed and outward.
 
 ## Bake edge and cavity attributes
 

@@ -637,7 +637,8 @@ const PRIMITIVES: HelperSpec[] = [
     signature: 'torusGeo(radius: number, tube: number, radialSegments?: 8, tubularSegments?: 12)',
     returns: 'THREE.TorusGeometry',
     category: 'geometry',
-    description: 'Donut shape. For rings, tyres, barrel ribs.',
+    description:
+      'Donut shape. For rings, tyres, barrel ribs. tube must be less than radius, or the call throws.',
     example: 'const geo = torusGeo(0.4, 0.04, 8, 16);',
   },
   {

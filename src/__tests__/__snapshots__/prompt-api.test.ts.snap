@@ -304,7 +304,8 @@ taperConeGeo(radiusBottom: number, radiusTop: number, height: number, axis?: 'x'
   // anything tapered that does not come to a point. axis selects orientation (default Y).
   // e.g. const cap = taperConeGeo(0.3, 0.18, 0.4); // frustum
 torusGeo(radius: number, tube: number, radialSegments?: 8, tubularSegments?: 12)
-  // Donut shape. For rings, tyres, barrel ribs.
+  // Donut shape. For rings, tyres, barrel ribs. tube must be less than radius, or the call
+  // throws.
   // e.g. const geo = torusGeo(0.4, 0.04, 8, 16);
 planeGeo(width: number, height: number, widthSegments?: 1, heightSegments?: 1)
   // Flat quad for TEXTURED surfaces (ground, signs, walls with albedo maps). For solid-color
