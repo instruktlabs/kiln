@@ -17,6 +17,21 @@ test('returns lexical evidence and labels unsupported words without certifying c
   expect(result.text).toContain('Unmatched: qzxvjk');
   expect(result.text).toContain('Matched:');
 });
+test('a query containing "constructor" returns ordinary results', async () => {
+  // A Codex author searched these words during the pre-1.9.0 dogfood; the response held
+  // the Object function and failed to clone, so the tool call failed.
+  const query = 'sandbox THREE Shape ExtrudeGeometry constructor BufferGeometry vector3';
+  const index = createLexicalDiscoveryIndex(entries);
+  const hits = await index.search(query);
+  for (const hit of hits) {
+    for (const term of [...hit.evidence!.matchedTerms, ...hit.evidence!.unmatchedTerms])
+      expect(typeof term).toBe('string');
+  }
+  const run = createDiscoveryService(entries, index, async () => ({}));
+  const result = await run({ query });
+  expect(result.error).toBeUndefined();
+  expect(result.entries.length).toBeGreaterThan(0);
+});
 test('fullwidth identifiers are searchable and limitations alone are not primary evidence', async () => {
   const index = createLexicalDiscoveryIndex(entries);
   expect((await index.search('ＭｅｓｈＧｅｏ'))[0]?.id).toBe('operation:meshGeo');
