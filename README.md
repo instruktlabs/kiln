@@ -141,7 +141,7 @@ availability, additional agents, repairs and plugin setup.
 | Author and refine | Geometry helpers, named parts, immutable source revisions and anchored edits |
 | Vary | Declared parameters: one source builds other sizes, counts, options and colours |
 | Inspect | Multi-view renders, measurements and image-independent structural QA |
-| Save and reuse | A local asset library, revision history and portable source/GLB exports |
+| Save and reuse | A local asset library, revision history, portable source/GLB exports and STL/3MF print files for closed solids |
 | Review together | A local dashboard with materials, optional projects and Live Review |
 | Integrate | Shared CLI/MCP tools and compiled ESM with TypeScript declarations |
 
@@ -198,7 +198,8 @@ The SDK is available as `@instruktlabs/kiln` and documented subpaths.
 Read the [SDK guide](docs/sdk.md) for imports and host interfaces, and the
 [tool reference](docs/tools.md) for MCP schemas. Local Claude Code and Codex
 [plugins](docs/install.md#local-claude-code-and-codex-plugins) use the same workspace
-setup. Other MCP clients can connect directly.
+setup. Other MCP clients can connect directly. The [isolation notes](docs/isolation.md)
+state where authored programs run and what contains them.
 
 [ChatGPT](docs/chatgpt.md) uses a separate remote-connection setup.
 [Hosted Kiln](https://kiln.instruktlabs.com/) is a remote MCP server at

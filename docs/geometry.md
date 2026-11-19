@@ -433,7 +433,9 @@ requireSolid(hull); // or requireSolid(group) for every visible mesh under it
 
 A marked mesh that is open, non-manifold or not outward fails the build with
 `REQUIRE_SOLID`, naming the part and the failing facts. The check measures; it
-repairs nothing, and it does not detect general self-intersection.
+repairs nothing, and it does not detect general self-intersection. The
+[print export](export-profiles.md#print-export-stl-and-3mf) (`kiln export --format
+stl|3mf`) applies the same measurement to every visible mesh, marked or not.
 
 The solid primitives are closed solids by contract: `boxGeo`, `sphereGeo`, the
 `cylinder*`, `cone*` and `capsule*` families, `cylinderOnAxis`, `taperConeGeo`,
