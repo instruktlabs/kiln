@@ -116,10 +116,20 @@ test('cards show the label only when marked, and the gallery says what the mark 
   expect(index).toContain('verified: element.dataset.verified !== undefined');
 });
 
-test('the shipped record file is valid and marks nothing until the owner signs off', () => {
-  expect(validateVerifiedReviews(shipped)).toEqual([]);
-  expect(verifiedReviews).toEqual([]);
-  expect(cards.filter((asset) => asset.verified)).toEqual([]);
+test('the shipped records are valid, mark only their verified revisions with the review date, and lead the default order', () => {
+  expect(validateVerifiedReviews(shipped)).toEqual(verifiedReviews);
+  const marked = cards.filter((asset) => asset.verified);
+  for (const asset of cards) {
+    const record = verifiedReviewFor(asset);
+    expect(asset.verified).toEqual(record ? { date: record.date } : undefined);
+  }
+  // The marked cards lead in curated order; the rest keep the order they had without marks.
+  const unmarked = browseGallery(buildGallery(true, [])).map((asset) => asset.href);
+  const isMarked = (href: string) => marked.some((asset) => asset.href === href);
+  expect(browseGallery(cards).map((asset) => asset.href)).toEqual([
+    ...unmarked.filter(isMarked),
+    ...unmarked.filter((href) => !isMarked(href)),
+  ]);
   expect(VERIFIED_BAR_HREF).toBe('https://github.com/instruktlabs/kiln/blob/main/docs/gallery-verified.md');
 });
 

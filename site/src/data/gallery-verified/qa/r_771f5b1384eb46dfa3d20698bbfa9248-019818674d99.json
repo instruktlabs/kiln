@@ -1,0 +1,1183 @@
+{
+  "kind": "kiln.gallery-verified-qa",
+  "version": 1,
+  "glbSha256": "019818674d99d9ed888b2091b1f5a1b55581a9856b24a427f09429d4a38c7d04",
+  "glbBytes": 6355620,
+  "engine": {
+    "name": "@instruktlabs/kiln",
+    "version": "1.8.0",
+    "sourceCommit": "71de263018ae4f281a02de809914e0180c06677a",
+    "sourceDirty": false
+  },
+  "readback": "loadGlbReviewScene (src/views/glb.ts) on the pinned bytes; each embedded image decoded with loadTexture (src/textures.ts) so the material rule sees its pixels, as after the export bake; flush faces and the scene rules on the single root node of the glTF scene; the final-GLB rules (Khronos validator, runtime cost, material advice) on the bytes",
+  "readbackDetail": {
+    "rootNode": "HeavyWalkerMech",
+    "imagesDecoded": 6,
+    "imageDecodeFailures": []
+  },
+  "requirements": "saved revision manifest",
+  "policy": "default",
+  "flushFaces": {
+    "pairs": 38,
+    "truncated": false,
+    "unexaminedParts": 0,
+    "triangles": 90587,
+    "examined": 90587,
+    "matching": 0,
+    "hidden": 0,
+    "omitted": 30,
+    "listed": [
+      {
+        "parts": [
+          "Mesh_Torso_decal:primitive-0",
+          "Mesh_Torso_decal:primitive-0"
+        ],
+        "sharedArea": 1.43465105,
+        "maxGap": 0.0005,
+        "trianglePairs": 586,
+        "facing": "same",
+        "normal": [
+          0,
+          1,
+          0
+        ],
+        "at": [
+          0.20838,
+          5.648,
+          -0.1064
+        ],
+        "occlusion": "visible"
+      },
+      {
+        "parts": [
+          "Mesh_MissilePod_decal:primitive-0",
+          "Mesh_MissilePod_decal:primitive-0"
+        ],
+        "sharedArea": 1.27384286,
+        "maxGap": 0.0005,
+        "trianglePairs": 357,
+        "facing": "same",
+        "normal": [
+          0,
+          1,
+          0
+        ],
+        "at": [
+          0.12263,
+          5.993,
+          -1.8287
+        ],
+        "occlusion": "visible"
+      },
+      {
+        "parts": [
+          "Mesh_Shin_L_decal:primitive-0",
+          "Mesh_Shin_L_decal:primitive-0"
+        ],
+        "sharedArea": 1.00200673,
+        "maxGap": 0.0005,
+        "trianglePairs": 435,
+        "facing": "same",
+        "normal": [
+          0,
+          0,
+          -1
+        ],
+        "at": [
+          -0.20126,
+          1.59262,
+          -1.1385
+        ],
+        "occlusion": "visible"
+      },
+      {
+        "parts": [
+          "Mesh_Shin_R_decal:primitive-0",
+          "Mesh_Shin_R_decal:primitive-0"
+        ],
+        "sharedArea": 0.88580041,
+        "maxGap": 0.0005,
+        "trianglePairs": 348,
+        "facing": "same",
+        "normal": [
+          0.7872,
+          -0.6167,
+          0
+        ],
+        "at": [
+          1.07208,
+          2.10024,
+          1.07115
+        ],
+        "occlusion": "visible"
+      },
+      {
+        "parts": [
+          "Mesh_Thigh_R_decal:primitive-0",
+          "Mesh_Thigh_R_decal:primitive-0"
+        ],
+        "sharedArea": 0.50131337,
+        "maxGap": 0.0005,
+        "trianglePairs": 263,
+        "facing": "same",
+        "normal": [
+          0,
+          0,
+          -1
+        ],
+        "at": [
+          0.5792,
+          2.70696,
+          0.5765
+        ],
+        "occlusion": "visible"
+      },
+      {
+        "parts": [
+          "Mesh_UpperArm_R_decal:primitive-0",
+          "Mesh_UpperArm_R_decal:primitive-0"
+        ],
+        "sharedArea": 0.50047418,
+        "maxGap": 0.0005,
+        "trianglePairs": 282,
+        "facing": "same",
+        "normal": [
+          0,
+          0,
+          -1
+        ],
+        "at": [
+          0.10865,
+          4.80162,
+          1.297
+        ],
+        "occlusion": "visible"
+      },
+      {
+        "parts": [
+          "Mesh_Thigh_L_decal:primitive-0",
+          "Mesh_Thigh_L_decal:primitive-0"
+        ],
+        "sharedArea": 0.4257598,
+        "maxGap": 0.0005,
+        "trianglePairs": 262,
+        "facing": "same",
+        "normal": [
+          0,
+          0,
+          1
+        ],
+        "at": [
+          0.5792,
+          2.70696,
+          -0.5765
+        ],
+        "occlusion": "visible"
+      },
+      {
+        "parts": [
+          "Mesh_Pelvis_decal:primitive-0",
+          "Mesh_Pelvis_decal:primitive-0"
+        ],
+        "sharedArea": 0.42528122,
+        "maxGap": 0.0005,
+        "trianglePairs": 207,
+        "facing": "same",
+        "normal": [
+          -0.9852,
+          -0.1713,
+          0
+        ],
+        "at": [
+          -0.63146,
+          3.24546,
+          0
+        ],
+        "occlusion": "visible"
+      }
+    ],
+    "occlusion": {
+      "visible": 37,
+      "occluded": 1,
+      "notEstimated": 0,
+      "rays": 1085,
+      "maxRays": 10000
+    },
+    "warning": "FLUSH_FACES: 38 pairs of parts have faces on one plane that will flicker (z-fighting) in any renderer. By a ray estimate, not a render: 37 in view, 1 hidden behind other parts. Worst in view: Mesh_Torso_decal:primitive-0 over itself, 0.5 mm apart, too close to order, sharing 1.43 m² near [0.20838, 5.648, -0.1064], normal (0, 1, 0). Also: Mesh_MissilePod_decal:primitive-0 over itself (1.27 m²); Mesh_Shin_L_decal:primitive-0 over itself (1 m²); and 35 more. For each pair, move the smaller face at least 2 mm along the shared normal, remove the covered face, or cut the opening it sits in."
+  },
+  "qa": {
+    "kind": "kiln.asset-qa-report",
+    "schemaVersion": 2,
+    "qaProfile": "asset.requirements.v1",
+    "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+    "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+    "acceptance": "accepted",
+    "disposition": "pass",
+    "dimensions": {
+      "exportIntegrity": {
+        "status": "pass",
+        "findings": [],
+        "metrics": {
+          "gltfErrors": 0,
+          "gltfWarnings": 0
+        }
+      },
+      "requirementReadiness": {
+        "status": "pass",
+        "findings": []
+      },
+      "promptAlignment": {
+        "status": "notEvaluated",
+        "findings": []
+      },
+      "visualQuality": {
+        "status": "notEvaluated",
+        "findings": [
+          {
+            "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.selfIntersection",
+            "message": "107 part-volume measurements were unavailable. 107 because a valid closed solid could not be measured (Not manifold): \"Mesh_Spur_L_armour:primitive-0\", \"Mesh_Spur_L_steel:primitive-0\", \"Mesh_Spur_L_decal:primitive-0\", \"Mesh_Piston_Toe_L_Rod_chrome:primitive-0\", \"Mesh_Foot_L_armour:primitive-0\" and 102 more. 736 overlapping part pairs include one of these parts and were not measured. These parts are not certified clear."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Knee_L_Rod_chrome:primitive-0\" reaches 0.0955 m inside solid \"Mesh_Piston_Knee_L_Cyl_steel:primitive-0\": 39 of 52 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Knee_L_Rod_chrome:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0955429236,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 39,
+                "sampledVertices": 52
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Knee_R_Rod_chrome:primitive-0\" reaches 0.0955 m inside solid \"Mesh_Piston_Knee_R_Cyl_steel:primitive-0\": 39 of 52 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Knee_R_Rod_chrome:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0955429236,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 39,
+                "sampledVertices": 52
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Ankle_L_Rod_chrome:primitive-0\" reaches 0.0955 m inside solid \"Mesh_Piston_Ankle_L_Cyl_steel:primitive-0\": 39 of 52 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Ankle_L_Rod_chrome:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0955429207,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 39,
+                "sampledVertices": 52
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Ankle_R_Rod_chrome:primitive-0\" reaches 0.0955 m inside solid \"Mesh_Piston_Ankle_R_Cyl_steel:primitive-0\": 39 of 52 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Ankle_R_Rod_chrome:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0955429207,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 39,
+                "sampledVertices": 52
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Ankle_L_Cyl_rubber:primitive-0\" reaches 0.0940 m inside solid \"Mesh_Piston_Ankle_L_Cyl_steel:primitive-0\": 24 of 54 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Ankle_L_Cyl_rubber:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0939865267,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 24,
+                "sampledVertices": 54
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Ankle_R_Cyl_rubber:primitive-0\" reaches 0.0940 m inside solid \"Mesh_Piston_Ankle_R_Cyl_steel:primitive-0\": 24 of 54 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Ankle_R_Cyl_rubber:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0939865267,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 24,
+                "sampledVertices": 54
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Knee_L_Cyl_rubber:primitive-0\" reaches 0.0936 m inside solid \"Mesh_Piston_Knee_L_Cyl_steel:primitive-0\": 24 of 54 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Knee_L_Cyl_rubber:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0936314411,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 24,
+                "sampledVertices": 54
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Knee_R_Cyl_rubber:primitive-0\" reaches 0.0936 m inside solid \"Mesh_Piston_Knee_R_Cyl_steel:primitive-0\": 24 of 54 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Knee_R_Cyl_rubber:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0936314411,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 24,
+                "sampledVertices": 54
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Hip_L_Rod_chrome:primitive-0\" reaches 0.0820 m inside solid \"Mesh_Piston_Hip_L_Cyl_steel:primitive-0\": 39 of 52 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Hip_L_Rod_chrome:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0820000023,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 39,
+                "sampledVertices": 52
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Hip_R_Rod_chrome:primitive-0\" reaches 0.0820 m inside solid \"Mesh_Piston_Hip_R_Cyl_steel:primitive-0\": 39 of 52 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Hip_R_Rod_chrome:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0820000023,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 39,
+                "sampledVertices": 52
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Elbow_L_Rod_chrome:primitive-0\" reaches 0.0731 m inside solid \"Mesh_Piston_Elbow_L_Cyl_steel:primitive-0\": 39 of 52 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Elbow_L_Rod_chrome:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0731195919,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 39,
+                "sampledVertices": 52
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Elbow_R_Rod_chrome:primitive-0\" reaches 0.0731 m inside solid \"Mesh_Piston_Elbow_R_Cyl_steel:primitive-0\": 39 of 52 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Elbow_R_Rod_chrome:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0731195917,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 39,
+                "sampledVertices": 52
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Elbow_L_Cyl_rubber:primitive-0\" reaches 0.0710 m inside solid \"Mesh_Piston_Elbow_L_Cyl_steel:primitive-0\": 24 of 54 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Elbow_L_Cyl_rubber:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0709681215,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 24,
+                "sampledVertices": 54
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Elbow_R_Cyl_rubber:primitive-0\" reaches 0.0710 m inside solid \"Mesh_Piston_Elbow_R_Cyl_steel:primitive-0\": 24 of 54 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Elbow_R_Cyl_rubber:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.070961322,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 24,
+                "sampledVertices": 54
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Toe_L_Rod_chrome:primitive-0\" reaches 0.0521 m inside solid \"Mesh_Piston_Toe_L_Cyl_steel:primitive-0\": 33 of 44 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Toe_L_Rod_chrome:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0521024801,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 33,
+                "sampledVertices": 44
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Toe_R_Rod_chrome:primitive-0\" reaches 0.0521 m inside solid \"Mesh_Piston_Toe_R_Cyl_steel:primitive-0\": 33 of 44 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Toe_R_Rod_chrome:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0521024801,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 33,
+                "sampledVertices": 44
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Shin_L_armour:primitive-0\" reaches 0.0317 m inside solid \"Mesh_Piston_Ankle_L_Cyl_steel:primitive-0\": 6 of 546 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Shin_L_armour:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0317046163,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 6,
+                "sampledVertices": 546
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Shin_L_steel:primitive-0\" reaches 0.0317 m inside solid \"Mesh_Piston_Ankle_L_Cyl_steel:primitive-0\": 6 of 1938 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Shin_L_steel:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0317046163,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 6,
+                "sampledVertices": 1938
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Shin_R_armour:primitive-0\" reaches 0.0317 m inside solid \"Mesh_Piston_Ankle_R_Cyl_steel:primitive-0\": 12 of 554 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Shin_R_armour:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0317046163,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 12,
+                "sampledVertices": 554
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Thigh_L_armour:primitive-0\" reaches 0.0267 m inside solid \"Mesh_Piston_Knee_L_Cyl_steel:primitive-0\": 6 of 572 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Thigh_L_armour:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0266988613,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 6,
+                "sampledVertices": 572
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Thigh_L_steel:primitive-0\" reaches 0.0267 m inside solid \"Mesh_Piston_Knee_L_Cyl_steel:primitive-0\": 6 of 3422 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Thigh_L_steel:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0266988613,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 6,
+                "sampledVertices": 3422
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Thigh_R_armour:primitive-0\" reaches 0.0267 m inside solid \"Mesh_Piston_Knee_R_Cyl_steel:primitive-0\": 8 of 552 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Thigh_R_armour:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0266988613,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 8,
+                "sampledVertices": 552
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Thigh_R_steel:primitive-0\" reaches 0.0267 m inside solid \"Mesh_Piston_Knee_R_Cyl_steel:primitive-0\": 4 of 3442 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Thigh_R_steel:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0266988613,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 4,
+                "sampledVertices": 3442
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_UpperArm_L_armour:primitive-0\" reaches 0.0208 m inside solid \"Mesh_Piston_Elbow_L_Cyl_steel:primitive-0\": 3 of 908 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_UpperArm_L_armour:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0207837539,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 3,
+                "sampledVertices": 908
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_UpperArm_L_steel:primitive-0\" reaches 0.0208 m inside solid \"Mesh_Piston_Elbow_L_Cyl_steel:primitive-0\": 3 of 1984 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_UpperArm_L_steel:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0207837539,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 3,
+                "sampledVertices": 1984
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_UpperArm_R_armour:primitive-0\" reaches 0.0208 m inside solid \"Mesh_Piston_Elbow_R_Cyl_steel:primitive-0\": 6 of 912 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_UpperArm_R_armour:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0207837539,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 6,
+                "sampledVertices": 912
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Hip_L_Cyl_rubber:primitive-0\" reaches 0.0172 m inside solid \"Mesh_Piston_Hip_L_Cyl_steel:primitive-0\": 6 of 90 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Hip_L_Cyl_rubber:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0172020401,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 6,
+                "sampledVertices": 90
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Hip_R_Cyl_rubber:primitive-0\" reaches 0.0172 m inside solid \"Mesh_Piston_Hip_R_Cyl_steel:primitive-0\": 6 of 90 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Hip_R_Cyl_rubber:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0172020401,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 6,
+                "sampledVertices": 90
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Thigh_L_decal:primitive-0\" reaches 0.0162 m inside solid \"Mesh_Piston_Knee_L_Cyl_steel:primitive-0\": 3 of 280 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Thigh_L_decal:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0162398073,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 3,
+                "sampledVertices": 280
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Shin_R_decal:primitive-0\" reaches 0.0143 m inside solid \"Mesh_Piston_Ankle_R_Cyl_steel:primitive-0\": 3 of 393 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Shin_R_decal:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0142931722,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 3,
+                "sampledVertices": 393
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Thigh_R_decal:primitive-0\" reaches 0.0136 m inside solid \"Mesh_Piston_Knee_R_Cyl_steel:primitive-0\": 3 of 292 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Thigh_R_decal:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0136387326,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 3,
+                "sampledVertices": 292
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Toe_L_Cyl_rubber:primitive-0\" reaches 0.0123 m inside solid \"Mesh_Piston_Toe_L_Cyl_steel:primitive-0\": 2 of 90 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Toe_L_Cyl_rubber:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0123430159,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 2,
+                "sampledVertices": 90
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Piston_Toe_R_Cyl_rubber:primitive-0\" reaches 0.0123 m inside solid \"Mesh_Piston_Toe_R_Cyl_steel:primitive-0\": 2 of 90 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Piston_Toe_R_Cyl_rubber:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.0123430159,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 2,
+                "sampledVertices": 90
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          },
+          {
+            "code": "GEO_OPEN_SURFACE_PENETRATION",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.openSurfacePenetration",
+            "message": "Open surface \"Mesh_Shin_L_decal:primitive-0\" reaches 0.0103 m inside solid \"Mesh_Piston_Ankle_L_Cyl_steel:primitive-0\": 6 of 429 sampled vertices lie deeper inside it than the 0.005 m contact tolerance.",
+            "affected": {
+              "node": "Mesh_Shin_L_decal:primitive-0"
+            },
+            "measurement": {
+              "name": "openSurfacePenetrationDepth",
+              "actual": 0.01032554,
+              "expected": 0.005,
+              "unit": "m",
+              "breakdown": {
+                "penetratingVertices": 6,
+                "sampledVertices": 429
+              }
+            },
+            "repairText": "A positive here is not a defect. Most are intentional: a fitting set into a structural shell -- a lamp recess in a hull, a strut landing, a ridge into a cap -- puts shell vertices inside the solid by design, exactly as a bolt in a hole shares volume. Review the ones you did not intend, such as a cloth crossing a wall or a canopy pierced by a mast, and move the surface clear or cut it back to the solid. Vertices are the samples, so a solid thinner than this surface’s facet spacing can pass between two of them."
+          }
+        ],
+        "metrics": {
+          "partVolumeCoverage": "partial",
+          "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+          "partVolumeEligibleParts": 133,
+          "partVolumeCandidatePairs": 736,
+          "partVolumeCandidatesLowerBound": false,
+          "partVolumePairsTested": 0,
+          "partVolumeUnmeasurablePairs": 736,
+          "partVolumePairsNotReached": 0,
+          "partVolumeLodAlternatePairs": 0,
+          "partVolumeSkipped": 107,
+          "openSurfaceCoverage": "complete-surface-pairs",
+          "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+          "openSurfaceContactTolerance": 0.005,
+          "openSurfaceOpenParts": 112,
+          "openSurfaceClosedParts": 21,
+          "openSurfaceCandidatePairs": 130,
+          "openSurfacePairsSampled": 130,
+          "openSurfacePairsNotReached": 0,
+          "openSurfaceVerticesUnresolved": 0,
+          "openSurfaceLodAlternatePairs": 0,
+          "openSurfaceSkipped": 0
+        }
+      },
+      "runtimeCost": {
+        "status": "pass",
+        "findings": [
+          {
+            "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+            "disposition": "observe",
+            "dimension": "runtimeCost",
+            "profile": "web.portable.v1/standard",
+            "message": "6 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }). To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+            "measurement": {
+              "name": "imageCount",
+              "actual": 6,
+              "expected": 4,
+              "unit": "images"
+            }
+          }
+        ],
+        "metrics": {
+          "instanceabilityGrade": "F",
+          "instanceabilitySummary": "F (informational, not a QA verdict), set by 14 distinct materials (F at 13+). Also: 2 transparent materials (lowers only A/B to C); 6 textures (over 4 lowers only A/B to C); 133 geometries; 133 draw calls. Optional advice, not a requirement: merging Chrome_PistonRod + Rubber_CableAndTrim + Screen_Centre + Screen_FrontLeft and 3 more (differ in baseColorFactor, emissiveFactor, metallicFactor, roughnessFactor); Glow_Amber + Glow_RailCoil + Glow_Cyan (differ in baseColorFactor, emissiveFactor, KHR_materials_emissive_strength) would leave 6 materials (C at 4-6).",
+          "uniqueGeometries": 133,
+          "uniqueMaterials": 14,
+          "meshNodes": 133,
+          "meshInstances": 133,
+          "drawCalls": 133,
+          "textureCount": 6,
+          "skinned": false,
+          "transparentMaterials": 2,
+          "triangles": 90587,
+          "materialCount": 14,
+          "opaqueMaterials": 12,
+          "maskedMaterials": 0,
+          "blendedMaterials": 2,
+          "singleSidedMaterials": 13,
+          "doubleSidedMaterials": 1,
+          "texturedMaterials": 3,
+          "materialExtensionCount": 1,
+          "materialExtensionsUsed": "KHR_materials_emissive_strength",
+          "imageCount": 6,
+          "maxImageDimension": 512,
+          "decodedImageBytesRgba8": 4472832,
+          "estimatedGpuBytesWithMipmaps": 5963780,
+          "blendedSurfaceAreaRatio": 0.1408057283877106
+        }
+      }
+    },
+    "rules": [
+      {
+        "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_FINITE_DATA_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_INDEX_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_ZERO_SCALE_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_NODE_NAME_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "MATERIAL_PORTABLE_PBR_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "ARCHITECTURE_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ARCHITECTURE_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "CHARACTER_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "CHARACTER_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_W6_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEGETATION_CONTACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEGETATION_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "PROP_CAPABILITY_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "PROP_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "ENVIRONMENT_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ENVIRONMENT_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VFX_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VFX_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "MODULAR_JOIN_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ASSET_SCOPE_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "GEO_PART_SELF_INTERSECTION",
+        "mode": "observe",
+        "status": "notEvaluated"
+      },
+      {
+        "id": "GEO_PART_CONNECTIVITY",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "GEO_OPEN_SURFACE_PENETRATION",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "REF_COMPARISON",
+        "mode": "observe",
+        "status": "notEvaluated",
+        "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+      },
+      {
+        "id": "SWEEP_SELF_INTERSECTION",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "HOST_VALIDATION_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      }
+    ],
+    "unevaluatedRequirements": []
+  }
+}

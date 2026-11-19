@@ -1,0 +1,385 @@
+{
+  "kind": "kiln.gallery-verified-qa",
+  "version": 1,
+  "glbSha256": "a85f648d1a66158f594f9f574850e1ba263f6701dc7d4dd7d4a569f2218cdf9d",
+  "glbBytes": 158832,
+  "engine": {
+    "name": "@instruktlabs/kiln",
+    "version": "1.8.0",
+    "sourceCommit": "71de263018ae4f281a02de809914e0180c06677a",
+    "sourceDirty": false
+  },
+  "readback": "loadGlbReviewScene (src/views/glb.ts) on the pinned bytes; each embedded image decoded with loadTexture (src/textures.ts) so the material rule sees its pixels, as after the export bake; flush faces and the scene rules on the single root node of the glTF scene; the final-GLB rules (Khronos validator, runtime cost, material advice) on the bytes",
+  "readbackDetail": {
+    "rootNode": "SquareFurnishing",
+    "imagesDecoded": 5,
+    "imageDecodeFailures": []
+  },
+  "requirements": "saved revision manifest",
+  "policy": "default",
+  "flushFaces": {
+    "pairs": 4,
+    "truncated": false,
+    "unexaminedParts": 0,
+    "triangles": 468,
+    "examined": 468,
+    "matching": 0,
+    "hidden": 0,
+    "omitted": 0,
+    "listed": [
+      {
+        "parts": [
+          "Mesh_Cloth:primitive-0",
+          "Mesh_Cloth:primitive-0"
+        ],
+        "sharedArea": 0.10530008,
+        "maxGap": 0,
+        "trianglePairs": 13,
+        "facing": "same",
+        "normal": [
+          0,
+          1,
+          0
+        ],
+        "at": [
+          0.8,
+          0.885,
+          0.5
+        ],
+        "occlusion": "visible"
+      },
+      {
+        "parts": [
+          "Mesh_Frame:primitive-0",
+          "Mesh_Frame:primitive-0"
+        ],
+        "sharedArea": 0.09800001,
+        "maxGap": 0,
+        "trianglePairs": 44,
+        "facing": "same",
+        "normal": [
+          1,
+          0,
+          0
+        ],
+        "at": [
+          0.85,
+          2.21062,
+          1.50086
+        ],
+        "occlusion": "visible"
+      },
+      {
+        "parts": [
+          "Mesh_Produce:primitive-0",
+          "Mesh_Produce:primitive-0"
+        ],
+        "sharedArea": 0.02073912,
+        "maxGap": 0.0001857,
+        "trianglePairs": 28,
+        "facing": "same",
+        "normal": [
+          0,
+          1,
+          0
+        ],
+        "at": [
+          0.10509,
+          1.17,
+          0.99381
+        ],
+        "occlusion": "visible"
+      },
+      {
+        "parts": [
+          "Mesh_Frame:primitive-0",
+          "Mesh_Cloth:primitive-0"
+        ],
+        "sharedArea": 0.0024,
+        "maxGap": 0,
+        "trianglePairs": 6,
+        "facing": "same",
+        "normal": [
+          0,
+          0,
+          1
+        ],
+        "at": [
+          0.79,
+          0.84981,
+          1.5
+        ],
+        "occlusion": "occluded"
+      }
+    ],
+    "occlusion": {
+      "visible": 3,
+      "occluded": 1,
+      "notEstimated": 0,
+      "rays": 280,
+      "maxRays": 10000
+    },
+    "warning": "FLUSH_FACES: 4 pairs of parts have faces on one plane that will flicker (z-fighting) in any renderer. By a ray estimate, not a render: 3 in view, 1 hidden behind other parts. Worst in view: Mesh_Cloth:primitive-0 over itself, on one plane, sharing 0.11 m² near [0.8, 0.885, 0.5], normal (0, 1, 0). Also: Mesh_Frame:primitive-0 over itself (0.1 m²); Mesh_Produce:primitive-0 over itself (0.02 m²); and 1 more. For each pair, move the smaller face at least 2 mm along the shared normal, remove the covered face, or cut the opening it sits in."
+  },
+  "qa": {
+    "kind": "kiln.asset-qa-report",
+    "schemaVersion": 2,
+    "qaProfile": "asset.requirements.v1",
+    "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+    "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+    "acceptance": "accepted",
+    "disposition": "pass",
+    "dimensions": {
+      "exportIntegrity": {
+        "status": "pass",
+        "findings": [],
+        "metrics": {
+          "gltfErrors": 0,
+          "gltfWarnings": 0
+        }
+      },
+      "requirementReadiness": {
+        "status": "pass",
+        "findings": []
+      },
+      "promptAlignment": {
+        "status": "notEvaluated",
+        "findings": []
+      },
+      "visualQuality": {
+        "status": "notEvaluated",
+        "findings": [
+          {
+            "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.selfIntersection",
+            "message": "3 part-volume measurements were unavailable. 3 because a valid closed solid could not be measured (Not manifold): \"Mesh_Awning:primitive-0\", \"Mesh_Cloth:primitive-0\", \"Mesh_Produce:primitive-0\". 3 overlapping part pairs include one of these parts and were not measured. These parts are not certified clear."
+          }
+        ],
+        "metrics": {
+          "partVolumeCoverage": "partial",
+          "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+          "partVolumeEligibleParts": 4,
+          "partVolumeCandidatePairs": 3,
+          "partVolumeCandidatesLowerBound": false,
+          "partVolumePairsTested": 0,
+          "partVolumeUnmeasurablePairs": 3,
+          "partVolumePairsNotReached": 0,
+          "partVolumeLodAlternatePairs": 0,
+          "partVolumeSkipped": 3,
+          "openSurfaceCoverage": "complete-surface-pairs",
+          "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+          "openSurfaceContactTolerance": 0.005,
+          "openSurfaceOpenParts": 4,
+          "openSurfaceClosedParts": 0,
+          "openSurfaceCandidatePairs": 0,
+          "openSurfacePairsSampled": 0,
+          "openSurfacePairsNotReached": 0,
+          "openSurfaceVerticesUnresolved": 0,
+          "openSurfaceLodAlternatePairs": 0,
+          "openSurfaceSkipped": 0
+        }
+      },
+      "runtimeCost": {
+        "status": "pass",
+        "findings": [
+          {
+            "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+            "disposition": "observe",
+            "dimension": "runtimeCost",
+            "profile": "web.portable.v1/standard",
+            "message": "5 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }). To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+            "measurement": {
+              "name": "imageCount",
+              "actual": 5,
+              "expected": 4,
+              "unit": "images"
+            }
+          }
+        ],
+        "metrics": {
+          "instanceabilityGrade": "C",
+          "instanceabilitySummary": "C (informational, not a QA verdict), set by 4 distinct materials (C at 4-6). Also: 5 textures (over 4 lowers only A/B to C); 4 geometries; 4 draw calls.",
+          "uniqueGeometries": 4,
+          "uniqueMaterials": 4,
+          "meshNodes": 4,
+          "meshInstances": 4,
+          "drawCalls": 4,
+          "textureCount": 5,
+          "skinned": false,
+          "transparentMaterials": 0,
+          "triangles": 468,
+          "materialCount": 4,
+          "opaqueMaterials": 4,
+          "maskedMaterials": 0,
+          "blendedMaterials": 0,
+          "singleSidedMaterials": 3,
+          "doubleSidedMaterials": 1,
+          "texturedMaterials": 4,
+          "materialExtensionCount": 0,
+          "materialExtensionsUsed": "",
+          "imageCount": 5,
+          "maxImageDimension": 256,
+          "decodedImageBytesRgba8": 917504,
+          "estimatedGpuBytesWithMipmaps": 1223342,
+          "blendedSurfaceAreaRatio": 0
+        }
+      }
+    },
+    "rules": [
+      {
+        "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_FINITE_DATA_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_INDEX_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_ZERO_SCALE_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_NODE_NAME_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "MATERIAL_PORTABLE_PBR_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "ARCHITECTURE_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ARCHITECTURE_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "CHARACTER_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "CHARACTER_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_W6_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEGETATION_CONTACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEGETATION_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "PROP_CAPABILITY_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "PROP_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "ENVIRONMENT_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ENVIRONMENT_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VFX_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VFX_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "MODULAR_JOIN_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ASSET_SCOPE_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "GEO_PART_SELF_INTERSECTION",
+        "mode": "observe",
+        "status": "notEvaluated"
+      },
+      {
+        "id": "GEO_PART_CONNECTIVITY",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "GEO_OPEN_SURFACE_PENETRATION",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "REF_COMPARISON",
+        "mode": "observe",
+        "status": "notEvaluated",
+        "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+      },
+      {
+        "id": "SWEEP_SELF_INTERSECTION",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "HOST_VALIDATION_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      }
+    ],
+    "unevaluatedRequirements": []
+  }
+}
