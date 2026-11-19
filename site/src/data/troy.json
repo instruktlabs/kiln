@@ -7,10 +7,10 @@
   "description": "A Bronze Age coast, battlefield and city. Explore Troy or fight as Achilles or Hector.",
   "models": {
     "profile": "runtime",
-    "path": "packs/troy/delivery-20261113-01/troy-runtime.zip",
-    "bytes": 8029924,
-    "sha256": "31dadf59ffb22a18369dc1b9dd672e22e4dbdee55bef6ab401917137a85f4ecd",
-    "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/troy-runtime.zip"
+    "path": "packs/troy/delivery-20261119-01/troy-runtime.zip",
+    "bytes": 8029957,
+    "sha256": "3a857d1ef2279263de887731551e058c33ecda9dbffc3f8e5c16a62383b8790d",
+    "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/troy-runtime.zip"
   },
   "scene": {
     "release": "troy-20261113-01",
@@ -1072,7 +1072,7 @@
       "category": "Vehicles",
       "description": "Late Bronze Age war chariot, from the Troy collection.",
       "assetId": "a_6858bae420a940b5b8798e11666070a7",
-      "revisionId": "r_b277a52b09ae48b39afd8471557ed41b",
+      "revisionId": "r_0270a26bb4474f89b1dc967c5af4a672",
       "metrics": {
         "triangles": 4156,
         "meshes": 16,
@@ -1115,9 +1115,10 @@
         ]
       },
       "runtimeDownload": {
-        "bytes": 614312,
-        "sha256": "6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
-        "url": "/scene-packs/troy/troy-20261113-01/models/war-chariot.glb"
+        "path": "packs/troy/delivery-20261119-01/models/war-chariot.glb",
+        "bytes": 614344,
+        "sha256": "ea9e450d766a71a1ffed471495bd136160a47d32dd1b0d522444c15bc6af1d42",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/war-chariot.glb"
       },
       "poster": {
         "src": "/scene-packs/troy/troy-20261113-01/media/war-chariot.webp",

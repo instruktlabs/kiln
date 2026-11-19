@@ -2539,17 +2539,17 @@
       "downloads": [
         {
           "profile": "runtime",
-          "path": "packs/troy/delivery-20261113-01/troy-runtime.zip",
-          "bytes": 8029924,
-          "sha256": "31dadf59ffb22a18369dc1b9dd672e22e4dbdee55bef6ab401917137a85f4ecd",
-          "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/troy-runtime.zip"
+          "path": "packs/troy/delivery-20261119-01/troy-runtime.zip",
+          "bytes": 8029957,
+          "sha256": "3a857d1ef2279263de887731551e058c33ecda9dbffc3f8e5c16a62383b8790d",
+          "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/troy-runtime.zip"
         },
         {
           "profile": "editable",
-          "path": "packs/troy/delivery-20261113-01/troy-editable.zip",
-          "bytes": 69127250,
-          "sha256": "2ead6b167ef4e295cb300e6719063a159d43bd72be21d9e3425efb7d902a364f",
-          "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/troy-editable.zip"
+          "path": "packs/troy/delivery-20261119-01/troy-editable.zip",
+          "bytes": 70069463,
+          "sha256": "1fd7e993ab0c969f568bba13f6e7fb6a5fcf9728a36a476e9e3537215a265120",
+          "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/troy-editable.zip"
         }
       ],
       "assets": [
@@ -2570,10 +2570,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/wall-section.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/wall-section.glb",
+            "path": "packs/troy/delivery-20261119-01/models/wall-section.glb",
             "bytes": 302776,
             "sha256": "d2e5c1a6885f509caeb9428980d74b2760bae735af81549ae08fdd825fadffa8",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/wall-section.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/wall-section.glb"
           }
         },
         {
@@ -2593,10 +2593,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/city-gate.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/city-gate.glb",
+            "path": "packs/troy/delivery-20261119-01/models/city-gate.glb",
             "bytes": 391512,
             "sha256": "19322963f4704e5a9e4b31e242d7d1991126e0ffde750d57152a622089ac4f91",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/city-gate.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/city-gate.glb"
           }
         },
         {
@@ -2617,10 +2617,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/house.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/house.glb",
+            "path": "packs/troy/delivery-20261119-01/models/house.glb",
             "bytes": 330640,
             "sha256": "95d35ce49e5ad9a60ae62cdce99ef420a1223788f388073aa331f822c7b27347",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/house.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/house.glb"
           }
         },
         {
@@ -2641,10 +2641,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/temple-hall.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/temple-hall.glb",
+            "path": "packs/troy/delivery-20261119-01/models/temple-hall.glb",
             "bytes": 493168,
             "sha256": "c106a6ff0c751ff9e552416f02a0b076034457a2e15dd2f0a4d604acb1835cb5",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/temple-hall.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/temple-hall.glb"
           }
         },
         {
@@ -2663,10 +2663,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/war-galley.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/war-galley.glb",
+            "path": "packs/troy/delivery-20261119-01/models/war-galley.glb",
             "bytes": 396772,
             "sha256": "c438f0275186e34ad724dade9f22426a4ad4dab412a17ea7b1d62d468c151f4f",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/war-galley.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/war-galley.glb"
           }
         },
         {
@@ -2691,10 +2691,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/greek-soldier.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/greek-soldier.glb",
+            "path": "packs/troy/delivery-20261119-01/models/greek-soldier.glb",
             "bytes": 373008,
             "sha256": "55361985e3353e4a87944f61c1007eb725732a128bf7a33d3a989f3b26f34af3",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/greek-soldier.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/greek-soldier.glb"
           }
         },
         {
@@ -2719,10 +2719,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/trojan-soldier.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/trojan-soldier.glb",
+            "path": "packs/troy/delivery-20261119-01/models/trojan-soldier.glb",
             "bytes": 352016,
             "sha256": "97f6fe97902df9af9037518dc28699524c843f0b94136ec3f9c9850d2b57df6f",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/trojan-soldier.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/trojan-soldier.glb"
           }
         },
         {
@@ -2748,10 +2748,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/achilles.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/achilles.glb",
+            "path": "packs/troy/delivery-20261119-01/models/achilles.glb",
             "bytes": 547628,
             "sha256": "1bb8b9b44044365a172eb5015c12b8493b6c47e3087178a7fa89b18e768e645f",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/achilles.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/achilles.glb"
           }
         },
         {
@@ -2778,10 +2778,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/hector.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/hector.glb",
+            "path": "packs/troy/delivery-20261119-01/models/hector.glb",
             "bytes": 428240,
             "sha256": "cd89d602f977cd5180a00de9121d0f2c60b41ca1e27f190df7becacb0352a022",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/hector.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/hector.glb"
           }
         },
         {
@@ -2801,10 +2801,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/olive.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/olive.glb",
+            "path": "packs/troy/delivery-20261119-01/models/olive.glb",
             "bytes": 171340,
             "sha256": "5ca97cea350d7eb751bcfb214a89e0b83cc3e7bf3c317663ae4d5d51d6e32cd9",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/olive.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/olive.glb"
           }
         },
         {
@@ -2824,10 +2824,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/cypress.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/cypress.glb",
+            "path": "packs/troy/delivery-20261119-01/models/cypress.glb",
             "bytes": 82436,
             "sha256": "0fbabf224cb33e55f3cc6480bfad8fd40175a15c0fa00f9072faa11e40e1ac89",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/cypress.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/cypress.glb"
           }
         },
         {
@@ -2847,10 +2847,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/fig.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/fig.glb",
+            "path": "packs/troy/delivery-20261119-01/models/fig.glb",
             "bytes": 147416,
             "sha256": "1769ec4b6d44f208af272b50056d4e01ceb7bf5a8605cbff49019595aef34fa3",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/fig.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/fig.glb"
           }
         },
         {
@@ -2870,10 +2870,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/shrub.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/shrub.glb",
+            "path": "packs/troy/delivery-20261119-01/models/shrub.glb",
             "bytes": 47456,
             "sha256": "4b2ad9c25c2035b02ebb72cc0336842c6c5a6441aada21cfe137d8749b3de51f",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/shrub.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/shrub.glb"
           }
         },
         {
@@ -2894,10 +2894,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/horse.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/horse.glb",
+            "path": "packs/troy/delivery-20261119-01/models/horse.glb",
             "bytes": 248068,
             "sha256": "03e257c29b54ad05f5f37381474fe6eba995f22d72fefba9e90e5d46bbe84b5c",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/horse.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/horse.glb"
           }
         },
         {
@@ -2918,33 +2918,34 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/wall-breached.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/wall-breached.glb",
+            "path": "packs/troy/delivery-20261119-01/models/wall-breached.glb",
             "bytes": 333340,
             "sha256": "77c48aa6dbff40b212c5eacc4f340838358f71ee52ccc99966cd2bdc7f9b37e7",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/wall-breached.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/wall-breached.glb"
           }
         },
         {
           "slug": "war-chariot",
           "collection": "project",
           "assetId": "a_6858bae420a940b5b8798e11666070a7",
-          "revisionId": "r_b277a52b09ae48b39afd8471557ed41b",
+          "revisionId": "r_0270a26bb4474f89b1dc967c5af4a672",
           "includedRevisions": [
+            "r_0270a26bb4474f89b1dc967c5af4a672",
             "r_b277a52b09ae48b39afd8471557ed41b",
             "r_e3bcea17f1ff455b99b3deb51182f964"
           ],
           "missingParents": [],
           "editableDownload": {
-            "path": "packs/troy/delivery-20261113-01/editable/war-chariot.zip",
-            "bytes": 1873292,
-            "sha256": "44f32c191d36bbd839dd5c45e8a1f51f77f6eaad20f242385c64370e1590da80",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/war-chariot.zip"
+            "path": "packs/troy/delivery-20261119-01/editable/war-chariot.zip",
+            "bytes": 2815523,
+            "sha256": "705ee722a6db00a99938b39af209f6591df8b044aa67e142ad9fbf5b0f042ebf",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/editable/war-chariot.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/war-chariot.glb",
-            "bytes": 614312,
-            "sha256": "6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/war-chariot.glb"
+            "path": "packs/troy/delivery-20261119-01/models/war-chariot.glb",
+            "bytes": 614344,
+            "sha256": "ea9e450d766a71a1ffed471495bd136160a47d32dd1b0d522444c15bc6af1d42",
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/war-chariot.glb"
           }
         },
         {
@@ -2963,10 +2964,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/sword.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/sword.glb",
+            "path": "packs/troy/delivery-20261119-01/models/sword.glb",
             "bytes": 137688,
             "sha256": "b15e157bf0e01fab0c421e232c08ab2572a7c42738d4454f994dfa275e99b4d9",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/sword.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/sword.glb"
           }
         },
         {
@@ -2985,10 +2986,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/shield.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/shield.glb",
+            "path": "packs/troy/delivery-20261119-01/models/shield.glb",
             "bytes": 182764,
             "sha256": "90a164bf7cbc9c98f7877bce029ed1ab016ab8043086f724ce70b92a0feff72a",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/shield.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/shield.glb"
           }
         },
         {
@@ -3007,10 +3008,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/bow-set.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/bow-set.glb",
+            "path": "packs/troy/delivery-20261119-01/models/bow-set.glb",
             "bytes": 137780,
             "sha256": "861da8a5dad6265aa823c4b86f73142da14accfa48f486372241fba3e51ac366",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/bow-set.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/bow-set.glb"
           }
         },
         {
@@ -3031,10 +3032,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/wooden-horse.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/wooden-horse.glb",
+            "path": "packs/troy/delivery-20261119-01/models/wooden-horse.glb",
             "bytes": 279548,
             "sha256": "d1b10019684539dc1ebbb5bd23429a4d529520983679e35583190d7741df8156",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/wooden-horse.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/wooden-horse.glb"
           }
         },
         {
@@ -3055,10 +3056,10 @@
             "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/battle-scene-reference.zip"
           },
           "runtimeDownload": {
-            "path": "packs/troy/delivery-20261113-01/models/battle-scene-reference.glb",
+            "path": "packs/troy/delivery-20261119-01/models/battle-scene-reference.glb",
             "bytes": 14464748,
             "sha256": "8cba3af1b914dd2907a66bfc48f1be6beeaa15fbb9cc133c1a3ba7b3a390b8c7",
-            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/battle-scene-reference.glb"
+            "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/battle-scene-reference.glb"
           }
         }
       ]
