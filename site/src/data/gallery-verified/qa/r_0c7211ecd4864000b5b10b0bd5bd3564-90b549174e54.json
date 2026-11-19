@@ -1,0 +1,308 @@
+{
+  "kind": "kiln.gallery-verified-qa",
+  "version": 1,
+  "glbSha256": "90b549174e54010615da8dac9ab6285fd16f8cf4daaffe49797feb841071a75e",
+  "glbBytes": 364012,
+  "engine": {
+    "name": "@instruktlabs/kiln",
+    "version": "1.8.0",
+    "sourceCommit": "71de263018ae4f281a02de809914e0180c06677a",
+    "sourceDirty": false
+  },
+  "readback": "loadGlbReviewScene (src/views/glb.ts) on the pinned bytes; each embedded image decoded with loadTexture (src/textures.ts) so the material rule sees its pixels, as after the export bake; flush faces and the scene rules on the single root node of the glTF scene; the final-GLB rules (Khronos validator, runtime cost, material advice) on the bytes",
+  "readbackDetail": {
+    "rootNode": "SpireFountain",
+    "imagesDecoded": 3,
+    "imageDecodeFailures": []
+  },
+  "requirements": "saved revision manifest",
+  "policy": "default",
+  "flushFaces": {
+    "pairs": 1,
+    "truncated": false,
+    "unexaminedParts": 0,
+    "triangles": 1650,
+    "examined": 1650,
+    "matching": 0,
+    "hidden": 0,
+    "omitted": 0,
+    "listed": [
+      {
+        "parts": [
+          "Mesh_Stone:primitive-0",
+          "Mesh_Stone:primitive-0"
+        ],
+        "sharedArea": 0.08412629,
+        "maxGap": 0,
+        "trianglePairs": 80,
+        "facing": "same",
+        "normal": [
+          0,
+          1,
+          0
+        ],
+        "at": [
+          0.05662,
+          6.05825,
+          -0.05662
+        ],
+        "occlusion": "visible"
+      }
+    ],
+    "occlusion": {
+      "visible": 1,
+      "occluded": 0,
+      "notEstimated": 0,
+      "rays": 3,
+      "maxRays": 10000
+    },
+    "warning": "FLUSH_FACES: 1 pair of parts has faces on one plane that will flicker (z-fighting) in any renderer. It is Mesh_Stone:primitive-0 over itself, on one plane, sharing 0.08 m² near [0.05662, 6.05825, -0.05662], normal (0, 1, 0). Move the smaller face at least 2 mm along that normal, remove the covered face, or cut the opening it sits in."
+  },
+  "qa": {
+    "kind": "kiln.asset-qa-report",
+    "schemaVersion": 2,
+    "qaProfile": "asset.requirements.v1",
+    "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+    "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+    "acceptance": "accepted",
+    "disposition": "pass",
+    "dimensions": {
+      "exportIntegrity": {
+        "status": "pass",
+        "findings": [],
+        "metrics": {
+          "gltfErrors": 0,
+          "gltfWarnings": 0
+        }
+      },
+      "requirementReadiness": {
+        "status": "pass",
+        "findings": []
+      },
+      "promptAlignment": {
+        "status": "notEvaluated",
+        "findings": []
+      },
+      "visualQuality": {
+        "status": "notEvaluated",
+        "findings": [
+          {
+            "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.selfIntersection",
+            "message": "4 part-volume measurements were unavailable. 4 because a valid closed solid could not be measured (Not manifold): \"Mesh_Stone:primitive-0\", \"Mesh_StoneDamp:primitive-0\", \"Mesh_Water:primitive-0\", \"Mesh_Bronze:primitive-0\". 5 overlapping part pairs include one of these parts and were not measured. These parts are not certified clear."
+          }
+        ],
+        "metrics": {
+          "partVolumeCoverage": "partial",
+          "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+          "partVolumeEligibleParts": 4,
+          "partVolumeCandidatePairs": 5,
+          "partVolumeCandidatesLowerBound": false,
+          "partVolumePairsTested": 0,
+          "partVolumeUnmeasurablePairs": 5,
+          "partVolumePairsNotReached": 0,
+          "partVolumeLodAlternatePairs": 0,
+          "partVolumeSkipped": 4,
+          "openSurfaceCoverage": "complete-surface-pairs",
+          "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+          "openSurfaceContactTolerance": 0.005,
+          "openSurfaceOpenParts": 4,
+          "openSurfaceClosedParts": 0,
+          "openSurfaceCandidatePairs": 0,
+          "openSurfacePairsSampled": 0,
+          "openSurfacePairsNotReached": 0,
+          "openSurfaceVerticesUnresolved": 0,
+          "openSurfaceLodAlternatePairs": 0,
+          "openSurfaceSkipped": 0
+        }
+      },
+      "runtimeCost": {
+        "status": "pass",
+        "findings": [],
+        "metrics": {
+          "instanceabilityGrade": "C",
+          "instanceabilitySummary": "C (informational, not a QA verdict), set by 4 distinct materials (C at 4-6). Also: 4 geometries; 4 draw calls.",
+          "uniqueGeometries": 4,
+          "uniqueMaterials": 4,
+          "meshNodes": 4,
+          "meshInstances": 4,
+          "drawCalls": 4,
+          "textureCount": 3,
+          "skinned": false,
+          "transparentMaterials": 0,
+          "triangles": 1650,
+          "materialCount": 4,
+          "opaqueMaterials": 4,
+          "maskedMaterials": 0,
+          "blendedMaterials": 0,
+          "singleSidedMaterials": 4,
+          "doubleSidedMaterials": 0,
+          "texturedMaterials": 3,
+          "materialExtensionCount": 0,
+          "materialExtensionsUsed": "",
+          "imageCount": 3,
+          "maxImageDimension": 512,
+          "decodedImageBytesRgba8": 2359296,
+          "estimatedGpuBytesWithMipmaps": 3145730,
+          "blendedSurfaceAreaRatio": 0
+        }
+      }
+    },
+    "rules": [
+      {
+        "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_FINITE_DATA_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_INDEX_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_ZERO_SCALE_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_NODE_NAME_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "MATERIAL_PORTABLE_PBR_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "ARCHITECTURE_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ARCHITECTURE_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "CHARACTER_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "CHARACTER_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_W6_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEGETATION_CONTACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEGETATION_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "PROP_CAPABILITY_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "PROP_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "ENVIRONMENT_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ENVIRONMENT_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VFX_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VFX_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "MODULAR_JOIN_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ASSET_SCOPE_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "GEO_PART_SELF_INTERSECTION",
+        "mode": "observe",
+        "status": "notEvaluated"
+      },
+      {
+        "id": "GEO_PART_CONNECTIVITY",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "GEO_OPEN_SURFACE_PENETRATION",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "REF_COMPARISON",
+        "mode": "observe",
+        "status": "notEvaluated",
+        "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+      },
+      {
+        "id": "SWEEP_SELF_INTERSECTION",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "HOST_VALIDATION_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      }
+    ],
+    "unevaluatedRequirements": []
+  }
+}

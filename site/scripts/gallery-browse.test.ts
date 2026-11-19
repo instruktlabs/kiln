@@ -6,7 +6,8 @@ import galleryOrder from '../src/data/gallery-order.json';
 import { curatedWorlds, featuredAssetHrefs, worldCover } from '../src/lib/site-curation';
 import { holodeckPacks } from '../src/lib/holodeck';
 
-const cards = buildGallery(true);
+// The curated order on its own; verified cards leading it is tested with the records in gallery-verified.test.ts.
+const cards = buildGallery(true, []);
 const card = (href: string) => cards.find((asset) => asset.href === href)!;
 
 test('every gallery asset has deliberate shared taxonomy and a catalog introduction date', () => {

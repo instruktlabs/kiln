@@ -1,5 +1,540 @@
 {
-  "description": "Owner review records against the verified bar in docs/gallery-verified.md. One record per exact revision and served GLB; a card is marked only when a verified record names its revision and GLB sha256. Rejected records are kept.",
+  "description": "Owner review records against the verified bar in docs/gallery-verified.md. One record per exact revision and served GLB; a card is marked only when a verified record names its revision and GLB sha256. Each record names the QA report its review used, stored in gallery-verified/qa/, and that file's sha256. Rejected records are kept.",
   "bar": 1,
-  "reviews": []
+  "reviews": [
+    {
+      "collection": "project",
+      "assetId": "a_d606fc5eebd44bd7b7db3611537b9570",
+      "revisionId": "r_4b6d19a4e1de409cad201987ce5f18d1",
+      "glbSha256": "9a3528f4c9e008d8a3f29d466ae4813c0dcdfb10101751a07b455f95ea1b4dea",
+      "bar": 1,
+      "verdict": "rejected",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 50,
+        "truncated": true,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_4b6d19a4e1de409cad201987ce5f18d1-9a3528f4c9e0.json",
+        "sha256": "ac06d53d969a862ecabffd3009eb073ff4f23501623b3bb6a2112825726906d6"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (/scene-packs/cathedral-square/cs3/models/cathedral.glb?revision=r_4b6d19a4e1de409cad201987ce5f18d1)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_d6b865669df24e6cbe645de659e13cad",
+      "revisionId": "r_369d7b0f63074203bdbda37064270049",
+      "glbSha256": "c4100fecfc3b94ea2f4de76f34b11b191abcddee22b1fdc714f06de624df221b",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 9
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_369d7b0f63074203bdbda37064270049-c4100fecfc3b.json",
+        "sha256": "e9d0f2d5a75cb0678fc3a461b0f249a0d363b510f6d6c5d2f961a1f372724992"
+      },
+      "findings": [
+        {
+          "code": "GLTF_NODE_SKINNED_MESH_NON_ROOT",
+          "subject": "/nodes/41",
+          "resolution": "accepted",
+          "note": "The skinned mesh HeavyWalkerMech_Body sits under HeavyWalkerMech, whose transform is identity, so a runtime that ignores parent transforms for skinned meshes draws it in the same place. Accepted."
+        },
+        {
+          "code": "FLUSH_FACES_UNMEASURED",
+          "resolution": "accepted",
+          "note": "Owner accepted 2026-11-18: the served GLB is skinned, so the flush check measured none of its triangles; verified on its views and the other QA checks."
+        }
+      ],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/text-to-3d/c4100fecfc3b94ea/mech.glb), which is not the saved asset.glb (9b1b004c460cc0a924f6a4d2d218a2d292ebbd507add1653cfc5152799d96df5)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_f7a502493cbe49728c9bba8c27914b19",
+      "revisionId": "r_5a5c5ed84a9d4668a05016e109861d1e",
+      "glbSha256": "f0ef65b3e1a01f9c1ee09c12095985c716cecc6310ad4dfc76dc0ecf67d38c08",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_5a5c5ed84a9d4668a05016e109861d1e-f0ef65b3e1a0.json",
+        "sha256": "8d721ef6a2ff5eb7bffa242accea566b7f6c724d36e4c50a33686cbe8bbb9115"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/holodeck/objects/f0ef65b3e1a01f9c1ee09c12095985c716cecc6310ad4dfc76dc0ecf67d38c08/plaza-fountain.glb?revision=r_5a5c5ed84a9d4668a05016e109861d1e), which is not the saved asset.glb (20cc045bef270b029b867cadb8a265cfc44ff40f434d016625b4fd0c2801fb30)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_7ac53c8c0d744a7ba02995ea616ed63b",
+      "revisionId": "r_6e91cd455ff24fbfb24c7dcb09029138",
+      "glbSha256": "4ed5b57f7701beee7b400d8cc17331c11e813c38f7b033cd26ad6fa9c57f7517",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_6e91cd455ff24fbfb24c7dcb09029138-4ed5b57f7701.json",
+        "sha256": "22bc9c0d61c9804e9c7e382f68151b3cda6e027b4d40707f4087f6d23bb46950"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/holodeck/objects/4ed5b57f7701beee7b400d8cc17331c11e813c38f7b033cd26ad6fa9c57f7517/statue-figure.glb?revision=r_6e91cd455ff24fbfb24c7dcb09029138), which is not the saved asset.glb (6c34ff35f9515b8af47ef65104e462ba56dca94ebdeed4b2ee1c2af8b7f8ab58)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_8859265660134a13a0295080de7c54fa",
+      "revisionId": "r_771f5b1384eb46dfa3d20698bbfa9248",
+      "glbSha256": "019818674d99d9ed888b2091b1f5a1b55581a9856b24a427f09429d4a38c7d04",
+      "bar": 1,
+      "verdict": "rejected",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 38,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_771f5b1384eb46dfa3d20698bbfa9248-019818674d99.json",
+        "sha256": "50766b70ed628048084123d7754663422f102de6004bff6272c62e5b8079705c"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/h-7/h7-1/models/mech-cockpit.glb)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_705819f9bd52422b947684965b45795c",
+      "revisionId": "r_94ec333e46d84cc7a9c4e79455b1c572",
+      "glbSha256": "fc54ddf1a7d1f0d70b8c6b414758ed7ddd690c6650d7053e1506ab95c94ccd94",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_94ec333e46d84cc7a9c4e79455b1c572-fc54ddf1a7d1.json",
+        "sha256": "9a4b4adea5666f1e27dbaf1786c2857c131e4d445e2f332e6231817652aeb203"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/holodeck/objects/fc54ddf1a7d1f0d70b8c6b414758ed7ddd690c6650d7053e1506ab95c94ccd94/meridian-statue-whale.glb?revision=r_94ec333e46d84cc7a9c4e79455b1c572), which is not the saved asset.glb (733063c17e42fbe08312a06ef3fb0b9b4ea1ee8bdb9d50103e8a8d04ef6382b3)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_fee938122fe54f34a498079254ffd4af",
+      "revisionId": "r_0e3ff4e9f6f74ac8b548f2aa6bb291ec",
+      "glbSha256": "7a686725e3aefcabeaf289fd7185f43bc85906d59f06617ff11828497de62e0f",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_0e3ff4e9f6f74ac8b548f2aa6bb291ec-7a686725e3ae.json",
+        "sha256": "ff34130bbadf9e6d6599ea4356dfceebfa4fd35a5968b09abc8caba009bc61f3"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/holodeck/objects/7a686725e3aefcabeaf289fd7185f43bc85906d59f06617ff11828497de62e0f/statue-bronze.glb?revision=r_0e3ff4e9f6f74ac8b548f2aa6bb291ec), which is not the saved asset.glb (8a5f8c59337283fb22f2bd29d4886c1c1115749d5bf6c6bd010aa458a44cf091)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_873885321d9441419a5e22f993bf833e",
+      "revisionId": "r_751a6bbaccc341beb85ae33375b45d94",
+      "glbSha256": "a4458d69dcb6b5e93a3ca5251e46d63502a5a756d043a6976a4406037354c42e",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_751a6bbaccc341beb85ae33375b45d94-a4458d69dcb6.json",
+        "sha256": "1d6e1b8ce4c32396df887041b1f7940ca85fa1062cd9f0cf11e41ccdee74b045"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/holodeck/objects/a4458d69dcb6b5e93a3ca5251e46d63502a5a756d043a6976a4406037354c42e/winter-wmc-hearth-masonry.glb?revision=r_751a6bbaccc341beb85ae33375b45d94), which is not the saved asset.glb (c3d113a70df16f5d639ea32d5c88f22b817aafa58a766ed3186bcbf5dcdf7952)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_35de3d83dc7848daade91840eb07b6b9",
+      "revisionId": "r_9fd1737c06b84b85875b0d54e3f66d09",
+      "glbSha256": "7085b61f702faf4863b8e71796b8ffd27be0f884304fb3eca7ade48552ec4dc1",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_9fd1737c06b84b85875b0d54e3f66d09-7085b61f702f.json",
+        "sha256": "13ee0ecb3dc001af6eb210803cc6674ee5a1a82ada9b161bf6a2fc911007b599"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/h-7/h7-1/models/skitterer.glb)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_1f6e07b0010946e080861252aa9030f9",
+      "revisionId": "r_fcf9c8cff5584d669f0a0b271b997ddb",
+      "glbSha256": "7c18f3b29cd22c3d94867c87cbcd2c4800c4b62cdcec6ec766c2020da54d7a7e",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_fcf9c8cff5584d669f0a0b271b997ddb-7c18f3b29cd2.json",
+        "sha256": "eb79eb3c15640a92ddb57cfb0fdecbb90eab2509b65eec0b3dc197eab21e79a0"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (/scene-packs/cathedral-square/cs3/models/crucifix.glb?revision=r_fcf9c8cff5584d669f0a0b271b997ddb)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_dca56b0a4d6243ac907f93a843074846",
+      "revisionId": "r_bfba41c9967b4f4c9d08932b30bce1f7",
+      "glbSha256": "8a97aa56f97de031a6f21ea94bca12a670639f45acf7228d76d194e7f36b7068",
+      "bar": 1,
+      "verdict": "rejected",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 4,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_bfba41c9967b4f4c9d08932b30bce1f7-8a97aa56f97d.json",
+        "sha256": "b24e0457ade44ca329eac0e01a9dde31bf8e74e2740337b071c8356ddf52fb21"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (/scene-packs/cathedral-square/cs3/models/house-stone-eaves-arcade.glb?revision=r_bfba41c9967b4f4c9d08932b30bce1f7)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_f57b556e45454937b12286efcd0c475c",
+      "revisionId": "r_0c7211ecd4864000b5b10b0bd5bd3564",
+      "glbSha256": "90b549174e54010615da8dac9ab6285fd16f8cf4daaffe49797feb841071a75e",
+      "bar": 1,
+      "verdict": "rejected",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 1,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_0c7211ecd4864000b5b10b0bd5bd3564-90b549174e54.json",
+        "sha256": "3b18ef962af92d97de93c83f2aba87e3964b011e3e727aa558cdc692f97ebd13"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (/scene-packs/cathedral-square/cs3/models/fountain.glb?revision=r_0c7211ecd4864000b5b10b0bd5bd3564)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_884d9b73f40143bea221bcd152fe7ae8",
+      "revisionId": "r_d6afad366bc541d782f612bc4ef3fa29",
+      "glbSha256": "a85f648d1a66158f594f9f574850e1ba263f6701dc7d4dd7d4a569f2218cdf9d",
+      "bar": 1,
+      "verdict": "rejected",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 4,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_d6afad366bc541d782f612bc4ef3fa29-a85f648d1a66.json",
+        "sha256": "7307abbf9b0273ce2e5c63061ea8d303d52b25b7fa759bf3745002a54129007f"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (/scene-packs/cathedral-square/cs3/models/stall-green.glb?revision=r_d6afad366bc541d782f612bc4ef3fa29)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_3d189b692e934646bccc63f3088eafd1",
+      "revisionId": "r_c33d46440935478180576e38ffa20662",
+      "glbSha256": "2d309596a95f989bcf575058e227f6e2ca916df77a0f3996fd78a326f5e76af9",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_c33d46440935478180576e38ffa20662-2d309596a95f.json",
+        "sha256": "43b5324cc3e3ea400faf93f32214ff18178566fe4ba9de17db0ffe4f19762c90"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/holodeck/objects/2d309596a95f989bcf575058e227f6e2ca916df77a0f3996fd78a326f5e76af9/meridian-gateway.glb?revision=r_c33d46440935478180576e38ffa20662), which is not the saved asset.glb (a80b611eb293ab6b6b18e95d9a436c7d7e2185e328ea92787b4ef9f787c173d9)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_2fdcbd42ab4740469b82e2c357f96413",
+      "revisionId": "r_c3c6c0cd796b43c88dabbb09061e3ef3",
+      "glbSha256": "bc5ba472b23aa8aa40b3bcf84d4f83284617f6480858b7955d9bcb47fad9684b",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_c3c6c0cd796b43c88dabbb09061e3ef3-bc5ba472b23a.json",
+        "sha256": "f602e377f39a3515f24a22a143d92f4f9a558a8bc39de363bf8d0c0223ce540b"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/holodeck/objects/bc5ba472b23aa8aa40b3bcf84d4f83284617f6480858b7955d9bcb47fad9684b/meridian-statue-figure.glb?revision=r_c3c6c0cd796b43c88dabbb09061e3ef3), which is not the saved asset.glb (fd9f981f9876ba561567ba071e10280db0feeeaf79ab902f813e2ea8c78a2988)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_56862f4b84564852886d5be2623632c3",
+      "revisionId": "r_ef304c3551e54050a26024a58eb8d4fd",
+      "glbSha256": "f2a2db5c75a2e659d05f6d14abfe69b0861332e3114be63627559ba63b474526",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_ef304c3551e54050a26024a58eb8d4fd-f2a2db5c75a2.json",
+        "sha256": "e735d2469ea8b380dc982085f48220fddfd1ffb3f77514c22a2324b0741572ec"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/holodeck/objects/f2a2db5c75a2e659d05f6d14abfe69b0861332e3114be63627559ba63b474526/planter-urn.glb?revision=r_ef304c3551e54050a26024a58eb8d4fd), which is not the saved asset.glb (4e87d39c92956ead45926198c3a2a6a699e7cd7678a905ab7690675886a7c237)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_43a2c9a0565e4743b82e9d9b51d257c9",
+      "revisionId": "r_b3d8583356574aac889f248ed6b8c791",
+      "glbSha256": "8f1a9157cb30a15b5d86862b6685f7160b7911f930dacd8576dbe0ab624e7a33",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_b3d8583356574aac889f248ed6b8c791-8f1a9157cb30.json",
+        "sha256": "eed7fd8ef6e21082531b9f561cb42d21cef12f611fe9c687fca915a437f160af"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/holodeck/objects/8f1a9157cb30a15b5d86862b6685f7160b7911f930dacd8576dbe0ab624e7a33/winter-wmc-kitchen-run.glb?revision=r_b3d8583356574aac889f248ed6b8c791), which is not the saved asset.glb (87acdc501b31417e6ef10baf268fb76c46b998999f7a15524a736688a0464980)."
+    },
+    {
+      "collection": "project",
+      "assetId": "a_5af9bd51de70444cb02f1cc5e926043f",
+      "revisionId": "r_b2c8b849e6da44c3b56bed180f764e81",
+      "glbSha256": "4c69322bbf37fd8edc4cdf42a63c288d57cea034fb7a13a4451d88ba1837c1ce",
+      "bar": 1,
+      "verdict": "verified",
+      "date": "2026-11-18",
+      "reviewer": "owner",
+      "flushFaces": {
+        "pairs": 0,
+        "truncated": false,
+        "unexaminedParts": 0
+      },
+      "qaReport": {
+        "path": "gallery-verified/qa/r_b2c8b849e6da44c3b56bed180f764e81-4c69322bbf37.json",
+        "sha256": "145636a1be81b4bba11a16877b668c3e11c2dadafa5359fa35077ab4ec00a047"
+      },
+      "findings": [],
+      "views": {
+        "shots": "default six-view sheet: 3x2 grid, 6 cells: Front (az 0, el 0); Right (az 90, el 0); Back (az 180, el 0); Left (az 270, el 0); Top (az 90, el 89.99); 3/4 (az 45, el 26.8)",
+        "backdrop": "neutral",
+        "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+        "delivered": "full-material",
+        "materialFaithful": true,
+        "exactArtifact": true
+      },
+      "note": "Reviewed on the GLB the card serves (https://assets.kilnstudio.tools/packs/holodeck/objects/4c69322bbf37fd8edc4cdf42a63c288d57cea034fb7a13a4451d88ba1837c1ce/winter-wmc-sofa-wool.glb?revision=r_b2c8b849e6da44c3b56bed180f764e81), which is not the saved asset.glb (b4506df0cdf89a501616e17bd07ff13f3f4625af12283b78a99cf722c3384c54)."
+    }
+  ]
 }

@@ -1,0 +1,325 @@
+{
+  "kind": "kiln.gallery-verified-qa",
+  "version": 1,
+  "glbSha256": "8f1a9157cb30a15b5d86862b6685f7160b7911f930dacd8576dbe0ab624e7a33",
+  "glbBytes": 837216,
+  "engine": {
+    "name": "@instruktlabs/kiln",
+    "version": "1.8.0",
+    "sourceCommit": "71de263018ae4f281a02de809914e0180c06677a",
+    "sourceDirty": false
+  },
+  "readback": "loadGlbReviewScene (src/views/glb.ts) on the pinned bytes; each embedded image decoded with loadTexture (src/textures.ts) so the material rule sees its pixels, as after the export bake; flush faces and the scene rules on the single root node of the glTF scene; the final-GLB rules (Khronos validator, runtime cost, material advice) on the bytes",
+  "readbackDetail": {
+    "rootNode": "wmc-kitchen-run",
+    "imagesDecoded": 8,
+    "imageDecodeFailures": []
+  },
+  "requirements": "saved revision manifest",
+  "policy": "default",
+  "flushFaces": {
+    "pairs": 0,
+    "truncated": false,
+    "unexaminedParts": 0,
+    "triangles": 10476,
+    "examined": 9988,
+    "matching": 0,
+    "hidden": 0,
+    "omitted": 0,
+    "listed": [],
+    "warning": null
+  },
+  "qa": {
+    "kind": "kiln.asset-qa-report",
+    "schemaVersion": 2,
+    "qaProfile": "asset.requirements.v1",
+    "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+    "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+    "acceptance": "accepted",
+    "disposition": "pass",
+    "dimensions": {
+      "exportIntegrity": {
+        "status": "pass",
+        "findings": [],
+        "metrics": {
+          "gltfErrors": 0,
+          "gltfWarnings": 0
+        }
+      },
+      "requirementReadiness": {
+        "status": "pass",
+        "findings": []
+      },
+      "promptAlignment": {
+        "status": "notEvaluated",
+        "findings": []
+      },
+      "visualQuality": {
+        "status": "notEvaluated",
+        "findings": [
+          {
+            "code": "GEO_PART_CONNECTIVITY",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.partConnectivity",
+            "message": "A group of 14 parts (\"Mesh_warm:primitive-0 (welded component 24 of 25)\", \"Mesh_iron:primitive-0 (welded component 17 of 25)\", \"Mesh_iron:primitive-0 (welded component 18 of 25)\", \"Mesh_iron:primitive-0 (welded component 19 of 25)\", \"Mesh_iron:primitive-0 (welded component 20 of 25)\", \"Mesh_endgrain:primitive-0 (welded component 61 of 64)\", \"Mesh_endgrain:primitive-0 (welded component 62 of 64)\", \"Mesh_ceramic:primitive-0 (welded component 1 of 7)\", \"Mesh_ceramic:primitive-0 (welded component 2 of 7)\", \"Mesh_ceramic:primitive-0 (welded component 3 of 7)\", \"Mesh_ceramic:primitive-0 (welded component 4 of 7)\", \"Mesh_ceramic:primitive-0 (welded component 5 of 7)\", +2 more) is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 0.200 m. This may be intentional. Box adjacency is not physical attachment evidence: a gap under 0.02 m reads as contact.",
+            "affected": {
+              "node": "Mesh_warm:primitive-0"
+            },
+            "measurement": {
+              "name": "gapToMainComponent",
+              "actual": 0.199741,
+              "expected": 0.02
+            },
+            "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+          },
+          {
+            "code": "GEO_PART_CONNECTIVITY",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.partConnectivity",
+            "message": "A group of 2 parts (\"Mesh_iron:primitive-0 (welded component 25 of 25)\", \"Mesh_linen:primitive-0\") is separate from the largest component in the rest-pose bounding boxes of visible parts; the nearest box gap is 0.032 m. This may be intentional. Box adjacency is not physical attachment evidence: a gap under 0.02 m reads as contact.",
+            "affected": {
+              "node": "Mesh_iron:primitive-0"
+            },
+            "measurement": {
+              "name": "gapToMainComponent",
+              "actual": 0.0315,
+              "expected": 0.02
+            },
+            "repairText": "Check whether the separation is intentional. If the brief requires attachment, inspect the named group and its intended interface before moving it. snapTo aligns bounding boxes; verify actual surfaces and required clearances afterward."
+          },
+          {
+            "code": "GEO_PART_SELF_INTERSECTION_UNMEASURED",
+            "disposition": "observe",
+            "dimension": "visualQuality",
+            "profile": "geometry.selfIntersection",
+            "message": "7 part-volume measurements were unavailable. 7 because a valid closed solid could not be measured (Not manifold): \"Mesh_warm:primitive-0\", \"Mesh_dark:primitive-0\", \"Mesh_iron:primitive-0\", \"Mesh_linen:primitive-0\", \"Mesh_endgrain:primitive-0\" and 2 more. 17 overlapping part pairs include one of these parts and were not measured. These parts are not certified clear."
+          }
+        ],
+        "metrics": {
+          "partVolumeCoverage": "partial",
+          "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+          "partVolumeEligibleParts": 8,
+          "partVolumeCandidatePairs": 17,
+          "partVolumeCandidatesLowerBound": false,
+          "partVolumePairsTested": 0,
+          "partVolumeUnmeasurablePairs": 17,
+          "partVolumePairsNotReached": 0,
+          "partVolumeLodAlternatePairs": 0,
+          "partVolumeSkipped": 7,
+          "openSurfaceCoverage": "complete-surface-pairs",
+          "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+          "openSurfaceContactTolerance": 0.005,
+          "openSurfaceOpenParts": 7,
+          "openSurfaceClosedParts": 1,
+          "openSurfaceCandidatePairs": 4,
+          "openSurfacePairsSampled": 4,
+          "openSurfacePairsNotReached": 0,
+          "openSurfaceVerticesUnresolved": 0,
+          "openSurfaceLodAlternatePairs": 0,
+          "openSurfaceSkipped": 0
+        }
+      },
+      "runtimeCost": {
+        "status": "pass",
+        "findings": [
+          {
+            "code": "MATERIAL_IMAGE_COUNT_ADVICE",
+            "disposition": "observe",
+            "dimension": "runtimeCost",
+            "profile": "web.portable.v1/standard",
+            "message": "8 images; the reference figure is 4. This is an optimization note from the web.portable.v1/standard reference profile, not a requirement; keep what carries the look. To make a limit binding, declare defineBudget({ images }). To reduce it, reuse approved resource IDs, remove unused images, or atlas compatible same-color-space slots; never atlas normal/data maps into an sRGB image.",
+            "measurement": {
+              "name": "imageCount",
+              "actual": 8,
+              "expected": 4,
+              "unit": "images"
+            }
+          }
+        ],
+        "metrics": {
+          "instanceabilityGrade": "D",
+          "instanceabilitySummary": "D (informational, not a QA verdict), set by 8 distinct materials (D at 7-12). Also: 8 textures (over 4 lowers only A/B to C); 8 geometries; 8 draw calls. Optional advice, not a requirement: merging kiln.material.wood.v1 + kiln.material.wood.v1 (differ in baseColorFactor, roughnessFactor); Mesh_iron material + Mesh_steel material (differ in baseColorFactor, metallicFactor, roughnessFactor) would leave 6 materials (C at 4-6).",
+          "uniqueGeometries": 8,
+          "uniqueMaterials": 8,
+          "meshNodes": 8,
+          "meshInstances": 8,
+          "drawCalls": 8,
+          "textureCount": 8,
+          "skinned": false,
+          "transparentMaterials": 0,
+          "triangles": 10476,
+          "materialCount": 8,
+          "opaqueMaterials": 8,
+          "maskedMaterials": 0,
+          "blendedMaterials": 0,
+          "singleSidedMaterials": 8,
+          "doubleSidedMaterials": 0,
+          "texturedMaterials": 6,
+          "materialExtensionCount": 0,
+          "materialExtensionsUsed": "",
+          "imageCount": 8,
+          "maxImageDimension": 256,
+          "decodedImageBytesRgba8": 1507328,
+          "estimatedGpuBytesWithMipmaps": 2009776,
+          "blendedSurfaceAreaRatio": 0
+        }
+      }
+    },
+    "rules": [
+      {
+        "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_FINITE_DATA_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_INDEX_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_ZERO_SCALE_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_NODE_NAME_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "MATERIAL_PORTABLE_PBR_RULE",
+        "mode": "enforce",
+        "status": "evaluated"
+      },
+      {
+        "id": "ARCHITECTURE_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ARCHITECTURE_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "CHARACTER_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "CHARACTER_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEHICLE_W6_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEGETATION_CONTACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VEGETATION_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "PROP_CAPABILITY_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "PROP_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "ENVIRONMENT_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ENVIRONMENT_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "VFX_EXACT_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "VFX_ADVISORY_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "MODULAR_JOIN_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      },
+      {
+        "id": "ASSET_SCOPE_PROFILE",
+        "mode": "observe",
+        "status": "notRequested"
+      },
+      {
+        "id": "GEO_PART_SELF_INTERSECTION",
+        "mode": "observe",
+        "status": "notEvaluated"
+      },
+      {
+        "id": "GEO_PART_CONNECTIVITY",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "GEO_OPEN_SURFACE_PENETRATION",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "REF_COMPARISON",
+        "mode": "observe",
+        "status": "notEvaluated",
+        "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+      },
+      {
+        "id": "SWEEP_SELF_INTERSECTION",
+        "mode": "observe",
+        "status": "evaluated"
+      },
+      {
+        "id": "HOST_VALIDATION_PROFILE",
+        "mode": "enforce",
+        "status": "notRequested"
+      }
+    ],
+    "unevaluatedRequirements": []
+  }
+}
