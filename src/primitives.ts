@@ -43,6 +43,14 @@ export type {
   WallFillMaterials,
   WallFillRole,
 } from './wall-fills';
+import { buildFenceRun, type FenceRunOptions, type FenceRunResult } from './fence-run';
+export type {
+  FencePegOptions,
+  FencePostOptions,
+  FenceRailOptions,
+  FenceRunOptions,
+  FenceRunResult,
+} from './fence-run';
 import { createBoneChain, createJointChain, createSkinnedPart } from './character';
 import { describeAssembly, replicateAssembly } from './assembly';
 import { defineLod } from './lod';
@@ -1655,6 +1663,16 @@ export function createStairs(
   return { root, steps: stepList };
 }
 
+/**
+ * A fence along a path: a post at each point, in its own named frame (a snap anchor) turned to
+ * the run, and rails between neighbouring posts that stop inside the post faces. Posts may be
+ * chamfered, capped and pegged; rails may merge into one named part. Invalid or ill-fitting runs
+ * throw before anything is built. See docs/geometry.md.
+ */
+export function fenceRun(name: string, options: FenceRunOptions): FenceRunResult {
+  return buildFenceRun(name, options);
+}
+
 // =============================================================================
 // Materials
 // =============================================================================
@@ -2572,6 +2590,7 @@ export function buildSandboxGlobals(
     createGableShell: wrap('createGableShell', createGableShell),
     createRoofSurfaceLayout: wrap('createRoofSurfaceLayout', createRoofSurfaceLayout),
     createStairs: wrap('createStairs', createStairs),
+    fenceRun: wrap('fenceRun', fenceRun),
     gameMaterial: wrap('gameMaterial', gameMaterial),
     materialRecipe: wrap('materialRecipe', sandboxMaterialRecipe),
     compilePortableMaterialSpecV2: wrap('compilePortableMaterialSpecV2', (...args: unknown[]) => {

@@ -484,6 +484,17 @@ const PRIMITIVES: HelperSpec[] = [
     example:
       "createStairs('Porch', stone, { steps: 4, totalRise: 0.6, totalRun: 1.0, width: 1.4, axis: 'x', parent: root });",
   },
+  {
+    name: 'fenceRun',
+    signature:
+      "fenceRun(name, { path: [x, y, z][], closed?, post?: { section?: size|[along, across], height?, chamfer?, cap?: { rise, inset }, pegs?: { radius, length, offsets, sides?, embed? }, groups?, names? }, rails?: false|{ heights?, section?: [thickness, height], chamfer?, embed?, merge?: partName }, material, materials?: { post?, rail? }, uv?: { seed? }, merge?: 'byMaterial', parent? })",
+    returns: '{ root: Object3D, posts: Object3D[], parts: Mesh[] }',
+    category: 'structure',
+    description:
+      'A fence along a path: a post at each point and rails between neighbouring posts, stopped inside the post faces so no rail end shows. Each post sits in its own named frame turned to the run, a snap anchor; posts take a chamfer, a weathering cap and pegs. Rails follow slopes; closed joins the last post to the first. UVs are metres with the grain along each member. Use instead of hand-placed posts and rails.',
+    example:
+      "fenceRun('Fence', { path: [[-1, 0, 0], [1, 0, 0], [1, 0, 2]], post: { section: 0.12, height: 1.1, chamfer: 0.015, cap: { rise: 0.05, inset: 0.03 } }, rails: { heights: [0.4, 0.85], section: [0.05, 0.1], merge: 'Fence_Rails' }, material: wood, parent: root });",
+  },
 
   // ---------------------------------------------------------------------------
   // Geometry

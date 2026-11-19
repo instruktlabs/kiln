@@ -196,18 +196,49 @@ fit, such as a frame wider than its opening, shutters over a neighbouring openin
 without a material, throws before anything is built. `room` passes `fill`, `name`, `names`
 and `materials` to its walls, with each wall's outer face outside the room.
 
+## Run a fence along a path
+
+`fenceRun(name, { path, post, rails, material })` puts a post at each path point and rails
+between neighbouring posts, so a fence bay, a pen or a sloping paddock run is one call. Each
+post sits in its own frame (`post.groups`, default `<name>_Post<i>`) at its point; the frames
+are snap anchors. A post's local +X follows the run: it bisects a turn of up to 45 degrees, and
+at a sharper turn it bisects only what is left after the nearest right angle, so the corner
+posts of a square pen are square to both rails. Posts take a `section` (a size or
+`[along, across]`), `height`, `chamfer`, a weathering `cap: { rise, inset }` and `pegs` on
+their side faces at each rail height. Rails run at `rails.heights` above the post bases, follow
+the slope, and stop `embed` (default 2 cm) inside each post face, so no rail end shows and no
+rail face lies on a post face. `rails.merge` makes every rail one part with that name, and
+`closed: true` joins the last post to the first.
+
+```js
+const run = fenceRun('Fence', {
+  path: [[-1, 0, 0], [1, 0, 0], [1, 0, 2]],
+  post: { section: 0.15, height: 1.1, chamfer: 0.018, cap: { rise: 0.06, inset: 0.035 },
+          pegs: { radius: 0.013, length: 0.01, offsets: [-0.045, 0.045] } },
+  rails: { heights: [0.42, 0.86], section: [0.06, 0.12], merge: 'Rails' },
+  material: wood, parent: root,
+});
+```
+
+Every member is a closed, outward solid with UVs in metres and the grain along it; `uv.seed`
+moves where each member's grain starts. The call returns `{ root, posts, parts }`: the post
+frames and the meshes. A run that does not fit throws before anything is built: posts too close
+for a rail, a rail outside the post shaft or showing its end on a steep slope or sharp turn, a
+rail meeting a post across its edge, two rails crossing outside a sharp corner post, or pegs
+where a rail enters a post's side.
+
 ## Merge an assembly by material
 
-`wallWithOpening` and `room` take `merge: 'byMaterial'`. The helper builds its pieces as it
-would without the option, then replaces them with one part per material: the same triangles
-in the same places, so triangle count and bounds do not change. A part is named for the role
-of its first piece: the wall takes the call's name, the rest `<name>_<Role>`. Frames that are
-not meshes stay where they were, so a room's wall frames still serve as anchors, and the
-pieces under a `Joint_` pivot merge only with each other, under the pivot, so a door leaf
-still swings; they are named for their opening, such as `<wall>_Door1_Leaf`. Geometry is
-concatenated, not unioned: two pieces that share an edge make that edge non-manifold, so
-`requireSolid` fails a merged part where its pieces touch. Without `merge`, output is
-unchanged.
+`wallWithOpening`, `room` and `fenceRun` take `merge: 'byMaterial'`. The helper builds its
+pieces as it would without the option, then replaces them with one part per material: the same
+triangles in the same places, so triangle count and bounds do not change. A part is named for
+the role of its first piece: a wall or a fence's posts take the call's name, the rest
+`<name>_<Role>` (a fence's rails `<name>_Rails`). Frames that are not meshes stay where they
+were, so a room's wall frames and a fence's post frames still serve as anchors, and the pieces
+under a `Joint_` pivot merge only with each other, under the pivot, so a door leaf still swings;
+they are named for their opening, such as `<wall>_Door1_Leaf`. Geometry is concatenated, not
+unioned: two pieces that share an edge make that edge non-manifold, so `requireSolid` fails a
+merged part where its pieces touch. Without `merge`, output is unchanged.
 
 ## Compose moving assemblies
 

@@ -831,6 +831,53 @@ const stairsCases = [
   ),
 ];
 
+const fenceCases = [
+  scene(
+    'fenceRun two posts, defaults',
+    (m) =>
+      P.fenceRun('F', {
+        path: [
+          [0, 0, 0],
+          [2, 0, 0],
+        ],
+        material: m,
+      }).root,
+  ),
+  scene(
+    'fenceRun farm bay: chamfer, cap, pegs, merged rails',
+    (m) =>
+      P.fenceRun('F', {
+        path: [
+          [-1, 0, 0],
+          [1, 0, 0],
+        ],
+        post: {
+          section: 0.15,
+          height: 1.1,
+          chamfer: 0.018,
+          cap: { rise: 0.06, inset: 0.035 },
+          pegs: { radius: 0.013, length: 0.01, offsets: [-0.045, 0.045] },
+        },
+        rails: { heights: [0.42, 0.86], section: [0.06, 0.12], chamfer: 0.012, merge: 'Rails' },
+        material: m,
+      }).root,
+  ),
+  scene(
+    'fenceRun closed sloping loop',
+    (m) =>
+      P.fenceRun('F', {
+        path: [
+          [0, 0, 0],
+          [2.5, 0.2, 0],
+          [3, 0.3, 2],
+          [0.5, 0.1, 2.5],
+        ],
+        closed: true,
+        material: m,
+      }).root,
+  ),
+];
+
 const sceneBuilders: Array<{ name: string; uvKind: string; cases: typeof ladderCases }> = [
   {
     name: 'createLadder',
@@ -840,6 +887,11 @@ const sceneBuilders: Array<{ name: string; uvKind: string; cases: typeof ladderC
   { name: 'wallWithOpening', uvKind: 'box per panel (boxGeo)', cases: wallCases },
   { name: 'room', uvKind: 'box per panel (boxGeo)', cases: roomCases },
   { name: 'createStairs', uvKind: 'box per tread and riser (boxGeo)', cases: stairsCases },
+  {
+    name: 'fenceRun',
+    uvKind: 'metres around and along each member, grain along V',
+    cases: fenceCases,
+  },
 ];
 
 // Every export, in any order; runAudit() checks the list against the file and prints file order.

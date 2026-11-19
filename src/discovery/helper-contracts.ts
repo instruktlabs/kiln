@@ -1597,6 +1597,34 @@ define(
   },
 );
 define(
+  'fenceRun',
+  {
+    ...assemblyFacts,
+    axes: "Each post frame's local +X follows the run and +Y is up; rails run between post centres.",
+    origin:
+      'Path points are post centres at the post base, in parent coordinates; the root has no offset.',
+    parameters: [
+      'path lists two or more finite [x, y, z] post centres (three or more when closed). Defaults: post section 0.1, height 1, no chamfer; rails at 35% and 75% of the post height, section [0.04, 0.08], embed 0.02.',
+      'A post bisects a turn of up to 45 degrees; at a sharper turn it bisects what is left after the nearest right angle, so a right-angle corner post is square to both rails and no rail meets a face more than 22.5 degrees off square.',
+      'Rails stop rails.embed inside each post face and follow the slope between post bases. pegs stand on both side faces (local Z) at every rail height, at offsets along the run.',
+      'Parts: Mesh_<name>_Post<i> in frames <name>_Post<i> (post.names and post.groups rename them), rails Mesh_<name>_Rail<segment>_<height>, or one part named rails.merge.',
+      'A run that does not fit throws before anything is built: posts too close, a rail outside the shaft or showing its end, a rail meeting a post across its edge, rails crossing outside a post at a sharp turn, or pegs where a rail enters a side face.',
+      "merge: 'byMaterial' merges posts into one part named for the call and rails into <name>_Rails (one part when they share a material); the post frames stay as empty anchors.",
+    ],
+    topology: [
+      'Every post (with its pegs) and rail is a closed, outward, flat-shaded solid with UV0 in metres, grain along V; rail ends pass into the posts and no rail face lies on a post face.',
+    ],
+    cost: 'One post part per path point and one rail part per segment and height, unless merged.',
+  },
+  {
+    ...assemblyMetadata,
+    references: ['src/fence-run.ts'],
+    aliases: ['fence', 'railing', 'post and rail fence', 'paddock fence', 'pen'],
+    intents: ['run a post-and-rail fence along a path'],
+    limitations: ['No gates, hinges, pickets or curved rails.'],
+  },
+);
+define(
   'createJointChain',
   {
     ...nodeFacts,
