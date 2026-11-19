@@ -1,6 +1,6 @@
 {
   "name": "kiln",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Create, review, save, and refine procedural 3D assets with portable source and GLB collections.",
   "author": {
     "name": "Matthew Kissinger"
@@ -22,6 +22,8 @@
     "longDescription": "Author JavaScript, inspect camera views, and save GLBs with source revisions for later refinement.",
     "developerName": "Instrukt Labs",
     "websiteURL": "https://kilnstudio.tools",
+    "privacyPolicyURL": "https://github.com/instruktlabs/kiln/blob/main/docs/local-plugin-privacy.md",
+    "termsOfServiceURL": "https://github.com/instruktlabs/kiln/blob/main/LICENSE",
     "category": "Developer Tools",
     "capabilities": [
       "Read",
@@ -30,7 +32,9 @@
     "defaultPrompt": [
       "Create a game prop and save its editable GLB bundle.",
       "Browse my collection and refine an existing asset."
-    ]
+    ],
+    "composerIcon": "./plugins/kiln-engine/.claude-plugin/icon.png",
+    "logo": "./plugins/kiln-engine/.claude-plugin/icon.png"
   },
   "mcpServers": {
     "kiln": {
