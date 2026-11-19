@@ -445,7 +445,9 @@ after welding vertices that share a position, as `geometryDiagnostics` does; the
 glTF primitive itself may stay split at UV seams. Scene builders (`createLadder`,
 `wallWithOpening`, `room`, `createStairs`, `createWingPair`, `beamBetween`) make
 the same promise for each mesh they create, not for the assembly, whose parts
-overlap by design. `planeGeo`, `foliageCardGeo`, `crossedQuadsGeo` and
+overlap by design. Overlapping parts still share no faces: an ascending
+`createStairs` riser stops under its tread (a step rise at or below
+`treadThickness` gets no riser), so a textured flight reports no `FLUSH_FACES` pair. `planeGeo`, `foliageCardGeo`, `crossedQuadsGeo` and
 `octaGridPlane` are open, one-sided surfaces and `requireSolid` fails them.
 `scripts/audit-primitives.test.ts` measures the contract, and the measured table
 is in the [primitives audit](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-11-18-primitives-audit.md). One known

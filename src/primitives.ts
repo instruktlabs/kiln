@@ -1467,16 +1467,23 @@ export function createStairs(
       createPart(`${name}Step${i + 1}`, treadGeo, material, { position: treadPos, parent: root }),
     );
 
-    if (riser) {
+    // Ascending, the tread already fills the top treadThickness of the step, so the riser
+    // stops under it (no shared faces); a step rise at or below treadThickness needs no
+    // riser (a rise within a millionth of treadThickness counts, so rounding leaves no
+    // sliver). Descending, the riser stands on the tread and spans the whole step.
+    const ascending = stepRise > 0;
+    const riserHeight = ascending ? stepRise - treadThickness : -stepRise;
+    if (riser && riserHeight > (ascending ? treadThickness * 1e-6 : 0)) {
       const front = i * stepRun;
+      const riserY = ascending ? topY - treadThickness - riserHeight / 2 : topY - stepRise / 2;
       const riserGeo =
         axis === 'x'
-          ? boxGeo(treadThickness, Math.abs(stepRise), width)
-          : boxGeo(width, Math.abs(stepRise), treadThickness);
+          ? boxGeo(treadThickness, riserHeight, width)
+          : boxGeo(width, riserHeight, treadThickness);
       const riserPos: [number, number, number] =
         axis === 'x'
-          ? [front + (Math.sign(stepRun) * treadThickness) / 2, topY - stepRise / 2, 0]
-          : [0, topY - stepRise / 2, front + (Math.sign(stepRun) * treadThickness) / 2];
+          ? [front + (Math.sign(stepRun) * treadThickness) / 2, riserY, 0]
+          : [0, riserY, front + (Math.sign(stepRun) * treadThickness) / 2];
       createPart(`${name}Riser${i + 1}`, riserGeo, material, { position: riserPos, parent: root });
     }
   }

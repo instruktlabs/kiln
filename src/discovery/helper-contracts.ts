@@ -1568,7 +1568,11 @@ define(
       'steps must be an integer from 1 to 10000; finite rise/run magnitudes below 1e-4 are rejected.',
       'Width and treadThickness are positive finite. Negative rise/run preserve descending/reversed placement with positive solid dimensions.',
     ],
-    cost: 'steps treads plus optional steps risers.',
+    topology: [
+      ...assemblyFacts.topology!,
+      'Each tread and riser is a closed box. Ascending, a riser stops under its tread, so they share no faces; a step rise at or below treadThickness gets no riser. Descending, a riser stands on its tread.',
+    ],
+    cost: 'steps treads plus up to steps risers.',
   },
   {
     ...assemblyMetadata,

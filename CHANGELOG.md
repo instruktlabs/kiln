@@ -44,6 +44,20 @@ does not publish a package.
   A benchmark agent whose working folder was not the workspace had fallen back to the CLI
   and skipped collections. No tool input schema changes. (#423)
 
+### Output that changes
+
+Primitive fixes from the primitives audit (`docs/reviews/2026-11-18-primitives-audit.md`).
+A build that calls one of these helpers makes a different GLB; a source that calls none of
+them builds byte-identically, measured over the saved packs and the example archive with
+the corpus gate.
+
+- **`createStairs` risers stop under their treads.** In an ascending flight each riser ran
+  the full step rise, so its top `treadThickness` sat inside the tread and four of its faces
+  lay on the tread's faces: a textured flight of 8 steps reported 8 `FLUSH_FACES` pairs. The
+  riser now ends at the tread's underside, and a step rise at or below `treadThickness` gets
+  no riser (12 fewer triangles per step). Bounds are unchanged; descending flights and
+  `riser: false` build as before. (#403)
+
 ## 1.8.0 (2026-11-13)
 
 - **`kiln_export` and `kiln_export_to` can carry sizes.** Both take an optional
