@@ -160,6 +160,86 @@ placement on each sector root. Rows, rise, radius and angular coverage are edita
 no house layout, roof or asset category is required. These are optional construction
 examples, not completed buildings, navigation certificates or finished materials.
 
+## Fill wall openings
+
+`wallWithOpening` cuts each opening and, with `fill`, makes what fills it: `frame`,
+`glazing`, `bars`, `sill` (windows), `lintel`, `shutters`, and a `leaf` under a `Joint_`
+hinge pivot. Every piece is placed from its opening and the wall, so moving or widening an
+opening moves its fills. Depths are metres inward from the outer face: `outward: 1` (the
+default) puts it on the +X side of a wall along `z` and the +Z side of one along `x`, and
+`-1` on the other side. Negative depths stand proud of the wall. Materials
+come by role in `materials` (`frame`, `glazing`, `bars`, `sill`, `lintel`, `shutter`, `leaf`,
+`hardware`); each falls back to `frame`, then the wall material, except `glazing`, which must
+be given. Parts are named `<wall>_<Door|Window><n>_<Piece>`; an opening's `name` replaces the
+prefix and its `names` maps a piece to the exact part name an existing contract needs.
+
+```js
+wallWithOpening('FrontWall', masonry, {
+  length: 7.4, height: 3.2, thickness: 0.3,
+  materials: { frame: trim, glazing: glass, sill: stone, shutter: olive },
+  openings: [
+    { kind: 'door', width: 1, height: 2.15,
+      fill: { frame: true, leaf: { pivot: 'FrontDoor', handle: true } } },
+    { kind: 'window', offset: 2, width: 1.1, height: 1.3, sill: 0.75,
+      fill: { frame: true, glazing: true, bars: { vertical: [0.5], horizontal: [0.58] },
+              sill: true, lintel: true, shutters: true } },
+  ],
+  parent: root,
+});
+```
+
+Pieces in the opening (frame, glazing, bars, leaf) stay inside it; sill, lintel and shutters
+stand against the outer face. Fills meet the wall and each other face to face or with a gap,
+none passes through another, and glazing stands 1 mm clear of the frame, bars and reveal so a
+double-sided pane cannot z-fight. Every piece is a closed box with UV0. A fill that does not
+fit, such as a frame wider than its opening, shutters over a neighbouring opening or glazing
+without a material, throws before anything is built. `room` passes `fill`, `name`, `names`
+and `materials` to its walls, with each wall's outer face outside the room.
+
+## Run a fence along a path
+
+`fenceRun(name, { path, post, rails, material })` puts a post at each path point and rails
+between neighbouring posts, so a fence bay, a pen or a sloping paddock run is one call. Each
+post sits in its own frame (`post.groups`, default `<name>_Post<i>`) at its point; the frames
+are snap anchors. A post's local +X follows the run: it bisects a turn of up to 45 degrees, and
+at a sharper turn it bisects only what is left after the nearest right angle, so the corner
+posts of a square pen are square to both rails. Posts take a `section` (a size or
+`[along, across]`), `height`, `chamfer`, a weathering `cap: { rise, inset }` and `pegs` on
+their side faces at each rail height. Rails run at `rails.heights` above the post bases, follow
+the slope, and stop `embed` (default 2 cm) inside each post face, so no rail end shows and no
+rail face lies on a post face. `rails.merge` makes every rail one part with that name, and
+`closed: true` joins the last post to the first.
+
+```js
+const run = fenceRun('Fence', {
+  path: [[-1, 0, 0], [1, 0, 0], [1, 0, 2]],
+  post: { section: 0.15, height: 1.1, chamfer: 0.018, cap: { rise: 0.06, inset: 0.035 },
+          pegs: { radius: 0.013, length: 0.01, offsets: [-0.045, 0.045] } },
+  rails: { heights: [0.42, 0.86], section: [0.06, 0.12], merge: 'Rails' },
+  material: wood, parent: root,
+});
+```
+
+Every member is a closed, outward solid with UVs in metres and the grain along it; `uv.seed`
+moves where each member's grain starts. The call returns `{ root, posts, parts }`: the post
+frames and the meshes. A run that does not fit throws before anything is built: posts too close
+for a rail, a rail outside the post shaft or showing its end on a steep slope or sharp turn, a
+rail meeting a post across its edge, two rails crossing outside a sharp corner post, or pegs
+where a rail enters a post's side.
+
+## Merge an assembly by material
+
+`wallWithOpening`, `room` and `fenceRun` take `merge: 'byMaterial'`. The helper builds its
+pieces as it would without the option, then replaces them with one part per material: the same
+triangles in the same places, so triangle count and bounds do not change. A part is named for
+the role of its first piece: a wall or a fence's posts take the call's name, the rest
+`<name>_<Role>` (a fence's rails `<name>_Rails`). Frames that are not meshes stay where they
+were, so a room's wall frames and a fence's post frames still serve as anchors, and the pieces
+under a `Joint_` pivot merge only with each other, under the pivot, so a door leaf still swings;
+they are named for their opening, such as `<wall>_Door1_Leaf`. Geometry is concatenated, not
+unioned: two pieces that share an edge make that edge non-manifold, so `requireSolid` fails a
+merged part where its pieces touch. Without `merge`, output is unchanged.
+
 ## Compose moving assemblies
 
 Discovery's `recipe:joined-frame-v1` derives brace endpoints from the same post

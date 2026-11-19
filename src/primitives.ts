@@ -19,6 +19,38 @@ import {
   GEOMETRY_ALLOCATION_LIMITS,
 } from './geometry-budget';
 import { buildWallPanels } from './wall-panels';
+import {
+  assertAssemblyMerge,
+  mergePiecesByMaterial,
+  roleSuffix,
+  type AssemblyMergeMode,
+} from './assembly-merge';
+import {
+  emitWallFills,
+  planWallFills,
+  type OpeningFill,
+  type WallFillMaterials,
+} from './wall-fills';
+export type {
+  OpeningBarsFill,
+  OpeningFaceFill,
+  OpeningFill,
+  OpeningFrameFill,
+  OpeningGlazingFill,
+  OpeningHandleFill,
+  OpeningLeafFill,
+  OpeningShuttersFill,
+  WallFillMaterials,
+  WallFillRole,
+} from './wall-fills';
+import { buildFenceRun, type FenceRunOptions, type FenceRunResult } from './fence-run';
+export type {
+  FencePegOptions,
+  FencePostOptions,
+  FenceRailOptions,
+  FenceRunOptions,
+  FenceRunResult,
+} from './fence-run';
 import { createBoneChain, createJointChain, createSkinnedPart } from './character';
 import { describeAssembly, replicateAssembly } from './assembly';
 import { defineLod } from './lod';
@@ -1266,6 +1298,12 @@ export interface WallOpening {
   height?: number;
   /** Window sill height above the wall base (ignored for doors). */
   sill?: number;
+  /** What fills the opening: frame, glazing, bars, sill, lintel, shutters, leaf. */
+  fill?: OpeningFill;
+  /** Part-name prefix for the fills. Default <wall>_<Door|Window><n>. */
+  name?: string;
+  /** Exact part names by piece (FrameStart, Leaf, ...), replacing the default names. */
+  names?: Record<string, string>;
 }
 
 export interface WallWithOpeningOptions {
@@ -1282,24 +1320,60 @@ export interface WallWithOpeningOptions {
   /** Multiple rectangular cuts, including vertically stacked windows.
    * Cuts may touch but must not overlap and must fit inside the wall sides/top. */
   openings?: readonly WallOpening[];
+  /** Which side is outside: 1 (default) is +X for axis z and +Z for axis x.
+   * Fill depths count inward from that face. */
+  outward?: 1 | -1;
+  /** Fill materials by role; each falls back to frame, then the wall material. */
+  materials?: WallFillMaterials;
+  /** One part per material instead of one part per piece (see docs/geometry.md). */
+  merge?: AssemblyMergeMode;
   parent?: THREE.Object3D;
 }
 
-/**
- * A wall with rectangular door/window cuts, composed from solid box segments.
- * Invalid, overlapping or out-of-bound cuts throw; they are never clipped.
- * Runs along `axis`, base at local Y=0, centered on the
- * length axis. Returns the wall container so the caller can position it.
- */
-export function wallWithOpening(
+/** Build the wall's pieces under a new container, recording each piece's role. */
+function buildWall(
   name: string,
   material: THREE.Material,
   options: WallWithOpeningOptions,
+  roles: Map<THREE.Mesh, string>,
+  pivotPrefixes: Map<THREE.Object3D, string>,
 ): THREE.Object3D {
-  const { length, height, thickness, axis = 'z', opening, openings, parent } = options;
+  const { length, height, thickness, axis = 'z', opening, openings, outward = 1 } = options;
   if (opening && openings)
     throw new TypeError('wallWithOpening: use opening or openings, not both.');
-  const built = buildWallPanels(length, height, thickness, openings ?? (opening ? [opening] : []));
+  const requested = openings ?? (opening ? [opening] : []);
+  const built = buildWallPanels(length, height, thickness, requested);
+  if (outward !== 1 && outward !== -1)
+    throw new RangeError('wallWithOpening: outward must be 1 or -1.');
+  // Fills are planned, and refused, before the first part is made.
+  const fills = {
+    name,
+    axis,
+    outward,
+    length,
+    height,
+    thickness,
+    material,
+    materials: options.materials,
+  };
+  const filling = requested.some((o) => o.fill !== undefined || o.names !== undefined);
+  const plan =
+    filling || options.materials !== undefined
+      ? planWallFills(
+          fills,
+          built.openings.map((o, i) => ({
+            kind: o.kind,
+            left: o.left,
+            right: o.right,
+            sill: o.sill,
+            top: o.top,
+            fill: requested[i]!.fill,
+            name: requested[i]!.name,
+            names: requested[i]!.names,
+          })),
+          built.panels.map((panel) => `${name}${panel.suffix}`),
+        )
+      : undefined;
   const group = new THREE.Object3D();
   group.name = name;
 
@@ -1317,14 +1391,47 @@ export function wallWithOpening(
     const yC = (yLo + yHi) / 2;
     const geo = axis === 'z' ? boxGeo(thickness, segH, segLen) : boxGeo(segLen, segH, thickness);
     const pos: [number, number, number] = axis === 'z' ? [0, yC, lenC] : [lenC, yC, 0];
-    createPart(`${name}${suffix}`, geo, material, { position: pos, parent: group });
+    roles.set(
+      createPart(`${name}${suffix}`, geo, material, { position: pos, parent: group }) as THREE.Mesh,
+      'wall',
+    );
   };
 
   for (const segment of built.panels) {
     panel(segment.suffix, segment.left, segment.right, segment.bottom, segment.top);
   }
+  if (plan) emitWallFills(fills, plan, group, roles, pivotPrefixes);
+  return group;
+}
 
-  if (parent) parent.add(group);
+/** Merged part names: the wall material takes the call's name; under a pivot, the opening's. */
+const wallPartName =
+  (name: string, pivotPrefixes: Map<THREE.Object3D, string>) =>
+  (role: string, group: THREE.Object3D): string =>
+    pivotPrefixes.has(group)
+      ? `${pivotPrefixes.get(group)}_${roleSuffix(role)}`
+      : role === 'wall'
+        ? name
+        : `${name}_${roleSuffix(role)}`;
+
+/**
+ * A wall with rectangular door/window cuts, composed from solid box segments.
+ * Invalid, overlapping or out-of-bound cuts throw; they are never clipped.
+ * Runs along `axis`, base at local Y=0, centered on the
+ * length axis. Returns the wall container so the caller can position it.
+ */
+export function wallWithOpening(
+  name: string,
+  material: THREE.Material,
+  options: WallWithOpeningOptions,
+): THREE.Object3D {
+  assertAssemblyMerge('wallWithOpening', options.merge);
+  const roles = new Map<THREE.Mesh, string>();
+  const pivots = new Map<THREE.Object3D, string>();
+  const group = buildWall(name, material, options, roles, pivots);
+  if (options.merge === 'byMaterial')
+    mergePiecesByMaterial(group, roles, wallPartName(name, pivots));
+  if (options.parent) options.parent.add(group);
   return group;
 }
 
@@ -1347,6 +1454,10 @@ export interface RoomOptions {
   /** Per-wall openings. Defaults to a centered door on the front wall, so the
    *  room is ENTERABLE by default. */
   openings?: RoomOpening[];
+  /** Fill materials by role for every wall; each wall's outer face is outside the room. */
+  materials?: WallFillMaterials;
+  /** One part per material for the whole room; wall frames stay as anchors. */
+  merge?: AssemblyMergeMode;
   parent?: THREE.Object3D;
 }
 
@@ -1375,6 +1486,7 @@ export function room(
     floorThickness = 0.1,
     parent,
   } = options;
+  assertAssemblyMerge('room', options.merge);
   const openings = options.openings ?? [{ wall: 'front', kind: 'door' }];
   if (depth > 0 && wallThickness >= depth)
     throw new RangeError(
@@ -1382,6 +1494,8 @@ export function room(
     );
   const root = new THREE.Object3D();
   root.name = name;
+  const roles = new Map<THREE.Mesh, string>();
+  const pivots = new Map<THREE.Object3D, string>();
 
   const wall = (
     suffix: string,
@@ -1392,20 +1506,29 @@ export function room(
   ): THREE.Object3D => {
     let w: THREE.Object3D;
     try {
-      w = wallWithOpening(`${name}_Wall${suffix}`, material, {
-        length: len,
-        height,
-        thickness: wallThickness,
-        axis,
-        openings: openings.filter((op) => op.wall === which),
-        parent: root,
-      });
+      w = buildWall(
+        `${name}_Wall${suffix}`,
+        material,
+        {
+          length: len,
+          height,
+          thickness: wallThickness,
+          axis,
+          openings: openings.filter((op) => op.wall === which),
+          // Each wall's outside faces away from the room's centre.
+          outward: which === 'front' || which === 'right' ? 1 : -1,
+          materials: options.materials,
+        },
+        roles,
+        pivots,
+      );
     } catch (error) {
       if (!(error instanceof RangeError)) throw error;
       throw new RangeError(
         `room("${name}"): ${which} wall (length ${+len.toFixed(6)}, offsets from its centre): ${error.message}`,
       );
     }
+    root.add(w);
     w.position.set(...pos);
     return w;
   };
@@ -1426,6 +1549,11 @@ export function room(
       position: [0, -floorThickness / 2, 0],
       parent: root,
     });
+    roles.set(floorObj as THREE.Mesh, 'wall');
+  }
+  if (options.merge === 'byMaterial') {
+    const { holder } = mergePiecesByMaterial(root, roles, wallPartName(name, pivots));
+    if (floorObj) floorObj = holder.get(floorObj as THREE.Mesh) ?? floorObj;
   }
 
   if (parent) parent.add(root);
@@ -1533,6 +1661,16 @@ export function createStairs(
 
   if (parent) parent.add(root);
   return { root, steps: stepList };
+}
+
+/**
+ * A fence along a path: a post at each point, in its own named frame (a snap anchor) turned to
+ * the run, and rails between neighbouring posts that stop inside the post faces. Posts may be
+ * chamfered, capped and pegged; rails may merge into one named part. Invalid or ill-fitting runs
+ * throw before anything is built. See docs/geometry.md.
+ */
+export function fenceRun(name: string, options: FenceRunOptions): FenceRunResult {
+  return buildFenceRun(name, options);
 }
 
 // =============================================================================
@@ -2452,6 +2590,7 @@ export function buildSandboxGlobals(
     createGableShell: wrap('createGableShell', createGableShell),
     createRoofSurfaceLayout: wrap('createRoofSurfaceLayout', createRoofSurfaceLayout),
     createStairs: wrap('createStairs', createStairs),
+    fenceRun: wrap('fenceRun', fenceRun),
     gameMaterial: wrap('gameMaterial', gameMaterial),
     materialRecipe: wrap('materialRecipe', sandboxMaterialRecipe),
     compilePortableMaterialSpecV2: wrap('compilePortableMaterialSpecV2', (...args: unknown[]) => {

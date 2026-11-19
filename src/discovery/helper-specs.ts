@@ -387,7 +387,7 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'room',
     signature:
-      "room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThickness?, openings?: [{ wall: 'front'|'back'|'left'|'right', kind?: 'door'|'window', offset?, width?, height?, sill? }], parent? })",
+      "room(name, material, { width?, depth?, height?, wallThickness?, floor?, floorThickness?, openings?: [{ wall: 'front'|'back'|'left'|'right', kind?: 'door'|'window', offset?, width?, height?, sill?, name?, names?, fill? }], materials?, merge?: 'byMaterial', parent? })",
     returns: '{ root: Object3D, walls: { front, back, left, right }, floor: Object3D | null }',
     category: 'structure',
     description:
@@ -400,13 +400,13 @@ const PRIMITIVES: HelperSpec[] = [
   {
     name: 'wallWithOpening',
     signature:
-      "wallWithOpening(name, material, { length, height, thickness, axis?: 'x'|'z', opening?: { kind?: 'door'|'window', offset?, width?, height?, sill? }, openings?: [{ kind?: 'door'|'window', offset?, width?, height?, sill? }], parent? })",
+      "wallWithOpening(name, material, { length, height, thickness, axis?: 'x'|'z', outward?: 1|-1, opening?: Opening, openings?: Opening[], materials?: { frame?, glazing?, bars?, sill?, lintel?, shutter?, leaf?, hardware? }, merge?: 'byMaterial', parent? }), Opening = { kind?: 'door'|'window', offset?, width?, height?, sill?, name?, names?: { [piece]: partName }, fill?: { frame?: true|{ width?, depth?: [from, to] }, glazing?: true|{ thickness?, depth? }, bars?: { vertical?: fractions, horizontal?: fractions, width?, depth? }, sill?: true|{ overhang?, projection?, height? }, lintel?: true|{ overhang?, projection?, height? }, shutters?: true|{ width?, thickness?, gap? }, leaf?: true|{ thickness?, clearance?, depth?, hinge?: 'start'|'end', pivot?, handle?: true|{ height?, inset?, size? } } } }",
     returns: 'THREE.Object3D (wall container)',
     category: 'structure',
     description:
-      'A wall panel with real rectangular door/window gaps, composed from solid box segments. Supply opening or openings, never both. Multiple or vertically stacked apertures must not overlap or extend outside the wall. Base at local Y=0, centered on the run axis. Use to compose custom layouts and interior dividing walls.',
+      'A wall panel with real rectangular door/window gaps, composed from solid box segments. Supply opening or openings, never both; apertures must not overlap or leave the wall. Base at local Y=0, centered on the run axis. fill adds what fills an opening, placed from it: frame, glazing, bars, window sill, lintel, shutters, and a leaf under a Joint_ hinge pivot. Fill depths are metres inward from the outer face that outward picks.',
     example:
-      "wallWithOpening('Partition', plaster, { length: 4, height: 2.8, thickness: 0.12, axis: 'x', opening: { kind: 'door', offset: 0.5 }, parent: root });",
+      "wallWithOpening('Front', plaster, { length: 5, height: 2.8, thickness: 0.2, materials: { frame: trim, glazing: glass }, openings: [{ kind: 'window', offset: -1.2, fill: { frame: true, glazing: true, bars: { vertical: [0.5] }, sill: true, lintel: true } }, { kind: 'door', offset: 1, fill: { frame: true, leaf: { pivot: 'FrontDoor', handle: true } } }], parent: root });",
   },
   {
     name: 'createRoofPlanes',
@@ -483,6 +483,17 @@ const PRIMITIVES: HelperSpec[] = [
       'A straight flight of stairs: box treads (with optional risers) climbing totalRise over totalRun from local origin toward +axis. Use for porch/entry steps or to connect storeys in a multi-storey building.',
     example:
       "createStairs('Porch', stone, { steps: 4, totalRise: 0.6, totalRun: 1.0, width: 1.4, axis: 'x', parent: root });",
+  },
+  {
+    name: 'fenceRun',
+    signature:
+      "fenceRun(name, { path: [x, y, z][], closed?, post?: { section?: size|[along, across], height?, chamfer?, cap?: { rise, inset }, pegs?: { radius, length, offsets, sides?, embed? }, groups?, names? }, rails?: false|{ heights?, section?: [thickness, height], chamfer?, embed?, merge?: partName }, material, materials?: { post?, rail? }, uv?: { seed? }, merge?: 'byMaterial', parent? })",
+    returns: '{ root: Object3D, posts: Object3D[], parts: Mesh[] }',
+    category: 'structure',
+    description:
+      'A fence along a path: a post at each point and rails between neighbouring posts, stopped inside the post faces so no rail end shows. Each post sits in its own named frame turned to the run, a snap anchor; posts take a chamfer, a weathering cap and pegs. Rails follow slopes; closed joins the last post to the first. UVs are metres with the grain along each member. Use instead of hand-placed posts and rails.',
+    example:
+      "fenceRun('Fence', { path: [[-1, 0, 0], [1, 0, 0], [1, 0, 2]], post: { section: 0.12, height: 1.1, chamfer: 0.015, cap: { rise: 0.05, inset: 0.03 } }, rails: { heights: [0.4, 0.85], section: [0.05, 0.1], merge: 'Fence_Rails' }, material: wood, parent: root });",
   },
 
   // ---------------------------------------------------------------------------
