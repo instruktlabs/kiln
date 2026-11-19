@@ -95,6 +95,7 @@ import {
   type SemanticMetadataV1,
   type SemanticMetadataV1Input,
 } from './contracts';
+import { createBuildTracker, noteDoubledPrefix, noteOperands } from './build-warnings';
 import * as uv from './uv';
 import * as uvShapes from './uv-shapes';
 import { projectUV } from './uv-project';
@@ -588,6 +589,12 @@ export function torusGeo(
   assertDimension('torusGeo radius', radius);
   assertDimension('torusGeo tube', tube);
   assertDimension('torusGeo outer radius', radius + tube);
+  // A tube this thick crosses the ring axis: the surface intersects itself, and the closed-solid
+  // check cannot see that.
+  if (tube >= radius)
+    throw new RangeError(
+      `torusGeo: tube ${tube} must be less than radius ${radius}; a tube at least as thick as the ring radius crosses the ring axis and the surface intersects itself. Reduce the tube or increase the radius.`,
+    );
   assertPrimitiveSegments('torusGeo radialSegments', radialSegments, 3);
   assertPrimitiveSegments('torusGeo tubularSegments', tubularSegments, 3);
   assertPrimitiveGrid('torusGeo', radialSegments, tubularSegments);
@@ -2185,6 +2192,8 @@ export interface SandboxDeclarations {
 }
 /** Symbol-keyed, so it never becomes a sandbox global. */
 export const SANDBOX_DECLARATIONS: unique symbol = Symbol('kiln.sandbox.declarations');
+/** What this sandbox saw `createPart` and `createPivot` do; executeKilnCode turns it into warnings. */
+export const SANDBOX_BUILD_TRACKER: unique symbol = Symbol('kiln.sandbox.buildTracker');
 
 export interface SandboxGlobalsOptions {
   /** Host-owned closed resolver. Generated code receives only the bound
@@ -2305,18 +2314,27 @@ export function buildSandboxGlobals(
   };
 
   const declarations: SandboxDeclarations = {};
+  const tracker = createBuildTracker();
   const globals: Record<string, unknown> = {
     createRoot: wrap('createRoot', createRoot),
     describeAssembly: wrap('describeAssembly', describeAssembly),
     replicateAssembly: wrap('replicateAssembly', replicateAssembly),
-    createPivot: wrap('createPivot', createPivot),
+    createPivot: wrap('createPivot', (...args: Parameters<typeof createPivot>) => {
+      noteDoubledPrefix(tracker, 'createPivot', args[0], 'Joint_');
+      return createPivot(...args);
+    }),
     createJointChain: wrap('createJointChain', createJointChain),
     createBoneChain: wrap('createBoneChain', createBoneChain),
     createSkinnedPart: wrap('createSkinnedPart', createSkinnedPart),
     createVehicleFrame: wrap('createVehicleFrame', createVehicleFrame),
     createWheelGeometrySet: wrap('createWheelGeometrySet', createWheelGeometrySet),
     createWheelAssembly: wrap('createWheelAssembly', createWheelAssembly),
-    createPart: wrap('createPart', createPart),
+    createPart: wrap('createPart', (...args: Parameters<typeof createPart>) => {
+      if (args[3]?.pivot) noteDoubledPrefix(tracker, 'createPart', args[0], 'Joint_');
+      const node = createPart(...args);
+      tracker.parts.push({ name: args[0], node, hadParent: args[3]?.parent !== undefined });
+      return node;
+    }),
     defineLod: wrap('defineLod', defineLod),
     markOpenShell: wrap('markOpenShell', markOpenShell),
     colliderBox: wrap('colliderBox', colliderBox),
@@ -2497,6 +2515,15 @@ export function buildSandboxGlobals(
     Math,
     console: options.console ?? console,
   };
+  // A part handed to another helper (a Boolean operand, a merge input) may be consumed by it.
+  for (const [name, value] of Object.entries(globals)) {
+    if (typeof value !== 'function' || name === 'createPart' || name === 'createPivot') continue;
+    globals[name] = (...args: unknown[]) => {
+      noteOperands(tracker, args);
+      return (value as (...a: unknown[]) => unknown)(...args);
+    };
+  }
   Object.defineProperty(globals, SANDBOX_DECLARATIONS, { value: declarations });
+  Object.defineProperty(globals, SANDBOX_BUILD_TRACKER, { value: tracker });
   return globals;
 }
