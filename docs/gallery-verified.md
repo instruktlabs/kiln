@@ -34,3 +34,10 @@ card is marked only when a `verified` record names its revision and GLB SHA-256.
 lead the gallery's default order with a label that links here.
 
 The mark does not rank assets by taste.
+
+## Reviewing candidates
+
+`site/scripts/gallery-verified-review.mjs` measures candidates on the GLB each card serves. It
+writes to the ignored `tmp/gallery-verified-review/` a pending record for each, with a proposed
+verdict and notes, the QA report the record names and one review page with the views. Its
+`--promote` option records the owner's decisions after checking them against the bar.
