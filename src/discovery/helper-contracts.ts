@@ -157,7 +157,10 @@ for (const [axis, names] of [
         'height/length is the nonnegative straight middle section; zero is supported. Radius is positive; total outer length is height/length + 2 × radius.',
         'Cap subdivision is fixed at 2; radial segments default to 6.',
       ],
-      cost: 'Linear in radial segments with fixed cap subdivision.',
+      topology: [
+        'Closed, manifold, outward after welding the UV seam and pole duplicates. Zero-area pole triangles (and the empty straight section at zero height/length) are dropped from the index; vertices, normals and UVs are kept.',
+      ],
+      cost: 'Linear in radial segments with fixed cap subdivision: 8 triangles per radial segment (48 at the default 6), 6 at zero height/length.',
     },
     {
       ...primitiveMetadata,
@@ -332,7 +335,10 @@ define(
     parameters: [
       'Positive finite span/rootChord/thickness; tipChord may be zero for a pointed wing. Signed sweep and dihedral are finite length displacements; generated coordinates must fit Float32.',
     ],
-    cost: 'Fixed trapezoid or triangular prism tessellation.',
+    topology: [
+      'Closed, manifold, outward prism. Each flat face has its own vertices, so every vertex normal is its face normal and the edges shade flat in any glTF viewer.',
+    ],
+    cost: 'Fixed trapezoid or triangular prism tessellation: 12 triangles on 24 vertices, or 8 on 18 with tipChord 0.',
   },
   {
     ...primitiveMetadata,
@@ -1377,7 +1383,7 @@ define(
     origin: 'Roots at ±rootZ with optional rootX/rootY offsets.',
     parameters: ['Uses wingGeo dimensions and explicit mirrored placement.'],
     preservation: [
-      'Creates separately owned mirrored geometry with corrected reflected triangle winding; material remains shared.',
+      'Creates separately owned mirrored geometry with corrected reflected triangle winding and per-face normals; material remains shared.',
     ],
     cost: 'Two fixed-complexity wing meshes.',
   },
@@ -1396,10 +1402,11 @@ define(
     origin: 'Wall base and floor top are local Y=0; floor extends downward.',
     parameters: [
       'Default width/depth/height describe a small room; dimensions are not an overall building/storey limit.',
-      'Per-wall rectangular openings are explicit; floor may be disabled.',
+      'Per-wall rectangular openings are explicit; floor may be disabled. An opening offset is measured from its wall centre and the opening must fit inside that wall: front/back walls are width + wallThickness long, left/right walls depth - wallThickness. wallThickness must be less than depth.',
     ],
     topology: [
       'Four box-segment walls with real apertures; optional floor. No roof or automatic whole-building watertightness.',
+      'Walls are centred on the width x depth footprint edges, so the outer footprint is (depth + wallThickness) x (width + wallThickness) and the interior (depth - wallThickness) x (width - wallThickness). Front/back walls run past the corners and left/right walls butt between them: corners neither overlap nor leave a notch, and no wall faces are flush.',
     ],
     cost: 'Mesh count grows with aperture segmentation, plus optional floor.',
   },
@@ -1568,7 +1575,11 @@ define(
       'steps must be an integer from 1 to 10000; finite rise/run magnitudes below 1e-4 are rejected.',
       'Width and treadThickness are positive finite. Negative rise/run preserve descending/reversed placement with positive solid dimensions.',
     ],
-    cost: 'steps treads plus optional steps risers.',
+    topology: [
+      ...assemblyFacts.topology!,
+      'Each tread and riser is a closed box. Ascending, a riser stops under its tread, so they share no faces; a step rise at or below treadThickness gets no riser. Descending, a riser stands on its tread.',
+    ],
+    cost: 'steps treads plus up to steps risers.',
   },
   {
     ...assemblyMetadata,

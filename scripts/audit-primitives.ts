@@ -923,12 +923,13 @@ function probes(): Probe[] {
       () => {
         const geometry = P.wingGeo();
         const n = geometry.getAttribute('normal');
-        // Leading edge uses vertices 0, 2, 6, 4; its face normal points +X (forward).
+        // The leading edge is the third face: index entries 12 to 17 (after top and bottom).
+        // Its face normal points +X (forward).
+        const index = geometry.getIndex()!;
+        const corners = [...new Set(Array.from({ length: 6 }, (_, k) => index.getX(12 + k)))];
         return {
           vertices: geometry.getAttribute('position').count,
-          leadingEdgeVertexNormals: [0, 2, 6, 4].map((i) =>
-            [n.getX(i), n.getY(i), n.getZ(i)].map(r6),
-          ),
+          leadingEdgeVertexNormals: corners.map((i) => [n.getX(i), n.getY(i), n.getZ(i)].map(r6)),
         };
       },
     ),

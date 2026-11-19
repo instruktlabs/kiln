@@ -54,6 +54,44 @@ does not publish a package.
   A benchmark agent whose working folder was not the workspace had fallen back to the CLI
   and skipped collections. No tool input schema changes. (#423)
 
+### Output that changes
+
+Primitive fixes from the primitives audit (`docs/reviews/2026-11-18-primitives-audit.md`).
+A build that calls one of these helpers makes a different GLB; a source that calls none of
+them builds byte-identically, measured over the saved packs and the example archive with
+the corpus gate.
+
+- **`createStairs` risers stop under their treads.** In an ascending flight each riser ran
+  the full step rise, so its top `treadThickness` sat inside the tread and four of its faces
+  lay on the tread's faces: a textured flight of 8 steps reported 8 `FLUSH_FACES` pairs. The
+  riser now ends at the tread's underside, and a step rise at or below `treadThickness` gets
+  no riser (12 fewer triangles per step). Bounds are unchanged; descending flights and
+  `riser: false` build as before. (#403)
+- **`room` walls meet at the corners.** All four walls ran only the footprint length, so at
+  each corner two walls overlapped in a `wallThickness / 2` square with flush tops (4
+  `FLUSH_FACES` pairs with a textured material) and the outer square stood empty: a 7.5 cm
+  notch the full wall height at defaults. The front and back walls now run
+  `width + wallThickness` and the left and right walls `depth - wallThickness` between them.
+  The outer footprint, interior, wall volume and triangle count are unchanged; the front,
+  back and side panels change length. A side-wall opening must now fit the shorter wall,
+  and the error names the wall and its length; `wallThickness` must be less than `depth`.
+  (#404)
+- **`wingGeo` and `createWingPair` shade their edges and caps flat.** The six flat faces
+  shared 8 vertices, so each vertex normal averaged faces about 90 degrees apart: the
+  leading edge faced +X but its normals pointed near ±Y, and one swept case had a
+  triangle whose normals opposed its winding. Kiln's views hid it under `flatShading`;
+  glTF has no such flag. Each face now has its own vertices (24, or 18 with `tipChord: 0`)
+  and carries its face normal (measured 0.0 degrees off, was up to 93.4). Triangles,
+  bounds and volume are unchanged; each wing has 16 more vertices (10 with `tipChord: 0`).
+  (#405)
+- **Capsules drop their zero-area pole triangles.** three.js `CapsuleGeometry` emits two
+  collapsed triangles per radial segment at the poles, 12 of 60 at defaults, and with a
+  zero straight length the whole straight section collapses too (24 of 60). The capsule
+  family (`capsuleGeo`, `capsuleXGeo`, `capsuleYGeo`, `capsuleZGeo`) now drops them from the
+  index, as spheres and cones already do: `capsuleGeo(0.5, 1)` has 48 triangles and
+  `countTriangles` and the build's `tris` count 48. Vertices, normals, UVs, bounds, volume
+  and the closed-solid facts are unchanged. (#407)
+
 ## 1.8.0 (2026-11-13)
 
 - **`kiln_export` and `kiln_export_to` can carry sizes.** Both take an optional

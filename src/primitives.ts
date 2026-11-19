@@ -413,7 +413,35 @@ export function capsuleGeo(radius: number, height: number, segments = 6): THREE.
   assertDimension('capsuleGeo height (straight middle length)', height, true);
   assertDimension('capsuleGeo outer half-length', height / 2 + radius);
   assertPrimitiveSegments('capsuleGeo segments', segments, 3);
-  return new THREE.CapsuleGeometry(radius, height, 2, segments);
+  const geometry = new THREE.CapsuleGeometry(radius, height, 2, segments);
+  dropCollapsedTriangles(geometry, radius);
+  return geometry;
+}
+
+/**
+ * three.js CapsuleGeometry emits two zero-area triangles per radial segment at the poles
+ * (and the whole straight section when its length is 0). Drop them from the index, as
+ * SphereGeometry does by construction; vertices, normals and UVs are kept. Real triangles
+ * have at least about radius^2 / (4 * segments) of area, far above the cut.
+ */
+function dropCollapsedTriangles(geometry: THREE.BufferGeometry, radius: number): void {
+  const index = geometry.getIndex()!;
+  const position = geometry.getAttribute('position');
+  const cut = 1e-12 * radius * radius;
+  const kept: number[] = [];
+  const a = new THREE.Vector3();
+  const b = new THREE.Vector3();
+  const c = new THREE.Vector3();
+  for (let i = 0; i < index.count; i += 3) {
+    const ia = index.getX(i);
+    const ib = index.getX(i + 1);
+    const ic = index.getX(i + 2);
+    a.fromBufferAttribute(position, ia);
+    b.fromBufferAttribute(position, ib).sub(a);
+    c.fromBufferAttribute(position, ic).sub(a);
+    if (b.cross(c).length() > cut) kept.push(ia, ib, ic);
+  }
+  geometry.setIndex(kept);
 }
 
 export function capsuleXGeo(radius: number, length: number, segments = 6): THREE.CapsuleGeometry {
@@ -886,53 +914,46 @@ export function wingGeo(options: WingGeometryOptions = {}): THREE.BufferGeometry
   if (!vertices.every(Number.isFinite))
     throw new RangeError('wingGeo dimensions and offsets produce nonfinite Float32 vertices.');
 
-  const indices = [
-    0,
-    3,
-    2,
-    0,
-    1,
-    3, // top
-    4,
-    6,
-    7,
-    4,
-    7,
-    5, // bottom
-    0,
-    2,
-    6,
-    0,
-    6,
-    4, // leading edge
-    1,
-    5,
-    7,
-    1,
-    7,
-    3, // trailing edge
-    0,
-    4,
-    5,
-    0,
-    5,
-    1, // root cap
-    2,
-    3,
-    7,
-    2,
-    7,
-    6, // tip cap
-  ];
+  // Each flat face lists its triangles over the eight corners above. A zero tip chord is a
+  // triangular wing: its top and bottom are one triangle each and the tip cap is omitted.
+  const faces: number[][] =
+    tipChord === 0
+      ? [
+          [0, 1, 3], // top
+          [4, 7, 5], // bottom
+          [0, 2, 6, 0, 6, 4], // leading edge
+          [1, 5, 7, 1, 7, 3], // trailing edge
+          [0, 4, 5, 0, 5, 1], // root cap
+        ]
+      : [
+          [0, 3, 2, 0, 1, 3], // top
+          [4, 6, 7, 4, 7, 5], // bottom
+          [0, 2, 6, 0, 6, 4], // leading edge
+          [1, 5, 7, 1, 7, 3], // trailing edge
+          [0, 4, 5, 0, 5, 1], // root cap
+          [2, 3, 7, 2, 7, 6], // tip cap
+        ];
+
+  // Every face is planar and gets its own vertices, as boxGeo does, so each vertex normal is
+  // its face normal instead of an average across faces about 90 degrees apart.
+  const positions: number[] = [];
+  const index: number[] = [];
+  for (const face of faces) {
+    const local = new Map<number, number>();
+    for (const corner of face) {
+      let vertex = local.get(corner);
+      if (vertex === undefined) {
+        vertex = positions.length / 3;
+        local.set(corner, vertex);
+        positions.push(vertices[corner * 3]!, vertices[corner * 3 + 1]!, vertices[corner * 3 + 2]!);
+      }
+      index.push(vertex);
+    }
+  }
 
   const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-  // A zero tip chord is a triangular wing: omit collapsed faces at the tip.
-  geo.setIndex(
-    tipChord === 0
-      ? [0, 1, 3, 4, 7, 5, 0, 2, 6, 0, 6, 4, 1, 5, 7, 1, 7, 3, 0, 4, 5, 0, 5, 1]
-      : indices,
-  );
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geo.setIndex(index);
   geo.computeVertexNormals();
   return geo;
 }
@@ -1355,6 +1376,10 @@ export function room(
     parent,
   } = options;
   const openings = options.openings ?? [{ wall: 'front', kind: 'door' }];
+  if (depth > 0 && wallThickness >= depth)
+    throw new RangeError(
+      `room("${name}"): wallThickness must be less than depth (got ${wallThickness} and ${depth}).`,
+    );
   const root = new THREE.Object3D();
   root.name = name;
 
@@ -1365,23 +1390,34 @@ export function room(
     pos: [number, number, number],
     which: RoomOpening['wall'],
   ): THREE.Object3D => {
-    const w = wallWithOpening(`${name}_Wall${suffix}`, material, {
-      length: len,
-      height,
-      thickness: wallThickness,
-      axis,
-      openings: openings.filter((op) => op.wall === which),
-      parent: root,
-    });
+    let w: THREE.Object3D;
+    try {
+      w = wallWithOpening(`${name}_Wall${suffix}`, material, {
+        length: len,
+        height,
+        thickness: wallThickness,
+        axis,
+        openings: openings.filter((op) => op.wall === which),
+        parent: root,
+      });
+    } catch (error) {
+      if (!(error instanceof RangeError)) throw error;
+      throw new RangeError(
+        `room("${name}"): ${which} wall (length ${+len.toFixed(6)}, offsets from its centre): ${error.message}`,
+      );
+    }
     w.position.set(...pos);
     return w;
   };
 
+  // Walls are centred on the footprint edges. Front and back run past the corners by the
+  // wall thickness and left and right fit between them, so the corners neither overlap nor
+  // leave a notch; the outer footprint and the interior are unchanged.
   const walls = {
-    front: wall('Front', width, 'z', [depth / 2, 0, 0], 'front'),
-    back: wall('Back', width, 'z', [-depth / 2, 0, 0], 'back'),
-    left: wall('Left', depth, 'x', [0, 0, -width / 2], 'left'),
-    right: wall('Right', depth, 'x', [0, 0, width / 2], 'right'),
+    front: wall('Front', width + wallThickness, 'z', [depth / 2, 0, 0], 'front'),
+    back: wall('Back', width + wallThickness, 'z', [-depth / 2, 0, 0], 'back'),
+    left: wall('Left', depth - wallThickness, 'x', [0, 0, -width / 2], 'left'),
+    right: wall('Right', depth - wallThickness, 'x', [0, 0, width / 2], 'right'),
   };
 
   let floorObj: THREE.Object3D | null = null;
@@ -1474,16 +1510,23 @@ export function createStairs(
       createPart(`${name}Step${i + 1}`, treadGeo, material, { position: treadPos, parent: root }),
     );
 
-    if (riser) {
+    // Ascending, the tread already fills the top treadThickness of the step, so the riser
+    // stops under it (no shared faces); a step rise at or below treadThickness needs no
+    // riser (a rise within a millionth of treadThickness counts, so rounding leaves no
+    // sliver). Descending, the riser stands on the tread and spans the whole step.
+    const ascending = stepRise > 0;
+    const riserHeight = ascending ? stepRise - treadThickness : -stepRise;
+    if (riser && riserHeight > (ascending ? treadThickness * 1e-6 : 0)) {
       const front = i * stepRun;
+      const riserY = ascending ? topY - treadThickness - riserHeight / 2 : topY - stepRise / 2;
       const riserGeo =
         axis === 'x'
-          ? boxGeo(treadThickness, Math.abs(stepRise), width)
-          : boxGeo(width, Math.abs(stepRise), treadThickness);
+          ? boxGeo(treadThickness, riserHeight, width)
+          : boxGeo(width, riserHeight, treadThickness);
       const riserPos: [number, number, number] =
         axis === 'x'
-          ? [front + (Math.sign(stepRun) * treadThickness) / 2, topY - stepRise / 2, 0]
-          : [0, topY - stepRise / 2, front + (Math.sign(stepRun) * treadThickness) / 2];
+          ? [front + (Math.sign(stepRun) * treadThickness) / 2, riserY, 0]
+          : [0, riserY, front + (Math.sign(stepRun) * treadThickness) / 2];
       createPart(`${name}Riser${i + 1}`, riserGeo, material, { position: riserPos, parent: root });
     }
   }

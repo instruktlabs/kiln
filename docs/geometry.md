@@ -407,7 +407,10 @@ Basic shape factories now reject invalid dimensions and segment counts before
 construction. Dimensions must be finite and representable in Float32. Box, sphere,
 cone, plane, torus and positive shape radii require positive dimensions. A cylinder
 may have one zero end radius for a tip; both cannot be zero. Capsule middle length
-may be zero, making its total length twice the radius. A zero-thickness sheet uses
+may be zero, making its total length twice the radius. Capsules drop the zero-area
+triangles three.js builds at the poles (and the empty straight section at zero length),
+as spheres do, keeping every vertex and UV: `capsuleGeo(0.5, 1)` has 48 triangles, 8 per
+radial segment (6 at zero length). A zero-thickness sheet uses
 `planeGeo`; a zero-size box is an error. `decalBox` retains its documented 0.002
 minimum depth and accepts a nonnegative requested depth.
 
@@ -442,10 +445,19 @@ The solid primitives are closed solids by contract: `boxGeo`, `sphereGeo`, the
 `torusGeo`, `decalBox` and `wingGeo` each return a closed, manifold, outward mesh
 for every input they accept, so `requireSolid` passes on them. "Closed" is measured
 after welding vertices that share a position, as `geometryDiagnostics` does; the
-glTF primitive itself may stay split at UV seams. Scene builders (`createLadder`,
+glTF primitive itself may stay split at UV seams, and at hard edges: each flat face
+of `boxGeo`, `decalBox` and `wingGeo` has its own vertices, so its vertex normals are
+its face normal in any renderer, with or without `flatShading`.
+Scene builders (`createLadder`,
 `wallWithOpening`, `room`, `createStairs`, `createWingPair`, `beamBetween`) make
 the same promise for each mesh they create, not for the assembly, whose parts
-overlap by design. `planeGeo`, `foliageCardGeo`, `crossedQuadsGeo` and
+overlap by design. Their parts still share no faces, so a textured build reports no
+`FLUSH_FACES` pair: an ascending `createStairs` riser stops under its tread (a step
+rise at or below `treadThickness` gets no riser), and `room` runs its front and back
+walls past the corners (`width + wallThickness`) and fits the left and right walls
+between them (`depth - wallThickness`), so no corner overlaps or leaves a notch;
+side-wall openings must fit the shorter walls.
+`planeGeo`, `foliageCardGeo`, `crossedQuadsGeo` and
 `octaGridPlane` are open, one-sided surfaces and `requireSolid` fails them.
 `scripts/audit-primitives.test.ts` measures the contract, and the measured table
 is in the [primitives audit](https://github.com/instruktlabs/kiln/blob/main/docs/reviews/2026-11-18-primitives-audit.md).
