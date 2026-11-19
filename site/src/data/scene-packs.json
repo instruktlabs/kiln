@@ -2,16 +2,16 @@
   "farm": {
     "schema": "kiln.scene-pack/1",
     "id": "farm",
-    "release": "r36-flush1",
+    "release": "r36-flush2",
     "three": "0.186.0",
     "source": ".cache/site-inputs/farm/standalone",
-    "base": "/scene-packs/farm/r36-flush1/",
+    "base": "/scene-packs/farm/r36-flush2/",
     "sealedFiles": 34,
-    "sealedBytes": 7133763,
+    "sealedBytes": 7027999,
     "totalFiles": 37,
-    "totalBytes": 7168078,
-    "packJsonSha256": "f97c8ee73d388e12d03784c605341f2f5fcb6d1c05672a161072c99abd235c8a",
-    "sha256sumsSha256": "4d52b8101f539c4be68713b1e3cd213c243ba849e1177635a62f829f4d0a9331",
+    "totalBytes": 7066849,
+    "packJsonSha256": "cc6f2c6d326257daa4c32dc161f9f402a7e8423c1487357ab205981c3dbc8034",
+    "sha256sumsSha256": "f346c8a3a1c2c263a615f31dafacf3735cdb4f998ff46bbfe63919f8d89dd3e4",
     "noticesSha256": "4bf6f2bd1d803606c88eb540c8e207ddee4a76be4d12fe14d6110bb7505e4ebc"
   },
   "golden-gate": {

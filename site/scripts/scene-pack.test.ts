@@ -277,13 +277,14 @@ describe('scene pack catalog record', () => {
     expect(compareRuntimeRecord(undefined, recorded)).toEqual(['the record has no runtime for this standalone build']);
   });
 
-  test('the Farm record serves the r36 local review with the flush-face fix farmer and retained walking controls', () => {
+  test('the Farm record serves the r36 local review with the flush-face fix models and retained walking controls', () => {
     const record = scenePacks.farm;
-    expect(record.release).toBe('r36-flush1');
+    expect(record.release).toBe('r36-flush2');
     expect(record.base).toBe(`/scene-packs/farm/${record.release}/`);
     expect(record.source).toBe('.cache/site-inputs/farm/standalone');
-    // r36-local-review with its farmer swapped for the flush-face fix child (scripts/scene-pack-swap.mjs).
-    expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_133_763, packJsonSha256: 'f97c8ee73d388e12d03784c605341f2f5fcb6d1c05672a161072c99abd235c8a' });
+    // r36-local-review with its farmer swapped for the flush-face fix child (r36-flush1), then the farmhouse, windmill,
+    // watermill, tractor and trailer swapped for theirs (scripts/scene-pack-swap.mjs).
+    expect(record).toMatchObject({ sealedFiles: 34, sealedBytes: 7_027_999, packJsonSha256: 'cc6f2c6d326257daa4c32dc161f9f402a7e8423c1487357ab205981c3dbc8034' });
     // The sealed asset pack keeps its original producer version when current runtime code advances.
     expect(record.three).toBe('0.186.0');
     expect(record.totalFiles).toBe(record.sealedFiles + 3);
@@ -291,7 +292,7 @@ describe('scene pack catalog record', () => {
     for (const digest of [record.packJsonSha256, record.sha256sumsSha256, record.noticesSha256]) expect(digest).toMatch(/^[0-9a-f]{64}$/);
     expect(farmScene.assetBase).toBe(record.base);
     expect(farmScene.pack).toBe(record);
-    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r36-flush1'));
+    expect(stagedPackDirectory(record, '/site')).toBe(resolve('/site', 'public', 'scene-packs', 'farm', 'r36-flush2'));
     expect(() => stagedPackDirectory({ base: '/../escape/' }, '/site')).toThrow('Unexpected');
   });
 

@@ -1,0 +1,108 @@
+{
+  "schema": "kiln.scene-pack-swap/1",
+  "scene": "farm",
+  "change": "Flush-face fix (#402): the farmhouse, windmill, watermill, tractor and trailer are the child revisions of the pack's current revisions, saved on Kiln 1.9.0 with their coincident faces moved apart once their farm-production project records were restored. The farmer keeps the flush-face fix child it took in r36-flush1.",
+  "from": {
+    "release": "r36-flush1",
+    "packJsonSha256": "f97c8ee73d388e12d03784c605341f2f5fcb6d1c05672a161072c99abd235c8a"
+  },
+  "release": "r36-flush2",
+  "inputs": "A Kiln asset store holding the five saved children: <asset>/revisions/<revision>/ with asset.glb, manifest.json and the files the manifest lists (the ws402-farm-<slug> stores' assets/kiln, not in the repository).",
+  "swaps": [
+    {
+      "id": "farmhouse",
+      "asset": "a_793e1ebd4c32465ab937d93215ec2a50",
+      "member": "models/farmhouse.glb",
+      "file": "a_793e1ebd4c32465ab937d93215ec2a50/revisions/r_10b63bdd371e4a78ae90faf92a8568ed/asset.glb",
+      "manifest": "a_793e1ebd4c32465ab937d93215ec2a50/revisions/r_10b63bdd371e4a78ae90faf92a8568ed/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "runtime.kiln-metadata.json",
+      "revision": "r_10b63bdd371e4a78ae90faf92a8568ed",
+      "parentRevision": "r_01f97f5e943e4c2693b6db8596f3e353",
+      "bytes": 549616,
+      "sha256": "7478f660811eeb93011b0baf22857e3efa3b102b45b2c9cdd9079e330960f646",
+      "previous": {
+        "revision": "r_01f97f5e943e4c2693b6db8596f3e353",
+        "bytes": 549584,
+        "sha256": "1b02596b30e3417e3f8336893694f2614002e28154408803b145154097de8512"
+      },
+      "rule": "The scene file is the Kiln runtime profile of the saved revision (kiln export --profile runtime --out runtime.glb; the sidecar is not in the pack): applied to the parent it reproduces the current member byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "windmill",
+      "asset": "windmill",
+      "member": "models/windmill.glb",
+      "file": "windmill/revisions/r_be71af41cdd34106b2a81e84e44a529f/asset.glb",
+      "manifest": "windmill/revisions/r_be71af41cdd34106b2a81e84e44a529f/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "runtime.kiln-metadata.json",
+      "revision": "r_be71af41cdd34106b2a81e84e44a529f",
+      "parentRevision": "r_ef9045311dd040258e0143345c171d6f",
+      "bytes": 454012,
+      "sha256": "f3ae9e54dbd8f42ffb219ffa48092eaf96e44b4f5e452b23219d3d553e75d806",
+      "previous": {
+        "revision": "r_ef9045311dd040258e0143345c171d6f",
+        "bytes": 454760,
+        "sha256": "089e966217cbd05c81a123ab2419d9d9c172bb7567f30ef2f7020cc790c8148f"
+      },
+      "rule": "The scene file is the Kiln runtime profile of the saved revision (kiln export --profile runtime --out runtime.glb; the sidecar is not in the pack): applied to the parent it reproduces the current member byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "watermill",
+      "asset": "watermill",
+      "member": "models/watermill.glb",
+      "file": "watermill/revisions/r_437647e09af4431da99fb2dd0906288a/asset.glb",
+      "manifest": "watermill/revisions/r_437647e09af4431da99fb2dd0906288a/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "runtime.kiln-metadata.json",
+      "revision": "r_437647e09af4431da99fb2dd0906288a",
+      "parentRevision": "r_f8ab38b03b5a4fb691b860d9fb076200",
+      "bytes": 580300,
+      "sha256": "126251b82f4ab9557552a198172ca1f8b35a4c60b9355292e6f950c95e5da2b0",
+      "previous": {
+        "revision": "r_f8ab38b03b5a4fb691b860d9fb076200",
+        "bytes": 580264,
+        "sha256": "b57f29056cf3b072058d65016b753551f146c4cace974458087bceaaab4d0ce0"
+      },
+      "rule": "The scene file is the Kiln runtime profile of the saved revision (kiln export --profile runtime --out runtime.glb; the sidecar is not in the pack): applied to the parent it reproduces the current member byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "tractor",
+      "asset": "tractor",
+      "member": "models/tractor.glb",
+      "file": "tractor/revisions/r_e89c34e3ad4e45d7abc75e779daae0cc/asset.glb",
+      "manifest": "tractor/revisions/r_e89c34e3ad4e45d7abc75e779daae0cc/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "runtime.kiln-metadata.json",
+      "revision": "r_e89c34e3ad4e45d7abc75e779daae0cc",
+      "parentRevision": "r_ebeeb57adda343dd98d575e97ca24f92",
+      "bytes": 304576,
+      "sha256": "144ed8fa0bded0355bb292d1534671e0bf84024ff6988e13df3b777419eab87f",
+      "previous": {
+        "revision": "r_ebeeb57adda343dd98d575e97ca24f92",
+        "bytes": 409684,
+        "sha256": "8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117"
+      },
+      "rule": "The scene file is the Kiln runtime profile of the saved revision (kiln export --profile runtime --out runtime.glb; the sidecar is not in the pack): applied to the parent it reproduces the current member byte for byte, and it is applied to the child."
+    },
+    {
+      "id": "trailer",
+      "asset": "trailer",
+      "member": "models/trailer.glb",
+      "file": "trailer/revisions/r_50136ad30e7a43d688d32e1d1a60a9c8/asset.glb",
+      "manifest": "trailer/revisions/r_50136ad30e7a43d688d32e1d1a60a9c8/manifest.json",
+      "derive": "kiln-runtime",
+      "runtimeMetadata": "runtime.kiln-metadata.json",
+      "revision": "r_50136ad30e7a43d688d32e1d1a60a9c8",
+      "parentRevision": "r_c72e516ce16949cfbddedbc9155efa06",
+      "bytes": 183276,
+      "sha256": "30628167973ce5cb9f5e7b47988c2b3b50f86359188601891823eb31aaa6aaca",
+      "previous": {
+        "revision": "r_c72e516ce16949cfbddedbc9155efa06",
+        "bytes": 183252,
+        "sha256": "6394d8c51b0c368a25f21d644630370cd6d8267dbd999642587460cb7a2b90de"
+      },
+      "rule": "The scene file is the Kiln runtime profile of the saved revision (kiln export --profile runtime --out runtime.glb; the sidecar is not in the pack): applied to the parent it reproduces the current member byte for byte, and it is applied to the child."
+    }
+  ]
+}

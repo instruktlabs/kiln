@@ -44,14 +44,14 @@ for (const release of ['r34', 'r35-local-review']) test(`${release} saved farmer
 });
 
 
-test('exact released farmer (r36-flush1) preserves relaxed shoulders on substep and normal rendered frames', async () => {
+test('exact released farmer (r36-flush2) preserves relaxed shoulders on substep and normal rendered frames', async () => {
   await import('three');
   const { createFarmSim } = await import('../../src/play/sim');
   const { buildFarmColliders } = await import('../../src/world/colliders');
   const { FARM_WALK } = await import('../../src/constants');
   const loader = new GLTFLoader();
   loader.register(() => ({ name: 'fit-material', loadMaterial: async () => new MeshBasicMaterial() }));
-  const expected = { farmer: 'f0b5ef71ca0abb99d71b6ed036c2672e1ebfe2d3d90b243651ad3f2fa634f6d3', tractor: '8185aea55248ec02eb49de46eb04d85c2cdd9a9f9a1d485d649d79009c3f1117' };
+  const expected = { farmer: 'f0b5ef71ca0abb99d71b6ed036c2672e1ebfe2d3d90b243651ad3f2fa634f6d3', tractor: '144ed8fa0bded0355bb292d1534671e0bf84024ff6988e13df3b777419eab87f' };
   const instances: import('../../src/world/types').FarmInstance[] = [];
   for (const id of ['farmer', 'tractor'] as const) {
     const bytes = readFileSync(new URL(`../../../../.cache/site-inputs/farm/standalone/assets/models/${id}.glb`, import.meta.url));
