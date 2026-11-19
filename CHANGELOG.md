@@ -7,6 +7,8 @@ does not publish a package.
 
 ## Unreleased
 
+## 1.9.0 (2026-11-18)
+
 - **`fenceRun` builds posts and rails along a path.** `fenceRun(name, { path, post, rails,
   material })` puts a post at each path point and rails between neighbouring posts. Rails follow a
   sloping path and stop inside each post, so no rail end shows and no rail face lies on a post face.

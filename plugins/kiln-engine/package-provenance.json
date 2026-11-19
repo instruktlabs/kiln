@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
   "kind": "kiln-local-plugin",
-  "pluginVersion": "1.8.0",
-  "engineVersion": "1.8.0",
+  "pluginVersion": "1.9.0",
+  "engineVersion": "1.9.0",
   "executables": [
     "bin/kiln-setup-workspace.mjs"
   ],
   "files": {
     ".claude-plugin/icon.png": "sha256:b4b651c402793b7e27cab780f04b14f80daec6d0cd5b7e4e90313930581a54e9",
-    ".claude-plugin/plugin.json": "sha256:b9611e9dad6e1a1172b9fa9e82100190246a32b0b281037d981508395e14e387",
+    ".claude-plugin/plugin.json": "sha256:6ef13d33ecd1cf4312b705993ff964798a32c8123a30e3f52bd246d554f70d2f",
     "bin/kiln-setup-workspace.mjs": "sha256:3d9a30236919a6ca91acb6b26f808cec442e6edc3dd88fe010645b010d76e838",
     "LICENSE": "sha256:cdba278ebf1d6de618869936226bf03be4887179c128efc7aaa13d22034826a5",
-    "plugin.json": "sha256:475819cf6bbc70a3b42d388e2ec60eae21c99c4b73fb7669543079bc49cd345a",
+    "plugin.json": "sha256:4269f7b0045c1a26682d99639a865aa67d0bd5ac8f3622006d7fb605226a787e",
     "PRIVACY.md": "sha256:5f58d981667e40441e21c2dec411f269a9a67a6141cec61976d27088fb12573b",
-    "README.md": "sha256:c2a6278d803def1ecf8648096cdd2e897b37677be8a0f3abbf30b7fa6f0d0e48",
-    "runtime.json": "sha256:1327d34a2dfc622a046abf72370a4b8d935ae1c0c93d24b802c8a34162531000",
+    "README.md": "sha256:da7e3757c4e71380370e766be8340075c83468de9159625f0d7cd622e30be999",
+    "runtime.json": "sha256:01b92dcd93e6696790a79f84ca710a2b0adb38b44a8c81b6afa184e925dbcafc",
     "SECURITY.md": "sha256:8e238d3985deff828efd71bc3354a5b0275613a4921f369fc971f760ca249606",
     "skills/kiln-setup-workspace/references/plugin-install.md": "sha256:c338fb792e7fad0364c3e1a13c94c506afa1395489ec1b6e83b36d04728935fb",
     "skills/kiln-setup-workspace/references/renderer-setup.md": "sha256:a716a1e35c3ed69256c9f90ca7e08a3f0e66ccfc391c57a9454cad5d3c6f78dd",
-    "skills/kiln-setup-workspace/SKILL.md": "sha256:65ed926b3503a33f4fe793e84e4a045ce36e3967f0e6b340e456a15dd010ce54"
+    "skills/kiln-setup-workspace/SKILL.md": "sha256:c91849edeed2a730f951f195d4387ebe16a7f3f892862282b6fb1058e2a57ab6"
   }
 }
