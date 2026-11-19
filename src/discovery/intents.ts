@@ -100,29 +100,31 @@ const stopwords = new Set([
   'need',
 ]);
 
-const inflections: Readonly<Record<string, string>> = {
-  supports: 'support',
-  pipes: 'pipe',
-  windows: 'window',
-  walls: 'wall',
-  doors: 'door',
-  wheels: 'wheel',
-  beams: 'beam',
-  steps: 'step',
-  solids: 'solid',
-  shapes: 'shape',
-  sections: 'section',
-  profiles: 'profile',
-  vertices: 'vertex',
-  copies: 'copy',
-  materials: 'material',
-  curves: 'curve',
-  normals: 'normal',
-  edges: 'edge',
-  points: 'point',
-  endpoints: 'endpoint',
-  pillars: 'pillar',
-};
+// A Map, not an object literal: a query word such as `constructor` must not read a
+// member of Object.prototype.
+const inflections: ReadonlyMap<string, string> = new Map([
+  ['supports', 'support'],
+  ['pipes', 'pipe'],
+  ['windows', 'window'],
+  ['walls', 'wall'],
+  ['doors', 'door'],
+  ['wheels', 'wheel'],
+  ['beams', 'beam'],
+  ['steps', 'step'],
+  ['solids', 'solid'],
+  ['shapes', 'shape'],
+  ['sections', 'section'],
+  ['profiles', 'profile'],
+  ['vertices', 'vertex'],
+  ['copies', 'copy'],
+  ['materials', 'material'],
+  ['curves', 'curve'],
+  ['normals', 'normal'],
+  ['edges', 'edge'],
+  ['points', 'point'],
+  ['endpoints', 'endpoint'],
+  ['pillars', 'pillar'],
+]);
 
 export function discoveryTokens(value: string): string[] {
   return value
@@ -132,5 +134,5 @@ export function discoveryTokens(value: string): string[] {
     .toLowerCase()
     .split(/[^\p{L}\p{N}]+/u)
     .filter((token) => token.length > 0 && !stopwords.has(token))
-    .map((token) => inflections[token] ?? token);
+    .map((token) => inflections.get(token) ?? token);
 }

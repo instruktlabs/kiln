@@ -15,6 +15,16 @@ test('tokenization handles identifiers and ordinary inflections without losing a
   expect(discoveryTokens('ＭｅｓｈＧｅｏ UVProject')).toEqual(['mesh', 'geo', 'uv', 'project']);
 });
 
+test('a word that names an Object.prototype member stays that word', () => {
+  // `constructor` once read Object.prototype.constructor out of the inflection table.
+  expect(discoveryTokens('Shape constructor CONSTRUCTOR __proto__')).toEqual([
+    'shape',
+    'constructor',
+    'constructor',
+    'proto',
+  ]);
+});
+
 test('all curated intent metadata belongs to existing current helpers', () => {
   const names = new Set(listHelperSpecs().map((entry) => entry.name));
   for (const [name, intents] of Object.entries(discoveryIntents)) {

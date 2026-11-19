@@ -7,6 +7,11 @@ does not publish a package.
 
 ## Unreleased
 
+- **A discovery search containing the word "constructor" works.** The word read
+  `Object.prototype.constructor` out of the inflection table, so the response held a function,
+  failed to clone, and the `kiln_discover` call failed with "function Object() { [native code] }
+  could not be cloned." The table is now a `Map`. Found by a Codex author in the pre-1.9.0
+  dogfood.
 - **`kiln mcp` starts the stdio MCP server from the default executable, and the repository carries
   the official MCP registry manifest.** `npx @instruktlabs/kiln` runs `kiln`, not `kiln-mcp`, so the
   registry entry needs a subcommand; `kiln mcp` runs the packaged `mcp-server.mjs` beside the CLI and
