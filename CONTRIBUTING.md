@@ -83,9 +83,11 @@ gate rebuilds every saved pack revision (`packs/*/sources/` and flat pack snapsh
 `packs/troy/assets/`) and the pinned example archive, then compares the GLB bytes with a
 baseline made **on the same machine and Node**. GLB bytes depend on the Node that evaluates
 the program: three.js converts every material colour to linear with `Math.pow`, which gives
-different results on Node 22 and Node 24, and `Math.log` differs between Windows and Linux even
-on one Node. So neither a baseline from another platform or Node nor a manifest's recorded hash
-is a portable reference. It is a manual or nightly maintainer
+different results on Node 22 and Node 24. On Node 22.23.4, Windows and Linux gave identical
+bytes for all 817 programs that build (2026-11-18), although `Math.log` differs between them
+for some inputs; the gate still refuses to compare across platforms, since a program could
+reach those inputs. So neither a baseline from another Node or platform nor a manifest's
+recorded hash is a portable reference. It is a manual or nightly maintainer
 check, not part of `bun run test`; `scripts/corpus-gate.test.ts` covers its logic.
 
 ```sh

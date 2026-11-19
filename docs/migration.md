@@ -6,7 +6,7 @@ names have no callable compatibility aliases.
 
 ## Changes between 1.6 and 1.9
 
-No export path, evaluator or MCP embedding name was removed between 1.6.0 and 1.8.0: the
+No export path, evaluator or MCP embedding name was removed between 1.6.0 and 1.9.0: the
 export map only gained `params` and `param-bindings`, and `@instruktlabs/kiln/evaluator`
 and `@instruktlabs/kiln/mcp` export the same names. Hosts that pinned 1.6.0 can move to the
 current release by changing the version, then checking these points. Details are in the
