@@ -34,7 +34,12 @@
       "Browse my collection and refine an existing asset."
     ],
     "composerIcon": "./plugins/kiln-engine/.claude-plugin/icon.png",
-    "logo": "./plugins/kiln-engine/.claude-plugin/icon.png"
+    "logo": "./plugins/kiln-engine/.claude-plugin/icon.png",
+    "screenshots": [
+      "./assets/gallery/gallery-grid-01.png",
+      "./assets/gallery/gallery-grid-02.png",
+      "./assets/gallery/gallery-grid-03.png"
+    ]
   },
   "mcpServers": {
     "kiln": {
