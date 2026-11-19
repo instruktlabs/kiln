@@ -27,6 +27,13 @@ does not publish a package.
   for delivery files. Measured over six dogfood runs in `docs/reviews/2026-11-18-wave3-dogfood.md`.
   Existing workspaces report the skill as changed; run `kiln-init <workspace> --check`, then
   `--upgrade`. (#370)
+- **Print export to STL and 3MF.** `kiln export ASSET_ID REVISION_ID --format stl|3mf --out
+  part.stl|part.3mf` writes a saved revision's visible meshes for a printer, in millimetres
+  and Z-up. Every visible mesh must be a closed, manifold, outward solid, as `requireSolid`
+  measures it; otherwise the export names each failing part and writes nothing. 3MF carries
+  units and base colours; textures are dropped; self-intersection is not checked. The same GLB
+  gives the same bytes. The library form is `exportAssetPrint` in
+  `@instruktlabs/kiln/asset-export`. No MCP tool schema changes. (#378)
 - **`file` errors name the workspace root, and absolute paths inside it work.** The `file` input
   accepts an absolute path that resolves inside the workspace root, as well as a relative
   one; `..`, another drive and, newly, a link that resolves outside the root are refused.
