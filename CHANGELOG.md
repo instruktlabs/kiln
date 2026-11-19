@@ -74,6 +74,13 @@ the corpus gate.
   and carries its face normal (measured 0.0 degrees off, was up to 93.4). Triangles,
   bounds and volume are unchanged; each wing has 16 more vertices (10 with `tipChord: 0`).
   (#405)
+- **Capsules drop their zero-area pole triangles.** three.js `CapsuleGeometry` emits two
+  collapsed triangles per radial segment at the poles, 12 of 60 at defaults, and with a
+  zero straight length the whole straight section collapses too (24 of 60). The capsule
+  family (`capsuleGeo`, `capsuleXGeo`, `capsuleYGeo`, `capsuleZGeo`) now drops them from the
+  index, as spheres and cones already do: `capsuleGeo(0.5, 1)` has 48 triangles and
+  `countTriangles` and the build's `tris` count 48. Vertices, normals, UVs, bounds, volume
+  and the closed-solid facts are unchanged. (#407)
 
 ## 1.8.0 (2026-11-13)
 

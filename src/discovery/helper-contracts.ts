@@ -157,7 +157,10 @@ for (const [axis, names] of [
         'height/length is the nonnegative straight middle section; zero is supported. Radius is positive; total outer length is height/length + 2 × radius.',
         'Cap subdivision is fixed at 2; radial segments default to 6.',
       ],
-      cost: 'Linear in radial segments with fixed cap subdivision.',
+      topology: [
+        'Closed, manifold, outward after welding the UV seam and pole duplicates. Zero-area pole triangles (and the empty straight section at zero height/length) are dropped from the index; vertices, normals and UVs are kept.',
+      ],
+      cost: 'Linear in radial segments with fixed cap subdivision: 8 triangles per radial segment (48 at the default 6), 6 at zero height/length.',
     },
     {
       ...primitiveMetadata,

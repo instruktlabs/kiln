@@ -412,7 +412,35 @@ export function capsuleGeo(radius: number, height: number, segments = 6): THREE.
   assertDimension('capsuleGeo height (straight middle length)', height, true);
   assertDimension('capsuleGeo outer half-length', height / 2 + radius);
   assertPrimitiveSegments('capsuleGeo segments', segments, 3);
-  return new THREE.CapsuleGeometry(radius, height, 2, segments);
+  const geometry = new THREE.CapsuleGeometry(radius, height, 2, segments);
+  dropCollapsedTriangles(geometry, radius);
+  return geometry;
+}
+
+/**
+ * three.js CapsuleGeometry emits two zero-area triangles per radial segment at the poles
+ * (and the whole straight section when its length is 0). Drop them from the index, as
+ * SphereGeometry does by construction; vertices, normals and UVs are kept. Real triangles
+ * have at least about radius^2 / (4 * segments) of area, far above the cut.
+ */
+function dropCollapsedTriangles(geometry: THREE.BufferGeometry, radius: number): void {
+  const index = geometry.getIndex()!;
+  const position = geometry.getAttribute('position');
+  const cut = 1e-12 * radius * radius;
+  const kept: number[] = [];
+  const a = new THREE.Vector3();
+  const b = new THREE.Vector3();
+  const c = new THREE.Vector3();
+  for (let i = 0; i < index.count; i += 3) {
+    const ia = index.getX(i);
+    const ib = index.getX(i + 1);
+    const ic = index.getX(i + 2);
+    a.fromBufferAttribute(position, ia);
+    b.fromBufferAttribute(position, ib).sub(a);
+    c.fromBufferAttribute(position, ic).sub(a);
+    if (b.cross(c).length() > cut) kept.push(ia, ib, ic);
+  }
+  geometry.setIndex(kept);
 }
 
 export function capsuleXGeo(radius: number, length: number, segments = 6): THREE.CapsuleGeometry {

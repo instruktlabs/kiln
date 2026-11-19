@@ -407,7 +407,10 @@ Basic shape factories now reject invalid dimensions and segment counts before
 construction. Dimensions must be finite and representable in Float32. Box, sphere,
 cone, plane, torus and positive shape radii require positive dimensions. A cylinder
 may have one zero end radius for a tip; both cannot be zero. Capsule middle length
-may be zero, making its total length twice the radius. A zero-thickness sheet uses
+may be zero, making its total length twice the radius. Capsules drop the zero-area
+triangles three.js builds at the poles (and the empty straight section at zero length),
+as spheres do, keeping every vertex and UV: `capsuleGeo(0.5, 1)` has 48 triangles, 8 per
+radial segment (6 at zero length). A zero-thickness sheet uses
 `planeGeo`; a zero-size box is an error. `decalBox` retains its documented 0.002
 minimum depth and accepts a nonnegative requested depth.
 

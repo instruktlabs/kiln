@@ -6,6 +6,12 @@
 import { describe, expect, test } from 'bun:test';
 import * as THREE from 'three';
 import {
+  capsuleGeo,
+  capsuleXGeo,
+  capsuleYGeo,
+  capsuleZGeo,
+  countTriangles,
+  createPart,
   createStairs,
   createWingPair,
   room,
@@ -232,5 +238,44 @@ describe('wing flat faces keep their own vertices and normals (#405)', () => {
         expect(geometryDiagnostics(geometry).solid.orientation).toBe('outward');
       }
     }
+  });
+});
+
+describe('capsules carry no zero-area pole triangles (#407)', () => {
+  const cases: Array<[string, () => THREE.BufferGeometry, number, number]> = [
+    // label, build, triangles after the fix (60 - 12 and so on), signed volume (unchanged)
+    ['capsuleGeo(0.5, 1)', () => capsuleGeo(0.5, 1), 48, 1.019119],
+    ['capsuleXGeo(0.5, 1)', () => capsuleXGeo(0.5, 1), 48, 1.019119],
+    ['capsuleYGeo(0.5, 1)', () => capsuleYGeo(0.5, 1), 48, 1.019119],
+    ['capsuleZGeo(0.5, 1)', () => capsuleZGeo(0.5, 1), 48, 1.019119],
+    ['capsuleGeo(0.5, 1, 3)', () => capsuleGeo(0.5, 1, 3), 24, 0.509559],
+    ['capsuleGeo(0.5, 0) zero straight length', () => capsuleGeo(0.5, 0), 36, 0.369599],
+    ['capsuleXGeo(0.5, 0, 3)', () => capsuleXGeo(0.5, 0, 3), 18, 0.1848],
+    ['capsuleGeo(0.01, 2, 16) thin', () => capsuleGeo(0.01, 2, 16), 128, 0.000616],
+  ];
+
+  for (const [label, build, triangles, volume] of cases) {
+    test(`${label}: no zero-area triangle, closed solid facts unchanged`, () => {
+      const geometry = build();
+      const diagnostics = geometryDiagnostics(geometry);
+      expect(diagnostics.degenerateTriangles).toBe(0);
+      expect(diagnostics.collapsedByToleranceTriangles).toBe(0);
+      expect(diagnostics.triangles).toBe(triangles);
+      expect(diagnostics.solid.closed).toBe(true);
+      expect(diagnostics.solid.manifold).toBe(true);
+      expect(diagnostics.solid.orientation).toBe('outward');
+      expect(diagnostics.solid.signedVolume).toBeCloseTo(volume, 6);
+    });
+  }
+
+  test('the vertices, normals and UVs stay; countTriangles reports the lower count', () => {
+    const geometry = capsuleGeo(0.5, 1);
+    expect(geometry).toBeInstanceOf(THREE.CapsuleGeometry);
+    // Six rows of seven vertices, as three.js builds them; only the index changes.
+    expect(geometry.getAttribute('position').count).toBe(42);
+    expect(geometry.getAttribute('normal').count).toBe(42);
+    expect(geometry.getAttribute('uv').count).toBe(42);
+    const part = createPart('Pill', geometry, new THREE.MeshStandardMaterial());
+    expect(countTriangles(part)).toBe(48);
   });
 });
