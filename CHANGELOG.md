@@ -86,7 +86,40 @@ does not publish a package.
   host keeps that one path in the error. `kiln_discover` capabilities add
   `source.file: { workspaceRoot, selectedBy, paths }` (null where a host has no `file`).
   A benchmark agent whose working folder was not the workspace had fallen back to the CLI
-  and skipped collections. No tool input schema changes. (#423)
+  and skipped collections. No tool input schema changes. The setup skill now tells agents to
+  check `source.file.workspaceRoot` and `selectedBy`, so existing workspaces report it as
+  changed; run `kiln-init <workspace> --check`, then `--upgrade`. (#423)
+- **Discovery ranks helpers named like the query first, and each hit leads with its
+  signature.**
+  - A helper whose name matches the query, or the query plus `Geo`, ranks first. Names
+    that start with the query come next.
+  - Each hit shows `signature -> returns`, then a summary cut at a sentence.
+  - The overview with no arguments lists families and says to browse a family for its
+    tags; it went from 4,363 to 2,362 bytes.
+  - On the 61-query fixture, the expected helper now ranks first in 61 cases, up from 54.
+  (#371)
+- **The flush-face check runs about 1.85 times faster.** It dismisses pairs that cannot
+  share area before clipping them. Reports, budgets and truncation are unchanged across the
+  225 GLBs measured. (#368)
+- **`FLUSH_FACES` estimates which pairs other parts hide.**
+  - Each reported pair gets an advisory `occlusion` estimate from ray samples. It is
+    deterministic and capped at 10,000 rays per build (`maxOcclusionRays`; 0 turns it off).
+  - The warning text changes only when some pair is estimated hidden: it then says it is a
+    ray estimate, not a render, and names the pairs in view first.
+  - Save warnings now keep up to 800 characters.
+  (#367)
+- **The primitives' closed-solid contract is written down.**
+  - `docs/geometry.md` says which primitives are closed, manifold and outward for every
+    input they accept, and that scene builders promise this for each mesh they make, not
+    for the whole assembly. It also names the open, one-sided surfaces.
+  - `docs/reviews/2026-11-18-primitives-audit.md` records the measured audit behind it.
+  (#374)
+- **A render service that loses the port race joins the winner.** When two sessions start
+  a managed service at once, the losing host waits up to two seconds for the other service
+  to answer before reporting a failed start. (#429)
+- **The root Codex plugin manifest is complete.** It carries the privacy policy and terms
+  URLs, and its `composerIcon` and `logo` point at the kiln-engine icon. A `.codexignore`
+  lists secrets, local state and generated site output. (#425)
 
 - **Review sheets, procedural textures and QA run faster on large assets, with identical
   output.** The engine profile's TypeScript hot spots are fixed:
