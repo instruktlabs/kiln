@@ -7,6 +7,28 @@ does not publish a package.
 
 ## Unreleased
 
+- **`fenceRun` builds posts and rails along a path.** `fenceRun(name, { path, post, rails,
+  material })` puts a post at each path point and rails between neighbouring posts. Rails follow a
+  sloping path and stop inside each post, so no rail end shows and no rail face lies on a post face.
+  Posts take a section, height, chamfer, cap and pegs; `rails.merge` makes the rails one part,
+  `closed` joins the last post to the first, and `merge: 'byMaterial'` merges the run. Posts too
+  close together, a rail meeting a post across its edge or two rails crossing outside a corner post
+  throw before anything is built. The farm's straight bay, rebuilt with one call, matches its saved
+  revision in parts, triangles, bounds and post anchors. (#411)
+- **`wallWithOpening` and `room` fill their openings.** An opening takes a `fill`: a frame,
+  glazing, glazing bars, a sill, a lintel, open shutters, or a door or casement leaf hung under a
+  `Joint_` hinge pivot with an optional handle. Each piece is placed from its opening, so moving or
+  widening the opening moves it. `outward` picks the wall's outer face, `materials` maps fill roles
+  to materials, and an opening's `name` and `names` keep an existing part-name contract. Every fill
+  is checked before the first part is made. Without `fill`, `names` or `materials` a wall is
+  unchanged. (#410)
+- **`wallWithOpening` and `room` can merge their parts by material.** `merge: 'byMaterial'` builds
+  the same pieces, then replaces them with one part per material: the same triangles and bounds,
+  named for the call. Frames and `Joint_` pivots stay, and pieces under a pivot merge only under it,
+  so a hinged leaf still moves. Merging concatenates rather than unions, so merged pieces that share
+  an edge make it non-manifold. Without the option the output is unchanged. The geometry recipes
+  mention the new options and `fenceRun`, so existing workspaces report the author skill as
+  changed; run `kiln-init <workspace> --check`, then `--upgrade`. (#412)
 - **Four more rejection causes are named.** A `projectUV` options error, a `taperedTube`
   radii, path or `sectionScale` error, a `sweepProfile` or `loftProfiles` path, scale, twist or
   cap error, and a Boolean or `hull` operand that is not a whole-triangle mesh now carry a
