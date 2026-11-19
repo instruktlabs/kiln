@@ -76,6 +76,57 @@ nothing outside that list, which is how `scripts/` went unlinted while the cover
 run measured it. Note that `biome` prints at most 20 diagnostics by default, so a
 count read off the output is a floor.
 
+### Corpus gate
+
+A change to primitives, helpers or export can alter assets people already saved. The corpus
+gate rebuilds every saved pack revision (`packs/*/sources/` and flat pack snapshots such as
+`packs/troy/assets/`) and the pinned example archive, then compares the GLB bytes with a
+baseline made **on the same machine**: GLB bytes differ between Linux and Windows
+(`scripts/glb-chunk-hashes.mjs`), so neither a baseline from another platform nor a
+manifest's recorded hash is a portable reference. It is a manual or nightly maintainer
+check, not part of `bun run test`; `scripts/corpus-gate.test.ts` covers its logic.
+
+```sh
+bun run build:runtime
+node scripts/example-archive.mjs --fetch          # optional: adds the 190 archive programs
+bun scripts/corpus-gate.ts list
+git switch --detach origin/main && bun run build:runtime
+bun scripts/corpus-gate.ts build --out tmp/corpus-gate/main.jsonl
+git switch - && bun run build:runtime
+bun scripts/corpus-gate.ts build --out tmp/corpus-gate/candidate.jsonl \
+  --compare tmp/corpus-gate/main.jsonl --expect-file expected-changes.txt
+```
+
+Each pack revision is rebuilt as `kiln asset <id> <revision> --rebuild` would: saved exporter
+options, saved requirements and the locked material closure, through the built Node evaluator
+worker in a child process of its own (deadline 120 s, 4 GiB heap; `--deadline-ms`,
+`--heap-mb`), so one crash or timeout cannot stop the run. The repository keeps no material
+map PNGs, so each map is regenerated from its saved procedural or atlas recipe and must
+reproduce its recorded sha256; otherwise that revision fails as `MATERIALS_UNAVAILABLE`.
+Archive programs have no saved options and build with the CLI defaults. The gate refuses a
+stale `dist/`, since the worker is what it measures.
+
+The run file is JSON Lines under ignored `tmp/`: a header with platform, toolchain, engine
+commit and build identity, then one line per entry with its sha256, JSON-section and BIN
+(geometry, images) chunk hashes, triangles, bounds, worker peak memory and whether it
+reproduces the manifest's recorded hash (informative only). Lines are appended as entries
+finish: `--resume` continues an interrupted run with the same engine build, and `--pack`,
+`--key PREFIX` and `--no-archive` limit a run, for example to rerun one pack.
+
+`compare` passes only when every compared entry built to the same sha256 or failed with the
+same code and message. Changes are listed by pack with the JSON sections or BIN parts that
+moved, triangle counts and bounds. State intended changes with `--expect PREFIX` or
+`--expect-file` (one key prefix per line, `#` comments); anything else exits 1, and a
+platform mismatch exits 2. A baseline is never committed: it belongs to one machine and one
+engine commit. Make a fresh one from `main` before measuring a change.
+
+Runtime: the 836 entries (646 pack, 190 archive) took 17 minutes with `--jobs 2` on an
+8-core Windows desktop already at 76–100% CPU from other work (34 minutes of summed entry
+time). The largest worker peaked at 560 MB resident (a 208,000-triangle battle scene) and the
+gate process at 400 MB. A second run on the same build matched it exactly (15 minutes,
+40–100% CPU). Revisions saved by recent engines reproduce their manifest hash;
+older ones mostly do not, because export output has changed since they were saved.
+
 ### Version
 
 Maintainers should follow the [v1 release runbook](https://github.com/instruktlabs/kiln/blob/main/docs/releasing.md) for exact
