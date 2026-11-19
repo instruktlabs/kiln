@@ -617,6 +617,11 @@ alone can leave the roof cutting through the room. Repeated canopies, stalls and
 trim must use each instance's frame and the actual neighbouring supports. Check
 the first, last and mirrored instances, not only the central example.
 
+For doors and windows, give `wallWithOpening` openings a `fill` (frame, glazing, bars,
+sill, lintel, shutters, a leaf on a hinge pivot) instead of hand-placing jambs and boxes:
+each piece is derived from its opening, so moving or widening it moves its fills. For a fence
+along a path, `fenceRun` places the posts and the rails between them instead of a placing loop.
+
 ## Organic curves and blended volumes
 
 When the intended shape follows a smooth curve with a round, varying cross-section,

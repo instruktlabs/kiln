@@ -20,8 +20,9 @@
  *   dropped. STL carries no colour.
  * - Layout: STL is one triangle list holding every body. 3MF writes one mesh object per
  *   body (named after its node) and a single build item, an object whose components are
- *   those bodies, so a slicer loads the asset as one object of several parts. Bodies may
- *   overlap (parts of an assembly often do); merging them is left to the slicer.
+ *   those bodies, placed as in the asset. Slicers read that assembly differently:
+ *   PrusaSlicer 2.9.7 loads each body as its own object. Bodies may overlap (parts of an
+ *   assembly often do); merging them is left to the slicer.
  *
  * Deterministic: no clock, no randomness; a fixed STL header and fixed zip timestamps.
  */
@@ -456,8 +457,9 @@ function write3mf(
     }
     lines.push('    </triangles>', '   </mesh>', '  </object>');
   });
-  // One build item whose components are the bodies, already placed: a slicer loads one
-  // object of several parts, where separate items would be separate objects to arrange.
+  // One build item whose components are the bodies, already placed, so the file states one
+  // assembly. How a slicer opens it varies: PrusaSlicer 2.9.7 makes each component its own
+  // object.
   const assemblyId = bodies.length + 2;
   lines.push(
     `  <object id="${assemblyId}" type="model" name="${xml(assembly)}">`,

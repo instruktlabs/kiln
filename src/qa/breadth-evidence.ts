@@ -11,6 +11,7 @@ import {
   type VfxIntentV1,
 } from '../contracts';
 import { isCubicSplineTrack } from '../animation-spline';
+import { hasTranslucentTexel } from '../texture-alpha';
 import type { VfxArtifactEvidenceV1, VfxMaterialEvidenceV1 } from './breadth';
 import type { QaContext } from './types';
 
@@ -94,6 +95,8 @@ function textureHasAlpha(texture: THREE.Texture | null | undefined): boolean {
   if (!image?.data || !image.width || !image.height) return false;
   const pixelCount = image.width * image.height;
   if (pixelCount <= 0 || image.data.length < pixelCount * 4) return false;
+  if (image.data instanceof Uint8Array)
+    return hasTranslucentTexel(image.data.subarray(0, pixelCount * 4));
   for (let index = 3; index < pixelCount * 4; index += 4) {
     if ((image.data[index] ?? 255) < 255) return true;
   }

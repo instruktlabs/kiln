@@ -23,7 +23,7 @@
 import { Vector3 } from 'three';
 import { resolveBackdrop, type BackdropId } from './background';
 import { visibleNormalSign, worldWindingParity, type SurfaceSide } from './face-policy';
-import { prepareTriangleCoverage } from './triangle-coverage';
+import { TriangleCoverage } from './triangle-coverage';
 
 export interface ViewSpec {
   name: string;
@@ -276,34 +276,78 @@ function forEachDrawn(root: DuckObject3D, visit: (obj: DuckObject3D) => void): v
   walk(root, true);
 }
 
-/** Collect world-space triangles + base colors from a (possibly cross-realm) scene. */
-export function collectTriangles(root: DuckObject3D): {
-  tris: Tri[];
+/**
+ * World-space triangles of a scene in flat typed arrays: what every view of a sheet draws.
+ * Collect once with {@link collectTriangleBuffers} and pass to {@link rasterizeCollected} for
+ * each view; the scene must not change in between.
+ */
+export interface CollectedTriangles {
+  count: number;
+  /** Nine world coordinates per triangle: [x0,y0,z0, x1,y1,z1, x2,y2,z2]. */
+  positions: Float64Array;
+  /** Index into the material table, per triangle. */
+  material: Uint32Array;
+  /** Mesh world-transform winding parity, per triangle. */
+  parity: Int8Array;
+  /** Material table: clamped linear RGB (three per entry), alpha and side. */
+  materialColors: Float64Array;
+  materialAlphas: Float64Array;
+  materialSides: Uint8Array;
   bbox: { min: Vec3; max: Vec3 };
-} {
-  updateSurfaceMatrices(root);
+}
 
-  const tris: Tri[] = [];
+/** Collect world-space triangles and base colors from a (possibly cross-realm) scene. */
+export function collectTriangleBuffers(root: unknown): CollectedTriangles {
+  const scene = root as DuckObject3D;
+  updateSurfaceMatrices(scene);
+
   const min: Vec3 = [Infinity, Infinity, Infinity];
   const max: Vec3 = [-Infinity, -Infinity, -Infinity];
 
-  const drawMesh = (obj: unknown) => {
+  // Pass 1: the meshes that draw, in draw order, and their triangle count, so the flat
+  // arrays are allocated once at their final size.
+  const meshes: Array<{ mesh: DuckMesh; geo: DuckGeometry; pos: DuckAttribute }> = [];
+  let count = 0;
+  forEachDrawn(scene, (obj) => {
     const mesh = obj as DuckMesh;
     if (!mesh.isMesh) return;
     const geo = mesh.geometry;
     const pos = geo?.getAttribute?.('position');
     if (!geo || !pos || pos.itemSize !== 3) return;
+    if (!mesh.matrixWorld?.elements) return;
+    meshes.push({ mesh, geo, pos });
+    const slots = geo.index ? geo.index.count : pos.count;
+    for (let i = 0; i + 2 < slots; i += 3) count++;
+  });
 
+  const positions = new Float64Array(count * 9);
+  const material = new Uint32Array(count);
+  const parity = new Int8Array(count);
+  const materialIds = new Map<DuckMaterial | undefined, number>();
+  const colors: number[] = [];
+  const alphas: number[] = [];
+  const sides: SurfaceSide[] = [];
+  const materialId = (mat: DuckMaterial | undefined): number => {
+    let id = materialIds.get(mat);
+    if (id !== undefined) return id;
+    id = materialIds.size;
+    materialIds.set(mat, id);
+    const c = mat?.color;
+    if (c) colors.push(clamp01(c.r), clamp01(c.g), clamp01(c.b));
+    else colors.push(0.7, 0.7, 0.7);
+    alphas.push(clamp01(mat?.opacity ?? 1));
+    sides.push(mat?.doubleSided === true || mat?.side === 2 ? 2 : mat?.side === 1 ? 1 : 0);
+    return id;
+  };
+
+  let t = 0;
+  for (const { mesh, geo, pos } of meshes) {
     const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-    const colorOf = (mat: DuckMaterial | undefined): [number, number, number] => {
-      const c = mat?.color;
-      return c ? [clamp01(c.r), clamp01(c.g), clamp01(c.b)] : [0.7, 0.7, 0.7];
-    };
     // Per-group material resolution: a multi-material mesh draws each geometry
     // group (a start/count range over the index — or position — buffer) with its
-    // own `materialIndex`. Colors are already per-triangle here, so resolve the
-    // group covering each triangle's first buffer position; meshes without
-    // groups (the common single-material case) keep the flat first material.
+    // own `materialIndex`. Resolve the group covering each triangle's first buffer
+    // position; meshes without groups (the common single-material case) keep the
+    // flat first material.
     const groups = mats.length > 1 && geo.groups?.length ? geo.groups : undefined;
     const materialAt = (bufferPos: number): DuckMaterial | undefined => {
       if (!groups) return mats[0];
@@ -315,8 +359,7 @@ export function collectTriangles(root: DuckObject3D): {
       return mats[0];
     };
 
-    const m = mesh.matrixWorld?.elements;
-    if (!m) return;
+    const m = mesh.matrixWorld!.elements;
     const windingParity = worldWindingParity(m);
 
     const readVertex = surfaceVertexReader(mesh, pos);
@@ -337,27 +380,22 @@ export function collectTriangles(root: DuckObject3D): {
       if (wz > max[2]) max[2] = wz;
     }
 
-    const pushTri = (a: number, b: number, c2: number, material: DuckMaterial | undefined) => {
-      const v = new Float64Array(9);
-      v[0] = world[a * 3]!;
-      v[1] = world[a * 3 + 1]!;
-      v[2] = world[a * 3 + 2]!;
-      v[3] = world[b * 3]!;
-      v[4] = world[b * 3 + 1]!;
-      v[5] = world[b * 3 + 2]!;
-      v[6] = world[c2 * 3]!;
-      v[7] = world[c2 * 3 + 1]!;
-      v[8] = world[c2 * 3 + 2]!;
-      const side =
-        material?.doubleSided === true || material?.side === 2 ? 2 : material?.side === 1 ? 1 : 0;
-      tris.push({
-        v,
-        color: colorOf(material),
-        alpha: clamp01(material?.opacity ?? 1),
-        doubleSided: side === 2,
-        side,
-        windingParity,
-      });
+    // An index past the vertex buffer reads `undefined`, which a Float64Array stores as NaN:
+    // the triangle keeps NaN corners, as the per-triangle collector always gave it.
+    const pushTri = (a: number, b: number, c2: number, mat: DuckMaterial | undefined) => {
+      const o = t * 9;
+      positions[o] = world[a * 3]!;
+      positions[o + 1] = world[a * 3 + 1]!;
+      positions[o + 2] = world[a * 3 + 2]!;
+      positions[o + 3] = world[b * 3]!;
+      positions[o + 4] = world[b * 3 + 1]!;
+      positions[o + 5] = world[b * 3 + 2]!;
+      positions[o + 6] = world[c2 * 3]!;
+      positions[o + 7] = world[c2 * 3 + 1]!;
+      positions[o + 8] = world[c2 * 3 + 2]!;
+      material[t] = materialId(mat);
+      parity[t] = windingParity;
+      t++;
     };
 
     // Geometry groups address the index buffer for indexed geometry and the
@@ -374,13 +412,119 @@ export function collectTriangles(root: DuckObject3D): {
         pushTri(i, i + 1, i + 2, materialAt(i));
       }
     }
-  };
-  forEachDrawn(root, drawMesh);
-
-  if (!Number.isFinite(min[0])) {
-    return { tris, bbox: { min: [0, 0, 0], max: [0, 0, 0] } };
   }
-  return { tris, bbox: { min, max } };
+
+  return {
+    count,
+    positions,
+    material,
+    parity,
+    materialColors: Float64Array.from(colors),
+    materialAlphas: Float64Array.from(alphas),
+    materialSides: Uint8Array.from(sides),
+    bbox: Number.isFinite(min[0]) ? { min, max } : { min: [0, 0, 0], max: [0, 0, 0] },
+  };
+}
+
+/** Collect world-space triangles + base colors from a (possibly cross-realm) scene. */
+export function collectTriangles(root: DuckObject3D): {
+  tris: Tri[];
+  bbox: { min: Vec3; max: Vec3 };
+} {
+  const collected = collectTriangleBuffers(root);
+  const { positions, material, parity, materialColors, materialAlphas, materialSides } = collected;
+  const tris: Tri[] = [];
+  for (let t = 0; t < collected.count; t++) {
+    const id = material[t]!;
+    const side = materialSides[id] as SurfaceSide;
+    tris.push({
+      v: positions.slice(t * 9, t * 9 + 9),
+      color: [materialColors[id * 3]!, materialColors[id * 3 + 1]!, materialColors[id * 3 + 2]!],
+      alpha: materialAlphas[id]!,
+      doubleSided: side === 2,
+      side,
+      windingParity: parity[t] as 1 | -1,
+    });
+  }
+  return { tris, bbox: collected.bbox };
+}
+
+/**
+ * View-independent per-triangle facts, derived once per collection: the flat world normal
+ * (exactly as each view used to compute it), its key-light term, the opaque draw list and
+ * the translucent triangles with their centroids. Lit colours are filled lazily per side.
+ */
+interface PreparedTriangles {
+  /** Unit world normal times winding parity; NaN when the triangle has NaN corners. */
+  normals: Float64Array;
+  /** 1 when the normal is too short to draw (`hypot < 1e-12`). */
+  collapsed: Uint8Array;
+  /** dot(normal, KEY_DIR). */
+  keyLight: Float64Array;
+  opaque: Uint32Array;
+  translucent: Uint32Array;
+  translucentCentroids: Float64Array;
+  /** sRGB bytes for normal sign +1 (offset 0) and -1 (offset 3), six per triangle. */
+  shade: Uint8Array;
+  /** Bit 1: +1 shade filled; bit 2: -1 shade filled. */
+  shaded: Uint8Array;
+}
+
+const preparedTriangles = new WeakMap<CollectedTriangles, PreparedTriangles>();
+
+function prepareTriangles(collected: CollectedTriangles): PreparedTriangles {
+  const cached = preparedTriangles.get(collected);
+  if (cached) return cached;
+  const { count, positions: v, material, parity, materialAlphas } = collected;
+  const normals = new Float64Array(count * 3);
+  const collapsed = new Uint8Array(count);
+  const keyLight = new Float64Array(count);
+  const opaque: number[] = [];
+  const translucent: number[] = [];
+  for (let t = 0; t < count; t++) {
+    const o = t * 9;
+    // World-space face normal (flat shading; robust under non-uniform scale).
+    const e10 = v[o + 3]! - v[o]!;
+    const e11 = v[o + 4]! - v[o + 1]!;
+    const e12 = v[o + 5]! - v[o + 2]!;
+    const e20 = v[o + 6]! - v[o]!;
+    const e21 = v[o + 7]! - v[o + 1]!;
+    const e22 = v[o + 8]! - v[o + 2]!;
+    const n0 = e11 * e22 - e12 * e21;
+    const n1 = e12 * e20 - e10 * e22;
+    const n2 = e10 * e21 - e11 * e20;
+    const nLen = Math.hypot(n0, n1, n2);
+    if (nLen < 1e-12) collapsed[t] = 1;
+    const sign = parity[t]!;
+    const N0 = (n0 / nLen) * sign;
+    const N1 = (n1 / nLen) * sign;
+    const N2 = (n2 / nLen) * sign;
+    normals[t * 3] = N0;
+    normals[t * 3 + 1] = N1;
+    normals[t * 3 + 2] = N2;
+    keyLight[t] = N0 * KEY_DIR[0] + N1 * KEY_DIR[1] + N2 * KEY_DIR[2];
+    if (materialAlphas[material[t]!]! >= 1) opaque.push(t);
+    else translucent.push(t);
+  }
+  const translucentCentroids = new Float64Array(translucent.length * 3);
+  for (let k = 0; k < translucent.length; k++) {
+    const o = translucent[k]! * 9;
+    translucentCentroids[k * 3] = (v[o]! + v[o + 3]! + v[o + 6]!) / 3;
+    translucentCentroids[k * 3 + 1] = (v[o + 1]! + v[o + 4]! + v[o + 7]!) / 3;
+    translucentCentroids[k * 3 + 2] = (v[o + 2]! + v[o + 5]! + v[o + 8]!) / 3;
+  }
+  const prepared: PreparedTriangles = {
+    normals,
+    collapsed,
+    keyLight,
+    opaque: Uint32Array.from(opaque),
+    translucent: Uint32Array.from(translucent),
+    translucentCentroids,
+    shade: new Uint8Array(count * 6),
+    shaded: new Uint8Array(count),
+  };
+  preparedTriangles.set(collected, prepared);
+  return prepared;
 }
 
 function clamp01(n: number): number {
@@ -407,10 +551,22 @@ export function rasterizeView(
   dir: [number, number, number],
   opts: RasterOptions = {},
 ): Uint8Array {
+  return rasterizeCollected(collectTriangleBuffers(root), dir, opts);
+}
+
+/**
+ * {@link rasterizeView} from triangles already collected: a sheet collects once and draws every
+ * view from the same collection, with the same pixels as collecting per view.
+ */
+export function rasterizeCollected(
+  collected: CollectedTriangles,
+  dir: [number, number, number],
+  opts: RasterOptions = {},
+): Uint8Array {
   const size = opts.size ?? 256;
   const cull = opts.backfaceCull ?? true;
   const BG = resolveBackdrop(opts.backdrop).rgb;
-  const { tris, bbox } = collectTriangles(root as DuckObject3D);
+  const { bbox, positions: v, material, materialColors, materialAlphas, materialSides } = collected;
 
   const out = new Uint8Array(size * size * 3);
   for (let i = 0; i < size * size; i++) {
@@ -418,7 +574,9 @@ export function rasterizeView(
     out[i * 3 + 1] = BG[1];
     out[i * 3 + 2] = BG[2];
   }
-  if (tris.length === 0) return out;
+  if (collected.count === 0) return out;
+  const prepared = prepareTriangles(collected);
+  const { normals, collapsed, keyLight, shade, shaded } = prepared;
 
   // Camera basis: z points from target toward the camera (three.js convention).
   const z = normalize(dir);
@@ -454,69 +612,98 @@ export function rasterizeView(
   const sy = new Float64Array(3);
   const sz = new Float64Array(3);
   const weights = new Float64Array(3);
+  const coverage = new TriangleCoverage();
+  const [x0, x1, x2] = x;
+  const [y0, y1, y2] = y;
+  const [z0, z1, z2] = z;
+  const [c0, c1, c2] = center;
 
-  // Orthographic: distance from the viewer runs against the view axis `z`.
-  const ordered = compositingOrder(
-    tris,
-    (px, py, pz) => -((px - center[0]) * z[0] + (py - center[1]) * z[1] + (pz - center[2]) * z[2]),
-  );
-  for (const tri of ordered) {
-    // World-space face normal (flat shading; robust under non-uniform scale).
-    const e1: Vec3 = [tri.v[3]! - tri.v[0]!, tri.v[4]! - tri.v[1]!, tri.v[5]! - tri.v[2]!];
-    const e2: Vec3 = [tri.v[6]! - tri.v[0]!, tri.v[7]! - tri.v[1]!, tri.v[8]! - tri.v[2]!];
-    const n = cross(e1, e2);
-    const nLen = Math.hypot(n[0], n[1], n[2]);
-    if (nLen < 1e-12) continue;
-    const N: Vec3 = [
-      (n[0] / nLen) * tri.windingParity,
-      (n[1] / nLen) * tri.windingParity,
-      (n[2] / nLen) * tri.windingParity,
-    ];
+  // Opaque triangles in scene order, then translucent ones farthest-first (see
+  // compositingOrder). Orthographic: distance from the viewer runs against the view axis `z`.
+  const { translucent, translucentCentroids: centroids } = prepared;
+  const keys = new Float64Array(translucent.length);
+  const back: number[] = [];
+  for (let k = 0; k < translucent.length; k++) {
+    keys[k] = -(
+      (centroids[k * 3]! - c0) * z0 +
+      (centroids[k * 3 + 1]! - c1) * z1 +
+      (centroids[k * 3 + 2]! - c2) * z2
+    );
+    back.push(k);
+  }
+  back.sort((a, b) => keys[b]! - keys[a]! || translucent[a]! - translucent[b]!);
+  const order = new Uint32Array(prepared.opaque.length + back.length);
+  order.set(prepared.opaque);
+  for (let k = 0; k < back.length; k++) order[prepared.opaque.length + k] = translucent[back[k]!]!;
 
-    const facing = dot(N, z);
-    const normalSign = visibleNormalSign(facing, tri.side, cull);
+  for (let n = 0; n < order.length; n++) {
+    const t = order[n]!;
+    if (collapsed[t]) continue;
+    const id = material[t]!;
+    const alpha = materialAlphas[id]!;
+
+    const facing = normals[t * 3]! * z0 + normals[t * 3 + 1]! * z1 + normals[t * 3 + 2]! * z2;
+    const normalSign = visibleNormalSign(facing, materialSides[id] as SurfaceSide, cull);
     if (normalSign === 0) continue;
-    if (tri.alpha <= 0) continue;
+    if (alpha <= 0) continue;
 
     // Project to screen space.
+    const o = t * 9;
     for (let i = 0; i < 3; i++) {
-      const px = tri.v[i * 3]! - center[0];
-      const py = tri.v[i * 3 + 1]! - center[1];
-      const pz = tri.v[i * 3 + 2]! - center[2];
-      const p: Vec3 = [px, py, pz];
-      sx[i] = half + dot(p, x) * scale;
-      sy[i] = half - dot(p, y) * scale;
-      sz[i] = dot(p, z);
+      const px = v[o + i * 3]! - c0;
+      const py = v[o + i * 3 + 1]! - c1;
+      const pz = v[o + i * 3 + 2]! - c2;
+      sx[i] = half + (px * x0 + py * x1 + pz * x2) * scale;
+      sy[i] = half - (px * y0 + py * y1 + pz * y2) * scale;
+      sz[i] = px * z0 + py * z1 + pz * z2;
     }
 
     // Flat lambert with the audit-grid light rig, in linear space, then the
     // sRGB output transform (matching what a Three.js renderer would write).
-    const lambert = Math.max(0, dot(N, KEY_DIR) * normalSign);
-    const lit = Math.min(1, AMBIENT + KEY_INTENSITY * lambert);
-    const r = Math.round(linearToSrgb(tri.color[0] * lit) * 255);
-    const g = Math.round(linearToSrgb(tri.color[1] * lit) * 255);
-    const b = Math.round(linearToSrgb(tri.color[2] * lit) * 255);
+    // A triangle's colour depends only on its normal sign, so it is computed once per
+    // sign and reused by later views; a NaN channel is never cached.
+    const bit = normalSign > 0 ? 1 : 2;
+    const so = t * 6 + (normalSign > 0 ? 0 : 3);
+    let r: number;
+    let g: number;
+    let b: number;
+    if (shaded[t]! & bit) {
+      r = shade[so]!;
+      g = shade[so + 1]!;
+      b = shade[so + 2]!;
+    } else {
+      const lambert = Math.max(0, keyLight[t]! * normalSign);
+      const lit = Math.min(1, AMBIENT + KEY_INTENSITY * lambert);
+      r = Math.round(linearToSrgb(materialColors[id * 3]! * lit) * 255);
+      g = Math.round(linearToSrgb(materialColors[id * 3 + 1]! * lit) * 255);
+      b = Math.round(linearToSrgb(materialColors[id * 3 + 2]! * lit) * 255);
+      if (!Number.isNaN(r) && !Number.isNaN(g) && !Number.isNaN(b)) {
+        shade[so] = r;
+        shade[so + 1] = g;
+        shade[so + 2] = b;
+        shaded[t] = shaded[t]! | bit;
+      }
+    }
 
-    const triangle = prepareTriangleCoverage(sx[0]!, sy[0]!, sx[1]!, sy[1]!, sx[2]!, sy[2]!, size);
-    if (!triangle) continue;
-    const { minX, maxX, minY, maxY } = triangle;
+    if (!coverage.prepare(sx[0]!, sy[0]!, sx[1]!, sy[1]!, sx[2]!, sy[2]!, size)) continue;
+    const { minX, maxX, minY, maxY } = coverage;
 
     for (let py = minY; py <= maxY; py++) {
       for (let px = minX; px <= maxX; px++) {
-        if (!triangle.sample(px + 0.5, py + 0.5, weights)) continue;
+        if (!coverage.sample(px + 0.5, py + 0.5, weights)) continue;
         const depth = weights[0]! * sz[0]! + weights[1]! * sz[1]! + weights[2]! * sz[2]!;
         const pi = py * size + px;
         if (depth <= zbuf[pi]!) continue;
         zbuf[pi] = depth;
-        if (tri.alpha >= 1) {
+        if (alpha >= 1) {
           out[pi * 3] = r;
           out[pi * 3 + 1] = g;
           out[pi * 3 + 2] = b;
         } else {
-          const inverse = 1 - tri.alpha;
-          out[pi * 3] = Math.round(r * tri.alpha + out[pi * 3]! * inverse);
-          out[pi * 3 + 1] = Math.round(g * tri.alpha + out[pi * 3 + 1]! * inverse);
-          out[pi * 3 + 2] = Math.round(b * tri.alpha + out[pi * 3 + 2]! * inverse);
+          const inverse = 1 - alpha;
+          out[pi * 3] = Math.round(r * alpha + out[pi * 3]! * inverse);
+          out[pi * 3 + 1] = Math.round(g * alpha + out[pi * 3 + 1]! * inverse);
+          out[pi * 3 + 2] = Math.round(b * alpha + out[pi * 3 + 2]! * inverse);
         }
       }
     }
