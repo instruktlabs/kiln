@@ -65,7 +65,7 @@ async function build(){
     g.rotateX(Math.PI/2);
     add(frame,'floor_plank_'+i,g,wood,[0,D.floorY,0]);
   }
-  for(const x of [-.46,.46]) add(frame,'longitudinal_sill_'+x,boxGeo(.075,.095,.91),wood,[x,.603,-.045]);
+  for(const x of [-.46,.46]) add(frame,'longitudinal_sill_'+x,boxGeo(.075,.095,.906),wood,[x,.603,-.043]);
   for(const z of [D.axleZ,.34]) add(frame,'floor_bolster_'+z,boxGeo(z===D.axleZ?1.28:.99,.08,.12),wood,[0,.625,z]);
   const railPath=[[-.60,1.17,-.50],[-.60,1.30,.12]];
   for(let i=1;i<=12;i++){const a=i*Math.PI/12;railPath.push([-.60*Math.cos(a),1.30+.08*Math.sin(a),.12+.48*Math.sin(a)]);}
@@ -130,7 +130,7 @@ async function build(){
   sheath.name='Troy leather-coloured quiver';
   const casing=[],quiverMetal=[],shafts=[];
   add(casing,'hollow_quiver_body',rimGeometry(.085,.105,.63,12),sheath,[0,.315,0],[0,0,90]);
-  add(casing,'quiver_closed_bottom',cylinderGeo(.105,.105,.035,12),sheath,[0,.0175,0]);
+  add(casing,'quiver_closed_bottom',cylinderGeo(.101,.101,.035,12),sheath,[0,.0155,0]);
   for(const y of [.10,.56]) add(quiverMetal,'quiver_band_'+y,rimGeometry(.103,.115,.045,12),bronze,[0,y,0],[0,0,90]);
   const javelins=[[-.043,-.030,1.55],[.014,-.042,1.67],[.052,.006,1.60],[-.010,.018,1.72],[-.047,.035,1.63]];
   javelins.forEach(([x,z,h],i)=>{

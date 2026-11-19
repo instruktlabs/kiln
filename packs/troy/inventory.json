@@ -9,7 +9,7 @@
       "assetId": "a_784f8007d64b466ca453813913d73933",
       "revisionId": "r_29dcf94872e74d468d005c55bcbfc3e5",
       "createdAt": "2026-10-02T14:26:51.187Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/wall-section.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/wall-section.glb",
       "tags": [
         "troy",
         "wall",
@@ -19,7 +19,7 @@
       "category": "Buildings",
       "glbSha256": "d2e5c1a6885f509caeb9428980d74b2760bae735af81549ae08fdd825fadffa8",
       "glbBytes": 302776,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/wall-section.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/wall-section.webp",
       "metrics": {
         "triangles": 168,
         "meshes": 14,
@@ -80,7 +80,7 @@
       "assetId": "city-gate",
       "revisionId": "r_932d7b9aa1714e3b8e2343b42506bc44",
       "createdAt": "2026-10-02T15:32:23.668Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/city-gate.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/city-gate.glb",
       "tags": [
         "troy",
         "gate",
@@ -90,7 +90,7 @@
       "category": "Buildings",
       "glbSha256": "19322963f4704e5a9e4b31e242d7d1991126e0ffde750d57152a622089ac4f91",
       "glbBytes": 391512,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/city-gate.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/city-gate.webp",
       "metrics": {
         "triangles": 516,
         "meshes": 7,
@@ -147,7 +147,7 @@
       "assetId": "a_65b2d411e2a14b41b490a575fc14e98a",
       "revisionId": "r_c2fd70c01c754177bfa3df2dceb712f3",
       "createdAt": "2026-11-13T00:21:27.701Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/house.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/house.glb",
       "tags": [
         "troy",
         "house",
@@ -157,7 +157,7 @@
       "category": "Buildings",
       "glbSha256": "95d35ce49e5ad9a60ae62cdce99ef420a1223788f388073aa331f822c7b27347",
       "glbBytes": 330640,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/house.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/house.webp",
       "metrics": {
         "triangles": 876,
         "meshes": 8,
@@ -213,7 +213,7 @@
       "assetId": "a_3a4fc574c2534f21977eeed0a3560f80",
       "revisionId": "r_67104831c85c4f879e889caf508527f2",
       "createdAt": "2026-11-13T00:16:15.192Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/temple-hall.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/temple-hall.glb",
       "tags": [
         "troy",
         "temple",
@@ -223,7 +223,7 @@
       "category": "Buildings",
       "glbSha256": "c106a6ff0c751ff9e552416f02a0b076034457a2e15dd2f0a4d604acb1835cb5",
       "glbBytes": 493168,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/temple-hall.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/temple-hall.webp",
       "metrics": {
         "triangles": 2024,
         "meshes": 12,
@@ -283,7 +283,7 @@
       "assetId": "a_582ae189884340d7ac23a1a23bd7bcc8",
       "revisionId": "r_89ac2dc4345d47d4b10a99d8e4bf34f7",
       "createdAt": "2026-10-02T04:39:42.201Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/war-galley.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/war-galley.glb",
       "tags": [
         "greek",
         "galley",
@@ -295,7 +295,7 @@
       "category": "Vehicles",
       "glbSha256": "c438f0275186e34ad724dade9f22426a4ad4dab412a17ea7b1d62d468c151f4f",
       "glbBytes": 396772,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/war-galley.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/war-galley.webp",
       "metrics": {
         "triangles": 6480,
         "meshes": 4,
@@ -344,7 +344,7 @@
       "assetId": "greek-soldier",
       "revisionId": "r_51a1713f71ed45d486e7cc386aeeb0cc",
       "createdAt": "2026-10-05T17:37:47.358Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/greek-soldier.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/greek-soldier.glb",
       "tags": [
         "troy",
         "character",
@@ -364,7 +364,7 @@
       "category": "Characters",
       "glbSha256": "55361985e3353e4a87944f61c1007eb725732a128bf7a33d3a989f3b26f34af3",
       "glbBytes": 373008,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/greek-soldier.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/greek-soldier.webp",
       "metrics": {
         "triangles": 2140,
         "meshes": 27,
@@ -446,7 +446,7 @@
       "assetId": "trojan-soldier",
       "revisionId": "r_7ab3ae9706164e38bdee28178c110f65",
       "createdAt": "2026-10-05T17:37:57.599Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/trojan-soldier.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/trojan-soldier.glb",
       "tags": [
         "troy",
         "character",
@@ -466,7 +466,7 @@
       "category": "Characters",
       "glbSha256": "97f6fe97902df9af9037518dc28699524c843f0b94136ec3f9c9850d2b57df6f",
       "glbBytes": 352016,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/trojan-soldier.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/trojan-soldier.webp",
       "metrics": {
         "triangles": 2000,
         "meshes": 27,
@@ -548,7 +548,7 @@
       "assetId": "achilles",
       "revisionId": "r_4792c9467d47401f8d77367e3e5c9647",
       "createdAt": "2026-10-05T17:37:26.682Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/achilles.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/achilles.glb",
       "tags": [
         "troy",
         "hero",
@@ -561,7 +561,7 @@
       "category": "Characters",
       "glbSha256": "1bb8b9b44044365a172eb5015c12b8493b6c47e3087178a7fa89b18e768e645f",
       "glbBytes": 547628,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/achilles.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/achilles.webp",
       "metrics": {
         "triangles": 3468,
         "meshes": 31,
@@ -648,7 +648,7 @@
       "assetId": "hector",
       "revisionId": "r_9f29a8b3f4204c5f892b6fca644b850b",
       "createdAt": "2026-11-13T00:22:57.592Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/hector.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/hector.glb",
       "tags": [
         "troy",
         "hero",
@@ -661,7 +661,7 @@
       "category": "Characters",
       "glbSha256": "cd89d602f977cd5180a00de9121d0f2c60b41ca1e27f190df7becacb0352a022",
       "glbBytes": 428240,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/hector.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/hector.webp",
       "metrics": {
         "triangles": 2516,
         "meshes": 30,
@@ -748,10 +748,10 @@
       "assetId": "a_3624be42cc4b43edadea1852c2535534",
       "revisionId": "r_37373fde43154f928653af8c34100186",
       "category": "Nature",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/olive.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/olive.glb",
       "glbSha256": "5ca97cea350d7eb751bcfb214a89e0b83cc3e7bf3c317663ae4d5d51d6e32cd9",
       "glbBytes": 171340,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/olive.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/olive.webp",
       "metrics": {
         "triangles": 4634,
         "meshes": 4,
@@ -812,10 +812,10 @@
       "assetId": "a_2e4e54bb1bd04a1187f564bc4e24111a",
       "revisionId": "r_9e34ca5dc6bf41caafe35ffb8576a6ff",
       "category": "Nature",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/cypress.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/cypress.glb",
       "glbSha256": "0fbabf224cb33e55f3cc6480bfad8fd40175a15c0fa00f9072faa11e40e1ac89",
       "glbBytes": 82436,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/cypress.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/cypress.webp",
       "metrics": {
         "triangles": 2712,
         "meshes": 2,
@@ -874,10 +874,10 @@
       "assetId": "a_8c9f4cbf02014d448cc6f1ea64ce521e",
       "revisionId": "r_efdd6cc6417c46a18d263a4865bfdc02",
       "category": "Nature",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/fig.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/fig.glb",
       "glbSha256": "1769ec4b6d44f208af272b50056d4e01ceb7bf5a8605cbff49019595aef34fa3",
       "glbBytes": 147416,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/fig.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/fig.webp",
       "metrics": {
         "triangles": 4676,
         "meshes": 4,
@@ -938,10 +938,10 @@
       "assetId": "a_4a87639c6022456f876e8cc1f230c551",
       "revisionId": "r_07a93557a106492ab919f72955ad0924",
       "category": "Nature",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/shrub.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/shrub.glb",
       "glbSha256": "4b2ad9c25c2035b02ebb72cc0336842c6c5a6441aada21cfe137d8749b3de51f",
       "glbBytes": 47456,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/shrub.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/shrub.webp",
       "metrics": {
         "triangles": 1252,
         "meshes": 3,
@@ -1001,7 +1001,7 @@
       "assetId": "horse",
       "revisionId": "r_ae20cb280150492dbf58b89860f029d2",
       "createdAt": "2026-10-03T22:26:31.972Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/horse.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/horse.glb",
       "tags": [
         "troy",
         "horse",
@@ -1013,7 +1013,7 @@
       "category": "Animals",
       "glbSha256": "03e257c29b54ad05f5f37381474fe6eba995f22d72fefba9e90e5d46bbe84b5c",
       "glbBytes": 248068,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/horse.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/horse.webp",
       "metrics": {
         "triangles": 4804,
         "meshes": 54,
@@ -1120,7 +1120,7 @@
       "assetId": "a_784f8007d64b466ca453813913d73933",
       "revisionId": "r_98d0a72a5110475a9fef34721a9dad64",
       "createdAt": "2026-10-02T15:20:07.001Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/wall-breached.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/wall-breached.glb",
       "tags": [
         "troy",
         "wall",
@@ -1131,7 +1131,7 @@
       "category": "Buildings",
       "glbSha256": "77c48aa6dbff40b212c5eacc4f340838358f71ee52ccc99966cd2bdc7f9b37e7",
       "glbBytes": 333340,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/wall-breached.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/wall-breached.webp",
       "metrics": {
         "triangles": 528,
         "meshes": 44,
@@ -1221,20 +1221,20 @@
       "slug": "war-chariot",
       "name": "Late Bronze Age war chariot",
       "assetId": "a_6858bae420a940b5b8798e11666070a7",
-      "revisionId": "r_b277a52b09ae48b39afd8471557ed41b",
-      "createdAt": "2026-10-02T02:49:04.961Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/war-chariot.glb",
+      "revisionId": "r_0270a26bb4474f89b1dc967c5af4a672",
+      "createdAt": "2026-11-19T20:01:44.462Z",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/war-chariot.glb",
       "tags": [
         "Late Bronze Age",
         "Troy",
         "chariot",
         "vehicle"
       ],
-      "description": "Child revision adds a hollow brown quiver with five bronze-tipped javelins on +X, the right side of the +Z-facing car, mounted by two bronze brackets. Both rims increase radial thickness from 0.08 to 0.12 m and width from 0.09 to 0.15 m, preserving 1.2 m wheel diameter. GPU overall/detail views reviewed; mount contacts verified at both ends, quiver-wheel rest surface clearance 0.0383 m. Exact exported comparison preserves all other pre-existing meshes, rest transforms, materials and both wheel_spin channels. Wheel motion sampled at phases 0, 0.073, 0.31, 0.68, 1. 4156 triangles, 16 draw calls, 4 tints of 3 pinned pack materials. QA accepted with inherited 9-image budget warning; destination scene performance untested.",
+      "description": "Child revision adds a hollow brown quiver with five bronze-tipped javelins on +X, the right side of the +Z-facing car, mounted by two bronze brackets. Both rims increase radial thickness from 0.08 to 0.12 m and width from 0.09 to 0.15 m, preserving 1.2 m wheel diameter. GPU overall/detail views reviewed; mount contacts verified at both ends, quiver-wheel rest surface clearance 0.0383 m. Exact exported comparison preserves all other pre-existing meshes, rest transforms, materials and both wheel_spin channels. Wheel motion sampled at phases 0, 0.073, 0.31, 0.68, 1. 4156 triangles, 16 draw calls, 4 tints of 3 pinned pack materials. QA accepted with inherited 9-image budget warning; destination scene performance untested. Flush-face fix: two longitudinal sills 4 mm shorter at the rear (z -0.496 instead of -0.5) so their end faces leave the floor-plank end plane; closed-bottom plug radius 0.105 to 0.101 (inside the tube wall) and 2 mm lower so its side and bottom faces leave the tube's outer surface and end ring.",
       "category": "Vehicles",
-      "glbSha256": "6b06d838c3f8016e5ca1f94abd6da317fc0825f83b3f12f932ae5968b5b60c29",
-      "glbBytes": 614312,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/war-chariot.webp",
+      "glbSha256": "ea9e450d766a71a1ffed471495bd136160a47d32dd1b0d522444c15bc6af1d42",
+      "glbBytes": 614344,
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/war-chariot.webp",
       "metrics": {
         "triangles": 4156,
         "meshes": 16,
@@ -1278,20 +1278,21 @@
       },
       "license": "CC0-1.0",
       "collection": "project",
-      "source": "sources/project/a_6858bae420a940b5b8798e11666070a7/r_b277a52b09ae48b39afd8471557ed41b/source.kiln.js",
-      "manifest": "sources/project/a_6858bae420a940b5b8798e11666070a7/r_b277a52b09ae48b39afd8471557ed41b/manifest.json",
+      "source": "sources/project/a_6858bae420a940b5b8798e11666070a7/r_0270a26bb4474f89b1dc967c5af4a672/source.kiln.js",
+      "manifest": "sources/project/a_6858bae420a940b5b8798e11666070a7/r_0270a26bb4474f89b1dc967c5af4a672/manifest.json",
       "includedRevisions": [
+        "r_0270a26bb4474f89b1dc967c5af4a672",
         "r_b277a52b09ae48b39afd8471557ed41b",
         "r_e3bcea17f1ff455b99b3deb51182f964"
       ],
       "missingParents": [],
       "editableDownload": {
-        "path": "packs/troy/delivery-20261113-01/editable/war-chariot.zip",
-        "bytes": 1873292,
-        "sha256": "44f32c191d36bbd839dd5c45e8a1f51f77f6eaad20f242385c64370e1590da80",
-        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/editable/war-chariot.zip"
+        "path": "packs/troy/delivery-20261119-01/editable/war-chariot.zip",
+        "bytes": 2815523,
+        "sha256": "705ee722a6db00a99938b39af209f6591df8b044aa67e142ad9fbf5b0f042ebf",
+        "url": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/editable/war-chariot.zip"
       },
-      "parentRevision": "r_e3bcea17f1ff455b99b3deb51182f964"
+      "parentRevision": "r_b277a52b09ae48b39afd8471557ed41b"
     },
     {
       "slug": "sword",
@@ -1299,7 +1300,7 @@
       "assetId": "a_f71b18076a3d47f084dc86a40e038812",
       "revisionId": "r_6f63da6600ae46bbba5636e575ae1b9e",
       "createdAt": "2026-10-02T03:32:48.671Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/sword.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/sword.glb",
       "tags": [
         "sword",
         "bronze",
@@ -1309,7 +1310,7 @@
       "category": "Equipment",
       "glbSha256": "b15e157bf0e01fab0c421e232c08ab2572a7c42738d4454f994dfa275e99b4d9",
       "glbBytes": 137688,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/sword.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/sword.webp",
       "metrics": {
         "triangles": 208,
         "meshes": 4,
@@ -1358,13 +1359,13 @@
       "assetId": "a_0a67bce7656144c2b9e1c54aa7bea6eb",
       "revisionId": "r_b8159cce845f442181910880090d09fe",
       "createdAt": "2026-10-02T03:38:38.631Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/shield.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/shield.glb",
       "tags": [],
       "description": "Round shield 0.92m diameter: domed bronze face and rim with central boss, hide-covered board back, pack-size vertical hand grip (r 0.03, 0.11 long) centred at origin on bronze brackets plus a leather forearm loop on struts. 2 pack materials, 1272 triangles.",
       "category": "Equipment",
       "glbSha256": "90a164bf7cbc9c98f7877bce029ed1ab016ab8043086f724ce70b92a0feff72a",
       "glbBytes": 182764,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/shield.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/shield.webp",
       "metrics": {
         "triangles": 1272,
         "meshes": 10,
@@ -1419,13 +1420,13 @@
       "assetId": "bow-set",
       "revisionId": "r_356b134d3d5e471fba86cb875c829463",
       "createdAt": "2026-10-02T04:16:48.788Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/bow-set.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/bow-set.glb",
       "tags": [],
       "description": "Low-poly recurved composite bow with string, three fanned arrows with bronze points and vanes, and a wooden quiver with bronze reinforcement bands and shoulder strap. Hand grip 0.03 m radius, 0.11 m long.",
       "category": "Equipment",
       "glbSha256": "861da8a5dad6265aa823c4b86f73142da14accfa48f486372241fba3e51ac366",
       "glbBytes": 137780,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/bow-set.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/bow-set.webp",
       "metrics": {
         "triangles": 1404,
         "meshes": 34,
@@ -1504,7 +1505,7 @@
       "assetId": "wooden-horse",
       "revisionId": "r_235ebe9c60184eb38666f76703dc3b32",
       "createdAt": "2026-11-13T00:23:13.340Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/wooden-horse.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/wooden-horse.glb",
       "tags": [
         "troy",
         "wooden-horse",
@@ -1516,7 +1517,7 @@
       "category": "Buildings",
       "glbSha256": "d1b10019684539dc1ebbb5bd23429a4d529520983679e35583190d7741df8156",
       "glbBytes": 279548,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/wooden-horse.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/wooden-horse.webp",
       "metrics": {
         "triangles": 2060,
         "meshes": 14,
@@ -1581,7 +1582,7 @@
       "assetId": "battle-scene",
       "revisionId": "r_97f6523694eb4b29a852ffeedd8babea",
       "createdAt": "2026-11-13T00:22:37.684Z",
-      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261113-01/models/battle-scene-reference.glb",
+      "glb": "https://assets.kilnstudio.tools/packs/troy/delivery-20261119-01/models/battle-scene-reference.glb",
       "tags": [
         "troy",
         "scene",
@@ -1591,7 +1592,7 @@
       "category": "Compositions",
       "glbSha256": "8cba3af1b914dd2907a66bfc48f1be6beeaa15fbb9cc133c1a3ba7b3a390b8c7",
       "glbBytes": 14464748,
-      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261113-01/media/battle-scene-reference.webp",
+      "poster": "https://kilnstudio.tools/scene-packs/troy/troy-20261119-01/media/battle-scene-reference.webp",
       "metrics": {
         "triangles": 208178,
         "meshes": 130,
@@ -1767,5 +1768,5 @@
   "license": "CC0-1.0",
   "release": "troy-20261005-02",
   "sourceRoot": "sources",
-  "sceneRelease": "troy-20261113-01"
+  "sceneRelease": "troy-20261119-01"
 }
