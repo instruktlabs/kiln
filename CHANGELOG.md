@@ -7,6 +7,13 @@ does not publish a package.
 
 ## Unreleased
 
+- **A variable named like a host global is refused with a message to rename it.** The source
+  check refuses names such as `window`, `document`, `location` and `self` everywhere, even
+  for the program's own variables. When the refused name is the program's own variable,
+  `UNSAFE_GLOBAL_ACCESS` now says to rename it, for example `windowPart`, instead of calling
+  it access to an ambient capability; a real host-global use keeps the old message. What is
+  refused is unchanged. A Codex author in the pre-1.9.0 dogfood named a gatehouse window
+  `window`.
 - **Four more rejection causes are named.** A `projectUV` options error, a `taperedTube`
   radii, path or `sectionScale` error, a `sweepProfile` or `loftProfiles` path, scale, twist or
   cap error, and a Boolean or `hull` operand that is not a whole-triangle mesh now carry a
