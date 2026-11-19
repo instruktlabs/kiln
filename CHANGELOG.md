@@ -120,6 +120,10 @@ does not publish a package.
 - **The root Codex plugin manifest is complete.** It carries the privacy policy and terms
   URLs, and its `composerIcon` and `logo` point at the kiln-engine icon. A `.codexignore`
   lists secrets, local state and generated site output. (#425)
+- **Saved GLB bytes reproduce on the Node version that saved them, on any OS.** On Node
+  22.23.4, Windows and Linux gave identical bytes for all 817 corpus programs that build; Node
+  24 differs from Node 22 in 493 of them, mostly in material colours, because three.js converts
+  colours with `Math.pow`. `docs/collections.md` and CONTRIBUTING say so. (#444)
 
 - **Review sheets, procedural textures and QA run faster on large assets, with identical
   output.** The engine profile's TypeScript hot spots are fixed:
