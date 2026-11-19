@@ -1,15 +1,15 @@
 {
   "schema": "kiln.scene-pack/1",
   "id": "cathedral-square",
-  "release": "cs3",
+  "release": "cs4",
   "three": "0.187.0",
   "source": "packages/cathedral-square/standalone/public",
-  "base": "/scene-packs/cathedral-square/cs3/",
+  "base": "/scene-packs/cathedral-square/cs4/",
   "sealedFiles": 22,
-  "sealedBytes": 25742332,
+  "sealedBytes": 25793496,
   "totalFiles": 25,
-  "totalBytes": 25751150,
-  "packJsonSha256": "7f32c63073d6c059258647c1db59d89081107b7c6678b71f35678c6057126ec5",
-  "sha256sumsSha256": "d85d5346d05aaa6eee383a1a00db3acda02dd8b7702258a241d4e91a5df12137",
+  "totalBytes": 25802314,
+  "packJsonSha256": "f6300e14559de4a317681c0904064dedab1a3436d5f5c01432bb9632e1308bd3",
+  "sha256sumsSha256": "baad7ebeb2f295baa5d40040f5bd765e276fe0bde4ef5b4b5e62153640c42451",
   "noticesSha256": "b46e4de452a81a32a667d959729686249941c7fc7a2a806bf0e257c5b00bcdec"
 }

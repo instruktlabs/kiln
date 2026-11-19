@@ -3068,17 +3068,17 @@
       "downloads": [
         {
           "profile": "runtime",
-          "path": "packs/cathedral-square/cs3/cathedral-square-runtime.zip",
-          "bytes": 14174568,
-          "sha256": "45e5cd357f1b76b07c3e03656a21434d6bb58fcdf0d267073c791cfe77a96d31",
-          "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs3/cathedral-square-runtime.zip"
+          "path": "packs/cathedral-square/cs4/cathedral-square-runtime.zip",
+          "bytes": 14190697,
+          "sha256": "c23b2d18d5583a85b97fc462cc66bce5e9023f7aa71449c8f7fd5538517dfaf9",
+          "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/cathedral-square-runtime.zip"
         },
         {
           "profile": "editable",
-          "path": "packs/cathedral-square/cs3/cathedral-square-editable.zip",
-          "bytes": 21665643,
-          "sha256": "564d459184c8e0fb6b2599aa9b4793462b88373f72ab3b28b87a6ed50585d437",
-          "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs3/cathedral-square-editable.zip"
+          "path": "packs/cathedral-square/cs4/cathedral-square-editable.zip",
+          "bytes": 21660971,
+          "sha256": "d04760b8f5e4fccefe269ebc06626c53182dd000ed23b116b067ebf35ec9f1b3",
+          "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/cathedral-square-editable.zip"
         }
       ],
       "assets": [
@@ -3086,215 +3086,225 @@
           "slug": "cathedral",
           "collection": "project",
           "assetId": "a_d606fc5eebd44bd7b7db3611537b9570",
-          "revisionId": "r_4b6d19a4e1de409cad201987ce5f18d1",
+          "revisionId": "r_ef41a151abca4234af6223789f01c547",
           "includedRevisions": [
-            "r_4b6d19a4e1de409cad201987ce5f18d1"
+            "r_ef41a151abca4234af6223789f01c547"
           ],
           "missingParents": [],
           "omittedParents": [
-            "r_ff0133e2d4f84b8d83f9e6db1c9f5c4d"
+            "r_4b6d19a4e1de409cad201987ce5f18d1"
           ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/cathedral.glb",
-            "bytes": 15353640,
-            "sha256": "9a3528f4c9e008d8a3f29d466ae4813c0dcdfb10101751a07b455f95ea1b4dea",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/cathedral.glb"
+            "path": "packs/cathedral-square/cs4/models/cathedral.glb",
+            "bytes": 15405508,
+            "sha256": "46f582b169e2dd37572bf16847fb513e45de8faa9711aefa6f4ba3e8603239f6",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/cathedral.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/cathedral.zip",
-            "bytes": 7175261,
-            "sha256": "fd2250ba8f92e674f547405012b7650906804c367ae3850bc478022f438195af",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/cathedral.zip"
+            "path": "packs/cathedral-square/cs4/editable/cathedral.zip",
+            "bytes": 7189051,
+            "sha256": "6cd6e0854df2019fcc72a7be5963d273fefbd79ee5695b89c0ce52c29d12cd9a",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/cathedral.zip"
           }
         },
         {
           "slug": "house-timber-gable-door",
           "collection": "project",
           "assetId": "a_083b1837a7094134867ad0de95ab9e78",
-          "revisionId": "r_c55d316b8a59443f8795ca43f5ee99c7",
+          "revisionId": "r_885007ae3c654f9d886e1fb243ca3a0d",
           "includedRevisions": [
-            "r_c55d316b8a59443f8795ca43f5ee99c7"
+            "r_885007ae3c654f9d886e1fb243ca3a0d"
           ],
           "missingParents": [],
-          "omittedParents": [],
+          "omittedParents": [
+            "r_c55d316b8a59443f8795ca43f5ee99c7"
+          ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/house-timber-gable-door.glb",
+            "path": "packs/cathedral-square/cs4/models/house-timber-gable-door.glb",
             "bytes": 636348,
-            "sha256": "61deeb1769db059c6de7010ebf65b4dc60acffa3a7d9dde8a51a156849919a2d",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/house-timber-gable-door.glb"
+            "sha256": "2fbb2998de51286bd0f5c5ef108df2f7ab0759f8eae05d7955d2dabd68c6a107",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/house-timber-gable-door.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/house-timber-gable-door.zip",
-            "bytes": 1017354,
-            "sha256": "592d968ebead8c6587f47c6da66928b1e861e8de3881c55a45b01d99a5fd2858",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/house-timber-gable-door.zip"
+            "path": "packs/cathedral-square/cs4/editable/house-timber-gable-door.zip",
+            "bytes": 1011738,
+            "sha256": "30137cc9211ea18f8e9503c15be6c4dcc8bdcf5d5cdae021fa0624bcc8abe168",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/house-timber-gable-door.zip"
           }
         },
         {
           "slug": "house-timber-gable-narrow",
           "collection": "project",
           "assetId": "a_a9cd08505ea5468ebef9d65837cb2484",
-          "revisionId": "r_426483d96ac140c1942bb2e225e08c03",
+          "revisionId": "r_297ec254fb034f8bafc8fcac2794fdfa",
           "includedRevisions": [
-            "r_426483d96ac140c1942bb2e225e08c03"
+            "r_297ec254fb034f8bafc8fcac2794fdfa"
           ],
           "missingParents": [],
-          "omittedParents": [],
+          "omittedParents": [
+            "r_426483d96ac140c1942bb2e225e08c03"
+          ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/house-timber-gable-narrow.glb",
-            "bytes": 723856,
-            "sha256": "a4fde55718dd7b9b40d1fdd41c92a876faf3a6be0ffb3f929435790f4eb00c8e",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/house-timber-gable-narrow.glb"
+            "path": "packs/cathedral-square/cs4/models/house-timber-gable-narrow.glb",
+            "bytes": 723152,
+            "sha256": "a68374d7ed6c7b136e7c73560bdfe3129721b537945853ffe9fbe53f64fbb0a9",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/house-timber-gable-narrow.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/house-timber-gable-narrow.zip",
-            "bytes": 870111,
-            "sha256": "7b01016704306fb629dfa4ea4fd7abe949ff5eabc3d2bf5c887d99fb75c8d309",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/house-timber-gable-narrow.zip"
+            "path": "packs/cathedral-square/cs4/editable/house-timber-gable-narrow.zip",
+            "bytes": 870039,
+            "sha256": "a253681bbbcf722c452c2d70b9091a5ed25c4c77a03b297fd4018f3cf66cebb9",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/house-timber-gable-narrow.zip"
           }
         },
         {
           "slug": "house-timber-gable-shop",
           "collection": "project",
           "assetId": "a_a9a108df19374d2cb9ee0a6b596a09a1",
-          "revisionId": "r_910fcc7b3dd1431099c8cbd65a9ffc3c",
+          "revisionId": "r_68d2665595d34e1fbffe08800a1ceb19",
           "includedRevisions": [
-            "r_910fcc7b3dd1431099c8cbd65a9ffc3c"
+            "r_68d2665595d34e1fbffe08800a1ceb19"
           ],
           "missingParents": [],
-          "omittedParents": [],
+          "omittedParents": [
+            "r_910fcc7b3dd1431099c8cbd65a9ffc3c"
+          ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/house-timber-gable-shop.glb",
+            "path": "packs/cathedral-square/cs4/models/house-timber-gable-shop.glb",
             "bytes": 704656,
-            "sha256": "3e6e2e23c3fda522c318648ecf7384a7e13f38e987dd49def916b7f5af5db6f7",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/house-timber-gable-shop.glb"
+            "sha256": "a657f111680f8d6199e92428c7b369e82795d6cbbd451fcf3d84b44fe6d82a1d",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/house-timber-gable-shop.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/house-timber-gable-shop.zip",
-            "bytes": 911739,
-            "sha256": "26f0c01c12fe21dc84085f2963ae6dc0272bb674f48472af89f3a9d7d7b84a27",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/house-timber-gable-shop.zip"
+            "path": "packs/cathedral-square/cs4/editable/house-timber-gable-shop.zip",
+            "bytes": 909954,
+            "sha256": "e7848146a4f1dfddd3c06e016e10b2accff493fafae3c151b083360f150c5d6e",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/house-timber-gable-shop.zip"
           }
         },
         {
           "slug": "house-stone-gable-shop",
           "collection": "project",
           "assetId": "a_0a5b078406014355b98b967db65374e2",
-          "revisionId": "r_60900adf31c840d2a6bd3d68033f427a",
+          "revisionId": "r_29d5208f2cf040baa2e378b87fd7adb6",
           "includedRevisions": [
-            "r_60900adf31c840d2a6bd3d68033f427a"
+            "r_29d5208f2cf040baa2e378b87fd7adb6"
           ],
           "missingParents": [],
-          "omittedParents": [],
+          "omittedParents": [
+            "r_60900adf31c840d2a6bd3d68033f427a"
+          ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/house-stone-gable-shop.glb",
+            "path": "packs/cathedral-square/cs4/models/house-stone-gable-shop.glb",
             "bytes": 664224,
-            "sha256": "fe2870601c2b57cfa0092c0899625891205e4ccca3167b36290c218208526f5e",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/house-stone-gable-shop.glb"
+            "sha256": "404588d94159f25630cede65805819a7e27abdd40f853f878e4d2cbe140e24ab",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/house-stone-gable-shop.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/house-stone-gable-shop.zip",
-            "bytes": 940383,
-            "sha256": "b8705ed6a72a6c7bca38999a288e38a9b3384ef9e89b167b09f399737e6fb8df",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/house-stone-gable-shop.zip"
+            "path": "packs/cathedral-square/cs4/editable/house-stone-gable-shop.zip",
+            "bytes": 933033,
+            "sha256": "c5aeed55305c7a6d4887a793b80d97fa42c6f6d253df71834de1e35597972092",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/house-stone-gable-shop.zip"
           }
         },
         {
           "slug": "house-stone-gable-tall",
           "collection": "project",
           "assetId": "a_4bed34bf68d643fd8ec4c28ba0b31f5e",
-          "revisionId": "r_171744bbc93c443b8d4cbd137692bf09",
+          "revisionId": "r_4c7455b9c4894d80a15579b13a3ced34",
           "includedRevisions": [
-            "r_171744bbc93c443b8d4cbd137692bf09"
+            "r_4c7455b9c4894d80a15579b13a3ced34"
           ],
           "missingParents": [],
-          "omittedParents": [],
+          "omittedParents": [
+            "r_171744bbc93c443b8d4cbd137692bf09"
+          ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/house-stone-gable-tall.glb",
+            "path": "packs/cathedral-square/cs4/models/house-stone-gable-tall.glb",
             "bytes": 733788,
-            "sha256": "29b1fd8d32c8776dbc462e9cdcd11c8a1b52c3cf0646fbe8febe4cae8f0ee6f4",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/house-stone-gable-tall.glb"
+            "sha256": "fdbd77a7d52207064cf393ffb0c56e98639bf6c8a5f7aac3110568f55c6f0754",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/house-stone-gable-tall.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/house-stone-gable-tall.zip",
-            "bytes": 960304,
-            "sha256": "6f94a0c34c0a0c5210b228e7a14c30657ba2dc4a02ef5c5c5154ad18c09b0d91",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/house-stone-gable-tall.zip"
+            "path": "packs/cathedral-square/cs4/editable/house-stone-gable-tall.zip",
+            "bytes": 953268,
+            "sha256": "9f06f79ff3b8a983a29bda617689470b27ba040befab10f470616ec6b24d6ef6",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/house-stone-gable-tall.zip"
           }
         },
         {
           "slug": "house-stone-eaves-arcade",
           "collection": "project",
           "assetId": "a_dca56b0a4d6243ac907f93a843074846",
-          "revisionId": "r_bfba41c9967b4f4c9d08932b30bce1f7",
+          "revisionId": "r_5e882cadafab460aa21884ca8e9723a7",
           "includedRevisions": [
-            "r_bfba41c9967b4f4c9d08932b30bce1f7"
+            "r_5e882cadafab460aa21884ca8e9723a7"
           ],
           "missingParents": [],
           "omittedParents": [
-            "r_711d1b2804624814be8d32fb44aafada"
+            "r_bfba41c9967b4f4c9d08932b30bce1f7"
           ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/house-stone-eaves-arcade.glb",
+            "path": "packs/cathedral-square/cs4/models/house-stone-eaves-arcade.glb",
             "bytes": 744256,
-            "sha256": "8a97aa56f97de031a6f21ea94bca12a670639f45acf7228d76d194e7f36b7068",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/house-stone-eaves-arcade.glb"
+            "sha256": "868cacceb100359f2d0ef3e0b5d01c53d55968eed469d189705623ec7298504a",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/house-stone-eaves-arcade.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/house-stone-eaves-arcade.zip",
-            "bytes": 1054550,
-            "sha256": "8719158dad7ad60eb9de44c87748ed9ec73ba8bc19a6d8db8afdbcc93f0584e1",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/house-stone-eaves-arcade.zip"
+            "path": "packs/cathedral-square/cs4/editable/house-stone-eaves-arcade.zip",
+            "bytes": 1046710,
+            "sha256": "73f9decff6778f1a6ead807e28d64c1a6e0a7b92fdcb54320ef0339906d1aaa3",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/house-stone-eaves-arcade.zip"
           }
         },
         {
           "slug": "house-plaster-eaves-arcade",
           "collection": "project",
           "assetId": "a_2a4337b615ed44e0a69db7459c369030",
-          "revisionId": "r_c91287f01b0d435a84f77846be132732",
+          "revisionId": "r_b8c4e3c9dd5b4dff9c672736895540cb",
           "includedRevisions": [
-            "r_c91287f01b0d435a84f77846be132732"
+            "r_b8c4e3c9dd5b4dff9c672736895540cb"
           ],
           "missingParents": [],
           "omittedParents": [
-            "r_58993c89be3140a08e4fcc9deec2b360"
+            "r_c91287f01b0d435a84f77846be132732"
           ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/house-plaster-eaves-arcade.glb",
+            "path": "packs/cathedral-square/cs4/models/house-plaster-eaves-arcade.glb",
             "bytes": 730036,
-            "sha256": "963a1100dc356d527331ea9f1be757c6031154715972809af939243e46279573",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/house-plaster-eaves-arcade.glb"
+            "sha256": "261d30d0f2872376f66dfd8e6eacf116fa00a3f864302c4511076c6f5776527e",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/house-plaster-eaves-arcade.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/house-plaster-eaves-arcade.zip",
-            "bytes": 1068668,
-            "sha256": "97b2cfb0a5fada177b6525b5258eb4ea7b98d78a72cbae6bcff33dd76c6b0c7b",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/house-plaster-eaves-arcade.zip"
+            "path": "packs/cathedral-square/cs4/editable/house-plaster-eaves-arcade.zip",
+            "bytes": 1074295,
+            "sha256": "4fbb4bd694c440ba4b603882660f679abdb4bdc0ecb2c4745cc5075c20d044d7",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/house-plaster-eaves-arcade.zip"
           }
         },
         {
           "slug": "house-plaster-eaves-shop",
           "collection": "project",
           "assetId": "a_8a1ce14aa5f2401b80c132279aa3e9a9",
-          "revisionId": "r_5dd53a57b04c4273b4c8a1ec8ee0fb66",
+          "revisionId": "r_f50482d5b68144d4b40311b8e7458536",
           "includedRevisions": [
-            "r_5dd53a57b04c4273b4c8a1ec8ee0fb66"
+            "r_f50482d5b68144d4b40311b8e7458536"
           ],
           "missingParents": [],
           "omittedParents": [
-            "r_9d190e5f5b68442ca3d1b7882b2eeeb9"
+            "r_5dd53a57b04c4273b4c8a1ec8ee0fb66"
           ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/house-plaster-eaves-shop.glb",
+            "path": "packs/cathedral-square/cs4/models/house-plaster-eaves-shop.glb",
             "bytes": 777772,
-            "sha256": "eaad2d95cfa199a78a1cb7e216275020497c67157025d43728507e55622c7e1e",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/house-plaster-eaves-shop.glb"
+            "sha256": "c0d6ac7b28a4f992ef9a6c1ec6dcdfba1667ffbed1acd694fcd37c514150dd0b",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/house-plaster-eaves-shop.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/house-plaster-eaves-shop.zip",
-            "bytes": 909578,
-            "sha256": "b60e43a33163f94b8dde198dd44f58155ce6c490d25936819f9def6a461ad81a",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/house-plaster-eaves-shop.zip"
+            "path": "packs/cathedral-square/cs4/editable/house-plaster-eaves-shop.zip",
+            "bytes": 907150,
+            "sha256": "18d697c403254c91aec2590d31609cb2ce0d20941d078f76452d799f2ea93ff7",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/house-plaster-eaves-shop.zip"
           }
         },
         {
@@ -3393,46 +3403,50 @@
           "slug": "stall-red",
           "collection": "project",
           "assetId": "a_fd6b2e0c65e74c7cb94a4b30ac2edc92",
-          "revisionId": "r_2a07e3e03a694ad8a9c4ca0b23553782",
+          "revisionId": "r_3d0a6939f7934702b6485f1df4d27a4d",
           "includedRevisions": [
-            "r_2a07e3e03a694ad8a9c4ca0b23553782"
+            "r_3d0a6939f7934702b6485f1df4d27a4d"
           ],
           "missingParents": [],
-          "omittedParents": [],
+          "omittedParents": [
+            "r_2a07e3e03a694ad8a9c4ca0b23553782"
+          ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/stall-red.glb",
+            "path": "packs/cathedral-square/cs4/models/stall-red.glb",
             "bytes": 158780,
-            "sha256": "d23185171b70bd6d7930548d1dbc0d98b2c77093e0d6f994f8a47e9ccbcff8bb",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/stall-red.glb"
+            "sha256": "29fabae488dc936ed31a24fe4c8a25d249f0058b45ff9cf14fc9f2f481ce89e0",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/stall-red.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/stall-red.zip",
-            "bytes": 461013,
-            "sha256": "8291ec643b69cd8daead16542a21ad66574e41c7d1e1b426a108b036a8bef106",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/stall-red.zip"
+            "path": "packs/cathedral-square/cs4/editable/stall-red.zip",
+            "bytes": 465261,
+            "sha256": "3eb76632ab6cf945defe7c815fe3b32e2f3d7afc350e6c72b22afadbdc76d718",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/stall-red.zip"
           }
         },
         {
           "slug": "stall-green",
           "collection": "project",
           "assetId": "a_884d9b73f40143bea221bcd152fe7ae8",
-          "revisionId": "r_d6afad366bc541d782f612bc4ef3fa29",
+          "revisionId": "r_f10e2cb5ce1b48d6bd189b7fa1a37d92",
           "includedRevisions": [
-            "r_d6afad366bc541d782f612bc4ef3fa29"
+            "r_f10e2cb5ce1b48d6bd189b7fa1a37d92"
           ],
           "missingParents": [],
-          "omittedParents": [],
+          "omittedParents": [
+            "r_d6afad366bc541d782f612bc4ef3fa29"
+          ],
           "runtimeDownload": {
-            "path": "packs/cathedral-square/cs2/models/stall-green.glb",
+            "path": "packs/cathedral-square/cs4/models/stall-green.glb",
             "bytes": 158832,
-            "sha256": "a85f648d1a66158f594f9f574850e1ba263f6701dc7d4dd7d4a569f2218cdf9d",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/models/stall-green.glb"
+            "sha256": "8a38cf9ff307e4a76cdf313f145a60b89d7cbd3d0a7ff7170066064c94f6e24f",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/models/stall-green.glb"
           },
           "editableDownload": {
-            "path": "packs/cathedral-square/cs2/editable/stall-green.zip",
-            "bytes": 459667,
-            "sha256": "bedf2630c45e13a7ab6fa964493b17c1863889de13bd859ee25153aa14411e60",
-            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs2/editable/stall-green.zip"
+            "path": "packs/cathedral-square/cs4/editable/stall-green.zip",
+            "bytes": 463447,
+            "sha256": "fc7ec0763ac6861bd1109926cf91a731a6482d505d640964c87d17ba6478e291",
+            "url": "https://assets.kilnstudio.tools/packs/cathedral-square/cs4/editable/stall-green.zip"
           }
         },
         {

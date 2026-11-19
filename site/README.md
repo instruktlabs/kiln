@@ -41,7 +41,7 @@ its module separately from the gallery viewer and loads it only after Explore.
 The normal build and `stage:scene` include Cathedral Square while the runtime
 CLI's default remains Farm.
 
-The sealed `cs2` input is pinned in `src/data/scene-inputs.json`, including the
+The sealed `cs4` input is pinned in `src/data/scene-inputs.json`, including the
 embedded pack hash. Set `KILN_ASSET_MIRROR` to the prepared local release mirror
 (`.localdata/cathedral-release` in this checkout) to restore the exact input without
 the original authoring workspaces. To stage just this scene:

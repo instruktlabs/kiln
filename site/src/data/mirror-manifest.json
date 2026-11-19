@@ -7970,6 +7970,126 @@
       "path": "media/rig/review-neutral-v1/h-7/h7-1/mech-cockpit.png",
       "bytes": 1748228,
       "sha256": "70d8f4d53a6d0d291d3677119421fe9e61902b1f092a1949f7f77b96444fab7e"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/cathedral.glb",
+      "bytes": 15405508,
+      "sha256": "46f582b169e2dd37572bf16847fb513e45de8faa9711aefa6f4ba3e8603239f6"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/cathedral.zip",
+      "bytes": 7189051,
+      "sha256": "6cd6e0854df2019fcc72a7be5963d273fefbd79ee5695b89c0ce52c29d12cd9a"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/house-timber-gable-door.glb",
+      "bytes": 636348,
+      "sha256": "2fbb2998de51286bd0f5c5ef108df2f7ab0759f8eae05d7955d2dabd68c6a107"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/house-timber-gable-door.zip",
+      "bytes": 1011738,
+      "sha256": "30137cc9211ea18f8e9503c15be6c4dcc8bdcf5d5cdae021fa0624bcc8abe168"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/house-timber-gable-narrow.glb",
+      "bytes": 723152,
+      "sha256": "a68374d7ed6c7b136e7c73560bdfe3129721b537945853ffe9fbe53f64fbb0a9"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/house-timber-gable-narrow.zip",
+      "bytes": 870039,
+      "sha256": "a253681bbbcf722c452c2d70b9091a5ed25c4c77a03b297fd4018f3cf66cebb9"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/house-timber-gable-shop.glb",
+      "bytes": 704656,
+      "sha256": "a657f111680f8d6199e92428c7b369e82795d6cbbd451fcf3d84b44fe6d82a1d"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/house-timber-gable-shop.zip",
+      "bytes": 909954,
+      "sha256": "e7848146a4f1dfddd3c06e016e10b2accff493fafae3c151b083360f150c5d6e"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/house-stone-gable-shop.glb",
+      "bytes": 664224,
+      "sha256": "404588d94159f25630cede65805819a7e27abdd40f853f878e4d2cbe140e24ab"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/house-stone-gable-shop.zip",
+      "bytes": 933033,
+      "sha256": "c5aeed55305c7a6d4887a793b80d97fa42c6f6d253df71834de1e35597972092"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/house-stone-gable-tall.glb",
+      "bytes": 733788,
+      "sha256": "fdbd77a7d52207064cf393ffb0c56e98639bf6c8a5f7aac3110568f55c6f0754"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/house-stone-gable-tall.zip",
+      "bytes": 953268,
+      "sha256": "9f06f79ff3b8a983a29bda617689470b27ba040befab10f470616ec6b24d6ef6"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/house-stone-eaves-arcade.glb",
+      "bytes": 744256,
+      "sha256": "868cacceb100359f2d0ef3e0b5d01c53d55968eed469d189705623ec7298504a"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/house-stone-eaves-arcade.zip",
+      "bytes": 1046710,
+      "sha256": "73f9decff6778f1a6ead807e28d64c1a6e0a7b92fdcb54320ef0339906d1aaa3"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/house-plaster-eaves-arcade.glb",
+      "bytes": 730036,
+      "sha256": "261d30d0f2872376f66dfd8e6eacf116fa00a3f864302c4511076c6f5776527e"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/house-plaster-eaves-arcade.zip",
+      "bytes": 1074295,
+      "sha256": "4fbb4bd694c440ba4b603882660f679abdb4bdc0ecb2c4745cc5075c20d044d7"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/house-plaster-eaves-shop.glb",
+      "bytes": 777772,
+      "sha256": "c0d6ac7b28a4f992ef9a6c1ec6dcdfba1667ffbed1acd694fcd37c514150dd0b"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/house-plaster-eaves-shop.zip",
+      "bytes": 907150,
+      "sha256": "18d697c403254c91aec2590d31609cb2ce0d20941d078f76452d799f2ea93ff7"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/stall-red.glb",
+      "bytes": 158780,
+      "sha256": "29fabae488dc936ed31a24fe4c8a25d249f0058b45ff9cf14fc9f2f481ce89e0"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/stall-red.zip",
+      "bytes": 465261,
+      "sha256": "3eb76632ab6cf945defe7c815fe3b32e2f3d7afc350e6c72b22afadbdc76d718"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/models/stall-green.glb",
+      "bytes": 158832,
+      "sha256": "8a38cf9ff307e4a76cdf313f145a60b89d7cbd3d0a7ff7170066064c94f6e24f"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/editable/stall-green.zip",
+      "bytes": 463447,
+      "sha256": "fc7ec0763ac6861bd1109926cf91a731a6482d505d640964c87d17ba6478e291"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/cathedral-square-runtime.zip",
+      "bytes": 14190697,
+      "sha256": "c23b2d18d5583a85b97fc462cc66bce5e9023f7aa71449c8f7fd5538517dfaf9"
+    },
+    {
+      "path": "packs/cathedral-square/cs4/cathedral-square-editable.zip",
+      "bytes": 21660971,
+      "sha256": "d04760b8f5e4fccefe269ebc06626c53182dd000ed23b116b067ebf35ec9f1b3"
     }
   ]
 }

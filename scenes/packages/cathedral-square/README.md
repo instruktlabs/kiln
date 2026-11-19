@@ -31,7 +31,7 @@ bun run typecheck
 bun run lint
 ```
 
-Staging reads the sibling `kiln-text-to-3d-run` checkouts, or `KILN_CATHEDRAL_ROOT`, `KILN_TOWN_KIT_ROOT`, and `KILN_CRUCIFIX_ROOT`. It writes `scene-pack.fragment.json` beside this package. The dev page is `standalone/` once the pack is staged. three meshlets stay off. Repair receipts and captured views live under `review/2026-11-09/`; source asset workspaces retain earlier revisions.
+Staging reads the sibling `kiln-text-to-3d-run` checkouts, or `KILN_CATHEDRAL_ROOT`, `KILN_TOWN_KIT_ROOT`, and `KILN_CRUCIFIX_ROOT`. It writes `scene-pack.fragment.json` beside this package. Every release since `cs2` carries a `THIRD-PARTY-NOTICES.txt` whose last line ends in CRLF (SHA-256 `b46e4de4…`), while Git checks this file out with LF. To reproduce those notices, the unchanged editable downloads and `noticesSha256`, stage with the notices bytes from the pinned input archive. The dev page is `standalone/` once the pack is staged. three meshlets stay off. Repair receipts and captured views live under `review/2026-11-09/`; source asset workspaces retain earlier revisions.
 
 The site build does not require those authoring workspaces. Its hash-pinned `scene-inputs.json` archive restores the sealed data to `scenes/.cache/site-inputs/cathedral-square/standalone`. From `site/`, with `KILN_ASSET_MIRROR` pointing to the prepared release mirror:
 
