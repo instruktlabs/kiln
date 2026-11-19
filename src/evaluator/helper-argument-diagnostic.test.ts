@@ -3,7 +3,7 @@ import { evaluateEvaluatorRequestV2 } from './handler';
 import { createEvaluatorRequestV2, decodeEvaluatorResultV2 } from './protocol';
 import { renderGLBViaSubprocess } from './subprocess';
 
-// #415: three helper preconditions that agents hit repeatedly threw a plain Error, so the
+// #415: four helper preconditions that agents hit repeatedly threw a plain Error, so the
 // worker reported only the generic sentence. Each is now a closed cause; the thrown text,
 // the helper's file and every argument value stay inside the sandbox.
 const cases = [
@@ -17,6 +17,20 @@ const cases = [
     advice: 'one radius per path point',
     source: `function build(){const g=taperedTube([[0,0,0],[0,1,0]],[0.1,0.2,0.3,0.987654]);return createRoot('PRIVATE_SOURCE_MARKER');}`,
   },
+  // A dogfood author passed one [side, depth] pair for the whole tube. Reading its first
+  // number as a pair threw a TypeError before the length check could name the cause.
+  {
+    name: 'TAPERED_TUBE_ARGUMENT for one sectionScale pair on a longer path',
+    diagnostic: 'TAPERED_TUBE_ARGUMENT',
+    advice: 'one [side, depth] pair per path point',
+    source: `function build(){const g=taperedTube([[0,0,0],[0,1,0],[0,2,0]],[0.1,0.1,0.1],{sectionScale:[1,0.987654]});return createRoot('PRIVATE_SOURCE_MARKER');}`,
+  },
+  {
+    name: 'TAPERED_TUBE_ARGUMENT for one sectionScale pair on a two-point path',
+    diagnostic: 'TAPERED_TUBE_ARGUMENT',
+    advice: 'one [side, depth] pair per path point',
+    source: `function build(){const g=taperedTube([[0,0,0],[0,1,0]],[0.1,0.1],{sectionScale:[1,0.987654]});return createRoot('PRIVATE_SOURCE_MARKER');}`,
+  },
   {
     diagnostic: 'SWEEP_PROFILE_ARGUMENT',
     advice: 'one [scaleX, scaleY] pair per path station',
@@ -29,8 +43,10 @@ const cases = [
   },
 ] as const;
 
-for (const { diagnostic, advice, source } of cases) {
-  test(`${diagnostic} crosses the worker as a closed cause without program text`, async () => {
+for (const testCase of cases) {
+  const { diagnostic, advice, source } = testCase;
+  const title = 'name' in testCase ? testCase.name : diagnostic;
+  test(`${title} crosses the worker as a closed cause without program text`, async () => {
     const wire = await evaluateEvaluatorRequestV2(
       createEvaluatorRequestV2({ requestId: diagnostic, code: source }).json,
     );

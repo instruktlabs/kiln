@@ -60,6 +60,13 @@ crosses the boundary; the tests check for that.
 | `SWEEP_PROFILE_ARGUMENT` | `sweepProfile` and `loftProfiles` path, scale, twist, cap and up checks | path rules, scale as one pair per station, twist, cap and up rules |
 | `CSG_OPERAND_MESH` | the operand checks shared by `boolUnion`, `boolDiff` and `hull` | whole triangles, finite positions, UVs, valid groups, baked skins and instances, empty groups |
 
+Follow-up from the pre-1.9.0 dogfood (2026-11-18): a Codex Sol 6.2 author passed one
+`[side, depth]` pair as `sectionScale` for a whole `taperedTube`. Reading its first number as a
+pair threw a TypeError before the length check ran, so the rejection was still
+`PROGRAM_TYPE_ERROR`. The length check now runs first, and an entry that cannot be read as a pair
+throws `TAPERED_TUBE_ARGUMENT`. Valid input reads the same values: six valid shapes (pairs, typed
+arrays, `Vector2`, three-value entries, a closed twisted ring) hash the same before and after.
+
 Not changed, and why: the shared 2D profile outline checks (`profile requires ...`, used by
 `extrudeProfile`, which already names `PROFILE_SOLID_FAILED`), the empty-result check of a
 Boolean, the argument-count checks of `boolUnion`, `boolDiff` and `hull`, and the `metaballSurface`,
@@ -75,5 +82,5 @@ until a transcript shows one.
   written first and failed with the generic rejection.
 - The opaque path stays for everything else; `rejection-cause.test.ts` still passes unchanged.
 - Corpus rebuild ([#417](https://github.com/instruktlabs/kiln/issues/417)) is unchanged. Only
-  thrown error classes and advice text changed; no helper's successful path was edited, so no
-  GLB changes. The existing sweep, organic, UV projection and CSG suites pass unchanged.
+  thrown error classes and advice text changed; no helper's successful path computes anything
+  new (the `taperedTube` follow-up only checks each entry before reading it), so no GLB changes. The existing sweep, organic, UV projection and CSG suites pass unchanged.
