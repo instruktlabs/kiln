@@ -8220,6 +8220,61 @@
       "path": "media/rig/review-neutral-v1/cabin-woods-psx-horror/cabin-20261119-01/batteries.png",
       "bytes": 1638664,
       "sha256": "3c248cb836459477c1ceab4644fe9c0483cc46f1ca31836ae3751dbac291d092"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/cathedral.png",
+      "bytes": 1560956,
+      "sha256": "acac25efd4e1c62a9bb658d2574cf11d8ee3d769eee46deaabaab5f61208859e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door.png",
+      "bytes": 1953759,
+      "sha256": "b8fa96fcc1e9168196f1643fb04ed912b4afeff6aca5726363add6a82533646c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow.png",
+      "bytes": 1832265,
+      "sha256": "382d136053a4251f966fc05ed379b298736483855894b19547d44e93c6b73b75"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop.png",
+      "bytes": 1929593,
+      "sha256": "c48804bab2316a3debfdf70fea56b3d0ea5edffdd7c995c4841f1dc18ff176b2"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop.png",
+      "bytes": 1906740,
+      "sha256": "85006a2176d503a547a464326f4cf85e66f60ddcb5ec5f625282979bc18af563"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall.png",
+      "bytes": 1904864,
+      "sha256": "33acac34a8fd07c553a75738dcd91cc26b0831a4a36e5682f373c22b79466c79"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade.png",
+      "bytes": 1930794,
+      "sha256": "9ac4fb5a2a2be4b348f3147b50dc92e1dd3a2c725c9441cbb9447d1aef651564"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade.png",
+      "bytes": 1985778,
+      "sha256": "f035eb765631ffccd766bf57835dee293f5ecf0e2abd18b44b534513c716fdcd"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop.png",
+      "bytes": 1850063,
+      "sha256": "47226c458d1760f05a9c708a4b4c5e32f56d025d1abed3d646d7a72728889d13"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/stall-red.png",
+      "bytes": 2062320,
+      "sha256": "d0a8d7327f635a1cee4a7d5d976a294d1bb1c1ed144ea42a7ccfbda7c22c852b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/cathedral-square/cs4/stall-green.png",
+      "bytes": 2057883,
+      "sha256": "d5e0847a29bd7fc8c2f75abd035dc043e6ba4caf9ac0cb371afe3d1f1dfd7f4a"
     }
   ]
 }

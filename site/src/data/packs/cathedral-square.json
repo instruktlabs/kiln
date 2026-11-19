@@ -31,15 +31,15 @@
         "sha256": "46f582b169e2dd37572bf16847fb513e45de8faa9711aefa6f4ba3e8603239f6"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/cathedral.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/cathedral.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A Gothic cathedral with a vaulted nave, carved west portals, stained glass and an articulated roofline.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/cathedral-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/cathedral-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/cathedral-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/cathedral-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/cathedral-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/cathedral-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/cathedral-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/cathedral-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/cathedral-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/cathedral-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/cathedral.png",
-        "sourceRevisionId": "r_4b6d19a4e1de409cad201987ce5f18d1",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/cathedral-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/cathedral.png",
+        "sourceRevisionId": "r_ef41a151abca4234af6223789f01c547",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
@@ -71,15 +71,15 @@
         "sha256": "2fbb2998de51286bd0f5c5ef108df2f7ab0759f8eae05d7955d2dabd68c6a107"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A timber-framed house with a street-facing gable and a ground-floor doorway.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-door.png",
-        "sourceRevisionId": "r_c55d316b8a59443f8795ca43f5ee99c7",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-door.png",
+        "sourceRevisionId": "r_885007ae3c654f9d886e1fb243ca3a0d",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
@@ -111,15 +111,15 @@
         "sha256": "a68374d7ed6c7b136e7c73560bdfe3129721b537945853ffe9fbe53f64fbb0a9"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A tall, narrow timber-framed house with a street-facing gable.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-narrow.png",
-        "sourceRevisionId": "r_426483d96ac140c1942bb2e225e08c03",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-narrow.png",
+        "sourceRevisionId": "r_297ec254fb034f8bafc8fcac2794fdfa",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
@@ -151,15 +151,15 @@
         "sha256": "a657f111680f8d6199e92428c7b369e82795d6cbbd451fcf3d84b44fe6d82a1d"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A timber-framed house with a gabled roof and a street-level shopfront.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/house-timber-gable-shop.png",
-        "sourceRevisionId": "r_910fcc7b3dd1431099c8cbd65a9ffc3c",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-timber-gable-shop.png",
+        "sourceRevisionId": "r_68d2665595d34e1fbffe08800a1ceb19",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
@@ -191,15 +191,15 @@
         "sha256": "404588d94159f25630cede65805819a7e27abdd40f853f878e4d2cbe140e24ab"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A masonry house with a street-facing gable and a shopfront.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-shop.png",
-        "sourceRevisionId": "r_60900adf31c840d2a6bd3d68033f427a",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-shop.png",
+        "sourceRevisionId": "r_29d5208f2cf040baa2e378b87fd7adb6",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
@@ -231,15 +231,15 @@
         "sha256": "fdbd77a7d52207064cf393ffb0c56e98639bf6c8a5f7aac3110568f55c6f0754"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A tall masonry townhouse with a street-facing gable.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-gable-tall.png",
-        "sourceRevisionId": "r_171744bbc93c443b8d4cbd137692bf09",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-gable-tall.png",
+        "sourceRevisionId": "r_4c7455b9c4894d80a15579b13a3ced34",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
@@ -271,15 +271,15 @@
         "sha256": "868cacceb100359f2d0ef3e0b5d01c53d55968eed469d189705623ec7298504a"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A masonry townhouse with a ground-floor arcade and dormers on the street-facing roof slope.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/house-stone-eaves-arcade.png",
-        "sourceRevisionId": "r_bfba41c9967b4f4c9d08932b30bce1f7",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-stone-eaves-arcade.png",
+        "sourceRevisionId": "r_5e882cadafab460aa21884ca8e9723a7",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
@@ -311,15 +311,15 @@
         "sha256": "261d30d0f2872376f66dfd8e6eacf116fa00a3f864302c4511076c6f5776527e"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A plaster townhouse with a ground-floor arcade and dormers on the tiled roof.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-arcade.png",
-        "sourceRevisionId": "r_c91287f01b0d435a84f77846be132732",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-arcade.png",
+        "sourceRevisionId": "r_b8c4e3c9dd5b4dff9c672736895540cb",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
@@ -351,15 +351,15 @@
         "sha256": "c0d6ac7b28a4f992ef9a6c1ec6dcdfba1667ffbed1acd694fcd37c514150dd0b"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A plaster townhouse with a street-level shopfront and a pair of dormers.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/house-plaster-eaves-shop.png",
-        "sourceRevisionId": "r_5dd53a57b04c4273b4c8a1ec8ee0fb66",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/house-plaster-eaves-shop.png",
+        "sourceRevisionId": "r_f50482d5b68144d4b40311b8e7458536",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
@@ -551,15 +551,15 @@
         "sha256": "29fabae488dc936ed31a24fe4c8a25d249f0058b45ff9cf14fc9f2f481ce89e0"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/stall-red.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-red.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A market stall with a red striped canopy.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/stall-red-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-red-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-red-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-red-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-red-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/stall-red-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-red-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-red-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-red-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-red-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/stall-red.png",
-        "sourceRevisionId": "r_2a07e3e03a694ad8a9c4ca0b23553782",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-red-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/stall-red.png",
+        "sourceRevisionId": "r_3d0a6939f7934702b6485f1df4d27a4d",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
@@ -591,15 +591,15 @@
         "sha256": "8a38cf9ff307e4a76cdf313f145a60b89d7cbd3d0a7ff7170066064c94f6e24f"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/cathedral-square/cs2/stall-green.webp",
+        "src": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-green.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A market stall with a green striped canopy.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs2/stall-green-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-green-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-green-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-green-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-green-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs2/stall-green-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-green-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-green-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-green-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs2/stall-green-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs2/stall-green.png",
-        "sourceRevisionId": "r_d6afad366bc541d782f612bc4ef3fa29",
-        "exactRevision": false,
+        "srcsetWebp": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-320.webp 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-480.webp 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-672.webp 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-768.webp 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-320.avif 320w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-480.avif 480w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-672.avif 672w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-768.avif 768w, /media/rig/review-neutral-v1/cathedral-square/cs4/stall-green-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/cathedral-square/cs4/stall-green.png",
+        "sourceRevisionId": "r_f10e2cb5ce1b48d6bd189b7fa1a37d92",
+        "exactRevision": true,
         "rig": "review-neutral-v1"
       }
     },
