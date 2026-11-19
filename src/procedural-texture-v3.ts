@@ -1,4 +1,5 @@
 /** Deterministic binary coverage and straight RGBA source-over compiler. */
+import type { ProceduralCompileOptions } from './procedural-texture-cache';
 import { compileProceduralTextureSpecV2 } from './procedural-texture-v2-compiler';
 import {
   canonicalizeProceduralTextureSpecV3,
@@ -63,7 +64,8 @@ function covers(shape: ProceduralShapeV3, x: number, y: number): boolean {
     return dx * dx * h2 + dy * dy * w2 <= w2 * h2;
   }
   if (shape.kind === 'line') {
-    const [ax, ay] = shape.from;
+    const ax = shape.from[0];
+    const ay = shape.from[1];
     const dx = shape.to[0] - ax;
     const dy = shape.to[1] - ay;
     const vx = px - ax;
@@ -78,8 +80,10 @@ function covers(shape: ProceduralShapeV3, x: number, y: number): boolean {
   }
   let inside = false;
   for (let i = 0, j = shape.points.length - 1; i < shape.points.length; j = i++) {
-    const [ax, ay] = shape.points[j]!;
-    const [bx, by] = shape.points[i]!;
+    const ax = shape.points[j]![0];
+    const ay = shape.points[j]![1];
+    const bx = shape.points[i]![0];
+    const by = shape.points[i]![1];
     const cross = (px - ax) * (by - ay) - (py - ay) * (bx - ax);
     if (
       cross === 0 &&
@@ -96,16 +100,32 @@ function covers(shape: ProceduralShapeV3, x: number, y: number): boolean {
 
 /** All divisions round half-up. Stored channels are straight, not premultiplied. */
 function sourceOver(pixels: Uint8Array, offset: number, rgba: RgbaV3, opacity: number): void {
-  const sa = roundRatio(rgba[3] * opacity, 255);
+  sourceOverChannels(pixels, offset, rgba[0], rgba[1], rgba[2], rgba[3], opacity);
+}
+
+/** {@link sourceOver} from separate channels, so a per-texel source needs no tuple. */
+function sourceOverChannels(
+  pixels: Uint8Array,
+  offset: number,
+  r: number,
+  g: number,
+  b: number,
+  a: number,
+  opacity: number,
+): void {
+  const sa = roundRatio(a * opacity, 255);
   if (sa === 0) return;
   const da = pixels[offset + 3]!;
   const alphaNumerator = sa * 255 + da * (255 - sa);
-  for (let channel = 0; channel < 3; channel++) {
-    pixels[offset + channel] = roundRatio(
-      rgba[channel]! * sa * 255 + pixels[offset + channel]! * da * (255 - sa),
-      alphaNumerator,
-    );
-  }
+  pixels[offset] = roundRatio(r * sa * 255 + pixels[offset]! * da * (255 - sa), alphaNumerator);
+  pixels[offset + 1] = roundRatio(
+    g * sa * 255 + pixels[offset + 1]! * da * (255 - sa),
+    alphaNumerator,
+  );
+  pixels[offset + 2] = roundRatio(
+    b * sa * 255 + pixels[offset + 2]! * da * (255 - sa),
+    alphaNumerator,
+  );
   pixels[offset + 3] = roundRatio(alphaNumerator, 255);
 }
 
@@ -171,11 +191,39 @@ function stampRandom(seed: number): () => number {
 const wrap = (value: number, period: number): number => ((value % period) + period) % period;
 
 /** Preflight validates all nested values and total worst-case work before allocation. */
-export function compileProceduralTextureSpecV3(input: unknown): CompiledProceduralTextureV3 {
+export function compileProceduralTextureSpecV3(
+  input: unknown,
+  options: ProceduralCompileOptions = {},
+): CompiledProceduralTextureV3 {
   const spec = canonicalizeProceduralTextureSpecV3(input);
+  const canonicalJson = canonicalProceduralTextureJsonV3(spec);
+  const pixels = options.cache
+    ? options.cache.pixels(`v3:${PROCEDURAL_TEXTURE_V3_COMPILER_ID}:${canonicalJson}`, () =>
+        compilePixelsV3(spec, options),
+      )
+    : compilePixelsV3(spec, options);
+  return {
+    spec,
+    pixels,
+    canonicalJson,
+    recipeHash: hashProceduralTextureSpecV3(spec),
+    compilerId: PROCEDURAL_TEXTURE_V3_COMPILER_ID,
+  };
+}
+
+function compilePixelsV3(
+  spec: CanonicalProceduralTextureSpecV3,
+  options: ProceduralCompileOptions,
+): Uint8Array {
   const { width, height } = spec;
   const pixels = new Uint8Array(width * height * 4);
-  for (let i = 0; i < pixels.length; i += 4) pixels.set(spec.background, i);
+  const [br, bg, bb, ba] = spec.background;
+  for (let i = 0; i < pixels.length; i += 4) {
+    pixels[i] = br;
+    pixels[i + 1] = bg;
+    pixels[i + 2] = bb;
+    pixels[i + 3] = ba;
+  }
   for (const op of spec.operations) {
     if (op.op === 'paint') paint(pixels, width, height, op.shape, op.rgba, op.opacity);
     else if (op.op === 'mask') {
@@ -189,9 +237,17 @@ export function compileProceduralTextureSpecV3(input: unknown): CompiledProcedur
           if (pixels[offset + 3] === 0) pixels.fill(0, offset, offset + 3);
         }
     } else if (op.op === 'legacy-v2') {
-      const legacy = compileProceduralTextureSpecV2(op.spec).pixels;
+      const legacy = compileProceduralTextureSpecV2(op.spec, options).pixels;
       for (let i = 0; i < pixels.length; i += 4)
-        sourceOver(pixels, i, [legacy[i]!, legacy[i + 1]!, legacy[i + 2]!, op.alpha], op.opacity);
+        sourceOverChannels(
+          pixels,
+          i,
+          legacy[i]!,
+          legacy[i + 1]!,
+          legacy[i + 2]!,
+          op.alpha,
+          op.opacity,
+        );
     } else {
       const random = stampRandom(op.seed);
       const [bx0, by0] = proceduralShapeBoundsV3(op.shape);
@@ -210,11 +266,5 @@ export function compileProceduralTextureSpecV3(input: unknown): CompiledProcedur
     }
   }
   if (spec.palette) applyPalette(pixels, width, spec.palette);
-  return {
-    spec,
-    pixels,
-    canonicalJson: canonicalProceduralTextureJsonV3(spec),
-    recipeHash: hashProceduralTextureSpecV3(spec),
-    compilerId: PROCEDURAL_TEXTURE_V3_COMPILER_ID,
-  };
+  return pixels;
 }

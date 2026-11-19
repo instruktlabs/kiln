@@ -81,6 +81,7 @@ export * from './geometry';
 import * as profile from './profile';
 import * as solids from './solids';
 import * as proceduralTextures from './procedural-texture';
+import { ProceduralPixelCache } from './procedural-texture-cache';
 import { seededRandom } from './seeded-random';
 import * as textures from './textures';
 import { textureAtlas, remapUVToAtlas } from './texture-atlas';
@@ -2231,6 +2232,9 @@ export function buildSandboxGlobals(
   // future click-to-edit interaction in the gallery viewer — can map a
   // clicked triangle back to the primitive call that produced it.
   const geoCache = new Map<string, THREE.BufferGeometry>();
+  // Procedural pixels compiled in this build, by full recipe identity (per sandbox, like the
+  // mesh cache). Every caller gets its own copy; see ProceduralPixelCache.
+  const proceduralPixels = new ProceduralPixelCache();
   let _kilnCallSeq = 0;
   const stampKilnRange = (name: string, geo: THREE.BufferGeometry) => {
     const idx = geo.getIndex();
@@ -2477,11 +2481,16 @@ export function buildSandboxGlobals(
     // objects are intentionally not accepted by this one-argument closure.
     loadApprovedTexture: wrap('loadApprovedTexture', loadApprovedTexture),
     // Procedural textures (sync — no I/O, so no await)
-    proceduralTexture: wrap('proceduralTexture', proceduralTextures.proceduralTexture),
+    proceduralTexture: wrap('proceduralTexture', (spec: proceduralTextures.ProceduralTextureSpec) =>
+      proceduralTextures.proceduralTexture(spec, { cache: proceduralPixels }),
+    ),
     textureAtlas: wrap('textureAtlas', (...args: unknown[]) => {
       if (args.length !== 1)
         return Promise.reject(new TypeError('textureAtlas accepts exactly one atlas spec'));
-      return textureAtlas(args[0], { resources: options.textureResolver?.pinnedMaterialMaps });
+      return textureAtlas(args[0], {
+        resources: options.textureResolver?.pinnedMaterialMaps,
+        proceduralCache: proceduralPixels,
+      });
     }),
     normalMapFromHeight: wrap('normalMapFromHeight', proceduralTextures.normalMapFromHeight),
     pbrMaterial: wrap('pbrMaterial', textures.pbrMaterial),
