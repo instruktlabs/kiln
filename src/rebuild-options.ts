@@ -14,3 +14,28 @@ export const rebuildOptionsSchema = z.object({
   instance: z.enum(['off', 'auto', 'on']),
 });
 export type RebuildOptions = z.infer<typeof rebuildOptionsSchema>;
+
+/**
+ * The evaluator options an exact rebuild of a saved revision passes, from its saved
+ * `build.options`. Shared by `kiln asset --rebuild` and the corpus gate so the two cannot
+ * drift: missing settings and an unversioned full pipeline are refused, never guessed.
+ */
+export function savedRebuildRenderOptions(
+  saved: unknown,
+): Omit<RebuildOptions, 'optimizationPipeline'> {
+  const parsed = rebuildOptionsSchema.safeParse(saved);
+  if (!parsed.success)
+    throw new Error(
+      'Saved exporter settings are incomplete; use an explicit new authoring run instead of an exact rebuild.',
+    );
+  if (
+    parsed.data.optimize === 'full' &&
+    parsed.data.optimizationPipeline !== FULL_OPTIMIZATION_PIPELINE
+  )
+    throw new Error(
+      'Saved revision uses an unversioned full optimization pipeline; rebuild with its original pinned engine, or explicitly author and save a new child revision to migrate.',
+    );
+  // The pipeline version is replay metadata, not an evaluator input option.
+  const { optimizationPipeline: _pipeline, ...renderOptions } = parsed.data;
+  return renderOptions;
+}

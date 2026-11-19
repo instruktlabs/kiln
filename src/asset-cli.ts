@@ -23,7 +23,7 @@ import { startAssetViewer } from './asset-viewer';
 import { FileWorkspace, localWorkspaceRoot } from './workspace-node';
 import { FileLiveReview } from './live-review-node';
 import { resolveAssetMaterialPayload } from './project-bundle-node';
-import { FULL_OPTIMIZATION_PIPELINE, rebuildOptionsSchema } from './rebuild-options';
+import { savedRebuildRenderOptions } from './rebuild-options';
 import { assertSavedRequirementsAuthorized } from './requirements-assets';
 import { resolveRequirementsContext } from './requirements-context';
 import { assetViewerHref } from './viewer/deep-link';
@@ -354,20 +354,7 @@ export async function assetMain(argv: readonly string[]): Promise<number> {
             record.manifest,
             resolveRequirementsContext(requirements),
           );
-          const parsed = rebuildOptionsSchema.safeParse(record.manifest.build?.options);
-          if (!parsed.success)
-            throw new Error(
-              'Saved exporter settings are incomplete; use an explicit new authoring run instead of an exact rebuild.',
-            );
-          if (
-            parsed.data.optimize === 'full' &&
-            parsed.data.optimizationPipeline !== FULL_OPTIMIZATION_PIPELINE
-          )
-            throw new Error(
-              'Saved revision uses an unversioned full optimization pipeline; rebuild with its original pinned engine, or explicitly author and save a new child revision to migrate.',
-            );
-          // The pipeline version is replay metadata, not an evaluator input option.
-          const { optimizationPipeline: _pipeline, ...renderOptions } = parsed.data;
+          const renderOptions = savedRebuildRenderOptions(record.manifest.build?.options);
           const materialResources = await resolveAssetMaterialPayload(
             new FileWorkspace(localWorkspaceRoot()),
             record,
