@@ -1,0 +1,124 @@
+{
+  "/gallery/cathedral-square/house-timber-gable-shop/": {
+    "revisionId": "r_68d2665595d34e1fbffe08800a1ceb19",
+    "glbSha256": "a657f111680f8d6199e92428c7b369e82795d6cbbd451fcf3d84b44fe6d82a1d",
+    "poster": {
+      "src": "/featured-assets/house-timber-gable-shop-672.webp",
+      "width": 672,
+      "height": 672,
+      "alt": "The timber-framed gable and shopfront with a peaked roof and chimney.",
+      "srcsetWebp": "/featured-assets/house-timber-gable-shop-320.webp 320w, /featured-assets/house-timber-gable-shop-672.webp 672w",
+      "srcsetAvif": ""
+    },
+    "capture": {
+      "assetId": "a_a9a108df19374d2cb9ee0a6b596a09a1",
+      "width": 1024,
+      "height": 1024,
+      "lightingPresetId": "review-neutral-v1",
+      "backdrop": "neutral",
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+      "materialFaithful": true,
+      "camera": {
+        "version": "kiln.camera.v1",
+        "projection": "orthographic",
+        "position": [
+          43.821490176044755,
+          17.67317816961164,
+          7.80225357902922
+        ],
+        "target": [
+          -5.4400001764297485,
+          9.773668518289924,
+          0
+        ],
+        "up": [
+          -0.1545084971874737,
+          0.9876883405951378,
+          -0.024471741852423214
+        ],
+        "aspect": 1,
+        "near": 25.24862295942958,
+        "far": 76.74586887828873,
+        "halfHeight": 12.162351855799761
+      },
+      "pngSha256": "c8940b79520c47750a4113d6bbfe44fa9427c49b5f7fdae6f9e295e6ab1d1ff8",
+      "crop": {
+        "left": 31,
+        "top": 48,
+        "size": 965
+      }
+    },
+    "files": {
+      "house-timber-gable-shop-320.webp": {
+        "sha256": "107b292a40aad76e99684e50b62bed2c1e4f0133d0e3eda2e31c44dc658b0ccb",
+        "bytes": 7466
+      },
+      "house-timber-gable-shop-672.webp": {
+        "sha256": "57d4159c067eced9040111ce6e0dc4e6e58742021df98f79f713db96f19d91ab",
+        "bytes": 21068
+      }
+    }
+  },
+  "/gallery/holodeck/tree-olive/": {
+    "revisionId": "r_f88d7d2fb5c2496ebf33ea2859e1d570",
+    "glbSha256": "c377b3a29c41192345c65043798431a6fe96b5bbe87f51d38f519eb61d9a72a3",
+    "poster": {
+      "src": "/featured-assets/tree-olive-672.webp",
+      "width": 672,
+      "height": 672,
+      "alt": "The Courtyard olive tree with twisting trunks and branching silver-green foliage.",
+      "srcsetWebp": "/featured-assets/tree-olive-320.webp 320w, /featured-assets/tree-olive-672.webp 672w",
+      "srcsetAvif": ""
+    },
+    "capture": {
+      "assetId": "a_74104f8de7514b7d8fdb101dc316ba89",
+      "width": 1024,
+      "height": 1024,
+      "lightingPresetId": "review-neutral-v1",
+      "backdrop": "neutral",
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+      "materialFaithful": true,
+      "camera": {
+        "version": "kiln.camera.v1",
+        "projection": "orthographic",
+        "position": [
+          -11.660486266073532,
+          3.8607915342829537,
+          8.099944567618955
+        ],
+        "target": [
+          -0.10994809865951538,
+          1.8790809512138367,
+          0.012170672416687012
+        ],
+        "up": [
+          0.11400393016147581,
+          0.9902680687415703,
+          -0.0798264112845987
+        ],
+        "aspect": 1,
+        "near": 7.119589092283545,
+        "far": 22.358767276850635,
+        "halfHeight": 3.152458548445942
+      },
+      "pngSha256": "411d32b8127445b2db1ae8e53c6c729bc9db6f12ab719b0f94381a56ec98e957",
+      "crop": {
+        "left": 124,
+        "top": 132,
+        "size": 773
+      }
+    },
+    "files": {
+      "tree-olive-320.webp": {
+        "sha256": "02ae1336de8caa1d1976bc45c62137c262b0b9ed43411677a929eb7d40a6d661",
+        "bytes": 12882
+      },
+      "tree-olive-672.webp": {
+        "sha256": "412f057b2570ce2617eb7eaf2bffe76ca3589082e736d46e024683cb0c770fb1",
+        "bytes": 54956
+      }
+    }
+  }
+}

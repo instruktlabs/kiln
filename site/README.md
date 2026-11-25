@@ -145,25 +145,24 @@ Collage tiles use matching 16:9 frames; each selection can set its crop position
 The generated
 `../assets/readme/holodeck-showcase.json` records their source and output hashes.
 
-The homepage uses one sequence: a Winter Cabin wall asset, its modular architecture
-kit assembling, its living floor and loft being furnished in cutaway views,
-then a capture of the finished Holodeck scene. The assembly uses 40 saved asset
-types and 173 placements from the catalog's exact world snapshot.
-Keep capture work in a separate workspace. Retain `web/manifest.json` (module
-revisions, model hashes, placements, world hash and scene capture record), the
-models under `web/models/`, `web/scene.webp`, `wall.kiln.js`, the capture page and
-`web/captures/property/{frame-0000.png,...,proof.json}`. The property film capture
-renders 1,020 fixed-time frames for a 34-second sequence at 30 fps. Its shot plan
-records the asset introduction, camera pullback, architecture assembly,
-living floor, a lower room tour, the staircase building upward, sleeping loft and final scene. The 17 interior treads and railings remain hidden during the living-room shots; they build with the loft landing afterward. Assets reveal
-in place through clipping groups, with clipped shadows and unchanged scale.
-Slow camera moves allow time to inspect the completed rooms. Run
-`node scripts/stage-asset-to-scene.mjs WORKSPACE/kit` from `site/` with FFmpeg and
-FFprobe available. Intake checks the placed revisions against the catalog,
-model and source hashes, world identity, the complete frame sequence, encoded
-frame rate and WebGPU capture evidence. It stages
-one MP4, a GIF, a poster and the wall source at a content-addressed path. The
-workflow tests verify the staged files and the single-player presentation.
+The homepage follows one window bay from Seed Town’s daylight seed 2026. The
+studio shots load the sealed GLBs and use the runtime planner and instance
+renderer to show three finishes and assemble one shop, its neighbors and the
+rest of the town. The outskirts planner places the trees in the final shot.
+The poster comes from that shot before captions. The film receipt records the
+source revision, kit hashes, placement IDs, tree count, seed and media checksums.
+
+To reproduce the film, install the site and scenes dependencies. From `site/`,
+run `bun scripts/stage-seed-town-workflow.mjs HYDRATED_SITE_PUBLIC FACADE_SOURCE`
+with Chrome, FFmpeg and FFprobe available. Supply the public directory containing
+`scene-packs/seed-town/st1/` and the saved
+`facade-bay.kiln.js` source. Add `--proof` to review representative
+frames under `.cache/seed-town-film/`. The full capture stages the
+MP4, GIF, poster and editable source under `public/workflow/seed-town/`.
+
+The earlier Winter Cabin film remains available at its original content-addressed
+URL. Its receipt is `src/data/winter-cabin-workflow.json` and its capture
+stager is `scripts/stage-asset-to-scene.mjs`.
 
 Public packs have source records under `../packs/`; five runnable scenes
 have source under `../scenes/packages/`. Large binaries are downloaded explicitly

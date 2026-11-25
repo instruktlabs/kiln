@@ -3,7 +3,7 @@ import { buildGallery } from '../src/lib/gallery';
 import { browseGallery, galleryCategories } from '../src/lib/gallery-browse';
 import taxonomy from '../src/data/gallery-taxonomy.json';
 import galleryOrder from '../src/data/gallery-order.json';
-import { curatedWorlds, featuredAssetHrefs, worldCover } from '../src/lib/site-curation';
+import { curatedWorlds, featuredAssetHrefs, featuredAssetPoster, worldCover, worldHeroCaption } from '../src/lib/site-curation';
 import { holodeckPacks } from '../src/lib/holodeck';
 
 // The curated order on its own; verified cards leading it is tested with the records in gallery-verified.test.ts.
@@ -35,6 +35,23 @@ test('curated world and asset selections resolve without dropping any current pa
   expect(curatedWorlds).toHaveLength(holodeckPacks.length);
   for (const pack of curatedWorlds) expect(worldCover(pack.id)?.src).toBeTruthy();
   for (const href of featuredAssetHrefs) expect(card(href)).toBeDefined();
+});
+
+test('the hero caption and model credit follow the selected world', () => {
+  const lagoon = holodeckPacks.find((pack) => pack.scene === 'lagoon-sanctuary')!;
+  const meridian = holodeckPacks.find((pack) => pack.scene === 'meridian-sanctuary')!;
+  expect(worldHeroCaption(lagoon)).toContain('turquoise jungle lagoon');
+  expect(worldHeroCaption(lagoon)).toContain('Gemini 4 Neon (XHigh)');
+  expect(worldHeroCaption(meridian)).toBe(meridian.description);
+});
+
+test('a featured poster follows its exact model, and other revisions use their own poster', () => {
+  const olive = card('/gallery/holodeck/tree-olive/');
+  expect(featuredAssetPoster(olive)?.src).toContain('/featured-assets/');
+  expect(featuredAssetPoster({ ...olive, revisionId: 'changed' })).toBe(olive.poster);
+  expect(featuredAssetPoster({ ...olive, runtimeModelDownload: { sha256: 'changed' } })).toBe(olive.poster);
+  const cathedral = card('/gallery/cathedral-square/cathedral/');
+  expect(featuredAssetPoster(cathedral)).toBe(cathedral.poster);
 });
 
 test('the gallery opens in the curated order, and unlisted assets follow newest first without loss', () => {

@@ -1,0 +1,932 @@
+{
+  "asset": {
+    "id": "wmc-wall-facade",
+    "slug": "winter-wmc-wall-facade",
+    "name": "Cabin front wall and gable frame",
+    "revision": "r_6b70ff0e8baf45dd96f6a3dec221853c",
+    "placedRevision": "r_6b70ff0e8baf45dd96f6a3dec221853c",
+    "sha256": "b53e834f0d8ea900736cf277e30c926b8c171844a934c9ec0ce89332fc04c782",
+    "model": "models/wmc-wall-facade.glb"
+  },
+  "modules": [
+    {
+      "id": "wmc-floor-main",
+      "slug": "winter-wmc-floor-main",
+      "name": "Cabin plank floor",
+      "revision": "r_6f875c61c5fc4d4d8112ef059c6c8443",
+      "placedRevision": "r_6f875c61c5fc4d4d8112ef059c6c8443",
+      "sha256": "f65e5db84489c67705f3e63df9d14656ca34b7053af1266d2e39882385025a09",
+      "model": "models/wmc-floor-main.glb"
+    },
+    {
+      "id": "wmc-wall-facade",
+      "slug": "winter-wmc-wall-facade",
+      "name": "Cabin front wall and gable frame",
+      "revision": "r_6b70ff0e8baf45dd96f6a3dec221853c",
+      "placedRevision": "r_6b70ff0e8baf45dd96f6a3dec221853c",
+      "sha256": "b53e834f0d8ea900736cf277e30c926b8c171844a934c9ec0ce89332fc04c782",
+      "model": "models/wmc-wall-facade.glb"
+    },
+    {
+      "id": "wmc-wall-west",
+      "slug": "winter-wmc-wall-west",
+      "name": "Cabin entry-side wall",
+      "revision": "r_a06b37dfb34843d394c049e0b9913019",
+      "placedRevision": "r_a06b37dfb34843d394c049e0b9913019",
+      "sha256": "7a5d2bc1993fb74d6778227fa039ca7ed9cd63eb4881bca2763175dc29aeba33",
+      "model": "models/wmc-wall-west.glb"
+    },
+    {
+      "id": "wmc-wall-east",
+      "slug": "winter-wmc-wall-east",
+      "name": "Cabin window-side wall",
+      "revision": "r_c9a234d398ed4d78b1c7a94023ae2ab0",
+      "placedRevision": "r_c9a234d398ed4d78b1c7a94023ae2ab0",
+      "sha256": "bec7b6538e0f61594607449088e44d847822a54b4afe06e740d35eb2a751a381",
+      "model": "models/wmc-wall-east.glb"
+    },
+    {
+      "id": "wmc-wall-rear",
+      "slug": "winter-wmc-wall-rear",
+      "name": "Cabin rear gable wall",
+      "revision": "r_6225dd8469d646c8a555c201713a5761",
+      "placedRevision": "r_6225dd8469d646c8a555c201713a5761",
+      "sha256": "cf8b764038bea4437e6e7a46f6d9d7839e4e0b3e87303bd76bd5ba822d35d654",
+      "model": "models/wmc-wall-rear.glb"
+    },
+    {
+      "id": "wmc-roof-east",
+      "slug": "winter-wmc-roof-east",
+      "name": "Snow-covered roof with chimney opening",
+      "revision": "r_04edc17050114086831c5e5098b64436",
+      "placedRevision": "r_04edc17050114086831c5e5098b64436",
+      "sha256": "426760d4f8c963729d6ca10f9aac697345cafe804d47edd2da3ddb5e0241d066",
+      "model": "models/wmc-roof-east.glb"
+    },
+    {
+      "id": "wmc-roof-west",
+      "slug": "winter-wmc-roof-west",
+      "name": "Snow-covered roof with ridge cap",
+      "revision": "r_20ee4d4806274ec6afd7b52ff91f9bc3",
+      "placedRevision": "r_20ee4d4806274ec6afd7b52ff91f9bc3",
+      "sha256": "d18380d2d2a5fa3a0d524076702f5497eff426367b255cd48947938f0fcf5c74",
+      "model": "models/wmc-roof-west.glb"
+    },
+    {
+      "id": "wmc-frame-post",
+      "slug": "winter-wmc-frame-post",
+      "name": "Timber frame post",
+      "revision": "r_16867fa4eb2f4855955e0f2179d41b60",
+      "placedRevision": "r_16867fa4eb2f4855955e0f2179d41b60",
+      "sha256": "16c09a2ebd4fdc9cf03169652390226cf6171a50614c37ff43a268c7c99eadf1",
+      "model": "models/wmc-frame-post.glb"
+    },
+    {
+      "id": "wmc-rafter-frame",
+      "slug": "winter-wmc-rafter-frame",
+      "name": "Paired timber rafters",
+      "revision": "r_4d62127be4ea41e7a8387e812bf4a811",
+      "placedRevision": "r_4d62127be4ea41e7a8387e812bf4a811",
+      "sha256": "db443e084f6674c221d4940acbc44151d414f29b753f717d3786c255a00e0a0d",
+      "model": "models/wmc-rafter-frame.glb"
+    },
+    {
+      "id": "wmc-window-tall",
+      "slug": "winter-wmc-window-tall",
+      "name": "Tall timber window",
+      "revision": "r_8c85b15ec6434f91b67353da68c41630",
+      "placedRevision": "r_8c85b15ec6434f91b67353da68c41630",
+      "sha256": "bbf65f63cb729b6e6d51e0e4709ae2bd9305e5facd249058dc4f82cf7dd159e9",
+      "model": "models/wmc-window-tall.glb"
+    },
+    {
+      "id": "wmc-gable-glass",
+      "slug": "winter-wmc-gable-glass",
+      "name": "Fitted gable glass panels",
+      "revision": "r_8510fb32447d4d4d84493a39e8be6a98",
+      "placedRevision": "r_8510fb32447d4d4d84493a39e8be6a98",
+      "sha256": "fb267c4097fc1a9eb111d22a332df3f4f8a415d6fb4ee950a40a5e38deaf42c4",
+      "model": "models/wmc-gable-glass.glb"
+    },
+    {
+      "id": "wmc-door-entry",
+      "slug": "winter-wmc-door-entry",
+      "name": "Timber entrance door",
+      "revision": "r_81e404f1e10f4ee6a408880168ee7344",
+      "placedRevision": "r_81e404f1e10f4ee6a408880168ee7344",
+      "sha256": "988bfcd1d0bfc15b4d743e123e9af12fea96b625e67d69fe67e364b44a403f43",
+      "model": "models/wmc-door-entry.glb"
+    },
+    {
+      "id": "wmc-door-deck",
+      "slug": "winter-wmc-door-deck",
+      "name": "Timber deck door",
+      "revision": "r_2c207a3161084bfbbd9608cf261ba6c7",
+      "placedRevision": "r_2c207a3161084bfbbd9608cf261ba6c7",
+      "sha256": "4e5cb5a7287b2e825ae5658f44fc16ab08e0f0bb047beb10dc43c35c6666e837",
+      "model": "models/wmc-door-deck.glb"
+    },
+    {
+      "id": "wmc-deck-tile",
+      "slug": "winter-wmc-deck-tile",
+      "name": "Timber deck module",
+      "revision": "r_24ad3a121ea949b3819e19192a07aecb",
+      "placedRevision": "r_24ad3a121ea949b3819e19192a07aecb",
+      "sha256": "4a13c23e6b7ced2213a3a7c48fff5d5ceaee8147ba771857a28239f3737a5026",
+      "model": "models/wmc-deck-tile.glb"
+    },
+    {
+      "id": "wmc-rail-span",
+      "slug": "winter-wmc-rail-span",
+      "name": "Timber and iron guardrail",
+      "revision": "r_9a172a5524904a298f8d475d722de2a1",
+      "placedRevision": "r_9a172a5524904a298f8d475d722de2a1",
+      "sha256": "610b49be8200c3259dc8e6ca66bee2ef53dccf52df46ac05c8bcfadd36386e3f",
+      "model": "models/wmc-rail-span.glb"
+    },
+    {
+      "id": "wmc-stone-pier",
+      "slug": "winter-wmc-stone-pier",
+      "name": "Stone foundation pier",
+      "revision": "r_5cfe4f56a2e64bdeaf11ecfd989d63a8",
+      "placedRevision": "r_5cfe4f56a2e64bdeaf11ecfd989d63a8",
+      "sha256": "66b1f288e84daf055b179d832b690bc863a03118b698aaed0adec0421d07fcec",
+      "model": "models/wmc-stone-pier.glb"
+    },
+    {
+      "id": "wmc-chimney-masonry",
+      "slug": "winter-wmc-chimney-masonry",
+      "name": "Stone chimney and roof flashing",
+      "revision": "r_a9b40046ca5c4d8e8c2a0f0cddd8c730",
+      "placedRevision": "r_a9b40046ca5c4d8e8c2a0f0cddd8c730",
+      "sha256": "13d9eff2c75a0b090b06db398c2110c7fb0511889598efb605b1cd204e3b4daa",
+      "model": "models/wmc-chimney-masonry.glb"
+    },
+    {
+      "id": "wmc-stone-plinth-panel",
+      "slug": "winter-wmc-stone-plinth-panel",
+      "name": "Stone foundation facing",
+      "revision": "r_b6a3c5ab05d04971bbb4a794d98b6fff",
+      "placedRevision": "r_b6a3c5ab05d04971bbb4a794d98b6fff",
+      "sha256": "3774732adde6e8cc3c22c387d4b432188e71561f4d8f8fbee7c56416b0645cfa",
+      "model": "models/wmc-stone-plinth-panel.glb"
+    },
+    {
+      "id": "wmc-tread-timber",
+      "slug": "winter-wmc-tread-timber",
+      "name": "Timber stair tread",
+      "revision": "r_8b684e59f24b4408862ed20026389cce",
+      "placedRevision": "r_8b684e59f24b4408862ed20026389cce",
+      "sha256": "ed466a3865232ab707154674ab524220cfd0802ed010b4c575f01d73c2bf4c97",
+      "model": "models/wmc-tread-timber.glb"
+    },
+    {
+      "id": "wmc-stair-rail-exterior",
+      "slug": "winter-wmc-stair-rail-exterior",
+      "name": "Exterior stair railing",
+      "revision": "r_659dbb66e23b4b64ab989ed92e795da5",
+      "placedRevision": "r_659dbb66e23b4b64ab989ed92e795da5",
+      "sha256": "78b9bd4d0c2613d8b4d708b9a3a884a24b345c2f0075555479c6d7d6aa25e2f0",
+      "model": "models/wmc-stair-rail-exterior.glb"
+    },
+    {
+      "id": "wmc-window-test",
+      "slug": "winter-wmc-window-test",
+      "name": "Timber side window",
+      "revision": "r_a68e049d8cbf4449bbad83b4b2d33499",
+      "placedRevision": "r_a68e049d8cbf4449bbad83b4b2d33499",
+      "sha256": "869d74335457eaf5437d55e7bc6cb83789fa4377b548b2f4ea39f5acc7923334",
+      "model": "models/wmc-window-test.glb",
+      "interior": false
+    },
+    {
+      "id": "wmc-lantern",
+      "slug": "winter-wmc-lantern",
+      "name": "Amber cabin lantern",
+      "revision": "r_51eacd2e38f9470e80a967cb04a12da8",
+      "placedRevision": "r_51eacd2e38f9470e80a967cb04a12da8",
+      "sha256": "702a4e65447b5c750b63ca6e6a000fa3cddcb5bf2720ac3dd13903bef56fe0a1",
+      "model": "models/wmc-lantern.glb",
+      "interior": false
+    },
+    {
+      "id": "wmc-floor-loft",
+      "slug": "winter-wmc-floor-loft",
+      "name": "Loft plank floor",
+      "revision": "r_dfca02649051461fa07592d21f60e932",
+      "placedRevision": "r_dfca02649051461fa07592d21f60e932",
+      "sha256": "e217d936c4634eaa1bc5d823613dcc77101230bf9a69bfb717880b8ca5c256c6",
+      "model": "models/wmc-floor-loft.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-stair-rail-interior",
+      "slug": "winter-wmc-stair-rail-interior",
+      "name": "Interior stair railing",
+      "revision": "r_abff23385acf408694274758d8e525bb",
+      "placedRevision": "r_abff23385acf408694274758d8e525bb",
+      "sha256": "cf7ddfb5dc84041f8b2ffa86140cd81e8c61d51f659ee67ff4ba62f81e4bdf12",
+      "model": "models/wmc-stair-rail-interior.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-eave-storage",
+      "slug": "winter-wmc-eave-storage",
+      "name": "Low timber storage cabinet",
+      "revision": "r_a8a15917bcc14649a392b736a40d0d0b",
+      "placedRevision": "r_a8a15917bcc14649a392b736a40d0d0b",
+      "sha256": "a6a82947a98876547e5cb1dd4b04b08dafb3c9ab87ecaef5d0764e77b1618e94",
+      "model": "models/wmc-eave-storage.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-sofa-wool",
+      "slug": "winter-wmc-sofa-wool",
+      "name": "Cabin sofa with cushions and throw",
+      "revision": "r_900d94fea90f4b8486bc7aa81e84fec7",
+      "placedRevision": "r_900d94fea90f4b8486bc7aa81e84fec7",
+      "sha256": "31208887ca28acce4b78d71814b2365922f79e0b9d5529e44955d4bc04659a44",
+      "model": "models/wmc-sofa-wool.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-coffee-table",
+      "slug": "winter-wmc-coffee-table",
+      "name": "Oak coffee table with book and bowl",
+      "revision": "r_865e239598de44a5918a2c8d2b73acff",
+      "placedRevision": "r_865e239598de44a5918a2c8d2b73acff",
+      "sha256": "1930b8cfbfd19325dd477b855505009eb7d60280b3328682a7ddbc4f4ebadab9",
+      "model": "models/wmc-coffee-table.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-living-rug-wool",
+      "slug": "winter-wmc-living-rug-wool",
+      "name": "Bordered wool rug",
+      "revision": "r_c9160d6fc18a4ee2baa2b7a367195e6a",
+      "placedRevision": "r_c9160d6fc18a4ee2baa2b7a367195e6a",
+      "sha256": "26b742b9b2ccc0fe25efc6c7f4ebefa79c49f1c9b39a9199a1dda0043ae3b8d9",
+      "model": "models/wmc-living-rug-wool.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-armchair-oak",
+      "slug": "winter-wmc-armchair-oak",
+      "name": "Oak armchair",
+      "revision": "r_63ad6298f8c24d7fa220eeb8b4bfd300",
+      "placedRevision": "r_63ad6298f8c24d7fa220eeb8b4bfd300",
+      "sha256": "07b8b0cfce29ff68def0291f1b1f6230bf5124f7b2f4dabc6e2cc477ca8d502a",
+      "model": "models/wmc-armchair-oak.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-hearth-masonry",
+      "slug": "winter-wmc-hearth-masonry",
+      "name": "Stone hearth with recessed firebox",
+      "revision": "r_69a2424559ec43b4a6194d3bdaf984f2",
+      "placedRevision": "r_69a2424559ec43b4a6194d3bdaf984f2",
+      "sha256": "6810ba00d23509597e452397d343d709b92c1ece80f854bb55e29ab1d42631c7",
+      "model": "models/wmc-hearth-masonry.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-floorlamp-tripod",
+      "slug": "winter-wmc-floorlamp-tripod",
+      "name": "Timber tripod floor lamp",
+      "revision": "r_42e2e4d7cb6e40b787db5f48ad0200e8",
+      "placedRevision": "r_42e2e4d7cb6e40b787db5f48ad0200e8",
+      "sha256": "a937ad32b256bdae9e07100d449d172e97380a4d08467f943ac6e7b0d80a764a",
+      "model": "models/wmc-floorlamp-tripod.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-entry-bench",
+      "slug": "winter-wmc-entry-bench",
+      "name": "Entry bench with coat and boots",
+      "revision": "r_78da00aa2eb04b7fbef7a33fab2826b6",
+      "placedRevision": "r_78da00aa2eb04b7fbef7a33fab2826b6",
+      "sha256": "9edb1292dcd614d3bec97f122e76240022312ad61933539cbd98400aa26073d2",
+      "model": "models/wmc-entry-bench.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-kitchen-run",
+      "slug": "winter-wmc-kitchen-run",
+      "name": "Cabin kitchen and wall shelf",
+      "revision": "r_8c52171c556a4d9180583dd6a6bdc01d",
+      "placedRevision": "r_8c52171c556a4d9180583dd6a6bdc01d",
+      "sha256": "9cc826394db01b32c1bc7d62a5053b657a53c1ed9305f46194e0baa081d9b288",
+      "model": "models/wmc-kitchen-run.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-dining-table",
+      "slug": "winter-wmc-dining-table",
+      "name": "Cabin dining table for two",
+      "revision": "r_49df9f4d840241aab1426e6a6ab2c3e3",
+      "placedRevision": "r_49df9f4d840241aab1426e6a6ab2c3e3",
+      "sha256": "594d6c40df27995d7bc949c0ad2ae80b915d2cd27e574ff29c7d1f48464880f2",
+      "model": "models/wmc-dining-table.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-dining-chair",
+      "slug": "winter-wmc-dining-chair",
+      "name": "Timber dining chair with woven seat",
+      "revision": "r_c513bc554a7f407eb0c7058055dcfc68",
+      "placedRevision": "r_c513bc554a7f407eb0c7058055dcfc68",
+      "sha256": "548033dfe41212ed713367d4f2cf071076b19ea65453b4e87e4264034e7d79d6",
+      "model": "models/wmc-dining-chair.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-loft-bed",
+      "slug": "winter-wmc-loft-bed",
+      "name": "Oak loft bed with layered bedding",
+      "revision": "r_cd846321ce64474da24aec6c2381178e",
+      "placedRevision": "r_cd846321ce64474da24aec6c2381178e",
+      "sha256": "235c03dabaff62b16db447fc7d08ccaea5fb04e70b4b027a44a047582abd40c7",
+      "model": "models/wmc-loft-bed.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-desk",
+      "slug": "winter-wmc-desk",
+      "name": "Oak writing desk",
+      "revision": "r_d52ea05e031942dfa0fb1a34972226ae",
+      "placedRevision": "r_d52ea05e031942dfa0fb1a34972226ae",
+      "sha256": "161c21bbc664b675b6f6f7a7c10335b6d15b3f5b55b15bdce718bc0ce92c94eb",
+      "model": "models/wmc-desk.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-side-table",
+      "slug": "winter-wmc-side-table",
+      "name": "Oak side table with book shelf",
+      "revision": "r_314b667491c24a52bbd681da663f69cd",
+      "placedRevision": "r_314b667491c24a52bbd681da663f69cd",
+      "sha256": "b38e325dcfb767c16d840e3987d669b05cf606a46efe72731681f790c8ec0318",
+      "model": "models/wmc-side-table.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-small-props",
+      "slug": "winter-wmc-small-props",
+      "name": "Reading and tea tray",
+      "revision": "r_15e05145d9c649de9fe845dd4d4aba9d",
+      "placedRevision": "r_15e05145d9c649de9fe845dd4d4aba9d",
+      "sha256": "36eb43ffd240300c10a2a7548681708576db54af903f05b94f564a5dacbc85f3",
+      "model": "models/wmc-small-props.glb",
+      "interior": true
+    },
+    {
+      "id": "wmc-pendant",
+      "slug": "winter-wmc-pendant",
+      "name": "Metal pendant lamp",
+      "revision": "r_34041812d1bb4d509fc4ba6aab5dcdec",
+      "placedRevision": "r_34041812d1bb4d509fc4ba6aab5dcdec",
+      "sha256": "4d146d856f18f306187fb052e718b1115870bedb3f4a479d377ce60b013c19c3",
+      "model": "models/wmc-pendant.glb",
+      "interior": true
+    }
+  ],
+  "interiorAssets": [
+    "wmc-floor-loft",
+    "wmc-stair-rail-interior",
+    "wmc-eave-storage",
+    "wmc-sofa-wool",
+    "wmc-coffee-table",
+    "wmc-living-rug-wool",
+    "wmc-armchair-oak",
+    "wmc-hearth-masonry",
+    "wmc-floorlamp-tripod",
+    "wmc-entry-bench",
+    "wmc-kitchen-run",
+    "wmc-dining-table",
+    "wmc-dining-chair",
+    "wmc-loft-bed",
+    "wmc-desk",
+    "wmc-side-table",
+    "wmc-small-props",
+    "wmc-pendant"
+  ],
+  "placements": 173,
+  "worldSha256": "0f9e7bd0e84240adb26170181fc965f54d808c418067f8a447fcf13c584831d3",
+  "capture": {
+    "style": "property-film-v1",
+    "placementMethod": "grounded-reveal",
+    "upstairsAssembly": {
+      "hiddenUntil": 20,
+      "internalTreadCount": 17,
+      "treadsStart": 20.25,
+      "treadInterval": 0.125,
+      "railsStart": 20.15,
+      "landingStart": 22.1,
+      "complete": 24,
+      "maxVisibleTreadsBeforeBuild": 0,
+      "visibleTreadsAfterBuild": 17,
+      "landingVisible": true
+    },
+    "backend": "WebGPU",
+    "renderer": "WebGPURenderer",
+    "shadows": true,
+    "environment": true,
+    "three": "186",
+    "worldSha256": "0f9e7bd0e84240adb26170181fc965f54d808c418067f8a447fcf13c584831d3",
+    "interiorAssets": [
+      "wmc-floor-loft",
+      "wmc-stair-rail-interior",
+      "wmc-eave-storage",
+      "wmc-sofa-wool",
+      "wmc-coffee-table",
+      "wmc-living-rug-wool",
+      "wmc-armchair-oak",
+      "wmc-hearth-masonry",
+      "wmc-floorlamp-tripod",
+      "wmc-entry-bench",
+      "wmc-kitchen-run",
+      "wmc-dining-table",
+      "wmc-dining-chair",
+      "wmc-loft-bed",
+      "wmc-desk",
+      "wmc-side-table",
+      "wmc-small-props",
+      "wmc-pendant"
+    ],
+    "modules": [
+      {
+        "id": "wmc-floor-main",
+        "sha256": "f65e5db84489c67705f3e63df9d14656ca34b7053af1266d2e39882385025a09"
+      },
+      {
+        "id": "wmc-wall-facade",
+        "sha256": "b53e834f0d8ea900736cf277e30c926b8c171844a934c9ec0ce89332fc04c782"
+      },
+      {
+        "id": "wmc-wall-west",
+        "sha256": "7a5d2bc1993fb74d6778227fa039ca7ed9cd63eb4881bca2763175dc29aeba33"
+      },
+      {
+        "id": "wmc-wall-east",
+        "sha256": "bec7b6538e0f61594607449088e44d847822a54b4afe06e740d35eb2a751a381"
+      },
+      {
+        "id": "wmc-wall-rear",
+        "sha256": "cf8b764038bea4437e6e7a46f6d9d7839e4e0b3e87303bd76bd5ba822d35d654"
+      },
+      {
+        "id": "wmc-roof-east",
+        "sha256": "426760d4f8c963729d6ca10f9aac697345cafe804d47edd2da3ddb5e0241d066"
+      },
+      {
+        "id": "wmc-roof-west",
+        "sha256": "d18380d2d2a5fa3a0d524076702f5497eff426367b255cd48947938f0fcf5c74"
+      },
+      {
+        "id": "wmc-frame-post",
+        "sha256": "16c09a2ebd4fdc9cf03169652390226cf6171a50614c37ff43a268c7c99eadf1"
+      },
+      {
+        "id": "wmc-rafter-frame",
+        "sha256": "db443e084f6674c221d4940acbc44151d414f29b753f717d3786c255a00e0a0d"
+      },
+      {
+        "id": "wmc-window-tall",
+        "sha256": "bbf65f63cb729b6e6d51e0e4709ae2bd9305e5facd249058dc4f82cf7dd159e9"
+      },
+      {
+        "id": "wmc-gable-glass",
+        "sha256": "fb267c4097fc1a9eb111d22a332df3f4f8a415d6fb4ee950a40a5e38deaf42c4"
+      },
+      {
+        "id": "wmc-door-entry",
+        "sha256": "988bfcd1d0bfc15b4d743e123e9af12fea96b625e67d69fe67e364b44a403f43"
+      },
+      {
+        "id": "wmc-door-deck",
+        "sha256": "4e5cb5a7287b2e825ae5658f44fc16ab08e0f0bb047beb10dc43c35c6666e837"
+      },
+      {
+        "id": "wmc-deck-tile",
+        "sha256": "4a13c23e6b7ced2213a3a7c48fff5d5ceaee8147ba771857a28239f3737a5026"
+      },
+      {
+        "id": "wmc-rail-span",
+        "sha256": "610b49be8200c3259dc8e6ca66bee2ef53dccf52df46ac05c8bcfadd36386e3f"
+      },
+      {
+        "id": "wmc-stone-pier",
+        "sha256": "66b1f288e84daf055b179d832b690bc863a03118b698aaed0adec0421d07fcec"
+      },
+      {
+        "id": "wmc-chimney-masonry",
+        "sha256": "13d9eff2c75a0b090b06db398c2110c7fb0511889598efb605b1cd204e3b4daa"
+      },
+      {
+        "id": "wmc-stone-plinth-panel",
+        "sha256": "3774732adde6e8cc3c22c387d4b432188e71561f4d8f8fbee7c56416b0645cfa"
+      },
+      {
+        "id": "wmc-tread-timber",
+        "sha256": "ed466a3865232ab707154674ab524220cfd0802ed010b4c575f01d73c2bf4c97"
+      },
+      {
+        "id": "wmc-stair-rail-exterior",
+        "sha256": "78b9bd4d0c2613d8b4d708b9a3a884a24b345c2f0075555479c6d7d6aa25e2f0"
+      },
+      {
+        "id": "wmc-window-test",
+        "sha256": "869d74335457eaf5437d55e7bc6cb83789fa4377b548b2f4ea39f5acc7923334"
+      },
+      {
+        "id": "wmc-lantern",
+        "sha256": "702a4e65447b5c750b63ca6e6a000fa3cddcb5bf2720ac3dd13903bef56fe0a1"
+      },
+      {
+        "id": "wmc-floor-loft",
+        "sha256": "e217d936c4634eaa1bc5d823613dcc77101230bf9a69bfb717880b8ca5c256c6"
+      },
+      {
+        "id": "wmc-stair-rail-interior",
+        "sha256": "cf7ddfb5dc84041f8b2ffa86140cd81e8c61d51f659ee67ff4ba62f81e4bdf12"
+      },
+      {
+        "id": "wmc-eave-storage",
+        "sha256": "a6a82947a98876547e5cb1dd4b04b08dafb3c9ab87ecaef5d0764e77b1618e94"
+      },
+      {
+        "id": "wmc-sofa-wool",
+        "sha256": "31208887ca28acce4b78d71814b2365922f79e0b9d5529e44955d4bc04659a44"
+      },
+      {
+        "id": "wmc-coffee-table",
+        "sha256": "1930b8cfbfd19325dd477b855505009eb7d60280b3328682a7ddbc4f4ebadab9"
+      },
+      {
+        "id": "wmc-living-rug-wool",
+        "sha256": "26b742b9b2ccc0fe25efc6c7f4ebefa79c49f1c9b39a9199a1dda0043ae3b8d9"
+      },
+      {
+        "id": "wmc-armchair-oak",
+        "sha256": "07b8b0cfce29ff68def0291f1b1f6230bf5124f7b2f4dabc6e2cc477ca8d502a"
+      },
+      {
+        "id": "wmc-hearth-masonry",
+        "sha256": "6810ba00d23509597e452397d343d709b92c1ece80f854bb55e29ab1d42631c7"
+      },
+      {
+        "id": "wmc-floorlamp-tripod",
+        "sha256": "a937ad32b256bdae9e07100d449d172e97380a4d08467f943ac6e7b0d80a764a"
+      },
+      {
+        "id": "wmc-entry-bench",
+        "sha256": "9edb1292dcd614d3bec97f122e76240022312ad61933539cbd98400aa26073d2"
+      },
+      {
+        "id": "wmc-kitchen-run",
+        "sha256": "9cc826394db01b32c1bc7d62a5053b657a53c1ed9305f46194e0baa081d9b288"
+      },
+      {
+        "id": "wmc-dining-table",
+        "sha256": "594d6c40df27995d7bc949c0ad2ae80b915d2cd27e574ff29c7d1f48464880f2"
+      },
+      {
+        "id": "wmc-dining-chair",
+        "sha256": "548033dfe41212ed713367d4f2cf071076b19ea65453b4e87e4264034e7d79d6"
+      },
+      {
+        "id": "wmc-loft-bed",
+        "sha256": "235c03dabaff62b16db447fc7d08ccaea5fb04e70b4b027a44a047582abd40c7"
+      },
+      {
+        "id": "wmc-desk",
+        "sha256": "161c21bbc664b675b6f6f7a7c10335b6d15b3f5b55b15bdce718bc0ce92c94eb"
+      },
+      {
+        "id": "wmc-side-table",
+        "sha256": "b38e325dcfb767c16d840e3987d669b05cf606a46efe72731681f790c8ec0318"
+      },
+      {
+        "id": "wmc-small-props",
+        "sha256": "36eb43ffd240300c10a2a7548681708576db54af903f05b94f564a5dacbc85f3"
+      },
+      {
+        "id": "wmc-pendant",
+        "sha256": "4d146d856f18f306187fb052e718b1115870bedb3f4a479d377ce60b013c19c3"
+      }
+    ],
+    "camera": {
+      "asset": {
+        "from": {
+          "eye": [
+            9.5,
+            6.2,
+            22.8
+          ],
+          "target": [
+            0,
+            3.4,
+            8.775
+          ],
+          "fov": 40
+        },
+        "to": {
+          "eye": [
+            8.5,
+            5.9,
+            21.8
+          ],
+          "target": [
+            0,
+            3.4,
+            8.775
+          ],
+          "fov": 40
+        }
+      },
+      "kit": {
+        "from": {
+          "eye": [
+            20.5,
+            15,
+            25.5
+          ],
+          "target": [
+            0,
+            4.5,
+            0
+          ],
+          "fov": 42
+        },
+        "to": {
+          "eye": [
+            19.8,
+            14.2,
+            24.8
+          ],
+          "target": [
+            0,
+            4.3,
+            0
+          ],
+          "fov": 42
+        }
+      },
+      "living": {
+        "from": {
+          "eye": [
+            9,
+            7.6,
+            10.6
+          ],
+          "target": [
+            0.2,
+            1.5,
+            -1.6
+          ],
+          "fov": 45
+        },
+        "to": {
+          "eye": [
+            8,
+            6.7,
+            10
+          ],
+          "target": [
+            0.2,
+            1.5,
+            -1.6
+          ],
+          "fov": 45
+        }
+      },
+      "livingTour": {
+        "from": {
+          "eye": [
+            -0.8,
+            1.85,
+            4.9
+          ],
+          "target": [
+            0.75,
+            1.3,
+            -1.65
+          ],
+          "fov": 62
+        },
+        "to": {
+          "eye": [
+            0.1,
+            1.85,
+            4.3
+          ],
+          "target": [
+            0.65,
+            1.3,
+            -1.8
+          ],
+          "fov": 62
+        }
+      },
+      "stairs": {
+        "from": {
+          "eye": [
+            7.7,
+            6.6,
+            8.6
+          ],
+          "target": [
+            -0.8,
+            1.8,
+            0.4
+          ],
+          "fov": 48
+        },
+        "to": {
+          "eye": [
+            6.6,
+            6,
+            7.5
+          ],
+          "target": [
+            -0.7,
+            2.1,
+            -0.8
+          ],
+          "fov": 48
+        }
+      },
+      "loft": {
+        "from": {
+          "eye": [
+            4.7,
+            7.2,
+            1.4
+          ],
+          "target": [
+            0.25,
+            3.9,
+            -3.65
+          ],
+          "fov": 55
+        },
+        "to": {
+          "eye": [
+            1.65,
+            4.85,
+            -0.4
+          ],
+          "target": [
+            0.25,
+            3.85,
+            -3.8
+          ],
+          "fov": 55
+        }
+      }
+    },
+    "fps": 30,
+    "frameCount": 1020,
+    "duration": 34,
+    "shots": [
+      {
+        "id": "asset",
+        "start": 0,
+        "end": 2.5,
+        "title": "A timber wall module",
+        "camera": "asset",
+        "review": 1.8
+      },
+      {
+        "id": "reveal",
+        "start": 2.5,
+        "end": 6,
+        "title": "A coordinated cabin kit",
+        "camera": "asset → kit",
+        "review": 5.5
+      },
+      {
+        "id": "architecture",
+        "start": 6,
+        "end": 10.5,
+        "title": "Walls, rafters and a snow-covered roof",
+        "camera": "kit",
+        "review": 9.8
+      },
+      {
+        "id": "living",
+        "start": 10.5,
+        "end": 16.5,
+        "title": "Furnishing the living floor",
+        "camera": "living",
+        "review": 15.8
+      },
+      {
+        "id": "living-tour",
+        "start": 16.5,
+        "end": 20,
+        "title": "Fireside living",
+        "camera": "livingTour",
+        "review": 18.8
+      },
+      {
+        "id": "stairs",
+        "start": 20,
+        "end": 24,
+        "title": "A stairway to the sleeping loft",
+        "camera": "stairs",
+        "review": 23.5
+      },
+      {
+        "id": "loft",
+        "start": 24,
+        "end": 31,
+        "title": "A sleeping loft above the living room",
+        "camera": "loft",
+        "review": 30
+      },
+      {
+        "id": "scene",
+        "start": 31,
+        "end": 34,
+        "title": "Winter Mountainside Cabin · Holodeck",
+        "camera": "Holodeck scene capture",
+        "review": 33
+      }
+    ],
+    "captureMethod": "Fixed-time PNG frames; encoded at 30 fps",
+    "resumedFromFrame": 1011,
+    "framesSha256": "a38ada0fa56ab1a01eb85111e846bd186be4343a04b66455ffb65f2da4ca796e",
+    "maxAssemblyHoldSeconds": 0.03333333333333333
+  },
+  "scene": {
+    "view": "winter-mountainside-cabin-exterior",
+    "src": "/media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior.webp",
+    "width": 1920,
+    "height": 1080,
+    "alt": "The timber cabin with its glazed gable, deck and stair among snow-covered firs and spruces.",
+    "srcsetWebp": "/media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-320.webp 320w, /media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-480.webp 480w, /media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-672.webp 672w, /media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-768.webp 768w, /media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-1024.webp 1024w, /media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-1440.webp 1440w",
+    "srcsetAvif": "/media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-320.avif 320w, /media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-480.avif 480w, /media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-672.avif 672w, /media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-768.avif 768w, /media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-1024.avif 1024w, /media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior-1440.avif 1440w",
+    "inputPath": "media/holodeck/scenes/ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd/winter-mountainside-cabin-exterior.png",
+    "bytes": 2209160,
+    "sha256": "ae68557825df539a540e6054192ac1625bf87f19402b0a00b240334bf44a57bd",
+    "capture": {
+      "tool": "scripts/capture-holodeck-shots.mjs",
+      "world": "https://holodeck.kilnstudio.tools/worlds/winter-mountainside-cabin/",
+      "manifestSha256": "9b9719819ab80e988e3ddf5cb4109687722efba7ef26af52da9051a65b5dc83a",
+      "camera": {
+        "position": [
+          28,
+          10,
+          -2
+        ],
+        "target": [
+          20,
+          8,
+          -29
+        ],
+        "fov": 52,
+        "cove": true
+      },
+      "backend": "WebGPU",
+      "browser": "Chrome/155.0.8059.85",
+      "capturedAt": "2026-10-25T21:21:24.557Z"
+    }
+  },
+  "media": {
+    "mp4": "/workflow/winter-cabin/7f7f5f16317afd7d/workflow.mp4",
+    "gif": "/workflow/winter-cabin/7f7f5f16317afd7d/workflow.gif",
+    "poster": "/workflow/winter-cabin/7f7f5f16317afd7d/poster.webp",
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "duration": 34
+  },
+  "source": {
+    "href": "/workflow/winter-cabin/7f7f5f16317afd7d/wall.kiln.js",
+    "sha256": "aa9f11709039fdf3cfd44d838e1505eea92494aa0f0fc2b3b5a726917187d6f0",
+    "excerpt": "async function wallRect(B,size,center,normal,seed){\n const axis=Math.abs(normal[0])?0:2,across=axis===0?2:0,depth=size[axis],width=size[across],H=size[1],face=normal[axis];\n const core=[...size];core[axis]=depth-.054;await block(B,'dark',core,center,1,.58,.002);\n const n=Math.max(1,Math.ceil(width/.18)),bw=width/n;\n for(let k=0;k<n;k++){\n  const p=[...center];p[across]+=-width/2+(k+.5)*bw;\n  const ss=[...size];ss[across]=bw-.003;ss[axis]=.030;p[axis]=center[axis]+face*(depth/2-.015);\n  await block(B,'dark',ss,p,1,.86+.025*((k+seed)%6),.003,[0,0,0],(k+seed)*.137);\n  ss[axis]=.024;p[axis]=center[axis]-face*(depth/2-.012);await block(B,'warm',ss,p,1,.92+.025*((k+seed)%4),.002,[0,0,0],(k+seed)*.173);\n }\n // Flush sill and head finish the cladding ends without narrowing the opening.\n for(const y of [-H/2+.04,H/2-.04]){const ss=[...size];ss[1]=.08;ss[axis]+=.004;const p=[...center];p[1]+=y;await block(B,'dark',ss,p,across,.92,.003);}\n}"
+  },
+  "files": [
+    {
+      "path": "public/workflow/winter-cabin/7f7f5f16317afd7d/workflow.mp4",
+      "sha256": "dc52e531e4426fecbb1132c32f6c7f3e5ef01224023e4175a0bea5317b47ffc1",
+      "bytes": 10919129
+    },
+    {
+      "path": "public/workflow/winter-cabin/7f7f5f16317afd7d/workflow.gif",
+      "sha256": "4795f371bfc5d5a407d9720d70a42e3fd7401d584b4779d63f8a98796331b4b0",
+      "bytes": 15208056
+    },
+    {
+      "path": "public/workflow/winter-cabin/7f7f5f16317afd7d/poster.webp",
+      "sha256": "badb10bedc010e871d52ec40d46ca460b461cf161f35f2c79276f549ed669923",
+      "bytes": 84182
+    },
+    {
+      "path": "public/workflow/winter-cabin/7f7f5f16317afd7d/wall.kiln.js",
+      "sha256": "aa9f11709039fdf3cfd44d838e1505eea92494aa0f0fc2b3b5a726917187d6f0",
+      "bytes": 26393
+    }
+  ]
+}

@@ -23,7 +23,7 @@ const Heading = headingLevel;
   data-verified={asset.verified ? "" : undefined}
   class="group min-w-0 border-t border-rule"
 >
-  <a href={asset.href ?? `/gallery/${asset.slug}/`} class="block text-ink no-underline" aria-label={asset.name}>
+  <a href={asset.href ?? `/gallery/${asset.slug}/`} class="block text-ink no-underline">
     {asset.poster && (
       <div class="bg-stage transition-colors group-hover:bg-sheet">
         <ResponsiveImage

@@ -67,7 +67,7 @@ for (let i = 0; i < names.length; i++) {
 }
 const text = source.toString('utf8');
 const excerpt = text.slice(text.indexOf('async function wallRect'), text.indexOf('async function floorBuild')).trim();
-await writeFile(join(site, 'src/data/asset-to-scene.json'), JSON.stringify({
+await writeFile(join(site, 'src/data/winter-cabin-workflow.json'), JSON.stringify({
   asset: manifest.asset, modules: manifest.modules, interiorAssets: manifest.interiorAssets, placements: manifest.objects.length, worldSha256: manifest.worldSha256,
   capture: proof, scene: manifest.scene,
   media: { mp4: base + 'workflow.mp4', gif: base + 'workflow.gif', poster: base + 'poster.webp', width: 1280, height: 720, fps: proof.fps, duration: Number(inspected.format.duration) },
